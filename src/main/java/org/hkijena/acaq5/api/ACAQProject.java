@@ -34,7 +34,7 @@ import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.ACAQDependency;
 import org.hkijena.acaq5.ACAQMutableDependency;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraphEdge;
+import org.hkijena.acaq5.api.algorithm.ACAQGraphEdge;
 import org.hkijena.acaq5.api.algorithm.ACAQGraph;
 import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQCompartmentOutput;
@@ -223,18 +223,18 @@ public class ACAQProject implements ACAQValidatable {
             compartment.getOutputNode().getVisibleCompartments().clear();
         }
 
-        for (ACAQAlgorithmGraphEdge edge : compartmentGraph.getGraph().edgeSet()) {
-            ACAQProjectCompartment source = (ACAQProjectCompartment) compartmentGraph.getGraph().getEdgeSource(edge).getAlgorithm();
-            ACAQProjectCompartment target = (ACAQProjectCompartment) compartmentGraph.getGraph().getEdgeTarget(edge).getAlgorithm();
+        for (ACAQGraphEdge edge : compartmentGraph.getGraph().edgeSet()) {
+            ACAQProjectCompartment source = (ACAQProjectCompartment) compartmentGraph.getGraph().getEdgeSource(edge).getNode();
+            ACAQProjectCompartment target = (ACAQProjectCompartment) compartmentGraph.getGraph().getEdgeTarget(edge).getNode();
             source.getOutputNode().getVisibleCompartments().add(target.getProjectCompartmentId());
         }
 
         // Remove invalid connections in the project graph
-        for (ACAQAlgorithmGraphEdge edge : ImmutableList.copyOf(graph.getGraph().edgeSet())) {
+        for (ACAQGraphEdge edge : ImmutableList.copyOf(graph.getGraph().edgeSet())) {
             if (graph.getGraph().containsEdge(edge)) {
                 ACAQDataSlot source = graph.getGraph().getEdgeSource(edge);
                 ACAQDataSlot target = graph.getGraph().getEdgeTarget(edge);
-                if (!source.getAlgorithm().isVisibleIn(target.getAlgorithm().getCompartment())) {
+                if (!source.getNode().isVisibleIn(target.getNode().getCompartment())) {
                     graph.disconnect(source, target, false);
                 }
             }

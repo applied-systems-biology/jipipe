@@ -16,20 +16,20 @@ package org.hkijena.acaq5.extensions.settings;
 import com.google.common.eventbus.EventBus;
 import org.hkijena.acaq5.ACAQDefaultRegistry;
 import org.hkijena.acaq5.api.ACAQDocumentation;
-import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.parameters.ACAQParameterCollection;
-import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphCanvasUI;
+import org.hkijena.acaq5.ui.grapheditor.ACAQGraphCanvasUI;
+import org.hkijena.acaq5.ui.grapheditor.ACAQGraphEditorUI;
 
 /**
- * All settings for {@link org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphEditorUI}
+ * All settings for {@link ACAQGraphEditorUI}
  */
 public class GraphEditorUISettings implements ACAQParameterCollection {
 
     public static String ID = "graph-editor-ui";
 
     private EventBus eventBus = new EventBus();
-    private ACAQAlgorithmGraphCanvasUI.ViewMode defaultViewMode = ACAQAlgorithmGraphCanvasUI.ViewMode.Vertical;
+    private ACAQGraphCanvasUI.ViewMode defaultViewMode = ACAQGraphCanvasUI.ViewMode.Vertical;
     private boolean switchPanningDirection = false;
     private boolean enableLayoutHelper = true;
 
@@ -40,12 +40,12 @@ public class GraphEditorUISettings implements ACAQParameterCollection {
 
     @ACAQDocumentation(name = "Default view mode", description = "Determines how the graph is displayed.")
     @ACAQParameter("default-view-mode")
-    public ACAQAlgorithmGraphCanvasUI.ViewMode getDefaultViewMode() {
+    public ACAQGraphCanvasUI.ViewMode getDefaultViewMode() {
         return defaultViewMode;
     }
 
     @ACAQParameter("default-view-mode")
-    public void setDefaultViewMode(ACAQAlgorithmGraphCanvasUI.ViewMode defaultViewMode) {
+    public void setDefaultViewMode(ACAQGraphCanvasUI.ViewMode defaultViewMode) {
         this.defaultViewMode = defaultViewMode;
 
     }

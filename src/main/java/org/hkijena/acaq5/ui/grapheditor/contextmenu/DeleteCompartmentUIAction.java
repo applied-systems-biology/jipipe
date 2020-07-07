@@ -18,8 +18,8 @@ import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
 import org.hkijena.acaq5.api.history.DeleteCompartmentGraphHistorySnapshot;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
-import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphCanvasUI;
-import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmUI;
+import org.hkijena.acaq5.ui.grapheditor.ACAQGraphCanvasUI;
+import org.hkijena.acaq5.ui.grapheditor.ACAQNodeUI;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
@@ -28,19 +28,19 @@ import java.util.stream.Collectors;
 
 public class DeleteCompartmentUIAction implements AlgorithmUIAction {
     @Override
-    public boolean matches(Set<ACAQAlgorithmUI> selection) {
+    public boolean matches(Set<ACAQNodeUI> selection) {
         return !selection.isEmpty();
     }
 
     @Override
-    public void run(ACAQAlgorithmGraphCanvasUI canvasUI, Set<ACAQAlgorithmUI> selection) {
+    public void run(ACAQGraphCanvasUI canvasUI, Set<ACAQNodeUI> selection) {
         if (JOptionPane.showConfirmDialog(canvasUI,
                 "Do you really want to remove the following compartments: " +
-                        selection.stream().map(ACAQAlgorithmUI::getAlgorithm).map(ACAQGraphNode::getName).collect(Collectors.joining(", ")), "Delete compartments",
+                        selection.stream().map(ACAQNodeUI::getNode).map(ACAQGraphNode::getName).collect(Collectors.joining(", ")), "Delete compartments",
                 JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
             ACAQProject project = ((ACAQProjectWorkbench) canvasUI.getWorkbench()).getProject();
-            for (ACAQAlgorithmUI ui : selection) {
-                ACAQProjectCompartment compartment = (ACAQProjectCompartment) ui.getAlgorithm();
+            for (ACAQNodeUI ui : selection) {
+                ACAQProjectCompartment compartment = (ACAQProjectCompartment) ui.getNode();
                 canvasUI.getGraphHistory().addSnapshotBefore(new DeleteCompartmentGraphHistorySnapshot(project, compartment));
                 compartment.getProject().removeCompartment(compartment);
             }

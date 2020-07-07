@@ -13,8 +13,8 @@
 
 package org.hkijena.acaq5.ui.grapheditor.contextmenu;
 
-import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphCanvasUI;
-import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmUI;
+import org.hkijena.acaq5.ui.grapheditor.ACAQGraphCanvasUI;
+import org.hkijena.acaq5.ui.grapheditor.ACAQNodeUI;
 
 import javax.swing.*;
 import java.util.Set;
@@ -35,7 +35,7 @@ public interface AlgorithmUIAction {
      * @param selection the list of algorithm UIs
      * @return if the action shows up
      */
-    boolean matches(Set<ACAQAlgorithmUI> selection);
+    boolean matches(Set<ACAQNodeUI> selection);
 
     /**
      * Runs the workload
@@ -43,7 +43,7 @@ public interface AlgorithmUIAction {
      * @param canvasUI  the canvas that contains all algorithm UIs
      * @param selection the current selection of algorithms
      */
-    void run(ACAQAlgorithmGraphCanvasUI canvasUI, Set<ACAQAlgorithmUI> selection);
+    void run(ACAQGraphCanvasUI canvasUI, Set<ACAQNodeUI> selection);
 
     /**
      * @return the name

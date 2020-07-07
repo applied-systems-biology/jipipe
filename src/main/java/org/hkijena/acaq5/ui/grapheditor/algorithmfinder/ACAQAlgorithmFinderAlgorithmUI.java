@@ -24,7 +24,7 @@ import org.hkijena.acaq5.api.data.ACAQSlotType;
 import org.hkijena.acaq5.api.events.AlgorithmSlotsChangedEvent;
 import org.hkijena.acaq5.ui.components.AddAlgorithmSlotPanel;
 import org.hkijena.acaq5.ui.events.AlgorithmFinderSuccessEvent;
-import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphCanvasUI;
+import org.hkijena.acaq5.ui.grapheditor.ACAQGraphCanvasUI;
 import org.hkijena.acaq5.utils.TooltipUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 
@@ -33,13 +33,13 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 
-import static org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmUI.SLOT_UI_HEIGHT;
+import static org.hkijena.acaq5.ui.grapheditor.ACAQNodeUI.SLOT_UI_HEIGHT;
 
 /**
  * UI for finding algorithms
  */
 public class ACAQAlgorithmFinderAlgorithmUI extends JPanel {
-    private final ACAQAlgorithmGraphCanvasUI canvasUI;
+    private final ACAQGraphCanvasUI canvasUI;
     private final ACAQDataSlot outputSlot;
     private final ACAQGraph graph;
     private final ACAQGraphNode algorithm;
@@ -59,10 +59,10 @@ public class ACAQAlgorithmFinderAlgorithmUI extends JPanel {
      * @param score       Score of the target algorithm
      * @param maxScore    Maximum score that was possible
      */
-    public ACAQAlgorithmFinderAlgorithmUI(ACAQAlgorithmGraphCanvasUI canvasUI, ACAQDataSlot outputSlot, ACAQAlgorithmDeclaration declaration, int score, int maxScore) {
+    public ACAQAlgorithmFinderAlgorithmUI(ACAQGraphCanvasUI canvasUI, ACAQDataSlot outputSlot, ACAQAlgorithmDeclaration declaration, int score, int maxScore) {
         this.canvasUI = canvasUI;
         this.outputSlot = outputSlot;
-        this.graph = canvasUI.getAlgorithmGraph();
+        this.graph = canvasUI.getGraph();
         this.compartment = canvasUI.getCompartment();
         this.score = score;
         this.maxScore = maxScore;
@@ -81,10 +81,10 @@ public class ACAQAlgorithmFinderAlgorithmUI extends JPanel {
      * @param score      Score of the target algorithm
      * @param maxScore   Maximum score that was possible
      */
-    public ACAQAlgorithmFinderAlgorithmUI(ACAQAlgorithmGraphCanvasUI canvasUI, ACAQDataSlot outputSlot, ACAQGraphNode algorithm, int score, int maxScore) {
+    public ACAQAlgorithmFinderAlgorithmUI(ACAQGraphCanvasUI canvasUI, ACAQDataSlot outputSlot, ACAQGraphNode algorithm, int score, int maxScore) {
         this.canvasUI = canvasUI;
         this.outputSlot = outputSlot;
-        this.graph = canvasUI.getAlgorithmGraph();
+        this.graph = canvasUI.getGraph();
         this.compartment = canvasUI.getCompartment();
         this.score = score;
         this.maxScore = maxScore;

@@ -19,7 +19,7 @@ import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
 import org.hkijena.acaq5.ui.ACAQWorkbench;
 import org.hkijena.acaq5.ui.extension.MenuExtension;
 import org.hkijena.acaq5.ui.extension.MenuTarget;
-import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphCanvasUI;
+import org.hkijena.acaq5.ui.grapheditor.ACAQGraphCanvasUI;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.imageio.ImageIO;
@@ -45,7 +45,7 @@ public class ScreenshotWholeGraphToolPNG extends MenuExtension {
 
     private void createScreenshot() {
         ACAQProjectWorkbench workbench = (ACAQProjectWorkbench) getWorkbench();
-        ACAQAlgorithmGraphCanvasUI canvasUI = new ACAQAlgorithmGraphCanvasUI(workbench, workbench.getProject().getGraph(), null);
+        ACAQGraphCanvasUI canvasUI = new ACAQGraphCanvasUI(workbench, workbench.getProject().getGraph(), null);
         canvasUI.autoLayoutAll();
         BufferedImage screenshot = canvasUI.createScreenshotPNG();
         Path file = FileChooserSettings.saveFile(this, FileChooserSettings.KEY_PARAMETER, "Export full graph as *.png", ".png");

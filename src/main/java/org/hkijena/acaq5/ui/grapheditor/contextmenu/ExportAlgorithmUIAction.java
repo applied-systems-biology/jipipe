@@ -20,9 +20,9 @@ import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.grouping.NodeGroup;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
 import org.hkijena.acaq5.ui.components.DocumentTabPane;
-import org.hkijena.acaq5.ui.extensionbuilder.ACAQJsonAlgorithmExporter;
-import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphCanvasUI;
-import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmUI;
+import org.hkijena.acaq5.ui.extensionbuilder.ACAQJsonExporter;
+import org.hkijena.acaq5.ui.grapheditor.ACAQGraphCanvasUI;
+import org.hkijena.acaq5.ui.grapheditor.ACAQNodeUI;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
@@ -31,13 +31,13 @@ import java.util.stream.Collectors;
 
 public class ExportAlgorithmUIAction implements AlgorithmUIAction {
     @Override
-    public boolean matches(Set<ACAQAlgorithmUI> selection) {
+    public boolean matches(Set<ACAQNodeUI> selection) {
         return !selection.isEmpty();
     }
 
     @Override
-    public void run(ACAQAlgorithmGraphCanvasUI canvasUI, Set<ACAQAlgorithmUI> selection) {
-        Set<ACAQGraphNode> algorithms = selection.stream().map(ACAQAlgorithmUI::getAlgorithm).collect(Collectors.toSet());
+    public void run(ACAQGraphCanvasUI canvasUI, Set<ACAQNodeUI> selection) {
+        Set<ACAQGraphNode> algorithms = selection.stream().map(ACAQNodeUI::getNode).collect(Collectors.toSet());
         ACAQValidityReport report = new ACAQValidityReport();
         for (ACAQGraphNode algorithm : algorithms) {
             algorithm.reportValidity(report.forCategory(algorithm.getName()));
@@ -51,7 +51,7 @@ public class ExportAlgorithmUIAction implements AlgorithmUIAction {
         ACAQProject project = projectWorkbench.getProject();
         ACAQGraph graph = project.getGraph().extract(algorithms, true);
         NodeGroup group = new NodeGroup(graph, true);
-        ACAQJsonAlgorithmExporter exporter = new ACAQJsonAlgorithmExporter(projectWorkbench, group);
+        ACAQJsonExporter exporter = new ACAQJsonExporter(projectWorkbench, group);
         projectWorkbench.getDocumentTabPane().addTab("Export custom algorithm",
                 UIUtils.getIconFromResources("export.png"),
                 exporter,

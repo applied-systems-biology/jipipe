@@ -28,7 +28,7 @@ import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
 import org.hkijena.acaq5.ui.components.MarkdownDocument;
 import org.hkijena.acaq5.ui.components.MarkdownReader;
 import org.hkijena.acaq5.ui.events.DefaultAlgorithmUIActionRequestedEvent;
-import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphEditorUI;
+import org.hkijena.acaq5.ui.grapheditor.ACAQGraphEditorUI;
 import org.hkijena.acaq5.ui.grapheditor.contextmenu.AlgorithmUIAction;
 import org.hkijena.acaq5.ui.grapheditor.contextmenu.DeleteCompartmentUIAction;
 import org.hkijena.acaq5.ui.grapheditor.contextmenu.ExportCompartmentAsJsonAlgorithmUIAction;
@@ -52,7 +52,7 @@ import static org.hkijena.acaq5.api.algorithm.ACAQGraph.COMPARTMENT_DEFAULT;
 /**
  * Graph editor UI for a project compartment graph
  */
-public class ACAQCompartmentGraphUI extends ACAQAlgorithmGraphEditorUI {
+public class ACAQCompartmentGraphUI extends ACAQGraphEditorUI {
     private final MarkdownReader documentationPanel;
 
     /**
@@ -103,10 +103,10 @@ public class ACAQCompartmentGraphUI extends ACAQAlgorithmGraphEditorUI {
             setPropertyPanel(documentationPanel);
         } else if (getSelection().size() == 1) {
             setPropertyPanel(new ACAQSingleCompartmentSelectionPanelUI(this,
-                    (ACAQProjectCompartment) getSelection().iterator().next().getAlgorithm()));
+                    (ACAQProjectCompartment) getSelection().iterator().next().getNode()));
         } else {
             setPropertyPanel(new ACAQMultiCompartmentSelectionPanelUI((ACAQProjectWorkbench) getWorkbench(),
-                    getSelection().stream().map(ui -> (ACAQProjectCompartment) ui.getAlgorithm()).collect(Collectors.toSet()), getCanvasUI()));
+                    getSelection().stream().map(ui -> (ACAQProjectCompartment) ui.getNode()).collect(Collectors.toSet()), getCanvasUI()));
         }
     }
 
@@ -176,8 +176,8 @@ public class ACAQCompartmentGraphUI extends ACAQAlgorithmGraphEditorUI {
      */
     @Subscribe
     public void onOpenCompartment(DefaultAlgorithmUIActionRequestedEvent event) {
-        if (event.getUi() != null && event.getUi().getAlgorithm() instanceof ACAQProjectCompartment) {
-            getProjectWorkbench().openCompartmentGraph((ACAQProjectCompartment) event.getUi().getAlgorithm(), true);
+        if (event.getUi() != null && event.getUi().getNode() instanceof ACAQProjectCompartment) {
+            getProjectWorkbench().openCompartmentGraph((ACAQProjectCompartment) event.getUi().getNode(), true);
         }
     }
 }

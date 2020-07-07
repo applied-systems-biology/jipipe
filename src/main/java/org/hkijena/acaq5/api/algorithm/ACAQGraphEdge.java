@@ -18,14 +18,14 @@ import org.jgrapht.graph.DefaultEdge;
 /**
  * A custom graph edge
  */
-public class ACAQAlgorithmGraphEdge extends DefaultEdge {
+public class ACAQGraphEdge extends DefaultEdge {
 
     private boolean userDisconnectable;
 
     /**
      * Initializes a new graph edge that is not user-disconnectable
      */
-    public ACAQAlgorithmGraphEdge() {
+    public ACAQGraphEdge() {
 
     }
 
@@ -34,7 +34,7 @@ public class ACAQAlgorithmGraphEdge extends DefaultEdge {
      *
      * @param userDisconnectable If a user is allowed to disconnect this edge
      */
-    public ACAQAlgorithmGraphEdge(boolean userDisconnectable) {
+    public ACAQGraphEdge(boolean userDisconnectable) {
         this.userDisconnectable = userDisconnectable;
     }
 

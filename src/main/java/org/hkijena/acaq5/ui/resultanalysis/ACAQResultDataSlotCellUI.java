@@ -47,7 +47,7 @@ public abstract class ACAQResultDataSlotCellUI extends JLabel {
      * @return The algorithm compartment
      */
     public static String getAlgorithmCompartment(ACAQProjectWorkbench workbenchUI, ACAQDataSlot slot) {
-        return workbenchUI.getProject().getCompartments().get(slot.getAlgorithm().getCompartment()).getName();
+        return workbenchUI.getProject().getCompartments().get(slot.getNode().getCompartment()).getName();
     }
 
     /**
@@ -57,7 +57,7 @@ public abstract class ACAQResultDataSlotCellUI extends JLabel {
      * @return The algorithm name
      */
     public static String getAlgorithmName(ACAQDataSlot slot) {
-        return slot.getAlgorithm().getName();
+        return slot.getNode().getName();
     }
 
     /**

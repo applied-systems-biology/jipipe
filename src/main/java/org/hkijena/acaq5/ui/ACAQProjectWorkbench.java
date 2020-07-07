@@ -36,7 +36,7 @@ import org.hkijena.acaq5.ui.components.RecentProjectsMenu;
 import org.hkijena.acaq5.ui.components.ReloadableValidityChecker;
 import org.hkijena.acaq5.ui.components.SplashScreen;
 import org.hkijena.acaq5.ui.extension.MenuTarget;
-import org.hkijena.acaq5.ui.extensionbuilder.ACAQJsonAlgorithmExporter;
+import org.hkijena.acaq5.ui.extensionbuilder.ACAQJsonExporter;
 import org.hkijena.acaq5.ui.extensions.ACAQPluginManagerUIPanel;
 import org.hkijena.acaq5.ui.extensions.ACAQPluginValidityCheckerPanel;
 import org.hkijena.acaq5.ui.running.ACAQRunSettingsUI;
@@ -465,7 +465,7 @@ public class ACAQProjectWorkbench extends JPanel implements ACAQWorkbench {
             return;
         }
         NodeGroup nodeGroup = new NodeGroup(new ACAQGraph(getProject().getGraph()), true);
-        ACAQJsonAlgorithmExporter exporter = new ACAQJsonAlgorithmExporter(this, nodeGroup);
+        ACAQJsonExporter exporter = new ACAQJsonExporter(this, nodeGroup);
         exporter.getAlgorithmDeclaration().setName("Custom algorithm");
         exporter.getAlgorithmDeclaration().setDescription("A custom algorithm");
         getDocumentTabPane().addTab("Export custom algorithm",

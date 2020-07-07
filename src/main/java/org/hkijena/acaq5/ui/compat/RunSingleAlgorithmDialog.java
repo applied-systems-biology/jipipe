@@ -25,7 +25,7 @@ import org.hkijena.acaq5.api.data.ACAQDefaultMutableSlotConfiguration;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.data.ACAQSlotType;
 import org.hkijena.acaq5.api.events.AlgorithmSlotsChangedEvent;
-import org.hkijena.acaq5.api.history.ACAQAlgorithmGraphHistory;
+import org.hkijena.acaq5.api.history.ACAQGraphHistory;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.extensions.settings.RuntimeSettings;
 import org.hkijena.acaq5.ui.ACAQWorkbench;
@@ -220,7 +220,7 @@ public class RunSingleAlgorithmDialog extends JDialog implements ACAQWorkbench {
                 JButton addButton = new JButton(UIUtils.getIconFromResources("add.png"));
                 addButton.setToolTipText("Add new input");
                 UIUtils.makeFlat25x25(addButton);
-                addButton.addActionListener(e -> AddAlgorithmSlotPanel.showDialog(this, new ACAQAlgorithmGraphHistory(), getAlgorithm(), ACAQSlotType.Input));
+                addButton.addActionListener(e -> AddAlgorithmSlotPanel.showDialog(this, new ACAQGraphHistory(), getAlgorithm(), ACAQSlotType.Input));
                 inputDataHeaderPanel.addColumn(addButton);
             }
             if (slotConfiguration.canModifyInputSlots()) {
@@ -261,7 +261,7 @@ public class RunSingleAlgorithmDialog extends JDialog implements ACAQWorkbench {
                 JButton addButton = new JButton(UIUtils.getIconFromResources("add.png"));
                 addButton.setToolTipText("Add new output");
                 UIUtils.makeFlat25x25(addButton);
-                addButton.addActionListener(e -> AddAlgorithmSlotPanel.showDialog(this, new ACAQAlgorithmGraphHistory(), getAlgorithm(), ACAQSlotType.Input));
+                addButton.addActionListener(e -> AddAlgorithmSlotPanel.showDialog(this, new ACAQGraphHistory(), getAlgorithm(), ACAQSlotType.Input));
                 outputDataHeaderPanel.addColumn(addButton);
             }
             if (slotConfiguration.canModifyInputSlots()) {

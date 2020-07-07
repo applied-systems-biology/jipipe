@@ -48,7 +48,7 @@ public class ACAQExportedDataTable implements TableModel {
      * @param dataOutputPaths output path for each slot row
      */
     public ACAQExportedDataTable(ACAQDataSlot slot, List<Path> dataOutputPaths) {
-        this.algorithmId = slot.getAlgorithm().getDeclaration().getId();
+        this.algorithmId = slot.getNode().getDeclaration().getId();
         this.slotName = slot.getName();
         this.internalPath = slot.getStoragePath();
         this.acceptedDataType = slot.getAcceptedDataType();

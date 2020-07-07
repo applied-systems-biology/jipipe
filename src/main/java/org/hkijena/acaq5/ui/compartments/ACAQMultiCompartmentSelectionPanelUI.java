@@ -19,8 +19,8 @@ import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbenchPanel;
 import org.hkijena.acaq5.ui.components.MarkdownDocument;
 import org.hkijena.acaq5.ui.components.MarkdownReader;
-import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphCanvasUI;
-import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphEditorUI;
+import org.hkijena.acaq5.ui.grapheditor.ACAQGraphCanvasUI;
+import org.hkijena.acaq5.ui.grapheditor.ACAQGraphEditorUI;
 import org.hkijena.acaq5.utils.TooltipUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 
@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
  * UI when multiple {@link ACAQProjectCompartment} instances are selected
  */
 public class ACAQMultiCompartmentSelectionPanelUI extends ACAQProjectWorkbenchPanel {
-    private final ACAQAlgorithmGraphCanvasUI canvas;
+    private final ACAQGraphCanvasUI canvas;
     private Set<ACAQProjectCompartment> compartments;
 
     /**
@@ -42,7 +42,7 @@ public class ACAQMultiCompartmentSelectionPanelUI extends ACAQProjectWorkbenchPa
      * @param compartments The compartment selection
      * @param canvas       the graph canvas
      */
-    public ACAQMultiCompartmentSelectionPanelUI(ACAQProjectWorkbench workbenchUI, Set<ACAQProjectCompartment> compartments, ACAQAlgorithmGraphCanvasUI canvas) {
+    public ACAQMultiCompartmentSelectionPanelUI(ACAQProjectWorkbench workbenchUI, Set<ACAQProjectCompartment> compartments, ACAQGraphCanvasUI canvas) {
         super(workbenchUI);
         this.compartments = compartments;
         this.canvas = canvas;
@@ -73,7 +73,7 @@ public class ACAQMultiCompartmentSelectionPanelUI extends ACAQProjectWorkbenchPa
 
         toolBar.add(Box.createHorizontalGlue());
 
-        ACAQAlgorithmGraphEditorUI.installContextActionsInto(toolBar,
+        ACAQGraphEditorUI.installContextActionsInto(toolBar,
                 canvas.getNodeUIsFor(compartments),
                 canvas.getContextActions(),
                 canvas);

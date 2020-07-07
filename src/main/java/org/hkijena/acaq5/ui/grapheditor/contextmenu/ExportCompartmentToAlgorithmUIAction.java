@@ -20,9 +20,9 @@ import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
 import org.hkijena.acaq5.api.grouping.NodeGroup;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
-import org.hkijena.acaq5.ui.extensionbuilder.ACAQJsonAlgorithmExporter;
-import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphCanvasUI;
-import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmUI;
+import org.hkijena.acaq5.ui.extensionbuilder.ACAQJsonExporter;
+import org.hkijena.acaq5.ui.grapheditor.ACAQGraphCanvasUI;
+import org.hkijena.acaq5.ui.grapheditor.ACAQNodeUI;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
@@ -32,13 +32,13 @@ import java.util.Set;
 
 public class ExportCompartmentToAlgorithmUIAction implements AlgorithmUIAction {
     @Override
-    public boolean matches(Set<ACAQAlgorithmUI> selection) {
+    public boolean matches(Set<ACAQNodeUI> selection) {
         return selection.size() == 1;
     }
 
     @Override
-    public void run(ACAQAlgorithmGraphCanvasUI canvasUI, Set<ACAQAlgorithmUI> selection) {
-        ACAQProjectCompartment compartment = (ACAQProjectCompartment) selection.iterator().next().getAlgorithm();
+    public void run(ACAQGraphCanvasUI canvasUI, Set<ACAQNodeUI> selection) {
+        ACAQProjectCompartment compartment = (ACAQProjectCompartment) selection.iterator().next().getNode();
         ACAQProjectWorkbench projectWorkbench = (ACAQProjectWorkbench) canvasUI.getWorkbench();
         ACAQProject project = projectWorkbench.getProject();
         final String compartmentId = compartment.getProjectCompartmentId();
@@ -55,7 +55,7 @@ public class ExportCompartmentToAlgorithmUIAction implements AlgorithmUIAction {
 
         ACAQGraph extractedGraph = project.getGraph().extract(project.getGraph().getAlgorithmsWithCompartment(compartmentId), true);
         NodeGroup nodeGroup = new NodeGroup(extractedGraph, true);
-        ACAQJsonAlgorithmExporter.createExporter(projectWorkbench, nodeGroup, compartment.getName(), compartment.getCustomDescription());
+        ACAQJsonExporter.createExporter(projectWorkbench, nodeGroup, compartment.getName(), compartment.getCustomDescription());
     }
 
     @Override

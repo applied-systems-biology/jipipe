@@ -16,8 +16,8 @@ package org.hkijena.acaq5.ui.grapheditor.contextmenu;
 import org.hkijena.acaq5.api.compartments.ACAQExportedCompartment;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
 import org.hkijena.acaq5.extensions.settings.FileChooserSettings;
-import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphCanvasUI;
-import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmUI;
+import org.hkijena.acaq5.ui.grapheditor.ACAQGraphCanvasUI;
+import org.hkijena.acaq5.ui.grapheditor.ACAQNodeUI;
 import org.hkijena.acaq5.ui.parameters.ParameterPanel;
 import org.hkijena.acaq5.utils.UIUtils;
 
@@ -28,13 +28,13 @@ import java.util.Set;
 
 public class ExportCompartmentAsJsonAlgorithmUIAction implements AlgorithmUIAction {
     @Override
-    public boolean matches(Set<ACAQAlgorithmUI> selection) {
+    public boolean matches(Set<ACAQNodeUI> selection) {
         return selection.size() == 1;
     }
 
     @Override
-    public void run(ACAQAlgorithmGraphCanvasUI canvasUI, Set<ACAQAlgorithmUI> selection) {
-        ACAQProjectCompartment compartment = (ACAQProjectCompartment) selection.iterator().next().getAlgorithm();
+    public void run(ACAQGraphCanvasUI canvasUI, Set<ACAQNodeUI> selection) {
+        ACAQProjectCompartment compartment = (ACAQProjectCompartment) selection.iterator().next().getNode();
         ACAQExportedCompartment exportedCompartment = new ACAQExportedCompartment(compartment);
         exportedCompartment.getMetadata().setName(compartment.getName());
         exportedCompartment.getMetadata().setDescription("An exported ACAQ5 compartment");

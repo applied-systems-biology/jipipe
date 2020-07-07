@@ -36,7 +36,7 @@ import java.awt.Rectangle;
 /**
  * UI around an {@link ACAQGraphNode} instance
  */
-public abstract class ACAQAlgorithmUI extends ACAQWorkbenchPanel {
+public abstract class ACAQNodeUI extends ACAQWorkbenchPanel {
 
     /**
      * Height assigned for one slot
@@ -52,9 +52,9 @@ public abstract class ACAQAlgorithmUI extends ACAQWorkbenchPanel {
     public static final String REQUEST_RUN_ONLY = "RUN_ONLY";
     public static final String REQUEST_OPEN_CONTEXT_MENU = "OPEN_CONTEXT_MENU";
 
-    private ACAQAlgorithmGraphCanvasUI graphUI;
-    private ACAQGraphNode algorithm;
-    private ACAQAlgorithmGraphCanvasUI.ViewMode viewMode;
+    private ACAQGraphCanvasUI graphUI;
+    private ACAQGraphNode node;
+    private ACAQGraphCanvasUI.ViewMode viewMode;
     private EventBus eventBus = new EventBus();
 
     private Color fillColor;
@@ -65,24 +65,24 @@ public abstract class ACAQAlgorithmUI extends ACAQWorkbenchPanel {
      *
      * @param workbench thr workbench
      * @param graphUI   The graph UI that contains this UI
-     * @param algorithm The algorithm
+     * @param node The algorithm
      * @param viewMode  Directionality of the canvas UI
      */
-    public ACAQAlgorithmUI(ACAQWorkbench workbench, ACAQAlgorithmGraphCanvasUI graphUI, ACAQGraphNode algorithm, ACAQAlgorithmGraphCanvasUI.ViewMode viewMode) {
+    public ACAQNodeUI(ACAQWorkbench workbench, ACAQGraphCanvasUI graphUI, ACAQGraphNode node, ACAQGraphCanvasUI.ViewMode viewMode) {
         super(workbench);
         this.graphUI = graphUI;
-        this.algorithm = algorithm;
+        this.node = node;
         this.viewMode = viewMode;
-        this.algorithm.getEventBus().register(this);
-        this.fillColor = UIUtils.getFillColorFor(algorithm.getDeclaration());
-        this.borderColor = UIUtils.getBorderColorFor(algorithm.getDeclaration());
+        this.node.getEventBus().register(this);
+        this.fillColor = UIUtils.getFillColorFor(node.getDeclaration());
+        this.borderColor = UIUtils.getBorderColorFor(node.getDeclaration());
     }
 
     /**
      * @return The displayed algorithm
      */
-    public ACAQGraphNode getAlgorithm() {
-        return algorithm;
+    public ACAQGraphNode getNode() {
+        return node;
     }
 
     /**
@@ -95,7 +95,7 @@ public abstract class ACAQAlgorithmUI extends ACAQWorkbenchPanel {
         JButton button = new JButton(UIUtils.getIconFromResources("add.png"));
         button.setPreferredSize(new Dimension(25, SLOT_UI_HEIGHT));
         UIUtils.makeFlat(button);
-        button.addActionListener(e -> AddAlgorithmSlotPanel.showDialog(this, graphUI.getGraphHistory(), algorithm, slotType));
+        button.addActionListener(e -> AddAlgorithmSlotPanel.showDialog(this, graphUI.getGraphHistory(), node, slotType));
 
         return button;
     }
@@ -114,8 +114,8 @@ public abstract class ACAQAlgorithmUI extends ACAQWorkbenchPanel {
      * @return True if setting the location was successful
      */
     public boolean trySetLocationInGrid(int x, int y) {
-        y = (int) Math.rint(y * 1.0 / ACAQAlgorithmUI.SLOT_UI_HEIGHT) * ACAQAlgorithmUI.SLOT_UI_HEIGHT;
-        x = (int) Math.rint(x * 1.0 / ACAQAlgorithmUI.SLOT_UI_WIDTH) * ACAQAlgorithmUI.SLOT_UI_WIDTH;
+        y = (int) Math.rint(y * 1.0 / ACAQNodeUI.SLOT_UI_HEIGHT) * ACAQNodeUI.SLOT_UI_HEIGHT;
+        x = (int) Math.rint(x * 1.0 / ACAQNodeUI.SLOT_UI_WIDTH) * ACAQNodeUI.SLOT_UI_WIDTH;
         return trySetLocationNoGrid(x, y);
     }
 
@@ -127,8 +127,8 @@ public abstract class ACAQAlgorithmUI extends ACAQWorkbenchPanel {
     public boolean isOverlapping() {
         for (int i = 0; i < graphUI.getComponentCount(); ++i) {
             Component component = graphUI.getComponent(i);
-            if (component instanceof ACAQAlgorithmUI) {
-                ACAQAlgorithmUI ui = (ACAQAlgorithmUI) component;
+            if (component instanceof ACAQNodeUI) {
+                ACAQNodeUI ui = (ACAQNodeUI) component;
                 if (ui != this) {
                     if (ui.getBounds().intersects(getBounds())) {
                         return true;
@@ -152,8 +152,8 @@ public abstract class ACAQAlgorithmUI extends ACAQWorkbenchPanel {
         Rectangle futureBounds = new Rectangle(x, y, getWidth(), getHeight());
         for (int i = 0; i < graphUI.getComponentCount(); ++i) {
             Component component = graphUI.getComponent(i);
-            if (component instanceof ACAQAlgorithmUI) {
-                ACAQAlgorithmUI ui = (ACAQAlgorithmUI) component;
+            if (component instanceof ACAQNodeUI) {
+                ACAQNodeUI ui = (ACAQNodeUI) component;
                 if (ui != this) {
                     if (ui.getBounds().intersects(futureBounds)) {
                         return false;
@@ -193,14 +193,14 @@ public abstract class ACAQAlgorithmUI extends ACAQWorkbenchPanel {
      */
     @Subscribe
     public void onAlgorithmParametersChanged(ParameterChangedEvent event) {
-        if (event.getSource() == algorithm && "acaq:node:name".equals(event.getKey())) {
+        if (event.getSource() == node && "acaq:node:name".equals(event.getKey())) {
             updateSize();
             updateName();
             revalidate();
             repaint();
-        } else if (event.getSource() == algorithm && "acaq:algorithm:enabled".equals(event.getKey())) {
+        } else if (event.getSource() == node && "acaq:algorithm:enabled".equals(event.getKey())) {
             updateActivationStatus();
-        } else if (event.getSource() == algorithm && "acaq:algorithm:pass-through".equals(event.getKey())) {
+        } else if (event.getSource() == node && "acaq:algorithm:pass-through".equals(event.getKey())) {
             updateActivationStatus();
         }
     }
@@ -223,13 +223,13 @@ public abstract class ACAQAlgorithmUI extends ACAQWorkbenchPanel {
     @Override
     public void setLocation(int x, int y) {
         super.setLocation(x, y);
-        algorithm.setLocationWithin(graphUI.getCompartment(), new Point(x, y), viewMode.toString());
+        node.setLocationWithin(graphUI.getCompartment(), new Point(x, y), viewMode.toString());
     }
 
     @Override
     public void setLocation(Point p) {
         super.setLocation(p);
-        algorithm.setLocationWithin(graphUI.getCompartment(), p, viewMode.toString());
+        node.setLocationWithin(graphUI.getCompartment(), p, viewMode.toString());
     }
 
     /**
@@ -255,7 +255,7 @@ public abstract class ACAQAlgorithmUI extends ACAQWorkbenchPanel {
         return borderColor;
     }
 
-    public ACAQAlgorithmGraphCanvasUI getGraphUI() {
+    public ACAQGraphCanvasUI getGraphUI() {
         return graphUI;
     }
 
@@ -270,8 +270,8 @@ public abstract class ACAQAlgorithmUI extends ACAQWorkbenchPanel {
      * @return rounded coordinates
      */
     public static Point toGridLocation(Point point) {
-        int y = (int) Math.rint(point.y * 1.0 / ACAQAlgorithmUI.SLOT_UI_HEIGHT) * ACAQAlgorithmUI.SLOT_UI_HEIGHT;
-        int x = (int) Math.rint(point.x * 1.0 / ACAQAlgorithmUI.SLOT_UI_WIDTH) * ACAQAlgorithmUI.SLOT_UI_WIDTH;
+        int y = (int) Math.rint(point.y * 1.0 / ACAQNodeUI.SLOT_UI_HEIGHT) * ACAQNodeUI.SLOT_UI_HEIGHT;
+        int x = (int) Math.rint(point.x * 1.0 / ACAQNodeUI.SLOT_UI_WIDTH) * ACAQNodeUI.SLOT_UI_WIDTH;
         return new Point(x, y);
     }
 }

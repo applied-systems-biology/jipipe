@@ -15,8 +15,8 @@ package org.hkijena.acaq5.ui.grapheditor.contextmenu.clipboard;
 
 import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.history.CutNodeGraphHistorySnapshot;
-import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphCanvasUI;
-import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmUI;
+import org.hkijena.acaq5.ui.grapheditor.ACAQGraphCanvasUI;
+import org.hkijena.acaq5.ui.grapheditor.ACAQNodeUI;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
@@ -26,11 +26,11 @@ import java.util.stream.Collectors;
 public class AlgorithmGraphCutAlgorithmUIAction extends AlgorithmGraphCopyAlgorithmUIAction {
 
     @Override
-    public void run(ACAQAlgorithmGraphCanvasUI canvasUI, Set<ACAQAlgorithmUI> selection) {
+    public void run(ACAQGraphCanvasUI canvasUI, Set<ACAQNodeUI> selection) {
         super.run(canvasUI, selection);
-        Set<ACAQGraphNode> nodes = selection.stream().map(ACAQAlgorithmUI::getAlgorithm).collect(Collectors.toSet());
-        canvasUI.getGraphHistory().addSnapshotBefore(new CutNodeGraphHistorySnapshot(canvasUI.getAlgorithmGraph(), nodes));
-        canvasUI.getAlgorithmGraph().removeNodes(nodes, true);
+        Set<ACAQGraphNode> nodes = selection.stream().map(ACAQNodeUI::getNode).collect(Collectors.toSet());
+        canvasUI.getGraphHistory().addSnapshotBefore(new CutNodeGraphHistorySnapshot(canvasUI.getGraph(), nodes));
+        canvasUI.getGraph().removeNodes(nodes, true);
     }
 
     @Override

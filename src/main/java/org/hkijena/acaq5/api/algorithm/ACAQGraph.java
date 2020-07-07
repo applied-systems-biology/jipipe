@@ -67,7 +67,7 @@ public class ACAQGraph implements ACAQValidatable {
 
     public static final String COMPARTMENT_DEFAULT = "DEFAULT";
 
-    private DefaultDirectedGraph<ACAQDataSlot, ACAQAlgorithmGraphEdge> graph = new DefaultDirectedGraph<>(ACAQAlgorithmGraphEdge.class);
+    private DefaultDirectedGraph<ACAQDataSlot, ACAQGraphEdge> graph = new DefaultDirectedGraph<>(ACAQGraphEdge.class);
     private BiMap<String, ACAQGraphNode> algorithms = HashBiMap.create();
     private Map<ACAQGraphNode, String> compartments = new HashMap<>();
     private List<ACAQDataSlot> traversedSlots;
@@ -102,8 +102,8 @@ public class ACAQGraph implements ACAQValidatable {
 
         // Copy edges
         for (Map.Entry<ACAQDataSlot, ACAQDataSlot> edge : other.getSlotEdges()) {
-            String sourceAlgorithmName = other.algorithms.inverse().get(edge.getKey().getAlgorithm());
-            String targetAlgorithmName = other.algorithms.inverse().get(edge.getValue().getAlgorithm());
+            String sourceAlgorithmName = other.algorithms.inverse().get(edge.getKey().getNode());
+            String targetAlgorithmName = other.algorithms.inverse().get(edge.getValue().getNode());
             ACAQGraphNode sourceAlgorithm = algorithms.get(sourceAlgorithmName);
             ACAQGraphNode targetAlgorithm = algorithms.get(targetAlgorithmName);
             connect(sourceAlgorithm.getOutputSlotMap().get(edge.getKey().getName()),
@@ -215,7 +215,7 @@ public class ACAQGraph implements ACAQValidatable {
      */
     public boolean canUserDisconnect(ACAQDataSlot source, ACAQDataSlot target) {
         if (graph.containsEdge(source, target)) {
-            ACAQAlgorithmGraphEdge edge = graph.getEdge(source, target);
+            ACAQGraphEdge edge = graph.getEdge(source, target);
             if (edge != null) {
                 return edge.isUserDisconnectable();
             }
@@ -294,9 +294,9 @@ public class ACAQGraph implements ACAQValidatable {
     public boolean canConnect(ACAQDataSlot source, ACAQDataSlot target, boolean user) {
         if (!canConnectFast(source, target, user))
             return false;
-        Graph<ACAQDataSlot, ACAQAlgorithmGraphEdge> copy = (Graph<ACAQDataSlot, ACAQAlgorithmGraphEdge>) graph.clone();
+        Graph<ACAQDataSlot, ACAQGraphEdge> copy = (Graph<ACAQDataSlot, ACAQGraphEdge>) graph.clone();
         copy.addEdge(source, target);
-        CycleDetector<ACAQDataSlot, ACAQAlgorithmGraphEdge> cycleDetector = new CycleDetector<>(copy);
+        CycleDetector<ACAQDataSlot, ACAQGraphEdge> cycleDetector = new CycleDetector<>(copy);
         return !cycleDetector.detectCycles();
     }
 
@@ -342,11 +342,11 @@ public class ACAQGraph implements ACAQValidatable {
                     "Cannot create a connection between '" + source.getNameWithAlgorithmName() + "' and '" + target.getNameWithAlgorithmName() + "'!",
                     "Algorithm graph", "The connection is invalid, such as one that causes cycles in the graph, or a connection where a slot receives multiple inputs",
                     "Check if your pipeline contains complicated sections prone to cycles. Reorganize the graph by dragging the nodes around.");
-        graph.addEdge(source, target, new ACAQAlgorithmGraphEdge(userCanDisconnect));
+        graph.addEdge(source, target, new ACAQGraphEdge(userCanDisconnect));
         postChangedEvent();
         getEventBus().post(new AlgorithmGraphConnectedEvent(this, source, target));
-        source.getAlgorithm().onSlotConnected(new AlgorithmGraphConnectedEvent(this, source, target));
-        target.getAlgorithm().onSlotConnected(new AlgorithmGraphConnectedEvent(this, source, target));
+        source.getNode().onSlotConnected(new AlgorithmGraphConnectedEvent(this, source, target));
+        target.getNode().onSlotConnected(new AlgorithmGraphConnectedEvent(this, source, target));
     }
 
     /**
@@ -375,7 +375,7 @@ public class ACAQGraph implements ACAQValidatable {
         Set<ACAQDataSlot> toRemove = new HashSet<>();
         for (ACAQGraphNode algorithm : algorithms.values()) {
             for (ACAQDataSlot slot : graph.vertexSet()) {
-                if (slot.getAlgorithm() == algorithm && !algorithm.getInputSlots().contains(slot) &&
+                if (slot.getNode() == algorithm && !algorithm.getInputSlots().contains(slot) &&
                         !algorithm.getOutputSlots().contains(slot)) {
                     toRemove.add(slot);
                     slot.getEventBus().unregister(this);
@@ -428,7 +428,7 @@ public class ACAQGraph implements ACAQValidatable {
      */
     public ACAQDataSlot getSourceSlot(ACAQDataSlot target) {
         if (target.isInput()) {
-            Set<ACAQAlgorithmGraphEdge> edges = graph.incomingEdgesOf(target);
+            Set<ACAQGraphEdge> edges = graph.incomingEdgesOf(target);
             if (edges.isEmpty())
                 return null;
             if (edges.size() > 1)
@@ -450,9 +450,9 @@ public class ACAQGraph implements ACAQValidatable {
      */
     public Set<ACAQDataSlot> getTargetSlots(ACAQDataSlot source) {
         if (source.isOutput()) {
-            Set<ACAQAlgorithmGraphEdge> edges = graph.outgoingEdgesOf(source);
+            Set<ACAQGraphEdge> edges = graph.outgoingEdgesOf(source);
             Set<ACAQDataSlot> result = new HashSet<>();
-            for (ACAQAlgorithmGraphEdge edge : edges) {
+            for (ACAQGraphEdge edge : edges) {
                 result.add(graph.getEdgeTarget(edge));
             }
             return result;
@@ -478,7 +478,7 @@ public class ACAQGraph implements ACAQValidatable {
                 continue;
             if (!source.isOutput())
                 continue;
-            if (source.getAlgorithm() == target.getAlgorithm())
+            if (source.getNode() == target.getNode())
                 continue;
             if (graph.containsEdge(source, target))
                 continue;
@@ -525,8 +525,8 @@ public class ACAQGraph implements ACAQValidatable {
             graph.removeEdge(source, target);
             getEventBus().post(new AlgorithmGraphDisconnectedEvent(this, source, target));
             postChangedEvent();
-            source.getAlgorithm().onSlotDisconnected(new AlgorithmGraphDisconnectedEvent(this, source, target));
-            target.getAlgorithm().onSlotDisconnected(new AlgorithmGraphDisconnectedEvent(this, source, target));
+            source.getNode().onSlotDisconnected(new AlgorithmGraphDisconnectedEvent(this, source, target));
+            target.getNode().onSlotDisconnected(new AlgorithmGraphDisconnectedEvent(this, source, target));
             return true;
         }
         return false;
@@ -550,7 +550,7 @@ public class ACAQGraph implements ACAQValidatable {
                 continue;
             if (!target.isInput())
                 continue;
-            if (target.getAlgorithm() == source.getAlgorithm())
+            if (target.getNode() == source.getNode())
                 continue;
             if (graph.containsEdge(source, target))
                 continue;
@@ -635,10 +635,10 @@ public class ACAQGraph implements ACAQValidatable {
      */
     public Set<Map.Entry<ACAQDataSlot, ACAQDataSlot>> getSlotEdges() {
         Set<Map.Entry<ACAQDataSlot, ACAQDataSlot>> result = new HashSet<>();
-        for (ACAQAlgorithmGraphEdge edge : graph.edgeSet()) {
+        for (ACAQGraphEdge edge : graph.edgeSet()) {
             ACAQDataSlot source = graph.getEdgeSource(edge);
             ACAQDataSlot target = graph.getEdgeTarget(edge);
-            if (source.getAlgorithm() == target.getAlgorithm())
+            if (source.getNode() == target.getNode())
                 continue;
             result.add(new AbstractMap.SimpleImmutableEntry<>(source, target));
         }
@@ -691,8 +691,8 @@ public class ACAQGraph implements ACAQValidatable {
                 continue;
             }
             if (!graph.containsEdge(source, target) && graph.inDegreeOf(target) > 0) {
-                System.err.println("Detected invalid edge from " + source.getAlgorithm().getIdInGraph() + "/" + source.getName() + " -> "
-                        + target.getAlgorithm().getIdInGraph() + "/" + target.getName() + "! Input slot already has a source. Skipping this instruction.");
+                System.err.println("Detected invalid edge from " + source.getNode().getIdInGraph() + "/" + source.getName() + " -> "
+                        + target.getNode().getIdInGraph() + "/" + target.getName() + "! Input slot already has a source. Skipping this instruction.");
                 continue;
             }
             if (!graph.containsEdge(source, target))
@@ -714,8 +714,8 @@ public class ACAQGraph implements ACAQValidatable {
             insertedNodes.put(newId, algorithm);
         }
         for (Map.Entry<ACAQDataSlot, ACAQDataSlot> edge : otherGraph.getSlotEdges()) {
-            ACAQGraphNode copySource = insertedNodes.get(edge.getKey().getAlgorithm().getIdInGraph());
-            ACAQGraphNode copyTarget = insertedNodes.get(edge.getValue().getAlgorithm().getIdInGraph());
+            ACAQGraphNode copySource = insertedNodes.get(edge.getKey().getNode().getIdInGraph());
+            ACAQGraphNode copyTarget = insertedNodes.get(edge.getValue().getNode().getIdInGraph());
             connect(copySource.getOutputSlotMap().get(edge.getKey().getName()), copyTarget.getInputSlotMap().get(edge.getValue().getName()));
         }
         return insertedNodes;
@@ -745,7 +745,7 @@ public class ACAQGraph implements ACAQValidatable {
         for (Map.Entry<ACAQDataSlot, ACAQDataSlot> edge : getSlotEdges()) {
             ACAQDataSlot source = edge.getKey();
             ACAQDataSlot target = edge.getValue();
-            if (nodes.contains(source.getAlgorithm()) && nodes.contains(target.getAlgorithm())) {
+            if (nodes.contains(source.getNode()) && nodes.contains(target.getNode())) {
                 graph.connect(graph.getEquivalentSlot(source), graph.getEquivalentSlot(target));
             }
         }
@@ -775,7 +775,7 @@ public class ACAQGraph implements ACAQValidatable {
     public List<ACAQDataSlot> traverseSlots() {
         if (traversedSlots != null)
             return Collections.unmodifiableList(traversedSlots);
-        GraphIterator<ACAQDataSlot, ACAQAlgorithmGraphEdge> iterator = new TopologicalOrderIterator<>(graph);
+        GraphIterator<ACAQDataSlot, ACAQGraphEdge> iterator = new TopologicalOrderIterator<>(graph);
         List<ACAQDataSlot> result = new ArrayList<>();
         while (iterator.hasNext()) {
             ACAQDataSlot slot = iterator.next();
@@ -796,7 +796,7 @@ public class ACAQGraph implements ACAQValidatable {
         Set<ACAQGraphNode> predecessors = new HashSet<>();
         for (ACAQDataSlot inputSlot : target.getInputSlots()) {
             for (ACAQDataSlot predecessor : GraphUtils.getAllPredecessors(graph, inputSlot)) {
-                predecessors.add(predecessor.getAlgorithm());
+                predecessors.add(predecessor.getNode());
             }
         }
         predecessors.remove(target);
@@ -828,7 +828,7 @@ public class ACAQGraph implements ACAQValidatable {
                     missing.add(algorithm);
                     break;
                 }
-                if (missing.contains(sourceSlot.getAlgorithm())) {
+                if (missing.contains(sourceSlot.getNode())) {
                     missing.add(algorithm);
                     break;
                 }
@@ -860,7 +860,7 @@ public class ACAQGraph implements ACAQValidatable {
                     missing.add(algorithm);
                     break;
                 }
-                if (missing.contains(sourceSlot.getAlgorithm())) {
+                if (missing.contains(sourceSlot.getNode())) {
                     missing.add(algorithm);
                     break;
                 }
@@ -883,9 +883,9 @@ public class ACAQGraph implements ACAQValidatable {
         List<ACAQGraphNode> result = new ArrayList<>();
         for (ACAQDataSlot slot : traverseSlots()) {
             if (slot.isOutput()) {
-                if (!visited.contains(slot.getAlgorithm())) {
-                    visited.add(slot.getAlgorithm());
-                    result.add(slot.getAlgorithm());
+                if (!visited.contains(slot.getNode())) {
+                    visited.add(slot.getNode());
+                    result.add(slot.getNode());
                 }
             }
         }
@@ -929,7 +929,7 @@ public class ACAQGraph implements ACAQValidatable {
             for (ACAQDataSlot slot : graph.vertexSet()) {
                 if (slot.isInput()) {
                     if (graph.incomingEdgesOf(slot).isEmpty()) {
-                        report.forCategory(slot.getAlgorithm().getCompartment()).forCategory(slot.getAlgorithm().getName())
+                        report.forCategory(slot.getNode().getCompartment()).forCategory(slot.getNode().getName())
                                 .forCategory("Slot: " + slot.getName()).reportIsInvalid("An input slot has no incoming data!",
                                 "Input slots must always be provided with input data.",
                                 "Please connect the slot to an output of another algorithm.",
@@ -980,7 +980,7 @@ public class ACAQGraph implements ACAQValidatable {
             }
             for (ACAQDataSlot slot : node.getInputSlots()) {
                 if (graph.incomingEdgesOf(slot).isEmpty()) {
-                    report.forCategory(slot.getAlgorithm().getCompartment()).forCategory(slot.getAlgorithm().getName())
+                    report.forCategory(slot.getNode().getCompartment()).forCategory(slot.getNode().getName())
                             .forCategory("Slot: " + slot.getName()).reportIsInvalid("An input slot has no incoming data!",
                             "Input slots must always be provided with input data.",
                             "Please connect the slot to an output of another algorithm.",
@@ -996,7 +996,7 @@ public class ACAQGraph implements ACAQValidatable {
     /**
      * @return The underlying graph
      */
-    public Graph<ACAQDataSlot, ACAQAlgorithmGraphEdge> getGraph() {
+    public Graph<ACAQDataSlot, ACAQGraphEdge> getGraph() {
         return graph;
     }
 
@@ -1049,9 +1049,9 @@ public class ACAQGraph implements ACAQValidatable {
      */
     public ACAQDataSlot getEquivalentSlot(ACAQDataSlot foreign) {
         if (foreign.isInput())
-            return getAlgorithmNodes().get(foreign.getAlgorithm().getIdInGraph()).getInputSlotMap().get(foreign.getName());
+            return getAlgorithmNodes().get(foreign.getNode().getIdInGraph()).getInputSlotMap().get(foreign.getName());
         else
-            return getAlgorithmNodes().get(foreign.getAlgorithm().getIdInGraph()).getOutputSlotMap().get(foreign.getName());
+            return getAlgorithmNodes().get(foreign.getNode().getIdInGraph()).getOutputSlotMap().get(foreign.getName());
     }
 
     /**
@@ -1163,8 +1163,8 @@ public class ACAQGraph implements ACAQValidatable {
         private void serializeEdges(ACAQGraph graph, JsonGenerator jsonGenerator) throws IOException {
             for (Map.Entry<ACAQDataSlot, ACAQDataSlot> edge : graph.getSlotEdges()) {
                 jsonGenerator.writeStartObject();
-                jsonGenerator.writeStringField("source-algorithm", StringUtils.jsonify(graph.getIdOf(edge.getKey().getAlgorithm())));
-                jsonGenerator.writeStringField("target-algorithm", StringUtils.jsonify(graph.getIdOf(edge.getValue().getAlgorithm())));
+                jsonGenerator.writeStringField("source-algorithm", StringUtils.jsonify(graph.getIdOf(edge.getKey().getNode())));
+                jsonGenerator.writeStringField("target-algorithm", StringUtils.jsonify(graph.getIdOf(edge.getValue().getNode())));
                 jsonGenerator.writeStringField("source-slot", StringUtils.makeFilesystemCompatible(edge.getKey().getName()));
                 jsonGenerator.writeStringField("target-slot", StringUtils.makeFilesystemCompatible(edge.getValue().getName()));
                 jsonGenerator.writeEndObject();

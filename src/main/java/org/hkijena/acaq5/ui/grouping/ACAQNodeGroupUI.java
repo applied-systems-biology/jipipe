@@ -19,7 +19,7 @@ import org.hkijena.acaq5.ui.ACAQWorkbench;
 import org.hkijena.acaq5.ui.ACAQWorkbenchPanel;
 import org.hkijena.acaq5.ui.compartments.ACAQCompartmentUI;
 import org.hkijena.acaq5.ui.components.DocumentTabPane;
-import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphCompartmentUI;
+import org.hkijena.acaq5.ui.grapheditor.ACAQGraphCompartmentUI;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import java.awt.BorderLayout;
@@ -28,12 +28,12 @@ import java.util.List;
 
 /**
  * Editor for a {@link org.hkijena.acaq5.api.grouping.NodeGroup}
- * Contains a {@link ACAQAlgorithmGraphCompartmentUI} instance that allows editing the compartment's content
+ * Contains a {@link ACAQGraphCompartmentUI} instance that allows editing the compartment's content
  */
 public class ACAQNodeGroupUI extends ACAQWorkbenchPanel {
 
     private NodeGroup nodeGroup;
-    private ACAQAlgorithmGraphCompartmentUI graphUI;
+    private ACAQGraphCompartmentUI graphUI;
 
     /**
      * Creates a new editor
@@ -49,7 +49,7 @@ public class ACAQNodeGroupUI extends ACAQWorkbenchPanel {
 
     private void initialize() {
         setLayout(new BorderLayout());
-        graphUI = new ACAQAlgorithmGraphCompartmentUI(getWorkbench(), nodeGroup.getWrappedGraph(), ACAQGraph.COMPARTMENT_DEFAULT);
+        graphUI = new ACAQGraphCompartmentUI(getWorkbench(), nodeGroup.getWrappedGraph(), ACAQGraph.COMPARTMENT_DEFAULT);
         add(graphUI, BorderLayout.CENTER);
     }
 

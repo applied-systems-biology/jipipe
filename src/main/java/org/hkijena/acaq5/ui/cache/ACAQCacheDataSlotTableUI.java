@@ -108,14 +108,14 @@ public class ACAQCacheDataSlotTableUI extends ACAQProjectWorkbenchPanel {
 
     private void handleSlotRowDefaultAction(int selectedRow) {
         int row = table.getRowSorter().convertRowIndexToModel(selectedRow);
-        slot.getData(row, ACAQData.class).display(slot.getAlgorithm().getName() + "/" + slot.getName() + "/" + row, getWorkbench());
+        slot.getData(row, ACAQData.class).display(slot.getNode().getName() + "/" + slot.getName() + "/" + row, getWorkbench());
     }
 
     private void showDataRows(int[] selectedRows) {
         rowUIList.clear();
         for (int viewRow : selectedRows) {
             int row = table.getRowSorter().convertRowIndexToModel(viewRow);
-            String name = slot.getAlgorithm().getName() + "/" + slot.getName() + "/" + row;
+            String name = slot.getNode().getName() + "/" + slot.getName() + "/" + row;
             JLabel nameLabel = new JLabel(name, ACAQUIDatatypeRegistry.getInstance().getIconFor(slot.getAcceptedDataType()), JLabel.LEFT);
             nameLabel.setToolTipText(TooltipUtils.getSlotInstanceTooltip(slot));
             ACAQDataSlotRowUI rowUI = new ACAQDataSlotRowUI(getWorkbench(), slot, row);

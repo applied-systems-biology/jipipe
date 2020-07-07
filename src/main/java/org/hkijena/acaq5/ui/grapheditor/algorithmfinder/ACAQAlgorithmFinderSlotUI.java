@@ -25,7 +25,7 @@ import org.hkijena.acaq5.api.history.EdgeConnectGraphHistorySnapshot;
 import org.hkijena.acaq5.api.history.EdgeDisconnectGraphHistorySnapshot;
 import org.hkijena.acaq5.api.history.SlotConfigurationHistorySnapshot;
 import org.hkijena.acaq5.ui.events.AlgorithmFinderSuccessEvent;
-import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphCanvasUI;
+import org.hkijena.acaq5.ui.grapheditor.ACAQGraphCanvasUI;
 import org.hkijena.acaq5.ui.registries.ACAQUIDatatypeRegistry;
 import org.hkijena.acaq5.utils.UIUtils;
 
@@ -35,14 +35,14 @@ import java.awt.Dimension;
 import java.util.Arrays;
 import java.util.Collections;
 
-import static org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmUI.SLOT_UI_HEIGHT;
+import static org.hkijena.acaq5.ui.grapheditor.ACAQNodeUI.SLOT_UI_HEIGHT;
 
 /**
  * UI for one slot in the algorithm finder
  */
 public class ACAQAlgorithmFinderSlotUI extends JPanel {
 
-    private final ACAQAlgorithmGraphCanvasUI canvasUI;
+    private final ACAQGraphCanvasUI canvasUI;
     private final ACAQDataSlot outputSlot;
     private final ACAQGraph graph;
     private final String compartment;
@@ -61,10 +61,10 @@ public class ACAQAlgorithmFinderSlotUI extends JPanel {
      * @param inputSlot          The target slot
      * @param isExistingInstance If true, the algorithm already exists within the graph
      */
-    public ACAQAlgorithmFinderSlotUI(ACAQAlgorithmGraphCanvasUI canvasUI, ACAQDataSlot outputSlot, ACAQDataSlot inputSlot, boolean isExistingInstance) {
+    public ACAQAlgorithmFinderSlotUI(ACAQGraphCanvasUI canvasUI, ACAQDataSlot outputSlot, ACAQDataSlot inputSlot, boolean isExistingInstance) {
         this.canvasUI = canvasUI;
         this.outputSlot = outputSlot;
-        this.graph = canvasUI.getAlgorithmGraph();
+        this.graph = canvasUI.getGraph();
         this.compartment = canvasUI.getCompartment();
         this.inputSlot = inputSlot;
         this.isExistingInstance = isExistingInstance;
@@ -112,8 +112,8 @@ public class ACAQAlgorithmFinderSlotUI extends JPanel {
             assignButtonMenu.add(connectButton);
         }
 
-        if (inputSlot.getAlgorithm().getSlotConfiguration() instanceof ACAQMutableSlotConfiguration) {
-            ACAQMutableSlotConfiguration slotConfiguration = (ACAQMutableSlotConfiguration) inputSlot.getAlgorithm().getSlotConfiguration();
+        if (inputSlot.getNode().getSlotConfiguration() instanceof ACAQMutableSlotConfiguration) {
+            ACAQMutableSlotConfiguration slotConfiguration = (ACAQMutableSlotConfiguration) inputSlot.getNode().getSlotConfiguration();
             if (slotConfiguration.canModifyInputSlots()) {
                 if (assignButtonMenu.getComponentCount() > 0)
                     assignButtonMenu.addSeparator();
@@ -125,18 +125,18 @@ public class ACAQAlgorithmFinderSlotUI extends JPanel {
     }
 
     private void deleteSlot() {
-        ACAQDefaultMutableSlotConfiguration slotConfiguration = (ACAQDefaultMutableSlotConfiguration) inputSlot.getAlgorithm().getSlotConfiguration();
-        canvasUI.getGraphHistory().addSnapshotBefore(new SlotConfigurationHistorySnapshot(inputSlot.getAlgorithm(),
+        ACAQDefaultMutableSlotConfiguration slotConfiguration = (ACAQDefaultMutableSlotConfiguration) inputSlot.getNode().getSlotConfiguration();
+        canvasUI.getGraphHistory().addSnapshotBefore(new SlotConfigurationHistorySnapshot(inputSlot.getNode(),
                 "Remove slot '" + inputSlot.getNameWithAlgorithmName() + "'"));
         slotConfiguration.removeInputSlot(inputSlot.getName(), true);
     }
 
     private void connectToNewInstance() {
         canvasUI.getGraphHistory().addSnapshotBefore(new CompoundGraphHistorySnapshot(Arrays.asList(
-                new AddNodeGraphHistorySnapshot(graph, Collections.singleton(inputSlot.getAlgorithm())),
+                new AddNodeGraphHistorySnapshot(graph, Collections.singleton(inputSlot.getNode())),
                 new EdgeConnectGraphHistorySnapshot(graph, outputSlot, inputSlot)
         )));
-        graph.insertNode(inputSlot.getAlgorithm(), compartment);
+        graph.insertNode(inputSlot.getNode(), compartment);
         graph.connect(outputSlot, inputSlot);
         eventBus.post(new AlgorithmFinderSuccessEvent(outputSlot, inputSlot));
     }

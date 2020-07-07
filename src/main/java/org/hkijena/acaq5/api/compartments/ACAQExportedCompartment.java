@@ -74,8 +74,8 @@ public class ACAQExportedCompartment {
             copies.put(algorithm.getIdInGraph(), copy);
         }
         for (Map.Entry<ACAQDataSlot, ACAQDataSlot> edge : sourceGraph.getSlotEdges()) {
-            ACAQGraphNode copySource = copies.get(edge.getKey().getAlgorithm().getIdInGraph());
-            ACAQGraphNode copyTarget = copies.get(edge.getValue().getAlgorithm().getIdInGraph());
+            ACAQGraphNode copySource = copies.get(edge.getKey().getNode().getIdInGraph());
+            ACAQGraphNode copyTarget = copies.get(edge.getValue().getNode().getIdInGraph());
             if (!copySource.getCompartment().equals(compartmentId))
                 continue;
             if (!copyTarget.getCompartment().equals(compartmentId))
@@ -130,8 +130,8 @@ public class ACAQExportedCompartment {
             }
         }
         for (Map.Entry<ACAQDataSlot, ACAQDataSlot> edge : graph.getSlotEdges()) {
-            ACAQGraphNode copySource = copies.get(edge.getKey().getAlgorithm().getIdInGraph());
-            ACAQGraphNode copyTarget = copies.get(edge.getValue().getAlgorithm().getIdInGraph());
+            ACAQGraphNode copySource = copies.get(edge.getKey().getNode().getIdInGraph());
+            ACAQGraphNode copyTarget = copies.get(edge.getValue().getNode().getIdInGraph());
             project.getGraph().connect(copySource.getOutputSlotMap().get(edge.getKey().getName()),
                     copyTarget.getInputSlotMap().get(edge.getValue().getName()));
         }

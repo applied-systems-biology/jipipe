@@ -17,8 +17,8 @@ import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.ui.ACAQWorkbenchPanel;
 import org.hkijena.acaq5.ui.components.ColorIcon;
 import org.hkijena.acaq5.ui.components.DocumentTabPane;
-import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphCanvasUI;
-import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphEditorUI;
+import org.hkijena.acaq5.ui.grapheditor.ACAQGraphCanvasUI;
+import org.hkijena.acaq5.ui.grapheditor.ACAQGraphEditorUI;
 import org.hkijena.acaq5.ui.grapheditor.settings.ACAQSlotEditorUI;
 import org.hkijena.acaq5.ui.parameters.ParameterPanel;
 import org.hkijena.acaq5.utils.TooltipUtils;
@@ -32,15 +32,15 @@ import java.util.Collections;
  * Shown when one algorithm is selected
  */
 public class ACAQJsonAlgorithmExporterSingleSelectionPanelUI extends ACAQWorkbenchPanel {
-    private final ACAQAlgorithmGraphEditorUI graphEditorUI;
-    private ACAQAlgorithmGraphCanvasUI canvas;
+    private final ACAQGraphEditorUI graphEditorUI;
+    private ACAQGraphCanvasUI canvas;
     private ACAQGraphNode algorithm;
 
     /**
      * @param graphEditorUI the graph editor
      * @param algorithm     The algorithm
      */
-    public ACAQJsonAlgorithmExporterSingleSelectionPanelUI(ACAQAlgorithmGraphEditorUI graphEditorUI, ACAQGraphNode algorithm) {
+    public ACAQJsonAlgorithmExporterSingleSelectionPanelUI(ACAQGraphEditorUI graphEditorUI, ACAQGraphNode algorithm) {
         super(graphEditorUI.getWorkbench());
         this.graphEditorUI = graphEditorUI;
         this.canvas = graphEditorUI.getCanvasUI();
@@ -81,7 +81,7 @@ public class ACAQJsonAlgorithmExporterSingleSelectionPanelUI extends ACAQWorkben
 
         toolBar.add(Box.createHorizontalGlue());
 
-        ACAQAlgorithmGraphEditorUI.installContextActionsInto(toolBar,
+        ACAQGraphEditorUI.installContextActionsInto(toolBar,
                 canvas.getNodeUIsFor(Collections.singleton(algorithm)),
                 canvas.getContextActions(),
                 canvas);

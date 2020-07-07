@@ -18,8 +18,8 @@ import org.hkijena.acaq5.ui.ACAQJsonExtensionWorkbench;
 import org.hkijena.acaq5.ui.ACAQJsonExtensionWorkbenchPanel;
 import org.hkijena.acaq5.ui.components.ColorIcon;
 import org.hkijena.acaq5.ui.components.DocumentTabPane;
-import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphCanvasUI;
-import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphEditorUI;
+import org.hkijena.acaq5.ui.grapheditor.ACAQGraphCanvasUI;
+import org.hkijena.acaq5.ui.grapheditor.ACAQGraphEditorUI;
 import org.hkijena.acaq5.ui.grapheditor.settings.ACAQSlotEditorUI;
 import org.hkijena.acaq5.ui.parameters.ParameterPanel;
 import org.hkijena.acaq5.utils.TooltipUtils;
@@ -33,15 +33,15 @@ import java.util.Collections;
  * Shown when one algorithm is selected
  */
 public class ACAQJsonExtensionSingleAlgorithmSelectionPanelUI extends ACAQJsonExtensionWorkbenchPanel {
-    private final ACAQAlgorithmGraphCanvasUI canvas;
-    private final ACAQAlgorithmGraphEditorUI graphEditorUI;
+    private final ACAQGraphCanvasUI canvas;
+    private final ACAQGraphEditorUI graphEditorUI;
     private final ACAQGraphNode algorithm;
 
     /**
      * @param graphEditorUI the graph editor
      * @param algorithm     The algorithm
      */
-    public ACAQJsonExtensionSingleAlgorithmSelectionPanelUI(ACAQAlgorithmGraphEditorUI graphEditorUI, ACAQGraphNode algorithm) {
+    public ACAQJsonExtensionSingleAlgorithmSelectionPanelUI(ACAQGraphEditorUI graphEditorUI, ACAQGraphNode algorithm) {
         super((ACAQJsonExtensionWorkbench) graphEditorUI.getWorkbench());
         this.graphEditorUI = graphEditorUI;
         this.canvas = graphEditorUI.getCanvasUI();
@@ -82,7 +82,7 @@ public class ACAQJsonExtensionSingleAlgorithmSelectionPanelUI extends ACAQJsonEx
 
         toolBar.add(Box.createHorizontalGlue());
 
-        ACAQAlgorithmGraphEditorUI.installContextActionsInto(toolBar,
+        ACAQGraphEditorUI.installContextActionsInto(toolBar,
                 canvas.getNodeUIsFor(Collections.singleton(algorithm)),
                 canvas.getContextActions(),
                 canvas);

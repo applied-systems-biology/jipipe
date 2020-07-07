@@ -832,7 +832,7 @@ public abstract class ACAQGraphNode implements ACAQValidatable, ACAQParameterCol
                 Set<ACAQGraphNode> algorithms = new HashSet<>();
                 for (ACAQDataSlot slot : getOutputSlots()) {
                     for (ACAQDataSlot targetSlot : graph.getTargetSlots(slot)) {
-                        algorithms.add(targetSlot.getAlgorithm());
+                        algorithms.add(targetSlot.getNode());
                     }
                 }
                 for (ACAQGraphNode algorithm : algorithms) {

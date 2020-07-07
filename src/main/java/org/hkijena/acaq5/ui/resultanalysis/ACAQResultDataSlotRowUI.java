@@ -69,7 +69,7 @@ public abstract class ACAQResultDataSlotRowUI extends ACAQProjectWorkbenchPanel 
      * @return the compartment name of the algorithm that generated the data
      */
     public String getAlgorithmCompartment() {
-        return getProjectWorkbench().getProject().getCompartments().get(slot.getAlgorithm().getCompartment()).getName();
+        return getProjectWorkbench().getProject().getCompartments().get(slot.getNode().getCompartment()).getName();
     }
 
     /**
@@ -78,7 +78,7 @@ public abstract class ACAQResultDataSlotRowUI extends ACAQProjectWorkbenchPanel 
      * @return the name of the algorithm that generated the data
      */
     public String getAlgorithmName() {
-        return slot.getAlgorithm().getName();
+        return slot.getNode().getName();
     }
 
     /**

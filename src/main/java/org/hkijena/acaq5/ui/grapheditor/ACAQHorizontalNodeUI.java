@@ -42,7 +42,7 @@ import java.util.List;
 /**
  * An algorithm UI for horizontal display
  */
-public class ACAQHorizontalAlgorithmUI extends ACAQAlgorithmUI {
+public class ACAQHorizontalNodeUI extends ACAQNodeUI {
 
     private List<ACAQDataSlotUI> slotUIList = new ArrayList<>();
     private JPanel inputSlotPanel;
@@ -57,8 +57,8 @@ public class ACAQHorizontalAlgorithmUI extends ACAQAlgorithmUI {
      * @param graphUI   The graph UI that contains this UI
      * @param algorithm The algorithm
      */
-    public ACAQHorizontalAlgorithmUI(ACAQWorkbench workbench, ACAQAlgorithmGraphCanvasUI graphUI, ACAQGraphNode algorithm) {
-        super(workbench, graphUI, algorithm, ACAQAlgorithmGraphCanvasUI.ViewMode.Horizontal);
+    public ACAQHorizontalNodeUI(ACAQWorkbench workbench, ACAQGraphCanvasUI graphUI, ACAQGraphNode algorithm) {
+        super(workbench, graphUI, algorithm, ACAQGraphCanvasUI.ViewMode.Horizontal);
         initialize();
         updateAlgorithmSlotUIs();
     }
@@ -75,8 +75,8 @@ public class ACAQHorizontalAlgorithmUI extends ACAQAlgorithmUI {
         outputSlotPanel = new JPanel();
         outputSlotPanel.setOpaque(false);
 
-        nameLabel = new JLabel(getAlgorithm().getName());
-        nameLabel.setIcon(ACAQUIAlgorithmRegistry.getInstance().getIconFor(getAlgorithm().getDeclaration()));
+        nameLabel = new JLabel(getNode().getName());
+        nameLabel.setIcon(ACAQUIAlgorithmRegistry.getInstance().getIconFor(getNode().getDeclaration()));
         openSettingsButton = new JButton(UIUtils.getIconFromResources("wrench.png"));
         UIUtils.makeFlat25x25(openSettingsButton);
         openSettingsButton.addActionListener(e -> getEventBus().post(new AlgorithmUIActionRequestedEvent(this, REQUEST_OPEN_CONTEXT_MENU)));
@@ -119,14 +119,14 @@ public class ACAQHorizontalAlgorithmUI extends ACAQAlgorithmUI {
      * @return Displayed rows
      */
     private int getDisplayedRows() {
-        int inputRows = getAlgorithm().getInputSlots().size();
-        int outputRows = getAlgorithm().getOutputSlots().size();
-        if (getAlgorithm().getSlotConfiguration() instanceof ACAQMutableSlotConfiguration) {
-            ACAQMutableSlotConfiguration configuration = (ACAQMutableSlotConfiguration) getAlgorithm().getSlotConfiguration();
-            if (configuration.canAddInputSlot() && getAlgorithm().getInputSlots().size() > 0) {
+        int inputRows = getNode().getInputSlots().size();
+        int outputRows = getNode().getOutputSlots().size();
+        if (getNode().getSlotConfiguration() instanceof ACAQMutableSlotConfiguration) {
+            ACAQMutableSlotConfiguration configuration = (ACAQMutableSlotConfiguration) getNode().getSlotConfiguration();
+            if (configuration.canAddInputSlot() && getNode().getInputSlots().size() > 0) {
                 inputRows += 1;
             }
-            if (configuration.canAddOutputSlot() && getAlgorithm().getOutputSlots().size() > 0) {
+            if (configuration.canAddOutputSlot() && getNode().getOutputSlots().size() > 0) {
                 outputRows += 1;
             }
         }
@@ -143,7 +143,7 @@ public class ACAQHorizontalAlgorithmUI extends ACAQAlgorithmUI {
 
         // Measure width of center
         {
-            TextLayout layout = new TextLayout(getAlgorithm().getName(), getFont(), frc);
+            TextLayout layout = new TextLayout(getNode().getName(), getFont(), frc);
             width += layout.getBounds().getWidth();
         }
 
@@ -193,15 +193,15 @@ public class ACAQHorizontalAlgorithmUI extends ACAQAlgorithmUI {
         boolean createInputSlots = true;
         boolean createOutputSlots = true;
 
-        if (getAlgorithm().getSlotConfiguration() instanceof ACAQMutableSlotConfiguration) {
-            ACAQMutableSlotConfiguration slotConfiguration = (ACAQMutableSlotConfiguration) getAlgorithm().getSlotConfiguration();
+        if (getNode().getSlotConfiguration() instanceof ACAQMutableSlotConfiguration) {
+            ACAQMutableSlotConfiguration slotConfiguration = (ACAQMutableSlotConfiguration) getNode().getSlotConfiguration();
             createAddInputSlotButton = slotConfiguration.canAddInputSlot();
             createAddOutputSlotButton = slotConfiguration.canAddOutputSlot();
         }
 
         // For ACAQCompartmentOutput, we want to hide creating outputs / inputs depending on the current compartment
-        if (getAlgorithm() instanceof ACAQCompartmentOutput) {
-            if (getAlgorithm().getCompartment().equals(getGraphUI().getCompartment())) {
+        if (getNode() instanceof ACAQCompartmentOutput) {
+            if (getNode().getCompartment().equals(getGraphUI().getCompartment())) {
                 createAddOutputSlotButton = false;
                 createOutputSlots = false;
             } else {
@@ -209,11 +209,11 @@ public class ACAQHorizontalAlgorithmUI extends ACAQAlgorithmUI {
                 createInputSlots = false;
             }
         }
-        if (!getAlgorithm().renderInputSlots()) {
+        if (!getNode().renderInputSlots()) {
             createAddInputSlotButton = false;
             createInputSlots = false;
         }
-        if (!getAlgorithm().renderOutputSlots()) {
+        if (!getNode().renderOutputSlots()) {
             createAddOutputSlotButton = false;
             createOutputSlots = false;
         }
@@ -222,8 +222,8 @@ public class ACAQHorizontalAlgorithmUI extends ACAQAlgorithmUI {
         int createdOutputSlots = 0;
         int createdInputSlots = 0;
 
-        if (createInputSlots && getAlgorithm().getInputSlots().size() > 0) {
-            List<ACAQDataSlot> slots = getAlgorithm().getInputSlots();
+        if (createInputSlots && getNode().getInputSlots().size() > 0) {
+            List<ACAQDataSlot> slots = getNode().getInputSlots();
             for (int i = 0; i < slots.size(); ++i) {
                 int bottomBorder = 0;
                 if (i < displayedRows - 1)
@@ -238,8 +238,8 @@ public class ACAQHorizontalAlgorithmUI extends ACAQAlgorithmUI {
                 ++createdInputSlots;
             }
         }
-        if (createOutputSlots && getAlgorithm().getOutputSlots().size() > 0) {
-            List<ACAQDataSlot> slots = getAlgorithm().getOutputSlots();
+        if (createOutputSlots && getNode().getOutputSlots().size() > 0) {
+            List<ACAQDataSlot> slots = getNode().getOutputSlots();
             for (int i = 0; i < slots.size(); ++i) {
                 int bottomBorder = 0;
                 if (i < displayedRows - 1)
@@ -286,9 +286,9 @@ public class ACAQHorizontalAlgorithmUI extends ACAQAlgorithmUI {
     @Override
     public PointRange getSlotLocation(ACAQDataSlot slot) {
         if (slot.isInput()) {
-            return new PointRange(0, getAlgorithm().getInputSlots().indexOf(slot) * SLOT_UI_HEIGHT + SLOT_UI_HEIGHT / 2);
+            return new PointRange(0, getNode().getInputSlots().indexOf(slot) * SLOT_UI_HEIGHT + SLOT_UI_HEIGHT / 2);
         } else if (slot.isOutput()) {
-            return new PointRange(getWidth(), getAlgorithm().getOutputSlots().indexOf(slot) * SLOT_UI_HEIGHT + SLOT_UI_HEIGHT / 2);
+            return new PointRange(getWidth(), getNode().getOutputSlots().indexOf(slot) * SLOT_UI_HEIGHT + SLOT_UI_HEIGHT / 2);
         } else {
             throw new UnsupportedOperationException("Unknown slot type!");
         }
@@ -296,13 +296,13 @@ public class ACAQHorizontalAlgorithmUI extends ACAQAlgorithmUI {
 
     @Override
     protected void updateName() {
-        nameLabel.setText(getAlgorithm().getName());
+        nameLabel.setText(getNode().getName());
     }
 
     @Override
     protected void updateActivationStatus() {
-        if (getAlgorithm() instanceof ACAQAlgorithm) {
-            ACAQAlgorithm algorithm = (ACAQAlgorithm) getAlgorithm();
+        if (getNode() instanceof ACAQAlgorithm) {
+            ACAQAlgorithm algorithm = (ACAQAlgorithm) getNode();
             if (algorithm.isEnabled()) {
                 if (!algorithm.isPassThrough()) {
                     setBackground(getFillColor());

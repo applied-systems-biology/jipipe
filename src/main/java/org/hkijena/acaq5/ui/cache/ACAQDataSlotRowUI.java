@@ -57,7 +57,7 @@ public class ACAQDataSlotRowUI extends ACAQWorkbenchPanel {
 
         JButton displayButton = new JButton("Show", UIUtils.getIconFromResources("search.png"));
         displayButton.setToolTipText("Shows the item");
-        displayButton.addActionListener(e -> slot.getData(row, ACAQData.class).display(slot.getAlgorithm().getName() + "/" + slot.getName() + "/" + row,
+        displayButton.addActionListener(e -> slot.getData(row, ACAQData.class).display(slot.getNode().getName() + "/" + slot.getName() + "/" + row,
                 getWorkbench()));
         add(displayButton);
     }

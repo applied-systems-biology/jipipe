@@ -25,7 +25,7 @@ import org.hkijena.acaq5.ui.components.AddAlgorithmSlotPanel;
 import org.hkijena.acaq5.ui.components.EditAlgorithmSlotPanel;
 import org.hkijena.acaq5.ui.components.MarkdownDocument;
 import org.hkijena.acaq5.ui.components.MarkdownReader;
-import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphEditorUI;
+import org.hkijena.acaq5.ui.grapheditor.ACAQGraphEditorUI;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
@@ -42,7 +42,7 @@ import java.util.Set;
  * An extended slot editor that is more powerful than the "in-place" slot editor
  */
 public class ACAQSlotEditorUI extends JPanel {
-    private final ACAQAlgorithmGraphEditorUI editorUI;
+    private final ACAQGraphEditorUI editorUI;
     private final ACAQGraphNode algorithm;
     private JTree slotTree;
 
@@ -50,7 +50,7 @@ public class ACAQSlotEditorUI extends JPanel {
      * @param editorUI  the editor that shows the slot editor
      * @param algorithm The algorithm
      */
-    public ACAQSlotEditorUI(ACAQAlgorithmGraphEditorUI editorUI, ACAQGraphNode algorithm) {
+    public ACAQSlotEditorUI(ACAQGraphEditorUI editorUI, ACAQGraphNode algorithm) {
         this.editorUI = editorUI;
         this.algorithm = algorithm;
         initialize();
@@ -155,7 +155,7 @@ public class ACAQSlotEditorUI extends JPanel {
             String newLabel = JOptionPane.showInputDialog(this,
                     "Please enter a new label for the slot.\nLeave the text empty to remove an existing label.",
                     slot.getDefinition().getCustomName());
-            editorUI.getCanvasUI().getGraphHistory().addSnapshotBefore(new SlotConfigurationHistorySnapshot(slot.getAlgorithm(),
+            editorUI.getCanvasUI().getGraphHistory().addSnapshotBefore(new SlotConfigurationHistorySnapshot(slot.getNode(),
                     "Relabel slot '" + slot.getNameWithAlgorithmName() + "'"));
             slot.getDefinition().setCustomName(newLabel);
         }
@@ -164,7 +164,7 @@ public class ACAQSlotEditorUI extends JPanel {
     private void moveSlotDown() {
         ACAQDataSlot slot = getSelectedSlot();
         if (slot != null) {
-            editorUI.getCanvasUI().getGraphHistory().addSnapshotBefore(new SlotConfigurationHistorySnapshot(slot.getAlgorithm(),
+            editorUI.getCanvasUI().getGraphHistory().addSnapshotBefore(new SlotConfigurationHistorySnapshot(slot.getNode(),
                     "Move slot '" + slot.getNameWithAlgorithmName() + "' down"));
             ((ACAQMutableSlotConfiguration) algorithm.getSlotConfiguration()).moveDown(slot.getName(), slot.getSlotType());
         }
@@ -173,7 +173,7 @@ public class ACAQSlotEditorUI extends JPanel {
     private void moveSlotUp() {
         ACAQDataSlot slot = getSelectedSlot();
         if (slot != null) {
-            editorUI.getCanvasUI().getGraphHistory().addSnapshotBefore(new SlotConfigurationHistorySnapshot(slot.getAlgorithm(),
+            editorUI.getCanvasUI().getGraphHistory().addSnapshotBefore(new SlotConfigurationHistorySnapshot(slot.getNode(),
                     "Move slot '" + slot.getNameWithAlgorithmName() + "' up"));
             ((ACAQMutableSlotConfiguration) algorithm.getSlotConfiguration()).moveUp(slot.getName(), slot.getSlotType());
         }
@@ -220,7 +220,7 @@ public class ACAQSlotEditorUI extends JPanel {
         }
         ACAQMutableSlotConfiguration slotConfiguration = (ACAQMutableSlotConfiguration) algorithm.getSlotConfiguration();
         for (ACAQDataSlot slot : toRemove) {
-            editorUI.getCanvasUI().getGraphHistory().addSnapshotBefore(new SlotConfigurationHistorySnapshot(slot.getAlgorithm(),
+            editorUI.getCanvasUI().getGraphHistory().addSnapshotBefore(new SlotConfigurationHistorySnapshot(slot.getNode(),
                     "Remove slot '" + slot.getNameWithAlgorithmName() + "'"));
             if (slot.isInput())
                 slotConfiguration.removeInputSlot(slot.getName(), true);

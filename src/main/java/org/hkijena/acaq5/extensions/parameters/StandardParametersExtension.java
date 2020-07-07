@@ -79,7 +79,7 @@ import org.hkijena.acaq5.extensions.parameters.scripts.ScriptParameter;
 import org.hkijena.acaq5.extensions.parameters.table.ParameterTable;
 import org.hkijena.acaq5.extensions.parameters.table.ParameterTableEditorUI;
 import org.hkijena.acaq5.extensions.parameters.util.ACAQAuthorMetadataParameterEditorUI;
-import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphCanvasUI;
+import org.hkijena.acaq5.ui.grapheditor.ACAQGraphCanvasUI;
 import org.hkijena.acaq5.utils.JsonUtils;
 import org.scijava.Priority;
 import org.scijava.plugin.Plugin;
@@ -348,7 +348,7 @@ public class StandardParametersExtension extends ACAQPrepackagedDefaultJavaExten
         registerEnumParameterType("path-filter:mode", PathPredicate.Mode.class, "Mode", "Available modes");
         registerEnumParameterType("string-filter:mode", StringPredicate.Mode.class, "Mode", "Available modes");
         registerEnumParameterType("acaq:iterating-algorithm:column-matching", ACAQIteratingAlgorithm.ColumnMatching.class, "Column matching strategy", "Determines how columns for dataset matching are selected");
-        registerEnumParameterType("acaq:ui:graph-editor-view-mode", ACAQAlgorithmGraphCanvasUI.ViewMode.class, "Graph editor view mode", "Determines how the graphs are displayed");
+        registerEnumParameterType("acaq:ui:graph-editor-view-mode", ACAQGraphCanvasUI.ViewMode.class, "Graph editor view mode", "Determines how the graphs are displayed");
 
     }
 

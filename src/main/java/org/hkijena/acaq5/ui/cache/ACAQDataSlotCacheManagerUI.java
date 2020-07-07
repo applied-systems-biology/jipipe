@@ -74,9 +74,9 @@ public class ACAQDataSlotCacheManagerUI extends ACAQProjectWorkbenchPanel {
 
     private void reloadContextMenu() {
         contextMenu.removeAll();
-        ACAQProjectCache.State currentState = getProject().getStateIdOf((ACAQAlgorithm) getDataSlot().getAlgorithm(), getProject().getGraph().traverseAlgorithms());
+        ACAQProjectCache.State currentState = getProject().getStateIdOf((ACAQAlgorithm) getDataSlot().getNode(), getProject().getGraph().traverseAlgorithms());
 
-        Map<ACAQProjectCache.State, Map<String, ACAQDataSlot>> stateMap = getProject().getCache().extract((ACAQAlgorithm) getDataSlot().getAlgorithm());
+        Map<ACAQProjectCache.State, Map<String, ACAQDataSlot>> stateMap = getProject().getCache().extract((ACAQAlgorithm) getDataSlot().getNode());
         if (stateMap != null) {
             JMenuItem openCurrent = createOpenStateButton(stateMap, currentState, "Open current snapshot");
             if (openCurrent != null) {
@@ -155,7 +155,7 @@ public class ACAQDataSlotCacheManagerUI extends ACAQProjectWorkbenchPanel {
 
     private void updateStatus() {
         ACAQProjectCache cache = getProject().getCache();
-        Map<ACAQProjectCache.State, Map<String, ACAQDataSlot>> stateMap = cache.extract((ACAQAlgorithm) getDataSlot().getAlgorithm());
+        Map<ACAQProjectCache.State, Map<String, ACAQDataSlot>> stateMap = cache.extract((ACAQAlgorithm) getDataSlot().getNode());
         int dataRows = 0;
         Set<String> traitTypes = new HashSet<>();
         if (stateMap != null) {

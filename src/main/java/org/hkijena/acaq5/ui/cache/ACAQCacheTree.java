@@ -117,7 +117,7 @@ public class ACAQCacheTree extends ACAQProjectWorkbenchPanel {
             DefaultMutableTreeNode node = (DefaultMutableTreeNode) enumeration.nextElement();
             if (node.getUserObject() instanceof ACAQDataSlot) {
                 ACAQDataSlot cacheSlot = (ACAQDataSlot) node.getUserObject();
-                if (cacheSlot.getAlgorithm() == dataSlot.getAlgorithm() && Objects.equals(cacheSlot.getName(), dataSlot.getName())) {
+                if (cacheSlot.getNode() == dataSlot.getNode() && Objects.equals(cacheSlot.getName(), dataSlot.getName())) {
                     DefaultMutableTreeNode parent = (DefaultMutableTreeNode) node.getParent();
                     ACAQProjectCache.State nodeState = (ACAQProjectCache.State) parent.getUserObject();
                     if (Objects.equals(nodeState, state)) {

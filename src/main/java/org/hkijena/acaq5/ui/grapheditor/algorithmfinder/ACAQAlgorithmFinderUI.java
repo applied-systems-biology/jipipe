@@ -29,7 +29,7 @@ import org.hkijena.acaq5.ui.components.ColorIcon;
 import org.hkijena.acaq5.ui.components.FormPanel;
 import org.hkijena.acaq5.ui.components.SearchTextField;
 import org.hkijena.acaq5.ui.events.AlgorithmFinderSuccessEvent;
-import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphCanvasUI;
+import org.hkijena.acaq5.ui.grapheditor.ACAQGraphCanvasUI;
 import org.hkijena.acaq5.ui.registries.ACAQUIDatatypeRegistry;
 import org.hkijena.acaq5.utils.TooltipUtils;
 import org.hkijena.acaq5.utils.UIUtils;
@@ -48,7 +48,7 @@ import java.util.stream.Collectors;
  * A user interface to find a matching algorithm for the specified target slot
  */
 public class ACAQAlgorithmFinderUI extends JPanel {
-    private final ACAQAlgorithmGraphCanvasUI canvasUI;
+    private final ACAQGraphCanvasUI canvasUI;
     private final ACAQDataSlot outputSlot;
     private final ACAQGraphNode algorithm;
     private final ACAQGraph graph;
@@ -63,14 +63,14 @@ public class ACAQAlgorithmFinderUI extends JPanel {
      * @param canvasUI   the canvas
      * @param outputSlot The target slot
      */
-    public ACAQAlgorithmFinderUI(ACAQAlgorithmGraphCanvasUI canvasUI, ACAQDataSlot outputSlot) {
+    public ACAQAlgorithmFinderUI(ACAQGraphCanvasUI canvasUI, ACAQDataSlot outputSlot) {
         this.canvasUI = canvasUI;
         this.compartment = canvasUI.getCompartment();
         if (!outputSlot.isOutput())
             throw new IllegalArgumentException();
         this.outputSlot = outputSlot;
-        this.algorithm = outputSlot.getAlgorithm();
-        this.graph = canvasUI.getAlgorithmGraph();
+        this.algorithm = outputSlot.getNode();
+        this.graph = canvasUI.getGraph();
         initialize();
         reloadAlgorithmList();
     }
@@ -111,7 +111,7 @@ public class ACAQAlgorithmFinderUI extends JPanel {
         List<ACAQAlgorithmDeclaration> algorithms = getFilteredAndSortedCompatibleTargetAlgorithms();
 
         // Add open slots
-        Set<ACAQGraphNode> knownTargetAlgorithms = graph.getTargetSlots(outputSlot).stream().map(ACAQDataSlot::getAlgorithm).collect(Collectors.toSet());
+        Set<ACAQGraphNode> knownTargetAlgorithms = graph.getTargetSlots(outputSlot).stream().map(ACAQDataSlot::getNode).collect(Collectors.toSet());
 
         // Add algorithms that allow adding slots of given type
         for (ACAQGraphNode algorithm : graph.getAlgorithmNodes().values()) {
@@ -141,7 +141,7 @@ public class ACAQAlgorithmFinderUI extends JPanel {
 
                 // Add existing instances
                 for (ACAQGraphNode existing : graph.getAlgorithmNodes().values().stream().filter(a -> a.getDeclaration() == targetAlgorithm).collect(Collectors.toList())) {
-                    if (existing == outputSlot.getAlgorithm())
+                    if (existing == outputSlot.getNode())
                         continue;
                     if (!algorithm.isVisibleIn(compartment))
                         continue;

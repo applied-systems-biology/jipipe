@@ -26,7 +26,7 @@ import org.hkijena.acaq5.ui.components.RecentJsonExtensionsMenu;
 import org.hkijena.acaq5.ui.components.ReloadableValidityChecker;
 import org.hkijena.acaq5.ui.components.SplashScreen;
 import org.hkijena.acaq5.ui.extension.MenuTarget;
-import org.hkijena.acaq5.ui.extensionbuilder.ACAQJsonExtensionAlgorithmGraphUI;
+import org.hkijena.acaq5.ui.extensionbuilder.ACAQJsonExtensionGraphUI;
 import org.hkijena.acaq5.ui.extensionbuilder.ACAQJsonExtensionContentListUI;
 import org.hkijena.acaq5.ui.extensionbuilder.ACAQJsonExtensionProjectValidation;
 import org.hkijena.acaq5.ui.settings.ACAQJsonExtensionSettingsUI;
@@ -289,8 +289,8 @@ public class ACAQJsonExtensionWorkbench extends JPanel implements ACAQWorkbench 
     private void removeUnnecessaryAlgorithmGraphEditors() {
         Set<DocumentTabPane.DocumentTab> toRemove = new HashSet<>();
         for (DocumentTabPane.DocumentTab tab : getDocumentTabPane().getTabs()) {
-            if (tab.getContent() instanceof ACAQJsonExtensionAlgorithmGraphUI) {
-                ACAQJsonExtensionAlgorithmGraphUI graphUI = (ACAQJsonExtensionAlgorithmGraphUI) tab.getContent();
+            if (tab.getContent() instanceof ACAQJsonExtensionGraphUI) {
+                ACAQJsonExtensionGraphUI graphUI = (ACAQJsonExtensionGraphUI) tab.getContent();
                 boolean notFound = project.getAlgorithmDeclarations().stream().noneMatch(d -> d.getGraph() == graphUI.getAlgorithmGraph());
                 if (notFound) {
                     toRemove.add(tab);

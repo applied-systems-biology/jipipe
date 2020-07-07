@@ -32,8 +32,8 @@ import java.awt.GridLayout;
 import java.awt.font.FontRenderContext;
 import java.awt.font.TextLayout;
 
-import static org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmUI.SLOT_UI_HEIGHT;
-import static org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmUI.SLOT_UI_WIDTH;
+import static org.hkijena.acaq5.ui.grapheditor.ACAQNodeUI.SLOT_UI_HEIGHT;
+import static org.hkijena.acaq5.ui.grapheditor.ACAQNodeUI.SLOT_UI_WIDTH;
 
 /**
  * Slot UI with horizontal direction
@@ -51,7 +51,7 @@ public class ACAQHorizontalDataSlotUI extends ACAQDataSlotUI {
      * @param compartment The compartment ID
      * @param slot        The slot instance
      */
-    public ACAQHorizontalDataSlotUI(ACAQWorkbench workbench, ACAQAlgorithmUI algorithmUI, String compartment, ACAQDataSlot slot) {
+    public ACAQHorizontalDataSlotUI(ACAQWorkbench workbench, ACAQNodeUI algorithmUI, String compartment, ACAQDataSlot slot) {
         super(workbench, algorithmUI, compartment, slot);
         initialize();
         reloadButtonStatus();
@@ -82,8 +82,8 @@ public class ACAQHorizontalDataSlotUI extends ACAQDataSlotUI {
         this.assignButtonMenu = UIUtils.addReloadablePopupMenuToComponent(assignButton, new JPopupMenu(), this::reloadPopupMenu);
         UIUtils.makeFlat(assignButton);
 
-        if (getSlot().getAlgorithm() instanceof ACAQCompartmentOutput) {
-            if (getSlot().getAlgorithm().getCompartment().equals(getCompartment())) {
+        if (getSlot().getNode() instanceof ACAQCompartmentOutput) {
+            if (getSlot().getNode().getCompartment().equals(getCompartment())) {
                 if (getSlot().isOutput()) {
                     assignButton.setEnabled(false);
                 }
@@ -106,7 +106,7 @@ public class ACAQHorizontalDataSlotUI extends ACAQDataSlotUI {
         nameLabel.setIcon(ACAQUIDatatypeRegistry.getInstance().getIconFor(getSlotDataType()));
         centerPanel.add(nameLabel);
 
-        if (getSlot().isOutput() && getSlot().getAlgorithm() instanceof ACAQAlgorithm && getWorkbench() instanceof ACAQProjectWorkbench) {
+        if (getSlot().isOutput() && getSlot().getNode() instanceof ACAQAlgorithm && getWorkbench() instanceof ACAQProjectWorkbench) {
             ACAQProjectWorkbench projectWorkbench = (ACAQProjectWorkbench) getWorkbench();
             cacheManagerUI = new ACAQDataSlotCacheManagerUI(projectWorkbench, getSlot());
             centerPanel.add(cacheManagerUI);

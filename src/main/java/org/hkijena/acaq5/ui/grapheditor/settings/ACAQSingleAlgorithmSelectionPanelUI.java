@@ -22,8 +22,8 @@ import org.hkijena.acaq5.ui.cache.ACAQAlgorithmCacheBrowserUI;
 import org.hkijena.acaq5.ui.compendium.ACAQAlgorithmCompendiumUI;
 import org.hkijena.acaq5.ui.components.ColorIcon;
 import org.hkijena.acaq5.ui.components.DocumentTabPane;
-import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphCanvasUI;
-import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphEditorUI;
+import org.hkijena.acaq5.ui.grapheditor.ACAQGraphCanvasUI;
+import org.hkijena.acaq5.ui.grapheditor.ACAQGraphEditorUI;
 import org.hkijena.acaq5.ui.parameters.ParameterPanel;
 import org.hkijena.acaq5.utils.TooltipUtils;
 import org.hkijena.acaq5.utils.UIUtils;
@@ -36,8 +36,8 @@ import java.util.Collections;
  * UI for a single {@link ACAQGraphNode}
  */
 public class ACAQSingleAlgorithmSelectionPanelUI extends ACAQProjectWorkbenchPanel {
-    private final ACAQAlgorithmGraphEditorUI graphEditorUI;
-    private final ACAQAlgorithmGraphCanvasUI canvas;
+    private final ACAQGraphEditorUI graphEditorUI;
+    private final ACAQGraphCanvasUI canvas;
     private final ACAQGraphNode algorithm;
     private JPanel testBenchTabContent;
     private JPanel cacheBrowserTabContent;
@@ -47,7 +47,7 @@ public class ACAQSingleAlgorithmSelectionPanelUI extends ACAQProjectWorkbenchPan
      * @param graphEditorUI the graph editor
      * @param algorithm     the algorithm
      */
-    public ACAQSingleAlgorithmSelectionPanelUI(ACAQAlgorithmGraphEditorUI graphEditorUI, ACAQGraphNode algorithm) {
+    public ACAQSingleAlgorithmSelectionPanelUI(ACAQGraphEditorUI graphEditorUI, ACAQGraphNode algorithm) {
         super((ACAQProjectWorkbench) graphEditorUI.getWorkbench());
         this.graphEditorUI = graphEditorUI;
         this.canvas = graphEditorUI.getCanvasUI();
@@ -118,7 +118,7 @@ public class ACAQSingleAlgorithmSelectionPanelUI extends ACAQProjectWorkbenchPan
 
         toolBar.add(Box.createHorizontalGlue());
 
-        ACAQAlgorithmGraphEditorUI.installContextActionsInto(toolBar,
+        ACAQGraphEditorUI.installContextActionsInto(toolBar,
                 canvas.getNodeUIsFor(Collections.singleton(algorithm)),
                 canvas.getContextActions(),
                 canvas);

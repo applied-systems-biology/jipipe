@@ -20,13 +20,13 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmGraphEdge;
+import org.hkijena.acaq5.api.algorithm.ACAQGraphEdge;
 import org.hkijena.acaq5.api.algorithm.ACAQGraph;
 import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.events.AlgorithmGraphChangedEvent;
 import org.hkijena.acaq5.api.events.AlgorithmGraphConnectedEvent;
-import org.hkijena.acaq5.api.history.ACAQAlgorithmGraphHistory;
+import org.hkijena.acaq5.api.history.ACAQGraphHistory;
 import org.hkijena.acaq5.api.history.MoveNodesGraphHistorySnapshot;
 import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
 import org.hkijena.acaq5.extensions.settings.GraphEditorUISettings;
@@ -64,19 +64,19 @@ import java.util.stream.Collectors;
 /**
  * UI that displays an {@link ACAQGraph}
  */
-public class ACAQAlgorithmGraphCanvasUI extends ACAQWorkbenchPanel implements MouseMotionListener, MouseListener {
+public class ACAQGraphCanvasUI extends ACAQWorkbenchPanel implements MouseMotionListener, MouseListener {
     private final ImageIcon cursorImage = UIUtils.getIconFromResources("target.png");
-    private final ACAQGraph algorithmGraph;
+    private final ACAQGraph graph;
     private final Point currentlyDraggedOffset = new Point();
-    private final BiMap<ACAQGraphNode, ACAQAlgorithmUI> nodeUIs = HashBiMap.create();
-    private final Set<ACAQAlgorithmUI> selection = new HashSet<>();
+    private final BiMap<ACAQGraphNode, ACAQNodeUI> nodeUIs = HashBiMap.create();
+    private final Set<ACAQNodeUI> selection = new HashSet<>();
     private final EventBus eventBus = new EventBus();
     private final String compartment;
-    private final ACAQAlgorithmGraphHistory graphHistory = new ACAQAlgorithmGraphHistory();
-    private ACAQAlgorithmUI currentlyDragged;
+    private final ACAQGraphHistory graphHistory = new ACAQGraphHistory();
+    private ACAQNodeUI currentlyDragged;
     private boolean layoutHelperEnabled;
     private ViewMode currentViewMode = GraphEditorUISettings.getInstance().getDefaultViewMode();
-    private ACAQAlgorithmGraphDragAndDropBehavior dragAndDropBehavior;
+    private ACAQGraphDragAndDropBehavior dragAndDropBehavior;
     private Point cursor;
     private long lastTimeExpandedNegative = 0;
     private List<AlgorithmUIAction> contextActions = new ArrayList<>();
@@ -91,17 +91,17 @@ public class ACAQAlgorithmGraphCanvasUI extends ACAQWorkbenchPanel implements Mo
      * Creates a new UI
      *
      * @param workbench      the workbench
-     * @param algorithmGraph The algorithm graph
+     * @param graph The algorithm graph
      * @param compartment    The compartment to show
      */
-    public ACAQAlgorithmGraphCanvasUI(ACAQWorkbench workbench, ACAQGraph algorithmGraph, String compartment) {
+    public ACAQGraphCanvasUI(ACAQWorkbench workbench, ACAQGraph graph, String compartment) {
         super(workbench);
         setLayout(null);
-        this.algorithmGraph = algorithmGraph;
+        this.graph = graph;
         this.compartment = compartment;
         initialize();
         addNewNodes();
-        algorithmGraph.getEventBus().register(this);
+        graph.getEventBus().register(this);
     }
 
     private void initialize() {
@@ -113,15 +113,15 @@ public class ACAQAlgorithmGraphCanvasUI extends ACAQWorkbenchPanel implements Mo
     /**
      * @return The displayed graph
      */
-    public ACAQGraph getAlgorithmGraph() {
-        return algorithmGraph;
+    public ACAQGraph getGraph() {
+        return graph;
     }
 
     /**
      * Removes all node UIs
      */
     private void removeAllNodes() {
-        for (ACAQAlgorithmUI ui : ImmutableList.copyOf(nodeUIs.values())) {
+        for (ACAQNodeUI ui : ImmutableList.copyOf(nodeUIs.values())) {
             remove(ui);
         }
         nodeUIs.clear();
@@ -136,12 +136,12 @@ public class ACAQAlgorithmGraphCanvasUI extends ACAQWorkbenchPanel implements Mo
      */
     private void removeOldNodes() {
         Set<ACAQGraphNode> toRemove = new HashSet<>();
-        for (Map.Entry<ACAQGraphNode, ACAQAlgorithmUI> kv : nodeUIs.entrySet()) {
-            if (!algorithmGraph.containsNode(kv.getKey()) || !kv.getKey().isVisibleIn(compartment))
+        for (Map.Entry<ACAQGraphNode, ACAQNodeUI> kv : nodeUIs.entrySet()) {
+            if (!graph.containsNode(kv.getKey()) || !kv.getKey().isVisibleIn(compartment))
                 toRemove.add(kv.getKey());
         }
         for (ACAQGraphNode algorithm : toRemove) {
-            ACAQAlgorithmUI ui = nodeUIs.get(algorithm);
+            ACAQNodeUI ui = nodeUIs.get(algorithm);
             selection.remove(ui);
             remove(ui);
             nodeUIs.remove(algorithm);
@@ -158,8 +158,8 @@ public class ACAQAlgorithmGraphCanvasUI extends ACAQWorkbenchPanel implements Mo
      */
     private void addNewNodes() {
         int newlyPlacedAlgorithms = 0;
-        ACAQAlgorithmUI ui = null;
-        for (ACAQGraphNode algorithm : algorithmGraph.traverseAlgorithms()) {
+        ACAQNodeUI ui = null;
+        for (ACAQGraphNode algorithm : graph.traverseAlgorithms()) {
             if (!algorithm.isVisibleIn(compartment))
                 continue;
             if (nodeUIs.containsKey(algorithm))
@@ -167,10 +167,10 @@ public class ACAQAlgorithmGraphCanvasUI extends ACAQWorkbenchPanel implements Mo
 
             switch (currentViewMode) {
                 case Horizontal:
-                    ui = new ACAQHorizontalAlgorithmUI(getWorkbench(), this, algorithm);
+                    ui = new ACAQHorizontalNodeUI(getWorkbench(), this, algorithm);
                     break;
                 case Vertical:
-                    ui = new ACAQVerticalAlgorithmUI(getWorkbench(), this, algorithm);
+                    ui = new ACAQVerticalNodeUI(getWorkbench(), this, algorithm);
                     break;
                 default:
                     throw new IllegalArgumentException("Unknown view mode!");
@@ -207,13 +207,13 @@ public class ACAQAlgorithmGraphCanvasUI extends ACAQWorkbenchPanel implements Mo
      * Auto-places components when an overlap was detected
      */
     private void removeComponentOverlaps() {
-        List<ACAQGraphNode> traversed = algorithmGraph.traverseAlgorithms();
+        List<ACAQGraphNode> traversed = graph.traverseAlgorithms();
         boolean detected = false;
         for (int i = traversed.size() - 1; i >= 0; --i) {
             ACAQGraphNode algorithm = traversed.get(i);
             if (!algorithm.isVisibleIn(compartment))
                 continue;
-            ACAQAlgorithmUI ui = nodeUIs.getOrDefault(algorithm, null);
+            ACAQNodeUI ui = nodeUIs.getOrDefault(algorithm, null);
             if (ui != null) {
                 if (ui.isOverlapping()) {
                     autoPlaceCloseToCursor(ui);
@@ -248,14 +248,14 @@ public class ACAQAlgorithmGraphCanvasUI extends ACAQWorkbenchPanel implements Mo
     }
 
     /**
-     * Triggers when an {@link ACAQAlgorithmUI} requests an action.
+     * Triggers when an {@link ACAQNodeUI} requests an action.
      * Passes the action to its own event bus
      *
      * @param event event
      */
     @Subscribe
     public void onActionRequested(AlgorithmUIActionRequestedEvent event) {
-        if (ACAQAlgorithmUI.REQUEST_OPEN_CONTEXT_MENU.equals(event.getAction())) {
+        if (ACAQNodeUI.REQUEST_OPEN_CONTEXT_MENU.equals(event.getAction())) {
             if (event.getUi() != null) {
                 openContextMenu(getMousePosition());
             }
@@ -263,7 +263,7 @@ public class ACAQAlgorithmGraphCanvasUI extends ACAQWorkbenchPanel implements Mo
         getEventBus().post(event);
     }
 
-    private void autoPlaceCloseToCursor(ACAQAlgorithmUI ui) {
+    private void autoPlaceCloseToCursor(ACAQNodeUI ui) {
         int minX = 0;
         int minY = 0;
         if (cursor != null) {
@@ -272,7 +272,7 @@ public class ACAQAlgorithmGraphCanvasUI extends ACAQWorkbenchPanel implements Mo
         }
 
         Set<Rectangle> otherShapes = new HashSet<>();
-        for (ACAQAlgorithmUI otherUi : nodeUIs.values()) {
+        for (ACAQNodeUI otherUi : nodeUIs.values()) {
             if (ui != otherUi) {
                 otherShapes.add(otherUi.getBounds());
             }
@@ -290,9 +290,9 @@ public class ACAQAlgorithmGraphCanvasUI extends ACAQWorkbenchPanel implements Mo
                 }
             }
             if (currentViewMode == ViewMode.Horizontal) {
-                currentShape.y += ACAQAlgorithmUI.SLOT_UI_HEIGHT;
+                currentShape.y += ACAQNodeUI.SLOT_UI_HEIGHT;
             } else {
-                currentShape.x += ACAQAlgorithmUI.SLOT_UI_WIDTH;
+                currentShape.x += ACAQNodeUI.SLOT_UI_WIDTH;
             }
         }
         while (!found);
@@ -301,30 +301,30 @@ public class ACAQAlgorithmGraphCanvasUI extends ACAQWorkbenchPanel implements Mo
 
     }
 
-    private void autoPlaceTargetAdjacent(ACAQAlgorithmUI sourceAlgorithmUI, ACAQDataSlot source, ACAQAlgorithmUI targetAlgorithmUI, ACAQDataSlot target) {
-        int sourceSlotIndex = source.getAlgorithm().getOutputSlots().indexOf(source);
-        int targetSlotIndex = target.getAlgorithm().getInputSlots().indexOf(target);
+    private void autoPlaceTargetAdjacent(ACAQNodeUI sourceAlgorithmUI, ACAQDataSlot source, ACAQNodeUI targetAlgorithmUI, ACAQDataSlot target) {
+        int sourceSlotIndex = source.getNode().getOutputSlots().indexOf(source);
+        int targetSlotIndex = target.getNode().getInputSlots().indexOf(target);
         if (sourceSlotIndex < 0 || targetSlotIndex < 0) {
             autoPlaceCloseToCursor(targetAlgorithmUI);
             return;
         }
 
         if (currentViewMode == ViewMode.Horizontal) {
-            int sourceSlotInternalY = sourceSlotIndex * ACAQAlgorithmUI.SLOT_UI_HEIGHT;
-            int targetSlotInternalY = targetSlotIndex * ACAQAlgorithmUI.SLOT_UI_HEIGHT;
+            int sourceSlotInternalY = sourceSlotIndex * ACAQNodeUI.SLOT_UI_HEIGHT;
+            int targetSlotInternalY = targetSlotIndex * ACAQNodeUI.SLOT_UI_HEIGHT;
 
-            int minX = sourceAlgorithmUI.getWidth() + sourceAlgorithmUI.getX() + ACAQAlgorithmUI.SLOT_UI_WIDTH * 2;
+            int minX = sourceAlgorithmUI.getWidth() + sourceAlgorithmUI.getX() + ACAQNodeUI.SLOT_UI_WIDTH * 2;
             int targetY = sourceAlgorithmUI.getY() + sourceSlotInternalY - targetSlotInternalY;
 
-            int x = (int) (minX * 1.0 / ACAQAlgorithmUI.SLOT_UI_WIDTH) * ACAQAlgorithmUI.SLOT_UI_WIDTH;
-            int y = (int) (targetY * 1.0 / ACAQAlgorithmUI.SLOT_UI_HEIGHT) * ACAQAlgorithmUI.SLOT_UI_HEIGHT;
+            int x = (int) (minX * 1.0 / ACAQNodeUI.SLOT_UI_WIDTH) * ACAQNodeUI.SLOT_UI_WIDTH;
+            int y = (int) (targetY * 1.0 / ACAQNodeUI.SLOT_UI_HEIGHT) * ACAQNodeUI.SLOT_UI_HEIGHT;
             if (!targetAlgorithmUI.trySetLocationNoGrid(x, y)) {
                 autoPlaceCloseToCursor(targetAlgorithmUI);
             }
         } else {
             int x = sourceAlgorithmUI.getSlotLocation(source).center.x + sourceAlgorithmUI.getX();
             x -= targetAlgorithmUI.getSlotLocation(target).center.x;
-            int y = sourceAlgorithmUI.getBottomY() + ACAQAlgorithmUI.SLOT_UI_HEIGHT;
+            int y = sourceAlgorithmUI.getBottomY() + ACAQNodeUI.SLOT_UI_HEIGHT;
             if (!targetAlgorithmUI.trySetLocationNoGrid(x, y)) {
                 autoPlaceCloseToCursor(targetAlgorithmUI);
             }
@@ -338,10 +338,10 @@ public class ACAQAlgorithmGraphCanvasUI extends ACAQWorkbenchPanel implements Mo
             int yu = currentlyDraggedOffset.y + mouseEvent.getY();
             if (xu < 0 || yu < 0) {
                 long currentTimeMillis = System.currentTimeMillis();
-                int ex = xu < 0 ? ACAQAlgorithmUI.SLOT_UI_WIDTH : 0;
-                int ey = yu < 0 ? ACAQAlgorithmUI.SLOT_UI_HEIGHT : 0;
+                int ex = xu < 0 ? ACAQNodeUI.SLOT_UI_WIDTH : 0;
+                int ey = yu < 0 ? ACAQNodeUI.SLOT_UI_HEIGHT : 0;
                 if (currentTimeMillis - lastTimeExpandedNegative > 100) {
-                    for (ACAQAlgorithmUI value : nodeUIs.values()) {
+                    for (ACAQNodeUI value : nodeUIs.values()) {
                         if (value != currentlyDragged) {
                             value.setLocation(value.getX() + ex, value.getY() + ey);
                         }
@@ -355,7 +355,7 @@ public class ACAQAlgorithmGraphCanvasUI extends ACAQWorkbenchPanel implements Mo
 
             if (currentlyDraggedSnapshot != null) {
                 // Check if something would change
-                if (!Objects.equals(currentlyDragged.getLocation(), ACAQAlgorithmUI.toGridLocation(new Point(x, y)))) {
+                if (!Objects.equals(currentlyDragged.getLocation(), ACAQNodeUI.toGridLocation(new Point(x, y)))) {
                     graphHistory.addSnapshotBefore(currentlyDraggedSnapshot);
                     currentlyDraggedSnapshot = null;
                 }
@@ -376,9 +376,9 @@ public class ACAQAlgorithmGraphCanvasUI extends ACAQWorkbenchPanel implements Mo
      * @param top  expand top
      */
     public void expandLeftTop(boolean left, boolean top) {
-        int ex = left ? ACAQAlgorithmUI.SLOT_UI_WIDTH : 0;
-        int ey = top ? ACAQAlgorithmUI.SLOT_UI_HEIGHT : 0;
-        for (ACAQAlgorithmUI value : nodeUIs.values()) {
+        int ex = left ? ACAQNodeUI.SLOT_UI_WIDTH : 0;
+        int ey = top ? ACAQNodeUI.SLOT_UI_HEIGHT : 0;
+        for (ACAQNodeUI value : nodeUIs.values()) {
             if (value != currentlyDragged) {
                 value.setLocation(value.getX() + ex, value.getY() + ey);
             }
@@ -415,7 +415,7 @@ public class ACAQAlgorithmGraphCanvasUI extends ACAQWorkbenchPanel implements Mo
     @Override
     public void mouseClicked(MouseEvent mouseEvent) {
         if (SwingUtilities.isLeftMouseButton(mouseEvent) && mouseEvent.getClickCount() == 2) {
-            ACAQAlgorithmUI ui = pickComponent(mouseEvent);
+            ACAQNodeUI ui = pickComponent(mouseEvent);
             if (ui != null)
                 eventBus.post(new DefaultAlgorithmUIActionRequestedEvent(ui));
         } else if (SwingUtilities.isLeftMouseButton(mouseEvent)) {
@@ -424,7 +424,7 @@ public class ACAQAlgorithmGraphCanvasUI extends ACAQWorkbenchPanel implements Mo
             repaint();
         } else if (SwingUtilities.isRightMouseButton(mouseEvent)) {
             if (selection.isEmpty()) {
-                ACAQAlgorithmUI ui = pickComponent(mouseEvent);
+                ACAQNodeUI ui = pickComponent(mouseEvent);
                 selectOnly(ui);
             }
             openContextMenu(new Point(mouseEvent.getX(), mouseEvent.getY()));
@@ -467,23 +467,23 @@ public class ACAQAlgorithmGraphCanvasUI extends ACAQWorkbenchPanel implements Mo
     @Override
     public void mousePressed(MouseEvent mouseEvent) {
         if (SwingUtilities.isLeftMouseButton(mouseEvent)) {
-            ACAQAlgorithmUI ui = pickComponent(mouseEvent);
+            ACAQNodeUI ui = pickComponent(mouseEvent);
             if (ui != null) {
                 currentlyDragged = ui;
                 currentlyDraggedOffset.x = ui.getX() - mouseEvent.getX();
                 currentlyDraggedOffset.y = ui.getY() - mouseEvent.getY();
-                currentlyDraggedSnapshot = new MoveNodesGraphHistorySnapshot(algorithmGraph, "Move node");
+                currentlyDraggedSnapshot = new MoveNodesGraphHistorySnapshot(graph, "Move node");
             }
             eventBus.post(new AlgorithmSelectedEvent(ui, mouseEvent.isShiftDown()));
         }
     }
 
-    private ACAQAlgorithmUI pickComponent(MouseEvent mouseEvent) {
+    private ACAQNodeUI pickComponent(MouseEvent mouseEvent) {
         for (int i = 0; i < getComponentCount(); ++i) {
             Component component = getComponent(i);
             if (component.getBounds().contains(mouseEvent.getX(), mouseEvent.getY())) {
-                if (component instanceof ACAQAlgorithmUI) {
-                    return (ACAQAlgorithmUI) component;
+                if (component instanceof ACAQNodeUI) {
+                    return (ACAQNodeUI) component;
                 }
             }
         }
@@ -542,8 +542,8 @@ public class ACAQAlgorithmGraphCanvasUI extends ACAQWorkbenchPanel implements Mo
     @Subscribe
     public void onAlgorithmGraphChanged(AlgorithmGraphChangedEvent event) {
         // Update the location of existing nodes
-        for (ACAQAlgorithmUI ui : nodeUIs.values()) {
-            Point point = ui.getAlgorithm().getLocationWithin(compartment, currentViewMode.name());
+        for (ACAQNodeUI ui : nodeUIs.values()) {
+            Point point = ui.getNode().getLocationWithin(compartment, currentViewMode.name());
             if (point != null) {
                 ui.setLocation(point);
             }
@@ -559,17 +559,17 @@ public class ACAQAlgorithmGraphCanvasUI extends ACAQWorkbenchPanel implements Mo
      */
     @Subscribe
     public void onAlgorithmConnected(AlgorithmGraphConnectedEvent event) {
-        ACAQAlgorithmUI sourceNode = nodeUIs.getOrDefault(event.getSource().getAlgorithm(), null);
-        ACAQAlgorithmUI targetNode = nodeUIs.getOrDefault(event.getTarget().getAlgorithm(), null);
+        ACAQNodeUI sourceNode = nodeUIs.getOrDefault(event.getSource().getNode(), null);
+        ACAQNodeUI targetNode = nodeUIs.getOrDefault(event.getTarget().getNode(), null);
 
         // Check if we actually need to auto-place
         if(currentViewMode == ViewMode.Horizontal) {
-            if(targetNode.getX() >= sourceNode.getRightX() + ACAQAlgorithmUI.SLOT_UI_WIDTH) {
+            if(targetNode.getX() >= sourceNode.getRightX() + ACAQNodeUI.SLOT_UI_WIDTH) {
                 return;
             }
         }
         else if(currentViewMode == ViewMode.Vertical) {
-            if(targetNode.getY() >= sourceNode.getBottomY() + ACAQAlgorithmUI.SLOT_UI_HEIGHT) {
+            if(targetNode.getY() >= sourceNode.getBottomY() + ACAQNodeUI.SLOT_UI_HEIGHT) {
                 return;
             }
         }
@@ -578,10 +578,10 @@ public class ACAQAlgorithmGraphCanvasUI extends ACAQWorkbenchPanel implements Mo
             Point cursorBackup = cursor;
             try {
                 if(currentViewMode == ViewMode.Horizontal)
-                    this.cursor = new Point(targetNode.getRightX() + 4 * ACAQAlgorithmUI.SLOT_UI_WIDTH,
+                    this.cursor = new Point(targetNode.getRightX() + 4 * ACAQNodeUI.SLOT_UI_WIDTH,
                             targetNode.getY());
                 else
-                    this.cursor = new Point(targetNode.getX(), targetNode.getBottomY() + 4 * ACAQAlgorithmUI.SLOT_UI_HEIGHT);
+                    this.cursor = new Point(targetNode.getX(), targetNode.getBottomY() + 4 * ACAQNodeUI.SLOT_UI_HEIGHT);
                 autoPlaceTargetAdjacent(sourceNode, event.getSource(), targetNode, event.getTarget());
             } finally {
                 this.cursor = cursorBackup;
@@ -591,7 +591,7 @@ public class ACAQAlgorithmGraphCanvasUI extends ACAQWorkbenchPanel implements Mo
 
 
     /**
-     * Should be triggered when an {@link ACAQAlgorithmUI} requests that the algorithm settings should be opened
+     * Should be triggered when an {@link ACAQNodeUI} requests that the algorithm settings should be opened
      *
      * @param event The generated event
      */
@@ -621,24 +621,24 @@ public class ACAQAlgorithmGraphCanvasUI extends ACAQWorkbenchPanel implements Mo
         // They are not covered by the other method below
         g.setStroke(new BasicStroke(2));
         graphics.setColor(Color.LIGHT_GRAY);
-        for (ACAQAlgorithmUI ui : nodeUIs.values()) {
-            if (!ui.getAlgorithm().getVisibleCompartments().isEmpty()) {
+        for (ACAQNodeUI ui : nodeUIs.values()) {
+            if (!ui.getNode().getVisibleCompartments().isEmpty()) {
                 Point sourcePoint = new Point();
                 Point targetPoint = new Point();
                 if (currentViewMode == ViewMode.Horizontal) {
-                    if (compartment == null || compartment.equals(ui.getAlgorithm().getCompartment())) {
+                    if (compartment == null || compartment.equals(ui.getNode().getCompartment())) {
                         sourcePoint.x = ui.getX() + ui.getWidth();
-                        sourcePoint.y = ui.getY() + ACAQAlgorithmUI.SLOT_UI_HEIGHT / 2;
+                        sourcePoint.y = ui.getY() + ACAQNodeUI.SLOT_UI_HEIGHT / 2;
                         targetPoint.x = getWidth();
                         targetPoint.y = sourcePoint.y;
                     } else {
                         sourcePoint.x = 0;
-                        sourcePoint.y = ui.getY() + ACAQAlgorithmUI.SLOT_UI_HEIGHT / 2;
+                        sourcePoint.y = ui.getY() + ACAQNodeUI.SLOT_UI_HEIGHT / 2;
                         targetPoint.x = ui.getX();
                         targetPoint.y = sourcePoint.y;
                     }
                 } else {
-                    if (compartment == null || compartment.equals(ui.getAlgorithm().getCompartment())) {
+                    if (compartment == null || compartment.equals(ui.getNode().getCompartment())) {
                         sourcePoint.x = ui.getX() + ui.getWidth() / 2;
                         sourcePoint.y = ui.getY() + ui.getHeight();
                         targetPoint.x = sourcePoint.x;
@@ -656,11 +656,11 @@ public class ACAQAlgorithmGraphCanvasUI extends ACAQWorkbenchPanel implements Mo
 
         // Draw edges between loaded algorithm UIs
         graphics.setColor(Color.DARK_GRAY);
-        for (Map.Entry<ACAQDataSlot, ACAQDataSlot> kv : algorithmGraph.getSlotEdges()) {
+        for (Map.Entry<ACAQDataSlot, ACAQDataSlot> kv : graph.getSlotEdges()) {
             ACAQDataSlot source = kv.getKey();
             ACAQDataSlot target = kv.getValue();
-            ACAQAlgorithmUI sourceUI = nodeUIs.getOrDefault(source.getAlgorithm(), null);
-            ACAQAlgorithmUI targetUI = nodeUIs.getOrDefault(target.getAlgorithm(), null);
+            ACAQNodeUI sourceUI = nodeUIs.getOrDefault(source.getNode(), null);
+            ACAQNodeUI targetUI = nodeUIs.getOrDefault(target.getNode(), null);
 
             if (sourceUI == null || targetUI == null)
                 continue;
@@ -688,7 +688,7 @@ public class ACAQAlgorithmGraphCanvasUI extends ACAQWorkbenchPanel implements Mo
 
         // Draw selections
         g.setStroke(new BasicStroke(3, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL, 0, new float[]{9}, 0));
-        for (ACAQAlgorithmUI ui : selection) {
+        for (ACAQNodeUI ui : selection) {
             Rectangle bounds = ui.getBounds();
             bounds.x -= 4;
             bounds.y -= 4;
@@ -715,7 +715,7 @@ public class ACAQAlgorithmGraphCanvasUI extends ACAQWorkbenchPanel implements Mo
      * @return the center slot location. Null if the algorithm has no UI or the returned location is null
      */
     public Point getSlotLocation(ACAQDataSlot slot) {
-        ACAQAlgorithmUI algorithmUI = nodeUIs.getOrDefault(slot.getAlgorithm(), null);
+        ACAQNodeUI algorithmUI = nodeUIs.getOrDefault(slot.getNode(), null);
         if (algorithmUI != null) {
             PointRange location = algorithmUI.getSlotLocation(slot);
             if (location != null) {
@@ -755,7 +755,7 @@ public class ACAQAlgorithmGraphCanvasUI extends ACAQWorkbenchPanel implements Mo
         int componentEndB;
 
         if (currentViewMode == ViewMode.Horizontal) {
-            buffer = ACAQAlgorithmUI.SLOT_UI_WIDTH;
+            buffer = ACAQNodeUI.SLOT_UI_WIDTH;
             sourceA = sourcePoint.x;
             targetA = targetPoint.x;
             sourceB = sourcePoint.y;
@@ -763,7 +763,7 @@ public class ACAQAlgorithmGraphCanvasUI extends ACAQWorkbenchPanel implements Mo
             componentStartB = sourceBounds.y;
             componentEndB = sourceBounds.y + sourceBounds.height;
         } else {
-            buffer = ACAQAlgorithmUI.SLOT_UI_HEIGHT / 2;
+            buffer = ACAQNodeUI.SLOT_UI_HEIGHT / 2;
             sourceA = sourcePoint.y;
             targetA = targetPoint.y;
             sourceB = sourcePoint.x;
@@ -851,19 +851,45 @@ public class ACAQAlgorithmGraphCanvasUI extends ACAQWorkbenchPanel implements Mo
      */
     private void autoLayoutSugiyama() {
         // Create an algorithm UI graph
+        Set<ACAQNodeUI> freeFloating = new HashSet<>();
         DefaultDirectedGraph<SugiyamaVertex, DefaultEdge> sugiyamaGraph = new DefaultDirectedGraph<>(DefaultEdge.class);
-        Map<ACAQAlgorithmUI, SugiyamaVertex> vertexMap = new HashMap<>();
-        for (ACAQAlgorithmUI ui : nodeUIs.values()) {
-            SugiyamaVertex sugiyamaVertex = new SugiyamaVertex(ui);
-            sugiyamaGraph.addVertex(sugiyamaVertex);
-            vertexMap.put(ui, sugiyamaVertex);
+        Map<ACAQNodeUI, SugiyamaVertex> vertexMap = new HashMap<>();
+        for (ACAQNodeUI ui : nodeUIs.values()) {
+            // Ignore all free-floating nodes (no inputs, no outputs within this compartment)
+            boolean isFreeFloating = true;
+            for (ACAQDataSlot inputSlot : ui.getNode().getInputSlots()) {
+                ACAQDataSlot sourceSlot = graph.getSourceSlot(inputSlot);
+                if(sourceSlot != null && Objects.equals(sourceSlot.getNode().getCompartment(), inputSlot.getNode().getCompartment())) {
+                    isFreeFloating = false;
+                    break;
+                }
+            }
+            if(isFreeFloating) {
+                outer: for (ACAQDataSlot outputSlot : ui.getNode().getOutputSlots()) {
+                    for (ACAQDataSlot targetSlot : graph.getTargetSlots(outputSlot)) {
+                        if(Objects.equals(outputSlot.getNode().getCompartment(), targetSlot.getNode().getCompartment())) {
+                            isFreeFloating = false;
+                            break outer;
+                        }
+                    }
+                }
+            }
+
+            if(!isFreeFloating) {
+                SugiyamaVertex sugiyamaVertex = new SugiyamaVertex(ui);
+                sugiyamaGraph.addVertex(sugiyamaVertex);
+                vertexMap.put(ui, sugiyamaVertex);
+            }
+            else {
+                freeFloating.add(ui);
+            }
         }
-        for (ACAQAlgorithmGraphEdge edge : algorithmGraph.getGraph().edgeSet()) {
-            ACAQAlgorithmUI sourceUI = nodeUIs.getOrDefault(algorithmGraph.getGraph().getEdgeSource(edge).getAlgorithm(), null);
-            ACAQAlgorithmUI targetUI = nodeUIs.getOrDefault(algorithmGraph.getGraph().getEdgeTarget(edge).getAlgorithm(), null);
+        for (ACAQGraphEdge edge : graph.getGraph().edgeSet()) {
+            ACAQNodeUI sourceUI = nodeUIs.getOrDefault(graph.getGraph().getEdgeSource(edge).getNode(), null);
+            ACAQNodeUI targetUI = nodeUIs.getOrDefault(graph.getGraph().getEdgeTarget(edge).getNode(), null);
             if (sourceUI == null || targetUI == null)
                 continue;
-            if (sourceUI.getAlgorithm() == targetUI.getAlgorithm())
+            if (sourceUI.getNode() == targetUI.getNode())
                 continue;
             if (!sugiyamaGraph.containsEdge(vertexMap.get(sourceUI), vertexMap.get(targetUI)))
                 sugiyamaGraph.addEdge(vertexMap.get(sourceUI), vertexMap.get(targetUI));
@@ -914,10 +940,6 @@ public class ACAQAlgorithmGraphCanvasUI extends ACAQWorkbenchPanel implements Mo
             }
         }
 
-//        // Reorder columns (23 is a magic number from the paper)
-//        for(int i = 0; i < 23; ++i) {
-//
-//        }
         switch (currentViewMode) {
             case Horizontal:
                 rearrangeSugiyamaHorizontal(sugiyamaGraph, maxLayer, maxIndex);
@@ -927,9 +949,44 @@ public class ACAQAlgorithmGraphCanvasUI extends ACAQWorkbenchPanel implements Mo
                 break;
         }
 
+        // Add free-floating algorithms back into the graph
+        if(!freeFloating.isEmpty()) {
+            if (currentViewMode == ViewMode.Horizontal) {
+                // Put them below
+                int minY = ACAQNodeUI.SLOT_UI_HEIGHT;
+                for (ACAQNodeUI ui : nodeUIs.values()) {
+                    if(!freeFloating.contains(ui)) {
+                        minY = Math.max(ui.getBottomY(), minY);
+                    }
+                }
+                int x = ACAQNodeUI.SLOT_UI_WIDTH * 4;
+                for (ACAQNodeUI ui : freeFloating) {
+                    ui.setLocation(x, minY);
+                    x += ui.getWidth() + ACAQNodeUI.SLOT_UI_WIDTH * 2;
+                }
+            }
+            else {
+                int minX = ACAQNodeUI.SLOT_UI_WIDTH * 4;
+                for (ACAQNodeUI ui : nodeUIs.values()) {
+                    if(!freeFloating.contains(ui)) {
+                        minX = Math.max(ui.getRightX(), minX);
+                    }
+                }
+                int y = ACAQNodeUI.SLOT_UI_HEIGHT;
+                for (ACAQNodeUI ui : freeFloating) {
+                    ui.setLocation(minX, y);
+                    y += ui.getHeight() + ACAQNodeUI.SLOT_UI_HEIGHT;
+                }
+            }
+            repaint();
+        }
     }
 
     private void rearrangeSugiyamaHorizontal(DefaultDirectedGraph<SugiyamaVertex, DefaultEdge> sugiyamaGraph, int maxLayer, int maxIndex) {
+
+        if(sugiyamaGraph.vertexSet().isEmpty())
+            return;
+
         // Create a table of column -> row -> vertex
         int maxRow = maxIndex;
         int maxColumn = maxLayer;
@@ -957,21 +1014,21 @@ public class ACAQAlgorithmGraphCanvasUI extends ACAQWorkbenchPanel implements Mo
             }
         }
         for (int column : columnWidths.keySet()) {
-            columnWidths.put(column, columnWidths.get(column) + 2 * ACAQAlgorithmUI.SLOT_UI_WIDTH);
+            columnWidths.put(column, columnWidths.get(column) + 2 * ACAQNodeUI.SLOT_UI_WIDTH);
         }
         for (int row : rowHeights.keySet()) {
-            rowHeights.put(row, rowHeights.get(row) + ACAQAlgorithmUI.SLOT_UI_HEIGHT);
+            rowHeights.put(row, rowHeights.get(row) + ACAQNodeUI.SLOT_UI_HEIGHT);
         }
 
         // Rearrange algorithms
-        int x = ACAQAlgorithmUI.SLOT_UI_WIDTH;
+        int x = ACAQNodeUI.SLOT_UI_WIDTH;
         for (int column = 0; column <= maxColumn; ++column) {
             Map<Integer, SugiyamaVertex> columnMap = vertexTable.get(column);
-            int y = ACAQAlgorithmUI.SLOT_UI_HEIGHT;
+            int y = ACAQNodeUI.SLOT_UI_HEIGHT;
             for (int row = 0; row <= maxRow; ++row) {
                 SugiyamaVertex vertex = columnMap.getOrDefault(row, null);
                 if (vertex != null && !vertex.virtual) {
-                    ACAQAlgorithmUI ui = vertex.algorithmUI;
+                    ACAQNodeUI ui = vertex.algorithmUI;
                     ui.setLocation(x, y);
                 }
                 y += rowHeights.getOrDefault(row, 0);
@@ -983,6 +1040,10 @@ public class ACAQAlgorithmGraphCanvasUI extends ACAQWorkbenchPanel implements Mo
     }
 
     private void rearrangeSugiyamaVertical(DefaultDirectedGraph<SugiyamaVertex, DefaultEdge> sugiyamaGraph, int maxLayer, int maxIndex) {
+
+        if(sugiyamaGraph.vertexSet().isEmpty())
+            return;
+
         // Create a table of column -> row -> vertex
         int maxRow = maxLayer;
         int maxColumn = maxIndex;
@@ -1010,21 +1071,21 @@ public class ACAQAlgorithmGraphCanvasUI extends ACAQWorkbenchPanel implements Mo
             }
         }
         for (int column : columnWidths.keySet()) {
-            columnWidths.put(column, columnWidths.get(column) + 2 * ACAQAlgorithmUI.SLOT_UI_WIDTH);
+            columnWidths.put(column, columnWidths.get(column) + 2 * ACAQNodeUI.SLOT_UI_WIDTH);
         }
         for (int row : rowHeights.keySet()) {
-            rowHeights.put(row, rowHeights.get(row) + ACAQAlgorithmUI.SLOT_UI_HEIGHT);
+            rowHeights.put(row, rowHeights.get(row) + ACAQNodeUI.SLOT_UI_HEIGHT);
         }
 
         // Rearrange algorithms
-        int x = ACAQAlgorithmUI.SLOT_UI_WIDTH;
+        int x = ACAQNodeUI.SLOT_UI_WIDTH;
         for (int column = 0; column <= maxColumn; ++column) {
             Map<Integer, SugiyamaVertex> columnMap = vertexTable.get(column);
-            int y = ACAQAlgorithmUI.SLOT_UI_HEIGHT;
+            int y = ACAQNodeUI.SLOT_UI_HEIGHT;
             for (int row = 0; row <= maxRow; ++row) {
                 SugiyamaVertex vertex = columnMap.getOrDefault(row, null);
                 if (vertex != null && !vertex.virtual) {
-                    ACAQAlgorithmUI ui = vertex.algorithmUI;
+                    ACAQNodeUI ui = vertex.algorithmUI;
                     ui.setLocation(x, y);
                 }
                 y += rowHeights.getOrDefault(row, 0);
@@ -1047,24 +1108,24 @@ public class ACAQAlgorithmGraphCanvasUI extends ACAQWorkbenchPanel implements Mo
         }
     }
 
-    public BiMap<ACAQGraphNode, ACAQAlgorithmUI> getNodeUIs() {
+    public BiMap<ACAQGraphNode, ACAQNodeUI> getNodeUIs() {
         return ImmutableBiMap.copyOf(nodeUIs);
     }
 
-    public ACAQAlgorithmGraphDragAndDropBehavior getDragAndDropBehavior() {
+    public ACAQGraphDragAndDropBehavior getDragAndDropBehavior() {
         return dragAndDropBehavior;
     }
 
-    public void setDragAndDropBehavior(ACAQAlgorithmGraphDragAndDropBehavior dragAndDropBehavior) {
+    public void setDragAndDropBehavior(ACAQGraphDragAndDropBehavior dragAndDropBehavior) {
         this.dragAndDropBehavior = dragAndDropBehavior;
         dragAndDropBehavior.setCanvas(this);
         new DropTarget(this, dragAndDropBehavior);
     }
 
     /**
-     * @return the list of selected {@link ACAQAlgorithmUI}
+     * @return the list of selected {@link ACAQNodeUI}
      */
-    public Set<ACAQAlgorithmUI> getSelection() {
+    public Set<ACAQNodeUI> getSelection() {
         return Collections.unmodifiableSet(selection);
     }
 
@@ -1072,7 +1133,7 @@ public class ACAQAlgorithmGraphCanvasUI extends ACAQWorkbenchPanel implements Mo
      * @return the list of selected nodes
      */
     public Set<ACAQGraphNode> getSelectedNodes() {
-        return selection.stream().map(ACAQAlgorithmUI::getAlgorithm).collect(Collectors.toSet());
+        return selection.stream().map(ACAQNodeUI::getNode).collect(Collectors.toSet());
     }
 
     /**
@@ -1093,7 +1154,7 @@ public class ACAQAlgorithmGraphCanvasUI extends ACAQWorkbenchPanel implements Mo
      *
      * @param ui The algorithm UI
      */
-    public void selectOnly(ACAQAlgorithmUI ui) {
+    public void selectOnly(ACAQNodeUI ui) {
         if (ui == null) {
             clearSelection();
             return;
@@ -1116,7 +1177,7 @@ public class ACAQAlgorithmGraphCanvasUI extends ACAQWorkbenchPanel implements Mo
      *
      * @param ui The algorithm UI
      */
-    public void removeFromSelection(ACAQAlgorithmUI ui) {
+    public void removeFromSelection(ACAQNodeUI ui) {
         if (selection.contains(ui)) {
             selection.remove(ui);
             updateSelection();
@@ -1128,7 +1189,7 @@ public class ACAQAlgorithmGraphCanvasUI extends ACAQWorkbenchPanel implements Mo
      *
      * @param ui The algorithm UI
      */
-    public void addToSelection(ACAQAlgorithmUI ui) {
+    public void addToSelection(ACAQNodeUI ui) {
         selection.add(ui);
         updateSelection();
     }
@@ -1139,15 +1200,15 @@ public class ACAQAlgorithmGraphCanvasUI extends ACAQWorkbenchPanel implements Mo
     public void crop() {
         int minX = Integer.MAX_VALUE;
         int minY = Integer.MAX_VALUE;
-        for (ACAQAlgorithmUI ui : nodeUIs.values()) {
+        for (ACAQNodeUI ui : nodeUIs.values()) {
             minX = Math.min(ui.getX(), minX);
             minY = Math.min(ui.getY(), minY);
         }
-        for (ACAQAlgorithmUI ui : nodeUIs.values()) {
-            ui.setLocation(ui.getX() - minX + ACAQAlgorithmUI.SLOT_UI_WIDTH,
-                    ui.getY() - minY + ACAQAlgorithmUI.SLOT_UI_HEIGHT);
+        for (ACAQNodeUI ui : nodeUIs.values()) {
+            ui.setLocation(ui.getX() - minX + ACAQNodeUI.SLOT_UI_WIDTH,
+                    ui.getY() - minY + ACAQNodeUI.SLOT_UI_HEIGHT);
         }
-        cursor = new Point(ACAQAlgorithmUI.SLOT_UI_WIDTH, ACAQAlgorithmUI.SLOT_UI_HEIGHT);
+        cursor = new Point(ACAQNodeUI.SLOT_UI_WIDTH, ACAQNodeUI.SLOT_UI_HEIGHT);
         minDimensions = null;
         if (getParent() != null)
             getParent().revalidate();
@@ -1178,10 +1239,10 @@ public class ACAQAlgorithmGraphCanvasUI extends ACAQWorkbenchPanel implements Mo
         this.contextActions = contextActions;
     }
 
-    public <T extends ACAQGraphNode> Set<ACAQAlgorithmUI> getNodeUIsFor(Set<T> nodes) {
-        Set<ACAQAlgorithmUI> uis = new HashSet<>();
+    public <T extends ACAQGraphNode> Set<ACAQNodeUI> getNodeUIsFor(Set<T> nodes) {
+        Set<ACAQNodeUI> uis = new HashSet<>();
         for (T node : nodes) {
-            ACAQAlgorithmUI ui = nodeUIs.getOrDefault(node, null);
+            ACAQNodeUI ui = nodeUIs.getOrDefault(node, null);
             if (ui != null) {
                 uis.add(ui);
             }
@@ -1189,7 +1250,7 @@ public class ACAQAlgorithmGraphCanvasUI extends ACAQWorkbenchPanel implements Mo
         return uis;
     }
 
-    public ACAQAlgorithmGraphHistory getGraphHistory() {
+    public ACAQGraphHistory getGraphHistory() {
         return graphHistory;
     }
 
@@ -1205,12 +1266,12 @@ public class ACAQAlgorithmGraphCanvasUI extends ACAQWorkbenchPanel implements Mo
      * Used for autoLayoutSugiyama()
      */
     private static class SugiyamaVertex {
-        private ACAQAlgorithmUI algorithmUI;
+        private ACAQNodeUI algorithmUI;
         private int layer = 0;
         private int index = 0;
         private boolean virtual = false;
 
-        private SugiyamaVertex(ACAQAlgorithmUI algorithmUI) {
+        private SugiyamaVertex(ACAQNodeUI algorithmUI) {
             this.algorithmUI = algorithmUI;
         }
 

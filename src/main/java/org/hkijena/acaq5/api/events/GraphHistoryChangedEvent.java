@@ -13,19 +13,19 @@
 
 package org.hkijena.acaq5.api.events;
 
-import org.hkijena.acaq5.api.history.ACAQAlgorithmGraphHistory;
+import org.hkijena.acaq5.api.history.ACAQGraphHistory;
 
 /**
- * Triggered when an {@link org.hkijena.acaq5.api.history.ACAQAlgorithmGraphHistory} was changed
+ * Triggered when an {@link ACAQGraphHistory} was changed
  */
 public class GraphHistoryChangedEvent {
-    private final ACAQAlgorithmGraphHistory graphHistory;
+    private final ACAQGraphHistory graphHistory;
 
-    public GraphHistoryChangedEvent(ACAQAlgorithmGraphHistory graphHistory) {
+    public GraphHistoryChangedEvent(ACAQGraphHistory graphHistory) {
         this.graphHistory = graphHistory;
     }
 
-    public ACAQAlgorithmGraphHistory getGraphHistory() {
+    public ACAQGraphHistory getGraphHistory() {
         return graphHistory;
     }
 }

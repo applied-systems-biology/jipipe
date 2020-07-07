@@ -101,7 +101,7 @@ public class ACAQRun implements ACAQRunnable {
             // Apply output path to the data slots
             for (ACAQDataSlot slot : algorithmGraph.getSlotNodes()) {
                 if (slot.isOutput()) {
-                    slot.setStoragePath(configuration.getOutputPath().resolve(slot.getAlgorithm().getInternalStoragePath().resolve(slot.getName())));
+                    slot.setStoragePath(configuration.getOutputPath().resolve(slot.getNode().getInternalStoragePath().resolve(slot.getName())));
                     try {
                         Files.createDirectories(slot.getStoragePath());
                     } catch (IOException e) {
@@ -115,14 +115,14 @@ public class ACAQRun implements ACAQRunnable {
     }
 
     private void flushFinishedSlots(List<ACAQDataSlot> traversedSlots, List<ACAQGraphNode> traversedProjectAlgorithms, Set<ACAQGraphNode> executedAlgorithms, int currentIndex, ACAQDataSlot outputSlot, Set<ACAQDataSlot> flushedSlots) {
-        if (!executedAlgorithms.contains(outputSlot.getAlgorithm()))
+        if (!executedAlgorithms.contains(outputSlot.getNode()))
             return;
         if (flushedSlots.contains(outputSlot))
             return;
         boolean canFlush = true;
         for (int j = currentIndex + 1; j < traversedSlots.size(); ++j) {
             ACAQDataSlot futureSlot = traversedSlots.get(j);
-            boolean isDeactivated = (futureSlot.getAlgorithm() instanceof ACAQAlgorithm) && (!((ACAQAlgorithm) futureSlot.getAlgorithm()).isEnabled());
+            boolean isDeactivated = (futureSlot.getNode() instanceof ACAQAlgorithm) && (!((ACAQAlgorithm) futureSlot.getNode()).isEnabled());
             if (!isDeactivated && futureSlot.isInput() && algorithmGraph.getSourceSlot(futureSlot) == outputSlot) {
                 canFlush = false;
                 break;
@@ -130,7 +130,7 @@ public class ACAQRun implements ACAQRunnable {
         }
         if (canFlush) {
             if (configuration.isStoreToCache()) {
-                ACAQGraphNode runAlgorithm = outputSlot.getAlgorithm();
+                ACAQGraphNode runAlgorithm = outputSlot.getNode();
                 ACAQGraphNode projectAlgorithm = project.getGraph().getAlgorithmNodes().get(runAlgorithm.getIdInGraph());
                 ACAQProjectCache.State stateId = project.getStateIdOf((ACAQAlgorithm) projectAlgorithm, traversedProjectAlgorithms);
                 project.getCache().store((ACAQAlgorithm) projectAlgorithm, stateId, outputSlot);
@@ -208,11 +208,11 @@ public class ACAQRun implements ACAQRunnable {
             logStatus(onProgress, new ACAQRunnerStatus(index, algorithmGraph.getSlotCount(), slot.getNameWithAlgorithmName()));
 
             // If an algorithm cannot be executed, skip it automatically
-            if (unExecutableAlgorithms.contains(slot.getAlgorithm()))
+            if (unExecutableAlgorithms.contains(slot.getNode()))
                 continue;
 
             // Let algorithms provide sub-progress
-            String statusMessage = "Algorithm: " + slot.getAlgorithm().getName();
+            String statusMessage = "Algorithm: " + slot.getNode().getName();
             int traversingIndex = index;
             Consumer<ACAQRunnerSubStatus> algorithmProgress = s -> logStatus(onProgress, new ACAQRunnerStatus(traversingIndex, traversedSlots.size(),
                     statusMessage + " | " + s));
@@ -226,13 +226,13 @@ public class ACAQRun implements ACAQRunnable {
                 flushFinishedSlots(traversedSlots, traversedProjectAlgorithms, executedAlgorithms, index, sourceSlot, flushedSlots);
             } else if (slot.isOutput()) {
                 // Ensure the algorithm has run
-                if (!executedAlgorithms.contains(slot.getAlgorithm())) {
+                if (!executedAlgorithms.contains(slot.getNode())) {
                     onProgress.accept(new ACAQRunnerStatus(index, traversedSlots.size(), statusMessage));
 
                     // If enabled try to extract outputs from cache
                     boolean dataLoadedFromCache = false;
                     if (configuration.isLoadFromCache()) {
-                        dataLoadedFromCache = tryLoadFromCache(slot.getAlgorithm(),
+                        dataLoadedFromCache = tryLoadFromCache(slot.getNode(),
                                 onProgress,
                                 traversingIndex,
                                 traversedSlots.size(),
@@ -242,34 +242,34 @@ public class ACAQRun implements ACAQRunnable {
 
                     if (!dataLoadedFromCache) {
                         try {
-                            if (slot.getAlgorithm() instanceof ACAQAlgorithm) {
-                                ((ACAQAlgorithm) slot.getAlgorithm()).setThreadPool(threadPool);
+                            if (slot.getNode() instanceof ACAQAlgorithm) {
+                                ((ACAQAlgorithm) slot.getNode()).setThreadPool(threadPool);
                             }
-                            slot.getAlgorithm().run(new ACAQRunnerSubStatus(), algorithmProgress, isCancelled);
+                            slot.getNode().run(new ACAQRunnerSubStatus(), algorithmProgress, isCancelled);
                         } catch (HeadlessException e) {
-                            throw new UserFriendlyRuntimeException("Algorithm " + slot.getAlgorithm() + " does not work in a headless environment!",
+                            throw new UserFriendlyRuntimeException("Algorithm " + slot.getNode() + " does not work in a headless environment!",
                                     e,
                                     "An error occurred during processing",
-                                    "On running the algorithm '" + slot.getAlgorithm().getName() + "', within compartment '" + getProject().getCompartments().get(slot.getAlgorithm().getCompartment()).getName() + "'",
+                                    "On running the algorithm '" + slot.getNode().getName() + "', within compartment '" + getProject().getCompartments().get(slot.getNode().getCompartment()).getName() + "'",
                                     "The algorithm raised an error, as it is not compatible with a headless environment.",
                                     "Please contact the plugin developers about this issue. If this happens in an ImageJ method, please contact the ImageJ developers.");
                         } catch (Exception e) {
-                            throw new UserFriendlyRuntimeException("Algorithm " + slot.getAlgorithm() + " raised an exception!",
+                            throw new UserFriendlyRuntimeException("Algorithm " + slot.getNode() + " raised an exception!",
                                     e,
                                     "An error occurred during processing",
-                                    "On running the algorithm '" + slot.getAlgorithm().getName() + "', within compartment '" + getProject().getCompartments().get(slot.getAlgorithm().getCompartment()).getName() + "'",
+                                    "On running the algorithm '" + slot.getNode().getName() + "', within compartment '" + getProject().getCompartments().get(slot.getNode().getCompartment()).getName() + "'",
                                     "Please refer to the other error messages.",
                                     "Please follow the instructions for the other error messages.");
                         } finally {
-                            if (slot.getAlgorithm() instanceof ACAQAlgorithm) {
-                                ((ACAQAlgorithm) slot.getAlgorithm()).setThreadPool(null);
+                            if (slot.getNode() instanceof ACAQAlgorithm) {
+                                ((ACAQAlgorithm) slot.getNode()).setThreadPool(null);
                             }
                         }
                     } else {
                         onProgress.accept(new ACAQRunnerStatus(index, traversedSlots.size(), statusMessage + " | Output data was loaded from cache. Not executing."));
                     }
 
-                    executedAlgorithms.add(slot.getAlgorithm());
+                    executedAlgorithms.add(slot.getNode());
                 }
 
                 // Check if we can flush the output

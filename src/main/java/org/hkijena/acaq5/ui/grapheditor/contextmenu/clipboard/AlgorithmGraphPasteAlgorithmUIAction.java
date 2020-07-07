@@ -18,8 +18,8 @@ import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQCompartmentOutput;
 import org.hkijena.acaq5.api.history.PasteNodeGraphHistorySnapshot;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
-import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphCanvasUI;
-import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmUI;
+import org.hkijena.acaq5.ui.grapheditor.ACAQGraphCanvasUI;
+import org.hkijena.acaq5.ui.grapheditor.ACAQNodeUI;
 import org.hkijena.acaq5.ui.grapheditor.contextmenu.AlgorithmUIAction;
 import org.hkijena.acaq5.utils.JsonUtils;
 import org.hkijena.acaq5.utils.StringUtils;
@@ -34,12 +34,12 @@ import java.util.Set;
 
 public class AlgorithmGraphPasteAlgorithmUIAction implements AlgorithmUIAction {
     @Override
-    public boolean matches(Set<ACAQAlgorithmUI> selection) {
+    public boolean matches(Set<ACAQNodeUI> selection) {
         return !StringUtils.isNullOrEmpty(UIUtils.getStringFromClipboard());
     }
 
     @Override
-    public void run(ACAQAlgorithmGraphCanvasUI canvasUI, Set<ACAQAlgorithmUI> selection) {
+    public void run(ACAQGraphCanvasUI canvasUI, Set<ACAQNodeUI> selection) {
         try {
             String json = UIUtils.getStringFromClipboard();
             if (json != null) {
@@ -83,9 +83,9 @@ public class AlgorithmGraphPasteAlgorithmUIAction implements AlgorithmUIAction {
                 }
 
                 // Add to graph
-                canvasUI.getGraphHistory().addSnapshotBefore(new PasteNodeGraphHistorySnapshot(canvasUI.getAlgorithmGraph(),
+                canvasUI.getGraphHistory().addSnapshotBefore(new PasteNodeGraphHistorySnapshot(canvasUI.getGraph(),
                         new HashSet<>(graph.getAlgorithmNodes().values())));
-                canvasUI.getAlgorithmGraph().mergeWith(graph);
+                canvasUI.getGraph().mergeWith(graph);
             }
         } catch (Exception e) {
             e.printStackTrace();

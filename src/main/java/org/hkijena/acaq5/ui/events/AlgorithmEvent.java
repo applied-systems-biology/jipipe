@@ -13,24 +13,24 @@
 
 package org.hkijena.acaq5.ui.events;
 
-import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmUI;
+import org.hkijena.acaq5.ui.grapheditor.ACAQNodeUI;
 
 /**
- * An event around {@link ACAQAlgorithmUI}
+ * An event around {@link ACAQNodeUI}
  */
 public class AlgorithmEvent {
-    private ACAQAlgorithmUI ui;
+    private ACAQNodeUI ui;
 
     /**
      * Creates a new event
      *
      * @param ui the algorithm
      */
-    public AlgorithmEvent(ACAQAlgorithmUI ui) {
+    public AlgorithmEvent(ACAQNodeUI ui) {
         this.ui = ui;
     }
 
-    public ACAQAlgorithmUI getUi() {
+    public ACAQNodeUI getUi() {
         return ui;
     }
 }

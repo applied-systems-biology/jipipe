@@ -60,38 +60,38 @@ public class ACAQGraphRunner implements ACAQRunnable {
             logStatus(onProgress, new ACAQRunnerStatus(index, algorithmGraph.getSlotCount(), slot.getNameWithAlgorithmName()));
 
             // If an algorithm cannot be executed, skip it automatically
-            if (unExecutableAlgorithms.contains(slot.getAlgorithm()))
+            if (unExecutableAlgorithms.contains(slot.getNode()))
                 continue;
 
             // Let algorithms provide sub-progress
-            String statusMessage = "Algorithm: " + slot.getAlgorithm().getName();
+            String statusMessage = "Algorithm: " + slot.getNode().getName();
             int traversingIndex = index;
             Consumer<ACAQRunnerSubStatus> algorithmProgress = s -> logStatus(onProgress, new ACAQRunnerStatus(traversingIndex, traversedSlots.size(),
                     statusMessage + " | " + s));
 
             if (slot.isInput()) {
-                if (!algorithmsWithExternalInput.contains(slot.getAlgorithm())) {
+                if (!algorithmsWithExternalInput.contains(slot.getNode())) {
                     // Copy data from source
                     ACAQDataSlot sourceSlot = algorithmGraph.getSourceSlot(slot);
                     slot.copyFrom(sourceSlot);
                 }
             } else if (slot.isOutput()) {
                 // Ensure the algorithm has run
-                if (!executedAlgorithms.contains(slot.getAlgorithm())) {
+                if (!executedAlgorithms.contains(slot.getNode())) {
                     onProgress.accept(new ACAQRunnerStatus(index, traversedSlots.size(), statusMessage));
 
                     try {
-                        slot.getAlgorithm().run(new ACAQRunnerSubStatus(), algorithmProgress, isCancelled);
+                        slot.getNode().run(new ACAQRunnerSubStatus(), algorithmProgress, isCancelled);
                     } catch (Exception e) {
-                        throw new UserFriendlyRuntimeException("Algorithm " + slot.getAlgorithm() + " raised an exception!",
+                        throw new UserFriendlyRuntimeException("Algorithm " + slot.getNode() + " raised an exception!",
                                 e,
                                 "An error occurred during processing",
-                                "On running the algorithm '" + slot.getAlgorithm().getName() + "', within graph '" + algorithmGraph + "'",
+                                "On running the algorithm '" + slot.getNode().getName() + "', within graph '" + algorithmGraph + "'",
                                 "Please refer to the other error messages.",
                                 "Please follow the instructions for the other error messages.");
                     }
 
-                    executedAlgorithms.add(slot.getAlgorithm());
+                    executedAlgorithms.add(slot.getNode());
                 }
             }
         }

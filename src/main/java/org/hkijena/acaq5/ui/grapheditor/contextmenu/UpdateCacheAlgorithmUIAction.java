@@ -14,24 +14,24 @@
 package org.hkijena.acaq5.ui.grapheditor.contextmenu;
 
 import org.hkijena.acaq5.ui.events.AlgorithmUIActionRequestedEvent;
-import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphCanvasUI;
-import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmUI;
+import org.hkijena.acaq5.ui.grapheditor.ACAQGraphCanvasUI;
+import org.hkijena.acaq5.ui.grapheditor.ACAQNodeUI;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
 import java.util.Set;
 
-import static org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmUI.REQUEST_RUN_ONLY;
+import static org.hkijena.acaq5.ui.grapheditor.ACAQNodeUI.REQUEST_RUN_ONLY;
 
 public class UpdateCacheAlgorithmUIAction implements AlgorithmUIAction {
     @Override
-    public boolean matches(Set<ACAQAlgorithmUI> selection) {
+    public boolean matches(Set<ACAQNodeUI> selection) {
         return selection.size() == 1;
     }
 
     @Override
-    public void run(ACAQAlgorithmGraphCanvasUI canvasUI, Set<ACAQAlgorithmUI> selection) {
-        ACAQAlgorithmUI ui = selection.iterator().next();
+    public void run(ACAQGraphCanvasUI canvasUI, Set<ACAQNodeUI> selection) {
+        ACAQNodeUI ui = selection.iterator().next();
         ui.getEventBus().post(new AlgorithmUIActionRequestedEvent(ui, REQUEST_RUN_ONLY));
     }
 

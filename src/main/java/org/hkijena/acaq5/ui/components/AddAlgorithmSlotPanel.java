@@ -19,7 +19,7 @@ import org.hkijena.acaq5.api.data.ACAQDataDeclaration;
 import org.hkijena.acaq5.api.data.ACAQDefaultMutableSlotConfiguration;
 import org.hkijena.acaq5.api.data.ACAQSlotDefinition;
 import org.hkijena.acaq5.api.data.ACAQSlotType;
-import org.hkijena.acaq5.api.history.ACAQAlgorithmGraphHistory;
+import org.hkijena.acaq5.api.history.ACAQGraphHistory;
 import org.hkijena.acaq5.api.history.SlotConfigurationHistorySnapshot;
 import org.hkijena.acaq5.utils.StringUtils;
 import org.hkijena.acaq5.utils.TooltipUtils;
@@ -50,7 +50,7 @@ public class AddAlgorithmSlotPanel extends JPanel {
      * Remember the type selected last for increased usability
      */
     private static ACAQDataDeclaration lastSelectedType = null;
-    private final ACAQAlgorithmGraphHistory graphHistory;
+    private final ACAQGraphHistory graphHistory;
     private ACAQGraphNode algorithm;
     private ACAQSlotType slotType;
     private SearchTextField searchField;
@@ -68,7 +68,7 @@ public class AddAlgorithmSlotPanel extends JPanel {
      * @param slotType     the slot type to be created
      * @param graphHistory the graph history
      */
-    public AddAlgorithmSlotPanel(ACAQGraphNode algorithm, ACAQSlotType slotType, ACAQAlgorithmGraphHistory graphHistory) {
+    public AddAlgorithmSlotPanel(ACAQGraphNode algorithm, ACAQSlotType slotType, ACAQGraphHistory graphHistory) {
         this.algorithm = algorithm;
         this.slotType = slotType;
         this.graphHistory = graphHistory;
@@ -339,7 +339,7 @@ public class AddAlgorithmSlotPanel extends JPanel {
      * @param algorithm    target algorithm
      * @param slotType     slot type to be created
      */
-    public static void showDialog(Component parent, ACAQAlgorithmGraphHistory graphHistory, ACAQGraphNode algorithm, ACAQSlotType slotType) {
+    public static void showDialog(Component parent, ACAQGraphHistory graphHistory, ACAQGraphNode algorithm, ACAQSlotType slotType) {
         JDialog dialog = new JDialog();
         AddAlgorithmSlotPanel panel = new AddAlgorithmSlotPanel(algorithm, slotType, graphHistory);
         panel.setDialog(dialog);

@@ -13,22 +13,22 @@
 
 package org.hkijena.acaq5.ui.events;
 
-import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmUI;
+import org.hkijena.acaq5.ui.grapheditor.ACAQNodeUI;
 
 /**
- * Triggered when an {@link ACAQAlgorithmUI} requests a default action (double click)
+ * Triggered when an {@link ACAQNodeUI} requests a default action (double click)
  */
 public class DefaultAlgorithmUIActionRequestedEvent {
-    private ACAQAlgorithmUI ui;
+    private ACAQNodeUI ui;
 
     /**
      * @param ui event source
      */
-    public DefaultAlgorithmUIActionRequestedEvent(ACAQAlgorithmUI ui) {
+    public DefaultAlgorithmUIActionRequestedEvent(ACAQNodeUI ui) {
         this.ui = ui;
     }
 
-    public ACAQAlgorithmUI getUi() {
+    public ACAQNodeUI getUi() {
         return ui;
     }
 }

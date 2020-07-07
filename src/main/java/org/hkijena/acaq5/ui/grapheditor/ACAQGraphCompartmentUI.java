@@ -51,7 +51,7 @@ import java.util.stream.Collectors;
 /**
  * Editor for a project graph compartment
  */
-public class ACAQAlgorithmGraphCompartmentUI extends ACAQAlgorithmGraphEditorUI {
+public class ACAQGraphCompartmentUI extends ACAQGraphEditorUI {
 
     private final MarkdownReader documentationPanel;
     private boolean disableUpdateOnSelection = false;
@@ -63,7 +63,7 @@ public class ACAQAlgorithmGraphCompartmentUI extends ACAQAlgorithmGraphEditorUI 
      * @param algorithmGraph The graph
      * @param compartment    The compartment
      */
-    public ACAQAlgorithmGraphCompartmentUI(ACAQWorkbench workbenchUI, ACAQGraph algorithmGraph, String compartment) {
+    public ACAQGraphCompartmentUI(ACAQWorkbench workbenchUI, ACAQGraph algorithmGraph, String compartment) {
         super(workbenchUI, algorithmGraph, compartment);
         documentationPanel = new MarkdownReader(false);
         documentationPanel.setDocument(MarkdownDocument.fromPluginResource("documentation/algorithm-graph.md"));
@@ -130,20 +130,20 @@ public class ACAQAlgorithmGraphCompartmentUI extends ACAQAlgorithmGraphEditorUI 
         if (getSelection().isEmpty()) {
             setPropertyPanel(documentationPanel);
         } else if (getSelection().size() == 1) {
-            ACAQAlgorithmUI ui = getSelection().iterator().next();
-            setPropertyPanel(new ACAQSingleAlgorithmSelectionPanelUI(this, ui.getAlgorithm()));
+            ACAQNodeUI ui = getSelection().iterator().next();
+            setPropertyPanel(new ACAQSingleAlgorithmSelectionPanelUI(this, ui.getNode()));
         } else {
             setPropertyPanel(new ACAQMultiAlgorithmSelectionPanelUI((ACAQProjectWorkbench) getWorkbench(), getCanvasUI(),
-                    getSelection().stream().map(ACAQAlgorithmUI::getAlgorithm).collect(Collectors.toSet())));
+                    getSelection().stream().map(ACAQNodeUI::getNode).collect(Collectors.toSet())));
         }
     }
 
     @Subscribe
     public void onDefaultActionRequested(DefaultAlgorithmUIActionRequestedEvent event) {
-        if (event.getUi().getAlgorithm() instanceof NodeGroup) {
-            if (event.getUi().getAlgorithm() instanceof NodeGroup) {
+        if (event.getUi().getNode() instanceof NodeGroup) {
+            if (event.getUi().getNode() instanceof NodeGroup) {
                 if (getWorkbench() instanceof ACAQProjectWorkbench) {
-                    ACAQNodeGroupUI.openGroupNodeGraph(getWorkbench(), (NodeGroup) event.getUi().getAlgorithm(), true);
+                    ACAQNodeGroupUI.openGroupNodeGraph(getWorkbench(), (NodeGroup) event.getUi().getNode(), true);
                 }
             }
         }
@@ -156,15 +156,15 @@ public class ACAQAlgorithmGraphCompartmentUI extends ACAQAlgorithmGraphEditorUI 
      */
     @Subscribe
     public void onAlgorithmActionRequested(AlgorithmUIActionRequestedEvent event) {
-        if (Objects.equals(event.getAction(), ACAQAlgorithmUI.REQUEST_RUN_AND_SHOW_RESULTS) ||
-                Objects.equals(event.getAction(), ACAQAlgorithmUI.REQUEST_RUN_ONLY)) {
+        if (Objects.equals(event.getAction(), ACAQNodeUI.REQUEST_RUN_AND_SHOW_RESULTS) ||
+                Objects.equals(event.getAction(), ACAQNodeUI.REQUEST_RUN_ONLY)) {
             disableUpdateOnSelection = true;
             selectOnly(event.getUi());
             ACAQSingleAlgorithmSelectionPanelUI panel = new ACAQSingleAlgorithmSelectionPanelUI(this,
-                    event.getUi().getAlgorithm());
+                    event.getUi().getNode());
             setPropertyPanel(panel);
-            panel.runTestBench(Objects.equals(event.getAction(), ACAQAlgorithmUI.REQUEST_RUN_AND_SHOW_RESULTS),
-                    Objects.equals(event.getAction(), ACAQAlgorithmUI.REQUEST_RUN_ONLY));
+            panel.runTestBench(Objects.equals(event.getAction(), ACAQNodeUI.REQUEST_RUN_AND_SHOW_RESULTS),
+                    Objects.equals(event.getAction(), ACAQNodeUI.REQUEST_RUN_ONLY));
             SwingUtilities.invokeLater(() -> disableUpdateOnSelection = false);
         }
     }
@@ -176,7 +176,7 @@ public class ACAQAlgorithmGraphCompartmentUI extends ACAQAlgorithmGraphEditorUI 
      * @param menuBar         The menu bar where the items are created
      * @param addedAlgorithms added algorithm types are added to this list
      */
-    public static void initializeAddNodesMenus(ACAQAlgorithmGraphEditorUI graphEditorUI, JMenuBar menuBar, Set<ACAQAlgorithmDeclaration> addedAlgorithms) {
+    public static void initializeAddNodesMenus(ACAQGraphEditorUI graphEditorUI, JMenuBar menuBar, Set<ACAQAlgorithmDeclaration> addedAlgorithms) {
         JMenu addDataSourceMenu = new JMenu("Add data");
         addDataSourceMenu.setIcon(UIUtils.getIconFromResources("database.png"));
         initializeAddDataSourceMenu(graphEditorUI, addDataSourceMenu, addedAlgorithms);
@@ -221,7 +221,7 @@ public class ACAQAlgorithmGraphCompartmentUI extends ACAQAlgorithmGraphEditorUI 
      * @param category        The algorithm category
      * @param addedAlgorithms added algorithm types are added to this list
      */
-    public static void initializeMenuForCategory(ACAQAlgorithmGraphEditorUI graphEditorUI, JMenu menu, ACAQAlgorithmCategory category, Set<ACAQAlgorithmDeclaration> addedAlgorithms) {
+    public static void initializeMenuForCategory(ACAQGraphEditorUI graphEditorUI, JMenu menu, ACAQAlgorithmCategory category, Set<ACAQAlgorithmDeclaration> addedAlgorithms) {
         ACAQGraph algorithmGraph = graphEditorUI.getAlgorithmGraph();
         String compartment = graphEditorUI.getCompartment();
         ACAQDefaultRegistry registryService = ACAQDefaultRegistry.getInstance();
@@ -259,7 +259,7 @@ public class ACAQAlgorithmGraphCompartmentUI extends ACAQAlgorithmGraphEditorUI 
      * @param menu            the target menu
      * @param addedAlgorithms added algorithm types are added to this list
      */
-    public static void initializeAddDataSourceMenu(ACAQAlgorithmGraphEditorUI graphEditorUI, JMenu menu, Set<ACAQAlgorithmDeclaration> addedAlgorithms) {
+    public static void initializeAddDataSourceMenu(ACAQGraphEditorUI graphEditorUI, JMenu menu, Set<ACAQAlgorithmDeclaration> addedAlgorithms) {
         ACAQGraph algorithmGraph = graphEditorUI.getAlgorithmGraph();
         String compartment = graphEditorUI.getCompartment();
         ACAQDefaultRegistry registryService = ACAQDefaultRegistry.getInstance();

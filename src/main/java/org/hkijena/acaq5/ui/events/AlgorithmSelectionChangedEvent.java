@@ -13,23 +13,23 @@
 
 package org.hkijena.acaq5.ui.events;
 
-import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphCanvasUI;
+import org.hkijena.acaq5.ui.grapheditor.ACAQGraphCanvasUI;
 
 /**
- * Triggered when An {@link org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphCanvasUI} selection was changed
+ * Triggered when An {@link ACAQGraphCanvasUI} selection was changed
  */
 public class AlgorithmSelectionChangedEvent {
-    private ACAQAlgorithmGraphCanvasUI canvasUI;
+    private ACAQGraphCanvasUI canvasUI;
 
     /**
      * @param canvasUI the canvas that triggered the event
      */
-    public AlgorithmSelectionChangedEvent(ACAQAlgorithmGraphCanvasUI canvasUI) {
+    public AlgorithmSelectionChangedEvent(ACAQGraphCanvasUI canvasUI) {
 
         this.canvasUI = canvasUI;
     }
 
-    public ACAQAlgorithmGraphCanvasUI getCanvasUI() {
+    public ACAQGraphCanvasUI getCanvasUI() {
         return canvasUI;
     }
 }

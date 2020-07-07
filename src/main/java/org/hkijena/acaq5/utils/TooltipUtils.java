@@ -267,7 +267,7 @@ public class TooltipUtils {
             builder.append("Input");
         else
             builder.append("Output");
-        builder.append(" of ").append(slot.getAlgorithm().getName()).append("<br/>");
+        builder.append(" of ").append(slot.getNode().getName()).append("<br/>");
 
         builder.append("</html>");
 

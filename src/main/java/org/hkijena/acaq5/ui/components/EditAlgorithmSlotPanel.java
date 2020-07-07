@@ -20,7 +20,7 @@ import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQDefaultMutableSlotConfiguration;
 import org.hkijena.acaq5.api.data.ACAQSlotDefinition;
 import org.hkijena.acaq5.api.data.ACAQSlotType;
-import org.hkijena.acaq5.api.history.ACAQAlgorithmGraphHistory;
+import org.hkijena.acaq5.api.history.ACAQGraphHistory;
 import org.hkijena.acaq5.api.history.SlotConfigurationHistorySnapshot;
 import org.hkijena.acaq5.utils.StringUtils;
 import org.hkijena.acaq5.utils.TooltipUtils;
@@ -48,7 +48,7 @@ import java.util.stream.Collectors;
  */
 public class EditAlgorithmSlotPanel extends JPanel {
 
-    private final ACAQAlgorithmGraphHistory graphHistory;
+    private final ACAQGraphHistory graphHistory;
     private ACAQDataSlot existingSlot;
     private SearchTextField searchField;
     private JList<ACAQDataDeclaration> datatypeList;
@@ -67,7 +67,7 @@ public class EditAlgorithmSlotPanel extends JPanel {
      * @param existingSlot the existing slot
      * @param graphHistory the graph history
      */
-    public EditAlgorithmSlotPanel(ACAQDataSlot existingSlot, ACAQAlgorithmGraphHistory graphHistory) {
+    public EditAlgorithmSlotPanel(ACAQDataSlot existingSlot, ACAQGraphHistory graphHistory) {
         this.existingSlot = existingSlot;
         this.graphHistory = graphHistory;
         initialize();
@@ -84,7 +84,7 @@ public class EditAlgorithmSlotPanel extends JPanel {
     }
 
     private void initialize() {
-        ACAQDefaultMutableSlotConfiguration slotConfiguration = (ACAQDefaultMutableSlotConfiguration) existingSlot.getAlgorithm().getSlotConfiguration();
+        ACAQDefaultMutableSlotConfiguration slotConfiguration = (ACAQDefaultMutableSlotConfiguration) existingSlot.getNode().getSlotConfiguration();
         setLayout(new BorderLayout());
         initializeToolBar();
 
@@ -120,11 +120,11 @@ public class EditAlgorithmSlotPanel extends JPanel {
         if (existingSlot.getSlotType() == ACAQSlotType.Output && slotConfiguration.isAllowInheritedOutputSlots()) {
             formPanel.addGroupHeader("Inheritance", UIUtils.getIconFromResources("cog.png"));
             inheritedSlotList = new JComboBox<>();
-            inheritedSlotList.setRenderer(new InheritedSlotListCellRenderer(existingSlot.getAlgorithm()));
+            inheritedSlotList.setRenderer(new InheritedSlotListCellRenderer(existingSlot.getNode()));
             DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
             model.addElement("");
             model.addElement("*");
-            for (String id : existingSlot.getAlgorithm().getInputSlotOrder()) {
+            for (String id : existingSlot.getNode().getInputSlotOrder()) {
                 model.addElement(id);
             }
             inheritedSlotList.setModel(model);
@@ -184,10 +184,10 @@ public class EditAlgorithmSlotPanel extends JPanel {
             return;
 
         // Create a undo snapshot
-        graphHistory.addSnapshotBefore(new SlotConfigurationHistorySnapshot(existingSlot.getAlgorithm(), "Edit slot '" + existingSlot.getNameWithAlgorithmName() + "'"));
+        graphHistory.addSnapshotBefore(new SlotConfigurationHistorySnapshot(existingSlot.getNode(), "Edit slot '" + existingSlot.getNameWithAlgorithmName() + "'"));
 
         String slotName = nameEditor.getText().trim();
-        ACAQGraphNode algorithm = existingSlot.getAlgorithm();
+        ACAQGraphNode algorithm = existingSlot.getNode();
         ACAQSlotType slotType = existingSlot.getSlotType();
         ACAQDefaultMutableSlotConfiguration slotConfiguration = (ACAQDefaultMutableSlotConfiguration) algorithm.getSlotConfiguration();
         ACAQSlotDefinition slotDefinition;
@@ -279,7 +279,7 @@ public class EditAlgorithmSlotPanel extends JPanel {
         JToolBar toolBar = new JToolBar();
         toolBar.setFloatable(false);
 
-        ACAQGraphNode algorithm = existingSlot.getAlgorithm();
+        ACAQGraphNode algorithm = existingSlot.getNode();
         JLabel algorithmNameLabel = new JLabel(algorithm.getName(),
                 new ColorIcon(16, 16, UIUtils.getFillColorFor(algorithm.getDeclaration())), JLabel.LEFT);
         algorithmNameLabel.setToolTipText(TooltipUtils.getAlgorithmTooltip(algorithm.getDeclaration()));
@@ -305,7 +305,7 @@ public class EditAlgorithmSlotPanel extends JPanel {
     }
 
     private void initializeAvailableDeclarations() {
-        ACAQGraphNode algorithm = existingSlot.getAlgorithm();
+        ACAQGraphNode algorithm = existingSlot.getNode();
         ACAQSlotType slotType = existingSlot.getSlotType();
         ACAQDefaultMutableSlotConfiguration slotConfiguration = (ACAQDefaultMutableSlotConfiguration) algorithm.getSlotConfiguration();
         if (slotType == ACAQSlotType.Input) {
@@ -360,7 +360,7 @@ public class EditAlgorithmSlotPanel extends JPanel {
      * @param graphHistory the graph history for undo snapshots
      * @param existingSlot the slot to be edited
      */
-    public static void showDialog(Component parent, ACAQAlgorithmGraphHistory graphHistory, ACAQDataSlot existingSlot) {
+    public static void showDialog(Component parent, ACAQGraphHistory graphHistory, ACAQDataSlot existingSlot) {
         JDialog dialog = new JDialog();
         EditAlgorithmSlotPanel panel = new EditAlgorithmSlotPanel(existingSlot, graphHistory);
         panel.setDialog(dialog);

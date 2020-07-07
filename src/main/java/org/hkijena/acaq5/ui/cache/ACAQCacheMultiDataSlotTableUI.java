@@ -121,7 +121,7 @@ public class ACAQCacheMultiDataSlotTableUI extends ACAQProjectWorkbenchPanel {
         int multiRow = table.getRowSorter().convertRowIndexToModel(selectedRow);
         ACAQDataSlot slot = multiSlotTable.getSlot(multiRow);
         int row = multiSlotTable.getRow(multiRow);
-        slot.getData(row, ACAQData.class).display(slot.getAlgorithm().getName() + "/" + slot.getName() + "/" + row, getWorkbench());
+        slot.getData(row, ACAQData.class).display(slot.getNode().getName() + "/" + slot.getName() + "/" + row, getWorkbench());
     }
 
     private void showDataRows(int[] selectedRows) {
@@ -130,7 +130,7 @@ public class ACAQCacheMultiDataSlotTableUI extends ACAQProjectWorkbenchPanel {
             int multiRow = table.getRowSorter().convertRowIndexToModel(viewRow);
             ACAQDataSlot slot = multiSlotTable.getSlot(multiRow);
             int row = multiSlotTable.getRow(multiRow);
-            String name = slot.getAlgorithm().getName() + "/" + slot.getName() + "/" + row;
+            String name = slot.getNode().getName() + "/" + slot.getName() + "/" + row;
             JLabel nameLabel = new JLabel(name, ACAQUIDatatypeRegistry.getInstance().getIconFor(slot.getAcceptedDataType()), JLabel.LEFT);
             nameLabel.setToolTipText(TooltipUtils.getSlotInstanceTooltip(slot));
             ACAQDataSlotRowUI ACAQDataSlotRowUI = new ACAQDataSlotRowUI(getWorkbench(), slot, row);

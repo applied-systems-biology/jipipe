@@ -15,8 +15,8 @@ package org.hkijena.acaq5.ui.grapheditor.contextmenu.clipboard;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.hkijena.acaq5.api.algorithm.ACAQGraph;
-import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphCanvasUI;
-import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmUI;
+import org.hkijena.acaq5.ui.grapheditor.ACAQGraphCanvasUI;
+import org.hkijena.acaq5.ui.grapheditor.ACAQNodeUI;
 import org.hkijena.acaq5.ui.grapheditor.contextmenu.AlgorithmUIAction;
 import org.hkijena.acaq5.utils.JsonUtils;
 import org.hkijena.acaq5.utils.UIUtils;
@@ -30,14 +30,14 @@ import java.util.stream.Collectors;
 
 public class GraphCompartmentCopyAlgorithmUIAction implements AlgorithmUIAction {
     @Override
-    public boolean matches(Set<ACAQAlgorithmUI> selection) {
+    public boolean matches(Set<ACAQNodeUI> selection) {
         return !selection.isEmpty();
     }
 
     @Override
-    public void run(ACAQAlgorithmGraphCanvasUI canvasUI, Set<ACAQAlgorithmUI> selection) {
-        ACAQGraph graph = canvasUI.getAlgorithmGraph()
-                .extract(selection.stream().map(ACAQAlgorithmUI::getAlgorithm).collect(Collectors.toSet()), true);
+    public void run(ACAQGraphCanvasUI canvasUI, Set<ACAQNodeUI> selection) {
+        ACAQGraph graph = canvasUI.getGraph()
+                .extract(selection.stream().map(ACAQNodeUI::getNode).collect(Collectors.toSet()), true);
         try {
             String json = JsonUtils.getObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(graph);
             StringSelection stringSelection = new StringSelection(json);

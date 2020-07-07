@@ -34,9 +34,9 @@ import java.util.stream.Collectors;
 /**
  * Installs Drag&Drop features that create filesystem nodes
  */
-public class ACAQStandardDragAndDropBehavior implements ACAQAlgorithmGraphDragAndDropBehavior {
+public class ACAQStandardDragAndDropBehavior implements ACAQGraphDragAndDropBehavior {
 
-    private ACAQAlgorithmGraphCanvasUI canvas;
+    private ACAQGraphCanvasUI canvas;
 
     @Override
     public void dragEnter(DropTargetDragEvent dtde) {
@@ -83,7 +83,7 @@ public class ACAQStandardDragAndDropBehavior implements ACAQAlgorithmGraphDragAn
 
     private void processDrop(List<File> files) {
         String compartment = canvas.getCompartment();
-        ACAQGraph graph = canvas.getAlgorithmGraph();
+        ACAQGraph graph = canvas.getGraph();
         if (files.size() == 1) {
             File selected = files.get(0);
             if (selected.isDirectory()) {
@@ -117,12 +117,12 @@ public class ACAQStandardDragAndDropBehavior implements ACAQAlgorithmGraphDragAn
     }
 
     @Override
-    public ACAQAlgorithmGraphCanvasUI getCanvas() {
+    public ACAQGraphCanvasUI getCanvas() {
         return canvas;
     }
 
     @Override
-    public void setCanvas(ACAQAlgorithmGraphCanvasUI canvas) {
+    public void setCanvas(ACAQGraphCanvasUI canvas) {
         this.canvas = canvas;
     }
 }

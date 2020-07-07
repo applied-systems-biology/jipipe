@@ -110,7 +110,7 @@ public class ACAQMergingDataBatch {
      * @return Input data with provided name
      */
     public <T extends ACAQData> List<T> getInputData(ACAQDataSlot slot, Class<T> dataClass) {
-        if (slot.getAlgorithm() != algorithm)
+        if (slot.getNode() != algorithm)
             throw new IllegalArgumentException("The provided slot does not belong to the data interface algorithm!");
         if (!slot.isInput())
             throw new IllegalArgumentException("Slot is not an input slot!");
@@ -138,7 +138,7 @@ public class ACAQMergingDataBatch {
      * @return the row indices that belong to this data interface
      */
     public Set<Integer> getInputRows(ACAQDataSlot slot) {
-        if (slot.getAlgorithm() != algorithm)
+        if (slot.getNode() != algorithm)
             throw new IllegalArgumentException("The provided slot does not belong to the data interface algorithm!");
         if (!slot.isInput())
             throw new IllegalArgumentException("Slot is not an input slot!");
@@ -214,7 +214,7 @@ public class ACAQMergingDataBatch {
      * @param data Added data
      */
     public void addOutputData(ACAQDataSlot slot, ACAQData data) {
-        if (slot.getAlgorithm() != algorithm)
+        if (slot.getNode() != algorithm)
             throw new IllegalArgumentException("The provided slot does not belong to the data interface algorithm!");
         if (!slot.isOutput())
             throw new IllegalArgumentException("Slot is not an output slot!");
@@ -230,7 +230,7 @@ public class ACAQMergingDataBatch {
      * @param additionalAnnotations Annotations that are added additionally to the global ones
      */
     public void addOutputData(ACAQDataSlot slot, ACAQData data, List<ACAQAnnotation> additionalAnnotations) {
-        if (slot.getAlgorithm() != algorithm)
+        if (slot.getNode() != algorithm)
             throw new IllegalArgumentException("The provided slot does not belong to the data interface algorithm!");
         if (!slot.isOutput())
             throw new IllegalArgumentException("Slot is not an output slot!");

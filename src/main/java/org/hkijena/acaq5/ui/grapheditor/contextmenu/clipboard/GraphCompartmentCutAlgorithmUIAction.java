@@ -17,8 +17,8 @@ import org.hkijena.acaq5.api.ACAQProject;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
 import org.hkijena.acaq5.api.history.CutCompartmentGraphHistorySnapshot;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
-import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphCanvasUI;
-import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmUI;
+import org.hkijena.acaq5.ui.grapheditor.ACAQGraphCanvasUI;
+import org.hkijena.acaq5.ui.grapheditor.ACAQNodeUI;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
@@ -27,11 +27,11 @@ import java.util.Set;
 public class GraphCompartmentCutAlgorithmUIAction extends GraphCompartmentCopyAlgorithmUIAction {
 
     @Override
-    public void run(ACAQAlgorithmGraphCanvasUI canvasUI, Set<ACAQAlgorithmUI> selection) {
+    public void run(ACAQGraphCanvasUI canvasUI, Set<ACAQNodeUI> selection) {
         super.run(canvasUI, selection);
         ACAQProject project = ((ACAQProjectWorkbench) canvasUI.getWorkbench()).getProject();
-        for (ACAQAlgorithmUI ui : selection) {
-            ACAQProjectCompartment compartment = (ACAQProjectCompartment) ui.getAlgorithm();
+        for (ACAQNodeUI ui : selection) {
+            ACAQProjectCompartment compartment = (ACAQProjectCompartment) ui.getNode();
             canvasUI.getGraphHistory().addSnapshotBefore(new CutCompartmentGraphHistorySnapshot(project, compartment));
             project.removeCompartment(compartment);
         }

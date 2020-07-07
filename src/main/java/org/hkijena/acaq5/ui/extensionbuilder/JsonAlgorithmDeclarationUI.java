@@ -105,15 +105,15 @@ public class JsonAlgorithmDeclarationUI extends ACAQJsonExtensionWorkbenchPanel 
 
     private void editAlgorithm() {
         for (DocumentTabPane.DocumentTab tab : getExtensionWorkbenchUI().getDocumentTabPane().getTabs()) {
-            if (tab.getContent() instanceof ACAQJsonExtensionAlgorithmGraphUI) {
-                ACAQJsonExtensionAlgorithmGraphUI ui = (ACAQJsonExtensionAlgorithmGraphUI) tab.getContent();
+            if (tab.getContent() instanceof ACAQJsonExtensionGraphUI) {
+                ACAQJsonExtensionGraphUI ui = (ACAQJsonExtensionGraphUI) tab.getContent();
                 if (ui.getAlgorithmGraph() == declaration.getGraph()) {
                     getExtensionWorkbenchUI().getDocumentTabPane().switchToContent(ui);
                     return;
                 }
             }
         }
-        ACAQJsonExtensionAlgorithmGraphUI ui = new ACAQJsonExtensionAlgorithmGraphUI(getExtensionWorkbenchUI(), declaration.getGraph(), "");
+        ACAQJsonExtensionGraphUI ui = new ACAQJsonExtensionGraphUI(getExtensionWorkbenchUI(), declaration.getGraph(), "");
         String name = StringUtils.orElse(declaration.getName(), "<Unnamed algorithm>");
         getExtensionWorkbenchUI().getDocumentTabPane().addTab(name, UIUtils.getIconFromResources("cog.png"),
                 ui, DocumentTabPane.CloseMode.withSilentCloseButton, true);

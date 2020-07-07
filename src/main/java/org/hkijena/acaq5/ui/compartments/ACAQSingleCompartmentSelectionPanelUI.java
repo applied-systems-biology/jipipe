@@ -20,8 +20,8 @@ import org.hkijena.acaq5.ui.ACAQProjectWorkbenchPanel;
 import org.hkijena.acaq5.ui.components.ColorIcon;
 import org.hkijena.acaq5.ui.components.DocumentTabPane;
 import org.hkijena.acaq5.ui.components.MarkdownDocument;
-import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphCanvasUI;
-import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphEditorUI;
+import org.hkijena.acaq5.ui.grapheditor.ACAQGraphCanvasUI;
+import org.hkijena.acaq5.ui.grapheditor.ACAQGraphEditorUI;
 import org.hkijena.acaq5.ui.grapheditor.settings.ACAQSlotEditorUI;
 import org.hkijena.acaq5.ui.parameters.ParameterPanel;
 import org.hkijena.acaq5.utils.TooltipUtils;
@@ -36,14 +36,14 @@ import java.util.Collections;
  */
 public class ACAQSingleCompartmentSelectionPanelUI extends ACAQProjectWorkbenchPanel {
     private final ACAQProjectCompartment compartment;
-    private final ACAQAlgorithmGraphCanvasUI canvas;
-    private final ACAQAlgorithmGraphEditorUI graphEditorUI;
+    private final ACAQGraphCanvasUI canvas;
+    private final ACAQGraphEditorUI graphEditorUI;
 
     /**
      * @param graphEditorUI the graph editor
      * @param compartment   the compartment
      */
-    public ACAQSingleCompartmentSelectionPanelUI(ACAQAlgorithmGraphEditorUI graphEditorUI, ACAQProjectCompartment compartment) {
+    public ACAQSingleCompartmentSelectionPanelUI(ACAQGraphEditorUI graphEditorUI, ACAQProjectCompartment compartment) {
         super((ACAQProjectWorkbench) graphEditorUI.getWorkbench());
         this.graphEditorUI = graphEditorUI;
         this.compartment = compartment;
@@ -90,7 +90,7 @@ public class ACAQSingleCompartmentSelectionPanelUI extends ACAQProjectWorkbenchP
 
         toolBar.add(Box.createHorizontalGlue());
 
-        ACAQAlgorithmGraphEditorUI.installContextActionsInto(toolBar,
+        ACAQGraphEditorUI.installContextActionsInto(toolBar,
                 canvas.getNodeUIsFor(Collections.singleton(compartment)),
                 canvas.getContextActions(),
                 canvas);

@@ -21,8 +21,8 @@ import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.history.PasteCompartmentGraphHistorySnapshot;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
-import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphCanvasUI;
-import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmUI;
+import org.hkijena.acaq5.ui.grapheditor.ACAQGraphCanvasUI;
+import org.hkijena.acaq5.ui.grapheditor.ACAQNodeUI;
 import org.hkijena.acaq5.ui.grapheditor.contextmenu.AlgorithmUIAction;
 import org.hkijena.acaq5.utils.JsonUtils;
 import org.hkijena.acaq5.utils.StringUtils;
@@ -38,12 +38,12 @@ import static org.hkijena.acaq5.utils.UIUtils.getStringFromClipboard;
 
 public class GraphCompartmentPasteAlgorithmUIAction implements AlgorithmUIAction {
     @Override
-    public boolean matches(Set<ACAQAlgorithmUI> selection) {
+    public boolean matches(Set<ACAQNodeUI> selection) {
         return !StringUtils.isNullOrEmpty(UIUtils.getStringFromClipboard());
     }
 
     @Override
-    public void run(ACAQAlgorithmGraphCanvasUI canvasUI, Set<ACAQAlgorithmUI> selection) {
+    public void run(ACAQGraphCanvasUI canvasUI, Set<ACAQNodeUI> selection) {
         try {
             String json = getStringFromClipboard();
             if (json != null) {
@@ -81,8 +81,8 @@ public class GraphCompartmentPasteAlgorithmUIAction implements AlgorithmUIAction
 
                 // Add edges
                 for (Map.Entry<ACAQDataSlot, ACAQDataSlot> edge : sourceGraph.getSlotEdges()) {
-                    if (edge.getValue().getAlgorithm() instanceof ACAQCompartmentOutput) {
-                        String sourceCompartment = edge.getValue().getAlgorithm().getCompartment();
+                    if (edge.getValue().getNode() instanceof ACAQCompartmentOutput) {
+                        String sourceCompartment = edge.getValue().getNode().getCompartment();
                         ACAQCompartmentOutput outputNode = compartmentNodeMap.get(sourceCompartment).getOutputNode();
                         ACAQDataSlot outputNodeSlot = outputNode.getInputSlotMap().get(edge.getValue().getName());
 

@@ -15,21 +15,16 @@ package org.hkijena.acaq5.ui;
 
 import com.google.common.eventbus.Subscribe;
 import com.google.common.html.HtmlEscapers;
-import ij.IJ;
 import ij.ImagePlus;
 import ij.plugin.filter.GaussianBlur;
 import org.hkijena.acaq5.api.ACAQAuthorMetadata;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
-import org.hkijena.acaq5.api.parameters.ACAQParameterTree;
-import org.hkijena.acaq5.extensions.parameters.table.ParameterTable;
-import org.hkijena.acaq5.extensions.settings.ProjectsSettings;
 import org.hkijena.acaq5.ui.components.FormPanel;
 import org.hkijena.acaq5.ui.components.MarkdownDocument;
 import org.hkijena.acaq5.ui.components.MarkdownReader;
-import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphCanvasUI;
+import org.hkijena.acaq5.ui.grapheditor.ACAQGraphCanvasUI;
 import org.hkijena.acaq5.ui.parameters.ParameterPanel;
 import org.hkijena.acaq5.ui.settings.ACAQProjectInfoParameters;
-import org.hkijena.acaq5.utils.ReflectionUtils;
 import org.hkijena.acaq5.utils.ResourceUtils;
 import org.hkijena.acaq5.utils.StringUtils;
 import org.hkijena.acaq5.utils.UIUtils;
@@ -38,7 +33,6 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -47,13 +41,8 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.jar.Attributes;
 
 /**
  * UI that gives an overview of a pipeline (shows parameters, etc.)
@@ -164,8 +153,8 @@ public class ACAQProjectInfoUI extends ACAQProjectWorkbenchPanel {
     }
 
     private void renderBackgroundPanel() {
-        ACAQAlgorithmGraphCanvasUI canvasUI = new ACAQAlgorithmGraphCanvasUI(getWorkbench(),getProject().getGraph(), null);
-        canvasUI.setCurrentViewMode(ACAQAlgorithmGraphCanvasUI.ViewMode.Horizontal);
+        ACAQGraphCanvasUI canvasUI = new ACAQGraphCanvasUI(getWorkbench(),getProject().getGraph(), null);
+        canvasUI.setCurrentViewMode(ACAQGraphCanvasUI.ViewMode.Horizontal);
         canvasUI.autoLayoutAll();
         try {
             BufferedImage screenshot = canvasUI.createScreenshotPNG();

@@ -13,13 +13,14 @@
 
 package org.hkijena.acaq5.ui.events;
 
-import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmUI;
+import org.hkijena.acaq5.ui.grapheditor.ACAQGraphEditorUI;
+import org.hkijena.acaq5.ui.grapheditor.ACAQNodeUI;
 
 /**
- * An action that is requested by an {@link ACAQAlgorithmUI} and passed down to a {@link org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphEditorUI}
+ * An action that is requested by an {@link ACAQNodeUI} and passed down to a {@link ACAQGraphEditorUI}
  */
 public class AlgorithmUIActionRequestedEvent {
-    private final ACAQAlgorithmUI ui;
+    private final ACAQNodeUI ui;
     private final Object action;
 
     /**
@@ -28,12 +29,12 @@ public class AlgorithmUIActionRequestedEvent {
      * @param ui     the requesting UI
      * @param action the action parameter
      */
-    public AlgorithmUIActionRequestedEvent(ACAQAlgorithmUI ui, Object action) {
+    public AlgorithmUIActionRequestedEvent(ACAQNodeUI ui, Object action) {
         this.ui = ui;
         this.action = action;
     }
 
-    public ACAQAlgorithmUI getUi() {
+    public ACAQNodeUI getUi() {
         return ui;
     }
 

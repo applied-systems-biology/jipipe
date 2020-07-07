@@ -36,7 +36,7 @@ import java.util.Objects;
  * Slots are part of an {@link ACAQGraphNode}
  */
 public class ACAQDataSlot implements TableModel {
-    private ACAQGraphNode algorithm;
+    private ACAQGraphNode node;
     private ACAQSlotDefinition definition;
     private String name;
     private Class<? extends ACAQData> acceptedDataType;
@@ -53,11 +53,11 @@ public class ACAQDataSlot implements TableModel {
      * Creates a new slot
      *
      * @param definition the slot definition
-     * @param algorithm  The algorithm that contains the slot
+     * @param node  The algorithm that contains the slot
      */
-    public ACAQDataSlot(ACAQSlotDefinition definition, ACAQGraphNode algorithm) {
+    public ACAQDataSlot(ACAQSlotDefinition definition, ACAQGraphNode node) {
         this.definition = definition;
-        this.algorithm = algorithm;
+        this.node = node;
         this.name = definition.getName();
         this.slotType = definition.getSlotType();
         this.acceptedDataType = definition.getDataClass();
@@ -297,14 +297,14 @@ public class ACAQDataSlot implements TableModel {
      * @return Display name that includes the algorithm name, as well as the slot name.
      */
     public String getNameWithAlgorithmName() {
-        return algorithm.getName() + " \uD83E\uDC92 " + getName();
+        return node.getName() + " \uD83E\uDC92 " + getName();
     }
 
     /**
      * @return The algorithm that contains the slot
      */
-    public ACAQGraphNode getAlgorithm() {
-        return algorithm;
+    public ACAQGraphNode getNode() {
+        return node;
     }
 
     /**

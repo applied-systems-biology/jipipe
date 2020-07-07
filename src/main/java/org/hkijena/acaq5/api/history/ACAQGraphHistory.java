@@ -21,7 +21,7 @@ import java.util.Stack;
 /**
  * Manages a Undo-history
  */
-public class ACAQAlgorithmGraphHistory {
+public class ACAQGraphHistory {
 
     private final EventBus eventBus = new EventBus();
     private final Stack<ACAQAlgorithmGraphHistorySnapshot> snapshots = new Stack<>();

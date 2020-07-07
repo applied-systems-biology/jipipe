@@ -90,7 +90,7 @@ public class JsonAlgorithm extends GraphWrapperAlgorithm implements ACAQCustomPa
 
         List<Map.Entry<ACAQDataSlot, ACAQDataSlot>> edges = new ArrayList<>();
         for (Map.Entry<ACAQDataSlot, ACAQDataSlot> edge : graph.getSlotEdges()) {
-            if (edge.getKey().getAlgorithm() == algorithm || edge.getValue().getAlgorithm() == algorithm) {
+            if (edge.getKey().getNode() == algorithm || edge.getValue().getNode() == algorithm) {
                 edges.add(edge);
             }
         }
@@ -99,11 +99,11 @@ public class JsonAlgorithm extends GraphWrapperAlgorithm implements ACAQCustomPa
         graph.insertNode(group, algorithm.getCompartment());
 
         for (Map.Entry<ACAQDataSlot, ACAQDataSlot> edge : edges) {
-            if (edge.getKey().getAlgorithm() == algorithm) {
+            if (edge.getKey().getNode() == algorithm) {
                 // Output node
                 ACAQDataSlot source = group.getOutputSlot(edge.getKey().getName());
                 graph.connect(source, edge.getValue());
-            } else if (edge.getValue().getAlgorithm() == algorithm) {
+            } else if (edge.getValue().getNode() == algorithm) {
                 // Input node
                 ACAQDataSlot target = group.getInputSlot(edge.getValue().getName());
                 graph.connect(edge.getKey(), target);

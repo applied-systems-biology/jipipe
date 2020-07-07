@@ -14,8 +14,8 @@
 package org.hkijena.acaq5.ui.grapheditor.contextmenu;
 
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
-import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphCanvasUI;
-import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmUI;
+import org.hkijena.acaq5.ui.grapheditor.ACAQGraphCanvasUI;
+import org.hkijena.acaq5.ui.grapheditor.ACAQNodeUI;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
@@ -23,10 +23,10 @@ import java.util.Set;
 
 public class DisablePassThroughAlgorithmUIAction implements AlgorithmUIAction {
     @Override
-    public boolean matches(Set<ACAQAlgorithmUI> selection) {
-        for (ACAQAlgorithmUI ui : selection) {
-            if (ui.getAlgorithm() instanceof ACAQAlgorithm) {
-                ACAQAlgorithm algorithm = (ACAQAlgorithm) ui.getAlgorithm();
+    public boolean matches(Set<ACAQNodeUI> selection) {
+        for (ACAQNodeUI ui : selection) {
+            if (ui.getNode() instanceof ACAQAlgorithm) {
+                ACAQAlgorithm algorithm = (ACAQAlgorithm) ui.getNode();
                 if (algorithm.isPassThrough())
                     return true;
             }
@@ -35,10 +35,10 @@ public class DisablePassThroughAlgorithmUIAction implements AlgorithmUIAction {
     }
 
     @Override
-    public void run(ACAQAlgorithmGraphCanvasUI canvasUI, Set<ACAQAlgorithmUI> selection) {
-        for (ACAQAlgorithmUI ui : selection) {
-            if (ui.getAlgorithm() instanceof ACAQAlgorithm) {
-                ACAQAlgorithm algorithm = (ACAQAlgorithm) ui.getAlgorithm();
+    public void run(ACAQGraphCanvasUI canvasUI, Set<ACAQNodeUI> selection) {
+        for (ACAQNodeUI ui : selection) {
+            if (ui.getNode() instanceof ACAQAlgorithm) {
+                ACAQAlgorithm algorithm = (ACAQAlgorithm) ui.getNode();
                 algorithm.setPassThrough(false);
             }
         }

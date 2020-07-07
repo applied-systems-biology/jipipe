@@ -18,9 +18,9 @@ import org.hkijena.acaq5.api.algorithm.ACAQGraph;
 import org.hkijena.acaq5.ui.ACAQJsonExtensionWorkbench;
 import org.hkijena.acaq5.ui.components.MarkdownDocument;
 import org.hkijena.acaq5.ui.components.MarkdownReader;
-import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphCompartmentUI;
-import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphEditorUI;
-import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmUI;
+import org.hkijena.acaq5.ui.grapheditor.ACAQGraphCompartmentUI;
+import org.hkijena.acaq5.ui.grapheditor.ACAQGraphEditorUI;
+import org.hkijena.acaq5.ui.grapheditor.ACAQNodeUI;
 import org.hkijena.acaq5.ui.grapheditor.ACAQStandardDragAndDropBehavior;
 import org.hkijena.acaq5.ui.grapheditor.contextmenu.clipboard.AlgorithmGraphCopyAlgorithmUIAction;
 import org.hkijena.acaq5.ui.grapheditor.contextmenu.clipboard.AlgorithmGraphCutAlgorithmUIAction;
@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 /**
  * Graph editor UI used within an {@link ACAQJsonExtension}
  */
-public class ACAQJsonExtensionAlgorithmGraphUI extends ACAQAlgorithmGraphEditorUI {
+public class ACAQJsonExtensionGraphUI extends ACAQGraphEditorUI {
 
     private MarkdownReader documentationPanel;
 
@@ -43,7 +43,7 @@ public class ACAQJsonExtensionAlgorithmGraphUI extends ACAQAlgorithmGraphEditorU
      * @param algorithmGraph The algorithm graph
      * @param compartment    The compartment
      */
-    public ACAQJsonExtensionAlgorithmGraphUI(ACAQJsonExtensionWorkbench workbenchUI, ACAQGraph algorithmGraph, String compartment) {
+    public ACAQJsonExtensionGraphUI(ACAQJsonExtensionWorkbench workbenchUI, ACAQGraph algorithmGraph, String compartment) {
         super(workbenchUI, algorithmGraph, compartment);
         documentationPanel = new MarkdownReader(false);
         documentationPanel.setDocument(MarkdownDocument.fromPluginResource("documentation/algorithm-graph.md"));
@@ -65,7 +65,7 @@ public class ACAQJsonExtensionAlgorithmGraphUI extends ACAQAlgorithmGraphEditorU
     public void reloadMenuBar() {
         menuBar.removeAll();
         getAddableAlgorithms().clear();
-        ACAQAlgorithmGraphCompartmentUI.initializeAddNodesMenus(this, menuBar, getAddableAlgorithms());
+        ACAQGraphCompartmentUI.initializeAddNodesMenus(this, menuBar, getAddableAlgorithms());
         initializeCommonActions();
         updateNavigation();
     }
@@ -91,10 +91,10 @@ public class ACAQJsonExtensionAlgorithmGraphUI extends ACAQAlgorithmGraphEditorU
             setPropertyPanel(documentationPanel);
         } else if (getSelection().size() == 1) {
             setPropertyPanel(new ACAQJsonExtensionSingleAlgorithmSelectionPanelUI(this,
-                    getSelection().iterator().next().getAlgorithm()));
+                    getSelection().iterator().next().getNode()));
         } else {
             setPropertyPanel(new ACAQJsonExtensionMultiAlgorithmSelectionPanelUI((ACAQJsonExtensionWorkbench) getWorkbench(), getCanvasUI(),
-                    getSelection().stream().map(ACAQAlgorithmUI::getAlgorithm).collect(Collectors.toSet())));
+                    getSelection().stream().map(ACAQNodeUI::getNode).collect(Collectors.toSet())));
         }
     }
 }

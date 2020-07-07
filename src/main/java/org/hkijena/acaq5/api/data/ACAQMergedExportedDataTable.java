@@ -46,9 +46,9 @@ public class ACAQMergedExportedDataTable implements TableModel {
             if (!traitColumns.contains(traitColumn))
                 traitColumns.add(traitColumn);
         }
-        String compartmentName = dataSlot.getAlgorithm().getCompartment();
+        String compartmentName = dataSlot.getNode().getCompartment();
         ACAQProjectCompartment compartment = project.getCompartments().get(compartmentName);
-        ACAQGraphNode algorithm = dataSlot.getAlgorithm();
+        ACAQGraphNode algorithm = dataSlot.getNode();
 
         for (ACAQExportedDataTable.Row row : table.getRowList()) {
             slotList.add(dataSlot);

@@ -17,8 +17,8 @@ import org.hkijena.acaq5.api.algorithm.ACAQGraph;
 import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.grouping.NodeGroup;
 import org.hkijena.acaq5.api.history.GraphChangedHistorySnapshot;
-import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmGraphCanvasUI;
-import org.hkijena.acaq5.ui.grapheditor.ACAQAlgorithmUI;
+import org.hkijena.acaq5.ui.grapheditor.ACAQGraphCanvasUI;
+import org.hkijena.acaq5.ui.grapheditor.ACAQNodeUI;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
@@ -27,15 +27,15 @@ import java.util.stream.Collectors;
 
 public class GroupAlgorithmUIAction implements AlgorithmUIAction {
     @Override
-    public boolean matches(Set<ACAQAlgorithmUI> selection) {
+    public boolean matches(Set<ACAQNodeUI> selection) {
         return !selection.isEmpty();
     }
 
     @Override
-    public void run(ACAQAlgorithmGraphCanvasUI canvasUI, Set<ACAQAlgorithmUI> selection) {
-        canvasUI.getGraphHistory().addSnapshotBefore(new GraphChangedHistorySnapshot(canvasUI.getAlgorithmGraph(), "Group"));
-        Set<ACAQGraphNode> algorithms = selection.stream().map(ACAQAlgorithmUI::getAlgorithm).collect(Collectors.toSet());
-        ACAQGraph graph = canvasUI.getAlgorithmGraph();
+    public void run(ACAQGraphCanvasUI canvasUI, Set<ACAQNodeUI> selection) {
+        canvasUI.getGraphHistory().addSnapshotBefore(new GraphChangedHistorySnapshot(canvasUI.getGraph(), "Group"));
+        Set<ACAQGraphNode> algorithms = selection.stream().map(ACAQNodeUI::getNode).collect(Collectors.toSet());
+        ACAQGraph graph = canvasUI.getGraph();
         ACAQGraph subGraph = graph.extract(algorithms, false);
         NodeGroup group = new NodeGroup(subGraph, true);
         for (ACAQGraphNode algorithm : algorithms) {

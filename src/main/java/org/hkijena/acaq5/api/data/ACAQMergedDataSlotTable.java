@@ -45,12 +45,12 @@ public class ACAQMergedDataSlotTable implements TableModel {
             if (!traitColumns.contains(traitColumn))
                 traitColumns.add(traitColumn);
         }
-        ACAQProjectCompartment compartment = project.getCompartments().getOrDefault(dataSlot.getAlgorithm().getCompartment(), null);
+        ACAQProjectCompartment compartment = project.getCompartments().getOrDefault(dataSlot.getNode().getCompartment(), null);
         if (compartment == null) {
             compartment = new ACAQProjectCompartment(new ACAQEmptyAlgorithmDeclaration());
-            compartment.setCustomName(dataSlot.getAlgorithm().getCompartment());
+            compartment.setCustomName(dataSlot.getNode().getCompartment());
         }
-        ACAQGraphNode algorithm = dataSlot.getAlgorithm();
+        ACAQGraphNode algorithm = dataSlot.getNode();
 
         for (int i = 0; i < dataSlot.getRowCount(); ++i) {
             slotList.add(dataSlot);

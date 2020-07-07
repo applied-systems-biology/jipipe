@@ -65,13 +65,13 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * A panel around {@link ACAQAlgorithmGraphCanvasUI} that comes with scrolling/panning, properties panel,
+ * A panel around {@link ACAQGraphCanvasUI} that comes with scrolling/panning, properties panel,
  * and a menu bar
  */
-public abstract class ACAQAlgorithmGraphEditorUI extends ACAQWorkbenchPanel implements MouseListener, MouseMotionListener {
+public abstract class ACAQGraphEditorUI extends ACAQWorkbenchPanel implements MouseListener, MouseMotionListener {
 
     protected JMenuBar menuBar = new JMenuBar();
-    private ACAQAlgorithmGraphCanvasUI canvasUI;
+    private ACAQGraphCanvasUI canvasUI;
     private ACAQGraph algorithmGraph;
     private String compartment;
 
@@ -93,7 +93,7 @@ public abstract class ACAQAlgorithmGraphEditorUI extends ACAQWorkbenchPanel impl
      * @param algorithmGraph the algorithm graph
      * @param compartment    the graph compartment to display. Set to null to display all compartments
      */
-    public ACAQAlgorithmGraphEditorUI(ACAQWorkbench workbenchUI, ACAQGraph algorithmGraph, String compartment) {
+    public ACAQGraphEditorUI(ACAQWorkbench workbenchUI, ACAQGraph algorithmGraph, String compartment) {
         super(workbenchUI);
         this.algorithmGraph = algorithmGraph;
         this.compartment = compartment;
@@ -103,7 +103,7 @@ public abstract class ACAQAlgorithmGraphEditorUI extends ACAQWorkbenchPanel impl
         algorithmGraph.getEventBus().register(this);
     }
 
-    public ACAQAlgorithmGraphCanvasUI getCanvasUI() {
+    public ACAQGraphCanvasUI getCanvasUI() {
         return canvasUI;
     }
 
@@ -120,7 +120,7 @@ public abstract class ACAQAlgorithmGraphEditorUI extends ACAQWorkbenchPanel impl
             }
         });
 
-        canvasUI = new ACAQAlgorithmGraphCanvasUI(getWorkbench(), algorithmGraph, compartment);
+        canvasUI = new ACAQGraphCanvasUI(getWorkbench(), algorithmGraph, compartment);
         canvasUI.fullRedraw();
         canvasUI.getEventBus().register(this);
         canvasUI.addMouseListener(this);
@@ -136,12 +136,12 @@ public abstract class ACAQAlgorithmGraphEditorUI extends ACAQWorkbenchPanel impl
         navigator.setModel(new DefaultComboBoxModel<>());
         navigator.setRenderer(new NavigationRenderer());
         navigator.addItemListener(e -> navigatorNavigate());
-        navigator.setFilterFunction(ACAQAlgorithmGraphEditorUI::filterNavigationEntry);
+        navigator.setFilterFunction(ACAQGraphEditorUI::filterNavigationEntry);
     }
 
     private void navigatorNavigate() {
-        if (navigator.getSelectedItem() instanceof ACAQAlgorithmUI) {
-            selectOnly((ACAQAlgorithmUI) navigator.getSelectedItem());
+        if (navigator.getSelectedItem() instanceof ACAQNodeUI) {
+            selectOnly((ACAQNodeUI) navigator.getSelectedItem());
             navigator.setSelectedItem(null);
         } else if (navigator.getSelectedItem() instanceof ACAQAlgorithmDeclaration) {
             ACAQAlgorithmDeclaration declaration = (ACAQAlgorithmDeclaration) navigator.getSelectedItem();
@@ -153,7 +153,7 @@ public abstract class ACAQAlgorithmGraphEditorUI extends ACAQWorkbenchPanel impl
 
     }
 
-    public Set<ACAQAlgorithmUI> getSelection() {
+    public Set<ACAQNodeUI> getSelection() {
         return canvasUI.getSelection();
     }
 
@@ -195,16 +195,16 @@ public abstract class ACAQAlgorithmGraphEditorUI extends ACAQWorkbenchPanel impl
         JToggleButton viewModeHorizontalButton = new JToggleButton(UIUtils.getIconFromResources("view-horizontal.png"));
         viewModeHorizontalButton.setToolTipText("Display nodes horizontally");
         UIUtils.makeFlat25x25(viewModeHorizontalButton);
-        viewModeHorizontalButton.setSelected(canvasUI.getCurrentViewMode() == ACAQAlgorithmGraphCanvasUI.ViewMode.Horizontal);
-        viewModeHorizontalButton.addActionListener(e -> canvasUI.setCurrentViewMode(ACAQAlgorithmGraphCanvasUI.ViewMode.Horizontal));
+        viewModeHorizontalButton.setSelected(canvasUI.getCurrentViewMode() == ACAQGraphCanvasUI.ViewMode.Horizontal);
+        viewModeHorizontalButton.addActionListener(e -> canvasUI.setCurrentViewMode(ACAQGraphCanvasUI.ViewMode.Horizontal));
         viewModeGroup.add(viewModeHorizontalButton);
         menuBar.add(viewModeHorizontalButton);
 
         JToggleButton viewModeVerticalButton = new JToggleButton(UIUtils.getIconFromResources("view-vertical.png"));
         viewModeVerticalButton.setToolTipText("Display nodes vertically");
         UIUtils.makeFlat25x25(viewModeVerticalButton);
-        viewModeVerticalButton.setSelected(canvasUI.getCurrentViewMode() == ACAQAlgorithmGraphCanvasUI.ViewMode.Vertical);
-        viewModeVerticalButton.addActionListener(e -> canvasUI.setCurrentViewMode(ACAQAlgorithmGraphCanvasUI.ViewMode.Vertical));
+        viewModeVerticalButton.setSelected(canvasUI.getCurrentViewMode() == ACAQGraphCanvasUI.ViewMode.Vertical);
+        viewModeVerticalButton.addActionListener(e -> canvasUI.setCurrentViewMode(ACAQGraphCanvasUI.ViewMode.Vertical));
         viewModeGroup.add(viewModeVerticalButton);
         menuBar.add(viewModeVerticalButton);
 
@@ -214,7 +214,7 @@ public abstract class ACAQAlgorithmGraphEditorUI extends ACAQWorkbenchPanel impl
         autoLayoutButton.setToolTipText("Auto-layout all nodes");
         UIUtils.makeFlat25x25(autoLayoutButton);
         autoLayoutButton.addActionListener(e -> {
-            canvasUI.getGraphHistory().addSnapshotBefore(new MoveNodesGraphHistorySnapshot(canvasUI.getAlgorithmGraph(), "Auto-layout all nodes"));
+            canvasUI.getGraphHistory().addSnapshotBefore(new MoveNodesGraphHistorySnapshot(canvasUI.getGraph(), "Auto-layout all nodes"));
             canvasUI.autoLayoutAll();
         });
         menuBar.add(autoLayoutButton);
@@ -223,7 +223,7 @@ public abstract class ACAQAlgorithmGraphEditorUI extends ACAQWorkbenchPanel impl
         centerViewButton.setToolTipText("Center view to nodes");
         UIUtils.makeFlat25x25(centerViewButton);
         centerViewButton.addActionListener(e -> {
-            canvasUI.getGraphHistory().addSnapshotBefore(new MoveNodesGraphHistorySnapshot(canvasUI.getAlgorithmGraph(), "Center view to nodes"));
+            canvasUI.getGraphHistory().addSnapshotBefore(new MoveNodesGraphHistorySnapshot(canvasUI.getGraph(), "Center view to nodes"));
             canvasUI.crop();
         });
         menuBar.add(centerViewButton);
@@ -360,7 +360,7 @@ public abstract class ACAQAlgorithmGraphEditorUI extends ACAQWorkbenchPanel impl
      *
      * @param ui the algorithm
      */
-    public void scrollToAlgorithm(ACAQAlgorithmUI ui) {
+    public void scrollToAlgorithm(ACAQNodeUI ui) {
         int minViewX = scrollPane.getHorizontalScrollBar().getValue();
         int maxViewX = minViewX + scrollPane.getHorizontalScrollBar().getVisibleAmount();
         int minViewY = scrollPane.getVerticalScrollBar().getValue();
@@ -385,7 +385,7 @@ public abstract class ACAQAlgorithmGraphEditorUI extends ACAQWorkbenchPanel impl
      *
      * @param ui The algorithm UI
      */
-    public void selectOnly(ACAQAlgorithmUI ui) {
+    public void selectOnly(ACAQNodeUI ui) {
         canvasUI.selectOnly(ui);
         scrollToAlgorithm(ui);
     }
@@ -395,7 +395,7 @@ public abstract class ACAQAlgorithmGraphEditorUI extends ACAQWorkbenchPanel impl
      *
      * @param ui The algorithm UI
      */
-    public void removeFromSelection(ACAQAlgorithmUI ui) {
+    public void removeFromSelection(ACAQNodeUI ui) {
         canvasUI.removeFromSelection(ui);
     }
 
@@ -419,7 +419,7 @@ public abstract class ACAQAlgorithmGraphEditorUI extends ACAQWorkbenchPanel impl
      *
      * @param ui The algorithm UI
      */
-    public void addToSelection(ACAQAlgorithmUI ui) {
+    public void addToSelection(ACAQNodeUI ui) {
         canvasUI.addToSelection(ui);
     }
 
@@ -489,12 +489,12 @@ public abstract class ACAQAlgorithmGraphEditorUI extends ACAQWorkbenchPanel impl
                 if (ex || ey) {
                     canvasUI.expandLeftTop(ex, ey);
                     if (ex) {
-                        nx = ACAQAlgorithmUI.SLOT_UI_WIDTH;
-                        panningOffset.x += ACAQAlgorithmUI.SLOT_UI_WIDTH;
+                        nx = ACAQNodeUI.SLOT_UI_WIDTH;
+                        panningOffset.x += ACAQNodeUI.SLOT_UI_WIDTH;
                     }
                     if (ey) {
-                        ny = ACAQAlgorithmUI.SLOT_UI_HEIGHT;
-                        panningOffset.y += ACAQAlgorithmUI.SLOT_UI_HEIGHT;
+                        ny = ACAQNodeUI.SLOT_UI_HEIGHT;
+                        panningOffset.y += ACAQNodeUI.SLOT_UI_HEIGHT;
                     }
                 }
             }
@@ -547,7 +547,7 @@ public abstract class ACAQAlgorithmGraphEditorUI extends ACAQWorkbenchPanel impl
     public void updateNavigation() {
         DefaultComboBoxModel<Object> model = (DefaultComboBoxModel<Object>) navigator.getModel();
         model.removeAllElements();
-        for (ACAQAlgorithmUI ui : canvasUI.getNodeUIs().values().stream().sorted(Comparator.comparing(ui -> ui.getAlgorithm().getName())).collect(Collectors.toList())) {
+        for (ACAQNodeUI ui : canvasUI.getNodeUIs().values().stream().sorted(Comparator.comparing(ui -> ui.getNode().getName())).collect(Collectors.toList())) {
             model.addElement(ui);
         }
         for (ACAQAlgorithmDeclaration declaration : addableAlgorithms.stream()
@@ -559,9 +559,9 @@ public abstract class ACAQAlgorithmGraphEditorUI extends ACAQWorkbenchPanel impl
     private static boolean filterNavigationEntry(Object entry, String searchString) {
         String haystack = "";
         ACAQAlgorithmDeclaration algorithmDeclaration = null;
-        if (entry instanceof ACAQAlgorithmUI) {
-            haystack += ((ACAQAlgorithmUI) entry).getAlgorithm().getName();
-            algorithmDeclaration = ((ACAQAlgorithmUI) entry).getAlgorithm().getDeclaration();
+        if (entry instanceof ACAQNodeUI) {
+            haystack += ((ACAQNodeUI) entry).getNode().getName();
+            algorithmDeclaration = ((ACAQNodeUI) entry).getNode().getDeclaration();
         } else if (entry instanceof ACAQAlgorithmDeclaration) {
             if (((ACAQAlgorithmDeclaration) entry).isHidden())
                 return false;
@@ -574,7 +574,7 @@ public abstract class ACAQAlgorithmGraphEditorUI extends ACAQWorkbenchPanel impl
         return haystack.toLowerCase().contains(searchString.toLowerCase());
     }
 
-    public static void installContextActionsInto(JToolBar toolBar, Set<ACAQAlgorithmUI> selection, List<AlgorithmUIAction> actionList, ACAQAlgorithmGraphCanvasUI canvasUI) {
+    public static void installContextActionsInto(JToolBar toolBar, Set<ACAQNodeUI> selection, List<AlgorithmUIAction> actionList, ACAQGraphCanvasUI canvasUI) {
         JPopupMenu overhang = new JPopupMenu();
         boolean scheduledSeparator = false;
         for (AlgorithmUIAction action : actionList) {
@@ -650,9 +650,9 @@ public abstract class ACAQAlgorithmGraphEditorUI extends ACAQWorkbenchPanel impl
                         HtmlEscapers.htmlEscaper().escape(declaration.getName()),
                         menuPath
                 ));
-            } else if (value instanceof ACAQAlgorithmUI) {
-                ACAQAlgorithmUI ui = (ACAQAlgorithmUI) value;
-                ACAQAlgorithmDeclaration declaration = ui.getAlgorithm().getDeclaration();
+            } else if (value instanceof ACAQNodeUI) {
+                ACAQNodeUI ui = (ACAQNodeUI) value;
+                ACAQAlgorithmDeclaration declaration = ui.getNode().getDeclaration();
                 String menuPath = declaration.getCategory().toString();
                 if (!StringUtils.isNullOrEmpty(declaration.getMenuPath())) {
                     menuPath += " &gt; " + String.join(" &gt; ", declaration.getMenuPath().split("\n"));

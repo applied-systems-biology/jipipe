@@ -20,7 +20,7 @@ import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.events.AlgorithmGraphChangedEvent;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
-import org.hkijena.acaq5.api.history.ACAQAlgorithmGraphHistory;
+import org.hkijena.acaq5.api.history.ACAQGraphHistory;
 import org.hkijena.acaq5.api.history.CompoundGraphHistorySnapshot;
 import org.hkijena.acaq5.api.history.EdgeConnectGraphHistorySnapshot;
 import org.hkijena.acaq5.api.history.EdgeDisconnectAllTargetsGraphHistorySnapshot;
@@ -54,7 +54,7 @@ import java.util.stream.Collectors;
  */
 public abstract class ACAQDataSlotUI extends ACAQWorkbenchPanel {
     protected JPopupMenu assignButtonMenu;
-    private ACAQAlgorithmUI algorithmUI;
+    private ACAQNodeUI algorithmUI;
     private String compartment;
     private ACAQDataSlot slot;
 
@@ -66,7 +66,7 @@ public abstract class ACAQDataSlotUI extends ACAQWorkbenchPanel {
      * @param compartment The compartment ID
      * @param slot        The slot instance
      */
-    public ACAQDataSlotUI(ACAQWorkbench workbench, ACAQAlgorithmUI algorithmUI, String compartment, ACAQDataSlot slot) {
+    public ACAQDataSlotUI(ACAQWorkbench workbench, ACAQNodeUI algorithmUI, String compartment, ACAQDataSlot slot) {
         super(workbench);
         this.algorithmUI = algorithmUI;
         this.compartment = compartment;
@@ -77,10 +77,10 @@ public abstract class ACAQDataSlotUI extends ACAQWorkbenchPanel {
     }
 
     public ACAQGraph getGraph() {
-        return getGraphUI().getAlgorithmGraph();
+        return getGraphUI().getGraph();
     }
 
-    public ACAQAlgorithmGraphCanvasUI getGraphUI() {
+    public ACAQGraphCanvasUI getGraphUI() {
         return algorithmUI.getGraphUI();
     }
 
@@ -109,9 +109,9 @@ public abstract class ACAQDataSlotUI extends ACAQWorkbenchPanel {
         if (slot.isInput()) {
             if (getGraph().getSourceSlot(slot) == null) {
                 Set<ACAQDataSlot> availableSources = getGraph().getAvailableSources(slot, true, false);
-                availableSources.removeIf(slot -> !slot.getAlgorithm().isVisibleIn(compartment));
+                availableSources.removeIf(slot -> !slot.getNode().isVisibleIn(compartment));
                 for (ACAQDataSlot source : sortSlotsByDistance(availableSources)) {
-                    if (!source.getAlgorithm().isVisibleIn(compartment))
+                    if (!source.getNode().isVisibleIn(compartment))
                         continue;
                     JMenuItem connectButton = new JMenuItem(source.getNameWithAlgorithmName(),
                             ACAQUIDatatypeRegistry.getInstance().getIconFor(source.getAcceptedDataType()));
@@ -123,8 +123,8 @@ public abstract class ACAQDataSlotUI extends ACAQWorkbenchPanel {
                 disconnectButton.addActionListener(e -> disconnectSlot());
                 assignButtonMenu.add(disconnectButton);
             }
-            if (slot.getAlgorithm().getSlotConfiguration() instanceof ACAQMutableSlotConfiguration) {
-                ACAQMutableSlotConfiguration slotConfiguration = (ACAQMutableSlotConfiguration) slot.getAlgorithm().getSlotConfiguration();
+            if (slot.getNode().getSlotConfiguration() instanceof ACAQMutableSlotConfiguration) {
+                ACAQMutableSlotConfiguration slotConfiguration = (ACAQMutableSlotConfiguration) slot.getNode().getSlotConfiguration();
                 if (slotConfiguration.canModifyInputSlots()) {
                     if (assignButtonMenu.getComponentCount() > 0)
                         assignButtonMenu.addSeparator();
@@ -164,7 +164,7 @@ public abstract class ACAQDataSlotUI extends ACAQWorkbenchPanel {
                 }
             }
             Set<ACAQDataSlot> availableTargets = getGraph().getAvailableTargets(slot, true, true);
-            availableTargets.removeIf(slot -> !slot.getAlgorithm().isVisibleIn(compartment));
+            availableTargets.removeIf(slot -> !slot.getNode().isVisibleIn(compartment));
 
             JMenuItem findAlgorithmButton = new JMenuItem("Find matching algorithm ...", UIUtils.getIconFromResources("search.png"));
             findAlgorithmButton.setToolTipText("Opens a tool to find a matching algorithm based on the data");
@@ -177,12 +177,12 @@ public abstract class ACAQDataSlotUI extends ACAQWorkbenchPanel {
                 JMenuItem connectButton = new JMenuItem(target.getNameWithAlgorithmName(),
                         ACAQUIDatatypeRegistry.getInstance().getIconFor(target.getAcceptedDataType()));
                 connectButton.addActionListener(e -> connectSlot(slot, target));
-                connectButton.setToolTipText(TooltipUtils.getAlgorithmTooltip(target.getAlgorithm().getDeclaration()));
+                connectButton.setToolTipText(TooltipUtils.getAlgorithmTooltip(target.getNode().getDeclaration()));
                 assignButtonMenu.add(connectButton);
             }
 
-            if (slot.getAlgorithm().getSlotConfiguration() instanceof ACAQMutableSlotConfiguration) {
-                ACAQMutableSlotConfiguration slotConfiguration = (ACAQMutableSlotConfiguration) slot.getAlgorithm().getSlotConfiguration();
+            if (slot.getNode().getSlotConfiguration() instanceof ACAQMutableSlotConfiguration) {
+                ACAQMutableSlotConfiguration slotConfiguration = (ACAQMutableSlotConfiguration) slot.getNode().getSlotConfiguration();
                 if (slotConfiguration.canModifyOutputSlots()) {
                     if (assignButtonMenu.getComponentCount() > 0)
                         assignButtonMenu.addSeparator();
@@ -213,13 +213,13 @@ public abstract class ACAQDataSlotUI extends ACAQWorkbenchPanel {
         String newLabel = JOptionPane.showInputDialog(this,
                 "Please enter a new label for the slot.\nLeave the text empty to remove an existing label.",
                 slot.getDefinition().getCustomName());
-        getGraphUI().getGraphHistory().addSnapshotBefore(new SlotConfigurationHistorySnapshot(slot.getAlgorithm(), "Relabel slot '" + slot.getNameWithAlgorithmName() + "'"));
+        getGraphUI().getGraphHistory().addSnapshotBefore(new SlotConfigurationHistorySnapshot(slot.getNode(), "Relabel slot '" + slot.getNameWithAlgorithmName() + "'"));
         slot.getDefinition().setCustomName(newLabel);
     }
 
     private void deleteSlot() {
-        ACAQMutableSlotConfiguration slotConfiguration = (ACAQMutableSlotConfiguration) slot.getAlgorithm().getSlotConfiguration();
-        getGraphUI().getGraphHistory().addSnapshotBefore(new SlotConfigurationHistorySnapshot(slot.getAlgorithm(), "Remove slot '" + slot.getNameWithAlgorithmName() + "'"));
+        ACAQMutableSlotConfiguration slotConfiguration = (ACAQMutableSlotConfiguration) slot.getNode().getSlotConfiguration();
+        getGraphUI().getGraphHistory().addSnapshotBefore(new SlotConfigurationHistorySnapshot(slot.getNode(), "Remove slot '" + slot.getNameWithAlgorithmName() + "'"));
         if (slot.isInput())
             slotConfiguration.removeInputSlot(slot.getName(), true);
         else if (slot.isOutput())
@@ -254,8 +254,8 @@ public abstract class ACAQDataSlotUI extends ACAQWorkbenchPanel {
 
     private void connectSlot(ACAQDataSlot source, ACAQDataSlot target) {
         if (getGraph().canConnect(source, target, true)) {
-            ACAQGraph graph = slot.getAlgorithm().getGraph();
-            ACAQAlgorithmGraphHistory graphHistory = algorithmUI.getGraphUI().getGraphHistory();
+            ACAQGraph graph = slot.getNode().getGraph();
+            ACAQGraphHistory graphHistory = algorithmUI.getGraphUI().getGraphHistory();
             if (getGraphUI().isLayoutHelperEnabled()) {
                 graphHistory.addSnapshotBefore(new CompoundGraphHistorySnapshot(Arrays.asList(
                         new EdgeConnectGraphHistorySnapshot(graph, source, target),
@@ -272,8 +272,8 @@ public abstract class ACAQDataSlotUI extends ACAQWorkbenchPanel {
     }
 
     private void disconnectSlot() {
-        ACAQGraph graph = slot.getAlgorithm().getGraph();
-        ACAQAlgorithmGraphHistory graphHistory = algorithmUI.getGraphUI().getGraphHistory();
+        ACAQGraph graph = slot.getNode().getGraph();
+        ACAQGraphHistory graphHistory = algorithmUI.getGraphUI().getGraphHistory();
         if (slot.isInput()) {
             ACAQDataSlot sourceSlot = graph.getSourceSlot(slot);
             if (sourceSlot != null) {
