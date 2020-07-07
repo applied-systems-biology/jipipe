@@ -37,7 +37,9 @@ import org.hkijena.acaq5.ui.events.AlgorithmSelectedEvent;
 import org.hkijena.acaq5.ui.events.AlgorithmSelectionChangedEvent;
 import org.hkijena.acaq5.ui.events.AlgorithmUIActionRequestedEvent;
 import org.hkijena.acaq5.ui.events.DefaultAlgorithmUIActionRequestedEvent;
+import org.hkijena.acaq5.ui.grapheditor.connections.NonCollidingRectangularLineDrawer;
 import org.hkijena.acaq5.ui.grapheditor.contextmenu.AlgorithmUIAction;
+import org.hkijena.acaq5.ui.grapheditor.layout.SugiyamaGraphAutoLayoutMethod;
 import org.hkijena.acaq5.utils.PointRange;
 import org.hkijena.acaq5.utils.ScreenImage;
 import org.hkijena.acaq5.utils.ScreenImageSVG;
@@ -55,7 +57,6 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
-import java.awt.geom.Path2D;
 import java.awt.image.BufferedImage;
 import java.util.List;
 import java.util.*;
@@ -242,9 +243,21 @@ public class ACAQGraphCanvasUI extends ACAQWorkbenchPanel implements MouseMotion
 //        addNewNodes();
 //        newEntryLocationX = backup;
         minDimensions = null;
-        autoLayoutSugiyama();
+        autoLayout();
         if (getParent() != null)
             getParent().revalidate();
+    }
+
+    /**
+     * Applies a full auto-layout method
+     */
+    public void autoLayout() {
+        switch(GraphEditorUISettings.getInstance().getAutoLayout()) {
+            case Sugiyama:
+                (new SugiyamaGraphAutoLayoutMethod()).accept(this);
+                break;
+        }
+        repaint();
     }
 
     /**
@@ -845,257 +858,6 @@ public class ACAQGraphCanvasUI extends ACAQWorkbenchPanel implements MouseMotion
         return ScreenImageSVG.createImage(this);
     }
 
-    /**
-     * Uses the Method by Sugiyama.
-     * Code was adapted from https://blog.disy.net/sugiyama-method/
-     */
-    private void autoLayoutSugiyama() {
-        // Create an algorithm UI graph
-        Set<ACAQNodeUI> freeFloating = new HashSet<>();
-        DefaultDirectedGraph<SugiyamaVertex, DefaultEdge> sugiyamaGraph = new DefaultDirectedGraph<>(DefaultEdge.class);
-        Map<ACAQNodeUI, SugiyamaVertex> vertexMap = new HashMap<>();
-        for (ACAQNodeUI ui : nodeUIs.values()) {
-            // Ignore all free-floating nodes (no inputs, no outputs within this compartment)
-            boolean isFreeFloating = true;
-            for (ACAQDataSlot inputSlot : ui.getNode().getInputSlots()) {
-                ACAQDataSlot sourceSlot = graph.getSourceSlot(inputSlot);
-                if(sourceSlot != null && Objects.equals(sourceSlot.getNode().getCompartment(), inputSlot.getNode().getCompartment())) {
-                    isFreeFloating = false;
-                    break;
-                }
-            }
-            if(isFreeFloating) {
-                outer: for (ACAQDataSlot outputSlot : ui.getNode().getOutputSlots()) {
-                    for (ACAQDataSlot targetSlot : graph.getTargetSlots(outputSlot)) {
-                        if(Objects.equals(outputSlot.getNode().getCompartment(), targetSlot.getNode().getCompartment())) {
-                            isFreeFloating = false;
-                            break outer;
-                        }
-                    }
-                }
-            }
-
-            if(!isFreeFloating) {
-                SugiyamaVertex sugiyamaVertex = new SugiyamaVertex(ui);
-                sugiyamaGraph.addVertex(sugiyamaVertex);
-                vertexMap.put(ui, sugiyamaVertex);
-            }
-            else {
-                freeFloating.add(ui);
-            }
-        }
-        for (ACAQGraphEdge edge : graph.getGraph().edgeSet()) {
-            ACAQNodeUI sourceUI = nodeUIs.getOrDefault(graph.getGraph().getEdgeSource(edge).getNode(), null);
-            ACAQNodeUI targetUI = nodeUIs.getOrDefault(graph.getGraph().getEdgeTarget(edge).getNode(), null);
-            if (sourceUI == null || targetUI == null)
-                continue;
-            if (sourceUI.getNode() == targetUI.getNode())
-                continue;
-            if (!sugiyamaGraph.containsEdge(vertexMap.get(sourceUI), vertexMap.get(targetUI)))
-                sugiyamaGraph.addEdge(vertexMap.get(sourceUI), vertexMap.get(targetUI));
-        }
-
-
-        // Skip: Remove cycles. ACAQAlgorithmGraph ensures that there are none
-
-        // Assign layerIndices
-        int maxLayer = 0;
-        for (SugiyamaVertex vertex : ImmutableList.copyOf(new TopologicalOrderIterator<>(sugiyamaGraph))) {
-            for (DefaultEdge edge : sugiyamaGraph.incomingEdgesOf(vertex)) {
-                SugiyamaVertex source = sugiyamaGraph.getEdgeSource(edge);
-                vertex.layer = Math.max(vertex.layer, source.layer) + 1;
-                maxLayer = Math.max(maxLayer, vertex.layer);
-            }
-        }
-
-        // Create virtual vertices
-        for (DefaultEdge edge : ImmutableList.copyOf(sugiyamaGraph.edgeSet())) {
-            SugiyamaVertex source = sugiyamaGraph.getEdgeSource(edge);
-            SugiyamaVertex target = sugiyamaGraph.getEdgeTarget(edge);
-            int layerDifference = target.layer - source.layer;
-            assert layerDifference >= 1;
-            if (layerDifference > 1) {
-                sugiyamaGraph.removeEdge(source, target);
-                SugiyamaVertex lastLayer = source;
-                for (int layer = source.layer + 1; layer < target.layer; ++layer) {
-                    SugiyamaVertex virtual = new SugiyamaVertex();
-                    virtual.layer = layer;
-                    sugiyamaGraph.addVertex(virtual);
-                    sugiyamaGraph.addEdge(lastLayer, virtual);
-                    lastLayer = virtual;
-                }
-                sugiyamaGraph.addEdge(lastLayer, target);
-            }
-        }
-
-        // Assign the row for each layer
-        int maxIndex = 0;
-        for (int layer = 0; layer <= maxLayer; ++layer) {
-            int row = 0;
-            for (SugiyamaVertex vertex : sugiyamaGraph.vertexSet()) {
-                if (vertex.layer == layer) {
-                    vertex.index = row++;
-                    maxIndex = Math.max(maxIndex, vertex.index);
-                }
-            }
-        }
-
-        switch (currentViewMode) {
-            case Horizontal:
-                rearrangeSugiyamaHorizontal(sugiyamaGraph, maxLayer, maxIndex);
-                break;
-            case Vertical:
-                rearrangeSugiyamaVertical(sugiyamaGraph, maxLayer, maxIndex);
-                break;
-        }
-
-        // Add free-floating algorithms back into the graph
-        if(!freeFloating.isEmpty()) {
-            if (currentViewMode == ViewMode.Horizontal) {
-                // Put them below
-                int minY = ACAQNodeUI.SLOT_UI_HEIGHT;
-                for (ACAQNodeUI ui : nodeUIs.values()) {
-                    if(!freeFloating.contains(ui)) {
-                        minY = Math.max(ui.getBottomY(), minY);
-                    }
-                }
-                int x = ACAQNodeUI.SLOT_UI_WIDTH * 4;
-                for (ACAQNodeUI ui : freeFloating) {
-                    ui.setLocation(x, minY);
-                    x += ui.getWidth() + ACAQNodeUI.SLOT_UI_WIDTH * 2;
-                }
-            }
-            else {
-                int minX = ACAQNodeUI.SLOT_UI_WIDTH * 4;
-                for (ACAQNodeUI ui : nodeUIs.values()) {
-                    if(!freeFloating.contains(ui)) {
-                        minX = Math.max(ui.getRightX(), minX);
-                    }
-                }
-                int y = ACAQNodeUI.SLOT_UI_HEIGHT;
-                for (ACAQNodeUI ui : freeFloating) {
-                    ui.setLocation(minX, y);
-                    y += ui.getHeight() + ACAQNodeUI.SLOT_UI_HEIGHT;
-                }
-            }
-            repaint();
-        }
-    }
-
-    private void rearrangeSugiyamaHorizontal(DefaultDirectedGraph<SugiyamaVertex, DefaultEdge> sugiyamaGraph, int maxLayer, int maxIndex) {
-
-        if(sugiyamaGraph.vertexSet().isEmpty())
-            return;
-
-        // Create a table of column -> row -> vertex
-        int maxRow = maxIndex;
-        int maxColumn = maxLayer;
-        Map<Integer, Map<Integer, SugiyamaVertex>> vertexTable = new HashMap<>();
-        for (SugiyamaVertex vertex : sugiyamaGraph.vertexSet()) {
-            Map<Integer, SugiyamaVertex> column = vertexTable.getOrDefault(vertex.layer, null);
-            if (column == null) {
-                column = new HashMap<>();
-                vertexTable.put(vertex.layer, column);
-            }
-            column.put(vertex.index, vertex);
-        }
-
-        // Calculate widths and heights
-        Map<Integer, Integer> columnWidths = new HashMap<>();
-        Map<Integer, Integer> rowHeights = new HashMap<>();
-        for (SugiyamaVertex vertex : sugiyamaGraph.vertexSet()) {
-            if (!vertex.virtual) {
-                int column = vertex.layer;
-                int row = vertex.index;
-                int columnWidth = Math.max(vertex.algorithmUI.getWidth(), columnWidths.getOrDefault(column, 0));
-                int rowHeight = Math.max(vertex.algorithmUI.getHeight(), rowHeights.getOrDefault(row, 0));
-                columnWidths.put(column, columnWidth);
-                rowHeights.put(row, rowHeight);
-            }
-        }
-        for (int column : columnWidths.keySet()) {
-            columnWidths.put(column, columnWidths.get(column) + 2 * ACAQNodeUI.SLOT_UI_WIDTH);
-        }
-        for (int row : rowHeights.keySet()) {
-            rowHeights.put(row, rowHeights.get(row) + ACAQNodeUI.SLOT_UI_HEIGHT);
-        }
-
-        // Rearrange algorithms
-        int x = ACAQNodeUI.SLOT_UI_WIDTH;
-        for (int column = 0; column <= maxColumn; ++column) {
-            Map<Integer, SugiyamaVertex> columnMap = vertexTable.get(column);
-            int y = ACAQNodeUI.SLOT_UI_HEIGHT;
-            for (int row = 0; row <= maxRow; ++row) {
-                SugiyamaVertex vertex = columnMap.getOrDefault(row, null);
-                if (vertex != null && !vertex.virtual) {
-                    ACAQNodeUI ui = vertex.algorithmUI;
-                    ui.setLocation(x, y);
-                }
-                y += rowHeights.getOrDefault(row, 0);
-            }
-            x += columnWidths.getOrDefault(column, 0);
-        }
-
-        repaint();
-    }
-
-    private void rearrangeSugiyamaVertical(DefaultDirectedGraph<SugiyamaVertex, DefaultEdge> sugiyamaGraph, int maxLayer, int maxIndex) {
-
-        if(sugiyamaGraph.vertexSet().isEmpty())
-            return;
-
-        // Create a table of column -> row -> vertex
-        int maxRow = maxLayer;
-        int maxColumn = maxIndex;
-        Map<Integer, Map<Integer, SugiyamaVertex>> vertexTable = new HashMap<>();
-        for (SugiyamaVertex vertex : sugiyamaGraph.vertexSet()) {
-            Map<Integer, SugiyamaVertex> column = vertexTable.getOrDefault(vertex.index, null);
-            if (column == null) {
-                column = new HashMap<>();
-                vertexTable.put(vertex.index, column);
-            }
-            column.put(vertex.layer, vertex);
-        }
-
-        // Calculate widths and heights
-        Map<Integer, Integer> columnWidths = new HashMap<>();
-        Map<Integer, Integer> rowHeights = new HashMap<>();
-        for (SugiyamaVertex vertex : sugiyamaGraph.vertexSet()) {
-            if (!vertex.virtual) {
-                int column = vertex.index;
-                int row = vertex.layer;
-                int columnWidth = Math.max(vertex.algorithmUI.getWidth(), columnWidths.getOrDefault(column, 0));
-                int rowHeight = Math.max(vertex.algorithmUI.getHeight(), rowHeights.getOrDefault(row, 0));
-                columnWidths.put(column, columnWidth);
-                rowHeights.put(row, rowHeight);
-            }
-        }
-        for (int column : columnWidths.keySet()) {
-            columnWidths.put(column, columnWidths.get(column) + 2 * ACAQNodeUI.SLOT_UI_WIDTH);
-        }
-        for (int row : rowHeights.keySet()) {
-            rowHeights.put(row, rowHeights.get(row) + ACAQNodeUI.SLOT_UI_HEIGHT);
-        }
-
-        // Rearrange algorithms
-        int x = ACAQNodeUI.SLOT_UI_WIDTH;
-        for (int column = 0; column <= maxColumn; ++column) {
-            Map<Integer, SugiyamaVertex> columnMap = vertexTable.get(column);
-            int y = ACAQNodeUI.SLOT_UI_HEIGHT;
-            for (int row = 0; row <= maxRow; ++row) {
-                SugiyamaVertex vertex = columnMap.getOrDefault(row, null);
-                if (vertex != null && !vertex.virtual) {
-                    ACAQNodeUI ui = vertex.algorithmUI;
-                    ui.setLocation(x, y);
-                }
-                y += rowHeights.getOrDefault(row, 0);
-            }
-            x += columnWidths.getOrDefault(column, 0);
-        }
-
-        repaint();
-    }
-
     public ViewMode getCurrentViewMode() {
         return currentViewMode;
     }
@@ -1262,180 +1024,4 @@ public class ACAQGraphCanvasUI extends ACAQWorkbenchPanel implements MouseMotion
         Vertical
     }
 
-    /**
-     * Used for autoLayoutSugiyama()
-     */
-    private static class SugiyamaVertex {
-        private ACAQNodeUI algorithmUI;
-        private int layer = 0;
-        private int index = 0;
-        private boolean virtual = false;
-
-        private SugiyamaVertex(ACAQNodeUI algorithmUI) {
-            this.algorithmUI = algorithmUI;
-        }
-
-        public SugiyamaVertex() {
-            this.virtual = true;
-        }
-    }
-
-    /**
-     * Encapsulates drawing rectangular lines
-     */
-    private static class NonCollidingRectangularLineDrawer {
-
-        private final List<RectangularLine> currentSegments = new ArrayList<>();
-        private final PriorityQueue<RectangularLine> majorCollisionLines = new PriorityQueue<>(Comparator.comparing(RectangularLine::getA1));
-        private final PriorityQueue<RectangularLine> minorCollisionLines = new PriorityQueue<>(Comparator.comparing(RectangularLine::getB1));
-        private int lineSpacer = 4;
-
-        public void start(int a0, int b) {
-            currentSegments.clear();
-            currentSegments.add(new RectangularLine(0, a0, 0, b));
-        }
-
-        private void addSpacer(RectangularLine lastSegment, RectangularLine newSegment) {
-            if (lastSegment.a1 == newSegment.a1) {
-                lastSegment.a1 += lineSpacer;
-                newSegment.a1 += lineSpacer;
-                newSegment.a0 += lineSpacer;
-            }
-            if (lastSegment.b1 == newSegment.b1) {
-                lastSegment.b1 += lineSpacer;
-                newSegment.b1 += lineSpacer;
-            }
-        }
-
-        public void moveToMajor(int a1, boolean withCollision) {
-            RectangularLine lastSegment = getLastSegment();
-            RectangularLine newSegment = new RectangularLine(lastSegment.a1, a1, lastSegment.b1, lastSegment.b1);
-            if (withCollision) {
-                for (RectangularLine collisionLine : majorCollisionLines) {
-                    int intersection = collisionLine.intersect(newSegment);
-                    if (intersection > lineSpacer) {
-                        addSpacer(lastSegment, newSegment);
-                    }
-                }
-            }
-            currentSegments.add(newSegment);
-        }
-
-        public void moveToMinor(int b, boolean withCollision) {
-            RectangularLine lastSegment = getLastSegment();
-            RectangularLine newSegment = new RectangularLine(lastSegment.a1, lastSegment.a1, lastSegment.b1, b);
-            if (withCollision) {
-                for (RectangularLine collisionLine : minorCollisionLines) {
-                    int intersection = collisionLine.intersect(newSegment);
-                    if (intersection > lineSpacer) {
-                        addSpacer(lastSegment, newSegment);
-                    }
-                }
-            }
-            currentSegments.add(newSegment);
-        }
-
-        public RectangularLine getLastSegment() {
-            return currentSegments.get(currentSegments.size() - 1);
-        }
-
-        public RectangularLine getFirstSegment() {
-            return currentSegments.get(0);
-        }
-
-        public void addToMajor(int addA1, boolean withCollision) {
-            moveToMajor(getLastSegment().a1 + addA1, withCollision);
-        }
-
-        public void addToMinor(int addB, boolean withCollision) {
-            moveToMinor(getLastSegment().b1 + addB, withCollision);
-        }
-
-        public void drawCurrentSegment(Graphics2D graphics2D, ViewMode viewMode) {
-            Path2D.Float path = new Path2D.Float();
-            if (viewMode == ViewMode.Horizontal) {
-                // A = X, B = Y
-                path.moveTo(getFirstSegment().a1, getFirstSegment().b1);
-                for (int i = 1; i < currentSegments.size(); ++i) {
-                    RectangularLine currentSegment = currentSegments.get(i);
-                    minorCollisionLines.add(currentSegment);
-                    majorCollisionLines.add(currentSegment);
-                    path.lineTo(currentSegment.a1, currentSegment.b1);
-                }
-            } else if (viewMode == ViewMode.Vertical) {
-                // A = Y, B = X
-                path.moveTo(getFirstSegment().b1, getFirstSegment().a1);
-                for (int i = 1; i < currentSegments.size(); ++i) {
-                    RectangularLine currentSegment = currentSegments.get(i);
-                    minorCollisionLines.add(currentSegment);
-                    majorCollisionLines.add(currentSegment);
-                    path.lineTo(currentSegment.b1, currentSegment.a1);
-                }
-            }
-            graphics2D.draw(path);
-        }
-    }
-
-    /**
-     * Contains coordinates of a line that is rectangular
-     * This abstracts away x and y for horizontal and vertical implementations
-     */
-    private static class RectangularLine {
-        public int a0;
-        public int a1;
-        public int b0;
-        public int b1;
-
-        /**
-         * @param a0 the first major coordinate (equivalent to x0 in horizontal)
-         * @param a1 the second major coordinate (equivalent to x1 in horizontal).
-         * @param b0 the first minor coordinate (equivalent to y0 in horizontal)
-         * @param b1 the second minor coordinate (equivalent to y1 in horizontal)
-         */
-        public RectangularLine(int a0, int a1, int b0, int b1) {
-            this.a0 = a0;
-            this.a1 = a1;
-            this.b0 = b0;
-            this.b1 = b1;
-        }
-
-        public int getA1() {
-            return a1;
-        }
-
-        public int getB1() {
-            return b1;
-        }
-
-        public int getSmallerMajor() {
-            return Math.min(a0, a1);
-        }
-
-        public int getLargerMajor() {
-            return Math.max(a0, a1);
-        }
-
-        public int getSmallerMinor() {
-            return Math.min(b0, b1);
-        }
-
-        public int getLargerMinor() {
-            return Math.max(b0, b1);
-        }
-
-        /**
-         * Returns true if this line intersects with the other line
-         *
-         * @param other the other line
-         * @return how many pixels intersect. Can be negative
-         */
-        public int intersect(RectangularLine other) {
-            if (other.b1 == b1) {
-                return Math.min(other.getLargerMajor(), getLargerMajor()) - Math.max(other.getSmallerMajor(), getSmallerMajor());
-            } else if (other.a1 == a1) {
-                return Math.min(other.getLargerMinor(), getLargerMinor()) - Math.max(other.getSmallerMinor(), getSmallerMinor());
-            }
-            return 0;
-        }
-    }
 }

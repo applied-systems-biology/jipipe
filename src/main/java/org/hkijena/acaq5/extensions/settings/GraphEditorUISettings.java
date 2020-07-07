@@ -20,6 +20,7 @@ import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.parameters.ACAQParameterCollection;
 import org.hkijena.acaq5.ui.grapheditor.ACAQGraphCanvasUI;
 import org.hkijena.acaq5.ui.grapheditor.ACAQGraphEditorUI;
+import org.hkijena.acaq5.ui.grapheditor.layout.GraphAutoLayout;
 
 /**
  * All settings for {@link ACAQGraphEditorUI}
@@ -30,6 +31,7 @@ public class GraphEditorUISettings implements ACAQParameterCollection {
 
     private EventBus eventBus = new EventBus();
     private ACAQGraphCanvasUI.ViewMode defaultViewMode = ACAQGraphCanvasUI.ViewMode.Vertical;
+    private GraphAutoLayout autoLayout = GraphAutoLayout.Sugiyama;
     private boolean switchPanningDirection = false;
     private boolean enableLayoutHelper = true;
 
@@ -74,6 +76,18 @@ public class GraphEditorUISettings implements ACAQParameterCollection {
     public void setEnableLayoutHelper(boolean enableLayoutHelper) {
         this.enableLayoutHelper = enableLayoutHelper;
 
+    }
+
+    @ACAQDocumentation(name = "Auto-layout method",
+    description = "Determines which method is used to applly auto-layout.")
+    @ACAQParameter("auto-layout-method")
+    public GraphAutoLayout getAutoLayout() {
+        return autoLayout;
+    }
+
+    @ACAQParameter("auto-layout-method")
+    public void setAutoLayout(GraphAutoLayout autoLayout) {
+        this.autoLayout = autoLayout;
     }
 
     public static GraphEditorUISettings getInstance() {
