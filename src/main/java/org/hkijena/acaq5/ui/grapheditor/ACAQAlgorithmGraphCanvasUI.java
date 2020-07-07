@@ -562,6 +562,18 @@ public class ACAQAlgorithmGraphCanvasUI extends ACAQWorkbenchPanel implements Mo
         ACAQAlgorithmUI sourceNode = nodeUIs.getOrDefault(event.getSource().getAlgorithm(), null);
         ACAQAlgorithmUI targetNode = nodeUIs.getOrDefault(event.getTarget().getAlgorithm(), null);
 
+        // Check if we actually need to auto-place
+        if(currentViewMode == ViewMode.Horizontal) {
+            if(targetNode.getX() >= sourceNode.getRightX() + ACAQAlgorithmUI.SLOT_UI_WIDTH) {
+                return;
+            }
+        }
+        else if(currentViewMode == ViewMode.Vertical) {
+            if(targetNode.getY() >= sourceNode.getBottomY() + ACAQAlgorithmUI.SLOT_UI_HEIGHT) {
+                return;
+            }
+        }
+
         if (sourceNode != null && targetNode != null && layoutHelperEnabled) {
             Point cursorBackup = cursor;
             try {
