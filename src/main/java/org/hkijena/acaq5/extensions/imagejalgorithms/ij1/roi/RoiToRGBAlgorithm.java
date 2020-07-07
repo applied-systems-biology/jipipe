@@ -84,6 +84,7 @@ public class RoiToRGBAlgorithm extends ACAQIteratingAlgorithm {
                 .build());
         overrideLineWidth.setContent(1.0);
         overrideFillColor.setContent(Color.RED);
+        overrideLineColor.setContent(Color.YELLOW);
     }
 
     /**
@@ -100,9 +101,6 @@ public class RoiToRGBAlgorithm extends ACAQIteratingAlgorithm {
         this.overrideLineColor = new OptionalColorParameter(other.overrideLineColor);
         this.overrideLineWidth = new OptionalDoubleParameter(other.overrideLineWidth);
         this.drawOver = other.drawOver;
-        overrideLineWidth.setContent(1.0);
-        overrideFillColor.setContent(Color.RED);
-        overrideLineColor.setContent(Color.YELLOW);
     }
 
     @Override
@@ -144,26 +142,40 @@ public class RoiToRGBAlgorithm extends ACAQIteratingAlgorithm {
         } else {
             result = IJ.createImage("ROIs", "RGB", sx, sy, sc, sz, st);
         }
-        Map<Integer, List<Roi>> groupedByStackIndex =
-                inputData.stream().collect(Collectors.groupingBy(roi -> result.getStackIndex(roi.getCPosition(), roi.getZPosition(), roi.getTPosition())));
-        for (Map.Entry<Integer, List<Roi>> entry : groupedByStackIndex.entrySet()) {
-            ImageProcessor processor = result.getStack().getProcessor(entry.getKey());
-            for (Roi roi : entry.getValue()) {
-                if (drawFilledOutline) {
-                    Color color = (overrideFillColor.isEnabled() || roi.getFillColor() == null) ? overrideFillColor.getContent() : roi.getFillColor();
-                    processor.setColor(color);
-                    processor.fill(roi);
-                }
-                if (drawOutline) {
-                    Color color = (overrideLineColor.isEnabled() || roi.getStrokeColor() == null) ? overrideLineColor.getContent() : roi.getStrokeColor();
-                    int width = (overrideLineWidth.isEnabled() || roi.getStrokeWidth() <= 0) ? (int) (double) (overrideLineWidth.getContent()) : (int) roi.getStrokeWidth();
-                    processor.setLineWidth(width);
-                    processor.setColor(color);
-                    roi.drawPixels(processor);
-                }
-                if (drawLabel) {
-                    Point centroid = roiCentroids.get(roi);
-                    roiFiller.drawLabel(result, processor, roiIndices.get(roi), new Rectangle(centroid.x, centroid.y, 0, 0));
+
+        // Draw ROI
+        for (int z = 0; z < sz; z++) {
+            for (int c = 0; c < sc; c++) {
+                for (int t = 0; t < st; t++) {
+                    int stackIndex = result.getStackIndex(c + 1, z + 1, t + 1);
+                    ImageProcessor processor = result.getStack().getProcessor(stackIndex);
+                    for (Roi roi : inputData) {
+                        int rz = roi.getZPosition();
+                        int rc = roi.getCPosition();
+                        int rt = roi.getTPosition();
+                        if (rz != 0 && rz != (z + 1))
+                            continue;
+                        if (rc != 0 && rc != (c + 1))
+                            continue;
+                        if (rt != 0 && rt != (t + 1))
+                            continue;
+                        if (drawFilledOutline) {
+                            Color color = (overrideFillColor.isEnabled() || roi.getFillColor() == null) ? overrideFillColor.getContent() : roi.getFillColor();
+                            processor.setColor(color);
+                            processor.fill(roi);
+                        }
+                        if (drawOutline) {
+                            Color color = (overrideLineColor.isEnabled() || roi.getStrokeColor() == null) ? overrideLineColor.getContent() : roi.getStrokeColor();
+                            int width = (overrideLineWidth.isEnabled() || roi.getStrokeWidth() <= 0) ? (int) (double) (overrideLineWidth.getContent()) : (int) roi.getStrokeWidth();
+                            processor.setLineWidth(width);
+                            processor.setColor(color);
+                            roi.drawPixels(processor);
+                        }
+                        if (drawLabel) {
+                            Point centroid = roiCentroids.get(roi);
+                            roiFiller.drawLabel(result, processor, roiIndices.get(roi), new Rectangle(centroid.x, centroid.y, 0, 0));
+                        }
+                    }
                 }
             }
         }

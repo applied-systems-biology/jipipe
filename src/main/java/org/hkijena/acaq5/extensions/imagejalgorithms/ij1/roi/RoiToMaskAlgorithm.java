@@ -103,17 +103,21 @@ public class RoiToMaskAlgorithm extends ACAQIteratingAlgorithm {
         } else {
             result = IJ.createImage("ROIs", "8-bit", sx, sy, sc, sz, st);
         }
-        Map<Integer, List<Roi>> groupedByStackIndex =
-                inputData.stream().collect(Collectors.groupingBy(roi -> result.getStackIndex(roi.getCPosition(), roi.getZPosition(), roi.getTPosition())));
-        for (Map.Entry<Integer, List<Roi>> entry : groupedByStackIndex.entrySet()) {
-            ImageProcessor processor = result.getStack().getProcessor(entry.getKey());
-            processor.setLineWidth(lineThickness);
-            processor.setColor(255);
-            for (Roi roi : entry.getValue()) {
-                if (drawFilledOutline)
-                    processor.fill(roi);
-                if (drawOutline)
-                    roi.drawPixels(processor);
+        for (int z = 0; z < sz; z++) {
+            for (int c = 0; c < sc; c++) {
+                for (int t = 0; t < st; t++) {
+                    int stackIndex = result.getStackIndex(c + 1, z + 1, t + 1);
+                    ImageProcessor processor = result.getStack().getProcessor(stackIndex);
+                    processor.setLineWidth(lineThickness);
+                    processor.setColor(255);
+
+                    for (Roi roi : inputData) {
+                        if (drawFilledOutline)
+                            processor.fill(roi);
+                        if (drawOutline)
+                            roi.drawPixels(processor);
+                    }
+                }
             }
         }
 
