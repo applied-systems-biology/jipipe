@@ -124,11 +124,10 @@ public class ACAQDataTypePicker extends JPanel {
         DefaultListModel<ACAQDataDeclaration> model = (DefaultListModel<ACAQDataDeclaration>) dataTypeList.getModel();
         hiddenDataTypes.clear();
         model.clear();
-        String[] searchStrings = searchField.getSearchStrings();
         List<Integer> selectedIndices = new ArrayList<>();
 
         for (ACAQDataDeclaration trait : availableDataTypes) {
-            if (!searchStringsMatches(trait, searchStrings)) {
+            if (!searchField.test(trait.getName() + " " + trait.getDescription())) {
                 hiddenDataTypes.add(trait);
                 continue;
             }
@@ -140,19 +139,6 @@ public class ACAQDataTypePicker extends JPanel {
         }
         dataTypeList.setSelectedIndices(Ints.toArray(selectedIndices));
         reloading = false;
-    }
-
-    private boolean searchStringsMatches(ACAQDataDeclaration trait, String[] strings) {
-        if (trait == null)
-            return true;
-        if (strings == null)
-            return true;
-        String traitName = trait.getName() + " " + trait.getDescription();
-        for (String str : strings) {
-            if (traitName.toLowerCase().contains(str.toLowerCase()))
-                return true;
-        }
-        return false;
     }
 
     public EventBus getEventBus() {

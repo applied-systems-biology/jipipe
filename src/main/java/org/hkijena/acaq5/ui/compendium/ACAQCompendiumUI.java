@@ -150,7 +150,7 @@ public abstract class ACAQCompendiumUI<T> extends JPanel {
     public MarkdownDocument generateWholeCompendium() {
         StringBuilder builder = new StringBuilder();
         builder.append(defaultDocument.getMarkdown()).append("\n\n");
-        for (T item : getFilteredItems(null)) {
+        for (T item : getFilteredItems()) {
             builder.append(generateCompendiumFor(item).getMarkdown()).append("\n\n");
         }
         return new MarkdownDocument(builder.toString());
@@ -159,14 +159,13 @@ public abstract class ACAQCompendiumUI<T> extends JPanel {
     /**
      * Returns all items that should be available
      *
-     * @param searchStrings the search strings
      * @return all items that should be available
      */
-    protected abstract List<T> getFilteredItems(String[] searchStrings);
+    protected abstract List<T> getFilteredItems();
 
     private void reloadAlgorithmList() {
         DefaultListModel<T> model = new DefaultListModel<>();
-        for (T item : getFilteredItems(searchField.getSearchStrings())) {
+        for (T item : getFilteredItems()) {
             model.addElement(item);
         }
         itemList.setModel(model);
@@ -175,6 +174,10 @@ public abstract class ACAQCompendiumUI<T> extends JPanel {
             itemList.setSelectedIndex(0);
         else
             selectItem(null);
+    }
+
+    public SearchTextField getSearchField() {
+        return searchField;
     }
 
     /**

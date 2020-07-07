@@ -22,13 +22,15 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.function.Predicate;
 
 /**
  * A {@link org.jdesktop.swingx.JXTextField} designed for searching
  */
-public class SearchTextField extends JPanel {
+public class SearchTextField extends JPanel implements Predicate<String> {
 
     private final JXTextField textField = new JXTextField();
+    private String[] searchStrings = new String[0];
 
     /**
      * Creates a new instance
@@ -58,14 +60,7 @@ public class SearchTextField extends JPanel {
      * @return the search strings
      */
     public String[] getSearchStrings() {
-        String[] searchStrings = null;
-        if (getText() != null) {
-            String str = getText().trim();
-            if (!str.isEmpty()) {
-                searchStrings = str.split(" ");
-            }
-        }
-        return searchStrings;
+       return searchStrings;
     }
 
     public String getText() {
@@ -89,8 +84,35 @@ public class SearchTextField extends JPanel {
         textField.getDocument().addDocumentListener(new DocumentChangeListener() {
             @Override
             public void changed(DocumentEvent documentEvent) {
+                updateSearchStrings();
                 listener.actionPerformed(new ActionEvent(this, 1, "search-text-changed"));
             }
         });
+    }
+
+    private void updateSearchStrings() {
+        if (getText() != null) {
+            String str = getText().trim();
+            if (!str.isEmpty()) {
+                searchStrings = str.split(" ");
+            }
+            else {
+                searchStrings = new String[0];
+            }
+        }
+        else {
+            searchStrings = new String[0];
+        }
+    }
+
+    @Override
+    public boolean test(String s) {
+        if(s == null)
+            s = "";
+        for (String searchString : getSearchStrings()) {
+            if(!s.toLowerCase().contains(searchString.toLowerCase()))
+                return false;
+        }
+        return true;
     }
 }

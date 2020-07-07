@@ -216,22 +216,7 @@ public class AddDynamicParameterPanel extends JPanel {
     }
 
     private List<ACAQParameterTypeDeclaration> getFilteredAndSortedDeclarations() {
-        String[] searchStrings = searchField.getSearchStrings();
-        Predicate<ACAQParameterTypeDeclaration> filterFunction = declaration -> {
-            if (searchStrings != null && searchStrings.length > 0) {
-                boolean matches = true;
-                String name = declaration.getName();
-                for (String searchString : searchStrings) {
-                    if (!name.toLowerCase().contains(searchString.toLowerCase())) {
-                        matches = false;
-                        break;
-                    }
-                }
-                return matches;
-            } else {
-                return true;
-            }
-        };
+        Predicate<ACAQParameterTypeDeclaration> filterFunction = declaration -> searchField.test(declaration.getName());
 
         return availableTypes.stream().filter(filterFunction).sorted(ACAQParameterTypeDeclaration::compareTo).collect(Collectors.toList());
     }

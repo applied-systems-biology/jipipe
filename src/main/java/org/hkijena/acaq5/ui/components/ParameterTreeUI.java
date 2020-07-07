@@ -36,14 +36,17 @@ import java.util.List;
  * Contains {@link javax.swing.tree.DefaultMutableTreeNode} that either reference the {@link org.hkijena.acaq5.api.parameters.ACAQParameterAccess}
  * or {@link ACAQParameterTree.Node}
  */
-public class ParameterTreeUI extends JTree {
+public class ParameterTreeUI extends JPanel {
+    private JTree treeComponent;
+    private SearchTextField searchTextField;
+    private JScrollPane treeScrollPane;
     private ACAQParameterTree tree;
 
     /**
      * Creates a new empty instance
      */
     public ParameterTreeUI() {
-        this.setCellRenderer(new Renderer());
+        initialize();
     }
 
     /**
@@ -53,8 +56,19 @@ public class ParameterTreeUI extends JTree {
      */
     public ParameterTreeUI(ACAQParameterTree tree) {
         this.tree = tree;
-        this.setCellRenderer(new Renderer());
+        initialize();
         rebuildModel();
+    }
+
+    private void initialize() {
+        setLayout(new BorderLayout());
+        treeComponent = new JTree();
+        treeComponent.setCellRenderer(new Renderer());
+        treeScrollPane = new JScrollPane(treeComponent);
+        add(treeScrollPane, BorderLayout.CENTER);
+        searchTextField = new SearchTextField();
+        searchTextField.addActionListener(e -> rebuildModel());
+        add(searchTextField, BorderLayout.NORTH);
     }
 
     public ACAQParameterTree getTree() {
@@ -72,19 +86,23 @@ public class ParameterTreeUI extends JTree {
     public void rebuildModel() {
         DefaultMutableTreeNode root = new DefaultMutableTreeNode(tree.getRoot());
         DefaultTreeModel model = new DefaultTreeModel(root);
-        traverse(root, tree.getRoot());
-        setModel(model);
+        traverse(root, tree.getRoot(), false);
+        treeComponent.setModel(model);
+        UIUtils.expandAllTree(treeComponent);
     }
 
-    private void traverse(DefaultMutableTreeNode uiNode, ACAQParameterTree.Node node) {
+    private void traverse(DefaultMutableTreeNode uiNode, ACAQParameterTree.Node node, boolean noSearch) {
         for (ACAQParameterAccess value : node.getParameters().values()) {
-            DefaultMutableTreeNode parameterUINode = new DefaultMutableTreeNode(value);
-            uiNode.add(parameterUINode);
+            if(noSearch || searchTextField.test(value.getName())) {
+                DefaultMutableTreeNode parameterUINode = new DefaultMutableTreeNode(value);
+                uiNode.add(parameterUINode);
+            }
         }
         for (ACAQParameterTree.Node child : node.getChildren().values()) {
             DefaultMutableTreeNode childUINode = new DefaultMutableTreeNode(child);
-            uiNode.add(childUINode);
-            traverse(childUINode, child);
+            traverse(childUINode, child, noSearch || searchTextField.test(child.getName()));
+            if(childUINode.getChildCount() > 0)
+                uiNode.add(childUINode);
         }
     }
 
@@ -98,14 +116,13 @@ public class ParameterTreeUI extends JTree {
      */
     public static List<Object> showPickerDialog(Component parent, ACAQParameterTree tree, String title) {
         ParameterTreeUI ui = new ParameterTreeUI(tree);
-        UIUtils.expandAllTree(ui);
         JPanel contentPanel = new JPanel(new BorderLayout());
 
         JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(parent));
         dialog.setTitle(title);
         dialog.setContentPane(contentPanel);
 
-        contentPanel.add(new JScrollPane(ui), BorderLayout.CENTER);
+        contentPanel.add(ui, BorderLayout.CENTER);
 
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
@@ -113,7 +130,7 @@ public class ParameterTreeUI extends JTree {
 
         JButton cancelButton = new JButton("Cancel", UIUtils.getIconFromResources("remove.png"));
         cancelButton.addActionListener(e -> {
-            ui.clearSelection();
+            ui.treeComponent.clearSelection();
             dialog.setVisible(false);
         });
         buttonPanel.add(cancelButton);
@@ -125,14 +142,14 @@ public class ParameterTreeUI extends JTree {
         contentPanel.add(buttonPanel, BorderLayout.SOUTH);
 
         dialog.pack();
-        dialog.setSize(300, 400);
+        dialog.setSize(400, 500);
         dialog.setLocationRelativeTo(parent);
         dialog.setModal(true);
         dialog.setVisible(true);
 
         List<Object> selected = new ArrayList<>();
-        if (ui.getSelectionPaths() != null) {
-            for (TreePath selectionPath : ui.getSelectionPaths()) {
+        if (ui.treeComponent.getSelectionPaths() != null) {
+            for (TreePath selectionPath : ui.treeComponent.getSelectionPaths()) {
                 if (selectionPath != null) {
                     Object lastPathComponent = selectionPath.getLastPathComponent();
                     if (lastPathComponent instanceof DefaultMutableTreeNode) {

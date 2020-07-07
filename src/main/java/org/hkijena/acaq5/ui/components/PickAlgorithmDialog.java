@@ -117,23 +117,7 @@ public class PickAlgorithmDialog extends JDialog {
     }
 
     private List<ACAQGraphNode> getFilteredAndSortedDeclarations() {
-        String[] searchStrings = searchField.getSearchStrings();
-        Predicate<ACAQGraphNode> filterFunction = declaration -> {
-            if (searchStrings != null && searchStrings.length > 0) {
-                boolean matches = true;
-                String name = declaration.getName();
-                for (String searchString : searchStrings) {
-                    if (!name.toLowerCase().contains(searchString.toLowerCase())) {
-                        matches = false;
-                        break;
-                    }
-                }
-                return matches;
-            } else {
-                return true;
-            }
-        };
-
+        Predicate<ACAQGraphNode> filterFunction = declaration -> searchField.test(declaration.getName());
         return algorithms.stream().filter(filterFunction).sorted(Comparator.comparing(ACAQGraphNode::getName)).collect(Collectors.toList());
     }
 

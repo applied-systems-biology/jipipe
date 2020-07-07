@@ -55,22 +55,8 @@ public class ACAQAlgorithmCompendiumUI extends ACAQCompendiumUI<ACAQAlgorithmDec
     }
 
     @Override
-    protected List<ACAQAlgorithmDeclaration> getFilteredItems(String[] searchStrings) {
-        Predicate<ACAQAlgorithmDeclaration> filterFunction = declaration -> {
-            if (searchStrings != null && searchStrings.length > 0) {
-                boolean matches = true;
-                String name = declaration.getName() + " " + declaration.getDescription() + " " + declaration.getMenuPath();
-                for (String searchString : searchStrings) {
-                    if (!name.toLowerCase().contains(searchString.toLowerCase())) {
-                        matches = false;
-                        break;
-                    }
-                }
-                return matches;
-            } else {
-                return true;
-            }
-        };
+    protected List<ACAQAlgorithmDeclaration> getFilteredItems() {
+        Predicate<ACAQAlgorithmDeclaration> filterFunction = declaration -> getSearchField().test( declaration.getName() + " " + declaration.getDescription() + " " + declaration.getMenuPath());
 
         return ACAQAlgorithmRegistry.getInstance().getRegisteredAlgorithms().values().stream().filter(filterFunction)
                 .sorted(Comparator.comparing(ACAQAlgorithmDeclaration::getName)).collect(Collectors.toList());

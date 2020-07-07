@@ -142,22 +142,7 @@ public class RunSingleAlgorithmDialog extends JDialog implements ACAQWorkbench {
     }
 
     private List<ACAQAlgorithmDeclaration> getFilteredAndSortedDeclarations() {
-        String[] searchStrings = searchField.getSearchStrings();
-        Predicate<ACAQAlgorithmDeclaration> filterFunction = declaration -> {
-            if (searchStrings != null && searchStrings.length > 0) {
-                boolean matches = true;
-                String name = declaration.getName() + " " + declaration.getDescription() + " " + declaration.getMenuPath();
-                for (String searchString : searchStrings) {
-                    if (!name.toLowerCase().contains(searchString.toLowerCase())) {
-                        matches = false;
-                        break;
-                    }
-                }
-                return matches;
-            } else {
-                return true;
-            }
-        };
+        Predicate<ACAQAlgorithmDeclaration> filterFunction = declaration -> searchField.test(declaration.getName() + " " + declaration.getDescription() + " " + declaration.getMenuPath());
 
         return ACAQAlgorithmRegistry.getInstance().getRegisteredAlgorithms().values().stream().filter(filterFunction)
                 .sorted(Comparator.comparing(ACAQAlgorithmDeclaration::getName)).collect(Collectors.toList());

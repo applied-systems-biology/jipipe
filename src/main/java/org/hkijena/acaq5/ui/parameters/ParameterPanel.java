@@ -205,15 +205,13 @@ public class ParameterPanel extends FormPanel implements Contextual {
             }
         }
 
-        String[] searchStrings = searchField.getSearchStrings();
-
         List<ACAQParameterEditorUI> uiList = new ArrayList<>();
         ACAQParameterVisibility sourceVisibility = traversed.getSourceVisibility(parameterHolder);
         for (ACAQParameterAccess parameterAccess : parameterAccesses) {
             ACAQParameterVisibility visibility = parameterAccess.getVisibility();
             if (!visibility.isVisibleIn(sourceVisibility))
                 continue;
-            if (!searchStringsMatches(parameterAccess, searchStrings))
+            if (withSearchBar && !searchField.test(parameterAccess.getName() + " " + parameterAccess.getDescription()))
                 continue;
 
             ACAQParameterEditorUI ui = ACAQUIParameterTypeRegistry.getInstance().createEditorFor(workbench, parameterAccess);
@@ -271,19 +269,6 @@ public class ParameterPanel extends FormPanel implements Contextual {
             markdownString.append("No description provided.");
         }
         return new MarkdownDocument(markdownString.toString());
-    }
-
-    private boolean searchStringsMatches(ACAQParameterAccess access, String[] strings) {
-        if (access == null)
-            return true;
-        if (strings == null)
-            return true;
-        String haystack = access.getName() + " " + access.getDescription();
-        for (String str : strings) {
-            if (haystack.toLowerCase().contains(str.toLowerCase()))
-                return true;
-        }
-        return false;
     }
 
     private void removeDynamicParameter(String key, ACAQDynamicParameterCollection parameterHolder) {

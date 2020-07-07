@@ -165,22 +165,7 @@ public class ACAQAlgorithmFinderUI extends JPanel {
     }
 
     private List<ACAQAlgorithmDeclaration> getFilteredAndSortedCompatibleTargetAlgorithms() {
-        String[] searchStrings = searchField.getSearchStrings();
-        Predicate<ACAQAlgorithmDeclaration> filterFunction = declaration -> {
-            if (searchStrings != null && searchStrings.length > 0) {
-                boolean matches = true;
-                String name = declaration.getName();
-                for (String searchString : searchStrings) {
-                    if (!name.toLowerCase().contains(searchString.toLowerCase())) {
-                        matches = false;
-                        break;
-                    }
-                }
-                return matches;
-            } else {
-                return true;
-            }
-        };
+        Predicate<ACAQAlgorithmDeclaration> filterFunction = declaration -> searchField.test(declaration.getName());
         return findCompatibleTargetAlgorithms(outputSlot).stream().filter(filterFunction).sorted(this::compareAlgorithmScore).collect(Collectors.toList());
     }
 

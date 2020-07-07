@@ -298,23 +298,7 @@ public class AddAlgorithmSlotPanel extends JPanel {
     }
 
     private List<ACAQDataDeclaration> getFilteredAndSortedDeclarations() {
-        String[] searchStrings = searchField.getSearchStrings();
-        Predicate<ACAQDataDeclaration> filterFunction = declaration -> {
-            if (searchStrings != null && searchStrings.length > 0) {
-                boolean matches = true;
-                String name = declaration.getName();
-                for (String searchString : searchStrings) {
-                    if (!name.toLowerCase().contains(searchString.toLowerCase())) {
-                        matches = false;
-                        break;
-                    }
-                }
-                return matches;
-            } else {
-                return true;
-            }
-        };
-
+        Predicate<ACAQDataDeclaration> filterFunction = declaration -> searchField.test(declaration.getName());
         return availableTypes.stream().filter(filterFunction).sorted(ACAQDataDeclaration::compareTo).collect(Collectors.toList());
     }
 

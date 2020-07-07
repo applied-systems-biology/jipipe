@@ -98,18 +98,8 @@ public class ACAQIconPickerDialog extends JDialog implements MouseListener {
     private void reloadIconList() {
         DefaultListModel<String> model = (DefaultListModel<String>) iconList.getModel();
         model.clear();
-        String[] searchStrings = searchField.getSearchStrings();
         for (String icon : availableIcons) {
-            boolean matches = true;
-            if (searchStrings != null) {
-                for (String searchString : searchStrings) {
-                    if (!icon.toLowerCase().contains(searchString)) {
-                        matches = false;
-                        break;
-                    }
-                }
-            }
-            if (matches) {
+            if (searchField.test(icon)) {
                 model.addElement(icon);
             }
         }
