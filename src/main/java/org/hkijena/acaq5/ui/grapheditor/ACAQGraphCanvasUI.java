@@ -20,7 +20,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import org.hkijena.acaq5.api.algorithm.ACAQGraphEdge;
 import org.hkijena.acaq5.api.algorithm.ACAQGraph;
 import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
@@ -37,7 +36,7 @@ import org.hkijena.acaq5.ui.events.AlgorithmSelectedEvent;
 import org.hkijena.acaq5.ui.events.AlgorithmSelectionChangedEvent;
 import org.hkijena.acaq5.ui.events.AlgorithmUIActionRequestedEvent;
 import org.hkijena.acaq5.ui.events.DefaultAlgorithmUIActionRequestedEvent;
-import org.hkijena.acaq5.ui.grapheditor.connections.NonCollidingRectangularLineDrawer;
+import org.hkijena.acaq5.ui.grapheditor.connections.RectangularLineDrawer;
 import org.hkijena.acaq5.ui.grapheditor.contextmenu.AlgorithmUIAction;
 import org.hkijena.acaq5.ui.grapheditor.layout.MSTGraphAutoLayoutMethod;
 import org.hkijena.acaq5.ui.grapheditor.layout.SugiyamaGraphAutoLayoutMethod;
@@ -46,9 +45,6 @@ import org.hkijena.acaq5.utils.ScreenImage;
 import org.hkijena.acaq5.utils.ScreenImageSVG;
 import org.hkijena.acaq5.utils.UIUtils;
 import org.jfree.graphics2d.svg.SVGGraphics2D;
-import org.jgrapht.graph.DefaultDirectedGraph;
-import org.jgrapht.graph.DefaultEdge;
-import org.jgrapht.traverse.TopologicalOrderIterator;
 
 import javax.swing.*;
 import java.awt.*;
@@ -631,15 +627,90 @@ public class ACAQGraphCanvasUI extends ACAQWorkbenchPanel implements MouseMotion
         Graphics2D g = (Graphics2D) graphics;
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        NonCollidingRectangularLineDrawer drawer = new NonCollidingRectangularLineDrawer();
+        RectangularLineDrawer drawer = new RectangularLineDrawer();
 
-        // Draw the edges to outside compartments
-        // The edges should be at the center input point of the node
-        // They are not covered by the other method below
         g.setStroke(new BasicStroke(2));
         graphics.setColor(Color.LIGHT_GRAY);
+        paintOutsideEdges(g, drawer, false);
+        paintEdges(graphics, g, drawer, false);
+
+        g.setStroke(new BasicStroke(7));
+        paintOutsideEdges(g, drawer, true);
+        paintEdges(graphics, g, drawer, true);
+
+        // Draw selections
+        g.setStroke(new BasicStroke(3, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL, 0, new float[]{9}, 0));
+        for (ACAQNodeUI ui : selection) {
+            Rectangle bounds = ui.getBounds();
+            bounds.x -= 4;
+            bounds.y -= 4;
+            bounds.width += 8;
+            bounds.height += 8;
+            g.setColor(ui.getBorderColor());
+            g.drawRect(bounds.x, bounds.y, bounds.width, bounds.height);
+        }
+
+        g.setStroke(new BasicStroke(1));
+
+        if (cursor != null) {
+            g.drawImage(cursorImage.getImage(),
+                    cursor.x - cursorImage.getIconWidth() / 2,
+                    cursor.y - cursorImage.getIconHeight() / 2,
+                    null);
+        }
+    }
+
+    private void paintEdges(Graphics graphics, Graphics2D g, RectangularLineDrawer drawer, boolean onlySelected) {
+        for (Map.Entry<ACAQDataSlot, ACAQDataSlot> kv : graph.getSlotEdges()) {
+            ACAQDataSlot source = kv.getKey();
+            ACAQDataSlot target = kv.getValue();
+            ACAQNodeUI sourceUI = nodeUIs.getOrDefault(source.getNode(), null);
+            ACAQNodeUI targetUI = nodeUIs.getOrDefault(target.getNode(), null);
+
+            if (sourceUI == null || targetUI == null)
+                continue;
+            if(onlySelected) {
+                if(!selection.contains(sourceUI) && !selection.contains(targetUI))
+                    continue;
+            }
+            else {
+                if(selection.contains(sourceUI) || selection.contains(targetUI))
+                    continue;
+            }
+            if (ACAQDatatypeRegistry.isTriviallyConvertible(source.getAcceptedDataType(), target.getAcceptedDataType()))
+                graphics.setColor(Color.DARK_GRAY);
+            else if (ACAQDatatypeRegistry.getInstance().isConvertible(source.getAcceptedDataType(), target.getAcceptedDataType()))
+                graphics.setColor(Color.BLUE);
+            else
+                graphics.setColor(Color.RED);
+
+            PointRange sourcePoint;
+            PointRange targetPoint;
+
+            sourcePoint = sourceUI.getSlotLocation(source);
+            sourcePoint.add(sourceUI.getLocation());
+            targetPoint = targetUI.getSlotLocation(target);
+            targetPoint.add(targetUI.getLocation());
+
+            // Tighten the point ranges: Bringing the centers together
+            PointRange.tighten(sourcePoint, targetPoint);
+
+            // Draw arrow
+            drawEdge(g, sourcePoint.center, sourceUI.getBounds(), targetPoint.center, drawer);
+        }
+    }
+
+    private void paintOutsideEdges(Graphics2D g, RectangularLineDrawer drawer, boolean onlySelected) {
         for (ACAQNodeUI ui : nodeUIs.values()) {
             if (!ui.getNode().getVisibleCompartments().isEmpty()) {
+                if(onlySelected) {
+                    if(!selection.contains(ui))
+                        continue;
+                }
+                else {
+                    if(selection.contains(ui))
+                        continue;
+                }
                 Point sourcePoint = new Point();
                 Point targetPoint = new Point();
                 if (currentViewMode == ViewMode.Horizontal) {
@@ -670,59 +741,6 @@ public class ACAQGraphCanvasUI extends ACAQWorkbenchPanel implements MouseMotion
                 drawOutsideEdge(g, sourcePoint, targetPoint, drawer);
             }
         }
-
-        // Draw edges between loaded algorithm UIs
-        graphics.setColor(Color.DARK_GRAY);
-        for (Map.Entry<ACAQDataSlot, ACAQDataSlot> kv : graph.getSlotEdges()) {
-            ACAQDataSlot source = kv.getKey();
-            ACAQDataSlot target = kv.getValue();
-            ACAQNodeUI sourceUI = nodeUIs.getOrDefault(source.getNode(), null);
-            ACAQNodeUI targetUI = nodeUIs.getOrDefault(target.getNode(), null);
-
-            if (sourceUI == null || targetUI == null)
-                continue;
-            if (ACAQDatatypeRegistry.isTriviallyConvertible(source.getAcceptedDataType(), target.getAcceptedDataType()))
-                graphics.setColor(Color.DARK_GRAY);
-            else if (ACAQDatatypeRegistry.getInstance().isConvertible(source.getAcceptedDataType(), target.getAcceptedDataType()))
-                graphics.setColor(Color.BLUE);
-            else
-                graphics.setColor(Color.RED);
-
-            PointRange sourcePoint;
-            PointRange targetPoint;
-
-            sourcePoint = sourceUI.getSlotLocation(source);
-            sourcePoint.add(sourceUI.getLocation());
-            targetPoint = targetUI.getSlotLocation(target);
-            targetPoint.add(targetUI.getLocation());
-
-            // Tighten the point ranges: Bringing the centers together
-            PointRange.tighten(sourcePoint, targetPoint);
-
-            // Draw arrow
-            drawEdge(g, sourcePoint.center, sourceUI.getBounds(), targetPoint.center, drawer);
-        }
-
-        // Draw selections
-        g.setStroke(new BasicStroke(3, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL, 0, new float[]{9}, 0));
-        for (ACAQNodeUI ui : selection) {
-            Rectangle bounds = ui.getBounds();
-            bounds.x -= 4;
-            bounds.y -= 4;
-            bounds.width += 8;
-            bounds.height += 8;
-            g.setColor(ui.getBorderColor());
-            g.drawRect(bounds.x, bounds.y, bounds.width, bounds.height);
-        }
-
-        g.setStroke(new BasicStroke(1));
-
-        if (cursor != null) {
-            g.drawImage(cursorImage.getImage(),
-                    cursor.x - cursorImage.getIconWidth() / 2,
-                    cursor.y - cursorImage.getIconHeight() / 2,
-                    null);
-        }
     }
 
     /**
@@ -742,7 +760,7 @@ public class ACAQGraphCanvasUI extends ACAQWorkbenchPanel implements MouseMotion
         return null;
     }
 
-    private void drawOutsideEdge(Graphics2D g, Point sourcePoint, Point targetPoint, NonCollidingRectangularLineDrawer drawer) {
+    private void drawOutsideEdge(Graphics2D g, Point sourcePoint, Point targetPoint, RectangularLineDrawer drawer) {
         int sourceA;
         int targetA;
         int sourceB;
@@ -758,11 +776,11 @@ public class ACAQGraphCanvasUI extends ACAQWorkbenchPanel implements MouseMotion
         }
 
         drawer.start(sourceA, sourceB);
-        drawer.moveToMajor(targetA, false);
+        drawer.moveToMajor(targetA);
         drawer.drawCurrentSegment(g, currentViewMode);
     }
 
-    private void drawEdge(Graphics2D g, Point sourcePoint, Rectangle sourceBounds, Point targetPoint, NonCollidingRectangularLineDrawer drawer) {
+    private void drawEdge(Graphics2D g, Point sourcePoint, Rectangle sourceBounds, Point targetPoint, RectangularLineDrawer drawer) {
         int buffer;
         int sourceA;
         int targetA;
@@ -794,30 +812,30 @@ public class ACAQGraphCanvasUI extends ACAQWorkbenchPanel implements MouseMotion
         // Target point is above the source. We have to navigate around it
         if (sourceA > targetA) {
             // Add some space in major direction
-            drawer.addToMajor(buffer, false);
+            drawer.addToMajor(buffer);
 
             // Go left or right
             if (targetB <= drawer.getLastSegment().b1) {
-                drawer.moveToMinor(Math.max(0, componentStartB - buffer), true);
+                drawer.moveToMinor(Math.max(0, componentStartB - buffer));
             } else {
-                drawer.moveToMinor(componentEndB + buffer, true);
+                drawer.moveToMinor(componentEndB + buffer);
             }
 
             // Go to target height
-            drawer.moveToMajor(Math.max(0, targetA - buffer), false);
+            drawer.moveToMajor(Math.max(0, targetA - buffer));
         } else if (sourceB != targetB) {
             // Add some space in major direction
             int dA = targetA - sourceA;
-            drawer.moveToMajor(Math.min(sourceA + buffer, sourceA + dA / 2), false);
+            drawer.moveToMajor(Math.min(sourceA + buffer, sourceA + dA / 2));
         }
 
         // Target point X is shifted
         if (drawer.getLastSegment().b1 != targetB) {
-            drawer.moveToMinor(targetB, true);
+            drawer.moveToMinor(targetB);
         }
 
         // Go to end point
-        drawer.moveToMajor(targetA, false);
+        drawer.moveToMajor(targetA);
         drawer.drawCurrentSegment(g, currentViewMode);
     }
 
