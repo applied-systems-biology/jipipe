@@ -39,6 +39,7 @@ import org.hkijena.acaq5.ui.events.AlgorithmUIActionRequestedEvent;
 import org.hkijena.acaq5.ui.events.DefaultAlgorithmUIActionRequestedEvent;
 import org.hkijena.acaq5.ui.grapheditor.connections.NonCollidingRectangularLineDrawer;
 import org.hkijena.acaq5.ui.grapheditor.contextmenu.AlgorithmUIAction;
+import org.hkijena.acaq5.ui.grapheditor.layout.MSTGraphAutoLayoutMethod;
 import org.hkijena.acaq5.ui.grapheditor.layout.SugiyamaGraphAutoLayoutMethod;
 import org.hkijena.acaq5.utils.PointRange;
 import org.hkijena.acaq5.utils.ScreenImage;
@@ -255,6 +256,9 @@ public class ACAQGraphCanvasUI extends ACAQWorkbenchPanel implements MouseMotion
         switch(GraphEditorUISettings.getInstance().getAutoLayout()) {
             case Sugiyama:
                 (new SugiyamaGraphAutoLayoutMethod()).accept(this);
+                break;
+            case MST:
+                (new MSTGraphAutoLayoutMethod()).accept(this);
                 break;
         }
         repaint();

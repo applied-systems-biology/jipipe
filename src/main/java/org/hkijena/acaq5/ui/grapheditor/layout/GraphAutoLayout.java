@@ -14,5 +14,6 @@
 package org.hkijena.acaq5.ui.grapheditor.layout;
 
 public enum GraphAutoLayout {
-    Sugiyama
+    Sugiyama,
+    MST
 }
