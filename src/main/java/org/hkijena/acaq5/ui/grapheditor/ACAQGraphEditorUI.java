@@ -126,6 +126,8 @@ public abstract class ACAQGraphEditorUI extends ACAQWorkbenchPanel implements Mo
         canvasUI.addMouseListener(this);
         canvasUI.addMouseMotionListener(this);
         scrollPane = new JScrollPane(canvasUI);
+        scrollPane.getVerticalScrollBar().setUnitIncrement(25);
+        scrollPane.getHorizontalScrollBar().setUnitIncrement(25);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         splitPane.setLeftComponent(scrollPane);
