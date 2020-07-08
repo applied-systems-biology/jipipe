@@ -32,6 +32,7 @@ import org.hkijena.acaq5.utils.StringUtils;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -52,6 +53,7 @@ public class CollectDataAlgorithm extends ACAQAlgorithm {
     private String separatorString = "_";
     private String equalsString = "=";
     private String missingString = "NA";
+    private Path outputDirectory = Paths.get("collected-data");
 
     public CollectDataAlgorithm(ACAQAlgorithmDeclaration declaration) {
         super(declaration, ACAQDefaultMutableSlotConfiguration.builder()
@@ -69,6 +71,7 @@ public class CollectDataAlgorithm extends ACAQAlgorithm {
         this.missingString = other.missingString;
         this.ignoreMissingMetadata = other.ignoreMissingMetadata;
         this.withMetadataKeys = other.withMetadataKeys;
+        this.outputDirectory = other.outputDirectory;
     }
 
     @Override
@@ -78,7 +81,14 @@ public class CollectDataAlgorithm extends ACAQAlgorithm {
             getFirstOutputSlot().addData(new FolderData(getFirstOutputSlot().getStoragePath()));
             return;
         }
-        Path outputPath = getFirstOutputSlot().getStoragePath();
+        Path outputPath;
+        if(outputDirectory == null || outputDirectory.toString().isEmpty() || !outputDirectory.isAbsolute()) {
+            outputPath = getFirstOutputSlot().getStoragePath().resolve(outputDirectory);
+        }
+        else {
+            outputPath = outputDirectory;
+        }
+
         if(splitByInputSlots) {
             for (ACAQDataSlot inputSlot : getInputSlots()) {
                 if(isCancelled.get())
@@ -207,5 +217,17 @@ public class CollectDataAlgorithm extends ACAQAlgorithm {
     @ACAQParameter("with-metadata-keys")
     public void setWithMetadataKeys(boolean withMetadataKeys) {
         this.withMetadataKeys = withMetadataKeys;
+    }
+
+    @ACAQDocumentation(name = "Output directory", description = "Can be a relative or absolute directory. All collected files will be put into this directory. " +
+            "If relative, it is relative to the output slot's output directory that is generated based on the current run's output path.")
+    @ACAQParameter("output-directory")
+    public Path getOutputDirectory() {
+        return outputDirectory;
+    }
+
+    @ACAQParameter("output-directory")
+    public void setOutputDirectory(Path outputDirectory) {
+        this.outputDirectory = outputDirectory;
     }
 }
