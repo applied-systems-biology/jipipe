@@ -44,6 +44,7 @@ import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -69,12 +70,22 @@ public class ROIListData extends ArrayList<Roi> implements ACAQData {
     }
 
     /**
-     * Loads {@link Roi} from a path that contains a zip file
+     * Loads {@link Roi} from a path that contains a zip/roi file
      *
-     * @param storageFilePath path that contains a zip file
+     * @param storageFilePath path that contains a zip/roi file
      */
     public ROIListData(Path storageFilePath) {
-        addAll(loadRoiListFromFile(PathUtils.findFileByExtensionIn(storageFilePath, ".zip")));
+        Path zipFile = PathUtils.findFileByExtensionIn(storageFilePath, ".zip");
+        Path roiFile = PathUtils.findFileByExtensionIn(storageFilePath, ".roi");
+        if(zipFile != null) {
+            addAll(loadRoiListFromFile(zipFile));
+        }
+        else if(roiFile != null) {
+            addAll(loadRoiListFromFile(roiFile));
+        }
+        else {
+            throw new RuntimeException(new FileNotFoundException("Could not find a .roi or .zip file in " + storageFilePath));
+        }
     }
 
     /**
@@ -121,22 +132,36 @@ public class ROIListData extends ArrayList<Roi> implements ACAQData {
     @Override
     public void saveTo(Path storageFilePath, String name, boolean forceName) {
         // Code adapted from ImageJ RoiManager class
-        try {
-            ZipOutputStream zos = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(storageFilePath.resolve(name + ".zip").toFile())));
-            DataOutputStream out = new DataOutputStream(new BufferedOutputStream(zos));
-            RoiEncoder re = new RoiEncoder(out);
-            for (int i = 0; i < this.size(); i++) {
-                String label = name + "-" + i;
-                Roi roi = this.get(i);
-                if (roi == null) continue;
-                if (!label.endsWith(".roi")) label += ".roi";
-                zos.putNextEntry(new ZipEntry(label));
+        if(size() == 1) {
+            try {
+                FileOutputStream out = new FileOutputStream(storageFilePath.resolve(name + ".roi").toFile());
+                RoiEncoder re = new RoiEncoder(out);
+                Roi roi = this.get(0);
                 re.write(roi);
                 out.flush();
+                out.close();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
-            out.close();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        }
+        else {
+            try {
+                ZipOutputStream zos = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(storageFilePath.resolve(name + ".zip").toFile())));
+                DataOutputStream out = new DataOutputStream(new BufferedOutputStream(zos));
+                RoiEncoder re = new RoiEncoder(out);
+                for (int i = 0; i < this.size(); i++) {
+                    String label = name + "-" + i;
+                    Roi roi = this.get(i);
+                    if (roi == null) continue;
+                    if (!label.endsWith(".roi")) label += ".roi";
+                    zos.putNextEntry(new ZipEntry(label));
+                    re.write(roi);
+                    out.flush();
+                }
+                out.close();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
@@ -501,47 +526,60 @@ public class ROIListData extends ArrayList<Roi> implements ACAQData {
     public static List<Roi> loadRoiListFromFile(Path fileName) {
         // Code adapted from ImageJ RoiManager
         List<Roi> result = new ArrayList<>();
-        ZipInputStream in = null;
-        ByteArrayOutputStream out = null;
-        int nRois = 0;
-        try {
-            in = new ZipInputStream(new FileInputStream(fileName.toFile()));
-            byte[] buf = new byte[1024];
-            int len;
-            ZipEntry entry = in.getNextEntry();
-            while (entry != null) {
-                String name = entry.getName();
-                if (name.endsWith(".roi")) {
-                    out = new ByteArrayOutputStream();
-                    while ((len = in.read(buf)) > 0)
-                        out.write(buf, 0, len);
-                    out.close();
-                    byte[] bytes = out.toByteArray();
-                    RoiDecoder rd = new RoiDecoder(bytes, name);
-                    Roi roi = rd.getRoi();
-                    if (roi != null) {
-                        name = name.substring(0, name.length() - 4);
-                        result.add(roi);
-                        nRois++;
-                    }
-                }
-                entry = in.getNextEntry();
+
+        if(fileName.toString().toLowerCase().endsWith(".roi")) {
+            try {
+                Roi roi = new RoiDecoder(fileName.toString()).getRoi();
+                if(roi != null)
+                    result.add(roi);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
-            in.close();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } finally {
-            if (in != null)
-                try {
-                    in.close();
-                } catch (IOException e) {
-                }
-            if (out != null)
-                try {
-                    out.close();
-                } catch (IOException e) {
-                }
         }
+        else {
+            ZipInputStream in = null;
+            ByteArrayOutputStream out = null;
+            int nRois = 0;
+            try {
+                in = new ZipInputStream(new FileInputStream(fileName.toFile()));
+                byte[] buf = new byte[1024];
+                int len;
+                ZipEntry entry = in.getNextEntry();
+                while (entry != null) {
+                    String name = entry.getName();
+                    if (name.endsWith(".roi")) {
+                        out = new ByteArrayOutputStream();
+                        while ((len = in.read(buf)) > 0)
+                            out.write(buf, 0, len);
+                        out.close();
+                        byte[] bytes = out.toByteArray();
+                        RoiDecoder rd = new RoiDecoder(bytes, name);
+                        Roi roi = rd.getRoi();
+                        if (roi != null) {
+                            name = name.substring(0, name.length() - 4);
+                            result.add(roi);
+                            nRois++;
+                        }
+                    }
+                    entry = in.getNextEntry();
+                }
+                in.close();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            } finally {
+                if (in != null)
+                    try {
+                        in.close();
+                    } catch (IOException e) {
+                    }
+                if (out != null)
+                    try {
+                        out.close();
+                    } catch (IOException e) {
+                    }
+            }
+        }
+
         return result;
     }
 }

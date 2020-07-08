@@ -49,7 +49,13 @@ public class ROIDataSlotRowUI extends ACAQDefaultResultDataSlotRowUI {
 
     private Path findROIFile() {
         if (getRowStorageFolder() != null && Files.isDirectory(getRowStorageFolder())) {
-            return PathUtils.findFileByExtensionIn(getRowStorageFolder(), ".zip");
+            Path zipFile = PathUtils.findFileByExtensionIn(getRowStorageFolder(), ".zip");
+            if(zipFile == null) {
+                return PathUtils.findFileByExtensionIn(getRowStorageFolder(), ".roi");
+            }
+            else {
+                return zipFile;
+            }
         }
         return null;
     }
