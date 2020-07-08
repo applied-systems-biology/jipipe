@@ -17,7 +17,7 @@ import org.hkijena.acaq5.api.algorithm.ACAQGraph;
 import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.events.AlgorithmGraphChangedEvent;
 
-import java.awt.Point;
+import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
 

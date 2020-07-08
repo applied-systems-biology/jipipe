@@ -78,20 +78,21 @@ public abstract class ACAQParameterEditorUI extends ACAQWorkbenchPanel implement
     /**
      * Sets the parameter value.
      * Can prevent reload()
-     *  @param parameter the value
+     *
+     * @param parameter the value
      * @param reload    if enabled, a reload can happen.
      * @return if the parameter was set
      */
     public boolean setParameter(Object parameter, boolean reload) {
-        if(!reload)
+        if (!reload)
             ++preventReload;
         reloadScheduled = reload;
         boolean success = getParameterAccess().set(parameter);
-        if(!reload)
+        if (!reload)
             --preventReload;
-        if(!success)
+        if (!success)
             reloadScheduled = true;
-        if(reloadScheduled) {
+        if (reloadScheduled) {
             ++preventReload;
             reload();
             --preventReload;

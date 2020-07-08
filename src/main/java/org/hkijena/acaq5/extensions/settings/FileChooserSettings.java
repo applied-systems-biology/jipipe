@@ -21,11 +21,7 @@ import org.hkijena.acaq5.api.registries.ACAQSettingsRegistry;
 import org.hkijena.acaq5.ui.components.PathEditor;
 
 import javax.swing.*;
-import java.awt.Component;
-import java.awt.Dialog;
-import java.awt.FileDialog;
-import java.awt.Frame;
-import java.awt.Window;
+import java.awt.*;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -196,9 +192,9 @@ public class FileChooserSettings implements ACAQParameterCollection {
     /**
      * Lets the user choose a file
      *
-     * @param parent parent component
-     * @param key    location where the dialog is opened
-     * @param title  dialog title
+     * @param parent    parent component
+     * @param key       location where the dialog is opened
+     * @param title     dialog title
      * @param extension The extension to add. Includes a period. Example: ".json"
      * @return selected file or null if dialog was cancelled
      */
@@ -215,7 +211,7 @@ public class FileChooserSettings implements ACAQParameterCollection {
             if (fileName != null) {
                 Path path = Paths.get(fileName);
                 instance.setLastDirectoryBy(key, path.getParent());
-                if(getInstance().isAddFileExtension() &&
+                if (getInstance().isAddFileExtension() &&
                         extension != null &&
                         !path.toString().toLowerCase().endsWith(extension.toLowerCase())) {
                     path = path.getParent().resolve(path.getFileName() + extension);
@@ -231,7 +227,7 @@ public class FileChooserSettings implements ACAQParameterCollection {
             if (fileChooser.showSaveDialog(parent) == JFileChooser.APPROVE_OPTION) {
                 Path path = fileChooser.getSelectedFile().toPath();
                 instance.setLastDirectoryBy(key, path.getParent());
-                if(getInstance().isAddFileExtension() &&
+                if (getInstance().isAddFileExtension() &&
                         extension != null &&
                         !path.toString().toLowerCase().endsWith(extension.toLowerCase())) {
                     path = path.getParent().resolve(path.getFileName() + extension);

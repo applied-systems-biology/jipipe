@@ -143,6 +143,7 @@ public class ResultsTableData implements ACAQData, TableModel {
 
     /**
      * Converts this table into its equivalent Python form (as dictionary of columns)
+     *
      * @return a dictionary of column name to list of row data
      */
     public PyDictionary toPython() {
@@ -151,12 +152,11 @@ public class ResultsTableData implements ACAQData, TableModel {
             String colName = getColumnName(col);
             List<Object> copy = new ArrayList<>();
 
-            if(isNumeric(col)) {
+            if (isNumeric(col)) {
                 for (int row = 0; row < getRowCount(); row++) {
                     copy.add(getValueAsDouble(row, col));
                 }
-            }
-            else {
+            } else {
                 for (int row = 0; row < getRowCount(); row++) {
                     copy.add(getValueAsString(row, col));
                 }
@@ -169,6 +169,7 @@ public class ResultsTableData implements ACAQData, TableModel {
 
     /**
      * Saves the table as CSV
+     *
      * @param path the output file
      */
     public void saveAsCSV(Path path) {
@@ -177,38 +178,6 @@ public class ResultsTableData implements ACAQData, TableModel {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    /**
-     * Converts a Python dictionary of column name to row data list to a results table
-     * @param tableDict the dictionary
-     * @return equivalent results table
-     */
-    public static ResultsTableData fromPython(PyDictionary tableDict) {
-        Map<String, TableColumn> columns = new HashMap<>();
-        for (Object key : tableDict.keys()) {
-            String columnKey = "" + key;
-            List<Object> rows = (List<Object>) tableDict.get(key);
-            boolean isNumeric = true;
-            for (Object row : rows) {
-                isNumeric &= row instanceof Number;
-            }
-            if(isNumeric) {
-                double[] data = new double[rows.size()];
-                for (int i = 0; i < rows.size(); i++) {
-                    data[i] = ((Number)rows.get(i)).doubleValue();
-                }
-                columns.put(columnKey, new DoubleArrayTableColumn(data, columnKey));
-            }
-            else {
-                String[] data = new String[rows.size()];
-                for (int i = 0; i < rows.size(); i++) {
-                    data[i] = "" + rows.get(i);
-                }
-                columns.put(columnKey, new StringArrayTableColumn(data, columnKey));
-            }
-        }
-        return new ResultsTableData(columns);
     }
 
     /**
@@ -903,6 +872,38 @@ public class ResultsTableData implements ACAQData, TableModel {
     }
 
     /**
+     * Converts a Python dictionary of column name to row data list to a results table
+     *
+     * @param tableDict the dictionary
+     * @return equivalent results table
+     */
+    public static ResultsTableData fromPython(PyDictionary tableDict) {
+        Map<String, TableColumn> columns = new HashMap<>();
+        for (Object key : tableDict.keys()) {
+            String columnKey = "" + key;
+            List<Object> rows = (List<Object>) tableDict.get(key);
+            boolean isNumeric = true;
+            for (Object row : rows) {
+                isNumeric &= row instanceof Number;
+            }
+            if (isNumeric) {
+                double[] data = new double[rows.size()];
+                for (int i = 0; i < rows.size(); i++) {
+                    data[i] = ((Number) rows.get(i)).doubleValue();
+                }
+                columns.put(columnKey, new DoubleArrayTableColumn(data, columnKey));
+            } else {
+                String[] data = new String[rows.size()];
+                for (int i = 0; i < rows.size(); i++) {
+                    data[i] = "" + rows.get(i);
+                }
+                columns.put(columnKey, new StringArrayTableColumn(data, columnKey));
+            }
+        }
+        return new ResultsTableData(columns);
+    }
+
+    /**
      * Loads a table from CSV
      *
      * @param file the file
@@ -915,6 +916,7 @@ public class ResultsTableData implements ACAQData, TableModel {
 
     /**
      * Converts a table model into a string results table
+     *
      * @param model the model
      * @return the results table
      */

@@ -25,9 +25,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreePath;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -93,7 +91,7 @@ public class ParameterTreeUI extends JPanel {
 
     private void traverse(DefaultMutableTreeNode uiNode, ACAQParameterTree.Node node, boolean noSearch) {
         for (ACAQParameterAccess value : node.getParameters().values()) {
-            if(noSearch || searchTextField.test(value.getName())) {
+            if (noSearch || searchTextField.test(value.getName())) {
                 DefaultMutableTreeNode parameterUINode = new DefaultMutableTreeNode(value);
                 uiNode.add(parameterUINode);
             }
@@ -101,7 +99,7 @@ public class ParameterTreeUI extends JPanel {
         for (ACAQParameterTree.Node child : node.getChildren().values()) {
             DefaultMutableTreeNode childUINode = new DefaultMutableTreeNode(child);
             traverse(childUINode, child, noSearch || searchTextField.test(child.getName()));
-            if(childUINode.getChildCount() > 0)
+            if (childUINode.getChildCount() > 0)
                 uiNode.add(childUINode);
         }
     }

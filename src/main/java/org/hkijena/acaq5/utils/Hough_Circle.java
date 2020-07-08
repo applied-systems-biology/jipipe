@@ -51,8 +51,7 @@ import ij.process.ImageProcessor;
 import ij.process.LUT;
 
 import javax.swing.*;
-import java.awt.Point;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;

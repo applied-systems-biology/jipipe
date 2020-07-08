@@ -38,8 +38,9 @@ public interface ACAQParameterCollection {
 
     /**
      * Deserializes parameters from JSON
+     *
      * @param target the target object that contains the parameters
-     * @param node the JSON node
+     * @param node   the JSON node
      */
     static void deserializeParametersFromJson(ACAQParameterCollection target, JsonNode node) {
         AtomicBoolean changedStructure = new AtomicBoolean();

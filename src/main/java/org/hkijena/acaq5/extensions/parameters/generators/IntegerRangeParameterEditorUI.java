@@ -20,8 +20,7 @@ import org.hkijena.acaq5.ui.parameters.ACAQParameterEditorUI;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
-import java.awt.Color;
-import java.awt.Font;
+import java.awt.*;
 
 /**
  * Editor for {@link IntegerRange}

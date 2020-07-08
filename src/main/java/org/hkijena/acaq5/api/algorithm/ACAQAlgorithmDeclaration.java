@@ -16,12 +16,7 @@ package org.hkijena.acaq5.api.algorithm;
 import org.hkijena.acaq5.ACAQDependency;
 import org.hkijena.acaq5.utils.StringUtils;
 
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**

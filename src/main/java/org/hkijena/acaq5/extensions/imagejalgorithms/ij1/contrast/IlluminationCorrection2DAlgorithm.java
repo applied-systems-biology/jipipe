@@ -19,13 +19,7 @@ import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQOrganization;
 import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
-import org.hkijena.acaq5.api.algorithm.ACAQDataInterface;
-import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
-import org.hkijena.acaq5.api.algorithm.ACAQSimpleIteratingAlgorithm;
-import org.hkijena.acaq5.api.algorithm.AlgorithmInputSlot;
-import org.hkijena.acaq5.api.algorithm.AlgorithmOutputSlot;
+import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.ACAQDefaultMutableSlotConfiguration;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.parameters.ACAQParameterVisibility;
@@ -105,7 +99,7 @@ public class IlluminationCorrection2DAlgorithm extends ACAQSimpleIteratingAlgori
     }
 
     @ACAQDocumentation(name = "Gaussian filter")
-    @ACAQParameter(value = "gaussian-algorithm", visibility = ACAQParameterVisibility.TransitiveVisible, uiExcludeSubParameters =  { "acaq:data-batch-generation", "acaq:parameter-slot-algorithm"  })
+    @ACAQParameter(value = "gaussian-algorithm", visibility = ACAQParameterVisibility.TransitiveVisible, uiExcludeSubParameters = {"acaq:data-batch-generation", "acaq:parameter-slot-algorithm"})
     public GaussianBlur2DAlgorithm getGaussianAlgorithm() {
         return gaussianAlgorithm;
     }

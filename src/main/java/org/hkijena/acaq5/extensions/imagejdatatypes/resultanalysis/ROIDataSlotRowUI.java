@@ -29,7 +29,7 @@ import org.hkijena.acaq5.utils.PathUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.Frame;
+import java.awt.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -50,10 +50,9 @@ public class ROIDataSlotRowUI extends ACAQDefaultResultDataSlotRowUI {
     private Path findROIFile() {
         if (getRowStorageFolder() != null && Files.isDirectory(getRowStorageFolder())) {
             Path zipFile = PathUtils.findFileByExtensionIn(getRowStorageFolder(), ".zip");
-            if(zipFile == null) {
+            if (zipFile == null) {
                 return PathUtils.findFileByExtensionIn(getRowStorageFolder(), ".roi");
-            }
-            else {
+            } else {
                 return zipFile;
             }
         }

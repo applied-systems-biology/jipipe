@@ -17,12 +17,7 @@ import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQOrganization;
 import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
-import org.hkijena.acaq5.api.algorithm.ACAQDataInterface;
-import org.hkijena.acaq5.api.algorithm.ACAQSimpleIteratingAlgorithm;
-import org.hkijena.acaq5.api.algorithm.AlgorithmInputSlot;
-import org.hkijena.acaq5.api.algorithm.AlgorithmOutputSlot;
+import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.ACAQAnnotation;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.parameters.ACAQDynamicParameterCollection;
@@ -116,8 +111,8 @@ public class ModifyAnnotationScript extends ACAQSimpleIteratingAlgorithm {
         this.code = code;
     }
 
-     @ACAQDocumentation(name = "Script parameters", description = "The following parameters will be passed to the Python script. The variable name is equal to the unique parameter identifier.")
-     @ACAQParameter("script-parameters")
+    @ACAQDocumentation(name = "Script parameters", description = "The following parameters will be passed to the Python script. The variable name is equal to the unique parameter identifier.")
+    @ACAQParameter("script-parameters")
     public ACAQDynamicParameterCollection getScriptParameters() {
         return scriptParameters;
     }

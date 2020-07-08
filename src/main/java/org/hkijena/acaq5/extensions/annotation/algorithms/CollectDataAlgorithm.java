@@ -57,10 +57,10 @@ public class CollectDataAlgorithm extends ACAQAlgorithm {
 
     public CollectDataAlgorithm(ACAQAlgorithmDeclaration declaration) {
         super(declaration, ACAQDefaultMutableSlotConfiguration.builder()
-        .addInputSlot("Input", ACAQData.class)
-        .addOutputSlot("Output path", FolderData.class, null)
-        .sealOutput()
-        .build());
+                .addInputSlot("Input", ACAQData.class)
+                .addOutputSlot("Output path", FolderData.class, null)
+                .sealOutput()
+                .build());
     }
 
     public CollectDataAlgorithm(CollectDataAlgorithm other) {
@@ -76,35 +76,33 @@ public class CollectDataAlgorithm extends ACAQAlgorithm {
 
     @Override
     public void run(ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
-        if(isPassThrough()) {
+        if (isPassThrough()) {
             algorithmProgress.accept(subProgress.resolve("Data passed through to output"));
             getFirstOutputSlot().addData(new FolderData(getFirstOutputSlot().getStoragePath()));
             return;
         }
         Path outputPath;
-        if(outputDirectory == null || outputDirectory.toString().isEmpty() || !outputDirectory.isAbsolute()) {
+        if (outputDirectory == null || outputDirectory.toString().isEmpty() || !outputDirectory.isAbsolute()) {
             outputPath = getFirstOutputSlot().getStoragePath().resolve(outputDirectory);
-        }
-        else {
+        } else {
             outputPath = outputDirectory;
         }
 
-        if(splitByInputSlots) {
+        if (splitByInputSlots) {
             for (ACAQDataSlot inputSlot : getInputSlots()) {
-                if(isCancelled.get())
+                if (isCancelled.get())
                     return;
                 writeToFolder(Collections.singletonList(inputSlot), outputPath.resolve(inputSlot.getName()), subProgress.resolve("Slot '" + inputSlot.getName() + "'"), algorithmProgress, isCancelled);
                 getFirstOutputSlot().addData(new FolderData(outputPath.resolve(inputSlot.getName())));
             }
-        }
-        else {
+        } else {
             writeToFolder(getInputSlots(), outputPath, subProgress, algorithmProgress, isCancelled);
             getFirstOutputSlot().addData(new FolderData(getFirstOutputSlot().getStoragePath()));
         }
     }
 
     private void writeToFolder(List<ACAQDataSlot> dataSlotList, Path outputPath, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
-        if(!Files.isDirectory(outputPath)) {
+        if (!Files.isDirectory(outputPath)) {
             try {
                 Files.createDirectories(outputPath);
             } catch (IOException e) {
@@ -114,23 +112,22 @@ public class CollectDataAlgorithm extends ACAQAlgorithm {
         Set<String> existingMetadata = new HashSet<>();
         for (ACAQDataSlot dataSlot : dataSlotList) {
             for (int row = 0; row < dataSlot.getRowCount(); row++) {
-                if(isCancelled.get())
+                if (isCancelled.get())
                     return;
                 StringBuilder metadataStringBuilder = new StringBuilder();
-                for (int col = 0; col < dataSlot.getAnnotationColumns().size() ; col++) {
+                for (int col = 0; col < dataSlot.getAnnotationColumns().size(); col++) {
                     String metadataKey = dataSlot.getAnnotationColumns().get(col);
                     ACAQAnnotation metadataValue;
-                    if(ignoreMissingMetadata) {
-                        metadataValue  = dataSlot.getAnnotationOr(row, metadataKey, null);
-                    }
-                    else {
+                    if (ignoreMissingMetadata) {
+                        metadataValue = dataSlot.getAnnotationOr(row, metadataKey, null);
+                    } else {
                         metadataValue = dataSlot.getAnnotationOr(row, metadataKey, new ACAQAnnotation(metadataKey, missingString));
                     }
 
-                    if(metadataValue != null) {
-                        if(metadataStringBuilder.length() > 0)
+                    if (metadataValue != null) {
+                        if (metadataStringBuilder.length() > 0)
                             metadataStringBuilder.append(separatorString);
-                        if(withMetadataKeys)
+                        if (withMetadataKeys)
                             metadataStringBuilder.append(metadataKey).append(equalsString);
                         metadataStringBuilder.append(metadataValue.getValue());
                     }

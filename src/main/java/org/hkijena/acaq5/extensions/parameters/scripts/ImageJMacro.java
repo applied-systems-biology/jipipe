@@ -18,9 +18,13 @@ import org.scijava.script.ScriptLanguage;
 /**
  * Encapsulates ImageJ macro code to be detected by the parameter system
  */
-public class ImageJMacro extends ScriptParameter{
+public class ImageJMacro extends ScriptParameter {
     public ImageJMacro() {
         super();
+    }
+
+    public ImageJMacro(ImageJMacro other) {
+        super(other);
     }
 
     @Override
@@ -36,9 +40,5 @@ public class ImageJMacro extends ScriptParameter{
     @Override
     public ScriptLanguage getLanguage() {
         return null;
-    }
-
-    public ImageJMacro(ImageJMacro other) {
-        super(other);
     }
 }

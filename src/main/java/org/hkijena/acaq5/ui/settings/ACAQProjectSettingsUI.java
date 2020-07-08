@@ -23,8 +23,7 @@ import org.hkijena.acaq5.ui.parameters.ParameterPanel;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
-import java.awt.Color;
+import java.awt.*;
 
 /**
  * UI around the metadata of an {@link org.hkijena.acaq5.api.ACAQProject}
@@ -71,10 +70,9 @@ public class ACAQProjectSettingsUI extends ACAQProjectWorkbenchPanel {
     private ACAQProjectInfoParameters getPipelineParameters() {
         Object existing = getProject().getAdditionalMetadata().getOrDefault(ACAQProjectInfoParameters.METADATA_KEY, null);
         ACAQProjectInfoParameters result;
-        if(existing instanceof ACAQProjectInfoParameters) {
+        if (existing instanceof ACAQProjectInfoParameters) {
             result = (ACAQProjectInfoParameters) existing;
-        }
-        else {
+        } else {
             result = new ACAQProjectInfoParameters();
             getProject().getAdditionalMetadata().put(ACAQProjectInfoParameters.METADATA_KEY, result);
         }

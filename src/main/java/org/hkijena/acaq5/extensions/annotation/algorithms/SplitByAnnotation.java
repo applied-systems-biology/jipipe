@@ -25,7 +25,6 @@ import org.hkijena.acaq5.api.data.ACAQAnnotation;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQDefaultMutableSlotConfiguration;
-import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.extensions.parameters.collections.OutputSlotMapParameterCollection;
 import org.hkijena.acaq5.extensions.parameters.predicates.StringPredicate;

@@ -78,7 +78,7 @@ public class ParametersDataTableDefinition extends ACAQAlgorithm {
     @Override
     public void run(ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         ACAQDataSlot outputSlot = getFirstOutputSlot();
-        if(parameterTable.getRowCount() > 0) {
+        if (parameterTable.getRowCount() > 0) {
             for (int row = 0; row < parameterTable.getRowCount(); ++row) {
                 ParametersData data = new ParametersData();
                 for (int col = 0; col < parameterTable.getColumnCount(); ++col) {
@@ -87,8 +87,7 @@ public class ParametersDataTableDefinition extends ACAQAlgorithm {
                 }
                 outputSlot.addData(data);
             }
-        }
-        else {
+        } else {
             algorithmProgress.accept(subProgress.resolve("Info: Please add rows to '" + getName() + "'. Falling back to adding the default parameters."));
             ParametersData data = new ParametersData();
             for (Map.Entry<String, ACAQParameterAccess> entry : parameters.getParameters().entrySet()) {
@@ -133,30 +132,31 @@ public class ParametersDataTableDefinition extends ACAQAlgorithm {
         for (int col = 0; col < parameterTable.getColumnCount(); ++col) {
             String key = parameterTable.getColumn(col).getKey();
             ACAQParameterAccess access = parameters.get(key);
-            if(access != null)
+            if (access != null)
                 row.add(access.get(Object.class));
         }
         return row;
     }
 
     private void updateParameterTable() {
-        if(parameterTable == null)
+        if (parameterTable == null)
             return;
 
         for (int col = parameterTable.getColumnCount() - 1; col >= 0; col--) {
             ParameterTable.ParameterColumn column = parameterTable.getColumn(col);
             ACAQParameterAccess existing = parameters.getParameters().getOrDefault(column.getKey(), null);
-            if(existing == null || existing.getFieldClass() != column.getFieldClass()) {
+            if (existing == null || existing.getFieldClass() != column.getFieldClass()) {
                 parameterTable.removeColumn(col);
             }
         }
 
-        outer: for (Map.Entry<String, ACAQParameterAccess> entry : parameters.getParameters().entrySet()) {
+        outer:
+        for (Map.Entry<String, ACAQParameterAccess> entry : parameters.getParameters().entrySet()) {
             ACAQParameterAccess access = entry.getValue();
             for (int col = 0; col < parameterTable.getColumnCount(); col++) {
                 ParameterTable.ParameterColumn column = parameterTable.getColumn(col);
-                if(column.getFieldClass() == entry.getValue().getFieldClass()
-                && Objects.equals(entry.getKey(), column.getKey())) {
+                if (column.getFieldClass() == entry.getValue().getFieldClass()
+                        && Objects.equals(entry.getKey(), column.getKey())) {
                     continue outer;
                 }
             }

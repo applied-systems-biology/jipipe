@@ -21,7 +21,7 @@ import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.parameters.ACAQParameterCollection;
 import org.hkijena.acaq5.extensions.parameters.collections.ListParameter;
 
-import java.awt.Rectangle;
+import java.awt.*;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Function;

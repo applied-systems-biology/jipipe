@@ -215,7 +215,7 @@ public class ACAQMutableParameterAccess implements ACAQParameterAccess {
     public <T> boolean set(T value) {
 
         // Ignore non-changes
-        if(this.value != value && Objects.equals(value, this.value))
+        if (this.value != value && Objects.equals(value, this.value))
             return true;
 
         this.value = value;

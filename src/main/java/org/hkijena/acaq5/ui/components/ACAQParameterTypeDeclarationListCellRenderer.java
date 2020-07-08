@@ -17,8 +17,7 @@ import org.hkijena.acaq5.api.parameters.ACAQParameterTypeDeclaration;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.Color;
-import java.awt.Component;
+import java.awt.*;
 
 public class ACAQParameterTypeDeclarationListCellRenderer extends JLabel implements ListCellRenderer<ACAQParameterTypeDeclaration> {
 
@@ -30,10 +29,9 @@ public class ACAQParameterTypeDeclarationListCellRenderer extends JLabel impleme
 
     @Override
     public Component getListCellRendererComponent(JList<? extends ACAQParameterTypeDeclaration> list, ACAQParameterTypeDeclaration value, int index, boolean isSelected, boolean cellHasFocus) {
-        if(value != null) {
+        if (value != null) {
             setText(value.getName());
-        }
-        else {
+        } else {
             setText("<Null>");
         }
 

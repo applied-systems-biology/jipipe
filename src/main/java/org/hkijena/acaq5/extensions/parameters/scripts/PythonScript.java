@@ -23,6 +23,10 @@ public class PythonScript extends ScriptParameter {
         super();
     }
 
+    public PythonScript(PythonScript other) {
+        super(other);
+    }
+
     @Override
     public String getMimeType() {
         return "text/x-python";
@@ -36,9 +40,5 @@ public class PythonScript extends ScriptParameter {
     @Override
     public ScriptLanguage getLanguage() {
         return null;
-    }
-
-    public PythonScript(PythonScript other) {
-        super(other);
     }
 }

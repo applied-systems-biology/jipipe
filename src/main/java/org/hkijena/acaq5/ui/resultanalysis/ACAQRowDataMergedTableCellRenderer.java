@@ -21,8 +21,7 @@ import org.hkijena.acaq5.ui.registries.ACAQUIDatatypeRegistry;
 
 import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
-import java.awt.Color;
-import java.awt.Component;
+import java.awt.*;
 
 /**
  * Renders data in {@link ACAQMergedExportedDataTable}
@@ -42,7 +41,7 @@ public class ACAQRowDataMergedTableCellRenderer implements TableCellRenderer {
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
         if (value instanceof ACAQExportedDataTable.Row) {
             ACAQMergedExportedDataTable model = (ACAQMergedExportedDataTable) table.getModel();
-            ACAQDataSlot slot = model.getSlot(row);
+            ACAQDataSlot slot = model.getSlot(table.convertRowIndexToModel(row));
             ACAQResultDataSlotCellUI renderer = ACAQUIDatatypeRegistry.getInstance().getCellRendererFor(slot.getAcceptedDataType());
             renderer.render(workbenchUI, slot, (ACAQExportedDataTable.Row) value);
             if (isSelected) {

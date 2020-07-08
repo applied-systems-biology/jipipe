@@ -18,7 +18,7 @@ import org.hkijena.acaq5.ui.ACAQJsonExtensionWorkbenchPanel;
 import org.hkijena.acaq5.ui.components.MarkdownDocument;
 import org.hkijena.acaq5.ui.parameters.ParameterPanel;
 
-import java.awt.BorderLayout;
+import java.awt.*;
 
 /**
  * Panel containing algorithm settings when algorithms are edited in a {@link org.hkijena.acaq5.ACAQJsonExtension}

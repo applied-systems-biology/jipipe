@@ -13,7 +13,7 @@
 
 package org.hkijena.acaq5.utils;
 
-import java.awt.Point;
+import java.awt.*;
 
 /**
  * Stores three points, representing the center point, and an area around it

@@ -79,7 +79,7 @@ public class GraphEditorUISettings implements ACAQParameterCollection {
     }
 
     @ACAQDocumentation(name = "Auto-layout method",
-    description = "Determines which method is used to applly auto-layout.")
+            description = "Determines which method is used to applly auto-layout.")
     @ACAQParameter("auto-layout-method")
     public GraphAutoLayout getAutoLayout() {
         return autoLayout;

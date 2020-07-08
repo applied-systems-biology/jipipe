@@ -25,12 +25,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * A data slot holds an {@link ACAQData} instance.
@@ -54,7 +49,7 @@ public class ACAQDataSlot implements TableModel {
      * Creates a new slot
      *
      * @param definition the slot definition
-     * @param node  The algorithm that contains the slot
+     * @param node       The algorithm that contains the slot
      */
     public ACAQDataSlot(ACAQSlotDefinition definition, ACAQGraphNode node) {
         this.definition = definition;
@@ -320,12 +315,11 @@ public class ACAQDataSlot implements TableModel {
      * Warning: Ensure that depending input slots do not use this slot, anymore!
      */
     public void flush() {
-        if(getNode() instanceof ACAQAlgorithm) {
-             if(((ACAQAlgorithm) getNode()).isSaveOutputs()) {
-                 save();
-             }
-        }
-        else {
+        if (getNode() instanceof ACAQAlgorithm) {
+            if (((ACAQAlgorithm) getNode()).isSaveOutputs()) {
+                save();
+            }
+        } else {
             save();
         }
         for (int i = 0; i < data.size(); ++i) {

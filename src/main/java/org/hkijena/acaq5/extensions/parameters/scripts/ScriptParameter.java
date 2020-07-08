@@ -54,12 +54,14 @@ public abstract class ScriptParameter {
 
     /**
      * Returns the MIME type of this script
+     *
      * @return the MIME type of this script
      */
     public abstract String getMimeType();
 
     /**
      * Returns the human-readable name of the language
+     *
      * @return the human-readable name of the language
      */
     public abstract String getLanguageName();
@@ -90,6 +92,7 @@ public abstract class ScriptParameter {
 
     /**
      * The language info. Optional.
+     *
      * @return The language info
      */
     public abstract ScriptLanguage getLanguage();

@@ -23,9 +23,9 @@ import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbenchPanel;
 import org.hkijena.acaq5.ui.components.FormPanel;
 import org.hkijena.acaq5.ui.components.SearchTextField;
+import org.hkijena.acaq5.ui.components.SearchTextFieldTableRowFilter;
 import org.hkijena.acaq5.ui.parameters.ParameterPanel;
 import org.hkijena.acaq5.ui.registries.ACAQUIDatatypeRegistry;
-import org.hkijena.acaq5.utils.StringUtils;
 import org.hkijena.acaq5.utils.TooltipUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 import org.jdesktop.swingx.JXTable;
@@ -34,9 +34,7 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
-import javax.swing.table.TableModel;
-import java.awt.BorderLayout;
-import java.awt.Color;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.nio.file.Path;
@@ -104,12 +102,7 @@ public class ACAQResultDataSlotTableUI extends ACAQProjectWorkbenchPanel {
         add(toolBar, BorderLayout.NORTH);
         toolBar.setFloatable(false);
 
-        searchTextField.addActionListener(e -> {
-            table.setModel(new DefaultTableModel());
-            table.setModel(dataTable);
-            table.setRowFilter(new DataSlotRowFilter(searchTextField));
-            table.packAll();
-        });
+        searchTextField.addActionListener(e -> refreshTable());
         toolBar.add(searchTextField);
 
         JButton exportButton = new JButton(UIUtils.getIconFromResources("export.png"));
@@ -124,7 +117,7 @@ public class ACAQResultDataSlotTableUI extends ACAQProjectWorkbenchPanel {
 
     private void exportAsCSV() {
         Path path = FileChooserSettings.saveFile(this, FileChooserSettings.KEY_PROJECT, "Export as *.csv", ".csv");
-        if(path != null) {
+        if (path != null) {
             ResultsTableData tableData = ResultsTableData.fromTableModel(dataTable);
             tableData.saveAsCSV(path);
         }
@@ -152,39 +145,23 @@ public class ACAQResultDataSlotTableUI extends ACAQProjectWorkbenchPanel {
     private void reloadTable() {
         dataTable = ACAQExportedDataTable.loadFromJson(slot.getStoragePath().resolve("data-table.json"));
         table.setModel(dataTable);
+        refreshTable();
+    }
 
+    private void refreshTable() {
+        table.setModel(new DefaultTableModel());
+        table.setModel(dataTable);
         TableColumnModel columnModel = table.getColumnModel();
         for (int i = 0; i < columnModel.getColumnCount(); ++i) {
             TableColumn column = columnModel.getColumn(i);
             column.setHeaderRenderer(new ACAQDataSlotTableColumnHeaderRenderer(dataTable));
         }
         table.setAutoCreateRowSorter(true);
-
+        table.setRowFilter(new SearchTextFieldTableRowFilter(searchTextField));
         table.packAll();
 
         if (dataTable.getRowCount() == 1) {
             table.setRowSelectionInterval(0, 0);
-        }
-    }
-
-    /**
-     * Filters the entries
-     */
-    private static class DataSlotRowFilter extends javax.swing.RowFilter<TableModel, Integer> {
-        private final SearchTextField searchTextField;
-
-        public DataSlotRowFilter(SearchTextField searchTextField) {
-            this.searchTextField = searchTextField;
-        }
-
-        @Override
-        public boolean include(Entry<? extends TableModel, ? extends Integer> entry) {
-            for (int i = 0; i < entry.getValueCount(); i++) {
-                if(searchTextField.test(StringUtils.orElse(entry.getStringValue(i), ""))) {
-                    return true;
-                }
-            }
-            return false;
         }
     }
 }

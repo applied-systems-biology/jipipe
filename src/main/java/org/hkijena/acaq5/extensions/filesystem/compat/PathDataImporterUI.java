@@ -17,7 +17,7 @@ import org.hkijena.acaq5.api.compat.ImageJDatatypeImporter;
 import org.hkijena.acaq5.ui.compat.ImageJDatatypeImporterUI;
 import org.hkijena.acaq5.ui.components.PathEditor;
 
-import java.awt.BorderLayout;
+import java.awt.*;
 
 /**
  * Imports {@link org.hkijena.acaq5.extensions.filesystem.dataypes.PathData}

@@ -21,9 +21,13 @@ import org.hkijena.acaq5.api.data.ACAQAnnotation;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQMergedDataSlotTable;
+import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ResultsTableData;
+import org.hkijena.acaq5.extensions.settings.FileChooserSettings;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbenchPanel;
 import org.hkijena.acaq5.ui.components.FormPanel;
+import org.hkijena.acaq5.ui.components.SearchTextField;
+import org.hkijena.acaq5.ui.components.SearchTextFieldTableRowFilter;
 import org.hkijena.acaq5.ui.parameters.ParameterPanel;
 import org.hkijena.acaq5.ui.registries.ACAQUIDatatypeRegistry;
 import org.hkijena.acaq5.ui.resultanalysis.ACAQAlgorithmTableCellRenderer;
@@ -34,14 +38,14 @@ import org.hkijena.acaq5.utils.UIUtils;
 import org.jdesktop.swingx.JXTable;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.nio.file.Path;
 import java.util.List;
 
 /**
@@ -53,6 +57,7 @@ public class ACAQCacheMultiDataSlotTableUI extends ACAQProjectWorkbenchPanel {
     private ACAQMergedDataSlotTable multiSlotTable;
     private JXTable table;
     private FormPanel rowUIList;
+    private SearchTextField searchTextField = new SearchTextField();
 
     /**
      * @param workbenchUI the workbench UI
@@ -73,6 +78,7 @@ public class ACAQCacheMultiDataSlotTableUI extends ACAQProjectWorkbenchPanel {
     }
 
     private void reloadTable() {
+        table.setModel(new DefaultTableModel());
         table.setModel(multiSlotTable);
         TableColumnModel columnModel = table.getColumnModel();
         for (int i = 0; i < columnModel.getColumnCount(); ++i) {
@@ -80,6 +86,7 @@ public class ACAQCacheMultiDataSlotTableUI extends ACAQProjectWorkbenchPanel {
             column.setHeaderRenderer(new MultiDataSlotTableColumnRenderer(multiSlotTable));
         }
         table.setAutoCreateRowSorter(true);
+        table.setRowFilter(new SearchTextFieldTableRowFilter(searchTextField));
         table.packAll();
     }
 
@@ -115,6 +122,31 @@ public class ACAQCacheMultiDataSlotTableUI extends ACAQProjectWorkbenchPanel {
 
         rowUIList = new FormPanel(null, ParameterPanel.WITH_SCROLLING);
         add(rowUIList, BorderLayout.SOUTH);
+
+        // Toolbar for searching and export
+        JToolBar toolBar = new JToolBar();
+        add(toolBar, BorderLayout.NORTH);
+        toolBar.setFloatable(false);
+
+        searchTextField.addActionListener(e -> reloadTable());
+        toolBar.add(searchTextField);
+
+        JButton exportButton = new JButton(UIUtils.getIconFromResources("export.png"));
+        toolBar.add(exportButton);
+        exportButton.setToolTipText("Export");
+        JPopupMenu exportMenu = UIUtils.addPopupMenuToComponent(exportButton);
+
+        JMenuItem exportAsCsvItem = new JMenuItem("as *.csv", UIUtils.getIconFromResources("filetype-csv.png"));
+        exportAsCsvItem.addActionListener(e -> exportAsCSV());
+        exportMenu.add(exportAsCsvItem);
+    }
+
+    private void exportAsCSV() {
+        Path path = FileChooserSettings.saveFile(this, FileChooserSettings.KEY_PROJECT, "Export as *.csv", ".csv");
+        if (path != null) {
+            ResultsTableData tableData = ResultsTableData.fromTableModel(multiSlotTable);
+            tableData.saveAsCSV(path);
+        }
     }
 
     private void handleSlotRowDefaultAction(int selectedRow) {

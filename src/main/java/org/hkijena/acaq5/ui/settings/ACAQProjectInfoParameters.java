@@ -13,8 +13,6 @@
 
 package org.hkijena.acaq5.ui.settings;
 
-import com.fasterxml.jackson.annotation.JsonGetter;
-import com.fasterxml.jackson.annotation.JsonSetter;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.api.ACAQProject;
@@ -22,12 +20,7 @@ import org.hkijena.acaq5.api.events.ParameterStructureChangedEvent;
 import org.hkijena.acaq5.api.grouping.events.ParameterReferencesChangedEvent;
 import org.hkijena.acaq5.api.grouping.parameters.GraphNodeParameterReferenceAccessGroupList;
 import org.hkijena.acaq5.api.grouping.parameters.GraphNodeParameters;
-import org.hkijena.acaq5.api.parameters.ACAQCustomParameterCollection;
-import org.hkijena.acaq5.api.parameters.ACAQParameter;
-import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
-import org.hkijena.acaq5.api.parameters.ACAQParameterCollection;
-import org.hkijena.acaq5.api.parameters.ACAQParameterTree;
-import org.hkijena.acaq5.api.parameters.ACAQParameterVisibility;
+import org.hkijena.acaq5.api.parameters.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -66,7 +59,7 @@ public class ACAQProjectInfoParameters implements ACAQParameterCollection, ACAQC
     @Override
     public Map<String, ACAQParameterCollection> getChildParameterCollections() {
         Map<String, ACAQParameterCollection> result = new HashMap<>();
-        if(project != null) {
+        if (project != null) {
             this.exportedParameters.setGraph(project.getGraph());
             result.put("exported", new GraphNodeParameterReferenceAccessGroupList(exportedParameters, getProject().getGraph().getParameterTree(), false));
         }

@@ -31,12 +31,7 @@ import org.hkijena.acaq5.extensions.parameters.primitives.StringList;
 import org.hkijena.acaq5.extensions.parameters.primitives.StringParameterSettings;
 import org.hkijena.acaq5.utils.ResourceUtils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.function.Consumer;
@@ -131,7 +126,7 @@ public abstract class ACAQIteratingAlgorithm extends ACAQParameterSlotAlgorithm 
         // Organize the input data by Dataset -> Slot -> Data row
         Map<ACAQUniqueDataBatch, Map<String, TIntSet>> dataSets = new HashMap<>();
         for (ACAQDataSlot inputSlot : getInputSlots()) {
-            if(inputSlot == getParameterSlot())
+            if (inputSlot == getParameterSlot())
                 continue;
             for (int row = 0; row < inputSlot.getRowCount(); row++) {
                 ACAQUniqueDataBatch key = new ACAQUniqueDataBatch();
@@ -179,7 +174,7 @@ public abstract class ACAQIteratingAlgorithm extends ACAQParameterSlotAlgorithm 
         for (Map.Entry<ACAQUniqueDataBatch, Map<String, TIntSet>> dataSetEntry : ImmutableList.copyOf(dataSets.entrySet())) {
             boolean incomplete = false;
             for (ACAQDataSlot inputSlot : getInputSlots()) {
-                if(getParameterSlot() == inputSlot)
+                if (getParameterSlot() == inputSlot)
                     continue;
                 TIntSet slotEntry = dataSetEntry.getValue().getOrDefault(inputSlot.getName(), null);
                 if (slotEntry == null) {
@@ -220,7 +215,7 @@ public abstract class ACAQIteratingAlgorithm extends ACAQParameterSlotAlgorithm 
             // Create subsequent batches
             for (int slotIndex = 1; slotIndex < getInputSlots().size(); slotIndex++) {
                 ACAQDataSlot inputSlot = getInputSlots().get(slotIndex);
-                if(getParameterSlot() == inputSlot)
+                if (getParameterSlot() == inputSlot)
                     continue;
                 TIntSet rows = dataSetEntry.getValue().get(inputSlot.getName());
 
@@ -302,7 +297,7 @@ public abstract class ACAQIteratingAlgorithm extends ACAQParameterSlotAlgorithm 
     private Set<String> getInputTraitColumnIntersection() {
         Set<String> result = null;
         for (ACAQDataSlot inputSlot : getInputSlots()) {
-            if(getParameterSlot() == inputSlot)
+            if (getParameterSlot() == inputSlot)
                 continue;
             if (result == null) {
                 result = new HashSet<>(inputSlot.getAnnotationColumns());
@@ -318,20 +313,11 @@ public abstract class ACAQIteratingAlgorithm extends ACAQParameterSlotAlgorithm 
     private Set<String> getInputTraitColumnUnion() {
         Set<String> result = new HashSet<>();
         for (ACAQDataSlot inputSlot : getInputSlots()) {
-            if(getParameterSlot() == inputSlot)
+            if (getParameterSlot() == inputSlot)
                 continue;
             result.addAll(inputSlot.getAnnotationColumns());
         }
         return result;
-    }
-
-    /**
-     * Strategies that determine how to detect the columns that should be used for matching
-     */
-    public enum ColumnMatching {
-        Union,
-        Intersection,
-        Custom
     }
 
     @Override
@@ -368,6 +354,15 @@ public abstract class ACAQIteratingAlgorithm extends ACAQParameterSlotAlgorithm 
      * @param isCancelled       Supplier that informs if the current task was canceled
      */
     protected abstract void runIteration(ACAQDataInterface dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled);
+
+    /**
+     * Strategies that determine how to detect the columns that should be used for matching
+     */
+    public enum ColumnMatching {
+        Union,
+        Intersection,
+        Custom
+    }
 
     /**
      * Groups data batch generation settings

@@ -16,18 +16,10 @@ package org.hkijena.acaq5.api.algorithm;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
-import com.google.common.collect.ImmutableBiMap;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.*;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.ACAQDependency;
@@ -35,11 +27,7 @@ import org.hkijena.acaq5.api.ACAQValidatable;
 import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
-import org.hkijena.acaq5.api.events.AlgorithmGraphChangedEvent;
-import org.hkijena.acaq5.api.events.AlgorithmGraphConnectedEvent;
-import org.hkijena.acaq5.api.events.AlgorithmGraphDisconnectedEvent;
-import org.hkijena.acaq5.api.events.AlgorithmSlotsChangedEvent;
-import org.hkijena.acaq5.api.events.ParameterStructureChangedEvent;
+import org.hkijena.acaq5.api.events.*;
 import org.hkijena.acaq5.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.acaq5.api.parameters.ACAQParameterTree;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
@@ -53,8 +41,9 @@ import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.traverse.GraphIterator;
 import org.jgrapht.traverse.TopologicalOrderIterator;
 
-import java.awt.Point;
+import java.awt.*;
 import java.io.IOException;
+import java.util.List;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -1135,6 +1124,7 @@ public class ACAQGraph implements ACAQValidatable {
 
     /**
      * Gets all edges between two algorithm nodes
+     *
      * @param source the source
      * @param target the target
      * @return all edges
@@ -1143,7 +1133,7 @@ public class ACAQGraph implements ACAQValidatable {
         Set<Map.Entry<ACAQDataSlot, ACAQDataSlot>> result = new HashSet<>();
         for (ACAQDataSlot outputSlot : source.getOutputSlots()) {
             for (ACAQDataSlot targetSlot : getTargetSlots(outputSlot)) {
-                if(targetSlot.getNode() == target) {
+                if (targetSlot.getNode() == target) {
                     result.add(new AbstractMap.SimpleEntry<>(outputSlot, targetSlot));
                 }
             }

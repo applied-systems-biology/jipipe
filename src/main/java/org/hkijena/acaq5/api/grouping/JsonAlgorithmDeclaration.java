@@ -28,7 +28,6 @@ import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.data.ACAQSlotDefinition;
 import org.hkijena.acaq5.api.data.ACAQSlotType;
 import org.hkijena.acaq5.api.events.AlgorithmGraphChangedEvent;
-import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.events.ParameterStructureChangedEvent;
 import org.hkijena.acaq5.api.grouping.parameters.GraphNodeParameters;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
@@ -40,13 +39,7 @@ import org.hkijena.acaq5.extensions.parameters.primitives.StringParameterSetting
 import org.hkijena.acaq5.extensions.parameters.references.ACAQAlgorithmIconRef;
 import org.hkijena.acaq5.utils.StringUtils;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Declaration of a {@link GraphWrapperAlgorithm}

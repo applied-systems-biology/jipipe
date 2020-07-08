@@ -34,11 +34,7 @@ import org.hkijena.acaq5.api.grouping.events.ParameterReferencesChangedEvent;
 import org.hkijena.acaq5.api.grouping.parameters.GraphNodeParameterReferenceAccessGroupList;
 import org.hkijena.acaq5.api.grouping.parameters.GraphNodeParameters;
 import org.hkijena.acaq5.api.grouping.parameters.NodeGroupContents;
-import org.hkijena.acaq5.api.parameters.ACAQCustomParameterCollection;
-import org.hkijena.acaq5.api.parameters.ACAQParameter;
-import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
-import org.hkijena.acaq5.api.parameters.ACAQParameterCollection;
-import org.hkijena.acaq5.api.parameters.ACAQParameterTree;
+import org.hkijena.acaq5.api.parameters.*;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.utils.StringUtils;
 

@@ -18,8 +18,7 @@ import org.hkijena.acaq5.ui.components.PathEditor;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
+import java.awt.*;
 
 /**
  * Dialog to import a table

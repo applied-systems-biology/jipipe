@@ -15,17 +15,8 @@ package org.hkijena.acaq5;
 
 import com.google.common.eventbus.EventBus;
 import org.hkijena.acaq5.api.ACAQValidatable;
-import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
-import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
-import org.hkijena.acaq5.api.registries.ACAQImageJAdapterRegistry;
-import org.hkijena.acaq5.api.registries.ACAQParameterTypeRegistry;
-import org.hkijena.acaq5.api.registries.ACAQSettingsRegistry;
-import org.hkijena.acaq5.api.registries.ACAQTableRegistry;
-import org.hkijena.acaq5.ui.registries.ACAQUIAlgorithmRegistry;
-import org.hkijena.acaq5.ui.registries.ACAQUIDatatypeRegistry;
-import org.hkijena.acaq5.ui.registries.ACAQUIImageJDatatypeAdapterRegistry;
-import org.hkijena.acaq5.ui.registries.ACAQUIMenuServiceRegistry;
-import org.hkijena.acaq5.ui.registries.ACAQUIParameterTypeRegistry;
+import org.hkijena.acaq5.api.registries.*;
+import org.hkijena.acaq5.ui.registries.*;
 import org.scijava.service.Service;
 
 import java.util.List;

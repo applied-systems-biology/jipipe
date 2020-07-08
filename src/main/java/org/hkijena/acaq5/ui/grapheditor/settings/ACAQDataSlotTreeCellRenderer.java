@@ -20,8 +20,7 @@ import org.hkijena.acaq5.utils.StringUtils;
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeCellRenderer;
-import java.awt.Color;
-import java.awt.Component;
+import java.awt.*;
 
 /**
  * Renders an {@link ACAQDataSlot} in a {@link JTree}

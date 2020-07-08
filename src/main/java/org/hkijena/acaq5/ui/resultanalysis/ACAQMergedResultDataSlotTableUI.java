@@ -26,9 +26,9 @@ import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbenchPanel;
 import org.hkijena.acaq5.ui.components.FormPanel;
 import org.hkijena.acaq5.ui.components.SearchTextField;
+import org.hkijena.acaq5.ui.components.SearchTextFieldTableRowFilter;
 import org.hkijena.acaq5.ui.parameters.ParameterPanel;
 import org.hkijena.acaq5.ui.registries.ACAQUIDatatypeRegistry;
-import org.hkijena.acaq5.utils.StringUtils;
 import org.hkijena.acaq5.utils.TooltipUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 import org.jdesktop.swingx.JXTable;
@@ -37,9 +37,7 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
-import javax.swing.table.TableModel;
-import java.awt.BorderLayout;
-import java.awt.Color;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.nio.file.Path;
@@ -110,12 +108,7 @@ public class ACAQMergedResultDataSlotTableUI extends ACAQProjectWorkbenchPanel {
         add(toolBar, BorderLayout.NORTH);
         toolBar.setFloatable(false);
 
-        searchTextField.addActionListener(e -> {
-            table.setModel(new DefaultTableModel());
-            table.setModel(mergedDataTable);
-            table.setRowFilter(new MergedDataSlotRowFilter(searchTextField));
-            table.packAll();
-        });
+        searchTextField.addActionListener(e -> refreshTable());
         toolBar.add(searchTextField);
 
         JButton exportButton = new JButton(UIUtils.getIconFromResources("export.png"));
@@ -130,7 +123,7 @@ public class ACAQMergedResultDataSlotTableUI extends ACAQProjectWorkbenchPanel {
 
     private void exportAsCSV() {
         Path path = FileChooserSettings.saveFile(this, FileChooserSettings.KEY_PROJECT, "Export as *.csv", ".csv");
-        if(path != null) {
+        if (path != null) {
             ResultsTableData tableData = ResultsTableData.fromTableModel(mergedDataTable);
             tableData.saveAsCSV(path);
         }
@@ -164,14 +157,19 @@ public class ACAQMergedResultDataSlotTableUI extends ACAQProjectWorkbenchPanel {
             mergedDataTable.add(getProject(), slot, dataTable);
         }
         table.setModel(mergedDataTable);
+        refreshTable();
+    }
 
+    private void refreshTable() {
+        table.setModel(new DefaultTableModel());
+        table.setModel(mergedDataTable);
         TableColumnModel columnModel = table.getColumnModel();
         for (int i = 0; i < columnModel.getColumnCount(); ++i) {
             TableColumn column = columnModel.getColumn(i);
             column.setHeaderRenderer(new ACAQMergedDataSlotTableColumnHeaderRenderer(mergedDataTable));
         }
         table.setAutoCreateRowSorter(true);
-
+        table.setRowFilter(new SearchTextFieldTableRowFilter(searchTextField));
         table.packAll();
 
         if (mergedDataTable.getRowCount() == 1) {
@@ -179,24 +177,4 @@ public class ACAQMergedResultDataSlotTableUI extends ACAQProjectWorkbenchPanel {
         }
     }
 
-    /**
-     * Filters the entries
-     */
-    public static class MergedDataSlotRowFilter extends RowFilter<TableModel, Integer> {
-        private final SearchTextField searchTextField;
-
-        public MergedDataSlotRowFilter(SearchTextField searchTextField) {
-            this.searchTextField = searchTextField;
-        }
-
-        @Override
-        public boolean include(Entry<? extends TableModel, ? extends Integer> entry) {
-            for (int i = 0; i < entry.getValueCount(); i++) {
-                if(searchTextField.test(StringUtils.orElse(entry.getStringValue(i), ""))) {
-                    return true;
-                }
-            }
-            return false;
-        }
-    }
 }

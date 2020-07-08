@@ -13,11 +13,7 @@
 
 package org.hkijena.acaq5.ui.grapheditor;
 
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
-import com.google.common.collect.ImmutableBiMap;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.*;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.api.algorithm.ACAQGraph;
@@ -31,11 +27,7 @@ import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
 import org.hkijena.acaq5.extensions.settings.GraphEditorUISettings;
 import org.hkijena.acaq5.ui.ACAQWorkbench;
 import org.hkijena.acaq5.ui.ACAQWorkbenchPanel;
-import org.hkijena.acaq5.ui.events.AlgorithmEvent;
-import org.hkijena.acaq5.ui.events.AlgorithmSelectedEvent;
-import org.hkijena.acaq5.ui.events.AlgorithmSelectionChangedEvent;
-import org.hkijena.acaq5.ui.events.AlgorithmUIActionRequestedEvent;
-import org.hkijena.acaq5.ui.events.DefaultAlgorithmUIActionRequestedEvent;
+import org.hkijena.acaq5.ui.events.*;
 import org.hkijena.acaq5.ui.grapheditor.connections.RectangularLineDrawer;
 import org.hkijena.acaq5.ui.grapheditor.contextmenu.AlgorithmUIAction;
 import org.hkijena.acaq5.ui.grapheditor.layout.MSTGraphAutoLayoutMethod;
@@ -49,11 +41,7 @@ import org.jfree.graphics2d.svg.SVGGraphics2D;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.dnd.DropTarget;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
+import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.util.List;
 import java.util.*;
@@ -88,9 +76,9 @@ public class ACAQGraphCanvasUI extends ACAQWorkbenchPanel implements MouseMotion
     /**
      * Creates a new UI
      *
-     * @param workbench      the workbench
-     * @param graph The algorithm graph
-     * @param compartment    The compartment to show
+     * @param workbench   the workbench
+     * @param graph       The algorithm graph
+     * @param compartment The compartment to show
      */
     public ACAQGraphCanvasUI(ACAQWorkbench workbench, ACAQGraph graph, String compartment) {
         super(workbench);
@@ -249,7 +237,7 @@ public class ACAQGraphCanvasUI extends ACAQWorkbenchPanel implements MouseMotion
      * Applies a full auto-layout method
      */
     public void autoLayout() {
-        switch(GraphEditorUISettings.getInstance().getAutoLayout()) {
+        switch (GraphEditorUISettings.getInstance().getAutoLayout()) {
             case Sugiyama:
                 (new SugiyamaGraphAutoLayoutMethod()).accept(this);
                 break;
@@ -576,13 +564,12 @@ public class ACAQGraphCanvasUI extends ACAQWorkbenchPanel implements MouseMotion
         ACAQNodeUI targetNode = nodeUIs.getOrDefault(event.getTarget().getNode(), null);
 
         // Check if we actually need to auto-place
-        if(currentViewMode == ViewMode.Horizontal) {
-            if(sourceNode != null && targetNode != null && targetNode.getX() >= sourceNode.getRightX() + ACAQNodeUI.SLOT_UI_WIDTH) {
+        if (currentViewMode == ViewMode.Horizontal) {
+            if (sourceNode != null && targetNode != null && targetNode.getX() >= sourceNode.getRightX() + ACAQNodeUI.SLOT_UI_WIDTH) {
                 return;
             }
-        }
-        else if(currentViewMode == ViewMode.Vertical) {
-            if(sourceNode != null && targetNode != null && targetNode.getY() >= sourceNode.getBottomY() + ACAQNodeUI.SLOT_UI_HEIGHT) {
+        } else if (currentViewMode == ViewMode.Vertical) {
+            if (sourceNode != null && targetNode != null && targetNode.getY() >= sourceNode.getBottomY() + ACAQNodeUI.SLOT_UI_HEIGHT) {
                 return;
             }
         }
@@ -590,7 +577,7 @@ public class ACAQGraphCanvasUI extends ACAQWorkbenchPanel implements MouseMotion
         if (sourceNode != null && targetNode != null && layoutHelperEnabled) {
             Point cursorBackup = cursor;
             try {
-                if(currentViewMode == ViewMode.Horizontal)
+                if (currentViewMode == ViewMode.Horizontal)
                     this.cursor = new Point(targetNode.getRightX() + 4 * ACAQNodeUI.SLOT_UI_WIDTH,
                             targetNode.getY());
                 else
@@ -669,12 +656,11 @@ public class ACAQGraphCanvasUI extends ACAQWorkbenchPanel implements MouseMotion
 
             if (sourceUI == null || targetUI == null)
                 continue;
-            if(onlySelected) {
-                if(!selection.contains(sourceUI) && !selection.contains(targetUI))
+            if (onlySelected) {
+                if (!selection.contains(sourceUI) && !selection.contains(targetUI))
                     continue;
-            }
-            else {
-                if(selection.contains(sourceUI) || selection.contains(targetUI))
+            } else {
+                if (selection.contains(sourceUI) || selection.contains(targetUI))
                     continue;
             }
             if (ACAQDatatypeRegistry.isTriviallyConvertible(source.getAcceptedDataType(), target.getAcceptedDataType()))
@@ -703,12 +689,11 @@ public class ACAQGraphCanvasUI extends ACAQWorkbenchPanel implements MouseMotion
     private void paintOutsideEdges(Graphics2D g, RectangularLineDrawer drawer, boolean onlySelected) {
         for (ACAQNodeUI ui : nodeUIs.values()) {
             if (!ui.getNode().getVisibleCompartments().isEmpty()) {
-                if(onlySelected) {
-                    if(!selection.contains(ui))
+                if (onlySelected) {
+                    if (!selection.contains(ui))
                         continue;
-                }
-                else {
-                    if(selection.contains(ui))
+                } else {
+                    if (selection.contains(ui))
                         continue;
                 }
                 Point sourcePoint = new Point();

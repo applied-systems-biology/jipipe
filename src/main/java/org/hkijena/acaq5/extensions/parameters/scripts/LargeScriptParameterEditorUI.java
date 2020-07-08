@@ -15,9 +15,7 @@ package org.hkijena.acaq5.extensions.parameters.scripts;
 
 import org.fife.ui.rtextarea.RTextScrollPane;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
-import org.hkijena.acaq5.extensions.parameters.scripts.ScriptParameter;
 import org.hkijena.acaq5.ui.ACAQWorkbench;
-import org.hkijena.acaq5.ui.ACAQWorkbenchPanel;
 import org.hkijena.acaq5.ui.components.DocumentChangeListener;
 import org.hkijena.acaq5.ui.parameters.ACAQParameterEditorUI;
 import org.hkijena.acaq5.utils.ReflectionUtils;
@@ -26,8 +24,7 @@ import org.scijava.ui.swing.script.EditorPane;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
-import java.awt.BorderLayout;
-import java.awt.Font;
+import java.awt.*;
 import java.util.Objects;
 
 /**
@@ -53,7 +50,7 @@ public class LargeScriptParameterEditorUI extends ACAQParameterEditorUI {
         ScriptParameter code = getParameter(ScriptParameter.class);
         textArea = new EditorPane();
         textArea.setCodeFoldingEnabled(true);
-        if(code.getLanguage() != null) {
+        if (code.getLanguage() != null) {
             ReflectionUtils.invokeMethod(textArea, "setLanguage", code.getLanguage());
             textArea.setAutoCompletionEnabled(true);
         }
@@ -99,7 +96,7 @@ public class LargeScriptParameterEditorUI extends ACAQParameterEditorUI {
     @Override
     public void reload() {
         ScriptParameter code = getParameter(ScriptParameter.class);
-        if(!Objects.equals(textArea.getText(), code.getCode()))
+        if (!Objects.equals(textArea.getText(), code.getCode()))
             textArea.setText(code.getCode());
     }
 }

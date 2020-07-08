@@ -15,7 +15,7 @@ package org.hkijena.acaq5.ui.grapheditor.connections;
 
 import org.hkijena.acaq5.ui.grapheditor.ACAQGraphCanvasUI;
 
-import java.awt.Graphics2D;
+import java.awt.*;
 import java.awt.geom.Path2D;
 import java.util.ArrayList;
 import java.util.Comparator;

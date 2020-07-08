@@ -22,11 +22,7 @@ import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.algorithm.AlgorithmInputSlot;
 import org.hkijena.acaq5.api.algorithm.AlgorithmOutputSlot;
 import org.hkijena.acaq5.api.data.ACAQData;
-import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
-import org.hkijena.acaq5.api.parameters.ACAQParameterCollection;
-import org.hkijena.acaq5.api.parameters.ACAQParameterTree;
-import org.hkijena.acaq5.api.parameters.ACAQParameterTypeDeclaration;
-import org.hkijena.acaq5.api.parameters.ACAQParameterVisibility;
+import org.hkijena.acaq5.api.parameters.*;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.api.registries.ACAQParameterTypeRegistry;
 import org.hkijena.acaq5.ui.components.ACAQAlgorithmDeclarationListCellRenderer;
@@ -56,7 +52,7 @@ public class ACAQAlgorithmCompendiumUI extends ACAQCompendiumUI<ACAQAlgorithmDec
 
     @Override
     protected List<ACAQAlgorithmDeclaration> getFilteredItems() {
-        Predicate<ACAQAlgorithmDeclaration> filterFunction = declaration -> getSearchField().test( declaration.getName() + " " + declaration.getDescription() + " " + declaration.getMenuPath());
+        Predicate<ACAQAlgorithmDeclaration> filterFunction = declaration -> getSearchField().test(declaration.getName() + " " + declaration.getDescription() + " " + declaration.getMenuPath());
 
         return ACAQAlgorithmRegistry.getInstance().getRegisteredAlgorithms().values().stream().filter(filterFunction)
                 .sorted(Comparator.comparing(ACAQAlgorithmDeclaration::getName)).collect(Collectors.toList());

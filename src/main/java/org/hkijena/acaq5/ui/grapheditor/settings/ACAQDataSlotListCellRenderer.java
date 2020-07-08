@@ -17,8 +17,7 @@ import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.ui.registries.ACAQUIDatatypeRegistry;
 
 import javax.swing.*;
-import java.awt.Color;
-import java.awt.Component;
+import java.awt.*;
 
 /**
  * Renders a {@link ACAQDataSlot}

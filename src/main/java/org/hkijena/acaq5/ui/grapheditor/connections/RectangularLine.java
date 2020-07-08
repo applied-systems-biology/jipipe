@@ -13,8 +13,6 @@
 
 package org.hkijena.acaq5.ui.grapheditor.connections;
 
-import org.hkijena.acaq5.ui.grapheditor.ACAQGraphCanvasUI;
-
 /**
  * Contains coordinates of a line that is rectangular
  * This abstracts away x and y for horizontal and vertical implementations

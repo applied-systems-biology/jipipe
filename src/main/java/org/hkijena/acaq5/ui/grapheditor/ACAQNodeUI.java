@@ -27,11 +27,7 @@ import org.hkijena.acaq5.utils.PointRange;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Point;
-import java.awt.Rectangle;
+import java.awt.*;
 
 /**
  * UI around an {@link ACAQGraphNode} instance
@@ -65,7 +61,7 @@ public abstract class ACAQNodeUI extends ACAQWorkbenchPanel {
      *
      * @param workbench thr workbench
      * @param graphUI   The graph UI that contains this UI
-     * @param node The algorithm
+     * @param node      The algorithm
      * @param viewMode  Directionality of the canvas UI
      */
     public ACAQNodeUI(ACAQWorkbench workbench, ACAQGraphCanvasUI graphUI, ACAQGraphNode node, ACAQGraphCanvasUI.ViewMode viewMode) {

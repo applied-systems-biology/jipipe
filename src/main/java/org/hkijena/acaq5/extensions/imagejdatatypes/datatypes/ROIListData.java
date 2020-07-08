@@ -38,15 +38,8 @@ import org.hkijena.acaq5.ui.ACAQWorkbench;
 import org.hkijena.acaq5.utils.PathUtils;
 
 import javax.swing.*;
-import java.awt.Frame;
-import java.awt.Rectangle;
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.awt.*;
+import java.io.*;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -77,13 +70,11 @@ public class ROIListData extends ArrayList<Roi> implements ACAQData {
     public ROIListData(Path storageFilePath) {
         Path zipFile = PathUtils.findFileByExtensionIn(storageFilePath, ".zip");
         Path roiFile = PathUtils.findFileByExtensionIn(storageFilePath, ".roi");
-        if(zipFile != null) {
+        if (zipFile != null) {
             addAll(loadRoiListFromFile(zipFile));
-        }
-        else if(roiFile != null) {
+        } else if (roiFile != null) {
             addAll(loadRoiListFromFile(roiFile));
-        }
-        else {
+        } else {
             throw new RuntimeException(new FileNotFoundException("Could not find a .roi or .zip file in " + storageFilePath));
         }
     }
@@ -132,7 +123,7 @@ public class ROIListData extends ArrayList<Roi> implements ACAQData {
     @Override
     public void saveTo(Path storageFilePath, String name, boolean forceName) {
         // Code adapted from ImageJ RoiManager class
-        if(size() == 1) {
+        if (size() == 1) {
             try {
                 FileOutputStream out = new FileOutputStream(storageFilePath.resolve(name + ".roi").toFile());
                 RoiEncoder re = new RoiEncoder(out);
@@ -143,8 +134,7 @@ public class ROIListData extends ArrayList<Roi> implements ACAQData {
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-        }
-        else {
+        } else {
             try {
                 ZipOutputStream zos = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(storageFilePath.resolve(name + ".zip").toFile())));
                 DataOutputStream out = new DataOutputStream(new BufferedOutputStream(zos));
@@ -527,16 +517,15 @@ public class ROIListData extends ArrayList<Roi> implements ACAQData {
         // Code adapted from ImageJ RoiManager
         List<Roi> result = new ArrayList<>();
 
-        if(fileName.toString().toLowerCase().endsWith(".roi")) {
+        if (fileName.toString().toLowerCase().endsWith(".roi")) {
             try {
                 Roi roi = new RoiDecoder(fileName.toString()).getRoi();
-                if(roi != null)
+                if (roi != null)
                     result.add(roi);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-        }
-        else {
+        } else {
             ZipInputStream in = null;
             ByteArrayOutputStream out = null;
             int nRois = 0;

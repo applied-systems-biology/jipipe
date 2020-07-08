@@ -54,21 +54,19 @@ public class PythonUtils {
 
     public static void passParametersToPython(PythonInterpreter pythonInterpreter, ACAQCustomParameterCollection collection) {
         for (Map.Entry<String, ACAQParameterAccess> entry : collection.getParameters().entrySet()) {
-            if(entry.getValue().getFieldClass() == StringAndStringPair.List.class) {
+            if (entry.getValue().getFieldClass() == StringAndStringPair.List.class) {
                 PyDictionary dictionary = new PyDictionary();
                 for (StringAndStringPair pair : entry.getValue().get(StringAndStringPair.List.class)) {
                     dictionary.put(pair.getKey(), pair.getValue());
                 }
                 pythonInterpreter.set(entry.getKey(), dictionary);
-            }
-            else  if(entry.getValue().getFieldClass() == IntegerAndIntegerPair.List.class) {
+            } else if (entry.getValue().getFieldClass() == IntegerAndIntegerPair.List.class) {
                 PyDictionary dictionary = new PyDictionary();
                 for (IntegerAndIntegerPair pair : entry.getValue().get(IntegerAndIntegerPair.List.class)) {
                     dictionary.put(pair.getKey(), pair.getValue());
                 }
                 pythonInterpreter.set(entry.getKey(), dictionary);
-            }
-            else {
+            } else {
                 pythonInterpreter.set(entry.getKey(), entry.getValue().get(Object.class));
             }
         }
@@ -79,14 +77,13 @@ public class PythonUtils {
             PythonInterpreter pythonInterpreter = new PythonInterpreter();
             PythonUtils.passParametersToPython(pythonInterpreter, scriptParameters);
             PyCode compile = pythonInterpreter.compile(code);
-            if(compile == null) {
+            if (compile == null) {
                 report.reportIsInvalid("The script is invalid!",
                         "The script could not be compiled.",
                         "Please check if your Python script is correct.",
                         code);
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             report.reportIsInvalid("The script is invalid!",
                     "The script could not be compiled.",
                     "Please check if your Python script is correct.",

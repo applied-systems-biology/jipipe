@@ -17,29 +17,13 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
-import org.hkijena.acaq5.api.data.ACAQAnnotation;
-import org.hkijena.acaq5.api.data.ACAQDataSlot;
-import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
-import org.hkijena.acaq5.api.data.ACAQSlotConfiguration;
-import org.hkijena.acaq5.api.data.ACAQSlotDefinition;
-import org.hkijena.acaq5.api.data.ACAQSlotType;
+import org.hkijena.acaq5.api.data.*;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
-import org.hkijena.acaq5.api.parameters.ACAQParameter;
-import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
-import org.hkijena.acaq5.api.parameters.ACAQParameterCollection;
-import org.hkijena.acaq5.api.parameters.ACAQParameterTree;
-import org.hkijena.acaq5.api.parameters.ACAQParameterVisibility;
+import org.hkijena.acaq5.api.parameters.*;
 import org.hkijena.acaq5.extensions.multiparameters.datatypes.ParametersData;
 import org.hkijena.acaq5.extensions.parameters.primitives.StringParameterSettings;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -61,6 +45,12 @@ public abstract class ACAQParameterSlotAlgorithm extends ACAQAlgorithm {
         registerParameterSettings();
     }
 
+    public ACAQParameterSlotAlgorithm(ACAQParameterSlotAlgorithm other) {
+        super(other);
+        this.parameterSlotAlgorithmSettings = new ParameterSlotAlgorithmSettings(other.parameterSlotAlgorithmSettings);
+        registerParameterSettings();
+    }
+
     private void registerParameterSettings() {
         this.parameterSlotAlgorithmSettings.getEventBus().register(new Object() {
             @Subscribe
@@ -73,19 +63,14 @@ public abstract class ACAQParameterSlotAlgorithm extends ACAQAlgorithm {
         registerSubParameter(parameterSlotAlgorithmSettings);
     }
 
-    public ACAQParameterSlotAlgorithm(ACAQParameterSlotAlgorithm other) {
-        super(other);
-       this.parameterSlotAlgorithmSettings = new ParameterSlotAlgorithmSettings(other.parameterSlotAlgorithmSettings);
-        registerParameterSettings();
-    }
-
     /**
      * Returns the number of input slots that are not parameter slots.
+     *
      * @return the number of input slots that are not parameter slots.
      */
     public int getEffectiveInputSlotCount() {
         int effectiveSlotSize = getInputSlots().size();
-        if(parameterSlotAlgorithmSettings.isHasParameterSlot())
+        if (parameterSlotAlgorithmSettings.isHasParameterSlot())
             --effectiveSlotSize;
         return effectiveSlotSize;
     }
@@ -93,10 +78,9 @@ public abstract class ACAQParameterSlotAlgorithm extends ACAQAlgorithm {
     @Override
     public ACAQDataSlot getFirstInputSlot() {
         ACAQDataSlot firstInputSlot = super.getFirstInputSlot();
-        if(Objects.equals(firstInputSlot.getName(), SLOT_PARAMETERS)) {
+        if (Objects.equals(firstInputSlot.getName(), SLOT_PARAMETERS)) {
             return getInputSlots().get(1);
-        }
-        else {
+        } else {
             return firstInputSlot;
         }
     }
@@ -110,10 +94,11 @@ public abstract class ACAQParameterSlotAlgorithm extends ACAQAlgorithm {
 
     /**
      * Returns the parameter slot if enabled
+     *
      * @return the parameter slot
      */
     public ACAQDataSlot getParameterSlot() {
-        if(parameterSlotAlgorithmSettings.hasParameterSlot)
+        if (parameterSlotAlgorithmSettings.hasParameterSlot)
             return getInputSlot(SLOT_PARAMETERS);
         else
             return null;
@@ -126,13 +111,12 @@ public abstract class ACAQParameterSlotAlgorithm extends ACAQAlgorithm {
             runPassThrough();
             return;
         }
-        if(parameterSlotAlgorithmSettings.hasParameterSlot) {
+        if (parameterSlotAlgorithmSettings.hasParameterSlot) {
             ACAQDataSlot parameterSlot = getInputSlot(SLOT_PARAMETERS);
-            if(parameterSlot.getRowCount() == 0) {
+            if (parameterSlot.getRowCount() == 0) {
                 algorithmProgress.accept(subProgress.resolve("No parameters were passed with enabled parameter slot. Applying default parameters, only."));
                 runParameterSet(subProgress, algorithmProgress, isCancelled, Collections.emptyList());
-            }
-            else {
+            } else {
                 // Create backups
                 Map<String, Object> parameterBackups = new HashMap<>();
                 ACAQParameterTree tree = new ACAQParameterTree(this);
@@ -146,10 +130,10 @@ public abstract class ACAQParameterSlotAlgorithm extends ACAQAlgorithm {
                     ParametersData data = parameterSlot.getData(row, ParametersData.class);
                     for (Map.Entry<String, Object> entry : data.getParameterData().entrySet()) {
                         ACAQParameterAccess target = tree.getParameters().getOrDefault(entry.getKey(), null);
-                        if(target != null) {
+                        if (target != null) {
                             Object existing = target.get(Object.class);
                             Object newValue = entry.getValue();
-                            if(!Objects.equals(existing, newValue)) {
+                            if (!Objects.equals(existing, newValue)) {
                                 nonDefaultParameters.add(entry.getKey());
                             }
                         }
@@ -162,20 +146,19 @@ public abstract class ACAQParameterSlotAlgorithm extends ACAQAlgorithm {
                     List<ACAQAnnotation> annotations = new ArrayList<>();
                     for (Map.Entry<String, Object> entry : data.getParameterData().entrySet()) {
                         ACAQParameterAccess target = tree.getParameters().getOrDefault(entry.getKey(), null);
-                        if(target == null) {
+                        if (target == null) {
                             algorithmProgress.accept(subProgress.resolve("Unable to find parameter '" + entry.getKey() + "' in " + getName() + "! Ignoring."));
                             continue;
                         }
                         target.set(entry.getValue());
                     }
-                    if(parameterSlotAlgorithmSettings.attachParameterAnnotations) {
+                    if (parameterSlotAlgorithmSettings.attachParameterAnnotations) {
                         for (String key : nonDefaultParameters) {
                             ACAQParameterAccess target = tree.getParameters().get(key);
                             String annotationName;
-                            if(parameterSlotAlgorithmSettings.parameterAnnotationsUseInternalNames) {
+                            if (parameterSlotAlgorithmSettings.parameterAnnotationsUseInternalNames) {
                                 annotationName = key;
-                            }
-                            else {
+                            } else {
                                 annotationName = target.getName();
                             }
                             annotationName = parameterSlotAlgorithmSettings.parameterAnnotationsPrefix + annotationName;
@@ -192,37 +175,36 @@ public abstract class ACAQParameterSlotAlgorithm extends ACAQAlgorithm {
                     entry.getValue().set(parameterBackups.get(entry.getKey()));
                 }
             }
-        }
-        else {
+        } else {
             runParameterSet(subProgress, algorithmProgress, isCancelled, Collections.emptyList());
         }
     }
 
     /**
      * Runs a parameter set iteration
-     * @param subProgress the progress
-     * @param algorithmProgress the progress consumer
-     * @param isCancelled if the user requested cancellation
+     *
+     * @param subProgress          the progress
+     * @param algorithmProgress    the progress consumer
+     * @param isCancelled          if the user requested cancellation
      * @param parameterAnnotations parameter annotations
      */
     public abstract void runParameterSet(ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled, List<ACAQAnnotation> parameterAnnotations);
 
     private void updateParameterSlot() {
-        if(getSlotConfiguration() instanceof ACAQMutableSlotConfiguration) {
+        if (getSlotConfiguration() instanceof ACAQMutableSlotConfiguration) {
             ACAQMutableSlotConfiguration slotConfiguration = (ACAQMutableSlotConfiguration) getSlotConfiguration();
-            if(parameterSlotAlgorithmSettings.hasParameterSlot) {
+            if (parameterSlotAlgorithmSettings.hasParameterSlot) {
                 ACAQSlotDefinition existing = slotConfiguration.getInputSlots().getOrDefault(SLOT_PARAMETERS, null);
-                if(existing != null && existing.getDataClass() != ParametersData.class) {
+                if (existing != null && existing.getDataClass() != ParametersData.class) {
                     slotConfiguration.removeInputSlot(SLOT_PARAMETERS, false);
                     existing = null;
                 }
-                if(existing == null) {
+                if (existing == null) {
                     slotConfiguration.addSlot(SLOT_PARAMETERS,
                             new ACAQSlotDefinition(ParametersData.class, ACAQSlotType.Input, null),
                             false);
                 }
-            }
-            else {
+            } else {
                 slotConfiguration.removeInputSlot(SLOT_PARAMETERS, false);
             }
         }

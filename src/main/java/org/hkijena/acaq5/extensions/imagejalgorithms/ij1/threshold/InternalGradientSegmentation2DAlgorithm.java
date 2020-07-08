@@ -23,14 +23,8 @@ import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQOrganization;
 import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
-import org.hkijena.acaq5.api.algorithm.ACAQDataInterface;
-import org.hkijena.acaq5.api.algorithm.ACAQSimpleIteratingAlgorithm;
-import org.hkijena.acaq5.api.algorithm.AlgorithmInputSlot;
-import org.hkijena.acaq5.api.algorithm.AlgorithmOutputSlot;
+import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.data.ACAQDefaultMutableSlotConfiguration;
-import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.extensions.imagejalgorithms.ij1.contrast.CLAHEContrastEnhancer;
@@ -237,13 +231,13 @@ public class InternalGradientSegmentation2DAlgorithm extends ACAQSimpleIterating
 
     }
 
-    @ACAQParameter(value = "auto-thresholding", uiExcludeSubParameters = { "acaq:data-batch-generation", "acaq:parameter-slot-algorithm"  })
+    @ACAQParameter(value = "auto-thresholding", uiExcludeSubParameters = {"acaq:data-batch-generation", "acaq:parameter-slot-algorithm"})
     @ACAQDocumentation(name = "Auto thresholding", description = "Parameters for underlying auto thresholding")
     public AutoThreshold2DAlgorithm getAutoThresholding() {
         return autoThresholding;
     }
 
-    @ACAQParameter(value = "clahe-enhancing", uiExcludeSubParameters = { "acaq:data-batch-generation", "acaq:parameter-slot-algorithm"  })
+    @ACAQParameter(value = "clahe-enhancing", uiExcludeSubParameters = {"acaq:data-batch-generation", "acaq:parameter-slot-algorithm"})
     @ACAQDocumentation(name = "CLAHE Enhancer", description = "Parameters for underlying CLAHE Enhancing algorithm")
     public CLAHEContrastEnhancer getContrastEnhancer() {
         return contrastEnhancer;

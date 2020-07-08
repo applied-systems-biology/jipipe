@@ -27,8 +27,7 @@ import javax.swing.*;
 import javax.swing.event.TableModelEvent;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
-import java.awt.BorderLayout;
-import java.awt.Point;
+import java.awt.*;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -264,7 +263,7 @@ public class ParameterTableEditorUI extends ACAQParameterEditorUI {
 
     @Override
     public void reload() {
-        if(table.getModel() instanceof ParameterTable) {
+        if (table.getModel() instanceof ParameterTable) {
             ((ParameterTable) table.getModel()).getEventBus().unregister(this);
         }
 

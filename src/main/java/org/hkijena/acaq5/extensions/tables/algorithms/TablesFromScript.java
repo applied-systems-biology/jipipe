@@ -120,8 +120,8 @@ public class TablesFromScript extends ACAQAlgorithm {
         this.code = code;
     }
 
-     @ACAQDocumentation(name = "Script parameters", description = "The following parameters will be passed to the Python script. The variable name is equal to the unique parameter identifier.")
-     @ACAQParameter("script-parameters")
+    @ACAQDocumentation(name = "Script parameters", description = "The following parameters will be passed to the Python script. The variable name is equal to the unique parameter identifier.")
+    @ACAQParameter("script-parameters")
     public ACAQDynamicParameterCollection getScriptParameters() {
         return scriptParameters;
     }

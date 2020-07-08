@@ -19,16 +19,11 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.EventBus;
-import org.hkijena.acaq5.api.events.ParameterStructureChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameterTypeDeclaration;
 import org.hkijena.acaq5.api.registries.ACAQParameterTypeRegistry;
 import org.hkijena.acaq5.utils.JsonUtils;
@@ -50,7 +45,7 @@ import java.util.function.Supplier;
 @JsonDeserialize(using = ParameterTable.Deserializer.class)
 public class ParameterTable implements TableModel {
 
-    private final  EventBus eventBus = new EventBus();
+    private final EventBus eventBus = new EventBus();
     private List<ParameterColumn> columns = new ArrayList<>();
     private List<List<Object>> rows = new ArrayList<>();
     private List<TableModelListener> listeners = new ArrayList<>();
@@ -221,6 +216,7 @@ public class ParameterTable implements TableModel {
 
     /**
      * Removes the specified column
+     *
      * @param col the column index
      */
     public void removeColumn(int col) {

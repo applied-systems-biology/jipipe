@@ -25,7 +25,7 @@ import org.hkijena.acaq5.utils.TooltipUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
+import java.awt.*;
 import java.util.Comparator;
 import java.util.Set;
 import java.util.stream.Collectors;

@@ -14,7 +14,6 @@
 package org.hkijena.acaq5.extensions.plots.datatypes;
 
 import org.hkijena.acaq5.api.ACAQDocumentation;
-import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.category.DefaultCategoryDataset;

@@ -16,18 +16,12 @@ package org.hkijena.acaq5.extensions.multiparameters.datasources;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.events.ParameterStructureChangedEvent;
-import org.hkijena.acaq5.api.parameters.ACAQContextAction;
-import org.hkijena.acaq5.api.parameters.ACAQDynamicParameterCollection;
-import org.hkijena.acaq5.api.parameters.ACAQMutableParameterAccess;
-import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
-import org.hkijena.acaq5.api.parameters.ACAQParameterTree;
-import org.hkijena.acaq5.api.parameters.ACAQParameterVisibility;
+import org.hkijena.acaq5.api.parameters.*;
 import org.hkijena.acaq5.api.registries.ACAQParameterTypeRegistry;
 import org.hkijena.acaq5.ui.ACAQWorkbench;
 import org.hkijena.acaq5.ui.components.ParameterTreeUI;
 import org.hkijena.acaq5.utils.ResourceUtils;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -49,20 +43,19 @@ public class GeneratedParameters extends ACAQDynamicParameterCollection {
     @ACAQDocumentation(name = "Import", description = "Imports a parameter from another graph node")
     @ACAQContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/graph-compartment.png")
     public void uiImportParameterFromGraph(ACAQWorkbench workbench) {
-        if(parent == null)
+        if (parent == null)
             return;
 
         ACAQParameterTree globalTree = parent.getGraph().getParameterTree();
 
         List<Object> importedParameters = ParameterTreeUI.showPickerDialog(workbench.getWindow(), globalTree, "Import parameter");
         for (Object importedParameter : importedParameters) {
-            if(importedParameter instanceof ACAQParameterAccess) {
+            if (importedParameter instanceof ACAQParameterAccess) {
                 ACAQParameterTree.Node node = globalTree.getSourceNode(((ACAQParameterAccess) importedParameter).getSource());
-                importParameter(node, (ACAQParameterAccess)importedParameter);
-            }
-            else if(importedParameter instanceof ACAQParameterTree.Node) {
+                importParameter(node, (ACAQParameterAccess) importedParameter);
+            } else if (importedParameter instanceof ACAQParameterTree.Node) {
                 for (ACAQParameterAccess access : ((ACAQParameterTree.Node) importedParameter).getParameters().values()) {
-                    if(access.getVisibility().isVisibleIn(ACAQParameterVisibility.TransitiveVisible)) {
+                    if (access.getVisibility().isVisibleIn(ACAQParameterVisibility.TransitiveVisible)) {
                         ACAQParameterTree.Node node = globalTree.getSourceNode(access.getSource());
                         importParameter(node, access);
                     }

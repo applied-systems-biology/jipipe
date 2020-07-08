@@ -21,11 +21,7 @@ import org.hkijena.acaq5.api.testbench.ACAQTestBenchSettings;
 import org.hkijena.acaq5.extensions.settings.RuntimeSettings;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbenchPanel;
-import org.hkijena.acaq5.ui.components.ACAQValidityReportUI;
-import org.hkijena.acaq5.ui.components.DocumentTabPane;
-import org.hkijena.acaq5.ui.components.DocumentedComponent;
-import org.hkijena.acaq5.ui.components.MarkdownDocument;
-import org.hkijena.acaq5.ui.components.UserFriendlyErrorUI;
+import org.hkijena.acaq5.ui.components.*;
 import org.hkijena.acaq5.ui.events.RunUIWorkerFinishedEvent;
 import org.hkijena.acaq5.ui.events.RunUIWorkerInterruptedEvent;
 import org.hkijena.acaq5.ui.parameters.ParameterPanel;
@@ -35,7 +31,7 @@ import org.hkijena.acaq5.ui.testbench.ACAQTestBenchUI;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
+import java.awt.*;
 import java.util.Set;
 import java.util.function.Consumer;
 

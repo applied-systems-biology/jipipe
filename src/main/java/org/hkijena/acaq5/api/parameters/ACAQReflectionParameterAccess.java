@@ -100,7 +100,7 @@ public class ACAQReflectionParameterAccess implements ACAQParameterAccess {
     public <T> boolean set(T value) {
         try {
             Object existing = get(Object.class);
-            if(existing != value && Objects.equals(existing, value)) {
+            if (existing != value && Objects.equals(existing, value)) {
                 return true;
             }
             Object result = setter.invoke(source, value);

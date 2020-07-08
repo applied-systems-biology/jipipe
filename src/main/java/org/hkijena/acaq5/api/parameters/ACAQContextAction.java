@@ -28,6 +28,7 @@ import java.lang.annotation.Target;
 public @interface ACAQContextAction {
     /**
      * The icon resource URL (optional)
+     *
      * @return icon resource URL or empty
      */
     String iconURL() default "";

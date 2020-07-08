@@ -14,10 +14,7 @@
 package org.hkijena.acaq5.extensions.parameters.colors;
 
 import javax.swing.*;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Graphics;
-import java.awt.Insets;
+import java.awt.*;
 
 /**
  * Icon that renders a color map entry

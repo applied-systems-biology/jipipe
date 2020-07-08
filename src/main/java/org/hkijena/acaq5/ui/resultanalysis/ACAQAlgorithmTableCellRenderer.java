@@ -18,8 +18,7 @@ import org.hkijena.acaq5.ui.registries.ACAQUIAlgorithmRegistry;
 
 import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
-import java.awt.Color;
-import java.awt.Component;
+import java.awt.*;
 
 /**
  * Renders {@link ACAQGraphNode} instances in a table cell

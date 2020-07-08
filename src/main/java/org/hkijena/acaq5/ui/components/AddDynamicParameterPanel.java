@@ -23,11 +23,7 @@ import org.jdesktop.swingx.JXTextField;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Font;
+import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.List;
@@ -253,7 +249,7 @@ public class AddDynamicParameterPanel extends JPanel {
     /**
      * Shows a dialog for adding slots
      *
-     * @param parent       parent component
+     * @param parent parent component
      */
     public static void showDialog(Component parent, ACAQDynamicParameterCollection parameterCollection) {
         JDialog dialog = new JDialog();

@@ -28,7 +28,7 @@ import org.hkijena.acaq5.utils.UIUtils;
 import org.scijava.Context;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
+import java.awt.*;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -48,10 +48,10 @@ public class ACAQProjectWindow extends JFrame {
     private Path projectSavePath;
 
     /**
-     * @param context context
-     * @param project The project
+     * @param context          context
+     * @param project          The project
      * @param showIntroduction whether to show the introduction
-     * @param isNewProject if the project is an empty project
+     * @param isNewProject     if the project is an empty project
      */
     public ACAQProjectWindow(Context context, ACAQProject project, boolean showIntroduction, boolean isNewProject) {
         this.context = context;
@@ -80,9 +80,10 @@ public class ACAQProjectWindow extends JFrame {
 
     /**
      * Loads a project into the window
-     *  @param project The project
+     *
+     * @param project          The project
      * @param showIntroduction whether to show the introduction
-     * @param isNewProject if the project is an empty project
+     * @param isNewProject     if the project is an empty project
      */
     public void loadProject(ACAQProject project, boolean showIntroduction, boolean isNewProject) {
         this.project = project;
@@ -233,10 +234,10 @@ public class ACAQProjectWindow extends JFrame {
     }
 
     /**
-     * @param messageTitle Description of the project source
-     * @param project      The project
+     * @param messageTitle     Description of the project source
+     * @param project          The project
      * @param showIntroduction whether to show the introduction
-     * @param isNewProject if the project is an empty project
+     * @param isNewProject     if the project is an empty project
      * @return The window that holds the project
      */
     private ACAQProjectWindow openProjectInThisOrNewWindow(String messageTitle, ACAQProject project, boolean showIntroduction, boolean isNewProject) {
@@ -281,10 +282,10 @@ public class ACAQProjectWindow extends JFrame {
     /**
      * Creates a new window
      *
-     * @param context context
-     * @param project The project
+     * @param context          context
+     * @param project          The project
      * @param showIntroduction show an introduction
-     * @param isNewProject if the project is a new empty project
+     * @param isNewProject     if the project is a new empty project
      * @return The window
      */
     public static ACAQProjectWindow newWindow(Context context, ACAQProject project, boolean showIntroduction, boolean isNewProject) {

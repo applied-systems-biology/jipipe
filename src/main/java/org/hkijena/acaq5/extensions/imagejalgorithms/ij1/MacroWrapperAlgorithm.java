@@ -13,7 +13,6 @@
 
 package org.hkijena.acaq5.extensions.imagejalgorithms.ij1;
 
-import ij.IJ;
 import ij.ImagePlus;
 import ij.WindowManager;
 import ij.macro.Interpreter;
@@ -23,12 +22,7 @@ import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQOrganization;
 import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidityReport;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
-import org.hkijena.acaq5.api.algorithm.ACAQDataInterface;
-import org.hkijena.acaq5.api.algorithm.ACAQIteratingAlgorithm;
-import org.hkijena.acaq5.api.algorithm.AlgorithmInputSlot;
-import org.hkijena.acaq5.api.algorithm.AlgorithmOutputSlot;
+import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.api.compat.ImageJDatatypeAdapter;
 import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
@@ -38,13 +32,13 @@ import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.api.registries.ACAQImageJAdapterRegistry;
 import org.hkijena.acaq5.extensions.filesystem.dataypes.PathData;
-import org.hkijena.acaq5.extensions.parameters.scripts.ImageJMacro;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ResultsTableData;
+import org.hkijena.acaq5.extensions.parameters.scripts.ImageJMacro;
 import org.hkijena.acaq5.utils.MacroUtils;
 
-import java.awt.Window;
+import java.awt.*;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -197,9 +191,9 @@ public class MacroWrapperAlgorithm extends ACAQIteratingAlgorithm {
             dataInterface.addOutputData(outputSlot, data);
 
             // Workaround bug: Not closing all outputs
-            if(ImagePlusData.class.isAssignableFrom(outputSlot.getAcceptedDataType())) {
+            if (ImagePlusData.class.isAssignableFrom(outputSlot.getAcceptedDataType())) {
                 ImagePlus image = WindowManager.getImage(outputSlot.getName());
-                if(image != null) {
+                if (image != null) {
                     image.changes = false;
                     image.close();
                 }

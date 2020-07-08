@@ -17,13 +17,7 @@ import com.google.common.eventbus.Subscribe;
 import com.google.common.html.HtmlEscapers;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.events.ParameterStructureChangedEvent;
-import org.hkijena.acaq5.api.parameters.ACAQDynamicParameterCollection;
-import org.hkijena.acaq5.api.parameters.ACAQMutableParameterAccess;
-import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
-import org.hkijena.acaq5.api.parameters.ACAQParameterCollection;
-import org.hkijena.acaq5.api.parameters.ACAQParameterTree;
-import org.hkijena.acaq5.api.parameters.ACAQParameterTypeDeclaration;
-import org.hkijena.acaq5.api.parameters.ACAQParameterVisibility;
+import org.hkijena.acaq5.api.parameters.*;
 import org.hkijena.acaq5.api.registries.ACAQParameterTypeRegistry;
 import org.hkijena.acaq5.ui.ACAQWorkbench;
 import org.hkijena.acaq5.ui.components.AddDynamicParameterPanel;
@@ -38,16 +32,9 @@ import org.scijava.Context;
 import org.scijava.Contextual;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
-import java.lang.annotation.Target;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.HashSet;
+import java.awt.*;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -153,7 +140,7 @@ public class ParameterPanel extends FormPanel implements Contextual {
             ACAQParameterTree.Node sourceNode = traversed.getSourceNode(source);
             for (String subParameterId : sourceNode.getUiExcludedSubParameters()) {
                 ACAQParameterTree.Node subParameterNode = sourceNode.getChildren().getOrDefault(subParameterId, null);
-                if(subParameterNode != null) {
+                if (subParameterNode != null) {
                     hidden.add(subParameterNode.getCollection());
                 }
             }
@@ -171,7 +158,7 @@ public class ParameterPanel extends FormPanel implements Contextual {
                 .collect(Collectors.toList())) {
             if (collection == this.displayedParameters)
                 continue;
-            if(hidden.contains(collection))
+            if (hidden.contains(collection))
                 continue;
             addToForm(traversed, collection, groupedBySource.get(collection));
         }

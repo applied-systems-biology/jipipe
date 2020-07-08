@@ -24,7 +24,7 @@ import org.hkijena.acaq5.ui.ACAQWorkbench;
 import org.hkijena.acaq5.utils.JsonUtils;
 import org.hkijena.acaq5.utils.StringUtils;
 
-import java.awt.Desktop;
+import java.awt.*;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;

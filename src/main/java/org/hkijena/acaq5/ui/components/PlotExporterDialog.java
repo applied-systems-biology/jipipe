@@ -21,9 +21,7 @@ import org.jfree.graphics2d.svg.SVGGraphics2D;
 import org.jfree.graphics2d.svg.SVGUtils;
 
 import javax.swing.*;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.io.IOException;
 import java.nio.file.Path;
 
@@ -164,7 +162,7 @@ public class PlotExporterDialog extends JDialog {
 
         switch ((FileFormat) plotExportFormat.getSelectedItem()) {
             case PNG:
-                if(FileChooserSettings.getInstance().isAddFileExtension() && !path.toString().toLowerCase().endsWith(".png")) {
+                if (FileChooserSettings.getInstance().isAddFileExtension() && !path.toString().toLowerCase().endsWith(".png")) {
                     path = path.getParent().resolve(path.getFileName() + ".png");
                 }
                 try {
@@ -177,7 +175,7 @@ public class PlotExporterDialog extends JDialog {
                 }
                 break;
             case JPEG:
-                if(FileChooserSettings.getInstance().isAddFileExtension() && !path.toString().toLowerCase().endsWith(".jpg")) {
+                if (FileChooserSettings.getInstance().isAddFileExtension() && !path.toString().toLowerCase().endsWith(".jpg")) {
                     path = path.getParent().resolve(path.getFileName() + ".jpg");
                 }
                 try {
@@ -190,7 +188,7 @@ public class PlotExporterDialog extends JDialog {
                 }
                 break;
             case SVG: {
-                if(FileChooserSettings.getInstance().isAddFileExtension() && !path.toString().toLowerCase().endsWith(".svg")) {
+                if (FileChooserSettings.getInstance().isAddFileExtension() && !path.toString().toLowerCase().endsWith(".svg")) {
                     path = path.getParent().resolve(path.getFileName() + ".svg");
                 }
                 int w = ((Number) plotWidth.getValue()).intValue();

@@ -23,21 +23,17 @@ import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.traverse.TopologicalOrderIterator;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Applies auto-layout according to Sugiyama et al.
- * Sugiyama, Kozo; Tagawa, Shôjirô; Toda, Mitsuhiko (1981), "Methods for visual understanding of hierarchical system structures", 
+ * Sugiyama, Kozo; Tagawa, Shôjirô; Toda, Mitsuhiko (1981), "Methods for visual understanding of hierarchical system structures",
  * IEEE Transactions on Systems, Man, and Cybernetics, SMC-11 (2): 109–125
- * 
+ * <p>
  * Code was adapted from https://blog.disy.net/sugiyama-method/
  */
 public class SugiyamaGraphAutoLayoutMethod implements GraphAutoLayoutMethod {
-    
+
     @Override
     public void accept(ACAQGraphCanvasUI canvasUI) {
 
@@ -52,15 +48,16 @@ public class SugiyamaGraphAutoLayoutMethod implements GraphAutoLayoutMethod {
             boolean isFreeFloating = true;
             for (ACAQDataSlot inputSlot : ui.getNode().getInputSlots()) {
                 ACAQDataSlot sourceSlot = graph.getSourceSlot(inputSlot);
-                if(sourceSlot != null && Objects.equals(sourceSlot.getNode().getCompartment(), inputSlot.getNode().getCompartment())) {
+                if (sourceSlot != null && Objects.equals(sourceSlot.getNode().getCompartment(), inputSlot.getNode().getCompartment())) {
                     isFreeFloating = false;
                     break;
                 }
             }
-            if(isFreeFloating) {
-                outer: for (ACAQDataSlot outputSlot : ui.getNode().getOutputSlots()) {
+            if (isFreeFloating) {
+                outer:
+                for (ACAQDataSlot outputSlot : ui.getNode().getOutputSlots()) {
                     for (ACAQDataSlot targetSlot : graph.getTargetSlots(outputSlot)) {
-                        if(Objects.equals(outputSlot.getNode().getCompartment(), targetSlot.getNode().getCompartment())) {
+                        if (Objects.equals(outputSlot.getNode().getCompartment(), targetSlot.getNode().getCompartment())) {
                             isFreeFloating = false;
                             break outer;
                         }
@@ -68,12 +65,11 @@ public class SugiyamaGraphAutoLayoutMethod implements GraphAutoLayoutMethod {
                 }
             }
 
-            if(!isFreeFloating) {
+            if (!isFreeFloating) {
                 SugiyamaVertex sugiyamaVertex = new SugiyamaVertex(ui);
                 sugiyamaGraph.addVertex(sugiyamaVertex);
                 vertexMap.put(ui, sugiyamaVertex);
-            }
-            else {
+            } else {
                 freeFloating.add(ui);
             }
         }
@@ -86,7 +82,7 @@ public class SugiyamaGraphAutoLayoutMethod implements GraphAutoLayoutMethod {
                 continue;
             SugiyamaVertex sourceVertex = vertexMap.getOrDefault(sourceUI, null);
             SugiyamaVertex targetVertex = vertexMap.getOrDefault(targetUI, null);
-            if(sourceVertex == null || targetVertex == null)
+            if (sourceVertex == null || targetVertex == null)
                 continue;
             if (!sugiyamaGraph.containsEdge(sourceVertex, targetVertex))
                 sugiyamaGraph.addEdge(sourceVertex, targetVertex);
@@ -147,12 +143,12 @@ public class SugiyamaGraphAutoLayoutMethod implements GraphAutoLayoutMethod {
         }
 
         // Add free-floating algorithms back into the graph
-        if(!freeFloating.isEmpty()) {
+        if (!freeFloating.isEmpty()) {
             if (canvasUI.getCurrentViewMode() == ACAQGraphCanvasUI.ViewMode.Horizontal) {
                 // Put them below
                 int minY = ACAQNodeUI.SLOT_UI_HEIGHT;
                 for (ACAQNodeUI ui : canvasUI.getNodeUIs().values()) {
-                    if(!freeFloating.contains(ui)) {
+                    if (!freeFloating.contains(ui)) {
                         minY = Math.max(ui.getBottomY(), minY);
                     }
                 }
@@ -161,11 +157,10 @@ public class SugiyamaGraphAutoLayoutMethod implements GraphAutoLayoutMethod {
                     ui.setLocation(x, minY);
                     x += ui.getWidth() + ACAQNodeUI.SLOT_UI_WIDTH * 2;
                 }
-            }
-            else {
+            } else {
                 int minX = ACAQNodeUI.SLOT_UI_WIDTH * 4;
                 for (ACAQNodeUI ui : canvasUI.getNodeUIs().values()) {
-                    if(!freeFloating.contains(ui)) {
+                    if (!freeFloating.contains(ui)) {
                         minX = Math.max(ui.getRightX(), minX);
                     }
                 }
@@ -175,14 +170,14 @@ public class SugiyamaGraphAutoLayoutMethod implements GraphAutoLayoutMethod {
                     y += ui.getHeight() + ACAQNodeUI.SLOT_UI_HEIGHT;
                 }
             }
-            
+
         }
     }
 
 
     private void rearrangeSugiyamaHorizontal(ACAQGraphCanvasUI canvasUI, DefaultDirectedGraph<SugiyamaVertex, DefaultEdge> sugiyamaGraph, int maxLayer, int maxIndex) {
 
-        if(sugiyamaGraph.vertexSet().isEmpty())
+        if (sugiyamaGraph.vertexSet().isEmpty())
             return;
 
         // Create a table of column -> row -> vertex
@@ -234,12 +229,12 @@ public class SugiyamaGraphAutoLayoutMethod implements GraphAutoLayoutMethod {
             x += columnWidths.getOrDefault(column, 0);
         }
 
-        
+
     }
 
     private void rearrangeSugiyamaVertical(ACAQGraphCanvasUI canvasUI, DefaultDirectedGraph<SugiyamaVertex, DefaultEdge> sugiyamaGraph, int maxLayer, int maxIndex) {
 
-        if(sugiyamaGraph.vertexSet().isEmpty())
+        if (sugiyamaGraph.vertexSet().isEmpty())
             return;
 
         // Create a table of column -> row -> vertex
@@ -291,7 +286,7 @@ public class SugiyamaGraphAutoLayoutMethod implements GraphAutoLayoutMethod {
             x += columnWidths.getOrDefault(column, 0);
         }
 
-        
+
     }
 
     /**

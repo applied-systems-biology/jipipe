@@ -14,12 +14,7 @@
 package org.hkijena.acaq5.extensions.multiparameters.algorithms;
 
 import org.hkijena.acaq5.ACAQDependency;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
-import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
-import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
-import org.hkijena.acaq5.api.algorithm.AlgorithmInputSlot;
-import org.hkijena.acaq5.api.algorithm.AlgorithmOutputSlot;
-import org.hkijena.acaq5.api.algorithm.DefaultAlgorithmInputSlot;
+import org.hkijena.acaq5.api.algorithm.*;
 import org.hkijena.acaq5.extensions.multiparameters.datatypes.ParametersData;
 
 import java.util.ArrayList;

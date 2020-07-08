@@ -13,22 +13,18 @@
 
 package org.hkijena.acaq5.extensions.parameters.scripts;
 
-import org.fife.ui.rsyntaxtextarea.AbstractTokenMakerFactory;
-import org.fife.ui.rsyntaxtextarea.TokenMakerFactory;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
 import org.hkijena.acaq5.ui.ACAQWorkbench;
 import org.hkijena.acaq5.ui.components.DocumentChangeListener;
 import org.hkijena.acaq5.ui.components.DocumentTabPane;
 import org.hkijena.acaq5.ui.parameters.ACAQParameterEditorUI;
 import org.hkijena.acaq5.utils.ReflectionUtils;
-import org.hkijena.acaq5.utils.StringUtils;
 import org.hkijena.acaq5.utils.UIUtils;
 import org.scijava.ui.swing.script.EditorPane;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
-import java.awt.BorderLayout;
-import java.awt.Font;
+import java.awt.*;
 import java.util.Objects;
 
 /**
@@ -57,7 +53,7 @@ public class ScriptParameterEditorUI extends ACAQParameterEditorUI {
                 JLabel.LEFT);
         collapseInfoLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, 12));
         textArea = new EditorPane();
-        if(code.getLanguage() != null) {
+        if (code.getLanguage() != null) {
             ReflectionUtils.invokeMethod(textArea, "setLanguage", code.getLanguage());
             textArea.setAutoCompletionEnabled(true);
         }
@@ -81,7 +77,7 @@ public class ScriptParameterEditorUI extends ACAQParameterEditorUI {
 
         JToggleButton collapseButton = new JToggleButton("Collapse", UIUtils.getIconFromResources("eye-slash.png"));
         collapseButton.setSelected(code.isCollapsed());
-        collapseButton.addActionListener( e -> toggleCollapse());
+        collapseButton.addActionListener(e -> toggleCollapse());
         toolBar.add(collapseButton);
 
         JButton openIdeButton = new JButton("IDE", UIUtils.getIconFromResources("window-new.png"));
@@ -102,13 +98,13 @@ public class ScriptParameterEditorUI extends ACAQParameterEditorUI {
     private void openIDE() {
         for (DocumentTabPane.DocumentTab documentTab : getWorkbench().getDocumentTabPane().getTabsContaining(LargeScriptParameterEditorUI.class)) {
             LargeScriptParameterEditorUI editorUI = (LargeScriptParameterEditorUI) documentTab.getContent();
-            if(editorUI.getParameterAccess() == getParameterAccess()) {
+            if (editorUI.getParameterAccess() == getParameterAccess()) {
                 getWorkbench().getDocumentTabPane().switchToContent(editorUI);
                 return;
             }
         }
         ScriptParameter code = getParameter(ScriptParameter.class);
-        getWorkbench().getDocumentTabPane().addTab(getParameterAccess().getName() + " (" +code.getLanguageName() + ")",
+        getWorkbench().getDocumentTabPane().addTab(getParameterAccess().getName() + " (" + code.getLanguageName() + ")",
                 UIUtils.getIconFromResources("algorithms/dialog-xml-editor.png"),
                 new LargeScriptParameterEditorUI(getWorkbench(), getParameterAccess()),
                 DocumentTabPane.CloseMode.withSilentCloseButton,
@@ -126,13 +122,12 @@ public class ScriptParameterEditorUI extends ACAQParameterEditorUI {
         ScriptParameter code = getParameter(ScriptParameter.class);
         remove(textArea);
         remove(collapseInfoLabel);
-        if(code.isCollapsed()) {
+        if (code.isCollapsed()) {
             add(collapseInfoLabel, BorderLayout.CENTER);
-        }
-        else {
+        } else {
             add(textArea, BorderLayout.CENTER);
         }
-        if(!Objects.equals(textArea.getText(), code.getCode()))
+        if (!Objects.equals(textArea.getText(), code.getCode()))
             textArea.setText(code.getCode());
         revalidate();
         repaint();

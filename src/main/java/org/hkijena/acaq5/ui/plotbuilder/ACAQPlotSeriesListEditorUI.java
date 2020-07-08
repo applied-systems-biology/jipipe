@@ -21,8 +21,7 @@ import org.hkijena.acaq5.ui.components.FormPanel;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
-import java.awt.Dimension;
+import java.awt.*;
 
 /**
  * Manages the list of series in a {@link ACAQPlotBuilderUI}

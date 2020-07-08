@@ -19,10 +19,7 @@ import org.hkijena.acaq5.ui.parameters.ACAQParameterEditorUI;
 import org.hkijena.acaq5.utils.ReflectionUtils;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Font;
+import java.awt.*;
 import java.util.Objects;
 
 /**
@@ -50,7 +47,7 @@ public class EnumParameterEditorUI extends ACAQParameterEditorUI {
     @Override
     public void reload() {
         Object target = getParameterAccess().get(Object.class);
-        if(!Objects.equals(target, comboBox.getSelectedItem())) {
+        if (!Objects.equals(target, comboBox.getSelectedItem())) {
             comboBox.setSelectedItem(target);
         }
     }

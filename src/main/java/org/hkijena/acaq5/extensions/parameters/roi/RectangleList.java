@@ -15,7 +15,7 @@ package org.hkijena.acaq5.extensions.parameters.roi;
 
 import org.hkijena.acaq5.extensions.parameters.collections.ListParameter;
 
-import java.awt.Rectangle;
+import java.awt.*;
 
 /**
  * List parameter of {@link Rectangle}

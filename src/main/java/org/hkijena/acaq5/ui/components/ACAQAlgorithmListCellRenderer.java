@@ -17,8 +17,7 @@ import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.ui.registries.ACAQUIAlgorithmRegistry;
 
 import javax.swing.*;
-import java.awt.Color;
-import java.awt.Component;
+import java.awt.*;
 
 /**
  * Renders {@link ACAQGraphNode}

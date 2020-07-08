@@ -19,10 +19,7 @@ import org.hkijena.acaq5.ui.parameters.ACAQParameterEditorUI;
 import org.hkijena.acaq5.utils.ReflectionUtils;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Font;
+import java.awt.*;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Supplier;
@@ -52,7 +49,7 @@ public class DynamicEnumParameterEditorUI extends ACAQParameterEditorUI {
     @Override
     public void reload() {
         DynamicEnumParameter parameter = getParameter(DynamicEnumParameter.class);
-        if(!Objects.equals(parameter.getValue(), comboBox.getSelectedItem())) {
+        if (!Objects.equals(parameter.getValue(), comboBox.getSelectedItem())) {
             comboBox.setSelectedItem(parameter.getValue());
         }
     }

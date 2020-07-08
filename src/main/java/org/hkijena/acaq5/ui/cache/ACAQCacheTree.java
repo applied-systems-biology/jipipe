@@ -20,13 +20,15 @@ import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbenchPanel;
+import org.hkijena.acaq5.ui.components.SearchTextField;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
-import java.awt.BorderLayout;
+import java.awt.*;
+import java.util.List;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -36,6 +38,7 @@ import java.util.stream.Collectors;
 public class ACAQCacheTree extends ACAQProjectWorkbenchPanel {
     private JScrollPane treeScollPane;
     private JTree tree;
+    private SearchTextField searchTextField;
 
     /**
      * @param workbenchUI Workbench ui
@@ -133,26 +136,43 @@ public class ACAQCacheTree extends ACAQProjectWorkbenchPanel {
     private void createCompartmentNode(DefaultMutableTreeNode root, Map<ACAQGraphNode, Map<ACAQProjectCache.State, List<ACAQDataSlot>>> algorithms, String compartmentName) {
         DefaultMutableTreeNode compartmentNode = new DefaultMutableTreeNode(compartmentName);
 
+        boolean compartmentMatches = searchTextField.test(compartmentName);
+        boolean compartmentHasMatchingChild = false;
+
         for (Map.Entry<ACAQGraphNode, Map<ACAQProjectCache.State, List<ACAQDataSlot>>> algorithmEntry : algorithms.entrySet()) {
             DefaultMutableTreeNode algorithmNode = new DefaultMutableTreeNode(algorithmEntry.getKey());
+
+            boolean algorithmMatches = compartmentMatches || searchTextField.test(algorithmEntry.getKey().getName());
+            compartmentHasMatchingChild |= algorithmMatches;
+            boolean algorithmHasMatchingChild = false;
 
             for (ACAQProjectCache.State state : algorithmEntry.getValue().keySet().stream().sorted(Comparator.reverseOrder()).collect(Collectors.toList())) {
                 DefaultMutableTreeNode stateNode = new DefaultMutableTreeNode(state);
 
+                boolean stateMatches = algorithmMatches || searchTextField.test(state.renderGenerationTime());
+                boolean stateHasMatchingChild = false;
+                compartmentHasMatchingChild |= stateMatches;
+                algorithmHasMatchingChild |= stateMatches;
+
                 for (ACAQDataSlot slot : algorithmEntry.getValue().get(state)) {
                     DefaultMutableTreeNode slotNode = new DefaultMutableTreeNode(slot);
-                    stateNode.add(slotNode);
+                    if (searchTextField.test(slot.getName())) {
+                        stateHasMatchingChild = true;
+                        algorithmHasMatchingChild = true;
+                        compartmentHasMatchingChild = true;
+                        stateNode.add(slotNode);
+                    }
                 }
 
-                if (stateNode.getChildCount() > 0)
+                if (stateNode.getChildCount() > 0 && (stateMatches || stateHasMatchingChild))
                     algorithmNode.add(stateNode);
             }
 
-            if (algorithmNode.getChildCount() > 0)
+            if (algorithmNode.getChildCount() > 0 && (algorithmMatches || algorithmHasMatchingChild))
                 compartmentNode.add(algorithmNode);
         }
 
-        if (compartmentNode.getChildCount() > 0)
+        if (compartmentNode.getChildCount() > 0 && (compartmentMatches || compartmentHasMatchingChild))
             root.add(compartmentNode);
     }
 
@@ -162,6 +182,10 @@ public class ACAQCacheTree extends ACAQProjectWorkbenchPanel {
         tree.setCellRenderer(new ACAQCacheStateTreeCellRenderer());
         treeScollPane = new JScrollPane(tree);
         add(treeScollPane, BorderLayout.CENTER);
+
+        searchTextField = new SearchTextField();
+        searchTextField.addActionListener(e -> refreshTree());
+        add(searchTextField, BorderLayout.NORTH);
     }
 
     /**

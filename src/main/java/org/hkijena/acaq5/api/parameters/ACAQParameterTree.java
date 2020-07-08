@@ -183,14 +183,14 @@ public class ACAQParameterTree implements ACAQParameterCollection, ACAQCustomPar
     private void addContextActions(ACAQParameterCollection source, Node target) {
         for (Method method : source.getClass().getMethods()) {
             ACAQContextAction actionAnnotation = method.getAnnotation(ACAQContextAction.class);
-            if(actionAnnotation == null)
+            if (actionAnnotation == null)
                 continue;
             ACAQDocumentation documentationAnnotation = method.getAnnotation(ACAQDocumentation.class);
-            if(documentationAnnotation == null) {
+            if (documentationAnnotation == null) {
                 documentationAnnotation = new ACAQDefaultDocumentation(method.getName(), "");
             }
             URL iconURL = null;
-            if(!StringUtils.isNullOrEmpty(actionAnnotation.iconURL())) {
+            if (!StringUtils.isNullOrEmpty(actionAnnotation.iconURL())) {
                 iconURL = ResourceUtils.class.getResource(actionAnnotation.iconURL());
             }
             target.actions.add(new ContextAction(source, method, iconURL, documentationAnnotation));

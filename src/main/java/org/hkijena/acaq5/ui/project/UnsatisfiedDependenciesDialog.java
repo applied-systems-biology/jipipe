@@ -19,8 +19,7 @@ import org.hkijena.acaq5.ui.components.MarkdownReader;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
-import java.awt.Component;
+import java.awt.*;
 import java.nio.file.Path;
 import java.util.Set;
 

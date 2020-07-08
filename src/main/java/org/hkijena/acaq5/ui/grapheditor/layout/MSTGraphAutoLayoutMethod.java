@@ -15,24 +15,14 @@ package org.hkijena.acaq5.ui.grapheditor.layout;
 
 import com.google.common.collect.ImmutableList;
 import org.hkijena.acaq5.api.algorithm.ACAQGraph;
-import org.hkijena.acaq5.api.algorithm.ACAQGraphEdge;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.ui.grapheditor.ACAQGraphCanvasUI;
 import org.hkijena.acaq5.ui.grapheditor.ACAQNodeUI;
-import org.jgrapht.Graph;
 import org.jgrapht.alg.spanning.KruskalMinimumSpanningTree;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultWeightedEdge;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Stack;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -42,7 +32,7 @@ public class MSTGraphAutoLayoutMethod implements GraphAutoLayoutMethod {
 
     @Override
     public void accept(ACAQGraphCanvasUI canvasUI) {
-        if(canvasUI.getNodeUIs().size() <= 1)
+        if (canvasUI.getNodeUIs().size() <= 1)
             return;
 
         DefaultDirectedGraph<Node, Edge> graph = generateGraph(canvasUI, canvasUI.getNodeUIs().values());
@@ -63,10 +53,9 @@ public class MSTGraphAutoLayoutMethod implements GraphAutoLayoutMethod {
 //            e.printStackTrace();
 //        }
 
-        if(canvasUI.getCurrentViewMode() == ACAQGraphCanvasUI.ViewMode.Vertical) {
+        if (canvasUI.getCurrentViewMode() == ACAQGraphCanvasUI.ViewMode.Vertical) {
             autoLayoutVertical(graph);
-        }
-        else {
+        } else {
             autoLayoutHorizontal(graph);
         }
     }
@@ -74,7 +63,7 @@ public class MSTGraphAutoLayoutMethod implements GraphAutoLayoutMethod {
     private int generateTracks(ACAQGraph projectGraph, DefaultDirectedGraph<Node, Edge> graph) {
         List<Node> roots = new ArrayList<>();
         for (Node node : graph.vertexSet()) {
-            if(graph.incomingEdgesOf(node).isEmpty()) {
+            if (graph.incomingEdgesOf(node).isEmpty()) {
                 roots.add(node);
             }
         }
@@ -85,12 +74,12 @@ public class MSTGraphAutoLayoutMethod implements GraphAutoLayoutMethod {
             Stack<Node> stack = new Stack<>();
             stack.push(root);
 
-            while(!stack.isEmpty()) {
+            while (!stack.isEmpty()) {
                 Node top = stack.pop();
                 ++track;
                 top.track = track;
                 Set<Edge> edges = graph.outgoingEdgesOf(top);
-                while(edges.size() > 0) {
+                while (edges.size() > 0) {
                     if (edges.size() == 1) {
                         // Iterate down until we find a branching section
                         do {
@@ -121,15 +110,14 @@ public class MSTGraphAutoLayoutMethod implements GraphAutoLayoutMethod {
     }
 
     private int sortBranches(ACAQGraph projectGraph, Node source, Node target0, Node target1) {
-        if(target0.depth == target1.depth) {
+        if (target0.depth == target1.depth) {
             Map.Entry<ACAQDataSlot, ACAQDataSlot> target0Edge = projectGraph.getEdgesBetween(source.getUi().getNode(), target0.getUi().getNode()).iterator().next();
             Map.Entry<ACAQDataSlot, ACAQDataSlot> target1Edge = projectGraph.getEdgesBetween(source.getUi().getNode(), target1.getUi().getNode()).iterator().next();
             int target0SlotIndex = source.getUi().getNode().getOutputSlots().indexOf(target0Edge.getKey());
             int target1SlotIndex = source.getUi().getNode().getOutputSlots().indexOf(target1Edge.getKey());
 
             return -Integer.compare(target0SlotIndex, target1SlotIndex);
-        }
-        else {
+        } else {
             return Integer.compare(target0.depth, target1.depth);
         }
     }
@@ -142,10 +130,9 @@ public class MSTGraphAutoLayoutMethod implements GraphAutoLayoutMethod {
         Map<Integer, Integer> trackRenaming = new HashMap<>();
         int trackModifier = 0;
         for (int i = 0; i <= maxTrack; i++) {
-            if(nonEmptyTracks.contains(i)) {
+            if (nonEmptyTracks.contains(i)) {
                 trackRenaming.put(i, i - trackModifier);
-            }
-            else {
+            } else {
                 ++trackModifier;
                 trackRenaming.put(i, i - trackModifier);
             }
@@ -225,8 +212,8 @@ public class MSTGraphAutoLayoutMethod implements GraphAutoLayoutMethod {
         for (ACAQNodeUI ui : uis) {
             for (ACAQDataSlot outputSlot : ui.getNode().getOutputSlots()) {
                 for (ACAQDataSlot targetSlot : ui.getGraphUI().getGraph().getTargetSlots(outputSlot)) {
-                    ACAQNodeUI targetUI =    canvasUI.getNodeUIs().getOrDefault(targetSlot.getNode(), null);
-                    if(targetUI != null) {
+                    ACAQNodeUI targetUI = canvasUI.getNodeUIs().getOrDefault(targetSlot.getNode(), null);
+                    if (targetUI != null) {
                         Node targetNode = nodeMap.get(targetUI);
                         helperGraph.addEdge(nodeMap.get(ui), targetNode);
                         graph.addEdge(nodeMap.get(ui), targetNode);
@@ -253,7 +240,7 @@ public class MSTGraphAutoLayoutMethod implements GraphAutoLayoutMethod {
         // Find the mst
         KruskalMinimumSpanningTree<Node, Edge> minimumSpanningTree = new KruskalMinimumSpanningTree<>(graph);
         for (Edge edge : ImmutableList.copyOf(graph.edgeSet())) {
-            if(!minimumSpanningTree.getSpanningTree().getEdges().contains(edge)) {
+            if (!minimumSpanningTree.getSpanningTree().getEdges().contains(edge)) {
                 graph.removeEdge(edge);
             }
         }
@@ -277,10 +264,10 @@ public class MSTGraphAutoLayoutMethod implements GraphAutoLayoutMethod {
     }
 
     private void calculateMaximumNodeDepths(DefaultDirectedGraph<Node, Edge> helperGraph) {
-        while(!helperGraph.vertexSet().isEmpty()) {
+        while (!helperGraph.vertexSet().isEmpty()) {
             Set<Node> leaves = new HashSet<>();
             for (Node node : helperGraph.vertexSet()) {
-                if(helperGraph.outgoingEdgesOf(node).isEmpty()) {
+                if (helperGraph.outgoingEdgesOf(node).isEmpty()) {
                     leaves.add(node);
                 }
             }

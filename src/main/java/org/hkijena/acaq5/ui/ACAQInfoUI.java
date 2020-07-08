@@ -28,11 +28,7 @@ import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Graphics;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
@@ -100,7 +96,7 @@ public class ACAQInfoUI extends ACAQProjectWorkbenchPanel {
                 if (e.getClickCount() == 2) {
                     Path value = recentProjectsList.getSelectedValue();
                     if (value != null) {
-                        ((ACAQProjectWindow)getProjectWorkbench().getWindow()).openProject(value);
+                        ((ACAQProjectWindow) getProjectWorkbench().getWindow()).openProject(value);
                     }
                 }
             }

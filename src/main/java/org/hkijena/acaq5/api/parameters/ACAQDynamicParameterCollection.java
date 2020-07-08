@@ -27,11 +27,7 @@ import org.hkijena.acaq5.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.acaq5.utils.JsonUtils;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 
 /**
@@ -84,8 +80,9 @@ public class ACAQDynamicParameterCollection implements ACAQCustomParameterCollec
 
     /**
      * Creates a new instance
+     *
      * @param allowUserModification let user modify this collection
-     * @param allowedTypes  The parameter types that can be added by the user (ignored if user cannot add)
+     * @param allowedTypes          The parameter types that can be added by the user (ignored if user cannot add)
      */
     public ACAQDynamicParameterCollection(boolean allowUserModification, Set<ACAQParameterTypeDeclaration> allowedTypes) {
         this.allowUserModification = allowUserModification;

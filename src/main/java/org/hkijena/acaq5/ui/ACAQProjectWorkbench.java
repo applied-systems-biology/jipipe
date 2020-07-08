@@ -30,11 +30,8 @@ import org.hkijena.acaq5.ui.cache.ACAQCacheManagerUI;
 import org.hkijena.acaq5.ui.compartments.ACAQCompartmentGraphUI;
 import org.hkijena.acaq5.ui.compartments.ACAQCompartmentUI;
 import org.hkijena.acaq5.ui.compendium.ACAQAlgorithmCompendiumUI;
-import org.hkijena.acaq5.ui.components.DocumentTabPane;
-import org.hkijena.acaq5.ui.components.MemoryStatusUI;
-import org.hkijena.acaq5.ui.components.RecentProjectsMenu;
-import org.hkijena.acaq5.ui.components.ReloadableValidityChecker;
 import org.hkijena.acaq5.ui.components.SplashScreen;
+import org.hkijena.acaq5.ui.components.*;
 import org.hkijena.acaq5.ui.extension.MenuTarget;
 import org.hkijena.acaq5.ui.extensionbuilder.ACAQJsonExporter;
 import org.hkijena.acaq5.ui.extensions.ACAQPluginManagerUIPanel;
@@ -49,8 +46,7 @@ import org.jdesktop.swingx.plaf.basic.BasicStatusBarUI;
 import org.scijava.Context;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
-import java.awt.Window;
+import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
 import java.time.LocalDateTime;
@@ -80,11 +76,11 @@ public class ACAQProjectWorkbench extends JPanel implements ACAQWorkbench {
     private ACAQPluginValidityCheckerPanel pluginValidityCheckerPanel;
 
     /**
-     * @param window  Parent window
-     * @param context SciJava context
-     * @param project The project
+     * @param window           Parent window
+     * @param context          SciJava context
+     * @param project          The project
      * @param showIntroduction whether to show the introduction
-     * @param isNewProject if the project is an empty project
+     * @param isNewProject     if the project is an empty project
      */
     public ACAQProjectWorkbench(ACAQProjectWindow window, Context context, ACAQProject project, boolean showIntroduction, boolean isNewProject) {
         this.window = window;
@@ -176,10 +172,9 @@ public class ACAQProjectWorkbench extends JPanel implements ACAQWorkbench {
         if (GeneralUISettings.getInstance().isShowIntroduction() && showIntroduction)
             documentTabPane.selectSingletonTab(TAB_INTRODUCTION);
         else {
-            if(GeneralUISettings.getInstance().isShowProjectInfo() && !isNewProject) {
+            if (GeneralUISettings.getInstance().isShowProjectInfo() && !isNewProject) {
                 documentTabPane.selectSingletonTab(TAB_PROJECT_OVERVIEW);
-            }
-            else {
+            } else {
                 documentTabPane.selectSingletonTab(TAB_COMPARTMENT_EDITOR);
             }
         }

@@ -138,6 +138,7 @@ public class ACAQAnnotation implements Comparable<ACAQAnnotation> {
 
     /**
      * Converts a map of annotations into a Python dictionary
+     *
      * @param annotationMap the annotations
      * @return the Python dictionary
      */
@@ -151,8 +152,9 @@ public class ACAQAnnotation implements Comparable<ACAQAnnotation> {
 
     /**
      * Sets annotations from a Python dictionary
+     *
      * @param annotationDict the dictionary
-     * @param target the target map
+     * @param target         the target map
      */
     public static void setAnnotationsFromPython(PyDictionary annotationDict, Map<String, ACAQAnnotation> target) {
         for (Object key : annotationDict.keys()) {
@@ -164,6 +166,7 @@ public class ACAQAnnotation implements Comparable<ACAQAnnotation> {
 
     /**
      * Sets annotations from a Python dictionary
+     *
      * @param annotationDict the dictionary
      */
     public static List<ACAQAnnotation> extractAnnotationsFromPython(PyDictionary annotationDict) {
@@ -178,6 +181,7 @@ public class ACAQAnnotation implements Comparable<ACAQAnnotation> {
 
     /**
      * Converts a list of annotations into a Python dictionary
+     *
      * @param annotations the annotations
      * @return the Python dictionary
      */

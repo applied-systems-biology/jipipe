@@ -20,7 +20,7 @@ import org.hkijena.acaq5.ui.parameters.ACAQParameterEditorUI;
 import org.hkijena.acaq5.ui.registries.ACAQUIParameterTypeRegistry;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
+import java.awt.*;
 
 /**
  * Editor for {@link org.hkijena.acaq5.extensions.parameters.functions.FunctionParameter}

@@ -19,19 +19,14 @@ import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQDefaultMutableSlotConfiguration;
 import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
-import org.hkijena.acaq5.api.history.AddNodeGraphHistorySnapshot;
-import org.hkijena.acaq5.api.history.CompoundGraphHistorySnapshot;
-import org.hkijena.acaq5.api.history.EdgeConnectGraphHistorySnapshot;
-import org.hkijena.acaq5.api.history.EdgeDisconnectGraphHistorySnapshot;
-import org.hkijena.acaq5.api.history.SlotConfigurationHistorySnapshot;
+import org.hkijena.acaq5.api.history.*;
 import org.hkijena.acaq5.ui.events.AlgorithmFinderSuccessEvent;
 import org.hkijena.acaq5.ui.grapheditor.ACAQGraphCanvasUI;
 import org.hkijena.acaq5.ui.registries.ACAQUIDatatypeRegistry;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
-import java.awt.Dimension;
+import java.awt.*;
 import java.util.Arrays;
 import java.util.Collections;
 

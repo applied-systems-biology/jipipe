@@ -112,7 +112,7 @@ public abstract class ImageRoiProcessorAlgorithm extends ACAQIteratingAlgorithm 
     @ACAQDocumentation(name = "Reference image generator", description = "Only relevant if 'Require reference image' is disabled. " +
             "The measurements are always extracted on images. This algorithm " +
             "generates a reference image by converting the ROIs into masks.")
-    @ACAQParameter(value = "reference-generator", uiExcludeSubParameters =  { "acaq:data-batch-generation", "acaq:parameter-slot-algorithm"  })
+    @ACAQParameter(value = "reference-generator", uiExcludeSubParameters = {"acaq:data-batch-generation", "acaq:parameter-slot-algorithm"})
     public UnreferencedRoiToMaskAlgorithm getToMaskAlgorithm() {
         return toMaskAlgorithm;
     }

@@ -23,8 +23,7 @@ import org.hkijena.acaq5.utils.StringUtils;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.text.JTextComponent;
-import java.awt.BorderLayout;
-import java.awt.Font;
+import java.awt.*;
 import java.util.Objects;
 
 /**
@@ -104,7 +103,7 @@ public class StringParameterEditorUI extends ACAQParameterEditorUI {
         if (value != null) {
             stringValue = "" + value;
         }
-        if(!Objects.equals(stringValue, textComponent.getText()))
+        if (!Objects.equals(stringValue, textComponent.getText()))
             textComponent.setText(stringValue);
     }
 }

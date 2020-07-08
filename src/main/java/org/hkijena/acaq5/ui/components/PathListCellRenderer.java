@@ -16,8 +16,7 @@ package org.hkijena.acaq5.ui.components;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.Color;
-import java.awt.Component;
+import java.awt.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -38,19 +37,16 @@ public class PathListCellRenderer extends JLabel implements ListCellRenderer<Pat
     @Override
     public Component getListCellRendererComponent(JList<? extends Path> list, Path value, int index, boolean isSelected, boolean cellHasFocus) {
 
-        if(value != null) {
+        if (value != null) {
             setText(value.toString());
-            if(Files.isRegularFile(value)) {
+            if (Files.isRegularFile(value)) {
                 setIcon(iconFile);
-            }
-            else if(Files.isDirectory(value)) {
+            } else if (Files.isDirectory(value)) {
                 setIcon(iconFolder);
-            }
-            else {
+            } else {
                 setIcon(iconUnknown);
             }
-        }
-        else {
+        } else {
             setText("<Empty path>");
         }
 

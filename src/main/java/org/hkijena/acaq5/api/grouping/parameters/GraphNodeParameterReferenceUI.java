@@ -22,7 +22,7 @@ import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
-import java.awt.BorderLayout;
+import java.awt.*;
 
 /**
  * Editor for {@link GraphNodeParameterReference}

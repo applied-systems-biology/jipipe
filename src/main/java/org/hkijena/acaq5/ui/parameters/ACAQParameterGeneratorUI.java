@@ -19,14 +19,9 @@ import org.hkijena.acaq5.ui.ACAQWorkbench;
 import org.hkijena.acaq5.ui.ACAQWorkbenchPanel;
 import org.hkijena.acaq5.utils.ReflectionUtils;
 import org.hkijena.acaq5.utils.UIUtils;
-import org.scijava.Context;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Window;
-import java.lang.reflect.InvocationTargetException;
+import java.awt.*;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -47,9 +42,9 @@ public abstract class ACAQParameterGeneratorUI extends ACAQWorkbenchPanel implem
     /**
      * Shows a dialog that allows the user to setup the generator
      *
-     * @param parent  The parent component
+     * @param parent    The parent component
      * @param workbench The workbench
-     * @param uiClass The generator UI class
+     * @param uiClass   The generator UI class
      * @return the generated values or null if the user cancelled
      */
     public static List<Object> showDialog(Component parent, ACAQWorkbench workbench, Class<? extends ACAQParameterGeneratorUI> uiClass) {

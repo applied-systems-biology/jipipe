@@ -17,8 +17,7 @@ import org.hkijena.acaq5.api.data.ACAQAnnotation;
 
 import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
-import java.awt.Color;
-import java.awt.Component;
+import java.awt.*;
 
 /**
  * Renders {@link ACAQAnnotation}

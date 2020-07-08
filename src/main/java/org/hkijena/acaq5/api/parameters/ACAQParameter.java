@@ -69,7 +69,8 @@ public @interface ACAQParameter {
 
     /**
      * Controls which sub-sub-parameters will not be shown in the UI
+     *
      * @return array of sub-sub-parameter keys
      */
-    String[] uiExcludeSubParameters() default { };
+    String[] uiExcludeSubParameters() default {};
 }

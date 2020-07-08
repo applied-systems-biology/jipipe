@@ -32,11 +32,7 @@ import org.hkijena.acaq5.api.data.ACAQDataDeclaration;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.events.ParameterStructureChangedEvent;
 import org.hkijena.acaq5.api.exceptions.UserFriendlyRuntimeException;
-import org.hkijena.acaq5.api.parameters.ACAQDynamicParameterCollection;
-import org.hkijena.acaq5.api.parameters.ACAQParameter;
-import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
-import org.hkijena.acaq5.api.parameters.ACAQParameterCollection;
-import org.hkijena.acaq5.api.parameters.ACAQParameterTree;
+import org.hkijena.acaq5.api.parameters.*;
 import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
 import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ResultsTableData;
 import org.hkijena.acaq5.ui.ACAQWorkbench;
@@ -49,15 +45,11 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.graphics2d.svg.SVGGraphics2D;
 import org.jfree.graphics2d.svg.SVGUtils;
 
-import java.awt.Rectangle;
+import java.awt.*;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
@@ -109,10 +101,9 @@ public abstract class PlotData implements ACAQData, ACAQParameterCollection, ACA
     public void saveTo(Path storageFilePath, String name, boolean forceName) {
         // Export metadata
         try {
-            if(forceName) {
+            if (forceName) {
                 JsonUtils.getObjectMapper().writerWithDefaultPrettyPrinter().writeValue(storageFilePath.resolve("plot-metadata.json").toFile(), this);
-            }
-            else {
+            } else {
                 JsonUtils.getObjectMapper().writerWithDefaultPrettyPrinter().writeValue(storageFilePath.resolve(name + "_plot-metadata.json").toFile(), this);
             }
         } catch (IOException e) {
@@ -125,10 +116,9 @@ public abstract class PlotData implements ACAQData, ACAQParameterCollection, ACA
 
         // Export series
         for (int i = 0; i < series.size(); ++i) {
-            if(forceName) {
+            if (forceName) {
                 series.get(i).saveTo(storageFilePath, name + "_" + "series" + i, forceName);
-            }
-            else {
+            } else {
                 series.get(i).saveTo(storageFilePath, "series" + i, forceName);
             }
         }

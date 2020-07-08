@@ -29,41 +29,19 @@ import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQRun;
 import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.ACAQValidatable;
-import org.hkijena.acaq5.api.data.ACAQData;
-import org.hkijena.acaq5.api.data.ACAQDataSlot;
-import org.hkijena.acaq5.api.data.ACAQDefaultMutableSlotConfiguration;
-import org.hkijena.acaq5.api.data.ACAQSlotConfiguration;
-import org.hkijena.acaq5.api.data.ACAQSlotDefinition;
-import org.hkijena.acaq5.api.data.ACAQSlotType;
-import org.hkijena.acaq5.api.events.AlgorithmGraphConnectedEvent;
-import org.hkijena.acaq5.api.events.AlgorithmGraphDisconnectedEvent;
-import org.hkijena.acaq5.api.events.AlgorithmSlotsChangedEvent;
-import org.hkijena.acaq5.api.events.ParameterChangedEvent;
-import org.hkijena.acaq5.api.events.ParameterStructureChangedEvent;
-import org.hkijena.acaq5.api.events.SlotsChangedEvent;
-import org.hkijena.acaq5.api.events.WorkDirectoryChangedEvent;
-import org.hkijena.acaq5.api.parameters.ACAQDynamicParameterCollection;
-import org.hkijena.acaq5.api.parameters.ACAQParameter;
-import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
-import org.hkijena.acaq5.api.parameters.ACAQParameterCollection;
-import org.hkijena.acaq5.api.parameters.ACAQParameterTree;
-import org.hkijena.acaq5.api.parameters.ACAQParameterVisibility;
+import org.hkijena.acaq5.api.data.*;
+import org.hkijena.acaq5.api.events.*;
+import org.hkijena.acaq5.api.parameters.*;
 import org.hkijena.acaq5.api.registries.ACAQAlgorithmRegistry;
 import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
 import org.hkijena.acaq5.extensions.parameters.primitives.StringParameterSettings;
 import org.hkijena.acaq5.utils.StringUtils;
 
-import java.awt.Point;
+import java.awt.*;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -186,15 +164,15 @@ public abstract class ACAQGraphNode implements ACAQValidatable, ACAQParameterCol
     }
 
     private boolean updateSlotOrder(List<String> configurationOrder, BiMap<String, ACAQDataSlot> slotMap, List<ACAQDataSlot> slots) {
-        if(configurationOrder.size() == slots.size()) {
+        if (configurationOrder.size() == slots.size()) {
             boolean noChanges = true;
             for (int i = 0; i < configurationOrder.size(); i++) {
-                if(!Objects.equals(configurationOrder.get(i), slots.get(i).getName())) {
+                if (!Objects.equals(configurationOrder.get(i), slots.get(i).getName())) {
                     noChanges = false;
                     break;
                 }
             }
-            if(noChanges)
+            if (noChanges)
                 return false;
         }
 

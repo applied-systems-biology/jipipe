@@ -32,12 +32,7 @@ import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Toolkit;
+import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.ComponentAdapter;
@@ -118,27 +113,24 @@ public class ACAQProjectInfoUI extends ACAQProjectWorkbenchPanel {
     }
 
     private void refreshHeaderButtons() {
-        if(!StringUtils.isNullOrEmpty(getProject().getMetadata().getWebsite())) {
+        if (!StringUtils.isNullOrEmpty(getProject().getMetadata().getWebsite())) {
             openWebsiteButton.setToolTipText(getProject().getMetadata().getWebsite());
             openWebsiteButton.setEnabled(true);
-        }
-        else {
+        } else {
             openWebsiteButton.setToolTipText("No website provided");
             openWebsiteButton.setEnabled(false);
         }
-        if(!StringUtils.isNullOrEmpty(getProject().getMetadata().getCitation())) {
+        if (!StringUtils.isNullOrEmpty(getProject().getMetadata().getCitation())) {
             copyCitationButton.setToolTipText(getProject().getMetadata().getCitation());
             copyCitationButton.setEnabled(true);
-        }
-        else {
+        } else {
             copyCitationButton.setToolTipText("No citation provided");
             copyCitationButton.setEnabled(false);
         }
-        if(getProject().getMetadata().getDependencyCitations().isEmpty()) {
+        if (getProject().getMetadata().getDependencyCitations().isEmpty()) {
             copyDependencyCitationsButton.setToolTipText("No cited sources provided");
             copyDependencyCitationsButton.setEnabled(false);
-        }
-        else {
+        } else {
             StringBuilder stringBuilder = new StringBuilder();
             for (String dependencyCitation : getProject().getMetadata().getDependencyCitations()) {
                 stringBuilder.append(dependencyCitation).append("\n\n");
@@ -154,22 +146,21 @@ public class ACAQProjectInfoUI extends ACAQProjectWorkbenchPanel {
     }
 
     private void renderBackgroundPanel() {
-        ACAQGraphCanvasUI canvasUI = new ACAQGraphCanvasUI(getWorkbench(),getProject().getGraph(), null);
+        ACAQGraphCanvasUI canvasUI = new ACAQGraphCanvasUI(getWorkbench(), getProject().getGraph(), null);
         canvasUI.setCurrentViewMode(ACAQGraphCanvasUI.ViewMode.Horizontal);
         canvasUI.autoLayoutAll();
         headerBackground = null;
         try {
-            if(GeneralUISettings.getInstance().isProjectInfoGeneratesPreview()) {
+            if (GeneralUISettings.getInstance().isProjectInfoGeneratesPreview()) {
                 BufferedImage screenshot = canvasUI.createScreenshotPNG();
                 ImagePlus img = new ImagePlus("screenshot", screenshot);
                 GaussianBlur blur = new GaussianBlur();
                 blur.blurGaussian(img.getProcessor(), 8);
                 headerBackground = img.getBufferedImage();
             }
+        } catch (Exception e) {
         }
-        catch (Exception e) {
-        }
-        if(headerBackground == null) {
+        if (headerBackground == null) {
             try {
                 headerBackground = ImageIO.read(ResourceUtils.getPluginResource("infoui-background.png"));
             } catch (IOException e) {
@@ -208,11 +199,9 @@ public class ACAQProjectInfoUI extends ACAQProjectWorkbenchPanel {
     public void onRecentProjectsChanged(ParameterChangedEvent event) {
         if ("description".equals(event.getKey())) {
             refreshDescription();
-        }
-        else if("name".equals(event.getKey()) || "authors".equals(event.getKey())) {
+        } else if ("name".equals(event.getKey()) || "authors".equals(event.getKey())) {
             refreshHeaderText();
-        }
-        else {
+        } else {
             refreshTechnicalInfo();
             refreshHeaderButtons();
         }
@@ -232,12 +221,12 @@ public class ACAQProjectInfoUI extends ACAQProjectWorkbenchPanel {
         projectName = UIUtils.makeReadonlyBorderlessTextField("Unnamed project");
         projectName.setOpaque(false);
         projectName.setFont(new Font(Font.DIALOG, Font.PLAIN, 40));
-        projectName.setBorder(BorderFactory.createEmptyBorder(8,8,8,8));
+        projectName.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
         nameAndAuthorPanel.addWideToForm(projectName, null);
 
         projectAuthors = UIUtils.makeBorderlessReadonlyTextPane("");
         projectAuthors.setOpaque(false);
-        projectAuthors.setBorder(BorderFactory.createEmptyBorder(8,8,8,8));
+        projectAuthors.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
         nameAndAuthorPanel.addWideToForm(projectAuthors, null);
 
         nameAndAuthorPanel.addVerticalGlue();
@@ -274,7 +263,7 @@ public class ACAQProjectInfoUI extends ACAQProjectWorkbenchPanel {
         toolBar.add(Box.createHorizontalStrut(4));
 
         copyCitationButton = new JButton("Copy citation", UIUtils.getIconFromResources("copy.png"));
-        copyCitationButton.addActionListener(e ->{
+        copyCitationButton.addActionListener(e -> {
             StringSelection selection = new StringSelection(getProject().getMetadata().getCitation());
             Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
             clipboard.setContents(selection, selection);
@@ -285,7 +274,7 @@ public class ACAQProjectInfoUI extends ACAQProjectWorkbenchPanel {
         toolBar.add(Box.createHorizontalStrut(4));
 
         copyDependencyCitationsButton = new JButton("Copy cited sources", UIUtils.getIconFromResources("copy.png"));
-        copyDependencyCitationsButton.addActionListener(e ->{
+        copyDependencyCitationsButton.addActionListener(e -> {
             StringBuilder stringBuilder = new StringBuilder();
             for (String dependencyCitation : getProject().getMetadata().getDependencyCitations()) {
                 stringBuilder.append(dependencyCitation).append("\n\n");
@@ -321,10 +310,9 @@ public class ACAQProjectInfoUI extends ACAQProjectWorkbenchPanel {
     private ACAQProjectInfoParameters getPipelineParameters() {
         Object existing = getProject().getAdditionalMetadata().getOrDefault(ACAQProjectInfoParameters.METADATA_KEY, null);
         ACAQProjectInfoParameters result;
-        if(existing instanceof ACAQProjectInfoParameters) {
+        if (existing instanceof ACAQProjectInfoParameters) {
             result = (ACAQProjectInfoParameters) existing;
-        }
-        else {
+        } else {
             result = new ACAQProjectInfoParameters();
             getProject().getAdditionalMetadata().put(ACAQProjectInfoParameters.METADATA_KEY, result);
         }
@@ -342,7 +330,7 @@ public class ACAQProjectInfoUI extends ACAQProjectWorkbenchPanel {
         public void paint(Graphics g) {
             double factor = 1.0 * getHeight() / headerBackground.getHeight();
             g.setColor(Color.WHITE);
-            g.fillRect(0,0,getWidth(), getHeight());
+            g.fillRect(0, 0, getWidth(), getHeight());
             g.drawImage(headerBackground, 0, 0, (int) (headerBackground.getWidth() * factor), getHeight(), null);
             super.paint(g);
         }

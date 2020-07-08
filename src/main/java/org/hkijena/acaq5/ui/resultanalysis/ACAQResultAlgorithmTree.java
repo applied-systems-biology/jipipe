@@ -26,7 +26,7 @@ import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
-import java.awt.BorderLayout;
+import java.awt.*;
 import java.nio.file.Files;
 import java.util.stream.Collectors;
 
@@ -73,7 +73,7 @@ public class ACAQResultAlgorithmTree extends ACAQProjectWorkbenchPanel {
                             continue;
                         DefaultMutableTreeNode slotNode = new DefaultMutableTreeNode(outputSlot);
 
-                        if(algorithmMatches || searchTextField.test(outputSlot.getName())) {
+                        if (algorithmMatches || searchTextField.test(outputSlot.getName())) {
                             algorithmNode.add(slotNode);
                             algorithmHasMatchedChildren = true;
                             compartmentHasMatchedChildren = true;

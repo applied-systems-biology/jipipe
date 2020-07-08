@@ -14,7 +14,7 @@
 package org.hkijena.acaq5.ui.components;
 
 import javax.swing.*;
-import java.awt.Component;
+import java.awt.*;
 
 /**
  * Renders {@link DocumentTabPane} tabs
