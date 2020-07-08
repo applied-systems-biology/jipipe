@@ -105,7 +105,7 @@ public class IlluminationCorrection2DAlgorithm extends ACAQSimpleIteratingAlgori
     }
 
     @ACAQDocumentation(name = "Gaussian filter")
-    @ACAQParameter(value = "gaussian-algorithm", visibility = ACAQParameterVisibility.TransitiveVisible)
+    @ACAQParameter(value = "gaussian-algorithm", visibility = ACAQParameterVisibility.TransitiveVisible, uiExcludeSubParameters =  { "acaq:data-batch-generation", "acaq:parameter-slot-algorithm"  })
     public GaussianBlur2DAlgorithm getGaussianAlgorithm() {
         return gaussianAlgorithm;
     }

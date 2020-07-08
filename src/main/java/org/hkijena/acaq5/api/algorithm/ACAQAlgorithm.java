@@ -197,7 +197,7 @@ public abstract class ACAQAlgorithm extends ACAQGraphNode {
     }
 
     @ACAQDocumentation(name = "Save outputs", description = "If disabled, the output data is not written into the output folder.")
-    @ACAQParameter("save-outputs")
+    @ACAQParameter(value = "save-outputs", visibility = ACAQParameterVisibility.Visible)
     public boolean isSaveOutputs() {
         return saveOutputs;
     }

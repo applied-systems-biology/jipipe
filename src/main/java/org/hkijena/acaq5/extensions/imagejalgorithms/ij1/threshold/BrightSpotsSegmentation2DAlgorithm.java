@@ -191,7 +191,7 @@ public class BrightSpotsSegmentation2DAlgorithm extends ACAQSimpleIteratingAlgor
 
     }
 
-    @ACAQParameter("auto-thresholding")
+    @ACAQParameter(value = "auto-thresholding", uiExcludeSubParameters =  { "acaq:data-batch-generation", "acaq:parameter-slot-algorithm"  })
     @ACAQDocumentation(name = "Auto thresholding", description = "Parameters for underlying auto thresholding")
     public AutoThreshold2DAlgorithm getAutoThresholding() {
         return autoThresholding;

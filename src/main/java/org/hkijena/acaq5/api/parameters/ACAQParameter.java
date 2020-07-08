@@ -66,4 +66,10 @@ public @interface ACAQParameter {
      * @return a low number indicates that this parameter is put first, while a high number indicates that this parameter is put last
      */
     int uiOrder() default 0;
+
+    /**
+     * Controls which sub-sub-parameters will not be shown in the UI
+     * @return array of sub-sub-parameter keys
+     */
+    String[] uiExcludeSubParameters() default { };
 }

@@ -56,7 +56,7 @@ public class ConvertToAnnotationTable extends ACAQMergingAlgorithm {
      */
     public ConvertToAnnotationTable(ACAQAlgorithmDeclaration declaration) {
         super(declaration);
-        setDataSetMatching(ACAQIteratingAlgorithm.ColumnMatching.Custom);
+        getDataBatchGenerationSettings().setDataSetMatching(ACAQIteratingAlgorithm.ColumnMatching.Custom);
     }
 
     /**

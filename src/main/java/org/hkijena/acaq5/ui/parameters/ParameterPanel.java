@@ -43,9 +43,11 @@ import java.lang.annotation.Target;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -144,8 +146,22 @@ public class ParameterPanel extends FormPanel implements Contextual {
      */
     public void refreshForm() {
         clear();
+
+        // Create list of filtered-out nodes
+        Set<ACAQParameterCollection> hidden = new HashSet<>();
+        for (ACAQParameterCollection source : traversed.getRegisteredSources()) {
+            ACAQParameterTree.Node sourceNode = traversed.getSourceNode(source);
+            for (String subParameterId : sourceNode.getUiExcludedSubParameters()) {
+                ACAQParameterTree.Node subParameterNode = sourceNode.getChildren().getOrDefault(subParameterId, null);
+                if(subParameterNode != null) {
+                    hidden.add(subParameterNode.getCollection());
+                }
+            }
+        }
+
+        // Generate form
         Map<ACAQParameterCollection, List<ACAQParameterAccess>> groupedBySource = traversed.getGroupedBySource();
-        if (groupedBySource.containsKey(this.displayedParameters)) {
+        if (groupedBySource.containsKey(this.displayedParameters) && !hidden.contains(displayedParameters)) {
             addToForm(traversed, this.displayedParameters, groupedBySource.get(this.displayedParameters));
         }
 
@@ -154,6 +170,8 @@ public class ParameterPanel extends FormPanel implements Contextual {
                         Comparator.nullsFirst(Comparator.comparing(traversed::getSourceDocumentationName))))
                 .collect(Collectors.toList())) {
             if (collection == this.displayedParameters)
+                continue;
+            if(hidden.contains(collection))
                 continue;
             addToForm(traversed, collection, groupedBySource.get(collection));
         }

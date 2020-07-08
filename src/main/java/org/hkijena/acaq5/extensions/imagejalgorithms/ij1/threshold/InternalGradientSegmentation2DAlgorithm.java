@@ -237,13 +237,13 @@ public class InternalGradientSegmentation2DAlgorithm extends ACAQSimpleIterating
 
     }
 
-    @ACAQParameter("auto-thresholding")
+    @ACAQParameter(value = "auto-thresholding", uiExcludeSubParameters = { "acaq:data-batch-generation", "acaq:parameter-slot-algorithm"  })
     @ACAQDocumentation(name = "Auto thresholding", description = "Parameters for underlying auto thresholding")
     public AutoThreshold2DAlgorithm getAutoThresholding() {
         return autoThresholding;
     }
 
-    @ACAQParameter("clahe-enhancing")
+    @ACAQParameter(value = "clahe-enhancing", uiExcludeSubParameters = { "acaq:data-batch-generation", "acaq:parameter-slot-algorithm"  })
     @ACAQDocumentation(name = "CLAHE Enhancer", description = "Parameters for underlying CLAHE Enhancing algorithm")
     public CLAHEContrastEnhancer getContrastEnhancer() {
         return contrastEnhancer;

@@ -29,14 +29,7 @@ import org.scijava.Priority;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.PriorityQueue;
-import java.util.Set;
-import java.util.Stack;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -279,6 +272,7 @@ public class ACAQParameterTree implements ACAQParameterCollection, ACAQCustomPar
 
                     childNode.setUiOrder(entry.getValue().getUIOrder());
                     childNode.setVisibility(entry.getValue().getVisibility());
+                    childNode.setUiExcludedSubParameters(entry.getValue().getUIExcludedSubParameters());
                 } catch (IllegalAccessException | InvocationTargetException e) {
                     e.printStackTrace();
                 }
@@ -528,6 +522,11 @@ public class ACAQParameterTree implements ACAQParameterCollection, ACAQCustomPar
             return getterAnnotation.uiOrder() != 0 ? getterAnnotation.uiOrder() : setterAnnotation.uiOrder();
         }
 
+        public Set<String> getUIExcludedSubParameters() {
+            ACAQParameter getterAnnotation = getter.getAnnotation(ACAQParameter.class);
+            return new HashSet<>(Arrays.asList(getterAnnotation.uiExcludeSubParameters()));
+        }
+
         public ACAQDocumentation getDocumentation() {
             ACAQDocumentation[] documentations = getter.getAnnotationsByType(ACAQDocumentation.class);
             if (documentations.length > 0)
@@ -593,6 +592,7 @@ public class ACAQParameterTree implements ACAQParameterCollection, ACAQCustomPar
         private BiMap<String, ACAQParameterAccess> parameters = HashBiMap.create();
         private BiMap<String, Node> children = HashBiMap.create();
         private List<ContextAction> actions = new ArrayList<>();
+        private Set<String> uiExcludedSubParameters = new HashSet<>();
 
         /**
          * Creates a node
@@ -710,6 +710,14 @@ public class ACAQParameterTree implements ACAQParameterCollection, ACAQCustomPar
 
         public void setActions(List<ContextAction> actions) {
             this.actions = actions;
+        }
+
+        public Set<String> getUiExcludedSubParameters() {
+            return uiExcludedSubParameters;
+        }
+
+        public void setUiExcludedSubParameters(Set<String> uiExcludedSubParameters) {
+            this.uiExcludedSubParameters = uiExcludedSubParameters;
         }
     }
 }

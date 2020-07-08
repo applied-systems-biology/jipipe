@@ -17,6 +17,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Multimap;
+import com.google.common.eventbus.EventBus;
 import gnu.trove.iterator.TIntIterator;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
@@ -27,6 +28,7 @@ import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQSlotConfiguration;
 import org.hkijena.acaq5.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
+import org.hkijena.acaq5.api.parameters.ACAQParameterCollection;
 import org.hkijena.acaq5.api.parameters.ACAQParameterVisibility;
 import org.hkijena.acaq5.extensions.parameters.primitives.StringList;
 import org.hkijena.acaq5.extensions.parameters.primitives.StringParameterSettings;
@@ -58,10 +60,8 @@ public abstract class ACAQMergingAlgorithm extends ACAQParameterSlotAlgorithm im
             "Those groups can consist of multiple data items. If you want to group all data into one output, set the matching strategy to 'Custom' and " +
             "leave 'Data set matching annotations' empty.";
 
-    private ACAQIteratingAlgorithm.ColumnMatching dataSetMatching = ACAQIteratingAlgorithm.ColumnMatching.Intersection;
-    private boolean skipIncompleteDataSets = false;
-    private StringList customColumns = new StringList();
     private boolean parallelizationEnabled = true;
+    private DataBatchGenerationSettings dataBatchGenerationSettings = new DataBatchGenerationSettings();
 
 
     /**
@@ -72,6 +72,7 @@ public abstract class ACAQMergingAlgorithm extends ACAQParameterSlotAlgorithm im
      */
     public ACAQMergingAlgorithm(ACAQAlgorithmDeclaration declaration, ACAQSlotConfiguration slotConfiguration) {
         super(declaration, slotConfiguration);
+        registerSubParameter(dataBatchGenerationSettings);
     }
 
     /**
@@ -90,10 +91,9 @@ public abstract class ACAQMergingAlgorithm extends ACAQParameterSlotAlgorithm im
      */
     public ACAQMergingAlgorithm(ACAQMergingAlgorithm other) {
         super(other);
-        this.dataSetMatching = other.dataSetMatching;
-        this.skipIncompleteDataSets = other.skipIncompleteDataSets;
-        this.customColumns = new StringList(other.customColumns);
+        this.dataBatchGenerationSettings = new DataBatchGenerationSettings(other.dataBatchGenerationSettings);
         this.parallelizationEnabled = other.parallelizationEnabled;
+        registerSubParameter(dataBatchGenerationSettings);
     }
 
     /**
@@ -124,9 +124,9 @@ public abstract class ACAQMergingAlgorithm extends ACAQParameterSlotAlgorithm im
         // First find all columns to sort by
         Set<String> referenceTraitColumns;
 
-        switch (dataSetMatching) {
+        switch (dataBatchGenerationSettings.dataSetMatching) {
             case Custom:
-                referenceTraitColumns = new HashSet<>(customColumns);
+                referenceTraitColumns = new HashSet<>(dataBatchGenerationSettings.customColumns);
                 break;
             case Union:
                 referenceTraitColumns = getInputTraitColumnUnion();
@@ -135,7 +135,7 @@ public abstract class ACAQMergingAlgorithm extends ACAQParameterSlotAlgorithm im
                 referenceTraitColumns = getInputTraitColumnIntersection();
                 break;
             default:
-                throw new UnsupportedOperationException("Unknown column matching strategy: " + dataSetMatching);
+                throw new UnsupportedOperationException("Unknown column matching strategy: " + dataBatchGenerationSettings.dataSetMatching);
         }
 
         // Remove ignored columns
@@ -183,7 +183,7 @@ public abstract class ACAQMergingAlgorithm extends ACAQParameterSlotAlgorithm im
                 }
             }
             if (incomplete) {
-                if (!skipIncompleteDataSets) {
+                if (!dataBatchGenerationSettings.skipIncompleteDataSets) {
                     throw new UserFriendlyRuntimeException("Incomplete data set found!",
                             "An incomplete data set was found!",
                             "Algorithm '" + getName() + "'",
@@ -308,50 +308,6 @@ public abstract class ACAQMergingAlgorithm extends ACAQParameterSlotAlgorithm im
      */
     protected abstract void runIteration(ACAQMergingDataBatch dataInterface, ACAQRunnerSubStatus subProgress, Consumer<ACAQRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled);
 
-    @ACAQDocumentation(name = "Data set matching strategy", description = "Algorithms with multiple inputs require to match the incoming data " +
-            "to data sets. This allows you to determine how interesting data annotation columns are extracted from the incoming data. " +
-            "Union matches using the union of annotation columns. Intersection intersects the sets of available columns. You can also" +
-            " customize which columns should be available.")
-    @ACAQParameter(value = "acaq:iterating-algorithm:column-matching", uiOrder = 999, visibility = ACAQParameterVisibility.Visible)
-    public ACAQIteratingAlgorithm.ColumnMatching getDataSetMatching() {
-        return dataSetMatching;
-    }
-
-    @ACAQParameter("acaq:iterating-algorithm:column-matching")
-    public void setDataSetMatching(ACAQIteratingAlgorithm.ColumnMatching dataSetMatching) {
-        this.dataSetMatching = dataSetMatching;
-
-    }
-
-    @ACAQDocumentation(name = "Data set matching annotations", description = "Only used if 'Data set matching strategy' is set to 'Custom'. " +
-            "Determines which annotation columns are referred to match data sets.")
-    @ACAQParameter(value = "acaq:iterating-algorithm:custom-matched-columns", uiOrder = 999, visibility = ACAQParameterVisibility.Visible)
-    @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/annotation.png")
-    public StringList getCustomColumns() {
-        if (customColumns == null)
-            customColumns = new StringList();
-        return customColumns;
-    }
-
-    @ACAQParameter(value = "acaq:iterating-algorithm:custom-matched-columns", visibility = ACAQParameterVisibility.Visible)
-    public void setCustomColumns(StringList customColumns) {
-        this.customColumns = customColumns;
-
-    }
-
-    @ACAQDocumentation(name = "Skip incomplete data sets", description = "If enabled, incomplete data sets are silently skipped. " +
-            "Otherwise an error is displayed if such a configuration is detected.")
-    @ACAQParameter(value = "acaq:iterating-algorithm:skip-incomplete", visibility = ACAQParameterVisibility.Visible)
-    public boolean isSkipIncompleteDataSets() {
-        return skipIncompleteDataSets;
-    }
-
-    @ACAQParameter("acaq:iterating-algorithm:skip-incomplete")
-    public void setSkipIncompleteDataSets(boolean skipIncompleteDataSets) {
-        this.skipIncompleteDataSets = skipIncompleteDataSets;
-
-    }
-
     @Override
     public boolean supportsParallelization() {
         return false;
@@ -375,5 +331,77 @@ public abstract class ACAQMergingAlgorithm extends ACAQParameterSlotAlgorithm im
     @ACAQParameter("acaq:parallelization:enabled")
     public void setParallelizationEnabled(boolean parallelizationEnabled) {
         this.parallelizationEnabled = parallelizationEnabled;
+    }
+
+    @ACAQDocumentation(name = "Merging data batch generation", description = "This algorithm can have multiple inputs. This means that ACAQ5 has to match incoming data into batches via metadata annotations. " +
+            "The following settings allow you to control which columns are used as reference to organize data.")
+    @ACAQParameter(value = "acaq:data-batch-generation", visibility = ACAQParameterVisibility.Visible)
+    public DataBatchGenerationSettings getDataBatchGenerationSettings() {
+        return dataBatchGenerationSettings;
+    }
+
+    public static class DataBatchGenerationSettings implements ACAQParameterCollection {
+        private final EventBus eventBus = new EventBus();
+        private ACAQIteratingAlgorithm.ColumnMatching dataSetMatching = ACAQIteratingAlgorithm.ColumnMatching.Intersection;
+        private boolean skipIncompleteDataSets = false;
+        private StringList customColumns = new StringList();
+
+        public DataBatchGenerationSettings() {
+        }
+
+        public DataBatchGenerationSettings(DataBatchGenerationSettings other) {
+            this.dataSetMatching = other.dataSetMatching;
+            this.skipIncompleteDataSets = other.skipIncompleteDataSets;
+            this.customColumns = new StringList(other.customColumns);
+        }
+
+        @Override
+        public EventBus getEventBus() {
+            return eventBus;
+        }
+
+        @ACAQDocumentation(name = "Data set matching strategy", description = "Algorithms with multiple inputs require to match the incoming data " +
+                "to data sets. This allows you to determine how interesting data annotation columns are extracted from the incoming data. " +
+                "Union matches using the union of annotation columns. Intersection intersects the sets of available columns. You can also" +
+                " customize which columns should be available.")
+        @ACAQParameter(value = "acaq:iterating-algorithm:column-matching", uiOrder = 999, visibility = ACAQParameterVisibility.Visible)
+        public ACAQIteratingAlgorithm.ColumnMatching getDataSetMatching() {
+            return dataSetMatching;
+        }
+
+        @ACAQParameter("acaq:iterating-algorithm:column-matching")
+        public void setDataSetMatching(ACAQIteratingAlgorithm.ColumnMatching dataSetMatching) {
+            this.dataSetMatching = dataSetMatching;
+
+        }
+
+        @ACAQDocumentation(name = "Data set matching annotations", description = "Only used if 'Data set matching strategy' is set to 'Custom'. " +
+                "Determines which annotation columns are referred to match data sets.")
+        @ACAQParameter(value = "acaq:iterating-algorithm:custom-matched-columns", uiOrder = 999, visibility = ACAQParameterVisibility.Visible)
+        @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/annotation.png")
+        public StringList getCustomColumns() {
+            if (customColumns == null)
+                customColumns = new StringList();
+            return customColumns;
+        }
+
+        @ACAQParameter(value = "acaq:iterating-algorithm:custom-matched-columns", visibility = ACAQParameterVisibility.Visible)
+        public void setCustomColumns(StringList customColumns) {
+            this.customColumns = customColumns;
+
+        }
+
+        @ACAQDocumentation(name = "Skip incomplete data sets", description = "If enabled, incomplete data sets are silently skipped. " +
+                "Otherwise an error is displayed if such a configuration is detected.")
+        @ACAQParameter(value = "acaq:iterating-algorithm:skip-incomplete", visibility = ACAQParameterVisibility.Visible)
+        public boolean isSkipIncompleteDataSets() {
+            return skipIncompleteDataSets;
+        }
+
+        @ACAQParameter("acaq:iterating-algorithm:skip-incomplete")
+        public void setSkipIncompleteDataSets(boolean skipIncompleteDataSets) {
+            this.skipIncompleteDataSets = skipIncompleteDataSets;
+
+        }
     }
 }

@@ -13,6 +13,8 @@
 
 package org.hkijena.acaq5.api.algorithm;
 
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 import org.hkijena.acaq5.api.ACAQDocumentation;
 import org.hkijena.acaq5.api.ACAQRunnerSubStatus;
 import org.hkijena.acaq5.api.data.ACAQAnnotation;
@@ -21,8 +23,10 @@ import org.hkijena.acaq5.api.data.ACAQMutableSlotConfiguration;
 import org.hkijena.acaq5.api.data.ACAQSlotConfiguration;
 import org.hkijena.acaq5.api.data.ACAQSlotDefinition;
 import org.hkijena.acaq5.api.data.ACAQSlotType;
+import org.hkijena.acaq5.api.events.ParameterChangedEvent;
 import org.hkijena.acaq5.api.parameters.ACAQParameter;
 import org.hkijena.acaq5.api.parameters.ACAQParameterAccess;
+import org.hkijena.acaq5.api.parameters.ACAQParameterCollection;
 import org.hkijena.acaq5.api.parameters.ACAQParameterTree;
 import org.hkijena.acaq5.api.parameters.ACAQParameterVisibility;
 import org.hkijena.acaq5.extensions.multiparameters.datatypes.ParametersData;
@@ -45,87 +49,34 @@ import java.util.function.Supplier;
 public abstract class ACAQParameterSlotAlgorithm extends ACAQAlgorithm {
 
     public static final String SLOT_PARAMETERS = "Parameters";
-
-    private boolean hasParameterSlot = false;
-    private boolean attachParameterAnnotations = true;
-    private boolean attachOnlyNonDefaultParameterAnnotations = true;
-    private boolean parameterAnnotationsUseInternalNames = false;
-    private String parameterAnnotationsPrefix = "";
+    private ParameterSlotAlgorithmSettings parameterSlotAlgorithmSettings = new ParameterSlotAlgorithmSettings();
 
     public ACAQParameterSlotAlgorithm(ACAQAlgorithmDeclaration declaration, ACAQSlotConfiguration slotConfiguration) {
         super(declaration, slotConfiguration);
+        registerParameterSettings();
     }
 
     public ACAQParameterSlotAlgorithm(ACAQAlgorithmDeclaration declaration) {
         super(declaration);
+        registerParameterSettings();
+    }
+
+    private void registerParameterSettings() {
+        this.parameterSlotAlgorithmSettings.getEventBus().register(new Object() {
+            @Subscribe
+            public void onParametersChanged(ParameterChangedEvent event) {
+                if ("has-parameter-slot".equals(event.getKey())) {
+                    updateParameterSlot();
+                }
+            }
+        });
+        registerSubParameter(parameterSlotAlgorithmSettings);
     }
 
     public ACAQParameterSlotAlgorithm(ACAQParameterSlotAlgorithm other) {
         super(other);
-        this.attachParameterAnnotations = other.attachParameterAnnotations;
-        this.attachOnlyNonDefaultParameterAnnotations = other.attachOnlyNonDefaultParameterAnnotations;
-        this.parameterAnnotationsUseInternalNames = other.parameterAnnotationsUseInternalNames;
-        this.parameterAnnotationsPrefix = other.parameterAnnotationsPrefix;
-        setHasParameterSlot(other.hasParameterSlot);
-    }
-
-    @ACAQDocumentation(name = "Multiple parameters", description = "If enabled, there will be an additional slot that consumes " +
-            "parameter data sets. The algorithm then will be applied for each of this parameter sets.")
-    @ACAQParameter(value = "has-parameter-slot", visibility = ACAQParameterVisibility.Visible)
-    public boolean isHasParameterSlot() {
-        return hasParameterSlot;
-    }
-
-    @ACAQParameter("has-parameter-slot")
-    public void setHasParameterSlot(boolean hasParameterSlot) {
-        this.hasParameterSlot = hasParameterSlot;
-        updateParameterSlot();
-    }
-
-    @ACAQDocumentation(name = "Attach parameter annotations", description = "If multiple parameters are allowed, attach the parameter values as annotations.")
-    @ACAQParameter(value = "attach-parameter-annotations", visibility = ACAQParameterVisibility.Visible)
-    public boolean isAttachParameterAnnotations() {
-        return attachParameterAnnotations;
-    }
-
-    @ACAQParameter("attach-parameter-annotations")
-    public void setAttachParameterAnnotations(boolean attachParameterAnnotations) {
-        this.attachParameterAnnotations = attachParameterAnnotations;
-    }
-
-    @ACAQDocumentation(name = "Attach only non-default parameter annotations", description = "If multiple parameters are allowed, " +
-            "attach only parameter annotations that have different values from the current settings. Requries 'Attach parameter annotations' to be enabled.")
-    @ACAQParameter(value = "attach-only-non-default-parameter-annotations", visibility = ACAQParameterVisibility.Visible)
-    public boolean isAttachOnlyNonDefaultParameterAnnotations() {
-        return attachOnlyNonDefaultParameterAnnotations;
-    }
-
-    @ACAQParameter("attach-only-non-default-parameter-annotations")
-    public void setAttachOnlyNonDefaultParameterAnnotations(boolean attachOnlyNonDefaultParameterAnnotations) {
-        this.attachOnlyNonDefaultParameterAnnotations = attachOnlyNonDefaultParameterAnnotations;
-    }
-
-    @ACAQDocumentation(name = "Parameter annotations use internal names", description = "Generated parameter annotations use their internal unique names.")
-    @ACAQParameter(value = "parameter-annotations-use-internal-names", visibility = ACAQParameterVisibility.Visible)
-    public boolean isParameterAnnotationsUseInternalNames() {
-        return parameterAnnotationsUseInternalNames;
-    }
-
-    @ACAQParameter("parameter-annotations-use-internal-names")
-    public void setParameterAnnotationsUseInternalNames(boolean parameterAnnotationsUseInternalNames) {
-        this.parameterAnnotationsUseInternalNames = parameterAnnotationsUseInternalNames;
-    }
-
-    @ACAQDocumentation(name = "Parameter annotation prefix", description = "Text prefixed to generated parameter annotations.")
-    @ACAQParameter(value = "parameter-annotations-prefix", visibility = ACAQParameterVisibility.Visible)
-    @StringParameterSettings(monospace = true)
-    public String getParameterAnnotationsPrefix() {
-        return parameterAnnotationsPrefix;
-    }
-
-    @ACAQParameter("parameter-annotations-prefix")
-    public void setParameterAnnotationsPrefix(String parameterAnnotationsPrefix) {
-        this.parameterAnnotationsPrefix = parameterAnnotationsPrefix;
+       this.parameterSlotAlgorithmSettings = new ParameterSlotAlgorithmSettings(other.parameterSlotAlgorithmSettings);
+        registerParameterSettings();
     }
 
     /**
@@ -134,7 +85,7 @@ public abstract class ACAQParameterSlotAlgorithm extends ACAQAlgorithm {
      */
     public int getEffectiveInputSlotCount() {
         int effectiveSlotSize = getInputSlots().size();
-        if(isHasParameterSlot())
+        if(parameterSlotAlgorithmSettings.isHasParameterSlot())
             --effectiveSlotSize;
         return effectiveSlotSize;
     }
@@ -150,12 +101,19 @@ public abstract class ACAQParameterSlotAlgorithm extends ACAQAlgorithm {
         }
     }
 
+    @ACAQDocumentation(name = "Multi-parameter settings", description = "This algorithm supports running with multiple parameter sets. Just enable 'Multiple parameters' and " +
+            "connect parameter data to the newly created slot. The algorithm is then automatically repeated for all parameter sets.")
+    @ACAQParameter(value = "acaq:parameter-slot-algorithm", visibility = ACAQParameterVisibility.Visible)
+    public ParameterSlotAlgorithmSettings getParameterSlotAlgorithmSettings() {
+        return parameterSlotAlgorithmSettings;
+    }
+
     /**
      * Returns the parameter slot if enabled
      * @return the parameter slot
      */
     public ACAQDataSlot getParameterSlot() {
-        if(hasParameterSlot)
+        if(parameterSlotAlgorithmSettings.hasParameterSlot)
             return getInputSlot(SLOT_PARAMETERS);
         else
             return null;
@@ -168,7 +126,7 @@ public abstract class ACAQParameterSlotAlgorithm extends ACAQAlgorithm {
             runPassThrough();
             return;
         }
-        if(hasParameterSlot) {
+        if(parameterSlotAlgorithmSettings.hasParameterSlot) {
             ACAQDataSlot parameterSlot = getInputSlot(SLOT_PARAMETERS);
             if(parameterSlot.getRowCount() == 0) {
                 algorithmProgress.accept(subProgress.resolve("No parameters were passed with enabled parameter slot. Applying default parameters, only."));
@@ -210,17 +168,17 @@ public abstract class ACAQParameterSlotAlgorithm extends ACAQAlgorithm {
                         }
                         target.set(entry.getValue());
                     }
-                    if(attachParameterAnnotations) {
+                    if(parameterSlotAlgorithmSettings.attachParameterAnnotations) {
                         for (String key : nonDefaultParameters) {
                             ACAQParameterAccess target = tree.getParameters().get(key);
                             String annotationName;
-                            if(parameterAnnotationsUseInternalNames) {
+                            if(parameterSlotAlgorithmSettings.parameterAnnotationsUseInternalNames) {
                                 annotationName = key;
                             }
                             else {
                                 annotationName = target.getName();
                             }
-                            annotationName = parameterAnnotationsPrefix + annotationName;
+                            annotationName = parameterSlotAlgorithmSettings.parameterAnnotationsPrefix + annotationName;
                             annotations.add(new ACAQAnnotation(annotationName, "" + target.get(Object.class)));
                         }
                     }
@@ -252,7 +210,7 @@ public abstract class ACAQParameterSlotAlgorithm extends ACAQAlgorithm {
     private void updateParameterSlot() {
         if(getSlotConfiguration() instanceof ACAQMutableSlotConfiguration) {
             ACAQMutableSlotConfiguration slotConfiguration = (ACAQMutableSlotConfiguration) getSlotConfiguration();
-            if(hasParameterSlot) {
+            if(parameterSlotAlgorithmSettings.hasParameterSlot) {
                 ACAQSlotDefinition existing = slotConfiguration.getInputSlots().getOrDefault(SLOT_PARAMETERS, null);
                 if(existing != null && existing.getDataClass() != ParametersData.class) {
                     slotConfiguration.removeInputSlot(SLOT_PARAMETERS, false);
@@ -267,6 +225,92 @@ public abstract class ACAQParameterSlotAlgorithm extends ACAQAlgorithm {
             else {
                 slotConfiguration.removeInputSlot(SLOT_PARAMETERS, false);
             }
+        }
+    }
+
+    /**
+     * Groups parameter slot settings
+     */
+    public static class ParameterSlotAlgorithmSettings implements ACAQParameterCollection {
+        private final EventBus eventBus = new EventBus();
+        private boolean hasParameterSlot = false;
+        private boolean attachParameterAnnotations = true;
+        private boolean attachOnlyNonDefaultParameterAnnotations = true;
+        private boolean parameterAnnotationsUseInternalNames = false;
+        private String parameterAnnotationsPrefix = "";
+
+        public ParameterSlotAlgorithmSettings() {
+        }
+
+        public ParameterSlotAlgorithmSettings(ParameterSlotAlgorithmSettings other) {
+            this.hasParameterSlot = other.hasParameterSlot;
+            this.attachParameterAnnotations = other.attachParameterAnnotations;
+            this.attachOnlyNonDefaultParameterAnnotations = other.attachOnlyNonDefaultParameterAnnotations;
+            this.parameterAnnotationsUseInternalNames = other.parameterAnnotationsUseInternalNames;
+            this.parameterAnnotationsPrefix = other.parameterAnnotationsPrefix;
+        }
+
+        @ACAQDocumentation(name = "Multiple parameters", description = "If enabled, there will be an additional slot that consumes " +
+                "parameter data sets. The algorithm then will be applied for each of this parameter sets.")
+        @ACAQParameter(value = "has-parameter-slot", visibility = ACAQParameterVisibility.Visible)
+        public boolean isHasParameterSlot() {
+            return hasParameterSlot;
+        }
+
+        @ACAQParameter("has-parameter-slot")
+        public void setHasParameterSlot(boolean hasParameterSlot) {
+            this.hasParameterSlot = hasParameterSlot;
+        }
+
+        @ACAQDocumentation(name = "Attach parameter annotations", description = "If multiple parameters are allowed, attach the parameter values as annotations.")
+        @ACAQParameter(value = "attach-parameter-annotations", visibility = ACAQParameterVisibility.Visible)
+        public boolean isAttachParameterAnnotations() {
+            return attachParameterAnnotations;
+        }
+
+        @ACAQParameter("attach-parameter-annotations")
+        public void setAttachParameterAnnotations(boolean attachParameterAnnotations) {
+            this.attachParameterAnnotations = attachParameterAnnotations;
+        }
+
+        @ACAQDocumentation(name = "Attach only non-default parameter annotations", description = "If multiple parameters are allowed, " +
+                "attach only parameter annotations that have different values from the current settings. Requries 'Attach parameter annotations' to be enabled.")
+        @ACAQParameter(value = "attach-only-non-default-parameter-annotations", visibility = ACAQParameterVisibility.Visible)
+        public boolean isAttachOnlyNonDefaultParameterAnnotations() {
+            return attachOnlyNonDefaultParameterAnnotations;
+        }
+
+        @ACAQParameter("attach-only-non-default-parameter-annotations")
+        public void setAttachOnlyNonDefaultParameterAnnotations(boolean attachOnlyNonDefaultParameterAnnotations) {
+            this.attachOnlyNonDefaultParameterAnnotations = attachOnlyNonDefaultParameterAnnotations;
+        }
+
+        @ACAQDocumentation(name = "Parameter annotations use internal names", description = "Generated parameter annotations use their internal unique names.")
+        @ACAQParameter(value = "parameter-annotations-use-internal-names", visibility = ACAQParameterVisibility.Visible)
+        public boolean isParameterAnnotationsUseInternalNames() {
+            return parameterAnnotationsUseInternalNames;
+        }
+
+        @ACAQParameter("parameter-annotations-use-internal-names")
+        public void setParameterAnnotationsUseInternalNames(boolean parameterAnnotationsUseInternalNames) {
+            this.parameterAnnotationsUseInternalNames = parameterAnnotationsUseInternalNames;
+        }
+
+        @ACAQDocumentation(name = "Parameter annotation prefix", description = "Text prefixed to generated parameter annotations.")
+        @ACAQParameter(value = "parameter-annotations-prefix", visibility = ACAQParameterVisibility.Visible)
+        @StringParameterSettings(monospace = true)
+        public String getParameterAnnotationsPrefix() {
+            return parameterAnnotationsPrefix;
+        }
+
+        @ACAQParameter("parameter-annotations-prefix")
+        public void setParameterAnnotationsPrefix(String parameterAnnotationsPrefix) {
+            this.parameterAnnotationsPrefix = parameterAnnotationsPrefix;
+        }
+
+        @Override
+        public EventBus getEventBus() {
+            return eventBus;
         }
     }
 }
