@@ -45,7 +45,7 @@ public class PathData implements ACAQData {
     }
 
     @Override
-    public void saveTo(Path storageFilePath, String name) {
+    public void saveTo(Path storageFilePath, String name, boolean forceName) {
         Path jsonFile = storageFilePath.resolve(name + ".json");
         try {
             JsonUtils.getObjectMapper().writerWithDefaultPrettyPrinter().writeValue(jsonFile.toFile(), this);

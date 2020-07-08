@@ -92,9 +92,9 @@ public class DoubleArrayTableColumn implements MutableTableColumn {
     }
 
     @Override
-    public void saveTo(Path storageFilePath, String name) {
+    public void saveTo(Path storageFilePath, String name, boolean forceName) {
         ResultsTableData resultsTableData = new ResultsTableData(Collections.singletonList(this));
-        resultsTableData.saveTo(storageFilePath, name);
+        resultsTableData.saveTo(storageFilePath, name, forceName);
     }
 
     @Override

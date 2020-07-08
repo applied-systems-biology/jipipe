@@ -73,7 +73,7 @@ public class RowIndexTableColumn implements TableColumn {
     }
 
     @Override
-    public void saveTo(Path storageFilePath, String name) {
+    public void saveTo(Path storageFilePath, String name, boolean forceName) {
 
     }
 

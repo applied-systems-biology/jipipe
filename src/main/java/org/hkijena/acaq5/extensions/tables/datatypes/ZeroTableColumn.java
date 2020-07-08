@@ -69,7 +69,7 @@ public class ZeroTableColumn implements TableColumn {
     }
 
     @Override
-    public void saveTo(Path storageFilePath, String name) {
+    public void saveTo(Path storageFilePath, String name, boolean forceName) {
 
     }
 

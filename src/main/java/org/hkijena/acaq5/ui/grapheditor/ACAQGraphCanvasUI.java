@@ -577,12 +577,12 @@ public class ACAQGraphCanvasUI extends ACAQWorkbenchPanel implements MouseMotion
 
         // Check if we actually need to auto-place
         if(currentViewMode == ViewMode.Horizontal) {
-            if(targetNode.getX() >= sourceNode.getRightX() + ACAQNodeUI.SLOT_UI_WIDTH) {
+            if(sourceNode != null && targetNode != null && targetNode.getX() >= sourceNode.getRightX() + ACAQNodeUI.SLOT_UI_WIDTH) {
                 return;
             }
         }
         else if(currentViewMode == ViewMode.Vertical) {
-            if(targetNode.getY() >= sourceNode.getBottomY() + ACAQNodeUI.SLOT_UI_HEIGHT) {
+            if(sourceNode != null && targetNode != null && targetNode.getY() >= sourceNode.getBottomY() + ACAQNodeUI.SLOT_UI_HEIGHT) {
                 return;
             }
         }

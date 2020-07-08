@@ -20,6 +20,8 @@ import org.hkijena.acaq5.api.ACAQValidityReport;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmCategory;
 import org.hkijena.acaq5.api.algorithm.ACAQAlgorithmDeclaration;
+import org.hkijena.acaq5.api.algorithm.AlgorithmInputSlot;
+import org.hkijena.acaq5.api.data.ACAQData;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQDefaultMutableSlotConfiguration;
 
@@ -31,6 +33,7 @@ import java.util.function.Supplier;
  */
 @ACAQDocumentation(name = "Merge data slots", description = "Merges the data rows from all input slots into one output slot")
 @ACAQOrganization(algorithmCategory = ACAQAlgorithmCategory.Processor)
+@AlgorithmInputSlot(ACAQData.class)
 public class MergeDataSlots extends ACAQAlgorithm {
 
     /**

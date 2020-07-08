@@ -41,7 +41,7 @@ public class ParametersData implements ACAQData {
     private Map<String, Object> parameterData = new HashMap<>();
 
     @Override
-    public void saveTo(Path storageFilePath, String name) {
+    public void saveTo(Path storageFilePath, String name, boolean forceName) {
         try {
             JsonUtils.getObjectMapper().writerWithDefaultPrettyPrinter()
                     .writeValue(storageFilePath.resolve(name + ".json").toFile(), this);

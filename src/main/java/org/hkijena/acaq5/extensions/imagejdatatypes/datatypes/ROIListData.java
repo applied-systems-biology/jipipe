@@ -119,7 +119,7 @@ public class ROIListData extends ArrayList<Roi> implements ACAQData {
     }
 
     @Override
-    public void saveTo(Path storageFilePath, String name) {
+    public void saveTo(Path storageFilePath, String name, boolean forceName) {
         // Code adapted from ImageJ RoiManager class
         try {
             ZipOutputStream zos = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(storageFilePath.resolve(name + ".zip").toFile())));

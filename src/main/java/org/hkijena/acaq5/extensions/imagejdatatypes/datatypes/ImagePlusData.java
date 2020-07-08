@@ -76,7 +76,7 @@ public class ImagePlusData implements ACAQData {
     }
 
     @Override
-    public void saveTo(Path storageFilePath, String name) {
+    public void saveTo(Path storageFilePath, String name, boolean forceName) {
         IJ.saveAsTiff(image, storageFilePath.resolve(name + ".tif").toString());
     }
 

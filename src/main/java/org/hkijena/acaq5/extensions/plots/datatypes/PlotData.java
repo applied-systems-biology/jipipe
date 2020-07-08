@@ -106,10 +106,15 @@ public abstract class PlotData implements ACAQData, ACAQParameterCollection, ACA
     }
 
     @Override
-    public void saveTo(Path storageFilePath, String name) {
+    public void saveTo(Path storageFilePath, String name, boolean forceName) {
         // Export metadata
         try {
-            JsonUtils.getObjectMapper().writerWithDefaultPrettyPrinter().writeValue(storageFilePath.resolve("plot-metadata.json").toFile(), this);
+            if(forceName) {
+                JsonUtils.getObjectMapper().writerWithDefaultPrettyPrinter().writeValue(storageFilePath.resolve("plot-metadata.json").toFile(), this);
+            }
+            else {
+                JsonUtils.getObjectMapper().writerWithDefaultPrettyPrinter().writeValue(storageFilePath.resolve(name + "_plot-metadata.json").toFile(), this);
+            }
         } catch (IOException e) {
             throw new UserFriendlyRuntimeException(e, "Unable to export plot!",
                     "Internal plot-export function",
@@ -120,7 +125,12 @@ public abstract class PlotData implements ACAQData, ACAQParameterCollection, ACA
 
         // Export series
         for (int i = 0; i < series.size(); ++i) {
-            series.get(i).saveTo(storageFilePath, "series" + i);
+            if(forceName) {
+                series.get(i).saveTo(storageFilePath, name + "_" + "series" + i, forceName);
+            }
+            else {
+                series.get(i).saveTo(storageFilePath, "series" + i, forceName);
+            }
         }
 
         // Export plot

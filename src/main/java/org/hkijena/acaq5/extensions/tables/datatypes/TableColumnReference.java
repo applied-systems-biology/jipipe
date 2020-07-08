@@ -88,9 +88,9 @@ public class TableColumnReference implements TableColumn {
     }
 
     @Override
-    public void saveTo(Path storageFilePath, String name) {
+    public void saveTo(Path storageFilePath, String name, boolean forceName) {
         ResultsTableData resultsTableData = new ResultsTableData(Collections.singletonList(this));
-        resultsTableData.saveTo(storageFilePath, name);
+        resultsTableData.saveTo(storageFilePath, name, forceName);
     }
 
     @Override

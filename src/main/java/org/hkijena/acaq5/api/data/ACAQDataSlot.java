@@ -14,6 +14,7 @@
 package org.hkijena.acaq5.api.data;
 
 import com.google.common.eventbus.EventBus;
+import org.hkijena.acaq5.api.algorithm.ACAQAlgorithm;
 import org.hkijena.acaq5.api.algorithm.ACAQGraphNode;
 import org.hkijena.acaq5.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.acaq5.api.registries.ACAQDatatypeRegistry;
@@ -319,7 +320,14 @@ public class ACAQDataSlot implements TableModel {
      * Warning: Ensure that depending input slots do not use this slot, anymore!
      */
     public void flush() {
-        save();
+        if(getNode() instanceof ACAQAlgorithm) {
+             if(((ACAQAlgorithm) getNode()).isSaveOutputs()) {
+                 save();
+             }
+        }
+        else {
+            save();
+        }
         for (int i = 0; i < data.size(); ++i) {
             data.get(i).flush();
             data.set(i, null);
@@ -395,7 +403,7 @@ public class ACAQDataSlot implements TableModel {
                 }
 
                 dataOutputPaths.add(pathName);
-                data.get(row).saveTo(path, getName());
+                data.get(row).saveTo(path, getName(), false);
             }
 
             ACAQExportedDataTable dataTable = new ACAQExportedDataTable(this, dataOutputPaths);

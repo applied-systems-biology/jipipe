@@ -392,7 +392,7 @@ public class ResultsTableData implements ACAQData, TableModel {
     }
 
     @Override
-    public void saveTo(Path storageFilePath, String name) {
+    public void saveTo(Path storageFilePath, String name, boolean forceName) {
         try {
             table.saveAs(storageFilePath.resolve(name + ".csv").toString());
         } catch (IOException e) {

@@ -28,7 +28,7 @@ import java.nio.file.Path;
 @ACAQHidden
 public class ACAQCompartmentOutputData implements ACAQData {
     @Override
-    public void saveTo(Path storageFilePath, String name) {
+    public void saveTo(Path storageFilePath, String name, boolean forceName) {
 
     }
 

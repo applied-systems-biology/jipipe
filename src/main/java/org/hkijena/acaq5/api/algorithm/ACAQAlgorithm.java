@@ -47,6 +47,7 @@ public abstract class ACAQAlgorithm extends ACAQGraphNode {
     private static final StateSerializer STATE_SERIALIZER = new StateSerializer();
     private boolean enabled = true;
     private boolean passThrough = false;
+    private boolean saveOutputs = true;
     private ACAQFixedThreadPool threadPool;
 
     /**
@@ -77,6 +78,7 @@ public abstract class ACAQAlgorithm extends ACAQGraphNode {
         super(other);
         this.enabled = other.enabled;
         this.passThrough = other.passThrough;
+        this.saveOutputs = other.saveOutputs;
     }
 
     @Override
@@ -192,6 +194,17 @@ public abstract class ACAQAlgorithm extends ACAQGraphNode {
      */
     public void setThreadPool(ACAQFixedThreadPool threadPool) {
         this.threadPool = threadPool;
+    }
+
+    @ACAQDocumentation(name = "Save outputs", description = "If disabled, the output data is not written into the output folder.")
+    @ACAQParameter("save-outputs")
+    public boolean isSaveOutputs() {
+        return saveOutputs;
+    }
+
+    @ACAQParameter("save-outputs")
+    public void setSaveOutputs(boolean saveOutputs) {
+        this.saveOutputs = saveOutputs;
     }
 
     /**
