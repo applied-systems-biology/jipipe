@@ -49,7 +49,7 @@ public class RemoveAnnotationByType extends ACAQSimpleIteratingAlgorithm {
      * @param declaration algorithm declaration
      */
     public RemoveAnnotationByType(ACAQAlgorithmDeclaration declaration) {
-        super(declaration, new ACAQIOSlotConfiguration());
+        super(declaration);
     }
 
     /**
