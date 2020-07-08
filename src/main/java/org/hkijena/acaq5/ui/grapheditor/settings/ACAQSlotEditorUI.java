@@ -167,6 +167,7 @@ public class ACAQSlotEditorUI extends JPanel {
             editorUI.getCanvasUI().getGraphHistory().addSnapshotBefore(new SlotConfigurationHistorySnapshot(slot.getNode(),
                     "Move slot '" + slot.getNameWithAlgorithmName() + "' down"));
             ((ACAQMutableSlotConfiguration) algorithm.getSlotConfiguration()).moveDown(slot.getName(), slot.getSlotType());
+            editorUI.getCanvasUI().repaint();
         }
     }
 
@@ -176,6 +177,7 @@ public class ACAQSlotEditorUI extends JPanel {
             editorUI.getCanvasUI().getGraphHistory().addSnapshotBefore(new SlotConfigurationHistorySnapshot(slot.getNode(),
                     "Move slot '" + slot.getNameWithAlgorithmName() + "' up"));
             ((ACAQMutableSlotConfiguration) algorithm.getSlotConfiguration()).moveUp(slot.getName(), slot.getSlotType());
+            editorUI.getCanvasUI().repaint();
         }
     }
 

@@ -19,6 +19,7 @@ import ij.ImagePlus;
 import ij.plugin.filter.GaussianBlur;
 import org.hkijena.acaq5.api.ACAQAuthorMetadata;
 import org.hkijena.acaq5.api.events.ParameterChangedEvent;
+import org.hkijena.acaq5.extensions.settings.GeneralUISettings;
 import org.hkijena.acaq5.ui.components.FormPanel;
 import org.hkijena.acaq5.ui.components.MarkdownDocument;
 import org.hkijena.acaq5.ui.components.MarkdownReader;
@@ -156,12 +157,15 @@ public class ACAQProjectInfoUI extends ACAQProjectWorkbenchPanel {
         ACAQGraphCanvasUI canvasUI = new ACAQGraphCanvasUI(getWorkbench(),getProject().getGraph(), null);
         canvasUI.setCurrentViewMode(ACAQGraphCanvasUI.ViewMode.Horizontal);
         canvasUI.autoLayoutAll();
+        headerBackground = null;
         try {
-            BufferedImage screenshot = canvasUI.createScreenshotPNG();
-            ImagePlus img = new ImagePlus("screenshot", screenshot);
-            GaussianBlur blur = new GaussianBlur();
-            blur.blurGaussian(img.getProcessor(), 8);
-            headerBackground = img.getBufferedImage();
+            if(GeneralUISettings.getInstance().isProjectInfoGeneratesPreview()) {
+                BufferedImage screenshot = canvasUI.createScreenshotPNG();
+                ImagePlus img = new ImagePlus("screenshot", screenshot);
+                GaussianBlur blur = new GaussianBlur();
+                blur.blurGaussian(img.getProcessor(), 8);
+                headerBackground = img.getBufferedImage();
+            }
         }
         catch (Exception e) {
         }
@@ -304,7 +308,7 @@ public class ACAQProjectInfoUI extends ACAQProjectWorkbenchPanel {
         refreshButton.addActionListener(e -> refreshAll());
         toolBar.add(refreshButton);
 
-        JButton openSettingsButton = new JButton("Edit", UIUtils.getIconFromResources("edit.png"));
+        JButton openSettingsButton = new JButton("Edit metadata", UIUtils.getIconFromResources("edit.png"));
         openSettingsButton.setOpaque(false);
         openSettingsButton.setBackground(new Color(0, 0, 0, 0));
         openSettingsButton.setToolTipText("Opens the project settings that allow you to change this page.");

@@ -165,19 +165,19 @@ public abstract class ACAQGraphNode implements ACAQValidatable, ACAQParameterCol
 
         // This loop handles add & replace
         for (Map.Entry<String, ACAQSlotDefinition> entry : slotConfiguration.getInputSlots().entrySet()) {
-            changed = updateAddAndModifySlots(changed, entry, inputSlotMap, inputSlots);
+            changed |= updateAddAndModifySlots(changed, entry, inputSlotMap, inputSlots);
         }
         for (Map.Entry<String, ACAQSlotDefinition> entry : slotConfiguration.getOutputSlots().entrySet()) {
-            changed = updateAddAndModifySlots(changed, entry, outputSlotMap, outputSlots);
+            changed |= updateAddAndModifySlots(changed, entry, outputSlotMap, outputSlots);
         }
 
         // This loop handles remove
-        changed = updateRemoveSlots(changed, slotConfiguration.getInputSlots(), inputSlotMap, inputSlots);
-        changed = updateRemoveSlots(changed, slotConfiguration.getOutputSlots(), outputSlotMap, outputSlots);
+        changed |= updateRemoveSlots(changed, slotConfiguration.getInputSlots(), inputSlotMap, inputSlots);
+        changed |= updateRemoveSlots(changed, slotConfiguration.getOutputSlots(), outputSlotMap, outputSlots);
 
         // Update according to slot order
-        updateSlotOrder(slotConfiguration.getInputSlotOrder(), inputSlotMap, inputSlots);
-        updateSlotOrder(slotConfiguration.getOutputSlotOrder(), outputSlotMap, outputSlots);
+        changed |= updateSlotOrder(slotConfiguration.getInputSlotOrder(), inputSlotMap, inputSlots);
+        changed |= updateSlotOrder(slotConfiguration.getOutputSlotOrder(), outputSlotMap, outputSlots);
 
         if (changed) {
             eventBus.post(new AlgorithmSlotsChangedEvent(this));
@@ -185,7 +185,19 @@ public abstract class ACAQGraphNode implements ACAQValidatable, ACAQParameterCol
         }
     }
 
-    private void updateSlotOrder(List<String> configurationOrder, BiMap<String, ACAQDataSlot> slotMap, List<ACAQDataSlot> slots) {
+    private boolean updateSlotOrder(List<String> configurationOrder, BiMap<String, ACAQDataSlot> slotMap, List<ACAQDataSlot> slots) {
+        if(configurationOrder.size() == slots.size()) {
+            boolean noChanges = true;
+            for (int i = 0; i < configurationOrder.size(); i++) {
+                if(!Objects.equals(configurationOrder.get(i), slots.get(i).getName())) {
+                    noChanges = false;
+                    break;
+                }
+            }
+            if(noChanges)
+                return false;
+        }
+
         slots.clear();
         for (String name : configurationOrder) {
             ACAQDataSlot instance = slotMap.getOrDefault(name, null);
@@ -198,6 +210,7 @@ public abstract class ACAQGraphNode implements ACAQValidatable, ACAQParameterCol
                 slots.add(instance);
             }
         }
+        return true;
     }
 
     private boolean updateRemoveSlots(boolean changed, Map<String, ACAQSlotDefinition> definedSlots, BiMap<String, ACAQDataSlot> slotMap, List<ACAQDataSlot> slots) {

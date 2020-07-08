@@ -14,9 +14,12 @@
 package org.hkijena.acaq5.ui.grapheditor.layout;
 
 import com.google.common.collect.ImmutableList;
+import org.hkijena.acaq5.api.algorithm.ACAQGraph;
+import org.hkijena.acaq5.api.algorithm.ACAQGraphEdge;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.ui.grapheditor.ACAQGraphCanvasUI;
 import org.hkijena.acaq5.ui.grapheditor.ACAQNodeUI;
+import org.jgrapht.Graph;
 import org.jgrapht.alg.spanning.KruskalMinimumSpanningTree;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultWeightedEdge;
@@ -46,7 +49,7 @@ public class MSTGraphAutoLayoutMethod implements GraphAutoLayoutMethod {
 
         // Extract the sorted list of roots
         // Sorted from highest to lowest depth
-        int track = generateTracks(graph);
+        int track = generateTracks(canvasUI.getGraph(), graph);
 
         // Squash tracks (make them consecutive)
         squashTracks(graph, track);
@@ -68,7 +71,7 @@ public class MSTGraphAutoLayoutMethod implements GraphAutoLayoutMethod {
         }
     }
 
-    private int generateTracks(DefaultDirectedGraph<Node, Edge> graph) {
+    private int generateTracks(ACAQGraph projectGraph, DefaultDirectedGraph<Node, Edge> graph) {
         List<Node> roots = new ArrayList<>();
         for (Node node : graph.vertexSet()) {
             if(graph.incomingEdgesOf(node).isEmpty()) {
@@ -98,11 +101,16 @@ public class MSTGraphAutoLayoutMethod implements GraphAutoLayoutMethod {
                         while (edges.size() == 1);
                     }
                     if (edges.size() > 1) {
-                        List<Node> branches = edges.stream().map(graph::getEdgeTarget).sorted(Comparator.comparing(Node::getDepth)).collect(Collectors.toList());
+                        List<Node> branches = new ArrayList<>();
+                        for (Edge edge : edges) {
+                            branches.add(graph.getEdgeTarget(edge));
+                        }
+                        final Node source = top;
+                        branches.sort((target0, target1) -> sortBranches(projectGraph, source, target0, target1));
                         top = branches.get(branches.size() - 1);
                         top.track = track;
                         edges = graph.outgoingEdgesOf(top);
-                        for (int i = 0; i < branches.size() - 1; i++) {
+                        for (int i = branches.size() - 2; i >= 0; i--) {
                             stack.push(branches.get(i));
                         }
                     }
@@ -110,6 +118,20 @@ public class MSTGraphAutoLayoutMethod implements GraphAutoLayoutMethod {
             }
         }
         return track;
+    }
+
+    private int sortBranches(ACAQGraph projectGraph, Node source, Node target0, Node target1) {
+        if(target0.depth == target1.depth) {
+            Map.Entry<ACAQDataSlot, ACAQDataSlot> target0Edge = projectGraph.getEdgesBetween(source.getUi().getNode(), target0.getUi().getNode()).iterator().next();
+            Map.Entry<ACAQDataSlot, ACAQDataSlot> target1Edge = projectGraph.getEdgesBetween(source.getUi().getNode(), target1.getUi().getNode()).iterator().next();
+            int target0SlotIndex = source.getUi().getNode().getOutputSlots().indexOf(target0Edge.getKey());
+            int target1SlotIndex = source.getUi().getNode().getOutputSlots().indexOf(target1Edge.getKey());
+
+            return -Integer.compare(target0SlotIndex, target1SlotIndex);
+        }
+        else {
+            return Integer.compare(target0.depth, target1.depth);
+        }
     }
 
     private void squashTracks(DefaultDirectedGraph<Node, Edge> graph, int maxTrack) {

@@ -1134,6 +1134,24 @@ public class ACAQGraph implements ACAQValidatable {
     }
 
     /**
+     * Gets all edges between two algorithm nodes
+     * @param source the source
+     * @param target the target
+     * @return all edges
+     */
+    public Set<Map.Entry<ACAQDataSlot, ACAQDataSlot>> getEdgesBetween(ACAQGraphNode source, ACAQGraphNode target) {
+        Set<Map.Entry<ACAQDataSlot, ACAQDataSlot>> result = new HashSet<>();
+        for (ACAQDataSlot outputSlot : source.getOutputSlots()) {
+            for (ACAQDataSlot targetSlot : getTargetSlots(outputSlot)) {
+                if(targetSlot.getNode() == target) {
+                    result.add(new AbstractMap.SimpleEntry<>(outputSlot, targetSlot));
+                }
+            }
+        }
+        return result;
+    }
+
+    /**
      * Serializes an {@link ACAQGraph}
      */
     public static class Serializer extends JsonSerializer<ACAQGraph> {

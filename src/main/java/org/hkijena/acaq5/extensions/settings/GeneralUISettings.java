@@ -34,6 +34,7 @@ public class GeneralUISettings implements ACAQParameterCollection {
     private boolean showParameterSearchBar = true;
     private boolean neverAskOnClosingTabs = false;
     private boolean validateOnSave = true;
+    private boolean projectInfoGeneratesPreview = true;
 
     @Override
     public EventBus getEventBus() {
@@ -110,6 +111,17 @@ public class GeneralUISettings implements ACAQParameterCollection {
     @ACAQParameter("show-project-info")
     public void setShowProjectInfo(boolean showProjectInfo) {
         this.showProjectInfo = showProjectInfo;
+    }
+
+    @ACAQDocumentation(name = "Project overview generates graph preview", description = "If enabled, the 'Project overview' tab generates a preview of the current pipeline.")
+    @ACAQParameter("project-info-generates-preview")
+    public boolean isProjectInfoGeneratesPreview() {
+        return projectInfoGeneratesPreview;
+    }
+
+    @ACAQParameter("project-info-generates-preview")
+    public void setProjectInfoGeneratesPreview(boolean projectInfoGeneratesPreview) {
+        this.projectInfoGeneratesPreview = projectInfoGeneratesPreview;
     }
 
     public static GeneralUISettings getInstance() {
