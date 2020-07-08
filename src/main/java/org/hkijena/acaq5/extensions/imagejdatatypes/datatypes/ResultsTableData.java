@@ -168,6 +168,18 @@ public class ResultsTableData implements ACAQData, TableModel {
     }
 
     /**
+     * Saves the table as CSV
+     * @param path the output file
+     */
+    public void saveAsCSV(Path path) {
+        try {
+            table.saveAs(path.toString());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
      * Converts a Python dictionary of column name to row data list to a results table
      * @param tableDict the dictionary
      * @return equivalent results table
@@ -899,6 +911,25 @@ public class ResultsTableData implements ACAQData, TableModel {
      */
     public static ResultsTableData fromCSV(Path file) throws IOException {
         return new ResultsTableData(ResultsTable.open(file.toString()));
+    }
+
+    /**
+     * Converts a table model into a string results table
+     * @param model the model
+     * @return the results table
+     */
+    public static ResultsTableData fromTableModel(TableModel model) {
+        ResultsTableData resultsTableData = new ResultsTableData();
+        for (int col = 0; col < model.getColumnCount(); col++) {
+            resultsTableData.addColumn(model.getColumnName(col), true);
+        }
+        for (int row = 0; row < model.getRowCount(); row++) {
+            resultsTableData.addRow();
+            for (int col = 0; col < model.getColumnCount(); col++) {
+                resultsTableData.setValueAt("" + model.getValueAt(row, col), row, col);
+            }
+        }
+        return resultsTableData;
     }
 
     /**

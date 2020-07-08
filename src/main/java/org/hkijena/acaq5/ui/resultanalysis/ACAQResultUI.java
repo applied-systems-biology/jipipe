@@ -124,7 +124,7 @@ public class ACAQResultUI extends ACAQProjectWorkbenchPanel {
     }
 
     private void showDataSlots(List<ACAQDataSlot> slots) {
-        ACAQMultipleResultDataSlotTableUI ui = new ACAQMultipleResultDataSlotTableUI(getProjectWorkbench(), run, slots);
+        ACAQMergedResultDataSlotTableUI ui = new ACAQMergedResultDataSlotTableUI(getProjectWorkbench(), run, slots);
         splitPane.setRightComponent(ui);
         revalidate();
     }

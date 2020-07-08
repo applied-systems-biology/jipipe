@@ -20,17 +20,24 @@ import org.hkijena.acaq5.api.data.ACAQAnnotation;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.api.data.ACAQExportedDataTable;
 import org.hkijena.acaq5.api.data.ACAQMergedExportedDataTable;
+import org.hkijena.acaq5.extensions.imagejdatatypes.datatypes.ResultsTableData;
+import org.hkijena.acaq5.extensions.settings.FileChooserSettings;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbenchPanel;
 import org.hkijena.acaq5.ui.components.FormPanel;
+import org.hkijena.acaq5.ui.components.SearchTextField;
 import org.hkijena.acaq5.ui.parameters.ParameterPanel;
 import org.hkijena.acaq5.ui.registries.ACAQUIDatatypeRegistry;
+import org.hkijena.acaq5.utils.StringUtils;
 import org.hkijena.acaq5.utils.TooltipUtils;
+import org.hkijena.acaq5.utils.UIUtils;
 import org.jdesktop.swingx.JXTable;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
+import javax.swing.table.TableModel;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.event.MouseAdapter;
@@ -41,20 +48,21 @@ import java.util.List;
 /**
  * Displays the result of multiple {@link ACAQDataSlot}
  */
-public class ACAQMultipleResultDataSlotTableUI extends ACAQProjectWorkbenchPanel {
+public class ACAQMergedResultDataSlotTableUI extends ACAQProjectWorkbenchPanel {
 
     private final List<ACAQDataSlot> slots;
     private ACAQRun run;
     private JXTable table;
     private ACAQMergedExportedDataTable mergedDataTable;
     private FormPanel rowUIList;
+    private SearchTextField searchTextField = new SearchTextField();
 
     /**
      * @param workbenchUI The workbench
      * @param run         The algorithm run
      * @param slots       The displayed slots
      */
-    public ACAQMultipleResultDataSlotTableUI(ACAQProjectWorkbench workbenchUI, ACAQRun run, List<ACAQDataSlot> slots) {
+    public ACAQMergedResultDataSlotTableUI(ACAQProjectWorkbench workbenchUI, ACAQRun run, List<ACAQDataSlot> slots) {
         super(workbenchUI);
         this.run = run;
         this.slots = slots;
@@ -96,6 +104,36 @@ public class ACAQMultipleResultDataSlotTableUI extends ACAQProjectWorkbenchPanel
 
         rowUIList = new FormPanel(null, ParameterPanel.WITH_SCROLLING);
         add(rowUIList, BorderLayout.SOUTH);
+
+        // Toolbar for searching and export
+        JToolBar toolBar = new JToolBar();
+        add(toolBar, BorderLayout.NORTH);
+        toolBar.setFloatable(false);
+
+        searchTextField.addActionListener(e -> {
+            table.setModel(new DefaultTableModel());
+            table.setModel(mergedDataTable);
+            table.setRowFilter(new MergedDataSlotRowFilter(searchTextField));
+            table.packAll();
+        });
+        toolBar.add(searchTextField);
+
+        JButton exportButton = new JButton(UIUtils.getIconFromResources("export.png"));
+        toolBar.add(exportButton);
+        exportButton.setToolTipText("Export");
+        JPopupMenu exportMenu = UIUtils.addPopupMenuToComponent(exportButton);
+
+        JMenuItem exportAsCsvItem = new JMenuItem("as *.csv", UIUtils.getIconFromResources("filetype-csv.png"));
+        exportAsCsvItem.addActionListener(e -> exportAsCSV());
+        exportMenu.add(exportAsCsvItem);
+    }
+
+    private void exportAsCSV() {
+        Path path = FileChooserSettings.saveFile(this, FileChooserSettings.KEY_PROJECT, "Export as *.csv", ".csv");
+        if(path != null) {
+            ResultsTableData tableData = ResultsTableData.fromTableModel(mergedDataTable);
+            tableData.saveAsCSV(path);
+        }
     }
 
     private void handleSlotRowDefaultAction(int selectedRow) {
@@ -138,6 +176,27 @@ public class ACAQMultipleResultDataSlotTableUI extends ACAQProjectWorkbenchPanel
 
         if (mergedDataTable.getRowCount() == 1) {
             table.setRowSelectionInterval(0, 0);
+        }
+    }
+
+    /**
+     * Filters the entries
+     */
+    public static class MergedDataSlotRowFilter extends RowFilter<TableModel, Integer> {
+        private final SearchTextField searchTextField;
+
+        public MergedDataSlotRowFilter(SearchTextField searchTextField) {
+            this.searchTextField = searchTextField;
+        }
+
+        @Override
+        public boolean include(Entry<? extends TableModel, ? extends Integer> entry) {
+            for (int i = 0; i < entry.getValueCount(); i++) {
+                if(searchTextField.test(StringUtils.orElse(entry.getStringValue(i), ""))) {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }
