@@ -19,6 +19,7 @@ import org.hkijena.acaq5.api.compartments.algorithms.ACAQProjectCompartment;
 import org.hkijena.acaq5.api.data.ACAQDataSlot;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbench;
 import org.hkijena.acaq5.ui.ACAQProjectWorkbenchPanel;
+import org.hkijena.acaq5.ui.components.SearchTextField;
 import org.hkijena.acaq5.utils.UIUtils;
 
 import javax.swing.*;
@@ -36,6 +37,7 @@ public class ACAQResultAlgorithmTree extends ACAQProjectWorkbenchPanel {
     private ACAQRun run;
     private JScrollPane treeScollPane;
     private JTree tree;
+    private SearchTextField searchTextField;
 
     /**
      * @param workbenchUI Workbench ui
@@ -55,20 +57,34 @@ public class ACAQResultAlgorithmTree extends ACAQProjectWorkbenchPanel {
         for (ACAQProjectCompartment compartment : run.getProject().getCompartmentGraph().traverseAlgorithms()
                 .stream().map(a -> (ACAQProjectCompartment) a).collect(Collectors.toList())) {
             DefaultMutableTreeNode compartmentNode = new DefaultMutableTreeNode(compartment);
+            boolean compartmentMatches = searchTextField.test(compartment.getName());
+            boolean compartmentHasMatchedChildren = false;
+
             for (ACAQGraphNode algorithm : run.getGraph().traverseAlgorithms()) {
                 if (algorithm.getCompartment().equals(compartment.getProjectCompartmentId())) {
                     DefaultMutableTreeNode algorithmNode = new DefaultMutableTreeNode(algorithm);
+
+                    boolean algorithmMatches = compartmentMatches || searchTextField.test(algorithm.getName());
+                    boolean algorithmHasMatchedChildren = false;
+                    compartmentHasMatchedChildren |= algorithmMatches;
+
                     for (ACAQDataSlot outputSlot : algorithm.getOutputSlots()) {
                         if (!Files.exists(outputSlot.getStoragePath().resolve("data-table.json")))
                             continue;
                         DefaultMutableTreeNode slotNode = new DefaultMutableTreeNode(outputSlot);
-                        algorithmNode.add(slotNode);
+
+                        if(algorithmMatches || searchTextField.test(outputSlot.getName())) {
+                            algorithmNode.add(slotNode);
+                            algorithmHasMatchedChildren = true;
+                            compartmentHasMatchedChildren = true;
+                        }
                     }
-                    if (algorithmNode.getChildCount() > 0)
+                    if (algorithmNode.getChildCount() > 0 && (algorithmMatches || algorithmHasMatchedChildren))
                         compartmentNode.add(algorithmNode);
                 }
             }
-            if (compartmentNode.getChildCount() > 0)
+
+            if (compartmentNode.getChildCount() > 0 && (compartmentMatches || compartmentHasMatchedChildren))
                 root.add(compartmentNode);
         }
         DefaultTreeModel model = new DefaultTreeModel(root);
@@ -86,6 +102,10 @@ public class ACAQResultAlgorithmTree extends ACAQProjectWorkbenchPanel {
         tree.setCellRenderer(new ACAQResultTreeCellRenderer());
         treeScollPane = new JScrollPane(tree);
         add(treeScollPane, BorderLayout.CENTER);
+
+        searchTextField = new SearchTextField();
+        searchTextField.addActionListener(e -> refreshTree());
+        add(searchTextField, BorderLayout.NORTH);
     }
 
     /**

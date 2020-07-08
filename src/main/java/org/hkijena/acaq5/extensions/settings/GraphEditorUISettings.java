@@ -31,7 +31,7 @@ public class GraphEditorUISettings implements ACAQParameterCollection {
 
     private EventBus eventBus = new EventBus();
     private ACAQGraphCanvasUI.ViewMode defaultViewMode = ACAQGraphCanvasUI.ViewMode.Vertical;
-    private GraphAutoLayout autoLayout = GraphAutoLayout.Sugiyama;
+    private GraphAutoLayout autoLayout = GraphAutoLayout.MST;
     private boolean switchPanningDirection = false;
     private boolean enableLayoutHelper = true;
 

@@ -84,8 +84,12 @@ public class SugiyamaGraphAutoLayoutMethod implements GraphAutoLayoutMethod {
                 continue;
             if (sourceUI.getNode() == targetUI.getNode())
                 continue;
-            if (!sugiyamaGraph.containsEdge(vertexMap.get(sourceUI), vertexMap.get(targetUI)))
-                sugiyamaGraph.addEdge(vertexMap.get(sourceUI), vertexMap.get(targetUI));
+            SugiyamaVertex sourceVertex = vertexMap.getOrDefault(sourceUI, null);
+            SugiyamaVertex targetVertex = vertexMap.getOrDefault(targetUI, null);
+            if(sourceVertex == null || targetVertex == null)
+                continue;
+            if (!sugiyamaGraph.containsEdge(sourceVertex, targetVertex))
+                sugiyamaGraph.addEdge(sourceVertex, targetVertex);
         }
 
 
