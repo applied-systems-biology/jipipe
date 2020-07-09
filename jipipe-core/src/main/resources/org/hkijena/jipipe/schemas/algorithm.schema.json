@@ -1,0 +1,111 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$id": "https://applied-systems-biology.github.io/jipipe/schemas/algorithm.schema.json",
+    "type": "object",
+    "title": "Algorithm type",
+    "description": "Defines a new algorithm",
+    "required": [
+        "id",
+        "metadata",
+        "category",
+        "parameter-visibilities",
+        "graph",
+        "menu-path",
+        "jipipe:project-type"
+    ],
+    "properties": {
+        "id": {
+            "$id": "#/properties/id",
+            "type": "string",
+            "title": "ID",
+            "description": "Unique algorithm ID",
+            "default": "",
+            "examples": [
+                "gaussian-blur"
+            ]
+        },
+        "metadata": {
+            "$id": "#/properties/metadata",
+            "type": "object",
+            "title": "Metadata",
+            "description": "General algorithm metadata",
+            "$ref": "https://applied-systems-biology.github.io/jipipe/schemas/metadata.schema.json"
+        },
+        "category": {
+            "$id": "#/properties/category",
+            "type": "string",
+            "title": "Category",
+            "description": "An algorithm category",
+            "default": "",
+            "examples": [
+                "Enhancer"
+            ],
+            "enum": [
+              "Converter", "Processor", "Analysis", "DataSource", "FileSystem", "Annotation", "Miscellaneous"
+            ]
+        },
+        "parameter-visibilities": {
+            "$id": "#/properties/parameter-visibilities",
+            "type": "object",
+            "title": "Parameter visibilities",
+            "description": "Determines which parameters are visible to the user",
+            "default": {"visible-keys": []},
+            "examples": [
+                {
+                    "visible-keys": [
+                        "default-gaussian-blur/macro-parameters/Sigma"
+                    ]
+                }
+            ],
+            "required": [
+                "visible-keys"
+            ],
+            "properties": {
+                "visible-keys": {
+                    "$id": "#/properties/parameter-visibilities/properties/visible-keys",
+                    "type": "array",
+                    "title": "Visible parameter keys",
+                    "description": "Determines the parameter keys that are visible",
+                    "default": [],
+                    "items": {
+                        "$id": "#/properties/parameter-visibilities/properties/visible-keys/items",
+                        "type": "string",
+                        "title": "Parameter key",
+                        "description": "Consists of [Algorithm instance ID]/[Parameter key in algorithm]",
+                        "default": "",
+                        "examples": [
+                            "default-gaussian-blur/macro-parameters/Sigma"
+                        ]
+                    }
+                }
+            }
+        },
+        "graph": {
+            "$id": "#/properties/graph",
+            "type": "object",
+            "title": "Wrapped algorithm graph",
+            "description": "This graph is executed when the algorithm is run",
+            "$ref": "https://applied-systems-biology.github.io/jipipe/schemas/graph.schema.json"
+        },
+        "menu-path": {
+            "$id": "#/properties/menu-path",
+            "type": "string",
+            "title": "Menu path",
+            "description": "Optional menu path within the category menu",
+            "default": "",
+            "examples": [
+                "Blur"
+            ]
+        },
+        "jipipe:project-type": {
+            "$id": "#/properties/jipipe:project-type",
+            "type": "string",
+            "title": "Project type",
+            "description": "Identifies the JSON as algorithm",
+            "default": "graph-wrapper-algorithm",
+            "enum": [
+                "graph-wrapper-algorithm"
+            ]
+        }
+    }
+}

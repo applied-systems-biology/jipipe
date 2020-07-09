@@ -1,0 +1,239 @@
+/*
+ * Copyright by Zoltán Cseresnyés, Ruman Gerst
+ *
+ * Research Group Applied Systems Biology - Head: Prof. Dr. Marc Thilo Figge
+ * https://www.leibniz-hki.de/en/applied-systems-biology.html
+ * HKI-Center for Systems Biology of Infection
+ * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)
+ * Adolf-Reichwein-Straße 23, 07745 Jena, Germany
+ *
+ * The project code is licensed under BSD 2-Clause.
+ * See the LICENSE file provided with the code for the full license.
+ */
+
+package org.hkijena.jipipe.api.algorithm;
+
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.JIPipeFixedThreadPool;
+import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
+import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.data.JIPipeSlotConfiguration;
+import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterVisibility;
+import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
+import org.hkijena.jipipe.utils.JsonUtils;
+
+import java.io.IOException;
+import java.io.StringWriter;
+import java.util.Map;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+
+/**
+ * An {@link JIPipeGraphNode} that contains a non-empty workload.
+ * This class contains additional parameters to control the workload behavior.
+ * Please prefer to use this class or its derivatives if you write your algorithms.
+ */
+public abstract class JIPipeAlgorithm extends JIPipeGraphNode {
+
+    private static final StateSerializer STATE_SERIALIZER = new StateSerializer();
+    private boolean enabled = true;
+    private boolean passThrough = false;
+    private boolean saveOutputs = true;
+    private JIPipeFixedThreadPool threadPool;
+
+    /**
+     * Initializes a new algorithm instance and sets a custom slot configuration
+     *
+     * @param declaration       The algorithm declaration
+     * @param slotConfiguration The slot configuration
+     */
+    public JIPipeAlgorithm(JIPipeAlgorithmDeclaration declaration, JIPipeSlotConfiguration slotConfiguration) {
+        super(declaration, slotConfiguration);
+    }
+
+    /**
+     * Initializes a new algorithm instance
+     *
+     * @param declaration The algorithm declaration
+     */
+    public JIPipeAlgorithm(JIPipeAlgorithmDeclaration declaration) {
+        super(declaration);
+    }
+
+    /**
+     * Creates a copy
+     *
+     * @param other the original
+     */
+    public JIPipeAlgorithm(JIPipeAlgorithm other) {
+        super(other);
+        this.enabled = other.enabled;
+        this.passThrough = other.passThrough;
+        this.saveOutputs = other.saveOutputs;
+    }
+
+    @Override
+    public void run(JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+        if (passThrough && canAutoPassThrough()) {
+            algorithmProgress.accept(subProgress.resolve("Data passed through to output"));
+            runPassThrough();
+        }
+    }
+
+    @Override
+    public void reportValidity(JIPipeValidityReport report) {
+        if (passThrough && !canPassThrough()) {
+            report.forCategory("Pass through").reportIsInvalid("Pass through is not supported!",
+                    "The algorithm reports that it does not support pass through. This is often the case for multi-output algorithms or " +
+                            "algorithms that apply a conversion.",
+                    "This cannot be changed. Please contact the algorithm author.",
+                    this);
+        }
+    }
+
+    /**
+     * Runs the pass through. Override this for custom implementations if you want
+     */
+    protected void runPassThrough() {
+        if (!canAutoPassThrough()) {
+            throw new RuntimeException("Auto pass through not allowed!");
+        }
+        if (getInputSlots().isEmpty())
+            return;
+        if (getOutputSlots().isEmpty())
+            return;
+        for (int row = 0; row < getFirstInputSlot().getRowCount(); row++) {
+            getFirstOutputSlot().addData(getFirstInputSlot().getData(row, JIPipeData.class), getFirstInputSlot().getAnnotations(row));
+        }
+    }
+
+    /**
+     * Returns true if the algorithm can automatically apply pass-through
+     * This is only possible if there is at most one input and at most one output.
+     * Input must be compatible to the output.
+     *
+     * @return if the algorithm can automatically apply pass-through
+     */
+    protected boolean canAutoPassThrough() {
+        return getInputSlots().size() <= 1 && getOutputSlots().size() <= 1 && (getInputSlots().isEmpty() || getOutputSlots().isEmpty() ||
+                JIPipeDatatypeRegistry.getInstance().isConvertible(getFirstInputSlot().getAcceptedDataType(), getFirstOutputSlot().getAcceptedDataType()));
+
+    }
+
+    /**
+     * Returns true if the algorithm can apply pass-through.
+     * Override this method to implement your own checks
+     *
+     * @return true if the algorithm can apply pass-through
+     */
+    protected boolean canPassThrough() {
+        return canAutoPassThrough();
+    }
+
+    @JIPipeDocumentation(name = "Enabled", description = "If disabled, this algorithm will be skipped in a run. " +
+            "Please note that this will also disable all algorithms dependent on this algorithm.")
+    @JIPipeParameter(value = "jipipe:algorithm:enabled", visibility = JIPipeParameterVisibility.Visible)
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    @JIPipeParameter("jipipe:algorithm:enabled")
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+
+    }
+
+    @JIPipeDocumentation(name = "Pass through", description = "If enabled, the algorithm will pass the input data directly to the output data without any processing. " +
+            "This is different from enabling/disabling the algorithm as this will not disable dependent algorithms.")
+    @JIPipeParameter(value = "jipipe:algorithm:pass-through", visibility = JIPipeParameterVisibility.Visible)
+    public boolean isPassThrough() {
+        return passThrough;
+    }
+
+    @JIPipeParameter("jipipe:algorithm:pass-through")
+    public void setPassThrough(boolean passThrough) {
+        this.passThrough = passThrough;
+
+    }
+
+    /**
+     * Returns a unique identifier that represents the state of the algorithm.
+     * Defaults to a JSON-serialized representation using the {@link StateSerializer}.
+     * Override this method if you have external influences.
+     *
+     * @return the state id
+     */
+    public String getStateId() {
+        try (StringWriter writer = new StringWriter()) {
+            JsonGenerator generator = JsonUtils.getObjectMapper().getFactory().createGenerator(writer);
+            STATE_SERIALIZER.serialize(this, generator, null);
+            return writer.toString();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public JIPipeFixedThreadPool getThreadPool() {
+        return threadPool;
+    }
+
+    /**
+     * Sets the thread pool.
+     * Depending on the implementation, the pool is just ignored.
+     *
+     * @param threadPool can be null (forces single-threaded run)
+     */
+    public void setThreadPool(JIPipeFixedThreadPool threadPool) {
+        this.threadPool = threadPool;
+    }
+
+    @JIPipeDocumentation(name = "Save outputs", description = "If disabled, the output data is not written into the output folder.")
+    @JIPipeParameter(value = "save-outputs", visibility = JIPipeParameterVisibility.Visible)
+    public boolean isSaveOutputs() {
+        return saveOutputs;
+    }
+
+    @JIPipeParameter("save-outputs")
+    public void setSaveOutputs(boolean saveOutputs) {
+        this.saveOutputs = saveOutputs;
+    }
+
+    /**
+     * Serializer used by getStateId()
+     * It automatically skips name, compartment, description, slot configuration, and UI parameters that are not relevant to the state
+     */
+    public static class StateSerializer extends JsonSerializer<JIPipeGraphNode> {
+        @Override
+        public void serialize(JIPipeGraphNode algorithm, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
+            jsonGenerator.writeStartObject();
+            jsonGenerator.writeStringField("jipipe:algorithm-type", algorithm.getDeclaration().getId());
+            JIPipeParameterTree parameterCollection = new JIPipeParameterTree(algorithm);
+            for (Map.Entry<String, JIPipeParameterAccess> entry : parameterCollection.getParameters().entrySet()) {
+                if (serializeParameter(entry))
+                    jsonGenerator.writeObjectField(entry.getKey(), entry.getValue().get(Object.class));
+            }
+
+            // Dynamic parameter storage is not saved, as their values are stored into normal parameters
+
+            jsonGenerator.writeEndObject();
+        }
+
+        /**
+         * Returns true if the parameter should be serialized
+         *
+         * @param entry the parameter
+         * @return if the parameter should be serialized
+         */
+        protected boolean serializeParameter(Map.Entry<String, JIPipeParameterAccess> entry) {
+            return !entry.getKey().equals("jipipe:node:name") && !entry.getKey().equals("jipipe:node:description");
+        }
+    }
+}

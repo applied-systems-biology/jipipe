@@ -1,0 +1,55 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$id": "https://applied-systems-biology.github.io/jipipe/schemas/graph-edge.schema.json",
+    "type": "object",
+    "title": "Graph Edge",
+    "description": "Edge in a graph",
+    "required": [
+        "source-algorithm",
+        "target-algorithm",
+        "source-slot",
+        "target-slot"
+    ],
+    "properties": {
+        "source-algorithm": {
+            "$id": "#/properties/source-algorithm",
+            "type": "string",
+            "title": "Source algorithm",
+            "description": "Algorithm ID of the edge source",
+            "default": "",
+            "examples": [
+                "default-preprocessing-folder-list"
+            ]
+        },
+        "target-algorithm": {
+            "$id": "#/properties/target-algorithm",
+            "type": "string",
+            "title": "Target algorithm",
+            "description": "Algorithm ID of the edge target",
+            "default": "",
+            "examples": [
+                "default-preprocessing-folders-to-annotations"
+            ]
+        },
+        "source-slot": {
+            "$id": "#/properties/source-slot",
+            "type": "string",
+            "title": "Source slot name",
+            "description": "Slot name within the edge source algorithm",
+            "default": "",
+            "examples": [
+                "Folder paths"
+            ]
+        },
+        "target-slot": {
+            "$id": "#/properties/target-slot",
+            "type": "string",
+            "title": "Target slot name",
+            "description": "Slot name within the edge target algorithm",
+            "default": "",
+            "examples": [
+                "Folders"
+            ]
+        }
+    }
+}

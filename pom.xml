@@ -15,11 +15,11 @@ See the LICENSE file provided with this code for the full license.
     <modelVersion>4.0.0</modelVersion>
     <packaging>pom</packaging>
     <groupId>org.hkijena</groupId>
-    <artifactId>pipelinej</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
-    <name>pipelinej</name>
-    <description>PipelineJ</description>
-    <url>https://applied-systems-biology.github.io/acaq5/</url>
+    <artifactId>jipipe</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <name>jipipe</name>
+    <description>JIPipe</description>
+    <url>https://applied-systems-biology.github.io/jipipe/</url>
     <inceptionYear>2020</inceptionYear>
     <organization>
         <name>Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)</name>
@@ -56,18 +56,18 @@ See the LICENSE file provided with this code for the full license.
         </mailingList>
     </mailingLists>
     <scm>
-        <connection>scm:git:https://github.com/applied-systems-biology/acaq5.git</connection>
-        <developerConnection>scm:git:https://github.com/applied-systems-biology/acaq5.git</developerConnection>
+        <connection>scm:git:https://github.com/applied-systems-biology/jipipe.git</connection>
+        <developerConnection>scm:git:https://github.com/applied-systems-biology/jipipe.git</developerConnection>
         <tag>HEAD</tag>
-        <url>https://github.com/applied-systems-biology/acaq5</url>
+        <url>https://github.com/applied-systems-biology/jipipe</url>
     </scm>
     <issueManagement>
         <system>GitHub Issues</system>
-        <url>https://github.com/applied-systems-biology/acaq5/issues</url>
+        <url>https://github.com/applied-systems-biology/jipipe/issues</url>
     </issueManagement>
     <ciManagement>
         <system>GitHub CI</system>
-        <url>https://github.com/applied-systems-biology/acaq5</url>
+        <url>https://github.com/applied-systems-biology/jipipe</url>
     </ciManagement>
 
     <parent>
@@ -252,12 +252,13 @@ See the LICENSE file provided with this code for the full license.
         <maven.compiler.target>1.8</maven.compiler.target>
         <license.licenseName>BSD-2-Clause</license.licenseName>
         <license.copyrightOwners>N/A</license.copyrightOwners>
-        <license.projectName>PipelineJ</license.projectName>
+        <license.projectName>JIPipe</license.projectName>
     </properties>
 
     <modules>
-        <module>pipelinej-core</module>
-        <module>pipelinej-algorithms</module>
-        <module>pipelinej-ij</module>
+        <module>jipipe-core</module>
+        <module>jipipe-algorithms</module>
+        <module>jipipe-ij</module>
+        <module>jipipe-debug</module>
     </modules>
 </project>

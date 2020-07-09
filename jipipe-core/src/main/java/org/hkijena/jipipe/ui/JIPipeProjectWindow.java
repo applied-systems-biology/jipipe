@@ -1,0 +1,306 @@
+/*
+ * Copyright by Zoltán Cseresnyés, Ruman Gerst
+ *
+ * Research Group Applied Systems Biology - Head: Prof. Dr. Marc Thilo Figge
+ * https://www.leibniz-hki.de/en/applied-systems-biology.html
+ * HKI-Center for Systems Biology of Infection
+ * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)
+ * Adolf-Reichwein-Straße 23, 07745 Jena, Germany
+ *
+ * The project code is licensed under BSD 2-Clause.
+ * See the LICENSE file provided with the code for the full license.
+ */
+
+package org.hkijena.jipipe.ui;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import org.hkijena.jipipe.JIPipeDependency;
+import org.hkijena.jipipe.api.JIPipeProject;
+import org.hkijena.jipipe.api.JIPipeRun;
+import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
+import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
+import org.hkijena.jipipe.extensions.settings.ProjectsSettings;
+import org.hkijena.jipipe.ui.components.DocumentTabPane;
+import org.hkijena.jipipe.ui.project.UnsatisfiedDependenciesDialog;
+import org.hkijena.jipipe.ui.resultanalysis.JIPipeResultUI;
+import org.hkijena.jipipe.utils.JsonUtils;
+import org.hkijena.jipipe.utils.UIUtils;
+import org.scijava.Context;
+
+import javax.swing.*;
+import java.awt.*;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+
+/**
+ * Window that holds an {@link JIPipeProjectWorkbench} instance
+ */
+public class JIPipeProjectWindow extends JFrame {
+
+    private static Set<JIPipeProjectWindow> OPEN_WINDOWS = new HashSet<>();
+    private Context context;
+    private JIPipeProject project;
+    private JIPipeProjectWorkbench projectUI;
+    private Path projectSavePath;
+
+    /**
+     * @param context          context
+     * @param project          The project
+     * @param showIntroduction whether to show the introduction
+     * @param isNewProject     if the project is an empty project
+     */
+    public JIPipeProjectWindow(Context context, JIPipeProject project, boolean showIntroduction, boolean isNewProject) {
+        this.context = context;
+        OPEN_WINDOWS.add(this);
+        initialize();
+        loadProject(project, showIntroduction, isNewProject);
+    }
+
+    private void initialize() {
+        getContentPane().setLayout(new BorderLayout(8, 8));
+        super.setTitle("JIPipe");
+        setIconImage(UIUtils.getIconFromResources("jipipe-128.png").getImage());
+        UIUtils.setToAskOnClose(this, "Do you really want to close JIPipe?", "Close window");
+    }
+
+    @Override
+    public void dispose() {
+        OPEN_WINDOWS.remove(this);
+        super.dispose();
+    }
+
+    @Override
+    public void setTitle(String title) {
+        super.setTitle("JIPipe - " + title);
+    }
+
+    /**
+     * Loads a project into the window
+     *
+     * @param project          The project
+     * @param showIntroduction whether to show the introduction
+     * @param isNewProject     if the project is an empty project
+     */
+    public void loadProject(JIPipeProject project, boolean showIntroduction, boolean isNewProject) {
+        this.project = project;
+        this.projectUI = new JIPipeProjectWorkbench(this, context, project, showIntroduction, isNewProject);
+        setContentPane(projectUI);
+    }
+
+    /**
+     * Creates a new project.
+     * Asks the user if it should replace the currently displayed project
+     */
+    public void newProject() {
+        JIPipeProject project = new JIPipeProject();
+        JIPipeProjectWindow window = openProjectInThisOrNewWindow("New project", project, true, true);
+        if (window == null)
+            return;
+        window.projectSavePath = null;
+        window.setTitle("New project");
+        window.getProjectUI().sendStatusBarText("Created new project");
+    }
+
+    /**
+     * Opens a project from a file or folder
+     * Asks the user if it should replace the currently displayed project
+     *
+     * @param path JSON project file or result folder
+     */
+    public void openProject(Path path) {
+        if (Files.isRegularFile(path)) {
+            try {
+                JsonNode jsonData = JsonUtils.getObjectMapper().readValue(path.toFile(), JsonNode.class);
+                Set<JIPipeDependency> dependencySet = JIPipeProject.loadDependenciesFromJson(jsonData);
+                Set<JIPipeDependency> missingDependencies = JIPipeDependency.findUnsatisfiedDependencies(dependencySet);
+                if (!missingDependencies.isEmpty()) {
+                    if (!UnsatisfiedDependenciesDialog.showDialog(this, path, missingDependencies))
+                        return;
+                }
+
+                JIPipeProject project = JIPipeProject.loadProject(jsonData);
+                project.setWorkDirectory(path.getParent());
+                JIPipeProjectWindow window = openProjectInThisOrNewWindow("Open project", project, false, false);
+                if (window == null)
+                    return;
+                window.projectSavePath = path;
+                window.getProjectUI().sendStatusBarText("Opened project from " + window.projectSavePath);
+                window.setTitle(window.projectSavePath.toString());
+                ProjectsSettings.getInstance().addRecentProject(path);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        } else if (Files.isDirectory(path)) {
+            try {
+                Path parameterFilePath = path.resolve("project.jip");
+                JsonNode jsonData = JsonUtils.getObjectMapper().readValue(parameterFilePath.toFile(), JsonNode.class);
+                Set<JIPipeDependency> dependencySet = JIPipeProject.loadDependenciesFromJson(jsonData);
+                Set<JIPipeDependency> missingDependencies = JIPipeDependency.findUnsatisfiedDependencies(dependencySet);
+                if (!missingDependencies.isEmpty()) {
+                    if (!UnsatisfiedDependenciesDialog.showDialog(this, path, missingDependencies))
+                        return;
+                }
+
+                JIPipeRun run = JIPipeRun.loadFromFolder(path);
+                run.getProject().setWorkDirectory(path);
+                JIPipeProjectWindow window = openProjectInThisOrNewWindow("Open JIPipe output", run.getProject(), false, false);
+                if (window == null)
+                    return;
+                window.projectSavePath = path.resolve("project.jip");
+                window.getProjectUI().sendStatusBarText("Opened project from " + window.projectSavePath);
+                window.setTitle(window.projectSavePath.toString());
+
+                // Create a new tab
+                window.getProjectUI().getDocumentTabPane().addTab("Run",
+                        UIUtils.getIconFromResources("run.png"),
+                        new JIPipeResultUI(window.projectUI, run),
+                        DocumentTabPane.CloseMode.withAskOnCloseButton,
+                        true);
+                ProjectsSettings.getInstance().addRecentProject(path);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    /**
+     * Opens a file chooser where the user can select a project file
+     */
+    public void openProject() {
+        Path file = FileChooserSettings.openFile(this, FileChooserSettings.KEY_PROJECT, "Open JIPipe project (*.jip)");
+        if (file != null) {
+            openProject(file);
+        }
+    }
+
+    /**
+     * Opens a file chooser where the user can select a result folder
+     */
+    public void openProjectAndOutput() {
+        Path file = FileChooserSettings.openDirectory(this, FileChooserSettings.KEY_PROJECT, "Open JIPipe output folder");
+        if (file != null) {
+            openProject(file);
+        }
+    }
+
+    /**
+     * Saves the project
+     *
+     * @param avoidDialog If true, the project is stored in the last known valid output location if possible
+     */
+    public void saveProjectAs(boolean avoidDialog) {
+        Path savePath = null;
+        if (avoidDialog && projectSavePath != null)
+            savePath = projectSavePath;
+        if (savePath == null) {
+            savePath = FileChooserSettings.saveFile(this, FileChooserSettings.KEY_PROJECT, "Save JIPipe project (*.jip)", ".jip");
+            if (savePath == null)
+                return;
+        }
+
+        try {
+            Path tempFile = Files.createTempFile(savePath.getParent(), savePath.getFileName().toString(), ".part");
+            getProject().setWorkDirectory(savePath.getParent());
+            getProject().saveProject(tempFile);
+
+            // Check if the saved project can be loaded
+            JIPipeProject.loadProject(tempFile);
+
+            // Overwrite the target file
+            if (Files.exists(savePath))
+                Files.delete(savePath);
+            Files.copy(tempFile, savePath);
+
+            // Everything OK, now set the title
+            setTitle(savePath.toString());
+            projectSavePath = savePath;
+            projectUI.sendStatusBarText("Saved project to " + savePath);
+            ProjectsSettings.getInstance().addRecentProject(savePath);
+
+            // Remove tmp file
+            Files.delete(tempFile);
+        } catch (IOException e) {
+            UIUtils.openErrorDialog(this, new UserFriendlyRuntimeException(e,
+                    "Error during saving!",
+                    "While saving the project into '" + savePath + "'. Any existing file was not changed or overwritten.",
+                    "The issue cannot be determined. Please contact the JIPipe authors.",
+                    "Please check if you have write access to the temporary directory and the target directory. " +
+                            "If this is the case, please contact the JIPipe authors."));
+        }
+    }
+
+    /**
+     * @param messageTitle     Description of the project source
+     * @param project          The project
+     * @param showIntroduction whether to show the introduction
+     * @param isNewProject     if the project is an empty project
+     * @return The window that holds the project
+     */
+    private JIPipeProjectWindow openProjectInThisOrNewWindow(String messageTitle, JIPipeProject project, boolean showIntroduction, boolean isNewProject) {
+        switch (UIUtils.askOpenInCurrentWindow(this, messageTitle)) {
+            case JOptionPane.YES_OPTION:
+                loadProject(project, false, isNewProject);
+                return this;
+            case JOptionPane.NO_OPTION:
+                return newWindow(context, project, showIntroduction, isNewProject);
+        }
+        return null;
+    }
+
+    /**
+     * @return GUI command
+     */
+    public Context getContext() {
+        return context;
+    }
+
+    /**
+     * @return The current project
+     */
+    public JIPipeProject getProject() {
+        return project;
+    }
+
+    /**
+     * @return The current project UI
+     */
+    public JIPipeProjectWorkbench getProjectUI() {
+        return projectUI;
+    }
+
+    /**
+     * @return Last known project save path
+     */
+    public Path getProjectSavePath() {
+        return projectSavePath;
+    }
+
+    /**
+     * Creates a new window
+     *
+     * @param context          context
+     * @param project          The project
+     * @param showIntroduction show an introduction
+     * @param isNewProject     if the project is a new empty project
+     * @return The window
+     */
+    public static JIPipeProjectWindow newWindow(Context context, JIPipeProject project, boolean showIntroduction, boolean isNewProject) {
+        JIPipeProjectWindow frame = new JIPipeProjectWindow(context, project, showIntroduction, isNewProject);
+        frame.pack();
+        frame.setSize(1024, 768);
+        frame.setVisible(true);
+//        frame.setExtendedState(frame.getExtendedState() | JFrame.MAXIMIZED_BOTH);
+        return frame;
+    }
+
+    /**
+     * @return All open project windows
+     */
+    public static Set<JIPipeProjectWindow> getOpenWindows() {
+        return Collections.unmodifiableSet(OPEN_WINDOWS);
+    }
+}

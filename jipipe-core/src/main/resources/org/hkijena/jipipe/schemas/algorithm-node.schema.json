@@ -1,0 +1,81 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$id": "https://applied-systems-biology.github.io/jipipe/schemas/algorithm-node.schema.json",
+    "type": "object",
+    "title": "Algorithm node",
+    "description": "Node in a graph",
+    "required": [
+        "jipipe:slot-configuration",
+        "jipipe:algorithm-type",
+        "jipipe:algorithm-compartment",
+        "name",
+        "description"
+    ],
+    "properties": {
+        "jipipe:slot-configuration": {
+            "$id": "#/properties/jipipe:slot-configuration",
+            "type": "object",
+            "title": "Slots",
+            "description": "User-defined slots. Might be ignored depending on the algorithm. The keys are the slot names.",
+            "default": {},
+            "examples": [
+                {}
+            ],
+            "additionalProperties": {
+              "$ref": "https://applied-systems-biology.github.io/jipipe/schemas/slot-definition.schema.json"
+            }
+        },
+        "jipipe:algorithm-ui-location": {
+            "$id": "#/properties/jipipe:algorithm-ui-location",
+            "type": "object",
+            "title": "UI locations",
+            "description": "Locations of this node within the UI. Optional. The keys depend on the UI implementation.",
+            "default": {},
+            "examples": [
+                {}
+            ],
+            "additionalProperties": {
+              "$ref": "https://applied-systems-biology.github.io/jipipe/schemas/point.schema.json"
+            }
+        },
+        "jipipe:algorithm-type": {
+            "$id": "#/properties/jipipe:algorithm-type",
+            "type": "string",
+            "title": "Algorithm ID",
+            "description": "Algorithm type ID",
+            "default": "",
+            "examples": [
+                "imagej-imgplus-2d-greyscale-from-file"
+            ]
+        },
+        "jipipe:algorithm-compartment": {
+            "$id": "#/properties/jipipe:algorithm-compartment",
+            "type": "string",
+            "title": "Graph compartment",
+            "description": "Compartment ID. Only important for the UI.",
+            "default": "DEFAULT",
+            "examples": [
+                "default-preprocessing"
+            ]
+        },
+        "name": {
+            "$id": "#/properties/name",
+            "type": "string",
+            "title": "Name",
+            "description": "A custom name for this algorithm. Only important for the UI. If null or empty, the UI will default to the algorithm type name.",
+            "default": "",
+            "examples": [
+                "Import 2D image (greyscale)"
+            ]
+        },
+        "description": {
+            "$id": "#/properties/description",
+            "title": "Description",
+            "description": "A custom description. Only important for the UI.",
+            "default": null,
+            "examples": [
+                null
+            ]
+        }
+    }
+}

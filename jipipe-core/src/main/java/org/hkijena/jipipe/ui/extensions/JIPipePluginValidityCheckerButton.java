@@ -1,0 +1,65 @@
+/*
+ * Copyright by Zoltán Cseresnyés, Ruman Gerst
+ *
+ * Research Group Applied Systems Biology - Head: Prof. Dr. Marc Thilo Figge
+ * https://www.leibniz-hki.de/en/applied-systems-biology.html
+ * HKI-Center for Systems Biology of Infection
+ * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)
+ * Adolf-Reichwein-Straße 23, 07745 Jena, Germany
+ *
+ * The project code is licensed under BSD 2-Clause.
+ * See the LICENSE file provided with the code for the full license.
+ */
+
+package org.hkijena.jipipe.ui.extensions;
+
+import com.google.common.eventbus.Subscribe;
+import org.hkijena.jipipe.JIPipeDefaultRegistry;
+import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.events.ExtensionRegisteredEvent;
+import org.hkijena.jipipe.utils.UIUtils;
+
+import javax.swing.*;
+
+/**
+ * Button that checks the plugin validity and shows the report if clicked
+ */
+public class JIPipePluginValidityCheckerButton extends JButton {
+
+    private JIPipeValidityReport report = new JIPipeValidityReport();
+
+    /**
+     * Creates new instance
+     */
+    public JIPipePluginValidityCheckerButton() {
+        recheckValidity();
+        JIPipeDefaultRegistry.getInstance().getEventBus().register(this);
+    }
+
+    /**
+     * Triggers a validity check
+     */
+    public void recheckValidity() {
+        report.clear();
+        JIPipeDefaultRegistry.getInstance().reportValidity(report);
+
+        if (report.isValid()) {
+            setText("All plugins valid");
+            setIcon(UIUtils.getIconFromResources("check-circle-green.png"));
+        } else {
+            setText("Some plugins could not be loaded");
+            setIcon(UIUtils.getIconFromResources("error.png"));
+        }
+    }
+
+    /**
+     * Triggered when an extension is registered.
+     * Rechecks validity.
+     *
+     * @param event Generated event
+     */
+    @Subscribe
+    public void onExtensionRegistered(ExtensionRegisteredEvent event) {
+        recheckValidity();
+    }
+}

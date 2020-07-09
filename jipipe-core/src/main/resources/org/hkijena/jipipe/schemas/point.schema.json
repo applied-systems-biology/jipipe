@@ -1,0 +1,33 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$id": "https://applied-systems-biology.github.io/jipipe/schemas/point.schema.json",
+    "type": "object",
+    "title": "Point",
+    "description": "A point",
+    "required": [
+        "x",
+        "y"
+    ],
+    "properties": {
+        "x": {
+            "$id": "#/properties/x",
+            "type": "integer",
+            "title": "X",
+            "description": "X coordinate",
+            "default": 0,
+            "examples": [
+                1700
+            ]
+        },
+        "y": {
+            "$id": "#/properties/y",
+            "type": "integer",
+            "title": "Y",
+            "description": "Y coordinate",
+            "default": 0,
+            "examples": [
+                100
+            ]
+        }
+    }
+}

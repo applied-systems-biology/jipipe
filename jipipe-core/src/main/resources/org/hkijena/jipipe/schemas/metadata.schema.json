@@ -1,0 +1,74 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$id": "https://applied-systems-biology.github.io/jipipe/schemas/metadata.schema.json",
+    "type": "object",
+    "title": "Metadata",
+    "description": "Commonly used metadata type in JIPipe.",
+    "required": [
+        "name",
+        "description",
+        "authors",
+        "website",
+        "license",
+        "citation"
+    ],
+    "properties": {
+        "name": {
+            "$id": "#/properties/name",
+            "type": "string",
+            "title": "Name",
+            "description": "A name",
+            "default": "",
+            "examples": [
+                "New project"
+            ]
+        },
+        "description": {
+            "$id": "#/properties/description",
+            "type": "string",
+            "title": "Description",
+            "description": "A description",
+            "default": "",
+            "examples": [
+                "An JIPipe project"
+            ]
+        },
+        "authors": {
+            "$id": "#/properties/authors",
+            "type": "string",
+            "title": "Authors",
+            "description": "Comma-separated list of authors",
+            "default": "",
+            "examples": [
+                "Zoltán Cseresnyés, Ruman Gerst"
+            ]
+        },
+        "website": {
+            "$id": "#/properties/website",
+            "type": "string",
+            "title": "Website",
+            "description": "Website of the project",
+            "default": "",
+            "examples": [
+                "https://applied-systems-biology.github.io/jipipe/"
+            ]
+        },
+        "license": {
+            "$id": "#/properties/license",
+            "type": "string",
+            "title": "License",
+            "description": "Name of the license",
+            "default": "",
+            "examples": [
+                "BSD-2"
+            ]
+        },
+        "citation": {
+            "$id": "#/properties/citation",
+            "type": "string",
+            "title": "Citation",
+            "description": "Citation for the publication",
+            "default": ""
+        }
+    }
+}

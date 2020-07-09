@@ -1,0 +1,359 @@
+/*
+ * Copyright by Zoltán Cseresnyés, Ruman Gerst
+ *
+ * Research Group Applied Systems Biology - Head: Prof. Dr. Marc Thilo Figge
+ * https://www.leibniz-hki.de/en/applied-systems-biology.html
+ * HKI-Center for Systems Biology of Infection
+ * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)
+ * Adolf-Reichwein-Straße 23, 07745 Jena, Germany
+ *
+ * The project code is licensed under BSD 2-Clause.
+ * See the LICENSE file provided with the code for the full license.
+ */
+
+package org.hkijena.jipipe.ui.components;
+
+import com.google.common.eventbus.EventBus;
+import com.google.common.primitives.Ints;
+import org.hkijena.jipipe.api.data.JIPipeDataDeclaration;
+import org.hkijena.jipipe.ui.registries.JIPipeUIDatatypeRegistry;
+import org.hkijena.jipipe.utils.ResourceUtils;
+import org.hkijena.jipipe.utils.StringUtils;
+import org.hkijena.jipipe.utils.UIUtils;
+
+import javax.swing.*;
+import java.awt.*;
+import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
+
+/**
+ * Panel that allows to pick {@link org.hkijena.jipipe.api.data.JIPipeDataDeclaration}
+ */
+public class JIPipeDataTypePicker extends JPanel {
+
+    boolean reloading = false;
+    private Mode mode;
+    private EventBus eventBus = new EventBus();
+    private SearchTextField searchField;
+    private JList<JIPipeDataDeclaration> dataTypeList;
+    private Set<JIPipeDataDeclaration> hiddenDataTypes = new HashSet<>();
+    private List<JIPipeDataDeclaration> availableDataTypes;
+    private Set<JIPipeDataDeclaration> selectedDataTypes = new HashSet<>();
+
+    /**
+     * @param mode               the mode
+     * @param availableDataTypes list of available trait types
+     */
+    public JIPipeDataTypePicker(Mode mode, Set<JIPipeDataDeclaration> availableDataTypes) {
+        this.mode = mode;
+        this.availableDataTypes = new ArrayList<>();
+        this.availableDataTypes.addAll(availableDataTypes.stream().sorted(Comparator.comparing(JIPipeDataDeclaration::getName)).collect(Collectors.toList()));
+        initialize();
+        refreshTraitList();
+    }
+
+    private void initialize() {
+        setLayout(new BorderLayout());
+        JToolBar toolBar = new JToolBar();
+        toolBar.setFloatable(false);
+
+        searchField = new SearchTextField();
+        searchField.addActionListener(e -> refreshTraitList());
+        toolBar.add(searchField);
+
+        add(toolBar, BorderLayout.NORTH);
+
+        dataTypeList = new JList<>(new DefaultListModel<>());
+        dataTypeList.setCellRenderer(new Renderer());
+        if (mode == Mode.NonInteractive) {
+            dataTypeList.setEnabled(false);
+        } else if (mode == Mode.Single) {
+            dataTypeList.setSelectionModel(new SingleSelectionModel());
+            dataTypeList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        } else {
+            dataTypeList.setSelectionModel(new MultiSelectionModel());
+            dataTypeList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+        }
+        dataTypeList.addListSelectionListener(e -> updateSelection());
+        add(new JScrollPane(dataTypeList), BorderLayout.CENTER);
+    }
+
+    private void updateSelection() {
+        if (reloading)
+            return;
+        boolean changed = false;
+        for (JIPipeDataDeclaration trait : availableDataTypes) {
+            if (hiddenDataTypes.contains(trait))
+                continue;
+            boolean uiSelected = dataTypeList.getSelectedValuesList().contains(trait);
+            boolean modelSelected = selectedDataTypes.contains(trait);
+            if (uiSelected != modelSelected) {
+                if (modelSelected) {
+                    selectedDataTypes.remove(trait);
+                    eventBus.post(new DataTypeDeselectedEvent(this, trait));
+                    changed = true;
+                }
+                if (uiSelected) {
+                    selectedDataTypes.add(trait);
+                    eventBus.post(new DataTypeSelectedEvent(this, trait));
+                    changed = true;
+                }
+            }
+        }
+
+        if (changed) {
+            eventBus.post(new SelectedDataTypesChangedEvent(this));
+        }
+    }
+
+    /**
+     * Refreshes the list
+     */
+    public void refreshTraitList() {
+        if (reloading)
+            return;
+        reloading = true;
+        DefaultListModel<JIPipeDataDeclaration> model = (DefaultListModel<JIPipeDataDeclaration>) dataTypeList.getModel();
+        hiddenDataTypes.clear();
+        model.clear();
+        List<Integer> selectedIndices = new ArrayList<>();
+
+        for (JIPipeDataDeclaration trait : availableDataTypes) {
+            if (!searchField.test(trait.getName() + " " + trait.getDescription())) {
+                hiddenDataTypes.add(trait);
+                continue;
+            }
+
+            model.addElement(trait);
+            if (selectedDataTypes.contains(trait)) {
+                selectedIndices.add(model.size() - 1);
+            }
+        }
+        dataTypeList.setSelectedIndices(Ints.toArray(selectedIndices));
+        reloading = false;
+    }
+
+    public EventBus getEventBus() {
+        return eventBus;
+    }
+
+    public Mode getMode() {
+        return mode;
+    }
+
+    public void setMode(Mode mode) {
+        this.mode = mode;
+        refreshTraitList();
+    }
+
+    public Set<JIPipeDataDeclaration> getSelectedDataTypes() {
+        return Collections.unmodifiableSet(selectedDataTypes);
+    }
+
+    public void setSelectedDataTypes(Set<JIPipeDataDeclaration> traits) {
+        this.selectedDataTypes = new HashSet<>(traits);
+        eventBus.post(new SelectedDataTypesChangedEvent(this));
+        refreshTraitList();
+    }
+
+    /**
+     * Shows a dialog to pick traits
+     *
+     * @param parent          parent component
+     * @param mode            mode
+     * @param availableTraits list of available traits
+     * @return picked traits
+     */
+    public static Set<JIPipeDataDeclaration> showDialog(Component parent, Mode mode, Set<JIPipeDataDeclaration> availableTraits) {
+        JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(parent));
+        JIPipeDataTypePicker picker = new JIPipeDataTypePicker(mode, availableTraits);
+
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.add(picker, BorderLayout.CENTER);
+
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
+        buttonPanel.add(Box.createHorizontalGlue());
+
+        JButton cancelButton = new JButton("Cancel", UIUtils.getIconFromResources("remove.png"));
+        cancelButton.addActionListener(e -> {
+            picker.setSelectedDataTypes(Collections.emptySet());
+            dialog.setVisible(false);
+        });
+        buttonPanel.add(cancelButton);
+
+        JButton confirmButton = new JButton("Pick", UIUtils.getIconFromResources("checkmark.png"));
+        confirmButton.addActionListener(e -> dialog.setVisible(false));
+        buttonPanel.add(confirmButton);
+
+        panel.add(buttonPanel, BorderLayout.SOUTH);
+
+        dialog.setContentPane(panel);
+        dialog.setTitle("Pick annotation");
+        dialog.setModal(true);
+        dialog.pack();
+        dialog.setSize(new Dimension(500, 600));
+        dialog.setLocationRelativeTo(parent);
+        UIUtils.addEscapeListener(dialog);
+        dialog.setVisible(true);
+
+        return picker.getSelectedDataTypes();
+    }
+
+    /**
+     * The mode of the picker
+     */
+    public enum Mode {
+        NonInteractive,
+        Single,
+        Multiple
+    }
+
+    /**
+     * Generated when a trait is selected
+     */
+    public static class SelectedDataTypesChangedEvent {
+        private JIPipeDataTypePicker dataTypePicker;
+
+        /**
+         * @param dataTypePicker event source
+         */
+        public SelectedDataTypesChangedEvent(JIPipeDataTypePicker dataTypePicker) {
+            this.dataTypePicker = dataTypePicker;
+        }
+
+        public JIPipeDataTypePicker getDataTypePicker() {
+            return dataTypePicker;
+        }
+    }
+
+    /**
+     * Renders an item
+     */
+    public static class Renderer extends JCheckBox implements ListCellRenderer<JIPipeDataDeclaration> {
+
+        /**
+         * Creates a new renderer
+         */
+        public Renderer() {
+            setOpaque(true);
+            setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+        }
+
+        @Override
+        public Component getListCellRendererComponent(JList<? extends JIPipeDataDeclaration> list, JIPipeDataDeclaration value, int index, boolean isSelected, boolean cellHasFocus) {
+            if (value != null) {
+                setText(StringUtils.createIconTextHTMLTable(value.getName(), JIPipeUIDatatypeRegistry.getInstance().getIconURLFor(value)));
+            } else {
+                setText(StringUtils.createIconTextHTMLTable("Select none", ResourceUtils.getPluginResource("icons/remove.png")));
+            }
+            setSelected(isSelected);
+            if (isSelected) {
+                setBackground(new Color(184, 207, 229));
+            } else {
+                setBackground(new Color(255, 255, 255));
+            }
+            return this;
+        }
+    }
+
+    /**
+     * Generated when a trait is selected
+     */
+    public static class DataTypeSelectedEvent {
+        private JIPipeDataTypePicker dataTypePicker;
+        private JIPipeDataDeclaration dataDeclaration;
+
+        /**
+         * @param dataTypePicker  event source
+         * @param dataDeclaration picked trait
+         */
+        public DataTypeSelectedEvent(JIPipeDataTypePicker dataTypePicker, JIPipeDataDeclaration dataDeclaration) {
+            this.dataTypePicker = dataTypePicker;
+            this.dataDeclaration = dataDeclaration;
+        }
+
+        public JIPipeDataTypePicker getDataTypePicker() {
+            return dataTypePicker;
+        }
+
+        public JIPipeDataDeclaration getDataDeclaration() {
+            return dataDeclaration;
+        }
+    }
+
+    /**
+     * Generated when a trait is deselected
+     */
+    public static class DataTypeDeselectedEvent {
+        private JIPipeDataTypePicker dataTypePicker;
+        private JIPipeDataDeclaration dataDeclaration;
+
+        /**
+         * @param dataTypePicker  event source
+         * @param dataDeclaration deselected trait
+         */
+        public DataTypeDeselectedEvent(JIPipeDataTypePicker dataTypePicker, JIPipeDataDeclaration dataDeclaration) {
+            this.dataTypePicker = dataTypePicker;
+            this.dataDeclaration = dataDeclaration;
+        }
+
+        public JIPipeDataTypePicker getDataTypePicker() {
+            return dataTypePicker;
+        }
+
+        public JIPipeDataDeclaration getDataDeclaration() {
+            return dataDeclaration;
+        }
+    }
+
+    /**
+     * Describes how data is selected
+     */
+    public static class SingleSelectionModel extends DefaultListSelectionModel {
+        @Override
+        public void setSelectionInterval(int startIndex, int endIndex) {
+            if (startIndex == endIndex) {
+                if (multipleItemsAreCurrentlySelected()) {
+                    clearSelection();
+                }
+                if (isSelectedIndex(startIndex)) {
+                    clearSelection();
+                } else {
+                    super.setSelectionInterval(startIndex, endIndex);
+                }
+            }
+            // User selected multiple items
+            else {
+                super.setSelectionInterval(startIndex, endIndex);
+            }
+        }
+
+        private boolean multipleItemsAreCurrentlySelected() {
+            return getMinSelectionIndex() != getMaxSelectionIndex();
+        }
+    }
+
+    /**
+     * Describes how data is selected
+     */
+    public static class MultiSelectionModel extends DefaultListSelectionModel {
+        @Override
+        public void setSelectionInterval(int startIndex, int endIndex) {
+            if (startIndex == endIndex) {
+                if (isSelectedIndex(startIndex)) {
+                    removeSelectionInterval(startIndex, endIndex);
+                } else {
+                    super.addSelectionInterval(startIndex, endIndex);
+                }
+            } else {
+                super.addSelectionInterval(startIndex, endIndex);
+            }
+        }
+
+        private boolean multipleItemsAreCurrentlySelected() {
+            return getMinSelectionIndex() != getMaxSelectionIndex();
+        }
+    }
+}

@@ -1,0 +1,305 @@
+/*
+ * Copyright by Zoltán Cseresnyés, Ruman Gerst
+ *
+ * Research Group Applied Systems Biology - Head: Prof. Dr. Marc Thilo Figge
+ * https://www.leibniz-hki.de/en/applied-systems-biology.html
+ * HKI-Center for Systems Biology of Infection
+ * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)
+ * Adolf-Reichwein-Straße 23, 07745 Jena, Germany
+ *
+ * The project code is licensed under BSD 2-Clause.
+ * See the LICENSE file provided with the code for the full license.
+ */
+
+package org.hkijena.jipipe.api.parameters;
+
+import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
+import org.hkijena.jipipe.utils.StringUtils;
+
+import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.function.Supplier;
+
+/**
+ * A custom parameter access
+ */
+public class JIPipeManualParameterAccess implements JIPipeParameterAccess {
+
+    private String key;
+    private String name;
+    private String description;
+    private JIPipeParameterVisibility visibility = JIPipeParameterVisibility.TransitiveVisible;
+    private Map<Class<? extends Annotation>, Annotation> annotations = new HashMap<>();
+    private Class<?> fieldClass;
+    private Supplier<Object> getter;
+    private Function<Object, Boolean> setter;
+    private JIPipeParameterCollection source;
+    private double priority;
+    private String shortKey;
+    private int uiOrder;
+
+    private JIPipeManualParameterAccess() {
+
+    }
+
+    @Override
+    public String getKey() {
+        return key;
+    }
+
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public String getDescription() {
+        return description;
+    }
+
+    @Override
+    public JIPipeParameterVisibility getVisibility() {
+        return visibility;
+    }
+
+    @Override
+    public <T extends Annotation> T getAnnotationOfType(Class<T> klass) {
+        return (T) annotations.getOrDefault(klass, null);
+    }
+
+    @Override
+    public Class<?> getFieldClass() {
+        return fieldClass;
+    }
+
+    @Override
+    public <T> T get(Class<T> klass) {
+        return (T) getter.get();
+    }
+
+    @Override
+    public <T> boolean set(T value) {
+        return setter.apply(value);
+    }
+
+    @Override
+    public JIPipeParameterCollection getSource() {
+        return source;
+    }
+
+    @Override
+    public double getPriority() {
+        return priority;
+    }
+
+    @Override
+    public String getShortKey() {
+        return !StringUtils.isNullOrEmpty(shortKey) ? shortKey : getKey();
+    }
+
+    @Override
+    public int getUIOrder() {
+        return uiOrder;
+    }
+
+    /**
+     * Creates a new builder
+     *
+     * @return the builder
+     */
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    /**
+     * A builder for {@link JIPipeManualParameterAccess}
+     */
+    public static class Builder {
+        private final JIPipeManualParameterAccess access = new JIPipeManualParameterAccess();
+
+        /**
+         * Sets the parameter source
+         *
+         * @param source the source
+         * @return this
+         */
+        public Builder setSource(JIPipeParameterCollection source) {
+            access.source = source;
+            return this;
+        }
+
+        /**
+         * Sets the priority
+         *
+         * @param priority
+         * @return this
+         */
+        public Builder setPriority(double priority) {
+            access.priority = priority;
+            return this;
+        }
+
+        /**
+         * Sets the UI order
+         *
+         * @param uiOrder the ui order
+         * @return this
+         */
+        public Builder setUIOrder(int uiOrder) {
+            access.uiOrder = uiOrder;
+            return this;
+        }
+
+        /**
+         * Sets the field class
+         *
+         * @param fieldClass the field class
+         * @return this
+         */
+        public Builder setFieldClass(Class<?> fieldClass) {
+            access.fieldClass = fieldClass;
+            return this;
+        }
+
+        /**
+         * Sets the name
+         *
+         * @param name the name
+         * @return this
+         */
+        public Builder setName(String name) {
+            access.name = name;
+            return this;
+        }
+
+        /**
+         * Sets the description
+         *
+         * @param description the description
+         * @return this
+         */
+        public Builder setDescription(String description) {
+            access.description = description;
+            return this;
+        }
+
+        /**
+         * Sets the short key
+         *
+         * @param shortKey the sort key
+         * @return this
+         */
+        public Builder setShortKey(String shortKey) {
+            access.shortKey = shortKey;
+            return this;
+        }
+
+        /**
+         * Sets the visibility
+         *
+         * @param visibility the visibility
+         * @return this
+         */
+        public Builder setVisibility(JIPipeParameterVisibility visibility) {
+            access.visibility = visibility;
+            return this;
+        }
+
+        /**
+         * Sets the getter
+         *
+         * @param getter the getter
+         * @return this
+         */
+        public Builder setGetter(Supplier<Object> getter) {
+            access.getter = getter;
+            return this;
+        }
+
+        /**
+         * Sets the setter
+         *
+         * @param setter the setter
+         * @return this
+         */
+        public Builder setSetter(Function<Object, Boolean> setter) {
+            access.setter = setter;
+            return this;
+        }
+
+        /**
+         * Sets up access via reflection
+         * The field class is extracted from the getter return type
+         *
+         * @param source the source object
+         * @param getter the getter method
+         * @param setter the setter method
+         * @return this
+         */
+        public Builder reflectionAccess(JIPipeParameterCollection source, Method getter, Method setter) {
+            Supplier<Object> getterSupplier = () -> {
+                try {
+                    return getter.invoke(source);
+                } catch (IllegalAccessException | InvocationTargetException e) {
+                    throw new UserFriendlyRuntimeException(e, "Unable to get parameter data!",
+                            "Parameter " + access.getName(), "There is an error in the algorithm's code.",
+                            "Please contact the authors of the algorithm.");
+                }
+            };
+            Function<Object, Boolean> setterConsumer = (value) -> {
+                try {
+                    Object result = setter.invoke(source, value);
+                    if (result instanceof Boolean) {
+                        return (boolean) result;
+                    } else {
+                        return true;
+                    }
+                } catch (IllegalAccessException | InvocationTargetException e) {
+                    throw new UserFriendlyRuntimeException(e, "Unable to set parameter data!",
+                            "Parameter " + access.getName(), "There is an error in the algorithm's code.",
+                            "Please contact the authors of the algorithm.");
+                }
+            };
+            return setFieldClass(getter.getReturnType()).setGetter(getterSupplier).setSetter(setterConsumer);
+        }
+
+        /**
+         * Sets up a dummy access.
+         * The source is set to an {@link JIPipeDummyParameterCollection} instance.
+         *
+         * @param fieldClass the field class to store
+         * @return this
+         */
+        public Builder dummyAccess(Class<?> fieldClass) {
+            try {
+                JIPipeDummyParameterCollection collection = new JIPipeDummyParameterCollection();
+                Method getter = JIPipeDummyParameterCollection.class.getDeclaredMethod("get");
+                Method setter = JIPipeDummyParameterCollection.class.getDeclaredMethod("accept", Object.class);
+                return setFieldClass(fieldClass).reflectionAccess(collection, getter, setter);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        /**
+         * Returns the finished object
+         *
+         * @return the finished object
+         */
+        public JIPipeManualParameterAccess build() {
+            if (access.source == null)
+                throw new IllegalArgumentException("The source is null!");
+            if (access.fieldClass == null)
+                throw new IllegalArgumentException("The field class is null!");
+            if (access.getter == null)
+                throw new IllegalArgumentException("The getter is null!");
+            if (access.setter == null)
+                throw new IllegalArgumentException("The setter is null!");
+            return access;
+        }
+    }
+}

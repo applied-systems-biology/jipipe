@@ -1,0 +1,78 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$id": "https://applied-systems-biology.github.io/jipipe/schemas/project.schema.json",
+    "type": "object",
+    "title": "Project",
+    "description": "An analysis project",
+    "required": [
+        "jipipe:project-type",
+        "metadata",
+        "dependencies",
+        "algorithm-graph",
+        "compartments"
+    ],
+    "properties": {
+        "jipipe:project-type": {
+            "$id": "#/properties/jipipe:project-type",
+            "type": "string",
+            "title": "Project type",
+            "description": "Used to identify this JSON as JIPipe project",
+            "default": "project",
+            "enum": [
+                "project"
+            ]
+        },
+        "metadata": {
+            "$id": "#/properties/metadata",
+            "type": "object",
+            "title": "Metadata",
+            "description": "General information about the project",
+            "default": {},
+            "$ref": "https://applied-systems-biology.github.io/jipipe/schemas/metadata.schema.json"
+        },
+        "dependencies": {
+            "$id": "#/properties/dependencies",
+            "type": "array",
+            "title": "Dependencies",
+            "description": "Dependencies of this project",
+            "default": [],
+            "items": {
+              "$ref": "https://applied-systems-biology.github.io/jipipe/schemas/dependency.schema.json"
+            }
+        },
+        "algorithm-graph": {
+            "$id": "#/properties/algorithm-graph",
+            "type": "object",
+            "title": "Algorithm graph",
+            "description": "Contains the algorithms",
+            "default": {
+              "nodes": {},
+              "edges": []
+            },
+            "$ref": "https://applied-systems-biology.github.io/jipipe/schemas/graph.schema.json"
+        },
+        "compartments": {
+            "$id": "#/properties/compartments",
+            "type": "object",
+            "title": "Project compartments",
+            "description": "For organization of compartments",
+            "default": {},
+            "required": [
+                "compartment-graph"
+            ],
+            "properties": {
+                "compartment-graph": {
+                    "$id": "#/properties/compartments/properties/compartment-graph",
+                    "$ref": "https://applied-systems-biology.github.io/jipipe/schemas/graph.schema.json",
+                    "type": "object",
+                    "title": "Compartment graph",
+                    "description": "Structural graph of compartments",
+                    "default": {},
+                    "examples": [
+                        {}
+                    ]
+                }
+            }
+        }
+    }
+}

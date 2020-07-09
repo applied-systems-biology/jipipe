@@ -1,0 +1,87 @@
+/*
+ * Copyright by Zoltán Cseresnyés, Ruman Gerst
+ *
+ * Research Group Applied Systems Biology - Head: Prof. Dr. Marc Thilo Figge
+ * https://www.leibniz-hki.de/en/applied-systems-biology.html
+ * HKI-Center for Systems Biology of Infection
+ * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)
+ * Adolf-Reichwein-Straße 23, 07745 Jena, Germany
+ *
+ * The project code is licensed under BSD 2-Clause.
+ * See the LICENSE file provided with the code for the full license.
+ */
+
+package org.hkijena.jipipe.extensions.multiparameters.datasources;
+
+import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.JIPipeOrganization;
+import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
+import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithm;
+import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmCategory;
+import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmDeclaration;
+import org.hkijena.jipipe.api.algorithm.AlgorithmOutputSlot;
+import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterVisibility;
+import org.hkijena.jipipe.extensions.multiparameters.datatypes.ParametersData;
+
+import java.util.Map;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+
+/**
+ * Generates {@link org.hkijena.jipipe.extensions.multiparameters.datatypes.ParametersData} objects
+ */
+@JIPipeDocumentation(name = "Define parameter", description = "Defines an algorithm parameter that can be consumed by a multi-parameter algorithm")
+@AlgorithmOutputSlot(value = ParametersData.class, slotName = "Parameters", autoCreate = true)
+@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.DataSource)
+public class ParametersDataDefinition extends JIPipeAlgorithm {
+
+    private GeneratedParameters parameters;
+
+    /**
+     * Creates a new instance
+     *
+     * @param declaration the algorithm declaration
+     */
+    public ParametersDataDefinition(JIPipeAlgorithmDeclaration declaration) {
+        super(declaration);
+        this.parameters = new GeneratedParameters(this);
+        registerSubParameter(parameters);
+    }
+
+    /**
+     * Copies the algorithm
+     *
+     * @param other the original
+     */
+    public ParametersDataDefinition(ParametersDataDefinition other) {
+        super(other);
+        this.parameters = new GeneratedParameters(other.parameters);
+        this.parameters.setParent(this);
+        registerSubParameter(parameters);
+    }
+
+    @Override
+    public void run(JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+        ParametersData result = new ParametersData();
+        for (Map.Entry<String, JIPipeParameterAccess> entry : parameters.getParameters().entrySet()) {
+            if (entry.getValue().getVisibility().isVisibleIn(JIPipeParameterVisibility.TransitiveVisible)) {
+                result.getParameterData().put(entry.getKey(), entry.getValue().get(Object.class));
+            }
+        }
+        getFirstOutputSlot().addData(result);
+    }
+
+    @Override
+    public void reportValidity(JIPipeValidityReport report) {
+        report.forCategory("Parameters").report(parameters);
+    }
+
+    @JIPipeDocumentation(name = "Parameters", description = "Following parameters are generated:")
+    @JIPipeParameter("parameters")
+    public GeneratedParameters getParameters() {
+        return parameters;
+    }
+}
