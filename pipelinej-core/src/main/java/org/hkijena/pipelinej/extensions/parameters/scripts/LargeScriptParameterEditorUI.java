@@ -1,0 +1,102 @@
+/*
+ * Copyright by Zoltán Cseresnyés, Ruman Gerst
+ *
+ * Research Group Applied Systems Biology - Head: Prof. Dr. Marc Thilo Figge
+ * https://www.leibniz-hki.de/en/applied-systems-biology.html
+ * HKI-Center for Systems Biology of Infection
+ * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)
+ * Adolf-Reichwein-Straße 23, 07745 Jena, Germany
+ *
+ * The project code is licensed under BSD 2-Clause.
+ * See the LICENSE file provided with the code for the full license.
+ */
+
+package org.hkijena.pipelinej.extensions.parameters.scripts;
+
+import org.fife.ui.rtextarea.RTextScrollPane;
+import org.hkijena.pipelinej.api.parameters.ACAQParameterAccess;
+import org.hkijena.pipelinej.ui.ACAQWorkbench;
+import org.hkijena.pipelinej.ui.components.DocumentChangeListener;
+import org.hkijena.pipelinej.ui.parameters.ACAQParameterEditorUI;
+import org.hkijena.pipelinej.utils.ReflectionUtils;
+import org.hkijena.pipelinej.utils.UIUtils;
+import org.scijava.ui.swing.script.EditorPane;
+
+import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import java.awt.*;
+import java.util.Objects;
+
+/**
+ * An editor for {@link ScriptParameter}
+ */
+public class LargeScriptParameterEditorUI extends ACAQParameterEditorUI {
+
+    private EditorPane textArea;
+
+    /**
+     * Creates new instance
+     *
+     * @param workbench       the workbech
+     * @param parameterAccess Parameter
+     */
+    public LargeScriptParameterEditorUI(ACAQWorkbench workbench, ACAQParameterAccess parameterAccess) {
+        super(workbench, parameterAccess);
+        initialize();
+    }
+
+    private void initialize() {
+        setLayout(new BorderLayout());
+        ScriptParameter code = getParameter(ScriptParameter.class);
+        textArea = new EditorPane();
+        textArea.setCodeFoldingEnabled(true);
+        if (code.getLanguage() != null) {
+            ReflectionUtils.invokeMethod(textArea, "setLanguage", code.getLanguage());
+            textArea.setAutoCompletionEnabled(true);
+        }
+        textArea.setTabSize(4);
+        getContext().inject(textArea);
+        textArea.setText(code.getCode());
+        textArea.setSyntaxEditingStyle(code.getMimeType());
+        textArea.getDocument().addDocumentListener(new DocumentChangeListener() {
+            @Override
+            public void changed(DocumentEvent documentEvent) {
+                code.setCode(textArea.getText());
+                setParameter(code, false);
+            }
+        });
+
+
+        RTextScrollPane scrollPane = new RTextScrollPane(textArea, true);
+        scrollPane.setFoldIndicatorEnabled(true);
+        add(scrollPane, BorderLayout.CENTER);
+
+        JToolBar toolBar = new JToolBar();
+        toolBar.setFloatable(false);
+        toolBar.add(new JLabel(code.getLanguageName()));
+
+        toolBar.add(Box.createHorizontalGlue());
+
+        JButton undoButton = new JButton("Undo", UIUtils.getIconFromResources("undo.png"));
+        undoButton.addActionListener(e -> textArea.undoLastAction());
+        toolBar.add(undoButton);
+
+        JButton redoButton = new JButton("Redo", UIUtils.getIconFromResources("redo.png"));
+        redoButton.addActionListener(e -> textArea.redoLastAction());
+        toolBar.add(redoButton);
+
+        add(toolBar, BorderLayout.NORTH);
+    }
+
+    @Override
+    public boolean isUILabelEnabled() {
+        return false;
+    }
+
+    @Override
+    public void reload() {
+        ScriptParameter code = getParameter(ScriptParameter.class);
+        if (!Objects.equals(textArea.getText(), code.getCode()))
+            textArea.setText(code.getCode());
+    }
+}

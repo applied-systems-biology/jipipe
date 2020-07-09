@@ -1,0 +1,126 @@
+/*
+ * Copyright by Zoltán Cseresnyés, Ruman Gerst
+ *
+ * Research Group Applied Systems Biology - Head: Prof. Dr. Marc Thilo Figge
+ * https://www.leibniz-hki.de/en/applied-systems-biology.html
+ * HKI-Center for Systems Biology of Infection
+ * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)
+ * Adolf-Reichwein-Straße 23, 07745 Jena, Germany
+ *
+ * The project code is licensed under BSD 2-Clause.
+ * See the LICENSE file provided with the code for the full license.
+ */
+
+package org.hkijena.pipelinej.ui.grapheditor;
+
+import org.hkijena.pipelinej.api.algorithm.ACAQGraph;
+import org.hkijena.pipelinej.api.algorithm.ACAQGraphNode;
+import org.hkijena.pipelinej.extensions.filesystem.datasources.FileDataSource;
+import org.hkijena.pipelinej.extensions.filesystem.datasources.FileListDataSource;
+import org.hkijena.pipelinej.extensions.filesystem.datasources.FolderDataSource;
+import org.hkijena.pipelinej.extensions.filesystem.datasources.FolderListDataSource;
+
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.dnd.DropTargetDragEvent;
+import java.awt.dnd.DropTargetDropEvent;
+import java.awt.dnd.DropTargetEvent;
+import java.io.File;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+/**
+ * Installs Drag&Drop features that create filesystem nodes
+ */
+public class ACAQStandardDragAndDropBehavior implements ACAQGraphDragAndDropBehavior {
+
+    private ACAQGraphCanvasUI canvas;
+
+    @Override
+    public void dragEnter(DropTargetDragEvent dtde) {
+
+    }
+
+    @Override
+    public void dragOver(DropTargetDragEvent dtde) {
+
+    }
+
+    @Override
+    public void dropActionChanged(DropTargetDragEvent dtde) {
+
+    }
+
+    @Override
+    public void dragExit(DropTargetEvent dte) {
+
+    }
+
+    @Override
+    public synchronized void drop(DropTargetDropEvent dtde) {
+        try {
+            Transferable tr = dtde.getTransferable();
+            DataFlavor[] flavors = tr.getTransferDataFlavors();
+            for (int i = 0; i < flavors.length; i++) {
+                if (flavors[i].isFlavorJavaFileListType()) {
+                    dtde.acceptDrop(dtde.getDropAction());
+                    @SuppressWarnings("unchecked")
+                    List<File> files = (List<File>) tr.getTransferData(flavors[i]);
+                    processDrop(files);
+
+                    dtde.dropComplete(true);
+                }
+            }
+            return;
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
+        dtde.rejectDrop();
+    }
+
+    private void processDrop(List<File> files) {
+        String compartment = canvas.getCompartment();
+        ACAQGraph graph = canvas.getGraph();
+        if (files.size() == 1) {
+            File selected = files.get(0);
+            if (selected.isDirectory()) {
+                FolderDataSource dataSource = ACAQGraphNode.newInstance("import-folder");
+                dataSource.setFolderPath(selected.toPath());
+                graph.insertNode(dataSource, compartment);
+            } else {
+                FileDataSource dataSource = ACAQGraphNode.newInstance("import-file");
+                dataSource.setFileName(selected.toPath());
+                graph.insertNode(dataSource, compartment);
+            }
+        } else {
+            Map<Boolean, List<File>> groupedByType = files.stream().collect(Collectors.groupingBy(File::isDirectory));
+            for (Map.Entry<Boolean, List<File>> entry : groupedByType.entrySet()) {
+                if (entry.getKey()) {
+                    FolderListDataSource dataSource = ACAQGraphNode.newInstance("import-folder-list");
+                    for (File file : entry.getValue()) {
+                        dataSource.getFolderPaths().add(file.toPath());
+                    }
+                    graph.insertNode(dataSource, compartment);
+                } else {
+                    FileListDataSource dataSource = ACAQGraphNode.newInstance("import-file-list");
+                    for (File file : entry.getValue()) {
+                        dataSource.getFileNames().add(file.toPath());
+                    }
+                    graph.insertNode(dataSource, compartment);
+                }
+            }
+
+        }
+    }
+
+    @Override
+    public ACAQGraphCanvasUI getCanvas() {
+        return canvas;
+    }
+
+    @Override
+    public void setCanvas(ACAQGraphCanvasUI canvas) {
+        this.canvas = canvas;
+    }
+}
