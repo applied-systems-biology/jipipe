@@ -3,6 +3,10 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/acaq5.iml" filepath="$PROJECT_DIR$/acaq5.iml" />
+      <module fileurl="file://$PROJECT_DIR$/pipelinej.iml" filepath="$PROJECT_DIR$/pipelinej.iml" />
+      <module fileurl="file://$PROJECT_DIR$/pipelinej-algorithms/pipelinej-algorithms.iml" filepath="$PROJECT_DIR$/pipelinej-algorithms/pipelinej-algorithms.iml" />
+      <module fileurl="file://$PROJECT_DIR$/pipelinej-core/pipelinej-core.iml" filepath="$PROJECT_DIR$/pipelinej-core/pipelinej-core.iml" />
+      <module fileurl="file://$PROJECT_DIR$/pipelinej-ij/pipelinej-ij.iml" filepath="$PROJECT_DIR$/pipelinej-ij/pipelinej-ij.iml" />
     </modules>
   </component>
 </project>

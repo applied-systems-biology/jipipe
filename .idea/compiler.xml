@@ -6,11 +6,18 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="pipelinej-ij" />
         <module name="acaq5" />
+        <module name="pipelinej-core" />
+        <module name="pipelinej-algorithms" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="acaq5" target="1.8" />
+      <module name="pipelinej" target="1.8" />
+      <module name="pipelinej-algorithms" target="1.8" />
+      <module name="pipelinej-core" target="1.8" />
+      <module name="pipelinej-ij" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>

@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <artifactId>pipelinej</artifactId>
+    <groupId>org.hkijena</groupId>
+    <version>1.0.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>pipelinej-ij</artifactId>
+  <version>1.0-SNAPSHOT</version>
+
+  <name>pipelinej-ij</name>
+  <description>PipelineJ ImageJ Algorithms</description>
+  <inceptionYear>2020</inceptionYear>
+  <url>https://applied-systems-biology.github.io/acaq5/</url>
+
+  <organization>
+    <name>Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)</name>
+    <url>https://www.leibniz-hki.de/</url>
+  </organization>
+  <licenses>
+    <license>
+      <name>BSD-2-Clause</name>
+      <url>https://opensource.org/licenses/BSD-2-Clause</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+  <developers>
+    <developer>
+      <id>RGerst</id>
+      <name>Ruman Gerst</name>
+      <url>https://www.leibniz-hki.de/en/asb-staff-details.html?member=1027</url>
+    </developer>
+    <developer>
+      <id>Zseresnyes</id>
+      <name>Zoltán Cseresnyés</name>
+      <url>https://www.leibniz-hki.de/en/asb-staff-details.html?member=144</url>
+    </developer>
+  </developers>
+  <contributors>
+    <contributor>
+      <name>None</name>
+    </contributor>
+  </contributors>
+  <mailingLists>
+    <mailingList>
+      <name>HKI Jena</name>
+      <archive>https://www.leibniz-hki.de/de/angewandte-systembiologie.html</archive>
+    </mailingList>
+  </mailingLists>
+  <scm>
+    <connection>scm:git:https://github.com/applied-systems-biology/acaq5.git</connection>
+    <developerConnection>scm:git:https://github.com/applied-systems-biology/acaq5.git</developerConnection>
+    <tag>HEAD</tag>
+    <url>https://github.com/applied-systems-biology/acaq5</url>
+  </scm>
+  <issueManagement>
+    <system>GitHub Issues</system>
+    <url>https://github.com/applied-systems-biology/acaq5/issues</url>
+  </issueManagement>
+  <ciManagement>
+    <system>GitHub CI</system>
+    <url>https://github.com/applied-systems-biology/acaq5</url>
+  </ciManagement>
+
+  <properties>
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
+    <license.licenseName>BSD-2-Clause</license.licenseName>
+    <license.copyrightOwners>N/A</license.copyrightOwners>
+    <license.projectName>PipelineJ-IJ</license.projectName>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.11</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.hkijena</groupId>
+      <artifactId>pipelinej-core</artifactId>
+      <version>1.0-SNAPSHOT</version>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <pluginManagement><!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
+      <plugins>
+        <!-- clean lifecycle, see https://maven.apache.org/ref/current/maven-core/lifecycles.html#clean_Lifecycle -->
+        <plugin>
+          <artifactId>maven-clean-plugin</artifactId>
+          <version>3.1.0</version>
+        </plugin>
+        <!-- default lifecycle, jar packaging: see https://maven.apache.org/ref/current/maven-core/default-bindings.html#Plugin_bindings_for_jar_packaging -->
+        <plugin>
+          <artifactId>maven-resources-plugin</artifactId>
+          <version>3.0.2</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <version>3.8.0</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <version>2.22.1</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-jar-plugin</artifactId>
+          <version>3.0.2</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-install-plugin</artifactId>
+          <version>2.5.2</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-deploy-plugin</artifactId>
+          <version>2.8.2</version>
+        </plugin>
+        <!-- site lifecycle, see https://maven.apache.org/ref/current/maven-core/lifecycles.html#site_Lifecycle -->
+        <plugin>
+          <artifactId>maven-site-plugin</artifactId>
+          <version>3.7.1</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-project-info-reports-plugin</artifactId>
+          <version>3.0.0</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
+</project>
