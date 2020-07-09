@@ -24,6 +24,7 @@ import com.vladsch.flexmark.parser.Parser;
 import com.vladsch.flexmark.util.options.MutableDataHolder;
 import com.vladsch.flexmark.util.options.MutableDataSet;
 import org.hkijena.jipipe.utils.ResourceUtils;
+import org.hkijena.jipipe.utils.StringUtils;
 
 import java.io.IOException;
 import java.net.URL;
@@ -31,7 +32,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Contains Markdown data
@@ -108,7 +111,37 @@ public class MarkdownDocument {
             if (existing != null)
                 return existing;
             String md = Resources.toString(resourcePath, Charsets.UTF_8);
-            md = md.replace("image://", ResourceUtils.getPluginResource("").toString());
+//            md = md.replace("image://", ResourceUtils.getPluginResource("").toString());
+            Set<String> imageURLs = new HashSet<>();
+            int index = md.indexOf("image://");
+            while(index >= 0) {
+                if(index > 0) {
+                    char lbracket = md.charAt(index - 1);
+                    char rbracket;
+
+                    index += "image://".length();
+
+                    if(lbracket == '(')
+                        rbracket = ')';
+                    else if(lbracket == '"')
+                        rbracket = '"';
+                    else {
+                        continue;
+                    }
+                    StringBuilder pathString = new StringBuilder();
+                    while(md.charAt(index) != rbracket) {
+                        pathString.append(md.charAt(index));
+                        ++index;
+                    }
+                    imageURLs.add(pathString.toString());
+                }
+                index = md.indexOf("image://", index);
+            }
+            for (String imageURL : imageURLs) {
+                URL url = ResourceUtils.getPluginResource(imageURL);
+                md = md.replace("image://" + imageURL, "" + url);
+            }
+
             MarkdownDocument markdownDocument = new MarkdownDocument(md);
             fromResourcesCache.put(resourcePath, markdownDocument);
             return markdownDocument;
