@@ -15,11 +15,11 @@
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="acaq5" target="1.8" />
+      <module name="jipipe" target="1.8" />
       <module name="jipipe-algorithms" target="1.8" />
       <module name="jipipe-core" target="1.8" />
       <module name="jipipe-debug" target="1.8" />
       <module name="jipipe-ij" target="1.8" />
-      <module name="pipelinej" target="1.8" />
       <module name="pipelinej-algorithms" target="1.8" />
       <module name="pipelinej-core" target="1.8" />
       <module name="pipelinej-ij" target="1.8" />

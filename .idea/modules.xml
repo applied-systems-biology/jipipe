@@ -3,11 +3,11 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/acaq5.iml" filepath="$PROJECT_DIR$/acaq5.iml" />
+      <module fileurl="file://$PROJECT_DIR$/jipipe.iml" filepath="$PROJECT_DIR$/jipipe.iml" />
       <module fileurl="file://$PROJECT_DIR$/jipipe-algorithms/jipipe-algorithms.iml" filepath="$PROJECT_DIR$/jipipe-algorithms/jipipe-algorithms.iml" />
       <module fileurl="file://$PROJECT_DIR$/jipipe-core/jipipe-core.iml" filepath="$PROJECT_DIR$/jipipe-core/jipipe-core.iml" />
       <module fileurl="file://$PROJECT_DIR$/jipipe-debug/jipipe-debug.iml" filepath="$PROJECT_DIR$/jipipe-debug/jipipe-debug.iml" />
       <module fileurl="file://$PROJECT_DIR$/jipipe-ij/jipipe-ij.iml" filepath="$PROJECT_DIR$/jipipe-ij/jipipe-ij.iml" />
-      <module fileurl="file://$PROJECT_DIR$/pipelinej.iml" filepath="$PROJECT_DIR$/pipelinej.iml" />
     </modules>
   </component>
 </project>
