@@ -30,6 +30,7 @@ import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
 import org.hkijena.jipipe.api.registries.JIPipeImageJAdapterRegistry;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.PathData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
@@ -335,12 +336,16 @@ public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm {
         this.strictMode = strictMode;
     }
 
-    @JIPipeParameter("macro-parameters")
+    @JIPipeParameter(value = "macro-parameters", persistence = JIPipeParameterPersistence.Object)
     @JIPipeDocumentation(name = "Macro parameters", description = "The parameter are passed as variables to the macro.")
     public JIPipeDynamicParameterCollection getMacroParameters() {
         return macroParameters;
     }
 
+    /**
+     * Returns all types compatible with the {@link MacroWrapperAlgorithm}
+     * @return compatible data types
+     */
     public static Class[] getCompatibleTypes() {
         return JIPipeImageJAdapterRegistry.getInstance().getSupportedJIPipeDataTypes().toArray(new Class[0]);
     }

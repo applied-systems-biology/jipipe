@@ -28,6 +28,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeMutableParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
 import org.hkijena.jipipe.extensions.tables.ResultsTableData;
 import org.hkijena.jipipe.extensions.parameters.editors.JIPipeDataParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.predicates.StringPredicate;
@@ -260,7 +261,7 @@ public class PlotGeneratorAlgorithm extends JIPipeAlgorithm {
 
     @JIPipeDocumentation(name = "Input columns", description = "Please define which input table columns are copied into the plot. " +
             "To find out which columns are available, run the quick run on input data. You can also generate missing columns.")
-    @JIPipeParameter("column-assignments")
+    @JIPipeParameter(value = "column-assignments", persistence = JIPipeParameterPersistence.Object)
     public JIPipeDynamicParameterCollection getColumnAssignments() {
         return columnAssignments;
     }

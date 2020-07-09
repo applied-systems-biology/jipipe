@@ -51,6 +51,7 @@ public class JIPipeMutableParameterAccess implements JIPipeParameterAccess {
     private Map<Class<? extends Annotation>, Annotation> annotationMap = new HashMap<>();
     private String shortKey;
     private int uiOrder;
+    private JIPipeParameterPersistence persistence = JIPipeParameterPersistence.Collection;
 
     /**
      * Creates a new instance
@@ -70,6 +71,7 @@ public class JIPipeMutableParameterAccess implements JIPipeParameterAccess {
         this.description = other.getDescription();
         this.visibility = other.getVisibility();
         this.fieldClass = other.getFieldClass();
+        this.persistence = other.getPersistence();
         JIPipeParameterTypeDeclaration declaration = JIPipeParameterTypeRegistry.getInstance().getDeclarationByFieldClass(fieldClass);
         this.value = declaration.duplicate(other.get(fieldClass)); // Deep copy
     }
@@ -103,6 +105,7 @@ public class JIPipeMutableParameterAccess implements JIPipeParameterAccess {
         this.fieldClass = other.fieldClass;
         this.value = other.value;
         this.priority = other.priority;
+        this.persistence = other.persistence;
     }
 
     @Override
@@ -283,6 +286,15 @@ public class JIPipeMutableParameterAccess implements JIPipeParameterAccess {
     @JsonSetter("ui-order")
     public void setUIOrder(int uiOrder) {
         this.uiOrder = uiOrder;
+    }
+
+    @Override
+    public JIPipeParameterPersistence getPersistence() {
+        return persistence;
+    }
+
+    public void setPersistence(JIPipeParameterPersistence persistence) {
+        this.persistence = persistence;
     }
 
     /**

@@ -15,6 +15,7 @@ package org.hkijena.jipipe.api.grouping.parameters;
 
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterVisibility;
 
@@ -22,7 +23,6 @@ import java.lang.annotation.Annotation;
 
 /**
  * A parameter access that references to another one, but hides the source
- * Note: This is marked as non-persistent!
  */
 public class GraphNodeParameterReferenceAccess implements JIPipeParameterAccess {
 
@@ -30,7 +30,7 @@ public class GraphNodeParameterReferenceAccess implements JIPipeParameterAccess 
     private final JIPipeParameterTree tree;
     private final JIPipeParameterCollection alternativeSource;
     private final JIPipeParameterAccess target;
-    private final boolean persistent;
+    private final JIPipeParameterPersistence persistence;
 
 
     /**
@@ -44,7 +44,7 @@ public class GraphNodeParameterReferenceAccess implements JIPipeParameterAccess 
     public GraphNodeParameterReferenceAccess(GraphNodeParameterReference reference, JIPipeParameterTree tree, JIPipeParameterCollection alternativeSource, boolean persistent) {
         this.reference = reference;
         this.tree = tree;
-        this.persistent = persistent;
+        this.persistence = persistent ? JIPipeParameterPersistence.Collection : JIPipeParameterPersistence.None;
         this.target = reference.resolve(tree);
         this.alternativeSource = alternativeSource;
     }
@@ -110,7 +110,7 @@ public class GraphNodeParameterReferenceAccess implements JIPipeParameterAccess 
     }
 
     @Override
-    public boolean isPersistent() {
-        return persistent;
+    public JIPipeParameterPersistence getPersistence() {
+        return persistence;
     }
 }

@@ -429,12 +429,9 @@ public class JIPipeProject implements JIPipeValidatable {
                 jsonGenerator.writeObjectFieldStart("additional-metadata");
                 for (Map.Entry<String, Object> entry : project.getAdditionalMetadata().entrySet()) {
                     if (entry.getValue() instanceof JIPipeParameterCollection) {
-                        JIPipeParameterTree tree = new JIPipeParameterTree((JIPipeParameterCollection) entry.getValue());
                         jsonGenerator.writeObjectFieldStart(entry.getKey());
                         jsonGenerator.writeObjectField("jipipe:type", entry.getValue().getClass());
-                        for (Map.Entry<String, JIPipeParameterAccess> parameterEntry : tree.getParameters().entrySet()) {
-                            jsonGenerator.writeObjectField(parameterEntry.getKey(), parameterEntry.getValue().get(Object.class));
-                        }
+                        JIPipeParameterCollection.serializeParametersToJson((JIPipeParameterCollection) entry.getValue(), jsonGenerator);
                         jsonGenerator.writeEndObject();
                     } else {
                         jsonGenerator.writeObjectFieldStart(entry.getKey());

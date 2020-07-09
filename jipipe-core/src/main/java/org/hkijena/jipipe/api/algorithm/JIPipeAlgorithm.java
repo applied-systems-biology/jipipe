@@ -25,6 +25,7 @@ import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeSlotConfiguration;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterVisibility;
 import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
@@ -34,6 +35,7 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 /**
@@ -215,14 +217,7 @@ public abstract class JIPipeAlgorithm extends JIPipeGraphNode {
         public void serialize(JIPipeGraphNode algorithm, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
             jsonGenerator.writeStartObject();
             jsonGenerator.writeStringField("jipipe:algorithm-type", algorithm.getDeclaration().getId());
-            JIPipeParameterTree parameterCollection = new JIPipeParameterTree(algorithm);
-            for (Map.Entry<String, JIPipeParameterAccess> entry : parameterCollection.getParameters().entrySet()) {
-                if (serializeParameter(entry))
-                    jsonGenerator.writeObjectField(entry.getKey(), entry.getValue().get(Object.class));
-            }
-
-            // Dynamic parameter storage is not saved, as their values are stored into normal parameters
-
+            JIPipeParameterCollection.serializeParametersToJson(algorithm, jsonGenerator, this::serializeParameter);
             jsonGenerator.writeEndObject();
         }
 

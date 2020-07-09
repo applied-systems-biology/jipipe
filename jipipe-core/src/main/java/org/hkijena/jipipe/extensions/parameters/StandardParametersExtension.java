@@ -323,7 +323,7 @@ public class StandardParametersExtension extends JIPipePrepackagedDefaultJavaExt
         registerEnumParameterType("rectangle-roi:anchor", Margin.Anchor.class, "Anchor", "Available rectangle anchors");
         registerEnumParameterType("path-filter:mode", PathPredicate.Mode.class, "Mode", "Available modes");
         registerEnumParameterType("string-filter:mode", StringPredicate.Mode.class, "Mode", "Available modes");
-        registerEnumParameterType("jipipe:iterating-algorithm:column-matching", JIPipeIteratingAlgorithm.ColumnMatching.class, "Column matching strategy", "Determines how columns for dataset matching are selected");
+        registerEnumParameterType("column-matching", JIPipeIteratingAlgorithm.ColumnMatching.class, "Column matching strategy", "Determines how columns for dataset matching are selected");
         registerEnumParameterType("jipipe:ui:graph-editor-view-mode", JIPipeGraphCanvasUI.ViewMode.class, "Graph editor view mode", "Determines how the graphs are displayed");
         registerEnumParameterType("jipipe:ui:graph-editor-auto-layout", GraphAutoLayout.class, "Graph auto layout", "Determines which method is used to apply graph auto-layout");
         registerEnumParameterType("logical-operation", LogicalOperation.class, "Logical operation", "Available logical operations");

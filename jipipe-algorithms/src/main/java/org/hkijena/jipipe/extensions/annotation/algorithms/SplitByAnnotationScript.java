@@ -23,6 +23,7 @@ import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
 import org.hkijena.jipipe.extensions.parameters.scripts.PythonScript;
 import org.hkijena.jipipe.utils.PythonUtils;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -132,7 +133,7 @@ public class SplitByAnnotationScript extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @JIPipeDocumentation(name = "Script parameters", description = "The following parameters will be passed to the Python script. The variable name is equal to the unique parameter identifier.")
-    @JIPipeParameter("script-parameters")
+    @JIPipeParameter(value = "script-parameters", persistence = JIPipeParameterPersistence.Object)
     public JIPipeDynamicParameterCollection getScriptParameters() {
         return scriptParameters;
     }

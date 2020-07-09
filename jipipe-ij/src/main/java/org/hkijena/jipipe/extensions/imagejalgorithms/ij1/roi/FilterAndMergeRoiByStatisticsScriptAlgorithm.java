@@ -22,6 +22,7 @@ import org.hkijena.jipipe.api.algorithm.*;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.tables.ResultsTableData;
@@ -166,7 +167,7 @@ public class FilterAndMergeRoiByStatisticsScriptAlgorithm extends ImageRoiProces
     }
 
     @JIPipeDocumentation(name = "Script parameters", description = "The following parameters will be passed to the Python script. The variable name is equal to the unique parameter identifier.")
-    @JIPipeParameter("script-parameters")
+    @JIPipeParameter(value = "script-parameters", persistence = JIPipeParameterPersistence.Object)
     public JIPipeDynamicParameterCollection getScriptParameters() {
         return scriptParameters;
     }

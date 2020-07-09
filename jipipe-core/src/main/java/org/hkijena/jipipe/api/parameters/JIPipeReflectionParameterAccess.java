@@ -37,6 +37,7 @@ public class JIPipeReflectionParameterAccess implements JIPipeParameterAccess {
     private JIPipeParameterCollection source;
     private String shortKey;
     private int uiOrder;
+    private JIPipeParameterPersistence persistence;
 
     @Override
     public String getKey() {
@@ -172,5 +173,14 @@ public class JIPipeReflectionParameterAccess implements JIPipeParameterAccess {
 
     public void setUIOrder(int uiOrder) {
         this.uiOrder = uiOrder;
+    }
+
+    @Override
+    public JIPipeParameterPersistence getPersistence() {
+        return persistence;
+    }
+
+    public void setPersistence(JIPipeParameterPersistence persistence) {
+        this.persistence = persistence;
     }
 }

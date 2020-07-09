@@ -433,25 +433,8 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
         jsonGenerator.writeEndObject();
         jsonGenerator.writeStringField("jipipe:algorithm-type", getDeclaration().getId());
         jsonGenerator.writeStringField("jipipe:algorithm-compartment", getCompartment());
-        JIPipeParameterTree parameterCollection = new JIPipeParameterTree(this);
-        for (Map.Entry<String, JIPipeParameterAccess> entry : parameterCollection.getParameters().entrySet()) {
-            if (entry.getValue().isPersistent()) {
-                jsonGenerator.writeObjectField(entry.getKey(), entry.getValue().get(Object.class));
-            }
-        }
 
-        // Save dynamic parameter storage
-        Set<JIPipeParameterCollection> dynamicParameters = parameterCollection.getRegisteredSources().stream()
-                .filter(src -> src instanceof JIPipeDynamicParameterCollection).collect(Collectors.toSet());
-        if (!dynamicParameters.isEmpty()) {
-            jsonGenerator.writeFieldName("jipipe:dynamic-parameters");
-            jsonGenerator.writeStartObject();
-            for (JIPipeParameterCollection dynamicParameter : dynamicParameters) {
-                String key = parameterCollection.getSourceKey(dynamicParameter);
-                jsonGenerator.writeObjectField(key, dynamicParameter);
-            }
-            jsonGenerator.writeEndObject();
-        }
+        JIPipeParameterCollection.serializeParametersToJson(this, jsonGenerator);
 
         jsonGenerator.writeEndObject();
     }
@@ -479,21 +462,6 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
                     }
                 }
             }
-        }
-
-        // Deserialize dynamic parameters
-        if (node.has("jipipe:dynamic-parameters")) {
-            JIPipeParameterTree parameterCollection = new JIPipeParameterTree(this);
-            Set<JIPipeParameterCollection> dynamicParameters = parameterCollection.getRegisteredSources().stream()
-                    .filter(src -> src instanceof JIPipeDynamicParameterCollection).collect(Collectors.toSet());
-            for (JIPipeParameterCollection dynamicParameter : dynamicParameters) {
-                String key = parameterCollection.getSourceKey(dynamicParameter);
-                JsonNode entryNode = node.path("jipipe:dynamic-parameters").path(key);
-                if (!entryNode.isMissingNode()) {
-                    ((JIPipeDynamicParameterCollection) dynamicParameter).fromJson(entryNode);
-                }
-            }
-
         }
 
         // Deserialize algorithm-specific parameters

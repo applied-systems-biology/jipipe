@@ -248,6 +248,7 @@ public class JIPipeParameterTree implements JIPipeParameterCollection, JIPipeCus
                 parameterAccess.setDocumentation(pair.getDocumentation());
                 parameterAccess.setVisibility(pair.getVisibility());
                 parameterAccess.setPriority(pair.getPriority());
+                parameterAccess.setPersistence(pair.getPersistence());
 
                 addParameter(entry.getKey(), parameterAccess, parent);
             }
@@ -273,6 +274,7 @@ public class JIPipeParameterTree implements JIPipeParameterCollection, JIPipeCus
                     childNode.setUiOrder(entry.getValue().getUIOrder());
                     childNode.setVisibility(entry.getValue().getVisibility());
                     childNode.setUiExcludedSubParameters(entry.getValue().getUIExcludedSubParameters());
+                    childNode.setPersistence(entry.getValue().getPersistence());
                 } catch (IllegalAccessException | InvocationTargetException e) {
                     e.printStackTrace();
                 }
@@ -498,6 +500,17 @@ public class JIPipeParameterTree implements JIPipeParameterCollection, JIPipeCus
             return getterAnnotation.visibility().intersectWith(setterAnnotation.visibility());
         }
 
+        public JIPipeParameterPersistence getPersistence() {
+            JIPipeParameter getterAnnotation = getter.getAnnotation(JIPipeParameter.class);
+            if (setter == null)
+                return getterAnnotation.persistence();
+            JIPipeParameter setterAnnotation = setter.getAnnotation(JIPipeParameter.class);
+            if(getterAnnotation.persistence() != JIPipeParameterPersistence.Collection)
+                return setterAnnotation.persistence();
+            else
+                return getterAnnotation.persistence();
+        }
+
         public double getPriority() {
             JIPipeParameter getterAnnotation = getter.getAnnotation(JIPipeParameter.class);
             if (setter == null)
@@ -593,6 +606,7 @@ public class JIPipeParameterTree implements JIPipeParameterCollection, JIPipeCus
         private BiMap<String, Node> children = HashBiMap.create();
         private List<ContextAction> actions = new ArrayList<>();
         private Set<String> uiExcludedSubParameters = new HashSet<>();
+        private JIPipeParameterPersistence persistence = JIPipeParameterPersistence.Collection;
 
         /**
          * Creates a node
@@ -718,6 +732,14 @@ public class JIPipeParameterTree implements JIPipeParameterCollection, JIPipeCus
 
         public void setUiExcludedSubParameters(Set<String> uiExcludedSubParameters) {
             this.uiExcludedSubParameters = uiExcludedSubParameters;
+        }
+
+        public JIPipeParameterPersistence getPersistence() {
+            return persistence;
+        }
+
+        public void setPersistence(JIPipeParameterPersistence persistence) {
+            this.persistence = persistence;
         }
     }
 }

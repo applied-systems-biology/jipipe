@@ -253,58 +253,7 @@ public abstract class PlotData implements JIPipeData, JIPipeParameterCollection,
      * @param node JSON node
      */
     public void fromJson(JsonNode node) {
-        // Deserialize dynamic parameters
-        if (node.has("jipipe:dynamic-parameters")) {
-            JIPipeParameterTree parameterCollection = new JIPipeParameterTree(this);
-            Set<JIPipeParameterCollection> dynamicParameters = parameterCollection.getRegisteredSources().stream()
-                    .filter(src -> src instanceof JIPipeDynamicParameterCollection).collect(Collectors.toSet());
-            for (JIPipeParameterCollection dynamicParameter : dynamicParameters) {
-                String key = parameterCollection.getSourceKey(dynamicParameter);
-                JsonNode entryNode = node.path("jipipe:dynamic-parameters").path(key);
-                if (!entryNode.isMissingNode()) {
-                    ((JIPipeDynamicParameterCollection) dynamicParameter).fromJson(entryNode);
-                }
-            }
-
-        }
-
-        // Deserialize algorithm-specific parameters
-        AtomicBoolean changedStructure = new AtomicBoolean();
-        changedStructure.set(true);
-        getEventBus().register(new Object() {
-            @Subscribe
-            public void onParametersChanged(ParameterStructureChangedEvent event) {
-                changedStructure.set(true);
-            }
-        });
-        Set<String> loadedParameters = new HashSet<>();
-        while (changedStructure.get()) {
-            changedStructure.set(false);
-            JIPipeParameterTree parameterCollection = new JIPipeParameterTree(this);
-            for (JIPipeParameterAccess parameterAccess : parameterCollection.getParametersByPriority()) {
-                String key = parameterCollection.getUniqueKey(parameterAccess);
-                if (loadedParameters.contains(key))
-                    continue;
-                loadedParameters.add(key);
-                if (node.has(key)) {
-                    Object v;
-                    try {
-                        v = JsonUtils.getObjectMapper().readerFor(parameterAccess.getFieldClass()).readValue(node.get(key));
-                    } catch (IOException e) {
-                        throw new UserFriendlyRuntimeException(e, "Could not load parameter '" + key + "'!",
-                                "Plot data", "Either the data was corrupted, or your JIPipe or plugin version is too new or too old.",
-                                "Check the 'dependencies' section of the project file and compare the plugin versions. Try " +
-                                        "to update JIPipe. Compare the project file with a valid one. Contact the JIPipe or plugin " +
-                                        "authors if you cannot resolve the issue by yourself.");
-                    }
-                    parameterAccess.set(v);
-
-                    // Stop loading here to prevent already traversed parameters from being not loaded
-                    if (changedStructure.get())
-                        break;
-                }
-            }
-        }
+       JIPipeParameterCollection.deserializeParametersFromJson(this, node);
     }
 
     /**
@@ -348,23 +297,7 @@ public abstract class PlotData implements JIPipeData, JIPipeParameterCollection,
             gen.writeStringField("plot-data-type", JIPipeDatatypeRegistry.getInstance().getIdOf(value.getClass()));
 
             // Write parameters
-            JIPipeParameterTree parameterCollection = new JIPipeParameterTree(value);
-            for (Map.Entry<String, JIPipeParameterAccess> kv : parameterCollection.getParameters().entrySet()) {
-                gen.writeObjectField(kv.getKey(), kv.getValue().get(Object.class));
-            }
-
-            // Save dynamic parameter storage
-            Set<JIPipeParameterCollection> dynamicParameters = parameterCollection.getRegisteredSources().stream()
-                    .filter(src -> src instanceof JIPipeDynamicParameterCollection).collect(Collectors.toSet());
-            if (!dynamicParameters.isEmpty()) {
-                gen.writeFieldName("jipipe:dynamic-parameters");
-                gen.writeStartObject();
-                for (JIPipeParameterCollection dynamicParameter : dynamicParameters) {
-                    String key = parameterCollection.getSourceKey(dynamicParameter);
-                    gen.writeObjectField(key, dynamicParameter);
-                }
-                gen.writeEndObject();
-            }
+            JIPipeParameterCollection.serializeParametersToJson(value, gen);
 
             // Write series mapping
             gen.writeFieldName("plot-series");

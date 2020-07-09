@@ -358,12 +358,12 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
                 "to data sets. This allows you to determine how interesting data annotation columns are extracted from the incoming data. " +
                 "Union matches using the union of annotation columns. Intersection intersects the sets of available columns. You can also" +
                 " customize which columns should be available.")
-        @JIPipeParameter(value = "jipipe:iterating-algorithm:column-matching", uiOrder = 999, visibility = JIPipeParameterVisibility.Visible)
+        @JIPipeParameter(value = "column-matching", uiOrder = 999, visibility = JIPipeParameterVisibility.Visible)
         public JIPipeIteratingAlgorithm.ColumnMatching getDataSetMatching() {
             return dataSetMatching;
         }
 
-        @JIPipeParameter("jipipe:iterating-algorithm:column-matching")
+        @JIPipeParameter("column-matching")
         public void setDataSetMatching(JIPipeIteratingAlgorithm.ColumnMatching dataSetMatching) {
             this.dataSetMatching = dataSetMatching;
 
@@ -371,7 +371,7 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
 
         @JIPipeDocumentation(name = "Data set matching annotations", description = "Only used if 'Data set matching strategy' is set to 'Custom'. " +
                 "Determines which annotation columns are referred to match data sets.")
-        @JIPipeParameter(value = "jipipe:iterating-algorithm:custom-matched-columns", uiOrder = 999, visibility = JIPipeParameterVisibility.Visible)
+        @JIPipeParameter(value = "custom-matched-columns", uiOrder = 999, visibility = JIPipeParameterVisibility.Visible)
         @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/annotation.png")
         public StringList getCustomColumns() {
             if (customColumns == null)
@@ -379,7 +379,7 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
             return customColumns;
         }
 
-        @JIPipeParameter(value = "jipipe:iterating-algorithm:custom-matched-columns", visibility = JIPipeParameterVisibility.Visible)
+        @JIPipeParameter(value = "custom-matched-columns", visibility = JIPipeParameterVisibility.Visible)
         public void setCustomColumns(StringList customColumns) {
             this.customColumns = customColumns;
 
@@ -387,12 +387,12 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
 
         @JIPipeDocumentation(name = "Skip incomplete data sets", description = "If enabled, incomplete data sets are silently skipped. " +
                 "Otherwise an error is displayed if such a configuration is detected.")
-        @JIPipeParameter(value = "jipipe:iterating-algorithm:skip-incomplete", visibility = JIPipeParameterVisibility.Visible)
+        @JIPipeParameter(value = "skip-incomplete", visibility = JIPipeParameterVisibility.Visible)
         public boolean isSkipIncompleteDataSets() {
             return skipIncompleteDataSets;
         }
 
-        @JIPipeParameter("jipipe:iterating-algorithm:skip-incomplete")
+        @JIPipeParameter("skip-incomplete")
         public void setSkipIncompleteDataSets(boolean skipIncompleteDataSets) {
             this.skipIncompleteDataSets = skipIncompleteDataSets;
 

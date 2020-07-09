@@ -24,6 +24,7 @@ import org.hkijena.jipipe.api.JIPipeValidatable;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.events.ParameterStructureChangedEvent;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
+import org.hkijena.jipipe.utils.JsonDeserializable;
 import org.hkijena.jipipe.utils.JsonUtils;
 
 import java.io.IOException;
@@ -33,7 +34,7 @@ import java.util.function.Function;
 /**
  * Holds a user-definable set of parameters
  */
-public class JIPipeDynamicParameterCollection implements JIPipeCustomParameterCollection, JIPipeValidatable {
+public class JIPipeDynamicParameterCollection implements JIPipeCustomParameterCollection, JIPipeValidatable, JsonDeserializable {
 
     private EventBus eventBus = new EventBus();
     private BiMap<String, JIPipeMutableParameterAccess> dynamicParameters = HashBiMap.create();
@@ -217,6 +218,7 @@ public class JIPipeDynamicParameterCollection implements JIPipeCustomParameterCo
      *
      * @param node JSON data
      */
+    @Override
     public void fromJson(JsonNode node) {
         dynamicParameters.clear();
         JsonNode parametersNode = node.get("parameters");

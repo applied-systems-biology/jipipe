@@ -73,4 +73,10 @@ public @interface JIPipeParameter {
      * @return array of sub-sub-parameter keys
      */
     String[] uiExcludeSubParameters() default {};
+
+    /**
+     * Controls how the parameter is serialized/deserialized
+     * @return the serialization behavior
+     */
+    JIPipeParameterPersistence persistence() default JIPipeParameterPersistence.Collection;
 }

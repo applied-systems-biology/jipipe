@@ -21,6 +21,7 @@ import org.hkijena.jipipe.api.algorithm.*;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
 import org.hkijena.jipipe.extensions.tables.ResultsTableData;
 import org.hkijena.jipipe.extensions.parameters.scripts.PythonScript;
 import org.hkijena.jipipe.utils.PythonUtils;
@@ -138,7 +139,7 @@ public class ModifyAndMergeTablesScript extends JIPipeAlgorithm {
     }
 
     @JIPipeDocumentation(name = "Script parameters", description = "The following parameters will be passed to the Python script. The variable name is equal to the unique parameter identifier.")
-    @JIPipeParameter("script-parameters")
+    @JIPipeParameter(value = "script-parameters", persistence = JIPipeParameterPersistence.Object)
     public JIPipeDynamicParameterCollection getScriptParameters() {
         return scriptParameters;
     }

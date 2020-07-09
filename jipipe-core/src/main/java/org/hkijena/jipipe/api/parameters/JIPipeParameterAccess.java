@@ -115,13 +115,11 @@ public interface JIPipeParameterAccess {
     int getUIOrder();
 
     /**
-     * Controls if this parameter should be saved. By default true.
-     * This is used by {@link org.hkijena.jipipe.api.algorithm.JIPipeGraphNode} and maybe other placed to skip parameters.
-     *
-     * @return if the parameter is saved.
+     * Controls the persistence of the parameter
+     * @return the persistence
      */
-    default boolean isPersistent() {
-        return true;
+    default JIPipeParameterPersistence getPersistence() {
+        return JIPipeParameterPersistence.Collection;
     }
 
     /**
