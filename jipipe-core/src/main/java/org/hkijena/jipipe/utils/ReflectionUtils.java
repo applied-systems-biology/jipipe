@@ -19,6 +19,7 @@ import org.apache.commons.lang.reflect.MethodUtils;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -167,7 +168,21 @@ public class ReflectionUtils {
         try {
             return MethodUtils.invokeMethod(target, functionName, args);
         } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-            throw new RuntimeException(e);
+            try {
+                int arguments = args.length;
+                Class[] parameterTypes = new Class[arguments];
+
+                for(int i = 0; i < arguments; ++i) {
+                    parameterTypes[i] = args[i].getClass();
+                }
+
+                Method bestMatch = target.getClass().getDeclaredMethod(functionName, parameterTypes);
+                bestMatch.setAccessible(true);
+                return bestMatch.invoke(target, args);
+            }
+            catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e1) {
+                throw new RuntimeException(e1);
+            }
         }
     }
 

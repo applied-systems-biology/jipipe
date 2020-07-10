@@ -101,7 +101,7 @@ public abstract class PlotData implements JIPipeData, JIPipeParameterCollection,
     public void saveTo(Path storageFilePath, String name, boolean forceName) {
         // Export metadata
         try {
-            if (forceName) {
+            if (!forceName) {
                 JsonUtils.getObjectMapper().writerWithDefaultPrettyPrinter().writeValue(storageFilePath.resolve("plot-metadata.json").toFile(), this);
             } else {
                 JsonUtils.getObjectMapper().writerWithDefaultPrettyPrinter().writeValue(storageFilePath.resolve(name + "_plot-metadata.json").toFile(), this);

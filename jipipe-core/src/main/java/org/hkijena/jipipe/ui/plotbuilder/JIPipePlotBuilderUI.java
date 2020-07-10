@@ -128,7 +128,7 @@ public class JIPipePlotBuilderUI extends JIPipeWorkbenchPanel implements JIPipeP
                 availableData.put(dataSource.getLabel(), dataSource);
             }
         }
-
+        getEventBus().post(new ParameterChangedEvent(this, "available-data"));
     }
 
     @Override
@@ -223,7 +223,10 @@ public class JIPipePlotBuilderUI extends JIPipeWorkbenchPanel implements JIPipeP
 
 
         getEventBus().post(new ParameterStructureChangedEvent(this));
+        getEventBus().post(new ParameterChangedEvent(this, "series"));
+        getEventBus().post(new ParameterChangedEvent(this, "available-data"));
         currentPlot.getEventBus().register(this);
+        rebuildPlot();
     }
 
     /**
