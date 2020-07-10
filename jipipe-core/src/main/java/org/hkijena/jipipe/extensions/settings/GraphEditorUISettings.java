@@ -34,6 +34,9 @@ public class GraphEditorUISettings implements JIPipeParameterCollection {
     private GraphAutoLayout autoLayout = GraphAutoLayout.MST;
     private boolean switchPanningDirection = false;
     private boolean enableLayoutHelper = true;
+    private boolean askOnDeleteNode = true;
+    private boolean askOnDeleteCompartment = true;
+    private boolean askOnDeleteParameter = true;
 
     @Override
     public EventBus getEventBus() {
@@ -88,6 +91,39 @@ public class GraphEditorUISettings implements JIPipeParameterCollection {
     @JIPipeParameter("auto-layout-method")
     public void setAutoLayout(GraphAutoLayout autoLayout) {
         this.autoLayout = autoLayout;
+    }
+
+    @JIPipeDocumentation(name = "Ask on deleting algorithms", description = "If enabled, users must confirm when an algorithm node is deleted")
+    @JIPipeParameter("ask-on-delete-node")
+    public boolean isAskOnDeleteNode() {
+        return askOnDeleteNode;
+    }
+
+    @JIPipeParameter("ask-on-delete-node")
+    public void setAskOnDeleteNode(boolean askOnDeleteNode) {
+        this.askOnDeleteNode = askOnDeleteNode;
+    }
+
+    @JIPipeDocumentation(name = "Ask on deleting compartments", description = "If enabled, users must confirm when a graph compartment is deleted")
+    @JIPipeParameter("ask-on-delete-compartment")
+    public boolean isAskOnDeleteCompartment() {
+        return askOnDeleteCompartment;
+    }
+
+    @JIPipeParameter("ask-on-delete-compartment")
+    public void setAskOnDeleteCompartment(boolean askOnDeleteCompartment) {
+        this.askOnDeleteCompartment = askOnDeleteCompartment;
+    }
+
+    @JIPipeDocumentation(name = "Ask on deleting parameters", description = "If enabled, users must confirm when a parameter is deleted")
+    @JIPipeParameter("ask-on-delete-parameter")
+    public boolean isAskOnDeleteParameter() {
+        return askOnDeleteParameter;
+    }
+
+    @JIPipeParameter("ask-on-delete-parameter")
+    public void setAskOnDeleteParameter(boolean askOnDeleteParameter) {
+        this.askOnDeleteParameter = askOnDeleteParameter;
     }
 
     public static GraphEditorUISettings getInstance() {

@@ -19,6 +19,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.events.ParameterStructureChangedEvent;
 import org.hkijena.jipipe.api.parameters.*;
 import org.hkijena.jipipe.api.registries.JIPipeParameterTypeRegistry;
+import org.hkijena.jipipe.extensions.settings.GraphEditorUISettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.AddDynamicParameterPanel;
 import org.hkijena.jipipe.ui.components.FormPanel;
@@ -278,7 +279,7 @@ public class ParameterPanel extends FormPanel implements Contextual {
 
     private void removeDynamicParameter(String key, JIPipeDynamicParameterCollection parameterHolder) {
         JIPipeMutableParameterAccess parameter = parameterHolder.getParameter(key);
-        if (JOptionPane.showConfirmDialog(this, "Do you really want to remove the parameter '" + parameter.getName() + "'?",
+        if (GraphEditorUISettings.getInstance().isAskOnDeleteParameter() || JOptionPane.showConfirmDialog(this, "Do you really want to remove the parameter '" + parameter.getName() + "'?",
                 "Remove parameter", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
             parameterHolder.removeParameter(key);
             reloadForm();
