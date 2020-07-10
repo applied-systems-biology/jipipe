@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>ACAQ5 for ImageJ</title>
+    <title>JIPipe for ImageJ</title>
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2020-06-24T13:25:45 CEST">
-<title>Image analysis pipeline :: ACAQ5 for ImageJ</title>
+<meta name="revised" content="2020-07-10T16:08:13 CEST">
+<title>Image analysis pipeline :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../images/favicon.png" type="image/x-icon" />
 <link href="../../css/font-awesome.min.css" rel="stylesheet">
 <link href="../../css/nucleus.css" rel="stylesheet">
@@ -15,7 +15,7 @@
 <link rel="stylesheet" href="../../css/bootstrap.min.css">
 <script src="../../js/jquery-2.x.min.js"></script>
 <script type="text/javascript">
-      var baseurl = "https:\/\/applied-systems-biology.github.io\/acaq5\/";
+      var baseurl = "https:\/\/applied-systems-biology.github.io\/jipipe\/";
 </script>
 <link rel="stylesheet" href="../../css/custom.css">
 
@@ -57,40 +57,40 @@
             <i class="fa fa-fw fa-home"></i>
           </a>
           </li>
-    <li data-nav-id="https://applied-systems-biology.github.io/acaq5/download/" class="dd-item
+    <li data-nav-id="https://applied-systems-biology.github.io/jipipe/download/" class="dd-item
         ">
       <div>
       <a href="../../download/">Download</a><i class="fa fa-circle-thin read-icon"></i>
       </div>
     </li>
-    <li data-nav-id="https://applied-systems-biology.github.io/acaq5/examples/" class="dd-item
+    <li data-nav-id="https://applied-systems-biology.github.io/jipipe/examples/" class="dd-item
         ">
       <div>
       <a href="../../examples/">Examples</a><i class="fa fa-circle-thin read-icon"></i>
       </div>
     </li>
-    <li data-nav-id="https://applied-systems-biology.github.io/acaq5/tutorials/" class="dd-item parent haschildren
+    <li data-nav-id="https://applied-systems-biology.github.io/jipipe/tutorials/" class="dd-item parent haschildren
         ">
       <div>
       <a href="../../tutorials/">Tutorials</a>
             <i class="fa fa-angle-down fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
       </div>
         <ul>
-      <li data-nav-id="https://applied-systems-biology.github.io/acaq5/tutorials/analysis/" class="dd-item active">
+      <li data-nav-id="https://applied-systems-biology.github.io/jipipe/tutorials/analysis/" class="dd-item active">
         <div>
           <a href="../../tutorials/analysis/">
             Image analysis pipeline
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
-      <li data-nav-id="https://applied-systems-biology.github.io/acaq5/tutorials/analysis_video/" class="dd-item">
+      <li data-nav-id="https://applied-systems-biology.github.io/jipipe/tutorials/analysis_video/" class="dd-item">
         <div>
           <a href="../../tutorials/analysis_video/">
             Image analysis pipeline (Video)
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
-      <li data-nav-id="https://applied-systems-biology.github.io/acaq5/tutorials/extension/" class="dd-item">
+      <li data-nav-id="https://applied-systems-biology.github.io/jipipe/tutorials/extension/" class="dd-item">
         <div>
           <a href="../../tutorials/extension/">
             Creating an extension
@@ -99,103 +99,103 @@
     </li>
         </ul>
     </li>
-    <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation/" class="dd-item haschildren
+    <li data-nav-id="https://applied-systems-biology.github.io/jipipe/documentation/" class="dd-item haschildren
         ">
       <div>
       <a href="../../documentation/">Documentation</a><i class="fa fa-angle-right fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
       </div>
         <ul>
-      <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation/batch-pipelines/" class="dd-item">
+      <li data-nav-id="https://applied-systems-biology.github.io/jipipe/documentation/batch-pipelines/" class="dd-item">
         <div>
           <a href="../../documentation/batch-pipelines/">
             Batch pipelines
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
-      <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation/graph-editor/" class="dd-item">
+      <li data-nav-id="https://applied-systems-biology.github.io/jipipe/documentation/graph-editor/" class="dd-item">
         <div>
           <a href="../../documentation/graph-editor/">
             Pipeline editor
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
-      <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation/graph-compartment/" class="dd-item">
+      <li data-nav-id="https://applied-systems-biology.github.io/jipipe/documentation/graph-compartment/" class="dd-item">
         <div>
           <a href="../../documentation/graph-compartment/">
             Graph compartments
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
-      <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation/result-analysis/" class="dd-item">
+      <li data-nav-id="https://applied-systems-biology.github.io/jipipe/documentation/result-analysis/" class="dd-item">
         <div>
           <a href="../../documentation/result-analysis/">
             Running a pipeline
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
-      <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation/quick-run/" class="dd-item">
+      <li data-nav-id="https://applied-systems-biology.github.io/jipipe/documentation/quick-run/" class="dd-item">
         <div>
           <a href="../../documentation/quick-run/">
             Testing algorithm parameters
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
-      <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation/cache/" class="dd-item">
+      <li data-nav-id="https://applied-systems-biology.github.io/jipipe/documentation/cache/" class="dd-item">
         <div>
           <a href="../../documentation/cache/">
             Data caching
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
-      <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation/imagej-integration/" class="dd-item">
+      <li data-nav-id="https://applied-systems-biology.github.io/jipipe/documentation/imagej-integration/" class="dd-item">
         <div>
           <a href="../../documentation/imagej-integration/">
             ImageJ integration
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
-      <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation/plugins/" class="dd-item">
+      <li data-nav-id="https://applied-systems-biology.github.io/jipipe/documentation/plugins/" class="dd-item">
         <div>
           <a href="../../documentation/plugins/">
             Managing plugins
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
-    <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation/standard-library/" class="dd-item haschildren
+    <li data-nav-id="https://applied-systems-biology.github.io/jipipe/documentation/standard-library/" class="dd-item haschildren
         ">
       <div>
       <a href="../../documentation/standard-library/">Standard library</a><i class="fa fa-angle-right fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
       </div>
         <ul>
-      <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation/standard-library/imagej-integration/" class="dd-item">
+      <li data-nav-id="https://applied-systems-biology.github.io/jipipe/documentation/standard-library/imagej-integration/" class="dd-item">
         <div>
           <a href="../../documentation/standard-library/imagej-integration/">
             ImageJ integration
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
-      <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation/standard-library/multi-parameter/" class="dd-item">
+      <li data-nav-id="https://applied-systems-biology.github.io/jipipe/documentation/standard-library/multi-parameter/" class="dd-item">
         <div>
           <a href="../../documentation/standard-library/multi-parameter/">
             Multi-parameter algorithms
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
-      <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation/standard-library/filesystem/" class="dd-item">
+      <li data-nav-id="https://applied-systems-biology.github.io/jipipe/documentation/standard-library/filesystem/" class="dd-item">
         <div>
           <a href="../../documentation/standard-library/filesystem/">
             Filesystem algorithms
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
-      <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation/standard-library/annotations/" class="dd-item">
+      <li data-nav-id="https://applied-systems-biology.github.io/jipipe/documentation/standard-library/annotations/" class="dd-item">
         <div>
           <a href="../../documentation/standard-library/annotations/">
             Data annotation algorithms
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
-      <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation/standard-library/plots-tables/" class="dd-item">
+      <li data-nav-id="https://applied-systems-biology.github.io/jipipe/documentation/standard-library/plots-tables/" class="dd-item">
         <div>
           <a href="../../documentation/standard-library/plots-tables/">
             Plots and tables
@@ -204,7 +204,7 @@
     </li>
         </ul>
     </li>
-    <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation/create-json-extensions/" class="dd-item
+    <li data-nav-id="https://applied-systems-biology.github.io/jipipe/documentation/create-json-extensions/" class="dd-item
         ">
       <div>
       <a href="../../documentation/create-json-extensions/">Extension builder</a><i class="fa fa-circle-thin read-icon"></i>
@@ -212,68 +212,68 @@
     </li>
         </ul>
     </li>
-    <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation-java-api/" class="dd-item haschildren
+    <li data-nav-id="https://applied-systems-biology.github.io/jipipe/documentation-java-api/" class="dd-item haschildren
         ">
       <div>
       <a href="../../documentation-java-api/">Java API documentation</a><i class="fa fa-angle-right fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
       </div>
         <ul>
-      <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation-java-api/javadocs/" class="dd-item">
+      <li data-nav-id="https://applied-systems-biology.github.io/jipipe/documentation-java-api/javadocs/" class="dd-item">
         <div>
           <a href="../../documentation-java-api/javadocs/">
             JavaDocs
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
-      <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation-java-api/create-extension/" class="dd-item">
+      <li data-nav-id="https://applied-systems-biology.github.io/jipipe/documentation-java-api/create-extension/" class="dd-item">
         <div>
           <a href="../../documentation-java-api/create-extension/">
             Creating an extension project
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
-    <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation-java-api/algorithm/" class="dd-item haschildren
+    <li data-nav-id="https://applied-systems-biology.github.io/jipipe/documentation-java-api/algorithm/" class="dd-item haschildren
         ">
       <div>
       <a href="../../documentation-java-api/algorithm/">Creating an algorithm</a><i class="fa fa-angle-right fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
       </div>
         <ul>
-      <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation-java-api/algorithm/iterating-algorithms/" class="dd-item">
+      <li data-nav-id="https://applied-systems-biology.github.io/jipipe/documentation-java-api/algorithm/iterating-algorithms/" class="dd-item">
         <div>
           <a href="../../documentation-java-api/algorithm/iterating-algorithms/">
             Handling multiple inputs
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
-      <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation-java-api/algorithm/merging-algorithms/" class="dd-item">
+      <li data-nav-id="https://applied-systems-biology.github.io/jipipe/documentation-java-api/algorithm/merging-algorithms/" class="dd-item">
         <div>
           <a href="../../documentation-java-api/algorithm/merging-algorithms/">
             Merging input data
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
-      <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation-java-api/algorithm/slot-configuration/" class="dd-item">
+      <li data-nav-id="https://applied-systems-biology.github.io/jipipe/documentation-java-api/algorithm/slot-configuration/" class="dd-item">
         <div>
           <a href="../../documentation-java-api/algorithm/slot-configuration/">
             Customizing slots
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
-      <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation-java-api/algorithm/parameters/" class="dd-item">
+      <li data-nav-id="https://applied-systems-biology.github.io/jipipe/documentation-java-api/algorithm/parameters/" class="dd-item">
         <div>
           <a href="../../documentation-java-api/algorithm/parameters/">
             Parameters
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
-      <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation-java-api/algorithm/parallelization/" class="dd-item">
+      <li data-nav-id="https://applied-systems-biology.github.io/jipipe/documentation-java-api/algorithm/parallelization/" class="dd-item">
         <div>
           <a href="../../documentation-java-api/algorithm/parallelization/">
             Parallelization
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
-      <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation-java-api/algorithm/custom-declaration/" class="dd-item">
+      <li data-nav-id="https://applied-systems-biology.github.io/jipipe/documentation-java-api/algorithm/custom-declaration/" class="dd-item">
         <div>
           <a href="../../documentation-java-api/algorithm/custom-declaration/">
             Custom algorithm declaration
@@ -282,20 +282,20 @@
     </li>
         </ul>
     </li>
-    <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation-java-api/data-type/" class="dd-item haschildren
+    <li data-nav-id="https://applied-systems-biology.github.io/jipipe/documentation-java-api/data-type/" class="dd-item haschildren
         ">
       <div>
       <a href="../../documentation-java-api/data-type/">Creating a data type</a><i class="fa fa-angle-right fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
       </div>
         <ul>
-      <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation-java-api/data-type/result-ui/" class="dd-item">
+      <li data-nav-id="https://applied-systems-biology.github.io/jipipe/documentation-java-api/data-type/result-ui/" class="dd-item">
         <div>
           <a href="../../documentation-java-api/data-type/result-ui/">
             Result view
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
-      <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation-java-api/data-type/cell-ui/" class="dd-item">
+      <li data-nav-id="https://applied-systems-biology.github.io/jipipe/documentation-java-api/data-type/cell-ui/" class="dd-item">
         <div>
           <a href="../../documentation-java-api/data-type/cell-ui/">
             Table cell view
@@ -304,7 +304,7 @@
     </li>
         </ul>
     </li>
-    <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation-java-api/parameter-type/" class="dd-item
+    <li data-nav-id="https://applied-systems-biology.github.io/jipipe/documentation-java-api/parameter-type/" class="dd-item
         ">
       <div>
       <a href="../../documentation-java-api/parameter-type/">Creating a parameter type</a><i class="fa fa-circle-thin read-icon"></i>
@@ -312,76 +312,76 @@
     </li>
         </ul>
     </li>
-    <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation-json-api/" class="dd-item haschildren
+    <li data-nav-id="https://applied-systems-biology.github.io/jipipe/documentation-json-api/" class="dd-item haschildren
         ">
       <div>
       <a href="../../documentation-json-api/">JSON API documentation</a><i class="fa fa-angle-right fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
       </div>
         <ul>
-      <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation-json-api/algorithm-node/" class="dd-item">
+      <li data-nav-id="https://applied-systems-biology.github.io/jipipe/documentation-json-api/algorithm-node/" class="dd-item">
         <div>
           <a href="../../documentation-json-api/algorithm-node/">
             Algorithm node
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
-      <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation-json-api/algorithm/" class="dd-item">
+      <li data-nav-id="https://applied-systems-biology.github.io/jipipe/documentation-json-api/algorithm/" class="dd-item">
         <div>
           <a href="../../documentation-json-api/algorithm/">
             Algorithm type
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
-      <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation-json-api/dependency/" class="dd-item">
+      <li data-nav-id="https://applied-systems-biology.github.io/jipipe/documentation-json-api/dependency/" class="dd-item">
         <div>
           <a href="../../documentation-json-api/dependency/">
             Dependency
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
-      <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation-json-api/graph-edge/" class="dd-item">
+      <li data-nav-id="https://applied-systems-biology.github.io/jipipe/documentation-json-api/graph-edge/" class="dd-item">
         <div>
           <a href="../../documentation-json-api/graph-edge/">
             Graph Edge
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
-      <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation-json-api/graph/" class="dd-item">
+      <li data-nav-id="https://applied-systems-biology.github.io/jipipe/documentation-json-api/graph/" class="dd-item">
         <div>
           <a href="../../documentation-json-api/graph/">
             Algorithm graph
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
-      <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation-json-api/json-extension/" class="dd-item">
+      <li data-nav-id="https://applied-systems-biology.github.io/jipipe/documentation-json-api/json-extension/" class="dd-item">
         <div>
           <a href="../../documentation-json-api/json-extension/">
             Extension
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
-      <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation-json-api/metadata/" class="dd-item">
+      <li data-nav-id="https://applied-systems-biology.github.io/jipipe/documentation-json-api/metadata/" class="dd-item">
         <div>
           <a href="../../documentation-json-api/metadata/">
             Metadata
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
-      <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation-json-api/point/" class="dd-item">
+      <li data-nav-id="https://applied-systems-biology.github.io/jipipe/documentation-json-api/point/" class="dd-item">
         <div>
           <a href="../../documentation-json-api/point/">
             Point
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
-      <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation-json-api/project/" class="dd-item">
+      <li data-nav-id="https://applied-systems-biology.github.io/jipipe/documentation-json-api/project/" class="dd-item">
         <div>
           <a href="../../documentation-json-api/project/">
             Project
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
-      <li data-nav-id="https://applied-systems-biology.github.io/acaq5/documentation-json-api/slot-definition/" class="dd-item">
+      <li data-nav-id="https://applied-systems-biology.github.io/jipipe/documentation-json-api/slot-definition/" class="dd-item">
         <div>
           <a href="../../documentation-json-api/slot-definition/">
             Slot definition
@@ -390,7 +390,7 @@
     </li>
         </ul>
     </li>
-    <li data-nav-id="https://applied-systems-biology.github.io/acaq5/citation/" class="dd-item
+    <li data-nav-id="https://applied-systems-biology.github.io/jipipe/citation/" class="dd-item
         ">
       <div>
       <a href="../../citation/">Citation</a><i class="fa fa-circle-thin read-icon"></i>
@@ -443,7 +443,7 @@
         <link href="../../css/auto-complete.css" rel="stylesheet">
         <script type="text/javascript">
           
-              var baseurl = "https:\/\/applied-systems-biology.github.io\/acaq5\/";
+              var baseurl = "https:\/\/applied-systems-biology.github.io\/jipipe\/";
           
         </script>
         <script type="text/javascript" src="../../js/search.js"></script>
@@ -464,7 +464,7 @@
     <div class="tutorial-item-img"><img src="../../img/tutorials/analysis/step0.png" /></div>
     <div class="tutorial-item-content">
     <h2>1. First start</h2>
-    On starting ACAQ5, you will see such a screen: It contains a short introduction, the <a href="../../documentation/graph-compartment">graph compartment editor</a>,
+    On starting JIPipe, you will see such a screen: It contains a short introduction, the <a href="../../documentation/graph-compartment">graph compartment editor</a>,
     an three pre-defined graph compartments <i>Preprocessing</i>, <i>Analysis</i>, and <i>Postprocessing</i>. As described in the graph compartment documentation, you
     can ignore graph graph compartments. But in this tutorial we will make use of its capabilities to clearly separate the pipeline into the mentioned tree steps.
     </div>
@@ -500,7 +500,7 @@
     <div class="tutorial-item-img"><img src="../../img/tutorials/analysis/step3.png" /></div>
     <div class="tutorial-item-content">
       <h2>4. Adding a data source</h2>
-      The most common way how data is provided is to load them from files or folders. ACAQ5 comes preinstalled with data-types and algorithms
+      The most common way how data is provided is to load them from files or folders. JIPipe comes preinstalled with data-types and algorithms
       that handle <a href="../../documentation/standard-library/filesystem">filesystem operations</a>. The tutorial data is supplied as set of folders
       that contain the input images as TIFF files in a sub-directory.<br/>We begin by adding a <strong>data source</strong> that supplies a list of folders.
       You can find it in <code>Add data &gt; Folder &gt; Folder list</code>. After selecting the item, it will appear in the graph.
@@ -527,7 +527,7 @@
       <div class="notices tip">
         <p>
           You can save the current project at any time and re-load it later. If you save it in a parent directory relative to where your data is located,
-          ACAQ5 automatically saves all paths relative to the project file. This means you can just move all your data, including the project to other machines or
+          JIPipe automatically saves all paths relative to the project file. This means you can just move all your data, including the project to other machines or
           hard drive partitions without breaking anything.
         </p>
       </div>
@@ -536,9 +536,9 @@
     <div class="tutorial-item-img"><img src="../../img/tutorials/analysis/step6.png" /></div>
     <div class="tutorial-item-content">
       <h2>6. Annotating data</h2>
-      ACAQ5 is designed as batch processing tool, meaning that it can be always scaled from small test data up to large data sets.
-      It can be helpful for you and some algorithms to know which data belongs together. ACAQ5 introduces the concept of <i>data annotations</i> that
-      assign data to an unique data set and are passed through the pipeline. You can find more about this in the <a href="../../documentation/batch-pipelines">documentation about how ACAQ5 processes data</a>.
+      JIPipe is designed as batch processing tool, meaning that it can be always scaled from small test data up to large data sets.
+      It can be helpful for you and some algorithms to know which data belongs together. JIPipe introduces the concept of <i>data annotations</i> that
+      assign data to an unique data set and are passed through the pipeline. You can find more about this in the <a href="../../documentation/batch-pipelines">documentation about how JIPipe processes data</a>.
       <br/>In this step we add the data annotation directly at the beginning by attaching the input folder name to each folder that was passed into the pipeline.
       This is done via the <code>Annotation &gt; Generate &gt; Path to annotation</code> algorithm. Just add this algorithm into the graph.<br/>
       For more advanced projects there are plenty of other sources for annotations, like importing them from tables, or extracting and modifying annotations.
@@ -547,7 +547,7 @@
     <div class="tutorial-item-img"><img src="../../img/tutorials/analysis/step7.png" /></div>
     <div class="tutorial-item-content">
       <h2>7. Connecting slots</h2>
-      The input folders are converted into a format understandable by ACAQ5 by the <code>Folder list</code> algorithm. The output then can be passed to following algorithms
+      The input folders are converted into a format understandable by JIPipe by the <code>Folder list</code> algorithm. The output then can be passed to following algorithms
       like the <code>Folders to annotations</code> algorithm we added in the last step.<br/>
       To make a connection click the <i class="fa fa-chevron-up"></i> or <i class="fa fa-chevron-down"></i> button and select the available data slot.
       You can see that a connection between the two data slots was created.<br/>
@@ -674,7 +674,7 @@
       <br/>You can also change various plot-specific settings and determine how output images are generated.
       <div class="notices tip">
         <p>
-          The plot node automatically generates SVG and PNG renders in the selected resolution. This is not a definite choice, as ACAQ5 has its own plot builder that
+          The plot node automatically generates SVG and PNG renders in the selected resolution. This is not a definite choice, as JIPipe has its own plot builder that
           can import generated plots from within the results UI.
         </p>
       </div>
@@ -695,7 +695,7 @@
       <br/>After setting up the parameters, click <i class="fa fa-cog"></i> <strong>Run now</strong>.
       <div class="notices info">
         <p>
-          ACAQ5 attempts to prevent the most common errors (such as wrong parameters) and displays a message if something was found. Please follow the instructions of those messages.
+          JIPipe attempts to prevent the most common errors (such as wrong parameters) and displays a message if something was found. Please follow the instructions of those messages.
           Depending on the data and algorithms, the behavior might not be forseeable and a crash occurs during the processing. A similar easy-to-understand message is shown on how
           to proceed or repair the issue.
         </p>
@@ -714,7 +714,7 @@
     <div class="tutorial-item-content">
       <h2>21. Displaying plots</h2>
       To open the generated plots, navigate to <code>Results &gt; Postprocessing &gt; Plot tables &gt; Output</code> and double-click an entry in the list.
-      Alternatively, you can also select the row and click <code>Open in ACAQ5</code>. This will open a new tab with a plot builder tool.
+      Alternatively, you can also select the row and click <code>Open in JIPipe</code>. This will open a new tab with a plot builder tool.
       Please take a look at the <a href="../../documentation/standard-library/plots-tables">plots and tables documentation</a> for more information how the tool works.
   </div>
 </div>

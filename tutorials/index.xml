@@ -1,39 +1,39 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Tutorials on ACAQ5 for ImageJ</title>
-    <link>https://applied-systems-biology.github.io/acaq5/tutorials/</link>
-    <description>Recent content in Tutorials on ACAQ5 for ImageJ</description>
+    <title>Tutorials on JIPipe for ImageJ</title>
+    <link>https://applied-systems-biology.github.io/jipipe/tutorials/</link>
+    <description>Recent content in Tutorials on JIPipe for ImageJ</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     
-	<atom:link href="https://applied-systems-biology.github.io/acaq5/tutorials/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://applied-systems-biology.github.io/jipipe/tutorials/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Image analysis pipeline</title>
-      <link>https://applied-systems-biology.github.io/acaq5/tutorials/analysis/</link>
+      <link>https://applied-systems-biology.github.io/jipipe/tutorials/analysis/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://applied-systems-biology.github.io/acaq5/tutorials/analysis/</guid>
-      <description>This tutorial is also available as video.   1. First start On starting ACAQ5, you will see such a screen: It contains a short introduction, the graph compartment editor, an three pre-defined graph compartments Preprocessing, Analysis, and Postprocessing. As described in the graph compartment documentation, you can ignore graph graph compartments. But in this tutorial we will make use of its capabilities to clearly separate the pipeline into the mentioned tree steps.</description>
+      <guid>https://applied-systems-biology.github.io/jipipe/tutorials/analysis/</guid>
+      <description>This tutorial is also available as video.   1. First start On starting JIPipe, you will see such a screen: It contains a short introduction, the graph compartment editor, an three pre-defined graph compartments Preprocessing, Analysis, and Postprocessing. As described in the graph compartment documentation, you can ignore graph graph compartments. But in this tutorial we will make use of its capabilities to clearly separate the pipeline into the mentioned tree steps.</description>
     </item>
     
     <item>
       <title>Image analysis pipeline (Video)</title>
-      <link>https://applied-systems-biology.github.io/acaq5/tutorials/analysis_video/</link>
+      <link>https://applied-systems-biology.github.io/jipipe/tutorials/analysis_video/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://applied-systems-biology.github.io/acaq5/tutorials/analysis_video/</guid>
+      <guid>https://applied-systems-biology.github.io/jipipe/tutorials/analysis_video/</guid>
       <description> This tutorial is also available as text tutorial.   </description>
     </item>
     
     <item>
       <title>Creating an extension</title>
-      <link>https://applied-systems-biology.github.io/acaq5/tutorials/extension/</link>
+      <link>https://applied-systems-biology.github.io/jipipe/tutorials/extension/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://applied-systems-biology.github.io/acaq5/tutorials/extension/</guid>
+      <guid>https://applied-systems-biology.github.io/jipipe/tutorials/extension/</guid>
       <description>1. Existing pipeline In this tutorial, we will create a custom algorithm extension based on parts of the pipeline created in the other tutorial. Please open the project file for the pipeline and navigate to the Preprocessing tab.    2. Selecting the algorithms Please select the following algorithms (you can either do this by holding the Shift keyboard button and clicking the nodes or right-clicking them and selecting Add to selection):  Folder list Path to annotation List files Import 2D image (greyscale)  After selecting the algorithms, click the Export button on the top-right corner.</description>
     </item>
     

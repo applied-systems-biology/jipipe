@@ -1,9 +1,9 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema",
-    "$id": "https://applied-systems-biology.github.io/acaq5/schemas/dependency.schema.json",
+    "$id": "https://applied-systems-biology.github.io/jipipe/schemas/dependency.schema.json",
     "type": "object",
     "title": "Dependency",
-    "description": "Project or extension dependency. Refers to an ACAQ5 extension.",
+    "description": "Project or extension dependency. Refers to an JIPipe extension.",
     "required": [
         "metadata",
         "id",
@@ -11,7 +11,7 @@
     ],
     "properties": {
         "metadata": {
-            "$ref": "https://applied-systems-biology.github.io/acaq5/schemas/metadata.schema.json"
+            "$ref": "https://applied-systems-biology.github.io/jipipe/schemas/metadata.schema.json"
         },
         "id": {
             "$id": "#/properties/id",
@@ -20,7 +20,7 @@
             "description": "Unique ID of this dependency should have format <groupId>.<artifactId>:<extensionId>",
             "default": "",
             "examples": [
-                "org.hkijena.acaq5:example"
+                "org.hkijena.jipipe:example"
             ]
         },
         "version": {

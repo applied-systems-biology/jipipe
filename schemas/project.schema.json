@@ -1,22 +1,22 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema",
-    "$id": "https://applied-systems-biology.github.io/acaq5/schemas/project.schema.json",
+    "$id": "https://applied-systems-biology.github.io/jipipe/schemas/project.schema.json",
     "type": "object",
     "title": "Project",
     "description": "An analysis project",
     "required": [
-        "acaq:project-type",
+        "jipipe:project-type",
         "metadata",
         "dependencies",
         "algorithm-graph",
         "compartments"
     ],
     "properties": {
-        "acaq:project-type": {
-            "$id": "#/properties/acaq:project-type",
+        "jipipe:project-type": {
+            "$id": "#/properties/jipipe:project-type",
             "type": "string",
             "title": "Project type",
-            "description": "Used to identify this JSON as ACAQ5 project",
+            "description": "Used to identify this JSON as JIPipe project",
             "default": "project",
             "enum": [
                 "project"
@@ -28,7 +28,7 @@
             "title": "Metadata",
             "description": "General information about the project",
             "default": {},
-            "$ref": "https://applied-systems-biology.github.io/acaq5/schemas/metadata.schema.json"
+            "$ref": "https://applied-systems-biology.github.io/jipipe/schemas/metadata.schema.json"
         },
         "dependencies": {
             "$id": "#/properties/dependencies",
@@ -37,7 +37,7 @@
             "description": "Dependencies of this project",
             "default": [],
             "items": {
-              "$ref": "https://applied-systems-biology.github.io/acaq5/schemas/dependency.schema.json"
+              "$ref": "https://applied-systems-biology.github.io/jipipe/schemas/dependency.schema.json"
             }
         },
         "algorithm-graph": {
@@ -49,7 +49,7 @@
               "nodes": {},
               "edges": []
             },
-            "$ref": "https://applied-systems-biology.github.io/acaq5/schemas/graph.schema.json"
+            "$ref": "https://applied-systems-biology.github.io/jipipe/schemas/graph.schema.json"
         },
         "compartments": {
             "$id": "#/properties/compartments",
@@ -63,7 +63,7 @@
             "properties": {
                 "compartment-graph": {
                     "$id": "#/properties/compartments/properties/compartment-graph",
-                    "$ref": "https://applied-systems-biology.github.io/acaq5/schemas/graph.schema.json",
+                    "$ref": "https://applied-systems-biology.github.io/jipipe/schemas/graph.schema.json",
                     "type": "object",
                     "title": "Compartment graph",
                     "description": "Structural graph of compartments",

@@ -1,6 +1,6 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema",
-    "$id": "https://applied-systems-biology.github.io/acaq5/schemas/algorithm.schema.json",
+    "$id": "https://applied-systems-biology.github.io/jipipe/schemas/algorithm.schema.json",
     "type": "object",
     "title": "Algorithm type",
     "description": "Defines a new algorithm",
@@ -11,7 +11,7 @@
         "parameter-visibilities",
         "graph",
         "menu-path",
-        "acaq:project-type"
+        "jipipe:project-type"
     ],
     "properties": {
         "id": {
@@ -29,7 +29,7 @@
             "type": "object",
             "title": "Metadata",
             "description": "General algorithm metadata",
-            "$ref": "https://applied-systems-biology.github.io/acaq5/schemas/metadata.schema.json"
+            "$ref": "https://applied-systems-biology.github.io/jipipe/schemas/metadata.schema.json"
         },
         "category": {
             "$id": "#/properties/category",
@@ -85,7 +85,7 @@
             "type": "object",
             "title": "Wrapped algorithm graph",
             "description": "This graph is executed when the algorithm is run",
-            "$ref": "https://applied-systems-biology.github.io/acaq5/schemas/graph.schema.json"
+            "$ref": "https://applied-systems-biology.github.io/jipipe/schemas/graph.schema.json"
         },
         "menu-path": {
             "$id": "#/properties/menu-path",
@@ -97,8 +97,8 @@
                 "Blur"
             ]
         },
-        "acaq:project-type": {
-            "$id": "#/properties/acaq:project-type",
+        "jipipe:project-type": {
+            "$id": "#/properties/jipipe:project-type",
             "type": "string",
             "title": "Project type",
             "description": "Identifies the JSON as algorithm",

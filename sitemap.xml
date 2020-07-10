@@ -3,216 +3,216 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
-    <loc>https://applied-systems-biology.github.io/acaq5/_header/</loc>
+    <loc>https://applied-systems-biology.github.io/jipipe/_header/</loc>
   </url>
   
   <url>
-    <loc>https://applied-systems-biology.github.io/acaq5/documentation-json-api/algorithm-node/</loc>
+    <loc>https://applied-systems-biology.github.io/jipipe/documentation-json-api/algorithm-node/</loc>
   </url>
   
   <url>
-    <loc>https://applied-systems-biology.github.io/acaq5/documentation/batch-pipelines/</loc>
+    <loc>https://applied-systems-biology.github.io/jipipe/documentation/batch-pipelines/</loc>
   </url>
   
   <url>
-    <loc>https://applied-systems-biology.github.io/acaq5/download/</loc>
+    <loc>https://applied-systems-biology.github.io/jipipe/download/</loc>
   </url>
   
   <url>
-    <loc>https://applied-systems-biology.github.io/acaq5/documentation-java-api/algorithm/iterating-algorithms/</loc>
+    <loc>https://applied-systems-biology.github.io/jipipe/documentation-java-api/algorithm/iterating-algorithms/</loc>
   </url>
   
   <url>
-    <loc>https://applied-systems-biology.github.io/acaq5/tutorials/analysis/</loc>
+    <loc>https://applied-systems-biology.github.io/jipipe/tutorials/analysis/</loc>
   </url>
   
   <url>
-    <loc>https://applied-systems-biology.github.io/acaq5/documentation-java-api/javadocs/</loc>
+    <loc>https://applied-systems-biology.github.io/jipipe/documentation-java-api/javadocs/</loc>
   </url>
   
   <url>
-    <loc>https://applied-systems-biology.github.io/acaq5/documentation-java-api/data-type/result-ui/</loc>
+    <loc>https://applied-systems-biology.github.io/jipipe/documentation-java-api/data-type/result-ui/</loc>
   </url>
   
   <url>
-    <loc>https://applied-systems-biology.github.io/acaq5/examples/</loc>
+    <loc>https://applied-systems-biology.github.io/jipipe/examples/</loc>
   </url>
   
   <url>
-    <loc>https://applied-systems-biology.github.io/acaq5/tutorials/analysis_video/</loc>
+    <loc>https://applied-systems-biology.github.io/jipipe/tutorials/analysis_video/</loc>
   </url>
   
   <url>
-    <loc>https://applied-systems-biology.github.io/acaq5/documentation-java-api/algorithm/merging-algorithms/</loc>
+    <loc>https://applied-systems-biology.github.io/jipipe/documentation-java-api/algorithm/merging-algorithms/</loc>
   </url>
   
   <url>
-    <loc>https://applied-systems-biology.github.io/acaq5/documentation-json-api/algorithm/</loc>
+    <loc>https://applied-systems-biology.github.io/jipipe/documentation-json-api/algorithm/</loc>
   </url>
   
   <url>
-    <loc>https://applied-systems-biology.github.io/acaq5/tutorials/extension/</loc>
+    <loc>https://applied-systems-biology.github.io/jipipe/tutorials/extension/</loc>
   </url>
   
   <url>
-    <loc>https://applied-systems-biology.github.io/acaq5/documentation-java-api/create-extension/</loc>
+    <loc>https://applied-systems-biology.github.io/jipipe/documentation-java-api/create-extension/</loc>
   </url>
   
   <url>
-    <loc>https://applied-systems-biology.github.io/acaq5/documentation-java-api/algorithm/slot-configuration/</loc>
+    <loc>https://applied-systems-biology.github.io/jipipe/documentation-java-api/algorithm/slot-configuration/</loc>
   </url>
   
   <url>
-    <loc>https://applied-systems-biology.github.io/acaq5/documentation/standard-library/imagej-integration/</loc>
+    <loc>https://applied-systems-biology.github.io/jipipe/documentation/standard-library/imagej-integration/</loc>
   </url>
   
   <url>
-    <loc>https://applied-systems-biology.github.io/acaq5/documentation/standard-library/multi-parameter/</loc>
+    <loc>https://applied-systems-biology.github.io/jipipe/documentation/standard-library/multi-parameter/</loc>
   </url>
   
   <url>
-    <loc>https://applied-systems-biology.github.io/acaq5/documentation/graph-editor/</loc>
+    <loc>https://applied-systems-biology.github.io/jipipe/documentation/graph-editor/</loc>
   </url>
   
   <url>
-    <loc>https://applied-systems-biology.github.io/acaq5/documentation-java-api/data-type/cell-ui/</loc>
+    <loc>https://applied-systems-biology.github.io/jipipe/documentation-java-api/data-type/cell-ui/</loc>
   </url>
   
   <url>
-    <loc>https://applied-systems-biology.github.io/acaq5/tutorials/</loc>
+    <loc>https://applied-systems-biology.github.io/jipipe/tutorials/</loc>
   </url>
   
   <url>
-    <loc>https://applied-systems-biology.github.io/acaq5/documentation-java-api/algorithm/</loc>
+    <loc>https://applied-systems-biology.github.io/jipipe/documentation-java-api/algorithm/</loc>
   </url>
   
   <url>
-    <loc>https://applied-systems-biology.github.io/acaq5/documentation-json-api/dependency/</loc>
+    <loc>https://applied-systems-biology.github.io/jipipe/documentation-json-api/dependency/</loc>
   </url>
   
   <url>
-    <loc>https://applied-systems-biology.github.io/acaq5/documentation/</loc>
+    <loc>https://applied-systems-biology.github.io/jipipe/documentation/</loc>
   </url>
   
   <url>
-    <loc>https://applied-systems-biology.github.io/acaq5/documentation/standard-library/filesystem/</loc>
+    <loc>https://applied-systems-biology.github.io/jipipe/documentation/standard-library/filesystem/</loc>
   </url>
   
   <url>
-    <loc>https://applied-systems-biology.github.io/acaq5/documentation/graph-compartment/</loc>
+    <loc>https://applied-systems-biology.github.io/jipipe/documentation/graph-compartment/</loc>
   </url>
   
   <url>
-    <loc>https://applied-systems-biology.github.io/acaq5/documentation-java-api/algorithm/parameters/</loc>
+    <loc>https://applied-systems-biology.github.io/jipipe/documentation-java-api/algorithm/parameters/</loc>
   </url>
   
   <url>
-    <loc>https://applied-systems-biology.github.io/acaq5/documentation-java-api/algorithm/parallelization/</loc>
+    <loc>https://applied-systems-biology.github.io/jipipe/documentation-java-api/algorithm/parallelization/</loc>
   </url>
   
   <url>
-    <loc>https://applied-systems-biology.github.io/acaq5/documentation-java-api/algorithm/custom-declaration/</loc>
+    <loc>https://applied-systems-biology.github.io/jipipe/documentation-java-api/algorithm/custom-declaration/</loc>
   </url>
   
   <url>
-    <loc>https://applied-systems-biology.github.io/acaq5/documentation-json-api/graph-edge/</loc>
+    <loc>https://applied-systems-biology.github.io/jipipe/documentation-json-api/graph-edge/</loc>
   </url>
   
   <url>
-    <loc>https://applied-systems-biology.github.io/acaq5/documentation-java-api/</loc>
+    <loc>https://applied-systems-biology.github.io/jipipe/documentation-java-api/</loc>
   </url>
   
   <url>
-    <loc>https://applied-systems-biology.github.io/acaq5/documentation/result-analysis/</loc>
+    <loc>https://applied-systems-biology.github.io/jipipe/documentation/result-analysis/</loc>
   </url>
   
   <url>
-    <loc>https://applied-systems-biology.github.io/acaq5/documentation-json-api/graph/</loc>
+    <loc>https://applied-systems-biology.github.io/jipipe/documentation-json-api/graph/</loc>
   </url>
   
   <url>
-    <loc>https://applied-systems-biology.github.io/acaq5/documentation-java-api/data-type/</loc>
+    <loc>https://applied-systems-biology.github.io/jipipe/documentation-java-api/data-type/</loc>
   </url>
   
   <url>
-    <loc>https://applied-systems-biology.github.io/acaq5/documentation/standard-library/annotations/</loc>
+    <loc>https://applied-systems-biology.github.io/jipipe/documentation/standard-library/annotations/</loc>
   </url>
   
   <url>
-    <loc>https://applied-systems-biology.github.io/acaq5/documentation-json-api/</loc>
+    <loc>https://applied-systems-biology.github.io/jipipe/documentation-json-api/</loc>
   </url>
   
   <url>
-    <loc>https://applied-systems-biology.github.io/acaq5/documentation/quick-run/</loc>
+    <loc>https://applied-systems-biology.github.io/jipipe/documentation/quick-run/</loc>
   </url>
   
   <url>
-    <loc>https://applied-systems-biology.github.io/acaq5/documentation/cache/</loc>
+    <loc>https://applied-systems-biology.github.io/jipipe/documentation/cache/</loc>
   </url>
   
   <url>
-    <loc>https://applied-systems-biology.github.io/acaq5/citation/</loc>
+    <loc>https://applied-systems-biology.github.io/jipipe/citation/</loc>
   </url>
   
   <url>
-    <loc>https://applied-systems-biology.github.io/acaq5/documentation-java-api/parameter-type/</loc>
+    <loc>https://applied-systems-biology.github.io/jipipe/documentation-java-api/parameter-type/</loc>
   </url>
   
   <url>
-    <loc>https://applied-systems-biology.github.io/acaq5/documentation-json-api/json-extension/</loc>
+    <loc>https://applied-systems-biology.github.io/jipipe/documentation-json-api/json-extension/</loc>
   </url>
   
   <url>
-    <loc>https://applied-systems-biology.github.io/acaq5/documentation/imagej-integration/</loc>
+    <loc>https://applied-systems-biology.github.io/jipipe/documentation/imagej-integration/</loc>
   </url>
   
   <url>
-    <loc>https://applied-systems-biology.github.io/acaq5/documentation/plugins/</loc>
+    <loc>https://applied-systems-biology.github.io/jipipe/documentation/plugins/</loc>
   </url>
   
   <url>
-    <loc>https://applied-systems-biology.github.io/acaq5/documentation/standard-library/plots-tables/</loc>
+    <loc>https://applied-systems-biology.github.io/jipipe/documentation/standard-library/plots-tables/</loc>
   </url>
   
   <url>
-    <loc>https://applied-systems-biology.github.io/acaq5/documentation-json-api/metadata/</loc>
+    <loc>https://applied-systems-biology.github.io/jipipe/documentation-json-api/metadata/</loc>
   </url>
   
   <url>
-    <loc>https://applied-systems-biology.github.io/acaq5/documentation-json-api/point/</loc>
+    <loc>https://applied-systems-biology.github.io/jipipe/documentation-json-api/point/</loc>
   </url>
   
   <url>
-    <loc>https://applied-systems-biology.github.io/acaq5/documentation/standard-library/</loc>
+    <loc>https://applied-systems-biology.github.io/jipipe/documentation/standard-library/</loc>
   </url>
   
   <url>
-    <loc>https://applied-systems-biology.github.io/acaq5/documentation/create-json-extensions/</loc>
+    <loc>https://applied-systems-biology.github.io/jipipe/documentation/create-json-extensions/</loc>
   </url>
   
   <url>
-    <loc>https://applied-systems-biology.github.io/acaq5/documentation-json-api/project/</loc>
+    <loc>https://applied-systems-biology.github.io/jipipe/documentation-json-api/project/</loc>
   </url>
   
   <url>
-    <loc>https://applied-systems-biology.github.io/acaq5/documentation-json-api/slot-definition/</loc>
+    <loc>https://applied-systems-biology.github.io/jipipe/documentation-json-api/slot-definition/</loc>
   </url>
   
   <url>
-    <loc>https://applied-systems-biology.github.io/acaq5/_footer/</loc>
+    <loc>https://applied-systems-biology.github.io/jipipe/_footer/</loc>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>https://applied-systems-biology.github.io/acaq5/</loc>
+    <loc>https://applied-systems-biology.github.io/jipipe/categories/</loc>
   </url>
   
   <url>
-    <loc>https://applied-systems-biology.github.io/acaq5/categories/</loc>
+    <loc>https://applied-systems-biology.github.io/jipipe/</loc>
   </url>
   
   <url>
-    <loc>https://applied-systems-biology.github.io/acaq5/tags/</loc>
+    <loc>https://applied-systems-biology.github.io/jipipe/tags/</loc>
   </url>
   
 </urlset>

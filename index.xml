@@ -1,401 +1,402 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>ACAQ5 on ACAQ5 for ImageJ</title>
-    <link>https://applied-systems-biology.github.io/acaq5/</link>
-    <description>Recent content in ACAQ5 on ACAQ5 for ImageJ</description>
+    <title>JIPipe on JIPipe for ImageJ</title>
+    <link>https://applied-systems-biology.github.io/jipipe/</link>
+    <description>Recent content in JIPipe on JIPipe for ImageJ</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     
-	<atom:link href="https://applied-systems-biology.github.io/acaq5/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://applied-systems-biology.github.io/jipipe/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Header</title>
-      <link>https://applied-systems-biology.github.io/acaq5/_header/</link>
+      <link>https://applied-systems-biology.github.io/jipipe/_header/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://applied-systems-biology.github.io/acaq5/_header/</guid>
+      <guid>https://applied-systems-biology.github.io/jipipe/_header/</guid>
       <description>by Applied Systems Biology, HKI Jena, Germany</description>
     </item>
     
     <item>
       <title>Algorithm node</title>
-      <link>https://applied-systems-biology.github.io/acaq5/documentation-json-api/algorithm-node/</link>
+      <link>https://applied-systems-biology.github.io/jipipe/documentation-json-api/algorithm-node/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://applied-systems-biology.github.io/acaq5/documentation-json-api/algorithm-node/</guid>
+      <guid>https://applied-systems-biology.github.io/jipipe/documentation-json-api/algorithm-node/</guid>
       <description>This document describes the properties of the JSON API object. You also can access the document in JSON Schema format: algorithm-node.schema.json
- Node in a graph   acaq:slot-configuration:  object   [object Object]      User-defined slots. Might be ignored depending on the algorithm. The keys are the slot names. See slot-definition        acaq:algorithm-ui-location:  object   [object Object]     Locations of this node within the UI.</description>
+ Node in a graph   jipipe:slot-configuration:  object   [object Object]      User-defined slots. Might be ignored depending on the algorithm. The keys are the slot names. See slot-definition        jipipe:algorithm-ui-location:  object   [object Object]     Locations of this node within the UI.</description>
     </item>
     
     <item>
       <title>Batch pipelines</title>
-      <link>https://applied-systems-biology.github.io/acaq5/documentation/batch-pipelines/</link>
+      <link>https://applied-systems-biology.github.io/jipipe/documentation/batch-pipelines/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://applied-systems-biology.github.io/acaq5/documentation/batch-pipelines/</guid>
-      <description>ACAQ5 was designed to always process data in batches, meaning that algorithms always work on multiple data sets at once. This greatly reduces the required work to upscale a processing pipeline from one or few to a large amount of data sets.
+      <guid>https://applied-systems-biology.github.io/jipipe/documentation/batch-pipelines/</guid>
+      <description>JIPipe was designed to always process data in batches, meaning that algorithms always work on multiple data sets at once. This greatly reduces the required work to upscale a processing pipeline from one or few to a large amount of data sets.
 We will use this pipeline as example:
 mermaid.initialize({startOnLoad:true}); graph LR; A[File] -- B[Load image] B -- C[Apply gaussian]  In the pipeline, a file is provided as input. Then the file is loaded as image.</description>
     </item>
     
     <item>
       <title>Handling multiple inputs</title>
-      <link>https://applied-systems-biology.github.io/acaq5/documentation-java-api/algorithm/iterating-algorithms/</link>
+      <link>https://applied-systems-biology.github.io/jipipe/documentation-java-api/algorithm/iterating-algorithms/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://applied-systems-biology.github.io/acaq5/documentation-java-api/algorithm/iterating-algorithms/</guid>
-      <description>ACAQ data slots store multiple data rows. This means that algorithms have to iterate their workload for each input row and generate equivalent output in the respective output slots.
-There can be issues if data from multiple input slots need to be combined (e.g. merge channels into RGB, see user documentation). ACAQAlgorithm has no capabilities to help with such cases.
-A solution can be ACAQIteratingAlgorithm or ACAQSimpleIteratingAlgorithm that use the annotation attached during processing to find data rows that belong to the same data set.</description>
+      <guid>https://applied-systems-biology.github.io/jipipe/documentation-java-api/algorithm/iterating-algorithms/</guid>
+      <description>JIPipe data slots store multiple data rows. This means that algorithms have to iterate their workload for each input row and generate equivalent output in the respective output slots.
+There can be issues if data from multiple input slots need to be combined (e.g. merge channels into RGB, see user documentation). JIPipeAlgorithm has no capabilities to help with such cases.
+A solution can be JIPipeIteratingAlgorithm or JIPipeSimpleIteratingAlgorithm that use the annotation attached during processing to find data rows that belong to the same data set.</description>
     </item>
     
     <item>
       <title>Image analysis pipeline</title>
-      <link>https://applied-systems-biology.github.io/acaq5/tutorials/analysis/</link>
+      <link>https://applied-systems-biology.github.io/jipipe/tutorials/analysis/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://applied-systems-biology.github.io/acaq5/tutorials/analysis/</guid>
-      <description>This tutorial is also available as video.   1. First start On starting ACAQ5, you will see such a screen: It contains a short introduction, the graph compartment editor, an three pre-defined graph compartments Preprocessing, Analysis, and Postprocessing. As described in the graph compartment documentation, you can ignore graph graph compartments. But in this tutorial we will make use of its capabilities to clearly separate the pipeline into the mentioned tree steps.</description>
+      <guid>https://applied-systems-biology.github.io/jipipe/tutorials/analysis/</guid>
+      <description>This tutorial is also available as video.   1. First start On starting JIPipe, you will see such a screen: It contains a short introduction, the graph compartment editor, an three pre-defined graph compartments Preprocessing, Analysis, and Postprocessing. As described in the graph compartment documentation, you can ignore graph graph compartments. But in this tutorial we will make use of its capabilities to clearly separate the pipeline into the mentioned tree steps.</description>
     </item>
     
     <item>
       <title>JavaDocs</title>
-      <link>https://applied-systems-biology.github.io/acaq5/documentation-java-api/javadocs/</link>
+      <link>https://applied-systems-biology.github.io/jipipe/documentation-java-api/javadocs/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://applied-systems-biology.github.io/acaq5/documentation-java-api/javadocs/</guid>
+      <guid>https://applied-systems-biology.github.io/jipipe/documentation-java-api/javadocs/</guid>
       <description>The JavaDocs of the Java API can be found here:
  Open JavaDocs  </description>
     </item>
     
     <item>
       <title>Result view</title>
-      <link>https://applied-systems-biology.github.io/acaq5/documentation-java-api/data-type/result-ui/</link>
+      <link>https://applied-systems-biology.github.io/jipipe/documentation-java-api/data-type/result-ui/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://applied-systems-biology.github.io/acaq5/documentation-java-api/data-type/result-ui/</guid>
-      <description>After processing, users should be able to continue processing the data from within ACAQ5. The data instances are cleared from memory after processing, meaning that the data needs to be loaded from its output folder after processing.
+      <guid>https://applied-systems-biology.github.io/jipipe/documentation-java-api/data-type/result-ui/</guid>
+      <description>After processing, users should be able to continue processing the data from within JIPipe. The data instances are cleared from memory after processing, meaning that the data needs to be loaded from its output folder after processing.
 An user interface is shown when a user select a row in the results table. This UI can be replaced with a custom one that is designed to handle this specific data type.</description>
     </item>
     
     <item>
       <title>Image analysis pipeline (Video)</title>
-      <link>https://applied-systems-biology.github.io/acaq5/tutorials/analysis_video/</link>
+      <link>https://applied-systems-biology.github.io/jipipe/tutorials/analysis_video/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://applied-systems-biology.github.io/acaq5/tutorials/analysis_video/</guid>
+      <guid>https://applied-systems-biology.github.io/jipipe/tutorials/analysis_video/</guid>
       <description> This tutorial is also available as text tutorial.   </description>
     </item>
     
     <item>
       <title>Merging input data</title>
-      <link>https://applied-systems-biology.github.io/acaq5/documentation-java-api/algorithm/merging-algorithms/</link>
+      <link>https://applied-systems-biology.github.io/jipipe/documentation-java-api/algorithm/merging-algorithms/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://applied-systems-biology.github.io/acaq5/documentation-java-api/algorithm/merging-algorithms/</guid>
-      <description>You might need to develop an algorithm that does not simply iterate through its input(s), but organize it into groups to be merged. ACAQ5 comes with ACAQMergingAlgorithm that uses the annotation attached during processing to find data rows that belong to the same data set. The implementation creates ACAQMultiDataInterface instances that represent multiple data rows merged into one group.
+      <guid>https://applied-systems-biology.github.io/jipipe/documentation-java-api/algorithm/merging-algorithms/</guid>
+      <description>You might need to develop an algorithm that does not simply iterate through its input(s), but organize it into groups to be merged. JIPipe comes with JIPipeMergingAlgorithm that uses the annotation attached during processing to find data rows that belong to the same data set. The implementation creates JIPipeMultiDataInterface instances that represent multiple data rows merged into one group.
 Please access data via the data interface.
- The only difference to ACAQAlgorithm is that you need to override a different function called runIteration.</description>
+ The only difference to JIPipeAlgorithm is that you need to override a different function called runIteration.</description>
     </item>
     
     <item>
       <title>Algorithm type</title>
-      <link>https://applied-systems-biology.github.io/acaq5/documentation-json-api/algorithm/</link>
+      <link>https://applied-systems-biology.github.io/jipipe/documentation-json-api/algorithm/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://applied-systems-biology.github.io/acaq5/documentation-json-api/algorithm/</guid>
+      <guid>https://applied-systems-biology.github.io/jipipe/documentation-json-api/algorithm/</guid>
       <description>This document describes the properties of the JSON API object. You also can access the document in JSON Schema format: algorithm.schema.json
- Defines a new algorithm   id:  string       Unique algorithm ID   metadata:  See metadata        General algorithm metadata   category:  string  , x ∈ { Converter  , Processor  , Analysis  , DataSource  , FileSystem  , Annotation  , Miscellaneous  }       An algorithm category   parameter-visibilities:  object   [object Object]      Determines which parameters are visible to the user  visible-keys:  string[]       Determines the parameter keys that are visible string    Consists of [Algorithm instance ID]/[Parameter key in algorithm]          graph:  See graph        This graph is executed when the algorithm is run   menu-path:  string       Optional menu path within the category menu   acaq:project-type:  string  , x ∈ { graph-wrapper-algorithm  (default)  } &amp;lt;/span&amp;gt; &amp;lt;span class=&amp;quot;json-property-range&amp;quot; title=&amp;quot;Value limits&amp;quot;&amp;gt; &amp;lt;/span&amp;gt; &amp;lt;span class=&amp;quot;json-property-required&amp;quot;&amp;gt; &amp;lt;/span&amp;gt;     Identifies the JSON as algorithm      Example { &amp;#34;id&amp;#34; : &amp;#34;folder-list-tif&amp;#34;, &amp;#34;metadata&amp;#34; : { &amp;#34;name&amp;#34; : &amp;#34;List TIFF files&amp;#34;, &amp;#34;description&amp;#34; : &amp;#34;Lists all TIFF files in a folder&amp;#34;, &amp;#34;authors&amp;#34; : &amp;#34;Ruman Gerst&amp;#34;, &amp;#34;website&amp;#34; : &amp;#34;&amp;#34;, &amp;#34;license&amp;#34; : &amp;#34;BSD-2&amp;#34;, &amp;#34;citation&amp;#34; : &amp;#34;&amp;#34; }, &amp;#34;category&amp;#34; : &amp;#34;Converter&amp;#34;, &amp;#34;parameter-visibilities&amp;#34; : { &amp;#34;visible-keys&amp;#34; : [ ] }, &amp;#34;graph&amp;#34; : { &amp;#34;nodes&amp;#34; : { &amp;#34;default-preprocessing-filter-files&amp;#34; : { &amp;#34;acaq:slot-configuration&amp;#34; : { &amp;#34;Files&amp;#34; : { &amp;#34;slot-data-type&amp;#34; : &amp;#34;file&amp;#34;, &amp;#34;slot-type&amp;#34; : &amp;#34;Input&amp;#34;, &amp;#34;inherited-slot&amp;#34; : null, &amp;#34;name&amp;#34; : &amp;#34;Files&amp;#34;, &amp;#34;custom-name&amp;#34; : null, &amp;#34;inheritance-conversions&amp;#34; : { } }, &amp;#34;Filtered files&amp;#34; : { &amp;#34;slot-data-type&amp;#34; : &amp;#34;file&amp;#34;, &amp;#34;slot-type&amp;#34; : &amp;#34;Output&amp;#34;, &amp;#34;inherited-slot&amp;#34; : null, &amp;#34;name&amp;#34; : &amp;#34;Filtered files&amp;#34;, &amp;#34;custom-name&amp;#34; : null, &amp;#34;inheritance-conversions&amp;#34; : { } } }, &amp;#34;acaq:algorithm-ui-location&amp;#34; : { &amp;#34;{Vertical}&amp;#34; : { &amp;#34;x&amp;#34; : 25, &amp;#34;y&amp;#34; : 250 } }, &amp;#34;acaq:algorithm-type&amp;#34; : &amp;#34;file-filter&amp;#34;, &amp;#34;acaq:algorithm-compartment&amp;#34; : &amp;#34;DEFAULT&amp;#34;, &amp;#34;name&amp;#34; : &amp;#34;Filter *.</description>
+ Defines a new algorithm   id:  string       Unique algorithm ID   metadata:  See metadata        General algorithm metadata   category:  string  , x ∈ { Converter  , Processor  , Analysis  , DataSource  , FileSystem  , Annotation  , Miscellaneous  }       An algorithm category   parameter-visibilities:  object   [object Object]      Determines which parameters are visible to the user  visible-keys:  string[]       Determines the parameter keys that are visible string    Consists of [Algorithm instance ID]/[Parameter key in algorithm]          graph:  See graph        This graph is executed when the algorithm is run   menu-path:  string       Optional menu path within the category menu   jipipe:project-type:  string  , x ∈ { graph-wrapper-algorithm  (default)  } &amp;lt;/span&amp;gt; &amp;lt;span class=&amp;quot;json-property-range&amp;quot; title=&amp;quot;Value limits&amp;quot;&amp;gt; &amp;lt;/span&amp;gt; &amp;lt;span class=&amp;quot;json-property-required&amp;quot;&amp;gt; &amp;lt;/span&amp;gt;     Identifies the JSON as algorithm      Example { &amp;#34;id&amp;#34; : &amp;#34;folder-list-tif&amp;#34;, &amp;#34;metadata&amp;#34; : { &amp;#34;name&amp;#34; : &amp;#34;List TIFF files&amp;#34;, &amp;#34;description&amp;#34; : &amp;#34;Lists all TIFF files in a folder&amp;#34;, &amp;#34;authors&amp;#34; : &amp;#34;Ruman Gerst&amp;#34;, &amp;#34;website&amp;#34; : &amp;#34;&amp;#34;, &amp;#34;license&amp;#34; : &amp;#34;BSD-2&amp;#34;, &amp;#34;citation&amp;#34; : &amp;#34;&amp;#34; }, &amp;#34;category&amp;#34; : &amp;#34;Converter&amp;#34;, &amp;#34;parameter-visibilities&amp;#34; : { &amp;#34;visible-keys&amp;#34; : [ ] }, &amp;#34;graph&amp;#34; : { &amp;#34;nodes&amp;#34; : { &amp;#34;default-preprocessing-filter-files&amp;#34; : { &amp;#34;jipipe:slot-configuration&amp;#34; : { &amp;#34;Files&amp;#34; : { &amp;#34;slot-data-type&amp;#34; : &amp;#34;file&amp;#34;, &amp;#34;slot-type&amp;#34; : &amp;#34;Input&amp;#34;, &amp;#34;inherited-slot&amp;#34; : null, &amp;#34;name&amp;#34; : &amp;#34;Files&amp;#34;, &amp;#34;custom-name&amp;#34; : null, &amp;#34;inheritance-conversions&amp;#34; : { } }, &amp;#34;Filtered files&amp;#34; : { &amp;#34;slot-data-type&amp;#34; : &amp;#34;file&amp;#34;, &amp;#34;slot-type&amp;#34; : &amp;#34;Output&amp;#34;, &amp;#34;inherited-slot&amp;#34; : null, &amp;#34;name&amp;#34; : &amp;#34;Filtered files&amp;#34;, &amp;#34;custom-name&amp;#34; : null, &amp;#34;inheritance-conversions&amp;#34; : { } } }, &amp;#34;jipipe:algorithm-ui-location&amp;#34; : { &amp;#34;{Vertical}&amp;#34; : { &amp;#34;x&amp;#34; : 25, &amp;#34;y&amp;#34; : 250 } }, &amp;#34;jipipe:algorithm-type&amp;#34; : &amp;#34;file-filter&amp;#34;, &amp;#34;jipipe:algorithm-compartment&amp;#34; : &amp;#34;DEFAULT&amp;#34;, &amp;#34;name&amp;#34; : &amp;#34;Filter *.</description>
     </item>
     
     <item>
       <title>Creating an extension</title>
-      <link>https://applied-systems-biology.github.io/acaq5/tutorials/extension/</link>
+      <link>https://applied-systems-biology.github.io/jipipe/tutorials/extension/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://applied-systems-biology.github.io/acaq5/tutorials/extension/</guid>
+      <guid>https://applied-systems-biology.github.io/jipipe/tutorials/extension/</guid>
       <description>1. Existing pipeline In this tutorial, we will create a custom algorithm extension based on parts of the pipeline created in the other tutorial. Please open the project file for the pipeline and navigate to the Preprocessing tab.    2. Selecting the algorithms Please select the following algorithms (you can either do this by holding the Shift keyboard button and clicking the nodes or right-clicking them and selecting Add to selection):  Folder list Path to annotation List files Import 2D image (greyscale)  After selecting the algorithms, click the Export button on the top-right corner.</description>
     </item>
     
     <item>
       <title>Creating an extension project</title>
-      <link>https://applied-systems-biology.github.io/acaq5/documentation-java-api/create-extension/</link>
+      <link>https://applied-systems-biology.github.io/jipipe/documentation-java-api/create-extension/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://applied-systems-biology.github.io/acaq5/documentation-java-api/create-extension/</guid>
+      <guid>https://applied-systems-biology.github.io/jipipe/documentation-java-api/create-extension/</guid>
       <description>Prerequisities  Java 8 (Java 9+ are not working)  If you are using Windows or a Linux distribution without Java 8, we recommend AdoptOpenJDK (Please choose OpenJDK 8)   Maven  Creating the project The project should have following structure:
 Project root └── pom.xml └── src └── main ├── java └── resources Both the java and resources folder should contain a folder structure that is equivalent the groupId and artifactId of the project.</description>
     </item>
     
     <item>
       <title>Customizing slots</title>
-      <link>https://applied-systems-biology.github.io/acaq5/documentation-java-api/algorithm/slot-configuration/</link>
+      <link>https://applied-systems-biology.github.io/jipipe/documentation-java-api/algorithm/slot-configuration/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://applied-systems-biology.github.io/acaq5/documentation-java-api/algorithm/slot-configuration/</guid>
+      <guid>https://applied-systems-biology.github.io/jipipe/documentation-java-api/algorithm/slot-configuration/</guid>
       <description>In the previous examples, we used the @AlgorithmInputSlot and @AlgorithmOutputSlot annotations with autoCreate = true to automatically configure the slots.
 This is not sufficient for more complicated algorithms that require
- Restricting the number of slots Restricting the allowed data types Users to add more slots or remove existing ones  A custom ACAQSlotConfiguration can be used to implement such more advanced behaviors.
-For many cases, the default implementation ACAQMutableSlotConfiguration is sufficient.</description>
+ Restricting the number of slots Restricting the allowed data types Users to add more slots or remove existing ones  A custom JIPipeSlotConfiguration can be used to implement such more advanced behaviors.
+For many cases, the default implementation JIPipeMutableSlotConfiguration is sufficient.</description>
     </item>
     
     <item>
       <title>ImageJ integration</title>
-      <link>https://applied-systems-biology.github.io/acaq5/documentation/standard-library/imagej-integration/</link>
+      <link>https://applied-systems-biology.github.io/jipipe/documentation/standard-library/imagej-integration/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://applied-systems-biology.github.io/acaq5/documentation/standard-library/imagej-integration/</guid>
-      <description>The ImageJ integration library integrates common data types from ImageJ into ACAQ5:
- Multi-dimensional images (ImagePlus). The standard output file format are TIFF files. Result tables. They are serialized to CSV files. Region of interest (ROI Manager). ACAQ5 handles ROI as *.zip files.  The ImageJ data types are marked as accessible from outside ACAQ5, meaning that algorithms that only use those types can be executed standalone
+      <guid>https://applied-systems-biology.github.io/jipipe/documentation/standard-library/imagej-integration/</guid>
+      <description>The ImageJ integration library integrates common data types from ImageJ into JIPipe:
+ Multi-dimensional images (ImagePlus). The standard output file format are TIFF files. Result tables. They are serialized to CSV files. Region of interest (ROI Manager). JIPipe handles ROI as *.zip files.  The ImageJ data types are marked as accessible from outside JIPipe, meaning that algorithms that only use those types can be executed standalone
 Image data types Various ImageJ algorithms only work on data with a specific color type, or dimensionality.</description>
     </item>
     
     <item>
       <title>Multi-parameter algorithms</title>
-      <link>https://applied-systems-biology.github.io/acaq5/documentation/standard-library/multi-parameter/</link>
+      <link>https://applied-systems-biology.github.io/jipipe/documentation/standard-library/multi-parameter/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://applied-systems-biology.github.io/acaq5/documentation/standard-library/multi-parameter/</guid>
-      <description>The ACAQ5 standard library comes with algorithms that can create and manage parameter sets. An algorithm called Apply parameters then consumes those parameters and applies each one to the specified algorithm. Like any ACAQ5 data, parameter sets can be split and merged. We also provide an easy way to create a table of parameters, including ways to generate multiple parameter sets at once.
-The parameter data types can be found in Add data &amp;gt; Parameters.</description>
+      <guid>https://applied-systems-biology.github.io/jipipe/documentation/standard-library/multi-parameter/</guid>
+      <description>Most algorithms allow handling of multiple parameters via an additional slot that can be optionally enabled. You can find the setting in an algorithm&amp;rsquo;s settings as Multiple parameters. On selecting the item, a new slot will appear that consumes parameter data.
+To define parameters, use the algorithms found in Add data &amp;gt; Parameters. There are currently two data source algorithms available:
+ Define parameter defines a single set of parameters Define multiple parameters lets you define a table of parameters  Use Process &amp;gt; Merge &amp;gt; Merge slots to merge multiple parameter sets.</description>
     </item>
     
     <item>
       <title>Pipeline editor</title>
-      <link>https://applied-systems-biology.github.io/acaq5/documentation/graph-editor/</link>
+      <link>https://applied-systems-biology.github.io/jipipe/documentation/graph-editor/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://applied-systems-biology.github.io/acaq5/documentation/graph-editor/</guid>
+      <guid>https://applied-systems-biology.github.io/jipipe/documentation/graph-editor/</guid>
       <description>The graph editor (pipeline editor) allows you to edit the processing steps of a graph compartment. Its user interface is separated into three sections:
  The analysis graph contains the processing steps (also referred as algorithms) The settings panel shows the properties of the currently selected algorithms The toolbar allows you to add more algorithms into the graph, navigate to existing algorithms, change some behavior settings of the graph editor, and create screenshots  Analysis graph The analysis graph contains algorithms that are represented by rectangles.</description>
     </item>
     
     <item>
       <title>Table cell view</title>
-      <link>https://applied-systems-biology.github.io/acaq5/documentation-java-api/data-type/cell-ui/</link>
+      <link>https://applied-systems-biology.github.io/jipipe/documentation-java-api/data-type/cell-ui/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://applied-systems-biology.github.io/acaq5/documentation-java-api/data-type/cell-ui/</guid>
+      <guid>https://applied-systems-biology.github.io/jipipe/documentation-java-api/data-type/cell-ui/</guid>
       <description>For some data types, it is more convenient to display a short summary or the whole data directly within the corresponding cell in result data slot table.
-To create such a cell renderer, inherit from ACAQResultDataSlotCellUI
-public class MyDataSlotCellUI extends ACAQResultDataSlotCellUI { public MyDataSlotCellUI() { setOpaque(true); setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4)); } // This is very similar as in MyDataDataSlotRowUI  private Path findJsonFile(ACAQDataSlot slot, ACAQExportedDataTable.Row row) { if (ACAQResultDataSlotCellUI.getRowStorageFolder(slot, row) !</description>
+To create such a cell renderer, inherit from JIPipeResultDataSlotCellUI
+public class MyDataSlotCellUI extends JIPipeResultDataSlotCellUI { public MyDataSlotCellUI() { setOpaque(true); setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4)); } // This is very similar as in MyDataDataSlotRowUI  private Path findJsonFile(JIPipeDataSlot slot, JIPipeExportedDataTable.Row row) { if (JIPipeResultDataSlotCellUI.getRowStorageFolder(slot, row) !</description>
     </item>
     
     <item>
       <title>Dependency</title>
-      <link>https://applied-systems-biology.github.io/acaq5/documentation-json-api/dependency/</link>
+      <link>https://applied-systems-biology.github.io/jipipe/documentation-json-api/dependency/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://applied-systems-biology.github.io/acaq5/documentation-json-api/dependency/</guid>
+      <guid>https://applied-systems-biology.github.io/jipipe/documentation-json-api/dependency/</guid>
       <description>This document describes the properties of the JSON API object. You also can access the document in JSON Schema format: dependency.schema.json
- Project or extension dependency. Refers to an ACAQ5 extension.   metadata:  See metadata         id:  string       Unique ID of this dependency should have format  .  :       version:  string       Version of this dependency      Example { &amp;#34;metadata&amp;#34; : { &amp;#34;name&amp;#34; : &amp;#34;Filesystem types and algorithms&amp;#34;, &amp;#34;description&amp;#34; : &amp;#34;Data types and algorithms for interacting with files and folders&amp;#34;, &amp;#34;authors&amp;#34; : &amp;#34;Zoltán Cseresnyés, Ruman Gerst&amp;#34;, &amp;#34;website&amp;#34; : &amp;#34;https://applied-systems-biology.</description>
+ Project or extension dependency. Refers to an JIPipe extension.   metadata:  See metadata         id:  string       Unique ID of this dependency should have format  .  :       version:  string       Version of this dependency      Example { &amp;#34;metadata&amp;#34; : { &amp;#34;name&amp;#34; : &amp;#34;Filesystem types and algorithms&amp;#34;, &amp;#34;description&amp;#34; : &amp;#34;Data types and algorithms for interacting with files and folders&amp;#34;, &amp;#34;authors&amp;#34; : &amp;#34;Zoltán Cseresnyés, Ruman Gerst&amp;#34;, &amp;#34;website&amp;#34; : &amp;#34;https://applied-systems-biology.</description>
     </item>
     
     <item>
       <title>Filesystem algorithms</title>
-      <link>https://applied-systems-biology.github.io/acaq5/documentation/standard-library/filesystem/</link>
+      <link>https://applied-systems-biology.github.io/jipipe/documentation/standard-library/filesystem/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://applied-systems-biology.github.io/acaq5/documentation/standard-library/filesystem/</guid>
-      <description>The ACAQ5 standard library contains data types and algorithms to apply file system operations. The common use case is to extract the list of input files for the following algorithms.
+      <guid>https://applied-systems-biology.github.io/jipipe/documentation/standard-library/filesystem/</guid>
+      <description>The JIPipe standard library contains data types and algorithms to apply file system operations. The common use case is to extract the list of input files for the following algorithms.
 The filesystem library has two basic data types:
  A  File contains a path to a file A  Folder contains a path to a folder A Path contains a path to a file or folder  In the Add data menu you can define one file/folder or a list of files/folders.</description>
     </item>
     
     <item>
       <title>Graph compartments</title>
-      <link>https://applied-systems-biology.github.io/acaq5/documentation/graph-compartment/</link>
+      <link>https://applied-systems-biology.github.io/jipipe/documentation/graph-compartment/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://applied-systems-biology.github.io/acaq5/documentation/graph-compartment/</guid>
-      <description>A common issue with graphical programming languages is that large graphs are hard to navigate. ACAQ5 solves this issue by separating the pipeline graph into sub-graphs. Each sub-graph has a predetermined output node that is visible to other compartments. Other nodes on the other hand are not visible to other compartments.
+      <guid>https://applied-systems-biology.github.io/jipipe/documentation/graph-compartment/</guid>
+      <description>A common issue with graphical programming languages is that large graphs are hard to navigate. JIPipe solves this issue by separating the pipeline graph into sub-graphs. Each sub-graph has a predetermined output node that is visible to other compartments. Other nodes on the other hand are not visible to other compartments.
 The difference between compartments and simple node groups is that compartments only communicate with each other via the compartment output node.</description>
     </item>
     
     <item>
       <title>Parameters</title>
-      <link>https://applied-systems-biology.github.io/acaq5/documentation-java-api/algorithm/parameters/</link>
+      <link>https://applied-systems-biology.github.io/jipipe/documentation-java-api/algorithm/parameters/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://applied-systems-biology.github.io/acaq5/documentation-java-api/algorithm/parameters/</guid>
-      <description>You can add parameters to your algorithm by creating a property with a getter and setter. Then you annotate the getter and setter with the same @ACAQParameter keys. Also add an @ACAQDocumentation annotation to either the getter or setter.
+      <guid>https://applied-systems-biology.github.io/jipipe/documentation-java-api/algorithm/parameters/</guid>
+      <description>You can add parameters to your algorithm by creating a property with a getter and setter. Then you annotate the getter and setter with the same @JIPipeParameter keys. Also add an @JIPipeDocumentation annotation to either the getter or setter.
 Parameters are automatically serialized and deserialized.
 Please make sure to send an event when the parameter is set, so the UI can update.
-// ... see previous tutorials public class MyAlgorithm extends ACAQIteratingAlgorithm { float roundness = 0.</description>
+// ... see previous tutorials public class MyAlgorithm extends JIPipeIteratingAlgorithm { float roundness = 0.</description>
     </item>
     
     <item>
       <title>Parallelization</title>
-      <link>https://applied-systems-biology.github.io/acaq5/documentation-java-api/algorithm/parallelization/</link>
+      <link>https://applied-systems-biology.github.io/jipipe/documentation-java-api/algorithm/parallelization/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://applied-systems-biology.github.io/acaq5/documentation-java-api/algorithm/parallelization/</guid>
-      <description>The current version of ACAQ5 supports parallelization via a fixed thread pool. Parallelization is done on an per-algorithm-level, meaning that the algorithms are responsible for providing parallelization capabilities.
-The included base algorithms ACAQIteratingAlgorithm, ACAQSimpleIteratingAlgorithm, and ACAQMergingAlgorithm already come with support for parallelization that has to be manually enabled via code. The inherit from ACAQParallelizedAlgorithm and completely apply parallelization automatically.
-Automated parallelization (ACAQParallelizedAlgorithm) The automated parallelization is controlled by three factors:</description>
+      <guid>https://applied-systems-biology.github.io/jipipe/documentation-java-api/algorithm/parallelization/</guid>
+      <description>The current version of JIPipe supports parallelization via a fixed thread pool. Parallelization is done on an per-algorithm-level, meaning that the algorithms are responsible for providing parallelization capabilities.
+The included base algorithms JIPipeIteratingAlgorithm, JIPipeSimpleIteratingAlgorithm, and JIPipeMergingAlgorithm already come with support for parallelization that has to be manually enabled via code. The inherit from JIPipeParallelizedAlgorithm and completely apply parallelization automatically.
+Automated parallelization (JIPipeParallelizedAlgorithm) The automated parallelization is controlled by three factors:</description>
     </item>
     
     <item>
       <title>Custom algorithm declaration</title>
-      <link>https://applied-systems-biology.github.io/acaq5/documentation-java-api/algorithm/custom-declaration/</link>
+      <link>https://applied-systems-biology.github.io/jipipe/documentation-java-api/algorithm/custom-declaration/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://applied-systems-biology.github.io/acaq5/documentation-java-api/algorithm/custom-declaration/</guid>
+      <guid>https://applied-systems-biology.github.io/jipipe/documentation-java-api/algorithm/custom-declaration/</guid>
       <description>In the previous tutorials we used the standard way of creating algorithms. This might not be sufficient if you want to generate algorithms, for example by importing ImageJ algorithms, loading algorithms from JSON or generate algorithms for an unknown list of data types.
-How algorithms are registered Algorithm instances are created by an ACAQAlgorithmDeclaration. This declaration is the object that is actually registered into ACAQ5. It is able to create new instances of the declared algorithm, or copy it.</description>
+How algorithms are registered Algorithm instances are created by an JIPipeAlgorithmDeclaration. This declaration is the object that is actually registered into JIPipe. It is able to create new instances of the declared algorithm, or copy it.</description>
     </item>
     
     <item>
       <title>Graph Edge</title>
-      <link>https://applied-systems-biology.github.io/acaq5/documentation-json-api/graph-edge/</link>
+      <link>https://applied-systems-biology.github.io/jipipe/documentation-json-api/graph-edge/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://applied-systems-biology.github.io/acaq5/documentation-json-api/graph-edge/</guid>
+      <guid>https://applied-systems-biology.github.io/jipipe/documentation-json-api/graph-edge/</guid>
       <description>This document describes the properties of the JSON API object. You also can access the document in JSON Schema format: graph-edge.schema.json
  Edge in a graph   source-algorithm:  string       Algorithm ID of the edge source   target-algorithm:  string       Algorithm ID of the edge target   source-slot:  string       Slot name within the edge source algorithm   target-slot:  string       Slot name within the edge target algorithm      Example { &amp;#34;source-algorithm&amp;#34; : &amp;#34;default-preprocessing-list-files&amp;#34;, &amp;#34;target-algorithm&amp;#34; : &amp;#34;default-preprocessing-filter-files&amp;#34;, &amp;#34;source-slot&amp;#34; : &amp;#34;Files&amp;#34;, &amp;#34;target-slot&amp;#34; : &amp;#34;Files&amp;#34; } </description>
     </item>
     
     <item>
       <title>Running a pipeline</title>
-      <link>https://applied-systems-biology.github.io/acaq5/documentation/result-analysis/</link>
+      <link>https://applied-systems-biology.github.io/jipipe/documentation/result-analysis/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://applied-systems-biology.github.io/acaq5/documentation/result-analysis/</guid>
-      <description>ACAQ5 stores its results in a user-defined output folder. After clicking  Run (located at the top right corner of a project window) ACAQ5 will query the output folder from you. You can also generate a random folder that will be located on your operating system&amp;rsquo;s temporary directory by clicking the button.
-After confirming the settings by clicking  Run now, ACAQ5 will start processing the pipeline.
+      <guid>https://applied-systems-biology.github.io/jipipe/documentation/result-analysis/</guid>
+      <description>JIPipe stores its results in a user-defined output folder. After clicking  Run (located at the top right corner of a project window) JIPipe will query the output folder from you. You can also generate a random folder that will be located on your operating system&amp;rsquo;s temporary directory by clicking the button.
+After confirming the settings by clicking  Run now, JIPipe will start processing the pipeline.
 You can have as many runs as you want.</description>
     </item>
     
     <item>
       <title>Algorithm graph</title>
-      <link>https://applied-systems-biology.github.io/acaq5/documentation-json-api/graph/</link>
+      <link>https://applied-systems-biology.github.io/jipipe/documentation-json-api/graph/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://applied-systems-biology.github.io/acaq5/documentation-json-api/graph/</guid>
+      <guid>https://applied-systems-biology.github.io/jipipe/documentation-json-api/graph/</guid>
       <description>This document describes the properties of the JSON API object. You also can access the document in JSON Schema format: graph.schema.json
- A graph   nodes:  object   [object Object]      The nodes. Keys are the unique algorithm instance IDs. See algorithm-node        edges:  object[]       The edges. IDs in the edge definition must be consistent to the IDs in the &#39;nodes&#39; entry See graph-edge           Example { &amp;#34;nodes&amp;#34; : { &amp;#34;default-preprocessing-filter-files&amp;#34; : { &amp;#34;acaq:slot-configuration&amp;#34; : { &amp;#34;Files&amp;#34; : { &amp;#34;slot-data-type&amp;#34; : &amp;#34;file&amp;#34;, &amp;#34;slot-type&amp;#34; : &amp;#34;Input&amp;#34;, &amp;#34;inherited-slot&amp;#34; : null, &amp;#34;name&amp;#34; : &amp;#34;Files&amp;#34;, &amp;#34;custom-name&amp;#34; : null, &amp;#34;inheritance-conversions&amp;#34; : { } }, &amp;#34;Filtered files&amp;#34; : { &amp;#34;slot-data-type&amp;#34; : &amp;#34;file&amp;#34;, &amp;#34;slot-type&amp;#34; : &amp;#34;Output&amp;#34;, &amp;#34;inherited-slot&amp;#34; : null, &amp;#34;name&amp;#34; : &amp;#34;Filtered files&amp;#34;, &amp;#34;custom-name&amp;#34; : null, &amp;#34;inheritance-conversions&amp;#34; : { } } }, &amp;#34;acaq:algorithm-ui-location&amp;#34; : { &amp;#34;{Vertical}&amp;#34; : { &amp;#34;x&amp;#34; : 25, &amp;#34;y&amp;#34; : 250 } }, &amp;#34;acaq:algorithm-type&amp;#34; : &amp;#34;file-filter&amp;#34;, &amp;#34;acaq:algorithm-compartment&amp;#34; : &amp;#34;DEFAULT&amp;#34;, &amp;#34;name&amp;#34; : &amp;#34;Filter *.</description>
+ A graph   nodes:  object   [object Object]      The nodes. Keys are the unique algorithm instance IDs. See algorithm-node        edges:  object[]       The edges. IDs in the edge definition must be consistent to the IDs in the &#39;nodes&#39; entry See graph-edge           Example { &amp;#34;nodes&amp;#34; : { &amp;#34;default-preprocessing-filter-files&amp;#34; : { &amp;#34;jipipe:slot-configuration&amp;#34; : { &amp;#34;Files&amp;#34; : { &amp;#34;slot-data-type&amp;#34; : &amp;#34;file&amp;#34;, &amp;#34;slot-type&amp;#34; : &amp;#34;Input&amp;#34;, &amp;#34;inherited-slot&amp;#34; : null, &amp;#34;name&amp;#34; : &amp;#34;Files&amp;#34;, &amp;#34;custom-name&amp;#34; : null, &amp;#34;inheritance-conversions&amp;#34; : { } }, &amp;#34;Filtered files&amp;#34; : { &amp;#34;slot-data-type&amp;#34; : &amp;#34;file&amp;#34;, &amp;#34;slot-type&amp;#34; : &amp;#34;Output&amp;#34;, &amp;#34;inherited-slot&amp;#34; : null, &amp;#34;name&amp;#34; : &amp;#34;Filtered files&amp;#34;, &amp;#34;custom-name&amp;#34; : null, &amp;#34;inheritance-conversions&amp;#34; : { } } }, &amp;#34;jipipe:algorithm-ui-location&amp;#34; : { &amp;#34;{Vertical}&amp;#34; : { &amp;#34;x&amp;#34; : 25, &amp;#34;y&amp;#34; : 250 } }, &amp;#34;jipipe:algorithm-type&amp;#34; : &amp;#34;file-filter&amp;#34;, &amp;#34;jipipe:algorithm-compartment&amp;#34; : &amp;#34;DEFAULT&amp;#34;, &amp;#34;name&amp;#34; : &amp;#34;Filter *.</description>
     </item>
     
     <item>
       <title>Data annotation algorithms</title>
-      <link>https://applied-systems-biology.github.io/acaq5/documentation/standard-library/annotations/</link>
+      <link>https://applied-systems-biology.github.io/jipipe/documentation/standard-library/annotations/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://applied-systems-biology.github.io/acaq5/documentation/standard-library/annotations/</guid>
-      <description>Data annotations allow ACAQ5 algorithms and users to assign an unique data set to the data located in a data slot. The standard library contains various algorithms that allow to generate, manipulate, and utilize those annotations.
+      <guid>https://applied-systems-biology.github.io/jipipe/documentation/standard-library/annotations/</guid>
+      <description>Data annotations allow JIPipe algorithms and users to assign an unique data set to the data located in a data slot. The standard library contains various algorithms that allow to generate, manipulate, and utilize those annotations.
 We recommend to use the algorithms in Annotation &amp;gt; Generate while setting up filesystem operations or any other import step to prevent issues in following algorithm steps.</description>
     </item>
     
     <item>
       <title>Testing algorithm parameters</title>
-      <link>https://applied-systems-biology.github.io/acaq5/documentation/quick-run/</link>
+      <link>https://applied-systems-biology.github.io/jipipe/documentation/quick-run/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://applied-systems-biology.github.io/acaq5/documentation/quick-run/</guid>
+      <guid>https://applied-systems-biology.github.io/jipipe/documentation/quick-run/</guid>
       <description>Many algorithms require plenty of user-defined parameters to create the expected results. Finding those parameters on the other hand can be very time-consuming due to the requirement of repeating all previous and following processing steps.
-ACAQ5 comes with a feature termed Quick Run that makes it easier to only test a part of an analysis pipeline. You can find the testbench by selecting an algorithm in the algorithm graph and selecting the  Quick Run tab.</description>
+JIPipe comes with a feature termed Quick Run that makes it easier to only test a part of an analysis pipeline. You can find the testbench by selecting an algorithm in the algorithm graph and selecting the  Quick Run tab.</description>
     </item>
     
     <item>
       <title>Data caching</title>
-      <link>https://applied-systems-biology.github.io/acaq5/documentation/cache/</link>
+      <link>https://applied-systems-biology.github.io/jipipe/documentation/cache/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://applied-systems-biology.github.io/acaq5/documentation/cache/</guid>
-      <description>ACAQ5 has a project-wide cache for generated results. This cache can be accessed by algorithms to prevent repeating previous calculation steps.
+      <guid>https://applied-systems-biology.github.io/jipipe/documentation/cache/</guid>
+      <description>JIPipe has a project-wide cache for generated results. This cache can be accessed by algorithms to prevent repeating previous calculation steps.
 Cache items are assigned a unique identifier ( Snapshot) that is based on relevant algorithm parameters and the processing pipeline behind the data generation. You have multiple ways to manage and access the cache. First, in the top tool bar, there is a summary on how many items are currently cached.</description>
     </item>
     
     <item>
       <title>Extension</title>
-      <link>https://applied-systems-biology.github.io/acaq5/documentation-json-api/json-extension/</link>
+      <link>https://applied-systems-biology.github.io/jipipe/documentation-json-api/json-extension/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://applied-systems-biology.github.io/acaq5/documentation-json-api/json-extension/</guid>
+      <guid>https://applied-systems-biology.github.io/jipipe/documentation-json-api/json-extension/</guid>
       <description>This document describes the properties of the JSON API object. You also can access the document in JSON Schema format: json-extension.schema.json
  An extension that can be put into the ImageJ plugin folder   id:  string       Unique ID of this extension. Should have format  .  :       version:  string       Version of this extension   metadata:  See metadata        General metadata about the extension   algorithms:  object[]       List of added algorithms See algorithm           Example { &amp;#34;id&amp;#34; : &amp;#34;org.</description>
     </item>
     
     <item>
       <title>ImageJ integration</title>
-      <link>https://applied-systems-biology.github.io/acaq5/documentation/imagej-integration/</link>
+      <link>https://applied-systems-biology.github.io/jipipe/documentation/imagej-integration/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://applied-systems-biology.github.io/acaq5/documentation/imagej-integration/</guid>
-      <description>ACAQ5 algorithms and pipelines can be executed from within an ImageJ environment. There are two ways ACAQ5 integrates back into ImageJ:
- You can run a pipeline project from a macro/command You can run ACAQ5 algorithms from a macro/command if the slot data types are supported by ImageJ  Running a pipeline You can run an ACAQ5 pipeline via the command Plugins &amp;gt; ACAQ5 &amp;gt; Run ACAQ5 project. It will ask you the project file and the output directory.</description>
+      <guid>https://applied-systems-biology.github.io/jipipe/documentation/imagej-integration/</guid>
+      <description>JIPipe algorithms and pipelines can be executed from within an ImageJ environment. There are two ways JIPipe integrates back into ImageJ:
+ You can run a pipeline project from a macro/command You can run JIPipe algorithms from a macro/command if the slot data types are supported by ImageJ  Running a pipeline You can run an JIPipe pipeline via the command Plugins &amp;gt; JIPipe &amp;gt; Run JIPipe project. It will ask you the project file and the output directory.</description>
     </item>
     
     <item>
       <title>Managing plugins</title>
-      <link>https://applied-systems-biology.github.io/acaq5/documentation/plugins/</link>
+      <link>https://applied-systems-biology.github.io/jipipe/documentation/plugins/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://applied-systems-biology.github.io/acaq5/documentation/plugins/</guid>
-      <description>ACAQ5 has its own plugin (extension) system that is independent of the one provided by ImageJ/SciJava. You can find a list of plugins in Plugins &amp;gt; Manage plugins.
-ACAQ5 by default supports two types of extensions:
+      <guid>https://applied-systems-biology.github.io/jipipe/documentation/plugins/</guid>
+      <description>JIPipe has its own plugin (extension) system that is independent of the one provided by ImageJ/SciJava. You can find a list of plugins in Plugins &amp;gt; Manage plugins.
+JIPipe by default supports two types of extensions:
  Java extensions are similar to ImageJ plugins (*.jar) and are the most powerful plugin type. Just like ImageJ plugins, they are located in the plugins directory. JSON plugins are similar to ImageJ macros or scripts, as they are pure text files.</description>
     </item>
     
     <item>
       <title>Plots and tables</title>
-      <link>https://applied-systems-biology.github.io/acaq5/documentation/standard-library/plots-tables/</link>
+      <link>https://applied-systems-biology.github.io/jipipe/documentation/standard-library/plots-tables/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://applied-systems-biology.github.io/acaq5/documentation/standard-library/plots-tables/</guid>
-      <description>The standard library contains algorithms and data types that allows to manipulate tables, and create plots. The table data type is the ACAQ5 wrapper for the ImageJ results table (see ImageJ integration).
+      <guid>https://applied-systems-biology.github.io/jipipe/documentation/standard-library/plots-tables/</guid>
+      <description>The standard library contains algorithms and data types that allows to manipulate tables, and create plots. The table data type is the JIPipe wrapper for the ImageJ results table (see ImageJ integration).
 Manipulating tables Table manipulation operations are located in Process &amp;gt; Tables and allow you to add, remove, or replace columns.
 Creating plots Plots can be created via the Analyze &amp;gt; Plot &amp;gt; Plot tables algorithm that processes each incoming result table and produces an automatically generated plot.</description>
     </item>
     
     <item>
       <title>Metadata</title>
-      <link>https://applied-systems-biology.github.io/acaq5/documentation-json-api/metadata/</link>
+      <link>https://applied-systems-biology.github.io/jipipe/documentation-json-api/metadata/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://applied-systems-biology.github.io/acaq5/documentation-json-api/metadata/</guid>
+      <guid>https://applied-systems-biology.github.io/jipipe/documentation-json-api/metadata/</guid>
       <description>This document describes the properties of the JSON API object. You also can access the document in JSON Schema format: metadata.schema.json
- Commonly used metadata type in ACAQ.   name:  string       A name   description:  string       A description   authors:  string       Comma-separated list of authors   website:  string       Website of the project   license:  string       Name of the license   citation:  string       Citation for the publication      Example { &amp;#34;name&amp;#34; : &amp;#34;Image property annotations&amp;#34;, &amp;#34;description&amp;#34; : &amp;#34;Commonly used annotations for describing image properties&amp;#34;, &amp;#34;authors&amp;#34; : &amp;#34;Zoltán Cseresnyés, Ruman Gerst&amp;#34;, &amp;#34;website&amp;#34; : &amp;#34;https://applied-systems-biology.</description>
+ Commonly used metadata type in JIPipe.   name:  string       A name   description:  string       A description   authors:  string       Comma-separated list of authors   website:  string       Website of the project   license:  string       Name of the license   citation:  string       Citation for the publication      Example { &amp;#34;name&amp;#34; : &amp;#34;Image property annotations&amp;#34;, &amp;#34;description&amp;#34; : &amp;#34;Commonly used annotations for describing image properties&amp;#34;, &amp;#34;authors&amp;#34; : &amp;#34;Zoltán Cseresnyés, Ruman Gerst&amp;#34;, &amp;#34;website&amp;#34; : &amp;#34;https://applied-systems-biology.</description>
     </item>
     
     <item>
       <title>Point</title>
-      <link>https://applied-systems-biology.github.io/acaq5/documentation-json-api/point/</link>
+      <link>https://applied-systems-biology.github.io/jipipe/documentation-json-api/point/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://applied-systems-biology.github.io/acaq5/documentation-json-api/point/</guid>
+      <guid>https://applied-systems-biology.github.io/jipipe/documentation-json-api/point/</guid>
       <description>This document describes the properties of the JSON API object. You also can access the document in JSON Schema format: point.schema.json
  A point   x:  integer       X coordinate   y:  integer       Y coordinate      Example { &amp;#34;x&amp;#34; : 2900, &amp;#34;y&amp;#34; : 100 } </description>
     </item>
     
     <item>
       <title>Project</title>
-      <link>https://applied-systems-biology.github.io/acaq5/documentation-json-api/project/</link>
+      <link>https://applied-systems-biology.github.io/jipipe/documentation-json-api/project/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://applied-systems-biology.github.io/acaq5/documentation-json-api/project/</guid>
+      <guid>https://applied-systems-biology.github.io/jipipe/documentation-json-api/project/</guid>
       <description>This document describes the properties of the JSON API object. You also can access the document in JSON Schema format: project.schema.json
- An analysis project   acaq:project-type:  string  , x ∈ { project  (default)  } &amp;lt;/span&amp;gt; &amp;lt;span class=&amp;quot;json-property-range&amp;quot; title=&amp;quot;Value limits&amp;quot;&amp;gt; &amp;lt;/span&amp;gt; &amp;lt;span class=&amp;quot;json-property-required&amp;quot;&amp;gt; &amp;lt;/span&amp;gt;     Used to identify this JSON as ACAQ5 project   metadata:  See metadata    [object Object]      General information about the project   dependencies:  object[]       Dependencies of this project See dependency        algorithm-graph:  See graph    [object Object]      Contains the algorithms   compartments:  object   [object Object]      For organization of compartments  compartment-graph:  See graph    [object Object]      Structural graph of compartments          Example { &amp;#34;acaq:project-type&amp;#34; : &amp;#34;project&amp;#34;, &amp;#34;metadata&amp;#34; : { &amp;#34;name&amp;#34; : &amp;#34;New project&amp;#34;, &amp;#34;description&amp;#34; : &amp;#34;An ACAQ5 project&amp;#34;, &amp;#34;authors&amp;#34; : &amp;#34;&amp;#34;, &amp;#34;website&amp;#34; : &amp;#34;&amp;#34;, &amp;#34;license&amp;#34; : &amp;#34;&amp;#34;, &amp;#34;citation&amp;#34; : &amp;#34;&amp;#34; }, &amp;#34;dependencies&amp;#34; : [ { &amp;#34;metadata&amp;#34; : { &amp;#34;name&amp;#34; : &amp;#34;Image property annotations&amp;#34;, &amp;#34;description&amp;#34; : &amp;#34;Commonly used annotations for describing image properties&amp;#34;, &amp;#34;authors&amp;#34; : &amp;#34;Zoltán Cseresnyés, Ruman Gerst&amp;#34;, &amp;#34;website&amp;#34; : &amp;#34;https://applied-systems-biology.</description>
+ An analysis project   jipipe:project-type:  string  , x ∈ { project  (default)  } &amp;lt;/span&amp;gt; &amp;lt;span class=&amp;quot;json-property-range&amp;quot; title=&amp;quot;Value limits&amp;quot;&amp;gt; &amp;lt;/span&amp;gt; &amp;lt;span class=&amp;quot;json-property-required&amp;quot;&amp;gt; &amp;lt;/span&amp;gt;     Used to identify this JSON as JIPipe project   metadata:  See metadata    [object Object]      General information about the project   dependencies:  object[]       Dependencies of this project See dependency        algorithm-graph:  See graph    [object Object]      Contains the algorithms   compartments:  object   [object Object]      For organization of compartments  compartment-graph:  See graph    [object Object]      Structural graph of compartments          Example { &amp;#34;jipipe:project-type&amp;#34; : &amp;#34;project&amp;#34;, &amp;#34;metadata&amp;#34; : { &amp;#34;name&amp;#34; : &amp;#34;New project&amp;#34;, &amp;#34;description&amp;#34; : &amp;#34;An JIPipe project&amp;#34;, &amp;#34;authors&amp;#34; : &amp;#34;&amp;#34;, &amp;#34;website&amp;#34; : &amp;#34;&amp;#34;, &amp;#34;license&amp;#34; : &amp;#34;&amp;#34;, &amp;#34;citation&amp;#34; : &amp;#34;&amp;#34; }, &amp;#34;dependencies&amp;#34; : [ { &amp;#34;metadata&amp;#34; : { &amp;#34;name&amp;#34; : &amp;#34;Image property annotations&amp;#34;, &amp;#34;description&amp;#34; : &amp;#34;Commonly used annotations for describing image properties&amp;#34;, &amp;#34;authors&amp;#34; : &amp;#34;Zoltán Cseresnyés, Ruman Gerst&amp;#34;, &amp;#34;website&amp;#34; : &amp;#34;https://applied-systems-biology.</description>
     </item>
     
     <item>
       <title>Slot definition</title>
-      <link>https://applied-systems-biology.github.io/acaq5/documentation-json-api/slot-definition/</link>
+      <link>https://applied-systems-biology.github.io/jipipe/documentation-json-api/slot-definition/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://applied-systems-biology.github.io/acaq5/documentation-json-api/slot-definition/</guid>
+      <guid>https://applied-systems-biology.github.io/jipipe/documentation-json-api/slot-definition/</guid>
       <description>This document describes the properties of the JSON API object. You also can access the document in JSON Schema format: slot-definition.schema.json
  Defines a data slot   slot-data-type:  string       The data type ID of the data stored in this slot   slot-type:  string  , x ∈ { Input  , Output  }       Determines if the slot is an input or an output   inherited-slot:  object      Only valid for output slot.</description>
     </item>
     
     <item>
       <title></title>
-      <link>https://applied-systems-biology.github.io/acaq5/_footer/</link>
+      <link>https://applied-systems-biology.github.io/jipipe/_footer/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://applied-systems-biology.github.io/acaq5/_footer/</guid>
+      <guid>https://applied-systems-biology.github.io/jipipe/_footer/</guid>
       <description>By Applied Systems Biology, Leibniz Institute for Natural Product Research and Infection Biology – Hans Knöll Institute (HKI), Jena, Germany</description>
     </item>
     

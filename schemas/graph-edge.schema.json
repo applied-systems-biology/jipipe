@@ -1,6 +1,6 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema",
-    "$id": "https://applied-systems-biology.github.io/acaq5/schemas/graph-edge.schema.json",
+    "$id": "https://applied-systems-biology.github.io/jipipe/schemas/graph-edge.schema.json",
     "type": "object",
     "title": "Graph Edge",
     "description": "Edge in a graph",

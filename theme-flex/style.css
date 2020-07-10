@@ -45,7 +45,7 @@ header {
   top: 0;
   z-index: 100; }
   header:after {
-    background: #ff6600;
+    background: #aa87de;
     content: '';
     height: .35rem;
     left: 0;

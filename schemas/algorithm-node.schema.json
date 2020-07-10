@@ -1,19 +1,19 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema",
-    "$id": "https://applied-systems-biology.github.io/acaq5/schemas/algorithm-node.schema.json",
+    "$id": "https://applied-systems-biology.github.io/jipipe/schemas/algorithm-node.schema.json",
     "type": "object",
     "title": "Algorithm node",
     "description": "Node in a graph",
     "required": [
-        "acaq:slot-configuration",
-        "acaq:algorithm-type",
-        "acaq:algorithm-compartment",
+        "jipipe:slot-configuration",
+        "jipipe:algorithm-type",
+        "jipipe:algorithm-compartment",
         "name",
         "description"
     ],
     "properties": {
-        "acaq:slot-configuration": {
-            "$id": "#/properties/acaq:slot-configuration",
+        "jipipe:slot-configuration": {
+            "$id": "#/properties/jipipe:slot-configuration",
             "type": "object",
             "title": "Slots",
             "description": "User-defined slots. Might be ignored depending on the algorithm. The keys are the slot names.",
@@ -22,11 +22,11 @@
                 {}
             ],
             "additionalProperties": {
-              "$ref": "https://applied-systems-biology.github.io/acaq5/schemas/slot-definition.schema.json"
+              "$ref": "https://applied-systems-biology.github.io/jipipe/schemas/slot-definition.schema.json"
             }
         },
-        "acaq:algorithm-ui-location": {
-            "$id": "#/properties/acaq:algorithm-ui-location",
+        "jipipe:algorithm-ui-location": {
+            "$id": "#/properties/jipipe:algorithm-ui-location",
             "type": "object",
             "title": "UI locations",
             "description": "Locations of this node within the UI. Optional. The keys depend on the UI implementation.",
@@ -35,11 +35,11 @@
                 {}
             ],
             "additionalProperties": {
-              "$ref": "https://applied-systems-biology.github.io/acaq5/schemas/point.schema.json"
+              "$ref": "https://applied-systems-biology.github.io/jipipe/schemas/point.schema.json"
             }
         },
-        "acaq:algorithm-type": {
-            "$id": "#/properties/acaq:algorithm-type",
+        "jipipe:algorithm-type": {
+            "$id": "#/properties/jipipe:algorithm-type",
             "type": "string",
             "title": "Algorithm ID",
             "description": "Algorithm type ID",
@@ -48,8 +48,8 @@
                 "imagej-imgplus-2d-greyscale-from-file"
             ]
         },
-        "acaq:algorithm-compartment": {
-            "$id": "#/properties/acaq:algorithm-compartment",
+        "jipipe:algorithm-compartment": {
+            "$id": "#/properties/jipipe:algorithm-compartment",
             "type": "string",
             "title": "Graph compartment",
             "description": "Compartment ID. Only important for the UI.",

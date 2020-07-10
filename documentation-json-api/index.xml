@@ -1,111 +1,111 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>JSON API documentation on ACAQ5 for ImageJ</title>
-    <link>https://applied-systems-biology.github.io/acaq5/documentation-json-api/</link>
-    <description>Recent content in JSON API documentation on ACAQ5 for ImageJ</description>
+    <title>JSON API documentation on JIPipe for ImageJ</title>
+    <link>https://applied-systems-biology.github.io/jipipe/documentation-json-api/</link>
+    <description>Recent content in JSON API documentation on JIPipe for ImageJ</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     
-	<atom:link href="https://applied-systems-biology.github.io/acaq5/documentation-json-api/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://applied-systems-biology.github.io/jipipe/documentation-json-api/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Algorithm node</title>
-      <link>https://applied-systems-biology.github.io/acaq5/documentation-json-api/algorithm-node/</link>
+      <link>https://applied-systems-biology.github.io/jipipe/documentation-json-api/algorithm-node/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://applied-systems-biology.github.io/acaq5/documentation-json-api/algorithm-node/</guid>
+      <guid>https://applied-systems-biology.github.io/jipipe/documentation-json-api/algorithm-node/</guid>
       <description>This document describes the properties of the JSON API object. You also can access the document in JSON Schema format: algorithm-node.schema.json
- Node in a graph   acaq:slot-configuration:  object   [object Object]      User-defined slots. Might be ignored depending on the algorithm. The keys are the slot names. See slot-definition        acaq:algorithm-ui-location:  object   [object Object]     Locations of this node within the UI.</description>
+ Node in a graph   jipipe:slot-configuration:  object   [object Object]      User-defined slots. Might be ignored depending on the algorithm. The keys are the slot names. See slot-definition        jipipe:algorithm-ui-location:  object   [object Object]     Locations of this node within the UI.</description>
     </item>
     
     <item>
       <title>Algorithm type</title>
-      <link>https://applied-systems-biology.github.io/acaq5/documentation-json-api/algorithm/</link>
+      <link>https://applied-systems-biology.github.io/jipipe/documentation-json-api/algorithm/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://applied-systems-biology.github.io/acaq5/documentation-json-api/algorithm/</guid>
+      <guid>https://applied-systems-biology.github.io/jipipe/documentation-json-api/algorithm/</guid>
       <description>This document describes the properties of the JSON API object. You also can access the document in JSON Schema format: algorithm.schema.json
- Defines a new algorithm   id:  string       Unique algorithm ID   metadata:  See metadata        General algorithm metadata   category:  string  , x ∈ { Converter  , Processor  , Analysis  , DataSource  , FileSystem  , Annotation  , Miscellaneous  }       An algorithm category   parameter-visibilities:  object   [object Object]      Determines which parameters are visible to the user  visible-keys:  string[]       Determines the parameter keys that are visible string    Consists of [Algorithm instance ID]/[Parameter key in algorithm]          graph:  See graph        This graph is executed when the algorithm is run   menu-path:  string       Optional menu path within the category menu   acaq:project-type:  string  , x ∈ { graph-wrapper-algorithm  (default)  } &amp;lt;/span&amp;gt; &amp;lt;span class=&amp;quot;json-property-range&amp;quot; title=&amp;quot;Value limits&amp;quot;&amp;gt; &amp;lt;/span&amp;gt; &amp;lt;span class=&amp;quot;json-property-required&amp;quot;&amp;gt; &amp;lt;/span&amp;gt;     Identifies the JSON as algorithm      Example { &amp;#34;id&amp;#34; : &amp;#34;folder-list-tif&amp;#34;, &amp;#34;metadata&amp;#34; : { &amp;#34;name&amp;#34; : &amp;#34;List TIFF files&amp;#34;, &amp;#34;description&amp;#34; : &amp;#34;Lists all TIFF files in a folder&amp;#34;, &amp;#34;authors&amp;#34; : &amp;#34;Ruman Gerst&amp;#34;, &amp;#34;website&amp;#34; : &amp;#34;&amp;#34;, &amp;#34;license&amp;#34; : &amp;#34;BSD-2&amp;#34;, &amp;#34;citation&amp;#34; : &amp;#34;&amp;#34; }, &amp;#34;category&amp;#34; : &amp;#34;Converter&amp;#34;, &amp;#34;parameter-visibilities&amp;#34; : { &amp;#34;visible-keys&amp;#34; : [ ] }, &amp;#34;graph&amp;#34; : { &amp;#34;nodes&amp;#34; : { &amp;#34;default-preprocessing-filter-files&amp;#34; : { &amp;#34;acaq:slot-configuration&amp;#34; : { &amp;#34;Files&amp;#34; : { &amp;#34;slot-data-type&amp;#34; : &amp;#34;file&amp;#34;, &amp;#34;slot-type&amp;#34; : &amp;#34;Input&amp;#34;, &amp;#34;inherited-slot&amp;#34; : null, &amp;#34;name&amp;#34; : &amp;#34;Files&amp;#34;, &amp;#34;custom-name&amp;#34; : null, &amp;#34;inheritance-conversions&amp;#34; : { } }, &amp;#34;Filtered files&amp;#34; : { &amp;#34;slot-data-type&amp;#34; : &amp;#34;file&amp;#34;, &amp;#34;slot-type&amp;#34; : &amp;#34;Output&amp;#34;, &amp;#34;inherited-slot&amp;#34; : null, &amp;#34;name&amp;#34; : &amp;#34;Filtered files&amp;#34;, &amp;#34;custom-name&amp;#34; : null, &amp;#34;inheritance-conversions&amp;#34; : { } } }, &amp;#34;acaq:algorithm-ui-location&amp;#34; : { &amp;#34;{Vertical}&amp;#34; : { &amp;#34;x&amp;#34; : 25, &amp;#34;y&amp;#34; : 250 } }, &amp;#34;acaq:algorithm-type&amp;#34; : &amp;#34;file-filter&amp;#34;, &amp;#34;acaq:algorithm-compartment&amp;#34; : &amp;#34;DEFAULT&amp;#34;, &amp;#34;name&amp;#34; : &amp;#34;Filter *.</description>
+ Defines a new algorithm   id:  string       Unique algorithm ID   metadata:  See metadata        General algorithm metadata   category:  string  , x ∈ { Converter  , Processor  , Analysis  , DataSource  , FileSystem  , Annotation  , Miscellaneous  }       An algorithm category   parameter-visibilities:  object   [object Object]      Determines which parameters are visible to the user  visible-keys:  string[]       Determines the parameter keys that are visible string    Consists of [Algorithm instance ID]/[Parameter key in algorithm]          graph:  See graph        This graph is executed when the algorithm is run   menu-path:  string       Optional menu path within the category menu   jipipe:project-type:  string  , x ∈ { graph-wrapper-algorithm  (default)  } &amp;lt;/span&amp;gt; &amp;lt;span class=&amp;quot;json-property-range&amp;quot; title=&amp;quot;Value limits&amp;quot;&amp;gt; &amp;lt;/span&amp;gt; &amp;lt;span class=&amp;quot;json-property-required&amp;quot;&amp;gt; &amp;lt;/span&amp;gt;     Identifies the JSON as algorithm      Example { &amp;#34;id&amp;#34; : &amp;#34;folder-list-tif&amp;#34;, &amp;#34;metadata&amp;#34; : { &amp;#34;name&amp;#34; : &amp;#34;List TIFF files&amp;#34;, &amp;#34;description&amp;#34; : &amp;#34;Lists all TIFF files in a folder&amp;#34;, &amp;#34;authors&amp;#34; : &amp;#34;Ruman Gerst&amp;#34;, &amp;#34;website&amp;#34; : &amp;#34;&amp;#34;, &amp;#34;license&amp;#34; : &amp;#34;BSD-2&amp;#34;, &amp;#34;citation&amp;#34; : &amp;#34;&amp;#34; }, &amp;#34;category&amp;#34; : &amp;#34;Converter&amp;#34;, &amp;#34;parameter-visibilities&amp;#34; : { &amp;#34;visible-keys&amp;#34; : [ ] }, &amp;#34;graph&amp;#34; : { &amp;#34;nodes&amp;#34; : { &amp;#34;default-preprocessing-filter-files&amp;#34; : { &amp;#34;jipipe:slot-configuration&amp;#34; : { &amp;#34;Files&amp;#34; : { &amp;#34;slot-data-type&amp;#34; : &amp;#34;file&amp;#34;, &amp;#34;slot-type&amp;#34; : &amp;#34;Input&amp;#34;, &amp;#34;inherited-slot&amp;#34; : null, &amp;#34;name&amp;#34; : &amp;#34;Files&amp;#34;, &amp;#34;custom-name&amp;#34; : null, &amp;#34;inheritance-conversions&amp;#34; : { } }, &amp;#34;Filtered files&amp;#34; : { &amp;#34;slot-data-type&amp;#34; : &amp;#34;file&amp;#34;, &amp;#34;slot-type&amp;#34; : &amp;#34;Output&amp;#34;, &amp;#34;inherited-slot&amp;#34; : null, &amp;#34;name&amp;#34; : &amp;#34;Filtered files&amp;#34;, &amp;#34;custom-name&amp;#34; : null, &amp;#34;inheritance-conversions&amp;#34; : { } } }, &amp;#34;jipipe:algorithm-ui-location&amp;#34; : { &amp;#34;{Vertical}&amp;#34; : { &amp;#34;x&amp;#34; : 25, &amp;#34;y&amp;#34; : 250 } }, &amp;#34;jipipe:algorithm-type&amp;#34; : &amp;#34;file-filter&amp;#34;, &amp;#34;jipipe:algorithm-compartment&amp;#34; : &amp;#34;DEFAULT&amp;#34;, &amp;#34;name&amp;#34; : &amp;#34;Filter *.</description>
     </item>
     
     <item>
       <title>Dependency</title>
-      <link>https://applied-systems-biology.github.io/acaq5/documentation-json-api/dependency/</link>
+      <link>https://applied-systems-biology.github.io/jipipe/documentation-json-api/dependency/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://applied-systems-biology.github.io/acaq5/documentation-json-api/dependency/</guid>
+      <guid>https://applied-systems-biology.github.io/jipipe/documentation-json-api/dependency/</guid>
       <description>This document describes the properties of the JSON API object. You also can access the document in JSON Schema format: dependency.schema.json
- Project or extension dependency. Refers to an ACAQ5 extension.   metadata:  See metadata         id:  string       Unique ID of this dependency should have format  .  :       version:  string       Version of this dependency      Example { &amp;#34;metadata&amp;#34; : { &amp;#34;name&amp;#34; : &amp;#34;Filesystem types and algorithms&amp;#34;, &amp;#34;description&amp;#34; : &amp;#34;Data types and algorithms for interacting with files and folders&amp;#34;, &amp;#34;authors&amp;#34; : &amp;#34;Zoltán Cseresnyés, Ruman Gerst&amp;#34;, &amp;#34;website&amp;#34; : &amp;#34;https://applied-systems-biology.</description>
+ Project or extension dependency. Refers to an JIPipe extension.   metadata:  See metadata         id:  string       Unique ID of this dependency should have format  .  :       version:  string       Version of this dependency      Example { &amp;#34;metadata&amp;#34; : { &amp;#34;name&amp;#34; : &amp;#34;Filesystem types and algorithms&amp;#34;, &amp;#34;description&amp;#34; : &amp;#34;Data types and algorithms for interacting with files and folders&amp;#34;, &amp;#34;authors&amp;#34; : &amp;#34;Zoltán Cseresnyés, Ruman Gerst&amp;#34;, &amp;#34;website&amp;#34; : &amp;#34;https://applied-systems-biology.</description>
     </item>
     
     <item>
       <title>Graph Edge</title>
-      <link>https://applied-systems-biology.github.io/acaq5/documentation-json-api/graph-edge/</link>
+      <link>https://applied-systems-biology.github.io/jipipe/documentation-json-api/graph-edge/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://applied-systems-biology.github.io/acaq5/documentation-json-api/graph-edge/</guid>
+      <guid>https://applied-systems-biology.github.io/jipipe/documentation-json-api/graph-edge/</guid>
       <description>This document describes the properties of the JSON API object. You also can access the document in JSON Schema format: graph-edge.schema.json
  Edge in a graph   source-algorithm:  string       Algorithm ID of the edge source   target-algorithm:  string       Algorithm ID of the edge target   source-slot:  string       Slot name within the edge source algorithm   target-slot:  string       Slot name within the edge target algorithm      Example { &amp;#34;source-algorithm&amp;#34; : &amp;#34;default-preprocessing-list-files&amp;#34;, &amp;#34;target-algorithm&amp;#34; : &amp;#34;default-preprocessing-filter-files&amp;#34;, &amp;#34;source-slot&amp;#34; : &amp;#34;Files&amp;#34;, &amp;#34;target-slot&amp;#34; : &amp;#34;Files&amp;#34; } </description>
     </item>
     
     <item>
       <title>Algorithm graph</title>
-      <link>https://applied-systems-biology.github.io/acaq5/documentation-json-api/graph/</link>
+      <link>https://applied-systems-biology.github.io/jipipe/documentation-json-api/graph/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://applied-systems-biology.github.io/acaq5/documentation-json-api/graph/</guid>
+      <guid>https://applied-systems-biology.github.io/jipipe/documentation-json-api/graph/</guid>
       <description>This document describes the properties of the JSON API object. You also can access the document in JSON Schema format: graph.schema.json
- A graph   nodes:  object   [object Object]      The nodes. Keys are the unique algorithm instance IDs. See algorithm-node        edges:  object[]       The edges. IDs in the edge definition must be consistent to the IDs in the &#39;nodes&#39; entry See graph-edge           Example { &amp;#34;nodes&amp;#34; : { &amp;#34;default-preprocessing-filter-files&amp;#34; : { &amp;#34;acaq:slot-configuration&amp;#34; : { &amp;#34;Files&amp;#34; : { &amp;#34;slot-data-type&amp;#34; : &amp;#34;file&amp;#34;, &amp;#34;slot-type&amp;#34; : &amp;#34;Input&amp;#34;, &amp;#34;inherited-slot&amp;#34; : null, &amp;#34;name&amp;#34; : &amp;#34;Files&amp;#34;, &amp;#34;custom-name&amp;#34; : null, &amp;#34;inheritance-conversions&amp;#34; : { } }, &amp;#34;Filtered files&amp;#34; : { &amp;#34;slot-data-type&amp;#34; : &amp;#34;file&amp;#34;, &amp;#34;slot-type&amp;#34; : &amp;#34;Output&amp;#34;, &amp;#34;inherited-slot&amp;#34; : null, &amp;#34;name&amp;#34; : &amp;#34;Filtered files&amp;#34;, &amp;#34;custom-name&amp;#34; : null, &amp;#34;inheritance-conversions&amp;#34; : { } } }, &amp;#34;acaq:algorithm-ui-location&amp;#34; : { &amp;#34;{Vertical}&amp;#34; : { &amp;#34;x&amp;#34; : 25, &amp;#34;y&amp;#34; : 250 } }, &amp;#34;acaq:algorithm-type&amp;#34; : &amp;#34;file-filter&amp;#34;, &amp;#34;acaq:algorithm-compartment&amp;#34; : &amp;#34;DEFAULT&amp;#34;, &amp;#34;name&amp;#34; : &amp;#34;Filter *.</description>
+ A graph   nodes:  object   [object Object]      The nodes. Keys are the unique algorithm instance IDs. See algorithm-node        edges:  object[]       The edges. IDs in the edge definition must be consistent to the IDs in the &#39;nodes&#39; entry See graph-edge           Example { &amp;#34;nodes&amp;#34; : { &amp;#34;default-preprocessing-filter-files&amp;#34; : { &amp;#34;jipipe:slot-configuration&amp;#34; : { &amp;#34;Files&amp;#34; : { &amp;#34;slot-data-type&amp;#34; : &amp;#34;file&amp;#34;, &amp;#34;slot-type&amp;#34; : &amp;#34;Input&amp;#34;, &amp;#34;inherited-slot&amp;#34; : null, &amp;#34;name&amp;#34; : &amp;#34;Files&amp;#34;, &amp;#34;custom-name&amp;#34; : null, &amp;#34;inheritance-conversions&amp;#34; : { } }, &amp;#34;Filtered files&amp;#34; : { &amp;#34;slot-data-type&amp;#34; : &amp;#34;file&amp;#34;, &amp;#34;slot-type&amp;#34; : &amp;#34;Output&amp;#34;, &amp;#34;inherited-slot&amp;#34; : null, &amp;#34;name&amp;#34; : &amp;#34;Filtered files&amp;#34;, &amp;#34;custom-name&amp;#34; : null, &amp;#34;inheritance-conversions&amp;#34; : { } } }, &amp;#34;jipipe:algorithm-ui-location&amp;#34; : { &amp;#34;{Vertical}&amp;#34; : { &amp;#34;x&amp;#34; : 25, &amp;#34;y&amp;#34; : 250 } }, &amp;#34;jipipe:algorithm-type&amp;#34; : &amp;#34;file-filter&amp;#34;, &amp;#34;jipipe:algorithm-compartment&amp;#34; : &amp;#34;DEFAULT&amp;#34;, &amp;#34;name&amp;#34; : &amp;#34;Filter *.</description>
     </item>
     
     <item>
       <title>Extension</title>
-      <link>https://applied-systems-biology.github.io/acaq5/documentation-json-api/json-extension/</link>
+      <link>https://applied-systems-biology.github.io/jipipe/documentation-json-api/json-extension/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://applied-systems-biology.github.io/acaq5/documentation-json-api/json-extension/</guid>
+      <guid>https://applied-systems-biology.github.io/jipipe/documentation-json-api/json-extension/</guid>
       <description>This document describes the properties of the JSON API object. You also can access the document in JSON Schema format: json-extension.schema.json
  An extension that can be put into the ImageJ plugin folder   id:  string       Unique ID of this extension. Should have format  .  :       version:  string       Version of this extension   metadata:  See metadata        General metadata about the extension   algorithms:  object[]       List of added algorithms See algorithm           Example { &amp;#34;id&amp;#34; : &amp;#34;org.</description>
     </item>
     
     <item>
       <title>Metadata</title>
-      <link>https://applied-systems-biology.github.io/acaq5/documentation-json-api/metadata/</link>
+      <link>https://applied-systems-biology.github.io/jipipe/documentation-json-api/metadata/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://applied-systems-biology.github.io/acaq5/documentation-json-api/metadata/</guid>
+      <guid>https://applied-systems-biology.github.io/jipipe/documentation-json-api/metadata/</guid>
       <description>This document describes the properties of the JSON API object. You also can access the document in JSON Schema format: metadata.schema.json
- Commonly used metadata type in ACAQ.   name:  string       A name   description:  string       A description   authors:  string       Comma-separated list of authors   website:  string       Website of the project   license:  string       Name of the license   citation:  string       Citation for the publication      Example { &amp;#34;name&amp;#34; : &amp;#34;Image property annotations&amp;#34;, &amp;#34;description&amp;#34; : &amp;#34;Commonly used annotations for describing image properties&amp;#34;, &amp;#34;authors&amp;#34; : &amp;#34;Zoltán Cseresnyés, Ruman Gerst&amp;#34;, &amp;#34;website&amp;#34; : &amp;#34;https://applied-systems-biology.</description>
+ Commonly used metadata type in JIPipe.   name:  string       A name   description:  string       A description   authors:  string       Comma-separated list of authors   website:  string       Website of the project   license:  string       Name of the license   citation:  string       Citation for the publication      Example { &amp;#34;name&amp;#34; : &amp;#34;Image property annotations&amp;#34;, &amp;#34;description&amp;#34; : &amp;#34;Commonly used annotations for describing image properties&amp;#34;, &amp;#34;authors&amp;#34; : &amp;#34;Zoltán Cseresnyés, Ruman Gerst&amp;#34;, &amp;#34;website&amp;#34; : &amp;#34;https://applied-systems-biology.</description>
     </item>
     
     <item>
       <title>Point</title>
-      <link>https://applied-systems-biology.github.io/acaq5/documentation-json-api/point/</link>
+      <link>https://applied-systems-biology.github.io/jipipe/documentation-json-api/point/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://applied-systems-biology.github.io/acaq5/documentation-json-api/point/</guid>
+      <guid>https://applied-systems-biology.github.io/jipipe/documentation-json-api/point/</guid>
       <description>This document describes the properties of the JSON API object. You also can access the document in JSON Schema format: point.schema.json
  A point   x:  integer       X coordinate   y:  integer       Y coordinate      Example { &amp;#34;x&amp;#34; : 2900, &amp;#34;y&amp;#34; : 100 } </description>
     </item>
     
     <item>
       <title>Project</title>
-      <link>https://applied-systems-biology.github.io/acaq5/documentation-json-api/project/</link>
+      <link>https://applied-systems-biology.github.io/jipipe/documentation-json-api/project/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://applied-systems-biology.github.io/acaq5/documentation-json-api/project/</guid>
+      <guid>https://applied-systems-biology.github.io/jipipe/documentation-json-api/project/</guid>
       <description>This document describes the properties of the JSON API object. You also can access the document in JSON Schema format: project.schema.json
- An analysis project   acaq:project-type:  string  , x ∈ { project  (default)  } &amp;lt;/span&amp;gt; &amp;lt;span class=&amp;quot;json-property-range&amp;quot; title=&amp;quot;Value limits&amp;quot;&amp;gt; &amp;lt;/span&amp;gt; &amp;lt;span class=&amp;quot;json-property-required&amp;quot;&amp;gt; &amp;lt;/span&amp;gt;     Used to identify this JSON as ACAQ5 project   metadata:  See metadata    [object Object]      General information about the project   dependencies:  object[]       Dependencies of this project See dependency        algorithm-graph:  See graph    [object Object]      Contains the algorithms   compartments:  object   [object Object]      For organization of compartments  compartment-graph:  See graph    [object Object]      Structural graph of compartments          Example { &amp;#34;acaq:project-type&amp;#34; : &amp;#34;project&amp;#34;, &amp;#34;metadata&amp;#34; : { &amp;#34;name&amp;#34; : &amp;#34;New project&amp;#34;, &amp;#34;description&amp;#34; : &amp;#34;An ACAQ5 project&amp;#34;, &amp;#34;authors&amp;#34; : &amp;#34;&amp;#34;, &amp;#34;website&amp;#34; : &amp;#34;&amp;#34;, &amp;#34;license&amp;#34; : &amp;#34;&amp;#34;, &amp;#34;citation&amp;#34; : &amp;#34;&amp;#34; }, &amp;#34;dependencies&amp;#34; : [ { &amp;#34;metadata&amp;#34; : { &amp;#34;name&amp;#34; : &amp;#34;Image property annotations&amp;#34;, &amp;#34;description&amp;#34; : &amp;#34;Commonly used annotations for describing image properties&amp;#34;, &amp;#34;authors&amp;#34; : &amp;#34;Zoltán Cseresnyés, Ruman Gerst&amp;#34;, &amp;#34;website&amp;#34; : &amp;#34;https://applied-systems-biology.</description>
+ An analysis project   jipipe:project-type:  string  , x ∈ { project  (default)  } &amp;lt;/span&amp;gt; &amp;lt;span class=&amp;quot;json-property-range&amp;quot; title=&amp;quot;Value limits&amp;quot;&amp;gt; &amp;lt;/span&amp;gt; &amp;lt;span class=&amp;quot;json-property-required&amp;quot;&amp;gt; &amp;lt;/span&amp;gt;     Used to identify this JSON as JIPipe project   metadata:  See metadata    [object Object]      General information about the project   dependencies:  object[]       Dependencies of this project See dependency        algorithm-graph:  See graph    [object Object]      Contains the algorithms   compartments:  object   [object Object]      For organization of compartments  compartment-graph:  See graph    [object Object]      Structural graph of compartments          Example { &amp;#34;jipipe:project-type&amp;#34; : &amp;#34;project&amp;#34;, &amp;#34;metadata&amp;#34; : { &amp;#34;name&amp;#34; : &amp;#34;New project&amp;#34;, &amp;#34;description&amp;#34; : &amp;#34;An JIPipe project&amp;#34;, &amp;#34;authors&amp;#34; : &amp;#34;&amp;#34;, &amp;#34;website&amp;#34; : &amp;#34;&amp;#34;, &amp;#34;license&amp;#34; : &amp;#34;&amp;#34;, &amp;#34;citation&amp;#34; : &amp;#34;&amp;#34; }, &amp;#34;dependencies&amp;#34; : [ { &amp;#34;metadata&amp;#34; : { &amp;#34;name&amp;#34; : &amp;#34;Image property annotations&amp;#34;, &amp;#34;description&amp;#34; : &amp;#34;Commonly used annotations for describing image properties&amp;#34;, &amp;#34;authors&amp;#34; : &amp;#34;Zoltán Cseresnyés, Ruman Gerst&amp;#34;, &amp;#34;website&amp;#34; : &amp;#34;https://applied-systems-biology.</description>
     </item>
     
     <item>
       <title>Slot definition</title>
-      <link>https://applied-systems-biology.github.io/acaq5/documentation-json-api/slot-definition/</link>
+      <link>https://applied-systems-biology.github.io/jipipe/documentation-json-api/slot-definition/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://applied-systems-biology.github.io/acaq5/documentation-json-api/slot-definition/</guid>
+      <guid>https://applied-systems-biology.github.io/jipipe/documentation-json-api/slot-definition/</guid>
       <description>This document describes the properties of the JSON API object. You also can access the document in JSON Schema format: slot-definition.schema.json
  Defines a data slot   slot-data-type:  string       The data type ID of the data stored in this slot   slot-type:  string  , x ∈ { Input  , Output  }       Determines if the slot is an input or an output   inherited-slot:  object      Only valid for output slot.</description>
     </item>

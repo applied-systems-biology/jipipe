@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Extension builder on ACAQ5 for ImageJ</title>
-    <link>https://applied-systems-biology.github.io/acaq5/documentation/create-json-extensions/</link>
-    <description>Recent content in Extension builder on ACAQ5 for ImageJ</description>
+    <title>Extension builder on JIPipe for ImageJ</title>
+    <link>https://applied-systems-biology.github.io/jipipe/documentation/create-json-extensions/</link>
+    <description>Recent content in Extension builder on JIPipe for ImageJ</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     
-	<atom:link href="https://applied-systems-biology.github.io/acaq5/documentation/create-json-extensions/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://applied-systems-biology.github.io/jipipe/documentation/create-json-extensions/index.xml" rel="self" type="application/rss+xml" />
     
     
   </channel>
