@@ -22,11 +22,14 @@ import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmDeclaration;
 import org.hkijena.jipipe.api.algorithm.AlgorithmInputSlot;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.data.JIPipeDataDeclaration;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FolderData;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
+import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.io.IOException;
@@ -50,6 +53,9 @@ public class CollectDataAlgorithm extends JIPipeAlgorithm {
     private boolean splitByInputSlots = true;
     private boolean ignoreMissingMetadata = false;
     private boolean withMetadataKeys = true;
+    private boolean appendDataTypeAsMetadata = false;
+    private boolean appendDataTypeUsesRealDataType = true;
+    private String appendDataTypeMetadataKey = "DataType";
     private String separatorString = "_";
     private String equalsString = "=";
     private String missingString = "NA";
@@ -72,20 +78,23 @@ public class CollectDataAlgorithm extends JIPipeAlgorithm {
         this.ignoreMissingMetadata = other.ignoreMissingMetadata;
         this.withMetadataKeys = other.withMetadataKeys;
         this.outputDirectory = other.outputDirectory;
+        this.appendDataTypeAsMetadata = other.appendDataTypeAsMetadata;
+        this.appendDataTypeUsesRealDataType = other.appendDataTypeUsesRealDataType;
+        this.appendDataTypeMetadataKey = other.appendDataTypeMetadataKey;
     }
 
     @Override
     public void run(JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
-        if (isPassThrough()) {
-            algorithmProgress.accept(subProgress.resolve("Data passed through to output"));
-            getFirstOutputSlot().addData(new FolderData(getFirstOutputSlot().getStoragePath()));
-            return;
-        }
         Path outputPath;
         if (outputDirectory == null || outputDirectory.toString().isEmpty() || !outputDirectory.isAbsolute()) {
             outputPath = getFirstOutputSlot().getStoragePath().resolve(outputDirectory);
         } else {
             outputPath = outputDirectory;
+        }
+        if (isPassThrough()) {
+            algorithmProgress.accept(subProgress.resolve("Data passed through to output"));
+            getFirstOutputSlot().addData(new FolderData(outputPath));
+            return;
         }
 
         if (splitByInputSlots) {
@@ -97,7 +106,7 @@ public class CollectDataAlgorithm extends JIPipeAlgorithm {
             }
         } else {
             writeToFolder(getInputSlots(), outputPath, subProgress, algorithmProgress, isCancelled);
-            getFirstOutputSlot().addData(new FolderData(getFirstOutputSlot().getStoragePath()));
+            getFirstOutputSlot().addData(new FolderData(outputPath));
         }
     }
 
@@ -115,6 +124,19 @@ public class CollectDataAlgorithm extends JIPipeAlgorithm {
                 if (isCancelled.get())
                     return;
                 StringBuilder metadataStringBuilder = new StringBuilder();
+                if(appendDataTypeAsMetadata) {
+                    String dataTypeName;
+                    if(appendDataTypeUsesRealDataType) {
+                        JIPipeData data = dataSlot.getData(row, JIPipeData.class);
+                        dataTypeName = JIPipeDataDeclaration.getInstance(data.getClass()).getName();
+                    }
+                    else {
+                        dataTypeName = JIPipeDataDeclaration.getInstance(dataSlot.getAcceptedDataType()).getName();
+                    }
+                    if (withMetadataKeys && !StringUtils.isNullOrEmpty(appendDataTypeMetadataKey))
+                        metadataStringBuilder.append(appendDataTypeMetadataKey).append(equalsString);
+                    metadataStringBuilder.append(dataTypeName);
+                }
                 for (int col = 0; col < dataSlot.getAnnotationColumns().size(); col++) {
                     String metadataKey = dataSlot.getAnnotationColumns().get(col);
                     JIPipeAnnotation metadataValue;
@@ -226,5 +248,40 @@ public class CollectDataAlgorithm extends JIPipeAlgorithm {
     @JIPipeParameter("output-directory")
     public void setOutputDirectory(Path outputDirectory) {
         this.outputDirectory = outputDirectory;
+    }
+
+    @JIPipeDocumentation(name = "Append data type as metadata", description = "If enabled, the input slot data type is added as additional metadata to the file name.")
+    @JIPipeParameter("append-data-type-as-metadata")
+    public boolean isAppendDataTypeAsMetadata() {
+        return appendDataTypeAsMetadata;
+    }
+
+    @JIPipeParameter("append-data-type-as-metadata")
+    public void setAppendDataTypeAsMetadata(boolean appendDataTypeAsMetadata) {
+        this.appendDataTypeAsMetadata = appendDataTypeAsMetadata;
+    }
+
+    @JIPipeDocumentation(name = "Append true data type as metadata", description = "If enabled, data type added by 'Append data type as metadata' is the " +
+            "true data type, not the slot data type.")
+    @JIPipeParameter("append-true-data-type-as-metadata")
+    public boolean isAppendDataTypeUsesRealDataType() {
+        return appendDataTypeUsesRealDataType;
+    }
+
+    @JIPipeParameter("append-true-data-type-as-metadata")
+    public void setAppendDataTypeUsesRealDataType(boolean appendDataTypeUsesRealDataType) {
+        this.appendDataTypeUsesRealDataType = appendDataTypeUsesRealDataType;
+    }
+
+    @JIPipeDocumentation(name = "Append data type as", description = "The metadata key that is used to append the data type if enabled. Can be empty.")
+    @JIPipeParameter("append-data-type-metadata-key")
+    @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/annotation.png")
+    public String getAppendDataTypeMetadataKey() {
+        return appendDataTypeMetadataKey;
+    }
+
+    @JIPipeParameter("append-data-type-metadata-key")
+    public void setAppendDataTypeMetadataKey(String appendDataTypeMetadataKey) {
+        this.appendDataTypeMetadataKey = appendDataTypeMetadataKey;
     }
 }

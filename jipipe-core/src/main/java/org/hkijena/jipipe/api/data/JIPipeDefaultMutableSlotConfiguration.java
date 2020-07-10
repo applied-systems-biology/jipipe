@@ -27,6 +27,7 @@ import org.hkijena.jipipe.utils.JsonUtils;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * A schema for slots
@@ -280,14 +281,16 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
         ObjectReader objectReader = JsonUtils.getObjectMapper().readerFor(JIPipeSlotDefinition.class);
         JsonNode inputsNode = node.path("input");
         JsonNode outputsNode = node.path("output");
-        if (!inputSlotsSealed && !inputsNode.isMissingNode()) {
+        if (!inputsNode.isMissingNode()) {
+            Set<String> definedSlots = new HashSet<>();
             for (Map.Entry<String, JsonNode> entry : ImmutableList.copyOf(inputsNode.fields())) {
                 try {
+                    definedSlots.add(entry.getKey());
                     JIPipeSlotDefinition slotDefinition = objectReader.readValue(entry.getValue());
                     JIPipeSlotDefinition existing = inputSlots.getOrDefault(entry.getKey(), null);
                     if (existing != null) {
                         existing.copyMetadata(slotDefinition);
-                    } else {
+                    } else if(!inputSlotsSealed) {
                         addSlot(entry.getKey(), slotDefinition, false);
                     }
                 } catch (IOException e) {
@@ -295,20 +298,34 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
                             "Please check if the JSON data is valid.");
                 }
             }
+            if(!inputSlotsSealed) {
+                Set<String> toRemove = inputSlots.keySet().stream().filter(s -> !definedSlots.contains(s)).collect(Collectors.toSet());
+                for (String s : toRemove) {
+                    removeInputSlot(s, false);
+                }
+            }
         }
-        if (!outputSlotsSealed && !outputsNode.isMissingNode()) {
+        if (!outputsNode.isMissingNode()) {
+            Set<String> definedSlots = new HashSet<>();
             for (Map.Entry<String, JsonNode> entry : ImmutableList.copyOf(outputsNode.fields())) {
                 try {
+                    definedSlots.add(entry.getKey());
                     JIPipeSlotDefinition slotDefinition = objectReader.readValue(entry.getValue());
                     JIPipeSlotDefinition existing = outputSlots.getOrDefault(entry.getKey(), null);
                     if (existing != null) {
                         existing.copyMetadata(slotDefinition);
-                    } else {
+                    } else if(!outputSlotsSealed) {
                         addSlot(entry.getKey(), slotDefinition, false);
                     }
                 } catch (IOException e) {
                     throw new UserFriendlyRuntimeException(e, "Unable to read slot from JSON!", "Algorithm slot configuration", "There is essential information missing in the JSON data.",
                             "Please check if the JSON data is valid.");
+                }
+            }
+            if(!outputSlotsSealed) {
+                Set<String> toRemove = inputSlots.keySet().stream().filter(s -> !definedSlots.contains(s)).collect(Collectors.toSet());
+                for (String s : toRemove) {
+                    removeOutputSlot(s, false);
                 }
             }
         }
