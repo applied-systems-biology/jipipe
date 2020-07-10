@@ -1,5 +1,3 @@
-<p style="text-align:center;"><img src="image://logo-400.png" width="400" height="146"/></p>
-
 # JIPipe Extension Builder
 
 The extension builder allows you to publish one or multiple pipelines into a custom algorithm node without the need for

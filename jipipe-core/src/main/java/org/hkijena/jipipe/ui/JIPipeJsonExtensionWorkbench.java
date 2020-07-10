@@ -82,7 +82,7 @@ public class JIPipeJsonExtensionWorkbench extends JPanel implements JIPipeWorkbe
         documentTabPane.addSingletonTab("INTRODUCTION",
                 "Introduction",
                 UIUtils.getIconFromResources("info.png"),
-                new MarkdownReader(true, MarkdownDocument.fromPluginResource("documentation/introduction-extension-builder.md")),
+                new JIPipeJsonExtensionInfoUI(this),
                 false);
         documentTabPane.addSingletonTab("PROJECT_SETTINGS",
                 "Extension settings",
