@@ -53,13 +53,11 @@ import java.util.stream.Collectors;
 public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMotionListener, MouseListener {
     private final ImageIcon cursorImage = UIUtils.getIconFromResources("target.png");
     private final JIPipeGraph graph;
-    private final Point currentlyDraggedOffset = new Point();
     private final BiMap<JIPipeGraphNode, JIPipeNodeUI> nodeUIs = HashBiMap.create();
     private final Set<JIPipeNodeUI> selection = new HashSet<>();
     private final EventBus eventBus = new EventBus();
     private final String compartment;
     private final JIPipeGraphHistory graphHistory = new JIPipeGraphHistory();
-    private JIPipeNodeUI currentlyDragged;
     private boolean layoutHelperEnabled;
     private ViewMode currentViewMode = GraphEditorUISettings.getInstance().getDefaultViewMode();
     private JIPipeGraphDragAndDropBehavior dragAndDropBehavior;
@@ -67,6 +65,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
     private long lastTimeExpandedNegative = 0;
     private List<AlgorithmUIAction> contextActions = new ArrayList<>();
     private MoveNodesGraphHistorySnapshot currentlyDraggedSnapshot;
+    private Map<JIPipeNodeUI, Point> currentlyDraggedOffsets = new HashMap<>();
 
     /**
      * Used to store the minimum dimensions of the canvas to reduce user disruption
@@ -334,37 +333,41 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
 
     @Override
     public void mouseDragged(MouseEvent mouseEvent) {
-        if (currentlyDragged != null) {
-            int xu = currentlyDraggedOffset.x + mouseEvent.getX();
-            int yu = currentlyDraggedOffset.y + mouseEvent.getY();
-            if (xu < 0 || yu < 0) {
-                long currentTimeMillis = System.currentTimeMillis();
-                int ex = xu < 0 ? JIPipeNodeUI.SLOT_UI_WIDTH : 0;
-                int ey = yu < 0 ? JIPipeNodeUI.SLOT_UI_HEIGHT : 0;
-                if (currentTimeMillis - lastTimeExpandedNegative > 100) {
-                    for (JIPipeNodeUI value : nodeUIs.values()) {
-                        if (value != currentlyDragged) {
-                            value.setLocation(value.getX() + ex, value.getY() + ey);
+        if (!currentlyDraggedOffsets.isEmpty()) {
+            for (Map.Entry<JIPipeNodeUI, Point> entry : currentlyDraggedOffsets.entrySet()) {
+                JIPipeNodeUI currentlyDragged = entry.getKey();
+                Point currentlyDraggedOffset = entry.getValue();
+
+                int xu = currentlyDraggedOffset.x + mouseEvent.getX();
+                int yu = currentlyDraggedOffset.y + mouseEvent.getY();
+                if (xu < 0 || yu < 0) {
+                    long currentTimeMillis = System.currentTimeMillis();
+                    int ex = xu < 0 ? JIPipeNodeUI.SLOT_UI_WIDTH : 0;
+                    int ey = yu < 0 ? JIPipeNodeUI.SLOT_UI_HEIGHT : 0;
+                    if (currentTimeMillis - lastTimeExpandedNegative > 100) {
+                        for (JIPipeNodeUI value : nodeUIs.values()) {
+                            if (value != currentlyDragged) {
+                                value.setLocation(value.getX() + ex, value.getY() + ey);
+                            }
                         }
+                        lastTimeExpandedNegative = currentTimeMillis;
                     }
-                    lastTimeExpandedNegative = currentTimeMillis;
                 }
-            }
 
-            int x = Math.max(0, currentlyDraggedOffset.x + mouseEvent.getX());
-            int y = Math.max(0, currentlyDraggedOffset.y + mouseEvent.getY());
+                int x = Math.max(0, currentlyDraggedOffset.x + mouseEvent.getX());
+                int y = Math.max(0, currentlyDraggedOffset.y + mouseEvent.getY());
 
-            if (currentlyDraggedSnapshot != null) {
-                // Check if something would change
-                if (!Objects.equals(currentlyDragged.getLocation(), JIPipeNodeUI.toGridLocation(new Point(x, y)))) {
-                    graphHistory.addSnapshotBefore(currentlyDraggedSnapshot);
-                    currentlyDraggedSnapshot = null;
+                if (currentlyDraggedSnapshot != null) {
+                    // Check if something would change
+                    if (!Objects.equals(currentlyDragged.getLocation(), JIPipeNodeUI.toGridLocation(new Point(x, y)))) {
+                        graphHistory.addSnapshotBefore(currentlyDraggedSnapshot);
+                        currentlyDraggedSnapshot = null;
+                    }
                 }
-            }
 
-            currentlyDragged.trySetLocationInGrid(x, y);
+                currentlyDragged.trySetLocationInGrid(x, y);
+            }
             repaint();
-//            updateEdgeUI();
             if (getParent() != null)
                 getParent().revalidate();
         }
@@ -380,7 +383,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
         int ex = left ? JIPipeNodeUI.SLOT_UI_WIDTH : 0;
         int ey = top ? JIPipeNodeUI.SLOT_UI_HEIGHT : 0;
         for (JIPipeNodeUI value : nodeUIs.values()) {
-            if (value != currentlyDragged) {
+            if (!currentlyDraggedOffsets.containsKey(value)) {
                 value.setLocation(value.getX() + ex, value.getY() + ey);
             }
         }
@@ -468,14 +471,31 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
     @Override
     public void mousePressed(MouseEvent mouseEvent) {
         if (SwingUtilities.isLeftMouseButton(mouseEvent)) {
-            JIPipeNodeUI ui = pickComponent(mouseEvent);
-            if (ui != null) {
-                currentlyDragged = ui;
-                currentlyDraggedOffset.x = ui.getX() - mouseEvent.getX();
-                currentlyDraggedOffset.y = ui.getY() - mouseEvent.getY();
-                currentlyDraggedSnapshot = new MoveNodesGraphHistorySnapshot(graph, "Move node");
+            if(currentlyDraggedOffsets.isEmpty()) {
+                JIPipeNodeUI ui = pickComponent(mouseEvent);
+                if (ui != null) {
+                    if(mouseEvent.isShiftDown()) {
+                        addToSelection(ui);
+                    }
+                    else {
+                        if (selection.isEmpty() || selection.size() == 1) {
+                            selectOnly(ui);
+                        } else {
+                            if (!selection.contains(ui)) {
+                                selectOnly(ui);
+                            }
+                        }
+                    }
+                    for (JIPipeNodeUI nodeUI : selection) {
+                        Point offset = new Point();
+                        offset.x = nodeUI.getX() - mouseEvent.getX();
+                        offset.y = nodeUI.getY() - mouseEvent.getY();
+                        currentlyDraggedOffsets.put(nodeUI, offset);
+                        currentlyDraggedSnapshot = new MoveNodesGraphHistorySnapshot(graph, "Move node");
+                    }
+
+                }
             }
-            eventBus.post(new AlgorithmSelectedEvent(ui, mouseEvent.isShiftDown()));
         }
     }
 
@@ -493,8 +513,11 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
 
     @Override
     public void mouseReleased(MouseEvent mouseEvent) {
-        currentlyDragged = null;
-//        updateEdgeUI();
+        currentlyDraggedOffsets.clear();
+        JIPipeNodeUI ui = pickComponent(mouseEvent);
+        if(ui == null) {
+            selectOnly(null);
+        }
     }
 
     @Override
@@ -505,13 +528,6 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
     @Override
     public void mouseExited(MouseEvent mouseEvent) {
 
-    }
-
-    /**
-     * @return Returns true if the user is currently dragging an algorithm around
-     */
-    public boolean isDragging() {
-        return currentlyDragged != null;
     }
 
     @Override
