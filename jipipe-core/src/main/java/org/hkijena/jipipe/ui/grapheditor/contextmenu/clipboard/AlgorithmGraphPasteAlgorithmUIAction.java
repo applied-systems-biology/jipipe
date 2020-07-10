@@ -35,7 +35,7 @@ import java.util.Set;
 public class AlgorithmGraphPasteAlgorithmUIAction implements AlgorithmUIAction {
     @Override
     public boolean matches(Set<JIPipeNodeUI> selection) {
-        return !StringUtils.isNullOrEmpty(UIUtils.getStringFromClipboard());
+        return true;
     }
 
     @Override
