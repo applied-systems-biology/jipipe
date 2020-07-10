@@ -90,7 +90,7 @@ public abstract class JIPipeNodeUI extends JIPipeWorkbenchPanel {
     protected JButton createAddSlotButton(JIPipeSlotType slotType) {
         JButton button = new JButton(UIUtils.getIconFromResources("add.png"));
         button.setPreferredSize(new Dimension(25, SLOT_UI_HEIGHT));
-        UIUtils.makeFlat(button);
+        UIUtils.makeFlat(button, Color.GRAY,0,0,0,0);
         button.addActionListener(e -> AddAlgorithmSlotPanel.showDialog(this, graphUI.getGraphHistory(), node, slotType));
 
         return button;

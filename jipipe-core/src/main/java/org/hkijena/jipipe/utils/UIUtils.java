@@ -196,6 +196,24 @@ public class UIUtils {
     }
 
     /**
+     * Makes a button flat
+     *
+     * @param component the button
+     * @param borderColor border color
+     * @param top top border size
+     * @param left left border size
+     * @param right right border size
+     * @param bottom bottom border size
+     */
+    public static void makeFlat(AbstractButton component, Color borderColor, int top, int left, int right, int bottom) {
+        component.setBackground(Color.WHITE);
+        component.setOpaque(false);
+        Border margin = new EmptyBorder(5, 15, 5, 15);
+        Border compound = new CompoundBorder(BorderFactory.createMatteBorder(top, left, bottom, right, borderColor), margin);
+        component.setBorder(compound);
+    }
+
+    /**
      * Makes a button flat and 25x25 size
      *
      * @param component the button

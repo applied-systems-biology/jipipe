@@ -72,6 +72,7 @@ public class JIPipeVerticalNodeUI extends JIPipeNodeUI {
         nameLabel.setIcon(JIPipeUIAlgorithmRegistry.getInstance().getIconFor(getNode().getDeclaration()));
         openSettingsButton = new JButton(UIUtils.getIconFromResources("wrench.png"));
         UIUtils.makeFlat25x25(openSettingsButton);
+        openSettingsButton.setBorder(null);
         openSettingsButton.addActionListener(e -> getEventBus().post(new AlgorithmUIActionRequestedEvent(this, REQUEST_OPEN_CONTEXT_MENU)));
 
 
@@ -91,6 +92,7 @@ public class JIPipeVerticalNodeUI extends JIPipeNodeUI {
                 gridx = 0;
                 gridy = 2;
                 insets = new Insets(0, 0, 0, 4);
+                anchor = GridBagConstraints.EAST;
             }
         });
         add(nameLabel, new GridBagConstraints() {

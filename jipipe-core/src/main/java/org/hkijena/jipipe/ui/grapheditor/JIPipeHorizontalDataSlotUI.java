@@ -77,7 +77,7 @@ public class JIPipeHorizontalDataSlotUI extends JIPipeDataSlotUI {
         this.assignButton = new JButton(UIUtils.getIconFromResources("chevron-right.png"));
         assignButton.setPreferredSize(new Dimension(25, SLOT_UI_HEIGHT));
         this.assignButtonMenu = UIUtils.addReloadablePopupMenuToComponent(assignButton, new JPopupMenu(), this::reloadPopupMenu);
-        UIUtils.makeFlat(assignButton);
+        UIUtils.makeFlat(assignButton, UIUtils.getBorderColorFor(getSlot().getNode().getDeclaration()), 0,0, 0,0);
 
         if (getSlot().getNode() instanceof JIPipeCompartmentOutput) {
             if (getSlot().getNode().getCompartment().equals(getCompartment())) {

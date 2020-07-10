@@ -72,6 +72,7 @@ public class JIPipeHorizontalNodeUI extends JIPipeNodeUI {
         nameLabel.setIcon(JIPipeUIAlgorithmRegistry.getInstance().getIconFor(getNode().getDeclaration()));
         openSettingsButton = new JButton(UIUtils.getIconFromResources("wrench.png"));
         UIUtils.makeFlat25x25(openSettingsButton);
+        openSettingsButton.setBorder(null);
         openSettingsButton.addActionListener(e -> getEventBus().post(new AlgorithmUIActionRequestedEvent(this, REQUEST_OPEN_CONTEXT_MENU)));
 
 
