@@ -40,7 +40,7 @@ import java.io.IOException;
 import java.util.Map;
 
 /**
- * Runs an JIPipe algorithm on a single data set.
+ * Runs a JIPipe algorithm on a single data set.
  */
 @Plugin(type = Command.class, menuPath = "Plugins>JIPipe>Run JIPipe algorithm", headless = true)
 public class JIPipeRunAlgorithmCommand extends DynamicCommand implements Initializable {

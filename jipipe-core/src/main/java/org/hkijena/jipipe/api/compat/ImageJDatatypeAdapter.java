@@ -61,7 +61,7 @@ public interface ImageJDatatypeAdapter {
     JIPipeData convertImageJToJIPipe(Object imageJData);
 
     /**
-     * Converts an JIPipe data type to its corresponding ImageJ data type
+     * Converts a JIPipe data type to its corresponding ImageJ data type
      *
      * @param jipipeData   JIPipe data
      * @param activate   If true, the data should be made visible in ImageJ

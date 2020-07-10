@@ -30,7 +30,7 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * Command that runs an JIPipe project without GUI
+ * Command that runs a JIPipe project without GUI
  */
 @Plugin(type = Command.class, menuPath = "Plugins>JIPipe>Run JIPipe project")
 public class JIPipeRunCommand implements Command {

@@ -341,7 +341,7 @@ public class JIPipeRun implements JIPipeRunnable {
     }
 
     /**
-     * Loads an JIPipeRun from a folder
+     * Loads a JIPipeRun from a folder
      *
      * @param folder Folder containing the run
      * @return The loaded run

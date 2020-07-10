@@ -3,7 +3,7 @@
     "$id": "https://applied-systems-biology.github.io/jipipe/schemas/dependency.schema.json",
     "type": "object",
     "title": "Dependency",
-    "description": "Project or extension dependency. Refers to an JIPipe extension.",
+    "description": "Project or extension dependency. Refers to a JIPipe extension.",
     "required": [
         "metadata",
         "id",

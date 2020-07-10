@@ -59,7 +59,7 @@ public class JIPipeImageJAdapterRegistry {
     }
 
     /**
-     * Returns a matching adapter for an JIPipe data type
+     * Returns a matching adapter for a JIPipe data type
      *
      * @param klass JIPipe data class
      * @return An adapter that supports the data class

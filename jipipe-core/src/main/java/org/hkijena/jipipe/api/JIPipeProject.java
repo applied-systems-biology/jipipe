@@ -60,7 +60,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * An JIPipe project.
+ * A JIPipe project.
  * It contains all information to setup and run an analysis
  */
 @JsonSerialize(using = JIPipeProject.Serializer.class)
@@ -77,7 +77,7 @@ public class JIPipeProject implements JIPipeValidatable {
     private JIPipeProjectCache cache;
 
     /**
-     * An JIPipe project
+     * A JIPipe project
      */
     public JIPipeProject() {
         this.cache = new JIPipeProjectCache(this);

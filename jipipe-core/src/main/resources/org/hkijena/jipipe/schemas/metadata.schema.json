@@ -30,7 +30,7 @@
             "description": "A description",
             "default": "",
             "examples": [
-                "An JIPipe project"
+                "A JIPipe project"
             ]
         },
         "authors": {

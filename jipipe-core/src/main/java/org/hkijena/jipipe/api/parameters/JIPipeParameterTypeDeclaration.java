@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.api.parameters;
 
 /**
- * A type that describes an JIPipe parameter type
+ * A type that describes a JIPipe parameter type
  */
 public interface JIPipeParameterTypeDeclaration extends Comparable<JIPipeParameterTypeDeclaration> {
 

@@ -28,7 +28,7 @@ import org.hkijena.jipipe.utils.ResourceUtils;
 public class JIPipeMetadata implements JIPipeParameterCollection {
     private EventBus eventBus = new EventBus();
     private String name = "New project";
-    private String description = "An JIPipe project";
+    private String description = "A JIPipe project";
     private JIPipeAuthorMetadata.List authors = new JIPipeAuthorMetadata.List();
     private String website = "";
     private String license = "";
