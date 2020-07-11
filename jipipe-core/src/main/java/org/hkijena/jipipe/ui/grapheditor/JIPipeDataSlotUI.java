@@ -335,9 +335,16 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
      */
     protected abstract void reloadButtonStatus();
 
-    private void connectSlot(JIPipeDataSlot source, JIPipeDataSlot target) {
+    /**
+     * Connects the two slots
+     * @param source source slot
+     * @param target target slot
+     */
+    public void connectSlot(JIPipeDataSlot source, JIPipeDataSlot target) {
         if (getGraph().canConnect(source, target, true)) {
             JIPipeGraph graph = slot.getNode().getGraph();
+            if(graph.getGraph().containsEdge(source, target))
+                return;
             JIPipeGraphHistory graphHistory = nodeUI.getGraphUI().getGraphHistory();
             if (getGraphUI().isLayoutHelperEnabled()) {
                 graphHistory.addSnapshotBefore(new CompoundGraphHistorySnapshot(Arrays.asList(

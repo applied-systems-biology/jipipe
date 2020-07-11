@@ -114,9 +114,9 @@ public class JIPipeConnectionDragAndDropBehavior implements DropTargetListener, 
             return;
         if (firstSlot.isInput() != secondSlot.isInput()) {
             if (firstSlot.isInput()) {
-                graph.connect(secondSlot, firstSlot);
+                slotUI.connectSlot(secondSlot, firstSlot);
             } else {
-                graph.connect(firstSlot, secondSlot);
+                slotUI.connectSlot(firstSlot, secondSlot);
             }
         }
     }
