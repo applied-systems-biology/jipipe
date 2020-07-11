@@ -66,6 +66,8 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
     private List<AlgorithmUIAction> contextActions = new ArrayList<>();
     private MoveNodesGraphHistorySnapshot currentlyDraggedSnapshot;
     private Map<JIPipeNodeUI, Point> currentlyDraggedOffsets = new HashMap<>();
+    private JIPipeDataSlotUI currentConnectionDragSource;
+    private JIPipeDataSlotUI currentConnectionDragTarget;
 
     /**
      * Used to store the minimum dimensions of the canvas to reduce user disruption
@@ -413,7 +415,6 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
 
     @Override
     public void mouseMoved(MouseEvent mouseEvent) {
-
     }
 
     @Override
@@ -650,6 +651,32 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
             bounds.height += 8;
             g.setColor(ui.getBorderColor());
             g.drawRect(bounds.x, bounds.y, bounds.width, bounds.height);
+        }
+
+        // Draw currently dragged connection
+        if(currentConnectionDragSource != null) {
+            g.setStroke(new BasicStroke(7));
+            graphics.setColor(new Color(0,128,0));
+            PointRange sourcePoint;
+            PointRange targetPoint;
+
+            sourcePoint = currentConnectionDragSource.getNodeUI().getSlotLocation(currentConnectionDragSource.getSlot());
+            sourcePoint.add(currentConnectionDragSource.getNodeUI().getLocation());
+
+            if(currentConnectionDragTarget == null || currentConnectionDragTarget == currentConnectionDragSource ||
+                currentConnectionDragTarget.getNodeUI().getNode() == currentConnectionDragSource.getNodeUI().getNode()) {
+                targetPoint = new PointRange(getMousePosition().x, getMousePosition().y);
+            }
+            else {
+                targetPoint = currentConnectionDragTarget.getNodeUI().getSlotLocation(currentConnectionDragTarget.getSlot());
+                targetPoint.add(currentConnectionDragTarget.getNodeUI().getLocation());
+            }
+
+            // Tighten the point ranges: Bringing the centers together
+            PointRange.tighten(sourcePoint, targetPoint);
+
+            // Draw arrow
+            drawEdge(g, sourcePoint.center, currentConnectionDragSource.getBounds(), targetPoint.center, drawer);
         }
 
         g.setStroke(new BasicStroke(1));
@@ -1036,6 +1063,22 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
 
     public JIPipeGraphHistory getGraphHistory() {
         return graphHistory;
+    }
+
+    public JIPipeDataSlotUI getCurrentConnectionDragSource() {
+        return currentConnectionDragSource;
+    }
+
+    public void setCurrentConnectionDragSource(JIPipeDataSlotUI currentConnectionDragSource) {
+        this.currentConnectionDragSource = currentConnectionDragSource;
+    }
+
+    public JIPipeDataSlotUI getCurrentConnectionDragTarget() {
+        return currentConnectionDragTarget;
+    }
+
+    public void setCurrentConnectionDragTarget(JIPipeDataSlotUI currentConnectionDragTarget) {
+        this.currentConnectionDragTarget = currentConnectionDragTarget;
     }
 
     /**

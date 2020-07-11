@@ -19,10 +19,9 @@ import java.awt.dnd.*;
 /**
  * Adds connection drag & drop behavior to a data slot
  */
-public class JIPipeConnectionDragAndDropBehavior implements DropTargetListener, DragGestureListener {
+public class JIPipeConnectionDragAndDropBehavior implements DropTargetListener, DragGestureListener, DragSourceListener {
 
     private final JIPipeDataSlotUI slotUI;
-    private final JButton assignButton;
 
     /**
      * Adds connection drag & drop behavior to a data slot
@@ -32,7 +31,6 @@ public class JIPipeConnectionDragAndDropBehavior implements DropTargetListener, 
      */
     public JIPipeConnectionDragAndDropBehavior(JIPipeDataSlotUI slotUI, JButton assignButton) {
         this.slotUI = slotUI;
-        this.assignButton = assignButton;
         DragSource dragSource = new DragSource();
         dragSource.createDefaultDragGestureRecognizer(
                 assignButton,
@@ -49,7 +47,8 @@ public class JIPipeConnectionDragAndDropBehavior implements DropTargetListener, 
 
     @Override
     public void dragEnter(DropTargetDragEvent dtde) {
-
+        slotUI.getGraphUI().setCurrentConnectionDragTarget(slotUI);
+        slotUI.getGraphUI().repaint();
     }
 
     @Override
@@ -64,7 +63,8 @@ public class JIPipeConnectionDragAndDropBehavior implements DropTargetListener, 
 
     @Override
     public void dragExit(DropTargetEvent dte) {
-
+        slotUI.getGraphUI().setCurrentConnectionDragTarget(null);
+        slotUI.getGraphUI().repaint();
     }
 
     @Override
@@ -130,10 +130,38 @@ public class JIPipeConnectionDragAndDropBehavior implements DropTargetListener, 
         try {
             String string = JsonUtils.getObjectMapper().writeValueAsString(node);
             StringSelection selection = new StringSelection(string);
+            slotUI.getGraphUI().setCurrentConnectionDragSource(slotUI);
             dge.startDrag(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR),
-                    selection);
+                    selection, this);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void dragEnter(DragSourceDragEvent dsde) {
+
+    }
+
+    @Override
+    public void dragOver(DragSourceDragEvent dsde) {
+        slotUI.getGraphUI().repaint();
+    }
+
+    @Override
+    public void dropActionChanged(DragSourceDragEvent dsde) {
+
+    }
+
+    @Override
+    public void dragExit(DragSourceEvent dse) {
+
+    }
+
+    @Override
+    public void dragDropEnd(DragSourceDropEvent dsde) {
+        slotUI.getGraphUI().setCurrentConnectionDragSource(null);
+        slotUI.getGraphUI().setCurrentConnectionDragTarget(null);
+        slotUI.getGraphUI().repaint();
     }
 }

@@ -43,7 +43,7 @@ import java.util.stream.Collectors;
  */
 public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
     protected JPopupMenu assignButtonMenu;
-    private JIPipeNodeUI algorithmUI;
+    private JIPipeNodeUI nodeUI;
     private String compartment;
     private JIPipeDataSlot slot;
 
@@ -51,13 +51,13 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
      * Creates a new UI
      *
      * @param workbench   the workbench
-     * @param algorithmUI The parent algorithm UI
+     * @param nodeUI The parent algorithm UI
      * @param compartment The compartment ID
      * @param slot        The slot instance
      */
-    public JIPipeDataSlotUI(JIPipeWorkbench workbench, JIPipeNodeUI algorithmUI, String compartment, JIPipeDataSlot slot) {
+    public JIPipeDataSlotUI(JIPipeWorkbench workbench, JIPipeNodeUI nodeUI, String compartment, JIPipeDataSlot slot) {
         super(workbench);
-        this.algorithmUI = algorithmUI;
+        this.nodeUI = nodeUI;
         this.compartment = compartment;
         this.slot = slot;
 
@@ -65,12 +65,16 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
         slot.getDefinition().getEventBus().register(this);
     }
 
+    public JIPipeNodeUI getNodeUI() {
+        return nodeUI;
+    }
+
     public JIPipeGraph getGraph() {
         return getGraphUI().getGraph();
     }
 
     public JIPipeGraphCanvasUI getGraphUI() {
-        return algorithmUI.getGraphUI();
+        return nodeUI.getGraphUI();
     }
 
     private List<JIPipeDataSlot> sortSlotsByDistance(Set<JIPipeDataSlot> unsorted) {
@@ -216,7 +220,7 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
     }
 
     private void findAlgorithm(JIPipeDataSlot slot) {
-        JIPipeAlgorithmFinderUI algorithmFinderUI = new JIPipeAlgorithmFinderUI(algorithmUI.getGraphUI(), slot);
+        JIPipeAlgorithmFinderUI algorithmFinderUI = new JIPipeAlgorithmFinderUI(nodeUI.getGraphUI(), slot);
         JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(this), "Find matching algorithm");
         UIUtils.addEscapeListener(dialog);
         dialog.setModal(true);
@@ -244,7 +248,7 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
     private void connectSlot(JIPipeDataSlot source, JIPipeDataSlot target) {
         if (getGraph().canConnect(source, target, true)) {
             JIPipeGraph graph = slot.getNode().getGraph();
-            JIPipeGraphHistory graphHistory = algorithmUI.getGraphUI().getGraphHistory();
+            JIPipeGraphHistory graphHistory = nodeUI.getGraphUI().getGraphHistory();
             if (getGraphUI().isLayoutHelperEnabled()) {
                 graphHistory.addSnapshotBefore(new CompoundGraphHistorySnapshot(Arrays.asList(
                         new EdgeConnectGraphHistorySnapshot(graph, source, target),
@@ -262,7 +266,7 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
 
     private void disconnectSlot() {
         JIPipeGraph graph = slot.getNode().getGraph();
-        JIPipeGraphHistory graphHistory = algorithmUI.getGraphUI().getGraphHistory();
+        JIPipeGraphHistory graphHistory = nodeUI.getGraphUI().getGraphHistory();
         if (slot.isInput()) {
             JIPipeDataSlot sourceSlot = graph.getSourceSlot(slot);
             if (sourceSlot != null) {
@@ -335,7 +339,7 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
     public void onSlotNameChanged(ParameterChangedEvent event) {
         if ("custom-name".equals(event.getKey())) {
             reloadName();
-            algorithmUI.updateSize();
+            nodeUI.updateSize();
         }
     }
 
