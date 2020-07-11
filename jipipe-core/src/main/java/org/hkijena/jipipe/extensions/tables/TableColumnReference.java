@@ -14,6 +14,8 @@
 package org.hkijena.jipipe.extensions.tables;
 
 import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
+import org.hkijena.jipipe.extensions.tables.datatypes.TableColumn;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 
 import java.nio.file.Path;

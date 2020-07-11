@@ -41,7 +41,7 @@ public abstract class JIPipePrepackagedDefaultJavaExtension extends JIPipeDefaul
 
     @Override
     public String getLicense() {
-        return "BSD-2";
+        return "BSD 2-Clause";
     }
 
     @Override

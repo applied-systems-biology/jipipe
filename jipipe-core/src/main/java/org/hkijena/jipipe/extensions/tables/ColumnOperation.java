@@ -13,6 +13,8 @@
 
 package org.hkijena.jipipe.extensions.tables;
 
+import org.hkijena.jipipe.extensions.tables.datatypes.TableColumn;
+
 import java.util.function.Function;
 
 /**

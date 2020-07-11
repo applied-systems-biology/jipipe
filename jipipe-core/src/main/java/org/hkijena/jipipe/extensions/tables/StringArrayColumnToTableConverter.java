@@ -15,6 +15,9 @@ package org.hkijena.jipipe.extensions.tables;
 
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataConverter;
+import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
+import org.hkijena.jipipe.extensions.tables.datatypes.StringArrayTableColumn;
+import org.hkijena.jipipe.extensions.tables.datatypes.TableColumn;
 
 import java.util.Collections;
 

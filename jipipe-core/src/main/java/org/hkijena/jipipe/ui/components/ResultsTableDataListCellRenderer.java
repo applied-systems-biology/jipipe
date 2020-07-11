@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.ui.components;
 
-import org.hkijena.jipipe.extensions.tables.ResultsTableData;
+import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;

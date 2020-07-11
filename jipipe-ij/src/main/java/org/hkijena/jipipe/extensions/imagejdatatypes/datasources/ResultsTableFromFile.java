@@ -20,7 +20,7 @@ import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.algorithm.*;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FileData;
-import org.hkijena.jipipe.extensions.tables.ResultsTableData;
+import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 
 import java.io.IOException;
 import java.util.function.Consumer;

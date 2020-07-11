@@ -16,7 +16,7 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.compat;
 import ij.measure.ResultsTable;
 import org.hkijena.jipipe.api.compat.ImageJDatatypeAdapter;
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.extensions.tables.ResultsTableData;
+import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 
 import java.util.ArrayList;
 import java.util.List;

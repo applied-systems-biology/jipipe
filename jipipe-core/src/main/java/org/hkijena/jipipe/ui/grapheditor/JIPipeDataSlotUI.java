@@ -55,7 +55,7 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
      * Creates a new UI
      *
      * @param workbench   the workbench
-     * @param nodeUI The parent algorithm UI
+     * @param nodeUI      The parent algorithm UI
      * @param compartment The compartment ID
      * @param slot        The slot instance
      */
@@ -139,10 +139,10 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
                         @Override
                         public void mouseEntered(MouseEvent e) {
                             JIPipeNodeUI sourceNodeUI = getGraphUI().getNodeUIs().getOrDefault(source.getNode(), null);
-                            if(sourceNodeUI != null) {
-                                if(source.isOutput()){
+                            if (sourceNodeUI != null) {
+                                if (source.isOutput()) {
                                     JIPipeDataSlotUI sourceUI = sourceNodeUI.getOutputSlotUIs().getOrDefault(source.getName(), null);
-                                    if(sourceUI != null) {
+                                    if (sourceUI != null) {
                                         getGraphUI().setCurrentConnectionDragTarget(JIPipeDataSlotUI.this);
                                         getGraphUI().setCurrentConnectionDragSource(sourceUI);
                                     }
@@ -225,10 +225,10 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
                     @Override
                     public void mouseEntered(MouseEvent e) {
                         JIPipeNodeUI targetNodeUI = getGraphUI().getNodeUIs().getOrDefault(target.getNode(), null);
-                        if(targetNodeUI != null) {
-                            if(target.isInput()){
+                        if (targetNodeUI != null) {
+                            if (target.isInput()) {
                                 JIPipeDataSlotUI targetUI = targetNodeUI.getInputSlotUIs().getOrDefault(target.getName(), null);
-                                if(targetUI != null) {
+                                if (targetUI != null) {
                                     getGraphUI().setCurrentConnectionDragTarget(targetUI);
                                     getGraphUI().setCurrentConnectionDragSource(JIPipeDataSlotUI.this);
                                 }

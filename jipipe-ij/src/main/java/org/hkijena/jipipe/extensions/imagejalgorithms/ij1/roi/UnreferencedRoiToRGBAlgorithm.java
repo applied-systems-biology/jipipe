@@ -32,7 +32,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusCo
 import org.hkijena.jipipe.extensions.parameters.colors.OptionalColorParameter;
 import org.hkijena.jipipe.extensions.parameters.primitives.OptionalDoubleParameter;
 import org.hkijena.jipipe.extensions.parameters.roi.Margin;
-import org.hkijena.jipipe.extensions.tables.ResultsTableData;
+import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 
 import java.awt.*;
 import java.util.HashMap;

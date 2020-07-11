@@ -655,20 +655,19 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
         }
 
         // Draw currently dragged connection
-        if(currentConnectionDragSource != null) {
+        if (currentConnectionDragSource != null) {
             g.setStroke(new BasicStroke(7));
-            graphics.setColor(new Color(0,128,0));
+            graphics.setColor(new Color(0, 128, 0));
             PointRange sourcePoint;
             PointRange targetPoint;
 
             sourcePoint = currentConnectionDragSource.getNodeUI().getSlotLocation(currentConnectionDragSource.getSlot());
             sourcePoint.add(currentConnectionDragSource.getNodeUI().getLocation());
 
-            if(currentConnectionDragTarget == null || currentConnectionDragTarget == currentConnectionDragSource ||
-                currentConnectionDragTarget.getNodeUI().getNode() == currentConnectionDragSource.getNodeUI().getNode()) {
+            if (currentConnectionDragTarget == null || currentConnectionDragTarget == currentConnectionDragSource ||
+                    currentConnectionDragTarget.getNodeUI().getNode() == currentConnectionDragSource.getNodeUI().getNode()) {
                 targetPoint = new PointRange(getMousePosition().x, getMousePosition().y);
-            }
-            else {
+            } else {
                 targetPoint = currentConnectionDragTarget.getNodeUI().getSlotLocation(currentConnectionDragTarget.getSlot());
                 targetPoint.add(currentConnectionDragTarget.getNodeUI().getLocation());
             }
@@ -677,23 +676,23 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
             PointRange.tighten(sourcePoint, targetPoint);
 
             // Draw arrow
-            if(currentConnectionDragSource.getSlot().isOutput())
+            if (currentConnectionDragSource.getSlot().isOutput())
                 drawEdge(g, sourcePoint.center, currentConnectionDragSource.getBounds(), targetPoint.center, drawer);
             else
                 drawEdge(g, targetPoint.center, currentConnectionDragSource.getBounds(), sourcePoint.center, drawer);
         }
 
-        if(currentHighlightedForDisconnect != null) {
+        if (currentHighlightedForDisconnect != null) {
             g.setStroke(new BasicStroke(7));
             g.setColor(Color.RED);
-            if(currentHighlightedForDisconnect.getSlot().isInput()) {
+            if (currentHighlightedForDisconnect.getSlot().isInput()) {
                 JIPipeDataSlot source = getGraph().getSourceSlot(currentHighlightedForDisconnect.getSlot());
-                if(source != null) {
+                if (source != null) {
                     JIPipeDataSlot target = currentHighlightedForDisconnect.getSlot();
                     JIPipeNodeUI sourceUI = nodeUIs.getOrDefault(source.getNode(), null);
                     JIPipeNodeUI targetUI = nodeUIs.getOrDefault(target.getNode(), null);
 
-                    if(sourceUI != null && targetUI != null) {
+                    if (sourceUI != null && targetUI != null) {
                         PointRange sourcePoint;
                         PointRange targetPoint;
 
@@ -709,14 +708,13 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
                         drawEdge(g, sourcePoint.center, sourceUI.getBounds(), targetPoint.center, drawer);
                     }
                 }
-            }
-            else if(currentHighlightedForDisconnect.getSlot().isOutput()) {
-                JIPipeDataSlot source =currentHighlightedForDisconnect.getSlot();
+            } else if (currentHighlightedForDisconnect.getSlot().isOutput()) {
+                JIPipeDataSlot source = currentHighlightedForDisconnect.getSlot();
                 for (JIPipeDataSlot target : getGraph().getTargetSlots(source)) {
                     JIPipeNodeUI sourceUI = nodeUIs.getOrDefault(source.getNode(), null);
                     JIPipeNodeUI targetUI = nodeUIs.getOrDefault(target.getNode(), null);
 
-                    if(sourceUI != null && targetUI != null) {
+                    if (sourceUI != null && targetUI != null) {
                         PointRange sourcePoint;
                         PointRange targetPoint;
 

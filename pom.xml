@@ -10,7 +10,7 @@ Adolf-Reichwein-Straße 23, 07745 Jena, Germany
 This code is licensed under BSD 2-Clause
 See the LICENSE file provided with this code for the full license.
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <packaging>pom</packaging>
@@ -257,8 +257,13 @@ See the LICENSE file provided with this code for the full license.
 
     <modules>
         <module>jipipe-core</module>
-        <module>jipipe-algorithms</module>
+        <module>jipipe-plots</module>
+        <module>jipipe-python</module>
         <module>jipipe-ij</module>
+        <module>jipipe-annotation</module>
+        <module>jipipe-filesystem</module>
+        <module>jipipe-tables</module>
+        <module>jipipe-multiparameters</module>
         <module>jipipe-debug</module>
     </modules>
 
@@ -290,18 +295,12 @@ See the LICENSE file provided with this code for the full license.
                 </plugin>
             </plugins>
         </pluginManagement>
-    </build>
-
-    <reporting>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <version>3.2.0</version>
-                <configuration>
-                    <aggregate>true</aggregate>
-                </configuration>
             </plugin>
         </plugins>
-    </reporting>
+    </build>
 </project>

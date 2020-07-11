@@ -16,9 +16,6 @@ package org.hkijena.jipipe.extensions.multiparameters;
 import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.api.registries.JIPipeAlgorithmRegistry;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
-import org.hkijena.jipipe.extensions.multiparameters.algorithms.MultiParameterAlgorithmDeclaration;
-import org.hkijena.jipipe.extensions.multiparameters.datasources.ParametersDataDefinition;
-import org.hkijena.jipipe.extensions.multiparameters.datasources.ParametersDataTableDefinition;
 import org.hkijena.jipipe.extensions.multiparameters.datatypes.ParametersData;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.scijava.plugin.Plugin;
@@ -31,12 +28,12 @@ public class MultiParametersExtension extends JIPipePrepackagedDefaultJavaExtens
 
     @Override
     public String getName() {
-        return "Multi parameter algorithms";
+        return "Multi parameters data types";
     }
 
     @Override
     public String getDescription() {
-        return "Extension that provides capabilities to run multiple parameters";
+        return "Extension that provides the necessary data types for handling multiple parameters";
     }
 
     @Override
@@ -48,11 +45,6 @@ public class MultiParametersExtension extends JIPipePrepackagedDefaultJavaExtens
                 ResourceUtils.getPluginResource("icons/data-types/data-type-parameters.png"),
                 null,
                 null);
-
-        // Register algorithms
-        registerAlgorithm("parameters-define", ParametersDataDefinition.class);
-        registerAlgorithm("parameters-define-table", ParametersDataTableDefinition.class);
-        registerAlgorithm(new MultiParameterAlgorithmDeclaration());
     }
 
     @Override

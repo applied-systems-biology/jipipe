@@ -27,7 +27,7 @@ import org.hkijena.jipipe.extensions.parameters.colors.ColorMapEnumItemInfo;
 import org.hkijena.jipipe.extensions.parameters.colors.OptionalColorMapParameter;
 import org.hkijena.jipipe.extensions.parameters.primitives.EnumParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.roi.IntModificationParameter;
-import org.hkijena.jipipe.extensions.tables.ResultsTableData;
+import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 
 import java.util.ArrayList;
 import java.util.Comparator;

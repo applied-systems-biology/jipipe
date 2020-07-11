@@ -34,7 +34,7 @@ import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.measure.ImageStatisticsParameters;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.RoiOutline;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.SliceIndex;
-import org.hkijena.jipipe.extensions.tables.ResultsTableData;
+import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.PathUtils;
 

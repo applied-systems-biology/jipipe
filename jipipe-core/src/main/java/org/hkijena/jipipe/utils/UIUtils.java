@@ -139,8 +139,7 @@ public class UIUtils {
                     popupMenu.revalidate();
                     popupMenu.show(target, 0, target.getHeight());
                 }
-            }
-            catch (IllegalComponentStateException e1) {
+            } catch (IllegalComponentStateException e1) {
             }
         });
         return popupMenu;

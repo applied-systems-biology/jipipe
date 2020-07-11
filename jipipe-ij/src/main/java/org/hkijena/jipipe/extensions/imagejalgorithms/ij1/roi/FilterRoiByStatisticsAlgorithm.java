@@ -26,7 +26,7 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.measure.MeasurementFil
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.parameters.util.LogicalOperation;
-import org.hkijena.jipipe.extensions.tables.ResultsTableData;
+import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 
 import java.util.ArrayList;
 import java.util.function.Consumer;

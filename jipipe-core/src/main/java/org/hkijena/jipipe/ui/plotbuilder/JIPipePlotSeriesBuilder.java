@@ -27,7 +27,7 @@ import org.hkijena.jipipe.extensions.plots.datatypes.PlotColumn;
 import org.hkijena.jipipe.extensions.plots.datatypes.PlotDataSeries;
 import org.hkijena.jipipe.extensions.plots.datatypes.PlotMetadata;
 import org.hkijena.jipipe.extensions.plots.parameters.UIPlotDataSeriesColumnEnum;
-import org.hkijena.jipipe.extensions.tables.TableColumn;
+import org.hkijena.jipipe.extensions.tables.datatypes.TableColumn;
 
 import java.util.ArrayList;
 import java.util.HashMap;
