@@ -23,13 +23,26 @@ public class MacroUtils {
     }
 
     /**
+     * Makes a string macro-compatible
+     * @param string the string
+     * @return formatted string
+     */
+    public static String makeMacroCompatible(String string) {
+        if(string.length() == 0)
+            return "_";
+        if(Character.isDigit(string.charAt(0)))
+            string = "_" + string;
+        return string.replaceAll("[^a-zA-Z0-9_]", "_");
+    }
+
+    /**
      * Returns true if the variable name is valid
      *
      * @param key parameter name
      * @return if the name is valid
      */
     public static boolean isValidVariableName(String key) {
-        return key.matches("^[a-zA-Z_][a-zA-Z0-9_]*$");
+        return key.length() > 0 && key.matches("^[a-zA-Z_][a-zA-Z0-9_]*$");
     }
 
     /**
