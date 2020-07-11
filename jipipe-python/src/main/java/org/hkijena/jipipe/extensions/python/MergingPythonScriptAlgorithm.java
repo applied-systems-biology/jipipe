@@ -61,20 +61,18 @@ public class MergingPythonScriptAlgorithm extends JIPipeMergingAlgorithm {
         registerSubParameter(scriptParameters);
 
         code.setCode("from org.hkijena.jipipe.extensions.tables.datatypes import ResultsTableData\n" +
-                "from org.hkijena.jipipe.api.data import JIPipeAnnotation\n" +
-                "from random import random\n" +
                 "\n" +
-                "# We generate a table of 10 values\n" +
-                "table = ResultsTableData()\n" +
-                "table.addColumn(\"Area\", True)\n" +
+                "# Fetch the input tables\n" +
+                "input_tables = data_batch.getInputData(input_slots[0], ResultsTableData)\n" +
                 "\n" +
-                "for row in range(10):\n" +
-                "\ttable.addRow()\n" +
-                "\ttable.setValueAt(random(), row, 0)\n" +
+                "# Merge them into one table\n" +
+                "output_table = ResultsTableData()\n" +
                 "\n" +
-                "# The output is written into the output slot\n" +
-                "# You can add annotations via an overload of addData()\n" +
-                "output_Table.addData(table, [JIPipeAnnotation(\"Dataset\", \"Generated\")])\n");
+                "for input_table in input_tables:\n" +
+                "\toutput_table.mergeWith(input_table)\n" +
+                "\n" +
+                "# Add into the output slot\n" +
+                "data_batch.addOutputData(output_slots[0], output_table)\n");
     }
 
     /**
