@@ -21,7 +21,8 @@ import java.lang.annotation.Target;
 /**
  * An additional action (usually UI action) that is attached to the {@link org.hkijena.jipipe.ui.parameters.ParameterPanel}.
  * Annotate a method with this annotation to make it accessible to the UI.
- * Use {@link org.hkijena.jipipe.api.JIPipeDocumentation} to add additional information
+ * Use {@link org.hkijena.jipipe.api.JIPipeDocumentation} to add additional information.
+ * The method should take a {@link org.hkijena.jipipe.ui.JIPipeWorkbench} instance as parameter
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)

@@ -20,6 +20,8 @@ import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.algorithm.*;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
+import org.hkijena.jipipe.api.events.ParameterChangedEvent;
+import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
@@ -28,10 +30,13 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.parameters.scripts.PythonScript;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
+import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.PythonUtils;
+import org.hkijena.jipipe.utils.ResourceUtils;
 import org.python.core.PyDictionary;
 import org.python.util.PythonInterpreter;
 
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -65,16 +70,6 @@ public class FilterAndMergeRoiByStatisticsScriptAlgorithm extends ImageRoiProces
      */
     public FilterAndMergeRoiByStatisticsScriptAlgorithm(JIPipeAlgorithmDeclaration declaration) {
         super(declaration, ROIListData.class, "Output");
-        code.setCode("# This script is executed once\n" +
-                "# All ROI lists are passed as array 'roi_lists'\n" +
-                "# It contains dictionaries with following structure:\n" +
-                "# { 'roi_list' : [], 'annotations': {} }\n" +
-                "# 'roi_list' contains dictionaries with following structure\n" +
-                "# { 'data' : x, 'stats' : {} } where x is an ImageJ ROI and stats contains the statistics.\n" +
-                "# 'annotations' is a dictionary from annotation name to value (str)" +
-                "\n\n" +
-                "for item in roi_lists:\n" +
-                "\titem[\"roi_list\"] = item[\"roi_list\"][:10]");
         registerSubParameter(scriptParameters);
     }
 
@@ -88,6 +83,28 @@ public class FilterAndMergeRoiByStatisticsScriptAlgorithm extends ImageRoiProces
         this.code = new PythonScript(other.code);
         this.scriptParameters = new JIPipeDynamicParameterCollection(other.scriptParameters);
         registerSubParameter(scriptParameters);
+    }
+
+    @JIPipeDocumentation(name = "Load example", description = "Loads example parameters that showcase how to use this algorithm.")
+    @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/algorithms/graduation-cap.png")
+    public void setToExample(JIPipeWorkbench parent) {
+        if (JOptionPane.showConfirmDialog(parent.getWindow(),
+                "This will reset most of the properties. Continue?",
+                "Load example",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
+            code.setCode("# This script is executed once\n" +
+                    "# All ROI lists are passed as array 'roi_lists'\n" +
+                    "# It contains dictionaries with following structure:\n" +
+                    "# { 'roi_list' : [], 'annotations': {} }\n" +
+                    "# 'roi_list' contains dictionaries with following structure\n" +
+                    "# { 'data' : x, 'stats' : {} } where x is an ImageJ ROI and stats contains the statistics.\n" +
+                    "# 'annotations' is a dictionary from annotation name to value (str)" +
+                    "\n\n" +
+                    "for item in roi_lists:\n" +
+                    "\titem[\"roi_list\"] = item[\"roi_list\"][:10]");
+            getEventBus().post(new ParameterChangedEvent(this, "code"));
+        }
     }
 
     @Override

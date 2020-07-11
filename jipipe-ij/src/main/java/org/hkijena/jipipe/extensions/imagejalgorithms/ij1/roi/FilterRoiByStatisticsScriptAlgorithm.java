@@ -20,6 +20,8 @@ import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.algorithm.*;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
+import org.hkijena.jipipe.api.events.ParameterChangedEvent;
+import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
@@ -28,10 +30,13 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.parameters.scripts.PythonScript;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
+import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.PythonUtils;
+import org.hkijena.jipipe.utils.ResourceUtils;
 import org.python.core.PyDictionary;
 import org.python.util.PythonInterpreter;
 
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -63,17 +68,6 @@ public class FilterRoiByStatisticsScriptAlgorithm extends ImageRoiProcessorAlgor
      */
     public FilterRoiByStatisticsScriptAlgorithm(JIPipeAlgorithmDeclaration declaration) {
         super(declaration, ROIListData.class, "Output");
-        code.setCode("# This script is executed for each ROI list\n" +
-                "# The list is accessible via 'roi_list'\n" +
-                "# It contains an entry 'data' with the ROI\n" +
-                "# And a dictionary 'stats' with statistics" +
-                "# Annotations can be modified via a dict 'annotations'\n" +
-                "\n\n" +
-                "filtered_rois = []\n" +
-                "for item in roi_list:\n" +
-                "\tif item[\"stats\"][\"Area\"] < 100:\n" +
-                "\t\tfiltered_rois.append(item)\n" +
-                "roi_list = filtered_rois");
         registerSubParameter(scriptParameters);
     }
 
@@ -87,6 +81,29 @@ public class FilterRoiByStatisticsScriptAlgorithm extends ImageRoiProcessorAlgor
         this.code = new PythonScript(other.code);
         this.scriptParameters = new JIPipeDynamicParameterCollection(other.scriptParameters);
         registerSubParameter(scriptParameters);
+    }
+
+    @JIPipeDocumentation(name = "Load example", description = "Loads example parameters that showcase how to use this algorithm.")
+    @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/algorithms/graduation-cap.png")
+    public void setToExample(JIPipeWorkbench parent) {
+        if (JOptionPane.showConfirmDialog(parent.getWindow(),
+                "This will reset most of the properties. Continue?",
+                "Load example",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
+            code.setCode("# This script is executed for each ROI list\n" +
+                    "# The list is accessible via 'roi_list'\n" +
+                    "# It contains an entry 'data' with the ROI\n" +
+                    "# And a dictionary 'stats' with statistics" +
+                    "# Annotations can be modified via a dict 'annotations'\n" +
+                    "\n\n" +
+                    "filtered_rois = []\n" +
+                    "for item in roi_list:\n" +
+                    "\tif item[\"stats\"][\"Area\"] < 100:\n" +
+                    "\t\tfiltered_rois.append(item)\n" +
+                    "roi_list = filtered_rois");
+            getEventBus().post(new ParameterChangedEvent(this, "code"));
+        }
     }
 
     @Override

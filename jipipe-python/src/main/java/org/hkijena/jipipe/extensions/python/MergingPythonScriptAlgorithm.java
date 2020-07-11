@@ -17,19 +17,29 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
-import org.hkijena.jipipe.api.algorithm.*;
+import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmCategory;
+import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmDeclaration;
+import org.hkijena.jipipe.api.algorithm.JIPipeMergingAlgorithm;
+import org.hkijena.jipipe.api.algorithm.JIPipeMergingDataBatch;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
+import org.hkijena.jipipe.api.data.JIPipeSlotDefinition;
+import org.hkijena.jipipe.api.data.JIPipeSlotType;
+import org.hkijena.jipipe.api.events.ParameterChangedEvent;
+import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
 import org.hkijena.jipipe.api.registries.JIPipeParameterTypeRegistry;
 import org.hkijena.jipipe.extensions.parameters.scripts.PythonScript;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
+import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.PythonUtils;
+import org.hkijena.jipipe.utils.ResourceUtils;
 import org.python.core.PyDictionary;
 import org.python.util.PythonInterpreter;
 
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -51,32 +61,17 @@ public class MergingPythonScriptAlgorithm extends JIPipeMergingAlgorithm {
 
     /**
      * Creates a new instance
+     *
      * @param declaration the declaration
      */
     public MergingPythonScriptAlgorithm(JIPipeAlgorithmDeclaration declaration) {
-        super(declaration, JIPipeDefaultMutableSlotConfiguration.builder()
-                .addInputSlot("Table", ResultsTableData.class)
-                .addOutputSlot("Table", ResultsTableData.class, null)
-                .build());
+        super(declaration, JIPipeDefaultMutableSlotConfiguration.builder().build());
         registerSubParameter(scriptParameters);
-
-        code.setCode("from org.hkijena.jipipe.extensions.tables.datatypes import ResultsTableData\n" +
-                "\n" +
-                "# Fetch the input tables\n" +
-                "input_tables = data_batch.getInputData(input_slots[0], ResultsTableData)\n" +
-                "\n" +
-                "# Merge them into one table\n" +
-                "output_table = ResultsTableData()\n" +
-                "\n" +
-                "for input_table in input_tables:\n" +
-                "\toutput_table.mergeWith(input_table)\n" +
-                "\n" +
-                "# Add into the output slot\n" +
-                "data_batch.addOutputData(output_slots[0], output_table)\n");
     }
 
     /**
      * Creates a copy
+     *
      * @param other the declaration
      */
     public MergingPythonScriptAlgorithm(MergingPythonScriptAlgorithm other) {
@@ -84,6 +79,36 @@ public class MergingPythonScriptAlgorithm extends JIPipeMergingAlgorithm {
         this.code = new PythonScript(other.code);
         this.scriptParameters = new JIPipeDynamicParameterCollection(other.scriptParameters);
         registerSubParameter(scriptParameters);
+    }
+
+    @JIPipeDocumentation(name = "Load example", description = "Loads example parameters that showcase how to use this algorithm.")
+    @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/algorithms/graduation-cap.png")
+    public void setToExample(JIPipeWorkbench parent) {
+        if (JOptionPane.showConfirmDialog(parent.getWindow(),
+                "This will reset most of the properties. Continue?",
+                "Load example",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
+            JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) getSlotConfiguration();
+            slotConfiguration.clearInputSlots(true);
+            slotConfiguration.clearOutputSlots(true);
+            slotConfiguration.addSlot("Table", new JIPipeSlotDefinition(ResultsTableData.class, JIPipeSlotType.Input, null), true);
+            slotConfiguration.addSlot("Table", new JIPipeSlotDefinition(ResultsTableData.class, JIPipeSlotType.Output, null), true);
+            code.setCode("from org.hkijena.jipipe.extensions.tables.datatypes import ResultsTableData\n" +
+                    "\n" +
+                    "# Fetch the input tables\n" +
+                    "input_tables = data_batch.getInputData(input_slots[0], ResultsTableData)\n" +
+                    "\n" +
+                    "# Merge them into one table\n" +
+                    "output_table = ResultsTableData()\n" +
+                    "\n" +
+                    "for input_table in input_tables:\n" +
+                    "\toutput_table.mergeWith(input_table)\n" +
+                    "\n" +
+                    "# Add into the output slot\n" +
+                    "data_batch.addOutputData(output_slots[0], output_table)\n");
+            getEventBus().post(new ParameterChangedEvent(this, "code"));
+        }
     }
 
     @Override

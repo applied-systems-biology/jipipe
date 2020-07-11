@@ -19,16 +19,21 @@ import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.algorithm.*;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
+import org.hkijena.jipipe.api.events.ParameterChangedEvent;
+import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
 import org.hkijena.jipipe.api.registries.JIPipeParameterTypeRegistry;
 import org.hkijena.jipipe.extensions.parameters.scripts.PythonScript;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
+import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.PythonUtils;
+import org.hkijena.jipipe.utils.ResourceUtils;
 import org.python.core.PyDictionary;
 import org.python.util.PythonInterpreter;
 
+import javax.swing.*;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -52,14 +57,6 @@ public class ModifyTablesScript extends JIPipeSimpleIteratingAlgorithm {
      */
     public ModifyTablesScript(JIPipeAlgorithmDeclaration declaration) {
         super(declaration);
-        code.setCode("# This script is executed for each table\n" +
-                "# Tables are passed as dictionary 'table'\n" +
-                "# Key are the column names\n" +
-                "# Values are string/double arrays\n" +
-                "# Annotations can be modified via a dict 'annotations'\n\n" +
-                "areas = table[\"Area\"]\n" +
-                "areas_sq = [ x * x for x in areas ]\n" +
-                "table[\"Area2\"] = areas_sq");
         registerSubParameter(scriptParameters);
     }
 
@@ -73,6 +70,26 @@ public class ModifyTablesScript extends JIPipeSimpleIteratingAlgorithm {
         this.code = new PythonScript(other.code);
         this.scriptParameters = new JIPipeDynamicParameterCollection(other.scriptParameters);
         registerSubParameter(scriptParameters);
+    }
+
+    @JIPipeDocumentation(name = "Load example", description = "Loads example parameters that showcase how to use this algorithm.")
+    @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/algorithms/graduation-cap.png")
+    public void setToExample(JIPipeWorkbench parent) {
+        if (JOptionPane.showConfirmDialog(parent.getWindow(),
+                "This will reset most of the properties. Continue?",
+                "Load example",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
+            code.setCode("# This script is executed for each table\n" +
+                    "# Tables are passed as dictionary 'table'\n" +
+                    "# Key are the column names\n" +
+                    "# Values are string/double arrays\n" +
+                    "# Annotations can be modified via a dict 'annotations'\n\n" +
+                    "areas = table[\"Area\"]\n" +
+                    "areas_sq = [ x * x for x in areas ]\n" +
+                    "table[\"Area2\"] = areas_sq");
+            getEventBus().post(new ParameterChangedEvent(this, "code"));
+        }
     }
 
     @Override

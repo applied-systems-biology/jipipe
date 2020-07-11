@@ -22,16 +22,21 @@ import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmCategory;
 import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmDeclaration;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
+import org.hkijena.jipipe.api.events.ParameterChangedEvent;
+import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
 import org.hkijena.jipipe.api.registries.JIPipeParameterTypeRegistry;
 import org.hkijena.jipipe.extensions.parameters.scripts.PythonScript;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
+import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.PythonUtils;
+import org.hkijena.jipipe.utils.ResourceUtils;
 import org.python.core.PyDictionary;
 import org.python.util.PythonInterpreter;
 
+import javax.swing.*;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -58,17 +63,6 @@ public class TablesFromScript extends JIPipeAlgorithm {
      */
     public TablesFromScript(JIPipeAlgorithmDeclaration declaration) {
         super(declaration);
-        code.setCode("# This script is executed once\n" +
-                "# The results are extracted from an array 'tables'\n" +
-                "# It contains dictionaries with following structure:\n" +
-                "# { 'data' : {}, 'nrow': x, 'annotations': {} }\n" +
-                "# 'data' is a dictionary from column name to a list of row data\n" +
-                "# 'nrow' is the number of rows (str/float)\n" +
-                "# 'annotations' is a dictionary from annotation name to value (str)" +
-                "\n\n" +
-                "tables = [\n" +
-                "    { \"data\": { \"example\" : [1,2,3] } }\n" +
-                "]");
         registerSubParameter(scriptParameters);
     }
 
@@ -82,6 +76,29 @@ public class TablesFromScript extends JIPipeAlgorithm {
         this.code = new PythonScript(other.code);
         this.scriptParameters = new JIPipeDynamicParameterCollection(other.scriptParameters);
         registerSubParameter(scriptParameters);
+    }
+
+    @JIPipeDocumentation(name = "Load example", description = "Loads example parameters that showcase how to use this algorithm.")
+    @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/algorithms/graduation-cap.png")
+    public void setToExample(JIPipeWorkbench parent) {
+        if (JOptionPane.showConfirmDialog(parent.getWindow(),
+                "This will reset most of the properties. Continue?",
+                "Load example",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
+            code.setCode("# This script is executed once\n" +
+                    "# The results are extracted from an array 'tables'\n" +
+                    "# It contains dictionaries with following structure:\n" +
+                    "# { 'data' : {}, 'nrow': x, 'annotations': {} }\n" +
+                    "# 'data' is a dictionary from column name to a list of row data\n" +
+                    "# 'nrow' is the number of rows (str/float)\n" +
+                    "# 'annotations' is a dictionary from annotation name to value (str)" +
+                    "\n\n" +
+                    "tables = [\n" +
+                    "    { \"data\": { \"example\" : [1,2,3] } }\n" +
+                    "]");
+            getEventBus().post(new ParameterChangedEvent(this, "code"));
+        }
     }
 
     @Override

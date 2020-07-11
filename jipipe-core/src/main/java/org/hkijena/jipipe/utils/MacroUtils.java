@@ -24,13 +24,14 @@ public class MacroUtils {
 
     /**
      * Makes a string macro-compatible
+     *
      * @param string the string
      * @return formatted string
      */
     public static String makeMacroCompatible(String string) {
-        if(string.length() == 0)
+        if (string.length() == 0)
             return "_";
-        if(Character.isDigit(string.charAt(0)))
+        if (Character.isDigit(string.charAt(0)))
             string = "_" + string;
         return string.replaceAll("[^a-zA-Z0-9_]", "_");
     }

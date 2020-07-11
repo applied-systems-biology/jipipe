@@ -24,21 +24,20 @@ import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.algorithm.*;
 import org.hkijena.jipipe.api.compat.ImageJDatatypeAdapter;
-import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
-import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
-import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
+import org.hkijena.jipipe.api.data.*;
+import org.hkijena.jipipe.api.events.ParameterChangedEvent;
+import org.hkijena.jipipe.api.parameters.*;
 import org.hkijena.jipipe.api.registries.JIPipeImageJAdapterRegistry;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.PathData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.parameters.scripts.ImageJMacro;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
+import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.MacroUtils;
+import org.hkijena.jipipe.utils.ResourceUtils;
 
+import javax.swing.*;
 import java.awt.*;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -93,17 +92,7 @@ public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm {
                 .allowOutputSlotInheritance(true)
                 .restrictInputTo(getCompatibleTypes())
                 .restrictOutputTo(getCompatibleTypes())
-                .addInputSlot("Input", ImagePlusData.class)
-                .addOutputSlot("Output", ImagePlusData.class, null)
                 .build());
-        this.code.setCode("// To add variables, click the [+] button below.\n" +
-                "// They will be created automatically before this code fragment.\n\n" +
-                "// Each input image slot creates a window with its name.\n" +
-                "// You have to select it, first\n" +
-                "selectWindow(\"Input\");\n\n" +
-                "// Apply your operations here\n\n" +
-                "// JIPipe extracts output images based on their window name\n" +
-                "rename(\"Output\");\n");
         this.macroParameters.getEventBus().register(this);
     }
 
@@ -230,6 +219,31 @@ public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm {
                 window.setVisible(false);
                 window.dispose();
             }
+        }
+    }
+
+    @JIPipeDocumentation(name = "Load example", description = "Loads example parameters that showcase how to use this algorithm.")
+    @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/algorithms/graduation-cap.png")
+    public void setToExample(JIPipeWorkbench parent) {
+        if (JOptionPane.showConfirmDialog(parent.getWindow(),
+                "This will reset most of the properties. Continue?",
+                "Load example",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
+            JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) getSlotConfiguration();
+            slotConfiguration.clearInputSlots(true);
+            slotConfiguration.clearOutputSlots(true);
+            slotConfiguration.addSlot("Input", new JIPipeSlotDefinition(ImagePlusData.class, JIPipeSlotType.Input, null), true);
+            slotConfiguration.addSlot("Output", new JIPipeSlotDefinition(ImagePlusData.class, JIPipeSlotType.Output, null), true);
+            this.code.setCode("// To add variables, click the [+] button below.\n" +
+                    "// They will be created automatically before this code fragment.\n\n" +
+                    "// Each input image slot creates a window with its name.\n" +
+                    "// You have to select it, first\n" +
+                    "selectWindow(\"Input\");\n\n" +
+                    "// Apply your operations here\n\n" +
+                    "// JIPipe extracts output images based on their window name\n" +
+                    "rename(\"Output\");\n");
+            getEventBus().post(new ParameterChangedEvent(this, "code"));
         }
     }
 

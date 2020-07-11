@@ -17,29 +17,27 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
-import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmCategory;
 import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmDeclaration;
 import org.hkijena.jipipe.api.algorithm.JIPipeParameterSlotAlgorithm;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
-import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
+import org.hkijena.jipipe.api.data.*;
+import org.hkijena.jipipe.api.events.ParameterChangedEvent;
+import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
 import org.hkijena.jipipe.api.registries.JIPipeParameterTypeRegistry;
 import org.hkijena.jipipe.extensions.parameters.scripts.PythonScript;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
-import org.hkijena.jipipe.utils.MacroUtils;
+import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.PythonUtils;
-import org.hkijena.jipipe.utils.StringUtils;
+import org.hkijena.jipipe.utils.ResourceUtils;
 import org.python.core.PyDictionary;
 import org.python.util.PythonInterpreter;
 
+import javax.swing.*;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -61,6 +59,7 @@ public class ParameterSlotPythonScriptAlgorithm extends JIPipeParameterSlotAlgor
 
     /**
      * Creates a new instance
+     *
      * @param declaration the declaration
      */
     public ParameterSlotPythonScriptAlgorithm(JIPipeAlgorithmDeclaration declaration) {
@@ -68,26 +67,11 @@ public class ParameterSlotPythonScriptAlgorithm extends JIPipeParameterSlotAlgor
                 .addOutputSlot("Table", ResultsTableData.class, null)
                 .build());
         registerSubParameter(scriptParameters);
-
-        code.setCode("from org.hkijena.jipipe.extensions.tables.datatypes import ResultsTableData\n" +
-                "from org.hkijena.jipipe.api.data import JIPipeAnnotation\n" +
-                "from random import random\n" +
-                "\n" +
-                "# We generate a table of 10 values\n" +
-                "table = ResultsTableData()\n" +
-                "table.addColumn(\"Area\", True)\n" +
-                "\n" +
-                "for row in range(10):\n" +
-                "\ttable.addRow()\n" +
-                "\ttable.setValueAt(random(), row, 0)\n" +
-                "\n" +
-                "# The output is written into the output slot\n" +
-                "# You can add annotations via an overload of addData()\n" +
-                "output_Table.addData(table, [JIPipeAnnotation(\"Dataset\", \"Generated\")])\n");
     }
 
     /**
      * Creates a copy
+     *
      * @param other the declaration
      */
     public ParameterSlotPythonScriptAlgorithm(ParameterSlotPythonScriptAlgorithm other) {
@@ -95,6 +79,37 @@ public class ParameterSlotPythonScriptAlgorithm extends JIPipeParameterSlotAlgor
         this.code = new PythonScript(other.code);
         this.scriptParameters = new JIPipeDynamicParameterCollection(other.scriptParameters);
         registerSubParameter(scriptParameters);
+    }
+
+    @JIPipeDocumentation(name = "Load example", description = "Loads example parameters that showcase how to use this algorithm.")
+    @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/algorithms/graduation-cap.png")
+    public void setToExample(JIPipeWorkbench parent) {
+        if (JOptionPane.showConfirmDialog(parent.getWindow(),
+                "This will reset most of the properties. Continue?",
+                "Load example",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
+            JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) getSlotConfiguration();
+            slotConfiguration.clearInputSlots(true);
+            slotConfiguration.clearOutputSlots(true);
+            slotConfiguration.addSlot("Table", new JIPipeSlotDefinition(ResultsTableData.class, JIPipeSlotType.Output, null), true);
+            code.setCode("from org.hkijena.jipipe.extensions.tables.datatypes import ResultsTableData\n" +
+                    "from org.hkijena.jipipe.api.data import JIPipeAnnotation\n" +
+                    "from random import random\n" +
+                    "\n" +
+                    "# We generate a table of 10 values\n" +
+                    "table = ResultsTableData()\n" +
+                    "table.addColumn(\"Area\", True)\n" +
+                    "\n" +
+                    "for row in range(10):\n" +
+                    "\ttable.addRow()\n" +
+                    "\ttable.setValueAt(random(), row, 0)\n" +
+                    "\n" +
+                    "# The output is written into the output slot\n" +
+                    "# You can add annotations via an overload of addData()\n" +
+                    "output_Table.addData(table, [JIPipeAnnotation(\"Dataset\", \"Generated\")])\n");
+            getEventBus().post(new ParameterChangedEvent(this, "code"));
+        }
     }
 
     @Override

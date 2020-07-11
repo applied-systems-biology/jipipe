@@ -36,6 +36,7 @@ public class PythonExtension extends JIPipePrepackagedDefaultJavaExtension {
     @Override
     public void register() {
         registerAlgorithm("python-script", PythonScriptAlgorithm.class, UIUtils.getAlgorithmIconURL("python.png"));
+        registerAlgorithm("python-script-multi-parameter", ParameterSlotPythonScriptAlgorithm.class, UIUtils.getAlgorithmIconURL("python.png"));
         registerAlgorithm("python-script-iterating-simple", SimpleIteratingPythonScriptAlgorithm.class, UIUtils.getAlgorithmIconURL("python.png"));
         registerAlgorithm("python-script-iterating", IteratingPythonScriptAlgorithm.class, UIUtils.getAlgorithmIconURL("python.png"));
         registerAlgorithm("python-script-merging", MergingPythonScriptAlgorithm.class, UIUtils.getAlgorithmIconURL("python.png"));

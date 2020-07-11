@@ -18,15 +18,10 @@ import org.hkijena.jipipe.api.parameters.JIPipeCustomParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.extensions.parameters.pairs.IntegerAndIntegerPair;
 import org.hkijena.jipipe.extensions.parameters.pairs.StringAndStringPair;
-import org.hkijena.jipipe.extensions.parameters.primitives.DoubleList;
-import org.hkijena.jipipe.extensions.parameters.primitives.IntegerList;
-import org.hkijena.jipipe.extensions.parameters.primitives.PathList;
-import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
 import org.python.core.PyCode;
 import org.python.core.PyDictionary;
 import org.python.util.PythonInterpreter;
 
-import java.nio.file.Path;
 import java.util.Map;
 
 /**
