@@ -279,7 +279,7 @@ public class ParameterPanel extends FormPanel implements Contextual {
 
     private void removeDynamicParameter(String key, JIPipeDynamicParameterCollection parameterHolder) {
         JIPipeMutableParameterAccess parameter = parameterHolder.getParameter(key);
-        if (GraphEditorUISettings.getInstance().isAskOnDeleteParameter() || JOptionPane.showConfirmDialog(this, "Do you really want to remove the parameter '" + parameter.getName() + "'?",
+        if (!GraphEditorUISettings.getInstance().isAskOnDeleteParameter() || JOptionPane.showConfirmDialog(this, "Do you really want to remove the parameter '" + parameter.getName() + "'?",
                 "Remove parameter", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
             parameterHolder.removeParameter(key);
             reloadForm();
