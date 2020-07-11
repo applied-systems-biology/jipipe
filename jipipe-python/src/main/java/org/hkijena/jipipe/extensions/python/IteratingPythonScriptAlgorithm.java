@@ -62,7 +62,7 @@ public class IteratingPythonScriptAlgorithm extends JIPipeIteratingAlgorithm {
         code.setCode("from org.hkijena.jipipe.extensions.tables.datatypes import ResultsTableData\n" +
                 "\n" +
                 "# Fetch the input table from the first input slot\n" +
-                "input_table = data_batch.getInputData(input_slot, ResultsTableData)\n" +
+                "input_table = data_batch.getInputData(input_slots[0], ResultsTableData)\n" +
                 "\n" +
                 "table = ResultsTableData()\n" +
                 "\n" +
