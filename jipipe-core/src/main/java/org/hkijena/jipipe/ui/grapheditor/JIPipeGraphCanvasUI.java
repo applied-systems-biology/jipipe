@@ -677,9 +677,9 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
 
             // Draw arrow
             if (currentConnectionDragSource.getSlot().isOutput())
-                drawEdge(g, sourcePoint.center, currentConnectionDragSource.getBounds(), targetPoint.center, drawer);
+                drawEdge(g, sourcePoint.center, currentConnectionDragSource.getNodeUI().getBounds(), targetPoint.center, drawer);
             else
-                drawEdge(g, targetPoint.center, currentConnectionDragSource.getBounds(), sourcePoint.center, drawer);
+                drawEdge(g, targetPoint.center, currentConnectionDragSource.getNodeUI().getBounds(), sourcePoint.center, drawer);
         }
 
         if (currentHighlightedForDisconnect != null) {
