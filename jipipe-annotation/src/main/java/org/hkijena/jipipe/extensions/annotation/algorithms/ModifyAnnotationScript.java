@@ -23,6 +23,7 @@ import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
+import org.hkijena.jipipe.api.registries.JIPipeParameterTypeRegistry;
 import org.hkijena.jipipe.extensions.parameters.scripts.PythonScript;
 import org.hkijena.jipipe.utils.PythonUtils;
 import org.python.core.PyDictionary;
@@ -31,7 +32,6 @@ import org.python.util.PythonInterpreter;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import static org.hkijena.jipipe.utils.PythonUtils.ALLOWED_PARAMETER_CLASSES;
 
 /**
  * Algorithm that annotates all data with the same annotation
@@ -46,7 +46,8 @@ public class ModifyAnnotationScript extends JIPipeSimpleIteratingAlgorithm {
 
     private PythonInterpreter pythonInterpreter;
     private PythonScript code = new PythonScript();
-    private JIPipeDynamicParameterCollection scriptParameters = new JIPipeDynamicParameterCollection(ALLOWED_PARAMETER_CLASSES);
+    private JIPipeDynamicParameterCollection scriptParameters = new JIPipeDynamicParameterCollection(true,
+            JIPipeParameterTypeRegistry.getInstance().getRegisteredParameters().values());
 
     /**
      * @param declaration the declaration
@@ -87,7 +88,7 @@ public class ModifyAnnotationScript extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataInterface dataInterface, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+    protected void runIteration(JIPipeDataBatch dataInterface, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         PyDictionary annotationDict = JIPipeAnnotation.annotationMapToPython(dataInterface.getAnnotations());
         pythonInterpreter.set("annotations", annotationDict);
         pythonInterpreter.exec(code.getCode());

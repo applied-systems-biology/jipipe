@@ -20,6 +20,8 @@ import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmCategory;
 import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmDeclaration;
+import org.hkijena.jipipe.api.algorithm.JIPipeParameterSlotAlgorithm;
+import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
@@ -31,13 +33,12 @@ import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.MacroUtils;
 import org.hkijena.jipipe.utils.PythonUtils;
 import org.hkijena.jipipe.utils.StringUtils;
-import org.python.core.PyArray;
 import org.python.core.PyDictionary;
-import org.python.core.PyObject;
 import org.python.util.PythonInterpreter;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -45,12 +46,14 @@ import java.util.function.Supplier;
 /**
  * An algorithm that allows to run Python code
  */
-@JIPipeDocumentation(name = "Python script", description = "Runs a Python script that has direct access to all input data slots. " +
+@JIPipeDocumentation(name = "Python script (multi-parameter capable)", description = "Runs a Python script that has direct access to all input data slots. " +
         "Input slots can be accessed from variables 'input_slots' (array), 'input_slots_map' (map from name to slot). " +
         "Output slots can be accessed from variables 'output_slots' (array), 'output_slots_map' (map from name to slot)." +
-        "Slots are of their respective JIPipe types (JIPipeDataSlot) and are fully accessible from within Python.")
+        "Slots are of their respective JIPipe types (JIPipeDataSlot) and are fully accessible from within Python. " +
+        "This algorithm is capable of running over multiple parameter sets via an additional slot. Automatically generated annotations generated based on " +
+        "the parameters are available as variable 'parameter_annotations'. Please do not forget to pass the annotations to the output if you want to want this.")
 @JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Miscellaneous, menuPath = "Python script")
-public class PythonScriptAlgorithm extends JIPipeAlgorithm {
+public class ParameterSlotPythonScriptAlgorithm extends JIPipeParameterSlotAlgorithm {
 
     private PythonScript code = new PythonScript();
     private JIPipeDynamicParameterCollection scriptParameters = new JIPipeDynamicParameterCollection(true,
@@ -60,7 +63,7 @@ public class PythonScriptAlgorithm extends JIPipeAlgorithm {
      * Creates a new instance
      * @param declaration the declaration
      */
-    public PythonScriptAlgorithm(JIPipeAlgorithmDeclaration declaration) {
+    public ParameterSlotPythonScriptAlgorithm(JIPipeAlgorithmDeclaration declaration) {
         super(declaration, JIPipeDefaultMutableSlotConfiguration.builder()
                 .addOutputSlot("Table", ResultsTableData.class, null)
                 .build());
@@ -80,14 +83,14 @@ public class PythonScriptAlgorithm extends JIPipeAlgorithm {
                 "\n" +
                 "# The output is written into the output slot\n" +
                 "# You can add annotations via an overload of addData()\n" +
-                "output_slot_map[\"Table\"].addData(table, [JIPipeAnnotation(\"Dataset\", \"Generated\")])\n");
+                "output_Table.addData(table, [JIPipeAnnotation(\"Dataset\", \"Generated\")])\n");
     }
 
     /**
      * Creates a copy
      * @param other the declaration
      */
-    public PythonScriptAlgorithm(PythonScriptAlgorithm other) {
+    public ParameterSlotPythonScriptAlgorithm(ParameterSlotPythonScriptAlgorithm other) {
         super(other);
         this.code = new PythonScript(other.code);
         this.scriptParameters = new JIPipeDynamicParameterCollection(other.scriptParameters);
@@ -95,15 +98,11 @@ public class PythonScriptAlgorithm extends JIPipeAlgorithm {
     }
 
     @Override
-    public void run(JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
-        if (isPassThrough() && canAutoPassThrough()) {
-            algorithmProgress.accept(subProgress.resolve("Data passed through to output"));
-            runPassThrough();
-            return;
-        }
-
+    public void runParameterSet(JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress,
+                                Supplier<Boolean> isCancelled, List<JIPipeAnnotation> parameterAnnotations) {
         PythonInterpreter pythonInterpreter = new PythonInterpreter();
         PythonUtils.passParametersToPython(pythonInterpreter, scriptParameters);
+        pythonInterpreter.set("parameter_annotations", parameterAnnotations);
         PyDictionary inputSlotMap = new PyDictionary();
         PyDictionary outputSlotMap = new PyDictionary();
         for (JIPipeDataSlot inputSlot : getInputSlots()) {
@@ -127,9 +126,7 @@ public class PythonScriptAlgorithm extends JIPipeAlgorithm {
         PythonUtils.checkScriptParametersValidity(scriptParameters, report.forCategory("Script parameters"));
     }
 
-    @JIPipeDocumentation(name = "Script", description = "Input slots can be accessed from variables 'input_slots' (array), 'input_slots_map' (map from name to slot). " +
-            "Output slots can be accessed from variables 'output_slots' (array), 'output_slots_map' (map from name to slot)." +
-            "Slots are of their respective JIPipe types (JIPipeDataSlot) and are fully accessible from within Python.")
+    @JIPipeDocumentation(name = "Script", description = "Access to the data batch is done via a variable 'data_batch' that provides access to all input and output data, as well as annotations.")
     @JIPipeParameter("code")
     public PythonScript getCode() {
         return code;

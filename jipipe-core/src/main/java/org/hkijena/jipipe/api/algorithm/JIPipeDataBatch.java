@@ -26,7 +26,7 @@ import java.util.Map;
  * Wraps a set of input and output slots that belong together
  * This can be used for convenience
  */
-public class JIPipeDataInterface {
+public class JIPipeDataBatch {
     private JIPipeGraphNode algorithm;
     private Map<JIPipeDataSlot, Integer> inputSlotRows;
     private Map<String, JIPipeAnnotation> annotations = new HashMap<>();
@@ -36,7 +36,7 @@ public class JIPipeDataInterface {
      *
      * @param algorithm The algorithm
      */
-    public JIPipeDataInterface(JIPipeGraphNode algorithm) {
+    public JIPipeDataBatch(JIPipeGraphNode algorithm) {
         this.algorithm = algorithm;
         this.inputSlotRows = new HashMap<>();
 //        initialize(inputSlots, row);
@@ -47,7 +47,7 @@ public class JIPipeDataInterface {
      *
      * @param other the original
      */
-    public JIPipeDataInterface(JIPipeDataInterface other) {
+    public JIPipeDataBatch(JIPipeDataBatch other) {
         this.algorithm = other.algorithm;
         this.inputSlotRows = new HashMap<>(other.inputSlotRows);
         this.annotations = new HashMap<>(other.annotations);

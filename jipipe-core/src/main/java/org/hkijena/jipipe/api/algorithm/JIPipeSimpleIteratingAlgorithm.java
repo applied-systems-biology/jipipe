@@ -85,7 +85,7 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
             final int row = 0;
             JIPipeRunnerSubStatus slotProgress = subProgress.resolve("Data row " + (row + 1) + " / " + 1);
             algorithmProgress.accept(slotProgress);
-            JIPipeDataInterface dataInterface = new JIPipeDataInterface(this);
+            JIPipeDataBatch dataInterface = new JIPipeDataBatch(this);
             dataInterface.addGlobalAnnotations(parameterAnnotations, true);
             runIteration(dataInterface, slotProgress, algorithmProgress, isCancelled);
         } else {
@@ -95,7 +95,7 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
                         return;
                     JIPipeRunnerSubStatus slotProgress = subProgress.resolve("Data row " + (i + 1) + " / " + getFirstInputSlot().getRowCount());
                     algorithmProgress.accept(slotProgress);
-                    JIPipeDataInterface dataInterface = new JIPipeDataInterface(this);
+                    JIPipeDataBatch dataInterface = new JIPipeDataBatch(this);
                     dataInterface.setData(getFirstInputSlot(), i);
                     dataInterface.addGlobalAnnotations(getFirstInputSlot().getAnnotations(i), true);
                     dataInterface.addGlobalAnnotations(parameterAnnotations, true);
@@ -110,7 +110,7 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
                             return;
                         JIPipeRunnerSubStatus slotProgress = subProgress.resolve("Data row " + (rowIndex + 1) + " / " + getFirstInputSlot().getRowCount());
                         algorithmProgress.accept(slotProgress);
-                        JIPipeDataInterface dataInterface = new JIPipeDataInterface(this);
+                        JIPipeDataBatch dataInterface = new JIPipeDataBatch(this);
                         dataInterface.setData(getFirstInputSlot(), rowIndex);
                         dataInterface.addGlobalAnnotations(getFirstInputSlot().getAnnotations(rowIndex), true);
                         dataInterface.addGlobalAnnotations(parameterAnnotations, true);
@@ -150,7 +150,7 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
      * @param algorithmProgress Consumer to publish a new sub-progress
      * @param isCancelled       Supplier that informs if the current task was canceled
      */
-    protected abstract void runIteration(JIPipeDataInterface dataInterface, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled);
+    protected abstract void runIteration(JIPipeDataBatch dataInterface, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled);
 
     @Override
     public boolean supportsParallelization() {

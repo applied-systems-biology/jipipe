@@ -21,7 +21,7 @@ import java.util.*;
 
 /**
  * Wraps a set of input and output slots that belong together.
- * This is a less restricted variant of {@link JIPipeDataInterface} used by {@link JIPipeMergingAlgorithm}
+ * This is a less restricted variant of {@link JIPipeDataBatch} used by {@link JIPipeMergingAlgorithm}
  */
 public class JIPipeMergingDataBatch {
     private JIPipeGraphNode algorithm;

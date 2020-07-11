@@ -94,7 +94,7 @@ public class MergeChannelsAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataInterface dataInterface, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+    protected void runIteration(JIPipeDataBatch dataInterface, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         ImagePlus[] channels = new ImagePlus[ChannelColor.values().length];
         for (int i = 0; i < ChannelColor.values().length; ++i) {
             ChannelColor color = ChannelColor.values()[i];

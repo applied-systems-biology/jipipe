@@ -17,9 +17,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
-import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithm;
-import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmCategory;
-import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmDeclaration;
+import org.hkijena.jipipe.api.algorithm.*;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
@@ -28,29 +26,24 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
 import org.hkijena.jipipe.api.registries.JIPipeParameterTypeRegistry;
 import org.hkijena.jipipe.extensions.parameters.scripts.PythonScript;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
-import org.hkijena.jipipe.utils.MacroUtils;
 import org.hkijena.jipipe.utils.PythonUtils;
-import org.hkijena.jipipe.utils.StringUtils;
-import org.python.core.PyArray;
 import org.python.core.PyDictionary;
-import org.python.core.PyObject;
 import org.python.util.PythonInterpreter;
 
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 /**
  * An algorithm that allows to run Python code
  */
-@JIPipeDocumentation(name = "Python script", description = "Runs a Python script that has direct access to all input data slots. " +
+@JIPipeDocumentation(name = "Python script (merging)", description = "Runs a Python script that iterates through each data batch in the input slots. " +
+        "Each data batch contains multiple input and output data items." +
+        "Access to the data batch is done via a variable 'data_batch' that provides access to all input and output data, as well as annotations. " +
         "Input slots can be accessed from variables 'input_slots' (array), 'input_slots_map' (map from name to slot). " +
-        "Output slots can be accessed from variables 'output_slots' (array), 'output_slots_map' (map from name to slot)." +
-        "Slots are of their respective JIPipe types (JIPipeDataSlot) and are fully accessible from within Python.")
+        "Output slots can be accessed from variables 'output_slots' (array), 'output_slots_map' (map from name to slot).")
 @JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Miscellaneous, menuPath = "Python script")
-public class PythonScriptAlgorithm extends JIPipeAlgorithm {
+public class MergingPythonScriptAlgorithm extends JIPipeMergingAlgorithm {
 
     private PythonScript code = new PythonScript();
     private JIPipeDynamicParameterCollection scriptParameters = new JIPipeDynamicParameterCollection(true,
@@ -60,8 +53,9 @@ public class PythonScriptAlgorithm extends JIPipeAlgorithm {
      * Creates a new instance
      * @param declaration the declaration
      */
-    public PythonScriptAlgorithm(JIPipeAlgorithmDeclaration declaration) {
+    public MergingPythonScriptAlgorithm(JIPipeAlgorithmDeclaration declaration) {
         super(declaration, JIPipeDefaultMutableSlotConfiguration.builder()
+                .addInputSlot("Table", ResultsTableData.class)
                 .addOutputSlot("Table", ResultsTableData.class, null)
                 .build());
         registerSubParameter(scriptParameters);
@@ -80,14 +74,14 @@ public class PythonScriptAlgorithm extends JIPipeAlgorithm {
                 "\n" +
                 "# The output is written into the output slot\n" +
                 "# You can add annotations via an overload of addData()\n" +
-                "output_slot_map[\"Table\"].addData(table, [JIPipeAnnotation(\"Dataset\", \"Generated\")])\n");
+                "output_Table.addData(table, [JIPipeAnnotation(\"Dataset\", \"Generated\")])\n");
     }
 
     /**
      * Creates a copy
      * @param other the declaration
      */
-    public PythonScriptAlgorithm(PythonScriptAlgorithm other) {
+    public MergingPythonScriptAlgorithm(MergingPythonScriptAlgorithm other) {
         super(other);
         this.code = new PythonScript(other.code);
         this.scriptParameters = new JIPipeDynamicParameterCollection(other.scriptParameters);
@@ -95,15 +89,17 @@ public class PythonScriptAlgorithm extends JIPipeAlgorithm {
     }
 
     @Override
-    public void run(JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
-        if (isPassThrough() && canAutoPassThrough()) {
-            algorithmProgress.accept(subProgress.resolve("Data passed through to output"));
-            runPassThrough();
-            return;
-        }
+    public void reportValidity(JIPipeValidityReport report) {
+        super.reportValidity(report);
+        PythonUtils.checkScriptValidity(code.getCode(), scriptParameters, report.forCategory("Script"));
+        PythonUtils.checkScriptParametersValidity(scriptParameters, report.forCategory("Script parameters"));
+    }
 
+    @Override
+    protected void runIteration(JIPipeMergingDataBatch dataInterface, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         PythonInterpreter pythonInterpreter = new PythonInterpreter();
         PythonUtils.passParametersToPython(pythonInterpreter, scriptParameters);
+        pythonInterpreter.set("data_batch", dataInterface);
         PyDictionary inputSlotMap = new PyDictionary();
         PyDictionary outputSlotMap = new PyDictionary();
         for (JIPipeDataSlot inputSlot : getInputSlots()) {
@@ -116,20 +112,12 @@ public class PythonScriptAlgorithm extends JIPipeAlgorithm {
         pythonInterpreter.set("output_slots", new ArrayList<>(getOutputSlots()));
         pythonInterpreter.set("input_slot_map", inputSlotMap);
         pythonInterpreter.set("output_slot_map", outputSlotMap);
-
         pythonInterpreter.exec(code.getCode());
     }
 
-    @Override
-    public void reportValidity(JIPipeValidityReport report) {
-        super.reportValidity(report);
-        PythonUtils.checkScriptValidity(code.getCode(), scriptParameters, report.forCategory("Script"));
-        PythonUtils.checkScriptParametersValidity(scriptParameters, report.forCategory("Script parameters"));
-    }
-
-    @JIPipeDocumentation(name = "Script", description = "Input slots can be accessed from variables 'input_slots' (array), 'input_slots_map' (map from name to slot). " +
-            "Output slots can be accessed from variables 'output_slots' (array), 'output_slots_map' (map from name to slot)." +
-            "Slots are of their respective JIPipe types (JIPipeDataSlot) and are fully accessible from within Python.")
+    @JIPipeDocumentation(name = "Script", description = "Access to the data batch is done via a variable 'data_batch' that provides access to all input and output data, as well as annotations." +
+            "Input slots can be accessed from variables 'input_slots' (array), 'input_slots_map' (map from name to slot). " +
+            "Output slots can be accessed from variables 'output_slots' (array), 'output_slots_map' (map from name to slot).")
     @JIPipeParameter("code")
     public PythonScript getCode() {
         return code;
@@ -138,7 +126,6 @@ public class PythonScriptAlgorithm extends JIPipeAlgorithm {
     @JIPipeParameter("code")
     public void setCode(PythonScript code) {
         this.code = code;
-
     }
 
     @JIPipeDocumentation(name = "Script parameters", description = "The following parameters will be passed to the Python script. The variable name is equal to the unique parameter identifier.")

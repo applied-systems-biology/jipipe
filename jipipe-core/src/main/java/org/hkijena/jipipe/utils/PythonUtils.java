@@ -34,20 +34,6 @@ import java.util.Map;
  */
 public class PythonUtils {
 
-    public static Class<?>[] ALLOWED_PARAMETER_CLASSES = new Class[]{
-            String.class,
-            StringList.class,
-            StringAndStringPair.List.class,
-            Integer.class,
-            IntegerList.class,
-            IntegerAndIntegerPair.List.class,
-            Double.class,
-            DoubleList.class,
-            Path.class,
-            PathList.class,
-            Boolean.class
-    };
-
     private PythonUtils() {
 
     }

@@ -69,7 +69,7 @@ public class FilterTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataInterface dataInterface, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+    protected void runIteration(JIPipeDataBatch dataInterface, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         ResultsTableData input = dataInterface.getInputData(getFirstInputSlot(), ResultsTableData.class);
         Multimap<String, StringOrDoublePredicate> filterPerColumn = HashMultimap.create();
         for (StringFilterAndStringOrDoubleFilterPair pair : filters) {

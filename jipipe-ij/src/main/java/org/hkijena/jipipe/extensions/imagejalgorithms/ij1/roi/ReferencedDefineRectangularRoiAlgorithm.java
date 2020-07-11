@@ -72,7 +72,7 @@ public class ReferencedDefineRectangularRoiAlgorithm extends JIPipeIteratingAlgo
     }
 
     @Override
-    protected void runIteration(JIPipeDataInterface dataInterface, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+    protected void runIteration(JIPipeDataBatch dataInterface, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         ImagePlus reference = dataInterface.getInputData(getFirstInputSlot(), ImagePlusData.class).getImage();
         Rectangle boundaries = new Rectangle(0, 0, reference.getWidth(), reference.getHeight());
 

@@ -39,7 +39,7 @@ import java.util.function.Supplier;
 
 /**
  * An {@link JIPipeAlgorithm} that iterates through each data row.
- * This algorithm utilizes the {@link JIPipeDataInterface} class to iterate through input data sets.
+ * This algorithm utilizes the {@link JIPipeDataBatch} class to iterate through input data sets.
  * It offers various parameters that control how data sets are matched.
  * If your algorithm only has one input and will never have more than one input slot, we recommend using {@link JIPipeSimpleIteratingAlgorithm}
  * instead that comes without the additional data set matching strategies
@@ -100,7 +100,7 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
             final int row = 0;
             JIPipeRunnerSubStatus slotProgress = subProgress.resolve("Data row " + (row + 1) + " / " + 1);
             algorithmProgress.accept(slotProgress);
-            JIPipeDataInterface dataInterface = new JIPipeDataInterface(this);
+            JIPipeDataBatch dataInterface = new JIPipeDataBatch(this);
             dataInterface.addGlobalAnnotations(parameterAnnotations, true);
             runIteration(dataInterface, slotProgress, algorithmProgress, isCancelled);
             return;
@@ -197,16 +197,16 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
         }
 
         // Generate data interfaces
-        List<JIPipeDataInterface> dataInterfaces = new ArrayList<>();
+        List<JIPipeDataBatch> dataInterfaces = new ArrayList<>();
         for (Map.Entry<JIPipeUniqueDataBatch, Map<String, TIntSet>> dataSetEntry : ImmutableList.copyOf(dataSets.entrySet())) {
-            List<JIPipeDataInterface> dataInterfacesForDataSet = new ArrayList<>();
+            List<JIPipeDataBatch> dataInterfacesForDataSet = new ArrayList<>();
             // Create the first batch
             {
                 JIPipeDataSlot inputSlot = getFirstInputSlot();
                 TIntSet rows = dataSetEntry.getValue().get(inputSlot.getName());
                 for (TIntIterator it = rows.iterator(); it.hasNext(); ) {
                     int row = it.next();
-                    JIPipeDataInterface dataInterface = new JIPipeDataInterface(this);
+                    JIPipeDataBatch dataInterface = new JIPipeDataBatch(this);
                     dataInterface.setData(inputSlot, row);
                     dataInterface.addGlobalAnnotations(inputSlot.getAnnotations(row), true);
                     dataInterfacesForDataSet.add(dataInterface);
@@ -219,7 +219,7 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
                     continue;
                 TIntSet rows = dataSetEntry.getValue().get(inputSlot.getName());
 
-                List<JIPipeDataInterface> backup = ImmutableList.copyOf(dataInterfacesForDataSet);
+                List<JIPipeDataBatch> backup = ImmutableList.copyOf(dataInterfacesForDataSet);
 
                 int rowIndex = 0;
                 for (TIntIterator it = rows.iterator(); it.hasNext(); ) {
@@ -227,14 +227,14 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
 
                     if (rowIndex == 0) {
                         // For the first row just add the row to the existing batches
-                        for (JIPipeDataInterface dataInterface : dataInterfacesForDataSet) {
+                        for (JIPipeDataBatch dataInterface : dataInterfacesForDataSet) {
                             dataInterface.setData(inputSlot, row);
                             dataInterface.addGlobalAnnotations(inputSlot.getAnnotations(row), true);
                         }
                     } else {
                         // We have to copy each input entry and adapt it to the row
-                        for (JIPipeDataInterface dataInterface : backup) {
-                            JIPipeDataInterface copy = new JIPipeDataInterface(dataInterface);
+                        for (JIPipeDataBatch dataInterface : backup) {
+                            JIPipeDataBatch copy = new JIPipeDataBatch(dataInterface);
                             copy.setData(inputSlot, row);
                             copy.addGlobalAnnotations(inputSlot.getAnnotations(row), true);
                             dataInterfacesForDataSet.add(copy);
@@ -246,7 +246,7 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
             }
 
             // Add parameter annotations
-            for (JIPipeDataInterface dataInterface : dataInterfacesForDataSet) {
+            for (JIPipeDataBatch dataInterface : dataInterfacesForDataSet) {
                 dataInterface.addGlobalAnnotations(parameterAnnotations, true);
             }
 
@@ -353,7 +353,7 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
      * @param algorithmProgress Consumer to publish a new sub-progress
      * @param isCancelled       Supplier that informs if the current task was canceled
      */
-    protected abstract void runIteration(JIPipeDataInterface dataInterface, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled);
+    protected abstract void runIteration(JIPipeDataBatch dataInterface, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled);
 
     /**
      * Strategies that determine how to detect the columns that should be used for matching

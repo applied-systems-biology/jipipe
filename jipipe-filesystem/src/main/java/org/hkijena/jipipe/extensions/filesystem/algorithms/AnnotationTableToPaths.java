@@ -67,7 +67,7 @@ public class AnnotationTableToPaths extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataInterface dataInterface, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+    protected void runIteration(JIPipeDataBatch dataInterface, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         AnnotationTableData tableData = dataInterface.getInputData(getFirstInputSlot(), AnnotationTableData.class);
         String dataColumn = tableData.getColumnNames().stream().filter(column).findFirst().orElse(null);
         if (dataColumn == null) {

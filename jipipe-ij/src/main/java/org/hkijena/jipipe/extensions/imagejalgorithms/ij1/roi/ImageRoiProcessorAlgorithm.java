@@ -18,7 +18,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmDeclaration;
-import org.hkijena.jipipe.api.algorithm.JIPipeDataInterface;
+import org.hkijena.jipipe.api.algorithm.JIPipeDataBatch;
 import org.hkijena.jipipe.api.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
@@ -85,7 +85,7 @@ public abstract class ImageRoiProcessorAlgorithm extends JIPipeIteratingAlgorith
      * @param isCancelled       if cancelled
      * @return reference image
      */
-    protected ImagePlus getReferenceImage(JIPipeDataInterface dataInterface, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+    protected ImagePlus getReferenceImage(JIPipeDataBatch dataInterface, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         if (requireReferenceImage) {
             return dataInterface.getInputData("Reference", ImagePlusData.class).getImage();
         } else {

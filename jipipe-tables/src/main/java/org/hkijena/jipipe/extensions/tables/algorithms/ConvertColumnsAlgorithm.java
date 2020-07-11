@@ -69,7 +69,7 @@ public class ConvertColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataInterface dataInterface, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+    protected void runIteration(JIPipeDataBatch dataInterface, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         ResultsTableData input = dataInterface.getInputData(getFirstInputSlot(), ResultsTableData.class);
         Map<String, TableColumn> resultColumns = new HashMap<>();
         for (ConvertingTableColumnProcessorParameter processor : processorParameters) {

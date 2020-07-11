@@ -22,6 +22,7 @@ import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
+import org.hkijena.jipipe.api.registries.JIPipeParameterTypeRegistry;
 import org.hkijena.jipipe.extensions.parameters.scripts.PythonScript;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.PythonUtils;
@@ -32,8 +33,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
-
-import static org.hkijena.jipipe.utils.PythonUtils.ALLOWED_PARAMETER_CLASSES;
 
 /**
  * Algorithm that annotates all data with the same annotation
@@ -50,7 +49,8 @@ public class ModifyAndMergeTablesScript extends JIPipeAlgorithm {
 
     private PythonInterpreter pythonInterpreter;
     private PythonScript code = new PythonScript();
-    private JIPipeDynamicParameterCollection scriptParameters = new JIPipeDynamicParameterCollection(ALLOWED_PARAMETER_CLASSES);
+    private JIPipeDynamicParameterCollection scriptParameters = new JIPipeDynamicParameterCollection(true,
+            JIPipeParameterTypeRegistry.getInstance().getRegisteredParameters().values());
 
     /**
      * @param declaration the declaration

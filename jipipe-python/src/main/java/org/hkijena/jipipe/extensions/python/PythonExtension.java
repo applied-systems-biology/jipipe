@@ -18,6 +18,9 @@ import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.plugin.Plugin;
 
+/**
+ * Python nodes
+ */
 @Plugin(type = JIPipeJavaExtension.class)
 public class PythonExtension extends JIPipePrepackagedDefaultJavaExtension {
     @Override
@@ -33,6 +36,9 @@ public class PythonExtension extends JIPipePrepackagedDefaultJavaExtension {
     @Override
     public void register() {
         registerAlgorithm("python-script", PythonScriptAlgorithm.class, UIUtils.getAlgorithmIconURL("python.png"));
+        registerAlgorithm("python-script-iterating-simple", SimpleIteratingPythonScriptAlgorithm.class, UIUtils.getAlgorithmIconURL("python.png"));
+        registerAlgorithm("python-script-iterating", IteratingPythonScriptAlgorithm.class, UIUtils.getAlgorithmIconURL("python.png"));
+        registerAlgorithm("python-script-merging", MergingPythonScriptAlgorithm.class, UIUtils.getAlgorithmIconURL("python.png"));
     }
 
     @Override

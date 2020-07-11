@@ -21,7 +21,7 @@ import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmCategory;
 import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmDeclaration;
-import org.hkijena.jipipe.api.algorithm.JIPipeDataInterface;
+import org.hkijena.jipipe.api.algorithm.JIPipeDataBatch;
 import org.hkijena.jipipe.api.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeData;
@@ -77,7 +77,7 @@ public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataInterface dataInterface, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+    protected void runIteration(JIPipeDataBatch dataInterface, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         FileData fileData = dataInterface.getInputData(getFirstInputSlot(), FileData.class);
         ImagePlusData data = (ImagePlusData) readImageFrom(fileData.getPath());
         List<JIPipeAnnotation> traits = new ArrayList<>();

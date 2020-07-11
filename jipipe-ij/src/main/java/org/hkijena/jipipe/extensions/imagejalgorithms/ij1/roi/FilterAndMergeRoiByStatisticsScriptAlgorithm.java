@@ -23,6 +23,7 @@ import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
+import org.hkijena.jipipe.api.registries.JIPipeParameterTypeRegistry;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.parameters.scripts.PythonScript;
@@ -37,7 +38,6 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import static org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.ImageRoiProcessorAlgorithm.ROI_PROCESSOR_DESCRIPTION;
-import static org.hkijena.jipipe.utils.PythonUtils.ALLOWED_PARAMETER_CLASSES;
 
 /**
  * Wrapper around {@link ij.plugin.frame.RoiManager}
@@ -54,7 +54,8 @@ public class FilterAndMergeRoiByStatisticsScriptAlgorithm extends ImageRoiProces
     private RoiStatisticsAlgorithm roiStatisticsAlgorithm = JIPipeAlgorithm.newInstance("ij1-roi-statistics");
     private PythonInterpreter pythonInterpreter;
     private PythonScript code = new PythonScript();
-    private JIPipeDynamicParameterCollection scriptParameters = new JIPipeDynamicParameterCollection(ALLOWED_PARAMETER_CLASSES);
+    private JIPipeDynamicParameterCollection scriptParameters = new JIPipeDynamicParameterCollection(true,
+            JIPipeParameterTypeRegistry.getInstance().getRegisteredParameters().values());
     private List<PyDictionary> pythonDataRow;
 
     /**
@@ -117,7 +118,7 @@ public class FilterAndMergeRoiByStatisticsScriptAlgorithm extends ImageRoiProces
     }
 
     @Override
-    protected void runIteration(JIPipeDataInterface dataInterface, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+    protected void runIteration(JIPipeDataBatch dataInterface, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         ROIListData inputData = dataInterface.getInputData("ROI", ROIListData.class);
         ImagePlusData referenceImageData = new ImagePlusData(getReferenceImage(dataInterface, subProgress.resolve("Generate reference image"), algorithmProgress, isCancelled));
 
