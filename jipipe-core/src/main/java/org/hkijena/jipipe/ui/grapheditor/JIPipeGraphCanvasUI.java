@@ -68,6 +68,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
     private Map<JIPipeNodeUI, Point> currentlyDraggedOffsets = new HashMap<>();
     private JIPipeDataSlotUI currentConnectionDragSource;
     private JIPipeDataSlotUI currentConnectionDragTarget;
+    private JIPipeDataSlotUI currentHighlightedForDisconnect;
 
     /**
      * Used to store the minimum dimensions of the canvas to reduce user disruption
@@ -676,7 +677,62 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
             PointRange.tighten(sourcePoint, targetPoint);
 
             // Draw arrow
-            drawEdge(g, sourcePoint.center, currentConnectionDragSource.getBounds(), targetPoint.center, drawer);
+            if(currentConnectionDragSource.getSlot().isOutput())
+                drawEdge(g, sourcePoint.center, currentConnectionDragSource.getBounds(), targetPoint.center, drawer);
+            else
+                drawEdge(g, targetPoint.center, currentConnectionDragSource.getBounds(), sourcePoint.center, drawer);
+        }
+
+        if(currentHighlightedForDisconnect != null) {
+            g.setStroke(new BasicStroke(7));
+            g.setColor(Color.RED);
+            if(currentHighlightedForDisconnect.getSlot().isInput()) {
+                JIPipeDataSlot source = getGraph().getSourceSlot(currentHighlightedForDisconnect.getSlot());
+                if(source != null) {
+                    JIPipeDataSlot target = currentHighlightedForDisconnect.getSlot();
+                    JIPipeNodeUI sourceUI = nodeUIs.getOrDefault(source.getNode(), null);
+                    JIPipeNodeUI targetUI = nodeUIs.getOrDefault(target.getNode(), null);
+
+                    if(sourceUI != null && targetUI != null) {
+                        PointRange sourcePoint;
+                        PointRange targetPoint;
+
+                        sourcePoint = sourceUI.getSlotLocation(source);
+                        sourcePoint.add(sourceUI.getLocation());
+                        targetPoint = targetUI.getSlotLocation(target);
+                        targetPoint.add(targetUI.getLocation());
+
+                        // Tighten the point ranges: Bringing the centers together
+                        PointRange.tighten(sourcePoint, targetPoint);
+
+                        // Draw arrow
+                        drawEdge(g, sourcePoint.center, sourceUI.getBounds(), targetPoint.center, drawer);
+                    }
+                }
+            }
+            else if(currentHighlightedForDisconnect.getSlot().isOutput()) {
+                JIPipeDataSlot source =currentHighlightedForDisconnect.getSlot();
+                for (JIPipeDataSlot target : getGraph().getTargetSlots(source)) {
+                    JIPipeNodeUI sourceUI = nodeUIs.getOrDefault(source.getNode(), null);
+                    JIPipeNodeUI targetUI = nodeUIs.getOrDefault(target.getNode(), null);
+
+                    if(sourceUI != null && targetUI != null) {
+                        PointRange sourcePoint;
+                        PointRange targetPoint;
+
+                        sourcePoint = sourceUI.getSlotLocation(source);
+                        sourcePoint.add(sourceUI.getLocation());
+                        targetPoint = targetUI.getSlotLocation(target);
+                        targetPoint.add(targetUI.getLocation());
+
+                        // Tighten the point ranges: Bringing the centers together
+                        PointRange.tighten(sourcePoint, targetPoint);
+
+                        // Draw arrow
+                        drawEdge(g, sourcePoint.center, sourceUI.getBounds(), targetPoint.center, drawer);
+                    }
+                }
+            }
         }
 
         g.setStroke(new BasicStroke(1));
@@ -1079,6 +1135,14 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
 
     public void setCurrentConnectionDragTarget(JIPipeDataSlotUI currentConnectionDragTarget) {
         this.currentConnectionDragTarget = currentConnectionDragTarget;
+    }
+
+    public JIPipeDataSlotUI getCurrentHighlightedForDisconnect() {
+        return currentHighlightedForDisconnect;
+    }
+
+    public void setCurrentHighlightedForDisconnect(JIPipeDataSlotUI currentHighlightedForDisconnect) {
+        this.currentHighlightedForDisconnect = currentHighlightedForDisconnect;
     }
 
     /**

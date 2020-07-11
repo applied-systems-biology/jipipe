@@ -13,6 +13,8 @@
 
 package org.hkijena.jipipe.ui.grapheditor;
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.algorithm.JIPipeGraphNode;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeCompartmentOutput;
@@ -30,7 +32,9 @@ import java.awt.*;
 import java.awt.font.FontRenderContext;
 import java.awt.font.TextLayout;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 /**
  * An algorithm UI for vertical display
@@ -38,6 +42,8 @@ import java.util.List;
 public class JIPipeVerticalNodeUI extends JIPipeNodeUI {
 
     private List<JIPipeDataSlotUI> slotUIList = new ArrayList<>();
+    private BiMap<String, JIPipeDataSlotUI> inputSlotUIs = HashBiMap.create();
+    private BiMap<String, JIPipeDataSlotUI> outputSlotUIs = HashBiMap.create();
     private JPanel inputSlotPanel;
     private JPanel outputSlotPanel;
     private JLabel nameLabel;
@@ -191,6 +197,8 @@ public class JIPipeVerticalNodeUI extends JIPipeNodeUI {
     @Override
     public void updateAlgorithmSlotUIs() {
         slotUIList.clear();
+        inputSlotUIs.clear();
+        outputSlotUIs.clear();
         inputSlotPanel.removeAll();
         outputSlotPanel.removeAll();
         inputSlotPanel.setLayout(new GridLayout(1, getDisplayedInputColumns()));
@@ -243,6 +251,7 @@ public class JIPipeVerticalNodeUI extends JIPipeNodeUI {
                 ui.setBorder(BorderFactory.createMatteBorder(0, 0, 1, rightBorder, getBorderColor()));
                 slotUIList.add(ui);
                 inputSlotPanel.add(ui);
+                inputSlotUIs.put(slot.getName(), ui);
                 ++createdInputSlots;
             }
         }
@@ -257,6 +266,7 @@ public class JIPipeVerticalNodeUI extends JIPipeNodeUI {
                 ui.setBorder(BorderFactory.createMatteBorder(1, 0, 0, rightBorder, getBorderColor()));
                 slotUIList.add(ui);
                 outputSlotPanel.add(ui);
+                outputSlotUIs.put(slot.getName(), ui);
                 ++createdOutputSlots;
             }
         }
@@ -347,5 +357,15 @@ public class JIPipeVerticalNodeUI extends JIPipeNodeUI {
         } else {
             throw new UnsupportedOperationException("Unknown slot type!");
         }
+    }
+
+    @Override
+    public Map<String, JIPipeDataSlotUI> getInputSlotUIs() {
+        return Collections.unmodifiableMap(inputSlotUIs);
+    }
+
+    @Override
+    public Map<String, JIPipeDataSlotUI> getOutputSlotUIs() {
+        return Collections.unmodifiableMap(outputSlotUIs);
     }
 }

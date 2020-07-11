@@ -130,13 +130,17 @@ public class UIUtils {
             }
         });
         target.addActionListener(e -> {
-            if (target.isDisplayable() && MouseInfo.getPointerInfo().getLocation().x < target.getLocationOnScreen().x
-                    || MouseInfo.getPointerInfo().getLocation().x > target.getLocationOnScreen().x + target.getWidth()
-                    || MouseInfo.getPointerInfo().getLocation().y < target.getLocationOnScreen().y
-                    || MouseInfo.getPointerInfo().getLocation().y > target.getLocationOnScreen().y + target.getHeight()) {
-                reloadFunction.run();
-                popupMenu.revalidate();
-                popupMenu.show(target, 0, target.getHeight());
+            try {
+                if (target.isDisplayable() && MouseInfo.getPointerInfo().getLocation().x < target.getLocationOnScreen().x
+                        || MouseInfo.getPointerInfo().getLocation().x > target.getLocationOnScreen().x + target.getWidth()
+                        || MouseInfo.getPointerInfo().getLocation().y < target.getLocationOnScreen().y
+                        || MouseInfo.getPointerInfo().getLocation().y > target.getLocationOnScreen().y + target.getHeight()) {
+                    reloadFunction.run();
+                    popupMenu.revalidate();
+                    popupMenu.show(target, 0, target.getHeight());
+                }
+            }
+            catch (IllegalComponentStateException e1) {
             }
         });
         return popupMenu;

@@ -32,7 +32,11 @@ import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
+import javax.swing.event.PopupMenuEvent;
+import javax.swing.event.PopupMenuListener;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.List;
 import java.util.*;
 import java.util.function.Consumer;
@@ -98,6 +102,28 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
      */
     protected void reloadPopupMenu() {
         assignButtonMenu.removeAll();
+        assignButtonMenu.addPopupMenuListener(new PopupMenuListener() {
+            @Override
+            public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
+
+            }
+
+            @Override
+            public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
+                getGraphUI().setCurrentConnectionDragSource(null);
+                getGraphUI().setCurrentConnectionDragTarget(null);
+                getGraphUI().setCurrentHighlightedForDisconnect(null);
+                getGraphUI().repaint();
+            }
+
+            @Override
+            public void popupMenuCanceled(PopupMenuEvent e) {
+                getGraphUI().setCurrentConnectionDragSource(null);
+                getGraphUI().setCurrentConnectionDragTarget(null);
+                getGraphUI().setCurrentHighlightedForDisconnect(null);
+                getGraphUI().repaint();
+            }
+        });
 
         if (slot.isInput()) {
             if (getGraph().getSourceSlot(slot) == null) {
@@ -109,12 +135,35 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
                     JMenuItem connectButton = new JMenuItem(source.getNameWithAlgorithmName(),
                             JIPipeUIDatatypeRegistry.getInstance().getIconFor(source.getAcceptedDataType()));
                     connectButton.addActionListener(e -> connectSlot(source, slot));
+                    connectButton.addMouseListener(new MouseAdapter() {
+                        @Override
+                        public void mouseEntered(MouseEvent e) {
+                            JIPipeNodeUI sourceNodeUI = getGraphUI().getNodeUIs().getOrDefault(source.getNode(), null);
+                            if(sourceNodeUI != null) {
+                                if(source.isOutput()){
+                                    JIPipeDataSlotUI sourceUI = sourceNodeUI.getOutputSlotUIs().getOrDefault(source.getName(), null);
+                                    if(sourceUI != null) {
+                                        getGraphUI().setCurrentConnectionDragTarget(JIPipeDataSlotUI.this);
+                                        getGraphUI().setCurrentConnectionDragSource(sourceUI);
+                                    }
+                                }
+                            }
+                            getGraphUI().repaint();
+                        }
+
+                        @Override
+                        public void mouseExited(MouseEvent e) {
+                            getGraphUI().setCurrentConnectionDragSource(null);
+                            getGraphUI().setCurrentConnectionDragTarget(null);
+                            getGraphUI().repaint();
+                        }
+                    });
                     assignButtonMenu.add(connectButton);
                 }
             } else {
                 JMenuItem disconnectButton = new JMenuItem("Disconnect", UIUtils.getIconFromResources("remove.png"));
                 disconnectButton.addActionListener(e -> disconnectSlot());
-                assignButtonMenu.add(disconnectButton);
+                installHighlightForDisconnect(disconnectButton);
             }
             if (slot.getNode().getSlotConfiguration() instanceof JIPipeMutableSlotConfiguration) {
                 JIPipeMutableSlotConfiguration slotConfiguration = (JIPipeMutableSlotConfiguration) slot.getNode().getSlotConfiguration();
@@ -123,7 +172,7 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
                         assignButtonMenu.addSeparator();
                     JMenuItem deleteButton = new JMenuItem("Delete this slot", UIUtils.getIconFromResources("delete.png"));
                     deleteButton.addActionListener(e -> deleteSlot());
-                    assignButtonMenu.add(deleteButton);
+                    installHighlightForDisconnect(deleteButton);
 
                     JMenuItem editButton = new JMenuItem("Edit this slot", UIUtils.getIconFromResources("edit.png"));
                     editButton.addActionListener(e -> editSlot());
@@ -151,6 +200,7 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
                 if (allowDisconnect) {
                     JMenuItem disconnectButton = new JMenuItem("Disconnect all", UIUtils.getIconFromResources("remove.png"));
                     disconnectButton.addActionListener(e -> disconnectSlot());
+                    installHighlightForDisconnect(disconnectButton);
                     assignButtonMenu.add(disconnectButton);
 
                     assignButtonMenu.addSeparator();
@@ -171,6 +221,29 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
                         JIPipeUIDatatypeRegistry.getInstance().getIconFor(target.getAcceptedDataType()));
                 connectButton.addActionListener(e -> connectSlot(slot, target));
                 connectButton.setToolTipText(TooltipUtils.getAlgorithmTooltip(target.getNode().getDeclaration()));
+                connectButton.addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseEntered(MouseEvent e) {
+                        JIPipeNodeUI targetNodeUI = getGraphUI().getNodeUIs().getOrDefault(target.getNode(), null);
+                        if(targetNodeUI != null) {
+                            if(target.isInput()){
+                                JIPipeDataSlotUI targetUI = targetNodeUI.getInputSlotUIs().getOrDefault(target.getName(), null);
+                                if(targetUI != null) {
+                                    getGraphUI().setCurrentConnectionDragTarget(targetUI);
+                                    getGraphUI().setCurrentConnectionDragSource(JIPipeDataSlotUI.this);
+                                }
+                            }
+                        }
+                        getGraphUI().repaint();
+                    }
+
+                    @Override
+                    public void mouseExited(MouseEvent e) {
+                        getGraphUI().setCurrentConnectionDragSource(null);
+                        getGraphUI().setCurrentConnectionDragTarget(null);
+                        getGraphUI().repaint();
+                    }
+                });
                 assignButtonMenu.add(connectButton);
             }
 
@@ -196,6 +269,23 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
             relabelButton.addActionListener(e -> relabelSlot());
             assignButtonMenu.add(relabelButton);
         }
+    }
+
+    private void installHighlightForDisconnect(JMenuItem disconnectButton) {
+        disconnectButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                getGraphUI().setCurrentHighlightedForDisconnect(JIPipeDataSlotUI.this);
+                getGraphUI().repaint();
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                getGraphUI().setCurrentHighlightedForDisconnect(null);
+                getGraphUI().repaint();
+            }
+        });
+        assignButtonMenu.add(disconnectButton);
     }
 
     private void editSlot() {

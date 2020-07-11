@@ -28,6 +28,7 @@ import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Map;
 
 /**
  * UI around an {@link JIPipeGraphNode} instance
@@ -258,6 +259,10 @@ public abstract class JIPipeNodeUI extends JIPipeWorkbenchPanel {
     public int getRightX() {
         return getX() + getWidth();
     }
+
+    public abstract Map<String, JIPipeDataSlotUI> getInputSlotUIs();
+
+    public abstract Map<String, JIPipeDataSlotUI> getOutputSlotUIs();
 
     /**
      * Rounds the input coordinates, so they fit into the grid
