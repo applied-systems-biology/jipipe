@@ -44,6 +44,7 @@ public class JIPipeGUICommand implements Command {
         }
         JIPipeDefaultRegistry.instantiate(context);
         SwingUtilities.invokeLater(() -> {
+            UIManager.put("swing.boldMetal", Boolean.FALSE);
             ToolTipManager.sharedInstance().setDismissDelay(Integer.MAX_VALUE);
             ToolTipManager.sharedInstance().setInitialDelay(1000);
             JIPipeProjectWindow window = JIPipeProjectWindow.newWindow(getContext(), new JIPipeProject(), true, true);

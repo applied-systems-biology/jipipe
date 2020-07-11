@@ -30,12 +30,12 @@ import java.util.stream.Collectors;
  */
 public class DocumentTabPane extends JPanel {
 
-    private JTabbedPane tabbedPane;
+    private DnDTabbedPane tabbedPane;
 
     /**
      * List of open tabs
      */
-    private List<DocumentTab> tabs = new ArrayList<>();
+    private Set<DocumentTab> tabs = new HashSet<>();
 
     /**
      * Last tabs have priority over lower index tabs
@@ -56,9 +56,27 @@ public class DocumentTabPane extends JPanel {
 
     private void initialize() {
         setLayout(new BorderLayout());
-        tabbedPane = new JTabbedPane(JTabbedPane.TOP);
+        tabbedPane = new DnDTabbedPane();
         tabbedPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
         tabbedPane.addChangeListener(e -> updateTabHistory());
+        tabbedPane.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if(e.getButton() == MouseEvent.BUTTON2) {
+                    int tabIndex = tabbedPane.getUI().tabForCoordinate(tabbedPane, e.getX(), e.getY());
+                    if(tabIndex >= 0 && tabIndex < tabbedPane.getTabCount()) {
+                        Component component = tabbedPane.getTabComponentAt(tabIndex);
+                        for (DocumentTab tab : tabs) {
+                            if(tab.getTabComponent() == component) {
+                                closeTab(tab);
+                                break;
+                            }
+                        }
+
+                    }
+                }
+            }
+        });
         add(tabbedPane, BorderLayout.CENTER);
     }
 
@@ -86,8 +104,8 @@ public class DocumentTabPane extends JPanel {
         return tabs.stream().filter(t -> t.getContent() == content).findFirst().orElse(null);
     }
 
-    public List<DocumentTab> getTabs() {
-        return Collections.unmodifiableList(tabs);
+    public Set<DocumentTab> getTabs() {
+        return Collections.unmodifiableSet(tabs);
     }
 
     /**
@@ -164,17 +182,6 @@ public class DocumentTabPane extends JPanel {
             closeButton.addActionListener(e -> closeTab(tab));
             tabPanel.add(Box.createHorizontalStrut(8));
             tabPanel.add(closeButton);
-
-            tabPanel.addMouseListener(new MouseAdapter() {
-                @Override
-                public void mouseClicked(MouseEvent e) {
-                    if (SwingUtilities.isMiddleMouseButton(e)) {
-                        closeTab(tab);
-                    } else {
-                        tabbedPane.setSelectedComponent(component);
-                    }
-                }
-            });
         }
 
         addTab(tab);
@@ -386,5 +393,4 @@ public class DocumentTabPane extends JPanel {
             return closeMode;
         }
     }
-
 }
