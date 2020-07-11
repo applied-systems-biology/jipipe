@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 public interface JsonDeserializable {
     /**
      * Loads JSON data into the current object instance
+     *
      * @param node the JSON data
      */
     void fromJson(JsonNode node);

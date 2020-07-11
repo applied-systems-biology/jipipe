@@ -21,8 +21,8 @@ import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.algorithm.*;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageJUtils;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;

@@ -19,8 +19,8 @@ import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmCategory;
 import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmDeclaration;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.components.JIPipeValidityReportUI;
 import org.hkijena.jipipe.ui.components.ColorIcon;
+import org.hkijena.jipipe.ui.components.JIPipeValidityReportUI;
 import org.hkijena.jipipe.ui.components.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.UserFriendlyErrorUI;
 import org.hkijena.jipipe.ui.extension.MenuExtension;
@@ -130,7 +130,7 @@ public class UIUtils {
             }
         });
         target.addActionListener(e -> {
-            if (MouseInfo.getPointerInfo().getLocation().x < target.getLocationOnScreen().x
+            if (target.isDisplayable() && MouseInfo.getPointerInfo().getLocation().x < target.getLocationOnScreen().x
                     || MouseInfo.getPointerInfo().getLocation().x > target.getLocationOnScreen().x + target.getWidth()
                     || MouseInfo.getPointerInfo().getLocation().y < target.getLocationOnScreen().y
                     || MouseInfo.getPointerInfo().getLocation().y > target.getLocationOnScreen().y + target.getHeight()) {
@@ -198,12 +198,12 @@ public class UIUtils {
     /**
      * Makes a button flat
      *
-     * @param component the button
+     * @param component   the button
      * @param borderColor border color
-     * @param top top border size
-     * @param left left border size
-     * @param right right border size
-     * @param bottom bottom border size
+     * @param top         top border size
+     * @param left        left border size
+     * @param right       right border size
+     * @param bottom      bottom border size
      */
     public static void makeFlat(AbstractButton component, Color borderColor, int top, int left, int right, int bottom) {
         component.setBackground(Color.WHITE);

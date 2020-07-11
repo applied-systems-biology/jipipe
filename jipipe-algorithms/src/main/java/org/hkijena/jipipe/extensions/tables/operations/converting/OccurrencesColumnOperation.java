@@ -15,9 +15,9 @@ package org.hkijena.jipipe.extensions.tables.operations.converting;
 
 import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Multiset;
+import org.hkijena.jipipe.extensions.tables.ConvertingColumnOperation;
 import org.hkijena.jipipe.extensions.tables.DoubleArrayTableColumn;
 import org.hkijena.jipipe.extensions.tables.TableColumn;
-import org.hkijena.jipipe.extensions.tables.ConvertingColumnOperation;
 
 /**
  * Converts each entry into a the number of occurrences within the column

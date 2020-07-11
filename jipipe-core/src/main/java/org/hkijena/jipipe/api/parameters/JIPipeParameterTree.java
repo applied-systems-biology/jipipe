@@ -505,7 +505,7 @@ public class JIPipeParameterTree implements JIPipeParameterCollection, JIPipeCus
             if (setter == null)
                 return getterAnnotation.persistence();
             JIPipeParameter setterAnnotation = setter.getAnnotation(JIPipeParameter.class);
-            if(getterAnnotation.persistence() != JIPipeParameterPersistence.Collection)
+            if (getterAnnotation.persistence() != JIPipeParameterPersistence.Collection)
                 return setterAnnotation.persistence();
             else
                 return getterAnnotation.persistence();

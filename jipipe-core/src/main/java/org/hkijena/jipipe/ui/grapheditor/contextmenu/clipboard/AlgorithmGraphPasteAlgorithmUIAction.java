@@ -22,7 +22,6 @@ import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphCanvasUI;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeNodeUI;
 import org.hkijena.jipipe.ui.grapheditor.contextmenu.AlgorithmUIAction;
 import org.hkijena.jipipe.utils.JsonUtils;
-import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;

@@ -31,7 +31,9 @@ import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidatable;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.events.*;
-import org.hkijena.jipipe.api.parameters.*;
+import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterVisibility;
 import org.hkijena.jipipe.api.registries.JIPipeAlgorithmRegistry;
 import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
@@ -44,7 +46,6 @@ import java.util.List;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 /**
  * An algorithm is is a set of input and output data slots, and a run() function

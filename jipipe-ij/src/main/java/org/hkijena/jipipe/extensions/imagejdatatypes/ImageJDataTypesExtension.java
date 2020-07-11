@@ -27,7 +27,6 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datasources.ROIDataFromFile
 import org.hkijena.jipipe.extensions.imagejdatatypes.datasources.ResultsTableFromFile;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
-import org.hkijena.jipipe.extensions.tables.ResultsTableData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColor8UData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColorData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColorRGBData;
@@ -55,6 +54,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.fft.*;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.*;
 import org.hkijena.jipipe.extensions.imagejdatatypes.resultanalysis.ImageDataSlotRowUI;
 import org.hkijena.jipipe.extensions.imagejdatatypes.resultanalysis.ROIDataSlotRowUI;
+import org.hkijena.jipipe.extensions.tables.ResultsTableData;
 import org.hkijena.jipipe.extensions.tables.ResultsTableDataSlotRowUI;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;

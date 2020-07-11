@@ -63,7 +63,7 @@ public interface ImageJDatatypeAdapter {
     /**
      * Converts a JIPipe data type to its corresponding ImageJ data type
      *
-     * @param jipipeData   JIPipe data
+     * @param jipipeData JIPipe data
      * @param activate   If true, the data should be made visible in ImageJ
      * @param noWindow   If true, the conversion should not create GUI windows
      * @param windowName Window name of the ImageJ data. Might be ignored or used otherwise to identify data.
@@ -75,7 +75,7 @@ public interface ImageJDatatypeAdapter {
      * Converts multiple JIPipe data to their corresponding ImageJ data type.
      * This method is actually called by the single algorithm run, as some data might need to be condensed
      *
-     * @param jipipeData   JIPipe data
+     * @param jipipeData JIPipe data
      * @param activate   If true, the data should be made visible in ImageJ
      * @param noWindow   If true, the conversion should not create GUI windows
      * @param windowName Window name of the ImageJ data. Might be ignored or used otherwise to identify data.

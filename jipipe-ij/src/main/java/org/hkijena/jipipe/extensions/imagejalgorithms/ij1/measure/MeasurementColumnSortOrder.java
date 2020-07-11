@@ -13,10 +13,10 @@
 
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.measure;
 
-import org.hkijena.jipipe.extensions.tables.ResultsTableData;
 import org.hkijena.jipipe.extensions.parameters.collections.ListParameter;
 import org.hkijena.jipipe.extensions.parameters.pairs.Pair;
 import org.hkijena.jipipe.extensions.parameters.util.SortOrder;
+import org.hkijena.jipipe.extensions.tables.ResultsTableData;
 
 import java.util.Comparator;
 

@@ -35,7 +35,7 @@ import static org.hkijena.jipipe.ui.grapheditor.JIPipeNodeUI.SLOT_UI_WIDTH;
  * Slot UI with horizontal direction
  */
 public class JIPipeVerticalDataSlotUI extends JIPipeDataSlotUI {
-    private AbstractButton assignButton;
+    private JButton assignButton;
     private JLabel nameLabel;
     private JIPipeDataSlotCacheManagerUI cacheManagerUI;
 
@@ -74,9 +74,10 @@ public class JIPipeVerticalDataSlotUI extends JIPipeDataSlotUI {
         setLayout(new BorderLayout());
 
         this.assignButton = new JButton(UIUtils.getIconFromResources("chevron-bottom.png"));
+        new JIPipeConnectionDragAndDropBehavior(this, assignButton);
         assignButton.setPreferredSize(new Dimension(25, 25));
         this.assignButtonMenu = UIUtils.addReloadablePopupMenuToComponent(assignButton, new JPopupMenu(), this::reloadPopupMenu);
-        UIUtils.makeFlat(assignButton, UIUtils.getBorderColorFor(getSlot().getNode().getDeclaration()), 0,0, 0,0);
+        UIUtils.makeFlat(assignButton, UIUtils.getBorderColorFor(getSlot().getNode().getDeclaration()), 0, 0, 0, 0);
 
         if (getSlot().getNode() instanceof JIPipeCompartmentOutput) {
             if (getSlot().getNode().getCompartment().equals(getCompartment())) {

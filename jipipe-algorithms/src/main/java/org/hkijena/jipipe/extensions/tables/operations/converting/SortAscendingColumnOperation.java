@@ -13,10 +13,10 @@
 
 package org.hkijena.jipipe.extensions.tables.operations.converting;
 
+import org.hkijena.jipipe.extensions.tables.ConvertingColumnOperation;
 import org.hkijena.jipipe.extensions.tables.DoubleArrayTableColumn;
 import org.hkijena.jipipe.extensions.tables.StringArrayTableColumn;
 import org.hkijena.jipipe.extensions.tables.TableColumn;
-import org.hkijena.jipipe.extensions.tables.ConvertingColumnOperation;
 
 import java.util.Arrays;
 

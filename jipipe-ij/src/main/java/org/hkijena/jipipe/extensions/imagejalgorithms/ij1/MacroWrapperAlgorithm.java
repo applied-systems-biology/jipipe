@@ -35,8 +35,8 @@ import org.hkijena.jipipe.api.registries.JIPipeImageJAdapterRegistry;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.PathData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
-import org.hkijena.jipipe.extensions.tables.ResultsTableData;
 import org.hkijena.jipipe.extensions.parameters.scripts.ImageJMacro;
+import org.hkijena.jipipe.extensions.tables.ResultsTableData;
 import org.hkijena.jipipe.utils.MacroUtils;
 
 import java.awt.*;
@@ -344,6 +344,7 @@ public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm {
 
     /**
      * Returns all types compatible with the {@link MacroWrapperAlgorithm}
+     *
      * @return compatible data types
      */
     public static Class[] getCompatibleTypes() {

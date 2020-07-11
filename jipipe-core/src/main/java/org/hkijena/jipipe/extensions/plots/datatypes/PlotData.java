@@ -21,7 +21,6 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
 import ij.measure.ResultsTable;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeHidden;
@@ -30,9 +29,9 @@ import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataDeclaration;
 import org.hkijena.jipipe.api.events.ParameterChangedEvent;
-import org.hkijena.jipipe.api.events.ParameterStructureChangedEvent;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
-import org.hkijena.jipipe.api.parameters.*;
+import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
 import org.hkijena.jipipe.extensions.tables.ResultsTableData;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
@@ -48,10 +47,9 @@ import org.jfree.graphics2d.svg.SVGUtils;
 import java.awt.*;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.stream.Collectors;
 
 /**
  * Contains all necessary data to generate a plot
@@ -253,7 +251,7 @@ public abstract class PlotData implements JIPipeData, JIPipeParameterCollection,
      * @param node JSON node
      */
     public void fromJson(JsonNode node) {
-       JIPipeParameterCollection.deserializeParametersFromJson(this, node);
+        JIPipeParameterCollection.deserializeParametersFromJson(this, node);
     }
 
     /**

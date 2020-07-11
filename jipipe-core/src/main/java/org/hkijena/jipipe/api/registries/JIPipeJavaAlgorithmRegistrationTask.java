@@ -14,10 +14,10 @@
 package org.hkijena.jipipe.api.registries;
 
 import org.hkijena.jipipe.JIPipeDependency;
-import org.hkijena.jipipe.api.algorithm.JIPipeGraphNode;
-import org.hkijena.jipipe.api.algorithm.JIPipeJavaAlgorithmDeclaration;
 import org.hkijena.jipipe.api.algorithm.AlgorithmInputSlot;
 import org.hkijena.jipipe.api.algorithm.AlgorithmOutputSlot;
+import org.hkijena.jipipe.api.algorithm.JIPipeGraphNode;
+import org.hkijena.jipipe.api.algorithm.JIPipeJavaAlgorithmDeclaration;
 import org.hkijena.jipipe.ui.registries.JIPipeUIAlgorithmRegistry;
 
 import java.net.URL;

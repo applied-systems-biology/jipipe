@@ -116,6 +116,7 @@ public interface JIPipeParameterAccess {
 
     /**
      * Controls the persistence of the parameter
+     *
      * @return the persistence
      */
     default JIPipeParameterPersistence getPersistence() {

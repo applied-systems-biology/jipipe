@@ -76,6 +76,7 @@ public @interface JIPipeParameter {
 
     /**
      * Controls how the parameter is serialized/deserialized
+     *
      * @return the serialization behavior
      */
     JIPipeParameterPersistence persistence() default JIPipeParameterPersistence.Collection;

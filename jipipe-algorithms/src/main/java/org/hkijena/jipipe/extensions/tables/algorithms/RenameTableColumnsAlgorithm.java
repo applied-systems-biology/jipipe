@@ -19,10 +19,10 @@ import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.algorithm.*;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.tables.ResultsTableData;
 import org.hkijena.jipipe.extensions.parameters.pairs.PairParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.pairs.StringFilterAndStringPair;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
+import org.hkijena.jipipe.extensions.tables.ResultsTableData;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.util.Objects;

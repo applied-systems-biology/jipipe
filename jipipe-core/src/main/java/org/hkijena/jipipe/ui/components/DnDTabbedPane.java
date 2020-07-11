@@ -30,10 +30,18 @@ class DnDTabbedPane extends JTabbedPane {
     protected Rectangle rectBackward = new Rectangle();
     protected Rectangle rectForward = new Rectangle();
 
+    protected DnDTabbedPane() {
+        super();
+        glassPane.setName("GlassPane");
+        new DropTarget(glassPane, DnDConstants.ACTION_COPY_OR_MOVE, new TabDropTargetListener(), true);
+        DragSource.getDefaultDragSource().createDefaultDragGestureRecognizer(
+                this, DnDConstants.ACTION_COPY_OR_MOVE, new TabDragGestureListener());
+    }
+
     private void clickArrowButton(String actionKey) {
         JButton scrollForwardButton = null;
         JButton scrollBackwardButton = null;
-        for (Component c: getComponents()) {
+        for (Component c : getComponents()) {
             if (c instanceof JButton) {
                 if (Objects.isNull(scrollForwardButton)) {
                     scrollForwardButton = (JButton) c;
@@ -77,14 +85,6 @@ class DnDTabbedPane extends JTabbedPane {
         } else if (rectForward.contains(glassPt)) {
             clickArrowButton("scrollTabsForwardAction");
         }
-    }
-
-    protected DnDTabbedPane() {
-        super();
-        glassPane.setName("GlassPane");
-        new DropTarget(glassPane, DnDConstants.ACTION_COPY_OR_MOVE, new TabDropTargetListener(), true);
-        DragSource.getDefaultDragSource().createDefaultDragGestureRecognizer(
-                this, DnDConstants.ACTION_COPY_OR_MOVE, new TabDragGestureListener());
     }
 
     protected int getTargetTabIndex(Point glassPt) {
@@ -255,32 +255,38 @@ class TabTransferable implements Transferable {
         this.tabbedPane = tabbedPane;
     }
 
-    @Override public Object getTransferData(DataFlavor flavor) {
+    @Override
+    public Object getTransferData(DataFlavor flavor) {
         return tabbedPane;
     }
 
-    @Override public DataFlavor[] getTransferDataFlavors() {
-        return new DataFlavor[] {FLAVOR};
+    @Override
+    public DataFlavor[] getTransferDataFlavors() {
+        return new DataFlavor[]{FLAVOR};
     }
 
-    @Override public boolean isDataFlavorSupported(DataFlavor flavor) {
+    @Override
+    public boolean isDataFlavorSupported(DataFlavor flavor) {
         return flavor.getHumanPresentableName().equals(NAME);
     }
 }
 
 class TabDragSourceListener implements DragSourceListener {
-    @Override public void dragEnter(DragSourceDragEvent e) {
+    @Override
+    public void dragEnter(DragSourceDragEvent e) {
         e.getDragSourceContext().setCursor(DragSource.DefaultMoveDrop);
     }
 
-    @Override public void dragExit(DragSourceEvent e) {
+    @Override
+    public void dragExit(DragSourceEvent e) {
         e.getDragSourceContext().setCursor(DragSource.DefaultMoveNoDrop);
         // glassPane.setTargetRect(0, 0, 0, 0);
         // glassPane.setPoint(new Point(-1000, -1000));
         // glassPane.repaint();
     }
 
-    @Override public void dragOver(DragSourceDragEvent e) {
+    @Override
+    public void dragOver(DragSourceDragEvent e) {
         // Point glassPt = e.getLocation();
         // JComponent glassPane = (JComponent) e.getDragSourceContext();
         // SwingUtilities.convertPointFromScreen(glassPt, glassPane);
@@ -295,18 +301,21 @@ class TabDragSourceListener implements DragSourceListener {
         // }
     }
 
-    @Override public void dragDropEnd(DragSourceDropEvent e) {
+    @Override
+    public void dragDropEnd(DragSourceDropEvent e) {
         // dragTabIndex = -1;
         // glassPane.setVisible(false);
     }
 
-    @Override public void dropActionChanged(DragSourceDragEvent e) {
+    @Override
+    public void dropActionChanged(DragSourceDragEvent e) {
         /* not needed */
     }
 }
 
 class TabDragGestureListener implements DragGestureListener {
-    @Override public void dragGestureRecognized(DragGestureEvent e) {
+    @Override
+    public void dragGestureRecognized(DragGestureEvent e) {
         Optional.ofNullable(e.getComponent())
                 .filter(c -> c instanceof DnDTabbedPane).map(c -> (DnDTabbedPane) c)
                 .filter(tabbedPane -> tabbedPane.getTabCount() > 1)
@@ -335,11 +344,8 @@ class TabDragGestureListener implements DragGestureListener {
 class TabDropTargetListener implements DropTargetListener {
     private static final Point HIDDEN_POINT = new Point(0, -1000);
 
-    private static Optional<GhostGlassPane> getGhostGlassPane(Component c) {
-        return Optional.ofNullable(c).filter(GhostGlassPane.class::isInstance).map(GhostGlassPane.class::cast);
-    }
-
-    @Override public void dragEnter(DropTargetDragEvent e) {
+    @Override
+    public void dragEnter(DropTargetDragEvent e) {
         getGhostGlassPane(e.getDropTargetContext().getComponent()).ifPresent(glassPane -> {
             // DnDTabbedPane tabbedPane = glassPane.tabbedPane;
             Transferable t = e.getTransferable();
@@ -352,7 +358,8 @@ class TabDropTargetListener implements DropTargetListener {
         });
     }
 
-    @Override public void dragExit(DropTargetEvent e) {
+    @Override
+    public void dragExit(DropTargetEvent e) {
         // Component c = e.getDropTargetContext().getComponent();
         // System.out.println("DropTargetListener#dragExit: " + c.getName());
         getGhostGlassPane(e.getDropTargetContext().getComponent()).ifPresent(glassPane -> {
@@ -363,11 +370,13 @@ class TabDropTargetListener implements DropTargetListener {
         });
     }
 
-    @Override public void dropActionChanged(DropTargetDragEvent e) {
+    @Override
+    public void dropActionChanged(DropTargetDragEvent e) {
         /* not needed */
     }
 
-    @Override public void dragOver(DropTargetDragEvent e) {
+    @Override
+    public void dragOver(DropTargetDragEvent e) {
         Component c = e.getDropTargetContext().getComponent();
         getGhostGlassPane(c).ifPresent(glassPane -> {
             Point glassPt = e.getLocation();
@@ -381,7 +390,8 @@ class TabDropTargetListener implements DropTargetListener {
         });
     }
 
-    @Override public void drop(DropTargetDropEvent e) {
+    @Override
+    public void drop(DropTargetDropEvent e) {
         Component c = e.getDropTargetContext().getComponent();
         getGhostGlassPane(c).ifPresent(glassPane -> {
             DnDTabbedPane tabbedPane = glassPane.tabbedPane;
@@ -398,6 +408,10 @@ class TabDropTargetListener implements DropTargetListener {
             glassPane.setVisible(false);
             // tabbedPane.dragTabIndex = -1;
         });
+    }
+
+    private static Optional<GhostGlassPane> getGhostGlassPane(Component c) {
+        return Optional.ofNullable(c).filter(GhostGlassPane.class::isInstance).map(GhostGlassPane.class::cast);
     }
 }
 
@@ -430,7 +444,8 @@ class GhostGlassPane extends JComponent {
         this.location.setLocation(pt);
     }
 
-    @Override public void setVisible(boolean v) {
+    @Override
+    public void setVisible(boolean v) {
         super.setVisible(v);
         if (!v) {
             setTargetRect(0, 0, 0, 0);
@@ -438,7 +453,8 @@ class GhostGlassPane extends JComponent {
         }
     }
 
-    @Override protected void paintComponent(Graphics g) {
+    @Override
+    protected void paintComponent(Graphics g) {
         Graphics2D g2 = (Graphics2D) g.create();
         g2.setComposite(ALPHA);
         if (tabbedPane.isPaintScrollArea && tabbedPane.getTabLayoutPolicy() == JTabbedPane.SCROLL_TAB_LAYOUT) {

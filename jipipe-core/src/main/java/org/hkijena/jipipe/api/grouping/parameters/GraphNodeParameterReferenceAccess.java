@@ -13,11 +13,7 @@
 
 package org.hkijena.jipipe.api.grouping.parameters;
 
-import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterVisibility;
+import org.hkijena.jipipe.api.parameters.*;
 
 import java.lang.annotation.Annotation;
 

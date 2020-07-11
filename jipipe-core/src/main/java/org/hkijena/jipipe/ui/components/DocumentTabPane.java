@@ -62,12 +62,12 @@ public class DocumentTabPane extends JPanel {
         tabbedPane.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if(e.getButton() == MouseEvent.BUTTON2) {
+                if (e.getButton() == MouseEvent.BUTTON2) {
                     int tabIndex = tabbedPane.getUI().tabForCoordinate(tabbedPane, e.getX(), e.getY());
-                    if(tabIndex >= 0 && tabIndex < tabbedPane.getTabCount()) {
+                    if (tabIndex >= 0 && tabIndex < tabbedPane.getTabCount()) {
                         Component component = tabbedPane.getTabComponentAt(tabIndex);
                         for (DocumentTab tab : tabs) {
-                            if(tab.getTabComponent() == component) {
+                            if (tab.getTabComponent() == component) {
                                 closeTab(tab);
                                 break;
                             }

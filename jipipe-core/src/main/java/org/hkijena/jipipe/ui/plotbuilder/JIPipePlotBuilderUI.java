@@ -29,14 +29,14 @@ import org.hkijena.jipipe.api.events.ParameterStructureChangedEvent;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
-import org.hkijena.jipipe.extensions.tables.DoubleArrayTableColumn;
-import org.hkijena.jipipe.extensions.tables.StringArrayTableColumn;
-import org.hkijena.jipipe.extensions.tables.TableColumn;
 import org.hkijena.jipipe.extensions.parameters.editors.JIPipeDataParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.references.JIPipeDataDeclarationRef;
 import org.hkijena.jipipe.extensions.plots.datatypes.PlotData;
 import org.hkijena.jipipe.extensions.plots.datatypes.PlotDataSeries;
 import org.hkijena.jipipe.extensions.plots.datatypes.PlotMetadata;
+import org.hkijena.jipipe.extensions.tables.DoubleArrayTableColumn;
+import org.hkijena.jipipe.extensions.tables.StringArrayTableColumn;
+import org.hkijena.jipipe.extensions.tables.TableColumn;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.DocumentTabPane;
@@ -50,15 +50,11 @@ import org.scijava.Priority;
 
 import javax.swing.*;
 import javax.swing.table.TableModel;
-import java.awt.BorderLayout;
+import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * User interface for displaying and creating plots

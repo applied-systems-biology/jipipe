@@ -22,9 +22,9 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.algorithm.JIPipeGraphNode;
 import org.hkijena.jipipe.api.algorithm.AlgorithmInputSlot;
 import org.hkijena.jipipe.api.algorithm.AlgorithmOutputSlot;
+import org.hkijena.jipipe.api.algorithm.JIPipeGraphNode;
 import org.hkijena.jipipe.api.events.ParameterChangedEvent;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
@@ -253,7 +253,7 @@ public class JIPipeSlotDefinition implements JIPipeParameterCollection {
      * @return Inheritance conversion that is outer(inner(x))
      */
     public static Map<Class<? extends JIPipeData>, Class<? extends JIPipeData>> composeRawInheritanceConversions(Map<Class<? extends JIPipeData>, Class<? extends JIPipeData>> outer,
-                                                                                                             Map<Class<? extends JIPipeData>, Class<? extends JIPipeData>> inner) {
+                                                                                                                 Map<Class<? extends JIPipeData>, Class<? extends JIPipeData>> inner) {
         Map<Class<? extends JIPipeData>, Class<? extends JIPipeData>> result = new HashMap<>(inner);
         for (Map.Entry<Class<? extends JIPipeData>, Class<? extends JIPipeData>> entry : result.entrySet()) {
             Class<? extends JIPipeData> transformed = outer.getOrDefault(entry.getValue(), null);
@@ -273,7 +273,7 @@ public class JIPipeSlotDefinition implements JIPipeParameterCollection {
      * @return Inheritance conversion that is outer(inner(x))
      */
     public static Map<JIPipeDataDeclaration, JIPipeDataDeclaration> composeInheritanceConversions(Map<JIPipeDataDeclaration, JIPipeDataDeclaration> outer,
-                                                                                              Map<JIPipeDataDeclaration, JIPipeDataDeclaration> inner) {
+                                                                                                  Map<JIPipeDataDeclaration, JIPipeDataDeclaration> inner) {
         Map<JIPipeDataDeclaration, JIPipeDataDeclaration> result = new HashMap<>(inner);
         for (Map.Entry<JIPipeDataDeclaration, JIPipeDataDeclaration> entry : result.entrySet()) {
             JIPipeDataDeclaration transformed = outer.getOrDefault(entry.getValue(), null);

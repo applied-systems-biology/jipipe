@@ -26,10 +26,10 @@ import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.measure.ImageStatisticsParameters;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
-import org.hkijena.jipipe.extensions.tables.ResultsTableData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageJUtils;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
+import org.hkijena.jipipe.extensions.tables.ResultsTableData;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.util.ArrayList;

@@ -22,12 +22,12 @@ import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.algorithm.*;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.imagejalgorithms.utils.SliceIndex;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.measure.ImageStatisticsParameters;
+import org.hkijena.jipipe.extensions.imagejalgorithms.utils.SliceIndex;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
-import org.hkijena.jipipe.extensions.tables.ResultsTableData;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
+import org.hkijena.jipipe.extensions.tables.ResultsTableData;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 

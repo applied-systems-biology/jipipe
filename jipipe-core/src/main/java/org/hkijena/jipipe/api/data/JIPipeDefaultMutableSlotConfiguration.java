@@ -290,7 +290,7 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
                     JIPipeSlotDefinition existing = inputSlots.getOrDefault(entry.getKey(), null);
                     if (existing != null) {
                         existing.copyMetadata(slotDefinition);
-                    } else if(!inputSlotsSealed) {
+                    } else if (!inputSlotsSealed) {
                         addSlot(entry.getKey(), slotDefinition, false);
                     }
                 } catch (IOException e) {
@@ -298,7 +298,7 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
                             "Please check if the JSON data is valid.");
                 }
             }
-            if(!inputSlotsSealed) {
+            if (!inputSlotsSealed) {
                 Set<String> toRemove = inputSlots.keySet().stream().filter(s -> !definedSlots.contains(s)).collect(Collectors.toSet());
                 for (String s : toRemove) {
                     removeInputSlot(s, false);
@@ -314,7 +314,7 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
                     JIPipeSlotDefinition existing = outputSlots.getOrDefault(entry.getKey(), null);
                     if (existing != null) {
                         existing.copyMetadata(slotDefinition);
-                    } else if(!outputSlotsSealed) {
+                    } else if (!outputSlotsSealed) {
                         addSlot(entry.getKey(), slotDefinition, false);
                     }
                 } catch (IOException e) {
@@ -322,7 +322,7 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
                             "Please check if the JSON data is valid.");
                 }
             }
-            if(!outputSlotsSealed) {
+            if (!outputSlotsSealed) {
                 Set<String> toRemove = inputSlots.keySet().stream().filter(s -> !definedSlots.contains(s)).collect(Collectors.toSet());
                 for (String s : toRemove) {
                     removeOutputSlot(s, false);

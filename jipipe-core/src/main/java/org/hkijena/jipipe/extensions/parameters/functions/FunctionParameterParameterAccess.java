@@ -15,7 +15,6 @@ package org.hkijena.jipipe.extensions.parameters.functions;
 
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterVisibility;
 
 import java.lang.annotation.Annotation;

@@ -172,15 +172,14 @@ public class ReflectionUtils {
                 int arguments = args.length;
                 Class[] parameterTypes = new Class[arguments];
 
-                for(int i = 0; i < arguments; ++i) {
+                for (int i = 0; i < arguments; ++i) {
                     parameterTypes[i] = args[i].getClass();
                 }
 
                 Method bestMatch = target.getClass().getDeclaredMethod(functionName, parameterTypes);
                 bestMatch.setAccessible(true);
                 return bestMatch.invoke(target, args);
-            }
-            catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e1) {
+            } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e1) {
                 throw new RuntimeException(e1);
             }
         }

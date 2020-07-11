@@ -20,10 +20,10 @@ import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.algorithm.*;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.tables.ResultsTableData;
 import org.hkijena.jipipe.extensions.parameters.pairs.StringFilterAndSortOrderPair;
 import org.hkijena.jipipe.extensions.parameters.predicates.StringPredicate;
 import org.hkijena.jipipe.extensions.parameters.util.SortOrder;
+import org.hkijena.jipipe.extensions.tables.ResultsTableData;
 
 import java.util.ArrayList;
 import java.util.Comparator;

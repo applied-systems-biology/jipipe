@@ -22,8 +22,8 @@ import org.hkijena.jipipe.api.algorithm.*;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.SliceIndex;
-import org.hkijena.jipipe.extensions.parameters.util.LogicalOperation;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.jipipe.extensions.parameters.util.LogicalOperation;
 
 import java.util.List;
 import java.util.Map;

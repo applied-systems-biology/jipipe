@@ -18,11 +18,6 @@ import com.google.common.html.HtmlEscapers;
 import ij.IJ;
 import org.hkijena.jipipe.api.events.ParameterChangedEvent;
 import org.hkijena.jipipe.extensions.settings.ProjectsSettings;
-import org.hkijena.jipipe.ui.JIPipeJsonExtensionWorkbench;
-import org.hkijena.jipipe.ui.JIPipeJsonExtensionWorkbenchPanel;
-import org.hkijena.jipipe.ui.JIPipeProjectWindow;
-import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
-import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.MarkdownReader;
@@ -33,11 +28,7 @@ import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Graphics;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
@@ -209,11 +200,11 @@ public class JIPipeJsonExtensionInfoUI extends JIPipeJsonExtensionWorkbenchPanel
             g.drawImage(backgroundImage, 0, 0, (int) (backgroundImage.getWidth() * factor), getHeight(), null);
 
             final int gs = 25;
-            g.setColor(new Color(185,206,227, 50));
-            for(int x = gs; x < getWidth(); x += gs) {
+            g.setColor(new Color(185, 206, 227, 50));
+            for (int x = gs; x < getWidth(); x += gs) {
                 g.drawLine(x, 0, x, getHeight());
             }
-            for(int y = gs; y < getHeight(); y += gs) {
+            for (int y = gs; y < getHeight(); y += gs) {
                 g.drawLine(0, y, getWidth(), y);
             }
 

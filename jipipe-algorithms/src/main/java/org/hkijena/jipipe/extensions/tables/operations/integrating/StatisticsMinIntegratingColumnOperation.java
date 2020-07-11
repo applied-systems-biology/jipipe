@@ -14,8 +14,8 @@
 package org.hkijena.jipipe.extensions.tables.operations.integrating;
 
 import org.hkijena.jipipe.extensions.tables.DoubleArrayTableColumn;
-import org.hkijena.jipipe.extensions.tables.TableColumn;
 import org.hkijena.jipipe.extensions.tables.IntegratingColumnOperation;
+import org.hkijena.jipipe.extensions.tables.TableColumn;
 
 /**
  * Implements calculating the min value

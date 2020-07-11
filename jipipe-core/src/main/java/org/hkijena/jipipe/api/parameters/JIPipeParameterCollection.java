@@ -23,11 +23,7 @@ import org.hkijena.jipipe.utils.JsonDeserializable;
 import org.hkijena.jipipe.utils.JsonUtils;
 
 import java.io.IOException;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.Stack;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -71,10 +67,11 @@ public interface JIPipeParameterCollection {
             stack.clear();
             stack.push(parameterCollection.getRoot());
 
-            outer: while(!stack.isEmpty()) {
+            outer:
+            while (!stack.isEmpty()) {
                 JIPipeParameterTree.Node top = stack.pop();
 
-                if(top.getPersistence() == JIPipeParameterPersistence.Collection) {
+                if (top.getPersistence() == JIPipeParameterPersistence.Collection) {
                     for (Map.Entry<String, JIPipeParameterAccess> entry : top.getParameters().entrySet().stream()
                             .sorted(Comparator.comparing(kv -> -kv.getValue().getPriority())).collect(Collectors.toList())) {
                         JIPipeParameterAccess parameterAccess = entry.getValue();
@@ -84,7 +81,7 @@ public interface JIPipeParameterCollection {
                                 continue;
                             loadedParameters.add(key);
                             JsonNode objectNode = node.path(key);
-                            if(!objectNode.isMissingNode()) {
+                            if (!objectNode.isMissingNode()) {
                                 Object v;
                                 try {
                                     v = JsonUtils.getObjectMapper().readerFor(parameterAccess.getFieldClass()).readValue(node.get(key));
@@ -114,12 +111,12 @@ public interface JIPipeParameterCollection {
         stack.clear();
         stack.push(parameterCollection.getRoot());
 
-        while(!stack.isEmpty()) {
+        while (!stack.isEmpty()) {
             JIPipeParameterTree.Node top = stack.pop();
 
-            if(top.getPersistence() == JIPipeParameterPersistence.Object) {
+            if (top.getPersistence() == JIPipeParameterPersistence.Object) {
                 JsonNode objectNode = node.path(String.join("/", top.getPath()));
-                if(!objectNode.isMissingNode()) {
+                if (!objectNode.isMissingNode()) {
                     JIPipeParameterCollection collection = top.getCollection();
                     if (collection instanceof JsonDeserializable) {
                         ((JsonDeserializable) collection).fromJson(objectNode);
@@ -127,8 +124,7 @@ public interface JIPipeParameterCollection {
                         throw new RuntimeException("Cannot deserialize object-like persistence into non-Json-deserializable target!");
                     }
                 }
-            }
-            else if(top.getPersistence() == JIPipeParameterPersistence.Collection) {
+            } else if (top.getPersistence() == JIPipeParameterPersistence.Collection) {
                 for (JIPipeParameterTree.Node child : top.getChildren().values()) {
                     stack.push(child);
                 }
@@ -138,7 +134,8 @@ public interface JIPipeParameterCollection {
 
     /**
      * Serializes parameters to JSON using a generator
-     * @param target the serialized parameter collection
+     *
+     * @param target        the serialized parameter collection
      * @param jsonGenerator the JSON target
      */
     static void serializeParametersToJson(JIPipeParameterCollection target, JsonGenerator jsonGenerator) throws IOException {
@@ -147,25 +144,25 @@ public interface JIPipeParameterCollection {
 
     /**
      * Serializes parameters to JSON using a generator
-     * @param target the serialized parameter collection
+     *
+     * @param target        the serialized parameter collection
      * @param jsonGenerator the JSON target
-     * @param filter filter to conditionally serialize entries
+     * @param filter        filter to conditionally serialize entries
      */
     static void serializeParametersToJson(JIPipeParameterCollection target, JsonGenerator jsonGenerator, Predicate<Map.Entry<String, JIPipeParameterAccess>> filter) throws IOException {
         JIPipeParameterTree parameterCollection = new JIPipeParameterTree(target);
         Stack<JIPipeParameterTree.Node> stack = new Stack<>();
         stack.push(parameterCollection.getRoot());
 
-        while(!stack.isEmpty()) {
+        while (!stack.isEmpty()) {
             JIPipeParameterTree.Node top = stack.pop();
 
-            if(top.getPersistence() == JIPipeParameterPersistence.Object) {
+            if (top.getPersistence() == JIPipeParameterPersistence.Object) {
                 jsonGenerator.writeObjectField(String.join("/", top.getPath()), top.getCollection());
-            }
-            else if(top.getPersistence() == JIPipeParameterPersistence.Collection) {
+            } else if (top.getPersistence() == JIPipeParameterPersistence.Collection) {
                 for (Map.Entry<String, JIPipeParameterAccess> entry : top.getParameters().entrySet()) {
                     JIPipeParameterAccess parameterAccess = entry.getValue();
-                    if(parameterAccess.getPersistence() != JIPipeParameterPersistence.None)
+                    if (parameterAccess.getPersistence() != JIPipeParameterPersistence.None)
                         jsonGenerator.writeObjectField(parameterCollection.getUniqueKey(parameterAccess), parameterAccess.get(Object.class));
                 }
                 for (JIPipeParameterTree.Node node : top.getChildren().values()) {

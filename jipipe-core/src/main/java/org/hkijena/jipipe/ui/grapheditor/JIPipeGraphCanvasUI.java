@@ -471,13 +471,12 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
     @Override
     public void mousePressed(MouseEvent mouseEvent) {
         if (SwingUtilities.isLeftMouseButton(mouseEvent)) {
-            if(currentlyDraggedOffsets.isEmpty()) {
+            if (currentlyDraggedOffsets.isEmpty()) {
                 JIPipeNodeUI ui = pickComponent(mouseEvent);
                 if (ui != null) {
-                    if(mouseEvent.isShiftDown()) {
+                    if (mouseEvent.isShiftDown()) {
                         addToSelection(ui);
-                    }
-                    else {
+                    } else {
                         if (selection.isEmpty() || selection.size() == 1) {
                             selectOnly(ui);
                         } else {
@@ -515,7 +514,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
     public void mouseReleased(MouseEvent mouseEvent) {
         currentlyDraggedOffsets.clear();
         JIPipeNodeUI ui = pickComponent(mouseEvent);
-        if(ui == null) {
+        if (ui == null) {
             selectOnly(null);
         }
     }
