@@ -765,8 +765,28 @@ public class ResultsTableData implements JIPipeData, TableModel {
     }
 
     /**
+     * Adds a string column with the given name.
+     * If the column already exists, the method returns the existing index
+     * @param name column name. cannot be empty.
+     * @return the column index (this includes any existing column) or -1 if the creation was not possible
+     */
+    public int addStringColumn(String name) {
+        return addColumn(name, true);
+    }
+
+    /**
+     * Adds a string column with the given name.
+     * If the column already exists, the method returns the existing index
+     * @param name column name. cannot be empty.
+     * @return the column index (this includes any existing column) or -1 if the creation was not possible
+     */
+    public int addNumericColumn(String name) {
+        return addColumn(name, false);
+    }
+
+    /**
      * Adds a column with the given name.
-     * If the column already exists, the method returns false
+     * If the column already exists, the method returns the existing index
      *
      * @param name         column name. cannot be empty.
      * @param stringColumn if the new column is a string column
