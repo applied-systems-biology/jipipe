@@ -376,6 +376,7 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         registerAlgorithm("ij1-math-replace-nan-by-median2d", RemoveNaNFilter2DAlgorithm.class, UIUtils.getAlgorithmIconURL("insert-math-expression.png"));
         registerAlgorithm("ij1-math-imagecalculator2d", ImageCalculator2DAlgorithm.class, UIUtils.getAlgorithmIconURL("calculator.png"));
         registerAlgorithm("ij1-math-hessian2d", Hessian2DAlgorithm.class, UIUtils.getAlgorithmIconURL("insert-math-expression.png"));
+        registerAlgorithm("ij1-math-divide-by-maximum", DivideByMaximumAlgorithm.class, UIUtils.getAlgorithmIconURL("insert-math-expression.png"));
 
         registerEnumParameterType("ij1-math-math2d:transformation", ApplyMath2DAlgorithm.Transformation.class,
                 "Transformation", "Available transformations");

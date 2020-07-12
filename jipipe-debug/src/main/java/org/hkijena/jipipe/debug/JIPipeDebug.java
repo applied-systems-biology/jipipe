@@ -18,7 +18,7 @@ import org.hkijena.jipipe.JIPipeGUICommand;
 
 import javax.swing.*;
 
-public class Main {
+public class JIPipeDebug {
     /**
      * @param args ignored
      */
