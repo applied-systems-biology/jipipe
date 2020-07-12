@@ -764,9 +764,17 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
 
         // Inherit from the inherited slot if there is no graph connection
         JIPipeDataSlot sourceSlot = graph.getSourceSlot(inheritedSlot);
+        Class<? extends JIPipeData> inheritedType;
         if (sourceSlot == null)
-            return JIPipeSlotDefinition.applyInheritanceConversion(slotDefinition, inheritedSlot.getAcceptedDataType());
-        return JIPipeSlotDefinition.applyInheritanceConversion(slotDefinition, sourceSlot.getAcceptedDataType());
+            inheritedType = JIPipeSlotDefinition.applyInheritanceConversion(slotDefinition, inheritedSlot.getAcceptedDataType());
+        else
+            inheritedType = JIPipeSlotDefinition.applyInheritanceConversion(slotDefinition, sourceSlot.getAcceptedDataType());
+
+        // Check if the inherited type is even compatible with the actual type
+        if(slotDefinition.getDataClass().isAssignableFrom(inheritedType))
+            return inheritedType;
+        else
+            return slotDefinition.getDataClass();
     }
 
     /**
