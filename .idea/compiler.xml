@@ -10,19 +10,16 @@
         <module name="jipipe-core" />
         <module name="jipipe-multiparameters" />
         <module name="jipipe-debug" />
-        <module name="acaq5" />
+        <module name="jipipe-plots" />
         <module name="jipipe-tables" />
         <module name="jipipe-filesystem" />
         <module name="jipipe-annotation" />
-        <module name="jipipe-plots" />
         <module name="jipipe-python" />
         <module name="jipipe-clij" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="acaq5" target="1.8" />
       <module name="jipipe" target="1.8" />
-      <module name="jipipe-algorithms" target="1.8" />
       <module name="jipipe-annotation" target="1.8" />
       <module name="jipipe-clij" target="1.8" />
       <module name="jipipe-core" target="1.8" />
@@ -33,9 +30,6 @@
       <module name="jipipe-plots" target="1.8" />
       <module name="jipipe-python" target="1.8" />
       <module name="jipipe-tables" target="1.8" />
-      <module name="pipelinej-algorithms" target="1.8" />
-      <module name="pipelinej-core" target="1.8" />
-      <module name="pipelinej-ij" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>
