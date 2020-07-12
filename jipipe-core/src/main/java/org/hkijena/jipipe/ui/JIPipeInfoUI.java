@@ -189,7 +189,7 @@ public class JIPipeInfoUI extends JIPipeProjectWorkbenchPanel {
         topPanel.add(toolBar, BorderLayout.SOUTH);
     }
 
-    private static class BackgroundPanel extends JPanel {
+    public static class BackgroundPanel extends JPanel {
 
         private final BufferedImage backgroundImage;
 

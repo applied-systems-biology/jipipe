@@ -135,7 +135,7 @@ public class JIPipeRun implements JIPipeRunnable {
                 JIPipeProjectCache.State stateId = project.getStateIdOf((JIPipeAlgorithm) projectAlgorithm, traversedProjectAlgorithms);
                 project.getCache().store((JIPipeAlgorithm) projectAlgorithm, stateId, outputSlot);
             }
-            outputSlot.flush();
+            outputSlot.flush(!configuration.isStoreToCache());
             flushedSlots.add(outputSlot);
         }
     }
@@ -307,7 +307,7 @@ public class JIPipeRun implements JIPipeRunnable {
                 }
             }
             for (JIPipeDataSlot outputSlot : algorithm.getOutputSlots()) {
-                outputSlot.clearData();
+                outputSlot.clearData(false);
                 outputSlot.copyFrom(cachedData.get(outputSlot.getName()));
             }
             logStatus(onProgress, new JIPipeRunnerStatus(progress, maxProgress,

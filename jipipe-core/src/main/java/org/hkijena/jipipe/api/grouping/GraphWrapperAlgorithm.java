@@ -187,7 +187,7 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm {
 
     private void clearWrappedGraphData() {
         for (JIPipeDataSlot slot : wrappedGraph.traverseSlots()) {
-            slot.clearData();
+            slot.clearData(false);
         }
     }
 

@@ -77,7 +77,7 @@ public class JIPipeProjectCache {
         JIPipeDataSlot existingSlot = slotMap.getOrDefault(slot.getName(), null);
         if (existingSlot != null) {
             removeFromStatistics(existingSlot);
-            existingSlot.clearData();
+            existingSlot.clearData(false);
         }
 
         JIPipeDataSlot slotCopy = new JIPipeDataSlot(slot.getDefinition(), source);
@@ -143,7 +143,7 @@ public class JIPipeProjectCache {
             for (Map.Entry<State, Map<String, JIPipeDataSlot>> stateEntry : stateMap.entrySet()) {
                 for (Map.Entry<String, JIPipeDataSlot> slotEntry : stateEntry.getValue().entrySet()) {
                     removeFromStatistics(slotEntry.getValue());
-                    slotEntry.getValue().clearData();
+                    slotEntry.getValue().clearData(true);
                 }
             }
             cacheEntries.remove(source);
@@ -164,7 +164,7 @@ public class JIPipeProjectCache {
             if (slotMap != null) {
                 for (Map.Entry<String, JIPipeDataSlot> slotEntry : slotMap.entrySet()) {
                     removeFromStatistics(slotEntry.getValue());
-                    slotEntry.getValue().clearData();
+                    slotEntry.getValue().clearData(true);
                 }
             }
             stateMap.remove(stateId);
@@ -179,7 +179,7 @@ public class JIPipeProjectCache {
         for (Map.Entry<JIPipeAlgorithm, Map<State, Map<String, JIPipeDataSlot>>> algorithmEntry : cacheEntries.entrySet()) {
             for (Map.Entry<State, Map<String, JIPipeDataSlot>> stateEntry : algorithmEntry.getValue().entrySet()) {
                 for (Map.Entry<String, JIPipeDataSlot> slotEntry : stateEntry.getValue().entrySet()) {
-                    slotEntry.getValue().clearData();
+                    slotEntry.getValue().clearData(true);
                 }
             }
         }

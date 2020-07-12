@@ -96,10 +96,10 @@ public class JIPipeTestBench implements JIPipeRunnable, JIPipeValidatable {
         // Clear all data
         for (JIPipeGraphNode node : testBenchRun.getGraph().getAlgorithmNodes().values()) {
             for (JIPipeDataSlot inputSlot : node.getInputSlots()) {
-                inputSlot.clearData();
+                inputSlot.clearData(false);
             }
             for (JIPipeDataSlot outputSlot : node.getOutputSlots()) {
-                outputSlot.clearData();
+                outputSlot.clearData(false);
             }
         }
 

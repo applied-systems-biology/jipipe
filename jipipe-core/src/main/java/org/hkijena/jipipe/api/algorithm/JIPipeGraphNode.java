@@ -855,10 +855,10 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
      */
     public void clearSlotData() {
         for (JIPipeDataSlot slot : inputSlots) {
-            slot.clearData();
+            slot.clearData(false);
         }
         for (JIPipeDataSlot slot : outputSlots) {
-            slot.clearData();
+            slot.clearData(false);
         }
     }
 
