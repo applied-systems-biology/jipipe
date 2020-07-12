@@ -44,20 +44,18 @@ public class CLIJImageDataImageJAdapter implements ImageJDatatypeAdapter {
         if (imageJData == null) {
             imageJData = IJ.getImage();
         }
-        if(imageJData instanceof ImagePlus) {
-            return new CLIJImageData(new ImagePlusData((ImagePlus)imageJData));
-        }
-        else if(imageJData instanceof ClearCLBuffer) {
-            return new CLIJImageData((ClearCLBuffer)imageJData);
-        }
-        else {
+        if (imageJData instanceof ImagePlus) {
+            return new CLIJImageData(new ImagePlusData((ImagePlus) imageJData));
+        } else if (imageJData instanceof ClearCLBuffer) {
+            return new CLIJImageData((ClearCLBuffer) imageJData);
+        } else {
             throw new IllegalArgumentException("Unknown data type: " + imageJData);
         }
     }
 
     @Override
     public Object convertJIPipeToImageJ(JIPipeData jipipeData, boolean activate, boolean noWindow, String windowName) {
-        CLIJImageData data = (CLIJImageData)jipipeData;
+        CLIJImageData data = (CLIJImageData) jipipeData;
         ImagePlusData imgData = data.pull();
         ImagePlus img = imgData.getImage();
         if (activate) {

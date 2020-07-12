@@ -17,6 +17,7 @@ import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.api.registries.JIPipeAlgorithmRegistry;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.multiparameters.datatypes.ParametersData;
+import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.scijava.plugin.Plugin;
 
@@ -25,6 +26,11 @@ import org.scijava.plugin.Plugin;
  */
 @Plugin(type = JIPipeJavaExtension.class)
 public class MultiParametersExtension extends JIPipePrepackagedDefaultJavaExtension {
+
+    @Override
+    public StringList getDependencyCitations() {
+        return new StringList();
+    }
 
     @Override
     public String getName() {

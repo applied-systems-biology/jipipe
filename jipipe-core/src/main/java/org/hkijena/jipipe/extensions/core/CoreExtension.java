@@ -3,6 +3,7 @@ package org.hkijena.jipipe.extensions.core;
 import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
+import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.scijava.plugin.Plugin;
 
@@ -11,6 +12,12 @@ import org.scijava.plugin.Plugin;
  */
 @Plugin(type = JIPipeJavaExtension.class)
 public class CoreExtension extends JIPipePrepackagedDefaultJavaExtension {
+
+    @Override
+    public StringList getDependencyCitations() {
+        return new StringList();
+    }
+
     @Override
     public String getName() {
         return "Core";

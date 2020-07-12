@@ -20,6 +20,6 @@ public class ImagePlusDataToCLIJImageDataConverter implements JIPipeDataConverte
 
     @Override
     public JIPipeData convert(JIPipeData input) {
-        return new CLIJImageData((ImagePlusData)input);
+        return new CLIJImageData((ImagePlusData) input);
     }
 }

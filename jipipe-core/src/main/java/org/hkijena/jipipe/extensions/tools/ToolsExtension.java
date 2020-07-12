@@ -15,6 +15,7 @@ package org.hkijena.jipipe.extensions.tools;
 
 import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
+import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -22,6 +23,11 @@ import org.scijava.plugin.Plugin;
  */
 @Plugin(type = JIPipeJavaExtension.class)
 public class ToolsExtension extends JIPipePrepackagedDefaultJavaExtension {
+    @Override
+    public StringList getDependencyCitations() {
+        return new StringList();
+    }
+
     @Override
     public String getName() {
         return "Standard tools";

@@ -49,7 +49,12 @@ public class JIPipeApplicationSettingsUI extends JIPipeWorkbenchPanel {
         add(documentTabPane, BorderLayout.CENTER);
         Map<String, List<JIPipeSettingsRegistry.Sheet>> byCategory =
                 JIPipeSettingsRegistry.getInstance().getRegisteredSheets().values().stream().collect(Collectors.groupingBy(JIPipeSettingsRegistry.Sheet::getCategory));
-        for (String category : byCategory.keySet().stream().sorted().collect(Collectors.toList())) {
+        List<String> categories = byCategory.keySet().stream().sorted().collect(Collectors.toList());
+        if(categories.contains("General")) {
+            categories.remove("General");
+            categories.add(0, "General");
+        }
+        for (String category : categories) {
             Icon categoryIcon = null;
             JIPipeParameterTree traversedParameterCollection = new JIPipeParameterTree();
             for (JIPipeSettingsRegistry.Sheet sheet : byCategory.get(category)) {

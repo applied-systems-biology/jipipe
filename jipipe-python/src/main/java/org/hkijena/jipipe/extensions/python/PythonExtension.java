@@ -15,6 +15,7 @@ package org.hkijena.jipipe.extensions.python;
 
 import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
+import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.plugin.Plugin;
 
@@ -40,6 +41,11 @@ public class PythonExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerAlgorithm("python-script-iterating-simple", SimpleIteratingPythonScriptAlgorithm.class, UIUtils.getAlgorithmIconURL("python.png"));
         registerAlgorithm("python-script-iterating", IteratingPythonScriptAlgorithm.class, UIUtils.getAlgorithmIconURL("python.png"));
         registerAlgorithm("python-script-merging", MergingPythonScriptAlgorithm.class, UIUtils.getAlgorithmIconURL("python.png"));
+    }
+
+    @Override
+    public StringList getDependencyCitations() {
+        return new StringList();
     }
 
     @Override

@@ -80,7 +80,7 @@ public class JIPipeDatatypeRegistry {
 
             // Find a converter fuzzy
             for (Map.Entry<Class<? extends JIPipeData>, Map<Class<? extends JIPipeData>, JIPipeDataConverter>> entry : registeredConverters.entrySet()) {
-                if(entry.getKey().isAssignableFrom(inputData.getClass())) {
+                if (entry.getKey().isAssignableFrom(inputData.getClass())) {
                     targetMap = entry.getValue();
                     JIPipeDataConverter converter = targetMap.getOrDefault(outputDataType, null);
                     if (converter != null) {
@@ -111,7 +111,7 @@ public class JIPipeDatatypeRegistry {
         } else {
             Map<Class<? extends JIPipeData>, JIPipeDataConverter> targetMap = registeredConverters.getOrDefault(inputDataType, null);
             if (targetMap != null) {
-                if(targetMap.containsKey(outputDataType))
+                if (targetMap.containsKey(outputDataType))
                     return true;
             }
 
@@ -119,7 +119,7 @@ public class JIPipeDatatypeRegistry {
             for (Map.Entry<Class<? extends JIPipeData>, Map<Class<? extends JIPipeData>, JIPipeDataConverter>> entry : registeredConverters.entrySet()) {
                 if (entry.getKey().isAssignableFrom(inputDataType)) {
                     targetMap = entry.getValue();
-                    if(targetMap.containsKey(outputDataType))
+                    if (targetMap.containsKey(outputDataType))
                         return true;
                 }
             }

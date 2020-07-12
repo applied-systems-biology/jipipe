@@ -313,6 +313,7 @@ public class JIPipeDataSlot implements TableModel {
     /**
      * Saves the stored data to the provided storage path and sets data to null
      * Warning: Ensure that depending input slots do not use this slot, anymore!
+     *
      * @param destroyData the the containing data should be destroyed
      */
     public void flush(boolean destroyData) {
@@ -324,7 +325,7 @@ public class JIPipeDataSlot implements TableModel {
             save();
         }
         for (int i = 0; i < data.size(); ++i) {
-            if(destroyData)
+            if (destroyData)
                 data.get(i).flush();
             data.set(i, null);
         }
@@ -490,10 +491,11 @@ public class JIPipeDataSlot implements TableModel {
 
     /**
      * Removes all data from this slot
+     *
      * @param destroyData if each data item should be destroyed via its flush() function
      */
     public void clearData(boolean destroyData) {
-        if(destroyData) {
+        if (destroyData) {
             for (JIPipeData item : data) {
                 item.flush();
             }

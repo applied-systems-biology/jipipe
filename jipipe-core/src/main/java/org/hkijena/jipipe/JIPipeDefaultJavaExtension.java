@@ -29,6 +29,7 @@ import org.hkijena.jipipe.api.registries.JIPipeAlgorithmRegistrationTask;
 import org.hkijena.jipipe.api.registries.JIPipeJavaAlgorithmRegistrationTask;
 import org.hkijena.jipipe.extensions.parameters.collections.ListParameter;
 import org.hkijena.jipipe.extensions.parameters.primitives.EnumParameterTypeDeclaration;
+import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
 import org.hkijena.jipipe.extensions.tables.ColumnOperation;
 import org.hkijena.jipipe.ui.compat.ImageJDatatypeImporterUI;
 import org.hkijena.jipipe.ui.extension.MenuExtension;
@@ -66,10 +67,18 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
         metadata.setName(getName());
         metadata.setDescription(getDescription());
         metadata.setAuthors(new JIPipeAuthorMetadata.List(getAuthors()));
+        metadata.setDependencyCitations(new StringList(getDependencyCitations()));
         metadata.setCitation(getCitation());
         metadata.setLicense(getLicense());
         metadata.setWebsite(getWebsite());
     }
+
+    /**
+     * Returns all dependent work
+     *
+     * @return dependent work
+     */
+    public abstract StringList getDependencyCitations();
 
     /**
      * @return The citation

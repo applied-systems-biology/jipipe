@@ -19,6 +19,7 @@ import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.multiparameters.algorithms.MultiParameterAlgorithmDeclaration;
 import org.hkijena.jipipe.extensions.multiparameters.datasources.ParametersDataDefinition;
 import org.hkijena.jipipe.extensions.multiparameters.datasources.ParametersDataTableDefinition;
+import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -26,6 +27,11 @@ import org.scijava.plugin.Plugin;
  */
 @Plugin(type = JIPipeJavaExtension.class)
 public class MultiParameterAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExtension {
+
+    @Override
+    public StringList getDependencyCitations() {
+        return new StringList();
+    }
 
     @Override
     public String getName() {

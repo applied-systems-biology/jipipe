@@ -1,11 +1,9 @@
 package org.hkijena.jipipe.extensions.clij2;
-import ch.systemsx.cisd.base.annotation.JsonObject;
+
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import net.haesleinhuepf.clij.macro.documentation.OffersDocumentation;
-import net.haesleinhuepf.clij2.plugins.*;
 import net.haesleinhuepf.clij2.utilities.HasAuthor;
 import net.haesleinhuepf.clij2.utilities.HasLicense;
-import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.JsonUtils;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 
@@ -15,7 +13,7 @@ import java.nio.file.Paths;
 
 public class GenerateDocumentationUtil {
     public static void main(String[] args) {
-        Class[] classes = new Class[] {net.haesleinhuepf.clij2.plugins.AbsoluteDifference.class,
+        Class[] classes = new Class[]{net.haesleinhuepf.clij2.plugins.AbsoluteDifference.class,
                 net.haesleinhuepf.clij2.plugins.GenerateParametricImageFromResultsTableColumn.class,
                 net.haesleinhuepf.clij2.plugins.EqualConstant.class,
                 net.haesleinhuepf.clij2.plugins.LabelToMask.class,
@@ -269,20 +267,20 @@ public class GenerateDocumentationUtil {
                 net.haesleinhuepf.clij2.plugins.MultiplyImageAndCoordinate.class,
                 net.haesleinhuepf.clij2.plugins.PointIndexListToMesh.class,
                 net.haesleinhuepf.clij2.plugins.ThresholdMaxEntropy.class,
-                net.haesleinhuepf.clij2.plugins.DilateSphere.class };
+                net.haesleinhuepf.clij2.plugins.DilateSphere.class};
 
         ObjectNode node = JsonUtils.getObjectMapper().getNodeFactory().objectNode();
         for (int i = 0; i < classes.length; i++) {
             Object instance = ReflectionUtils.newInstance(classes[i]);
             StringBuilder stringBuilder = new StringBuilder();
-            if(instance instanceof OffersDocumentation) {
+            if (instance instanceof OffersDocumentation) {
                 stringBuilder.append(((OffersDocumentation) instance).getDescription());
                 stringBuilder.append(" Works for following image dimensions: ").append(((OffersDocumentation) instance).getAvailableForDimensions()).append(".");
             }
-            if(instance instanceof HasAuthor) {
+            if (instance instanceof HasAuthor) {
                 stringBuilder.append(" Developed by ").append(((HasAuthor) instance).getAuthorName()).append(".");
             }
-            if(instance instanceof HasLicense) {
+            if (instance instanceof HasLicense) {
                 stringBuilder.append(" Licensed under ").append(((HasLicense) instance).getLicense());
             }
             node.put(classes[i].getCanonicalName(), stringBuilder.toString());

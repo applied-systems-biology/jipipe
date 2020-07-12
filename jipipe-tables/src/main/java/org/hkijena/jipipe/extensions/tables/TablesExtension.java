@@ -15,6 +15,7 @@ package org.hkijena.jipipe.extensions.tables;
 
 import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
+import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
 import org.hkijena.jipipe.extensions.tables.algorithms.*;
 import org.hkijena.jipipe.extensions.tables.datatypes.*;
 import org.hkijena.jipipe.extensions.tables.operations.converting.*;
@@ -38,6 +39,16 @@ import org.scijava.plugin.Plugin;
  */
 @Plugin(type = JIPipeJavaExtension.class)
 public class TablesExtension extends JIPipePrepackagedDefaultJavaExtension {
+
+    @Override
+    public StringList getDependencyCitations() {
+        StringList result = new StringList();
+        result.add("Rueden, C. T.; Schindelin, J. & Hiner, M. C. et al. (2017), \"ImageJ2: ImageJ for the next generation of scientific image data\", " +
+                "BMC Bioinformatics 18:529");
+        result.add("Schneider, C. A.; Rasband, W. S. & Eliceiri, K. W. (2012), \"NIH Image to ImageJ: 25 years of image analysis\", " +
+                "Nature methods 9(7): 671-675");
+        return result;
+    }
 
     @Override
     public String getName() {

@@ -54,6 +54,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.fft.*;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.*;
 import org.hkijena.jipipe.extensions.imagejdatatypes.resultanalysis.ImageDataSlotRowUI;
 import org.hkijena.jipipe.extensions.imagejdatatypes.resultanalysis.ROIDataSlotRowUI;
+import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
 import org.hkijena.jipipe.extensions.tables.ResultsTableDataSlotRowUI;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.ResourceUtils;
@@ -140,6 +141,19 @@ public class ImageJDataTypesExtension extends JIPipePrepackagedDefaultJavaExtens
             ImagePlus3DColorRGBData.class,
             ImagePlus4DColorRGBData.class,
             ImagePlus5DColorRGBData.class);
+
+    @Override
+    public StringList getDependencyCitations() {
+        StringList result = new StringList();
+        result.add("Rueden, C. T.; Schindelin, J. & Hiner, M. C. et al. (2017), \"ImageJ2: ImageJ for the next generation of scientific image data\", " +
+                "BMC Bioinformatics 18:529");
+        result.add("Schneider, C. A.; Rasband, W. S. & Eliceiri, K. W. (2012), \"NIH Image to ImageJ: 25 years of image analysis\", " +
+                "Nature methods 9(7): 671-675");
+        result.add("Melissa Linkert, Curtis T. Rueden, Chris Allan, Jean-Marie Burel, Will Moore, Andrew Patterson, Brian Loranger, Josh Moore, " +
+                "Carlos Neves, Donald MacDonald, Aleksandra Tarkowska, Caitlin Sticco, Emma Hill, Mike Rossner, Kevin W. Eliceiri, " +
+                "and Jason R. Swedlow (2010) Metadata matters: access to image data in the real world. The Journal of Cell Biology 189(5), 777-782");
+        return result;
+    }
 
     @Override
     public String getName() {

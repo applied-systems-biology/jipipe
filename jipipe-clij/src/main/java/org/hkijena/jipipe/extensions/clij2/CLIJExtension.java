@@ -10,6 +10,7 @@ import org.hkijena.jipipe.extensions.clij2.datatypes.ImagePlusDataToCLIJImageDat
 import org.hkijena.jipipe.extensions.clij2.ui.CLIJControlPanelMenuExtension;
 import org.hkijena.jipipe.extensions.imagejdatatypes.compat.ImagePlusDataImporterUI;
 import org.hkijena.jipipe.extensions.imagejdatatypes.resultanalysis.ImageDataSlotRowUI;
+import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.plugin.Plugin;
 
@@ -17,7 +18,15 @@ import org.scijava.plugin.Plugin;
  * Integrates CLIJ
  */
 @Plugin(type = JIPipeJavaExtension.class)
-public class CLIJExtension  extends JIPipePrepackagedDefaultJavaExtension {
+public class CLIJExtension extends JIPipePrepackagedDefaultJavaExtension {
+    @Override
+    public StringList getDependencyCitations() {
+        StringList result = new StringList();
+        result.add("Robert Haase, Loic Alain Royer, Peter Steinbach, Deborah Schmidt, Alexandr Dibrov, Uwe Schmidt, Martin Weigert, " +
+                "Nicola Maghelli, Pavel Tomancak, Florian Jug, Eugene W Myers. CLIJ: GPU-accelerated image processing for everyone. Nat Methods 17, 5-6 (2020)");
+        return result;
+    }
+
     @Override
     public String getName() {
         return "CLIJ2 integration";

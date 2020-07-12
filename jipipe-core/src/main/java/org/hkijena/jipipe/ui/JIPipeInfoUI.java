@@ -17,6 +17,8 @@ import com.google.common.eventbus.Subscribe;
 import com.google.common.html.HtmlEscapers;
 import ij.IJ;
 import org.hkijena.jipipe.api.events.ParameterChangedEvent;
+import org.hkijena.jipipe.api.registries.JIPipeAlgorithmRegistry;
+import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
 import org.hkijena.jipipe.extensions.settings.ProjectsSettings;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.MarkdownDocument;
@@ -131,6 +133,8 @@ public class JIPipeInfoUI extends JIPipeProjectWorkbenchPanel {
         }
         technicalInfo.addToForm(UIUtils.makeReadonlyBorderlessTextField(StringUtils.orElse(IJ.getVersion(), "NA")), new JLabel("ImageJ"), null);
         technicalInfo.addToForm(UIUtils.makeReadonlyBorderlessTextField(StringUtils.orElse(System.getProperty("java.version"), "NA")), new JLabel("Java"), null);
+        technicalInfo.addToForm(UIUtils.makeReadonlyBorderlessTextField(JIPipeAlgorithmRegistry.getInstance().getRegisteredAlgorithms().size() + " algorithms"), new JLabel("Registered algorithms"), null);
+        technicalInfo.addToForm(UIUtils.makeReadonlyBorderlessTextField(JIPipeDatatypeRegistry.getInstance().getRegisteredDataTypes().size() + " types"), new JLabel("Registered data types"), null);
         technicalInfo.addVerticalGlue();
 
         headerPanel.add(technicalInfo, BorderLayout.EAST);

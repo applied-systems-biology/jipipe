@@ -22,6 +22,7 @@ import org.hkijena.jipipe.JIPipeJsonExtension;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.events.ExtensionRegisteredEvent;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
+import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
 import org.hkijena.jipipe.utils.JsonUtils;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.scijava.plugin.Plugin;
@@ -41,6 +42,11 @@ import java.util.stream.Collectors;
 public class JsonExtensionLoaderExtension extends JIPipePrepackagedDefaultJavaExtension {
 
     private Set<JsonExtensionRegistrationTask> registrationTasks = new HashSet<>();
+
+    @Override
+    public StringList getDependencyCitations() {
+        return new StringList();
+    }
 
     @Override
     public String getName() {

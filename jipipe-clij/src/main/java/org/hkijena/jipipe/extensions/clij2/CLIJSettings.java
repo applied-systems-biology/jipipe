@@ -1,21 +1,17 @@
 package org.hkijena.jipipe.extensions.clij2;
 
 import com.google.common.eventbus.EventBus;
-import ij.IJ;
 import net.haesleinhuepf.clij.CLIJ;
 import net.haesleinhuepf.clij.converters.CLIJConverterService;
 import net.haesleinhuepf.clij.macro.CLIJHandler;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeRunSettings;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.registries.JIPipeSettingsRegistry;
-import org.hkijena.jipipe.ui.settings.JIPipeProjectSettingsUI;
 import org.scijava.Context;
 
 import java.util.ArrayList;
-import java.util.concurrent.ExecutorService;
 
 /**
  * Settings for CLIJ
@@ -52,18 +48,18 @@ public class CLIJSettings implements JIPipeParameterCollection {
 
     /**
      * Initializes CLIJ based on the settings
+     *
      * @param context SciJava context
-     * @param force if a re-initialization should be applied
+     * @param force   if a re-initialization should be applied
      */
     public static void initializeCLIJ(Context context, boolean force) {
-        if(!force && getInstance().initialized)
+        if (!force && getInstance().initialized)
             return;
         getInstance().initialized = false;
         ArrayList<String> deviceList;
         try {
             deviceList = CLIJ.getAvailableDeviceNames();
-        }
-        catch(Exception e) {
+        } catch (Exception e) {
             throw new UserFriendlyRuntimeException(e,
                     "Could not get list of available graphics cards!",
                     "CLIJ2 initialization",
@@ -72,7 +68,7 @@ public class CLIJSettings implements JIPipeParameterCollection {
                     "Please check if you have OpenCL installed and a modern graphics card that can make use of it. " +
                             "Try updating your graphics driver. Try Installing 'ocl-icd-opencl-dev' if you are on Ubuntu, as this package provides some mandatory library.");
         }
-        if(deviceList.isEmpty()) {
+        if (deviceList.isEmpty()) {
             throw new UserFriendlyRuntimeException("No graphics card device available!",
                     "No compatible graphics card detected!",
                     "CLIJ2 initialization",

@@ -1,6 +1,5 @@
 package org.hkijena.jipipe.extensions.clij2.ui;
 
-import net.haesleinhuepf.clij.macro.CLIJHandler;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.DocumentTabPane;
@@ -28,7 +27,7 @@ public class CLIJControlPanelMenuExtension extends MenuExtension {
 
     private void openControlPanel() {
         for (DocumentTabPane.DocumentTab tab : getWorkbench().getDocumentTabPane().getTabs()) {
-            if(tab.getContent() instanceof CLIJControlPanel) {
+            if (tab.getContent() instanceof CLIJControlPanel) {
                 getWorkbench().getDocumentTabPane().switchToContent(tab.getContent());
                 return;
             }

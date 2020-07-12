@@ -20,6 +20,7 @@ public class CLIJImageData implements JIPipeData {
 
     /**
      * Initializes a new instance from an existing buffer
+     *
      * @param image the buffer
      */
     public CLIJImageData(ClearCLBuffer image) {
@@ -28,6 +29,7 @@ public class CLIJImageData implements JIPipeData {
 
     /**
      * Initializes an instance by copying data from {@link ImagePlusData}
+     *
      * @param image the image
      */
     public CLIJImageData(ImagePlusData image) {
@@ -37,6 +39,7 @@ public class CLIJImageData implements JIPipeData {
 
     /**
      * Makes a copy
+     *
      * @param other the original
      */
     public CLIJImageData(CLIJImageData other) {
@@ -70,6 +73,7 @@ public class CLIJImageData implements JIPipeData {
 
     /**
      * Extracts {@link ImagePlusData} from the GPU memory
+     *
      * @return the {@link ImagePlusData}
      */
     public ImagePlusData pull() {

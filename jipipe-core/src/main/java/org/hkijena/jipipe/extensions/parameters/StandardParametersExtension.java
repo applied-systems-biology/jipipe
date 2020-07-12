@@ -73,6 +73,11 @@ import java.nio.file.Paths;
 public class StandardParametersExtension extends JIPipePrepackagedDefaultJavaExtension {
 
     @Override
+    public StringList getDependencyCitations() {
+        return new StringList();
+    }
+
+    @Override
     public String getName() {
         return "Standard parameter editors";
     }

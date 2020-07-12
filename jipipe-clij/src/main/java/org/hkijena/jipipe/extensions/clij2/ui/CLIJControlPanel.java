@@ -3,7 +3,9 @@ package org.hkijena.jipipe.extensions.clij2.ui;
 import net.haesleinhuepf.clij.converters.CLIJConverterService;
 import net.haesleinhuepf.clij2.CLIJ2;
 import org.hkijena.jipipe.extensions.clij2.CLIJSettings;
-import org.hkijena.jipipe.ui.*;
+import org.hkijena.jipipe.ui.JIPipeInfoUI;
+import org.hkijena.jipipe.ui.JIPipeWorkbench;
+import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.MarkdownReader;
@@ -92,19 +94,17 @@ public class CLIJControlPanel extends JIPipeWorkbenchPanel {
             CLIJ2 clij2 = CLIJ2.getInstance();
             openCLInfo.setText("" + clij2.getOpenCLVersion());
             gpuModel.setText(clij2.getGPUName());
-            gpuMemory.setText(clij2.getCLIJ().getGPUMemoryInBytes() / 1024 /1024 + " MB");
+            gpuMemory.setText(clij2.getCLIJ().getGPUMemoryInBytes() / 1024 / 1024 + " MB");
             clearMemoryButton.setEnabled(true);
             CLIJConverterService clijConverterService = getWorkbench().getContext().getService(CLIJConverterService.class);
-            if(clijConverterService.getCLIJ() == clij2.getCLIJ()) {
+            if (clijConverterService.getCLIJ() == clij2.getCLIJ()) {
                 readyLabel.setText("Ready");
                 readyLabel.setIcon(UIUtils.getIconFromResources("check-circle-green.png"));
-            }
-            else {
+            } else {
                 readyLabel.setText("Not ready");
                 readyLabel.setIcon(UIUtils.getIconFromResources("error.png"));
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             switchToUnsuccessfulLoad();
         }
     }
@@ -170,11 +170,9 @@ public class CLIJControlPanel extends JIPipeWorkbenchPanel {
         try {
             CLIJSettings.initializeCLIJ(getWorkbench().getContext(), true);
             getWorkbench().sendStatusBarText("Re-initialized GPU.");
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             UIUtils.openErrorDialog(this, e);
-        }
-        finally {
+        } finally {
             refresh();
         }
     }
