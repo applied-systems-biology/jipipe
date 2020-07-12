@@ -17,7 +17,7 @@ import java.util.function.Supplier;
  * CLIJ2 algorithm ported from {@link net.haesleinhuepf.clij2.plugins.TouchMatrixToMesh}
  */
 @JIPipeDocumentation(name = "CLIJ2 Touch Matrix To Mesh", description = "Takes a pointlist with dimensions n*d with n point coordinates in d dimensions and a touch matrix of " + "size n*n to draw lines from all points to points if the corresponding pixel in the touch matrix is 1. Works for following image dimensions: 2D, 3D.")
-@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "CLIJ2")
+@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Converter)
 @AlgorithmInputSlot(value = CLIJImageData.class, slotName = "pointlist", autoCreate = true)
 @AlgorithmInputSlot(value = CLIJImageData.class, slotName = "touch_matrix", autoCreate = true)
 @AlgorithmOutputSlot(value = CLIJImageData.class, slotName = "mesh", autoCreate = true)

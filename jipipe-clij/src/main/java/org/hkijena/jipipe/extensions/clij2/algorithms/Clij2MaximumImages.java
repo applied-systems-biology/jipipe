@@ -17,7 +17,7 @@ import java.util.function.Supplier;
  * CLIJ2 algorithm ported from {@link net.haesleinhuepf.clij2.plugins.MaximumImages}
  */
 @JIPipeDocumentation(name = "CLIJ2 Maximum Images", description = "Computes the maximum of a pair of pixel values x, y from two given images X and Y. " + "<pre>f(x, y) = max(x, y)</pre> Works for following image dimensions: 2D, 3D.")
-@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "CLIJ2")
+@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "Math\nLocal")
 @AlgorithmInputSlot(value = CLIJImageData.class, slotName = "src", autoCreate = true)
 @AlgorithmInputSlot(value = CLIJImageData.class, slotName = "src1", autoCreate = true)
 @AlgorithmOutputSlot(value = CLIJImageData.class, slotName = "dst", autoCreate = true)

@@ -18,7 +18,7 @@ import java.util.function.Supplier;
  * CLIJ2 algorithm ported from {@link net.haesleinhuepf.clij2.plugins.CopySlice}
  */
 @JIPipeDocumentation(name = "CLIJ2 Copy Slice", description = "This method has two purposes: " + "It copies a 2D image to a given slice z position in a 3D image stack or " + "It copies a given slice at position z in an image stack to a 2D image." + "The first case is only available via ImageJ macro. If you are using it, it is recommended that the " + "target 3D image already pre-exists in GPU memory before calling this method. Otherwise, CLIJ create " + "the image stack with z planes. Works for following image dimensions: 3D -> 2D and 2D -> 3D.")
-@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "CLIJ2")
+@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Miscellaneous, menuPath = "CLIJ2")
 @AlgorithmInputSlot(value = CLIJImageData.class, slotName = "src", autoCreate = true)
 @AlgorithmOutputSlot(value = CLIJImageData.class, slotName = "dst", autoCreate = true)
 

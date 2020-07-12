@@ -17,7 +17,7 @@ import java.util.function.Supplier;
  * CLIJ2 algorithm ported from {@link net.haesleinhuepf.clij2.plugins.SumXProjection}
  */
 @JIPipeDocumentation(name = "CLIJ2 Sum X Projection", description = "Determines the sum intensity projection of an image along Z. Works for following image dimensions: 3D.")
-@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "CLIJ2")
+@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "Dimensions")
 @AlgorithmInputSlot(value = CLIJImageData.class, slotName = "src", autoCreate = true)
 @AlgorithmOutputSlot(value = CLIJImageData.class, slotName = "dst", autoCreate = true)
 

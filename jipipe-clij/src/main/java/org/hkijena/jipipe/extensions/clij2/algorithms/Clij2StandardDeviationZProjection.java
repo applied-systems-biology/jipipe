@@ -17,7 +17,7 @@ import java.util.function.Supplier;
  * CLIJ2 algorithm ported from {@link net.haesleinhuepf.clij2.plugins.StandardDeviationZProjection}
  */
 @JIPipeDocumentation(name = "CLIJ2 Standard Deviation Z Projection", description = "Determines the standard deviation intensity projection of an image stack along Z. Works for following image dimensions: 3D -> 2D.")
-@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "CLIJ2")
+@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "Math\nCalculate")
 @AlgorithmInputSlot(value = CLIJImageData.class, slotName = "input", autoCreate = true)
 @AlgorithmOutputSlot(value = CLIJImageData.class, slotName = "output", autoCreate = true)
 

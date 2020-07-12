@@ -18,7 +18,7 @@ import java.util.function.Supplier;
  * CLIJ2 algorithm ported from {@link net.haesleinhuepf.clij2.plugins.ExcludeLabelsWithValuesWithinRange}
  */
 @JIPipeDocumentation(name = "CLIJ2 Exclude Labels With Values Within Range", description = "This operation removes labels from a labelmap and renumbers the remaining labels. " + "Hand over a vector of values and a range specifying which labels with which values are eliminated. Works for following image dimensions: 2D, 3D.")
-@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "CLIJ2")
+@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "Labels")
 @AlgorithmInputSlot(value = CLIJImageData.class, slotName = "values", autoCreate = true)
 @AlgorithmInputSlot(value = CLIJImageData.class, slotName = "label_map_in", autoCreate = true)
 @AlgorithmOutputSlot(value = CLIJImageData.class, slotName = "label_map_out", autoCreate = true)

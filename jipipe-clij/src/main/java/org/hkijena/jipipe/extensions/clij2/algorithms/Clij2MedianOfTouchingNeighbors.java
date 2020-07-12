@@ -17,7 +17,7 @@ import java.util.function.Supplier;
  * CLIJ2 algorithm ported from {@link net.haesleinhuepf.clij2.plugins.MedianOfTouchingNeighbors}
  */
 @JIPipeDocumentation(name = "CLIJ2 Median Of Touching Neighbors", description = "Takes a touch matrix and a vector of values to determine the median value among touching neighbors for every object. " + " Works for following image dimensions: 2D.")
-@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "CLIJ2")
+@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "Touch matrix")
 @AlgorithmInputSlot(value = CLIJImageData.class, slotName = "src_values", autoCreate = true)
 @AlgorithmInputSlot(value = CLIJImageData.class, slotName = "touch_matrix", autoCreate = true)
 @AlgorithmOutputSlot(value = CLIJImageData.class, slotName = "dst_values", autoCreate = true)

@@ -18,7 +18,7 @@ import java.util.function.Supplier;
  * CLIJ2 algorithm ported from {@link net.haesleinhuepf.clij2.plugins.AddImageAndScalar}
  */
 @JIPipeDocumentation(name = "CLIJ2 Add Image And Scalar", description = "Adds a scalar value s to all pixels x of a given image X." + "<pre>f(x, s) = x + s</pre> Works for following image dimensions: 2D, 3D.")
-@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "CLIJ2")
+@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "Math\nCalculate")
 @AlgorithmInputSlot(value = CLIJImageData.class, slotName = "src", autoCreate = true)
 @AlgorithmOutputSlot(value = CLIJImageData.class, slotName = "dst", autoCreate = true)
 

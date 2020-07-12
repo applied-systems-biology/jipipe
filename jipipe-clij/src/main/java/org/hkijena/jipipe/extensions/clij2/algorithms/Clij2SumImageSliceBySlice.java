@@ -17,7 +17,7 @@ import java.util.function.Supplier;
  * CLIJ2 algorithm ported from {@link net.haesleinhuepf.clij2.plugins.SumImageSliceBySlice}
  */
 @JIPipeDocumentation(name = "CLIJ2 Sum Image Slice By Slice", description = "Sums all pixels slice by slice and returns them in an array. Works for following image dimensions: 2D, 3D.")
-@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "CLIJ2")
+@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "Math\nCalculate")
 @AlgorithmInputSlot(value = CLIJImageData.class, slotName = "src", autoCreate = true)
 @AlgorithmOutputSlot(value = CLIJImageData.class, slotName = "dst", autoCreate = true)
 

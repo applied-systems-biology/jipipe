@@ -16,12 +16,12 @@ import java.util.function.Supplier;
 /**
  * CLIJ2 algorithm ported from {@link net.haesleinhuepf.clij2.plugins.LabelCentroidsToPointList}
  */
-@JIPipeDocumentation(name = "CLIJ2 Spots To Point List", description = "Determines centroids of all labels in a label map image and saves corresponding coordinates in a pointlist. Works for following image dimensions: 2D, 3D.")
-@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "CLIJ2")
+@JIPipeDocumentation(name = "CLIJ2 Label Centroids To Point list", description = "Determines centroids of all labels in a label map image and saves corresponding coordinates in a pointlist. Works for following image dimensions: 2D, 3D.")
+@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Converter)
 @AlgorithmInputSlot(value = CLIJImageData.class, slotName = "input", autoCreate = true)
 @AlgorithmOutputSlot(value = CLIJImageData.class, slotName = "output", autoCreate = true)
 
-public class Clij2SpotsToPointList extends JIPipeSimpleIteratingAlgorithm {
+public class Clij2LabelCentroidsToPointList extends JIPipeSimpleIteratingAlgorithm {
 
 
     /**
@@ -29,7 +29,7 @@ public class Clij2SpotsToPointList extends JIPipeSimpleIteratingAlgorithm {
      *
      * @param declaration The algorithm declaration
      */
-    public Clij2SpotsToPointList(JIPipeAlgorithmDeclaration declaration) {
+    public Clij2LabelCentroidsToPointList(JIPipeAlgorithmDeclaration declaration) {
         super(declaration);
     }
 
@@ -38,7 +38,7 @@ public class Clij2SpotsToPointList extends JIPipeSimpleIteratingAlgorithm {
      *
      * @param other the original
      */
-    public Clij2SpotsToPointList(Clij2SpotsToPointList other) {
+    public Clij2LabelCentroidsToPointList(Clij2LabelCentroidsToPointList other) {
         super(other);
     }
 

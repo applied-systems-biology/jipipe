@@ -17,7 +17,7 @@ import java.util.function.Supplier;
  * CLIJ2 algorithm ported from {@link net.haesleinhuepf.clij2.plugins.MeanOfMaskedPixels}
  */
 @JIPipeDocumentation(name = "CLIJ2 Mean Of Masked Pixels", description = "Determines the mean intensity in a masked image. " + "Only in pixels which have non-zero values in another binary mask image. Works for following image dimensions: 2D, 3D.")
-@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "CLIJ2")
+@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "Mask")
 @AlgorithmInputSlot(value = CLIJImageData.class, slotName = "clImage", autoCreate = true)
 @AlgorithmOutputSlot(value = CLIJImageData.class, slotName = "mask", autoCreate = true)
 

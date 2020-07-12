@@ -16,8 +16,8 @@ import java.util.function.Supplier;
 /**
  * CLIJ2 algorithm ported from {@link net.haesleinhuepf.clij2.plugins.AdjacencyMatrixToTouchMatrix}
  */
-@JIPipeDocumentation(name = "CLIJ2 Adjacency Matrix To Touch Matrix", description = "Converts a adjacency matrix in a touch matrix Works for following image dimensions: 2D, 3D.")
-@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "CLIJ2")
+@JIPipeDocumentation(name = "CLIJ2 Adjacency Matrix To Touch Matrix", description = "Converts a adjacency matrix in a touch matrix. Works for following image dimensions: 2D, 3D.")
+@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Converter)
 @AlgorithmInputSlot(value = CLIJImageData.class, slotName = "touch_matrix", autoCreate = true)
 @AlgorithmOutputSlot(value = CLIJImageData.class, slotName = "adjacency_matrix", autoCreate = true)
 

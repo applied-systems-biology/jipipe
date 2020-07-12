@@ -17,7 +17,7 @@ import java.util.function.Supplier;
  * CLIJ2 algorithm ported from {@link net.haesleinhuepf.clij2.plugins.GenerateParametricImage}
  */
 @JIPipeDocumentation(name = "CLIJ2 Generate Parametric Image", description = "Take a labelmap and a vector of values to replace label 1 with the 1st value in the vector. " + "Note that indexing in the vector starts at zero. The 0th entry corresponds to background in the label map.Internally this method just calls ReplaceIntensities." + " Works for following image dimensions: 2D, 3D.")
-@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "CLIJ2")
+@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "Generate")
 @AlgorithmInputSlot(value = CLIJImageData.class, slotName = "label_map", autoCreate = true)
 @AlgorithmInputSlot(value = CLIJImageData.class, slotName = "parameter_value_vector", autoCreate = true)
 @AlgorithmOutputSlot(value = CLIJImageData.class, slotName = "parametric_image_destination", autoCreate = true)

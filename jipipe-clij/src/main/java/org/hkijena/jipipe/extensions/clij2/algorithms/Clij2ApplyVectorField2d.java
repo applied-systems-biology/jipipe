@@ -17,7 +17,7 @@ import java.util.function.Supplier;
  * CLIJ2 algorithm ported from {@link net.haesleinhuepf.clij2.plugins.ApplyVectorField2D}
  */
 @JIPipeDocumentation(name = "CLIJ2 Apply Vector Field 2D", description = "Deforms an image according to distances provided in the given vector images." + " It is recommended to use 32-bit images for input, output and vector images.  Works for following image dimensions: 2D.")
-@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "CLIJ2")
+@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "Deform")
 @AlgorithmInputSlot(value = CLIJImageData.class, slotName = "src", autoCreate = true)
 @AlgorithmInputSlot(value = CLIJImageData.class, slotName = "vectorX", autoCreate = true)
 @AlgorithmInputSlot(value = CLIJImageData.class, slotName = "vectorY", autoCreate = true)

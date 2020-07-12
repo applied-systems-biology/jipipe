@@ -17,7 +17,7 @@ import java.util.function.Supplier;
  * CLIJ2 algorithm ported from {@link net.haesleinhuepf.clij2.plugins.LocalThreshold}
  */
 @JIPipeDocumentation(name = "CLIJ2 Local Threshold", description = "Computes a binary image with pixel values 0 and 1 depending on if a pixel value x in image X " + "was above of equal to the pixel value m in mask image M." + "<pre>f(x) = (1 if (x >=  m)); (0 otherwise)</pre> Works for following image dimensions: 2D, 3D.")
-@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "CLIJ2")
+@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "Threshold")
 @AlgorithmInputSlot(value = CLIJImageData.class, slotName = "src", autoCreate = true)
 @AlgorithmInputSlot(value = CLIJImageData.class, slotName = "threshold", autoCreate = true)
 @AlgorithmOutputSlot(value = CLIJImageData.class, slotName = "dst", autoCreate = true)

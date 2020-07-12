@@ -18,7 +18,7 @@ import java.util.function.Supplier;
  * CLIJ2 algorithm ported from {@link net.haesleinhuepf.clij2.plugins.Median2DSphere}
  */
 @JIPipeDocumentation(name = "CLIJ2 Median 2D Sphere", description = "Computes the local median of a pixels ellipsoidal neighborhood. " + "The ellipses size is specified by " + "its half-width and half-height (radius)." + "For technical reasons, the area of the ellipse must have less than 1000 pixels. Works for following image dimensions: 2D.")
-@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "CLIJ2")
+@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "Blur")
 @AlgorithmInputSlot(value = CLIJImageData.class, slotName = "src", autoCreate = true)
 @AlgorithmOutputSlot(value = CLIJImageData.class, slotName = "dst", autoCreate = true)
 

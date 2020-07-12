@@ -18,7 +18,7 @@ import java.util.function.Supplier;
  * CLIJ2 algorithm ported from {@link net.haesleinhuepf.clij2.plugins.DetectMinimaSliceBySliceBox}
  */
 @JIPipeDocumentation(name = "CLIJ2 Detect Minima Slice By Slice Box", description = "Detects local minima in a given square neighborhood of an input image stack. " + "The input image stack is processed slice by slice. Pixels in the resulting image are set to 1 if " + "there is no other pixel in a given radius which has a lower intensity, and to 0 otherwise. Works for following image dimensions: 3D.")
-@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "CLIJ2")
+@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "Math")
 @AlgorithmInputSlot(value = CLIJImageData.class, slotName = "src", autoCreate = true)
 @AlgorithmOutputSlot(value = CLIJImageData.class, slotName = "dst", autoCreate = true)
 

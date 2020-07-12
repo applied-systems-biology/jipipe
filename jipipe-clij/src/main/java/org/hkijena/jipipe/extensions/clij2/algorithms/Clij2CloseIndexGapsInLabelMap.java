@@ -17,7 +17,7 @@ import java.util.function.Supplier;
  * CLIJ2 algorithm ported from {@link net.haesleinhuepf.clij2.plugins.CloseIndexGapsInLabelMap}
  */
 @JIPipeDocumentation(name = "CLIJ2 Close Index Gaps In Label Map", description = "Analyses a label map and if there are gaps in the indexing (e.g. label 5 is not present) all " + "subsequent labels will be relabelled. " + "Thus, afterwards number of labels and maximum label index are equal." + "This operation is mostly performed on the CPU. Works for following image dimensions: 2D, 3D.")
-@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "CLIJ2")
+@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "Morphology")
 @AlgorithmInputSlot(value = CLIJImageData.class, slotName = "input", autoCreate = true)
 @AlgorithmOutputSlot(value = CLIJImageData.class, slotName = "output", autoCreate = true)
 

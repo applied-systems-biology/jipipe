@@ -17,7 +17,7 @@ import java.util.function.Supplier;
  * CLIJ2 algorithm ported from {@link net.haesleinhuepf.clij2.plugins.PowerImages}
  */
 @JIPipeDocumentation(name = "CLIJ2 Power Images", description = "Calculates x to the power of y pixel wise of two images X and Y. Works for following image dimensions: 2D, 3D.")
-@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "CLIJ2")
+@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "Math\nCalculate")
 @AlgorithmInputSlot(value = CLIJImageData.class, slotName = "input1", autoCreate = true)
 @AlgorithmInputSlot(value = CLIJImageData.class, slotName = "input2", autoCreate = true)
 @AlgorithmOutputSlot(value = CLIJImageData.class, slotName = "output", autoCreate = true)

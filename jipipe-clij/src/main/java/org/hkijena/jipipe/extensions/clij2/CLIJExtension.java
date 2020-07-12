@@ -115,7 +115,7 @@ public class CLIJExtension  extends JIPipePrepackagedDefaultJavaExtension {
         registerAlgorithm("clij2:centroids-of-labels", Clij2CentroidsOfLabels.class, UIUtils.getAlgorithmIconURL("clij.png"));
         registerAlgorithm("clij2:statistics-of-labelled-pixels", Clij2StatisticsOfLabelledPixels.class, UIUtils.getAlgorithmIconURL("clij.png"));
         registerAlgorithm("clij2:write-values-to-positions", Clij2WriteValuesToPositions.class, UIUtils.getAlgorithmIconURL("clij.png"));
-        registerAlgorithm("clij2:spots-to-point-list", Clij2SpotsToPointList.class, UIUtils.getAlgorithmIconURL("clij.png"));
+        registerAlgorithm("clij2:spots-to-point-list", Clij2LabelCentroidsToPointList.class, UIUtils.getAlgorithmIconURL("clij.png"));
         registerAlgorithm("clij2:combine-vertically", Clij2CombineVertically.class, UIUtils.getAlgorithmIconURL("clij.png"));
         registerAlgorithm("clij2:absolute", Clij2Absolute.class, UIUtils.getAlgorithmIconURL("clij.png"));
         registerAlgorithm("clij2:threshold-otsu", Clij2ThresholdOtsu.class, UIUtils.getAlgorithmIconURL("clij.png"));

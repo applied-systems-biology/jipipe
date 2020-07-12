@@ -17,7 +17,7 @@ import java.util.function.Supplier;
  * CLIJ2 algorithm ported from {@link net.haesleinhuepf.clij2.plugins.BinaryNot}
  */
 @JIPipeDocumentation(name = "CLIJ2 Binary Not", description = "Computes a binary image (containing pixel values 0 and 1) from an image X by negating its pixel values" + "x using the binary NOT operator !" + "All pixel values except 0 in the input image are interpreted as 1." + "<pre>f(x) = !x</pre> Works for following image dimensions: 2D, 3D.")
-@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "CLIJ2")
+@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "Binary")
 @AlgorithmInputSlot(value = CLIJImageData.class, slotName = "src1", autoCreate = true)
 @AlgorithmOutputSlot(value = CLIJImageData.class, slotName = "dst", autoCreate = true)
 

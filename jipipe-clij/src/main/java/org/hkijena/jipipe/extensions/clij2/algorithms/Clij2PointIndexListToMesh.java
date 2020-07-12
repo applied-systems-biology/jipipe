@@ -17,7 +17,7 @@ import java.util.function.Supplier;
  * CLIJ2 algorithm ported from {@link net.haesleinhuepf.clij2.plugins.PointIndexListToMesh}
  */
 @JIPipeDocumentation(name = "CLIJ2 Point Index List To Mesh", description = "Meshes all points in a given point list which are indiced in a corresponding index list. Works for following image dimensions: 2D, 3D.")
-@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "CLIJ2")
+@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "Point list")
 @AlgorithmInputSlot(value = CLIJImageData.class, slotName = "pointlist", autoCreate = true)
 @AlgorithmInputSlot(value = CLIJImageData.class, slotName = "indexlist", autoCreate = true)
 @AlgorithmOutputSlot(value = CLIJImageData.class, slotName = "mesh", autoCreate = true)

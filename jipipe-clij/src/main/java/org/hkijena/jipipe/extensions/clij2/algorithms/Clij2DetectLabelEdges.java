@@ -17,7 +17,7 @@ import java.util.function.Supplier;
  * CLIJ2 algorithm ported from {@link net.haesleinhuepf.clij2.plugins.DetectLabelEdges}
  */
 @JIPipeDocumentation(name = "CLIJ2 Detect Label Edges", description = "Takes a labelmap and returns an image where all pixels on label edges are set to 1 and all other pixels to 0. Works for following image dimensions: 2D, 3D.")
-@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "CLIJ2")
+@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "Edges")
 @AlgorithmInputSlot(value = CLIJImageData.class, slotName = "src_label_map", autoCreate = true)
 @AlgorithmOutputSlot(value = CLIJImageData.class, slotName = "dst_edge_image", autoCreate = true)
 

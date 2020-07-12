@@ -18,7 +18,7 @@ import java.util.function.Supplier;
  * CLIJ2 algorithm ported from {@link net.haesleinhuepf.clij2.plugins.CountNonZeroPixelsSliceBySliceSphere}
  */
 @JIPipeDocumentation(name = "CLIJ2 Count Non Zero Pixels Slice By Slice Sphere", description = "Counts non-zero pixels in a sphere around every pixel slice by slice in a stack. " + " It puts the resulting number in the destination image stack. Works for following image dimensions: 3D.")
-@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "CLIJ2")
+@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "Math\nCount")
 @AlgorithmInputSlot(value = CLIJImageData.class, slotName = "src", autoCreate = true)
 @AlgorithmOutputSlot(value = CLIJImageData.class, slotName = "dst", autoCreate = true)
 

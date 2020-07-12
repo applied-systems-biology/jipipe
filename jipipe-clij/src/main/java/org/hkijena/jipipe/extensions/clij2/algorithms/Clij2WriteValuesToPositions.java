@@ -17,7 +17,7 @@ import java.util.function.Supplier;
  * CLIJ2 algorithm ported from {@link net.haesleinhuepf.clij2.plugins.WriteValuesToPositions}
  */
 @JIPipeDocumentation(name = "CLIJ2 Write Values To Positions", description = "Takes an image with three/four rows (2D: height = 3; 3D: height = 4): x, y [, z] and v and target image. " + "The value v will be written at position x/y[/z] in the target image. Works for following image dimensions: 2D, 3D.")
-@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "CLIJ2")
+@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "Binary")
 @AlgorithmInputSlot(value = CLIJImageData.class, slotName = "positionsAndValues", autoCreate = true)
 @AlgorithmOutputSlot(value = CLIJImageData.class, slotName = "dst", autoCreate = true)
 

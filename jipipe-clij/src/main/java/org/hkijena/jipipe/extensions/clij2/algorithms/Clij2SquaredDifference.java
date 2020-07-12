@@ -17,7 +17,7 @@ import java.util.function.Supplier;
  * CLIJ2 algorithm ported from {@link net.haesleinhuepf.clij2.plugins.SquaredDifference}
  */
 @JIPipeDocumentation(name = "CLIJ2 Squared Difference", description = "Determines the squared difference pixel by pixel between two images. Works for following image dimensions: 2D, 3D.")
-@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "CLIJ2")
+@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "Math\nCalculate")
 @AlgorithmInputSlot(value = CLIJImageData.class, slotName = "buffer1", autoCreate = true)
 @AlgorithmInputSlot(value = CLIJImageData.class, slotName = "buffer2", autoCreate = true)
 @AlgorithmOutputSlot(value = CLIJImageData.class, slotName = "result", autoCreate = true)

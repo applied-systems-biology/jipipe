@@ -18,7 +18,7 @@ import java.util.function.Supplier;
  * CLIJ2 algorithm ported from {@link net.haesleinhuepf.clij2.plugins.Median3DBox}
  */
 @JIPipeDocumentation(name = "CLIJ2 Median 3D Box", description = "Computes the local median of a pixels cuboid neighborhood. " + "The cuboid size is specified by " + "its half-width, half-height and half-depth (radius)." + "For technical reasons, the volume of the cuboid must contain less than 1000 voxels. Works for following image dimensions: 3D.")
-@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "CLIJ2")
+@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "Blur")
 @AlgorithmInputSlot(value = CLIJImageData.class, slotName = "src", autoCreate = true)
 @AlgorithmOutputSlot(value = CLIJImageData.class, slotName = "dst", autoCreate = true)
 

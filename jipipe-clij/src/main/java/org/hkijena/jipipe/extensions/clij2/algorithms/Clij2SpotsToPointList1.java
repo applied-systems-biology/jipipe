@@ -16,8 +16,8 @@ import java.util.function.Supplier;
 /**
  * CLIJ2 algorithm ported from {@link net.haesleinhuepf.clij2.plugins.SpotsToPointList}
  */
-@JIPipeDocumentation(name = "CLIJ2 Spots To Point List 1", description = "Transforms a spots image as resulting from maximum/minimum detection in an image where every column contains d " + "pixels (with d = dimensionality of the original image) with the coordinates of the maxima/minima. Works for following image dimensions: 2D, 3D.")
-@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "CLIJ2")
+@JIPipeDocumentation(name = "CLIJ2 Spots To Point List", description = "Transforms a spots image as resulting from maximum/minimum detection in an image where every column contains d " + "pixels (with d = dimensionality of the original image) with the coordinates of the maxima/minima. Works for following image dimensions: 2D, 3D.")
+@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Converter)
 @AlgorithmInputSlot(value = CLIJImageData.class, slotName = "input", autoCreate = true)
 @AlgorithmOutputSlot(value = CLIJImageData.class, slotName = "output", autoCreate = true)
 

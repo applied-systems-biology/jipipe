@@ -17,7 +17,7 @@ import java.util.function.Supplier;
  * CLIJ2 algorithm ported from {@link net.haesleinhuepf.clij2.plugins.GenerateTouchCountMatrix}
  */
 @JIPipeDocumentation(name = "CLIJ2 Generate Touch Count Matrix", description = "Takes a label map with n labels and generates a (n+1)*(n+1) matrix where all pixels are set the number of pixels where labels touch (diamond neighborhood). " + "Major parts of this operation run on the CPU. Works for following image dimensions: 2D, 3D.")
-@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "CLIJ2")
+@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "Generate")
 @AlgorithmInputSlot(value = CLIJImageData.class, slotName = "src_label_map1", autoCreate = true)
 @AlgorithmOutputSlot(value = CLIJImageData.class, slotName = "dst_touch_count_matrix", autoCreate = true)
 

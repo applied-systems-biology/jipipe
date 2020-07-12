@@ -17,7 +17,7 @@ import java.util.function.Supplier;
  * CLIJ2 algorithm ported from {@link net.haesleinhuepf.clij2.plugins.NClosestPoints}
  */
 @JIPipeDocumentation(name = "CLIJ2 N Closest Points", description = "Determine the n point indices with shortest distance for all points in a distance matrix. " + "This corresponds to the n row indices with minimum values for each column of the distance matrix. Works for following image dimensions: 2D.")
-@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "CLIJ2")
+@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "Distance matrix")
 @AlgorithmInputSlot(value = CLIJImageData.class, slotName = "distance_matrix", autoCreate = true)
 @AlgorithmOutputSlot(value = CLIJImageData.class, slotName = "indexlist_destination", autoCreate = true)
 

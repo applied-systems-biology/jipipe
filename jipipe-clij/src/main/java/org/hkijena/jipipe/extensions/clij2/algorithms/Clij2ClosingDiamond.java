@@ -18,7 +18,7 @@ import java.util.function.Supplier;
  * CLIJ2 algorithm ported from {@link net.haesleinhuepf.clij2.plugins.ClosingDiamond}
  */
 @JIPipeDocumentation(name = "CLIJ2 Closing Diamond", description = "Apply a binary closing to the input image by calling n dilations and n erosions subsequently. Works for following image dimensions: 2D, 3D.")
-@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "CLIJ2")
+@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "Morphology\nClosing")
 @AlgorithmInputSlot(value = CLIJImageData.class, slotName = "input", autoCreate = true)
 @AlgorithmOutputSlot(value = CLIJImageData.class, slotName = "output", autoCreate = true)
 

@@ -17,7 +17,7 @@ import java.util.function.Supplier;
  * CLIJ2 algorithm ported from {@link net.haesleinhuepf.clij2.plugins.CentroidsOfLabels}
  */
 @JIPipeDocumentation(name = "CLIJ2 Centroids Of Labels", description = "Determines the centroids of all labels in a label image or image stack. " + "It writes the resulting  coordinates in a pointlist image. Depending on the dimensionality d of the labelmap and the number  of labels n, the pointlist image will have n*d pixels. Works for following image dimensions: 2D, 3D.")
-@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "CLIJ2")
+@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "Features")
 @AlgorithmInputSlot(value = CLIJImageData.class, slotName = "labelMap", autoCreate = true)
 @AlgorithmOutputSlot(value = CLIJImageData.class, slotName = "pointlist", autoCreate = true)
 

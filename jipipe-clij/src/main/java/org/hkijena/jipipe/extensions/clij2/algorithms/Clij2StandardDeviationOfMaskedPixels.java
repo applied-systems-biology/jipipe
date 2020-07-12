@@ -17,7 +17,7 @@ import java.util.function.Supplier;
  * CLIJ2 algorithm ported from {@link net.haesleinhuepf.clij2.plugins.StandardDeviationOfMaskedPixels}
  */
 @JIPipeDocumentation(name = "CLIJ2 Standard Deviation Of Masked Pixels", description = "Determines the standard deviation of all pixels in an image which have non-zero value in a corresponding mask image. " + "The value will be stored in a new row of ImageJs" + "Results table in the column 'Masked_standard_deviation'. Works for following image dimensions: 2D, 3D.")
-@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "CLIJ2")
+@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "Math\nCalculate")
 @AlgorithmInputSlot(value = CLIJImageData.class, slotName = "buffer1", autoCreate = true)
 @AlgorithmOutputSlot(value = CLIJImageData.class, slotName = "mask", autoCreate = true)
 

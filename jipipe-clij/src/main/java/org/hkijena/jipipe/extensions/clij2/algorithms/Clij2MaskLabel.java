@@ -18,7 +18,7 @@ import java.util.function.Supplier;
  * CLIJ2 algorithm ported from {@link net.haesleinhuepf.clij2.plugins.MaskLabel}
  */
 @JIPipeDocumentation(name = "CLIJ2 Mask Label", description = "Computes a masked image by applying a label mask to an image. " + "All pixel values x of image X will be copied" + "to the destination image in case pixel value m at the same position in the label_map image has the right index value i." + "f(x,m,i) = (x if (m == i); (0 otherwise)) Works for following image dimensions: 2D, 3D.")
-@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "CLIJ2")
+@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "Mask")
 @AlgorithmInputSlot(value = CLIJImageData.class, slotName = "input", autoCreate = true)
 @AlgorithmInputSlot(value = CLIJImageData.class, slotName = "label_map", autoCreate = true)
 @AlgorithmOutputSlot(value = CLIJImageData.class, slotName = "output", autoCreate = true)

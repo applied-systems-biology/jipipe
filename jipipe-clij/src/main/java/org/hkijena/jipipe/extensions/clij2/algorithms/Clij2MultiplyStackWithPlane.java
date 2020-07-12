@@ -17,7 +17,7 @@ import java.util.function.Supplier;
  * CLIJ2 algorithm ported from {@link net.haesleinhuepf.clij2.plugins.MultiplyStackWithPlane}
  */
 @JIPipeDocumentation(name = "CLIJ2 Multiply Stack With Plane", description = "Multiplies all pairs of pixel values x and y from an image stack X and a 2D image Y. " + "x and y are at " + "the same spatial position within a plane." + "<pre>f(x, y) = x * y</pre> Works for following image dimensions: 3D (first parameter), 2D (second parameter), 3D (result).")
-@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "CLIJ2")
+@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "Math")
 @AlgorithmInputSlot(value = CLIJImageData.class, slotName = "input3d", autoCreate = true)
 @AlgorithmInputSlot(value = CLIJImageData.class, slotName = "input2d", autoCreate = true)
 @AlgorithmOutputSlot(value = CLIJImageData.class, slotName = "output3d", autoCreate = true)

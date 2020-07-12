@@ -18,7 +18,7 @@ import java.util.function.Supplier;
  * CLIJ2 algorithm ported from {@link net.haesleinhuepf.clij2.plugins.MinimumZProjectionThresholdedBounded}
  */
 @JIPipeDocumentation(name = "CLIJ2 Minimum Z Projection Thresholded Bounded", description = "Determines the minimum intensity projection of all pixels in an image above a given threshold along Z within a given z range. Works for following image dimensions: 3D -> 2D.")
-@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "CLIJ2")
+@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "Dimensions\nZ Projection")
 @AlgorithmInputSlot(value = CLIJImageData.class, slotName = "src", autoCreate = true)
 @AlgorithmOutputSlot(value = CLIJImageData.class, slotName = "dst_min", autoCreate = true)
 

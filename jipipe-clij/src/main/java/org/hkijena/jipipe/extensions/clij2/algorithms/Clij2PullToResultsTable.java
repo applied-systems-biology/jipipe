@@ -19,7 +19,7 @@ import java.util.function.Supplier;
  * CLIJ2 algorithm ported from {@link net.haesleinhuepf.clij2.plugins.PullToResultsTable}
  */
 @JIPipeDocumentation(name = "CLIJ2 Pull To Results Table", description = "")
-@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "CLIJ2")
+@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Converter)
 @AlgorithmInputSlot(value = CLIJImageData.class, slotName = "buffer", autoCreate = true)
 @AlgorithmOutputSlot(value = ResultsTableData.class, slotName = "table", autoCreate = true)
 

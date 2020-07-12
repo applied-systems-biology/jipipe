@@ -17,7 +17,7 @@ import java.util.function.Supplier;
  * CLIJ2 algorithm ported from {@link net.haesleinhuepf.clij2.plugins.MultiplyImageStackWithScalars}
  */
 @JIPipeDocumentation(name = "CLIJ2 Multiply Image Stack With Scalars", description = "Multiplies all pixels value x in a given image X with a constant scalar s from a list of scalars." + "<pre>f(x, s) = x * s</pre> Works for following image dimensions: 2D, 3D.")
-@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "CLIJ2")
+@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "Math\nCalculate")
 @AlgorithmInputSlot(value = CLIJImageData.class, slotName = "src", autoCreate = true)
 @AlgorithmInputSlot(value = CLIJImageData.class, slotName = "scalar_list", autoCreate = true)
 @AlgorithmOutputSlot(value = CLIJImageData.class, slotName = "dst", autoCreate = true)

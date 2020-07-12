@@ -17,7 +17,7 @@ import java.util.function.Supplier;
  * CLIJ2 algorithm ported from {@link net.haesleinhuepf.clij2.plugins.LabelledSpotsToPointList}
  */
 @JIPipeDocumentation(name = "CLIJ2 Labelled Spots To Point List", description = "Generates a coordinate list of points in a labelled spot image. " + "Transforms a labelmap of spots (single pixels with values 1, 2, ..., n for n spots) as resulting " + "from connected components analysis in an image where every column contains d " + "pixels (with d = dimensionality of the original image) with the coordinates of the maxima/minima. Works for following image dimensions: 2D, 3D.")
-@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "CLIJ2")
+@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Analysis, menuPath = "Labels")
 @AlgorithmInputSlot(value = CLIJImageData.class, slotName = "input_labelmap", autoCreate = true)
 @AlgorithmOutputSlot(value = CLIJImageData.class, slotName = "output", autoCreate = true)
 

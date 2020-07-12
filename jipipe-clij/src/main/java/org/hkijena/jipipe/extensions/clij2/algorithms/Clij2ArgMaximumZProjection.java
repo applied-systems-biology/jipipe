@@ -17,7 +17,7 @@ import java.util.function.Supplier;
  * CLIJ2 algorithm ported from {@link net.haesleinhuepf.clij2.plugins.ArgMaximumZProjection}
  */
 @JIPipeDocumentation(name = "CLIJ2 Arg Maximum Z Projection", description = "Determines the maximum projection of an image stack along Z." + "Furthermore, another 2D image is generated with pixels containing the z-index where the maximum was found (zero based). Works for following image dimensions: 3D.")
-@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "CLIJ2")
+@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "Dimensions")
 @AlgorithmInputSlot(value = CLIJImageData.class, slotName = "src", autoCreate = true)
 @AlgorithmOutputSlot(value = CLIJImageData.class, slotName = "dst_max", autoCreate = true)
 @AlgorithmOutputSlot(value = CLIJImageData.class, slotName = "dst_arg", autoCreate = true)

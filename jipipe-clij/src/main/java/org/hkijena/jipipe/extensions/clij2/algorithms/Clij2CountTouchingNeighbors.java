@@ -17,7 +17,7 @@ import java.util.function.Supplier;
  * CLIJ2 algorithm ported from {@link net.haesleinhuepf.clij2.plugins.CountTouchingNeighbors}
  */
 @JIPipeDocumentation(name = "CLIJ2 Count Touching Neighbors", description = "Takes a touch matrix as input and delivers a vector with number of touching neighbors per label as a vector. Works for following image dimensions: 2D -> 1D.")
-@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "CLIJ2")
+@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "Math\nCount")
 @AlgorithmInputSlot(value = CLIJImageData.class, slotName = "src_touch_matrix", autoCreate = true)
 @AlgorithmOutputSlot(value = CLIJImageData.class, slotName = "dst_count_list", autoCreate = true)
 

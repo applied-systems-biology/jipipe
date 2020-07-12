@@ -17,7 +17,7 @@ import java.util.function.Supplier;
  * CLIJ2 algorithm ported from {@link net.haesleinhuepf.clij2.plugins.GenerateDistanceMatrix}
  */
 @JIPipeDocumentation(name = "CLIJ2 Generate Distance Matrix", description = "Takes two images containing coordinates and builds up a matrix containing distance between the points. " + "Convention: image width represents number of points, height represents dimensionality (2D, 3D, ... 10D). The result image has width the first input image and height equals to the width of the second input image. Works for following image dimensions: 2D.")
-@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "CLIJ2")
+@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "Generate")
 @AlgorithmInputSlot(value = CLIJImageData.class, slotName = "src_pointlist1", autoCreate = true)
 @AlgorithmInputSlot(value = CLIJImageData.class, slotName = "src_pointlist2", autoCreate = true)
 @AlgorithmOutputSlot(value = CLIJImageData.class, slotName = "dst_distance_matrix", autoCreate = true)

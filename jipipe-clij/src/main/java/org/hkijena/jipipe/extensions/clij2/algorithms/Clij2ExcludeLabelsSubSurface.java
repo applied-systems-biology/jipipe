@@ -18,7 +18,7 @@ import java.util.function.Supplier;
  * CLIJ2 algorithm ported from {@link net.haesleinhuepf.clij2.plugins.ExcludeLabelsSubSurface}
  */
 @JIPipeDocumentation(name = "CLIJ2 Exclude Labels Sub Surface", description = "This operation follows a ray from a given position towards a label (or opposite direction) and checks if  there is another label between the label an the image border. " + "If yes, this label is eliminated from the label map. Works for following image dimensions: 2D, 3D.")
-@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "CLIJ2")
+@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "Labels")
 @AlgorithmInputSlot(value = CLIJImageData.class, slotName = "pointlist", autoCreate = true)
 @AlgorithmInputSlot(value = CLIJImageData.class, slotName = "label_map_in", autoCreate = true)
 @AlgorithmOutputSlot(value = CLIJImageData.class, slotName = "label_map_out", autoCreate = true)

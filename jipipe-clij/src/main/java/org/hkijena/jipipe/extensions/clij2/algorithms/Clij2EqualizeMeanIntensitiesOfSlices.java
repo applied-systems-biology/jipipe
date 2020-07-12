@@ -18,7 +18,7 @@ import java.util.function.Supplier;
  * CLIJ2 algorithm ported from {@link net.haesleinhuepf.clij2.plugins.EqualizeMeanIntensitiesOfSlices}
  */
 @JIPipeDocumentation(name = "CLIJ2 Equalize Mean Intensities Of Slices", description = "Determines correction factors for each z-slice so that the average intensity in all slices can be made the same and multiplies these factors with the slices. " + "This functionality is similar to the 'Simple Ratio Bleaching Correction' in Fiji. Works for following image dimensions: 3D.")
-@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "CLIJ2")
+@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "Dimensions")
 @AlgorithmInputSlot(value = CLIJImageData.class, slotName = "input", autoCreate = true)
 @AlgorithmOutputSlot(value = CLIJImageData.class, slotName = "output", autoCreate = true)
 

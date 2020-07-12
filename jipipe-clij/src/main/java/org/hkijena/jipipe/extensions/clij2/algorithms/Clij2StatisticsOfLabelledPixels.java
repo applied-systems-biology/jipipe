@@ -17,7 +17,7 @@ import java.util.function.Supplier;
  * CLIJ2 algorithm ported from {@link net.haesleinhuepf.clij2.plugins.StatisticsOfLabelledPixels}
  */
 @JIPipeDocumentation(name = "CLIJ2 Statistics Of Labelled Pixels", description = "Determines bounding box, area (in pixels/voxels), min, max and mean intensity " + " of labelled objects in a label map and corresponding pixels in the original image. " + "Instead of a label map, you can also use a binary image as a binary image is a label map with just one label." + "This method is executed on the CPU and not on the GPU/OpenCL device. Works for following image dimensions: 2D, 3D.")
-@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "CLIJ2")
+@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Analysis, menuPath = "Statistics")
 @AlgorithmInputSlot(value = CLIJImageData.class, slotName = "inputImage", autoCreate = true)
 @AlgorithmOutputSlot(value = CLIJImageData.class, slotName = "inputLabelMap", autoCreate = true)
 

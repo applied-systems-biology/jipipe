@@ -18,7 +18,7 @@ import java.util.function.Supplier;
  * CLIJ2 algorithm ported from {@link net.haesleinhuepf.clij2.plugins.MaximumOctagon}
  */
 @JIPipeDocumentation(name = "CLIJ2 Maximum Octagon", description = "Applies a maximum filter with kernel size 3x3 n times to an image iteratively. " + "Odd iterations are done with box neighborhood, even iterations with a diamond. " + "Thus, with n > 2, the filter shape is an octagon. The given number of iterations makes the filter " + "result very similar to minimum sphere. Approximately:radius = iterations - 2 Works for following image dimensions: 2D, 3D.")
-@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "CLIJ2")
+@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "Math\nLocal")
 @AlgorithmInputSlot(value = CLIJImageData.class, slotName = "src", autoCreate = true)
 @AlgorithmOutputSlot(value = CLIJImageData.class, slotName = "dst", autoCreate = true)
 

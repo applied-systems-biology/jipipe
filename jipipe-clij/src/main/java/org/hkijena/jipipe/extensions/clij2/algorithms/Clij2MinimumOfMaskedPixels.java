@@ -17,7 +17,7 @@ import java.util.function.Supplier;
  * CLIJ2 algorithm ported from {@link net.haesleinhuepf.clij2.plugins.MinimumOfMaskedPixels}
  */
 @JIPipeDocumentation(name = "CLIJ2 Minimum Of Masked Pixels", description = "Determines the minimum intensity in a masked image. " + "But only in pixels which have non-zero values in another mask image. Works for following image dimensions: 2D, 3D.")
-@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "CLIJ2")
+@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "Mask")
 @AlgorithmInputSlot(value = CLIJImageData.class, slotName = "clImage", autoCreate = true)
 @AlgorithmOutputSlot(value = CLIJImageData.class, slotName = "mask", autoCreate = true)
 

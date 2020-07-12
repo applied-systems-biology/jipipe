@@ -19,7 +19,7 @@ import java.util.function.Supplier;
  * CLIJ2 algorithm ported from {@link net.haesleinhuepf.clij2.plugins.StatisticsOfBackgroundAndLabelledPixels}
  */
 @JIPipeDocumentation(name = "CLIJ2 Statistics Of Background And Labelled Pixels", description = "")
-@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "CLIJ2")
+@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Analysis, menuPath = "Statistics")
 @AlgorithmInputSlot(value = CLIJImageData.class, slotName = "inputImage", autoCreate = true)
 @AlgorithmInputSlot(value = CLIJImageData.class, slotName = "inputLabelMap", autoCreate = true)
 @AlgorithmOutputSlot(value = ResultsTableData.class, slotName = "resultsTable", autoCreate = true)

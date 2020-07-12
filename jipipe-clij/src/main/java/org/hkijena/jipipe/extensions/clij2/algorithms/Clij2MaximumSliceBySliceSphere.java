@@ -18,7 +18,7 @@ import java.util.function.Supplier;
  * CLIJ2 algorithm ported from {@link net.haesleinhuepf.clij2.plugins.MaximumSliceBySliceSphere}
  */
 @JIPipeDocumentation(name = "CLIJ2 Maximum Slice By Slice Sphere", description = "Computes the local maximum of a pixels ellipsoidal 2D neighborhood in an image stack slice by slice. " + "The ellipses size is specified by its half-width and half-height (radius)." + "This filter is applied slice by slice in 2D. Works for following image dimensions: 3D.")
-@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "CLIJ2")
+@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "Math\nLocal")
 @AlgorithmInputSlot(value = CLIJImageData.class, slotName = "src", autoCreate = true)
 @AlgorithmOutputSlot(value = CLIJImageData.class, slotName = "dst", autoCreate = true)
 

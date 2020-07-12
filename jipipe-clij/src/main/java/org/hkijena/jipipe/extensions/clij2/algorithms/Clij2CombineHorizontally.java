@@ -17,7 +17,7 @@ import java.util.function.Supplier;
  * CLIJ2 algorithm ported from {@link net.haesleinhuepf.clij2.plugins.CombineHorizontally}
  */
 @JIPipeDocumentation(name = "CLIJ2 Combine Horizontally", description = "Combines two images or stacks in X. Works for following image dimensions: 2D, 3D.")
-@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "CLIJ2")
+@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "Dimensions\nCombine")
 @AlgorithmInputSlot(value = CLIJImageData.class, slotName = "stack1", autoCreate = true)
 @AlgorithmInputSlot(value = CLIJImageData.class, slotName = "stack2", autoCreate = true)
 @AlgorithmOutputSlot(value = CLIJImageData.class, slotName = "dst", autoCreate = true)

@@ -17,7 +17,7 @@ import java.util.function.Supplier;
  * CLIJ2 algorithm ported from {@link net.haesleinhuepf.clij2.plugins.ReplacePixelsIfZero}
  */
 @JIPipeDocumentation(name = "CLIJ2 Replace Pixels If Zero", description = "Replaces pixel values x with y in case x is zero." + "This functionality is comparable to ImageJs image calculator operator 'transparent zero'. Works for following image dimensions: 2D, 3D.")
-@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "CLIJ2")
+@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "Math\nReplace")
 @AlgorithmInputSlot(value = CLIJImageData.class, slotName = "src1", autoCreate = true)
 @AlgorithmInputSlot(value = CLIJImageData.class, slotName = "src2", autoCreate = true)
 @AlgorithmOutputSlot(value = CLIJImageData.class, slotName = "dst", autoCreate = true)
