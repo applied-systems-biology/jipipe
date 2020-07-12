@@ -3,7 +3,7 @@ JIPipe provides a plugin that integrates CLIJ into JIPipe.
 
 # Trouble shooting
 
-CLIJ2 requires a modern graphics card that supports OpenCL 1.2 or higher (lesser versions might work, but can be the cause for lower precision).
+CLIJ2 requires a modern graphics card that supports OpenCL 1.2 or higher (older versions might work, but can be the cause for lower precision).
 A common issue is that the hardware is not properly detected by CLIJ due to missing system libraries.
 
 If you have issues, please update your graphics card drivers. On Linux, CLIJ2 makes use of `libOpencv.so`. On Ubuntu,
