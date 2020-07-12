@@ -8,11 +8,11 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>jipipe-python</artifactId>
+    <artifactId>jipipe-clij</artifactId>
     <version>1.0-SNAPSHOT</version>
 
-    <name>jipipe-python</name>
-    <description>JIPipe Python Integration</description>
+    <name>jipipe-clij</name>
+    <description>JIPipe CLIJ2 Integration</description>
     <inceptionYear>2020</inceptionYear>
     <url>https://applied-systems-biology.github.io/jipipe/</url>
 
@@ -70,14 +70,31 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         <license.licenseName>BSD-2-Clause</license.licenseName>
         <license.copyrightOwners>N/A</license.copyrightOwners>
-        <license.projectName>JIPipe-Python</license.projectName>
+        <license.projectName>JIPipe-CLIJ</license.projectName>
     </properties>
+
+    <repositories>
+        <repository>
+            <id>clij</id>
+            <url>http://dl.bintray.com/haesleinhuepf/clij</url>
+        </repository>
+    </repositories>
 
     <dependencies>
         <dependency>
             <groupId>org.hkijena</groupId>
             <artifactId>jipipe-core</artifactId>
             <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.hkijena</groupId>
+            <artifactId>jipipe-ij</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>net.haesleinhuepf</groupId>
+            <artifactId>clij2_</artifactId>
+            <version>2.0.0.14</version>
         </dependency>
     </dependencies>
 

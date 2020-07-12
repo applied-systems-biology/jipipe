@@ -77,6 +77,17 @@ public class JIPipeDatatypeRegistry {
                     return converter.convert(inputData.duplicate());
                 }
             }
+
+            // Find a converter fuzzy
+            for (Map.Entry<Class<? extends JIPipeData>, Map<Class<? extends JIPipeData>, JIPipeDataConverter>> entry : registeredConverters.entrySet()) {
+                if(entry.getKey().isAssignableFrom(inputData.getClass())) {
+                    targetMap = entry.getValue();
+                    JIPipeDataConverter converter = targetMap.getOrDefault(outputDataType, null);
+                    if (converter != null) {
+                        return converter.convert(inputData.duplicate());
+                    }
+                }
+            }
         }
         throw new UserFriendlyRuntimeException("Could not convert " + inputData.getClass() + " to " + outputDataType,
                 "Unable to convert data type!",
@@ -100,10 +111,19 @@ public class JIPipeDatatypeRegistry {
         } else {
             Map<Class<? extends JIPipeData>, JIPipeDataConverter> targetMap = registeredConverters.getOrDefault(inputDataType, null);
             if (targetMap != null) {
-                return targetMap.containsKey(outputDataType);
-            } else {
-                return false;
+                if(targetMap.containsKey(outputDataType))
+                    return true;
             }
+
+            // Search fuzzy
+            for (Map.Entry<Class<? extends JIPipeData>, Map<Class<? extends JIPipeData>, JIPipeDataConverter>> entry : registeredConverters.entrySet()) {
+                if (entry.getKey().isAssignableFrom(inputDataType)) {
+                    targetMap = entry.getValue();
+                    if(targetMap.containsKey(outputDataType))
+                        return true;
+                }
+            }
+            return false;
         }
     }
 

@@ -10,8 +10,6 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" scope="TEST" name="Maven: junit:junit:4.11" level="project" />
-    <orderEntry type="library" scope="TEST" name="Maven: org.hamcrest:hamcrest-core:1.3" level="project" />
     <orderEntry type="module" module-name="jipipe-core" />
     <orderEntry type="module" module-name="jipipe-annotation" />
     <orderEntry type="library" name="Maven: net.imagej:imagej:2.0.0-rc-72" level="project" />

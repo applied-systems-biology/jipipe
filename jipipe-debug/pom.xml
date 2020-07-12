@@ -75,12 +75,6 @@
 
     <dependencies>
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.11</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>org.hkijena</groupId>
             <artifactId>jipipe-core</artifactId>
             <version>1.0-SNAPSHOT</version>
@@ -120,6 +114,23 @@
             <artifactId>jipipe-ij</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>org.hkijena</groupId>
+            <artifactId>jipipe-clij</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>net.haesleinhuepf</groupId>
+            <artifactId>clij2_</artifactId>
+            <version>2.0.0.14</version>
+        </dependency>
     </dependencies>
+
+    <repositories>
+        <repository>
+            <id>clij</id>
+            <url>http://dl.bintray.com/haesleinhuepf/clij</url>
+        </repository>
+    </repositories>
 
 </project>

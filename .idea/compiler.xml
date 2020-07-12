@@ -6,16 +6,17 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="jipipe-tables" />
         <module name="jipipe-ij" />
         <module name="jipipe-core" />
         <module name="jipipe-multiparameters" />
         <module name="jipipe-debug" />
         <module name="acaq5" />
-        <module name="jipipe-plots" />
+        <module name="jipipe-tables" />
         <module name="jipipe-filesystem" />
         <module name="jipipe-annotation" />
+        <module name="jipipe-plots" />
         <module name="jipipe-python" />
+        <module name="jipipe-clij" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
@@ -23,6 +24,7 @@
       <module name="jipipe" target="1.8" />
       <module name="jipipe-algorithms" target="1.8" />
       <module name="jipipe-annotation" target="1.8" />
+      <module name="jipipe-clij" target="1.8" />
       <module name="jipipe-core" target="1.8" />
       <module name="jipipe-debug" target="1.8" />
       <module name="jipipe-filesystem" target="1.8" />

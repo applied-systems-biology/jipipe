@@ -5,6 +5,7 @@
       <module fileurl="file://$PROJECT_DIR$/acaq5.iml" filepath="$PROJECT_DIR$/acaq5.iml" />
       <module fileurl="file://$PROJECT_DIR$/jipipe.iml" filepath="$PROJECT_DIR$/jipipe.iml" />
       <module fileurl="file://$PROJECT_DIR$/jipipe-annotation/jipipe-annotation.iml" filepath="$PROJECT_DIR$/jipipe-annotation/jipipe-annotation.iml" />
+      <module fileurl="file://$PROJECT_DIR$/jipipe-clij/jipipe-clij.iml" filepath="$PROJECT_DIR$/jipipe-clij/jipipe-clij.iml" />
       <module fileurl="file://$PROJECT_DIR$/jipipe-core/jipipe-core.iml" filepath="$PROJECT_DIR$/jipipe-core/jipipe-core.iml" />
       <module fileurl="file://$PROJECT_DIR$/jipipe-debug/jipipe-debug.iml" filepath="$PROJECT_DIR$/jipipe-debug/jipipe-debug.iml" />
       <module fileurl="file://$PROJECT_DIR$/jipipe-filesystem/jipipe-filesystem.iml" filepath="$PROJECT_DIR$/jipipe-filesystem/jipipe-filesystem.iml" />
