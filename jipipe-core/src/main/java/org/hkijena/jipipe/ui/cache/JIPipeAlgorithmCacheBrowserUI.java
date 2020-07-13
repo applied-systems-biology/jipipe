@@ -21,6 +21,9 @@ import org.hkijena.jipipe.api.algorithm.JIPipeGraphNode;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
+import org.hkijena.jipipe.ui.events.RunUIWorkerFinishedEvent;
+import org.hkijena.jipipe.ui.events.RunUIWorkerInterruptedEvent;
+import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -51,6 +54,7 @@ public class JIPipeAlgorithmCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
         showAllDataSlots();
 
         getProject().getCache().getEventBus().register(this);
+        JIPipeRunnerQueue.getInstance().getEventBus().register(this);
     }
 
     private void initialize() {
@@ -161,6 +165,20 @@ public class JIPipeAlgorithmCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
      */
     @Subscribe
     public void onCacheUpdated(JIPipeProjectCache.ModifiedEvent event) {
+        if(JIPipeRunnerQueue.getInstance().getCurrentRun() == null) {
+            tree.refreshTree();
+            showAllDataSlots();
+        }
+    }
+
+    @Subscribe
+    public void onWorkerFinished(RunUIWorkerFinishedEvent event) {
+        tree.refreshTree();
+        showAllDataSlots();
+    }
+
+    @Subscribe
+    public void onWorkerInterrupted(RunUIWorkerInterruptedEvent event) {
         tree.refreshTree();
         showAllDataSlots();
     }

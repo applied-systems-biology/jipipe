@@ -152,15 +152,17 @@ public class JIPipeGraphCompartmentUI extends JIPipeGraphEditorUI {
      */
     @Subscribe
     public void onAlgorithmActionRequested(AlgorithmUIActionRequestedEvent event) {
-        if (Objects.equals(event.getAction(), JIPipeNodeUI.REQUEST_RUN_AND_SHOW_RESULTS) ||
-                Objects.equals(event.getAction(), JIPipeNodeUI.REQUEST_RUN_ONLY)) {
+        boolean runAndShowResults = Objects.equals(event.getAction(), JIPipeNodeUI.REQUEST_RUN_AND_SHOW_RESULTS);
+        boolean updateCache = Objects.equals(event.getAction(), JIPipeNodeUI.REQUEST_UPDATE_CACHE);
+        if (runAndShowResults ||
+                updateCache) {
             disableUpdateOnSelection = true;
             selectOnly(event.getUi());
             JIPipeSingleAlgorithmSelectionPanelUI panel = new JIPipeSingleAlgorithmSelectionPanelUI(this,
                     event.getUi().getNode());
             setPropertyPanel(panel);
-            panel.runTestBench(Objects.equals(event.getAction(), JIPipeNodeUI.REQUEST_RUN_AND_SHOW_RESULTS),
-                    Objects.equals(event.getAction(), JIPipeNodeUI.REQUEST_RUN_ONLY));
+            panel.runTestBench(runAndShowResults,
+                    updateCache, !updateCache);
             SwingUtilities.invokeLater(() -> disableUpdateOnSelection = false);
         }
     }

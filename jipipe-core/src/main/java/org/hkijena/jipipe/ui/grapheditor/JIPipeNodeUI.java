@@ -36,7 +36,7 @@ import java.util.Map;
 public abstract class JIPipeNodeUI extends JIPipeWorkbenchPanel {
 
     public static final String REQUEST_RUN_AND_SHOW_RESULTS = "RUN_AND_SHOW_RESULTS";
-    public static final String REQUEST_RUN_ONLY = "RUN_ONLY";
+    public static final String REQUEST_UPDATE_CACHE = "RUN_ONLY";
     public static final String REQUEST_OPEN_CONTEXT_MENU = "OPEN_CONTEXT_MENU";
 
     private JIPipeGraphCanvasUI graphUI;
