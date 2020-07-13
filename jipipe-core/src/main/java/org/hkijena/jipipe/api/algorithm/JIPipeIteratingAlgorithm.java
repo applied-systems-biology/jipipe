@@ -420,7 +420,7 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
         @JIPipeDocumentation(name = "Data set matching annotations", description = "Only used if 'Data set matching strategy' is set to 'Custom'. " +
                 "Determines which annotation columns are referred to match data sets.")
         @JIPipeParameter(value = "custom-matched-columns", uiOrder = 999, visibility = JIPipeParameterVisibility.Visible)
-        @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/imgplus.png")
+        @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/annotation.png")
         public StringList getCustomColumns() {
             if (customColumns == null)
                 customColumns = new StringList();
