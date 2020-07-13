@@ -37,6 +37,7 @@ public class GraphEditorUISettings implements JIPipeParameterCollection {
     private boolean askOnDeleteNode = true;
     private boolean askOnDeleteCompartment = true;
     private boolean askOnDeleteParameter = true;
+    private boolean drawOutsideEdges = true;
 
     @Override
     public EventBus getEventBus() {
@@ -124,6 +125,17 @@ public class GraphEditorUISettings implements JIPipeParameterCollection {
     @JIPipeParameter("ask-on-delete-parameter")
     public void setAskOnDeleteParameter(boolean askOnDeleteParameter) {
         this.askOnDeleteParameter = askOnDeleteParameter;
+    }
+
+    @JIPipeDocumentation(name = "Draw inter-compartment edges", description = "If enabled, compartment outputs draw edges that lead outside of the graph area.")
+    @JIPipeParameter("draw-outside-edges")
+    public boolean isDrawOutsideEdges() {
+        return drawOutsideEdges;
+    }
+
+    @JIPipeParameter("draw-outside-edges")
+    public void setDrawOutsideEdges(boolean drawOutsideEdges) {
+        this.drawOutsideEdges = drawOutsideEdges;
     }
 
     public static GraphEditorUISettings getInstance() {
