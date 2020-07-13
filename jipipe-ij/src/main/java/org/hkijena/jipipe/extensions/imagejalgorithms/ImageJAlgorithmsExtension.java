@@ -32,6 +32,8 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.color.InvertColorsAlgo
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.color.MergeChannelsAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.color.SplitChannelsAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.contrast.CLAHEContrastEnhancer;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.contrast.CalibrationContrastEnhancer;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.contrast.CalibrationMode;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.contrast.IlluminationCorrection2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.convolve.Convolve2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.dimensions.*;
@@ -235,6 +237,8 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
                 "Measurement", "Available measurements");
         registerEnumParameterType("ij1-measurement-column", MeasurementColumn.class,
                 "Measurement column", "Available measurement columns");
+        registerEnumParameterType("ij1-calibration-mode", CalibrationMode.class,
+                "Contrast calibration", "Methods to apply display range calibration");
     }
 
     private void registerROIAlgorithms() {
@@ -403,6 +407,7 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
     private void registerContrastAlgorithms() {
         registerAlgorithm("ij1-contrast-clahe", CLAHEContrastEnhancer.class, UIUtils.getAlgorithmIconURL("adjust.png"));
         registerAlgorithm("ij1-contrast-illumination-correction2d", IlluminationCorrection2DAlgorithm.class, UIUtils.getAlgorithmIconURL("adjust.png"));
+        registerAlgorithm("ij1-contrast-calibrate", CalibrationContrastEnhancer.class, UIUtils.getAlgorithmIconURL("adjust.png"));
     }
 
     private void registerEdgeAlgorithms() {

@@ -5,10 +5,13 @@ import net.haesleinhuepf.clij.CLIJ;
 import net.haesleinhuepf.clij.converters.CLIJConverterService;
 import net.haesleinhuepf.clij.macro.CLIJHandler;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.algorithm.JIPipeGraphNode;
+import org.hkijena.jipipe.api.algorithm.JIPipeJavaAlgorithmDeclaration;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.registries.JIPipeSettingsRegistry;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.contrast.CalibrationContrastEnhancer;
 import org.scijava.Context;
 
 import java.util.ArrayList;
@@ -23,6 +26,12 @@ public class CLIJSettings implements JIPipeParameterCollection {
     private final EventBus eventBus = new EventBus();
     private int device = 0;
     private boolean initialized = false;
+    private boolean autoCalibrateAfterPulling = true;
+    private CalibrationContrastEnhancer contrastEnhancer;
+
+    public CLIJSettings() {
+        contrastEnhancer = new CalibrationContrastEnhancer(new JIPipeJavaAlgorithmDeclaration("", CalibrationContrastEnhancer.class));
+    }
 
     @Override
     public EventBus getEventBus() {
@@ -40,6 +49,25 @@ public class CLIJSettings implements JIPipeParameterCollection {
     @JIPipeParameter("device")
     public void setDevice(int device) {
         this.device = device;
+    }
+
+    @JIPipeDocumentation(name = "Auto-calibrate images", description = "Apply auto-calibration after extracting an image from the GPU. " +
+            "This is helpful if you see only black or white output images. Calibration does not modify the contained data, but only " +
+            "how the image is displayed in ImageJ.")
+    @JIPipeParameter("auto-calibrate-after-pull")
+    public boolean isAutoCalibrateAfterPulling() {
+        return autoCalibrateAfterPulling;
+    }
+
+    @JIPipeParameter("auto-calibrate-after-pull")
+    public void setAutoCalibrateAfterPulling(boolean autoCalibrateAfterPulling) {
+        this.autoCalibrateAfterPulling = autoCalibrateAfterPulling;
+    }
+
+    @JIPipeDocumentation(name = "Calibration settings", description = "Following settings will be used if you enable auto-calibration:")
+    @JIPipeParameter(value = "contrast-enhancer", uiExcludeSubParameters = {"jipipe:data-batch-generation", "jipipe:parameter-slot-algorithm", "duplicate-image"})
+    public CalibrationContrastEnhancer getContrastEnhancer() {
+        return contrastEnhancer;
     }
 
     public static CLIJSettings getInstance() {

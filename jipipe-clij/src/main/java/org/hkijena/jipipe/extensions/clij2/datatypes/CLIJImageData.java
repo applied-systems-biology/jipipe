@@ -5,6 +5,8 @@ import net.haesleinhuepf.clij.clearcl.ClearCLBuffer;
 import net.haesleinhuepf.clij2.CLIJ2;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.extensions.clij2.CLIJSettings;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.contrast.CalibrationContrastEnhancer;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 
@@ -79,6 +81,13 @@ public class CLIJImageData implements JIPipeData {
     public ImagePlusData pull() {
         CLIJ2 clij = CLIJ2.getInstance();
         ImagePlus imagePlus = clij.pull(image);
+        if(CLIJSettings.getInstance().isAutoCalibrateAfterPulling()) {
+            CalibrationContrastEnhancer contrastEnhancer = CLIJSettings.getInstance().getContrastEnhancer();
+            CalibrationContrastEnhancer.calibrate(imagePlus,
+                    contrastEnhancer.getCalibrationMode(),
+                    contrastEnhancer.getCustomMin(),
+                    contrastEnhancer.getCustomMax());
+        }
         return new ImagePlusData(imagePlus);
     }
 
