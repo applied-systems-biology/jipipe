@@ -22,8 +22,8 @@ import java.lang.annotation.*;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-@Repeatable(AlgorithmInputSlots.class)
-public @interface AlgorithmInputSlot {
+@Repeatable(JIPipeInputSlots.class)
+public @interface JIPipeInputSlot {
     /**
      * The data class
      *

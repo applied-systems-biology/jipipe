@@ -26,8 +26,8 @@ public abstract class JIPipeMutableAlgorithmDeclaration implements JIPipeAlgorit
     private String name;
     private String description;
     private JIPipeAlgorithmCategory category;
-    private List<AlgorithmInputSlot> inputSlots = new ArrayList<>();
-    private List<AlgorithmOutputSlot> outputSlots = new ArrayList<>();
+    private List<JIPipeInputSlot> inputSlots = new ArrayList<>();
+    private List<JIPipeOutputSlot> outputSlots = new ArrayList<>();
     private String menuPath;
     private boolean hidden = false;
 
@@ -89,7 +89,7 @@ public abstract class JIPipeMutableAlgorithmDeclaration implements JIPipeAlgorit
 
 
     @Override
-    public List<AlgorithmInputSlot> getInputSlots() {
+    public List<JIPipeInputSlot> getInputSlots() {
         return inputSlots;
     }
 
@@ -98,12 +98,12 @@ public abstract class JIPipeMutableAlgorithmDeclaration implements JIPipeAlgorit
      *
      * @param inputSlots Input slots
      */
-    public void setInputSlots(List<AlgorithmInputSlot> inputSlots) {
+    public void setInputSlots(List<JIPipeInputSlot> inputSlots) {
         this.inputSlots = inputSlots;
     }
 
     @Override
-    public List<AlgorithmOutputSlot> getOutputSlots() {
+    public List<JIPipeOutputSlot> getOutputSlots() {
         return outputSlots;
     }
 
@@ -112,7 +112,7 @@ public abstract class JIPipeMutableAlgorithmDeclaration implements JIPipeAlgorit
      *
      * @param outputSlots Output slots
      */
-    public void setOutputSlots(List<AlgorithmOutputSlot> outputSlots) {
+    public void setOutputSlots(List<JIPipeOutputSlot> outputSlots) {
         this.outputSlots = outputSlots;
     }
 

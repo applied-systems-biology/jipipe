@@ -34,8 +34,8 @@ import static org.hkijena.jipipe.api.algorithm.JIPipeMergingAlgorithm.MERGING_AL
         "Use the parameters to control how groups are created. To merge all incoming ROI lists into just one list, set the matching strategy to 'Custom' and leave the list of " +
         "annotation columns empty." + "\n\n" + MERGING_ALGORITHM_DESCRIPTION)
 @JIPipeOrganization(menuPath = "ROI", algorithmCategory = JIPipeAlgorithmCategory.Processor)
-@AlgorithmInputSlot(value = ROIListData.class, slotName = "Input")
-@AlgorithmOutputSlot(value = ROIListData.class, slotName = "Output")
+@JIPipeInputSlot(value = ROIListData.class, slotName = "Input")
+@JIPipeOutputSlot(value = ROIListData.class, slotName = "Output")
 public class MergeRoiListsAlgorithm extends JIPipeMergingAlgorithm {
 
     /**

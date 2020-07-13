@@ -36,8 +36,8 @@ import java.util.function.Supplier;
  */
 @JIPipeDocumentation(name = "Annotate with image properties", description = "Adds data annotations that contain the image properties.")
 @JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Annotation, menuPath = "Generate")
-@AlgorithmInputSlot(value = ImagePlusData.class, slotName = "Image", autoCreate = true)
-@AlgorithmOutputSlot(value = ImagePlusData.class, slotName = "Annotated image", inheritedSlot = "Image", autoCreate = true)
+@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Image", autoCreate = true)
+@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Annotated image", inheritedSlot = "Image", autoCreate = true)
 public class ImagePropertiesToAnnotationAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private OptionalStringParameter titleAnnotation = new OptionalStringParameter();

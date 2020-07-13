@@ -35,8 +35,8 @@ import java.util.function.Supplier;
 @JIPipeDocumentation(name = "Euclidean distance transform 2D", description = "Applies a euclidean distance transform on binary images." +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
 @JIPipeOrganization(menuPath = "Math", algorithmCategory = JIPipeAlgorithmCategory.Processor)
-@AlgorithmInputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Input")
-@AlgorithmOutputSlot(value = ImagePlusGreyscale8UData.class, slotName = "Output")
+@JIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Input")
+@JIPipeOutputSlot(value = ImagePlusGreyscale8UData.class, slotName = "Output")
 public class ApplyDistanceTransform2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     /**

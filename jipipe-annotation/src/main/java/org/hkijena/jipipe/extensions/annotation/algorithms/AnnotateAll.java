@@ -33,8 +33,8 @@ import java.util.function.Supplier;
  */
 @JIPipeDocumentation(name = "Set annotations", description = "Sets the specified annotations to the specified values")
 @JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Annotation, menuPath = "Modify")
-@AlgorithmInputSlot(value = JIPipeData.class, slotName = "Input", autoCreate = true)
-@AlgorithmOutputSlot(value = JIPipeData.class, slotName = "Output", inheritedSlot = "Input", autoCreate = true)
+@JIPipeInputSlot(value = JIPipeData.class, slotName = "Input", autoCreate = true)
+@JIPipeOutputSlot(value = JIPipeData.class, slotName = "Output", inheritedSlot = "Input", autoCreate = true)
 public class AnnotateAll extends JIPipeSimpleIteratingAlgorithm {
 
     private StringAndStringPair.List annotations = new StringAndStringPair.List();

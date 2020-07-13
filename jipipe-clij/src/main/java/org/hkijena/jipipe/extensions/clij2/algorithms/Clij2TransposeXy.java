@@ -7,8 +7,8 @@ import net.haesleinhuepf.clij2.plugins.TransposeXY;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
-import org.hkijena.jipipe.api.algorithm.AlgorithmInputSlot;
-import org.hkijena.jipipe.api.algorithm.AlgorithmOutputSlot;
+import org.hkijena.jipipe.api.algorithm.JIPipeInputSlot;
+import org.hkijena.jipipe.api.algorithm.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmCategory;
 import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmDeclaration;
 import org.hkijena.jipipe.api.algorithm.JIPipeDataBatch;
@@ -23,8 +23,8 @@ import java.util.function.Supplier;
  */
 @JIPipeDocumentation(name = "CLIJ2 Transpose Xy", description = "Transpose X and Y axes of an image. Works for following image dimensions: 2D, 3D.")
 @JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "Transform")
-@AlgorithmInputSlot(value = CLIJImageData.class, slotName = "input", autoCreate = true)
-@AlgorithmOutputSlot(value = CLIJImageData.class, slotName = "output", autoCreate = true)
+@JIPipeInputSlot(value = CLIJImageData.class, slotName = "input", autoCreate = true)
+@JIPipeOutputSlot(value = CLIJImageData.class, slotName = "output", autoCreate = true)
 
 public class Clij2TransposeXy extends JIPipeSimpleIteratingAlgorithm {
 

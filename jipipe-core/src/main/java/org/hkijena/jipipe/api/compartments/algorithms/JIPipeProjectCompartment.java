@@ -17,8 +17,8 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
-import org.hkijena.jipipe.api.algorithm.AlgorithmInputSlot;
-import org.hkijena.jipipe.api.algorithm.AlgorithmOutputSlot;
+import org.hkijena.jipipe.api.algorithm.JIPipeInputSlot;
+import org.hkijena.jipipe.api.algorithm.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmDeclaration;
 import org.hkijena.jipipe.api.algorithm.JIPipeGraphNode;
 import org.hkijena.jipipe.api.compartments.datatypes.JIPipeCompartmentOutputData;
@@ -34,8 +34,8 @@ import java.util.function.Supplier;
  * Its node functionality is structural.
  */
 @JIPipeDocumentation(name = "Graph compartment", description = "A compartment in the analysis graph")
-@AlgorithmInputSlot(JIPipeCompartmentOutputData.class)
-@AlgorithmOutputSlot(JIPipeCompartmentOutputData.class)
+@JIPipeInputSlot(JIPipeCompartmentOutputData.class)
+@JIPipeOutputSlot(JIPipeCompartmentOutputData.class)
 public class JIPipeProjectCompartment extends JIPipeGraphNode {
 
     private JIPipeProject project;

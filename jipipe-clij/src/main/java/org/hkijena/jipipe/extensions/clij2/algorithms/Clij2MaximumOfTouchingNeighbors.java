@@ -7,8 +7,8 @@ import net.haesleinhuepf.clij2.plugins.MaximumOfTouchingNeighbors;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
-import org.hkijena.jipipe.api.algorithm.AlgorithmInputSlot;
-import org.hkijena.jipipe.api.algorithm.AlgorithmOutputSlot;
+import org.hkijena.jipipe.api.algorithm.JIPipeInputSlot;
+import org.hkijena.jipipe.api.algorithm.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmCategory;
 import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmDeclaration;
 import org.hkijena.jipipe.api.algorithm.JIPipeDataBatch;
@@ -23,9 +23,9 @@ import java.util.function.Supplier;
  */
 @JIPipeDocumentation(name = "CLIJ2 Maximum Of Touching Neighbors", description = "Takes a touch matrix and a vector of values to determine the maximum value among touching neighbors for every object. " + " Works for following image dimensions: 2D.")
 @JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "Touch matrix")
-@AlgorithmInputSlot(value = CLIJImageData.class, slotName = "src_values", autoCreate = true)
-@AlgorithmInputSlot(value = CLIJImageData.class, slotName = "touch_matrix", autoCreate = true)
-@AlgorithmOutputSlot(value = CLIJImageData.class, slotName = "dst_values", autoCreate = true)
+@JIPipeInputSlot(value = CLIJImageData.class, slotName = "src_values", autoCreate = true)
+@JIPipeInputSlot(value = CLIJImageData.class, slotName = "touch_matrix", autoCreate = true)
+@JIPipeOutputSlot(value = CLIJImageData.class, slotName = "dst_values", autoCreate = true)
 
 public class Clij2MaximumOfTouchingNeighbors extends JIPipeIteratingAlgorithm {
 

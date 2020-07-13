@@ -37,8 +37,8 @@ import java.util.stream.Collectors;
  */
 @JIPipeDocumentation(name = "Filter table", description = "Filters the table by values")
 @JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "Tables")
-@AlgorithmInputSlot(value = ResultsTableData.class, slotName = "Input", autoCreate = true)
-@AlgorithmOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
+@JIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", autoCreate = true)
+@JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
 public class FilterTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private StringFilterAndStringOrDoubleFilterPair.List filters = new StringFilterAndStringOrDoubleFilterPair.List();

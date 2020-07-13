@@ -35,8 +35,8 @@ import java.util.function.Supplier;
  */
 @JIPipeDocumentation(name = "Path to annotation", description = "Creates an annotation for each path based on its name or its full path.")
 @JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Annotation, menuPath = "Generate")
-@AlgorithmInputSlot(value = PathData.class, slotName = "Paths", autoCreate = true)
-@AlgorithmOutputSlot(value = PathData.class, slotName = "Annotated paths", autoCreate = true, inheritedSlot = "Paths")
+@JIPipeInputSlot(value = PathData.class, slotName = "Paths", autoCreate = true)
+@JIPipeOutputSlot(value = PathData.class, slotName = "Annotated paths", autoCreate = true, inheritedSlot = "Paths")
 public class SimplePathAnnotationGenerator extends JIPipeSimpleIteratingAlgorithm {
 
     private String generatedAnnotation = "Dataset";

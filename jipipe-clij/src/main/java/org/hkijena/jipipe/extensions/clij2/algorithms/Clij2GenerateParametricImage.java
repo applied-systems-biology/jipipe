@@ -7,8 +7,8 @@ import net.haesleinhuepf.clij2.plugins.GenerateParametricImage;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
-import org.hkijena.jipipe.api.algorithm.AlgorithmInputSlot;
-import org.hkijena.jipipe.api.algorithm.AlgorithmOutputSlot;
+import org.hkijena.jipipe.api.algorithm.JIPipeInputSlot;
+import org.hkijena.jipipe.api.algorithm.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmCategory;
 import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmDeclaration;
 import org.hkijena.jipipe.api.algorithm.JIPipeDataBatch;
@@ -23,9 +23,9 @@ import java.util.function.Supplier;
  */
 @JIPipeDocumentation(name = "CLIJ2 Generate Parametric Image", description = "Take a labelmap and a vector of values to replace label 1 with the 1st value in the vector. " + "Note that indexing in the vector starts at zero. The 0th entry corresponds to background in the label map.Internally this method just calls ReplaceIntensities." + " Works for following image dimensions: 2D, 3D.")
 @JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "Generate")
-@AlgorithmInputSlot(value = CLIJImageData.class, slotName = "label_map", autoCreate = true)
-@AlgorithmInputSlot(value = CLIJImageData.class, slotName = "parameter_value_vector", autoCreate = true)
-@AlgorithmOutputSlot(value = CLIJImageData.class, slotName = "parametric_image_destination", autoCreate = true)
+@JIPipeInputSlot(value = CLIJImageData.class, slotName = "label_map", autoCreate = true)
+@JIPipeInputSlot(value = CLIJImageData.class, slotName = "parameter_value_vector", autoCreate = true)
+@JIPipeOutputSlot(value = CLIJImageData.class, slotName = "parametric_image_destination", autoCreate = true)
 
 public class Clij2GenerateParametricImage extends JIPipeIteratingAlgorithm {
 

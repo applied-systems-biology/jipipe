@@ -7,8 +7,8 @@ import net.haesleinhuepf.clij2.plugins.Translate3D;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
-import org.hkijena.jipipe.api.algorithm.AlgorithmInputSlot;
-import org.hkijena.jipipe.api.algorithm.AlgorithmOutputSlot;
+import org.hkijena.jipipe.api.algorithm.JIPipeInputSlot;
+import org.hkijena.jipipe.api.algorithm.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmCategory;
 import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmDeclaration;
 import org.hkijena.jipipe.api.algorithm.JIPipeDataBatch;
@@ -24,8 +24,8 @@ import java.util.function.Supplier;
  */
 @JIPipeDocumentation(name = "CLIJ2 Translate 3D", description = "Translate an image stack in X, Y and Z. Works for following image dimensions: 3D.")
 @JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "Transform")
-@AlgorithmInputSlot(value = CLIJImageData.class, slotName = "input", autoCreate = true)
-@AlgorithmOutputSlot(value = CLIJImageData.class, slotName = "output", autoCreate = true)
+@JIPipeInputSlot(value = CLIJImageData.class, slotName = "input", autoCreate = true)
+@JIPipeOutputSlot(value = CLIJImageData.class, slotName = "output", autoCreate = true)
 
 public class Clij2Translate3d extends JIPipeSimpleIteratingAlgorithm {
     Float translateX;

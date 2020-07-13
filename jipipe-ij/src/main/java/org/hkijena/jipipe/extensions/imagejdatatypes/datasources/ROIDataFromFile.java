@@ -30,8 +30,8 @@ import java.util.function.Supplier;
  * Loads ROI data from a file via IJ.openFile()
  */
 @JIPipeDocumentation(name = "ROI from file")
-@AlgorithmInputSlot(value = FileData.class, slotName = "Files", autoCreate = true)
-@AlgorithmOutputSlot(value = ROIListData.class, slotName = "Mask", autoCreate = true)
+@JIPipeInputSlot(value = FileData.class, slotName = "Files", autoCreate = true)
+@JIPipeOutputSlot(value = ROIListData.class, slotName = "Mask", autoCreate = true)
 @JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.DataSource)
 public class ROIDataFromFile extends JIPipeSimpleIteratingAlgorithm {
 

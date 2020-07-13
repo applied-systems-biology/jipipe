@@ -35,8 +35,8 @@ import java.util.function.Supplier;
  */
 @JIPipeDocumentation(name = "Change ROI properties", description = "Changes properties of all Roi to a user-defined value.")
 @JIPipeOrganization(menuPath = "ROI", algorithmCategory = JIPipeAlgorithmCategory.Processor)
-@AlgorithmInputSlot(value = ROIListData.class, slotName = "Input")
-@AlgorithmOutputSlot(value = ROIListData.class, slotName = "Output")
+@JIPipeInputSlot(value = ROIListData.class, slotName = "Input")
+@JIPipeOutputSlot(value = ROIListData.class, slotName = "Output")
 public class ChangeRoiPropertiesAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private OptionalStringParameter roiName = new OptionalStringParameter();

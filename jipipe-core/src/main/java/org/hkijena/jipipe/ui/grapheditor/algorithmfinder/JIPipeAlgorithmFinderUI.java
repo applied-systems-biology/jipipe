@@ -218,7 +218,7 @@ public class JIPipeAlgorithmFinderUI extends JPanel {
         Class<? extends JIPipeData> outputSlotDataClass = slot.getAcceptedDataType();
         List<JIPipeAlgorithmDeclaration> result = new ArrayList<>();
         for (JIPipeAlgorithmDeclaration declaration : JIPipeAlgorithmRegistry.getInstance().getRegisteredAlgorithms().values()) {
-            for (Class<? extends JIPipeData> inputSlotDataClass : declaration.getInputSlots().stream().map(AlgorithmInputSlot::value).collect(Collectors.toList())) {
+            for (Class<? extends JIPipeData> inputSlotDataClass : declaration.getInputSlots().stream().map(JIPipeInputSlot::value).collect(Collectors.toList())) {
                 if (JIPipeDatatypeRegistry.getInstance().isConvertible(outputSlotDataClass, inputSlotDataClass)) {
                     result.add(declaration);
                     break;

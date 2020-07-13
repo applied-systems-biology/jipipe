@@ -37,9 +37,9 @@ import static org.hkijena.jipipe.api.algorithm.JIPipeIteratingAlgorithm.ITERATIN
 @JIPipeDocumentation(name = "Append rectangular ROI (referenced)", description = "Appends manually defines rectangular ROI to all input ROI lists. " +
         "Ths algorithm allows to add rectangles as margins to the reference image bounds." + "\n\n" + ITERATING_ALGORITHM_DESCRIPTION)
 @JIPipeOrganization(menuPath = "ROI", algorithmCategory = JIPipeAlgorithmCategory.Processor)
-@AlgorithmInputSlot(value = ROIListData.class, slotName = "ROI")
-@AlgorithmInputSlot(value = ImagePlusData.class, slotName = "Reference")
-@AlgorithmOutputSlot(value = ROIListData.class, slotName = "Output")
+@JIPipeInputSlot(value = ROIListData.class, slotName = "ROI")
+@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference")
+@JIPipeOutputSlot(value = ROIListData.class, slotName = "Output")
 public class ReferencedAppendRectangularRoiAlgorithm extends JIPipeIteratingAlgorithm {
 
     private Margin.List rectangles = new Margin.List();

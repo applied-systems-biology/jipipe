@@ -14,8 +14,8 @@
 package org.hkijena.jipipe.api.registries;
 
 import org.hkijena.jipipe.JIPipeDependency;
-import org.hkijena.jipipe.api.algorithm.AlgorithmInputSlot;
-import org.hkijena.jipipe.api.algorithm.AlgorithmOutputSlot;
+import org.hkijena.jipipe.api.algorithm.JIPipeInputSlot;
+import org.hkijena.jipipe.api.algorithm.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.algorithm.JIPipeGraphNode;
 import org.hkijena.jipipe.api.algorithm.JIPipeJavaAlgorithmDeclaration;
 import org.hkijena.jipipe.ui.registries.JIPipeUIAlgorithmRegistry;
@@ -47,10 +47,10 @@ public class JIPipeJavaAlgorithmRegistrationTask extends JIPipeDefaultAlgorithmR
         this.algorithmClass = algorithmClass;
         this.icon = icon;
 
-        for (AlgorithmInputSlot slot : algorithmClass.getAnnotationsByType(AlgorithmInputSlot.class)) {
+        for (JIPipeInputSlot slot : algorithmClass.getAnnotationsByType(JIPipeInputSlot.class)) {
             getDependencyDatatypeClasses().add(slot.value());
         }
-        for (AlgorithmOutputSlot slot : algorithmClass.getAnnotationsByType(AlgorithmOutputSlot.class)) {
+        for (JIPipeOutputSlot slot : algorithmClass.getAnnotationsByType(JIPipeOutputSlot.class)) {
             getDependencyDatatypeClasses().add(slot.value());
         }
     }

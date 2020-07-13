@@ -47,9 +47,9 @@ import java.util.function.Supplier;
 @JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Analysis)
 
 // Algorithm data flow
-@AlgorithmInputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Mask")
-@AlgorithmOutputSlot(value = ROIListData.class, slotName = "ROI")
-@AlgorithmOutputSlot(value = ResultsTableData.class, slotName = "Measurements")
+@JIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Mask")
+@JIPipeOutputSlot(value = ROIListData.class, slotName = "ROI")
+@JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Measurements")
 
 // Algorithm traits
 public class FindParticles2D extends JIPipeSimpleIteratingAlgorithm {

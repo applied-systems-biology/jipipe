@@ -30,8 +30,8 @@ import java.util.function.Supplier;
  */
 @JIPipeDocumentation(name = "Remove table column", description = "Removes one or multiple columns by name")
 @JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "Tables")
-@AlgorithmInputSlot(value = ResultsTableData.class, slotName = "Input", autoCreate = true)
-@AlgorithmOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
+@JIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", autoCreate = true)
+@JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
 public class RemoveColumnAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private StringPredicate.List filters = new StringPredicate.List();

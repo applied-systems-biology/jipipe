@@ -30,8 +30,8 @@ import java.util.function.Supplier;
  * Imports {@link AnnotationTableData} from a file
  */
 @JIPipeDocumentation(name = "Annotation table from file")
-@AlgorithmInputSlot(value = FileData.class, slotName = "Files", autoCreate = true)
-@AlgorithmOutputSlot(value = AnnotationTableData.class, slotName = "Annotation table", autoCreate = true)
+@JIPipeInputSlot(value = FileData.class, slotName = "Files", autoCreate = true)
+@JIPipeOutputSlot(value = AnnotationTableData.class, slotName = "Annotation table", autoCreate = true)
 @JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.DataSource)
 public class AnnotationTableFromFile extends JIPipeSimpleIteratingAlgorithm {
 

@@ -39,8 +39,8 @@ import java.util.function.Supplier;
 @JIPipeOrganization(menuPath = "Filesystem", algorithmCategory = JIPipeAlgorithmCategory.Converter)
 
 // Algorithm flow
-@AlgorithmInputSlot(value = AnnotationTableData.class, slotName = "Input", autoCreate = true)
-@AlgorithmOutputSlot(value = PathData.class, slotName = "Output", autoCreate = true)
+@JIPipeInputSlot(value = AnnotationTableData.class, slotName = "Input", autoCreate = true)
+@JIPipeOutputSlot(value = PathData.class, slotName = "Output", autoCreate = true)
 
 // Traits
 public class AnnotationTableToPaths extends JIPipeSimpleIteratingAlgorithm {

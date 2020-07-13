@@ -17,8 +17,8 @@ import com.google.common.html.HtmlEscapers;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.algorithm.AlgorithmInputSlot;
-import org.hkijena.jipipe.api.algorithm.AlgorithmOutputSlot;
+import org.hkijena.jipipe.api.algorithm.JIPipeInputSlot;
+import org.hkijena.jipipe.api.algorithm.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmDeclaration;
 import org.hkijena.jipipe.api.algorithm.JIPipeGraphNode;
 import org.hkijena.jipipe.api.data.JIPipeData;
@@ -70,8 +70,8 @@ public class JIPipeAlgorithmCompendiumUI extends JIPipeCompendiumUI<JIPipeAlgori
         // Write algorithm slot info
         builder.append("<table>");
         {
-            List<AlgorithmInputSlot> inputSlots = declaration.getInputSlots();
-            List<AlgorithmOutputSlot> outputSlots = declaration.getOutputSlots();
+            List<JIPipeInputSlot> inputSlots = declaration.getInputSlots();
+            List<JIPipeOutputSlot> outputSlots = declaration.getOutputSlots();
 
             int displayedSlots = Math.max(inputSlots.size(), outputSlots.size());
             if (displayedSlots > 0) {

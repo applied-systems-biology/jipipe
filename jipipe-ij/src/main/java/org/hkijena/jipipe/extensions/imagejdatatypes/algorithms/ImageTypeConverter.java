@@ -33,8 +33,8 @@ import java.util.function.Supplier;
 /**
  * Converts ImageJ data type into each other
  */
-@AlgorithmInputSlot(value = ImagePlusData.class, slotName = "Input")
-@AlgorithmOutputSlot(value = ImagePlusData.class, slotName = "Output")
+@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input")
+@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output")
 @JIPipeDocumentation(name = "Convert ImageJ image", description = "Converts an ImageJ image into another ImageJ image data type")
 @JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Converter)
 public class ImageTypeConverter extends JIPipeAlgorithm {

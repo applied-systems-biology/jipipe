@@ -43,8 +43,8 @@ import java.util.function.Supplier;
         "converted into their respective JIPipe types. The target slot is extracted from a variable 'output_slot' that should be present within the script." +
         " If the variable is set to null or empty, the data is discarded.")
 @JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Annotation, menuPath = "Modify")
-@AlgorithmInputSlot(value = JIPipeData.class, slotName = "Input")
-@AlgorithmOutputSlot(value = JIPipeData.class, slotName = "Output")
+@JIPipeInputSlot(value = JIPipeData.class, slotName = "Input")
+@JIPipeOutputSlot(value = JIPipeData.class, slotName = "Output")
 public class SplitByAnnotationScript extends JIPipeSimpleIteratingAlgorithm {
 
     private PythonInterpreter pythonInterpreter;

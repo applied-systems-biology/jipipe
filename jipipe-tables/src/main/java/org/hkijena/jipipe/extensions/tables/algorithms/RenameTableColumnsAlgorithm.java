@@ -34,8 +34,8 @@ import java.util.function.Supplier;
  */
 @JIPipeDocumentation(name = "Rename table column", description = "Renames columns")
 @JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "Tables")
-@AlgorithmInputSlot(value = ResultsTableData.class, slotName = "Input", autoCreate = true)
-@AlgorithmOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
+@JIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", autoCreate = true)
+@JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
 public class RenameTableColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private StringFilterAndStringPair.List renamingEntries = new StringFilterAndStringPair.List();

@@ -18,22 +18,25 @@ import org.hkijena.jipipe.api.data.JIPipeData;
 import java.lang.annotation.Annotation;
 
 /**
- * Default implementation of {@link AlgorithmInputSlot}
+ * Default implementation of {@link JIPipeOutputSlot}
  */
-public class DefaultAlgorithmInputSlot implements AlgorithmInputSlot {
+public class DefaultJIPipeOutputSlot implements JIPipeOutputSlot {
 
     private Class<? extends JIPipeData> value;
     private String slotName;
+    private String inheritedSlot;
     private boolean autoCreate;
 
     /**
-     * @param value      the value
-     * @param slotName   the slot name
-     * @param autoCreate if the slot should be automatically created
+     * @param value         the data class
+     * @param slotName      the slot name
+     * @param inheritedSlot An optional inherited slot.
+     * @param autoCreate    Automatically create the slot if supported by the algorithm
      */
-    public DefaultAlgorithmInputSlot(Class<? extends JIPipeData> value, String slotName, boolean autoCreate) {
+    public DefaultJIPipeOutputSlot(Class<? extends JIPipeData> value, String slotName, String inheritedSlot, boolean autoCreate) {
         this.value = value;
         this.slotName = slotName;
+        this.inheritedSlot = inheritedSlot;
         this.autoCreate = autoCreate;
     }
 
@@ -48,12 +51,17 @@ public class DefaultAlgorithmInputSlot implements AlgorithmInputSlot {
     }
 
     @Override
+    public String inheritedSlot() {
+        return inheritedSlot;
+    }
+
+    @Override
     public boolean autoCreate() {
         return autoCreate;
     }
 
     @Override
     public Class<? extends Annotation> annotationType() {
-        return AlgorithmInputSlot.class;
+        return JIPipeOutputSlot.class;
     }
 }

@@ -17,7 +17,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
-import org.hkijena.jipipe.api.algorithm.AlgorithmOutputSlot;
+import org.hkijena.jipipe.api.algorithm.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmCategory;
 import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmDeclaration;
@@ -34,7 +34,7 @@ import java.util.function.Supplier;
  * Generates {@link org.hkijena.jipipe.extensions.multiparameters.datatypes.ParametersData} objects
  */
 @JIPipeDocumentation(name = "Define parameter", description = "Defines an algorithm parameter that can be consumed by a multi-parameter algorithm")
-@AlgorithmOutputSlot(value = ParametersData.class, slotName = "Parameters", autoCreate = true)
+@JIPipeOutputSlot(value = ParametersData.class, slotName = "Parameters", autoCreate = true)
 @JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.DataSource)
 public class ParametersDataDefinition extends JIPipeAlgorithm {
 

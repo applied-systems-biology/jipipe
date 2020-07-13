@@ -8,8 +8,8 @@ import net.haesleinhuepf.clij2.plugins.PullToResultsTable;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
-import org.hkijena.jipipe.api.algorithm.AlgorithmInputSlot;
-import org.hkijena.jipipe.api.algorithm.AlgorithmOutputSlot;
+import org.hkijena.jipipe.api.algorithm.JIPipeInputSlot;
+import org.hkijena.jipipe.api.algorithm.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmCategory;
 import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmDeclaration;
 import org.hkijena.jipipe.api.algorithm.JIPipeDataBatch;
@@ -25,8 +25,8 @@ import java.util.function.Supplier;
  */
 @JIPipeDocumentation(name = "CLIJ2 Pull To Results Table", description = "")
 @JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Converter)
-@AlgorithmInputSlot(value = CLIJImageData.class, slotName = "buffer", autoCreate = true)
-@AlgorithmOutputSlot(value = ResultsTableData.class, slotName = "table", autoCreate = true)
+@JIPipeInputSlot(value = CLIJImageData.class, slotName = "buffer", autoCreate = true)
+@JIPipeOutputSlot(value = ResultsTableData.class, slotName = "table", autoCreate = true)
 
 public class Clij2PullToResultsTable extends JIPipeSimpleIteratingAlgorithm {
 

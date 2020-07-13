@@ -30,8 +30,8 @@ import java.util.function.Supplier;
  * Imports {@link ResultsTableData} from a file
  */
 @JIPipeDocumentation(name = "Results table from file")
-@AlgorithmInputSlot(value = FileData.class, slotName = "Files", autoCreate = true)
-@AlgorithmOutputSlot(value = ResultsTableData.class, slotName = "Results table", autoCreate = true)
+@JIPipeInputSlot(value = FileData.class, slotName = "Files", autoCreate = true)
+@JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Results table", autoCreate = true)
 @JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.DataSource)
 public class ResultsTableFromFile extends JIPipeSimpleIteratingAlgorithm {
 

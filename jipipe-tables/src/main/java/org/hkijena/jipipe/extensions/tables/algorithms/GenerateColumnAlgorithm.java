@@ -40,8 +40,8 @@ import java.util.function.Supplier;
  */
 @JIPipeDocumentation(name = "Generate table column", description = "Adds a new column or replaces an existing table column by generating values")
 @JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "Tables")
-@AlgorithmInputSlot(value = ResultsTableData.class, slotName = "Input", autoCreate = true)
-@AlgorithmOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
+@JIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", autoCreate = true)
+@JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
 public class GenerateColumnAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private TableColumnGeneratorProcessorParameterList columns = new TableColumnGeneratorProcessorParameterList();

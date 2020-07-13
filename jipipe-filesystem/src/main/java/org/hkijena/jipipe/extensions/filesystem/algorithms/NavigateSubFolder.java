@@ -33,8 +33,8 @@ import java.util.function.Supplier;
 @JIPipeOrganization(menuPath = "Navigate", algorithmCategory = JIPipeAlgorithmCategory.FileSystem)
 
 // Algorithm flow
-@AlgorithmInputSlot(value = FolderData.class, slotName = "Folders", autoCreate = true)
-@AlgorithmOutputSlot(value = FolderData.class, slotName = "Subfolders", autoCreate = true)
+@JIPipeInputSlot(value = FolderData.class, slotName = "Folders", autoCreate = true)
+@JIPipeOutputSlot(value = FolderData.class, slotName = "Subfolders", autoCreate = true)
 
 // Traits
 public class NavigateSubFolder extends JIPipeSimpleIteratingAlgorithm {

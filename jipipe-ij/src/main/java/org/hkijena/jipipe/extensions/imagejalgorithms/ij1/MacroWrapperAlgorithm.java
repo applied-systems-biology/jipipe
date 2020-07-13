@@ -58,13 +58,13 @@ import static org.hkijena.jipipe.api.algorithm.JIPipeIteratingAlgorithm.ITERATIN
         "can be adressed via the global functions. Input ROI are merged into one ROI manager.\n\n" +
         "You can define variables that are passed from JIPipe to ImageJ. Variables are also created for incoming path-like data." + "\n\n" + ITERATING_ALGORITHM_DESCRIPTION)
 @JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor)
-@AlgorithmInputSlot(ImagePlusData.class)
-@AlgorithmInputSlot(ROIListData.class)
-@AlgorithmInputSlot(ResultsTableData.class)
-@AlgorithmInputSlot(PathData.class)
-@AlgorithmOutputSlot(ImagePlusData.class)
-@AlgorithmOutputSlot(ROIListData.class)
-@AlgorithmOutputSlot(ResultsTableData.class)
+@JIPipeInputSlot(ImagePlusData.class)
+@JIPipeInputSlot(ROIListData.class)
+@JIPipeInputSlot(ResultsTableData.class)
+@JIPipeInputSlot(PathData.class)
+@JIPipeOutputSlot(ImagePlusData.class)
+@JIPipeOutputSlot(ROIListData.class)
+@JIPipeOutputSlot(ResultsTableData.class)
 public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm {
     public static Class<?>[] ALLOWED_PARAMETER_CLASSES = new Class[]{
             String.class,

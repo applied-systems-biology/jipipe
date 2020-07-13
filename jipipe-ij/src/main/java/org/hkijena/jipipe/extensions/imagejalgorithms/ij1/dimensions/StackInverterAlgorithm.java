@@ -32,8 +32,8 @@ import java.util.function.Supplier;
  */
 @JIPipeDocumentation(name = "Invert 3D stack Z-order", description = "Inverts the order of a Z-stack.")
 @JIPipeOrganization(menuPath = "Dimensions", algorithmCategory = JIPipeAlgorithmCategory.Processor)
-@AlgorithmInputSlot(value = ImagePlus3DData.class, slotName = "Input")
-@AlgorithmOutputSlot(value = ImagePlus3DData.class, slotName = "Output")
+@JIPipeInputSlot(value = ImagePlus3DData.class, slotName = "Input")
+@JIPipeOutputSlot(value = ImagePlus3DData.class, slotName = "Output")
 public class StackInverterAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     /**

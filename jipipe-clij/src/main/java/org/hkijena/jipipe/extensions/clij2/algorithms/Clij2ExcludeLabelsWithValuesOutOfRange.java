@@ -7,8 +7,8 @@ import net.haesleinhuepf.clij2.plugins.ExcludeLabelsWithValuesOutOfRange;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
-import org.hkijena.jipipe.api.algorithm.AlgorithmInputSlot;
-import org.hkijena.jipipe.api.algorithm.AlgorithmOutputSlot;
+import org.hkijena.jipipe.api.algorithm.JIPipeInputSlot;
+import org.hkijena.jipipe.api.algorithm.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmCategory;
 import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmDeclaration;
 import org.hkijena.jipipe.api.algorithm.JIPipeDataBatch;
@@ -24,9 +24,9 @@ import java.util.function.Supplier;
  */
 @JIPipeDocumentation(name = "CLIJ2 Exclude Labels With Values Out Of Range", description = "This operation removes labels from a labelmap and renumbers the remaining labels. " + "Hand over a vector of values and a range specifying which labels with which values are eliminated. Works for following image dimensions: 2D, 3D.")
 @JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "Labels")
-@AlgorithmInputSlot(value = CLIJImageData.class, slotName = "values", autoCreate = true)
-@AlgorithmInputSlot(value = CLIJImageData.class, slotName = "label_map_in", autoCreate = true)
-@AlgorithmOutputSlot(value = CLIJImageData.class, slotName = "label_map_out", autoCreate = true)
+@JIPipeInputSlot(value = CLIJImageData.class, slotName = "values", autoCreate = true)
+@JIPipeInputSlot(value = CLIJImageData.class, slotName = "label_map_in", autoCreate = true)
+@JIPipeOutputSlot(value = CLIJImageData.class, slotName = "label_map_out", autoCreate = true)
 
 public class Clij2ExcludeLabelsWithValuesOutOfRange extends JIPipeIteratingAlgorithm {
     Float min;

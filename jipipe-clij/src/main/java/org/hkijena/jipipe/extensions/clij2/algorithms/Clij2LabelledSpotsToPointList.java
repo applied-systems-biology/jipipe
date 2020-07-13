@@ -7,8 +7,8 @@ import net.haesleinhuepf.clij2.plugins.LabelledSpotsToPointList;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
-import org.hkijena.jipipe.api.algorithm.AlgorithmInputSlot;
-import org.hkijena.jipipe.api.algorithm.AlgorithmOutputSlot;
+import org.hkijena.jipipe.api.algorithm.JIPipeInputSlot;
+import org.hkijena.jipipe.api.algorithm.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmCategory;
 import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmDeclaration;
 import org.hkijena.jipipe.api.algorithm.JIPipeDataBatch;
@@ -23,8 +23,8 @@ import java.util.function.Supplier;
  */
 @JIPipeDocumentation(name = "CLIJ2 Labelled Spots To Point List", description = "Generates a coordinate list of points in a labelled spot image. " + "Transforms a labelmap of spots (single pixels with values 1, 2, ..., n for n spots) as resulting " + "from connected components analysis in an image where every column contains d " + "pixels (with d = dimensionality of the original image) with the coordinates of the maxima/minima. Works for following image dimensions: 2D, 3D.")
 @JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Analysis, menuPath = "Labels")
-@AlgorithmInputSlot(value = CLIJImageData.class, slotName = "input_labelmap", autoCreate = true)
-@AlgorithmOutputSlot(value = CLIJImageData.class, slotName = "output", autoCreate = true)
+@JIPipeInputSlot(value = CLIJImageData.class, slotName = "input_labelmap", autoCreate = true)
+@JIPipeOutputSlot(value = CLIJImageData.class, slotName = "output", autoCreate = true)
 
 public class Clij2LabelledSpotsToPointList extends JIPipeSimpleIteratingAlgorithm {
 

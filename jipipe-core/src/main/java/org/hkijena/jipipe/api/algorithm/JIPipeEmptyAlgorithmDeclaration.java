@@ -73,12 +73,12 @@ public class JIPipeEmptyAlgorithmDeclaration implements JIPipeAlgorithmDeclarati
     }
 
     @Override
-    public List<AlgorithmInputSlot> getInputSlots() {
+    public List<JIPipeInputSlot> getInputSlots() {
         return Collections.emptyList();
     }
 
     @Override
-    public List<AlgorithmOutputSlot> getOutputSlots() {
+    public List<JIPipeOutputSlot> getOutputSlots() {
         return Collections.emptyList();
     }
 

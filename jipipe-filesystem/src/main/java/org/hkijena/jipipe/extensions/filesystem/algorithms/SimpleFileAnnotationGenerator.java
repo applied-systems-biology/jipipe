@@ -30,8 +30,8 @@ import java.util.function.Supplier;
  */
 @JIPipeDocumentation(name = "Files to annotations", description = "Creates an annotation for each file based on its file name")
 @JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Annotation, menuPath = "Generate")
-@AlgorithmInputSlot(value = FileData.class, slotName = "Files", autoCreate = true)
-@AlgorithmOutputSlot(value = FileData.class, slotName = "Annotated files", autoCreate = true)
+@JIPipeInputSlot(value = FileData.class, slotName = "Files", autoCreate = true)
+@JIPipeOutputSlot(value = FileData.class, slotName = "Annotated files", autoCreate = true)
 @JIPipeHidden
 public class SimpleFileAnnotationGenerator extends JIPipeSimpleIteratingAlgorithm {
 

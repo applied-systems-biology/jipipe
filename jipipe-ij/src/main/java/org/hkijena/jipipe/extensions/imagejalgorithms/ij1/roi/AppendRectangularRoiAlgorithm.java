@@ -34,8 +34,8 @@ import java.util.function.Supplier;
         "Ths algorithm allows to add rectangles as margins. As no reference image is available, the reference area is defined by the " +
         "bounds of the already existing ROI.")
 @JIPipeOrganization(menuPath = "ROI", algorithmCategory = JIPipeAlgorithmCategory.Processor)
-@AlgorithmInputSlot(value = ROIListData.class, slotName = "Input")
-@AlgorithmOutputSlot(value = ROIListData.class, slotName = "Output")
+@JIPipeInputSlot(value = ROIListData.class, slotName = "Input")
+@JIPipeOutputSlot(value = ROIListData.class, slotName = "Output")
 public class AppendRectangularRoiAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private Margin.List rectangles = new Margin.List();
