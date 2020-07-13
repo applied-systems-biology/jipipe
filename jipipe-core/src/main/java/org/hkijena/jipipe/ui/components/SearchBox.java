@@ -25,8 +25,8 @@ import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
-import java.util.function.BiPredicate;
 
 /**
  * A {@link JComboBox} that implements a search behavior
@@ -35,7 +35,7 @@ import java.util.function.BiPredicate;
  */
 public class SearchBox<T> extends JPanel {
 
-    private BiPredicate<T, String> filterFunction = (x, s) -> true;
+    private RankingFunction<T> rankingFunction;
     private FilteringModel<T> filteringModel;
     private JComboBox<T> comboBox = new JComboBox<>();
 
@@ -107,12 +107,12 @@ public class SearchBox<T> extends JPanel {
         return comboBox.getEditor().getEditorComponent().getPreferredSize();
     }
 
-    public BiPredicate<T, String> getFilterFunction() {
-        return filterFunction;
+    public RankingFunction<T> getRankingFunction() {
+        return rankingFunction;
     }
 
-    public void setFilterFunction(BiPredicate<T, String> filterFunction) {
-        this.filterFunction = filterFunction;
+    public void setRankingFunction(RankingFunction<T> rankingFunction) {
+        this.rankingFunction = rankingFunction;
     }
 
     /**
@@ -151,6 +151,53 @@ public class SearchBox<T> extends JPanel {
 
     public void setSelectedItem(T item) {
         comboBox.setSelectedItem(item);
+    }
+
+    /**
+     * Models a search ranking function
+     * @param <T> the items
+     */
+    public interface RankingFunction<T> {
+        /**
+         * Ranks the value in conjunction with the filter strings
+         * @param value the value
+         * @param filterStrings the filter strings (can be null or empty)
+         * @return a rank for each category. each item represents the ranking score (lower values are higher ranks) for a column. if null, the item does not match
+         */
+        int[] rank(T value, String[] filterStrings);
+    }
+
+    private static class RankedData<T> implements Comparable<RankedData<T>>{
+        private final T data;
+        private final int[] rank;
+
+        private RankedData(T data, int[] rank) {
+            this.data = data;
+            this.rank = rank;
+        }
+
+        public int getRankAt(int i) {
+            return i < rank.length ? rank[i] : 0;
+        }
+
+        @Override
+        public int compareTo(RankedData<T> o) {
+            if(o.rank.length == 0 && rank.length == 0)
+                return 0;
+            int num = Math.min(o.rank.length, rank.length);
+            for (int i = 0; i < num; i++) {
+                int lhs = getRankAt(i);
+                int rhs = o.getRankAt(i);
+                int compare = Integer.compare(lhs, rhs);
+                if(compare != 0)
+                    return compare;
+            }
+            return 0;
+        }
+
+        public T getData() {
+            return data;
+        }
     }
 
     /**
@@ -204,6 +251,8 @@ public class SearchBox<T> extends JPanel {
             isLoading = true;
             data.clear();
             String[] searchStrings = getSearchStrings();
+            List<RankedData<T>> rankedData = new ArrayList<>();
+            int maxRankLength = 0;
 
             if (searchStrings == null || searchStrings.length == 0) {
                 for (int i = 0; i < unfilteredModel.getSize(); ++i) {
@@ -212,18 +261,24 @@ public class SearchBox<T> extends JPanel {
             } else {
                 for (int i = 0; i < unfilteredModel.getSize(); ++i) {
                     T element = unfilteredModel.getElementAt(i);
-                    boolean matches = true;
-                    for (String searchString : searchStrings) {
-                        if (!parent.filterFunction.test(element, searchString)) {
-                            matches = false;
-                            break;
-                        }
-                    }
-                    if (matches) {
-                        data.add(element);
+                    int[] rank = parent.rankingFunction.rank(element, searchStrings);
+                    if (rank != null) {
+                        rankedData.add(new RankedData<>(element, rank));
+                        maxRankLength = Math.max(maxRankLength, rank.length);
                     }
                 }
             }
+
+            // Sort according to rank
+            if(maxRankLength > 0) {
+                rankedData.sort(Comparator.naturalOrder());
+            }
+
+            for (RankedData<T> item : rankedData) {
+                data.add(item.data);
+            }
+
+
             if (selectedItem != null && !data.contains(selectedItem)) {
                 selectedItem = null;
             }

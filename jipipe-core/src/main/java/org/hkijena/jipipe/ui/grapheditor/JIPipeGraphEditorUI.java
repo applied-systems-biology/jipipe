@@ -71,9 +71,6 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
 
     private Set<JIPipeAlgorithmDeclaration> addableAlgorithms = new HashSet<>();
     private SearchBox<Object> navigator = new SearchBox<>();
-    private JMenuItem cutContextMenuItem;
-    private JMenuItem copyContextMenuItem;
-    private JMenuItem pasteContextMenuItem;
 
     /**
      * @param workbenchUI    the workbench
@@ -125,7 +122,35 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         navigator.setModel(new DefaultComboBoxModel<>());
         navigator.setRenderer(new NavigationRenderer());
         navigator.addItemListener(e -> navigatorNavigate());
-        navigator.setFilterFunction(JIPipeGraphEditorUI::filterNavigationEntry);
+        navigator.setRankingFunction(JIPipeGraphEditorUI::rankNavigationEntry);
+    }
+
+    private static int[] rankNavigationEntry(Object value, String[] searchStrings) {
+        if(searchStrings == null || searchStrings.length == 0)
+            return new int[0];
+        JIPipeAlgorithmDeclaration algorithmDeclaration;
+        if (value instanceof JIPipeNodeUI) {
+            algorithmDeclaration = ((JIPipeNodeUI) value).getNode().getDeclaration();
+        } else if (value instanceof JIPipeAlgorithmDeclaration) {
+            if (((JIPipeAlgorithmDeclaration) value).isHidden())
+                return null;
+            algorithmDeclaration = (JIPipeAlgorithmDeclaration) value;
+        }
+        else {
+            return null;
+        }
+
+        int[] ranks = new int[2];
+        String nameHayStack = algorithmDeclaration.getName().toLowerCase();
+        String descriptionHayStack = algorithmDeclaration.getDescription().toLowerCase();
+        for (String string : searchStrings) {
+            if(nameHayStack.contains(string))
+                --ranks[0];
+            if(descriptionHayStack.contains(string))
+                --ranks[1];
+        }
+
+        return ranks;
     }
 
     private void navigatorNavigate() {
