@@ -56,7 +56,7 @@ public class AlgorithmGraphPasteAlgorithmUIAction implements AlgorithmUIAction {
                 int minY = Integer.MAX_VALUE;
                 Map<JIPipeGraphNode, Point> originalLocations = new HashMap<>();
                 for (JIPipeGraphNode algorithm : graph.getAlgorithmNodes().values()) {
-                    Point point = algorithm.getLocationWithin(algorithm.getCompartment(), canvasUI.getCurrentViewMode().name());
+                    Point point = algorithm.getLocationWithin(algorithm.getCompartment(), canvasUI.getViewMode().name());
                     if (point != null) {
                         originalLocations.put(algorithm, point);
                         minX = Math.min(minX, point.x);
@@ -77,7 +77,7 @@ public class AlgorithmGraphPasteAlgorithmUIAction implements AlgorithmUIAction {
                     if (original != null) {
                         original.x = original.x - minX + cursor.x;
                         original.y = original.y - minY + cursor.y;
-                        algorithm.setLocationWithin(compartment, original, canvasUI.getCurrentViewMode().name());
+                        algorithm.setLocationWithin(compartment, original, canvasUI.getViewMode().name());
                     }
                 }
 

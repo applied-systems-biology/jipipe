@@ -57,7 +57,7 @@ public class JIPipeVerticalNodeUI extends JIPipeNodeUI {
      * @param algorithm The algorithm
      */
     public JIPipeVerticalNodeUI(JIPipeWorkbench workbench, JIPipeGraphCanvasUI graphUI, JIPipeGraphNode algorithm) {
-        super(workbench, graphUI, algorithm, JIPipeGraphCanvasUI.ViewMode.Vertical);
+        super(workbench, graphUI, algorithm, JIPipeGraphViewMode.Vertical);
         initialize();
         updateAlgorithmSlotUIs();
     }
@@ -121,7 +121,7 @@ public class JIPipeVerticalNodeUI extends JIPipeNodeUI {
     }
 
     private int calculateHeight() {
-        return 3 * SLOT_UI_HEIGHT;
+        return 3 * JIPipeGraphViewMode.Vertical.getGridHeight();
     }
 
     private int calculateWidth() {
@@ -144,7 +144,7 @@ public class JIPipeVerticalNodeUI extends JIPipeNodeUI {
             width = Math.max(width, maxWidth * Math.max(getDisplayedInputColumns(), getDisplayedOutputColumns()));
         }
 
-        return (int) Math.ceil(width * 1.0 / SLOT_UI_WIDTH) * SLOT_UI_WIDTH + 150;
+        return (int) Math.ceil(width * 1.0 / JIPipeGraphViewMode.Vertical.getGridWidth()) * JIPipeGraphViewMode.Vertical.getGridWidth() + 150;
     }
 
     private void addVerticalGlue(int row) {

@@ -24,6 +24,7 @@ import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.MarkdownReader;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphCanvasUI;
+import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphViewMode;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.ui.settings.JIPipeProjectInfoParameters;
 import org.hkijena.jipipe.utils.ResourceUtils;
@@ -147,7 +148,7 @@ public class JIPipeProjectInfoUI extends JIPipeProjectWorkbenchPanel {
 
     private void renderBackgroundPanel() {
         JIPipeGraphCanvasUI canvasUI = new JIPipeGraphCanvasUI(getWorkbench(), getProject().getGraph(), null);
-        canvasUI.setCurrentViewMode(JIPipeGraphCanvasUI.ViewMode.Horizontal);
+        canvasUI.setViewMode(JIPipeGraphViewMode.Horizontal);
         canvasUI.autoLayoutAll();
         headerBackground = null;
         try {

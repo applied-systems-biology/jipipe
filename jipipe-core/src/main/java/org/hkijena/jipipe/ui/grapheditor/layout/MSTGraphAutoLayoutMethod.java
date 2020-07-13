@@ -17,6 +17,7 @@ import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.api.algorithm.JIPipeGraph;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphCanvasUI;
+import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphViewMode;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeNodeUI;
 import org.jgrapht.alg.spanning.KruskalMinimumSpanningTree;
 import org.jgrapht.graph.DefaultDirectedGraph;
@@ -53,7 +54,7 @@ public class MSTGraphAutoLayoutMethod implements GraphAutoLayoutMethod {
 //            e.printStackTrace();
 //        }
 
-        if (canvasUI.getCurrentViewMode() == JIPipeGraphCanvasUI.ViewMode.Vertical) {
+        if (canvasUI.getViewMode() == JIPipeGraphViewMode.Vertical) {
             autoLayoutVertical(graph);
         } else {
             autoLayoutHorizontal(graph);
@@ -146,6 +147,7 @@ public class MSTGraphAutoLayoutMethod implements GraphAutoLayoutMethod {
         Map<Integer, Integer> trackHeights = new HashMap<>();
         Map<Integer, Integer> depthWidths = new HashMap<>();
         Map<Integer, Integer> cumulativeDepthWidths = new HashMap<>();
+        JIPipeGraphViewMode viewMode = JIPipeGraphViewMode.Horizontal;
         int minTrack = Integer.MAX_VALUE;
         int maxTrack = Integer.MIN_VALUE;
         int maxDepth = 0;
@@ -158,7 +160,7 @@ public class MSTGraphAutoLayoutMethod implements GraphAutoLayoutMethod {
         }
         cumulativeDepthWidths.put(0, depthWidths.getOrDefault(0, 0));
         for (int depth = 1; depth <= maxDepth; depth++) {
-            cumulativeDepthWidths.put(depth, cumulativeDepthWidths.get(depth - 1) + depthWidths.get(depth) + JIPipeNodeUI.SLOT_UI_WIDTH * 4);
+            cumulativeDepthWidths.put(depth, cumulativeDepthWidths.get(depth - 1) + depthWidths.get(depth) + viewMode.getGridWidth() * 4);
         }
         int maxCumulativeDepthWidth = 0;
         for (Integer value : cumulativeDepthWidths.values()) {
@@ -166,14 +168,14 @@ public class MSTGraphAutoLayoutMethod implements GraphAutoLayoutMethod {
         }
 
 
-        int y = JIPipeNodeUI.SLOT_UI_HEIGHT;
+        int y = viewMode.getGridHeight();
         for (int track = minTrack; track <= maxTrack; track++) {
             int finalTrack = track;
             for (Node node : graph.vertexSet().stream().filter(node -> node.track == finalTrack).collect(Collectors.toList())) {
                 int x = maxCumulativeDepthWidth - cumulativeDepthWidths.get(node.depth);
                 node.getUi().setLocation(x, y);
             }
-            y += trackHeights.get(track) + JIPipeNodeUI.SLOT_UI_HEIGHT;
+            y += trackHeights.get(track) + viewMode.getGridHeight();
         }
     }
 
@@ -182,20 +184,21 @@ public class MSTGraphAutoLayoutMethod implements GraphAutoLayoutMethod {
         int minTrack = Integer.MAX_VALUE;
         int maxTrack = Integer.MIN_VALUE;
         int maxDepth = 0;
+        JIPipeGraphViewMode viewMode = JIPipeGraphViewMode.Vertical;
         for (Node node : graph.vertexSet()) {
             minTrack = Math.min(minTrack, node.track);
             maxTrack = Math.max(maxTrack, node.track);
             maxDepth = Math.max(maxDepth, node.depth);
             trackWidths.put(node.track, Math.max(trackWidths.getOrDefault(node.track, 0), node.ui.getWidth()));
         }
-        int x = JIPipeNodeUI.SLOT_UI_WIDTH * 4;
+        int x = viewMode.getGridWidth() * 4;
         for (int track = minTrack; track <= maxTrack; track++) {
             int finalTrack = track;
             for (Node node : graph.vertexSet().stream().filter(node -> node.track == finalTrack).collect(Collectors.toList())) {
-                int y = (maxDepth - node.depth) * 4 * JIPipeNodeUI.SLOT_UI_HEIGHT + JIPipeNodeUI.SLOT_UI_HEIGHT;
+                int y = (maxDepth - node.depth) * 4 * viewMode.getGridHeight() + viewMode.getGridHeight();
                 node.getUi().setLocation(x, y);
             }
-            x += trackWidths.get(track) + JIPipeNodeUI.SLOT_UI_WIDTH * 4;
+            x += trackWidths.get(track) + viewMode.getGridWidth() * 4;
         }
     }
 

@@ -18,8 +18,8 @@ import org.hkijena.jipipe.JIPipeDefaultRegistry;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphCanvasUI;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphEditorUI;
+import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphViewMode;
 import org.hkijena.jipipe.ui.grapheditor.layout.GraphAutoLayout;
 
 /**
@@ -30,7 +30,7 @@ public class GraphEditorUISettings implements JIPipeParameterCollection {
     public static String ID = "graph-editor-ui";
 
     private EventBus eventBus = new EventBus();
-    private JIPipeGraphCanvasUI.ViewMode defaultViewMode = JIPipeGraphCanvasUI.ViewMode.Vertical;
+    private JIPipeGraphViewMode defaultViewMode = JIPipeGraphViewMode.Vertical;
     private GraphAutoLayout autoLayout = GraphAutoLayout.MST;
     private boolean switchPanningDirection = false;
     private boolean enableLayoutHelper = true;
@@ -45,12 +45,12 @@ public class GraphEditorUISettings implements JIPipeParameterCollection {
 
     @JIPipeDocumentation(name = "Default view mode", description = "Determines how the graph is displayed.")
     @JIPipeParameter("default-view-mode")
-    public JIPipeGraphCanvasUI.ViewMode getDefaultViewMode() {
+    public JIPipeGraphViewMode getDefaultViewMode() {
         return defaultViewMode;
     }
 
     @JIPipeParameter("default-view-mode")
-    public void setDefaultViewMode(JIPipeGraphCanvasUI.ViewMode defaultViewMode) {
+    public void setDefaultViewMode(JIPipeGraphViewMode defaultViewMode) {
         this.defaultViewMode = defaultViewMode;
 
     }

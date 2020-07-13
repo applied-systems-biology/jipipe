@@ -59,7 +59,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
     private final String compartment;
     private final JIPipeGraphHistory graphHistory = new JIPipeGraphHistory();
     private boolean layoutHelperEnabled;
-    private ViewMode currentViewMode = GraphEditorUISettings.getInstance().getDefaultViewMode();
+    private JIPipeGraphViewMode viewMode = GraphEditorUISettings.getInstance().getDefaultViewMode();
     private JIPipeGraphDragAndDropBehavior dragAndDropBehavior;
     private Point cursor;
     private long lastTimeExpandedNegative = 0;
@@ -153,7 +153,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
             if (nodeUIs.containsKey(algorithm))
                 continue;
 
-            switch (currentViewMode) {
+            switch (viewMode) {
                 case Horizontal:
                     ui = new JIPipeHorizontalNodeUI(getWorkbench(), this, algorithm);
                     break;
@@ -167,7 +167,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
             ui.getEventBus().register(this);
             add(ui);
             nodeUIs.put(algorithm, ui);
-            Point location = algorithm.getLocationWithin(compartment, currentViewMode.toString());
+            Point location = algorithm.getLocationWithin(compartment, viewMode.toString());
             if (location == null || !ui.trySetLocationNoGrid(location.x, location.y)) {
                 autoPlaceCloseToCursor(ui);
                 ++newlyPlacedAlgorithms;
@@ -292,15 +292,15 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
                     break;
                 }
             }
-            if (currentViewMode == ViewMode.Horizontal) {
-                currentShape.y += JIPipeNodeUI.SLOT_UI_HEIGHT;
+            if (viewMode == JIPipeGraphViewMode.Horizontal) {
+                currentShape.y += viewMode.getGridHeight();
             } else {
-                currentShape.x += JIPipeNodeUI.SLOT_UI_WIDTH;
+                currentShape.x += viewMode.getGridWidth();
             }
         }
         while (!found);
 
-        ui.trySetLocationInGrid(currentShape.x, currentShape.y);
+        ui.trySetLocationAtNextGridPoint(currentShape.x, currentShape.y);
 
     }
 
@@ -312,22 +312,22 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
             return;
         }
 
-        if (currentViewMode == ViewMode.Horizontal) {
-            int sourceSlotInternalY = sourceSlotIndex * JIPipeNodeUI.SLOT_UI_HEIGHT;
-            int targetSlotInternalY = targetSlotIndex * JIPipeNodeUI.SLOT_UI_HEIGHT;
+        if (viewMode == JIPipeGraphViewMode.Horizontal) {
+            int sourceSlotInternalY = sourceSlotIndex * viewMode.getGridHeight();
+            int targetSlotInternalY = targetSlotIndex * viewMode.getGridHeight();
 
-            int minX = sourceAlgorithmUI.getWidth() + sourceAlgorithmUI.getX() + JIPipeNodeUI.SLOT_UI_WIDTH * 2;
+            int minX = sourceAlgorithmUI.getWidth() + sourceAlgorithmUI.getX() + viewMode.getGridWidth() * 2;
             int targetY = sourceAlgorithmUI.getY() + sourceSlotInternalY - targetSlotInternalY;
 
-            int x = (int) (minX * 1.0 / JIPipeNodeUI.SLOT_UI_WIDTH) * JIPipeNodeUI.SLOT_UI_WIDTH;
-            int y = (int) (targetY * 1.0 / JIPipeNodeUI.SLOT_UI_HEIGHT) * JIPipeNodeUI.SLOT_UI_HEIGHT;
+            int x = (int) (minX * 1.0 / viewMode.getGridWidth()) * viewMode.getGridWidth();
+            int y = (int) (targetY * 1.0 / viewMode.getGridHeight()) * viewMode.getGridHeight();
             if (!targetAlgorithmUI.trySetLocationNoGrid(x, y)) {
                 autoPlaceCloseToCursor(targetAlgorithmUI);
             }
         } else {
             int x = sourceAlgorithmUI.getSlotLocation(source).center.x + sourceAlgorithmUI.getX();
             x -= targetAlgorithmUI.getSlotLocation(target).center.x;
-            int y = sourceAlgorithmUI.getBottomY() + JIPipeNodeUI.SLOT_UI_HEIGHT;
+            int y = sourceAlgorithmUI.getBottomY() + viewMode.getGridHeight();
             if (!targetAlgorithmUI.trySetLocationNoGrid(x, y)) {
                 autoPlaceCloseToCursor(targetAlgorithmUI);
             }
@@ -345,8 +345,8 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
                 int yu = currentlyDraggedOffset.y + mouseEvent.getY();
                 if (xu < 0 || yu < 0) {
                     long currentTimeMillis = System.currentTimeMillis();
-                    int ex = xu < 0 ? JIPipeNodeUI.SLOT_UI_WIDTH : 0;
-                    int ey = yu < 0 ? JIPipeNodeUI.SLOT_UI_HEIGHT : 0;
+                    int ex = xu < 0 ? viewMode.getGridWidth() : 0;
+                    int ey = yu < 0 ? viewMode.getGridHeight() : 0;
                     if (currentTimeMillis - lastTimeExpandedNegative > 100) {
                         for (JIPipeNodeUI value : nodeUIs.values()) {
                             if (value != currentlyDragged) {
@@ -362,13 +362,13 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
 
                 if (currentlyDraggedSnapshot != null) {
                     // Check if something would change
-                    if (!Objects.equals(currentlyDragged.getLocation(), JIPipeNodeUI.toGridLocation(new Point(x, y)))) {
+                    if (!Objects.equals(currentlyDragged.getLocation(), viewMode.getNextGridPoint(new Point(x, y)))) {
                         graphHistory.addSnapshotBefore(currentlyDraggedSnapshot);
                         currentlyDraggedSnapshot = null;
                     }
                 }
 
-                currentlyDragged.trySetLocationInGrid(x, y);
+                currentlyDragged.trySetLocationAtNextGridPoint(x, y);
             }
             repaint();
             if (getParent() != null)
@@ -383,8 +383,8 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
      * @param top  expand top
      */
     public void expandLeftTop(boolean left, boolean top) {
-        int ex = left ? JIPipeNodeUI.SLOT_UI_WIDTH : 0;
-        int ey = top ? JIPipeNodeUI.SLOT_UI_HEIGHT : 0;
+        int ex = left ? viewMode.getGridWidth() : 0;
+        int ey = top ? viewMode.getGridHeight() : 0;
         for (JIPipeNodeUI value : nodeUIs.values()) {
             if (!currentlyDraggedOffsets.containsKey(value)) {
                 value.setLocation(value.getX() + ex, value.getY() + ey);
@@ -561,7 +561,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
     public void onAlgorithmGraphChanged(AlgorithmGraphChangedEvent event) {
         // Update the location of existing nodes
         for (JIPipeNodeUI ui : nodeUIs.values()) {
-            Point point = ui.getNode().getLocationWithin(compartment, currentViewMode.name());
+            Point point = ui.getNode().getLocationWithin(compartment, viewMode.name());
             if (point != null) {
                 ui.setLocation(point);
             }
@@ -581,12 +581,12 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
         JIPipeNodeUI targetNode = nodeUIs.getOrDefault(event.getTarget().getNode(), null);
 
         // Check if we actually need to auto-place
-        if (currentViewMode == ViewMode.Horizontal) {
-            if (sourceNode != null && targetNode != null && targetNode.getX() >= sourceNode.getRightX() + JIPipeNodeUI.SLOT_UI_WIDTH) {
+        if (viewMode == JIPipeGraphViewMode.Horizontal) {
+            if (sourceNode != null && targetNode != null && targetNode.getX() >= sourceNode.getRightX() + viewMode.getGridWidth()) {
                 return;
             }
-        } else if (currentViewMode == ViewMode.Vertical) {
-            if (sourceNode != null && targetNode != null && targetNode.getY() >= sourceNode.getBottomY() + JIPipeNodeUI.SLOT_UI_HEIGHT) {
+        } else if (viewMode == JIPipeGraphViewMode.Vertical) {
+            if (sourceNode != null && targetNode != null && targetNode.getY() >= sourceNode.getBottomY() + viewMode.getGridHeight()) {
                 return;
             }
         }
@@ -594,11 +594,11 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
         if (sourceNode != null && targetNode != null && layoutHelperEnabled) {
             Point cursorBackup = cursor;
             try {
-                if (currentViewMode == ViewMode.Horizontal)
-                    this.cursor = new Point(targetNode.getRightX() + 4 * JIPipeNodeUI.SLOT_UI_WIDTH,
+                if (viewMode == JIPipeGraphViewMode.Horizontal)
+                    this.cursor = new Point(targetNode.getRightX() + 4 * viewMode.getGridWidth(),
                             targetNode.getY());
                 else
-                    this.cursor = new Point(targetNode.getX(), targetNode.getBottomY() + 4 * JIPipeNodeUI.SLOT_UI_HEIGHT);
+                    this.cursor = new Point(targetNode.getX(), targetNode.getBottomY() + 4 * viewMode.getGridHeight());
                 autoPlaceTargetAdjacent(sourceNode, event.getSource(), targetNode, event.getTarget());
             } finally {
                 this.cursor = cursorBackup;
@@ -794,15 +794,15 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
                 }
                 Point sourcePoint = new Point();
                 Point targetPoint = new Point();
-                if (currentViewMode == ViewMode.Horizontal) {
+                if (viewMode == JIPipeGraphViewMode.Horizontal) {
                     if (compartment == null || compartment.equals(ui.getNode().getCompartment())) {
                         sourcePoint.x = ui.getX() + ui.getWidth();
-                        sourcePoint.y = ui.getY() + JIPipeNodeUI.SLOT_UI_HEIGHT / 2;
+                        sourcePoint.y = ui.getY() + viewMode.getGridHeight() / 2;
                         targetPoint.x = getWidth();
                         targetPoint.y = sourcePoint.y;
                     } else {
                         sourcePoint.x = 0;
-                        sourcePoint.y = ui.getY() + JIPipeNodeUI.SLOT_UI_HEIGHT / 2;
+                        sourcePoint.y = ui.getY() + viewMode.getGridHeight() / 2;
                         targetPoint.x = ui.getX();
                         targetPoint.y = sourcePoint.y;
                     }
@@ -846,7 +846,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
         int targetA;
         int sourceB;
 
-        if (currentViewMode == ViewMode.Horizontal) {
+        if (viewMode == JIPipeGraphViewMode.Horizontal) {
             sourceA = sourcePoint.x;
             targetA = targetPoint.x;
             sourceB = sourcePoint.y;
@@ -858,7 +858,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
 
         drawer.start(sourceA, sourceB);
         drawer.moveToMajor(targetA);
-        drawer.drawCurrentSegment(g, currentViewMode);
+        drawer.drawCurrentSegment(g, viewMode);
     }
 
     private void drawEdge(Graphics2D g, Point sourcePoint, Rectangle sourceBounds, Point targetPoint, RectangularLineDrawer drawer) {
@@ -870,8 +870,8 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
         int componentStartB;
         int componentEndB;
 
-        if (currentViewMode == ViewMode.Horizontal) {
-            buffer = JIPipeNodeUI.SLOT_UI_WIDTH;
+        if (viewMode == JIPipeGraphViewMode.Horizontal) {
+            buffer = viewMode.getGridWidth();
             sourceA = sourcePoint.x;
             targetA = targetPoint.x;
             sourceB = sourcePoint.y;
@@ -879,7 +879,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
             componentStartB = sourceBounds.y;
             componentEndB = sourceBounds.y + sourceBounds.height;
         } else {
-            buffer = JIPipeNodeUI.SLOT_UI_HEIGHT / 2;
+            buffer = viewMode.getGridHeight() / 2;
             sourceA = sourcePoint.y;
             targetA = targetPoint.y;
             sourceB = sourcePoint.x;
@@ -917,7 +917,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
 
         // Go to end point
         drawer.moveToMajor(targetA);
-        drawer.drawCurrentSegment(g, currentViewMode);
+        drawer.drawCurrentSegment(g, viewMode);
     }
 
     /**
@@ -961,13 +961,13 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
         return ScreenImageSVG.createImage(this);
     }
 
-    public ViewMode getCurrentViewMode() {
-        return currentViewMode;
+    public JIPipeGraphViewMode getViewMode() {
+        return viewMode;
     }
 
-    public void setCurrentViewMode(ViewMode currentViewMode) {
-        if (currentViewMode != this.currentViewMode) {
-            this.currentViewMode = currentViewMode;
+    public void setViewMode(JIPipeGraphViewMode viewMode) {
+        if (viewMode != this.viewMode) {
+            this.viewMode = viewMode;
             removeAllNodes();
             addNewNodes();
         }
@@ -1070,10 +1070,10 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
             minY = Math.min(ui.getY(), minY);
         }
         for (JIPipeNodeUI ui : nodeUIs.values()) {
-            ui.setLocation(ui.getX() - minX + JIPipeNodeUI.SLOT_UI_WIDTH,
-                    ui.getY() - minY + JIPipeNodeUI.SLOT_UI_HEIGHT);
+            ui.setLocation(ui.getX() - minX + viewMode.getGridWidth(),
+                    ui.getY() - minY + viewMode.getGridHeight());
         }
-        cursor = new Point(JIPipeNodeUI.SLOT_UI_WIDTH, JIPipeNodeUI.SLOT_UI_HEIGHT);
+        cursor = viewMode.getGridPoint(new Point(1, 1));
         minDimensions = null;
         if (getParent() != null)
             getParent().revalidate();
@@ -1141,14 +1141,6 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
 
     public void setCurrentHighlightedForDisconnect(JIPipeDataSlotUI currentHighlightedForDisconnect) {
         this.currentHighlightedForDisconnect = currentHighlightedForDisconnect;
-    }
-
-    /**
-     * The direction how a canvas renders the nodes
-     */
-    public enum ViewMode {
-        Horizontal,
-        Vertical
     }
 
 }

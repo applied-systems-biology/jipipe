@@ -30,8 +30,6 @@ import java.awt.*;
 import java.util.Arrays;
 import java.util.Collections;
 
-import static org.hkijena.jipipe.ui.grapheditor.JIPipeNodeUI.SLOT_UI_HEIGHT;
-
 /**
  * UI for one slot in the algorithm finder
  */
@@ -70,7 +68,7 @@ public class JIPipeAlgorithmFinderSlotUI extends JPanel {
         setLayout(new BorderLayout());
 
         assignButton = new JButton(UIUtils.getIconFromResources("chevron-right.png"));
-        assignButton.setPreferredSize(new Dimension(25, SLOT_UI_HEIGHT));
+        assignButton.setPreferredSize(new Dimension(25, 50));
         assignButtonMenu = UIUtils.addPopupMenuToComponent(assignButton);
         UIUtils.makeFlat(assignButton);
 

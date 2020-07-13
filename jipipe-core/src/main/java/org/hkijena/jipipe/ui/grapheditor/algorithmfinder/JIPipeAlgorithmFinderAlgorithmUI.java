@@ -33,7 +33,6 @@ import org.hkijena.jipipe.utils.UIUtils;
 import javax.swing.*;
 import java.awt.*;
 
-import static org.hkijena.jipipe.ui.grapheditor.JIPipeNodeUI.SLOT_UI_HEIGHT;
 
 /**
  * UI for finding algorithms
@@ -233,7 +232,7 @@ public class JIPipeAlgorithmFinderAlgorithmUI extends JPanel {
 
         if (createAddInputSlotButton) {
             JButton addInputSlotButton = createAddSlotButton(JIPipeSlotType.Input);
-            addInputSlotButton.setPreferredSize(new Dimension(25, SLOT_UI_HEIGHT));
+            addInputSlotButton.setPreferredSize(new Dimension(25, 50));
             JPanel panel = new JPanel(new BorderLayout());
 //            panel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(0,0,0,1, getAlgorithmBorderColor()),
 //                    BorderFactory.createEmptyBorder(0,0,0,4)));

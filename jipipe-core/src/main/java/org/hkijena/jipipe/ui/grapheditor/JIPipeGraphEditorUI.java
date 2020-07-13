@@ -15,7 +15,6 @@ package org.hkijena.jipipe.ui.grapheditor;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.eventbus.Subscribe;
-import com.google.common.html.HtmlEscapers;
 import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmDeclaration;
 import org.hkijena.jipipe.api.algorithm.JIPipeGraph;
 import org.hkijena.jipipe.api.algorithm.JIPipeGraphNode;
@@ -209,16 +208,16 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         JToggleButton viewModeHorizontalButton = new JToggleButton(UIUtils.getIconFromResources("view-horizontal.png"));
         viewModeHorizontalButton.setToolTipText("Display nodes horizontally");
         UIUtils.makeFlat25x25(viewModeHorizontalButton);
-        viewModeHorizontalButton.setSelected(canvasUI.getCurrentViewMode() == JIPipeGraphCanvasUI.ViewMode.Horizontal);
-        viewModeHorizontalButton.addActionListener(e -> canvasUI.setCurrentViewMode(JIPipeGraphCanvasUI.ViewMode.Horizontal));
+        viewModeHorizontalButton.setSelected(canvasUI.getViewMode() == JIPipeGraphViewMode.Horizontal);
+        viewModeHorizontalButton.addActionListener(e -> canvasUI.setViewMode(JIPipeGraphViewMode.Horizontal));
         viewModeGroup.add(viewModeHorizontalButton);
         menuBar.add(viewModeHorizontalButton);
 
         JToggleButton viewModeVerticalButton = new JToggleButton(UIUtils.getIconFromResources("view-vertical.png"));
         viewModeVerticalButton.setToolTipText("Display nodes vertically");
         UIUtils.makeFlat25x25(viewModeVerticalButton);
-        viewModeVerticalButton.setSelected(canvasUI.getCurrentViewMode() == JIPipeGraphCanvasUI.ViewMode.Vertical);
-        viewModeVerticalButton.addActionListener(e -> canvasUI.setCurrentViewMode(JIPipeGraphCanvasUI.ViewMode.Vertical));
+        viewModeVerticalButton.setSelected(canvasUI.getViewMode() == JIPipeGraphViewMode.Vertical);
+        viewModeVerticalButton.addActionListener(e -> canvasUI.setViewMode(JIPipeGraphViewMode.Vertical));
         viewModeGroup.add(viewModeVerticalButton);
         menuBar.add(viewModeVerticalButton);
 
@@ -503,12 +502,12 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
                 if (ex || ey) {
                     canvasUI.expandLeftTop(ex, ey);
                     if (ex) {
-                        nx = JIPipeNodeUI.SLOT_UI_WIDTH;
-                        panningOffset.x += JIPipeNodeUI.SLOT_UI_WIDTH;
+                        nx = canvasUI.getViewMode().getGridWidth();
+                        panningOffset.x += canvasUI.getViewMode().getGridWidth();
                     }
                     if (ey) {
-                        ny = JIPipeNodeUI.SLOT_UI_HEIGHT;
-                        panningOffset.y += JIPipeNodeUI.SLOT_UI_HEIGHT;
+                        ny = canvasUI.getViewMode().getGridHeight();
+                        panningOffset.y += canvasUI.getViewMode().getGridHeight();
                     }
                 }
             }
