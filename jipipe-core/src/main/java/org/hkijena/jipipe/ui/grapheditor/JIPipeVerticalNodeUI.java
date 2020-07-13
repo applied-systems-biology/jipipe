@@ -144,7 +144,7 @@ public class JIPipeVerticalNodeUI extends JIPipeNodeUI {
             width = Math.max(width, maxWidth * Math.max(getDisplayedInputColumns(), getDisplayedOutputColumns()));
         }
 
-        return (int) Math.ceil(width * 1.0 / JIPipeGraphViewMode.Vertical.getGridWidth()) * JIPipeGraphViewMode.Vertical.getGridWidth() + 150;
+        return (int) Math.ceil(width * 1.0 / JIPipeGraphViewMode.Vertical.getGridWidth()) * JIPipeGraphViewMode.Vertical.getGridWidth() + 100;
     }
 
     private void addVerticalGlue(int row) {
