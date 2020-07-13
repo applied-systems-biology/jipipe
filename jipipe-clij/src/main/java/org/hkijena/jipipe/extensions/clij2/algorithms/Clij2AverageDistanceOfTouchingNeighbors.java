@@ -22,7 +22,7 @@ import java.util.function.Supplier;
  * CLIJ2 algorithm ported from {@link net.haesleinhuepf.clij2.plugins.AverageDistanceOfTouchingNeighbors}
  */
 @JIPipeDocumentation(name = "CLIJ2 Average Distance Of Touching Neighbors", description = "Takes a touch matrix and a distance matrix to determine the average distance of touching neighbors " + " for every object. Works for following image dimensions: 2D.")
-@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "Distance Matrix")
+@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "Distance matrix")
 @AlgorithmInputSlot(value = CLIJImageData.class, slotName = "distance_matrix", autoCreate = true)
 @AlgorithmInputSlot(value = CLIJImageData.class, slotName = "touch_matrix", autoCreate = true)
 @AlgorithmOutputSlot(value = CLIJImageData.class, slotName = "average_distancelist_destination", autoCreate = true)

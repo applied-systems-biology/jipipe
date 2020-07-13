@@ -23,7 +23,7 @@ import java.util.function.Supplier;
  * CLIJ2 algorithm ported from {@link net.haesleinhuepf.clij2.plugins.AverageDistanceOfNFarOffPoints}
  */
 @JIPipeDocumentation(name = "CLIJ2 Average Distance Of N Far Off Points", description = "Determines the average of the n far off (most distant) points for every point in a distance matrix." + "This corresponds to the average of the n maximum values (rows) for each column of the distance matrix. Works for following image dimensions: 2D.")
-@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "Distance Matrix")
+@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "Distance matrix")
 @AlgorithmInputSlot(value = CLIJImageData.class, slotName = "distance_matrix", autoCreate = true)
 @AlgorithmOutputSlot(value = CLIJImageData.class, slotName = "indexlist_destination", autoCreate = true)
 
