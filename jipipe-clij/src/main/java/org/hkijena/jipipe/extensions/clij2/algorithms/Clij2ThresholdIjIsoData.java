@@ -21,7 +21,7 @@ import java.util.function.Supplier;
 /**
  * CLIJ2 algorithm ported from {@link net.haesleinhuepf.clij2.plugins.ThresholdIJ_IsoData}
  */
-@JIPipeDocumentation(name = "CLIJ2 Threshold Ij Iso Data", description = "The automatic thresholder utilizes the IJ_IsoData threshold method implemented in ImageJ using a histogram determined on " + "the GPU to create binary images as similar as possible to ImageJ 'Apply Threshold' method. Works for following image dimensions: 2D, 3D. Developed by Robert Haase based on work by G. Landini and W. Rasband. Licensed under The code for the automatic thresholding methods originates from https://github.com/imagej/imagej1/blob/master/ij/process/AutoThresholder.java" + "Detailed documentation on the implemented methods can be found online: https://imagej.net/Auto_Threshold")
+@JIPipeDocumentation(name = "CLIJ2 Threshold Ij Iso Data", description = "The automatic thresholder utilizes the IJ_IsoData threshold method implemented in ImageJ using a histogram determined on " + "the GPU to create binary images as similar as possible to ImageJ 'Apply Threshold' method. Works for following image dimensions: 2D, 3D. Developed by Robert Haase based on work by G. Landini and W. Rasband. The code for the automatic thresholding methods originates from https://github.com/imagej/imagej1/blob/master/ij/process/AutoThresholder.java" + "Detailed documentation on the implemented methods can be found online: https://imagej.net/Auto_Threshold")
 @JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "Threshold\nCLIJ Threshold")
 @JIPipeInputSlot(value = CLIJImageData.class, slotName = "src", autoCreate = true)
 @JIPipeOutputSlot(value = CLIJImageData.class, slotName = "dst", autoCreate = true)
