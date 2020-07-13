@@ -85,4 +85,12 @@ public class CLIJImageData implements JIPipeData {
     public ClearCLBuffer getImage() {
         return image;
     }
+
+    @Override
+    public String toString() {
+        if (image != null)
+            return image.toString();
+        else
+            return "<Null>";
+    }
 }

@@ -8,6 +8,7 @@ import org.hkijena.jipipe.extensions.clij2.datatypes.CLIJImageData;
 import org.hkijena.jipipe.extensions.clij2.datatypes.CLIJImageDataImageJAdapter;
 import org.hkijena.jipipe.extensions.clij2.datatypes.CLIJImageToImagePlusDataConverter;
 import org.hkijena.jipipe.extensions.clij2.datatypes.ImagePlusDataToCLIJImageDataConverter;
+import org.hkijena.jipipe.extensions.clij2.parameters.OpenCLKernelScript;
 import org.hkijena.jipipe.extensions.clij2.ui.CLIJControlPanelMenuExtension;
 import org.hkijena.jipipe.extensions.imagejdatatypes.ImageJDataTypesExtension;
 import org.hkijena.jipipe.extensions.imagejdatatypes.compat.ImagePlusDataImporterUI;
@@ -21,6 +22,9 @@ import org.scijava.plugin.Plugin;
  */
 @Plugin(type = JIPipeJavaExtension.class)
 public class CLIJExtension extends JIPipePrepackagedDefaultJavaExtension {
+
+    public static final Class[] ALLOWED_PARAMETER_TYPES = new Class[]{Boolean.class, Character.class, Short.class, Integer.class, Float.class, Double.class};
+
     @Override
     public StringList getDependencyCitations() {
         StringList result = new StringList();
@@ -41,6 +45,13 @@ public class CLIJExtension extends JIPipePrepackagedDefaultJavaExtension {
 
     @Override
     public void register() {
+        registerParameterType("clij2:opencl-kernel",
+                OpenCLKernelScript.class,
+                null,
+                null,
+                "OpenCL Kernel",
+                "A OpenCL kernel",
+                null);
         registerDatatype("clij2-image",
                 CLIJImageData.class,
                 UIUtils.getIconURLFromResources("data-types/clij.png"),
@@ -62,6 +73,8 @@ public class CLIJExtension extends JIPipePrepackagedDefaultJavaExtension {
     }
 
     private void registerAlgorithms() {
+        registerAlgorithm("clij2:execute-kernel-simple-iterating", Clij2ExecuteKernelSimpleIterating.class, UIUtils.getAlgorithmIconURL("clij.png"));
+        registerAlgorithm("clij2:execute-kernel-iterating", Clij2ExecuteKernelIterating.class, UIUtils.getAlgorithmIconURL("clij.png"));
         registerAlgorithm("clij2:absolute-difference", Clij2AbsoluteDifference.class, UIUtils.getAlgorithmIconURL("clij.png"));
         registerAlgorithm("clij2:generate-parametric-image-from-results-table-column", Clij2GenerateParametricImageFromResultsTableColumn.class, UIUtils.getAlgorithmIconURL("clij.png"));
         registerAlgorithm("clij2:equal-constant", Clij2EqualConstant.class, UIUtils.getAlgorithmIconURL("clij.png"));

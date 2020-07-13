@@ -7,7 +7,12 @@ import net.haesleinhuepf.clij2.plugins.MeanClosestSpotDistance;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
-import org.hkijena.jipipe.api.algorithm.*;
+import org.hkijena.jipipe.api.algorithm.AlgorithmInputSlot;
+import org.hkijena.jipipe.api.algorithm.AlgorithmOutputSlot;
+import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmCategory;
+import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmDeclaration;
+import org.hkijena.jipipe.api.algorithm.JIPipeDataBatch;
+import org.hkijena.jipipe.api.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.extensions.clij2.datatypes.CLIJImageData;
 
 import java.util.function.Consumer;

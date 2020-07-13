@@ -34,6 +34,7 @@ public class ScriptParameterEditorUI extends JIPipeParameterEditorUI {
 
     private EditorPane textArea;
     private JLabel collapseInfoLabel;
+    private boolean isCollapsed;
 
     /**
      * @param workbench       workbench
@@ -120,16 +121,19 @@ public class ScriptParameterEditorUI extends JIPipeParameterEditorUI {
     @Override
     public void reload() {
         ScriptParameter code = getParameter(ScriptParameter.class);
-        remove(textArea);
-        remove(collapseInfoLabel);
-        if (code.isCollapsed()) {
-            add(collapseInfoLabel, BorderLayout.CENTER);
-        } else {
-            add(textArea, BorderLayout.CENTER);
+        if (!code.isCollapsed() || !isCollapsed) {
+            remove(textArea);
+            remove(collapseInfoLabel);
+            if (code.isCollapsed()) {
+                add(collapseInfoLabel, BorderLayout.CENTER);
+            } else {
+                add(textArea, BorderLayout.CENTER);
+            }
+            isCollapsed = code.isCollapsed();
+            if (!Objects.equals(textArea.getText(), code.getCode()))
+                textArea.setText(code.getCode());
+            revalidate();
+            repaint();
         }
-        if (!Objects.equals(textArea.getText(), code.getCode()))
-            textArea.setText(code.getCode());
-        revalidate();
-        repaint();
     }
 }

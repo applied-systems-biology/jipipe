@@ -50,7 +50,7 @@ import java.util.function.Supplier;
 @JIPipeDocumentation(name = "Python script (simple iterating)", description = "Runs a Python script that iterates through each data batch in one input slot. " +
         "Access to the data batch is done via a variable 'data_batch' that provides access to all input and output data, as well as annotations. " +
         "Input slots can be accessed from variables 'input_slots' (array), 'input_slots_map' (map from name to slot). " +
-        "The first (any only) input slot is also accessible via the 'input_slot' variable. " +
+        "The first (and only) input slot is also accessible via the 'input_slot' variable. " +
         "Output slots can be accessed from variables 'output_slots' (array), 'output_slots_map' (map from name to slot).")
 @JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Miscellaneous, menuPath = "Python script")
 public class SimpleIteratingPythonScriptAlgorithm extends JIPipeSimpleIteratingAlgorithm {
@@ -152,7 +152,7 @@ public class SimpleIteratingPythonScriptAlgorithm extends JIPipeSimpleIteratingA
 
     @JIPipeDocumentation(name = "Script", description = "Access to the data batch is done via a variable 'data_batch' that provides access to all input and output data, as well as annotations." +
             "Input slots can be accessed from variables 'input_slots' (array), 'input_slots_map' (map from name to slot). " +
-            "The first (any only) input slot is also accessible via the 'input_slot' variable. " +
+            "The first (and only) input slot is also accessible via the 'input_slot' variable. " +
             "Output slots can be accessed from variables 'output_slots' (array), 'output_slots_map' (map from name to slot).")
     @JIPipeParameter("code")
     public PythonScript getCode() {

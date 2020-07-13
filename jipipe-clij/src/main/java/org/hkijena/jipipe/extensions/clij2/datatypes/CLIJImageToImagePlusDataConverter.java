@@ -9,10 +9,9 @@ import org.hkijena.jipipe.utils.ReflectionUtils;
  * Converter from {@link CLIJImageData} to {@link ImagePlusData}
  */
 public class CLIJImageToImagePlusDataConverter implements JIPipeDataConverter {
-    private  final Class<? extends JIPipeData> outputType;
+    private final Class<? extends JIPipeData> outputType;
 
     /**
-     *
      * @param outputType the output type
      */
     public CLIJImageToImagePlusDataConverter(Class<? extends JIPipeData> outputType) {
