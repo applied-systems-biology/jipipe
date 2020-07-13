@@ -25,6 +25,8 @@ import org.hkijena.jipipe.api.events.AlgorithmSlotsChangedEvent;
 import org.hkijena.jipipe.ui.components.AddAlgorithmSlotPanel;
 import org.hkijena.jipipe.ui.events.AlgorithmFinderSuccessEvent;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphCanvasUI;
+import org.hkijena.jipipe.ui.registries.JIPipeUIDatatypeRegistry;
+import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -39,13 +41,11 @@ import static org.hkijena.jipipe.ui.grapheditor.JIPipeNodeUI.SLOT_UI_HEIGHT;
 public class JIPipeAlgorithmFinderAlgorithmUI extends JPanel {
     private final JIPipeGraphCanvasUI canvasUI;
     private final JIPipeDataSlot outputSlot;
-    private final JIPipeGraph graph;
     private final JIPipeGraphNode algorithm;
     private final int score;
     private final int maxScore;
     private final boolean isExistingInstance;
     private final EventBus eventBus = new EventBus();
-    private final String compartment;
     private JPanel slotPanel;
 
     /**
@@ -60,8 +60,6 @@ public class JIPipeAlgorithmFinderAlgorithmUI extends JPanel {
     public JIPipeAlgorithmFinderAlgorithmUI(JIPipeGraphCanvasUI canvasUI, JIPipeDataSlot outputSlot, JIPipeAlgorithmDeclaration declaration, int score, int maxScore) {
         this.canvasUI = canvasUI;
         this.outputSlot = outputSlot;
-        this.graph = canvasUI.getGraph();
-        this.compartment = canvasUI.getCompartment();
         this.score = score;
         this.maxScore = maxScore;
         this.algorithm = declaration.newInstance();
@@ -82,8 +80,6 @@ public class JIPipeAlgorithmFinderAlgorithmUI extends JPanel {
     public JIPipeAlgorithmFinderAlgorithmUI(JIPipeGraphCanvasUI canvasUI, JIPipeDataSlot outputSlot, JIPipeGraphNode algorithm, int score, int maxScore) {
         this.canvasUI = canvasUI;
         this.outputSlot = outputSlot;
-        this.graph = canvasUI.getGraph();
-        this.compartment = canvasUI.getCompartment();
         this.score = score;
         this.maxScore = maxScore;
         this.algorithm = algorithm;
@@ -103,23 +99,8 @@ public class JIPipeAlgorithmFinderAlgorithmUI extends JPanel {
                 BorderFactory.createLineBorder(Color.DARK_GRAY, 1, true)));
         setLayout(new BorderLayout());
 
-        JPanel centerPanel = new JPanel(new BorderLayout());
-
-        StringBuilder title = new StringBuilder();
-        if (isExistingInstance)
-            title.append("<span style=\"color: blue;\">Existing </span>");
-        else
-            title.append("<span style=\"color: green;\">Create </span>");
-        title.append("<span style=\"font-size: 16pt;\">").append(algorithm.getName()).append("</font>");
-
-        double stars = (maxScore > 0 ? (Math.max(0, score) * 1.0 / maxScore) : 1.0) * 5.0;
-        JLabel starsLabel = UIUtils.createStarRatingLabel(title.toString(), stars, 5);
-        centerPanel.add(starsLabel, BorderLayout.NORTH);
-
-        JLabel label = new JLabel();
-        label.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
-        label.setText(TooltipUtils.getAlgorithmTooltip(algorithm.getDeclaration(), false));
-        centerPanel.add(label, BorderLayout.CENTER);
+        JPanel centerPanel = new JPanel(new GridBagLayout());
+        initializeCenterPanel(centerPanel);
 
         add(centerPanel, BorderLayout.CENTER);
 
@@ -131,6 +112,104 @@ public class JIPipeAlgorithmFinderAlgorithmUI extends JPanel {
         slotPanel = new JPanel();
         slotPanel.setLayout(new BoxLayout(slotPanel, BoxLayout.Y_AXIS));
         add(slotPanel, BorderLayout.EAST);
+    }
+
+    private void initializeCenterPanel(JPanel centerPanel) {
+
+        // Label showing if a new or existing instance is shown
+        JLabel actionLabel = new JLabel();
+        if(isExistingInstance) {
+            actionLabel.setText("Existing");
+            actionLabel.setForeground(Color.BLUE);
+        }
+        else {
+            actionLabel.setText("Create");
+            actionLabel.setForeground(new Color(0,128,0));
+        }
+        centerPanel.add(actionLabel, new GridBagConstraints() {
+            {
+                anchor = WEST;
+                gridx = 0;
+                gridy = 0;
+                insets = UIUtils.UI_PADDING;
+            }
+        });
+
+        // The title and menu
+        JLabel titleLabel = new JLabel(algorithm.getName());
+        centerPanel.add(titleLabel, new GridBagConstraints() {
+            {
+                anchor = WEST;
+                gridx = 1;
+                gridy = 0;
+                weightx = 1;
+                fill = HORIZONTAL;
+                insets = UIUtils.UI_PADDING;
+            }
+        });
+
+        JIPipeAlgorithmDeclaration declaration = algorithm.getDeclaration();
+        String menuPath = declaration.getCategory().toString();
+        if (!StringUtils.isNullOrEmpty(declaration.getMenuPath())) {
+            menuPath += " > " + String.join(" > ", declaration.getMenuPath().split("\n"));
+        }
+        JLabel menuLabel = new JLabel(menuPath);
+        menuLabel.setForeground(Color.GRAY);
+        menuLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, 12));
+        centerPanel.add(menuLabel, new GridBagConstraints() {
+            {
+                anchor = WEST;
+                gridx = 1;
+                gridy = 1;
+                weightx = 1;
+                fill = HORIZONTAL;
+                insets = UIUtils.UI_PADDING;
+            }
+        });
+
+        // The description
+        JTextArea description = UIUtils.makeReadonlyBorderlessTextArea(declaration.getDescription());
+        centerPanel.add(description, new GridBagConstraints() {
+            {
+                anchor = WEST;
+                gridx = 1;
+                gridy = 2;
+                weightx = 1;
+                fill = HORIZONTAL;
+                insets = UIUtils.UI_PADDING;
+            }
+        });
+
+        // Outputs
+        if(!algorithm.getOutputSlots().isEmpty()) {
+            int row = 3;
+            centerPanel.add(new JLabel("Generates following outputs:"), new GridBagConstraints() {
+                {
+                    anchor = WEST;
+                    gridx = 1;
+                    gridy = 3;
+                    weightx = 1;
+                    fill = HORIZONTAL;
+                    insets = UIUtils.UI_PADDING;
+                }
+            });
+            for (JIPipeDataSlot slot : algorithm.getOutputSlots()) {
+                ++row;
+                int finalRow = row;
+                JLabel label = new JLabel(slot.getName(), JIPipeUIDatatypeRegistry.getInstance().getIconFor(slot.getAcceptedDataType()), JLabel.LEFT);
+                label.setToolTipText(TooltipUtils.getSlotInstanceTooltip(slot));
+                centerPanel.add(label, new GridBagConstraints() {
+                    {
+                        anchor = WEST;
+                        gridx = 1;
+                        gridy = finalRow;
+                        weightx = 1;
+                        fill = HORIZONTAL;
+                        insets = UIUtils.UI_PADDING;
+                    }
+                });
+            }
+        }
     }
 
     /**
