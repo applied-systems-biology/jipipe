@@ -209,7 +209,7 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
         JIPipeSlotDefinition slot = outputSlots.getOrDefault(name, null);
         if (slot != null) {
             if (user) {
-                if (!canModifyInputSlots())
+                if (!canModifyOutputSlots())
                     throw new UserFriendlyRuntimeException("Output slots can not be modified!", "Unable to remove slot!",
                             "Algorithm slot configuration",
                             "The algorithm is configured, so output slots cannot be removed.", "Contact the authors of the plugin that provides the algorithm.");
