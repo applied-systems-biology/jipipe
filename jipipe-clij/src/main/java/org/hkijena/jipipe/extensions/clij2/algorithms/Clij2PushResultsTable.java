@@ -3,6 +3,7 @@ package org.hkijena.jipipe.extensions.clij2.algorithms;
 import ij.measure.ResultsTable;
 import net.haesleinhuepf.clij.CLIJ;
 import net.haesleinhuepf.clij.clearcl.ClearCLBuffer;
+import net.haesleinhuepf.clij.coremem.enums.NativeTypeEnum;
 import net.haesleinhuepf.clij2.CLIJ2;
 import net.haesleinhuepf.clij2.plugins.PushResultsTable;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
@@ -25,8 +26,8 @@ import java.util.function.Supplier;
  */
 @JIPipeDocumentation(name = "CLIJ2 Push Results Table", description = "")
 @JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Converter)
-@AlgorithmInputSlot(value = CLIJImageData.class, slotName = "buffer", autoCreate = true)
-@AlgorithmOutputSlot(value = ResultsTableData.class, slotName = "table", autoCreate = true)
+@AlgorithmOutputSlot(value = CLIJImageData.class, slotName = "buffer", autoCreate = true)
+@AlgorithmInputSlot(value = ResultsTableData.class, slotName = "table", autoCreate = true)
 
 public class Clij2PushResultsTable extends JIPipeSimpleIteratingAlgorithm {
 
@@ -53,11 +54,11 @@ public class Clij2PushResultsTable extends JIPipeSimpleIteratingAlgorithm {
     protected void runIteration(JIPipeDataBatch dataInterface, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         CLIJ2 clij2 = CLIJ2.getInstance();
         CLIJ clij = clij2.getCLIJ();
-        ClearCLBuffer buffer = dataInterface.getInputData(getInputSlot("buffer"), CLIJImageData.class).getImage();
-        ResultsTable table = new ResultsTable();
+        ResultsTable table = dataInterface.getInputData(getFirstInputSlot(), ResultsTableData.class).getTable();
+        ClearCLBuffer buffer = clij.create(new long[]{table.getHeadings().length, table.getCounter()}, NativeTypeEnum.Float);
         PushResultsTable.pushResultsTable(clij2, buffer, table);
 
-        dataInterface.addOutputData(getOutputSlot("table"), new ResultsTableData(table));
+        dataInterface.addOutputData(getFirstOutputSlot(), new CLIJImageData(buffer));
     }
 
 }
