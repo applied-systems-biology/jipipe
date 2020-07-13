@@ -632,15 +632,74 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
     /**
      * Renders items in the navigator
      */
-    public static class NavigationRenderer extends JLabel implements ListCellRenderer<Object> {
+    public static class NavigationRenderer extends JPanel implements ListCellRenderer<Object> {
+
+        private ColorIcon icon;
+        private JLabel iconLabel;
+        private JLabel actionLabel;
+        private JLabel algorithmLabel;
+        private JLabel menuLabel;
 
         /**
          * Creates a new instance
          */
         public NavigationRenderer() {
+            setLayout(new GridBagLayout());
             setOpaque(true);
             setFont(new Font(Font.DIALOG, Font.PLAIN, 12));
             setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+
+
+            icon = new ColorIcon(16,40);
+            iconLabel = new JLabel(icon);
+            Insets border = new Insets(2, 4, 2, 2);
+            add(iconLabel, new GridBagConstraints() {
+                {
+                    gridx = 0;
+                    gridy = 0;
+                    gridheight = 2;
+                    anchor = WEST;
+                    insets = border;
+                }
+            });
+
+            actionLabel = new JLabel();
+            add(actionLabel, new GridBagConstraints() {
+                {
+                    gridx = 1;
+                    gridy = 0;
+                    anchor = WEST;
+                    insets = border;
+                }
+            });
+            algorithmLabel = new JLabel();
+            add(algorithmLabel, new GridBagConstraints() {
+                {
+                    gridx = 2;
+                    gridy = 0;
+                    anchor = WEST;
+                    insets = border;
+                }
+            });
+            menuLabel = new JLabel();
+            menuLabel.setForeground(Color.GRAY);
+            menuLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, 12));
+            add(menuLabel, new GridBagConstraints() {
+                {
+                    gridx = 2;
+                    gridy = 1;
+                    anchor = WEST;
+                    insets = border;
+                }
+            });
+            JPanel glue = new JPanel();
+            glue.setOpaque(false);
+            add(glue, new GridBagConstraints() {
+                {
+                    gridx = 3;
+                    weightx = 1;
+                }
+            });
         }
 
         @Override
@@ -650,40 +709,30 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
                 JIPipeAlgorithmDeclaration declaration = (JIPipeAlgorithmDeclaration) value;
                 String menuPath = declaration.getCategory().toString();
                 if (!StringUtils.isNullOrEmpty(declaration.getMenuPath())) {
-                    menuPath += " &gt; " + String.join(" &gt; ", declaration.getMenuPath().split("\n"));
+                    menuPath += " > " + String.join(" > ", declaration.getMenuPath().split("\n"));
                 }
 
-                setIcon(new ColorIcon(16, 40, Color.WHITE, UIUtils.getFillColorFor(declaration)));
-                setText(String.format("<html><table cellpadding=\"1\"><tr><td><span style=\"color: green;\">Create</span></td>" +
-                                "<td><img src=\"%s\"/></td>" +
-                                "<td>%s</td></tr>" +
-                                "<tr><td></td>" +
-                                "<td></td>" +
-                                "<td><span style=\"color: gray;\">%s</span></td></tr></table></html>",
-                        JIPipeUIAlgorithmRegistry.getInstance().getIconURLFor(declaration),
-                        HtmlEscapers.htmlEscaper().escape(declaration.getName()),
-                        menuPath
-                ));
+                icon.setFillColor(Color.WHITE);
+                icon.setBorderColor(UIUtils.getFillColorFor(declaration));
+                actionLabel.setText("Create");
+                actionLabel.setForeground(new Color(0,128,0));
+                algorithmLabel.setText(declaration.getName());
+                algorithmLabel.setIcon(JIPipeUIAlgorithmRegistry.getInstance().getIconFor(declaration));
+                menuLabel.setText(menuPath);
             } else if (value instanceof JIPipeNodeUI) {
-                JIPipeNodeUI ui = (JIPipeNodeUI) value;
-                JIPipeAlgorithmDeclaration declaration = ui.getNode().getDeclaration();
+                JIPipeAlgorithmDeclaration declaration = ((JIPipeNodeUI) value).getNode().getDeclaration();
                 String menuPath = declaration.getCategory().toString();
                 if (!StringUtils.isNullOrEmpty(declaration.getMenuPath())) {
-                    menuPath += " &gt; " + String.join(" &gt; ", declaration.getMenuPath().split("\n"));
+                    menuPath += " > " + String.join(" > ", declaration.getMenuPath().split("\n"));
                 }
-                setIcon(new ColorIcon(16, 40, UIUtils.getFillColorFor(declaration), UIUtils.getBorderColorFor(declaration)));
-                setText(String.format("<html><table cellpadding=\"1\"><tr><td><span style=\"color: blue;\">Navigate</span></td>" +
-                                "<td><img src=\"%s\"/></td>" +
-                                "<td>%s</td></tr>" +
-                                "<tr><td></td>" +
-                                "<td></td>" +
-                                "<td><span style=\"color: gray;\">%s</span></td></tr></table></html>",
-                        JIPipeUIAlgorithmRegistry.getInstance().getIconURLFor(declaration),
-                        HtmlEscapers.htmlEscaper().escape(declaration.getName()),
-                        menuPath
-                ));
-            } else {
-                setText("<Null>");
+
+                icon.setFillColor(UIUtils.getFillColorFor(declaration));
+                icon.setBorderColor(UIUtils.getBorderColorFor(declaration));
+                actionLabel.setText("Navigate");
+                actionLabel.setForeground(Color.BLUE);
+                algorithmLabel.setText(declaration.getName());
+                algorithmLabel.setIcon(JIPipeUIAlgorithmRegistry.getInstance().getIconFor(declaration));
+                menuLabel.setText(menuPath);
             }
 
             if (isSelected) {
