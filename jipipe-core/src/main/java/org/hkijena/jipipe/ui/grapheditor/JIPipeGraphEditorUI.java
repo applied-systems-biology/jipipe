@@ -84,6 +84,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         reloadMenuBar();
         JIPipeAlgorithmRegistry.getInstance().getEventBus().register(this);
         algorithmGraph.getEventBus().register(this);
+        updateNavigation();
     }
 
     public JIPipeGraphCanvasUI getCanvasUI() {
@@ -127,27 +128,37 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
     private static int[] rankNavigationEntry(Object value, String[] searchStrings) {
         if(searchStrings == null || searchStrings.length == 0)
             return new int[0];
-        JIPipeAlgorithmDeclaration algorithmDeclaration;
+        String nameHayStack;
+        String descriptionHayStack;
         if (value instanceof JIPipeNodeUI) {
-            algorithmDeclaration = ((JIPipeNodeUI) value).getNode().getDeclaration();
+            JIPipeGraphNode node = ((JIPipeNodeUI) value).getNode();
+            nameHayStack = node.getName();
+            descriptionHayStack = StringUtils.orElse(node.getCustomDescription(), node.getDeclaration().getDescription());
         } else if (value instanceof JIPipeAlgorithmDeclaration) {
-            if (((JIPipeAlgorithmDeclaration) value).isHidden())
+            JIPipeAlgorithmDeclaration declaration = (JIPipeAlgorithmDeclaration) value;
+            if (declaration.isHidden())
                 return null;
-            algorithmDeclaration = (JIPipeAlgorithmDeclaration) value;
+            nameHayStack = declaration.getName().toLowerCase();
+            descriptionHayStack = declaration.getDescription().toLowerCase();
         }
         else {
             return null;
         }
 
+        nameHayStack = nameHayStack.toLowerCase();
+        descriptionHayStack = descriptionHayStack.toLowerCase();
+
         int[] ranks = new int[2];
-        String nameHayStack = algorithmDeclaration.getName().toLowerCase();
-        String descriptionHayStack = algorithmDeclaration.getDescription().toLowerCase();
+
         for (String string : searchStrings) {
-            if(nameHayStack.contains(string))
+            if(nameHayStack.contains(string.toLowerCase()))
                 --ranks[0];
-            if(descriptionHayStack.contains(string))
+            if(descriptionHayStack.contains(string.toLowerCase()))
                 --ranks[1];
         }
+
+        if(ranks[0] == 0 && ranks[1] == 0)
+            return null;
 
         return ranks;
     }
@@ -719,7 +730,8 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
                 algorithmLabel.setIcon(JIPipeUIAlgorithmRegistry.getInstance().getIconFor(declaration));
                 menuLabel.setText(menuPath);
             } else if (value instanceof JIPipeNodeUI) {
-                JIPipeAlgorithmDeclaration declaration = ((JIPipeNodeUI) value).getNode().getDeclaration();
+                JIPipeGraphNode node = ((JIPipeNodeUI) value).getNode();
+                JIPipeAlgorithmDeclaration declaration = node.getDeclaration();
                 String menuPath = declaration.getCategory().toString();
                 if (!StringUtils.isNullOrEmpty(declaration.getMenuPath())) {
                     menuPath += " > " + String.join(" > ", declaration.getMenuPath().split("\n"));
@@ -729,7 +741,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
                 icon.setBorderColor(UIUtils.getBorderColorFor(declaration));
                 actionLabel.setText("Navigate");
                 actionLabel.setForeground(Color.BLUE);
-                algorithmLabel.setText(declaration.getName());
+                algorithmLabel.setText(node.getName());
                 algorithmLabel.setIcon(JIPipeUIAlgorithmRegistry.getInstance().getIconFor(declaration));
                 menuLabel.setText(menuPath);
             }
