@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.ui.grapheditor.settings;
 
+import org.hkijena.jipipe.api.algorithm.JIPipeDataBatchAlgorithm;
 import org.hkijena.jipipe.api.algorithm.JIPipeGraphNode;
 import org.hkijena.jipipe.api.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.algorithm.JIPipeMergingAlgorithm;
@@ -84,7 +85,7 @@ public class JIPipeSingleAlgorithmSelectionPanelUI extends JIPipeProjectWorkbenc
                 DocumentTabPane.CloseMode.withoutCloseButton,
                 false);
 
-        if(algorithm instanceof JIPipeIteratingAlgorithm || algorithm instanceof JIPipeMergingAlgorithm) {
+        if(algorithm instanceof JIPipeDataBatchAlgorithm) {
             batchAssistantTabContent = new JPanel(new BorderLayout());
             tabbedPane.addTab("Data batches", UIUtils.getIconFromResources("algorithms/boxes.png"),
                     batchAssistantTabContent,
@@ -119,7 +120,7 @@ public class JIPipeSingleAlgorithmSelectionPanelUI extends JIPipeProjectWorkbenc
                 cacheBrowserTabContent.add(browserUI, BorderLayout.CENTER);
             }
         }
-        if(algorithm instanceof JIPipeIteratingAlgorithm || algorithm instanceof JIPipeMergingAlgorithm) {
+        if(algorithm instanceof JIPipeDataBatchAlgorithm) {
             if(batchAssistantTabContent != null && tabbedPane.getCurrentContent() == batchAssistantTabContent) {
                 if (batchAssistantTabContent.getComponentCount() == 0) {
                     DataBatchAssistantUI browserUI = new DataBatchAssistantUI(getProjectWorkbench(), algorithm,
@@ -190,7 +191,7 @@ public class JIPipeSingleAlgorithmSelectionPanelUI extends JIPipeProjectWorkbenc
                 SwingUtilities.invokeLater(() -> tabbedPane.switchToContent(cacheBrowserTabContent));
             }
             else if(showBatchAssistant) {
-                if(algorithm instanceof JIPipeIteratingAlgorithm || algorithm instanceof JIPipeMergingAlgorithm) {
+                if(algorithm instanceof JIPipeDataBatchAlgorithm) {
                     SwingUtilities.invokeLater(() -> tabbedPane.switchToContent(batchAssistantTabContent));
                 }
             }

@@ -90,7 +90,7 @@ public class FormPanel extends JXPanel {
             boolean documentationBelow = (flags & DOCUMENTATION_BELOW) == DOCUMENTATION_BELOW;
             JSplitPane splitPane = new JSplitPane(documentationBelow ? JSplitPane.VERTICAL_SPLIT : JSplitPane.HORIZONTAL_SPLIT, content, helpPanel);
             splitPane.setDividerSize(3);
-            splitPane.setResizeWeight(0.33);
+            splitPane.setResizeWeight(0.66);
             addComponentListener(new ComponentAdapter() {
                 @Override
                 public void componentResized(ComponentEvent e) {

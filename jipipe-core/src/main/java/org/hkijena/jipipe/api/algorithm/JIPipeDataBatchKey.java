@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 /**
  * Structure that can hold multiple {@link JIPipeAnnotation} instances to make a set of traits a key
  */
-public class JIPipeUniqueDataBatch {
+public class JIPipeDataBatchKey {
     private Map<String, JIPipeAnnotation> entries = new HashMap<>();
 
     public Map<String, JIPipeAnnotation> getEntries() {
@@ -38,7 +38,7 @@ public class JIPipeUniqueDataBatch {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        JIPipeUniqueDataBatch that = (JIPipeUniqueDataBatch) o;
+        JIPipeDataBatchKey that = (JIPipeDataBatchKey) o;
         return entries.equals(that.entries);
     }
 

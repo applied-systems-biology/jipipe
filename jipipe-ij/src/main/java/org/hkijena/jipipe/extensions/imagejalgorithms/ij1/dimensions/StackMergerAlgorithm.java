@@ -81,9 +81,9 @@ public class StackMergerAlgorithm extends JIPipeMergingAlgorithm {
     }
 
     @Override
-    protected Set<String> getIgnoredTraitColumns() {
+    public Set<String> getIgnoredAnnotationColumns() {
         if (StringUtils.isNullOrEmpty(counterAnnotation))
-            return super.getIgnoredTraitColumns();
+            return super.getIgnoredAnnotationColumns();
         else
             return Collections.singleton(counterAnnotation);
     }

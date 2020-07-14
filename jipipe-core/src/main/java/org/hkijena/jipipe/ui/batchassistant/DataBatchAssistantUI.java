@@ -16,21 +16,29 @@ package org.hkijena.jipipe.ui.batchassistant;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.JIPipeProjectCache;
 import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithm;
+import org.hkijena.jipipe.api.algorithm.JIPipeDataBatchAlgorithm;
 import org.hkijena.jipipe.api.algorithm.JIPipeGraphNode;
 import org.hkijena.jipipe.api.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.algorithm.JIPipeMergingAlgorithm;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.events.AlgorithmSlotsChangedEvent;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
+import org.hkijena.jipipe.ui.components.FormPanel;
+import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * A tool that assists the user in configuring batch generation for
@@ -43,6 +51,7 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
     private JPanel errorUI;
     private Map<JIPipeDataSlot, JIPipeDataSlot> currentCache = new HashMap<>();
     private JLabel errorLabel;
+    private JPanel batchPreviewPanel = new FormPanel(null, FormPanel.WITH_SCROLLING);
 
     /**
      * @param workbenchUI The workbench UI
@@ -113,21 +122,31 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
         }
         else {
             removeAll();
-            if(algorithm instanceof JIPipeIteratingAlgorithm)
-                buildBatchEditorUIForIteratingAlgorithm((JIPipeIteratingAlgorithm)algorithm);
-            else if(algorithm instanceof JIPipeMergingAlgorithm)
-                buildBatchEditorUIForMergingAlgorithm((JIPipeMergingAlgorithm)algorithm);
+            switchToEditor();
             revalidate();
             repaint();
         }
     }
 
-    private void buildBatchEditorUIForMergingAlgorithm(JIPipeMergingAlgorithm mergingAlgorithm) {
+    private void switchToEditor() {
+        JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
+        splitPane.setDividerSize(3);
+        splitPane.setResizeWeight(0.33);
+        addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                super.componentResized(e);
+                splitPane.setDividerLocation(0.33);
+            }
+        });
+        add(splitPane, BorderLayout.CENTER);
 
-    }
-
-    private void buildBatchEditorUIForIteratingAlgorithm(JIPipeIteratingAlgorithm iteratingAlgorithm) {
-
+        ParameterPanel parameterPanel = new ParameterPanel(getWorkbench(),
+                ((JIPipeDataBatchAlgorithm)algorithm).getGenerationSettingsInterface(),
+                null,
+                ParameterPanel.NO_GROUP_HEADERS | ParameterPanel.WITH_SCROLLING);
+        splitPane.setTopComponent(parameterPanel);
+        splitPane.setBottomComponent(batchPreviewPanel);
     }
 
     private void initialize() {

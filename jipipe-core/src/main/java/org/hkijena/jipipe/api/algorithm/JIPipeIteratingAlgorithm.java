@@ -44,7 +44,7 @@ import java.util.function.Supplier;
  * If your algorithm only has one input and will never have more than one input slot, we recommend using {@link JIPipeSimpleIteratingAlgorithm}
  * instead that comes without the additional data set matching strategies
  */
-public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgorithm implements JIPipeParallelizedAlgorithm {
+public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgorithm implements JIPipeParallelizedAlgorithm, JIPipeDataBatchAlgorithm {
 
     public static final String ITERATING_ALGORITHM_DESCRIPTION = "This algorithm groups the incoming data based on the annotations. " +
             "Those groups can consist of one data item per slot.";
@@ -85,28 +85,12 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
     }
 
     @Override
-    public void runParameterSet(JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled, List<JIPipeAnnotation> parameterAnnotations) {
+    public JIPipeParameterCollection getGenerationSettingsInterface() {
+        return dataBatchGenerationSettings;
+    }
 
-        if (isPassThrough() && canPassThrough()) {
-            algorithmProgress.accept(subProgress.resolve("Data passed through to output"));
-            runPassThrough();
-            return;
-        }
-
-        // Special case: No input slots
-        if (getEffectiveInputSlotCount() == 0) {
-            if (isCancelled.get())
-                return;
-            final int row = 0;
-            JIPipeRunnerSubStatus slotProgress = subProgress.resolve("Data row " + (row + 1) + " / " + 1);
-            algorithmProgress.accept(slotProgress);
-            JIPipeDataBatch dataBatch = new JIPipeDataBatch(this);
-            dataBatch.addGlobalAnnotations(parameterAnnotations, true);
-            runIteration(dataBatch, slotProgress, algorithmProgress, isCancelled);
-            return;
-        }
-
-        // First find all columns to sort by
+    @Override
+    public Map<JIPipeDataBatchKey, Map<String, TIntSet>> generateBatches(Map<String, JIPipeDataSlot> slotMap) {
         Set<String> referenceTraitColumns;
 
         switch (dataBatchGenerationSettings.dataSetMatching) {
@@ -114,22 +98,21 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
                 referenceTraitColumns = new HashSet<>(dataBatchGenerationSettings.customColumns);
                 break;
             case Union:
-                referenceTraitColumns = getInputTraitColumnUnion();
+                referenceTraitColumns = getInputAnnotationColumnUnion(slotMap);
                 break;
             case Intersection:
-                referenceTraitColumns = getInputTraitColumnIntersection();
+                referenceTraitColumns = getInputAnnotationColumnIntersection(slotMap);
                 break;
             default:
                 throw new UnsupportedOperationException("Unknown column matching strategy: " + dataBatchGenerationSettings.dataSetMatching);
         }
 
-        // Organize the input data by Dataset -> Slot -> Data row
-        Map<JIPipeUniqueDataBatch, Map<String, TIntSet>> dataSets = new HashMap<>();
-        for (JIPipeDataSlot inputSlot : getInputSlots()) {
+        Map<JIPipeDataBatchKey, Map<String, TIntSet>> dataSets = new HashMap<>();
+        for (JIPipeDataSlot inputSlot : slotMap.values()) {
             if (inputSlot == getParameterSlot())
                 continue;
             for (int row = 0; row < inputSlot.getRowCount(); row++) {
-                JIPipeUniqueDataBatch key = new JIPipeUniqueDataBatch();
+                JIPipeDataBatchKey key = new JIPipeDataBatchKey();
                 for (String referenceTraitColumn : referenceTraitColumns) {
                     key.getEntries().put(referenceTraitColumn, null);
                 }
@@ -151,10 +134,44 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
                 rows.add(row);
             }
         }
+        return dataSets;
+    }
+
+    @Override
+    public void runParameterSet(JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled, List<JIPipeAnnotation> parameterAnnotations) {
+
+        if (isPassThrough() && canPassThrough()) {
+            algorithmProgress.accept(subProgress.resolve("Data passed through to output"));
+            runPassThrough();
+            return;
+        }
+
+        // Special case: No input slots
+        if (getEffectiveInputSlotCount() == 0) {
+            if (isCancelled.get())
+                return;
+            final int row = 0;
+            JIPipeRunnerSubStatus slotProgress = subProgress.resolve("Data row " + (row + 1) + " / " + 1);
+            algorithmProgress.accept(slotProgress);
+            JIPipeDataBatch dataBatch = new JIPipeDataBatch(this);
+            dataBatch.addGlobalAnnotations(parameterAnnotations, true);
+            runIteration(dataBatch, slotProgress, algorithmProgress, isCancelled);
+            return;
+        }
+
+        Map<String, JIPipeDataSlot> slotMap = new HashMap<>();
+        for (JIPipeDataSlot inputSlot : getInputSlots()) {
+            if(inputSlot == getParameterSlot())
+                continue;
+            slotMap.put(inputSlot.getName(), inputSlot);
+        }
+
+        // Organize the input data by Dataset -> Slot -> Data row
+        Map<JIPipeDataBatchKey, Map<String, TIntSet>> dataSets = generateBatches(slotMap);
 
         // Check for duplicates
         if (!dataBatchGenerationSettings.allowDuplicateDataSets) {
-            for (Map.Entry<JIPipeUniqueDataBatch, Map<String, TIntSet>> dataSetEntry : dataSets.entrySet()) {
+            for (Map.Entry<JIPipeDataBatchKey, Map<String, TIntSet>> dataSetEntry : dataSets.entrySet()) {
                 for (Map.Entry<String, TIntSet> slotEntry : dataSetEntry.getValue().entrySet()) {
                     if (slotEntry.getValue().size() > 1) {
                         throw new UserFriendlyRuntimeException("Duplicate data set found!",
@@ -171,7 +188,7 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
         }
 
         // Check for missing data sets
-        for (Map.Entry<JIPipeUniqueDataBatch, Map<String, TIntSet>> dataSetEntry : ImmutableList.copyOf(dataSets.entrySet())) {
+        for (Map.Entry<JIPipeDataBatchKey, Map<String, TIntSet>> dataSetEntry : ImmutableList.copyOf(dataSets.entrySet())) {
             boolean incomplete = false;
             for (JIPipeDataSlot inputSlot : getInputSlots()) {
                 if (getParameterSlot() == inputSlot)
@@ -198,7 +215,7 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
 
         // Generate data interfaces
         List<JIPipeDataBatch> dataBatchs = new ArrayList<>();
-        for (Map.Entry<JIPipeUniqueDataBatch, Map<String, TIntSet>> dataSetEntry : ImmutableList.copyOf(dataSets.entrySet())) {
+        for (Map.Entry<JIPipeDataBatchKey, Map<String, TIntSet>> dataSetEntry : ImmutableList.copyOf(dataSets.entrySet())) {
             List<JIPipeDataBatch> dataBatchsForDataSet = new ArrayList<>();
             // Create the first batch
             {
@@ -294,9 +311,9 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
         return dataBatchGenerationSettings;
     }
 
-    private Set<String> getInputTraitColumnIntersection() {
+    private Set<String> getInputAnnotationColumnIntersection(Map<String, JIPipeDataSlot> slotMap) {
         Set<String> result = null;
-        for (JIPipeDataSlot inputSlot : getInputSlots()) {
+        for (JIPipeDataSlot inputSlot : slotMap.values()) {
             if (getParameterSlot() == inputSlot)
                 continue;
             if (result == null) {
@@ -310,9 +327,9 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
         return result;
     }
 
-    private Set<String> getInputTraitColumnUnion() {
+    private Set<String> getInputAnnotationColumnUnion(Map<String, JIPipeDataSlot> slotMap) {
         Set<String> result = new HashSet<>();
-        for (JIPipeDataSlot inputSlot : getInputSlots()) {
+        for (JIPipeDataSlot inputSlot : slotMap.values()) {
             if (getParameterSlot() == inputSlot)
                 continue;
             result.addAll(inputSlot.getAnnotationColumns());
