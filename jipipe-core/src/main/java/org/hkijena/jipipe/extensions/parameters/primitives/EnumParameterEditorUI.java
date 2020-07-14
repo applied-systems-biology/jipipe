@@ -20,6 +20,8 @@ import org.hkijena.jipipe.utils.ReflectionUtils;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Objects;
 
 /**
@@ -55,11 +57,6 @@ public class EnumParameterEditorUI extends JIPipeParameterEditorUI {
     private void initialize() {
         setLayout(new BorderLayout());
         Object[] values = getParameterAccess().getFieldClass().getEnumConstants();
-        comboBox = new JComboBox<>(values);
-        comboBox.setSelectedItem(getParameterAccess().get(Object.class));
-        comboBox.addActionListener(e -> {
-            setParameter(comboBox.getSelectedItem(), false);
-        });
         EnumParameterSettings settings = getParameterAccess().getAnnotationOfType(EnumParameterSettings.class);
         EnumItemInfo info;
         if (settings != null) {
@@ -67,6 +64,12 @@ public class EnumParameterEditorUI extends JIPipeParameterEditorUI {
         } else {
             info = new DefaultEnumItemInfo();
         }
+        Arrays.sort(values, Comparator.comparing(info::getLabel));
+        comboBox = new JComboBox<>(values);
+        comboBox.setSelectedItem(getParameterAccess().get(Object.class));
+        comboBox.addActionListener(e -> {
+            setParameter(comboBox.getSelectedItem(), false);
+        });
         comboBox.setRenderer(new Renderer(info));
 
         add(comboBox, BorderLayout.CENTER);
