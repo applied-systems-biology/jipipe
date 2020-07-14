@@ -43,8 +43,8 @@ import java.util.function.Supplier;
 @JIPipeDocumentation(name = "Modify tables (Script)", description = "Executes a Python-script for each table. " +
         "Each table is passed as dictionary 'table' with the column name as key and values being an array of strings or doubles. The number of input rows can be accessed via the 'nrow' variable.")
 @JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "Tables")
-@AlgorithmInputSlot(value = ResultsTableData.class, slotName = "Input", autoCreate = true)
-@AlgorithmOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
+@JIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", autoCreate = true)
+@JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
 public class ModifyTablesScript extends JIPipeSimpleIteratingAlgorithm {
 
     private PythonInterpreter pythonInterpreter;

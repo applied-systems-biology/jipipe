@@ -51,8 +51,8 @@ public class JsonAlgorithmDeclaration implements JIPipeAlgorithmDeclaration, JIP
     private String name;
     private String description;
     private JIPipeAlgorithmCategory category = JIPipeAlgorithmCategory.Miscellaneous;
-    private List<AlgorithmInputSlot> inputSlots = new ArrayList<>();
-    private List<AlgorithmOutputSlot> outputSlots = new ArrayList<>();
+    private List<JIPipeInputSlot> inputSlots = new ArrayList<>();
+    private List<JIPipeOutputSlot> outputSlots = new ArrayList<>();
     private JIPipeGraph graph = new JIPipeGraph();
     private Map<JIPipeDataSlot, String> exportedSlotNames = new HashMap<>();
     private StringList menuPath = new StringList();
@@ -171,12 +171,12 @@ public class JsonAlgorithmDeclaration implements JIPipeAlgorithmDeclaration, JIP
     }
 
     @Override
-    public List<AlgorithmInputSlot> getInputSlots() {
+    public List<JIPipeInputSlot> getInputSlots() {
         return inputSlots;
     }
 
     @Override
-    public List<AlgorithmOutputSlot> getOutputSlots() {
+    public List<JIPipeOutputSlot> getOutputSlots() {
         return outputSlots;
     }
 
@@ -244,7 +244,7 @@ public class JsonAlgorithmDeclaration implements JIPipeAlgorithmDeclaration, JIP
         JIPipeMutableSlotConfiguration outputSlotConfiguration = (JIPipeMutableSlotConfiguration) getGroupOutput().getSlotConfiguration();
         for (Map.Entry<String, JIPipeSlotDefinition> entry : inputSlotConfiguration.getInputSlots().entrySet()) {
             if (entry.getValue().getSlotType() == JIPipeSlotType.Input) {
-                inputSlots.add(new DefaultAlgorithmInputSlot(entry.getValue().getDataClass(),
+                inputSlots.add(new DefaultJIPipeInputSlot(entry.getValue().getDataClass(),
                         entry.getKey(),
                         true));
                 usedSlotNames.add(entry.getKey());
@@ -253,7 +253,7 @@ public class JsonAlgorithmDeclaration implements JIPipeAlgorithmDeclaration, JIP
         for (Map.Entry<String, JIPipeSlotDefinition> entry : outputSlotConfiguration.getOutputSlots().entrySet()) {
             if (entry.getValue().getSlotType() == JIPipeSlotType.Output) {
                 if (!usedSlotNames.contains(entry.getKey())) {
-                    outputSlots.add(new DefaultAlgorithmOutputSlot(entry.getValue().getDataClass(),
+                    outputSlots.add(new DefaultJIPipeOutputSlot(entry.getValue().getDataClass(),
                             entry.getKey(),
                             null,
                             true));

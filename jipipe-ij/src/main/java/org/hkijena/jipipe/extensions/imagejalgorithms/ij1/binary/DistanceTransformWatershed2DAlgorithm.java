@@ -34,8 +34,8 @@ import java.util.function.Supplier;
 @JIPipeDocumentation(name = "Distance transform watershed 2D", description = "Applies an euclidean distance transform on binary images. Then applies a watershed algorithm." +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
 @JIPipeOrganization(menuPath = "Binary", algorithmCategory = JIPipeAlgorithmCategory.Processor)
-@AlgorithmInputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Input")
-@AlgorithmOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output")
+@JIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Input")
+@JIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output")
 public class DistanceTransformWatershed2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     /**

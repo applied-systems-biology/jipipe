@@ -30,8 +30,8 @@ import java.util.function.Supplier;
  */
 @JIPipeDocumentation(name = "Outline ROI", description = "Converts the ROI into polygons, bounding rectangles, or convex hulls.")
 @JIPipeOrganization(menuPath = "ROI", algorithmCategory = JIPipeAlgorithmCategory.Processor)
-@AlgorithmInputSlot(value = ROIListData.class, slotName = "Input")
-@AlgorithmOutputSlot(value = ROIListData.class, slotName = "Output")
+@JIPipeInputSlot(value = ROIListData.class, slotName = "Input")
+@JIPipeOutputSlot(value = ROIListData.class, slotName = "Output")
 public class OutlineRoiAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private RoiOutline outline = RoiOutline.ClosedPolygon;

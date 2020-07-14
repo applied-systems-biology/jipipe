@@ -21,7 +21,7 @@ import org.hkijena.jipipe.utils.UIUtils;
 import javax.swing.*;
 import java.util.Set;
 
-import static org.hkijena.jipipe.ui.grapheditor.JIPipeNodeUI.REQUEST_RUN_ONLY;
+import static org.hkijena.jipipe.ui.grapheditor.JIPipeNodeUI.REQUEST_UPDATE_CACHE;
 
 public class UpdateCacheAlgorithmUIAction implements AlgorithmUIAction {
     @Override
@@ -32,7 +32,7 @@ public class UpdateCacheAlgorithmUIAction implements AlgorithmUIAction {
     @Override
     public void run(JIPipeGraphCanvasUI canvasUI, Set<JIPipeNodeUI> selection) {
         JIPipeNodeUI ui = selection.iterator().next();
-        ui.getEventBus().post(new AlgorithmUIActionRequestedEvent(ui, REQUEST_RUN_ONLY));
+        ui.getEventBus().post(new AlgorithmUIActionRequestedEvent(ui, REQUEST_UPDATE_CACHE));
     }
 
     @Override

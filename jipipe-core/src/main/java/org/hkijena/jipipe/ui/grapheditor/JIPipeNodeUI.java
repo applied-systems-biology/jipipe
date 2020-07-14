@@ -35,23 +35,13 @@ import java.util.Map;
  */
 public abstract class JIPipeNodeUI extends JIPipeWorkbenchPanel {
 
-    /**
-     * Height assigned for one slot
-     */
-    public static final int SLOT_UI_HEIGHT = 50;
-
-    /**
-     * Grid width for horizontal direction
-     */
-    public static final int SLOT_UI_WIDTH = 25;
-
     public static final String REQUEST_RUN_AND_SHOW_RESULTS = "RUN_AND_SHOW_RESULTS";
-    public static final String REQUEST_RUN_ONLY = "RUN_ONLY";
+    public static final String REQUEST_UPDATE_CACHE = "RUN_ONLY";
     public static final String REQUEST_OPEN_CONTEXT_MENU = "OPEN_CONTEXT_MENU";
 
     private JIPipeGraphCanvasUI graphUI;
     private JIPipeGraphNode node;
-    private JIPipeGraphCanvasUI.ViewMode viewMode;
+    private JIPipeGraphViewMode viewMode;
     private EventBus eventBus = new EventBus();
 
     private Color fillColor;
@@ -65,7 +55,7 @@ public abstract class JIPipeNodeUI extends JIPipeWorkbenchPanel {
      * @param node      The algorithm
      * @param viewMode  Directionality of the canvas UI
      */
-    public JIPipeNodeUI(JIPipeWorkbench workbench, JIPipeGraphCanvasUI graphUI, JIPipeGraphNode node, JIPipeGraphCanvasUI.ViewMode viewMode) {
+    public JIPipeNodeUI(JIPipeWorkbench workbench, JIPipeGraphCanvasUI graphUI, JIPipeGraphNode node, JIPipeGraphViewMode viewMode) {
         super(workbench);
         this.graphUI = graphUI;
         this.node = node;
@@ -90,7 +80,7 @@ public abstract class JIPipeNodeUI extends JIPipeWorkbenchPanel {
      */
     protected JButton createAddSlotButton(JIPipeSlotType slotType) {
         JButton button = new JButton(UIUtils.getIconFromResources("add.png"));
-        button.setPreferredSize(new Dimension(25, SLOT_UI_HEIGHT));
+        button.setPreferredSize(new Dimension(25, viewMode.getGridHeight()));
         UIUtils.makeFlat(button, Color.GRAY, 0, 0, 0, 0);
         button.addActionListener(e -> AddAlgorithmSlotPanel.showDialog(this, graphUI.getGraphHistory(), node, slotType));
 
@@ -110,10 +100,9 @@ public abstract class JIPipeNodeUI extends JIPipeWorkbenchPanel {
      * @param y y coordinate
      * @return True if setting the location was successful
      */
-    public boolean trySetLocationInGrid(int x, int y) {
-        y = (int) Math.rint(y * 1.0 / JIPipeNodeUI.SLOT_UI_HEIGHT) * JIPipeNodeUI.SLOT_UI_HEIGHT;
-        x = (int) Math.rint(x * 1.0 / JIPipeNodeUI.SLOT_UI_WIDTH) * JIPipeNodeUI.SLOT_UI_WIDTH;
-        return trySetLocationNoGrid(x, y);
+    public boolean trySetLocationAtNextGridPoint(int x, int y) {
+        Point nextGridPoint = viewMode.getNextGridPoint(new Point(x, y));
+        return trySetLocationNoGrid(nextGridPoint.x, nextGridPoint.y);
     }
 
     /**
@@ -263,16 +252,4 @@ public abstract class JIPipeNodeUI extends JIPipeWorkbenchPanel {
     public abstract Map<String, JIPipeDataSlotUI> getInputSlotUIs();
 
     public abstract Map<String, JIPipeDataSlotUI> getOutputSlotUIs();
-
-    /**
-     * Rounds the input coordinates, so they fit into the grid
-     *
-     * @param point the coordinates
-     * @return rounded coordinates
-     */
-    public static Point toGridLocation(Point point) {
-        int y = (int) Math.rint(point.y * 1.0 / JIPipeNodeUI.SLOT_UI_HEIGHT) * JIPipeNodeUI.SLOT_UI_HEIGHT;
-        int x = (int) Math.rint(point.x * 1.0 / JIPipeNodeUI.SLOT_UI_WIDTH) * JIPipeNodeUI.SLOT_UI_WIDTH;
-        return new Point(x, y);
-    }
 }

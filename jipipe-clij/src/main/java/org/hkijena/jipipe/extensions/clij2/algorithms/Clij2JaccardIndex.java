@@ -7,8 +7,8 @@ import net.haesleinhuepf.clij2.plugins.JaccardIndex;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
-import org.hkijena.jipipe.api.algorithm.AlgorithmInputSlot;
-import org.hkijena.jipipe.api.algorithm.AlgorithmOutputSlot;
+import org.hkijena.jipipe.api.algorithm.JIPipeInputSlot;
+import org.hkijena.jipipe.api.algorithm.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmCategory;
 import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmDeclaration;
 import org.hkijena.jipipe.api.algorithm.JIPipeDataBatch;
@@ -23,8 +23,8 @@ import java.util.function.Supplier;
  */
 @JIPipeDocumentation(name = "CLIJ2 Jaccard Index", description = "Determines the overlap of two binary images using the Jaccard index. " + "A value of 0 suggests no overlap, 1 means perfect overlap." + "The resulting Jaccard index is saved to the results table in the 'Jaccard_Index' column." + "Note that the Sorensen-Dice coefficient can be calculated from the Jaccard index j using this formula:" + "<pre>s = f(j) = 2 j / (j + 1)</pre> Works for following image dimensions: 2D, 3D.")
 @JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "Binary")
-@AlgorithmInputSlot(value = CLIJImageData.class, slotName = "input1", autoCreate = true)
-@AlgorithmOutputSlot(value = CLIJImageData.class, slotName = "input2", autoCreate = true)
+@JIPipeInputSlot(value = CLIJImageData.class, slotName = "input1", autoCreate = true)
+@JIPipeOutputSlot(value = CLIJImageData.class, slotName = "input2", autoCreate = true)
 
 public class Clij2JaccardIndex extends JIPipeSimpleIteratingAlgorithm {
 

@@ -40,8 +40,8 @@ import static org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExt
  */
 @JIPipeDocumentation(name = "Split stack into 2D", description = "Splits high-dimensional image stacks into 2D planes")
 @JIPipeOrganization(menuPath = "Dimensions", algorithmCategory = JIPipeAlgorithmCategory.Processor)
-@AlgorithmInputSlot(value = ImagePlusData.class, slotName = "Input")
-@AlgorithmOutputSlot(value = ImagePlus2DData.class, slotName = "Output")
+@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input")
+@JIPipeOutputSlot(value = ImagePlus2DData.class, slotName = "Output")
 public class StackTo2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private boolean annotateSlices = true;

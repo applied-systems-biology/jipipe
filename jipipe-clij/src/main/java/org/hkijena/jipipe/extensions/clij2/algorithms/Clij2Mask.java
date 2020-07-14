@@ -7,8 +7,8 @@ import net.haesleinhuepf.clij2.plugins.Mask;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
-import org.hkijena.jipipe.api.algorithm.AlgorithmInputSlot;
-import org.hkijena.jipipe.api.algorithm.AlgorithmOutputSlot;
+import org.hkijena.jipipe.api.algorithm.JIPipeInputSlot;
+import org.hkijena.jipipe.api.algorithm.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmCategory;
 import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmDeclaration;
 import org.hkijena.jipipe.api.algorithm.JIPipeDataBatch;
@@ -23,9 +23,9 @@ import java.util.function.Supplier;
  */
 @JIPipeDocumentation(name = "CLIJ2 Mask", description = "Computes a masked image by applying a binary mask to an image. " + "All pixel values x of image X will be copied" + "to the destination image in case pixel value m at the same position in the mask image is not equal to " + "zero." + "<pre>f(x,m) = (x if (m != 0); (0 otherwise))</pre> Works for following image dimensions: 2D, 3D.")
 @JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "Mask")
-@AlgorithmInputSlot(value = CLIJImageData.class, slotName = "src", autoCreate = true)
-@AlgorithmInputSlot(value = CLIJImageData.class, slotName = "mask", autoCreate = true)
-@AlgorithmOutputSlot(value = CLIJImageData.class, slotName = "dst", autoCreate = true)
+@JIPipeInputSlot(value = CLIJImageData.class, slotName = "src", autoCreate = true)
+@JIPipeInputSlot(value = CLIJImageData.class, slotName = "mask", autoCreate = true)
+@JIPipeOutputSlot(value = CLIJImageData.class, slotName = "dst", autoCreate = true)
 
 public class Clij2Mask extends JIPipeIteratingAlgorithm {
 

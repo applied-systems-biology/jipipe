@@ -46,8 +46,8 @@ import static org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExt
         "images into groups. All images in a group are then merged into a 3D stack. The order of the stack slices is determined by the 'Slice index annotation' " +
         "that is ignored while defining the groups." + "\n\n" + MERGING_ALGORITHM_DESCRIPTION)
 @JIPipeOrganization(menuPath = "Dimensions", algorithmCategory = JIPipeAlgorithmCategory.Processor)
-@AlgorithmInputSlot(value = ImagePlus2DData.class, slotName = "Input")
-@AlgorithmOutputSlot(value = ImagePlus3DData.class, slotName = "Output")
+@JIPipeInputSlot(value = ImagePlus2DData.class, slotName = "Input")
+@JIPipeOutputSlot(value = ImagePlus3DData.class, slotName = "Output")
 public class StackMergerAlgorithm extends JIPipeMergingAlgorithm {
 
     private String counterAnnotation = "Slice";

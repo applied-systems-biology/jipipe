@@ -87,7 +87,7 @@ public interface JIPipeAlgorithmDeclaration {
      *
      * @return List of input slots
      */
-    List<AlgorithmInputSlot> getInputSlots();
+    List<JIPipeInputSlot> getInputSlots();
 
     /**
      * Returns general output data.
@@ -95,7 +95,7 @@ public interface JIPipeAlgorithmDeclaration {
      *
      * @return List of output slots
      */
-    List<AlgorithmOutputSlot> getOutputSlots();
+    List<JIPipeOutputSlot> getOutputSlots();
 
     /**
      * Returns all dependencies

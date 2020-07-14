@@ -7,8 +7,8 @@ import net.haesleinhuepf.clij2.plugins.CopySlice;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
-import org.hkijena.jipipe.api.algorithm.AlgorithmInputSlot;
-import org.hkijena.jipipe.api.algorithm.AlgorithmOutputSlot;
+import org.hkijena.jipipe.api.algorithm.JIPipeInputSlot;
+import org.hkijena.jipipe.api.algorithm.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmCategory;
 import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmDeclaration;
 import org.hkijena.jipipe.api.algorithm.JIPipeDataBatch;
@@ -24,8 +24,8 @@ import java.util.function.Supplier;
  */
 @JIPipeDocumentation(name = "CLIJ2 Copy Slice", description = "This method has two purposes: " + "It copies a 2D image to a given slice z position in a 3D image stack or " + "It copies a given slice at position z in an image stack to a 2D image." + "The first case is only available via ImageJ macro. If you are using it, it is recommended that the " + "target 3D image already pre-exists in GPU memory before calling this method. Otherwise, CLIJ create " + "the image stack with z planes. Works for following image dimensions: 3D -> 2D and 2D -> 3D.")
 @JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Miscellaneous, menuPath = "CLIJ2")
-@AlgorithmInputSlot(value = CLIJImageData.class, slotName = "src", autoCreate = true)
-@AlgorithmOutputSlot(value = CLIJImageData.class, slotName = "dst", autoCreate = true)
+@JIPipeInputSlot(value = CLIJImageData.class, slotName = "src", autoCreate = true)
+@JIPipeOutputSlot(value = CLIJImageData.class, slotName = "dst", autoCreate = true)
 
 public class Clij2CopySlice extends JIPipeSimpleIteratingAlgorithm {
     Integer planeIndex;

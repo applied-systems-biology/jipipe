@@ -52,6 +52,7 @@ import java.util.stream.Collectors;
 public class UIUtils {
 
     public static final Insets UI_PADDING = new Insets(4, 4, 4, 4);
+    public static final Map<String, ImageIcon> ICON_FROM_RESOURCES_CACHE = new HashMap<>();
 
     /**
      * Equivalent of {@link Box}.verticalGlue() for {@link GridBagLayout}
@@ -152,7 +153,12 @@ public class UIUtils {
      * @return the icon instance
      */
     public static ImageIcon getIconFromResources(String iconName) {
-        return new ImageIcon(ResourceUtils.getPluginResource("icons/" + iconName));
+        ImageIcon icon = ICON_FROM_RESOURCES_CACHE.getOrDefault(iconName, null);
+        if(icon == null) {
+            icon = new ImageIcon(ResourceUtils.getPluginResource("icons/" + iconName));
+            ICON_FROM_RESOURCES_CACHE.put(iconName, icon);
+        }
+        return icon;
     }
 
     /**

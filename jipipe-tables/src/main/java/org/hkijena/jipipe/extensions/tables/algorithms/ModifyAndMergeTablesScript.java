@@ -48,8 +48,8 @@ import java.util.function.Supplier;
         "'nrow' is an integer that contains the number of rows. " +
         "'annotations' is a dictionary from string to string containing all annotations.")
 @JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "Tables")
-@AlgorithmInputSlot(value = ResultsTableData.class, slotName = "Input", autoCreate = true)
-@AlgorithmOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
+@JIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", autoCreate = true)
+@JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
 public class ModifyAndMergeTablesScript extends JIPipeAlgorithm {
 
     private PythonInterpreter pythonInterpreter;

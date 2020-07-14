@@ -40,8 +40,8 @@ import java.util.function.Supplier;
  * BioFormats importer wrapper
  */
 @JIPipeDocumentation(name = "Bioformats importer", description = "Imports images via the Bioformats plugin")
-@AlgorithmInputSlot(value = FileData.class, slotName = "Files")
-@AlgorithmOutputSlot(value = ImagePlusData.class, slotName = "Image")
+@JIPipeInputSlot(value = FileData.class, slotName = "Files")
+@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Image")
 @JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.DataSource)
 public class BioFormatsImporter extends JIPipeSimpleIteratingAlgorithm {
 

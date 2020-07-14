@@ -48,8 +48,8 @@ import java.util.function.Supplier;
  */
 @JIPipeDocumentation(name = "Plot tables", description = "Converts input data tables into plots.")
 @JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Analysis, menuPath = "Plot")
-@AlgorithmInputSlot(ResultsTableData.class)
-@AlgorithmOutputSlot(PlotData.class)
+@JIPipeInputSlot(ResultsTableData.class)
+@JIPipeOutputSlot(PlotData.class)
 public class PlotGeneratorAlgorithm extends JIPipeAlgorithm {
 
     private JIPipeDataDeclarationRef plotType = new JIPipeDataDeclarationRef();

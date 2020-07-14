@@ -40,8 +40,8 @@ import java.util.function.Supplier;
  */
 @JIPipeDocumentation(name = "Integrate table columns", description = "Integrates table columns by applying operations like average, standard deviation, or median")
 @JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "Tables")
-@AlgorithmInputSlot(value = ResultsTableData.class, slotName = "Input", autoCreate = true)
-@AlgorithmOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
+@JIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", autoCreate = true)
+@JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
 public class IntegrateColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private IntegratingTableColumnProcessorParameterList processorParameters = new IntegratingTableColumnProcessorParameterList();

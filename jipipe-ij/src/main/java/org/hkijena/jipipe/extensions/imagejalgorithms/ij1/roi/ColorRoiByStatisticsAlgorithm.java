@@ -40,9 +40,9 @@ import static org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.ImageRoiPro
  */
 @JIPipeDocumentation(name = "Color ROI by statistics", description = "Sets the ROI item colors by measurements." + "\n\n" + ROI_PROCESSOR_DESCRIPTION)
 @JIPipeOrganization(menuPath = "ROI", algorithmCategory = JIPipeAlgorithmCategory.Processor)
-@AlgorithmInputSlot(value = ROIListData.class, slotName = "ROI")
-@AlgorithmInputSlot(value = ImagePlusData.class, slotName = "Reference")
-@AlgorithmOutputSlot(value = ROIListData.class, slotName = "Output")
+@JIPipeInputSlot(value = ROIListData.class, slotName = "ROI")
+@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference")
+@JIPipeOutputSlot(value = ROIListData.class, slotName = "Output")
 public class ColorRoiByStatisticsAlgorithm extends ImageRoiProcessorAlgorithm {
 
     private MeasurementColumn fillMeasurement = MeasurementColumn.Area;

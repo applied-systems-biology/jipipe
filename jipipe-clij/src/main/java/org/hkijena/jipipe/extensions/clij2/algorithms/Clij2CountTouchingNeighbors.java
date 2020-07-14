@@ -7,8 +7,8 @@ import net.haesleinhuepf.clij2.plugins.CountTouchingNeighbors;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
-import org.hkijena.jipipe.api.algorithm.AlgorithmInputSlot;
-import org.hkijena.jipipe.api.algorithm.AlgorithmOutputSlot;
+import org.hkijena.jipipe.api.algorithm.JIPipeInputSlot;
+import org.hkijena.jipipe.api.algorithm.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmCategory;
 import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmDeclaration;
 import org.hkijena.jipipe.api.algorithm.JIPipeDataBatch;
@@ -23,8 +23,8 @@ import java.util.function.Supplier;
  */
 @JIPipeDocumentation(name = "CLIJ2 Count Touching Neighbors", description = "Takes a touch matrix as input and delivers a vector with number of touching neighbors per label as a vector. Works for following image dimensions: 2D -> 1D.")
 @JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "Math\nCount")
-@AlgorithmInputSlot(value = CLIJImageData.class, slotName = "src_touch_matrix", autoCreate = true)
-@AlgorithmOutputSlot(value = CLIJImageData.class, slotName = "dst_count_list", autoCreate = true)
+@JIPipeInputSlot(value = CLIJImageData.class, slotName = "src_touch_matrix", autoCreate = true)
+@JIPipeOutputSlot(value = CLIJImageData.class, slotName = "dst_count_list", autoCreate = true)
 
 public class Clij2CountTouchingNeighbors extends JIPipeSimpleIteratingAlgorithm {
 

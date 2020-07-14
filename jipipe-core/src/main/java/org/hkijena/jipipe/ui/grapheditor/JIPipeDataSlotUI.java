@@ -423,7 +423,6 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
     @Subscribe
     public void onAlgorithmGraphChanged(AlgorithmGraphChangedEvent event) {
         if (getGraph().containsNode(slot)) {
-            reloadPopupMenu();
             reloadButtonStatus();
         }
     }

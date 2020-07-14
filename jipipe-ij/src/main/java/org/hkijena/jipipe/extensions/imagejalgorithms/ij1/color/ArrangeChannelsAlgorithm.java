@@ -38,8 +38,8 @@ import java.util.function.Supplier;
  */
 @JIPipeDocumentation(name = "Arrange channels", description = "Reorders the channels of each input image")
 @JIPipeOrganization(menuPath = "Colors", algorithmCategory = JIPipeAlgorithmCategory.Processor)
-@AlgorithmInputSlot(value = ImagePlusColorData.class, slotName = "Input")
-@AlgorithmOutputSlot(value = ImagePlusColorData.class, slotName = "Output")
+@JIPipeInputSlot(value = ImagePlusColorData.class, slotName = "Input")
+@JIPipeOutputSlot(value = ImagePlusColorData.class, slotName = "Output")
 public class ArrangeChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private IntegerAndIntegerPair.List channelReordering = new IntegerAndIntegerPair.List();

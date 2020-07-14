@@ -40,8 +40,8 @@ import java.util.function.Supplier;
 @JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "Contrast")
 
 // Algorithm flow
-@AlgorithmInputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Input")
-@AlgorithmOutputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Output")
+@JIPipeInputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Input")
+@JIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Output")
 
 // Trait matching
 

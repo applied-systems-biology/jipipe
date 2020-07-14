@@ -46,8 +46,8 @@ import java.util.function.Supplier;
 @JIPipeDocumentation(name = "Convert only ROI to RGB", description = "Converts ROI lists to color images. The line and fill color is stored within the ROI themselves. " +
         "This algorithm does not need a reference image that determines the output size.")
 @JIPipeOrganization(menuPath = "ROI", algorithmCategory = JIPipeAlgorithmCategory.Converter)
-@AlgorithmInputSlot(value = ROIListData.class, slotName = "Input")
-@AlgorithmOutputSlot(value = ImagePlusColorRGBData.class, slotName = "Output")
+@JIPipeInputSlot(value = ROIListData.class, slotName = "Input")
+@JIPipeOutputSlot(value = ImagePlusColorRGBData.class, slotName = "Output")
 public class UnreferencedRoiToRGBAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private Margin imageArea = new Margin();

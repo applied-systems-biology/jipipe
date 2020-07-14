@@ -7,8 +7,8 @@ import net.haesleinhuepf.clij2.plugins.ApplyVectorField3D;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
-import org.hkijena.jipipe.api.algorithm.AlgorithmInputSlot;
-import org.hkijena.jipipe.api.algorithm.AlgorithmOutputSlot;
+import org.hkijena.jipipe.api.algorithm.JIPipeInputSlot;
+import org.hkijena.jipipe.api.algorithm.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmCategory;
 import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmDeclaration;
 import org.hkijena.jipipe.api.algorithm.JIPipeDataBatch;
@@ -23,11 +23,11 @@ import java.util.function.Supplier;
  */
 @JIPipeDocumentation(name = "CLIJ2 Apply Vector Field 3D", description = "Deforms an image stack according to distances provided in the given vector image stacks." + "It is recommended to use 32-bit image stacks for input, output and vector image stacks.  Works for following image dimensions: 3D.")
 @JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "Deform")
-@AlgorithmInputSlot(value = CLIJImageData.class, slotName = "src", autoCreate = true)
-@AlgorithmInputSlot(value = CLIJImageData.class, slotName = "vectorX", autoCreate = true)
-@AlgorithmInputSlot(value = CLIJImageData.class, slotName = "vectorY", autoCreate = true)
-@AlgorithmInputSlot(value = CLIJImageData.class, slotName = "vectorZ", autoCreate = true)
-@AlgorithmOutputSlot(value = CLIJImageData.class, slotName = "dst", autoCreate = true)
+@JIPipeInputSlot(value = CLIJImageData.class, slotName = "src", autoCreate = true)
+@JIPipeInputSlot(value = CLIJImageData.class, slotName = "vectorX", autoCreate = true)
+@JIPipeInputSlot(value = CLIJImageData.class, slotName = "vectorY", autoCreate = true)
+@JIPipeInputSlot(value = CLIJImageData.class, slotName = "vectorZ", autoCreate = true)
+@JIPipeOutputSlot(value = CLIJImageData.class, slotName = "dst", autoCreate = true)
 
 public class Clij2ApplyVectorField3d extends JIPipeIteratingAlgorithm {
 

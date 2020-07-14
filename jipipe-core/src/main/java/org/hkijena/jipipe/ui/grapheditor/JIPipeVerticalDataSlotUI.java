@@ -29,8 +29,6 @@ import java.awt.*;
 import java.awt.font.FontRenderContext;
 import java.awt.font.TextLayout;
 
-import static org.hkijena.jipipe.ui.grapheditor.JIPipeNodeUI.SLOT_UI_WIDTH;
-
 /**
  * Slot UI with horizontal direction
  */
@@ -133,7 +131,8 @@ public class JIPipeVerticalDataSlotUI extends JIPipeDataSlotUI {
         FontRenderContext frc = new FontRenderContext(null, false, false);
         TextLayout layout = new TextLayout(getDisplayedName(), getFont(), frc);
         double w = layout.getBounds().getWidth();
-        int labelWidth = (int) Math.ceil(w * 1.0 / SLOT_UI_WIDTH) * SLOT_UI_WIDTH;
+        int labelWidth = (int) Math.ceil(w * 1.0 / JIPipeGraphViewMode.Vertical.getGridWidth())
+                *  JIPipeGraphViewMode.Vertical.getGridWidth();
         int width = labelWidth + 75;
 
         return width;

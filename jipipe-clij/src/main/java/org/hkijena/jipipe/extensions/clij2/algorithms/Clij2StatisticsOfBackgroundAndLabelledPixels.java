@@ -8,8 +8,8 @@ import net.haesleinhuepf.clij2.plugins.StatisticsOfBackgroundAndLabelledPixels;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
-import org.hkijena.jipipe.api.algorithm.AlgorithmInputSlot;
-import org.hkijena.jipipe.api.algorithm.AlgorithmOutputSlot;
+import org.hkijena.jipipe.api.algorithm.JIPipeInputSlot;
+import org.hkijena.jipipe.api.algorithm.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmCategory;
 import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmDeclaration;
 import org.hkijena.jipipe.api.algorithm.JIPipeDataBatch;
@@ -25,9 +25,9 @@ import java.util.function.Supplier;
  */
 @JIPipeDocumentation(name = "CLIJ2 Statistics Of Background And Labelled Pixels", description = "")
 @JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Analysis, menuPath = "Statistics")
-@AlgorithmInputSlot(value = CLIJImageData.class, slotName = "inputImage", autoCreate = true)
-@AlgorithmInputSlot(value = CLIJImageData.class, slotName = "inputLabelMap", autoCreate = true)
-@AlgorithmOutputSlot(value = ResultsTableData.class, slotName = "resultsTable", autoCreate = true)
+@JIPipeInputSlot(value = CLIJImageData.class, slotName = "inputImage", autoCreate = true)
+@JIPipeInputSlot(value = CLIJImageData.class, slotName = "inputLabelMap", autoCreate = true)
+@JIPipeOutputSlot(value = ResultsTableData.class, slotName = "resultsTable", autoCreate = true)
 
 public class Clij2StatisticsOfBackgroundAndLabelledPixels extends JIPipeIteratingAlgorithm {
 

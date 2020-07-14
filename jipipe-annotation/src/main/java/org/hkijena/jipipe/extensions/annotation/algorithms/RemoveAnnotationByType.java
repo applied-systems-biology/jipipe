@@ -32,8 +32,8 @@ import java.util.function.Supplier;
  */
 @JIPipeDocumentation(name = "Remove annotation by type", description = "Removes annotations of the specified types")
 @JIPipeOrganization(menuPath = "Remove", algorithmCategory = JIPipeAlgorithmCategory.Annotation)
-@AlgorithmInputSlot(value = JIPipeData.class, slotName = "Input", autoCreate = true)
-@AlgorithmOutputSlot(value = JIPipeData.class, slotName = "Output", inheritedSlot = "Input", autoCreate = true)
+@JIPipeInputSlot(value = JIPipeData.class, slotName = "Input", autoCreate = true)
+@JIPipeOutputSlot(value = JIPipeData.class, slotName = "Output", inheritedSlot = "Input", autoCreate = true)
 public class RemoveAnnotationByType extends JIPipeSimpleIteratingAlgorithm {
 
     private StringList annotationTypes = new StringList();

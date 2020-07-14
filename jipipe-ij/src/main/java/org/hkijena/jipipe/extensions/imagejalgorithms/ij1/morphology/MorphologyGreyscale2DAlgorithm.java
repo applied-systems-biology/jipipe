@@ -36,8 +36,8 @@ import java.util.function.Supplier;
         "If a multi-channel image is provided, the operation is applied to each channel. " +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
 @JIPipeOrganization(menuPath = "Morphology", algorithmCategory = JIPipeAlgorithmCategory.Processor)
-@AlgorithmInputSlot(value = ImagePlusData.class, slotName = "Input")
-@AlgorithmOutputSlot(value = ImagePlusData.class, slotName = "Output")
+@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input")
+@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output")
 public class MorphologyGreyscale2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private Operation operation = Operation.Dilate;

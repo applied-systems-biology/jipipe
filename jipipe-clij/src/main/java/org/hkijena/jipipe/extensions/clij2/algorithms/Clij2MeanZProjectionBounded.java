@@ -7,8 +7,8 @@ import net.haesleinhuepf.clij2.plugins.MeanZProjectionBounded;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
-import org.hkijena.jipipe.api.algorithm.AlgorithmInputSlot;
-import org.hkijena.jipipe.api.algorithm.AlgorithmOutputSlot;
+import org.hkijena.jipipe.api.algorithm.JIPipeInputSlot;
+import org.hkijena.jipipe.api.algorithm.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmCategory;
 import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmDeclaration;
 import org.hkijena.jipipe.api.algorithm.JIPipeDataBatch;
@@ -24,8 +24,8 @@ import java.util.function.Supplier;
  */
 @JIPipeDocumentation(name = "CLIJ2 Mean Z Projection Bounded", description = "Determines the mean average intensity projection of an image along Z within a given z range. Works for following image dimensions: 3D -> 2D.")
 @JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "Dimensions\nZ Projection")
-@AlgorithmInputSlot(value = CLIJImageData.class, slotName = "src", autoCreate = true)
-@AlgorithmOutputSlot(value = CLIJImageData.class, slotName = "dst_mean", autoCreate = true)
+@JIPipeInputSlot(value = CLIJImageData.class, slotName = "src", autoCreate = true)
+@JIPipeOutputSlot(value = CLIJImageData.class, slotName = "dst_mean", autoCreate = true)
 
 public class Clij2MeanZProjectionBounded extends JIPipeSimpleIteratingAlgorithm {
     Integer min_z;

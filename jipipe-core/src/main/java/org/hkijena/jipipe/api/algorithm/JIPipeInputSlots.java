@@ -19,13 +19,13 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Required to allow multiple {@link AlgorithmOutputSlot}
+ * Required to allow multiple {@link JIPipeInputSlot}
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-public @interface AlgorithmOutputSlots {
+public @interface JIPipeInputSlots {
     /**
-     * @return output slots
+     * @return input slots
      */
-    AlgorithmOutputSlot[] value();
+    JIPipeInputSlot[] value();
 }

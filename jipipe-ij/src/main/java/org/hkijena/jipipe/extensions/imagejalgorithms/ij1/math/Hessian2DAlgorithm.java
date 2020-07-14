@@ -42,8 +42,8 @@ import java.util.function.Supplier;
 @JIPipeDocumentation(name = "Hessian 2D", description = "Computes Hessian eigenimages of images." +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
 @JIPipeOrganization(menuPath = "Math", algorithmCategory = JIPipeAlgorithmCategory.Processor)
-@AlgorithmInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input")
-@AlgorithmOutputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Output")
+@JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input")
+@JIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Output")
 public class Hessian2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private EigenvalueSelection2D eigenvalueSelection = EigenvalueSelection2D.Largest;

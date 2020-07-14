@@ -42,8 +42,8 @@ import java.util.stream.Stream;
 @JIPipeOrganization(menuPath = "List", algorithmCategory = JIPipeAlgorithmCategory.FileSystem)
 
 // Algorithm flow
-@AlgorithmInputSlot(value = FolderData.class, slotName = "Folders", autoCreate = true)
-@AlgorithmOutputSlot(value = FileData.class, slotName = "Files", autoCreate = true)
+@JIPipeInputSlot(value = FolderData.class, slotName = "Folders", autoCreate = true)
+@JIPipeOutputSlot(value = FileData.class, slotName = "Files", autoCreate = true)
 
 // Traits
 public class ListFiles extends JIPipeSimpleIteratingAlgorithm {

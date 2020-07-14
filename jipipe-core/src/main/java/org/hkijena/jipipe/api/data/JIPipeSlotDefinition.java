@@ -22,8 +22,8 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.algorithm.AlgorithmInputSlot;
-import org.hkijena.jipipe.api.algorithm.AlgorithmOutputSlot;
+import org.hkijena.jipipe.api.algorithm.JIPipeInputSlot;
+import org.hkijena.jipipe.api.algorithm.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.algorithm.JIPipeGraphNode;
 import org.hkijena.jipipe.api.events.ParameterChangedEvent;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -78,14 +78,14 @@ public class JIPipeSlotDefinition implements JIPipeParameterCollection {
     /**
      * @param slot Imported annotation
      */
-    public JIPipeSlotDefinition(AlgorithmInputSlot slot) {
+    public JIPipeSlotDefinition(JIPipeInputSlot slot) {
         this(slot.value(), JIPipeSlotType.Input, slot.slotName(), null);
     }
 
     /**
      * @param slot Imported annotation
      */
-    public JIPipeSlotDefinition(AlgorithmOutputSlot slot) {
+    public JIPipeSlotDefinition(JIPipeOutputSlot slot) {
         this(slot.value(), JIPipeSlotType.Output, slot.slotName(), null);
     }
 

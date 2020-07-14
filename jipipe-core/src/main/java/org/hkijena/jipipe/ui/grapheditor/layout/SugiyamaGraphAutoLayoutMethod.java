@@ -18,6 +18,7 @@ import org.hkijena.jipipe.api.algorithm.JIPipeGraph;
 import org.hkijena.jipipe.api.algorithm.JIPipeGraphEdge;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphCanvasUI;
+import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphViewMode;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeNodeUI;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
@@ -133,7 +134,7 @@ public class SugiyamaGraphAutoLayoutMethod implements GraphAutoLayoutMethod {
             }
         }
 
-        switch (canvasUI.getCurrentViewMode()) {
+        switch (canvasUI.getViewMode()) {
             case Horizontal:
                 rearrangeSugiyamaHorizontal(canvasUI, sugiyamaGraph, maxLayer, maxIndex);
                 break;
@@ -144,30 +145,30 @@ public class SugiyamaGraphAutoLayoutMethod implements GraphAutoLayoutMethod {
 
         // Add free-floating algorithms back into the graph
         if (!freeFloating.isEmpty()) {
-            if (canvasUI.getCurrentViewMode() == JIPipeGraphCanvasUI.ViewMode.Horizontal) {
+            if (canvasUI.getViewMode() == JIPipeGraphViewMode.Horizontal) {
                 // Put them below
-                int minY = JIPipeNodeUI.SLOT_UI_HEIGHT;
+                int minY = canvasUI.getViewMode().getGridHeight();
                 for (JIPipeNodeUI ui : canvasUI.getNodeUIs().values()) {
                     if (!freeFloating.contains(ui)) {
                         minY = Math.max(ui.getBottomY(), minY);
                     }
                 }
-                int x = JIPipeNodeUI.SLOT_UI_WIDTH * 4;
+                int x = canvasUI.getViewMode().getGridWidth() * 4;
                 for (JIPipeNodeUI ui : freeFloating) {
                     ui.setLocation(x, minY);
-                    x += ui.getWidth() + JIPipeNodeUI.SLOT_UI_WIDTH * 2;
+                    x += ui.getWidth() + canvasUI.getViewMode().getGridWidth() * 2;
                 }
             } else {
-                int minX = JIPipeNodeUI.SLOT_UI_WIDTH * 4;
+                int minX = canvasUI.getViewMode().getGridWidth() * 4;
                 for (JIPipeNodeUI ui : canvasUI.getNodeUIs().values()) {
                     if (!freeFloating.contains(ui)) {
                         minX = Math.max(ui.getRightX(), minX);
                     }
                 }
-                int y = JIPipeNodeUI.SLOT_UI_HEIGHT;
+                int y = canvasUI.getViewMode().getGridHeight();
                 for (JIPipeNodeUI ui : freeFloating) {
                     ui.setLocation(minX, y);
-                    y += ui.getHeight() + JIPipeNodeUI.SLOT_UI_HEIGHT;
+                    y += ui.getHeight() + canvasUI.getViewMode().getGridHeight();
                 }
             }
 
@@ -207,17 +208,17 @@ public class SugiyamaGraphAutoLayoutMethod implements GraphAutoLayoutMethod {
             }
         }
         for (int column : columnWidths.keySet()) {
-            columnWidths.put(column, columnWidths.get(column) + 2 * JIPipeNodeUI.SLOT_UI_WIDTH);
+            columnWidths.put(column, columnWidths.get(column) + 2 * canvasUI.getViewMode().getGridWidth());
         }
         for (int row : rowHeights.keySet()) {
-            rowHeights.put(row, rowHeights.get(row) + JIPipeNodeUI.SLOT_UI_HEIGHT);
+            rowHeights.put(row, rowHeights.get(row) + canvasUI.getViewMode().getGridHeight());
         }
 
         // Rearrange algorithms
-        int x = JIPipeNodeUI.SLOT_UI_WIDTH;
+        int x = canvasUI.getViewMode().getGridWidth();
         for (int column = 0; column <= maxColumn; ++column) {
             Map<Integer, SugiyamaVertex> columnMap = vertexTable.get(column);
-            int y = JIPipeNodeUI.SLOT_UI_HEIGHT;
+            int y = canvasUI.getViewMode().getGridHeight();
             for (int row = 0; row <= maxRow; ++row) {
                 SugiyamaVertex vertex = columnMap.getOrDefault(row, null);
                 if (vertex != null && !vertex.virtual) {
@@ -264,17 +265,17 @@ public class SugiyamaGraphAutoLayoutMethod implements GraphAutoLayoutMethod {
             }
         }
         for (int column : columnWidths.keySet()) {
-            columnWidths.put(column, columnWidths.get(column) + 2 * JIPipeNodeUI.SLOT_UI_WIDTH);
+            columnWidths.put(column, columnWidths.get(column) + 2 * canvasUI.getViewMode().getGridWidth());
         }
         for (int row : rowHeights.keySet()) {
-            rowHeights.put(row, rowHeights.get(row) + JIPipeNodeUI.SLOT_UI_HEIGHT);
+            rowHeights.put(row, rowHeights.get(row) + canvasUI.getViewMode().getGridHeight());
         }
 
         // Rearrange algorithms
-        int x = JIPipeNodeUI.SLOT_UI_WIDTH;
+        int x = canvasUI.getViewMode().getGridWidth();
         for (int column = 0; column <= maxColumn; ++column) {
             Map<Integer, SugiyamaVertex> columnMap = vertexTable.get(column);
-            int y = JIPipeNodeUI.SLOT_UI_HEIGHT;
+            int y = canvasUI.getViewMode().getGridHeight();
             for (int row = 0; row <= maxRow; ++row) {
                 SugiyamaVertex vertex = columnMap.getOrDefault(row, null);
                 if (vertex != null && !vertex.virtual) {

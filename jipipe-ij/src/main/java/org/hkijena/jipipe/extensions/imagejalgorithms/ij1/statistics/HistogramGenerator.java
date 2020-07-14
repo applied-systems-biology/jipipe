@@ -42,8 +42,8 @@ import java.util.function.Supplier;
 @JIPipeDocumentation(name = "Histogram", description = "Generates a histogram of the input image. " +
         "It generates following output columns: <pre>value</pre>, <pre>count</pre>.")
 @JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Analysis, menuPath = "Statistics")
-@AlgorithmInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)
-@AlgorithmOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
+@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)
+@JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
 public class HistogramGenerator extends JIPipeSimpleIteratingAlgorithm {
 
     private boolean applyPerSlice = false;

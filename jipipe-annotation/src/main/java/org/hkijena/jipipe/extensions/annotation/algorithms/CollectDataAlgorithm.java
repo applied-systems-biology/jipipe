@@ -16,7 +16,7 @@ package org.hkijena.jipipe.extensions.annotation.algorithms;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
-import org.hkijena.jipipe.api.algorithm.AlgorithmInputSlot;
+import org.hkijena.jipipe.api.algorithm.JIPipeInputSlot;
 import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmCategory;
 import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmDeclaration;
@@ -40,8 +40,8 @@ import java.util.function.Supplier;
 
 @JIPipeDocumentation(name = "Collect data", description = "Collects all incoming data into one or multiple folders that contain the raw output files. " +
         "The output files are named according to the metadata columns and can be easily processed by humans or third-party scripts.")
-@AlgorithmInputSlot(JIPipeData.class)
-@AlgorithmInputSlot(FolderData.class)
+@JIPipeInputSlot(JIPipeData.class)
+@JIPipeInputSlot(FolderData.class)
 @JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Miscellaneous)
 public class CollectDataAlgorithm extends JIPipeAlgorithm {
 

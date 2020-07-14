@@ -35,8 +35,8 @@ import java.util.function.Supplier;
  */
 @JIPipeDocumentation(name = "Scale 3D image", description = "Scales a 3D image.")
 @JIPipeOrganization(menuPath = "Transform", algorithmCategory = JIPipeAlgorithmCategory.Processor)
-@AlgorithmInputSlot(value = ImagePlusData.class, slotName = "Input")
-@AlgorithmOutputSlot(value = ImagePlusData.class, slotName = "Output")
+@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input")
+@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output")
 public class TransformScale3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private InterpolationMethod interpolationMethod = InterpolationMethod.Bilinear;

@@ -50,8 +50,8 @@ import static org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExt
 @JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "Features")
 
 // Algorithm flow
-@AlgorithmInputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Input")
-@AlgorithmOutputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Output")
+@JIPipeInputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Input")
+@JIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Output")
 public class MeijeringVesselness2DFeatures extends JIPipeSimpleIteratingAlgorithm {
 
     private DoubleList scales = new DoubleList();

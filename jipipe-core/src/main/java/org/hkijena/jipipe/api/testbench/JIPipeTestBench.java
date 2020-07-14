@@ -58,6 +58,7 @@ public class JIPipeTestBench implements JIPipeRunnable, JIPipeValidatable {
         configuration.setLoadFromCache(settings.isLoadFromCache());
         configuration.setStoreToCache(settings.isStoreToCache());
         configuration.setNumThreads(settings.getNumThreads());
+        configuration.setSaveOutputs(settings.isSaveOutputs());
 
         testBenchRun = new JIPipeRun(project, configuration);
         benchedAlgorithm = testBenchRun.getGraph().getAlgorithmNodes().get(projectAlgorithm.getIdInGraph());

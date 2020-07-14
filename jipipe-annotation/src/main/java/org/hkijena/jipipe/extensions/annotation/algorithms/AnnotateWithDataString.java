@@ -34,8 +34,8 @@ import java.util.function.Supplier;
 @JIPipeDocumentation(name = "Annotate with data string", description = "Converts incoming data into its string representation and creates the a new annotation that " +
         "contains this generated string.")
 @JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Annotation, menuPath = "Generate")
-@AlgorithmInputSlot(value = JIPipeData.class, slotName = "Data", autoCreate = true)
-@AlgorithmOutputSlot(value = JIPipeData.class, slotName = "Annotated data", inheritedSlot = "Data", autoCreate = true)
+@JIPipeInputSlot(value = JIPipeData.class, slotName = "Data", autoCreate = true)
+@JIPipeOutputSlot(value = JIPipeData.class, slotName = "Annotated data", inheritedSlot = "Data", autoCreate = true)
 public class AnnotateWithDataString extends JIPipeSimpleIteratingAlgorithm {
 
     private String generatedAnnotation = "Data";

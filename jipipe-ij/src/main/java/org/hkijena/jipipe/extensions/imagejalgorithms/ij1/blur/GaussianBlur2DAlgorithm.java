@@ -38,8 +38,8 @@ import static org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExt
 @JIPipeDocumentation(name = "Gaussian blur 2D", description = "Applies convolution with a Gaussian function for smoothing. " +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
 @JIPipeOrganization(menuPath = "Blur", algorithmCategory = JIPipeAlgorithmCategory.Processor)
-@AlgorithmInputSlot(value = ImagePlusData.class, slotName = "Input")
-@AlgorithmOutputSlot(value = ImagePlusData.class, slotName = "Output")
+@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input")
+@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output")
 public class GaussianBlur2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private double sigmaX = 1;

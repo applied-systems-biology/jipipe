@@ -15,7 +15,6 @@ package org.hkijena.jipipe.ui.grapheditor;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.eventbus.Subscribe;
-import com.google.common.html.HtmlEscapers;
 import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmDeclaration;
 import org.hkijena.jipipe.api.algorithm.JIPipeGraph;
 import org.hkijena.jipipe.api.algorithm.JIPipeGraphNode;
@@ -85,6 +84,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         reloadMenuBar();
         JIPipeAlgorithmRegistry.getInstance().getEventBus().register(this);
         algorithmGraph.getEventBus().register(this);
+        updateNavigation();
     }
 
     public JIPipeGraphCanvasUI getCanvasUI() {
@@ -128,27 +128,37 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
     private static int[] rankNavigationEntry(Object value, String[] searchStrings) {
         if(searchStrings == null || searchStrings.length == 0)
             return new int[0];
-        JIPipeAlgorithmDeclaration algorithmDeclaration;
+        String nameHayStack;
+        String descriptionHayStack;
         if (value instanceof JIPipeNodeUI) {
-            algorithmDeclaration = ((JIPipeNodeUI) value).getNode().getDeclaration();
+            JIPipeGraphNode node = ((JIPipeNodeUI) value).getNode();
+            nameHayStack = node.getName();
+            descriptionHayStack = StringUtils.orElse(node.getCustomDescription(), node.getDeclaration().getDescription());
         } else if (value instanceof JIPipeAlgorithmDeclaration) {
-            if (((JIPipeAlgorithmDeclaration) value).isHidden())
+            JIPipeAlgorithmDeclaration declaration = (JIPipeAlgorithmDeclaration) value;
+            if (declaration.isHidden())
                 return null;
-            algorithmDeclaration = (JIPipeAlgorithmDeclaration) value;
+            nameHayStack = declaration.getName().toLowerCase();
+            descriptionHayStack = declaration.getDescription().toLowerCase();
         }
         else {
             return null;
         }
 
+        nameHayStack = nameHayStack.toLowerCase();
+        descriptionHayStack = descriptionHayStack.toLowerCase();
+
         int[] ranks = new int[2];
-        String nameHayStack = algorithmDeclaration.getName().toLowerCase();
-        String descriptionHayStack = algorithmDeclaration.getDescription().toLowerCase();
+
         for (String string : searchStrings) {
-            if(nameHayStack.contains(string))
+            if(nameHayStack.contains(string.toLowerCase()))
                 --ranks[0];
-            if(descriptionHayStack.contains(string))
+            if(descriptionHayStack.contains(string.toLowerCase()))
                 --ranks[1];
         }
+
+        if(ranks[0] == 0 && ranks[1] == 0)
+            return null;
 
         return ranks;
     }
@@ -209,16 +219,16 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         JToggleButton viewModeHorizontalButton = new JToggleButton(UIUtils.getIconFromResources("view-horizontal.png"));
         viewModeHorizontalButton.setToolTipText("Display nodes horizontally");
         UIUtils.makeFlat25x25(viewModeHorizontalButton);
-        viewModeHorizontalButton.setSelected(canvasUI.getCurrentViewMode() == JIPipeGraphCanvasUI.ViewMode.Horizontal);
-        viewModeHorizontalButton.addActionListener(e -> canvasUI.setCurrentViewMode(JIPipeGraphCanvasUI.ViewMode.Horizontal));
+        viewModeHorizontalButton.setSelected(canvasUI.getViewMode() == JIPipeGraphViewMode.Horizontal);
+        viewModeHorizontalButton.addActionListener(e -> canvasUI.setViewMode(JIPipeGraphViewMode.Horizontal));
         viewModeGroup.add(viewModeHorizontalButton);
         menuBar.add(viewModeHorizontalButton);
 
         JToggleButton viewModeVerticalButton = new JToggleButton(UIUtils.getIconFromResources("view-vertical.png"));
         viewModeVerticalButton.setToolTipText("Display nodes vertically");
         UIUtils.makeFlat25x25(viewModeVerticalButton);
-        viewModeVerticalButton.setSelected(canvasUI.getCurrentViewMode() == JIPipeGraphCanvasUI.ViewMode.Vertical);
-        viewModeVerticalButton.addActionListener(e -> canvasUI.setCurrentViewMode(JIPipeGraphCanvasUI.ViewMode.Vertical));
+        viewModeVerticalButton.setSelected(canvasUI.getViewMode() == JIPipeGraphViewMode.Vertical);
+        viewModeVerticalButton.addActionListener(e -> canvasUI.setViewMode(JIPipeGraphViewMode.Vertical));
         viewModeGroup.add(viewModeVerticalButton);
         menuBar.add(viewModeVerticalButton);
 
@@ -503,12 +513,12 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
                 if (ex || ey) {
                     canvasUI.expandLeftTop(ex, ey);
                     if (ex) {
-                        nx = JIPipeNodeUI.SLOT_UI_WIDTH;
-                        panningOffset.x += JIPipeNodeUI.SLOT_UI_WIDTH;
+                        nx = canvasUI.getViewMode().getGridWidth();
+                        panningOffset.x += canvasUI.getViewMode().getGridWidth();
                     }
                     if (ey) {
-                        ny = JIPipeNodeUI.SLOT_UI_HEIGHT;
-                        panningOffset.y += JIPipeNodeUI.SLOT_UI_HEIGHT;
+                        ny = canvasUI.getViewMode().getGridHeight();
+                        panningOffset.y += canvasUI.getViewMode().getGridHeight();
                     }
                 }
             }
@@ -632,15 +642,74 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
     /**
      * Renders items in the navigator
      */
-    public static class NavigationRenderer extends JLabel implements ListCellRenderer<Object> {
+    public static class NavigationRenderer extends JPanel implements ListCellRenderer<Object> {
+
+        private ColorIcon icon;
+        private JLabel iconLabel;
+        private JLabel actionLabel;
+        private JLabel algorithmLabel;
+        private JLabel menuLabel;
 
         /**
          * Creates a new instance
          */
         public NavigationRenderer() {
+            setLayout(new GridBagLayout());
             setOpaque(true);
             setFont(new Font(Font.DIALOG, Font.PLAIN, 12));
             setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+
+
+            icon = new ColorIcon(16,40);
+            iconLabel = new JLabel(icon);
+            Insets border = new Insets(2, 4, 2, 2);
+            add(iconLabel, new GridBagConstraints() {
+                {
+                    gridx = 0;
+                    gridy = 0;
+                    gridheight = 2;
+                    anchor = WEST;
+                    insets = border;
+                }
+            });
+
+            actionLabel = new JLabel();
+            add(actionLabel, new GridBagConstraints() {
+                {
+                    gridx = 1;
+                    gridy = 0;
+                    anchor = WEST;
+                    insets = border;
+                }
+            });
+            algorithmLabel = new JLabel();
+            add(algorithmLabel, new GridBagConstraints() {
+                {
+                    gridx = 2;
+                    gridy = 0;
+                    anchor = WEST;
+                    insets = border;
+                }
+            });
+            menuLabel = new JLabel();
+            menuLabel.setForeground(Color.GRAY);
+            menuLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, 12));
+            add(menuLabel, new GridBagConstraints() {
+                {
+                    gridx = 2;
+                    gridy = 1;
+                    anchor = WEST;
+                    insets = border;
+                }
+            });
+            JPanel glue = new JPanel();
+            glue.setOpaque(false);
+            add(glue, new GridBagConstraints() {
+                {
+                    gridx = 3;
+                    weightx = 1;
+                }
+            });
         }
 
         @Override
@@ -650,40 +719,31 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
                 JIPipeAlgorithmDeclaration declaration = (JIPipeAlgorithmDeclaration) value;
                 String menuPath = declaration.getCategory().toString();
                 if (!StringUtils.isNullOrEmpty(declaration.getMenuPath())) {
-                    menuPath += " &gt; " + String.join(" &gt; ", declaration.getMenuPath().split("\n"));
+                    menuPath += " > " + String.join(" > ", declaration.getMenuPath().split("\n"));
                 }
 
-                setIcon(new ColorIcon(16, 40, Color.WHITE, UIUtils.getFillColorFor(declaration)));
-                setText(String.format("<html><table cellpadding=\"1\"><tr><td><span style=\"color: green;\">Create</span></td>" +
-                                "<td><img src=\"%s\"/></td>" +
-                                "<td>%s</td></tr>" +
-                                "<tr><td></td>" +
-                                "<td></td>" +
-                                "<td><span style=\"color: gray;\">%s</span></td></tr></table></html>",
-                        JIPipeUIAlgorithmRegistry.getInstance().getIconURLFor(declaration),
-                        HtmlEscapers.htmlEscaper().escape(declaration.getName()),
-                        menuPath
-                ));
+                icon.setFillColor(Color.WHITE);
+                icon.setBorderColor(UIUtils.getFillColorFor(declaration));
+                actionLabel.setText("Create");
+                actionLabel.setForeground(new Color(0,128,0));
+                algorithmLabel.setText(declaration.getName());
+                algorithmLabel.setIcon(JIPipeUIAlgorithmRegistry.getInstance().getIconFor(declaration));
+                menuLabel.setText(menuPath);
             } else if (value instanceof JIPipeNodeUI) {
-                JIPipeNodeUI ui = (JIPipeNodeUI) value;
-                JIPipeAlgorithmDeclaration declaration = ui.getNode().getDeclaration();
+                JIPipeGraphNode node = ((JIPipeNodeUI) value).getNode();
+                JIPipeAlgorithmDeclaration declaration = node.getDeclaration();
                 String menuPath = declaration.getCategory().toString();
                 if (!StringUtils.isNullOrEmpty(declaration.getMenuPath())) {
-                    menuPath += " &gt; " + String.join(" &gt; ", declaration.getMenuPath().split("\n"));
+                    menuPath += " > " + String.join(" > ", declaration.getMenuPath().split("\n"));
                 }
-                setIcon(new ColorIcon(16, 40, UIUtils.getFillColorFor(declaration), UIUtils.getBorderColorFor(declaration)));
-                setText(String.format("<html><table cellpadding=\"1\"><tr><td><span style=\"color: blue;\">Navigate</span></td>" +
-                                "<td><img src=\"%s\"/></td>" +
-                                "<td>%s</td></tr>" +
-                                "<tr><td></td>" +
-                                "<td></td>" +
-                                "<td><span style=\"color: gray;\">%s</span></td></tr></table></html>",
-                        JIPipeUIAlgorithmRegistry.getInstance().getIconURLFor(declaration),
-                        HtmlEscapers.htmlEscaper().escape(declaration.getName()),
-                        menuPath
-                ));
-            } else {
-                setText("<Null>");
+
+                icon.setFillColor(UIUtils.getFillColorFor(declaration));
+                icon.setBorderColor(UIUtils.getBorderColorFor(declaration));
+                actionLabel.setText("Navigate");
+                actionLabel.setForeground(Color.BLUE);
+                algorithmLabel.setText(node.getName());
+                algorithmLabel.setIcon(JIPipeUIAlgorithmRegistry.getInstance().getIconFor(declaration));
+                menuLabel.setText(menuPath);
             }
 
             if (isSelected) {

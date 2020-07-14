@@ -33,8 +33,8 @@ import java.util.function.Supplier;
  */
 @JIPipeDocumentation(name = "2D FFT swap quadrants", description = "Swaps the quadrants of a frequency space image.")
 @JIPipeOrganization(menuPath = "FFT", algorithmCategory = JIPipeAlgorithmCategory.Processor)
-@AlgorithmInputSlot(ImagePlusFFT2DData.class)
-@AlgorithmOutputSlot(ImagePlusFFT2DData.class)
+@JIPipeInputSlot(ImagePlusFFT2DData.class)
+@JIPipeOutputSlot(ImagePlusFFT2DData.class)
 public class FFT2DSwapQuadrants extends JIPipeSimpleIteratingAlgorithm {
 
     /**

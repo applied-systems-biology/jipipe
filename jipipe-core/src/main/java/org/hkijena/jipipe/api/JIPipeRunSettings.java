@@ -30,6 +30,7 @@ public class JIPipeRunSettings implements JIPipeParameterCollection {
     private Path outputPath;
     private boolean loadFromCache = true;
     private boolean storeToCache = false;
+    private boolean saveOutputs = true;
     private int numThreads = RuntimeSettings.getInstance().getDefaultRunThreads();
 
     @JIPipeParameter(value = "output-path", uiOrder = -999)
@@ -88,5 +89,13 @@ public class JIPipeRunSettings implements JIPipeParameterCollection {
     @Override
     public EventBus getEventBus() {
         return eventBus;
+    }
+
+    public boolean isSaveOutputs() {
+        return saveOutputs;
+    }
+
+    public void setSaveOutputs(boolean saveOutputs) {
+        this.saveOutputs = saveOutputs;
     }
 }

@@ -32,8 +32,8 @@ import java.util.function.Supplier;
  */
 @JIPipeDocumentation(name = "Invert colors", description = "Inverts the colors of an image")
 @JIPipeOrganization(menuPath = "Colors", algorithmCategory = JIPipeAlgorithmCategory.Processor)
-@AlgorithmInputSlot(value = ImagePlusData.class, slotName = "Input")
-@AlgorithmOutputSlot(value = ImagePlusData.class, slotName = "Output")
+@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input")
+@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output")
 public class InvertColorsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     /**

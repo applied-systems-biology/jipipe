@@ -7,8 +7,8 @@ import net.haesleinhuepf.clij2.plugins.MultiplyImageStackWithScalars;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
-import org.hkijena.jipipe.api.algorithm.AlgorithmInputSlot;
-import org.hkijena.jipipe.api.algorithm.AlgorithmOutputSlot;
+import org.hkijena.jipipe.api.algorithm.JIPipeInputSlot;
+import org.hkijena.jipipe.api.algorithm.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmCategory;
 import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmDeclaration;
 import org.hkijena.jipipe.api.algorithm.JIPipeDataBatch;
@@ -23,9 +23,9 @@ import java.util.function.Supplier;
  */
 @JIPipeDocumentation(name = "CLIJ2 Multiply Image Stack With Scalars", description = "Multiplies all pixels value x in a given image X with a constant scalar s from a list of scalars." + "<pre>f(x, s) = x * s</pre> Works for following image dimensions: 2D, 3D.")
 @JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "Math\nCalculate")
-@AlgorithmInputSlot(value = CLIJImageData.class, slotName = "src", autoCreate = true)
-@AlgorithmInputSlot(value = CLIJImageData.class, slotName = "scalar_list", autoCreate = true)
-@AlgorithmOutputSlot(value = CLIJImageData.class, slotName = "dst", autoCreate = true)
+@JIPipeInputSlot(value = CLIJImageData.class, slotName = "src", autoCreate = true)
+@JIPipeInputSlot(value = CLIJImageData.class, slotName = "scalar_list", autoCreate = true)
+@JIPipeOutputSlot(value = CLIJImageData.class, slotName = "dst", autoCreate = true)
 
 public class Clij2MultiplyImageStackWithScalars extends JIPipeIteratingAlgorithm {
 

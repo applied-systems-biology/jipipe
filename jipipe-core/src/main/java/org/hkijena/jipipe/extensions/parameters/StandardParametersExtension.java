@@ -55,7 +55,7 @@ import org.hkijena.jipipe.extensions.parameters.table.ParameterTableEditorUI;
 import org.hkijena.jipipe.extensions.parameters.util.JIPipeAuthorMetadataParameterEditorUI;
 import org.hkijena.jipipe.extensions.parameters.util.LogicalOperation;
 import org.hkijena.jipipe.extensions.parameters.util.SortOrder;
-import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphCanvasUI;
+import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphViewMode;
 import org.hkijena.jipipe.ui.grapheditor.layout.GraphAutoLayout;
 import org.hkijena.jipipe.utils.JsonUtils;
 import org.scijava.Priority;
@@ -329,7 +329,7 @@ public class StandardParametersExtension extends JIPipePrepackagedDefaultJavaExt
         registerEnumParameterType("path-filter:mode", PathPredicate.Mode.class, "Mode", "Available modes");
         registerEnumParameterType("string-filter:mode", StringPredicate.Mode.class, "Mode", "Available modes");
         registerEnumParameterType("column-matching", JIPipeIteratingAlgorithm.ColumnMatching.class, "Column matching strategy", "Determines how columns for dataset matching are selected");
-        registerEnumParameterType("jipipe:ui:graph-editor-view-mode", JIPipeGraphCanvasUI.ViewMode.class, "Graph editor view mode", "Determines how the graphs are displayed");
+        registerEnumParameterType("jipipe:ui:graph-editor-view-mode", JIPipeGraphViewMode.class, "Graph editor view mode", "Determines how the graphs are displayed");
         registerEnumParameterType("jipipe:ui:graph-editor-auto-layout", GraphAutoLayout.class, "Graph auto layout", "Determines which method is used to apply graph auto-layout");
         registerEnumParameterType("logical-operation", LogicalOperation.class, "Logical operation", "Available logical operations");
         registerEnumParameterType("sort-order", SortOrder.class, "Sort order", "Available sort orders");

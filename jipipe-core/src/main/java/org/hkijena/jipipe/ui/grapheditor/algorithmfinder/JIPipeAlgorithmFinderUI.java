@@ -29,6 +29,7 @@ import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphCanvasUI;
 import org.hkijena.jipipe.ui.registries.JIPipeUIDatatypeRegistry;
 import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.jdesktop.swingx.SwingXUtilities;
 
 import javax.swing.*;
 import java.awt.*;
@@ -155,6 +156,7 @@ public class JIPipeAlgorithmFinderUI extends JPanel {
         }
 
         formPanel.addVerticalGlue();
+        SwingUtilities.invokeLater(() -> formPanel.getScrollPane().getVerticalScrollBar().setValue(0));
     }
 
     private List<JIPipeAlgorithmDeclaration> getFilteredAndSortedCompatibleTargetAlgorithms() {
@@ -218,7 +220,7 @@ public class JIPipeAlgorithmFinderUI extends JPanel {
         Class<? extends JIPipeData> outputSlotDataClass = slot.getAcceptedDataType();
         List<JIPipeAlgorithmDeclaration> result = new ArrayList<>();
         for (JIPipeAlgorithmDeclaration declaration : JIPipeAlgorithmRegistry.getInstance().getRegisteredAlgorithms().values()) {
-            for (Class<? extends JIPipeData> inputSlotDataClass : declaration.getInputSlots().stream().map(AlgorithmInputSlot::value).collect(Collectors.toList())) {
+            for (Class<? extends JIPipeData> inputSlotDataClass : declaration.getInputSlots().stream().map(JIPipeInputSlot::value).collect(Collectors.toList())) {
                 if (JIPipeDatatypeRegistry.getInstance().isConvertible(outputSlotDataClass, inputSlotDataClass)) {
                     result.add(declaration);
                     break;

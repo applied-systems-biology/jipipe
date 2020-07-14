@@ -39,9 +39,9 @@ import static org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.ImageRoiPro
  */
 @JIPipeDocumentation(name = "Filter ROI by statistics", description = "Filters the ROI list elements via statistics." + "\n\n" + ROI_PROCESSOR_DESCRIPTION)
 @JIPipeOrganization(menuPath = "ROI", algorithmCategory = JIPipeAlgorithmCategory.Processor)
-@AlgorithmInputSlot(value = ROIListData.class, slotName = "ROI")
-@AlgorithmInputSlot(value = ImagePlusData.class, slotName = "Image")
-@AlgorithmOutputSlot(value = ROIListData.class, slotName = "Output")
+@JIPipeInputSlot(value = ROIListData.class, slotName = "ROI")
+@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Image")
+@JIPipeOutputSlot(value = ROIListData.class, slotName = "Output")
 public class FilterRoiByStatisticsAlgorithm extends ImageRoiProcessorAlgorithm {
 
     private MeasurementFilter.List measurementFilters = new MeasurementFilter.List();

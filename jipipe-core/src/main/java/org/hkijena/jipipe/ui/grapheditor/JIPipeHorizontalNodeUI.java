@@ -57,7 +57,7 @@ public class JIPipeHorizontalNodeUI extends JIPipeNodeUI {
      * @param algorithm The algorithm
      */
     public JIPipeHorizontalNodeUI(JIPipeWorkbench workbench, JIPipeGraphCanvasUI graphUI, JIPipeGraphNode algorithm) {
-        super(workbench, graphUI, algorithm, JIPipeGraphCanvasUI.ViewMode.Horizontal);
+        super(workbench, graphUI, algorithm, JIPipeGraphViewMode.Horizontal);
         initialize();
         updateAlgorithmSlotUIs();
     }
@@ -134,7 +134,8 @@ public class JIPipeHorizontalNodeUI extends JIPipeNodeUI {
     }
 
     private int calculateHeight() {
-        return Math.max(SLOT_UI_HEIGHT, SLOT_UI_HEIGHT * getDisplayedRows());
+        return Math.max(JIPipeGraphViewMode.Horizontal.getGridHeight(),
+                JIPipeGraphViewMode.Horizontal.getGridHeight() * getDisplayedRows());
     }
 
     private int calculateWidth() {
@@ -162,7 +163,8 @@ public class JIPipeHorizontalNodeUI extends JIPipeNodeUI {
             width += maxInputSlotWidth + maxOutputSlotWidth;
         }
 
-        return (int) Math.ceil(width * 1.0 / SLOT_UI_WIDTH) * SLOT_UI_WIDTH + 150;
+        return (int) Math.ceil(width * 1.0 / JIPipeGraphViewMode.Horizontal.getGridWidth())
+                * JIPipeGraphViewMode.Horizontal.getGridWidth() + 150;
     }
 
     private void addHorizontalGlue(int column) {
@@ -288,9 +290,11 @@ public class JIPipeHorizontalNodeUI extends JIPipeNodeUI {
     @Override
     public PointRange getSlotLocation(JIPipeDataSlot slot) {
         if (slot.isInput()) {
-            return new PointRange(0, getNode().getInputSlots().indexOf(slot) * SLOT_UI_HEIGHT + SLOT_UI_HEIGHT / 2);
+            return new PointRange(0, getNode().getInputSlots().indexOf(slot) * JIPipeGraphViewMode.Horizontal.getGridHeight() +
+                    JIPipeGraphViewMode.Horizontal.getGridHeight() / 2);
         } else if (slot.isOutput()) {
-            return new PointRange(getWidth(), getNode().getOutputSlots().indexOf(slot) * SLOT_UI_HEIGHT + SLOT_UI_HEIGHT / 2);
+            return new PointRange(getWidth(), getNode().getOutputSlots().indexOf(slot) * JIPipeGraphViewMode.Horizontal.getGridHeight() +
+                    JIPipeGraphViewMode.Horizontal.getGridHeight() / 2);
         } else {
             throw new UnsupportedOperationException("Unknown slot type!");
         }

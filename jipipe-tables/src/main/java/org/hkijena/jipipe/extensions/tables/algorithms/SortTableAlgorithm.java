@@ -35,8 +35,8 @@ import java.util.function.Supplier;
  */
 @JIPipeDocumentation(name = "Sort table", description = "Sorts the table by columns")
 @JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "Tables")
-@AlgorithmInputSlot(value = ResultsTableData.class, slotName = "Input", autoCreate = true)
-@AlgorithmOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
+@JIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", autoCreate = true)
+@JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
 public class SortTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private StringFilterAndSortOrderPair.List sortOrderList = new StringFilterAndSortOrderPair.List();

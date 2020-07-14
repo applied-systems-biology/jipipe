@@ -48,9 +48,9 @@ import static org.hkijena.jipipe.api.algorithm.JIPipeIteratingAlgorithm.ITERATIN
         "This algorithm needs a reference image that provides the output sizes. If you do not have a reference image, you can use the unreferenced variant."
         + "\n\n" + ITERATING_ALGORITHM_DESCRIPTION)
 @JIPipeOrganization(menuPath = "ROI", algorithmCategory = JIPipeAlgorithmCategory.Converter)
-@AlgorithmInputSlot(value = ROIListData.class, slotName = "ROI")
-@AlgorithmInputSlot(value = ImagePlusData.class, slotName = "Image")
-@AlgorithmOutputSlot(value = ImagePlusColorRGBData.class, slotName = "Output")
+@JIPipeInputSlot(value = ROIListData.class, slotName = "ROI")
+@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Image")
+@JIPipeOutputSlot(value = ImagePlusColorRGBData.class, slotName = "Output")
 public class RoiToRGBAlgorithm extends JIPipeIteratingAlgorithm {
 
     private boolean drawOutline = true;

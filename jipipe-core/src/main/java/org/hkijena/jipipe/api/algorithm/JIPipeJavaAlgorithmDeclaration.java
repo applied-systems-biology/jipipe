@@ -57,10 +57,10 @@ public class JIPipeJavaAlgorithmDeclaration extends JIPipeMutableAlgorithmDeclar
     }
 
     private void initializeSlots() {
-        for (AlgorithmInputSlot slot : getAlgorithmClass().getAnnotationsByType(AlgorithmInputSlot.class)) {
+        for (JIPipeInputSlot slot : getAlgorithmClass().getAnnotationsByType(JIPipeInputSlot.class)) {
             getInputSlots().add(slot);
         }
-        for (AlgorithmOutputSlot slot : getAlgorithmClass().getAnnotationsByType(AlgorithmOutputSlot.class)) {
+        for (JIPipeOutputSlot slot : getAlgorithmClass().getAnnotationsByType(JIPipeOutputSlot.class)) {
             getOutputSlots().add(slot);
         }
     }

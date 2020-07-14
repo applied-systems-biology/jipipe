@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.ui.grapheditor.connections;
 
-import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphCanvasUI;
+import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphViewMode;
 
 import java.awt.*;
 import java.awt.geom.Path2D;
@@ -73,16 +73,16 @@ public class RectangularLineDrawer {
         moveToMinor(getLastSegment().b1 + addB);
     }
 
-    public void drawCurrentSegment(Graphics2D graphics2D, JIPipeGraphCanvasUI.ViewMode viewMode) {
+    public void drawCurrentSegment(Graphics2D graphics2D, JIPipeGraphViewMode viewMode) {
         Path2D.Float path = new Path2D.Float();
-        if (viewMode == JIPipeGraphCanvasUI.ViewMode.Horizontal) {
+        if (viewMode == JIPipeGraphViewMode.Horizontal) {
             // A = X, B = Y
             path.moveTo(getFirstSegment().a1, getFirstSegment().b1);
             for (int i = 1; i < currentSegments.size(); ++i) {
                 RectangularLine currentSegment = currentSegments.get(i);
                 path.lineTo(currentSegment.a1, currentSegment.b1);
             }
-        } else if (viewMode == JIPipeGraphCanvasUI.ViewMode.Vertical) {
+        } else if (viewMode == JIPipeGraphViewMode.Vertical) {
             // A = Y, B = X
             path.moveTo(getFirstSegment().b1, getFirstSegment().a1);
             for (int i = 1; i < currentSegments.size(); ++i) {

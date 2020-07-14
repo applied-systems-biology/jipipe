@@ -37,7 +37,7 @@ public class SelectAndMoveNodeHereAlgorithmUIAction implements AlgorithmUIAction
             JIPipeNodeUI ui = canvasUI.getNodeUIs().getOrDefault(algorithm, null);
             if (ui != null) {
                 canvasUI.getGraphHistory().addSnapshotBefore(new MoveNodesGraphHistorySnapshot(canvasUI.getGraph(), "Move node here ..."));
-                ui.trySetLocationInGrid(canvasUI.getGraphEditorCursor().x, canvasUI.getGraphEditorCursor().y);
+                ui.trySetLocationAtNextGridPoint(canvasUI.getGraphEditorCursor().x, canvasUI.getGraphEditorCursor().y);
                 canvasUI.repaint();
                 canvasUI.getEventBus().post(new AlgorithmEvent(ui));
             }

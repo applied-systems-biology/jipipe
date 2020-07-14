@@ -7,8 +7,8 @@ import net.haesleinhuepf.clij2.plugins.PointIndexListToMesh;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
-import org.hkijena.jipipe.api.algorithm.AlgorithmInputSlot;
-import org.hkijena.jipipe.api.algorithm.AlgorithmOutputSlot;
+import org.hkijena.jipipe.api.algorithm.JIPipeInputSlot;
+import org.hkijena.jipipe.api.algorithm.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmCategory;
 import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmDeclaration;
 import org.hkijena.jipipe.api.algorithm.JIPipeDataBatch;
@@ -23,9 +23,9 @@ import java.util.function.Supplier;
  */
 @JIPipeDocumentation(name = "CLIJ2 Point Index List To Mesh", description = "Meshes all points in a given point list which are indiced in a corresponding index list. Works for following image dimensions: 2D, 3D.")
 @JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "Point list")
-@AlgorithmInputSlot(value = CLIJImageData.class, slotName = "pointlist", autoCreate = true)
-@AlgorithmInputSlot(value = CLIJImageData.class, slotName = "indexlist", autoCreate = true)
-@AlgorithmOutputSlot(value = CLIJImageData.class, slotName = "mesh", autoCreate = true)
+@JIPipeInputSlot(value = CLIJImageData.class, slotName = "pointlist", autoCreate = true)
+@JIPipeInputSlot(value = CLIJImageData.class, slotName = "indexlist", autoCreate = true)
+@JIPipeOutputSlot(value = CLIJImageData.class, slotName = "mesh", autoCreate = true)
 
 public class Clij2PointIndexListToMesh extends JIPipeIteratingAlgorithm {
 

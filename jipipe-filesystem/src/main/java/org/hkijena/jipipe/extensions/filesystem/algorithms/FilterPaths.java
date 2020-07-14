@@ -35,8 +35,8 @@ import java.util.function.Supplier;
 @JIPipeOrganization(menuPath = "Filter", algorithmCategory = JIPipeAlgorithmCategory.FileSystem)
 
 // Algorithm flow
-@AlgorithmInputSlot(value = PathData.class, slotName = "Input", autoCreate = true)
-@AlgorithmOutputSlot(value = PathData.class, slotName = "Output", autoCreate = true, inheritedSlot = "Input")
+@JIPipeInputSlot(value = PathData.class, slotName = "Input", autoCreate = true)
+@JIPipeOutputSlot(value = PathData.class, slotName = "Output", autoCreate = true, inheritedSlot = "Input")
 
 // Traits
 public class FilterPaths extends JIPipeSimpleIteratingAlgorithm {

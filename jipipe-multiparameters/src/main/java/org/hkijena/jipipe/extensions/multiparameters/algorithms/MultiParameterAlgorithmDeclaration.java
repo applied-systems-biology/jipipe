@@ -27,14 +27,14 @@ import java.util.Set;
  */
 public class MultiParameterAlgorithmDeclaration implements JIPipeAlgorithmDeclaration {
 
-    private List<AlgorithmInputSlot> inputSlots = new ArrayList<>();
-    private List<AlgorithmOutputSlot> outputSlots = new ArrayList<>();
+    private List<JIPipeInputSlot> inputSlots = new ArrayList<>();
+    private List<JIPipeOutputSlot> outputSlots = new ArrayList<>();
 
     /**
      * Creates a new instance
      */
     public MultiParameterAlgorithmDeclaration() {
-        this.inputSlots.add(new DefaultAlgorithmInputSlot(ParametersData.class, "Parameters", false));
+        this.inputSlots.add(new DefaultJIPipeInputSlot(ParametersData.class, "Parameters", false));
     }
 
     @Override
@@ -78,12 +78,12 @@ public class MultiParameterAlgorithmDeclaration implements JIPipeAlgorithmDeclar
     }
 
     @Override
-    public List<AlgorithmInputSlot> getInputSlots() {
+    public List<JIPipeInputSlot> getInputSlots() {
         return inputSlots;
     }
 
     @Override
-    public List<AlgorithmOutputSlot> getOutputSlots() {
+    public List<JIPipeOutputSlot> getOutputSlots() {
         return outputSlots;
     }
 

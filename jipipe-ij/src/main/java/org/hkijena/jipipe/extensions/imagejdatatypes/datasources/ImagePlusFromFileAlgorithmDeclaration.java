@@ -30,8 +30,8 @@ public class ImagePlusFromFileAlgorithmDeclaration implements JIPipeAlgorithmDec
 
     private String dataClassId;
     private Class<? extends JIPipeData> dataClass;
-    private List<AlgorithmInputSlot> inputSlots = new ArrayList<>();
-    private List<AlgorithmOutputSlot> outputSlots = new ArrayList<>();
+    private List<JIPipeInputSlot> inputSlots = new ArrayList<>();
+    private List<JIPipeOutputSlot> outputSlots = new ArrayList<>();
 
     /**
      * @param dataClassId the data class ID
@@ -40,8 +40,8 @@ public class ImagePlusFromFileAlgorithmDeclaration implements JIPipeAlgorithmDec
     public ImagePlusFromFileAlgorithmDeclaration(String dataClassId, Class<? extends JIPipeData> dataClass) {
         this.dataClassId = dataClassId;
         this.dataClass = dataClass;
-        inputSlots.add(new DefaultAlgorithmInputSlot(FileData.class, "Input", false));
-        outputSlots.add(new DefaultAlgorithmOutputSlot(dataClass, "Image", "", false));
+        inputSlots.add(new DefaultJIPipeInputSlot(FileData.class, "Input", false));
+        outputSlots.add(new DefaultJIPipeOutputSlot(dataClass, "Image", "", false));
     }
 
     @Override
@@ -85,12 +85,12 @@ public class ImagePlusFromFileAlgorithmDeclaration implements JIPipeAlgorithmDec
     }
 
     @Override
-    public List<AlgorithmInputSlot> getInputSlots() {
+    public List<JIPipeInputSlot> getInputSlots() {
         return Collections.unmodifiableList(inputSlots);
     }
 
     @Override
-    public List<AlgorithmOutputSlot> getOutputSlots() {
+    public List<JIPipeOutputSlot> getOutputSlots() {
         return Collections.unmodifiableList(outputSlots);
     }
 

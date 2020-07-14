@@ -31,8 +31,8 @@ import java.util.function.Supplier;
  */
 @JIPipeDocumentation(name = "Folders to annotations", description = "Creates an annotation for each path based on its name")
 @JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Annotation, menuPath = "Generate")
-@AlgorithmInputSlot(value = PathData.class, slotName = "Folders", autoCreate = true)
-@AlgorithmOutputSlot(value = PathData.class, slotName = "Annotated folders", autoCreate = true)
+@JIPipeInputSlot(value = PathData.class, slotName = "Folders", autoCreate = true)
+@JIPipeOutputSlot(value = PathData.class, slotName = "Annotated folders", autoCreate = true)
 @JIPipeHidden
 public class SimpleFolderAnnotationGenerator extends JIPipeSimpleIteratingAlgorithm {
 

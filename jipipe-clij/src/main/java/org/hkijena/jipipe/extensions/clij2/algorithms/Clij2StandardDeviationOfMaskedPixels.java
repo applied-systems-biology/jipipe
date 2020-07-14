@@ -7,8 +7,8 @@ import net.haesleinhuepf.clij2.plugins.StandardDeviationOfMaskedPixels;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
-import org.hkijena.jipipe.api.algorithm.AlgorithmInputSlot;
-import org.hkijena.jipipe.api.algorithm.AlgorithmOutputSlot;
+import org.hkijena.jipipe.api.algorithm.JIPipeInputSlot;
+import org.hkijena.jipipe.api.algorithm.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmCategory;
 import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmDeclaration;
 import org.hkijena.jipipe.api.algorithm.JIPipeDataBatch;
@@ -23,8 +23,8 @@ import java.util.function.Supplier;
  */
 @JIPipeDocumentation(name = "CLIJ2 Standard Deviation Of Masked Pixels", description = "Determines the standard deviation of all pixels in an image which have non-zero value in a corresponding mask image. " + "The value will be stored in a new row of ImageJs" + "Results table in the column 'Masked_standard_deviation'. Works for following image dimensions: 2D, 3D.")
 @JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "Math\nCalculate")
-@AlgorithmInputSlot(value = CLIJImageData.class, slotName = "buffer1", autoCreate = true)
-@AlgorithmOutputSlot(value = CLIJImageData.class, slotName = "mask", autoCreate = true)
+@JIPipeInputSlot(value = CLIJImageData.class, slotName = "buffer1", autoCreate = true)
+@JIPipeOutputSlot(value = CLIJImageData.class, slotName = "mask", autoCreate = true)
 
 public class Clij2StandardDeviationOfMaskedPixels extends JIPipeSimpleIteratingAlgorithm {
 

@@ -44,9 +44,9 @@ import static org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.ImageRoiPro
  */
 @JIPipeDocumentation(name = "Extract ROI statistics", description = "Generates a results table containing ROI statistics." + "\n\n" + ROI_PROCESSOR_DESCRIPTION)
 @JIPipeOrganization(menuPath = "ROI", algorithmCategory = JIPipeAlgorithmCategory.Analysis)
-@AlgorithmInputSlot(value = ROIListData.class, slotName = "ROI")
-@AlgorithmInputSlot(value = ImagePlusData.class, slotName = "Reference")
-@AlgorithmOutputSlot(value = ResultsTableData.class, slotName = "Measurements")
+@JIPipeInputSlot(value = ROIListData.class, slotName = "ROI")
+@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference")
+@JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Measurements")
 public class RoiStatisticsAlgorithm extends ImageRoiProcessorAlgorithm {
 
     private ImageStatisticsParameters measurements = new ImageStatisticsParameters();

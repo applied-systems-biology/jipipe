@@ -31,6 +31,7 @@ public class JIPipeTestBenchSettings implements JIPipeParameterCollection {
     private Path outputPath;
     private boolean loadFromCache = true;
     private boolean storeToCache = true;
+    private boolean saveOutputs = true;
     private int numThreads = RuntimeSettings.getInstance().getDefaultTestBenchThreads();
 
     /**
@@ -92,5 +93,16 @@ public class JIPipeTestBenchSettings implements JIPipeParameterCollection {
     @JIPipeParameter("num-threads")
     public void setNumThreads(int numThreads) {
         this.numThreads = numThreads;
+    }
+
+    @JIPipeDocumentation(name = "Save to output folder", description = "If enabled, outputs are saved.")
+    @JIPipeParameter("save-outputs")
+    public boolean isSaveOutputs() {
+        return saveOutputs;
+    }
+
+    @JIPipeParameter("save-outputs")
+    public void setSaveOutputs(boolean saveOutputs) {
+        this.saveOutputs = saveOutputs;
     }
 }

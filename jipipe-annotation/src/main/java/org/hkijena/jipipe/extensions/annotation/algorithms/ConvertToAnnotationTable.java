@@ -38,8 +38,8 @@ import static org.hkijena.jipipe.api.algorithm.JIPipeMergingAlgorithm.MERGING_AL
         "All other columns are generated based on the annotations. They have following structure: 'annotation:[annotation-id]' where the annotation id " +
         "is the unique identifier of this annotation type. You can find annotation types in the help menu." + "\n\n" + MERGING_ALGORITHM_DESCRIPTION)
 @JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Converter)
-@AlgorithmInputSlot(value = JIPipeData.class, slotName = "Input", autoCreate = true)
-@AlgorithmOutputSlot(value = AnnotationTableData.class, slotName = "Output", autoCreate = true)
+@JIPipeInputSlot(value = JIPipeData.class, slotName = "Input", autoCreate = true)
+@JIPipeOutputSlot(value = AnnotationTableData.class, slotName = "Output", autoCreate = true)
 public class ConvertToAnnotationTable extends JIPipeMergingAlgorithm {
 
     private boolean removeOutputAnnotations = true;
