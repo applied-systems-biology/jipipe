@@ -18,8 +18,8 @@ import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.algorithm.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.algorithm.JIPipeGraph;
 import org.hkijena.jipipe.api.algorithm.JIPipeGraphNode;
-import org.hkijena.jipipe.api.events.AlgorithmGraphChangedEvent;
-import org.hkijena.jipipe.api.events.AlgorithmRegisteredEvent;
+import org.hkijena.jipipe.api.events.GraphChangedEvent;
+import org.hkijena.jipipe.api.events.NodeInfoRegisteredEvent;
 import org.hkijena.jipipe.api.history.AddNodeGraphHistorySnapshot;
 import org.hkijena.jipipe.api.history.MoveNodesGraphHistorySnapshot;
 import org.hkijena.jipipe.api.registries.JIPipeNodeRegistry;
@@ -340,7 +340,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
      * @param event Generated event
      */
     @Subscribe
-    public void onAlgorithmRegistryChanged(AlgorithmRegisteredEvent event) {
+    public void onAlgorithmRegistryChanged(NodeInfoRegisteredEvent event) {
         reloadMenuBar();
         getWorkbench().sendStatusBarText("Plugins were updated");
     }
@@ -453,7 +453,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
      * @param event The generated event
      */
     @Subscribe
-    public void onGraphChanged(AlgorithmGraphChangedEvent event) {
+    public void onGraphChanged(GraphChangedEvent event) {
         updateNavigation();
     }
 

@@ -90,7 +90,7 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
     }
 
     @Override
-    public Map<JIPipeDataBatchKey, Map<String, TIntSet>> generateBatches(Map<String, JIPipeDataSlot> slotMap) {
+    public Map<JIPipeDataBatchKey, Map<String, TIntSet>> groupDataByMetadata(Map<String, JIPipeDataSlot> slotMap) {
         Set<String> referenceTraitColumns;
 
         switch (dataBatchGenerationSettings.dataSetMatching) {
@@ -138,6 +138,60 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
     }
 
     @Override
+    public List<JIPipeMergingDataBatch> generateDataBatchesDryRun(Map<JIPipeDataBatchKey, Map<String, TIntSet>> groups) {
+        List<JIPipeMergingDataBatch> dataBatches = new ArrayList<>();
+        for (Map.Entry<JIPipeDataBatchKey, Map<String, TIntSet>> dataSetEntry : ImmutableList.copyOf(groups.entrySet())) {
+            List<JIPipeMergingDataBatch> dataBatchesForDataSet = new ArrayList<>();
+            // Create the first batch
+            {
+                JIPipeDataSlot inputSlot = getFirstInputSlot();
+                TIntSet rows = dataSetEntry.getValue().get(inputSlot.getName());
+                for (TIntIterator it = rows.iterator(); it.hasNext(); ) {
+                    int row = it.next();
+                    JIPipeMergingDataBatch dataBatch = new JIPipeMergingDataBatch(this);
+                    dataBatch.addData(inputSlot, row);
+                    dataBatch.addGlobalAnnotations(inputSlot.getAnnotations(row), true);
+                    dataBatchesForDataSet.add(dataBatch);
+                }
+            }
+            // Create subsequent batches
+            for (int slotIndex = 1; slotIndex < getInputSlots().size(); slotIndex++) {
+                JIPipeDataSlot inputSlot = getInputSlots().get(slotIndex);
+                if (getParameterSlot() == inputSlot)
+                    continue;
+                TIntSet rows = dataSetEntry.getValue().get(inputSlot.getName());
+
+                List<JIPipeMergingDataBatch> backup = ImmutableList.copyOf(dataBatchesForDataSet);
+
+                int rowIndex = 0;
+                for (TIntIterator it = rows.iterator(); it.hasNext(); ) {
+                    int row = it.next();
+
+                    if (rowIndex == 0) {
+                        // For the first row just add the row to the existing batches
+                        for (JIPipeMergingDataBatch dataBatch : dataBatchesForDataSet) {
+                            dataBatch.setData(inputSlot, row);
+                            dataBatch.addGlobalAnnotations(inputSlot.getAnnotations(row), true);
+                        }
+                    } else {
+                        // We have to copy each input entry and adapt it to the row
+                        for (JIPipeMergingDataBatch dataBatch : backup) {
+                            JIPipeMergingDataBatch copy = new JIPipeMergingDataBatch(dataBatch);
+                            copy.setData(inputSlot, row);
+                            copy.addGlobalAnnotations(inputSlot.getAnnotations(row), true);
+                            dataBatchesForDataSet.add(copy);
+                        }
+                    }
+
+                    ++rowIndex;
+                }
+            }
+            dataBatches.addAll(dataBatchesForDataSet);
+        }
+        return dataBatches;
+    }
+
+    @Override
     public void runParameterSet(JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled, List<JIPipeAnnotation> parameterAnnotations) {
 
         if (isPassThrough() && canPassThrough()) {
@@ -167,7 +221,7 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
         }
 
         // Organize the input data by Dataset -> Slot -> Data row
-        Map<JIPipeDataBatchKey, Map<String, TIntSet>> dataSets = generateBatches(slotMap);
+        Map<JIPipeDataBatchKey, Map<String, TIntSet>> dataSets = groupDataByMetadata(slotMap);
 
         // Check for duplicates
         if (!dataBatchGenerationSettings.allowDuplicateDataSets) {
@@ -214,9 +268,9 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
         }
 
         // Generate data interfaces
-        List<JIPipeDataBatch> dataBatchs = new ArrayList<>();
+        List<JIPipeDataBatch> dataBatches = new ArrayList<>();
         for (Map.Entry<JIPipeDataBatchKey, Map<String, TIntSet>> dataSetEntry : ImmutableList.copyOf(dataSets.entrySet())) {
-            List<JIPipeDataBatch> dataBatchsForDataSet = new ArrayList<>();
+            List<JIPipeDataBatch> dataBatchesForDataSet = new ArrayList<>();
             // Create the first batch
             {
                 JIPipeDataSlot inputSlot = getFirstInputSlot();
@@ -226,7 +280,7 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
                     JIPipeDataBatch dataBatch = new JIPipeDataBatch(this);
                     dataBatch.setData(inputSlot, row);
                     dataBatch.addGlobalAnnotations(inputSlot.getAnnotations(row), true);
-                    dataBatchsForDataSet.add(dataBatch);
+                    dataBatchesForDataSet.add(dataBatch);
                 }
             }
             // Create subsequent batches
@@ -236,7 +290,7 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
                     continue;
                 TIntSet rows = dataSetEntry.getValue().get(inputSlot.getName());
 
-                List<JIPipeDataBatch> backup = ImmutableList.copyOf(dataBatchsForDataSet);
+                List<JIPipeDataBatch> backup = ImmutableList.copyOf(dataBatchesForDataSet);
 
                 int rowIndex = 0;
                 for (TIntIterator it = rows.iterator(); it.hasNext(); ) {
@@ -244,7 +298,7 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
 
                     if (rowIndex == 0) {
                         // For the first row just add the row to the existing batches
-                        for (JIPipeDataBatch dataBatch : dataBatchsForDataSet) {
+                        for (JIPipeDataBatch dataBatch : dataBatchesForDataSet) {
                             dataBatch.setData(inputSlot, row);
                             dataBatch.addGlobalAnnotations(inputSlot.getAnnotations(row), true);
                         }
@@ -254,7 +308,7 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
                             JIPipeDataBatch copy = new JIPipeDataBatch(dataBatch);
                             copy.setData(inputSlot, row);
                             copy.addGlobalAnnotations(inputSlot.getAnnotations(row), true);
-                            dataBatchsForDataSet.add(copy);
+                            dataBatchesForDataSet.add(copy);
                         }
                     }
 
@@ -263,21 +317,21 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
             }
 
             // Add parameter annotations
-            for (JIPipeDataBatch dataBatch : dataBatchsForDataSet) {
+            for (JIPipeDataBatch dataBatch : dataBatchesForDataSet) {
                 dataBatch.addGlobalAnnotations(parameterAnnotations, true);
             }
 
 
-            dataBatchs.addAll(dataBatchsForDataSet);
+            dataBatches.addAll(dataBatchesForDataSet);
         }
 
         if (!supportsParallelization() || !isParallelizationEnabled() || getThreadPool() == null || getThreadPool().getMaxThreads() <= 1) {
-            for (int i = 0; i < dataBatchs.size(); i++) {
+            for (int i = 0; i < dataBatches.size(); i++) {
                 if (isCancelled.get())
                     return;
-                JIPipeRunnerSubStatus slotProgress = subProgress.resolve("Data row " + (i + 1) + " / " + dataBatchs.size());
+                JIPipeRunnerSubStatus slotProgress = subProgress.resolve("Data row " + (i + 1) + " / " + dataBatches.size());
                 algorithmProgress.accept(slotProgress);
-                runIteration(dataBatchs.get(i), slotProgress, algorithmProgress, isCancelled);
+                runIteration(dataBatches.get(i), slotProgress, algorithmProgress, isCancelled);
             }
         } else {
             List<Runnable> tasks = new ArrayList<>();
@@ -286,9 +340,9 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
                 tasks.add(() -> {
                     if (isCancelled.get())
                         return;
-                    JIPipeRunnerSubStatus slotProgress = subProgress.resolve("Data row " + (rowIndex + 1) + " / " + dataBatchs.size());
+                    JIPipeRunnerSubStatus slotProgress = subProgress.resolve("Data row " + (rowIndex + 1) + " / " + dataBatches.size());
                     algorithmProgress.accept(slotProgress);
-                    runIteration(dataBatchs.get(rowIndex), slotProgress, algorithmProgress, isCancelled);
+                    runIteration(dataBatches.get(rowIndex), slotProgress, algorithmProgress, isCancelled);
                 });
             }
             algorithmProgress.accept(subProgress.resolve(String.format("Running %d batches (batch size %d) in parallel. Available threads = %d", tasks.size(), getParallelizationBatchSize(), getThreadPool().getMaxThreads())));

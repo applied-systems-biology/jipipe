@@ -96,7 +96,7 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
     }
 
     @Override
-    public Map<JIPipeDataBatchKey, Map<String, TIntSet>> generateBatches(Map<String, JIPipeDataSlot> slotMap) {
+    public Map<JIPipeDataBatchKey, Map<String, TIntSet>> groupDataByMetadata(Map<String, JIPipeDataSlot> slotMap) {
         Set<String> referenceTraitColumns;
 
         switch (dataBatchGenerationSettings.dataSetMatching) {
@@ -143,6 +143,48 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
         return dataSets;
     }
 
+    @Override
+    public List<JIPipeMergingDataBatch> generateDataBatchesDryRun(Map<JIPipeDataBatchKey, Map<String, TIntSet>> groups) {
+        List<JIPipeMergingDataBatch> dataBatches = new ArrayList<>();
+        for (Map.Entry<JIPipeDataBatchKey, Map<String, TIntSet>> dataSetEntry : ImmutableList.copyOf(groups.entrySet())) {
+
+            JIPipeMergingDataBatch dataBatch = new JIPipeMergingDataBatch(this);
+            Multimap<String, String> compoundTraits = HashMultimap.create();
+            for (Map.Entry<String, TIntSet> dataSlotEntry : dataSetEntry.getValue().entrySet()) {
+                JIPipeDataSlot inputSlot = getInputSlot(dataSlotEntry.getKey());
+                if (getParameterSlot() == inputSlot)
+                    continue;
+                TIntSet rows = dataSetEntry.getValue().get(inputSlot.getName());
+                for (TIntIterator it = rows.iterator(); it.hasNext(); ) {
+                    int row = it.next();
+                    dataBatch.addData(inputSlot, row);
+
+                    // Store all annotations
+                    for (JIPipeAnnotation annotation : inputSlot.getAnnotations(row)) {
+                        if (annotation != null) {
+                            compoundTraits.put(annotation.getName(), "" + annotation.getValue());
+                        }
+                    }
+                }
+            }
+
+            // Create new merged annotations
+            for (String info : compoundTraits.keySet()) {
+                List<String> valueList = compoundTraits.get(info).stream().distinct().sorted().collect(Collectors.toList());
+                String value;
+                try {
+                    value = JsonUtils.getObjectMapper().writeValueAsString(valueList);
+                } catch (JsonProcessingException e) {
+                    throw new RuntimeException(e);
+                }
+                dataBatch.addGlobalAnnotation(new JIPipeAnnotation(info, value));
+            }
+
+            dataBatches.add(dataBatch);
+        }
+        return dataBatches;
+    }
+
     /**
      * Returns annotation types that should be ignored by the internal logic.
      * Use this if you have some counting/sorting annotation that should not be included into the set of annotations used to match data.
@@ -176,7 +218,7 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
         }
 
         // Organize the input data by Dataset -> Slot -> Data row
-        Map<JIPipeDataBatchKey, Map<String, TIntSet>> dataSets = generateBatches(slotMap);
+        Map<JIPipeDataBatchKey, Map<String, TIntSet>> dataSets = groupDataByMetadata(slotMap);
 
         // Check for missing data sets
         for (Map.Entry<JIPipeDataBatchKey, Map<String, TIntSet>> dataSetEntry : ImmutableList.copyOf(dataSets.entrySet())) {

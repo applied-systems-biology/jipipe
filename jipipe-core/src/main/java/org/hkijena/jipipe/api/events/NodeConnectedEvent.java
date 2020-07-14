@@ -17,9 +17,9 @@ import org.hkijena.jipipe.api.algorithm.JIPipeGraph;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 
 /**
- * Generated when slots are disconnected
+ * Generated when a connection was made in {@link JIPipeGraph}
  */
-public class AlgorithmGraphDisconnectedEvent {
+public class NodeConnectedEvent {
     private JIPipeGraph graph;
     private JIPipeDataSlot source;
     private JIPipeDataSlot target;
@@ -29,7 +29,7 @@ public class AlgorithmGraphDisconnectedEvent {
      * @param source the source slot
      * @param target the target slot
      */
-    public AlgorithmGraphDisconnectedEvent(JIPipeGraph graph, JIPipeDataSlot source, JIPipeDataSlot target) {
+    public NodeConnectedEvent(JIPipeGraph graph, JIPipeDataSlot source, JIPipeDataSlot target) {
         this.graph = graph;
         this.source = source;
         this.target = target;

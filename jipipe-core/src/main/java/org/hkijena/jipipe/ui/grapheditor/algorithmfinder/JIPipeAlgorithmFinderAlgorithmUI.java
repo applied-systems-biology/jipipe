@@ -20,7 +20,7 @@ import org.hkijena.jipipe.api.algorithm.JIPipeGraphNode;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeMutableSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
-import org.hkijena.jipipe.api.events.AlgorithmSlotsChangedEvent;
+import org.hkijena.jipipe.api.events.NodeSlotsChangedEvent;
 import org.hkijena.jipipe.ui.components.AddAlgorithmSlotPanel;
 import org.hkijena.jipipe.ui.events.AlgorithmFinderSuccessEvent;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphCanvasUI;
@@ -244,7 +244,7 @@ public class JIPipeAlgorithmFinderAlgorithmUI extends JPanel {
      * @param event Generated event
      */
     @Subscribe
-    public void onAlgorithmSlotsChanged(AlgorithmSlotsChangedEvent event) {
+    public void onAlgorithmSlotsChanged(NodeSlotsChangedEvent event) {
         reloadSlotUI();
     }
 

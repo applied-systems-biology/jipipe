@@ -18,13 +18,13 @@ import org.hkijena.jipipe.api.algorithm.JIPipeNodeInfo;
 /**
  * Triggered when an algorithm is registered
  */
-public class AlgorithmRegisteredEvent {
+public class NodeInfoRegisteredEvent {
     private JIPipeNodeInfo nodeInfo;
 
     /**
      * @param nodeInfo the algorithm type
      */
-    public AlgorithmRegisteredEvent(JIPipeNodeInfo nodeInfo) {
+    public NodeInfoRegisteredEvent(JIPipeNodeInfo nodeInfo) {
         this.nodeInfo = nodeInfo;
     }
 

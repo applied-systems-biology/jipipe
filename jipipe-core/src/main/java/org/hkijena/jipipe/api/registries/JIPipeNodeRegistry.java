@@ -23,7 +23,7 @@ import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.algorithm.JIPipeNodeCategory;
 import org.hkijena.jipipe.api.algorithm.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.events.AlgorithmRegisteredEvent;
+import org.hkijena.jipipe.api.events.NodeInfoRegisteredEvent;
 import org.hkijena.jipipe.api.events.DatatypeRegisteredEvent;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 
@@ -101,7 +101,7 @@ public class JIPipeNodeRegistry implements JIPipeValidatable {
     public void register(JIPipeNodeInfo info, JIPipeDependency source) {
         registeredNodeInfos.put(info.getId(), info);
         registeredNodeInfoSources.put(info.getId(), source);
-        eventBus.post(new AlgorithmRegisteredEvent(info));
+        eventBus.post(new NodeInfoRegisteredEvent(info));
         System.out.println("Registered algorithm '" + info.getName() + "' [" + info.getId() + "]");
         runRegistrationTasks();
     }

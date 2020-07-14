@@ -137,7 +137,7 @@ public class JIPipeGraph implements JIPipeValidatable {
         traversedSlots = null;
         if (preventTriggerEvents <= 0) {
             preventTriggerEvents = 0;
-            eventBus.post(new AlgorithmGraphChangedEvent(this));
+            eventBus.post(new GraphChangedEvent(this));
         }
     }
 
@@ -333,9 +333,9 @@ public class JIPipeGraph implements JIPipeValidatable {
                     "Check if your pipeline contains complicated sections prone to cycles. Reorganize the graph by dragging the nodes around.");
         graph.addEdge(source, target, new JIPipeGraphEdge(userCanDisconnect));
         postChangedEvent();
-        getEventBus().post(new AlgorithmGraphConnectedEvent(this, source, target));
-        source.getNode().onSlotConnected(new AlgorithmGraphConnectedEvent(this, source, target));
-        target.getNode().onSlotConnected(new AlgorithmGraphConnectedEvent(this, source, target));
+        getEventBus().post(new NodeConnectedEvent(this, source, target));
+        source.getNode().onSlotConnected(new NodeConnectedEvent(this, source, target));
+        target.getNode().onSlotConnected(new NodeConnectedEvent(this, source, target));
     }
 
     /**
@@ -512,10 +512,10 @@ public class JIPipeGraph implements JIPipeValidatable {
             if (user && !canUserDisconnect(source, target))
                 return false;
             graph.removeEdge(source, target);
-            getEventBus().post(new AlgorithmGraphDisconnectedEvent(this, source, target));
+            getEventBus().post(new NodeDisconnectedEvent(this, source, target));
             postChangedEvent();
-            source.getNode().onSlotDisconnected(new AlgorithmGraphDisconnectedEvent(this, source, target));
-            target.getNode().onSlotDisconnected(new AlgorithmGraphDisconnectedEvent(this, source, target));
+            source.getNode().onSlotDisconnected(new NodeDisconnectedEvent(this, source, target));
+            target.getNode().onSlotDisconnected(new NodeDisconnectedEvent(this, source, target));
             return true;
         }
         return false;
@@ -561,7 +561,7 @@ public class JIPipeGraph implements JIPipeValidatable {
      * @param event The generated event
      */
     @Subscribe
-    public void onAlgorithmSlotsChanged(AlgorithmSlotsChangedEvent event) {
+    public void onAlgorithmSlotsChanged(NodeSlotsChangedEvent event) {
         repairGraph();
     }
 

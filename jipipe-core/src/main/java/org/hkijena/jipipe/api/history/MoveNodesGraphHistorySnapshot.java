@@ -15,7 +15,7 @@ package org.hkijena.jipipe.api.history;
 
 import org.hkijena.jipipe.api.algorithm.JIPipeGraph;
 import org.hkijena.jipipe.api.algorithm.JIPipeGraphNode;
-import org.hkijena.jipipe.api.events.AlgorithmGraphChangedEvent;
+import org.hkijena.jipipe.api.events.GraphChangedEvent;
 
 import java.awt.*;
 import java.util.HashMap;
@@ -75,7 +75,7 @@ public class MoveNodesGraphHistorySnapshot implements JIPipeAlgorithmGraphHistor
                 }
             }
         }
-        graph.getEventBus().post(new AlgorithmGraphChangedEvent(graph));
+        graph.getEventBus().post(new GraphChangedEvent(graph));
     }
 
     private Map<JIPipeGraphNode, Map<String, Map<String, Point>>> extractLocation() {

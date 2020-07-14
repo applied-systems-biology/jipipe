@@ -39,7 +39,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeMutableSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeSlotDefinition;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
-import org.hkijena.jipipe.api.events.AlgorithmGraphChangedEvent;
+import org.hkijena.jipipe.api.events.GraphChangedEvent;
 import org.hkijena.jipipe.api.events.CompartmentRemovedEvent;
 import org.hkijena.jipipe.api.events.WorkDirectoryChangedEvent;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
@@ -228,7 +228,7 @@ public class JIPipeProject implements JIPipeValidatable {
             }
         }
 
-        graph.getEventBus().post(new AlgorithmGraphChangedEvent(graph));
+        graph.getEventBus().post(new GraphChangedEvent(graph));
     }
 
     /**
@@ -237,7 +237,7 @@ public class JIPipeProject implements JIPipeValidatable {
      * @param event Generated event
      */
     @Subscribe
-    public void onCompartmentGraphChanged(AlgorithmGraphChangedEvent event) {
+    public void onCompartmentGraphChanged(GraphChangedEvent event) {
         if (event.getAlgorithmGraph() == compartmentGraph) {
             for (JIPipeGraphNode algorithm : compartmentGraph.getNodes().values()) {
                 JIPipeProjectCompartment compartment = (JIPipeProjectCompartment) algorithm;

@@ -19,8 +19,8 @@ import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.algorithm.JIPipeGraph;
 import org.hkijena.jipipe.api.algorithm.JIPipeGraphNode;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.events.AlgorithmGraphChangedEvent;
-import org.hkijena.jipipe.api.events.AlgorithmGraphConnectedEvent;
+import org.hkijena.jipipe.api.events.GraphChangedEvent;
+import org.hkijena.jipipe.api.events.NodeConnectedEvent;
 import org.hkijena.jipipe.api.history.JIPipeGraphHistory;
 import org.hkijena.jipipe.api.history.MoveNodesGraphHistorySnapshot;
 import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
@@ -558,7 +558,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
      * @param event The generated event
      */
     @Subscribe
-    public void onAlgorithmGraphChanged(AlgorithmGraphChangedEvent event) {
+    public void onAlgorithmGraphChanged(GraphChangedEvent event) {
         // Update the location of existing nodes
         for (JIPipeNodeUI ui : nodeUIs.values()) {
             Point point = ui.getNode().getLocationWithin(compartment, viewMode.name());
@@ -576,7 +576,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
      * @param event The generated event
      */
     @Subscribe
-    public void onAlgorithmConnected(AlgorithmGraphConnectedEvent event) {
+    public void onAlgorithmConnected(NodeConnectedEvent event) {
         JIPipeNodeUI sourceNode = nodeUIs.getOrDefault(event.getSource().getNode(), null);
         JIPipeNodeUI targetNode = nodeUIs.getOrDefault(event.getTarget().getNode(), null);
 

@@ -21,7 +21,7 @@ import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.algorithm.*;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
-import org.hkijena.jipipe.api.events.AlgorithmSlotsChangedEvent;
+import org.hkijena.jipipe.api.events.NodeSlotsChangedEvent;
 import org.hkijena.jipipe.api.events.ParameterStructureChangedEvent;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.parameters.*;
@@ -246,7 +246,7 @@ public class PlotGeneratorAlgorithm extends JIPipeAlgorithm {
         } else {
             getFirstOutputSlot().setAcceptedDataType(PlotData.class);
         }
-        getEventBus().post(new AlgorithmSlotsChangedEvent(this));
+        getEventBus().post(new NodeSlotsChangedEvent(this));
     }
 
     @JIPipeDocumentation(name = "Plot parameters")

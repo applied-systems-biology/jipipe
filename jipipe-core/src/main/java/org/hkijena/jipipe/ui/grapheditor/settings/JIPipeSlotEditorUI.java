@@ -18,7 +18,7 @@ import org.hkijena.jipipe.api.algorithm.JIPipeGraphNode;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeMutableSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
-import org.hkijena.jipipe.api.events.AlgorithmSlotsChangedEvent;
+import org.hkijena.jipipe.api.events.NodeSlotsChangedEvent;
 import org.hkijena.jipipe.api.events.ParameterChangedEvent;
 import org.hkijena.jipipe.api.history.SlotConfigurationHistorySnapshot;
 import org.hkijena.jipipe.ui.components.AddAlgorithmSlotPanel;
@@ -276,7 +276,7 @@ public class JIPipeSlotEditorUI extends JPanel {
      * @param event Generated event
      */
     @Subscribe
-    public void onAlgorithmSlotsChanged(AlgorithmSlotsChangedEvent event) {
+    public void onAlgorithmSlotsChanged(NodeSlotsChangedEvent event) {
         reloadList();
     }
 

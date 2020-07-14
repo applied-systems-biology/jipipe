@@ -18,13 +18,13 @@ import org.hkijena.jipipe.api.algorithm.JIPipeGraphNode;
 /**
  * Triggered when an algorithm's slots change
  */
-public class AlgorithmSlotsChangedEvent {
+public class NodeSlotsChangedEvent {
     private JIPipeGraphNode algorithm;
 
     /**
      * @param algorithm the algorithm
      */
-    public AlgorithmSlotsChangedEvent(JIPipeGraphNode algorithm) {
+    public NodeSlotsChangedEvent(JIPipeGraphNode algorithm) {
         this.algorithm = algorithm;
     }
 

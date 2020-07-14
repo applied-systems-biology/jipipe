@@ -15,7 +15,7 @@ package org.hkijena.jipipe.api.grouping.parameters;
 
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.algorithm.JIPipeGraphNode;
-import org.hkijena.jipipe.api.events.AlgorithmGraphChangedEvent;
+import org.hkijena.jipipe.api.events.GraphChangedEvent;
 import org.hkijena.jipipe.api.events.ParameterStructureChangedEvent;
 import org.hkijena.jipipe.api.grouping.events.ParameterReferencesChangedEvent;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
@@ -161,7 +161,7 @@ public class GraphNodeParametersUI extends JIPipeWorkbenchPanel {
      * @param event the event
      */
     @Subscribe
-    public void onGraphStructureChanged(AlgorithmGraphChangedEvent event) {
+    public void onGraphStructureChanged(GraphChangedEvent event) {
         refreshContent();
     }
 

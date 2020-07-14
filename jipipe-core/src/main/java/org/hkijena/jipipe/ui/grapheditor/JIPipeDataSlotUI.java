@@ -18,7 +18,7 @@ import org.hkijena.jipipe.api.algorithm.JIPipeGraph;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeMutableSlotConfiguration;
-import org.hkijena.jipipe.api.events.AlgorithmGraphChangedEvent;
+import org.hkijena.jipipe.api.events.GraphChangedEvent;
 import org.hkijena.jipipe.api.events.ParameterChangedEvent;
 import org.hkijena.jipipe.api.history.*;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
@@ -421,7 +421,7 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
      * @param event Generated event
      */
     @Subscribe
-    public void onAlgorithmGraphChanged(AlgorithmGraphChangedEvent event) {
+    public void onAlgorithmGraphChanged(GraphChangedEvent event) {
         if (getGraph().containsNode(slot)) {
             reloadButtonStatus();
         }

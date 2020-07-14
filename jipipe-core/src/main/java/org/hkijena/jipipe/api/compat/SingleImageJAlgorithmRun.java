@@ -27,7 +27,7 @@ import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.algorithm.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.algorithm.JIPipeGraphNode;
 import org.hkijena.jipipe.api.data.*;
-import org.hkijena.jipipe.api.events.AlgorithmSlotsChangedEvent;
+import org.hkijena.jipipe.api.events.NodeSlotsChangedEvent;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
@@ -124,7 +124,7 @@ public class SingleImageJAlgorithmRun implements JIPipeValidatable {
      * @param event generated event
      */
     @Subscribe
-    public void onAlgorithmSlotsChanged(AlgorithmSlotsChangedEvent event) {
+    public void onAlgorithmSlotsChanged(NodeSlotsChangedEvent event) {
         updateSlots();
         eventBus.post(event);
     }

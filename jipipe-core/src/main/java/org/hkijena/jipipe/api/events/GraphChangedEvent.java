@@ -18,13 +18,13 @@ import org.hkijena.jipipe.api.algorithm.JIPipeGraph;
 /**
  * Event is triggered when algorithm graph is changed
  */
-public class AlgorithmGraphChangedEvent {
+public class GraphChangedEvent {
     private JIPipeGraph algorithmGraph;
 
     /**
      * @param algorithmGraph the graph
      */
-    public AlgorithmGraphChangedEvent(JIPipeGraph algorithmGraph) {
+    public GraphChangedEvent(JIPipeGraph algorithmGraph) {
         this.algorithmGraph = algorithmGraph;
     }
 

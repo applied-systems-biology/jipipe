@@ -17,6 +17,7 @@ import gnu.trove.set.TIntSet;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -32,7 +33,15 @@ public interface JIPipeDataBatchAlgorithm {
     /**
      * Generate the initial data batches based on the slot map
      * @param slotMap the slot map
-     * @return data batches
+     * @return map from metadata table to the selected row indices per slot
      */
-    Map<JIPipeDataBatchKey, Map<String, TIntSet>> generateBatches(Map<String, JIPipeDataSlot> slotMap);
+    Map<JIPipeDataBatchKey, Map<String, TIntSet>> groupDataByMetadata(Map<String, JIPipeDataSlot> slotMap);
+
+    /**
+     * Generates data batches for the groups.
+     * This is a dry-run function that should never throw errors
+     * @param groups the grouped data
+     * @return the batches
+     */
+    List<JIPipeMergingDataBatch> generateDataBatchesDryRun(Map<JIPipeDataBatchKey, Map<String, TIntSet>> groups);
 }

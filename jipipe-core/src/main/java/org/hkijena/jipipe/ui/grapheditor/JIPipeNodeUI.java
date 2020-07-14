@@ -18,7 +18,7 @@ import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.algorithm.JIPipeGraphNode;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
-import org.hkijena.jipipe.api.events.AlgorithmSlotsChangedEvent;
+import org.hkijena.jipipe.api.events.NodeSlotsChangedEvent;
 import org.hkijena.jipipe.api.events.ParameterChangedEvent;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
@@ -168,7 +168,7 @@ public abstract class JIPipeNodeUI extends JIPipeWorkbenchPanel {
      * @param event Generated event
      */
     @Subscribe
-    public void onAlgorithmSlotsChanged(AlgorithmSlotsChangedEvent event) {
+    public void onAlgorithmSlotsChanged(NodeSlotsChangedEvent event) {
         updateAlgorithmSlotUIs();
     }
 

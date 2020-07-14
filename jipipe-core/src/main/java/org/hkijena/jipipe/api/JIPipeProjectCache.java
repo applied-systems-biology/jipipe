@@ -19,7 +19,7 @@ import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.algorithm.JIPipeGraphNode;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.events.AlgorithmGraphChangedEvent;
+import org.hkijena.jipipe.api.events.GraphChangedEvent;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.utils.StringUtils;
 
@@ -249,7 +249,7 @@ public class JIPipeProjectCache {
      *
      * @param event the event
      */
-    public void onAlgorithmRemoved(AlgorithmGraphChangedEvent event) {
+    public void onAlgorithmRemoved(GraphChangedEvent event) {
         autoClean(false, false);
     }
 
