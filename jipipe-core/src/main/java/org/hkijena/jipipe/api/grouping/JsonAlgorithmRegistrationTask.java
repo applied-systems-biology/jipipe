@@ -26,7 +26,7 @@ import java.io.IOException;
 import java.util.Map;
 
 /**
- * Registers a {@link JsonAlgorithmDeclaration}
+ * Registers a {@link JsonNodeInfo}
  */
 public class JsonAlgorithmRegistrationTask extends JIPipeDefaultAlgorithmRegistrationTask {
 
@@ -47,8 +47,8 @@ public class JsonAlgorithmRegistrationTask extends JIPipeDefaultAlgorithmRegistr
     private void findDependencyAlgorithms() {
         JsonNode graphNodesNode = jsonNode.get("graph").get("nodes");
         for (Map.Entry<String, JsonNode> entry : ImmutableList.copyOf(graphNodesNode.fields())) {
-            JsonNode declarationIdNode = entry.getValue().get("jipipe:algorithm-type");
-            getDependencyAlgorithmIds().add(declarationIdNode.asText());
+            JsonNode infoIdNode = entry.getValue().get("jipipe:algorithm-type");
+            getDependencyAlgorithmIds().add(infoIdNode.asText());
         }
     }
 
@@ -58,13 +58,13 @@ public class JsonAlgorithmRegistrationTask extends JIPipeDefaultAlgorithmRegistr
             return;
         alreadyRegistered = true;
         try {
-            JsonAlgorithmDeclaration declaration = JsonUtils.getObjectMapper().readerFor(JsonAlgorithmDeclaration.class).readValue(jsonNode);
-            if (declaration == null)
+            JsonNodeInfo info = JsonUtils.getObjectMapper().readerFor(JsonNodeInfo.class).readValue(jsonNode);
+            if (info == null)
                 throw new NullPointerException("Algorithm is null!");
-            JIPipeAlgorithmRegistry.getInstance().register(declaration, source);
-            if (declaration.getIcon().getIconName() != null) {
-                JIPipeUIAlgorithmRegistry.getInstance().registerIcon(declaration,
-                        ResourceUtils.getPluginResource("icons/algorithms/" + declaration.getIcon().getIconName()));
+            JIPipeAlgorithmRegistry.getInstance().register(info, source);
+            if (info.getIcon().getIconName() != null) {
+                JIPipeUIAlgorithmRegistry.getInstance().registerIcon(info,
+                        ResourceUtils.getPluginResource("icons/algorithms/" + info.getIcon().getIconName()));
             }
         } catch (IOException e) {
             throw new RuntimeException(e);

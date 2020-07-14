@@ -41,10 +41,10 @@ public class AnnotateAll extends JIPipeSimpleIteratingAlgorithm {
     private boolean overwrite = false;
 
     /**
-     * @param declaration the declaration
+     * @param info the info
      */
-    public AnnotateAll(JIPipeAlgorithmDeclaration declaration) {
-        super(declaration);
+    public AnnotateAll(JIPipeNodeInfo info) {
+        super(info);
         annotations.addNewInstance();
     }
 

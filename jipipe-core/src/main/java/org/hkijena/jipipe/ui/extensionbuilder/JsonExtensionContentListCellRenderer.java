@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.ui.extensionbuilder;
 
-import org.hkijena.jipipe.api.grouping.JsonAlgorithmDeclaration;
+import org.hkijena.jipipe.api.grouping.JsonNodeInfo;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -34,8 +34,8 @@ public class JsonExtensionContentListCellRenderer extends JLabel implements List
 
     @Override
     public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-        if (value instanceof JsonAlgorithmDeclaration) {
-            String name = StringUtils.orElse(((JsonAlgorithmDeclaration) value).getName(), "&lt;No name&gt;");
+        if (value instanceof JsonNodeInfo) {
+            String name = StringUtils.orElse(((JsonNodeInfo) value).getName(), "&lt;No name&gt;");
             setText("<html><strong>" + name + "</strong><br/>" + "<i>Algorithm</i>" + "</html>");
             setIcon(UIUtils.getIconFromResources("cogs-32.png"));
         } else {

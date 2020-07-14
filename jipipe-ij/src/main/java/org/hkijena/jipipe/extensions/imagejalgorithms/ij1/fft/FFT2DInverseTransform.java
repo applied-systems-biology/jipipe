@@ -39,10 +39,10 @@ public class FFT2DInverseTransform extends JIPipeSimpleIteratingAlgorithm {
     /**
      * Creates a new instance
      *
-     * @param declaration the algorithm declaration
+     * @param info the algorithm info
      */
-    public FFT2DInverseTransform(JIPipeAlgorithmDeclaration declaration) {
-        super(declaration, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", ImagePlusFFT2DData.class)
+    public FFT2DInverseTransform(JIPipeNodeInfo info) {
+        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", ImagePlusFFT2DData.class)
                 .addOutputSlot("Output", ImagePlus2DData.class, null)
                 .allowOutputSlotInheritance(false)
                 .seal()

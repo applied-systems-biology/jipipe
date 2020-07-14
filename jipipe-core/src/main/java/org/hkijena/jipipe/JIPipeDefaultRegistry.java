@@ -16,7 +16,7 @@ package org.hkijena.jipipe;
 import com.google.common.eventbus.EventBus;
 import ij.IJ;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
-import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmDeclaration;
+import org.hkijena.jipipe.api.algorithm.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.algorithm.JIPipeGraphNode;
 import org.hkijena.jipipe.api.events.ExtensionRegisteredEvent;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
@@ -121,11 +121,11 @@ public class JIPipeDefaultRegistry extends AbstractService implements JIPipeRegi
         }
 
         // Check for errors
-        for (JIPipeAlgorithmDeclaration declaration : algorithmRegistry.getRegisteredAlgorithms().values()) {
-            JIPipeGraphNode algorithm = declaration.newInstance();
+        for (JIPipeNodeInfo info : algorithmRegistry.getRegisteredAlgorithms().values()) {
+            JIPipeGraphNode algorithm = info.newInstance();
             JIPipeParameterTree collection = new JIPipeParameterTree(algorithm);
             for (Map.Entry<String, JIPipeParameterAccess> entry : collection.getParameters().entrySet()) {
-                if (JIPipeParameterTypeRegistry.getInstance().getDeclarationByFieldClass(entry.getValue().getFieldClass()) == null) {
+                if (JIPipeParameterTypeRegistry.getInstance().getInfoByFieldClass(entry.getValue().getFieldClass()) == null) {
                     throw new UserFriendlyRuntimeException("Unregistered parameter found: " + entry.getValue().getFieldClass() + " @ "
                             + algorithm + " -> " + entry.getKey(),
                             "A plugin is invalid!",

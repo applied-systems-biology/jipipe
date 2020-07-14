@@ -17,7 +17,7 @@ import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.algorithm.JIPipeInputSlot;
 import org.hkijena.jipipe.api.algorithm.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.algorithm.JIPipeGraphNode;
-import org.hkijena.jipipe.api.algorithm.JIPipeJavaAlgorithmDeclaration;
+import org.hkijena.jipipe.api.algorithm.JIPipeJavaNodeInfo;
 import org.hkijena.jipipe.ui.registries.JIPipeUIAlgorithmRegistry;
 
 import java.net.URL;
@@ -60,10 +60,10 @@ public class JIPipeJavaAlgorithmRegistrationTask extends JIPipeDefaultAlgorithmR
         if (alreadyRegistered)
             return;
         alreadyRegistered = true;
-        JIPipeJavaAlgorithmDeclaration declaration = new JIPipeJavaAlgorithmDeclaration(id, algorithmClass);
-        JIPipeAlgorithmRegistry.getInstance().register(declaration, source);
+        JIPipeJavaNodeInfo info = new JIPipeJavaNodeInfo(id, algorithmClass);
+        JIPipeAlgorithmRegistry.getInstance().register(info, source);
         if (icon != null)
-            JIPipeUIAlgorithmRegistry.getInstance().registerIcon(declaration, icon);
+            JIPipeUIAlgorithmRegistry.getInstance().registerIcon(info, icon);
     }
 
     @Override

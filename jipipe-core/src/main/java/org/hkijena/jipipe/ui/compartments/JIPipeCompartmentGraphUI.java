@@ -17,7 +17,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.eventbus.Subscribe;
 import ij.IJ;
 import org.hkijena.jipipe.api.JIPipeProject;
-import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmDeclaration;
+import org.hkijena.jipipe.api.algorithm.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.compartments.JIPipeExportedCompartment;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.history.AddCompartmentGraphHistorySnapshot;
@@ -110,12 +110,12 @@ public class JIPipeCompartmentGraphUI extends JIPipeGraphEditorUI {
      * Initializes the "Add nodes" area
      */
     protected void initializeAddNodesMenus() {
-        JIPipeAlgorithmDeclaration declaration = JIPipeAlgorithmRegistry.getInstance().getDeclarationById("jipipe:project-compartment");
+        JIPipeNodeInfo info = JIPipeAlgorithmRegistry.getInstance().getInfoById("jipipe:project-compartment");
 
         JButton addItem = new JButton("Add new compartment", UIUtils.getIconFromResources("add.png"));
         UIUtils.makeFlatH25(addItem);
         addItem.setBorder(BorderFactory.createEmptyBorder(0, 2, 0, 2));
-        addItem.setToolTipText(TooltipUtils.getAlgorithmTooltip(declaration));
+        addItem.setToolTipText(TooltipUtils.getAlgorithmTooltip(info));
         addItem.addActionListener(e -> addCompartment());
         menuBar.add(addItem);
 

@@ -15,6 +15,8 @@ package org.hkijena.jipipe.api;
 
 import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmCategory;
 import org.hkijena.jipipe.api.algorithm.JIPipeGraphNode;
+import org.hkijena.jipipe.api.algorithm.JIPipeJavaNodeInfo;
+import org.hkijena.jipipe.api.algorithm.JIPipeNodeInfo;
 import org.hkijena.jipipe.ui.extension.MenuExtension;
 import org.hkijena.jipipe.ui.extension.MenuTarget;
 
@@ -37,8 +39,8 @@ public @interface JIPipeOrganization {
 
     /**
      * Assigns a category to an algorithm.
-     * This is only valid for algorithm classes that use {@link org.hkijena.jipipe.api.algorithm.JIPipeJavaAlgorithmDeclaration} or any
-     * other {@link org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmDeclaration} that listens for algorithm categories.
+     * This is only valid for algorithm classes that use {@link JIPipeJavaNodeInfo} or any
+     * other {@link JIPipeNodeInfo} that listens for algorithm categories.
      *
      * @return the algorithm category
      */

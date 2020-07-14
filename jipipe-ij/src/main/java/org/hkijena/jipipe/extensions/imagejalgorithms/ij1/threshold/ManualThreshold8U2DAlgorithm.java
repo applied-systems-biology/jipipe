@@ -47,10 +47,10 @@ public class ManualThreshold8U2DAlgorithm extends JIPipeSimpleIteratingAlgorithm
     /**
      * Instantiates a new algorithm.
      *
-     * @param declaration the declaration
+     * @param info the info
      */
-    public ManualThreshold8U2DAlgorithm(JIPipeAlgorithmDeclaration declaration) {
-        super(declaration, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", ImagePlusGreyscale8UData.class)
+    public ManualThreshold8U2DAlgorithm(JIPipeNodeInfo info) {
+        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", ImagePlusGreyscale8UData.class)
                 .addOutputSlot("Output", ImagePlusGreyscaleMaskData.class, "Input", ADD_MASK_QUALIFIER)
                 .allowOutputSlotInheritance(true)
                 .seal()

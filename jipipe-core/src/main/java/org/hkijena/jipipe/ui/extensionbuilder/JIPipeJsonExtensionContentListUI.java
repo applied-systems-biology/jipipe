@@ -15,12 +15,12 @@ package org.hkijena.jipipe.ui.extensionbuilder;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.Subscribe;
-import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmDeclaration;
+import org.hkijena.jipipe.api.algorithm.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.algorithm.JIPipeGraph;
 import org.hkijena.jipipe.api.events.ExtensionContentAddedEvent;
 import org.hkijena.jipipe.api.events.ExtensionContentRemovedEvent;
 import org.hkijena.jipipe.api.events.ParameterChangedEvent;
-import org.hkijena.jipipe.api.grouping.JsonAlgorithmDeclaration;
+import org.hkijena.jipipe.api.grouping.JsonNodeInfo;
 import org.hkijena.jipipe.ui.JIPipeJsonExtensionWorkbench;
 import org.hkijena.jipipe.ui.JIPipeJsonExtensionWorkbenchPanel;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -56,8 +56,8 @@ public class JIPipeJsonExtensionContentListUI extends JIPipeJsonExtensionWorkben
         Object selectedValue = list.getSelectedValue();
         DefaultListModel<Object> model = (DefaultListModel<Object>) list.getModel();
         model.clear();
-        for (JIPipeAlgorithmDeclaration declaration : getProject().getAlgorithmDeclarations().stream().sorted(Comparator.comparing(JIPipeAlgorithmDeclaration::getName, Comparator.nullsFirst(Comparator.naturalOrder()))).collect(Collectors.toList())) {
-            model.addElement(declaration);
+        for (JIPipeNodeInfo info : getProject().getNodeInfos().stream().sorted(Comparator.comparing(JIPipeNodeInfo::getName, Comparator.nullsFirst(Comparator.naturalOrder()))).collect(Collectors.toList())) {
+            model.addElement(info);
         }
         if (model.contains(selectedValue)) {
             list.setSelectedValue(selectedValue, true);
@@ -105,18 +105,18 @@ public class JIPipeJsonExtensionContentListUI extends JIPipeJsonExtensionWorkben
 
     private void removeSelection() {
         for (Object item : ImmutableList.copyOf(list.getSelectedValuesList())) {
-            if (item instanceof JsonAlgorithmDeclaration) {
-                getProject().removeAlgorithm((JsonAlgorithmDeclaration) item);
+            if (item instanceof JsonNodeInfo) {
+                getProject().removeAlgorithm((JsonNodeInfo) item);
             }
         }
     }
 
     private void addAlgorithm() {
-        JsonAlgorithmDeclaration declaration = new JsonAlgorithmDeclaration();
-        declaration.setName("");
-        declaration.setGraph(new JIPipeGraph());
-        getProject().addAlgorithm(declaration);
-        declaration.getEventBus().register(this);
+        JsonNodeInfo info = new JsonNodeInfo();
+        info.setName("");
+        info.setGraph(new JIPipeGraph());
+        getProject().addAlgorithm(info);
+        info.getEventBus().register(this);
     }
 
     /**
@@ -165,8 +165,8 @@ public class JIPipeJsonExtensionContentListUI extends JIPipeJsonExtensionWorkben
         if (currentlySelectedValue != this.currentlySelectedValue) {
             this.currentlySelectedValue = currentlySelectedValue;
             if (currentlySelectedValue != null) {
-                if (currentlySelectedValue instanceof JsonAlgorithmDeclaration) {
-                    splitPane.setRightComponent(new JsonAlgorithmDeclarationUI(getExtensionWorkbenchUI(), (JsonAlgorithmDeclaration) currentlySelectedValue));
+                if (currentlySelectedValue instanceof JsonNodeInfo) {
+                    splitPane.setRightComponent(new JsonNodeInfoUI(getExtensionWorkbenchUI(), (JsonNodeInfo) currentlySelectedValue));
                 }
             } else {
                 splitPane.setRightComponent(new JPanel());

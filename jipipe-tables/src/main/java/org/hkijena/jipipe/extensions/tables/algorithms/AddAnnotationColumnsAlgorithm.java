@@ -40,10 +40,10 @@ public class AddAnnotationColumnsAlgorithm extends JIPipeSimpleIteratingAlgorith
     /**
      * Creates a new instance
      *
-     * @param declaration algorithm declaration
+     * @param info algorithm info
      */
-    public AddAnnotationColumnsAlgorithm(JIPipeAlgorithmDeclaration declaration) {
-        super(declaration);
+    public AddAnnotationColumnsAlgorithm(JIPipeNodeInfo info) {
+        super(info);
     }
 
     /**

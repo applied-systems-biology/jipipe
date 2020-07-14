@@ -41,10 +41,10 @@ public class MergeRoiListsAlgorithm extends JIPipeMergingAlgorithm {
     /**
      * Instantiates a new algorithm.
      *
-     * @param declaration the declaration
+     * @param info the info
      */
-    public MergeRoiListsAlgorithm(JIPipeAlgorithmDeclaration declaration) {
-        super(declaration, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", ROIListData.class)
+    public MergeRoiListsAlgorithm(JIPipeNodeInfo info) {
+        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", ROIListData.class)
                 .addOutputSlot("Output", ROIListData.class, null)
                 .seal()
                 .build());

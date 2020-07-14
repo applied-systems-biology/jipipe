@@ -13,6 +13,8 @@
 
 package org.hkijena.jipipe.ui.components;
 
+import org.hkijena.jipipe.utils.RankedData;
+import org.hkijena.jipipe.utils.RankingFunction;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jdesktop.swingx.JXTextField;
 
@@ -154,53 +156,6 @@ public class SearchBox<T> extends JPanel {
     }
 
     /**
-     * Models a search ranking function
-     * @param <T> the items
-     */
-    public interface RankingFunction<T> {
-        /**
-         * Ranks the value in conjunction with the filter strings
-         * @param value the value
-         * @param filterStrings the filter strings (can be null or empty)
-         * @return a rank for each category. each item represents the ranking score (lower values are higher ranks) for a column. if null, the item does not match
-         */
-        int[] rank(T value, String[] filterStrings);
-    }
-
-    private static class RankedData<T> implements Comparable<RankedData<T>>{
-        private final T data;
-        private final int[] rank;
-
-        private RankedData(T data, int[] rank) {
-            this.data = data;
-            this.rank = rank;
-        }
-
-        public int getRankAt(int i) {
-            return i < rank.length ? rank[i] : 0;
-        }
-
-        @Override
-        public int compareTo(RankedData<T> o) {
-            if(o.rank.length == 0 && rank.length == 0)
-                return 0;
-            int num = Math.min(o.rank.length, rank.length);
-            for (int i = 0; i < num; i++) {
-                int lhs = getRankAt(i);
-                int rhs = o.getRankAt(i);
-                int compare = Integer.compare(lhs, rhs);
-                if(compare != 0)
-                    return compare;
-            }
-            return 0;
-        }
-
-        public T getData() {
-            return data;
-        }
-    }
-
-    /**
      * Model that implements filtering
      *
      * @param <T> type
@@ -275,9 +230,8 @@ public class SearchBox<T> extends JPanel {
             }
 
             for (RankedData<T> item : rankedData) {
-                data.add(item.data);
+                data.add(item.getData());
             }
-
 
             if (selectedItem != null && !data.contains(selectedItem)) {
                 selectedItem = null;

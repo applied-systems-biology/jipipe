@@ -15,7 +15,7 @@ package org.hkijena.jipipe.ui.components;
 
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeMutableParameterAccess;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeDeclaration;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
 import org.hkijena.jipipe.api.registries.JIPipeParameterTypeRegistry;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -39,15 +39,15 @@ public class AddDynamicParameterPanel extends JPanel {
     /**
      * Remember the type selected last for increased usability
      */
-    private static JIPipeParameterTypeDeclaration lastSelectedType = null;
+    private static JIPipeParameterTypeInfo lastSelectedType = null;
     private JIPipeDynamicParameterCollection parameterCollection;
     private SearchTextField searchField;
-    private JList<JIPipeParameterTypeDeclaration> datatypeList;
+    private JList<JIPipeParameterTypeInfo> datatypeList;
     private JTextField keyEditor;
-    private JIPipeParameterTypeDeclaration selectedDeclaration;
+    private JIPipeParameterTypeInfo selectedInfo;
     private JButton confirmButton;
     private JDialog dialog;
-    private Set<JIPipeParameterTypeDeclaration> availableTypes;
+    private Set<JIPipeParameterTypeInfo> availableTypes;
     private JTextArea descriptionEditor;
     private JXTextField nameEditor;
 
@@ -57,7 +57,7 @@ public class AddDynamicParameterPanel extends JPanel {
     public AddDynamicParameterPanel(JIPipeDynamicParameterCollection parameterCollection) {
         this.parameterCollection = parameterCollection;
         this.availableTypes = parameterCollection.getAllowedTypes().stream().map(x ->
-                JIPipeParameterTypeRegistry.getInstance().getDeclarationByFieldClass(x)).collect(Collectors.toSet());
+                JIPipeParameterTypeRegistry.getInstance().getInfoByFieldClass(x)).collect(Collectors.toSet());
         initialize();
         reloadTypeList();
         setInitialName();
@@ -81,10 +81,10 @@ public class AddDynamicParameterPanel extends JPanel {
         initializeToolBar();
 
         datatypeList = new JList<>();
-        datatypeList.setCellRenderer(new JIPipeParameterTypeDeclarationListCellRenderer());
+        datatypeList.setCellRenderer(new JIPipeParameterTypeInfoListCellRenderer());
         datatypeList.addListSelectionListener(e -> {
             if (datatypeList.getSelectedValue() != null) {
-                setSelectedDeclaration(datatypeList.getSelectedValue());
+                setSelectedInfo(datatypeList.getSelectedValue());
             }
         });
         JScrollPane scrollPane = new JScrollPane(datatypeList);
@@ -167,18 +167,18 @@ public class AddDynamicParameterPanel extends JPanel {
         String name = StringUtils.orElse(nameEditor.getText(), key);
         String description = descriptionEditor.getText();
 
-        JIPipeMutableParameterAccess access = parameterCollection.addParameter(key, selectedDeclaration.getFieldClass());
+        JIPipeMutableParameterAccess access = parameterCollection.addParameter(key, selectedInfo.getFieldClass());
         access.setName(name);
         access.setDescription(description);
 
-        lastSelectedType = selectedDeclaration;
+        lastSelectedType = selectedInfo;
 
         if (dialog != null)
             dialog.setVisible(false);
     }
 
     private boolean canAddParameter() {
-        if (selectedDeclaration == null)
+        if (selectedInfo == null)
             return false;
         String slotName = keyEditor.getText();
         if (slotName == null || slotName.isEmpty()) {
@@ -200,7 +200,7 @@ public class AddDynamicParameterPanel extends JPanel {
         searchField.addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent e) {
-                if (selectedDeclaration != null && e.getKeyCode() == KeyEvent.VK_ENTER) {
+                if (selectedInfo != null && e.getKeyCode() == KeyEvent.VK_ENTER) {
                     keyEditor.requestFocusInWindow();
                     keyEditor.selectAll();
                 }
@@ -211,17 +211,17 @@ public class AddDynamicParameterPanel extends JPanel {
         add(toolBar, BorderLayout.NORTH);
     }
 
-    private List<JIPipeParameterTypeDeclaration> getFilteredAndSortedDeclarations() {
-        Predicate<JIPipeParameterTypeDeclaration> filterFunction = declaration -> searchField.test(declaration.getName());
+    private List<JIPipeParameterTypeInfo> getFilteredAndSortedInfos() {
+        Predicate<JIPipeParameterTypeInfo> filterFunction = info -> searchField.test(info.getName());
 
-        return availableTypes.stream().filter(filterFunction).sorted(JIPipeParameterTypeDeclaration::compareTo).collect(Collectors.toList());
+        return availableTypes.stream().filter(filterFunction).sorted(JIPipeParameterTypeInfo::compareTo).collect(Collectors.toList());
     }
 
     private void reloadTypeList() {
-        setSelectedDeclaration(null);
-        List<JIPipeParameterTypeDeclaration> availableTypes = getFilteredAndSortedDeclarations();
-        DefaultListModel<JIPipeParameterTypeDeclaration> listModel = new DefaultListModel<>();
-        for (JIPipeParameterTypeDeclaration type : availableTypes) {
+        setSelectedInfo(null);
+        List<JIPipeParameterTypeInfo> availableTypes = getFilteredAndSortedInfos();
+        DefaultListModel<JIPipeParameterTypeInfo> listModel = new DefaultListModel<>();
+        for (JIPipeParameterTypeInfo type : availableTypes) {
             listModel.addElement(type);
         }
         datatypeList.setModel(listModel);
@@ -230,12 +230,12 @@ public class AddDynamicParameterPanel extends JPanel {
         }
     }
 
-    public JIPipeParameterTypeDeclaration getSelectedDeclaration() {
-        return selectedDeclaration;
+    public JIPipeParameterTypeInfo getSelectedInfo() {
+        return selectedInfo;
     }
 
-    public void setSelectedDeclaration(JIPipeParameterTypeDeclaration selectedDeclaration) {
-        this.selectedDeclaration = selectedDeclaration;
+    public void setSelectedInfo(JIPipeParameterTypeInfo selectedInfo) {
+        this.selectedInfo = selectedInfo;
     }
 
     public JDialog getDialog() {

@@ -44,10 +44,10 @@ public class SortTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     /**
      * Creates a new instance
      *
-     * @param declaration algorithm declaration
+     * @param info algorithm info
      */
-    public SortTableAlgorithm(JIPipeAlgorithmDeclaration declaration) {
-        super(declaration);
+    public SortTableAlgorithm(JIPipeNodeInfo info) {
+        super(info);
         sortOrderList.addNewInstance();
     }
 

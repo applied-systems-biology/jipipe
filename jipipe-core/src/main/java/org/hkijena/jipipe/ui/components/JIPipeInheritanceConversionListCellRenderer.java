@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.ui.components;
 
-import org.hkijena.jipipe.api.data.JIPipeDataDeclaration;
+import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.ui.registries.JIPipeUIDatatypeRegistry;
 import org.hkijena.jipipe.utils.ResourceUtils;
 
@@ -24,7 +24,7 @@ import java.util.Map;
 /**
  * Renders inheritance conversion entries
  */
-public class JIPipeInheritanceConversionListCellRenderer extends JLabel implements ListCellRenderer<Map.Entry<JIPipeDataDeclaration, JIPipeDataDeclaration>> {
+public class JIPipeInheritanceConversionListCellRenderer extends JLabel implements ListCellRenderer<Map.Entry<JIPipeDataInfo, JIPipeDataInfo>> {
 
     /**
      * Creates a new renderer
@@ -35,13 +35,13 @@ public class JIPipeInheritanceConversionListCellRenderer extends JLabel implemen
     }
 
     @Override
-    public Component getListCellRendererComponent(JList<? extends Map.Entry<JIPipeDataDeclaration, JIPipeDataDeclaration>> list,
-                                                  Map.Entry<JIPipeDataDeclaration, JIPipeDataDeclaration> value, int index, boolean isSelected, boolean cellHasFocus) {
+    public Component getListCellRendererComponent(JList<? extends Map.Entry<JIPipeDataInfo, JIPipeDataInfo>> list,
+                                                  Map.Entry<JIPipeDataInfo, JIPipeDataInfo> value, int index, boolean isSelected, boolean cellHasFocus) {
         if (value == null) {
             setText("<Null>");
         } else {
-            JIPipeDataDeclaration from = value.getKey();
-            JIPipeDataDeclaration to = value.getValue();
+            JIPipeDataInfo from = value.getKey();
+            JIPipeDataInfo to = value.getValue();
             String stringBuilder = "<html>" +
                     "<table><tr>" +
                     "<td><img src=\"" + JIPipeUIDatatypeRegistry.getInstance().getIconURLFor(from.getDataClass()) + "\" /></td>" +

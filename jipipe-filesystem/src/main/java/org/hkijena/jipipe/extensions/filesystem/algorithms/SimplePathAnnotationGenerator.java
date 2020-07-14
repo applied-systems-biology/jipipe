@@ -46,10 +46,10 @@ public class SimplePathAnnotationGenerator extends JIPipeSimpleIteratingAlgorith
     /**
      * Creates a new instance
      *
-     * @param declaration The algorithm declaration
+     * @param info The algorithm info
      */
-    public SimplePathAnnotationGenerator(JIPipeAlgorithmDeclaration declaration) {
-        super(declaration);
+    public SimplePathAnnotationGenerator(JIPipeNodeInfo info) {
+        super(info);
     }
 
     /**

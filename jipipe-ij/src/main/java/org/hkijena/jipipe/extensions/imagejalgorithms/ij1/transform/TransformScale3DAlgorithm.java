@@ -49,10 +49,10 @@ public class TransformScale3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     /**
      * Instantiates a new algorithm.
      *
-     * @param declaration the declaration
+     * @param info the info
      */
-    public TransformScale3DAlgorithm(JIPipeAlgorithmDeclaration declaration) {
-        super(declaration, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", ImagePlusData.class)
+    public TransformScale3DAlgorithm(JIPipeNodeInfo info) {
+        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", ImagePlusData.class)
                 .addOutputSlot("Output", ImagePlusData.class, "Input")
                 .allowOutputSlotInheritance(true)
                 .seal()

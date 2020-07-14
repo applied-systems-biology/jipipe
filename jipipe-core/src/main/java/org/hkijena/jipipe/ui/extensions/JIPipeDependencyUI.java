@@ -16,8 +16,8 @@ package org.hkijena.jipipe.ui.extensions;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeJsonExtension;
 import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
-import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmDeclaration;
-import org.hkijena.jipipe.api.data.JIPipeDataDeclaration;
+import org.hkijena.jipipe.api.algorithm.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeSlotDefinition;
 import org.hkijena.jipipe.api.registries.JIPipeAlgorithmRegistry;
 import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
@@ -109,22 +109,22 @@ public class JIPipeDependencyUI extends JPanel {
     }
 
     private void insertAddedDatatypes(FormPanel formPanel) {
-        Set<JIPipeDataDeclaration> list = JIPipeDatatypeRegistry.getInstance().getDeclaredBy(dependency);
+        Set<JIPipeDataInfo> list = JIPipeDatatypeRegistry.getInstance().getDeclaredBy(dependency);
         if (list.isEmpty())
             return;
         DefaultTableModel model = new DefaultTableModel();
         model.setColumnIdentifiers(new Object[]{"Name", "ID", "Description", "ImageJ support"});
-        for (JIPipeDataDeclaration declaration : list) {
-            boolean supportsImageJ = JIPipeImageJAdapterRegistry.getInstance().supportsJIPipeData(declaration.getDataClass());
+        for (JIPipeDataInfo info : list) {
+            boolean supportsImageJ = JIPipeImageJAdapterRegistry.getInstance().supportsJIPipeData(info.getDataClass());
             String supportsImageJEntry;
             if (supportsImageJ)
                 supportsImageJEntry = StringUtils.createIconTextHTMLTable("Yes", ResourceUtils.getPluginResource("icons/check-circle-green.png"));
             else
                 supportsImageJEntry = StringUtils.createIconTextHTMLTable("No", ResourceUtils.getPluginResource("icons/close-tab.png"));
             model.addRow(new Object[]{
-                    StringUtils.createIconTextHTMLTable(declaration.getName(), JIPipeUIDatatypeRegistry.getInstance().getIconURLFor(declaration)),
-                    declaration.getId(),
-                    StringUtils.wordWrappedHTML(declaration.getDescription(), 50),
+                    StringUtils.createIconTextHTMLTable(info.getName(), JIPipeUIDatatypeRegistry.getInstance().getIconURLFor(info)),
+                    info.getId(),
+                    StringUtils.wordWrappedHTML(info.getDescription(), 50),
                     supportsImageJEntry
             });
         }
@@ -144,18 +144,18 @@ public class JIPipeDependencyUI extends JPanel {
     }
 
     private void insertAddedAlgorithms(FormPanel formPanel) {
-        List<JIPipeAlgorithmDeclaration> list = new ArrayList<>(JIPipeAlgorithmRegistry.getInstance().getDeclaredBy(dependency));
+        List<JIPipeNodeInfo> list = new ArrayList<>(JIPipeAlgorithmRegistry.getInstance().getDeclaredBy(dependency));
         if (list.isEmpty())
             return;
         DefaultTableModel model = new DefaultTableModel();
         model.setColumnIdentifiers(new Object[]{"Name", "ID", "Description", "Input slots", "Output slots"});
-        for (JIPipeAlgorithmDeclaration declaration : list) {
+        for (JIPipeNodeInfo info : list) {
             model.addRow(new Object[]{
-                    declaration.getName(),
-                    declaration.getId(),
-                    StringUtils.wordWrappedHTML(declaration.getDescription(), 50),
-                    TooltipUtils.getSlotTable(declaration.getInputSlots().stream().map(JIPipeSlotDefinition::new).collect(Collectors.toList())),
-                    TooltipUtils.getSlotTable(declaration.getOutputSlots().stream().map(JIPipeSlotDefinition::new).collect(Collectors.toList()))
+                    info.getName(),
+                    info.getId(),
+                    StringUtils.wordWrappedHTML(info.getDescription(), 50),
+                    TooltipUtils.getSlotTable(info.getInputSlots().stream().map(JIPipeSlotDefinition::new).collect(Collectors.toList())),
+                    TooltipUtils.getSlotTable(info.getOutputSlots().stream().map(JIPipeSlotDefinition::new).collect(Collectors.toList()))
             });
         }
         insertTable(formPanel, model, "Algorithms", UIUtils.getIconFromResources("run.png"));

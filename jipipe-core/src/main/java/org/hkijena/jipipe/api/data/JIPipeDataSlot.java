@@ -113,8 +113,8 @@ public class JIPipeDataSlot implements TableModel {
      */
     public synchronized List<JIPipeAnnotation> getAnnotations(int row) {
         List<JIPipeAnnotation> result = new ArrayList<>();
-        for (String declaration : annotationColumns) {
-            JIPipeAnnotation trait = getOrCreateAnnotationColumnData(declaration).get(row);
+        for (String info : annotationColumns) {
+            JIPipeAnnotation trait = getOrCreateAnnotationColumnData(info).get(row);
             if (trait != null)
                 result.add(trait);
         }
@@ -134,18 +134,18 @@ public class JIPipeDataSlot implements TableModel {
     }
 
     /**
-     * Gets the annotation column for the trait declaration or creates it
+     * Gets the annotation column for the trait info or creates it
      * Ensures that the output size is equal to getRowCount()
      *
-     * @param declaration Annotation type
+     * @param info Annotation type
      * @return All trait instances of the provided type. Size is getRowCount()
      */
-    private synchronized List<JIPipeAnnotation> getOrCreateAnnotationColumnData(String declaration) {
-        ArrayList<JIPipeAnnotation> arrayList = annotations.getOrDefault(declaration, null);
+    private synchronized List<JIPipeAnnotation> getOrCreateAnnotationColumnData(String info) {
+        ArrayList<JIPipeAnnotation> arrayList = annotations.getOrDefault(info, null);
         if (arrayList == null) {
-            annotationColumns.add(declaration);
+            annotationColumns.add(info);
             arrayList = new ArrayList<>();
-            annotations.put(declaration, arrayList);
+            annotations.put(info, arrayList);
         }
         while (arrayList.size() < getRowCount()) {
             arrayList.add(null);
@@ -192,13 +192,13 @@ public class JIPipeDataSlot implements TableModel {
     /**
      * Removes an annotation column from the data
      *
-     * @param declaration Annotation type
+     * @param info Annotation type
      */
-    public synchronized void removeAllAnnotationsFromData(String declaration) {
-        int columnIndex = annotationColumns.indexOf(declaration);
+    public synchronized void removeAllAnnotationsFromData(String info) {
+        int columnIndex = annotationColumns.indexOf(info);
         if (columnIndex != -1) {
             annotationColumns.remove(columnIndex);
-            annotations.remove(declaration);
+            annotations.remove(info);
         }
     }
 
@@ -218,18 +218,18 @@ public class JIPipeDataSlot implements TableModel {
      * @return row index >= 0 if found, otherwise -1
      */
     public int findRowWithTraits(List<JIPipeAnnotation> traits) {
-        String[] declarationMap = new String[traits.size()];
+        String[] infoMap = new String[traits.size()];
         for (int i = 0; i < traits.size(); ++i) {
-            int declarationIndex = annotationColumns.indexOf(traits.get(i).getName());
-            if (declarationIndex == -1)
+            int infoIndex = annotationColumns.indexOf(traits.get(i).getName());
+            if (infoIndex == -1)
                 return -1;
-            declarationMap[i] = annotationColumns.get(declarationIndex);
+            infoMap[i] = annotationColumns.get(infoIndex);
         }
         for (int row = 0; row < data.size(); ++row) {
             boolean equal = true;
             for (int i = 0; i < traits.size(); ++i) {
-                String declaration = declarationMap[i];
-                JIPipeAnnotation rowTrait = annotations.get(declaration).get(row);
+                String info = infoMap[i];
+                JIPipeAnnotation rowTrait = annotations.get(info).get(row);
                 if (!JIPipeAnnotation.nameEquals(traits.get(i), rowTrait)) {
                     equal = false;
                 }
@@ -247,19 +247,19 @@ public class JIPipeDataSlot implements TableModel {
      * @return list of rows
      */
     public List<Integer> findRowsWithTraits(List<JIPipeAnnotation> traits) {
-        String[] declarationMap = new String[traits.size()];
+        String[] infoMap = new String[traits.size()];
         for (int i = 0; i < traits.size(); ++i) {
-            int declarationIndex = annotationColumns.indexOf(traits.get(i).getName());
-            if (declarationIndex == -1)
+            int infoIndex = annotationColumns.indexOf(traits.get(i).getName());
+            if (infoIndex == -1)
                 return new ArrayList<>();
-            declarationMap[i] = annotationColumns.get(declarationIndex);
+            infoMap[i] = annotationColumns.get(infoIndex);
         }
         List<Integer> result = new ArrayList<>();
         for (int row = 0; row < data.size(); ++row) {
             boolean equal = true;
             for (int i = 0; i < traits.size(); ++i) {
-                String declaration = declarationMap[i];
-                JIPipeAnnotation rowTrait = annotations.get(declaration).get(row);
+                String info = infoMap[i];
+                JIPipeAnnotation rowTrait = annotations.get(info).get(row);
                 if (!JIPipeAnnotation.nameEquals(traits.get(i), rowTrait)) {
                     equal = false;
                 }

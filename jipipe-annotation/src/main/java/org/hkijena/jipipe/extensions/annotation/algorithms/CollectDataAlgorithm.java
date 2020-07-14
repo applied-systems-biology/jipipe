@@ -19,7 +19,7 @@ import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.algorithm.JIPipeInputSlot;
 import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmCategory;
-import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmDeclaration;
+import org.hkijena.jipipe.api.algorithm.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FolderData;
@@ -56,8 +56,8 @@ public class CollectDataAlgorithm extends JIPipeAlgorithm {
     private String missingString = "NA";
     private Path outputDirectory = Paths.get("collected-data");
 
-    public CollectDataAlgorithm(JIPipeAlgorithmDeclaration declaration) {
-        super(declaration, JIPipeDefaultMutableSlotConfiguration.builder()
+    public CollectDataAlgorithm(JIPipeNodeInfo info) {
+        super(info, JIPipeDefaultMutableSlotConfiguration.builder()
                 .addInputSlot("Input", JIPipeData.class)
                 .addOutputSlot("Output path", FolderData.class, null)
                 .sealOutput()
@@ -123,9 +123,9 @@ public class CollectDataAlgorithm extends JIPipeAlgorithm {
                     String dataTypeName;
                     if (appendDataTypeUsesRealDataType) {
                         JIPipeData data = dataSlot.getData(row, JIPipeData.class);
-                        dataTypeName = JIPipeDataDeclaration.getInstance(data.getClass()).getName();
+                        dataTypeName = JIPipeDataInfo.getInstance(data.getClass()).getName();
                     } else {
-                        dataTypeName = JIPipeDataDeclaration.getInstance(dataSlot.getAcceptedDataType()).getName();
+                        dataTypeName = JIPipeDataInfo.getInstance(dataSlot.getAcceptedDataType()).getName();
                     }
                     if (withMetadataKeys && !StringUtils.isNullOrEmpty(appendDataTypeMetadataKey))
                         metadataStringBuilder.append(appendDataTypeMetadataKey).append(equalsString);

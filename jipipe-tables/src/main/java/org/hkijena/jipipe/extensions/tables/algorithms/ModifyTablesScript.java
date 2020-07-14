@@ -53,10 +53,10 @@ public class ModifyTablesScript extends JIPipeSimpleIteratingAlgorithm {
             JIPipeParameterTypeRegistry.getInstance().getRegisteredParameters().values());
 
     /**
-     * @param declaration the declaration
+     * @param info the info
      */
-    public ModifyTablesScript(JIPipeAlgorithmDeclaration declaration) {
-        super(declaration);
+    public ModifyTablesScript(JIPipeNodeInfo info) {
+        super(info);
         registerSubParameter(scriptParameters);
     }
 

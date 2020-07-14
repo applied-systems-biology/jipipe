@@ -16,7 +16,7 @@ package org.hkijena.jipipe.utils;
 import ij.IJ;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmCategory;
-import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmDeclaration;
+import org.hkijena.jipipe.api.algorithm.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.ColorIcon;
@@ -435,15 +435,15 @@ public class UIUtils {
     }
 
     /**
-     * Returns a fill color for {@link JIPipeAlgorithmDeclaration}
+     * Returns a fill color for {@link JIPipeNodeInfo}
      *
-     * @param declaration the algorithm type
+     * @param info the algorithm type
      * @return the fill color
      */
-    public static Color getFillColorFor(JIPipeAlgorithmDeclaration declaration) {
-        if (declaration.getAlgorithmClass() == JIPipeProjectCompartment.class)
+    public static Color getFillColorFor(JIPipeNodeInfo info) {
+        if (info.getAlgorithmClass() == JIPipeProjectCompartment.class)
             return new Color(254, 254, 255);
-        return declaration.getCategory().getColor(0.1f, 0.9f);
+        return info.getCategory().getColor(0.1f, 0.9f);
     }
 
     /**
@@ -457,15 +457,15 @@ public class UIUtils {
     }
 
     /**
-     * Returns a border color for {@link JIPipeAlgorithmDeclaration}
+     * Returns a border color for {@link JIPipeNodeInfo}
      *
-     * @param declaration the algorithm type
+     * @param info the algorithm type
      * @return the border color
      */
-    public static Color getBorderColorFor(JIPipeAlgorithmDeclaration declaration) {
-        if (declaration.getAlgorithmClass() == JIPipeProjectCompartment.class)
+    public static Color getBorderColorFor(JIPipeNodeInfo info) {
+        if (info.getAlgorithmClass() == JIPipeProjectCompartment.class)
             return new Color(6, 20, 57);
-        return declaration.getCategory().getColor(0.1f, 0.5f);
+        return info.getCategory().getColor(0.1f, 0.5f);
     }
 
     /**

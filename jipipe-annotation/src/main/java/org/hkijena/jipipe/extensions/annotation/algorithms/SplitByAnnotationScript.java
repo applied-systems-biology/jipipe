@@ -53,10 +53,10 @@ public class SplitByAnnotationScript extends JIPipeSimpleIteratingAlgorithm {
             JIPipeParameterTypeRegistry.getInstance().getRegisteredParameters().values());
 
     /**
-     * @param declaration the declaration
+     * @param info the info
      */
-    public SplitByAnnotationScript(JIPipeAlgorithmDeclaration declaration) {
-        super(declaration, JIPipeDefaultMutableSlotConfiguration.builder()
+    public SplitByAnnotationScript(JIPipeNodeInfo info) {
+        super(info, JIPipeDefaultMutableSlotConfiguration.builder()
                 .addInputSlot("Input", JIPipeData.class)
                 .addOutputSlot("Output", JIPipeData.class, "Input")
                 .sealInput()

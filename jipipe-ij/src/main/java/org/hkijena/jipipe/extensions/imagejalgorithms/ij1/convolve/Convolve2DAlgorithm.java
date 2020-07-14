@@ -45,10 +45,10 @@ public class Convolve2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     /**
      * Instantiates a new algorithm.
      *
-     * @param declaration the declaration
+     * @param info the info
      */
-    public Convolve2DAlgorithm(JIPipeAlgorithmDeclaration declaration) {
-        super(declaration, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", ImagePlusGreyscale32FData.class)
+    public Convolve2DAlgorithm(JIPipeNodeInfo info) {
+        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", ImagePlusGreyscale32FData.class)
                 .addOutputSlot("Output", ImagePlusGreyscale32FData.class, null)
                 .allowOutputSlotInheritance(true)
                 .seal()

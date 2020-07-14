@@ -85,9 +85,9 @@ public class JIPipeDynamicParameterCollection implements JIPipeCustomParameterCo
      * @param allowUserModification let user modify this collection
      * @param allowedTypes          The parameter types that can be added by the user (ignored if user cannot add)
      */
-    public JIPipeDynamicParameterCollection(boolean allowUserModification, Set<JIPipeParameterTypeDeclaration> allowedTypes) {
+    public JIPipeDynamicParameterCollection(boolean allowUserModification, Set<JIPipeParameterTypeInfo> allowedTypes) {
         this.allowUserModification = allowUserModification;
-        for (JIPipeParameterTypeDeclaration allowedType : allowedTypes) {
+        for (JIPipeParameterTypeInfo allowedType : allowedTypes) {
             this.allowedTypes.add(allowedType.getFieldClass());
         }
     }

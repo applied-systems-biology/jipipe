@@ -17,7 +17,7 @@ import ij.ImagePlus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithm;
-import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmDeclaration;
+import org.hkijena.jipipe.api.algorithm.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.algorithm.JIPipeDataBatch;
 import org.hkijena.jipipe.api.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.data.JIPipeData;
@@ -49,12 +49,12 @@ public abstract class ImageRoiProcessorAlgorithm extends JIPipeIteratingAlgorith
     /**
      * Creates a new instance
      *
-     * @param declaration algorithm declaration
+     * @param info algorithm info
      * @param output      the generated output
      * @param outputName  name of the output slot
      */
-    public ImageRoiProcessorAlgorithm(JIPipeAlgorithmDeclaration declaration, Class<? extends JIPipeData> output, String outputName) {
-        super(declaration, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("ROI", ROIListData.class)
+    public ImageRoiProcessorAlgorithm(JIPipeNodeInfo info, Class<? extends JIPipeData> output, String outputName) {
+        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("ROI", ROIListData.class)
                 .addInputSlot("Reference", ImagePlusData.class)
                 .addOutputSlot(outputName, output, null)
                 .seal()

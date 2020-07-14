@@ -40,10 +40,10 @@ public class SimpleFileAnnotationGenerator extends JIPipeSimpleIteratingAlgorith
     /**
      * New instance
      *
-     * @param declaration Algorithm declaration
+     * @param info Algorithm info
      */
-    public SimpleFileAnnotationGenerator(JIPipeAlgorithmDeclaration declaration) {
-        super(declaration);
+    public SimpleFileAnnotationGenerator(JIPipeNodeInfo info) {
+        super(info);
     }
 
     /**

@@ -20,7 +20,7 @@ import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.algorithm.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmCategory;
-import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmDeclaration;
+import org.hkijena.jipipe.api.algorithm.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FolderData;
 import org.hkijena.jipipe.extensions.parameters.primitives.FilePathParameterSettings;
@@ -46,10 +46,10 @@ public class FolderListDataSource extends JIPipeAlgorithm {
     /**
      * Creates a new instance
      *
-     * @param declaration The algorithm declaration
+     * @param info The algorithm info
      */
-    public FolderListDataSource(JIPipeAlgorithmDeclaration declaration) {
-        super(declaration);
+    public FolderListDataSource(JIPipeNodeInfo info) {
+        super(info);
     }
 
     /**

@@ -48,7 +48,7 @@ public class JIPipeExportedDataTable implements TableModel {
      * @param dataOutputPaths output path for each slot row
      */
     public JIPipeExportedDataTable(JIPipeDataSlot slot, List<Path> dataOutputPaths) {
-        this.algorithmId = slot.getNode().getDeclaration().getId();
+        this.algorithmId = slot.getNode().getInfo().getId();
         this.slotName = slot.getName();
         this.internalPath = slot.getStoragePath();
         this.acceptedDataType = slot.getAcceptedDataType();

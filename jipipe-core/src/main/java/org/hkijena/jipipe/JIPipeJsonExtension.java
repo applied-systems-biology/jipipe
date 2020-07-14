@@ -28,11 +28,11 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeMetadata;
 import org.hkijena.jipipe.api.JIPipeValidatable;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
-import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmDeclaration;
+import org.hkijena.jipipe.api.algorithm.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.events.ExtensionContentAddedEvent;
 import org.hkijena.jipipe.api.events.ExtensionContentRemovedEvent;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
-import org.hkijena.jipipe.api.grouping.JsonAlgorithmDeclaration;
+import org.hkijena.jipipe.api.grouping.JsonNodeInfo;
 import org.hkijena.jipipe.api.grouping.JsonAlgorithmRegistrationTask;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.registries.JIPipeAlgorithmRegistry;
@@ -59,7 +59,7 @@ public class JIPipeJsonExtension implements JIPipeDependency, JIPipeValidatable 
     private Path jsonFilePath;
     private JIPipeDefaultRegistry registry;
 
-    private Set<JsonAlgorithmDeclaration> algorithmDeclarations = new HashSet<>();
+    private Set<JsonNodeInfo> nodeInfos = new HashSet<>();
     private JsonNode serializedJson;
 
     /**
@@ -151,8 +151,8 @@ public class JIPipeJsonExtension implements JIPipeDependency, JIPipeValidatable 
     @JsonGetter("dependencies")
     public Set<JIPipeDependency> getDependencies() {
         Set<JIPipeDependency> result = new HashSet<>();
-        for (JIPipeAlgorithmDeclaration declaration : getAlgorithmDeclarations()) {
-            result.addAll(declaration.getDependencies());
+        for (JIPipeNodeInfo info : getNodeInfos()) {
+            result.addAll(info.getDependencies());
         }
         return result.stream().map(JIPipeMutableDependency::new).collect(Collectors.toSet());
     }
@@ -204,24 +204,24 @@ public class JIPipeJsonExtension implements JIPipeDependency, JIPipeValidatable 
     /**
      * Adds a new algorithm of specified type
      *
-     * @param algorithmDeclaration The algorithm type
+     * @param nodeInfo The algorithm type
      */
-    public void addAlgorithm(JsonAlgorithmDeclaration algorithmDeclaration) {
-        if (algorithmDeclarations == null)
-            deserializeAlgorithmDeclarations();
-        algorithmDeclarations.add(algorithmDeclaration);
-        eventBus.post(new ExtensionContentAddedEvent(this, algorithmDeclaration));
+    public void addAlgorithm(JsonNodeInfo nodeInfo) {
+        if (nodeInfos == null)
+            deserializeNodeInfos();
+        nodeInfos.add(nodeInfo);
+        eventBus.post(new ExtensionContentAddedEvent(this, nodeInfo));
     }
 
     /**
      * Responsible for deserializing the algorithms
      */
-    private void deserializeAlgorithmDeclarations() {
-        if (algorithmDeclarations == null) {
-            TypeReference<HashSet<JsonAlgorithmDeclaration>> typeReference = new TypeReference<HashSet<JsonAlgorithmDeclaration>>() {
+    private void deserializeNodeInfos() {
+        if (nodeInfos == null) {
+            TypeReference<HashSet<JsonNodeInfo>> typeReference = new TypeReference<HashSet<JsonNodeInfo>>() {
             };
             try {
-                algorithmDeclarations = JsonUtils.getObjectMapper().readerFor(typeReference).readValue(serializedJson.get("algorithms"));
+                nodeInfos = JsonUtils.getObjectMapper().readerFor(typeReference).readValue(serializedJson.get("algorithms"));
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -229,23 +229,23 @@ public class JIPipeJsonExtension implements JIPipeDependency, JIPipeValidatable 
     }
 
     /**
-     * @return Algorithm declarations
+     * @return Algorithm infos
      */
     @JsonGetter("algorithms")
-    public Set<JsonAlgorithmDeclaration> getAlgorithmDeclarations() {
-        if (algorithmDeclarations == null)
-            deserializeAlgorithmDeclarations();
-        return Collections.unmodifiableSet(algorithmDeclarations);
+    public Set<JsonNodeInfo> getNodeInfos() {
+        if (nodeInfos == null)
+            deserializeNodeInfos();
+        return Collections.unmodifiableSet(nodeInfos);
     }
 
     /**
-     * Sets algorithm declarations
+     * Sets algorithm infos
      *
-     * @param algorithmDeclarations Declarations
+     * @param nodeInfos Infos
      */
     @JsonSetter("algorithms")
-    private void setAlgorithmDeclarations(Set<JsonAlgorithmDeclaration> algorithmDeclarations) {
-        this.algorithmDeclarations = algorithmDeclarations;
+    private void setNodeInfos(Set<JsonNodeInfo> nodeInfos) {
+        this.nodeInfos = nodeInfos;
     }
 
     @Override
@@ -273,12 +273,12 @@ public class JIPipeJsonExtension implements JIPipeDependency, JIPipeValidatable 
                     "Please provide a meaningful name for your plugin.",
                     this);
         }
-        if (algorithmDeclarations == null)
-            deserializeAlgorithmDeclarations();
-        for (JsonAlgorithmDeclaration declaration : algorithmDeclarations) {
-            report.forCategory("Algorithms").forCategory(declaration.getName()).report(declaration);
+        if (nodeInfos == null)
+            deserializeNodeInfos();
+        for (JsonNodeInfo info : nodeInfos) {
+            report.forCategory("Algorithms").forCategory(info.getName()).report(info);
         }
-        if (algorithmDeclarations.size() != algorithmDeclarations.stream().map(JsonAlgorithmDeclaration::getId).collect(Collectors.toSet()).size()) {
+        if (nodeInfos.size() != nodeInfos.stream().map(JsonNodeInfo::getId).collect(Collectors.toSet()).size()) {
             report.forCategory("Algorithms").reportIsInvalid("Duplicate IDs found!",
                     "Algorithm IDs must be unique",
                     "Please make sure that IDs are unique.",
@@ -289,13 +289,13 @@ public class JIPipeJsonExtension implements JIPipeDependency, JIPipeValidatable 
     /**
      * Removes an algorithm
      *
-     * @param declaration Algorithm type
+     * @param info Algorithm type
      */
-    public void removeAlgorithm(JsonAlgorithmDeclaration declaration) {
-        if (algorithmDeclarations == null)
-            deserializeAlgorithmDeclarations();
-        if (algorithmDeclarations.remove(declaration)) {
-            eventBus.post(new ExtensionContentRemovedEvent(this, declaration));
+    public void removeAlgorithm(JsonNodeInfo info) {
+        if (nodeInfos == null)
+            deserializeNodeInfos();
+        if (nodeInfos.remove(info)) {
+            eventBus.post(new ExtensionContentRemovedEvent(this, info));
         }
     }
 
@@ -317,14 +317,14 @@ public class JIPipeJsonExtension implements JIPipeDependency, JIPipeValidatable 
 
     /**
      * Deserializer for the {@link JIPipeJsonExtension}.
-     * This is a special deserializer that leaves the algorithmDeclarations field alone, as we cannot be sure if algorithmDeclarations is deserialized
+     * This is a special deserializer that leaves the algorithmInfos field alone, as we cannot be sure if algorithmInfos is deserialized
      * during registration (leading to missing algorithm Ids)
      */
     public static class Deserializer extends JsonDeserializer<JIPipeJsonExtension> {
         @Override
         public JIPipeJsonExtension deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
             JIPipeJsonExtension extension = new JIPipeJsonExtension();
-            extension.algorithmDeclarations = null;
+            extension.nodeInfos = null;
             JsonNode node = jsonParser.readValueAsTree();
 
             extension.serializedJson = node;

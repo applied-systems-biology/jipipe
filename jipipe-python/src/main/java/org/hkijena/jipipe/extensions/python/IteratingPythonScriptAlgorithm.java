@@ -18,7 +18,7 @@ import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmCategory;
-import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmDeclaration;
+import org.hkijena.jipipe.api.algorithm.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.algorithm.JIPipeDataBatch;
 import org.hkijena.jipipe.api.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
@@ -61,17 +61,17 @@ public class IteratingPythonScriptAlgorithm extends JIPipeIteratingAlgorithm {
     /**
      * Creates a new instance
      *
-     * @param declaration the declaration
+     * @param info the info
      */
-    public IteratingPythonScriptAlgorithm(JIPipeAlgorithmDeclaration declaration) {
-        super(declaration, JIPipeDefaultMutableSlotConfiguration.builder().build());
+    public IteratingPythonScriptAlgorithm(JIPipeNodeInfo info) {
+        super(info, JIPipeDefaultMutableSlotConfiguration.builder().build());
         registerSubParameter(scriptParameters);
     }
 
     /**
      * Creates a copy
      *
-     * @param other the declaration
+     * @param other the info
      */
     public IteratingPythonScriptAlgorithm(IteratingPythonScriptAlgorithm other) {
         super(other);

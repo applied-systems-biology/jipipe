@@ -19,7 +19,7 @@ import ij.measure.ResultsTable;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeValidatable;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
-import org.hkijena.jipipe.api.data.JIPipeDataDeclaration;
+import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.events.ParameterChangedEvent;
 import org.hkijena.jipipe.api.events.ParameterStructureChangedEvent;
 import org.hkijena.jipipe.api.parameters.*;
@@ -39,7 +39,7 @@ import java.util.Map;
  */
 public class JIPipePlotSeriesBuilder implements JIPipeParameterCollection, JIPipeValidatable {
     private JIPipePlotBuilderUI plotBuilderUI;
-    private JIPipeDataDeclaration plotType;
+    private JIPipeDataInfo plotType;
     private EventBus eventBus = new EventBus();
     private JIPipeDynamicParameterCollection columnAssignments = new JIPipeDynamicParameterCollection(false);
     private String name = "Series";
@@ -51,7 +51,7 @@ public class JIPipePlotSeriesBuilder implements JIPipeParameterCollection, JIPip
      * @param plotBuilderUI the plot builder
      * @param plotType      the plot type this series builder is defined for
      */
-    public JIPipePlotSeriesBuilder(JIPipePlotBuilderUI plotBuilderUI, JIPipeDataDeclaration plotType) {
+    public JIPipePlotSeriesBuilder(JIPipePlotBuilderUI plotBuilderUI, JIPipeDataInfo plotType) {
         this.plotBuilderUI = plotBuilderUI;
         this.plotType = plotType;
 
@@ -135,7 +135,7 @@ public class JIPipePlotSeriesBuilder implements JIPipeParameterCollection, JIPip
         return columnAssignments;
     }
 
-    public JIPipeDataDeclaration getPlotType() {
+    public JIPipeDataInfo getPlotType() {
         return plotType;
     }
 

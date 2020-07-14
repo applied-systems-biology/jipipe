@@ -58,7 +58,7 @@ public class JIPipeJsonAlgorithmExporterMultiSelectionPanelUI extends JIPipeWork
 
         StringBuilder markdownContent = new StringBuilder();
         for (JIPipeGraphNode algorithm : algorithms.stream().sorted(Comparator.comparing(JIPipeGraphNode::getName)).collect(Collectors.toList())) {
-            markdownContent.append(TooltipUtils.getAlgorithmTooltip(algorithm.getDeclaration())
+            markdownContent.append(TooltipUtils.getAlgorithmTooltip(algorithm.getInfo())
                     .replace("<html>", "<div style=\"border: 1px solid gray; border-radius: 4px; margin: 4px; padding: 4px;\">")
                     .replace("</html>", "</div>"));
             markdownContent.append("\n\n");

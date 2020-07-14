@@ -55,10 +55,10 @@ public class ModifyAnnotationScript extends JIPipeSimpleIteratingAlgorithm {
             JIPipeParameterTypeRegistry.getInstance().getRegisteredParameters().values());
 
     /**
-     * @param declaration the declaration
+     * @param info the info
      */
-    public ModifyAnnotationScript(JIPipeAlgorithmDeclaration declaration) {
-        super(declaration);
+    public ModifyAnnotationScript(JIPipeNodeInfo info) {
+        super(info);
         registerSubParameter(scriptParameters);
     }
 

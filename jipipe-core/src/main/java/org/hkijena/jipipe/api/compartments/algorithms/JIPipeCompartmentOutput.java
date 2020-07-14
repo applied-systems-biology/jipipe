@@ -16,7 +16,7 @@ package org.hkijena.jipipe.api.compartments.algorithms;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmCategory;
-import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmDeclaration;
+import org.hkijena.jipipe.api.algorithm.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.algorithm.JIPipeGraphNode;
 
 /**
@@ -31,10 +31,10 @@ public class JIPipeCompartmentOutput extends IOInterfaceAlgorithm {
      * Creates a new instance.
      * Please do not use this constructor manually, but instead use {@link JIPipeGraphNode}'s newInstance() method
      *
-     * @param declaration The algorithm declaration
+     * @param info The algorithm info
      */
-    public JIPipeCompartmentOutput(JIPipeAlgorithmDeclaration declaration) {
-        super(declaration);
+    public JIPipeCompartmentOutput(JIPipeNodeInfo info) {
+        super(info);
     }
 
     /**

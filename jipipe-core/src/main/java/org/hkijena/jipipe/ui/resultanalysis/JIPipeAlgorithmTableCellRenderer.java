@@ -38,7 +38,7 @@ public class JIPipeAlgorithmTableCellRenderer extends JLabel implements TableCel
 
         if (value instanceof JIPipeGraphNode) {
             JIPipeGraphNode algorithm = (JIPipeGraphNode) value;
-            setIcon(JIPipeUIAlgorithmRegistry.getInstance().getIconFor(algorithm.getDeclaration()));
+            setIcon(JIPipeUIAlgorithmRegistry.getInstance().getIconFor(algorithm.getInfo()));
             setText(algorithm.getName());
         }
 

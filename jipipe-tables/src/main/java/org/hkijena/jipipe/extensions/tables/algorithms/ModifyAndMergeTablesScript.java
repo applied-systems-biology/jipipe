@@ -58,10 +58,10 @@ public class ModifyAndMergeTablesScript extends JIPipeAlgorithm {
             JIPipeParameterTypeRegistry.getInstance().getRegisteredParameters().values());
 
     /**
-     * @param declaration the declaration
+     * @param info the info
      */
-    public ModifyAndMergeTablesScript(JIPipeAlgorithmDeclaration declaration) {
-        super(declaration);
+    public ModifyAndMergeTablesScript(JIPipeNodeInfo info) {
+        super(info);
         registerSubParameter(scriptParameters);
     }
 

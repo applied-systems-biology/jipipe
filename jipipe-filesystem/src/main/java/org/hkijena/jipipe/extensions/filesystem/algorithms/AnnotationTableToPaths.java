@@ -50,10 +50,10 @@ public class AnnotationTableToPaths extends JIPipeSimpleIteratingAlgorithm {
     /**
      * Instantiates the algorithm
      *
-     * @param declaration Algorithm declaration
+     * @param info Algorithm info
      */
-    public AnnotationTableToPaths(JIPipeAlgorithmDeclaration declaration) {
-        super(declaration);
+    public AnnotationTableToPaths(JIPipeNodeInfo info) {
+        super(info);
     }
 
     /**
@@ -83,9 +83,9 @@ public class AnnotationTableToPaths extends JIPipeSimpleIteratingAlgorithm {
         for (int row = 0; row < tableData.getRowCount(); row++) {
             List<JIPipeAnnotation> annotations = new ArrayList<>();
             for (String annotationColumn : annotationColumns) {
-                String declaration = AnnotationTableData.getAnnotationTypeFromColumnName(annotationColumn);
-                if (declaration != null)
-                    annotations.add(new JIPipeAnnotation(declaration, tableData.getValueAsString(row, annotationColumn)));
+                String info = AnnotationTableData.getAnnotationTypeFromColumnName(annotationColumn);
+                if (info != null)
+                    annotations.add(new JIPipeAnnotation(info, tableData.getValueAsString(row, annotationColumn)));
             }
 
             String data = tableData.getValueAsString(row, dataColumn);

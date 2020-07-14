@@ -15,8 +15,7 @@ package org.hkijena.jipipe.ui.grapheditor.algorithmfinder;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmDeclaration;
-import org.hkijena.jipipe.api.algorithm.JIPipeGraph;
+import org.hkijena.jipipe.api.algorithm.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.algorithm.JIPipeGraphNode;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeMutableSlotConfiguration;
@@ -52,16 +51,16 @@ public class JIPipeAlgorithmFinderAlgorithmUI extends JPanel {
      *
      * @param canvasUI    the canvas
      * @param outputSlot  The output slot to connect
-     * @param declaration The target algorithm
+     * @param info The target algorithm
      * @param score       Score of the target algorithm
      * @param maxScore    Maximum score that was possible
      */
-    public JIPipeAlgorithmFinderAlgorithmUI(JIPipeGraphCanvasUI canvasUI, JIPipeDataSlot outputSlot, JIPipeAlgorithmDeclaration declaration, int score, int maxScore) {
+    public JIPipeAlgorithmFinderAlgorithmUI(JIPipeGraphCanvasUI canvasUI, JIPipeDataSlot outputSlot, JIPipeNodeInfo info, int score, int maxScore) {
         this.canvasUI = canvasUI;
         this.outputSlot = outputSlot;
         this.score = score;
         this.maxScore = maxScore;
-        this.algorithm = declaration.newInstance();
+        this.algorithm = info.newInstance();
         this.isExistingInstance = false;
 
         initialize();
@@ -104,7 +103,7 @@ public class JIPipeAlgorithmFinderAlgorithmUI extends JPanel {
         add(centerPanel, BorderLayout.CENTER);
 
         JPanel colorPanel = new JPanel();
-        colorPanel.setBackground(UIUtils.getFillColorFor(algorithm.getDeclaration()));
+        colorPanel.setBackground(UIUtils.getFillColorFor(algorithm.getInfo()));
         colorPanel.setPreferredSize(new Dimension(16, 1));
         add(colorPanel, BorderLayout.WEST);
 
@@ -147,10 +146,10 @@ public class JIPipeAlgorithmFinderAlgorithmUI extends JPanel {
             }
         });
 
-        JIPipeAlgorithmDeclaration declaration = algorithm.getDeclaration();
-        String menuPath = declaration.getCategory().toString();
-        if (!StringUtils.isNullOrEmpty(declaration.getMenuPath())) {
-            menuPath += " > " + String.join(" > ", declaration.getMenuPath().split("\n"));
+        JIPipeNodeInfo info = algorithm.getInfo();
+        String menuPath = info.getCategory().toString();
+        if (!StringUtils.isNullOrEmpty(info.getMenuPath())) {
+            menuPath += " > " + String.join(" > ", info.getMenuPath().split("\n"));
         }
         JLabel menuLabel = new JLabel(menuPath);
         menuLabel.setForeground(Color.GRAY);
@@ -167,7 +166,7 @@ public class JIPipeAlgorithmFinderAlgorithmUI extends JPanel {
         });
 
         // The description
-        JTextArea description = UIUtils.makeReadonlyBorderlessTextArea(declaration.getDescription());
+        JTextArea description = UIUtils.makeReadonlyBorderlessTextArea(info.getDescription());
         centerPanel.add(description, new GridBagConstraints() {
             {
                 anchor = WEST;

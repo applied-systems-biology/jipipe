@@ -20,12 +20,12 @@ import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.algorithm.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmCategory;
-import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmDeclaration;
+import org.hkijena.jipipe.api.algorithm.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.events.ParameterStructureChangedEvent;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeDeclaration;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterVisibility;
 import org.hkijena.jipipe.api.registries.JIPipeParameterTypeRegistry;
 import org.hkijena.jipipe.extensions.multiparameters.datatypes.ParametersData;
@@ -52,10 +52,10 @@ public class ParametersDataTableDefinition extends JIPipeAlgorithm {
     /**
      * Creates a new instance
      *
-     * @param declaration the algorithm declaration
+     * @param info the algorithm info
      */
-    public ParametersDataTableDefinition(JIPipeAlgorithmDeclaration declaration) {
-        super(declaration);
+    public ParametersDataTableDefinition(JIPipeNodeInfo info) {
+        super(info);
         this.parameters = new GeneratedParameters(this);
         registerSubParameter(parameters);
         parameterTable.setRowGenerator(this::generateRow);
@@ -91,8 +91,8 @@ public class ParametersDataTableDefinition extends JIPipeAlgorithm {
             algorithmProgress.accept(subProgress.resolve("Info: Please add rows to '" + getName() + "'. Falling back to adding the default parameters."));
             ParametersData data = new ParametersData();
             for (Map.Entry<String, JIPipeParameterAccess> entry : parameters.getParameters().entrySet()) {
-                JIPipeParameterTypeDeclaration declaration = JIPipeParameterTypeRegistry.getInstance().getDeclarationByFieldClass(entry.getValue().getFieldClass());
-                data.getParameterData().put(entry.getKey(), declaration.duplicate(entry.getValue().get(Object.class)));
+                JIPipeParameterTypeInfo info = JIPipeParameterTypeRegistry.getInstance().getInfoByFieldClass(entry.getValue().getFieldClass());
+                data.getParameterData().put(entry.getKey(), info.duplicate(entry.getValue().get(Object.class)));
             }
             outputSlot.addData(data);
         }
@@ -166,7 +166,7 @@ public class ParametersDataTableDefinition extends JIPipeAlgorithm {
                     access.getName(),
                     entry.getKey(),
                     access.getFieldClass()
-            ), JIPipeParameterTypeRegistry.getInstance().getDeclarationByFieldClass(access.getFieldClass()).newInstance());
+            ), JIPipeParameterTypeRegistry.getInstance().getInfoByFieldClass(access.getFieldClass()).newInstance());
         }
     }
 }

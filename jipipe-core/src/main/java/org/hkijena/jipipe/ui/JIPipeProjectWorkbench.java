@@ -461,8 +461,8 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
         }
         NodeGroup nodeGroup = new NodeGroup(new JIPipeGraph(getProject().getGraph()), true);
         JIPipeJsonExporter exporter = new JIPipeJsonExporter(this, nodeGroup);
-        exporter.getAlgorithmDeclaration().setName("Custom algorithm");
-        exporter.getAlgorithmDeclaration().setDescription("A custom algorithm");
+        exporter.getNodeInfo().setName("Custom algorithm");
+        exporter.getNodeInfo().setDescription("A custom algorithm");
         getDocumentTabPane().addTab("Export custom algorithm",
                 UIUtils.getIconFromResources("export.png"),
                 exporter,

@@ -20,7 +20,7 @@ import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmCategory;
-import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmDeclaration;
+import org.hkijena.jipipe.api.algorithm.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.algorithm.JIPipeDataBatch;
 import org.hkijena.jipipe.api.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
@@ -68,8 +68,8 @@ public class Clij2ExecuteKernelIterating extends JIPipeIteratingAlgorithm {
             CLIJExtension.ALLOWED_PARAMETER_TYPES);
     private StringAndStringPair.List outputSizes = new StringAndStringPair.List();
 
-    public Clij2ExecuteKernelIterating(JIPipeAlgorithmDeclaration declaration) {
-        super(declaration, JIPipeDefaultMutableSlotConfiguration.builder()
+    public Clij2ExecuteKernelIterating(JIPipeNodeInfo info) {
+        super(info, JIPipeDefaultMutableSlotConfiguration.builder()
                 .restrictInputTo(CLIJImageData.class)
                 .restrictOutputTo(CLIJImageData.class)
                 .build());
@@ -183,7 +183,7 @@ public class Clij2ExecuteKernelIterating extends JIPipeIteratingAlgorithm {
         for (Map.Entry<String, JIPipeParameterAccess> entry : scriptParameters.getParameters().entrySet()) {
             Object o = entry.getValue().get(Object.class);
             if (o == null) {
-                o = JIPipeParameterTypeRegistry.getInstance().getDeclarationByFieldClass(entry.getValue().getFieldClass()).newInstance();
+                o = JIPipeParameterTypeRegistry.getInstance().getInfoByFieldClass(entry.getValue().getFieldClass()).newInstance();
             }
             if (o instanceof Boolean) {
                 o = (boolean) o ? 1 : 0;

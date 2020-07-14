@@ -38,10 +38,10 @@ public class IOInterfaceAlgorithm extends JIPipeAlgorithm {
      * Creates a new instance.
      * Please do not use this constructor manually, but instead use {@link JIPipeGraphNode}'s newInstance() method
      *
-     * @param declaration The algorithm declaration
+     * @param info The algorithm info
      */
-    public IOInterfaceAlgorithm(JIPipeAlgorithmDeclaration declaration) {
-        super(declaration, new JIPipeIOSlotConfiguration());
+    public IOInterfaceAlgorithm(JIPipeNodeInfo info) {
+        super(info, new JIPipeIOSlotConfiguration());
     }
 
     /**

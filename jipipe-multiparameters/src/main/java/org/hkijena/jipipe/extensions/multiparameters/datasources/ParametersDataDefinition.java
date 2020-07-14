@@ -20,7 +20,7 @@ import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.algorithm.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmCategory;
-import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmDeclaration;
+import org.hkijena.jipipe.api.algorithm.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterVisibility;
@@ -43,10 +43,10 @@ public class ParametersDataDefinition extends JIPipeAlgorithm {
     /**
      * Creates a new instance
      *
-     * @param declaration the algorithm declaration
+     * @param info the algorithm info
      */
-    public ParametersDataDefinition(JIPipeAlgorithmDeclaration declaration) {
-        super(declaration);
+    public ParametersDataDefinition(JIPipeNodeInfo info) {
+        super(info);
         this.parameters = new GeneratedParameters(this);
         registerSubParameter(parameters);
     }

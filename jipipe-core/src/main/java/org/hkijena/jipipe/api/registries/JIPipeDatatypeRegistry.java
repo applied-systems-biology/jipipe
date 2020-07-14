@@ -21,7 +21,7 @@ import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.JIPipeHidden;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataConverter;
-import org.hkijena.jipipe.api.data.JIPipeDataDeclaration;
+import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.events.DatatypeRegisteredEvent;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
@@ -265,17 +265,17 @@ public class JIPipeDatatypeRegistry {
     }
 
     /**
-     * Returns all data declarations added by the dependency
+     * Returns all data infos added by the dependency
      *
      * @param dependency The dependency
-     * @return Set of data declarations registered by the dependency
+     * @return Set of data infos registered by the dependency
      */
-    public Set<JIPipeDataDeclaration> getDeclaredBy(JIPipeDependency dependency) {
-        Set<JIPipeDataDeclaration> result = new HashSet<>();
+    public Set<JIPipeDataInfo> getDeclaredBy(JIPipeDependency dependency) {
+        Set<JIPipeDataInfo> result = new HashSet<>();
         for (Map.Entry<String, Class<? extends JIPipeData>> entry : registeredDataTypes.entrySet()) {
             JIPipeDependency source = getSourceOf(entry.getKey());
             if (source == dependency)
-                result.add(JIPipeDataDeclaration.getInstance(entry.getValue()));
+                result.add(JIPipeDataInfo.getInstance(entry.getValue()));
         }
         return result;
     }

@@ -50,10 +50,10 @@ public class StackTo2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     /**
      * Instantiates a new algorithm.
      *
-     * @param declaration the declaration
+     * @param info the info
      */
-    public StackTo2DAlgorithm(JIPipeAlgorithmDeclaration declaration) {
-        super(declaration, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", ImagePlusData.class)
+    public StackTo2DAlgorithm(JIPipeNodeInfo info) {
+        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", ImagePlusData.class)
                 .addOutputSlot("Output", ImagePlus2DData.class, "Input", TO_2D_CONVERSION)
                 .allowOutputSlotInheritance(true)
                 .seal()

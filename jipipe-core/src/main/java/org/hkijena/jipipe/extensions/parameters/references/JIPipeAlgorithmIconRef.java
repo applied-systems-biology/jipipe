@@ -19,12 +19,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import org.hkijena.jipipe.api.grouping.JsonAlgorithmDeclaration;
+import org.hkijena.jipipe.api.grouping.JsonNodeInfo;
 
 import java.io.IOException;
 
 /**
- * Used by {@link JsonAlgorithmDeclaration} to setup icons
+ * Used by {@link JsonNodeInfo} to setup icons
  */
 @JsonSerialize(using = JIPipeAlgorithmIconRef.Serializer.class)
 @JsonDeserialize(using = JIPipeAlgorithmIconRef.Deserializer.class)

@@ -20,7 +20,7 @@ import org.hkijena.jipipe.api.JIPipeFixedThreadPool;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithm;
-import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmDeclaration;
+import org.hkijena.jipipe.api.algorithm.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.algorithm.JIPipeGraphNode;
 import org.hkijena.jipipe.api.compat.SingleImageJAlgorithmRun;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
@@ -86,8 +86,8 @@ public class JIPipeRunAlgorithmCommand extends DynamicCommand implements Initial
                 settings = dialog.getRunSettings();
             }
         } else {
-            JIPipeAlgorithmDeclaration declaration = JIPipeAlgorithmRegistry.getInstance().getDeclarationById(algorithmId);
-            algorithm = declaration.newInstance();
+            JIPipeNodeInfo info = JIPipeAlgorithmRegistry.getInstance().getInfoById(algorithmId);
+            algorithm = info.newInstance();
             settings = new SingleImageJAlgorithmRun(algorithm);
             try {
                 settings.fromJson(JsonUtils.getObjectMapper().readValue(algorithmParameters, JsonNode.class));

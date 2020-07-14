@@ -35,13 +35,13 @@ public abstract class JIPipeParameterSlotAlgorithm extends JIPipeAlgorithm {
     public static final String SLOT_PARAMETERS = "Parameters";
     private ParameterSlotAlgorithmSettings parameterSlotAlgorithmSettings = new ParameterSlotAlgorithmSettings();
 
-    public JIPipeParameterSlotAlgorithm(JIPipeAlgorithmDeclaration declaration, JIPipeSlotConfiguration slotConfiguration) {
-        super(declaration, slotConfiguration);
+    public JIPipeParameterSlotAlgorithm(JIPipeNodeInfo info, JIPipeSlotConfiguration slotConfiguration) {
+        super(info, slotConfiguration);
         registerParameterSettings();
     }
 
-    public JIPipeParameterSlotAlgorithm(JIPipeAlgorithmDeclaration declaration) {
-        super(declaration);
+    public JIPipeParameterSlotAlgorithm(JIPipeNodeInfo info) {
+        super(info);
         registerParameterSettings();
     }
 

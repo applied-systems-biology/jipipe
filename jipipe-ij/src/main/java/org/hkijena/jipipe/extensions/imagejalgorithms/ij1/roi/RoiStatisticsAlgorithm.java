@@ -58,10 +58,10 @@ public class RoiStatisticsAlgorithm extends ImageRoiProcessorAlgorithm {
     /**
      * Instantiates a new algorithm.
      *
-     * @param declaration the declaration
+     * @param info the info
      */
-    public RoiStatisticsAlgorithm(JIPipeAlgorithmDeclaration declaration) {
-        super(declaration, ResultsTableData.class, "Measurements");
+    public RoiStatisticsAlgorithm(JIPipeNodeInfo info) {
+        super(info, ResultsTableData.class, "Measurements");
     }
 
     /**

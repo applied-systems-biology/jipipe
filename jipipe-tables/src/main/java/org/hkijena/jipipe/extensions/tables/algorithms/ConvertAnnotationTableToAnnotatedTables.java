@@ -42,10 +42,10 @@ public class ConvertAnnotationTableToAnnotatedTables extends JIPipeSimpleIterati
     /**
      * Creates a new instance
      *
-     * @param declaration algorithm declaration
+     * @param info algorithm info
      */
-    public ConvertAnnotationTableToAnnotatedTables(JIPipeAlgorithmDeclaration declaration) {
-        super(declaration);
+    public ConvertAnnotationTableToAnnotatedTables(JIPipeNodeInfo info) {
+        super(info);
     }
 
     /**

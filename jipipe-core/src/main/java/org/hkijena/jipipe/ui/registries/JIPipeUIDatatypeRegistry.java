@@ -17,7 +17,7 @@ import org.apache.commons.lang3.reflect.ConstructorUtils;
 import org.hkijena.jipipe.JIPipeDefaultRegistry;
 import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmCategory;
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.JIPipeDataDeclaration;
+import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeExportedDataTable;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
@@ -156,11 +156,11 @@ public class JIPipeUIDatatypeRegistry {
     }
 
     /**
-     * @param declaration data declaration
+     * @param info data info
      * @return icon resource
      */
-    public URL getIconURLFor(JIPipeDataDeclaration declaration) {
-        return getIconURLFor(declaration.getDataClass());
+    public URL getIconURLFor(JIPipeDataInfo info) {
+        return getIconURLFor(info.getDataClass());
     }
 
     public static JIPipeUIDatatypeRegistry getInstance() {

@@ -39,10 +39,10 @@ public class RemoveAnnotationByType extends JIPipeSimpleIteratingAlgorithm {
     private StringList annotationTypes = new StringList();
 
     /**
-     * @param declaration algorithm declaration
+     * @param info algorithm info
      */
-    public RemoveAnnotationByType(JIPipeAlgorithmDeclaration declaration) {
-        super(declaration);
+    public RemoveAnnotationByType(JIPipeNodeInfo info) {
+        super(info);
     }
 
     /**

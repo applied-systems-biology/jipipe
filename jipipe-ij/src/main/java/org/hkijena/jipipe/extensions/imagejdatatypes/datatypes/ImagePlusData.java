@@ -18,7 +18,7 @@ import ij.ImagePlus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.JIPipeDataDeclaration;
+import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyNullPointerException;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.PathUtils;
@@ -92,7 +92,7 @@ public class ImagePlusData implements JIPipeData {
 
     @Override
     public String toString() {
-        return JIPipeDataDeclaration.getInstance(getClass()).getName() + " (" + image + ")";
+        return JIPipeDataInfo.getInstance(getClass()).getName() + " (" + image + ")";
     }
 
     /**

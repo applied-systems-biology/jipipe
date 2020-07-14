@@ -66,10 +66,10 @@ public class HoughSegmentation2DAlgorithm extends JIPipeSimpleIteratingAlgorithm
     private boolean local = false;
 
     /**
-     * @param declaration algorithm declaration
+     * @param info algorithm info
      */
-    public HoughSegmentation2DAlgorithm(JIPipeAlgorithmDeclaration declaration) {
-        super(declaration, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", ImagePlusGreyscale8UData.class)
+    public HoughSegmentation2DAlgorithm(JIPipeNodeInfo info) {
+        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", ImagePlusGreyscale8UData.class)
                 .addOutputSlot("Output", ImagePlusGreyscaleMaskData.class, "Input", ADD_MASK_QUALIFIER)
                 .allowOutputSlotInheritance(true)
                 .seal()

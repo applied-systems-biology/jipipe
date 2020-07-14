@@ -39,10 +39,10 @@ public class JIPipeMergedDataSlotTableColumnHeaderRenderer implements TableCellR
         if (column < 4) {
             return defaultRenderer.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
         } else {
-            String declaration = dataTable.getTraitColumns().get(column - 4);
+            String info = dataTable.getTraitColumns().get(column - 4);
             String html = String.format("<html><table><tr><td><img src=\"%s\"/></td><td>%s</tr>",
                     UIUtils.getIconFromResources("annotation.png"),
-                    declaration);
+                    info);
             return defaultRenderer.getTableCellRendererComponent(table, html, isSelected, hasFocus, row, column);
         }
     }

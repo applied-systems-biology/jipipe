@@ -82,7 +82,7 @@ public class JIPipeGraph implements JIPipeValidatable {
     public JIPipeGraph(JIPipeGraph other) {
         // Copy nodes
         for (Map.Entry<String, JIPipeGraphNode> kv : other.algorithms.entrySet()) {
-            JIPipeGraphNode algorithm = kv.getValue().getDeclaration().clone(kv.getValue());
+            JIPipeGraphNode algorithm = kv.getValue().getInfo().clone(kv.getValue());
             algorithms.put(kv.getKey(), algorithm);
             algorithm.setGraph(this);
             algorithm.getEventBus().register(this);
@@ -645,9 +645,9 @@ public class JIPipeGraph implements JIPipeValidatable {
 
         for (Map.Entry<String, JsonNode> kv : ImmutableList.copyOf(node.get("nodes").fields())) {
             if (!algorithms.containsKey(kv.getKey())) {
-                String declarationInfo = kv.getValue().get("jipipe:algorithm-type").asText();
-                JIPipeAlgorithmDeclaration declaration = JIPipeAlgorithmRegistry.getInstance().getDeclarationById(declarationInfo);
-                JIPipeGraphNode algorithm = declaration.newInstance();
+                String infoInfo = kv.getValue().get("jipipe:algorithm-type").asText();
+                JIPipeNodeInfo info = JIPipeAlgorithmRegistry.getInstance().getInfoById(infoInfo);
+                JIPipeGraphNode algorithm = info.newInstance();
                 algorithm.fromJson(kv.getValue());
                 insertNode(StringUtils.jsonify(kv.getKey()), algorithm, algorithm.getCompartment());
             }
@@ -723,7 +723,7 @@ public class JIPipeGraph implements JIPipeValidatable {
         for (JIPipeGraphNode algorithm : nodes) {
             if (!withInternal && algorithm.getCategory() == JIPipeAlgorithmCategory.Internal)
                 continue;
-            JIPipeGraphNode copy = algorithm.getDeclaration().clone(algorithm);
+            JIPipeGraphNode copy = algorithm.getInfo().clone(algorithm);
             if (copy.getCompartment() != null) {
                 Map<String, Point> map = copy.getLocations().get(copy.getCompartment());
                 copy.getLocations().clear();

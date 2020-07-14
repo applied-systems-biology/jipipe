@@ -47,10 +47,10 @@ public class SplitTableIntoColumnsAlgorithm extends JIPipeSimpleIteratingAlgorit
     /**
      * Creates a new instance
      *
-     * @param declaration algorithm declaration
+     * @param info algorithm info
      */
-    public SplitTableIntoColumnsAlgorithm(JIPipeAlgorithmDeclaration declaration) {
-        super(declaration);
+    public SplitTableIntoColumnsAlgorithm(JIPipeNodeInfo info) {
+        super(info);
     }
 
     /**

@@ -24,9 +24,9 @@ import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.parameters.collections.ListParameter;
 import org.hkijena.jipipe.extensions.parameters.collections.ListParameterEditorUI;
 import org.hkijena.jipipe.extensions.parameters.colors.*;
-import org.hkijena.jipipe.extensions.parameters.editors.JIPipeAlgorithmDeclarationRefParameterEditorUI;
+import org.hkijena.jipipe.extensions.parameters.editors.JIPipeNodeInfoRefParameterEditorUI;
 import org.hkijena.jipipe.extensions.parameters.editors.JIPipeAlgorithmIconRefParameterEditorUI;
-import org.hkijena.jipipe.extensions.parameters.editors.JIPipeDataDeclarationRefParameterEditorUI;
+import org.hkijena.jipipe.extensions.parameters.editors.JIPipeDataInfoRefParameterEditorUI;
 import org.hkijena.jipipe.extensions.parameters.editors.JIPipeParameterCollectionVisibilitiesParameterEditorUI;
 import org.hkijena.jipipe.extensions.parameters.functions.FunctionParameter;
 import org.hkijena.jipipe.extensions.parameters.functions.FunctionParameterEditorUI;
@@ -42,9 +42,9 @@ import org.hkijena.jipipe.extensions.parameters.patterns.StringPatternExtraction
 import org.hkijena.jipipe.extensions.parameters.patterns.StringPatternExtractionParameterEditorUI;
 import org.hkijena.jipipe.extensions.parameters.predicates.*;
 import org.hkijena.jipipe.extensions.parameters.primitives.*;
-import org.hkijena.jipipe.extensions.parameters.references.JIPipeAlgorithmDeclarationRef;
+import org.hkijena.jipipe.extensions.parameters.references.JIPipeNodeInfoRef;
 import org.hkijena.jipipe.extensions.parameters.references.JIPipeAlgorithmIconRef;
-import org.hkijena.jipipe.extensions.parameters.references.JIPipeDataDeclarationRef;
+import org.hkijena.jipipe.extensions.parameters.references.JIPipeDataInfoRef;
 import org.hkijena.jipipe.extensions.parameters.roi.*;
 import org.hkijena.jipipe.extensions.parameters.scripts.ImageJMacro;
 import org.hkijena.jipipe.extensions.parameters.scripts.PythonScript;
@@ -449,19 +449,19 @@ public class StandardParametersExtension extends JIPipePrepackagedDefaultJavaExt
     private void registerJIPipeTypes() {
         // JIPipe registry reference types
         registerParameterType("data-type",
-                JIPipeDataDeclarationRef.class,
-                JIPipeDataDeclarationRef::new,
-                r -> new JIPipeDataDeclarationRef((JIPipeDataDeclarationRef) r),
+                JIPipeDataInfoRef.class,
+                JIPipeDataInfoRef::new,
+                r -> new JIPipeDataInfoRef((JIPipeDataInfoRef) r),
                 "Data type",
                 "Reference to a data type",
-                JIPipeDataDeclarationRefParameterEditorUI.class);
+                JIPipeDataInfoRefParameterEditorUI.class);
         registerParameterType("algorithm-type",
-                JIPipeAlgorithmDeclarationRef.class,
-                JIPipeAlgorithmDeclarationRef::new,
-                r -> new JIPipeAlgorithmDeclarationRef((JIPipeAlgorithmDeclarationRef) r),
+                JIPipeNodeInfoRef.class,
+                JIPipeNodeInfoRef::new,
+                r -> new JIPipeNodeInfoRef((JIPipeNodeInfoRef) r),
                 "Algorithm type",
                 "Reference to an algorithm type",
-                JIPipeAlgorithmDeclarationRefParameterEditorUI.class);
+                JIPipeNodeInfoRefParameterEditorUI.class);
 
         // Icon types
         registerParameterType("algorithm-type-icon",
@@ -498,22 +498,22 @@ public class StandardParametersExtension extends JIPipePrepackagedDefaultJavaExt
 
     private void registerPrimitives() {
         // Register boolean
-        registerParameterType(new BooleanPrimitiveParameterTypeDeclaration(), BooleanParameterEditorUI.class);
-        registerParameterType(new BooleanParameterTypeDeclaration(), BooleanParameterEditorUI.class);
+        registerParameterType(new BooleanPrimitiveParameterTypeInfo(), BooleanParameterEditorUI.class);
+        registerParameterType(new BooleanParameterTypeInfo(), BooleanParameterEditorUI.class);
 
         // Register numbers
-        registerParameterType(new BytePrimitiveParameterTypeDeclaration(), NumberParameterEditorUI.class);
-        registerParameterType(new ShortPrimitiveParameterTypeDeclaration(), NumberParameterEditorUI.class);
-        registerParameterType(new IntPrimitiveParameterTypeDeclaration(), NumberParameterEditorUI.class);
-        registerParameterType(new LongPrimitiveParameterTypeDeclaration(), NumberParameterEditorUI.class);
-        registerParameterType(new FloatPrimitiveParameterTypeDeclaration(), NumberParameterEditorUI.class);
-        registerParameterType(new DoublePrimitiveParameterTypeDeclaration(), NumberParameterEditorUI.class);
-        registerParameterType(new ByteParameterTypeDeclaration(), NumberParameterEditorUI.class);
-        registerParameterType(new ShortParameterTypeDeclaration(), NumberParameterEditorUI.class);
-        registerParameterType(new IntParameterTypeDeclaration(), IntegerList.class, NumberParameterEditorUI.class);
-        registerParameterType(new LongParameterTypeDeclaration(), NumberParameterEditorUI.class);
-        registerParameterType(new FloatParameterTypeDeclaration(), FloatList.class, NumberParameterEditorUI.class);
-        registerParameterType(new DoubleParameterTypeDeclaration(), DoubleList.class, NumberParameterEditorUI.class);
+        registerParameterType(new BytePrimitiveParameterTypeInfo(), NumberParameterEditorUI.class);
+        registerParameterType(new ShortPrimitiveParameterTypeInfo(), NumberParameterEditorUI.class);
+        registerParameterType(new IntPrimitiveParameterTypeInfo(), NumberParameterEditorUI.class);
+        registerParameterType(new LongPrimitiveParameterTypeInfo(), NumberParameterEditorUI.class);
+        registerParameterType(new FloatPrimitiveParameterTypeInfo(), NumberParameterEditorUI.class);
+        registerParameterType(new DoublePrimitiveParameterTypeInfo(), NumberParameterEditorUI.class);
+        registerParameterType(new ByteParameterTypeInfo(), NumberParameterEditorUI.class);
+        registerParameterType(new ShortParameterTypeInfo(), NumberParameterEditorUI.class);
+        registerParameterType(new IntParameterTypeInfo(), IntegerList.class, NumberParameterEditorUI.class);
+        registerParameterType(new LongParameterTypeInfo(), NumberParameterEditorUI.class);
+        registerParameterType(new FloatParameterTypeInfo(), FloatList.class, NumberParameterEditorUI.class);
+        registerParameterType(new DoubleParameterTypeInfo(), DoubleList.class, NumberParameterEditorUI.class);
     }
 
     private void registerColorJsonSerializer() {

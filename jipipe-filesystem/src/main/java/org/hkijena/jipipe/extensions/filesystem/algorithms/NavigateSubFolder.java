@@ -42,10 +42,10 @@ public class NavigateSubFolder extends JIPipeSimpleIteratingAlgorithm {
     private String subFolder;
 
     /**
-     * @param declaration Algorithm declaration
+     * @param info Algorithm info
      */
-    public NavigateSubFolder(JIPipeAlgorithmDeclaration declaration) {
-        super(declaration);
+    public NavigateSubFolder(JIPipeNodeInfo info) {
+        super(info);
     }
 
     /**

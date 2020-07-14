@@ -57,10 +57,10 @@ public class ListFiles extends JIPipeSimpleIteratingAlgorithm {
     /**
      * Creates new instance
      *
-     * @param declaration The declaration
+     * @param info The info
      */
-    public ListFiles(JIPipeAlgorithmDeclaration declaration) {
-        super(declaration);
+    public ListFiles(JIPipeNodeInfo info) {
+        super(info);
     }
 
     /**

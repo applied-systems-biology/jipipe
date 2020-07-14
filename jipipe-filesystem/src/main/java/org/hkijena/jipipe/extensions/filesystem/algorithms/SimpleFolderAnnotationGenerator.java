@@ -41,10 +41,10 @@ public class SimpleFolderAnnotationGenerator extends JIPipeSimpleIteratingAlgori
     /**
      * Creates a new instance
      *
-     * @param declaration The algorithm declaration
+     * @param info The algorithm info
      */
-    public SimpleFolderAnnotationGenerator(JIPipeAlgorithmDeclaration declaration) {
-        super(declaration);
+    public SimpleFolderAnnotationGenerator(JIPipeNodeInfo info) {
+        super(info);
     }
 
     /**

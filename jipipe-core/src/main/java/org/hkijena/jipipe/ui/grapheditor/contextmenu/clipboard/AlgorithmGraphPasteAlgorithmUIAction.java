@@ -47,7 +47,7 @@ public class AlgorithmGraphPasteAlgorithmUIAction implements AlgorithmUIAction {
                 // Replace project compartment with IOInterface
                 for (JIPipeGraphNode node : graph.getAlgorithmNodes().values()) {
                     if (node instanceof JIPipeCompartmentOutput) {
-                        node.setDeclaration(JIPipeAlgorithmRegistry.getInstance().getDeclarationById("io-interface"));
+                        node.setInfo(JIPipeAlgorithmRegistry.getInstance().getInfoById("io-interface"));
                     }
                 }
 

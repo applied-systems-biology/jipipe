@@ -63,10 +63,10 @@ public class FindParticles2D extends JIPipeSimpleIteratingAlgorithm {
     private ImageStatisticsParameters statisticsParameters = new ImageStatisticsParameters();
 
     /**
-     * @param declaration algorithm declaration
+     * @param info algorithm info
      */
-    public FindParticles2D(JIPipeAlgorithmDeclaration declaration) {
-        super(declaration,
+    public FindParticles2D(JIPipeNodeInfo info) {
+        super(info,
                 JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Mask", ImagePlusGreyscaleMaskData.class)
                         .addOutputSlot("ROI", ROIListData.class, null)
                         .addOutputSlot("Measurements", ResultsTableData.class, null)

@@ -288,7 +288,7 @@ public class JIPipeJsonExtensionWorkbench extends JPanel implements JIPipeWorkbe
         for (DocumentTabPane.DocumentTab tab : getDocumentTabPane().getTabs()) {
             if (tab.getContent() instanceof JIPipeJsonExtensionGraphUI) {
                 JIPipeJsonExtensionGraphUI graphUI = (JIPipeJsonExtensionGraphUI) tab.getContent();
-                boolean notFound = project.getAlgorithmDeclarations().stream().noneMatch(d -> d.getGraph() == graphUI.getAlgorithmGraph());
+                boolean notFound = project.getNodeInfos().stream().noneMatch(d -> d.getGraph() == graphUI.getAlgorithmGraph());
                 if (notFound) {
                     toRemove.add(tab);
                 }

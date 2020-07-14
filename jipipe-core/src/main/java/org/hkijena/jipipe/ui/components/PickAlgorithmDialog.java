@@ -113,14 +113,14 @@ public class PickAlgorithmDialog extends JDialog {
         add(toolBar, BorderLayout.NORTH);
     }
 
-    private List<JIPipeGraphNode> getFilteredAndSortedDeclarations() {
-        Predicate<JIPipeGraphNode> filterFunction = declaration -> searchField.test(declaration.getName());
+    private List<JIPipeGraphNode> getFilteredAndSortedInfos() {
+        Predicate<JIPipeGraphNode> filterFunction = info -> searchField.test(info.getName());
         return algorithms.stream().filter(filterFunction).sorted(Comparator.comparing(JIPipeGraphNode::getName)).collect(Collectors.toList());
     }
 
     private void reloadTypeList() {
         setSelectedAlgorithm(null);
-        List<JIPipeGraphNode> available = getFilteredAndSortedDeclarations();
+        List<JIPipeGraphNode> available = getFilteredAndSortedInfos();
         DefaultListModel<JIPipeGraphNode> listModel = new DefaultListModel<>();
         for (JIPipeGraphNode type : available) {
             listModel.addElement(type);

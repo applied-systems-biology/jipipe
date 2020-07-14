@@ -49,10 +49,10 @@ public class FilterPaths extends JIPipeSimpleIteratingAlgorithm {
     /**
      * Instantiates the algorithm
      *
-     * @param declaration Algorithm declaration
+     * @param info Algorithm info
      */
-    public FilterPaths(JIPipeAlgorithmDeclaration declaration) {
-        super(declaration);
+    public FilterPaths(JIPipeNodeInfo info) {
+        super(info);
         filters.addNewInstance();
     }
 

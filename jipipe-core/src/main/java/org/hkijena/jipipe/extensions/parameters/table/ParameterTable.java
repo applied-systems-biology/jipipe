@@ -24,7 +24,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.EventBus;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeDeclaration;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
 import org.hkijena.jipipe.api.registries.JIPipeParameterTypeRegistry;
 import org.hkijena.jipipe.utils.JsonUtils;
 
@@ -68,11 +68,11 @@ public class ParameterTable implements TableModel {
         }
         for (List<Object> row : other.rows) {
             int columnIndex = 0;
-            JIPipeParameterTypeDeclaration declaration = JIPipeParameterTypeRegistry.getInstance().
-                    getDeclarationByFieldClass(columns.get(columnIndex).fieldClass);
+            JIPipeParameterTypeInfo info = JIPipeParameterTypeRegistry.getInstance().
+                    getInfoByFieldClass(columns.get(columnIndex).fieldClass);
             List<Object> thisRow = new ArrayList<>();
             for (Object o : row) {
-                thisRow.add(declaration.duplicate(o));
+                thisRow.add(info.duplicate(o));
             }
             this.rows.add(thisRow);
             ++columnIndex;
@@ -87,9 +87,9 @@ public class ParameterTable implements TableModel {
      */
     public void addColumn(ParameterColumn column, Object initialValue) {
         columns.add(column);
-        JIPipeParameterTypeDeclaration declaration = JIPipeParameterTypeRegistry.getInstance().getDeclarationByFieldClass(column.fieldClass);
+        JIPipeParameterTypeInfo info = JIPipeParameterTypeRegistry.getInstance().getInfoByFieldClass(column.fieldClass);
         for (List<Object> row : rows) {
-            row.add(declaration.duplicate(initialValue)); // Deep-copy!
+            row.add(info.duplicate(initialValue)); // Deep-copy!
         }
 
     }
@@ -178,8 +178,8 @@ public class ParameterTable implements TableModel {
             List<Object> row = new ArrayList<>();
 
             for (ParameterColumn column : columns) {
-                JIPipeParameterTypeDeclaration declaration = JIPipeParameterTypeRegistry.getInstance().getDeclarationByFieldClass(column.fieldClass);
-                row.add(declaration.newInstance());
+                JIPipeParameterTypeInfo info = JIPipeParameterTypeRegistry.getInstance().getInfoByFieldClass(column.fieldClass);
+                row.add(info.newInstance());
             }
             rows.add(row);
         }
@@ -290,13 +290,13 @@ public class ParameterTable implements TableModel {
         }
 
         @JsonGetter("field-class-id")
-        public String getFieldClassDeclarationType() {
-            return JIPipeParameterTypeRegistry.getInstance().getDeclarationByFieldClass(fieldClass).getId();
+        public String getFieldClassInfoId() {
+            return JIPipeParameterTypeRegistry.getInstance().getInfoByFieldClass(fieldClass).getId();
         }
 
         @JsonSetter("field-class-id")
-        public void setFieldClassDeclarationType(String id) {
-            fieldClass = JIPipeParameterTypeRegistry.getInstance().getDeclarationById(id).getFieldClass();
+        public void setFieldClassInfoId(String id) {
+            fieldClass = JIPipeParameterTypeRegistry.getInstance().getInfoById(id).getFieldClass();
         }
 
         @JsonGetter("key")

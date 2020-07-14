@@ -49,10 +49,10 @@ public class FilterTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     /**
      * Creates a new instance
      *
-     * @param declaration algorithm declaration
+     * @param info algorithm info
      */
-    public FilterTableAlgorithm(JIPipeAlgorithmDeclaration declaration) {
-        super(declaration);
+    public FilterTableAlgorithm(JIPipeNodeInfo info) {
+        super(info);
     }
 
     /**

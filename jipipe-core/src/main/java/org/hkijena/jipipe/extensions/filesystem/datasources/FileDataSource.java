@@ -20,7 +20,7 @@ import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.algorithm.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmCategory;
-import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmDeclaration;
+import org.hkijena.jipipe.api.algorithm.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FileData;
 import org.hkijena.jipipe.extensions.parameters.primitives.FilePathParameterSettings;
@@ -45,10 +45,10 @@ public class FileDataSource extends JIPipeAlgorithm {
     /**
      * Initializes the algorithm
      *
-     * @param declaration The algorithm declaration
+     * @param info The algorithm info
      */
-    public FileDataSource(JIPipeAlgorithmDeclaration declaration) {
-        super(declaration);
+    public FileDataSource(JIPipeNodeInfo info) {
+        super(info);
     }
 
     /**

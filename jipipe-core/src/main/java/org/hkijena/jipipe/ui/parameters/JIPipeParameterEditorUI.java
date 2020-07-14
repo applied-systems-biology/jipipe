@@ -68,7 +68,7 @@ public abstract class JIPipeParameterEditorUI extends JIPipeWorkbenchPanel imple
         T value = (T) getParameterAccess().get(getParameterAccess().getFieldClass());
         if (value == null) {
             ++preventReload;
-            value = (T) JIPipeParameterTypeRegistry.getInstance().getDeclarationByFieldClass(getParameterAccess().getFieldClass()).newInstance();
+            value = (T) JIPipeParameterTypeRegistry.getInstance().getInfoByFieldClass(getParameterAccess().getFieldClass()).newInstance();
             getParameterAccess().set(value);
             --preventReload;
         }

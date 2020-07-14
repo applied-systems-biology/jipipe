@@ -39,10 +39,10 @@ public class RemoveAnnotationByValue extends JIPipeSimpleIteratingAlgorithm {
     private StringAndStringPredicatePair.List filters = new StringAndStringPredicatePair.List();
 
     /**
-     * @param declaration algorithm declaration
+     * @param info algorithm info
      */
-    public RemoveAnnotationByValue(JIPipeAlgorithmDeclaration declaration) {
-        super(declaration);
+    public RemoveAnnotationByValue(JIPipeNodeInfo info) {
+        super(info);
     }
 
     /**

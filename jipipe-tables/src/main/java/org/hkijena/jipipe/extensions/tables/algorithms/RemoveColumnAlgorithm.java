@@ -39,10 +39,10 @@ public class RemoveColumnAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     /**
      * Creates a new instance
      *
-     * @param declaration algorithm declaration
+     * @param info algorithm info
      */
-    public RemoveColumnAlgorithm(JIPipeAlgorithmDeclaration declaration) {
-        super(declaration);
+    public RemoveColumnAlgorithm(JIPipeNodeInfo info) {
+        super(info);
     }
 
     /**

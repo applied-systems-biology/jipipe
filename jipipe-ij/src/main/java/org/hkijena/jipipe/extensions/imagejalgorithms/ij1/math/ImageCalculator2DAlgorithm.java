@@ -57,10 +57,10 @@ public class ImageCalculator2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     /**
      * Instantiates a new algorithm.
      *
-     * @param declaration the declaration
+     * @param info the info
      */
-    public ImageCalculator2DAlgorithm(JIPipeAlgorithmDeclaration declaration) {
-        super(declaration, JIPipeDefaultMutableSlotConfiguration.builder()
+    public ImageCalculator2DAlgorithm(JIPipeNodeInfo info) {
+        super(info, JIPipeDefaultMutableSlotConfiguration.builder()
                 .addInputSlot("Input 1", ImagePlusData.class)
                 .addInputSlot("Input 2", ImagePlusData.class)
                 .addOutputSlot("Output", ImagePlusData.class, "Input 1")

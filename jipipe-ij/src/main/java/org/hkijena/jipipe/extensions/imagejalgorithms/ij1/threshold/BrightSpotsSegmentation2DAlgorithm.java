@@ -60,15 +60,15 @@ public class BrightSpotsSegmentation2DAlgorithm extends JIPipeSimpleIteratingAlg
     private AutoThreshold2DAlgorithm autoThresholding;
 
     /**
-     * @param declaration the declaration
+     * @param info the info
      */
-    public BrightSpotsSegmentation2DAlgorithm(JIPipeAlgorithmDeclaration declaration) {
-        super(declaration, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", ImagePlusGreyscale8UData.class)
+    public BrightSpotsSegmentation2DAlgorithm(JIPipeNodeInfo info) {
+        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", ImagePlusGreyscale8UData.class)
                 .addOutputSlot("Output", ImagePlusGreyscaleMaskData.class, "Input", ADD_MASK_QUALIFIER)
                 .allowOutputSlotInheritance(true)
                 .seal()
                 .build());
-        this.autoThresholding = (AutoThreshold2DAlgorithm) JIPipeAlgorithmRegistry.getInstance().getDeclarationById("ij1-threshold-auto2d").newInstance();
+        this.autoThresholding = (AutoThreshold2DAlgorithm) JIPipeAlgorithmRegistry.getInstance().getInfoById("ij1-threshold-auto2d").newInstance();
     }
 
     /**
@@ -81,7 +81,7 @@ public class BrightSpotsSegmentation2DAlgorithm extends JIPipeSimpleIteratingAlg
         this.rollingBallRadius = other.rollingBallRadius;
         this.dilationErodeSteps = other.dilationErodeSteps;
         this.gaussianSigma = other.gaussianSigma;
-        this.autoThresholding = (AutoThreshold2DAlgorithm) other.autoThresholding.getDeclaration().clone(other.autoThresholding);
+        this.autoThresholding = (AutoThreshold2DAlgorithm) other.autoThresholding.getInfo().clone(other.autoThresholding);
     }
 
     @Override

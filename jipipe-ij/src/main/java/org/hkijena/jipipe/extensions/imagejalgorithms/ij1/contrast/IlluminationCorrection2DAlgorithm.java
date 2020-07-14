@@ -51,10 +51,10 @@ public class IlluminationCorrection2DAlgorithm extends JIPipeSimpleIteratingAlgo
     private GaussianBlur2DAlgorithm gaussianAlgorithm = JIPipeGraphNode.newInstance("ij1-blur-gaussian2d");
 
     /**
-     * @param declaration the algorithm declaration
+     * @param info the algorithm info
      */
-    public IlluminationCorrection2DAlgorithm(JIPipeAlgorithmDeclaration declaration) {
-        super(declaration, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", ImagePlusGreyscale32FData.class)
+    public IlluminationCorrection2DAlgorithm(JIPipeNodeInfo info) {
+        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", ImagePlusGreyscale32FData.class)
                 .addOutputSlot("Output", ImagePlusGreyscale32FData.class, null)
                 .allowOutputSlotInheritance(true)
                 .seal()

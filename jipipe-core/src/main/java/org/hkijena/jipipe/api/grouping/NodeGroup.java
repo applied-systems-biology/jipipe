@@ -22,7 +22,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmCategory;
-import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmDeclaration;
+import org.hkijena.jipipe.api.algorithm.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.algorithm.JIPipeGraph;
 import org.hkijena.jipipe.api.algorithm.JIPipeGraphNode;
 import org.hkijena.jipipe.api.compartments.algorithms.IOInterfaceAlgorithm;
@@ -54,10 +54,10 @@ public class NodeGroup extends GraphWrapperAlgorithm implements JIPipeCustomPara
     /**
      * Creates a new instance
      *
-     * @param declaration the declaration
+     * @param info the info
      */
-    public NodeGroup(JIPipeAlgorithmDeclaration declaration) {
-        super(declaration, new JIPipeGraph());
+    public NodeGroup(JIPipeNodeInfo info) {
+        super(info, new JIPipeGraph());
         initializeContents();
         this.exportedParameters.getEventBus().register(this);
     }
@@ -81,7 +81,7 @@ public class NodeGroup extends GraphWrapperAlgorithm implements JIPipeCustomPara
      * @param autoCreateSlots automatically create input and output slots
      */
     public NodeGroup(JIPipeGraph graph, boolean autoCreateSlots) {
-        super(JIPipeAlgorithmRegistry.getInstance().getDeclarationById("node-group"), new JIPipeGraph());
+        super(JIPipeAlgorithmRegistry.getInstance().getInfoById("node-group"), new JIPipeGraph());
 
         // Remove all algorithms with no i/o
 //        for (JIPipeGraphNode node : ImmutableList.copyOf(graph.getAlgorithmNodes().values())) {

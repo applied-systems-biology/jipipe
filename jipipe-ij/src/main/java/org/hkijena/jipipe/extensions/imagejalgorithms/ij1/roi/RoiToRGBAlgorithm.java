@@ -64,10 +64,10 @@ public class RoiToRGBAlgorithm extends JIPipeIteratingAlgorithm {
     /**
      * Instantiates a new algorithm.
      *
-     * @param declaration the declaration
+     * @param info the info
      */
-    public RoiToRGBAlgorithm(JIPipeAlgorithmDeclaration declaration) {
-        super(declaration, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("ROI", ROIListData.class)
+    public RoiToRGBAlgorithm(JIPipeNodeInfo info) {
+        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("ROI", ROIListData.class)
                 .addInputSlot("Image", ImagePlusData.class)
                 .addOutputSlot("Output", ImagePlusColorRGBData.class, null)
                 .seal()

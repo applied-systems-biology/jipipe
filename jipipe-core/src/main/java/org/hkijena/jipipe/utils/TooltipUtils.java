@@ -19,7 +19,7 @@ import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.algorithm.*;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.JIPipeDataDeclaration;
+import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeSlotDefinition;
 import org.hkijena.jipipe.api.registries.JIPipeAlgorithmRegistry;
@@ -67,21 +67,21 @@ public class TooltipUtils {
     /**
      * Creates a tooltip for an algorithm. Has a title
      *
-     * @param declaration the algorithm type
+     * @param info the algorithm type
      * @return the tooltip
      */
-    public static String getAlgorithmTooltip(JIPipeAlgorithmDeclaration declaration) {
-        return getAlgorithmTooltip(declaration, true);
+    public static String getAlgorithmTooltip(JIPipeNodeInfo info) {
+        return getAlgorithmTooltip(info, true);
     }
 
-    public static MarkdownDocument getAlgorithmDocumentation(JIPipeAlgorithmDeclaration declaration) {
+    public static MarkdownDocument getAlgorithmDocumentation(JIPipeNodeInfo info) {
         StringBuilder builder = new StringBuilder();
-        builder.append("# ").append(declaration.getName()).append("\n\n");
+        builder.append("# ").append(info.getName()).append("\n\n");
         // Write algorithm slot info
         builder.append("<table>");
         {
-            List<JIPipeInputSlot> inputSlots = declaration.getInputSlots();
-            List<JIPipeOutputSlot> outputSlots = declaration.getOutputSlots();
+            List<JIPipeInputSlot> inputSlots = info.getInputSlots();
+            List<JIPipeOutputSlot> outputSlots = info.getOutputSlots();
 
             int displayedSlots = Math.max(inputSlots.size(), outputSlots.size());
             if (displayedSlots > 0) {
@@ -106,14 +106,14 @@ public class TooltipUtils {
         }
 
         // Write description
-        String description = declaration.getDescription();
+        String description = info.getDescription();
         if (description != null && !description.isEmpty())
             builder.append(HtmlEscapers.htmlEscaper().escape(description)).append("</br>");
 
         builder.append("</table>\n\n");
 
         // Write author information
-        JIPipeDependency source = JIPipeAlgorithmRegistry.getInstance().getSourceOf(declaration.getId());
+        JIPipeDependency source = JIPipeAlgorithmRegistry.getInstance().getSourceOf(info.getId());
         if (source != null) {
             builder.append("## Developer information\n\n");
             builder.append("<table>");
@@ -137,21 +137,21 @@ public class TooltipUtils {
     /**
      * Creates a tooltip for an algorithm
      *
-     * @param declaration the algorithm
+     * @param info the algorithm
      * @param withTitle   if a title is displayed
      * @return the tooltip
      */
-    public static String getAlgorithmTooltip(JIPipeAlgorithmDeclaration declaration, boolean withTitle) {
+    public static String getAlgorithmTooltip(JIPipeNodeInfo info, boolean withTitle) {
         StringBuilder builder = new StringBuilder();
         builder.append("<html>");
         if (withTitle)
-            builder.append("<u><strong>").append(declaration.getName()).append("</strong></u><br/>");
+            builder.append("<u><strong>").append(info.getName()).append("</strong></u><br/>");
 
         // Write algorithm slot info
         builder.append("<table>");
         {
-            List<JIPipeInputSlot> inputSlots = declaration.getInputSlots();
-            List<JIPipeOutputSlot> outputSlots = declaration.getOutputSlots();
+            List<JIPipeInputSlot> inputSlots = info.getInputSlots();
+            List<JIPipeOutputSlot> outputSlots = info.getOutputSlots();
 
             int displayedSlots = Math.max(inputSlots.size(), outputSlots.size());
             if (displayedSlots > 0) {
@@ -176,7 +176,7 @@ public class TooltipUtils {
         }
 
         // Write description
-        String description = declaration.getDescription();
+        String description = info.getDescription();
         if (description != null && !description.isEmpty())
             builder.append(StringUtils.wordWrappedHTMLElement(description, 50)).append("</br>");
 
@@ -296,10 +296,10 @@ public class TooltipUtils {
     /**
      * Creates a tooltip for data
      *
-     * @param declaration the data type
+     * @param info the data type
      * @return the tooltip
      */
-    public static String getDataTooltip(JIPipeDataDeclaration declaration) {
-        return "<html><u><strong>" + declaration.getName() + "</strong></u><br/>" + HtmlEscapers.htmlEscaper().escape(declaration.getDescription()) + "</html>";
+    public static String getDataTooltip(JIPipeDataInfo info) {
+        return "<html><u><strong>" + info.getName() + "</strong></u><br/>" + HtmlEscapers.htmlEscaper().escape(info.getDescription()) + "</html>";
     }
 }

@@ -15,7 +15,7 @@ package org.hkijena.jipipe.ui.grapheditor;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.eventbus.Subscribe;
-import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmDeclaration;
+import org.hkijena.jipipe.api.algorithm.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.algorithm.JIPipeGraph;
 import org.hkijena.jipipe.api.algorithm.JIPipeGraphNode;
 import org.hkijena.jipipe.api.events.AlgorithmGraphChangedEvent;
@@ -68,7 +68,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
     private boolean isPanning = false;
     private JToggleButton switchPanningDirectionButton;
 
-    private Set<JIPipeAlgorithmDeclaration> addableAlgorithms = new HashSet<>();
+    private Set<JIPipeNodeInfo> addableAlgorithms = new HashSet<>();
     private SearchBox<Object> navigator = new SearchBox<>();
 
     /**
@@ -133,13 +133,13 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         if (value instanceof JIPipeNodeUI) {
             JIPipeGraphNode node = ((JIPipeNodeUI) value).getNode();
             nameHayStack = node.getName();
-            descriptionHayStack = StringUtils.orElse(node.getCustomDescription(), node.getDeclaration().getDescription());
-        } else if (value instanceof JIPipeAlgorithmDeclaration) {
-            JIPipeAlgorithmDeclaration declaration = (JIPipeAlgorithmDeclaration) value;
-            if (declaration.isHidden())
+            descriptionHayStack = StringUtils.orElse(node.getCustomDescription(), node.getInfo().getDescription());
+        } else if (value instanceof JIPipeNodeInfo) {
+            JIPipeNodeInfo info = (JIPipeNodeInfo) value;
+            if (info.isHidden())
                 return null;
-            nameHayStack = declaration.getName().toLowerCase();
-            descriptionHayStack = declaration.getDescription().toLowerCase();
+            nameHayStack = info.getName().toLowerCase();
+            descriptionHayStack = info.getDescription().toLowerCase();
         }
         else {
             return null;
@@ -167,9 +167,9 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         if (navigator.getSelectedItem() instanceof JIPipeNodeUI) {
             selectOnly((JIPipeNodeUI) navigator.getSelectedItem());
             navigator.setSelectedItem(null);
-        } else if (navigator.getSelectedItem() instanceof JIPipeAlgorithmDeclaration) {
-            JIPipeAlgorithmDeclaration declaration = (JIPipeAlgorithmDeclaration) navigator.getSelectedItem();
-            JIPipeGraphNode node = declaration.newInstance();
+        } else if (navigator.getSelectedItem() instanceof JIPipeNodeInfo) {
+            JIPipeNodeInfo info = (JIPipeNodeInfo) navigator.getSelectedItem();
+            JIPipeGraphNode node = info.newInstance();
             getCanvasUI().getGraphHistory().addSnapshotBefore(new AddNodeGraphHistorySnapshot(algorithmGraph, Collections.singleton(node)));
             algorithmGraph.insertNode(node, compartment);
             navigator.setSelectedItem(null);
@@ -556,11 +556,11 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         return menuBar;
     }
 
-    public Set<JIPipeAlgorithmDeclaration> getAddableAlgorithms() {
+    public Set<JIPipeNodeInfo> getAddableAlgorithms() {
         return addableAlgorithms;
     }
 
-    public void setAddableAlgorithms(Set<JIPipeAlgorithmDeclaration> addableAlgorithms) {
+    public void setAddableAlgorithms(Set<JIPipeNodeInfo> addableAlgorithms) {
         this.addableAlgorithms = addableAlgorithms;
         updateNavigation();
     }
@@ -574,28 +574,10 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         for (JIPipeNodeUI ui : canvasUI.getNodeUIs().values().stream().sorted(Comparator.comparing(ui -> ui.getNode().getName())).collect(Collectors.toList())) {
             model.addElement(ui);
         }
-        for (JIPipeAlgorithmDeclaration declaration : addableAlgorithms.stream()
-                .sorted(Comparator.comparing(JIPipeAlgorithmDeclaration::getName)).collect(Collectors.toList())) {
-            model.addElement(declaration);
+        for (JIPipeNodeInfo info : addableAlgorithms.stream()
+                .sorted(Comparator.comparing(JIPipeNodeInfo::getName)).collect(Collectors.toList())) {
+            model.addElement(info);
         }
-    }
-
-    private static boolean filterNavigationEntry(Object entry, String searchString) {
-        String haystack = "";
-        JIPipeAlgorithmDeclaration algorithmDeclaration = null;
-        if (entry instanceof JIPipeNodeUI) {
-            haystack += ((JIPipeNodeUI) entry).getNode().getName();
-            algorithmDeclaration = ((JIPipeNodeUI) entry).getNode().getDeclaration();
-        } else if (entry instanceof JIPipeAlgorithmDeclaration) {
-            if (((JIPipeAlgorithmDeclaration) entry).isHidden())
-                return false;
-            algorithmDeclaration = (JIPipeAlgorithmDeclaration) entry;
-        }
-        if (algorithmDeclaration != null) {
-            haystack += algorithmDeclaration.getName() + algorithmDeclaration.getDescription()
-                    + algorithmDeclaration.getMenuPath();
-        }
-        return haystack.toLowerCase().contains(searchString.toLowerCase());
     }
 
     public static void installContextActionsInto(JToolBar toolBar, Set<JIPipeNodeUI> selection, List<AlgorithmUIAction> actionList, JIPipeGraphCanvasUI canvasUI) {
@@ -715,34 +697,34 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         @Override
         public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
 
-            if (value instanceof JIPipeAlgorithmDeclaration) {
-                JIPipeAlgorithmDeclaration declaration = (JIPipeAlgorithmDeclaration) value;
-                String menuPath = declaration.getCategory().toString();
-                if (!StringUtils.isNullOrEmpty(declaration.getMenuPath())) {
-                    menuPath += " > " + String.join(" > ", declaration.getMenuPath().split("\n"));
+            if (value instanceof JIPipeNodeInfo) {
+                JIPipeNodeInfo info = (JIPipeNodeInfo) value;
+                String menuPath = info.getCategory().toString();
+                if (!StringUtils.isNullOrEmpty(info.getMenuPath())) {
+                    menuPath += " > " + String.join(" > ", info.getMenuPath().split("\n"));
                 }
 
                 icon.setFillColor(Color.WHITE);
-                icon.setBorderColor(UIUtils.getFillColorFor(declaration));
+                icon.setBorderColor(UIUtils.getFillColorFor(info));
                 actionLabel.setText("Create");
                 actionLabel.setForeground(new Color(0,128,0));
-                algorithmLabel.setText(declaration.getName());
-                algorithmLabel.setIcon(JIPipeUIAlgorithmRegistry.getInstance().getIconFor(declaration));
+                algorithmLabel.setText(info.getName());
+                algorithmLabel.setIcon(JIPipeUIAlgorithmRegistry.getInstance().getIconFor(info));
                 menuLabel.setText(menuPath);
             } else if (value instanceof JIPipeNodeUI) {
                 JIPipeGraphNode node = ((JIPipeNodeUI) value).getNode();
-                JIPipeAlgorithmDeclaration declaration = node.getDeclaration();
-                String menuPath = declaration.getCategory().toString();
-                if (!StringUtils.isNullOrEmpty(declaration.getMenuPath())) {
-                    menuPath += " > " + String.join(" > ", declaration.getMenuPath().split("\n"));
+                JIPipeNodeInfo info = node.getInfo();
+                String menuPath = info.getCategory().toString();
+                if (!StringUtils.isNullOrEmpty(info.getMenuPath())) {
+                    menuPath += " > " + String.join(" > ", info.getMenuPath().split("\n"));
                 }
 
-                icon.setFillColor(UIUtils.getFillColorFor(declaration));
-                icon.setBorderColor(UIUtils.getBorderColorFor(declaration));
+                icon.setFillColor(UIUtils.getFillColorFor(info));
+                icon.setBorderColor(UIUtils.getBorderColorFor(info));
                 actionLabel.setText("Navigate");
                 actionLabel.setForeground(Color.BLUE);
                 algorithmLabel.setText(node.getName());
-                algorithmLabel.setIcon(JIPipeUIAlgorithmRegistry.getInstance().getIconFor(declaration));
+                algorithmLabel.setIcon(JIPipeUIAlgorithmRegistry.getInstance().getIconFor(info));
                 menuLabel.setText(menuPath);
             }
 

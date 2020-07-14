@@ -13,22 +13,22 @@
 
 package org.hkijena.jipipe.api.events;
 
-import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmDeclaration;
+import org.hkijena.jipipe.api.algorithm.JIPipeNodeInfo;
 
 /**
  * Triggered when an algorithm is registered
  */
 public class AlgorithmRegisteredEvent {
-    private JIPipeAlgorithmDeclaration algorithmDeclaration;
+    private JIPipeNodeInfo nodeInfo;
 
     /**
-     * @param algorithmDeclaration the algorithm type
+     * @param nodeInfo the algorithm type
      */
-    public AlgorithmRegisteredEvent(JIPipeAlgorithmDeclaration algorithmDeclaration) {
-        this.algorithmDeclaration = algorithmDeclaration;
+    public AlgorithmRegisteredEvent(JIPipeNodeInfo nodeInfo) {
+        this.nodeInfo = nodeInfo;
     }
 
-    public JIPipeAlgorithmDeclaration getAlgorithmDeclaration() {
-        return algorithmDeclaration;
+    public JIPipeNodeInfo getNodeInfo() {
+        return nodeInfo;
     }
 }

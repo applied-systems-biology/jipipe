@@ -66,10 +66,10 @@ public class FilterAndMergeRoiByStatisticsScriptAlgorithm extends ImageRoiProces
     /**
      * Instantiates a new algorithm.
      *
-     * @param declaration the declaration
+     * @param info the info
      */
-    public FilterAndMergeRoiByStatisticsScriptAlgorithm(JIPipeAlgorithmDeclaration declaration) {
-        super(declaration, ROIListData.class, "Output");
+    public FilterAndMergeRoiByStatisticsScriptAlgorithm(JIPipeNodeInfo info) {
+        super(info, ROIListData.class, "Output");
         registerSubParameter(scriptParameters);
     }
 

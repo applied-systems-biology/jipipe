@@ -53,10 +53,10 @@ public class FrangiVesselnessFeatures extends JIPipeSimpleIteratingAlgorithm {
     private SlicingMode slicingMode = SlicingMode.Unchanged;
 
     /**
-     * @param declaration the declaration
+     * @param info the info
      */
-    public FrangiVesselnessFeatures(JIPipeAlgorithmDeclaration declaration) {
-        super(declaration, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", ImagePlusGreyscale32FData.class)
+    public FrangiVesselnessFeatures(JIPipeNodeInfo info) {
+        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", ImagePlusGreyscale32FData.class)
                 .addOutputSlot("Output", ImagePlusGreyscale32FData.class, "Input", REMOVE_MASK_QUALIFIER)
                 .allowOutputSlotInheritance(true)
                 .seal()

@@ -27,7 +27,7 @@ import org.hkijena.jipipe.api.JIPipeHidden;
 import org.hkijena.jipipe.api.JIPipeValidatable;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.JIPipeDataDeclaration;
+import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.events.ParameterChangedEvent;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -242,7 +242,7 @@ public abstract class PlotData implements JIPipeData, JIPipeParameterCollection,
 
     @Override
     public String toString() {
-        return JIPipeDataDeclaration.getInstance(getClass()).getName();
+        return JIPipeDataInfo.getInstance(getClass()).getName();
     }
 
     /**

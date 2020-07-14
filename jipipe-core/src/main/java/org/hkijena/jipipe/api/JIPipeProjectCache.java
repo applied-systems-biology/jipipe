@@ -17,7 +17,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.algorithm.JIPipeGraphNode;
-import org.hkijena.jipipe.api.data.JIPipeDataDeclaration;
+import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.events.AlgorithmGraphChangedEvent;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
@@ -33,7 +33,7 @@ public class JIPipeProjectCache {
     private final EventBus eventBus = new EventBus();
     private final JIPipeProject project;
     private final Map<JIPipeAlgorithm, Map<State, Map<String, JIPipeDataSlot>>> cacheEntries = new HashMap<>();
-    private final Map<JIPipeDataDeclaration, Integer> cachedDataTypes = new HashMap<>();
+    private final Map<JIPipeDataInfo, Integer> cachedDataTypes = new HashMap<>();
     private int cachedRowNumber = 0;
 
     /**
@@ -191,18 +191,18 @@ public class JIPipeProjectCache {
 
     private void addToStatistics(JIPipeDataSlot slot) {
         cachedRowNumber += slot.getRowCount();
-        JIPipeDataDeclaration dataDeclaration = JIPipeDataDeclaration.getInstance(slot.getAcceptedDataType());
-        int perDataType = cachedDataTypes.getOrDefault(dataDeclaration, 0);
+        JIPipeDataInfo dataInfo = JIPipeDataInfo.getInstance(slot.getAcceptedDataType());
+        int perDataType = cachedDataTypes.getOrDefault(dataInfo, 0);
         perDataType += slot.getRowCount();
-        cachedDataTypes.put(dataDeclaration, perDataType);
+        cachedDataTypes.put(dataInfo, perDataType);
     }
 
     private void removeFromStatistics(JIPipeDataSlot slot) {
         cachedRowNumber -= slot.getRowCount();
-        JIPipeDataDeclaration dataDeclaration = JIPipeDataDeclaration.getInstance(slot.getAcceptedDataType());
-        int perDataType = cachedDataTypes.getOrDefault(dataDeclaration, 0);
+        JIPipeDataInfo dataInfo = JIPipeDataInfo.getInstance(slot.getAcceptedDataType());
+        int perDataType = cachedDataTypes.getOrDefault(dataInfo, 0);
         perDataType -= slot.getRowCount();
-        cachedDataTypes.put(dataDeclaration, perDataType);
+        cachedDataTypes.put(dataInfo, perDataType);
     }
 
     /**
@@ -271,7 +271,7 @@ public class JIPipeProjectCache {
      *
      * @return statistics on how many rows of given data type have been cached
      */
-    public Map<JIPipeDataDeclaration, Integer> getCachedDataTypes() {
+    public Map<JIPipeDataInfo, Integer> getCachedDataTypes() {
         return Collections.unmodifiableMap(cachedDataTypes);
     }
 

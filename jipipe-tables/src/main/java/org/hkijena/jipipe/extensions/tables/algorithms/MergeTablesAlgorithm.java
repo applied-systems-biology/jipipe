@@ -38,10 +38,10 @@ public class MergeTablesAlgorithm extends JIPipeMergingAlgorithm {
     /**
      * Creates a new instance
      *
-     * @param declaration algorithm declaration
+     * @param info algorithm info
      */
-    public MergeTablesAlgorithm(JIPipeAlgorithmDeclaration declaration) {
-        super(declaration);
+    public MergeTablesAlgorithm(JIPipeNodeInfo info) {
+        super(info);
     }
 
     /**

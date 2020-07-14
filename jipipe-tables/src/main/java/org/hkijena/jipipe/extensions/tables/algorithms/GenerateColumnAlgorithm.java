@@ -20,7 +20,7 @@ import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.algorithm.*;
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.JIPipeDataDeclaration;
+import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeMutableParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -50,10 +50,10 @@ public class GenerateColumnAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     /**
      * Creates a new instance
      *
-     * @param declaration algorithm declaration
+     * @param info algorithm info
      */
-    public GenerateColumnAlgorithm(JIPipeAlgorithmDeclaration declaration) {
-        super(declaration);
+    public GenerateColumnAlgorithm(JIPipeNodeInfo info) {
+        super(info);
         columns.addNewInstance();
     }
 
@@ -78,7 +78,7 @@ public class GenerateColumnAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                 continue;
 
             TableColumnGeneratorParameter generatorParameter = entry.getKey();
-            TableColumn generator = (TableColumn) JIPipeData.createInstance(generatorParameter.getGeneratorType().getDeclaration().getDataClass());
+            TableColumn generator = (TableColumn) JIPipeData.createInstance(generatorParameter.getGeneratorType().getInfo().getDataClass());
             int columnId = table.getOrCreateColumnIndex(columnName);
 
             if (generatorParameter.getGeneratedType() == ColumnContentType.NumericColumn) {
@@ -138,9 +138,9 @@ public class GenerateColumnAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         markdown.append("<table>");
         for (Class<? extends JIPipeData> klass : JIPipeDatatypeRegistry.getInstance().getRegisteredDataTypes().values()) {
             if (TableColumn.isGeneratingTableColumn(klass)) {
-                JIPipeDataDeclaration declaration = JIPipeDataDeclaration.getInstance(klass);
-                markdown.append("<tr><td><strong>").append(HtmlEscapers.htmlEscaper().escape(declaration.getName())).append("</strong></td><td>")
-                        .append(HtmlEscapers.htmlEscaper().escape(declaration.getDescription())).append("</td></tr>");
+                JIPipeDataInfo info = JIPipeDataInfo.getInstance(klass);
+                markdown.append("<tr><td><strong>").append(HtmlEscapers.htmlEscaper().escape(info.getName())).append("</strong></td><td>")
+                        .append(HtmlEscapers.htmlEscaper().escape(info.getDescription())).append("</td></tr>");
             }
         }
 

@@ -23,14 +23,14 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeValidatable;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.JIPipeDataDeclaration;
+import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.events.ParameterChangedEvent;
 import org.hkijena.jipipe.api.events.ParameterStructureChangedEvent;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
 import org.hkijena.jipipe.extensions.parameters.editors.JIPipeDataParameterSettings;
-import org.hkijena.jipipe.extensions.parameters.references.JIPipeDataDeclarationRef;
+import org.hkijena.jipipe.extensions.parameters.references.JIPipeDataInfoRef;
 import org.hkijena.jipipe.extensions.plots.datatypes.PlotData;
 import org.hkijena.jipipe.extensions.plots.datatypes.PlotDataSeries;
 import org.hkijena.jipipe.extensions.plots.datatypes.PlotMetadata;
@@ -62,7 +62,7 @@ import java.util.*;
 public class JIPipePlotBuilderUI extends JIPipeWorkbenchPanel implements JIPipeParameterCollection, JIPipeValidatable {
 
     private EventBus eventBus = new EventBus();
-    private JIPipeDataDeclarationRef plotType = new JIPipeDataDeclarationRef();
+    private JIPipeDataInfoRef plotType = new JIPipeDataInfoRef();
     private PlotData currentPlot;
     private JSplitPane splitPane;
     private BiMap<String, TableColumn> availableData = HashBiMap.create();
@@ -134,7 +134,7 @@ public class JIPipePlotBuilderUI extends JIPipeWorkbenchPanel implements JIPipeP
 
     @Override
     public void reportValidity(JIPipeValidityReport report) {
-        report.forCategory("Plot type").checkNonNull(getPlotType().getDeclaration(), this);
+        report.forCategory("Plot type").checkNonNull(getPlotType().getInfo(), this);
         if (currentPlot != null) {
             report.forCategory("Plot parameters").report(currentPlot);
         }
@@ -147,15 +147,15 @@ public class JIPipePlotBuilderUI extends JIPipeWorkbenchPanel implements JIPipeP
     @JIPipeDocumentation(name = "Plot type", description = "The type of plot to be generated.")
     @JIPipeParameter(value = "plot-type", priority = Priority.HIGH)
     @JIPipeDataParameterSettings(dataBaseClass = PlotData.class)
-    public JIPipeDataDeclarationRef getPlotType() {
+    public JIPipeDataInfoRef getPlotType() {
         if (plotType == null) {
-            plotType = new JIPipeDataDeclarationRef();
+            plotType = new JIPipeDataInfoRef();
         }
         return plotType;
     }
 
     @JIPipeParameter("plot-type")
-    public void setPlotType(JIPipeDataDeclarationRef plotType) {
+    public void setPlotType(JIPipeDataInfoRef plotType) {
         this.plotType = plotType;
 
         updatePlotTypeParameters();
@@ -163,14 +163,14 @@ public class JIPipePlotBuilderUI extends JIPipeWorkbenchPanel implements JIPipeP
 
     private void updatePlotTypeParameters() {
         boolean changedPlot = false;
-        if (currentPlot == null || (plotType.getDeclaration() != null &&
-                !Objects.equals(plotType.getDeclaration().getDataClass(), currentPlot.getClass()))) {
-            if (plotType.getDeclaration() != null) {
-                currentPlot = (PlotData) JIPipeData.createInstance(plotType.getDeclaration().getDataClass());
+        if (currentPlot == null || (plotType.getInfo() != null &&
+                !Objects.equals(plotType.getInfo().getDataClass(), currentPlot.getClass()))) {
+            if (plotType.getInfo() != null) {
+                currentPlot = (PlotData) JIPipeData.createInstance(plotType.getInfo().getDataClass());
                 changedPlot = true;
                 currentPlot.getEventBus().register(this);
             }
-        } else if (plotType.getDeclaration() == null) {
+        } else if (plotType.getInfo() == null) {
             currentPlot = null;
             changedPlot = true;
         }
@@ -200,12 +200,12 @@ public class JIPipePlotBuilderUI extends JIPipeWorkbenchPanel implements JIPipeP
      * @param data the existing plot
      */
     public void importExistingPlot(PlotData data) {
-        this.plotType.setDeclaration(JIPipeDataDeclaration.getInstance(data.getClass()));
+        this.plotType.setInfo(JIPipeDataInfo.getInstance(data.getClass()));
         this.currentPlot = data;
         seriesBuilders.clear();
         List<PlotDataSeries> seriesList = new ArrayList<>(data.getSeries());
         for (PlotDataSeries series : seriesList) {
-            JIPipePlotSeriesBuilder builder = new JIPipePlotSeriesBuilder(this, JIPipeDataDeclaration.getInstance(data.getClass()));
+            JIPipePlotSeriesBuilder builder = new JIPipePlotSeriesBuilder(this, JIPipeDataInfo.getInstance(data.getClass()));
             Map<String, String> columnMap = importData(series);
             for (Map.Entry<String, String> entry : columnMap.entrySet()) {
                 builder.assignData(entry.getKey(), availableData.get(entry.getValue()));
@@ -398,7 +398,7 @@ public class JIPipePlotBuilderUI extends JIPipeWorkbenchPanel implements JIPipeP
      * Adds a new series
      */
     public void addSeries() {
-        JIPipePlotSeriesBuilder seriesBuilder = new JIPipePlotSeriesBuilder(this, plotType.getDeclaration());
+        JIPipePlotSeriesBuilder seriesBuilder = new JIPipePlotSeriesBuilder(this, plotType.getInfo());
         seriesBuilders.add(seriesBuilder);
         eventBus.post(new ParameterChangedEvent(this, "series"));
 

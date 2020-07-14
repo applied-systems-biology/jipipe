@@ -160,21 +160,21 @@ public class JIPipeMergingDataBatch {
     /**
      * Removes an annotation of provided type
      *
-     * @param declaration removed annotation
+     * @param info removed annotation
      */
-    public void removeGlobalAnnotation(String declaration) {
-        annotations.remove(declaration);
+    public void removeGlobalAnnotation(String info) {
+        annotations.remove(info);
     }
 
     /**
      * Returns an existing annotation
      * Only the exact type is used for searching
      *
-     * @param declaration annotation type
+     * @param info annotation type
      * @return null if it does not exist
      */
-    public JIPipeAnnotation getAnnotationOfType(String declaration) {
-        return annotations.getOrDefault(declaration, null);
+    public JIPipeAnnotation getAnnotationOfType(String info) {
+        return annotations.getOrDefault(info, null);
     }
 
     /**

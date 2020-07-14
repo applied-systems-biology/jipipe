@@ -54,10 +54,10 @@ public class HistogramGenerator extends JIPipeSimpleIteratingAlgorithm {
     /**
      * Creates a new instance
      *
-     * @param declaration the algorithm declaration
+     * @param info the algorithm info
      */
-    public HistogramGenerator(JIPipeAlgorithmDeclaration declaration) {
-        super(declaration);
+    public HistogramGenerator(JIPipeNodeInfo info) {
+        super(info);
     }
 
     /**

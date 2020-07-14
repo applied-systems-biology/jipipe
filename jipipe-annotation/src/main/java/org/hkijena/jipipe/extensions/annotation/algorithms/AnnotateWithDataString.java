@@ -43,10 +43,10 @@ public class AnnotateWithDataString extends JIPipeSimpleIteratingAlgorithm {
     /**
      * New instance
      *
-     * @param declaration Algorithm declaration
+     * @param info Algorithm info
      */
-    public AnnotateWithDataString(JIPipeAlgorithmDeclaration declaration) {
-        super(declaration);
+    public AnnotateWithDataString(JIPipeNodeInfo info) {
+        super(info);
     }
 
     /**

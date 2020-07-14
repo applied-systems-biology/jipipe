@@ -14,13 +14,13 @@
 package org.hkijena.jipipe.extensions.tables.parameters.enums;
 
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.JIPipeDataDeclaration;
+import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
 import org.hkijena.jipipe.extensions.tables.ColumnContentType;
 import org.hkijena.jipipe.extensions.tables.datatypes.TableColumn;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.components.JIPipeDataDeclarationListCellRenderer;
+import org.hkijena.jipipe.ui.components.JIPipeDataInfoListCellRenderer;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -34,7 +34,7 @@ import java.util.List;
 public class TableColumnGeneratorParameterEditorUI extends JIPipeParameterEditorUI {
 
     private boolean isProcessing = false;
-    private JComboBox<JIPipeDataDeclaration> comboBox;
+    private JComboBox<JIPipeDataInfo> comboBox;
     private JToggleButton numericColumnToggle;
     private JToggleButton textColumnToggle;
 
@@ -57,7 +57,7 @@ public class TableColumnGeneratorParameterEditorUI extends JIPipeParameterEditor
     public void reload() {
         isProcessing = true;
         TableColumnGeneratorParameter parameter = getParameter(TableColumnGeneratorParameter.class);
-        comboBox.setSelectedItem(parameter.getGeneratorType().getDeclaration());
+        comboBox.setSelectedItem(parameter.getGeneratorType().getInfo());
         if (parameter.getGeneratedType() == ColumnContentType.NumericColumn) {
             numericColumnToggle.setSelected(true);
         } else {
@@ -69,7 +69,7 @@ public class TableColumnGeneratorParameterEditorUI extends JIPipeParameterEditor
     private void initialize() {
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
         comboBox = new JComboBox<>(getAvailableGenerators());
-        comboBox.setRenderer(new JIPipeDataDeclarationListCellRenderer());
+        comboBox.setRenderer(new JIPipeDataInfoListCellRenderer());
         comboBox.addActionListener(e -> writeValueToParameter());
         add(comboBox);
 
@@ -84,9 +84,9 @@ public class TableColumnGeneratorParameterEditorUI extends JIPipeParameterEditor
         isProcessing = true;
         TableColumnGeneratorParameter parameter = getParameter(TableColumnGeneratorParameter.class);
         if (comboBox.getSelectedItem() != null)
-            parameter.getGeneratorType().setDeclaration((JIPipeDataDeclaration) comboBox.getSelectedItem());
+            parameter.getGeneratorType().setInfo((JIPipeDataInfo) comboBox.getSelectedItem());
         else
-            parameter.getGeneratorType().setDeclaration(null);
+            parameter.getGeneratorType().setInfo(null);
         if (numericColumnToggle.isSelected())
             parameter.setGeneratedType(ColumnContentType.NumericColumn);
         else
@@ -95,16 +95,16 @@ public class TableColumnGeneratorParameterEditorUI extends JIPipeParameterEditor
         isProcessing = false;
     }
 
-    private JIPipeDataDeclaration[] getAvailableGenerators() {
+    private JIPipeDataInfo[] getAvailableGenerators() {
         List<Object> result = new ArrayList<>();
         result.add(null);
         for (Class<? extends JIPipeData> klass : JIPipeDatatypeRegistry.getInstance().getRegisteredDataTypes().values()) {
             if (TableColumn.isGeneratingTableColumn(klass)) {
-                result.add(JIPipeDataDeclaration.getInstance(klass));
+                result.add(JIPipeDataInfo.getInstance(klass));
             }
         }
 
-        return result.toArray(new JIPipeDataDeclaration[0]);
+        return result.toArray(new JIPipeDataInfo[0]);
     }
 
     private JToggleButton addToggle(ButtonGroup group, Icon icon, String description) {

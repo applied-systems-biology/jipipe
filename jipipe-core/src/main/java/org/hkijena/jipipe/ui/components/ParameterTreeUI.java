@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.ui.components;
 
-import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmDeclaration;
+import org.hkijena.jipipe.api.algorithm.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.algorithm.JIPipeGraphNode;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
@@ -182,8 +182,8 @@ public class ParameterTreeUI extends JPanel {
                     JIPipeParameterTree.Node node = (JIPipeParameterTree.Node) userObject;
                     Icon icon = null;
                     if (node.getCollection() instanceof JIPipeGraphNode) {
-                        JIPipeAlgorithmDeclaration declaration = ((JIPipeGraphNode) node.getCollection()).getDeclaration();
-                        icon = JIPipeUIAlgorithmRegistry.getInstance().getIconFor(declaration);
+                        JIPipeNodeInfo info = ((JIPipeGraphNode) node.getCollection()).getInfo();
+                        icon = JIPipeUIAlgorithmRegistry.getInstance().getIconFor(info);
                     }
                     if (icon == null) {
                         UIUtils.getIconFromResources("object.png");

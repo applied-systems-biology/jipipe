@@ -38,11 +38,11 @@ public class JsonAlgorithm extends GraphWrapperAlgorithm implements JIPipeCustom
     /**
      * Creates a new instance
      *
-     * @param declaration the declaration
+     * @param info the info
      */
-    public JsonAlgorithm(JsonAlgorithmDeclaration declaration) {
-        super(declaration, new JIPipeGraph(declaration.getGraph()));
-        exportedParameters = new GraphNodeParameters(declaration.getExportedParameters());
+    public JsonAlgorithm(JsonNodeInfo info) {
+        super(info, new JIPipeGraph(info.getGraph()));
+        exportedParameters = new GraphNodeParameters(info.getExportedParameters());
     }
 
     /**

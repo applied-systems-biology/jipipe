@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.api.data;
 
 import org.hkijena.jipipe.api.JIPipeProject;
-import org.hkijena.jipipe.api.algorithm.JIPipeEmptyAlgorithmDeclaration;
+import org.hkijena.jipipe.api.algorithm.JIPipeEmptyNodeInfo;
 import org.hkijena.jipipe.api.algorithm.JIPipeGraphNode;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 
@@ -47,7 +47,7 @@ public class JIPipeMergedDataSlotTable implements TableModel {
         }
         JIPipeProjectCompartment compartment = project.getCompartments().getOrDefault(dataSlot.getNode().getCompartment(), null);
         if (compartment == null) {
-            compartment = new JIPipeProjectCompartment(new JIPipeEmptyAlgorithmDeclaration());
+            compartment = new JIPipeProjectCompartment(new JIPipeEmptyNodeInfo());
             compartment.setCustomName(dataSlot.getNode().getCompartment());
         }
         JIPipeGraphNode algorithm = dataSlot.getNode();

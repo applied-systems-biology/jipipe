@@ -54,10 +54,10 @@ public class ColorRoiByStatisticsAlgorithm extends ImageRoiProcessorAlgorithm {
     /**
      * Instantiates a new algorithm.
      *
-     * @param declaration the declaration
+     * @param info the info
      */
-    public ColorRoiByStatisticsAlgorithm(JIPipeAlgorithmDeclaration declaration) {
-        super(declaration, ROIListData.class, "Output");
+    public ColorRoiByStatisticsAlgorithm(JIPipeNodeInfo info) {
+        super(info, ROIListData.class, "Output");
         this.mapFillColor.setEnabled(true);
     }
 

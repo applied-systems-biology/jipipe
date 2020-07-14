@@ -20,7 +20,7 @@ import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmCategory;
-import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmDeclaration;
+import org.hkijena.jipipe.api.algorithm.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.algorithm.JIPipeDataBatch;
 import org.hkijena.jipipe.api.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
@@ -51,11 +51,11 @@ public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
     private OptionalStringParameter titleAnnotation = new OptionalStringParameter();
 
     /**
-     * @param declaration algorithm declaration
+     * @param info algorithm info
      * @param dataClass   loaded data class
      */
-    public ImagePlusFromFile(JIPipeAlgorithmDeclaration declaration, Class<? extends JIPipeData> dataClass) {
-        super(declaration,
+    public ImagePlusFromFile(JIPipeNodeInfo info, Class<? extends JIPipeData> dataClass) {
+        super(info,
                 JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Files", FileData.class)
                         .addOutputSlot("Image", dataClass, "")
                         .sealOutput()

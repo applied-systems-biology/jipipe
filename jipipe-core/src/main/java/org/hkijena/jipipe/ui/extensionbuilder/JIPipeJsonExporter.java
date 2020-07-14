@@ -15,7 +15,7 @@ package org.hkijena.jipipe.ui.extensionbuilder;
 
 import org.hkijena.jipipe.JIPipeJsonExtension;
 import org.hkijena.jipipe.api.algorithm.JIPipeGraph;
-import org.hkijena.jipipe.api.grouping.JsonAlgorithmDeclaration;
+import org.hkijena.jipipe.api.grouping.JsonNodeInfo;
 import org.hkijena.jipipe.api.grouping.NodeGroup;
 import org.hkijena.jipipe.api.registries.JIPipeAlgorithmRegistry;
 import org.hkijena.jipipe.ui.JIPipeJsonExtensionWindow;
@@ -33,11 +33,11 @@ import java.awt.*;
 import java.util.stream.Collectors;
 
 /**
- * Exports a {@link JsonAlgorithmDeclaration}
+ * Exports a {@link JsonNodeInfo}
  */
 public class JIPipeJsonExporter extends JIPipeGraphEditorUI {
 
-    private final JsonAlgorithmDeclaration algorithmDeclaration;
+    private final JsonNodeInfo nodeInfo;
     private JPopupMenu exportMenu;
     private JPanel exportPanel;
 
@@ -49,9 +49,9 @@ public class JIPipeJsonExporter extends JIPipeGraphEditorUI {
      */
     public JIPipeJsonExporter(JIPipeProjectWorkbench workbenchUI, NodeGroup group) {
         super(workbenchUI, group.getWrappedGraph(), JIPipeGraph.COMPARTMENT_DEFAULT);
-        algorithmDeclaration = new JsonAlgorithmDeclaration(group);
-        algorithmDeclaration.setName(group.getName());
-        algorithmDeclaration.setDescription(group.getCustomDescription());
+        nodeInfo = new JsonNodeInfo(group);
+        nodeInfo.setName(group.getName());
+        nodeInfo.setDescription(group.getCustomDescription());
         initialize();
         updateSelection();
     }
@@ -69,7 +69,7 @@ public class JIPipeJsonExporter extends JIPipeGraphEditorUI {
     private void initialize() {
         exportPanel = new JPanel(new BorderLayout());
 
-        ParameterPanel parameterPanel = new ParameterPanel(getWorkbench(), algorithmDeclaration,
+        ParameterPanel parameterPanel = new ParameterPanel(getWorkbench(), nodeInfo,
                 MarkdownDocument.fromPluginResource("documentation/exporting-algorithms.md"),
                 ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.WITH_SCROLLING | ParameterPanel.DOCUMENTATION_BELOW | ParameterPanel.WITH_SEARCH_BAR);
         exportPanel.add(parameterPanel, BorderLayout.CENTER);
@@ -112,25 +112,25 @@ public class JIPipeJsonExporter extends JIPipeGraphEditorUI {
     }
 
     private void exportToExtension(JIPipeJsonExtension extension) {
-        extension.addAlgorithm(algorithmDeclaration);
+        extension.addAlgorithm(nodeInfo);
         getWorkbench().getDocumentTabPane().remove(this);
     }
 
     private void exportToNewExtension() {
         JIPipeJsonExtension extension = new JIPipeJsonExtension();
-        extension.addAlgorithm(algorithmDeclaration);
+        extension.addAlgorithm(nodeInfo);
         getWorkbench().getDocumentTabPane().remove(this);
         JIPipeJsonExtensionWindow.newWindow(getWorkbench().getContext(), extension);
     }
 
     private void createRandomId() {
-        String name = algorithmDeclaration.getName();
+        String name = nodeInfo.getName();
         if (name == null || name.isEmpty()) {
             name = "my-algorithm";
         }
         name = StringUtils.jsonify(name);
         name = StringUtils.makeUniqueString(name, "-", id -> JIPipeAlgorithmRegistry.getInstance().hasAlgorithmWithId(id));
-        algorithmDeclaration.setId(name);
+        nodeInfo.setId(name);
     }
 
     @Override
@@ -149,10 +149,10 @@ public class JIPipeJsonExporter extends JIPipeGraphEditorUI {
     }
 
     /**
-     * @return The declaration
+     * @return The info
      */
-    public JsonAlgorithmDeclaration getAlgorithmDeclaration() {
-        return algorithmDeclaration;
+    public JsonNodeInfo getNodeInfo() {
+        return nodeInfo;
     }
 
     /**
@@ -165,8 +165,8 @@ public class JIPipeJsonExporter extends JIPipeGraphEditorUI {
      */
     public static void createExporter(JIPipeProjectWorkbench workbench, NodeGroup nodeGroup, String name, String description) {
         JIPipeJsonExporter exporter = new JIPipeJsonExporter(workbench, (NodeGroup) nodeGroup.duplicate());
-        exporter.getAlgorithmDeclaration().setName(name);
-        exporter.getAlgorithmDeclaration().setDescription(description);
+        exporter.getNodeInfo().setName(name);
+        exporter.getNodeInfo().setDescription(description);
         workbench.getDocumentTabPane().addTab("Export algorithm '" + name + "'",
                 UIUtils.getIconFromResources("export.png"),
                 exporter,

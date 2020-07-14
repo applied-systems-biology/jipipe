@@ -27,7 +27,7 @@ import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.parameters.*;
 import org.hkijena.jipipe.extensions.parameters.editors.JIPipeDataParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.predicates.StringPredicate;
-import org.hkijena.jipipe.extensions.parameters.references.JIPipeDataDeclarationRef;
+import org.hkijena.jipipe.extensions.parameters.references.JIPipeDataInfoRef;
 import org.hkijena.jipipe.extensions.plots.datatypes.PlotColumn;
 import org.hkijena.jipipe.extensions.plots.datatypes.PlotData;
 import org.hkijena.jipipe.extensions.plots.datatypes.PlotDataSeries;
@@ -52,17 +52,17 @@ import java.util.function.Supplier;
 @JIPipeOutputSlot(PlotData.class)
 public class PlotGeneratorAlgorithm extends JIPipeAlgorithm {
 
-    private JIPipeDataDeclarationRef plotType = new JIPipeDataDeclarationRef();
+    private JIPipeDataInfoRef plotType = new JIPipeDataInfoRef();
     private PlotData plotTypeParameters;
     private JIPipeDynamicParameterCollection columnAssignments = new JIPipeDynamicParameterCollection(false);
 
     /**
      * Creates a new instance
      *
-     * @param declaration The algorithm declaration
+     * @param info The algorithm info
      */
-    public PlotGeneratorAlgorithm(JIPipeAlgorithmDeclaration declaration) {
-        super(declaration, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", ResultsTableData.class)
+    public PlotGeneratorAlgorithm(JIPipeNodeInfo info) {
+        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", ResultsTableData.class)
                 .addOutputSlot("Output", PlotData.class, null)
                 .seal()
                 .build());
@@ -76,14 +76,14 @@ public class PlotGeneratorAlgorithm extends JIPipeAlgorithm {
      */
     public PlotGeneratorAlgorithm(PlotGeneratorAlgorithm other) {
         super(other);
-        this.plotType = new JIPipeDataDeclarationRef(other.plotType);
+        this.plotType = new JIPipeDataInfoRef(other.plotType);
         this.plotTypeParameters = (PlotData) other.plotTypeParameters.duplicate();
         this.columnAssignments = new JIPipeDynamicParameterCollection(other.columnAssignments);
     }
 
     @Override
     public void run(JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
-        PlotMetadata plotMetadata = plotType.getDeclaration().getDataClass().getAnnotation(PlotMetadata.class);
+        PlotMetadata plotMetadata = plotType.getInfo().getDataClass().getAnnotation(PlotMetadata.class);
         Map<String, PlotColumn> plotColumns = new HashMap<>();
         for (PlotColumn column : plotMetadata.columns()) {
             plotColumns.put(column.name(), column);
@@ -139,7 +139,7 @@ public class PlotGeneratorAlgorithm extends JIPipeAlgorithm {
                 TableColumnSourceParameter parameter = entry.getValue().get(TableColumnSourceParameter.class);
                 if (parameter.getMode() == TableColumnSourceParameter.Mode.GenerateColumn) {
                     PlotColumn column = plotColumns.get(entry.getKey());
-                    TableColumn generator = (TableColumn) ReflectionUtils.newInstance(parameter.getGeneratorSource().getGeneratorType().getDeclaration().getDataClass());
+                    TableColumn generator = (TableColumn) ReflectionUtils.newInstance(parameter.getGeneratorSource().getGeneratorType().getInfo().getDataClass());
                     if (column.isNumeric()) {
                         double[] data = generator.getDataAsDouble(seriesTable.getCounter());
                         int col = seriesTable.getFreeColumn(entry.getKey());
@@ -164,7 +164,7 @@ public class PlotGeneratorAlgorithm extends JIPipeAlgorithm {
 
     @Override
     public void reportValidity(JIPipeValidityReport report) {
-        report.forCategory("Plot type").checkNonNull(getPlotType().getDeclaration(), this);
+        report.forCategory("Plot type").checkNonNull(getPlotType().getInfo(), this);
         if (plotTypeParameters != null) {
             report.forCategory("Plot parameters").report(plotTypeParameters);
         }
@@ -189,15 +189,15 @@ public class PlotGeneratorAlgorithm extends JIPipeAlgorithm {
     @JIPipeDocumentation(name = "Plot type", description = "The type of plot to be generated.")
     @JIPipeParameter(value = "plot-type", priority = Priority.HIGH)
     @JIPipeDataParameterSettings(dataBaseClass = PlotData.class)
-    public JIPipeDataDeclarationRef getPlotType() {
+    public JIPipeDataInfoRef getPlotType() {
         if (plotType == null) {
-            plotType = new JIPipeDataDeclarationRef();
+            plotType = new JIPipeDataInfoRef();
         }
         return plotType;
     }
 
     @JIPipeParameter("plot-type")
-    public void setPlotType(JIPipeDataDeclarationRef plotType) {
+    public void setPlotType(JIPipeDataInfoRef plotType) {
         this.plotType = plotType;
 
 
@@ -209,8 +209,8 @@ public class PlotGeneratorAlgorithm extends JIPipeAlgorithm {
     private void updateColumnAssignment() {
         columnAssignments.beginModificationBlock();
         columnAssignments.clear();
-        if (plotType.getDeclaration() != null) {
-            PlotMetadata plotMetadata = plotType.getDeclaration().getDataClass().getAnnotation(PlotMetadata.class);
+        if (plotType.getInfo() != null) {
+            PlotMetadata plotMetadata = plotType.getInfo().getDataClass().getAnnotation(PlotMetadata.class);
             for (PlotColumn column : plotMetadata.columns()) {
                 JIPipeMutableParameterAccess parameterAccess = new JIPipeMutableParameterAccess();
                 parameterAccess.setKey(column.name());
@@ -229,20 +229,20 @@ public class PlotGeneratorAlgorithm extends JIPipeAlgorithm {
     }
 
     private void updatePlotTypeParameters() {
-        if (plotTypeParameters == null || (plotType.getDeclaration() != null && !Objects.equals(plotType.getDeclaration().getDataClass(), plotTypeParameters.getClass()))) {
-            if (plotType.getDeclaration() != null) {
-                plotTypeParameters = (PlotData) JIPipeData.createInstance(plotType.getDeclaration().getDataClass());
+        if (plotTypeParameters == null || (plotType.getInfo() != null && !Objects.equals(plotType.getInfo().getDataClass(), plotTypeParameters.getClass()))) {
+            if (plotType.getInfo() != null) {
+                plotTypeParameters = (PlotData) JIPipeData.createInstance(plotType.getInfo().getDataClass());
                 getEventBus().post(new ParameterStructureChangedEvent(this));
             }
-        } else if (plotType.getDeclaration() == null) {
+        } else if (plotType.getInfo() == null) {
             plotTypeParameters = null;
             getEventBus().post(new ParameterStructureChangedEvent(this));
         }
     }
 
     private void updateOutputSlotType() {
-        if (plotType.getDeclaration() != null) {
-            getFirstOutputSlot().setAcceptedDataType(plotType.getDeclaration().getDataClass());
+        if (plotType.getInfo() != null) {
+            getFirstOutputSlot().setAcceptedDataType(plotType.getInfo().getDataClass());
         } else {
             getFirstOutputSlot().setAcceptedDataType(PlotData.class);
         }

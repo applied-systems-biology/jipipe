@@ -61,21 +61,21 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
     /**
      * Creates a new instance
      *
-     * @param declaration       Algorithm declaration
+     * @param info       Algorithm info
      * @param slotConfiguration Slot configuration override
      */
-    public JIPipeMergingAlgorithm(JIPipeAlgorithmDeclaration declaration, JIPipeSlotConfiguration slotConfiguration) {
-        super(declaration, slotConfiguration);
+    public JIPipeMergingAlgorithm(JIPipeNodeInfo info, JIPipeSlotConfiguration slotConfiguration) {
+        super(info, slotConfiguration);
         registerSubParameter(dataBatchGenerationSettings);
     }
 
     /**
      * Creates a new instance
      *
-     * @param declaration Algorithm declaration
+     * @param info Algorithm info
      */
-    public JIPipeMergingAlgorithm(JIPipeAlgorithmDeclaration declaration) {
-        super(declaration, null);
+    public JIPipeMergingAlgorithm(JIPipeNodeInfo info) {
+        super(info, null);
     }
 
     /**
@@ -215,15 +215,15 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
             }
 
             // Create new merged annotations
-            for (String declaration : compoundTraits.keySet()) {
-                List<String> valueList = compoundTraits.get(declaration).stream().distinct().sorted().collect(Collectors.toList());
+            for (String info : compoundTraits.keySet()) {
+                List<String> valueList = compoundTraits.get(info).stream().distinct().sorted().collect(Collectors.toList());
                 String value;
                 try {
                     value = JsonUtils.getObjectMapper().writeValueAsString(valueList);
                 } catch (JsonProcessingException e) {
                     throw new RuntimeException(e);
                 }
-                dataInterface.addGlobalAnnotation(new JIPipeAnnotation(declaration, value));
+                dataInterface.addGlobalAnnotation(new JIPipeAnnotation(info, value));
             }
 
             // Add parameter annotations

@@ -41,14 +41,14 @@ public class EditAlgorithmSlotPanel extends JPanel {
     private final JIPipeGraphHistory graphHistory;
     private JIPipeDataSlot existingSlot;
     private SearchTextField searchField;
-    private JList<JIPipeDataDeclaration> datatypeList;
+    private JList<JIPipeDataInfo> datatypeList;
     private JComboBox<String> inheritedSlotList;
     private JTextField nameEditor;
-    private JIPipeDataDeclaration selectedDeclaration;
+    private JIPipeDataInfo selectedInfo;
     private JButton confirmButton;
     private JDialog dialog;
-    private Set<JIPipeDataDeclaration> availableTypes;
-    private Map<JIPipeDataDeclaration, JIPipeDataDeclaration> inheritanceConversions = new HashMap<>();
+    private Set<JIPipeDataInfo> availableTypes;
+    private Map<JIPipeDataInfo, JIPipeDataInfo> inheritanceConversions = new HashMap<>();
 
 
     /**
@@ -61,7 +61,7 @@ public class EditAlgorithmSlotPanel extends JPanel {
         this.existingSlot = existingSlot;
         this.graphHistory = graphHistory;
         initialize();
-        initializeAvailableDeclarations();
+        initializeAvailableInfos();
         reloadTypeList();
 
         setInitialValues();
@@ -69,7 +69,7 @@ public class EditAlgorithmSlotPanel extends JPanel {
 
     private void setInitialValues() {
         nameEditor.setText(existingSlot.getName());
-        datatypeList.setSelectedValue(JIPipeDataDeclaration.getInstance(existingSlot.getAcceptedDataType()), true);
+        datatypeList.setSelectedValue(JIPipeDataInfo.getInstance(existingSlot.getAcceptedDataType()), true);
 
     }
 
@@ -80,10 +80,10 @@ public class EditAlgorithmSlotPanel extends JPanel {
 
 
         datatypeList = new JList<>();
-        datatypeList.setCellRenderer(new JIPipeDataDeclarationListCellRenderer());
+        datatypeList.setCellRenderer(new JIPipeDataInfoListCellRenderer());
         datatypeList.addListSelectionListener(e -> {
             if (datatypeList.getSelectedValue() != null) {
-                setSelectedDeclaration(datatypeList.getSelectedValue());
+                setSelectedInfo(datatypeList.getSelectedValue());
             }
         });
         JScrollPane scrollPane = new JScrollPane(datatypeList);
@@ -182,14 +182,14 @@ public class EditAlgorithmSlotPanel extends JPanel {
         JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) algorithm.getSlotConfiguration();
         JIPipeSlotDefinition slotDefinition;
         if (slotType == JIPipeSlotType.Input) {
-            slotDefinition = new JIPipeSlotDefinition(selectedDeclaration.getDataClass(), slotType, slotName, null);
+            slotDefinition = new JIPipeSlotDefinition(selectedInfo.getDataClass(), slotType, slotName, null);
         } else if (slotType == JIPipeSlotType.Output) {
             String inheritedSlot = null;
             if (inheritedSlotList != null && inheritedSlotList.getSelectedItem() != null) {
                 inheritedSlot = inheritedSlotList.getSelectedItem().toString();
             }
 
-            slotDefinition = new JIPipeSlotDefinition(selectedDeclaration.getDataClass(), slotType, slotName, inheritedSlot);
+            slotDefinition = new JIPipeSlotDefinition(selectedInfo.getDataClass(), slotType, slotName, inheritedSlot);
         } else {
             throw new UnsupportedOperationException();
         }
@@ -249,7 +249,7 @@ public class EditAlgorithmSlotPanel extends JPanel {
     }
 
     private boolean settingsAreValid() {
-        if (selectedDeclaration == null)
+        if (selectedInfo == null)
             return false;
         String slotName = nameEditor.getText();
         if (slotName == null || slotName.isEmpty()) {
@@ -271,8 +271,8 @@ public class EditAlgorithmSlotPanel extends JPanel {
 
         JIPipeGraphNode algorithm = existingSlot.getNode();
         JLabel algorithmNameLabel = new JLabel(algorithm.getName(),
-                new ColorIcon(16, 16, UIUtils.getFillColorFor(algorithm.getDeclaration())), JLabel.LEFT);
-        algorithmNameLabel.setToolTipText(TooltipUtils.getAlgorithmTooltip(algorithm.getDeclaration()));
+                new ColorIcon(16, 16, UIUtils.getFillColorFor(algorithm.getInfo())), JLabel.LEFT);
+        algorithmNameLabel.setToolTipText(TooltipUtils.getAlgorithmTooltip(algorithm.getInfo()));
         toolBar.add(algorithmNameLabel);
         toolBar.add(Box.createHorizontalStrut(5));
 
@@ -283,7 +283,7 @@ public class EditAlgorithmSlotPanel extends JPanel {
         searchField.addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent e) {
-                if (selectedDeclaration != null && e.getKeyCode() == KeyEvent.VK_ENTER) {
+                if (selectedInfo != null && e.getKeyCode() == KeyEvent.VK_ENTER) {
                     nameEditor.requestFocusInWindow();
                     nameEditor.selectAll();
                 }
@@ -294,31 +294,31 @@ public class EditAlgorithmSlotPanel extends JPanel {
         add(toolBar, BorderLayout.NORTH);
     }
 
-    private void initializeAvailableDeclarations() {
+    private void initializeAvailableInfos() {
         JIPipeGraphNode algorithm = existingSlot.getNode();
         JIPipeSlotType slotType = existingSlot.getSlotType();
         JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) algorithm.getSlotConfiguration();
         if (slotType == JIPipeSlotType.Input) {
             availableTypes = slotConfiguration.getAllowedInputSlotTypes()
-                    .stream().map(JIPipeDataDeclaration::getInstance).collect(Collectors.toSet());
+                    .stream().map(JIPipeDataInfo::getInstance).collect(Collectors.toSet());
         } else if (slotType == JIPipeSlotType.Output) {
             availableTypes = slotConfiguration.getAllowedOutputSlotTypes()
-                    .stream().map(JIPipeDataDeclaration::getInstance).collect(Collectors.toSet());
+                    .stream().map(JIPipeDataInfo::getInstance).collect(Collectors.toSet());
         } else {
             throw new UnsupportedOperationException();
         }
     }
 
-    private List<JIPipeDataDeclaration> getFilteredAndSortedDeclarations() {
-        Predicate<JIPipeDataDeclaration> filterFunction = declaration -> searchField.test(declaration.getName());
-        return availableTypes.stream().filter(filterFunction).sorted(JIPipeDataDeclaration::compareTo).collect(Collectors.toList());
+    private List<JIPipeDataInfo> getFilteredAndSortedInfos() {
+        Predicate<JIPipeDataInfo> filterFunction = info -> searchField.test(info.getName());
+        return availableTypes.stream().filter(filterFunction).sorted(JIPipeDataInfo::compareTo).collect(Collectors.toList());
     }
 
     private void reloadTypeList() {
-        setSelectedDeclaration(null);
-        List<JIPipeDataDeclaration> availableTypes = getFilteredAndSortedDeclarations();
-        DefaultListModel<JIPipeDataDeclaration> listModel = new DefaultListModel<>();
-        for (JIPipeDataDeclaration type : availableTypes) {
+        setSelectedInfo(null);
+        List<JIPipeDataInfo> availableTypes = getFilteredAndSortedInfos();
+        DefaultListModel<JIPipeDataInfo> listModel = new DefaultListModel<>();
+        for (JIPipeDataInfo type : availableTypes) {
             listModel.addElement(type);
         }
         datatypeList.setModel(listModel);
@@ -327,12 +327,12 @@ public class EditAlgorithmSlotPanel extends JPanel {
         }
     }
 
-    public JIPipeDataDeclaration getSelectedDeclaration() {
-        return selectedDeclaration;
+    public JIPipeDataInfo getSelectedInfo() {
+        return selectedInfo;
     }
 
-    public void setSelectedDeclaration(JIPipeDataDeclaration selectedDeclaration) {
-        this.selectedDeclaration = selectedDeclaration;
+    public void setSelectedInfo(JIPipeDataInfo selectedInfo) {
+        this.selectedInfo = selectedInfo;
     }
 
     public JDialog getDialog() {

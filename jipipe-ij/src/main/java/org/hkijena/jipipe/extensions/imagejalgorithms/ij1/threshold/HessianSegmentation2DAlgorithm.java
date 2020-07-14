@@ -63,15 +63,15 @@ public class HessianSegmentation2DAlgorithm extends JIPipeSimpleIteratingAlgorit
     private int despeckleIterations = 2;
 
     /**
-     * @param declaration the algorithm declaration
+     * @param info the algorithm info
      */
-    public HessianSegmentation2DAlgorithm(JIPipeAlgorithmDeclaration declaration) {
-        super(declaration, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", ImagePlusGreyscale8UData.class)
+    public HessianSegmentation2DAlgorithm(JIPipeNodeInfo info) {
+        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", ImagePlusGreyscale8UData.class)
                 .addOutputSlot("Output", ImagePlusGreyscaleMaskData.class, "Input", ADD_MASK_QUALIFIER)
                 .allowOutputSlotInheritance(true)
                 .seal()
                 .build());
-        this.autoThresholding = (AutoThreshold2DAlgorithm) JIPipeAlgorithmRegistry.getInstance().getDeclarationById("ij1-threshold-auto2d").newInstance();
+        this.autoThresholding = (AutoThreshold2DAlgorithm) JIPipeAlgorithmRegistry.getInstance().getInfoById("ij1-threshold-auto2d").newInstance();
     }
 
     /**
@@ -85,7 +85,7 @@ public class HessianSegmentation2DAlgorithm extends JIPipeSimpleIteratingAlgorit
         this.gradientRadius = other.gradientRadius;
         this.eigenvalueSelection = other.eigenvalueSelection;
         this.compareAbsolute = other.compareAbsolute;
-        this.autoThresholding = (AutoThreshold2DAlgorithm) other.autoThresholding.getDeclaration().clone(other.autoThresholding);
+        this.autoThresholding = (AutoThreshold2DAlgorithm) other.autoThresholding.getInfo().clone(other.autoThresholding);
         this.applyInternalGradient = other.applyInternalGradient;
         this.applyDespeckle = other.applyDespeckle;
         this.despeckleIterations = other.despeckleIterations;

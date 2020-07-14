@@ -36,10 +36,10 @@ import java.util.function.Supplier;
 public class ROIDataFromFile extends JIPipeSimpleIteratingAlgorithm {
 
     /**
-     * @param declaration the algorithm declaration
+     * @param info the algorithm info
      */
-    public ROIDataFromFile(JIPipeAlgorithmDeclaration declaration) {
-        super(declaration);
+    public ROIDataFromFile(JIPipeNodeInfo info) {
+        super(info);
     }
 
     /**

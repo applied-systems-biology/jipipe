@@ -73,11 +73,11 @@ public class AnnotationTableData extends ResultsTableData {
      * Adds a new column that contains annotation data and returns its index-
      * If the column already exists, its index is returned.
      *
-     * @param traitDeclaration the annotation type
+     * @param traitInfo the annotation type
      * @return index
      */
-    public int addAnnotationColumn(String traitDeclaration) {
-        return addColumn(getAnnotationColumnName(traitDeclaration), true);
+    public int addAnnotationColumn(String traitInfo) {
+        return addColumn(getAnnotationColumnName(traitInfo), true);
     }
 
     /**
@@ -119,15 +119,15 @@ public class AnnotationTableData extends ResultsTableData {
     /**
      * Returns the annotation column name of the annotation type
      *
-     * @param traitDeclaration the annotation type
+     * @param traitInfo the annotation type
      * @return column name
      */
-    public static String getAnnotationColumnName(String traitDeclaration) {
-        return "annotation:" + traitDeclaration;
+    public static String getAnnotationColumnName(String traitInfo) {
+        return "annotation:" + traitInfo;
     }
 
     /**
-     * Returns the trait declaration from a column name. If the annotation type does not exist or
+     * Returns the trait info from a column name. If the annotation type does not exist or
      * the column is not an annotation column, null is returned
      *
      * @param columnName the column name

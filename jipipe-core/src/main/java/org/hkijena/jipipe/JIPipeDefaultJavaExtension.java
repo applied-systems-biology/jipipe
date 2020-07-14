@@ -17,18 +17,19 @@ import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.JIPipeMetadata;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
-import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmDeclaration;
+import org.hkijena.jipipe.api.algorithm.JIPipeJavaNodeInfo;
+import org.hkijena.jipipe.api.algorithm.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.algorithm.JIPipeGraphNode;
 import org.hkijena.jipipe.api.compat.ImageJDatatypeAdapter;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataConverter;
-import org.hkijena.jipipe.api.parameters.JIPipeDefaultParameterTypeDeclaration;
+import org.hkijena.jipipe.api.parameters.JIPipeDefaultParameterTypeInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeDeclaration;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
 import org.hkijena.jipipe.api.registries.JIPipeAlgorithmRegistrationTask;
 import org.hkijena.jipipe.api.registries.JIPipeJavaAlgorithmRegistrationTask;
 import org.hkijena.jipipe.extensions.parameters.collections.ListParameter;
-import org.hkijena.jipipe.extensions.parameters.primitives.EnumParameterTypeDeclaration;
+import org.hkijena.jipipe.extensions.parameters.primitives.EnumParameterTypeInfo;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
 import org.hkijena.jipipe.extensions.tables.ColumnOperation;
 import org.hkijena.jipipe.ui.compat.ImageJDatatypeImporterUI;
@@ -182,7 +183,7 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
     }
 
     /**
-     * Registers a new algorithm. The {@link JIPipeAlgorithmDeclaration} is generated as {@link org.hkijena.jipipe.api.algorithm.JIPipeJavaAlgorithmDeclaration}.
+     * Registers a new algorithm. The {@link JIPipeNodeInfo} is generated as {@link JIPipeJavaNodeInfo}.
      *
      * @param id             Algorithm ID
      * @param algorithmClass Algorithm class
@@ -192,7 +193,7 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
     }
 
     /**
-     * Registers a new algorithm. The {@link JIPipeAlgorithmDeclaration} is generated as {@link org.hkijena.jipipe.api.algorithm.JIPipeJavaAlgorithmDeclaration}.
+     * Registers a new algorithm. The {@link JIPipeNodeInfo} is generated as {@link JIPipeJavaNodeInfo}.
      *
      * @param id             Algorithm ID
      * @param algorithmClass Algorithm class
@@ -206,22 +207,22 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
      * Registers a new algorithm. It is assumed that all dependencies are met.
      * If the dependency situation is unclear, register an {@link JIPipeAlgorithmRegistrationTask} instead
      *
-     * @param declaration Algorithm declaration
+     * @param info Algorithm info
      */
-    public void registerAlgorithm(JIPipeAlgorithmDeclaration declaration) {
-        registry.getAlgorithmRegistry().register(declaration, this);
+    public void registerAlgorithm(JIPipeNodeInfo info) {
+        registry.getAlgorithmRegistry().register(info, this);
     }
 
     /**
      * Registers a new algorithm. It is assumed that all dependencies are met.
      * If the dependency situation is unclear, register an {@link JIPipeAlgorithmRegistrationTask} instead
      *
-     * @param declaration Algorithm declaration
+     * @param info Algorithm info
      * @param icon        custom algorithm icon
      */
-    public void registerAlgorithm(JIPipeAlgorithmDeclaration declaration, URL icon) {
-        registry.getAlgorithmRegistry().register(declaration, this);
-        registry.getUIAlgorithmRegistry().registerIcon(declaration, icon);
+    public void registerAlgorithm(JIPipeNodeInfo info, URL icon) {
+        registry.getAlgorithmRegistry().register(info, this);
+        registry.getUIAlgorithmRegistry().registerIcon(info, icon);
     }
 
     /**
@@ -243,7 +244,7 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
      * @param description    Description for the parameter type
      */
     public void registerEnumParameterType(String id, Class<? extends Enum<?>> parameterClass, String name, String description) {
-        registerParameterType(new EnumParameterTypeDeclaration(id, parameterClass, name, description), null);
+        registerParameterType(new EnumParameterTypeInfo(id, parameterClass, name, description), null);
     }
 
     /**
@@ -258,13 +259,13 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
      * @param uiClass              Parameter editor UI. Can be null if the editor is already provided.
      */
     public void registerParameterType(String id, Class<?> parameterClass, Supplier<Object> newInstanceGenerator, Function<Object, Object> duplicateFunction, String name, String description, Class<? extends JIPipeParameterEditorUI> uiClass) {
-        JIPipeDefaultParameterTypeDeclaration declaration = new JIPipeDefaultParameterTypeDeclaration(id,
+        JIPipeDefaultParameterTypeInfo info = new JIPipeDefaultParameterTypeInfo(id,
                 parameterClass,
                 newInstanceGenerator != null ? newInstanceGenerator : () -> ReflectionUtils.newInstance(parameterClass),
                 duplicateFunction != null ? duplicateFunction : o -> ReflectionUtils.newInstance(parameterClass, o),
                 name,
                 description);
-        registerParameterType(declaration, uiClass);
+        registerParameterType(info, uiClass);
     }
 
     /**
@@ -281,13 +282,13 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
      * @param <T>                  parameter class
      */
     public <T> void registerParameterType(String id, Class<T> parameterClass, Class<? extends ListParameter<T>> listClass, Supplier<Object> newInstanceGenerator, Function<Object, Object> duplicateFunction, String name, String description, Class<? extends JIPipeParameterEditorUI> uiClass) {
-        JIPipeDefaultParameterTypeDeclaration declaration = new JIPipeDefaultParameterTypeDeclaration(id,
+        JIPipeDefaultParameterTypeInfo info = new JIPipeDefaultParameterTypeInfo(id,
                 parameterClass,
                 newInstanceGenerator != null ? newInstanceGenerator : () -> ReflectionUtils.newInstance(parameterClass),
                 duplicateFunction != null ? duplicateFunction : o -> ReflectionUtils.newInstance(parameterClass, o),
                 name,
                 description);
-        registerParameterType(declaration, uiClass);
+        registerParameterType(info, uiClass);
         if (listClass != null) {
             registerParameterType(id + "-list", listClass, () -> ReflectionUtils.newInstance(listClass),
                     o -> ReflectionUtils.newInstance(listClass, o),
@@ -300,33 +301,33 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
     /**
      * Registers a new parameter type and respective editor
      *
-     * @param declaration the declaration
+     * @param info the info
      * @param uiClass     Parameter editor UI. Can be null if the editor is already provided.
      */
-    public void registerParameterType(JIPipeParameterTypeDeclaration declaration, Class<? extends JIPipeParameterEditorUI> uiClass) {
-        registry.getParameterTypeRegistry().register(declaration);
+    public void registerParameterType(JIPipeParameterTypeInfo info, Class<? extends JIPipeParameterEditorUI> uiClass) {
+        registry.getParameterTypeRegistry().register(info);
         if (uiClass != null) {
-            registerParameterEditor(declaration.getFieldClass(), uiClass);
+            registerParameterEditor(info.getFieldClass(), uiClass);
         }
     }
 
     /**
      * Registers a new parameter type and respective editor
      *
-     * @param declaration the declaration
+     * @param info the info
      * @param listClass   a parameter type that is a list of the registered type
      * @param uiClass     Parameter editor UI. Can be null if the editor is already provided.
      */
-    public void registerParameterType(JIPipeParameterTypeDeclaration declaration, Class<?> listClass, Class<? extends JIPipeParameterEditorUI> uiClass) {
-        registry.getParameterTypeRegistry().register(declaration);
+    public void registerParameterType(JIPipeParameterTypeInfo info, Class<?> listClass, Class<? extends JIPipeParameterEditorUI> uiClass) {
+        registry.getParameterTypeRegistry().register(info);
         if (uiClass != null) {
-            registerParameterEditor(declaration.getFieldClass(), uiClass);
+            registerParameterEditor(info.getFieldClass(), uiClass);
         }
         if (listClass != null) {
-            registerParameterType(declaration.getId() + "-list", listClass, () -> ReflectionUtils.newInstance(listClass),
+            registerParameterType(info.getId() + "-list", listClass, () -> ReflectionUtils.newInstance(listClass),
                     o -> ReflectionUtils.newInstance(listClass, o),
-                    "List of " + declaration.getName(),
-                    declaration.getDescription(),
+                    "List of " + info.getName(),
+                    info.getDescription(),
                     null);
         }
     }

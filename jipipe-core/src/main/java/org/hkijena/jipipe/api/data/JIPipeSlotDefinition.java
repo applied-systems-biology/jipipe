@@ -45,7 +45,7 @@ public class JIPipeSlotDefinition implements JIPipeParameterCollection {
     private JIPipeSlotType slotType;
     private String name;
     private String inheritedSlot;
-    private Map<JIPipeDataDeclaration, JIPipeDataDeclaration> inheritanceConversions = new HashMap<>();
+    private Map<JIPipeDataInfo, JIPipeDataInfo> inheritanceConversions = new HashMap<>();
     private String customName;
 
     /**
@@ -171,18 +171,18 @@ public class JIPipeSlotDefinition implements JIPipeParameterCollection {
         return inheritedSlot;
     }
 
-    public Map<JIPipeDataDeclaration, JIPipeDataDeclaration> getInheritanceConversions() {
+    public Map<JIPipeDataInfo, JIPipeDataInfo> getInheritanceConversions() {
         return inheritanceConversions;
     }
 
-    public void setInheritanceConversions(Map<JIPipeDataDeclaration, JIPipeDataDeclaration> inheritanceConversions) {
+    public void setInheritanceConversions(Map<JIPipeDataInfo, JIPipeDataInfo> inheritanceConversions) {
         this.inheritanceConversions = inheritanceConversions;
     }
 
     public void setInheritanceConversionsFromRaw(Map<Class<? extends JIPipeData>, Class<? extends JIPipeData>> inheritanceConversions) {
         this.inheritanceConversions = new HashMap<>();
         for (Map.Entry<Class<? extends JIPipeData>, Class<? extends JIPipeData>> entry : inheritanceConversions.entrySet()) {
-            this.inheritanceConversions.put(JIPipeDataDeclaration.getInstance(entry.getKey()), JIPipeDataDeclaration.getInstance(entry.getValue()));
+            this.inheritanceConversions.put(JIPipeDataInfo.getInstance(entry.getKey()), JIPipeDataInfo.getInstance(entry.getValue()));
         }
     }
 
@@ -229,9 +229,9 @@ public class JIPipeSlotDefinition implements JIPipeParameterCollection {
      * @return The converted data
      */
     public static Class<? extends JIPipeData> applyInheritanceConversion(JIPipeSlotDefinition definition, Class<? extends JIPipeData> dataClass) {
-        Set<JIPipeDataDeclaration> visited = new HashSet<>();
-        JIPipeDataDeclaration currentData = JIPipeDataDeclaration.getInstance(dataClass);
-        JIPipeDataDeclaration lastData = currentData;
+        Set<JIPipeDataInfo> visited = new HashSet<>();
+        JIPipeDataInfo currentData = JIPipeDataInfo.getInstance(dataClass);
+        JIPipeDataInfo lastData = currentData;
         visited.add(currentData);
         while (true) {
             currentData = definition.inheritanceConversions.getOrDefault(currentData, null);
@@ -272,11 +272,11 @@ public class JIPipeSlotDefinition implements JIPipeParameterCollection {
      * @param inner the inner conversion
      * @return Inheritance conversion that is outer(inner(x))
      */
-    public static Map<JIPipeDataDeclaration, JIPipeDataDeclaration> composeInheritanceConversions(Map<JIPipeDataDeclaration, JIPipeDataDeclaration> outer,
-                                                                                                  Map<JIPipeDataDeclaration, JIPipeDataDeclaration> inner) {
-        Map<JIPipeDataDeclaration, JIPipeDataDeclaration> result = new HashMap<>(inner);
-        for (Map.Entry<JIPipeDataDeclaration, JIPipeDataDeclaration> entry : result.entrySet()) {
-            JIPipeDataDeclaration transformed = outer.getOrDefault(entry.getValue(), null);
+    public static Map<JIPipeDataInfo, JIPipeDataInfo> composeInheritanceConversions(Map<JIPipeDataInfo, JIPipeDataInfo> outer,
+                                                                                    Map<JIPipeDataInfo, JIPipeDataInfo> inner) {
+        Map<JIPipeDataInfo, JIPipeDataInfo> result = new HashMap<>(inner);
+        for (Map.Entry<JIPipeDataInfo, JIPipeDataInfo> entry : result.entrySet()) {
+            JIPipeDataInfo transformed = outer.getOrDefault(entry.getValue(), null);
             if (transformed != null) {
                 entry.setValue(transformed);
             }
@@ -298,7 +298,7 @@ public class JIPipeSlotDefinition implements JIPipeParameterCollection {
             jsonGenerator.writeStringField("custom-name", definition.customName);
             jsonGenerator.writeFieldName("inheritance-conversions");
             jsonGenerator.writeStartObject();
-            for (Map.Entry<JIPipeDataDeclaration, JIPipeDataDeclaration> entry : definition.getInheritanceConversions().entrySet()) {
+            for (Map.Entry<JIPipeDataInfo, JIPipeDataInfo> entry : definition.getInheritanceConversions().entrySet()) {
                 jsonGenerator.writeStringField(entry.getKey().getId(), entry.getValue().getId());
             }
             jsonGenerator.writeEndObject();
@@ -324,8 +324,8 @@ public class JIPipeSlotDefinition implements JIPipeParameterCollection {
                 for (Map.Entry<String, JsonNode> entry : ImmutableList.copyOf(conversionsNode.fields())) {
                     String idKey = entry.getKey();
                     String idValue = entry.getValue().asText();
-                    JIPipeDataDeclaration key = JIPipeDataDeclaration.getInstance(idKey);
-                    JIPipeDataDeclaration value = JIPipeDataDeclaration.getInstance(idValue);
+                    JIPipeDataInfo key = JIPipeDataInfo.getInstance(idKey);
+                    JIPipeDataInfo value = JIPipeDataInfo.getInstance(idValue);
                     definition.inheritanceConversions.put(key, value);
                 }
             }

@@ -64,10 +64,10 @@ public class FilterRoiByStatisticsScriptAlgorithm extends ImageRoiProcessorAlgor
     /**
      * Instantiates a new algorithm.
      *
-     * @param declaration the declaration
+     * @param info the info
      */
-    public FilterRoiByStatisticsScriptAlgorithm(JIPipeAlgorithmDeclaration declaration) {
-        super(declaration, ROIListData.class, "Output");
+    public FilterRoiByStatisticsScriptAlgorithm(JIPipeNodeInfo info) {
+        super(info, ROIListData.class, "Output");
         registerSubParameter(scriptParameters);
     }
 

@@ -65,7 +65,7 @@ def extract_methods(java_file):
 
     extracted_methods = []
     for klass in tree.types:
-        if not type(klass) is javalang.tree.ClassDeclaration:
+        if not type(klass) is javalang.tree.ClassInfo:
             continue
         if klass.implements is None:
             continue
@@ -245,10 +245,10 @@ def generate_jipipe_class(method, class_name):
     class_code += """\n\n
     /**
     * Creates a new instance
-    * @param declaration The algorithm declaration
+    * @param info The algorithm info
     */
-    public {class_name}(JIPipeAlgorithmDeclaration declaration) {{
-        super(declaration);
+    public {class_name}(JIPipeAlgorithmInfo info) {{
+        super(info);
     }}
     
     /**

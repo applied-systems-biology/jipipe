@@ -63,10 +63,10 @@ public class SplitChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     /**
      * Instantiates a new algorithm.
      *
-     * @param declaration the declaration
+     * @param info the info
      */
-    public SplitChannelsAlgorithm(JIPipeAlgorithmDeclaration declaration) {
-        super(declaration, JIPipeDefaultMutableSlotConfiguration.builder()
+    public SplitChannelsAlgorithm(JIPipeNodeInfo info) {
+        super(info, JIPipeDefaultMutableSlotConfiguration.builder()
                 .addInputSlot("Input", ImagePlusData.class)
                 .restrictOutputTo(ImageJDataTypesExtension.IMAGE_TYPES_GREYSCALE)
                 .allowOutputSlotInheritance(false)

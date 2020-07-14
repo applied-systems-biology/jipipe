@@ -57,10 +57,10 @@ public class ListSubfolders extends JIPipeSimpleIteratingAlgorithm {
     /**
      * Creates a new instance
      *
-     * @param declaration The algorithm declaration
+     * @param info The algorithm info
      */
-    public ListSubfolders(JIPipeAlgorithmDeclaration declaration) {
-        super(declaration);
+    public ListSubfolders(JIPipeNodeInfo info) {
+        super(info);
     }
 
     /**

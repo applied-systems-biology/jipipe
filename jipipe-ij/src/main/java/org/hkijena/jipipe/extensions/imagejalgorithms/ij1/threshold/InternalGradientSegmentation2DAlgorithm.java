@@ -67,16 +67,16 @@ public class InternalGradientSegmentation2DAlgorithm extends JIPipeSimpleIterati
     private CLAHEContrastEnhancer contrastEnhancer;
 
     /**
-     * @param declaration the algorithm declaration
+     * @param info the algorithm info
      */
-    public InternalGradientSegmentation2DAlgorithm(JIPipeAlgorithmDeclaration declaration) {
-        super(declaration, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", ImagePlusGreyscale8UData.class)
+    public InternalGradientSegmentation2DAlgorithm(JIPipeNodeInfo info) {
+        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", ImagePlusGreyscale8UData.class)
                 .addOutputSlot("Output", ImagePlusGreyscaleMaskData.class, "Input", ADD_MASK_QUALIFIER)
                 .allowOutputSlotInheritance(true)
                 .seal()
                 .build());
-        this.contrastEnhancer = (CLAHEContrastEnhancer) JIPipeAlgorithmRegistry.getInstance().getDeclarationById("ij1-contrast-clahe").newInstance();
-        this.autoThresholding = (AutoThreshold2DAlgorithm) JIPipeAlgorithmRegistry.getInstance().getDeclarationById("ij1-threshold-auto2d").newInstance();
+        this.contrastEnhancer = (CLAHEContrastEnhancer) JIPipeAlgorithmRegistry.getInstance().getInfoById("ij1-contrast-clahe").newInstance();
+        this.autoThresholding = (AutoThreshold2DAlgorithm) JIPipeAlgorithmRegistry.getInstance().getInfoById("ij1-threshold-auto2d").newInstance();
     }
 
     /**
@@ -90,8 +90,8 @@ public class InternalGradientSegmentation2DAlgorithm extends JIPipeSimpleIterati
         this.internalGradientRadius = other.internalGradientRadius;
         this.dilationIterations = other.dilationIterations;
         this.erosionIterations = other.erosionIterations;
-        this.autoThresholding = (AutoThreshold2DAlgorithm) other.autoThresholding.getDeclaration().clone(other.autoThresholding);
-        this.contrastEnhancer = (CLAHEContrastEnhancer) other.contrastEnhancer.getDeclaration().clone(other.contrastEnhancer);
+        this.autoThresholding = (AutoThreshold2DAlgorithm) other.autoThresholding.getInfo().clone(other.autoThresholding);
+        this.contrastEnhancer = (CLAHEContrastEnhancer) other.contrastEnhancer.getInfo().clone(other.contrastEnhancer);
         this.applyFirstCLAHE = other.applyFirstCLAHE;
         this.applySecondCLAHE = other.applySecondCLAHE;
         this.applyGaussian = other.applyGaussian;

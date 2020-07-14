@@ -19,14 +19,14 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeValidatable;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.parameters.references.JIPipeDataDeclarationRef;
+import org.hkijena.jipipe.extensions.parameters.references.JIPipeDataInfoRef;
 import org.hkijena.jipipe.extensions.tables.ColumnContentType;
 
 /**
  * A parameter that allows the user to setup a table column generator
  */
 public class TableColumnGeneratorParameter implements JIPipeValidatable {
-    private JIPipeDataDeclarationRef generatorType;
+    private JIPipeDataInfoRef generatorType;
     private ColumnContentType generatedType;
 
     /**
@@ -41,22 +41,22 @@ public class TableColumnGeneratorParameter implements JIPipeValidatable {
      * @param other the original
      */
     public TableColumnGeneratorParameter(TableColumnGeneratorParameter other) {
-        this.generatorType = new JIPipeDataDeclarationRef(other.generatorType);
+        this.generatorType = new JIPipeDataInfoRef(other.generatorType);
         this.generatedType = other.generatedType;
     }
 
     @JIPipeDocumentation(name = "Generator", description = "Which generator is responsible for generating the column")
     @JsonGetter("generator-type")
     @JIPipeParameter("generator-type")
-    public JIPipeDataDeclarationRef getGeneratorType() {
+    public JIPipeDataInfoRef getGeneratorType() {
         if (generatorType == null)
-            generatorType = new JIPipeDataDeclarationRef();
+            generatorType = new JIPipeDataInfoRef();
         return generatorType;
     }
 
     @JsonSetter("generator-type")
     @JIPipeParameter("generator-type")
-    public void setGeneratorType(JIPipeDataDeclarationRef generatorType) {
+    public void setGeneratorType(JIPipeDataInfoRef generatorType) {
         this.generatorType = generatorType;
     }
 
@@ -75,6 +75,6 @@ public class TableColumnGeneratorParameter implements JIPipeValidatable {
 
     @Override
     public void reportValidity(JIPipeValidityReport report) {
-        report.forCategory("Generator").checkNonNull(getGeneratorType().getDeclaration(), this);
+        report.forCategory("Generator").checkNonNull(getGeneratorType().getInfo(), this);
     }
 }

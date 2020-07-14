@@ -42,10 +42,10 @@ public class ImageTypeConverter extends JIPipeAlgorithm {
     /**
      * Creates a new instance
      *
-     * @param declaration Algorithm declaration
+     * @param info Algorithm info
      */
-    public ImageTypeConverter(JIPipeAlgorithmDeclaration declaration) {
-        super(declaration, createConfiguration());
+    public ImageTypeConverter(JIPipeNodeInfo info) {
+        super(info, createConfiguration());
     }
 
     /**

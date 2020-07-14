@@ -16,14 +16,14 @@ package org.hkijena.jipipe.api.grouping;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmCategory;
-import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmDeclaration;
+import org.hkijena.jipipe.api.algorithm.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.compartments.algorithms.IOInterfaceAlgorithm;
 
 @JIPipeDocumentation(name = "Group output", description = "Acts as output of a node group.")
 @JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Internal)
 public class GraphWrapperAlgorithmOutput extends IOInterfaceAlgorithm {
-    public GraphWrapperAlgorithmOutput(JIPipeAlgorithmDeclaration declaration) {
-        super(declaration);
+    public GraphWrapperAlgorithmOutput(JIPipeNodeInfo info) {
+        super(info);
     }
 
     public GraphWrapperAlgorithmOutput(GraphWrapperAlgorithmOutput other) {

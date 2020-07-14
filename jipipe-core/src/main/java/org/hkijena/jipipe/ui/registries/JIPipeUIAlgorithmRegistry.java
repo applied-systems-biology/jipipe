@@ -15,7 +15,7 @@ package org.hkijena.jipipe.ui.registries;
 
 import org.hkijena.jipipe.JIPipeDefaultRegistry;
 import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmCategory;
-import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmDeclaration;
+import org.hkijena.jipipe.api.algorithm.JIPipeNodeInfo;
 import org.hkijena.jipipe.utils.ResourceUtils;
 
 import javax.swing.*;
@@ -27,7 +27,7 @@ import java.util.Map;
  * Registry for algorithms
  */
 public class JIPipeUIAlgorithmRegistry {
-    private Map<JIPipeAlgorithmDeclaration, URL> icons = new HashMap<>();
+    private Map<JIPipeNodeInfo, URL> icons = new HashMap<>();
 
     /**
      * Creates new instance
@@ -39,11 +39,11 @@ public class JIPipeUIAlgorithmRegistry {
     /**
      * Registers a custom icon for a trait
      *
-     * @param declaration  the trait type
+     * @param info  the trait type
      * @param resourcePath icon url
      */
-    public void registerIcon(JIPipeAlgorithmDeclaration declaration, URL resourcePath) {
-        icons.put(declaration, resourcePath);
+    public void registerIcon(JIPipeNodeInfo info, URL resourcePath) {
+        icons.put(info, resourcePath);
     }
 
     /**
@@ -52,30 +52,30 @@ public class JIPipeUIAlgorithmRegistry {
      * @param klass trait type
      * @return icon url
      */
-    public URL getIconURLFor(JIPipeAlgorithmDeclaration klass) {
+    public URL getIconURLFor(JIPipeNodeInfo klass) {
         return icons.getOrDefault(klass, ResourceUtils.getPluginResource("icons/cog.png"));
     }
 
     /**
      * Returns the icon for a trait
      *
-     * @param declaration trait type
+     * @param info trait type
      * @return icon instance
      */
-    public ImageIcon getIconFor(JIPipeAlgorithmDeclaration declaration) {
-        URL uri = icons.getOrDefault(declaration, null);
+    public ImageIcon getIconFor(JIPipeNodeInfo info) {
+        URL uri = icons.getOrDefault(info, null);
         if (uri == null) {
             URL defaultIcon;
-            if (declaration.getCategory() == JIPipeAlgorithmCategory.DataSource) {
-                if (!declaration.getOutputSlots().isEmpty()) {
-                    defaultIcon = JIPipeUIDatatypeRegistry.getInstance().getIconURLFor(declaration.getOutputSlots().get(0).value());
+            if (info.getCategory() == JIPipeAlgorithmCategory.DataSource) {
+                if (!info.getOutputSlots().isEmpty()) {
+                    defaultIcon = JIPipeUIDatatypeRegistry.getInstance().getIconURLFor(info.getOutputSlots().get(0).value());
                 } else {
                     defaultIcon = ResourceUtils.getPluginResource("icons/cog.png");
                 }
             } else {
                 defaultIcon = ResourceUtils.getPluginResource("icons/cog.png");
             }
-            icons.put(declaration, defaultIcon);
+            icons.put(info, defaultIcon);
             uri = defaultIcon;
         }
         return new ImageIcon(uri);

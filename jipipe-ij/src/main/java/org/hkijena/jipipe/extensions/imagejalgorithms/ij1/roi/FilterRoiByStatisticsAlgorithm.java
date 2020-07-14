@@ -53,10 +53,10 @@ public class FilterRoiByStatisticsAlgorithm extends ImageRoiProcessorAlgorithm {
     /**
      * Instantiates a new algorithm.
      *
-     * @param declaration the declaration
+     * @param info the info
      */
-    public FilterRoiByStatisticsAlgorithm(JIPipeAlgorithmDeclaration declaration) {
-        super(declaration, ROIListData.class, "Output");
+    public FilterRoiByStatisticsAlgorithm(JIPipeNodeInfo info) {
+        super(info, ROIListData.class, "Output");
         measurementFilters.addNewInstance();
     }
 

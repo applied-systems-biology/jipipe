@@ -17,7 +17,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithm;
-import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmDeclaration;
+import org.hkijena.jipipe.api.algorithm.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.algorithm.JIPipeGraphNode;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeData;
@@ -27,7 +27,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.multiparameters.datatypes.ParametersData;
-import org.hkijena.jipipe.extensions.parameters.references.JIPipeAlgorithmDeclarationRef;
+import org.hkijena.jipipe.extensions.parameters.references.JIPipeNodeInfoRef;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 
@@ -49,10 +49,10 @@ public class MultiParameterAlgorithm extends JIPipeAlgorithm {
     /**
      * Creates a new instance
      *
-     * @param declaration the algorithm declaration
+     * @param info the algorithm info
      */
-    public MultiParameterAlgorithm(JIPipeAlgorithmDeclaration declaration) {
-        super(declaration, new MultiParameterAlgorithmSlotConfiguration());
+    public MultiParameterAlgorithm(JIPipeNodeInfo info) {
+        super(info, new MultiParameterAlgorithmSlotConfiguration());
         ((MultiParameterAlgorithmSlotConfiguration) getSlotConfiguration()).setAlgorithmInstance(algorithmInstance);
     }
 
@@ -67,7 +67,7 @@ public class MultiParameterAlgorithm extends JIPipeAlgorithm {
         this.setSlotConfiguration(slotConfiguration);
         slotConfiguration.setTo(other.getSlotConfiguration());
         if (other.algorithmInstance != null) {
-            this.algorithmInstance = other.algorithmInstance.getDeclaration().clone(other.algorithmInstance);
+            this.algorithmInstance = other.algorithmInstance.getInfo().clone(other.algorithmInstance);
             this.algorithmInstance.getEventBus().register(this);
         }
     }
@@ -194,21 +194,21 @@ public class MultiParameterAlgorithm extends JIPipeAlgorithm {
 
     @JIPipeParameter("algorithm-type")
     @JIPipeDocumentation(name = "Algorithm", description = "The algorithm the parameters are created for")
-    public JIPipeAlgorithmDeclarationRef getAlgorithmDeclaration() {
+    public JIPipeNodeInfoRef getNodeInfo() {
         if (algorithmInstance == null) {
-            return new JIPipeAlgorithmDeclarationRef();
+            return new JIPipeNodeInfoRef();
         } else {
-            return new JIPipeAlgorithmDeclarationRef(algorithmInstance.getDeclaration());
+            return new JIPipeNodeInfoRef(algorithmInstance.getInfo());
         }
     }
 
     @JIPipeParameter("algorithm-type")
-    public void setAlgorithmDeclaration(JIPipeAlgorithmDeclarationRef algorithmDeclaration) {
-        if (algorithmDeclaration.getDeclaration() != null) {
+    public void setNodeInfo(JIPipeNodeInfoRef nodeInfo) {
+        if (nodeInfo.getInfo() != null) {
             if (algorithmInstance != null) {
                 algorithmInstance.getEventBus().unregister(this);
             }
-            algorithmInstance = algorithmDeclaration.getDeclaration().newInstance();
+            algorithmInstance = nodeInfo.getInfo().newInstance();
         } else {
             algorithmInstance = null;
         }

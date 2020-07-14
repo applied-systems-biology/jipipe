@@ -52,20 +52,20 @@ public abstract class JIPipeAlgorithm extends JIPipeGraphNode {
     /**
      * Initializes a new algorithm instance and sets a custom slot configuration
      *
-     * @param declaration       The algorithm declaration
+     * @param info       The algorithm info
      * @param slotConfiguration The slot configuration
      */
-    public JIPipeAlgorithm(JIPipeAlgorithmDeclaration declaration, JIPipeSlotConfiguration slotConfiguration) {
-        super(declaration, slotConfiguration);
+    public JIPipeAlgorithm(JIPipeNodeInfo info, JIPipeSlotConfiguration slotConfiguration) {
+        super(info, slotConfiguration);
     }
 
     /**
      * Initializes a new algorithm instance
      *
-     * @param declaration The algorithm declaration
+     * @param info The algorithm info
      */
-    public JIPipeAlgorithm(JIPipeAlgorithmDeclaration declaration) {
-        super(declaration);
+    public JIPipeAlgorithm(JIPipeNodeInfo info) {
+        super(info);
     }
 
     /**
@@ -214,7 +214,7 @@ public abstract class JIPipeAlgorithm extends JIPipeGraphNode {
         @Override
         public void serialize(JIPipeGraphNode algorithm, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
             jsonGenerator.writeStartObject();
-            jsonGenerator.writeStringField("jipipe:algorithm-type", algorithm.getDeclaration().getId());
+            jsonGenerator.writeStringField("jipipe:algorithm-type", algorithm.getInfo().getId());
             JIPipeParameterCollection.serializeParametersToJson(algorithm, jsonGenerator, this::serializeParameter);
             jsonGenerator.writeEndObject();
         }

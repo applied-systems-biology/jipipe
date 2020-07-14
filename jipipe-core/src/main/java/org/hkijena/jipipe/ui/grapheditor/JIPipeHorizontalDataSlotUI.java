@@ -75,7 +75,7 @@ public class JIPipeHorizontalDataSlotUI extends JIPipeDataSlotUI {
         new JIPipeConnectionDragAndDropBehavior(this, assignButton);
         assignButton.setPreferredSize(new Dimension(25, JIPipeGraphViewMode.Horizontal.getGridHeight()));
         this.assignButtonMenu = UIUtils.addReloadablePopupMenuToComponent(assignButton, new JPopupMenu(), this::reloadPopupMenu);
-        UIUtils.makeFlat(assignButton, UIUtils.getBorderColorFor(getSlot().getNode().getDeclaration()), 0, 0, 0, 0);
+        UIUtils.makeFlat(assignButton, UIUtils.getBorderColorFor(getSlot().getNode().getInfo()), 0, 0, 0, 0);
 
         if (getSlot().getNode() instanceof JIPipeCompartmentOutput) {
             if (getSlot().getNode().getCompartment().equals(getCompartment())) {

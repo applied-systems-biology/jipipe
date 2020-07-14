@@ -48,10 +48,10 @@ public class ReferencedDefineRectangularRoiAlgorithm extends JIPipeIteratingAlgo
     /**
      * Instantiates a new algorithm.
      *
-     * @param declaration the declaration
+     * @param info the info
      */
-    public ReferencedDefineRectangularRoiAlgorithm(JIPipeAlgorithmDeclaration declaration) {
-        super(declaration, JIPipeDefaultMutableSlotConfiguration.builder()
+    public ReferencedDefineRectangularRoiAlgorithm(JIPipeNodeInfo info) {
+        super(info, JIPipeDefaultMutableSlotConfiguration.builder()
                 .addInputSlot("Reference", ImagePlusData.class)
                 .addOutputSlot("Output", ROIListData.class, null)
                 .seal()

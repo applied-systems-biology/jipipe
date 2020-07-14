@@ -41,20 +41,20 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
     /**
      * Creates a new instance
      *
-     * @param declaration       Algorithm declaration
+     * @param info       Algorithm info
      * @param slotConfiguration Slot configuration override
      */
-    public JIPipeSimpleIteratingAlgorithm(JIPipeAlgorithmDeclaration declaration, JIPipeSlotConfiguration slotConfiguration) {
-        super(declaration, slotConfiguration);
+    public JIPipeSimpleIteratingAlgorithm(JIPipeNodeInfo info, JIPipeSlotConfiguration slotConfiguration) {
+        super(info, slotConfiguration);
     }
 
     /**
      * Creates a new instance
      *
-     * @param declaration Algorithm declaration
+     * @param info Algorithm info
      */
-    public JIPipeSimpleIteratingAlgorithm(JIPipeAlgorithmDeclaration declaration) {
-        super(declaration, null);
+    public JIPipeSimpleIteratingAlgorithm(JIPipeNodeInfo info) {
+        super(info, null);
     }
 
     /**
@@ -74,7 +74,7 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
                     "Error in source code detected!",
                     "Algorithm '" + getName() + "'",
                     "The developer of this algorithm chose the wrong node type. The one that was selected only supports at most one input.",
-                    "Please contact the plugin developers and tell them to let algorithm '" + getDeclaration().getId() + "' inherit from 'JIPipeIteratingAlgorithm' instead.");
+                    "Please contact the plugin developers and tell them to let algorithm '" + getInfo().getId() + "' inherit from 'JIPipeIteratingAlgorithm' instead.");
         if (isPassThrough() && canPassThrough()) {
             algorithmProgress.accept(subProgress.resolve("Data passed through to output"));
             runPassThrough();
@@ -137,7 +137,7 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
             report.forCategory("Internals").reportIsInvalid(
                     "Error in source code detected!",
                     "The developer of this algorithm chose the wrong node type. The one that was selected only supports at most one input.",
-                    "Please contact the plugin developers and tell them to let algorithm '" + getDeclaration().getId() + "' inherit from 'JIPipeIteratingAlgorithm' instead.",
+                    "Please contact the plugin developers and tell them to let algorithm '" + getInfo().getId() + "' inherit from 'JIPipeIteratingAlgorithm' instead.",
                     this);
         }
     }

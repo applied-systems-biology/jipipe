@@ -42,10 +42,10 @@ public class RenameColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     /**
      * Creates a new instance
      *
-     * @param declaration algorithm declaration
+     * @param info algorithm info
      */
-    public RenameColumnsAlgorithm(JIPipeAlgorithmDeclaration declaration) {
-        super(declaration);
+    public RenameColumnsAlgorithm(JIPipeNodeInfo info) {
+        super(info);
     }
 
     /**

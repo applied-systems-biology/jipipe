@@ -36,10 +36,10 @@ import java.util.function.Supplier;
 public class ResultsTableFromFile extends JIPipeSimpleIteratingAlgorithm {
 
     /**
-     * @param declaration algorithm declaration
+     * @param info algorithm info
      */
-    public ResultsTableFromFile(JIPipeAlgorithmDeclaration declaration) {
-        super(declaration);
+    public ResultsTableFromFile(JIPipeNodeInfo info) {
+        super(info);
     }
 
     /**

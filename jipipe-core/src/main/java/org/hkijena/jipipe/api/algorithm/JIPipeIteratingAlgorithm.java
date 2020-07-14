@@ -55,20 +55,20 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
     /**
      * Creates a new instance
      *
-     * @param declaration       Algorithm declaration
+     * @param info       Algorithm info
      * @param slotConfiguration Slot configuration override
      */
-    public JIPipeIteratingAlgorithm(JIPipeAlgorithmDeclaration declaration, JIPipeSlotConfiguration slotConfiguration) {
-        super(declaration, slotConfiguration);
+    public JIPipeIteratingAlgorithm(JIPipeNodeInfo info, JIPipeSlotConfiguration slotConfiguration) {
+        super(info, slotConfiguration);
     }
 
     /**
      * Creates a new instance
      *
-     * @param declaration Algorithm declaration
+     * @param info Algorithm info
      */
-    public JIPipeIteratingAlgorithm(JIPipeAlgorithmDeclaration declaration) {
-        super(declaration, null);
+    public JIPipeIteratingAlgorithm(JIPipeNodeInfo info) {
+        super(info, null);
         registerSubParameter(dataBatchGenerationSettings);
     }
 

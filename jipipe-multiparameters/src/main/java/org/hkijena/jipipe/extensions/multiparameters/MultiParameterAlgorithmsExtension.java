@@ -16,7 +16,7 @@ package org.hkijena.jipipe.extensions.multiparameters;
 import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.api.registries.JIPipeAlgorithmRegistry;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
-import org.hkijena.jipipe.extensions.multiparameters.algorithms.MultiParameterAlgorithmDeclaration;
+import org.hkijena.jipipe.extensions.multiparameters.algorithms.MultiParameterNodeInfo;
 import org.hkijena.jipipe.extensions.multiparameters.datasources.ParametersDataDefinition;
 import org.hkijena.jipipe.extensions.multiparameters.datasources.ParametersDataTableDefinition;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
@@ -50,7 +50,7 @@ public class MultiParameterAlgorithmsExtension extends JIPipePrepackagedDefaultJ
         // Register algorithms
         registerAlgorithm("parameters-define", ParametersDataDefinition.class);
         registerAlgorithm("parameters-define-table", ParametersDataTableDefinition.class);
-        registerAlgorithm(new MultiParameterAlgorithmDeclaration());
+        registerAlgorithm(new MultiParameterNodeInfo());
     }
 
     @Override

@@ -19,13 +19,13 @@ import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.algorithm.JIPipeInputSlot;
 import org.hkijena.jipipe.api.algorithm.JIPipeOutputSlot;
-import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmDeclaration;
+import org.hkijena.jipipe.api.algorithm.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.algorithm.JIPipeGraphNode;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.parameters.*;
 import org.hkijena.jipipe.api.registries.JIPipeAlgorithmRegistry;
 import org.hkijena.jipipe.api.registries.JIPipeParameterTypeRegistry;
-import org.hkijena.jipipe.ui.components.JIPipeAlgorithmDeclarationListCellRenderer;
+import org.hkijena.jipipe.ui.components.JIPipeNodeInfoListCellRenderer;
 import org.hkijena.jipipe.ui.components.MarkdownDocument;
 import org.hkijena.jipipe.ui.registries.JIPipeUIDatatypeRegistry;
 import org.hkijena.jipipe.utils.ResourceUtils;
@@ -41,7 +41,7 @@ import java.util.stream.Collectors;
 /**
  * A browsable list of algorithms with full documentation
  */
-public class JIPipeAlgorithmCompendiumUI extends JIPipeCompendiumUI<JIPipeAlgorithmDeclaration> {
+public class JIPipeAlgorithmCompendiumUI extends JIPipeCompendiumUI<JIPipeNodeInfo> {
 
     /**
      * Creates a new instance
@@ -51,27 +51,27 @@ public class JIPipeAlgorithmCompendiumUI extends JIPipeCompendiumUI<JIPipeAlgori
     }
 
     @Override
-    protected List<JIPipeAlgorithmDeclaration> getFilteredItems() {
-        Predicate<JIPipeAlgorithmDeclaration> filterFunction = declaration -> getSearchField().test(declaration.getName() + " " + declaration.getDescription() + " " + declaration.getMenuPath());
+    protected List<JIPipeNodeInfo> getFilteredItems() {
+        Predicate<JIPipeNodeInfo> filterFunction = info -> getSearchField().test(info.getName() + " " + info.getDescription() + " " + info.getMenuPath());
 
         return JIPipeAlgorithmRegistry.getInstance().getRegisteredAlgorithms().values().stream().filter(filterFunction)
-                .sorted(Comparator.comparing(JIPipeAlgorithmDeclaration::getName)).collect(Collectors.toList());
+                .sorted(Comparator.comparing(JIPipeNodeInfo::getName)).collect(Collectors.toList());
     }
 
     @Override
-    protected ListCellRenderer<JIPipeAlgorithmDeclaration> getItemListRenderer() {
-        return new JIPipeAlgorithmDeclarationListCellRenderer();
+    protected ListCellRenderer<JIPipeNodeInfo> getItemListRenderer() {
+        return new JIPipeNodeInfoListCellRenderer();
     }
 
     @Override
-    protected MarkdownDocument generateCompendiumFor(JIPipeAlgorithmDeclaration declaration) {
+    protected MarkdownDocument generateCompendiumFor(JIPipeNodeInfo info) {
         StringBuilder builder = new StringBuilder();
-        builder.append("# ").append(declaration.getName()).append("\n\n");
+        builder.append("# ").append(info.getName()).append("\n\n");
         // Write algorithm slot info
         builder.append("<table>");
         {
-            List<JIPipeInputSlot> inputSlots = declaration.getInputSlots();
-            List<JIPipeOutputSlot> outputSlots = declaration.getOutputSlots();
+            List<JIPipeInputSlot> inputSlots = info.getInputSlots();
+            List<JIPipeOutputSlot> outputSlots = info.getOutputSlots();
 
             int displayedSlots = Math.max(inputSlots.size(), outputSlots.size());
             if (displayedSlots > 0) {
@@ -96,7 +96,7 @@ public class JIPipeAlgorithmCompendiumUI extends JIPipeCompendiumUI<JIPipeAlgori
         }
 
         // Write description
-        String description = declaration.getDescription();
+        String description = info.getDescription();
         if (description != null && !description.isEmpty())
             builder.append(HtmlEscapers.htmlEscaper().escape(description)).append("</br>");
 
@@ -104,7 +104,7 @@ public class JIPipeAlgorithmCompendiumUI extends JIPipeCompendiumUI<JIPipeAlgori
 
         // Write parameter documentation
         builder.append("# Parameters").append("\nIn the following section, you will find a description of all parameters.\n\n");
-        JIPipeGraphNode algorithm = declaration.newInstance();
+        JIPipeGraphNode algorithm = info.newInstance();
         JIPipeParameterTree traversed = new JIPipeParameterTree(algorithm);
         Map<JIPipeParameterCollection, List<JIPipeParameterAccess>> groupedBySource =
                 traversed.getParameters().values().stream().collect(Collectors.groupingBy(JIPipeParameterAccess::getSource));
@@ -137,7 +137,7 @@ public class JIPipeAlgorithmCompendiumUI extends JIPipeCompendiumUI<JIPipeAlgori
 
 
         // Write author information
-        JIPipeDependency source = JIPipeAlgorithmRegistry.getInstance().getSourceOf(declaration.getId());
+        JIPipeDependency source = JIPipeAlgorithmRegistry.getInstance().getSourceOf(info.getId());
         if (source != null) {
             builder.append("# Developer information\n\n");
             builder.append("<table>");
@@ -165,11 +165,11 @@ public class JIPipeAlgorithmCompendiumUI extends JIPipeCompendiumUI<JIPipeAlgori
         builder.append("<td><strong>Unique identifier</strong>: <code>");
         builder.append(HtmlEscapers.htmlEscaper().escape(access.getKey())).append("</code></td></tr>\n\n");
 
-        JIPipeParameterTypeDeclaration declaration = JIPipeParameterTypeRegistry.getInstance().getDeclarationByFieldClass(access.getFieldClass());
-        if (declaration != null) {
+        JIPipeParameterTypeInfo info = JIPipeParameterTypeRegistry.getInstance().getInfoByFieldClass(access.getFieldClass());
+        if (info != null) {
             builder.append("<td><img src=\"").append(ResourceUtils.getPluginResource("icons/data-types/data-type.png")).append("\" /></td>");
-            builder.append("<td><strong>").append(HtmlEscapers.htmlEscaper().escape(declaration.getName())).append("</strong>: ");
-            builder.append(HtmlEscapers.htmlEscaper().escape(declaration.getDescription())).append("</td></tr>");
+            builder.append("<td><strong>").append(HtmlEscapers.htmlEscaper().escape(info.getName())).append("</strong>: ");
+            builder.append(HtmlEscapers.htmlEscaper().escape(info.getDescription())).append("</td></tr>");
         }
         builder.append("</table>\n\n");
         if (access.getDescription() != null && !access.getDescription().isEmpty()) {

@@ -18,7 +18,7 @@ import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmCategory;
-import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmDeclaration;
+import org.hkijena.jipipe.api.algorithm.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.algorithm.JIPipeParameterSlotAlgorithm;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.events.ParameterChangedEvent;
@@ -60,10 +60,10 @@ public class ParameterSlotPythonScriptAlgorithm extends JIPipeParameterSlotAlgor
     /**
      * Creates a new instance
      *
-     * @param declaration the declaration
+     * @param info the info
      */
-    public ParameterSlotPythonScriptAlgorithm(JIPipeAlgorithmDeclaration declaration) {
-        super(declaration, JIPipeDefaultMutableSlotConfiguration.builder()
+    public ParameterSlotPythonScriptAlgorithm(JIPipeNodeInfo info) {
+        super(info, JIPipeDefaultMutableSlotConfiguration.builder()
                 .addOutputSlot("Table", ResultsTableData.class, null)
                 .build());
         registerSubParameter(scriptParameters);
@@ -72,7 +72,7 @@ public class ParameterSlotPythonScriptAlgorithm extends JIPipeParameterSlotAlgor
     /**
      * Creates a copy
      *
-     * @param other the declaration
+     * @param other the info
      */
     public ParameterSlotPythonScriptAlgorithm(ParameterSlotPythonScriptAlgorithm other) {
         super(other);

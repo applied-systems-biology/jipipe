@@ -220,7 +220,7 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
                 JMenuItem connectButton = new JMenuItem(target.getNameWithAlgorithmName(),
                         JIPipeUIDatatypeRegistry.getInstance().getIconFor(target.getAcceptedDataType()));
                 connectButton.addActionListener(e -> connectSlot(slot, target));
-                connectButton.setToolTipText(TooltipUtils.getAlgorithmTooltip(target.getNode().getDeclaration()));
+                connectButton.setToolTipText(TooltipUtils.getAlgorithmTooltip(target.getNode().getInfo()));
                 connectButton.addMouseListener(new MouseAdapter() {
                     @Override
                     public void mouseEntered(MouseEvent e) {

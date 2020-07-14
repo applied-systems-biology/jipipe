@@ -16,7 +16,7 @@ package org.hkijena.jipipe.ui.compat;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
-import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmDeclaration;
+import org.hkijena.jipipe.api.algorithm.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.algorithm.JIPipeGraphNode;
 import org.hkijena.jipipe.api.compat.ImageJDatatypeImporter;
 import org.hkijena.jipipe.api.compat.SingleImageJAlgorithmRun;
@@ -58,7 +58,7 @@ public class RunSingleAlgorithmDialog extends JDialog implements JIPipeWorkbench
     private Context context;
     private boolean canceled = true;
     private SingleImageJAlgorithmRun runSettings;
-    private JList<JIPipeAlgorithmDeclaration> algorithmList;
+    private JList<JIPipeNodeInfo> algorithmList;
     private SearchTextField searchField;
     private JSplitPane splitPane;
     private FormPanel formPanel;
@@ -120,44 +120,44 @@ public class RunSingleAlgorithmDialog extends JDialog implements JIPipeWorkbench
     }
 
     private void reloadAlgorithmList() {
-        List<JIPipeAlgorithmDeclaration> declarations = getFilteredAndSortedDeclarations();
-        DefaultListModel<JIPipeAlgorithmDeclaration> model = new DefaultListModel<>();
-        for (JIPipeAlgorithmDeclaration declaration : declarations) {
-            if (SingleImageJAlgorithmRun.isCompatible(declaration))
-                model.addElement(declaration);
+        List<JIPipeNodeInfo> infos = getFilteredAndSortedInfos();
+        DefaultListModel<JIPipeNodeInfo> model = new DefaultListModel<>();
+        for (JIPipeNodeInfo info : infos) {
+            if (SingleImageJAlgorithmRun.isCompatible(info))
+                model.addElement(info);
         }
         algorithmList.setModel(model);
 
         if (!model.isEmpty())
             algorithmList.setSelectedIndex(0);
         else
-            selectAlgorithmDeclaration(null);
+            selectNodeInfo(null);
     }
 
-    private List<JIPipeAlgorithmDeclaration> getFilteredAndSortedDeclarations() {
-        Predicate<JIPipeAlgorithmDeclaration> filterFunction = declaration -> searchField.test(declaration.getName() + " " + declaration.getDescription() + " " + declaration.getMenuPath());
+    private List<JIPipeNodeInfo> getFilteredAndSortedInfos() {
+        Predicate<JIPipeNodeInfo> filterFunction = info -> searchField.test(info.getName() + " " + info.getDescription() + " " + info.getMenuPath());
 
         return JIPipeAlgorithmRegistry.getInstance().getRegisteredAlgorithms().values().stream().filter(filterFunction)
-                .sorted(Comparator.comparing(JIPipeAlgorithmDeclaration::getName)).collect(Collectors.toList());
+                .sorted(Comparator.comparing(JIPipeNodeInfo::getName)).collect(Collectors.toList());
     }
 
     private void initializeList(JPanel listPanel) {
         algorithmList = new JList<>();
         algorithmList.setBorder(BorderFactory.createEtchedBorder());
-        algorithmList.setCellRenderer(new JIPipeAlgorithmDeclarationListCellRenderer());
+        algorithmList.setCellRenderer(new JIPipeNodeInfoListCellRenderer());
         algorithmList.setModel(new DefaultListModel<>());
         algorithmList.addListSelectionListener(e -> {
-            selectAlgorithmDeclaration(algorithmList.getSelectedValue());
+            selectNodeInfo(algorithmList.getSelectedValue());
         });
         listPanel.add(new JScrollPane(algorithmList), BorderLayout.CENTER);
     }
 
-    private void selectAlgorithmDeclaration(JIPipeAlgorithmDeclaration declaration) {
-        if (declaration != null) {
+    private void selectNodeInfo(JIPipeNodeInfo info) {
+        if (info != null) {
             if (runSettings != null) {
                 runSettings.getEventBus().unregister(this);
             }
-            runSettings = new SingleImageJAlgorithmRun(declaration.newInstance());
+            runSettings = new SingleImageJAlgorithmRun(info.newInstance());
             reloadAlgorithmProperties();
             runSettings.getEventBus().register(this);
         } else {
@@ -171,7 +171,7 @@ public class RunSingleAlgorithmDialog extends JDialog implements JIPipeWorkbench
         // Add some descriptions
         JTextPane descriptions = new JTextPane();
         descriptions.setContentType("text/html");
-        descriptions.setText(TooltipUtils.getAlgorithmTooltip(runSettings.getAlgorithm().getDeclaration(), false));
+        descriptions.setText(TooltipUtils.getAlgorithmTooltip(runSettings.getAlgorithm().getInfo(), false));
         descriptions.setEditable(false);
         descriptions.setBorder(null);
         descriptions.setOpaque(false);
@@ -349,7 +349,7 @@ public class RunSingleAlgorithmDialog extends JDialog implements JIPipeWorkbench
     }
 
     public String getAlgorithmId() {
-        return runSettings.getAlgorithm().getDeclaration().getId();
+        return runSettings.getAlgorithm().getInfo().getId();
     }
 
     public String getAlgorithmParametersJson() {

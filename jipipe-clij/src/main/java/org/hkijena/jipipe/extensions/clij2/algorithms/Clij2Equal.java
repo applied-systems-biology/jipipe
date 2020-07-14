@@ -10,7 +10,7 @@ import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.algorithm.JIPipeInputSlot;
 import org.hkijena.jipipe.api.algorithm.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmCategory;
-import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmDeclaration;
+import org.hkijena.jipipe.api.algorithm.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.algorithm.JIPipeDataBatch;
 import org.hkijena.jipipe.api.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.extensions.clij2.datatypes.CLIJImageData;
@@ -33,10 +33,10 @@ public class Clij2Equal extends JIPipeIteratingAlgorithm {
     /**
      * Creates a new instance
      *
-     * @param declaration The algorithm declaration
+     * @param info The algorithm info
      */
-    public Clij2Equal(JIPipeAlgorithmDeclaration declaration) {
-        super(declaration);
+    public Clij2Equal(JIPipeNodeInfo info) {
+        super(info);
     }
 
     /**

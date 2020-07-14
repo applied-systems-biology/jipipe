@@ -36,10 +36,10 @@ import java.util.function.Supplier;
 public class AnnotationTableFromFile extends JIPipeSimpleIteratingAlgorithm {
 
     /**
-     * @param declaration algorithm declaration
+     * @param info algorithm info
      */
-    public AnnotationTableFromFile(JIPipeAlgorithmDeclaration declaration) {
-        super(declaration);
+    public AnnotationTableFromFile(JIPipeNodeInfo info) {
+        super(info);
     }
 
     /**

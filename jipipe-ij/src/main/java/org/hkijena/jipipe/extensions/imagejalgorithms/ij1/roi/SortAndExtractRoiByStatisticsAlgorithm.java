@@ -58,10 +58,10 @@ public class SortAndExtractRoiByStatisticsAlgorithm extends ImageRoiProcessorAlg
     /**
      * Instantiates a new algorithm.
      *
-     * @param declaration the declaration
+     * @param info the info
      */
-    public SortAndExtractRoiByStatisticsAlgorithm(JIPipeAlgorithmDeclaration declaration) {
-        super(declaration, ROIListData.class, "Output");
+    public SortAndExtractRoiByStatisticsAlgorithm(JIPipeNodeInfo info) {
+        super(info, ROIListData.class, "Output");
         selection.setUseExactValue(true);
         sortOrderList.addNewInstance();
     }

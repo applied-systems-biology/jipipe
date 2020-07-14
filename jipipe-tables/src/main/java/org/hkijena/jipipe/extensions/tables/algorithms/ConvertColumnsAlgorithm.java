@@ -50,10 +50,10 @@ public class ConvertColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     /**
      * Creates a new instance
      *
-     * @param declaration algorithm declaration
+     * @param info algorithm info
      */
-    public ConvertColumnsAlgorithm(JIPipeAlgorithmDeclaration declaration) {
-        super(declaration);
+    public ConvertColumnsAlgorithm(JIPipeNodeInfo info) {
+        super(info);
         processorParameters.addNewInstance();
     }
 

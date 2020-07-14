@@ -57,7 +57,7 @@ import java.util.function.Supplier;
  */
 @JsonSerialize(using = JIPipeGraphNode.Serializer.class)
 public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParameterCollection {
-    private JIPipeAlgorithmDeclaration declaration;
+    private JIPipeNodeInfo info;
     private JIPipeSlotConfiguration slotConfiguration;
     private List<JIPipeDataSlot> inputSlots = new ArrayList<>();
     private List<JIPipeDataSlot> outputSlots = new ArrayList<>();
@@ -77,11 +77,11 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
     /**
      * Initializes this algorithm with a custom provided slot configuration and trait configuration
      *
-     * @param declaration       Contains algorithm metadata
+     * @param info       Contains algorithm metadata
      * @param slotConfiguration if null, generate the slot configuration
      */
-    public JIPipeGraphNode(JIPipeAlgorithmDeclaration declaration, JIPipeSlotConfiguration slotConfiguration) {
-        this.declaration = declaration;
+    public JIPipeGraphNode(JIPipeNodeInfo info, JIPipeSlotConfiguration slotConfiguration) {
+        this.info = info;
         if (slotConfiguration == null) {
             JIPipeDefaultMutableSlotConfiguration.Builder builder = JIPipeDefaultMutableSlotConfiguration.builder();
 
@@ -110,10 +110,10 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
     /**
      * Initializes a new algorithm instance
      *
-     * @param declaration The algorithm declaration
+     * @param info The algorithm info
      */
-    public JIPipeGraphNode(JIPipeAlgorithmDeclaration declaration) {
-        this(declaration, null);
+    public JIPipeGraphNode(JIPipeNodeInfo info) {
+        this(info, null);
     }
 
     /**
@@ -122,7 +122,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
      * @param other Copied algorithm
      */
     public JIPipeGraphNode(JIPipeGraphNode other) {
-        this.declaration = other.declaration;
+        this.info = other.info;
         this.slotConfiguration = copySlotConfiguration(other);
         this.locations = new HashMap<>();
         for (Map.Entry<String, Map<String, Point>> entry : other.locations.entrySet()) {
@@ -257,7 +257,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
     @JIPipeDocumentation(name = "Name", description = "Custom algorithm name.")
     public String getName() {
         if (customName == null || customName.isEmpty())
-            return getDeclaration().getName();
+            return getInfo().getName();
         return customName;
     }
 
@@ -278,7 +278,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
      * @return The category
      */
     public JIPipeAlgorithmCategory getCategory() {
-        return getDeclaration().getCategory();
+        return getInfo().getCategory();
     }
 
     /**
@@ -432,7 +432,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
             jsonGenerator.writeEndObject();
         }
         jsonGenerator.writeEndObject();
-        jsonGenerator.writeStringField("jipipe:algorithm-type", getDeclaration().getId());
+        jsonGenerator.writeStringField("jipipe:algorithm-type", getInfo().getId());
         jsonGenerator.writeStringField("jipipe:algorithm-compartment", getCompartment());
 
         JIPipeParameterCollection.serializeParametersToJson(this, jsonGenerator);
@@ -509,25 +509,25 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
     }
 
     /**
-     * Returns the {@link JIPipeAlgorithmDeclaration} that describes this algorithm
+     * Returns the {@link JIPipeNodeInfo} that describes this algorithm
      *
-     * @return The declaration
+     * @return The info
      */
-    public JIPipeAlgorithmDeclaration getDeclaration() {
-        return declaration;
+    public JIPipeNodeInfo getInfo() {
+        return info;
     }
 
     /**
-     * Sets the {@link JIPipeAlgorithmDeclaration} that describes this algorithm.
+     * Sets the {@link JIPipeNodeInfo} that describes this algorithm.
      * Please note that this function can be very dangerous and break everything.
      * This will affect how JIPipe (and especially the UI) handles this algorithm.
      * A use case is to convert algorithms from internal representations to their public variants (e.g. {@link org.hkijena.jipipe.api.compartments.algorithms.JIPipeCompartmentOutput}
      * to {@link org.hkijena.jipipe.api.compartments.algorithms.IOInterfaceAlgorithm}
      *
-     * @param declaration
+     * @param info
      */
-    public void setDeclaration(JIPipeAlgorithmDeclaration declaration) {
-        this.declaration = declaration;
+    public void setInfo(JIPipeNodeInfo info) {
+        this.info = info;
     }
 
     /**
@@ -826,7 +826,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
      */
     public Set<JIPipeDependency> getDependencies() {
         Set<JIPipeDependency> result = new HashSet<>();
-        result.add(JIPipeAlgorithmRegistry.getInstance().getSourceOf(getDeclaration().getId()));
+        result.add(JIPipeAlgorithmRegistry.getInstance().getSourceOf(getInfo().getId()));
 
         // Add data slots
         for (JIPipeDataSlot slot : inputSlots) {
@@ -877,7 +877,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
      * @return the copy
      */
     public JIPipeGraphNode duplicate() {
-        return getDeclaration().clone(this);
+        return getInfo().clone(this);
     }
 
     /**
@@ -941,7 +941,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
      * @return Algorithm instance
      */
     public static <T extends JIPipeGraphNode> T newInstance(String id) {
-        return (T) JIPipeAlgorithmRegistry.getInstance().getDeclarationById(id).newInstance();
+        return (T) JIPipeAlgorithmRegistry.getInstance().getInfoById(id).newInstance();
     }
 
     /**

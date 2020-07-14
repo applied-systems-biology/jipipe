@@ -61,8 +61,8 @@ public abstract class JIPipeNodeUI extends JIPipeWorkbenchPanel {
         this.node = node;
         this.viewMode = viewMode;
         this.node.getEventBus().register(this);
-        this.fillColor = UIUtils.getFillColorFor(node.getDeclaration());
-        this.borderColor = UIUtils.getBorderColorFor(node.getDeclaration());
+        this.fillColor = UIUtils.getFillColorFor(node.getInfo());
+        this.borderColor = UIUtils.getBorderColorFor(node.getInfo());
     }
 
     /**

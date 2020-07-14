@@ -53,10 +53,10 @@ public class ImagePropertiesToAnnotationAlgorithm extends JIPipeSimpleIteratingA
     /**
      * Creates a new instance
      *
-     * @param declaration algorithm declaration
+     * @param info algorithm info
      */
-    public ImagePropertiesToAnnotationAlgorithm(JIPipeAlgorithmDeclaration declaration) {
-        super(declaration);
+    public ImagePropertiesToAnnotationAlgorithm(JIPipeNodeInfo info) {
+        super(info);
         titleAnnotation.setContent("Image title");
         widthAnnotation.setContent("Image width");
         heightAnnotation.setContent("Image height");

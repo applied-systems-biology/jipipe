@@ -187,9 +187,9 @@ public class JIPipeDataSlotCacheManagerUI extends JIPipeProjectWorkbenchPanel {
         builder.append("<html>");
         builder.append("This output data is annotated in at least one snapshot.<br/><br/>");
         builder.append("<table>");
-        for (String declaration : traitTypes.stream().sorted().collect(Collectors.toList())) {
+        for (String info : traitTypes.stream().sorted().collect(Collectors.toList())) {
             builder.append("<tr><td><img src=\"").append(UIUtils.getIconFromResources("annotation.png")).append("\"/><td><strong>");
-            builder.append(HtmlEscapers.htmlEscaper().escape(declaration)).append("</strong></td></tr>");
+            builder.append(HtmlEscapers.htmlEscaper().escape(info)).append("</strong></td></tr>");
         }
         builder.append("<table>");
         builder.append("</html>");

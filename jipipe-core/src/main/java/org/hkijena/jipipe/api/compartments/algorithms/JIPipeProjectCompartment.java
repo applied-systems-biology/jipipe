@@ -19,7 +19,7 @@ import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.algorithm.JIPipeInputSlot;
 import org.hkijena.jipipe.api.algorithm.JIPipeOutputSlot;
-import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmDeclaration;
+import org.hkijena.jipipe.api.algorithm.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.algorithm.JIPipeGraphNode;
 import org.hkijena.jipipe.api.compartments.datatypes.JIPipeCompartmentOutputData;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
@@ -44,10 +44,10 @@ public class JIPipeProjectCompartment extends JIPipeGraphNode {
     /**
      * Creates new instance
      *
-     * @param declaration Algorithm declaration
+     * @param info Algorithm info
      */
-    public JIPipeProjectCompartment(JIPipeAlgorithmDeclaration declaration) {
-        super(declaration, createSlotConfiguration());
+    public JIPipeProjectCompartment(JIPipeNodeInfo info) {
+        super(info, createSlotConfiguration());
     }
 
     /**

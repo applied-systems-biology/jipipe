@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.ui.components;
 
-import org.hkijena.jipipe.api.data.JIPipeDataDeclaration;
+import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -26,21 +26,21 @@ import java.util.Objects;
  * Editor for an inheritance conversion stored in an {@link org.hkijena.jipipe.api.data.JIPipeSlotDefinition}
  */
 public class InheritanceConversionEditorUI extends JPanel {
-    private Map<JIPipeDataDeclaration, JIPipeDataDeclaration> inheritanceConversions;
-    private JList<Map.Entry<JIPipeDataDeclaration, JIPipeDataDeclaration>> list;
+    private Map<JIPipeDataInfo, JIPipeDataInfo> inheritanceConversions;
+    private JList<Map.Entry<JIPipeDataInfo, JIPipeDataInfo>> list;
 
     /**
      * @param inheritanceConversions the inheritance conversion
      */
-    public InheritanceConversionEditorUI(Map<JIPipeDataDeclaration, JIPipeDataDeclaration> inheritanceConversions) {
+    public InheritanceConversionEditorUI(Map<JIPipeDataInfo, JIPipeDataInfo> inheritanceConversions) {
         this.inheritanceConversions = inheritanceConversions;
         initialize();
         reload();
     }
 
     private void reload() {
-        DefaultListModel<Map.Entry<JIPipeDataDeclaration, JIPipeDataDeclaration>> model = new DefaultListModel<>();
-        for (Map.Entry<JIPipeDataDeclaration, JIPipeDataDeclaration> entry : inheritanceConversions.entrySet()) {
+        DefaultListModel<Map.Entry<JIPipeDataInfo, JIPipeDataInfo>> model = new DefaultListModel<>();
+        for (Map.Entry<JIPipeDataInfo, JIPipeDataInfo> entry : inheritanceConversions.entrySet()) {
             model.addElement(entry);
         }
         list.setModel(model);
@@ -65,7 +65,7 @@ public class InheritanceConversionEditorUI extends JPanel {
     }
 
     private void removeSelectedEntries() {
-        for (Map.Entry<JIPipeDataDeclaration, JIPipeDataDeclaration> entry :
+        for (Map.Entry<JIPipeDataInfo, JIPipeDataInfo> entry :
                 list.getSelectedValuesList()) {
             inheritanceConversions.remove(entry.getKey());
         }
@@ -74,12 +74,12 @@ public class InheritanceConversionEditorUI extends JPanel {
 
     private void addEntry() {
         FormPanel formPanel = new FormPanel(null, FormPanel.NONE);
-        JIPipeDataDeclaration[] available = JIPipeDatatypeRegistry.getInstance().getUnhiddenRegisteredDataTypes().values()
-                .stream().map(JIPipeDataDeclaration::getInstance).toArray(JIPipeDataDeclaration[]::new);
-        JComboBox<JIPipeDataDeclaration> from = new JComboBox<>(available);
-        from.setRenderer(new JIPipeDataDeclarationListCellRenderer());
-        JComboBox<JIPipeDataDeclaration> to = new JComboBox<>(available);
-        to.setRenderer(new JIPipeDataDeclarationListCellRenderer());
+        JIPipeDataInfo[] available = JIPipeDatatypeRegistry.getInstance().getUnhiddenRegisteredDataTypes().values()
+                .stream().map(JIPipeDataInfo::getInstance).toArray(JIPipeDataInfo[]::new);
+        JComboBox<JIPipeDataInfo> from = new JComboBox<>(available);
+        from.setRenderer(new JIPipeDataInfoListCellRenderer());
+        JComboBox<JIPipeDataInfo> to = new JComboBox<>(available);
+        to.setRenderer(new JIPipeDataInfoListCellRenderer());
         formPanel.addToForm(from, new JLabel("From"), null);
         formPanel.addToForm(to, new JLabel("To"), null);
 
@@ -88,8 +88,8 @@ public class InheritanceConversionEditorUI extends JPanel {
                 "Add conversion",
                 JOptionPane.OK_CANCEL_OPTION,
                 JOptionPane.PLAIN_MESSAGE) == JOptionPane.OK_OPTION) {
-            JIPipeDataDeclaration selectedFrom = (JIPipeDataDeclaration) from.getSelectedItem();
-            JIPipeDataDeclaration selectedTo = (JIPipeDataDeclaration) to.getSelectedItem();
+            JIPipeDataInfo selectedFrom = (JIPipeDataInfo) from.getSelectedItem();
+            JIPipeDataInfo selectedTo = (JIPipeDataInfo) to.getSelectedItem();
             if (!Objects.equals(selectedFrom, selectedTo)) {
                 inheritanceConversions.put(selectedFrom, selectedTo);
                 reload();

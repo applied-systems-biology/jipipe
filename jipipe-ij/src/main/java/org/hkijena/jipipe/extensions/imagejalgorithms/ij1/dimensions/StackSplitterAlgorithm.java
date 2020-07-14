@@ -61,10 +61,10 @@ public class StackSplitterAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     /**
      * Instantiates a new algorithm.
      *
-     * @param declaration the declaration
+     * @param info the info
      */
-    public StackSplitterAlgorithm(JIPipeAlgorithmDeclaration declaration) {
-        super(declaration, JIPipeDefaultMutableSlotConfiguration.builder()
+    public StackSplitterAlgorithm(JIPipeNodeInfo info) {
+        super(info, JIPipeDefaultMutableSlotConfiguration.builder()
                 .addInputSlot("Input", ImagePlusData.class)
                 .restrictOutputTo(ImageJDataTypesExtension.IMAGE_TYPES)
                 .allowOutputSlotInheritance(true)

@@ -61,7 +61,7 @@ public class JIPipeSingleAlgorithmSelectionPanelUI extends JIPipeProjectWorkbenc
 
         ParameterPanel parametersUI = new ParameterPanel(getProjectWorkbench(),
                 algorithm,
-                TooltipUtils.getAlgorithmDocumentation(algorithm.getDeclaration()),
+                TooltipUtils.getAlgorithmDocumentation(algorithm.getInfo()),
                 ParameterPanel.WITH_SCROLLING | ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.DOCUMENTATION_BELOW | ParameterPanel.WITH_SEARCH_BAR);
         tabbedPane.addTab("Parameters", UIUtils.getIconFromResources("cog.png"),
                 parametersUI,
@@ -112,8 +112,8 @@ public class JIPipeSingleAlgorithmSelectionPanelUI extends JIPipeProjectWorkbenc
     private void initializeToolbar() {
         JToolBar toolBar = new JToolBar();
         toolBar.setFloatable(false);
-        JLabel nameLabel = new JLabel(algorithm.getName(), new ColorIcon(16, 16, UIUtils.getFillColorFor(algorithm.getDeclaration())), JLabel.LEFT);
-        nameLabel.setToolTipText(TooltipUtils.getAlgorithmTooltip(algorithm.getDeclaration()));
+        JLabel nameLabel = new JLabel(algorithm.getName(), new ColorIcon(16, 16, UIUtils.getFillColorFor(algorithm.getInfo())), JLabel.LEFT);
+        nameLabel.setToolTipText(TooltipUtils.getAlgorithmTooltip(algorithm.getInfo()));
         toolBar.add(nameLabel);
 
         toolBar.add(Box.createHorizontalGlue());
@@ -123,12 +123,12 @@ public class JIPipeSingleAlgorithmSelectionPanelUI extends JIPipeProjectWorkbenc
                 canvas.getContextActions(),
                 canvas);
 
-        if (JIPipeAlgorithmRegistry.getInstance().getRegisteredAlgorithms().containsValue(algorithm.getDeclaration())) {
+        if (JIPipeAlgorithmRegistry.getInstance().getRegisteredAlgorithms().containsValue(algorithm.getInfo())) {
             JButton openCompendiumButton = new JButton(UIUtils.getIconFromResources("help.png"));
             openCompendiumButton.setToolTipText("Open in algorithm compendium");
             openCompendiumButton.addActionListener(e -> {
                 JIPipeAlgorithmCompendiumUI compendiumUI = new JIPipeAlgorithmCompendiumUI();
-                compendiumUI.selectItem(algorithm.getDeclaration());
+                compendiumUI.selectItem(algorithm.getInfo());
                 getWorkbench().getDocumentTabPane().addTab("Algorithm compendium",
                         UIUtils.getIconFromResources("help.png"),
                         compendiumUI,

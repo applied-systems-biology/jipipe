@@ -49,10 +49,10 @@ public class IntegrateColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     /**
      * Creates a new instance
      *
-     * @param declaration algorithm declaration
+     * @param info algorithm info
      */
-    public IntegrateColumnsAlgorithm(JIPipeAlgorithmDeclaration declaration) {
-        super(declaration);
+    public IntegrateColumnsAlgorithm(JIPipeNodeInfo info) {
+        super(info);
         processorParameters.addNewInstance();
     }
 

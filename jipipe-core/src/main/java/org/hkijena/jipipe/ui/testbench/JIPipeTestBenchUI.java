@@ -88,8 +88,8 @@ public class JIPipeTestBenchUI extends JIPipeProjectWorkbenchPanel {
         toolBar.add(Box.createHorizontalStrut(8));
 
         JLabel algorithmInfo = new JLabel(testBench.getProjectAlgorithm().getName(), new ColorIcon(16, 16,
-                UIUtils.getFillColorFor(testBench.getProjectAlgorithm().getDeclaration())), JLabel.LEFT);
-        algorithmInfo.setToolTipText(TooltipUtils.getAlgorithmTooltip(testBench.getProjectAlgorithm().getDeclaration()));
+                UIUtils.getFillColorFor(testBench.getProjectAlgorithm().getInfo())), JLabel.LEFT);
+        algorithmInfo.setToolTipText(TooltipUtils.getAlgorithmTooltip(testBench.getProjectAlgorithm().getInfo()));
         toolBar.add(algorithmInfo);
 
         toolBar.add(Box.createHorizontalGlue());

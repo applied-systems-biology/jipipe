@@ -16,7 +16,7 @@ package org.hkijena.jipipe.ui.extensionbuilder;
 import org.hkijena.jipipe.JIPipeJsonExtension;
 import org.hkijena.jipipe.api.JIPipeValidatable;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
-import org.hkijena.jipipe.api.grouping.JsonAlgorithmDeclaration;
+import org.hkijena.jipipe.api.grouping.JsonNodeInfo;
 import org.hkijena.jipipe.api.registries.JIPipeAlgorithmRegistry;
 import org.hkijena.jipipe.utils.StringUtils;
 
@@ -38,13 +38,13 @@ public class JIPipeJsonExtensionProjectValidation implements JIPipeValidatable {
     @Override
     public void reportValidity(JIPipeValidityReport report) {
         extension.reportValidity(report);
-        for (JsonAlgorithmDeclaration declaration : extension.getAlgorithmDeclarations()) {
-            if (!StringUtils.isNullOrEmpty(declaration.getId())) {
-                if (JIPipeAlgorithmRegistry.getInstance().hasAlgorithmWithId(declaration.getId())) {
-                    report.forCategory("Algorithms").forCategory(declaration.getName()).reportIsInvalid("Already registered: " + declaration.getId(),
+        for (JsonNodeInfo info : extension.getNodeInfos()) {
+            if (!StringUtils.isNullOrEmpty(info.getId())) {
+                if (JIPipeAlgorithmRegistry.getInstance().hasAlgorithmWithId(info.getId())) {
+                    report.forCategory("Algorithms").forCategory(info.getName()).reportIsInvalid("Already registered: " + info.getId(),
                             "Currently there is already an algorithm with the same ID.",
                             "If this is intenional, you do not need to do something. If not, please assign an unique identifier.",
-                            declaration);
+                            info);
                 }
             }
         }

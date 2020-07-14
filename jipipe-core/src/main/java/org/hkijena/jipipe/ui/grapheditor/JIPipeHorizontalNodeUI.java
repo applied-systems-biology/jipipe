@@ -75,7 +75,7 @@ public class JIPipeHorizontalNodeUI extends JIPipeNodeUI {
         outputSlotPanel.setOpaque(false);
 
         nameLabel = new JLabel(getNode().getName());
-        nameLabel.setIcon(JIPipeUIAlgorithmRegistry.getInstance().getIconFor(getNode().getDeclaration()));
+        nameLabel.setIcon(JIPipeUIAlgorithmRegistry.getInstance().getIconFor(getNode().getInfo()));
         openSettingsButton = new JButton(UIUtils.getIconFromResources("wrench.png"));
         UIUtils.makeFlat25x25(openSettingsButton);
         openSettingsButton.setBorder(null);

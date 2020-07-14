@@ -57,10 +57,10 @@ public class BioFormatsImporter extends JIPipeSimpleIteratingAlgorithm {
     private OptionalStringParameter titleAnnotation = new OptionalStringParameter();
 
     /**
-     * @param declaration the declaration
+     * @param info the info
      */
-    public BioFormatsImporter(JIPipeAlgorithmDeclaration declaration) {
-        super(declaration, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", FileData.class)
+    public BioFormatsImporter(JIPipeNodeInfo info) {
+        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", FileData.class)
                 .addOutputSlot("Output", ImagePlusData.class, null)
                 .allowOutputSlotInheritance(true)
                 .seal()

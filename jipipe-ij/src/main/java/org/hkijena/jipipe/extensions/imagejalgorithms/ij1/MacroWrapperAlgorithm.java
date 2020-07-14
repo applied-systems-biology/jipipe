@@ -85,10 +85,10 @@ public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm {
     private List<Window> initiallyOpenedWindows = new ArrayList<>();
 
     /**
-     * @param declaration the declaration
+     * @param info the info
      */
-    public MacroWrapperAlgorithm(JIPipeAlgorithmDeclaration declaration) {
-        super(declaration, JIPipeDefaultMutableSlotConfiguration.builder()
+    public MacroWrapperAlgorithm(JIPipeNodeInfo info) {
+        super(info, JIPipeDefaultMutableSlotConfiguration.builder()
                 .allowOutputSlotInheritance(true)
                 .restrictInputTo(getCompatibleTypes())
                 .restrictOutputTo(getCompatibleTypes())

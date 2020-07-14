@@ -21,7 +21,7 @@ import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.algorithm.JIPipeInputSlot;
 import org.hkijena.jipipe.api.algorithm.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmCategory;
-import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmDeclaration;
+import org.hkijena.jipipe.api.algorithm.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.algorithm.JIPipeDataBatch;
 import org.hkijena.jipipe.api.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -41,8 +41,8 @@ public class CalibrationContrastEnhancer extends JIPipeSimpleIteratingAlgorithm 
     private double customMax = 1;
     private boolean duplicateImage = true;
 
-    public CalibrationContrastEnhancer(JIPipeAlgorithmDeclaration declaration) {
-        super(declaration);
+    public CalibrationContrastEnhancer(JIPipeNodeInfo info) {
+        super(info);
     }
 
     public CalibrationContrastEnhancer(CalibrationContrastEnhancer other) {

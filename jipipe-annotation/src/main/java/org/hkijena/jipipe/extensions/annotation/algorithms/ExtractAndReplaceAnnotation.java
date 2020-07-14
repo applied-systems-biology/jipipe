@@ -42,10 +42,10 @@ public class ExtractAndReplaceAnnotation extends JIPipeSimpleIteratingAlgorithm 
     /**
      * New instance
      *
-     * @param declaration Algorithm declaration
+     * @param info Algorithm info
      */
-    public ExtractAndReplaceAnnotation(JIPipeAlgorithmDeclaration declaration) {
-        super(declaration);
+    public ExtractAndReplaceAnnotation(JIPipeNodeInfo info) {
+        super(info);
         functions.addNewInstance();
     }
 

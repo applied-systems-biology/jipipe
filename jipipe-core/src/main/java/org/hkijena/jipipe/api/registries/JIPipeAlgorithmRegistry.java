@@ -21,7 +21,7 @@ import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.JIPipeValidatable;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmCategory;
-import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmDeclaration;
+import org.hkijena.jipipe.api.algorithm.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.events.AlgorithmRegisteredEvent;
 import org.hkijena.jipipe.api.events.DatatypeRegisteredEvent;
@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
  * Manages known algorithms and their annotations
  */
 public class JIPipeAlgorithmRegistry implements JIPipeValidatable {
-    private Map<String, JIPipeAlgorithmDeclaration> registeredAlgorithms = new HashMap<>();
+    private Map<String, JIPipeNodeInfo> registeredAlgorithms = new HashMap<>();
     private Set<JIPipeAlgorithmRegistrationTask> registrationTasks = new HashSet<>();
     private Map<String, JIPipeDependency> registeredAlgorithmSources = new HashMap<>();
     private boolean stateChanged;
@@ -93,25 +93,25 @@ public class JIPipeAlgorithmRegistry implements JIPipeValidatable {
     }
 
     /**
-     * Registers an algorithm declaration
+     * Registers an algorithm info
      *
-     * @param declaration The algorithm declaration
-     * @param source      The dependency that registers the declaration
+     * @param info The algorithm info
+     * @param source      The dependency that registers the info
      */
-    public void register(JIPipeAlgorithmDeclaration declaration, JIPipeDependency source) {
-        registeredAlgorithms.put(declaration.getId(), declaration);
-        registeredAlgorithmSources.put(declaration.getId(), source);
-        eventBus.post(new AlgorithmRegisteredEvent(declaration));
-        System.out.println("Registered algorithm '" + declaration.getName() + "' [" + declaration.getId() + "]");
+    public void register(JIPipeNodeInfo info, JIPipeDependency source) {
+        registeredAlgorithms.put(info.getId(), info);
+        registeredAlgorithmSources.put(info.getId(), source);
+        eventBus.post(new AlgorithmRegisteredEvent(info));
+        System.out.println("Registered algorithm '" + info.getName() + "' [" + info.getId() + "]");
         runRegistrationTasks();
     }
 
     /**
      * Gets the set of all known algorithms
      *
-     * @return Map from algorithm ID to algorithm declaration
+     * @return Map from algorithm ID to algorithm info
      */
-    public Map<String, JIPipeAlgorithmDeclaration> getRegisteredAlgorithms() {
+    public Map<String, JIPipeNodeInfo> getRegisteredAlgorithms() {
         return Collections.unmodifiableMap(registeredAlgorithms);
     }
 
@@ -122,12 +122,12 @@ public class JIPipeAlgorithmRegistry implements JIPipeValidatable {
      * @param dataClass The data class
      * @return Available datasource algorithms that generate the data
      */
-    public <T extends JIPipeData> Set<JIPipeAlgorithmDeclaration> getDataSourcesFor(Class<? extends T> dataClass) {
-        Set<JIPipeAlgorithmDeclaration> result = new HashSet<>();
-        for (JIPipeAlgorithmDeclaration declaration : registeredAlgorithms.values()) {
-            if (declaration.getCategory() == JIPipeAlgorithmCategory.DataSource) {
-                if (declaration.getOutputSlots().stream().anyMatch(slot -> slot.value() == dataClass)) {
-                    result.add(declaration);
+    public <T extends JIPipeData> Set<JIPipeNodeInfo> getDataSourcesFor(Class<? extends T> dataClass) {
+        Set<JIPipeNodeInfo> result = new HashSet<>();
+        for (JIPipeNodeInfo info : registeredAlgorithms.values()) {
+            if (info.getCategory() == JIPipeAlgorithmCategory.DataSource) {
+                if (info.getOutputSlots().stream().anyMatch(slot -> slot.value() == dataClass)) {
+                    result.add(info);
                 }
             }
         }
@@ -140,20 +140,20 @@ public class JIPipeAlgorithmRegistry implements JIPipeValidatable {
      * @param category The category
      * @return Algorithms within the specified category
      */
-    public Set<JIPipeAlgorithmDeclaration> getAlgorithmsOfCategory(JIPipeAlgorithmCategory category) {
+    public Set<JIPipeNodeInfo> getAlgorithmsOfCategory(JIPipeAlgorithmCategory category) {
         return registeredAlgorithms.values().stream().filter(d -> d.getCategory() == category).collect(Collectors.toSet());
     }
 
     /**
-     * Gets a matching declaration by Id
+     * Gets a matching info by Id
      *
-     * @param id The declaration ID. Must exist.
-     * @return The declaration
+     * @param id The info ID. Must exist.
+     * @return The info
      */
-    public JIPipeAlgorithmDeclaration getDeclarationById(String id) {
-        JIPipeAlgorithmDeclaration declaration = registeredAlgorithms.getOrDefault(id, null);
-        if (declaration == null) {
-            throw new UserFriendlyRuntimeException(new NullPointerException("Could not find algorithm declaration with id '" + id + "' in " +
+    public JIPipeNodeInfo getInfoById(String id) {
+        JIPipeNodeInfo info = registeredAlgorithms.getOrDefault(id, null);
+        if (info == null) {
+            throw new UserFriendlyRuntimeException(new NullPointerException("Could not find algorithm info with id '" + id + "' in " +
                     String.join(", ", registeredAlgorithms.keySet())),
                     "Unable to find an algorithm type!",
                     "JIPipe plugin manager",
@@ -161,13 +161,13 @@ public class JIPipeAlgorithmRegistry implements JIPipeValidatable {
                     "Check if JIPipe is up-to-date and the newest version of all plugins are installed. If you know that an algorithm was assigned a new ID, " +
                             "search for '" + id + "' in the JSON file and replace it with the new identifier.");
         }
-        return declaration;
+        return info;
     }
 
     /**
      * Returns true if the algorithm ID already exists
      *
-     * @param id The declaration ID
+     * @param id The info ID
      * @return If true, the ID exists
      */
     public boolean hasAlgorithmWithId(String id) {
@@ -205,7 +205,7 @@ public class JIPipeAlgorithmRegistry implements JIPipeValidatable {
     /**
      * Returns the source of a registered algorithm
      *
-     * @param algorithmId The algorithm declaration ID
+     * @param algorithmId The algorithm info ID
      * @return The dependency that registered the algorithm
      */
     public JIPipeDependency getSourceOf(String algorithmId) {
@@ -218,9 +218,9 @@ public class JIPipeAlgorithmRegistry implements JIPipeValidatable {
      * @param dependency The dependency
      * @return All algorithms that were registered by this dependency
      */
-    public Set<JIPipeAlgorithmDeclaration> getDeclaredBy(JIPipeDependency dependency) {
-        Set<JIPipeAlgorithmDeclaration> result = new HashSet<>();
-        for (Map.Entry<String, JIPipeAlgorithmDeclaration> entry : registeredAlgorithms.entrySet()) {
+    public Set<JIPipeNodeInfo> getDeclaredBy(JIPipeDependency dependency) {
+        Set<JIPipeNodeInfo> result = new HashSet<>();
+        for (Map.Entry<String, JIPipeNodeInfo> entry : registeredAlgorithms.entrySet()) {
             JIPipeDependency source = getSourceOf(entry.getKey());
             if (source == dependency)
                 result.add(entry.getValue());

@@ -726,8 +726,8 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
         public Builder addOutputSlot(String name, Class<? extends JIPipeData> klass, String inheritedSlot, Map<Class<? extends JIPipeData>, Class<? extends JIPipeData>> inheritanceConversions) {
             JIPipeSlotDefinition slotDefinition = object.addSlot(name, new JIPipeSlotDefinition(klass, JIPipeSlotType.Output, name, inheritedSlot), false);
             for (Map.Entry<Class<? extends JIPipeData>, Class<? extends JIPipeData>> entry : inheritanceConversions.entrySet()) {
-                slotDefinition.getInheritanceConversions().put(JIPipeDataDeclaration.getInstance(entry.getKey()),
-                        JIPipeDataDeclaration.getInstance(entry.getValue()));
+                slotDefinition.getInheritanceConversions().put(JIPipeDataInfo.getInstance(entry.getKey()),
+                        JIPipeDataInfo.getInstance(entry.getValue()));
             }
             if (inheritedSlot != null && !inheritedSlot.isEmpty()) {
                 object.setAllowInheritedOutputSlots(true);

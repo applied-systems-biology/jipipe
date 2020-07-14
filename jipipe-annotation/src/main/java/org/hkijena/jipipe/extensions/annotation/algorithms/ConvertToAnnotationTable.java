@@ -46,10 +46,10 @@ public class ConvertToAnnotationTable extends JIPipeMergingAlgorithm {
     private String generatedColumn = "data";
 
     /**
-     * @param declaration algorithm declaration
+     * @param info algorithm info
      */
-    public ConvertToAnnotationTable(JIPipeAlgorithmDeclaration declaration) {
-        super(declaration);
+    public ConvertToAnnotationTable(JIPipeNodeInfo info) {
+        super(info);
         getDataBatchGenerationSettings().setDataSetMatching(JIPipeIteratingAlgorithm.ColumnMatching.Custom);
     }
 

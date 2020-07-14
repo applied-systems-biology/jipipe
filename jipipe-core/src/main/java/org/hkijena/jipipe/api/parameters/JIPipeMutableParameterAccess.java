@@ -72,8 +72,8 @@ public class JIPipeMutableParameterAccess implements JIPipeParameterAccess {
         this.visibility = other.getVisibility();
         this.fieldClass = other.getFieldClass();
         this.persistence = other.getPersistence();
-        JIPipeParameterTypeDeclaration declaration = JIPipeParameterTypeRegistry.getInstance().getDeclarationByFieldClass(fieldClass);
-        this.value = declaration.duplicate(other.get(fieldClass)); // Deep copy
+        JIPipeParameterTypeInfo info = JIPipeParameterTypeRegistry.getInstance().getInfoByFieldClass(fieldClass);
+        this.value = info.duplicate(other.get(fieldClass)); // Deep copy
     }
 
     /**
@@ -193,13 +193,13 @@ public class JIPipeMutableParameterAccess implements JIPipeParameterAccess {
     }
 
     @JsonGetter("field-class-id")
-    public String getFieldClassDeclarationId() {
-        return JIPipeParameterTypeRegistry.getInstance().getDeclarationByFieldClass(getFieldClass()).getId();
+    public String getFieldClassInfoId() {
+        return JIPipeParameterTypeRegistry.getInstance().getInfoByFieldClass(getFieldClass()).getId();
     }
 
     @JsonSetter("field-class-id")
-    public void setFieldClassDeclarationId(String id) {
-        setFieldClass(JIPipeParameterTypeRegistry.getInstance().getDeclarationById(id).getFieldClass());
+    public void setFieldClassInfoId(String id) {
+        setFieldClass(JIPipeParameterTypeRegistry.getInstance().getInfoById(id).getFieldClass());
     }
 
     @JsonGetter("value")
@@ -308,7 +308,7 @@ public class JIPipeMutableParameterAccess implements JIPipeParameterAccess {
             result.setName(jsonNode.get("name").textValue());
             result.setDescription(jsonNode.get("description").textValue());
             result.setVisibility(JsonUtils.getObjectMapper().readerFor(JIPipeParameterVisibility.class).readValue(jsonNode.get("visibility")));
-            result.setFieldClassDeclarationId(jsonNode.get("field-class-id").textValue());
+            result.setFieldClassInfoId(jsonNode.get("field-class-id").textValue());
             if (jsonNode.has("value"))
                 result.set(JsonUtils.getObjectMapper().readerFor(result.getFieldClass()).readValue(jsonNode.get("value")));
             if (jsonNode.has("short-key"))

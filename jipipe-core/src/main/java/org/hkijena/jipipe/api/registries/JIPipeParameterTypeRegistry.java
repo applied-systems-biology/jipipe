@@ -17,40 +17,40 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableBiMap;
 import org.hkijena.jipipe.JIPipeDefaultRegistry;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeDeclaration;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
 
 /**
  * Registry for all known parameter types
  */
 public class JIPipeParameterTypeRegistry {
-    private BiMap<String, JIPipeParameterTypeDeclaration> registeredParameters = HashBiMap.create();
-    private BiMap<Class<?>, JIPipeParameterTypeDeclaration> registeredParameterClasses = HashBiMap.create();
+    private BiMap<String, JIPipeParameterTypeInfo> registeredParameters = HashBiMap.create();
+    private BiMap<Class<?>, JIPipeParameterTypeInfo> registeredParameterClasses = HashBiMap.create();
 
     /**
      * Registers a new parameter type
      *
-     * @param parameterTypeDeclaration the parameter type
+     * @param info the parameter type
      */
-    public void register(JIPipeParameterTypeDeclaration parameterTypeDeclaration) {
-        if (registeredParameters.containsKey(parameterTypeDeclaration.getId()))
-            throw new RuntimeException("Parameter type with ID '" + parameterTypeDeclaration.getId() + "' already exists!");
-        if (registeredParameterClasses.containsKey(parameterTypeDeclaration.getFieldClass()))
-            throw new RuntimeException("Parameter type with class '" + parameterTypeDeclaration.getFieldClass() + "' already exists!");
-        registeredParameters.put(parameterTypeDeclaration.getId(), parameterTypeDeclaration);
-        registeredParameterClasses.put(parameterTypeDeclaration.getFieldClass(), parameterTypeDeclaration);
+    public void register(JIPipeParameterTypeInfo info) {
+        if (registeredParameters.containsKey(info.getId()))
+            throw new RuntimeException("Parameter type with ID '" + info.getId() + "' already exists!");
+        if (registeredParameterClasses.containsKey(info.getFieldClass()))
+            throw new RuntimeException("Parameter type with class '" + info.getFieldClass() + "' already exists!");
+        registeredParameters.put(info.getId(), info);
+        registeredParameterClasses.put(info.getFieldClass(), info);
     }
 
-    public BiMap<String, JIPipeParameterTypeDeclaration> getRegisteredParameters() {
+    public BiMap<String, JIPipeParameterTypeInfo> getRegisteredParameters() {
         return ImmutableBiMap.copyOf(registeredParameters);
     }
 
     /**
-     * Returns a parameter type declaration by ID
+     * Returns a parameter type info by ID
      *
      * @param id the ID
-     * @return the declaration
+     * @return the info
      */
-    public JIPipeParameterTypeDeclaration getDeclarationById(String id) {
+    public JIPipeParameterTypeInfo getInfoById(String id) {
         return registeredParameters.get(id);
     }
 
@@ -58,9 +58,9 @@ public class JIPipeParameterTypeRegistry {
      * Return a parameter type by its field class
      *
      * @param fieldClass the field class
-     * @return the declaration
+     * @return the info
      */
-    public JIPipeParameterTypeDeclaration getDeclarationByFieldClass(Class<?> fieldClass) {
+    public JIPipeParameterTypeInfo getInfoByFieldClass(Class<?> fieldClass) {
         return registeredParameterClasses.get(fieldClass);
     }
 

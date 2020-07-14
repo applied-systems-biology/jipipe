@@ -39,7 +39,7 @@ public class JIPipeAlgorithmListCellRenderer extends JLabel implements ListCellR
         }
         if (value != null) {
             setText(value.getName());
-            setIcon(JIPipeUIAlgorithmRegistry.getInstance().getIconFor(value.getDeclaration()));
+            setIcon(JIPipeUIAlgorithmRegistry.getInstance().getIconFor(value.getInfo()));
         } else {
             setText("<No data type>");
             setIcon(null);

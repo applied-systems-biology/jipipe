@@ -41,10 +41,10 @@ public class MergeColumnsAlgorithm extends JIPipeMergingAlgorithm {
     /**
      * Creates a new instance
      *
-     * @param declaration algorithm declaration
+     * @param info algorithm info
      */
-    public MergeColumnsAlgorithm(JIPipeAlgorithmDeclaration declaration) {
-        super(declaration);
+    public MergeColumnsAlgorithm(JIPipeNodeInfo info) {
+        super(info);
     }
 
     /**

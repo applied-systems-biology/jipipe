@@ -40,10 +40,10 @@ public class FFT2DSwapQuadrants extends JIPipeSimpleIteratingAlgorithm {
     /**
      * Creates a new instance
      *
-     * @param declaration the algorithm declaration
+     * @param info the algorithm info
      */
-    public FFT2DSwapQuadrants(JIPipeAlgorithmDeclaration declaration) {
-        super(declaration, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", ImagePlusFFT2DData.class)
+    public FFT2DSwapQuadrants(JIPipeNodeInfo info) {
+        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", ImagePlusFFT2DData.class)
                 .addOutputSlot("Output", ImagePlusFFT2DData.class, null)
                 .allowOutputSlotInheritance(false)
                 .seal()

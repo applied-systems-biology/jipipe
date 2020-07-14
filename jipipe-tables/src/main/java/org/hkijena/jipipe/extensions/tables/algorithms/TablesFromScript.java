@@ -20,7 +20,7 @@ import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.algorithm.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmCategory;
-import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmDeclaration;
+import org.hkijena.jipipe.api.algorithm.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.events.ParameterChangedEvent;
 import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
@@ -59,10 +59,10 @@ public class TablesFromScript extends JIPipeAlgorithm {
             JIPipeParameterTypeRegistry.getInstance().getRegisteredParameters().values());
 
     /**
-     * @param declaration the declaration
+     * @param info the info
      */
-    public TablesFromScript(JIPipeAlgorithmDeclaration declaration) {
-        super(declaration);
+    public TablesFromScript(JIPipeNodeInfo info) {
+        super(info);
         registerSubParameter(scriptParameters);
     }
 

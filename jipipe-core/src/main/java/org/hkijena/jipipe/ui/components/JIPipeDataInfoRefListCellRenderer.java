@@ -1,0 +1,56 @@
+/*
+ * Copyright by Zoltán Cseresnyés, Ruman Gerst
+ *
+ * Research Group Applied Systems Biology - Head: Prof. Dr. Marc Thilo Figge
+ * https://www.leibniz-hki.de/en/applied-systems-biology.html
+ * HKI-Center for Systems Biology of Infection
+ * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)
+ * Adolf-Reichwein-Straße 23, 07745 Jena, Germany
+ *
+ * The project code is licensed under BSD 2-Clause.
+ * See the LICENSE file provided with the code for the full license.
+ */
+
+package org.hkijena.jipipe.ui.components;
+
+import org.hkijena.jipipe.extensions.parameters.references.JIPipeDataInfoRef;
+import org.hkijena.jipipe.ui.registries.JIPipeUIDatatypeRegistry;
+import org.hkijena.jipipe.utils.UIUtils;
+
+import javax.swing.*;
+import java.awt.*;
+
+/**
+ * Renders {@link JIPipeDataInfoRef}
+ */
+public class JIPipeDataInfoRefListCellRenderer extends JLabel implements ListCellRenderer<JIPipeDataInfoRef> {
+
+    /**
+     * Creates a new renderer
+     */
+    public JIPipeDataInfoRefListCellRenderer() {
+        setOpaque(true);
+        setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+    }
+
+    @Override
+    public Component getListCellRendererComponent(JList<? extends JIPipeDataInfoRef> list, JIPipeDataInfoRef value, int index, boolean isSelected, boolean cellHasFocus) {
+        if (list.getFont() != null) {
+            setFont(list.getFont());
+        }
+        if (value != null && value.getInfo() != null) {
+            setText(value.getInfo().getName());
+            setIcon(JIPipeUIDatatypeRegistry.getInstance().getIconFor(value.getInfo().getDataClass()));
+        } else {
+            setText("Nothing selected");
+            setIcon(UIUtils.getIconFromResources("error.png"));
+        }
+
+        if (isSelected) {
+            setBackground(new Color(184, 207, 229));
+        } else {
+            setBackground(new Color(255, 255, 255));
+        }
+        return this;
+    }
+}

@@ -51,10 +51,10 @@ public class GreyscalePixelsGenerator extends JIPipeSimpleIteratingAlgorithm {
     /**
      * Creates a new instance
      *
-     * @param declaration the algorithm declaration
+     * @param info the algorithm info
      */
-    public GreyscalePixelsGenerator(JIPipeAlgorithmDeclaration declaration) {
-        super(declaration);
+    public GreyscalePixelsGenerator(JIPipeNodeInfo info) {
+        super(info);
     }
 
     /**

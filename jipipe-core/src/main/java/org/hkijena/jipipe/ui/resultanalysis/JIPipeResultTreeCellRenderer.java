@@ -51,7 +51,7 @@ public class JIPipeResultTreeCellRenderer extends JLabel implements TreeCellRend
                 setText(compartment.getName());
             } else if (userObject instanceof JIPipeGraphNode) {
                 JIPipeGraphNode algorithm = (JIPipeGraphNode) userObject;
-                setIcon(JIPipeUIAlgorithmRegistry.getInstance().getIconFor(algorithm.getDeclaration()));
+                setIcon(JIPipeUIAlgorithmRegistry.getInstance().getIconFor(algorithm.getInfo()));
                 setText(algorithm.getName());
             } else if (userObject instanceof JIPipeDataSlot) {
                 JIPipeDataSlot slot = (JIPipeDataSlot) userObject;

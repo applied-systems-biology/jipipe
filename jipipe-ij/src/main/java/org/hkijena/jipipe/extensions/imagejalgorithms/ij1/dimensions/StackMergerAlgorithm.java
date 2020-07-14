@@ -55,10 +55,10 @@ public class StackMergerAlgorithm extends JIPipeMergingAlgorithm {
     /**
      * Instantiates a new algorithm.
      *
-     * @param declaration the declaration
+     * @param info the info
      */
-    public StackMergerAlgorithm(JIPipeAlgorithmDeclaration declaration) {
-        super(declaration, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", ImagePlus2DData.class)
+    public StackMergerAlgorithm(JIPipeNodeInfo info) {
+        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", ImagePlus2DData.class)
                 .addOutputSlot("Output", ImagePlus3DData.class, "Input", TO_3D_CONVERSION)
                 .allowOutputSlotInheritance(true)
                 .seal()

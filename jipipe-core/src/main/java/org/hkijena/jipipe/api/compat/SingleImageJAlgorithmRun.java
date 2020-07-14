@@ -24,7 +24,7 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.JIPipeValidatable;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
-import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmDeclaration;
+import org.hkijena.jipipe.api.algorithm.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.algorithm.JIPipeGraphNode;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.events.AlgorithmSlotsChangedEvent;
@@ -150,8 +150,8 @@ public class SingleImageJAlgorithmRun implements JIPipeValidatable {
         if (jsonNode.has("add-input")) {
             JIPipeMutableSlotConfiguration slotConfiguration = (JIPipeMutableSlotConfiguration) algorithm.getSlotConfiguration();
             for (Map.Entry<String, JsonNode> entry : ImmutableList.copyOf(jsonNode.get("add-input").fields())) {
-                JIPipeDataDeclaration declaration = JIPipeDataDeclaration.getInstance(entry.getValue().textValue());
-                slotConfiguration.addSlot(entry.getKey(), new JIPipeSlotDefinition(declaration.getDataClass(),
+                JIPipeDataInfo info = JIPipeDataInfo.getInstance(entry.getValue().textValue());
+                slotConfiguration.addSlot(entry.getKey(), new JIPipeSlotDefinition(info.getDataClass(),
                         JIPipeSlotType.Input,
                         entry.getKey(),
                         null), false);
@@ -160,8 +160,8 @@ public class SingleImageJAlgorithmRun implements JIPipeValidatable {
         if (jsonNode.has("add-output")) {
             JIPipeMutableSlotConfiguration slotConfiguration = (JIPipeMutableSlotConfiguration) algorithm.getSlotConfiguration();
             for (Map.Entry<String, JsonNode> entry : ImmutableList.copyOf(jsonNode.get("add-output").fields())) {
-                JIPipeDataDeclaration declaration = JIPipeDataDeclaration.getInstance(entry.getValue().textValue());
-                slotConfiguration.addSlot(entry.getKey(), new JIPipeSlotDefinition(declaration.getDataClass(),
+                JIPipeDataInfo info = JIPipeDataInfo.getInstance(entry.getValue().textValue());
+                slotConfiguration.addSlot(entry.getKey(), new JIPipeSlotDefinition(info.getDataClass(),
                         JIPipeSlotType.Output,
                         entry.getKey(),
                         null), false);
@@ -182,16 +182,16 @@ public class SingleImageJAlgorithmRun implements JIPipeValidatable {
     /**
      * Returns true if an algorithm can be run in a single ImageJ algorithm run
      *
-     * @param declaration the algorithm type
+     * @param info the algorithm type
      * @return if the algorithm is compatible
      */
-    public static boolean isCompatible(JIPipeAlgorithmDeclaration declaration) {
-        switch (declaration.getCategory()) {
+    public static boolean isCompatible(JIPipeNodeInfo info) {
+        switch (info.getCategory()) {
             case Internal:
             case Annotation:
                 return false;
         }
-        JIPipeGraphNode algorithm = declaration.newInstance();
+        JIPipeGraphNode algorithm = info.newInstance();
         for (JIPipeDataSlot inputSlot : algorithm.getInputSlots()) {
             if (!JIPipeImageJAdapterRegistry.getInstance().supportsJIPipeData(inputSlot.getAcceptedDataType()))
                 return false;
@@ -211,7 +211,7 @@ public class SingleImageJAlgorithmRun implements JIPipeValidatable {
         @Override
         public void serialize(SingleImageJAlgorithmRun run, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
             // Instantiate an unchanged algorithm to reduce the output
-            JIPipeGraphNode comparison = run.getAlgorithm().getDeclaration().newInstance();
+            JIPipeGraphNode comparison = run.getAlgorithm().getInfo().newInstance();
             jsonGenerator.writeStartObject();
 
             serializeParameters(run, comparison, jsonGenerator);
