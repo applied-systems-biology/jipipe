@@ -55,7 +55,10 @@ public class SplitChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private OutputSlotMapParameterCollection channelToSlotAssignment;
     private boolean ignoreMissingChannels = false;
-    private String annotationType = "Image index";
+    private String annotationColumnSlotName = "Channel";
+    private String annotationColumnChannelIndex = "Channel index";
+    private boolean annotateWithChannelIndex = true;
+    private boolean annotateWithSlotName = true;
 
     /**
      * Instantiates a new algorithm.
@@ -81,8 +84,11 @@ public class SplitChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
      */
     public SplitChannelsAlgorithm(SplitChannelsAlgorithm other) {
         super(other);
-        this.annotationType = other.annotationType;
+        this.annotationColumnSlotName = other.annotationColumnSlotName;
+        this.annotationColumnChannelIndex = other.annotationColumnChannelIndex;
         this.ignoreMissingChannels = other.ignoreMissingChannels;
+        this.annotateWithSlotName = other.annotateWithSlotName;
+        this.annotateWithChannelIndex = other.annotateWithChannelIndex;
 
         channelToSlotAssignment = new OutputSlotMapParameterCollection(Integer.class, this, () -> 0, false);
         other.channelToSlotAssignment.copyTo(channelToSlotAssignment);
@@ -118,8 +124,11 @@ public class SplitChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                 }
 
                 List<JIPipeAnnotation> annotations = new ArrayList<>();
-                if (!StringUtils.isNullOrEmpty(annotationType)) {
-                    annotations.add(new JIPipeAnnotation(annotationType, "channel=" + channelIndex));
+                if (annotateWithSlotName) {
+                    annotations.add(new JIPipeAnnotation(annotationColumnSlotName, slotName));
+                }
+                if(annotateWithChannelIndex) {
+                    annotations.add(new JIPipeAnnotation(annotationColumnChannelIndex, "" + channelIndex));
                 }
                 dataInterface.addOutputData(slotName, new ImagePlusGreyscaleData(image), annotations);
             }
@@ -170,8 +179,11 @@ public class SplitChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             }
 
             List<JIPipeAnnotation> annotations = new ArrayList<>();
-            if (!StringUtils.isNullOrEmpty(annotationType)) {
-                annotations.add(new JIPipeAnnotation(annotationType, "channel=" + channelIndex));
+            if (annotateWithSlotName) {
+                annotations.add(new JIPipeAnnotation(annotationColumnSlotName, slotName));
+            }
+            if(annotateWithChannelIndex) {
+                annotations.add(new JIPipeAnnotation(annotationColumnChannelIndex, "" + channelIndex));
             }
 
             // Rebuild image stack
@@ -194,7 +206,18 @@ public class SplitChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @Override
     public void reportValidity(JIPipeValidityReport report) {
-
+        if(annotateWithChannelIndex && StringUtils.isNullOrEmpty(annotationColumnChannelIndex)) {
+            report.forCategory("Channel index annotation column").reportIsInvalid("Column name is empty!",
+                    "You enabled adding the channel index as output annotation, but the column name is empty",
+                    "Change the column name to a non-empty string",
+                    this);
+        }
+        if(annotateWithSlotName && StringUtils.isNullOrEmpty(annotationColumnSlotName)) {
+            report.forCategory("Slot name annotation column").reportIsInvalid("Column name is empty!",
+                    "You enabled adding the channel index as output annotation, but the column name is empty",
+                    "Change the column name to a non-empty string",
+                    this);
+        }
     }
 
     @JIPipeDocumentation(name = "Channel assignment", description = "Please create an output slot for each greyscale channel you " +
@@ -216,16 +239,48 @@ public class SplitChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.ignoreMissingChannels = ignoreMissingChannels;
     }
 
-    @JIPipeDocumentation(name = "Generated annotation", description = "An optional annotation that is generated for each output to indicate which channel the data is coming from. " +
-            "The format will be channel=[index].")
-    @JIPipeParameter("annotation-type")
-    @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/annotation.png")
-    public String getAnnotationType() {
-        return annotationType;
+    @JIPipeDocumentation(name = "Annotate with slot names", description = "If enabled, the output slot name is added as annotation")
+    @JIPipeParameter("annotate-with-slot-name")
+    public boolean isAnnotateWithSlotName() {
+        return annotateWithSlotName;
     }
 
-    @JIPipeParameter("annotation-type")
-    public void setAnnotationType(String annotationType) {
-        this.annotationType = annotationType;
+    @JIPipeParameter("annotate-with-slot-name")
+    public void setAnnotateWithSlotName(boolean annotateWithSlotName) {
+        this.annotateWithSlotName = annotateWithSlotName;
+    }
+
+    @JIPipeDocumentation(name = "Annotate with channel-index", description = "If enabled, the output slot name is added as annotation")
+    @JIPipeParameter("annotate-with-channel-index")
+    public boolean isAnnotateWithChannelIndex() {
+        return annotateWithChannelIndex;
+    }
+
+    @JIPipeParameter("annotate-with-channel-index")
+    public void setAnnotateWithChannelIndex(boolean annotateWithChannelIndex) {
+        this.annotateWithChannelIndex = annotateWithChannelIndex;
+    }
+
+    @JIPipeDocumentation(name = "Channel index annotation column", description = "The annotation name that is used if 'Annotate with channel index' is enabled")
+    @JIPipeParameter("channel-index-annotation-column")
+    public String getAnnotationColumnChannelIndex() {
+        return annotationColumnChannelIndex;
+    }
+
+    @JIPipeParameter("channel-index-annotation-column")
+    public void setAnnotationColumnChannelIndex(String annotationColumnChannelIndex) {
+        this.annotationColumnChannelIndex = annotationColumnChannelIndex;
+    }
+
+    @JIPipeDocumentation(name = "Slot name annotation column", description = "The annotation name that is used if 'Annotate with slot names' is enabled")
+    @JIPipeParameter("slot-name-annotation-column")
+    @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/annotation.png")
+    public String getAnnotationColumnSlotName() {
+        return annotationColumnSlotName;
+    }
+
+    @JIPipeParameter("slot-name-annotation-column")
+    public void setAnnotationColumnSlotName(String annotationColumnSlotName) {
+        this.annotationColumnSlotName = annotationColumnSlotName;
     }
 }
