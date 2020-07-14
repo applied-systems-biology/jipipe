@@ -9,7 +9,7 @@ import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.algorithm.JIPipeInputSlot;
 import org.hkijena.jipipe.api.algorithm.JIPipeOutputSlot;
-import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmCategory;
+import org.hkijena.jipipe.api.algorithm.JIPipeNodeCategory;
 import org.hkijena.jipipe.api.algorithm.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.algorithm.JIPipeDataBatch;
 import org.hkijena.jipipe.api.algorithm.JIPipeIteratingAlgorithm;
@@ -23,7 +23,7 @@ import java.util.function.Supplier;
  * CLIJ2 algorithm ported from {@link net.haesleinhuepf.clij2.plugins.MaskLabel}
  */
 @JIPipeDocumentation(name = "CLIJ2 Mask Label", description = "Computes a masked image by applying a label mask to an image. " + "All pixel values x of image X will be copied" + "to the destination image in case pixel value m at the same position in the label_map image has the right index value i." + "f(x,m,i) = (x if (m == i); (0 otherwise)) Works for following image dimensions: 2D, 3D.")
-@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "Mask")
+@JIPipeOrganization(algorithmCategory = JIPipeNodeCategory.Processor, menuPath = "Mask")
 @JIPipeInputSlot(value = CLIJImageData.class, slotName = "input", autoCreate = true)
 @JIPipeInputSlot(value = CLIJImageData.class, slotName = "label_map", autoCreate = true)
 @JIPipeOutputSlot(value = CLIJImageData.class, slotName = "output", autoCreate = true)

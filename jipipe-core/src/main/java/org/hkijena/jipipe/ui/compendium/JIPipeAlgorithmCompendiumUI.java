@@ -23,7 +23,7 @@ import org.hkijena.jipipe.api.algorithm.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.algorithm.JIPipeGraphNode;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.parameters.*;
-import org.hkijena.jipipe.api.registries.JIPipeAlgorithmRegistry;
+import org.hkijena.jipipe.api.registries.JIPipeNodeRegistry;
 import org.hkijena.jipipe.api.registries.JIPipeParameterTypeRegistry;
 import org.hkijena.jipipe.ui.components.JIPipeNodeInfoListCellRenderer;
 import org.hkijena.jipipe.ui.components.MarkdownDocument;
@@ -54,7 +54,7 @@ public class JIPipeAlgorithmCompendiumUI extends JIPipeCompendiumUI<JIPipeNodeIn
     protected List<JIPipeNodeInfo> getFilteredItems() {
         Predicate<JIPipeNodeInfo> filterFunction = info -> getSearchField().test(info.getName() + " " + info.getDescription() + " " + info.getMenuPath());
 
-        return JIPipeAlgorithmRegistry.getInstance().getRegisteredAlgorithms().values().stream().filter(filterFunction)
+        return JIPipeNodeRegistry.getInstance().getRegisteredNodeInfos().values().stream().filter(filterFunction)
                 .sorted(Comparator.comparing(JIPipeNodeInfo::getName)).collect(Collectors.toList());
     }
 
@@ -137,7 +137,7 @@ public class JIPipeAlgorithmCompendiumUI extends JIPipeCompendiumUI<JIPipeNodeIn
 
 
         // Write author information
-        JIPipeDependency source = JIPipeAlgorithmRegistry.getInstance().getSourceOf(info.getId());
+        JIPipeDependency source = JIPipeNodeRegistry.getInstance().getSourceOf(info.getId());
         if (source != null) {
             builder.append("# Developer information\n\n");
             builder.append("<table>");

@@ -86,7 +86,7 @@ public class GraphNodeParametersUI extends JIPipeWorkbenchPanel {
 
     private void autoAddAlgorithm() {
         JIPipeGraphNode algorithm = PickAlgorithmDialog.showDialog(this,
-                parameters.getGraph().getAlgorithmNodes().values(),
+                parameters.getGraph().getNodes().values(),
                 "Add parameters of algorithm");
         if (algorithm != null) {
             List<GraphNodeParameterReferenceGroup> groupList = new ArrayList<>();

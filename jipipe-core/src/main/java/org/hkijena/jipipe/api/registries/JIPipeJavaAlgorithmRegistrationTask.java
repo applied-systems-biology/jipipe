@@ -61,7 +61,7 @@ public class JIPipeJavaAlgorithmRegistrationTask extends JIPipeDefaultAlgorithmR
             return;
         alreadyRegistered = true;
         JIPipeJavaNodeInfo info = new JIPipeJavaNodeInfo(id, algorithmClass);
-        JIPipeAlgorithmRegistry.getInstance().register(info, source);
+        JIPipeNodeRegistry.getInstance().register(info, source);
         if (icon != null)
             JIPipeUIAlgorithmRegistry.getInstance().registerIcon(info, icon);
     }

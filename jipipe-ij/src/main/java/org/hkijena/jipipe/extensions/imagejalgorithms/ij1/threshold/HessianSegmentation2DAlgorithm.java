@@ -28,7 +28,7 @@ import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.algorithm.*;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.registries.JIPipeAlgorithmRegistry;
+import org.hkijena.jipipe.api.registries.JIPipeNodeRegistry;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.EigenvalueSelection2D;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
@@ -48,7 +48,7 @@ import static org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExt
  */
 @JIPipeDocumentation(name = "Hessian segmentation 2D", description = "Segments by applying a Hessian and morphological postprocessing. " +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
-@JIPipeOrganization(menuPath = "Threshold", algorithmCategory = JIPipeAlgorithmCategory.Processor)
+@JIPipeOrganization(menuPath = "Threshold", algorithmCategory = JIPipeNodeCategory.Processor)
 @JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input")
 @JIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output")
 public class HessianSegmentation2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
@@ -71,7 +71,7 @@ public class HessianSegmentation2DAlgorithm extends JIPipeSimpleIteratingAlgorit
                 .allowOutputSlotInheritance(true)
                 .seal()
                 .build());
-        this.autoThresholding = (AutoThreshold2DAlgorithm) JIPipeAlgorithmRegistry.getInstance().getInfoById("ij1-threshold-auto2d").newInstance();
+        this.autoThresholding = (AutoThreshold2DAlgorithm) JIPipeNodeRegistry.getInstance().getInfoById("ij1-threshold-auto2d").newInstance();
     }
 
     /**

@@ -31,7 +31,7 @@ import java.util.function.Supplier;
  * Wrapper around {@link ij.process.ImageProcessor}
  */
 @JIPipeDocumentation(name = "Divide by maximum", description = "Divides greyscale pixel values by the global maximum across all slices.")
-@JIPipeOrganization(menuPath = "Math", algorithmCategory = JIPipeAlgorithmCategory.Processor)
+@JIPipeOrganization(menuPath = "Math", algorithmCategory = JIPipeNodeCategory.Processor)
 @JIPipeInputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Input")
 @JIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Output")
 public class DivideByMaximumAlgorithm extends JIPipeSimpleIteratingAlgorithm {

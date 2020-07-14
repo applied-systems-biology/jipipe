@@ -32,7 +32,7 @@ import java.util.function.Supplier;
 @JIPipeDocumentation(name = "Results table from file")
 @JIPipeInputSlot(value = FileData.class, slotName = "Files", autoCreate = true)
 @JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Results table", autoCreate = true)
-@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.DataSource)
+@JIPipeOrganization(algorithmCategory = JIPipeNodeCategory.DataSource)
 public class ResultsTableFromFile extends JIPipeSimpleIteratingAlgorithm {
 
     /**

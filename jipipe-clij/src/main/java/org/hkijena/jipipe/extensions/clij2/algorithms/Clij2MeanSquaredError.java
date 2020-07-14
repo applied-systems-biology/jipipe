@@ -9,7 +9,7 @@ import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.algorithm.JIPipeInputSlot;
 import org.hkijena.jipipe.api.algorithm.JIPipeOutputSlot;
-import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmCategory;
+import org.hkijena.jipipe.api.algorithm.JIPipeNodeCategory;
 import org.hkijena.jipipe.api.algorithm.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.algorithm.JIPipeDataBatch;
 import org.hkijena.jipipe.api.algorithm.JIPipeSimpleIteratingAlgorithm;
@@ -22,7 +22,7 @@ import java.util.function.Supplier;
  * CLIJ2 algorithm ported from {@link net.haesleinhuepf.clij2.plugins.MeanSquaredError}
  */
 @JIPipeDocumentation(name = "CLIJ2 Mean Squared Error", description = "Determines the mean squared error (MSE) between two images. " + "The MSE will be stored in a new row of ImageJs" + "Results table in the column 'MSE'. Works for following image dimensions: 2D, 3D.")
-@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "Math\nCalculate")
+@JIPipeOrganization(algorithmCategory = JIPipeNodeCategory.Processor, menuPath = "Math\nCalculate")
 @JIPipeInputSlot(value = CLIJImageData.class, slotName = "buffer1", autoCreate = true)
 @JIPipeOutputSlot(value = CLIJImageData.class, slotName = "buffer2", autoCreate = true)
 

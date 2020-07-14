@@ -39,7 +39,7 @@ import java.util.stream.Stream;
  * Algorithm that lists files in each folder
  */
 @JIPipeDocumentation(name = "List files", description = "Lists all files in the input folder")
-@JIPipeOrganization(menuPath = "List", algorithmCategory = JIPipeAlgorithmCategory.FileSystem)
+@JIPipeOrganization(menuPath = "List", algorithmCategory = JIPipeNodeCategory.FileSystem)
 
 // Algorithm flow
 @JIPipeInputSlot(value = FolderData.class, slotName = "Folders", autoCreate = true)

@@ -32,7 +32,7 @@ import java.util.function.Supplier;
  * Filters input files
  */
 @JIPipeDocumentation(name = "Filter paths", description = "Filters the paths (files/folders) by their name or absolute path")
-@JIPipeOrganization(menuPath = "Filter", algorithmCategory = JIPipeAlgorithmCategory.FileSystem)
+@JIPipeOrganization(menuPath = "Filter", algorithmCategory = JIPipeNodeCategory.FileSystem)
 
 // Algorithm flow
 @JIPipeInputSlot(value = PathData.class, slotName = "Input", autoCreate = true)

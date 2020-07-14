@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
  * Algorithm that integrates columns
  */
 @JIPipeDocumentation(name = "Filter table", description = "Filters the table by values")
-@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "Tables")
+@JIPipeOrganization(algorithmCategory = JIPipeNodeCategory.Processor, menuPath = "Tables")
 @JIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
 public class FilterTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {

@@ -57,7 +57,7 @@ import static org.hkijena.jipipe.api.algorithm.JIPipeIteratingAlgorithm.ITERATIN
         "the select() function or comparable functions. You have have one results table input which " +
         "can be adressed via the global functions. Input ROI are merged into one ROI manager.\n\n" +
         "You can define variables that are passed from JIPipe to ImageJ. Variables are also created for incoming path-like data." + "\n\n" + ITERATING_ALGORITHM_DESCRIPTION)
-@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor)
+@JIPipeOrganization(algorithmCategory = JIPipeNodeCategory.Processor)
 @JIPipeInputSlot(ImagePlusData.class)
 @JIPipeInputSlot(ROIListData.class)
 @JIPipeInputSlot(ResultsTableData.class)

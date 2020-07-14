@@ -35,7 +35,7 @@ import static org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExt
 @JIPipeDocumentation(name = "Despeckle 2D", description = "Applies a median filter with radius=1. " +
         "If a multi-channel image is provided, the operation is applied to each channel. " +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
-@JIPipeOrganization(menuPath = "Noise", algorithmCategory = JIPipeAlgorithmCategory.Processor)
+@JIPipeOrganization(menuPath = "Noise", algorithmCategory = JIPipeNodeCategory.Processor)
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input")
 @JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output")
 public class DespeckleFilter2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {

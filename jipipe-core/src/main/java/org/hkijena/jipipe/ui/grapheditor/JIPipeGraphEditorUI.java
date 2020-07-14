@@ -22,7 +22,7 @@ import org.hkijena.jipipe.api.events.AlgorithmGraphChangedEvent;
 import org.hkijena.jipipe.api.events.AlgorithmRegisteredEvent;
 import org.hkijena.jipipe.api.history.AddNodeGraphHistorySnapshot;
 import org.hkijena.jipipe.api.history.MoveNodesGraphHistorySnapshot;
-import org.hkijena.jipipe.api.registries.JIPipeAlgorithmRegistry;
+import org.hkijena.jipipe.api.registries.JIPipeNodeRegistry;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.settings.GraphEditorUISettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
@@ -82,7 +82,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         this.compartment = compartment;
         initialize();
         reloadMenuBar();
-        JIPipeAlgorithmRegistry.getInstance().getEventBus().register(this);
+        JIPipeNodeRegistry.getInstance().getEventBus().register(this);
         algorithmGraph.getEventBus().register(this);
         updateNavigation();
     }

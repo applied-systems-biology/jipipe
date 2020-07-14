@@ -50,7 +50,7 @@ public class ImagePlusFromFileNodeInfo implements JIPipeNodeInfo {
     }
 
     @Override
-    public Class<? extends JIPipeGraphNode> getAlgorithmClass() {
+    public Class<? extends JIPipeGraphNode> getInstanceClass() {
         return ImagePlusFromFile.class;
     }
 
@@ -80,8 +80,8 @@ public class ImagePlusFromFileNodeInfo implements JIPipeNodeInfo {
     }
 
     @Override
-    public JIPipeAlgorithmCategory getCategory() {
-        return JIPipeAlgorithmCategory.DataSource;
+    public JIPipeNodeCategory getCategory() {
+        return JIPipeNodeCategory.DataSource;
     }
 
     @Override

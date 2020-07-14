@@ -44,7 +44,7 @@ public class JIPipeDefaultRegistry extends AbstractService implements JIPipeRegi
     private EventBus eventBus = new EventBus();
     private Set<String> registeredExtensionIds = new HashSet<>();
     private List<JIPipeDependency> registeredExtensions = new ArrayList<>();
-    private JIPipeAlgorithmRegistry algorithmRegistry = new JIPipeAlgorithmRegistry();
+    private JIPipeNodeRegistry algorithmRegistry = new JIPipeNodeRegistry();
     private JIPipeDatatypeRegistry datatypeRegistry = new JIPipeDatatypeRegistry();
     private JIPipeUIDatatypeRegistry uiDatatypeRegistry = new JIPipeUIDatatypeRegistry();
     private JIPipeUIParameterTypeRegistry uiParametertypeRegistry = new JIPipeUIParameterTypeRegistry();
@@ -74,7 +74,7 @@ public class JIPipeDefaultRegistry extends AbstractService implements JIPipeRegi
         registeredExtensions = new ArrayList<>();
         registeredExtensionIds = new HashSet<>();
         datatypeRegistry = new JIPipeDatatypeRegistry();
-        algorithmRegistry = new JIPipeAlgorithmRegistry();
+        algorithmRegistry = new JIPipeNodeRegistry();
         uiDatatypeRegistry = new JIPipeUIDatatypeRegistry();
         uiParametertypeRegistry = new JIPipeUIParameterTypeRegistry();
         imageJDataAdapterRegistry = new JIPipeImageJAdapterRegistry();
@@ -121,7 +121,7 @@ public class JIPipeDefaultRegistry extends AbstractService implements JIPipeRegi
         }
 
         // Check for errors
-        for (JIPipeNodeInfo info : algorithmRegistry.getRegisteredAlgorithms().values()) {
+        for (JIPipeNodeInfo info : algorithmRegistry.getRegisteredNodeInfos().values()) {
             JIPipeGraphNode algorithm = info.newInstance();
             JIPipeParameterTree collection = new JIPipeParameterTree(algorithm);
             for (Map.Entry<String, JIPipeParameterAccess> entry : collection.getParameters().entrySet()) {
@@ -156,7 +156,7 @@ public class JIPipeDefaultRegistry extends AbstractService implements JIPipeRegi
     }
 
     @Override
-    public JIPipeAlgorithmRegistry getAlgorithmRegistry() {
+    public JIPipeNodeRegistry getAlgorithmRegistry() {
         return algorithmRegistry;
     }
 

@@ -155,6 +155,10 @@ public class JIPipeProjectInfoUI extends JIPipeProjectWorkbenchPanel {
             if (GeneralUISettings.getInstance().isProjectInfoGeneratesPreview()) {
                 BufferedImage screenshot = canvasUI.createScreenshotPNG();
                 ImagePlus img = new ImagePlus("screenshot", screenshot);
+                if(img.getWidth() > 1000 || img.getHeight() > 1000) {
+                    double factor = Math.min(1000.0 / img.getWidth(), 1000.0 / img.getHeight());
+                    img.getProcessor().scale(factor, factor);
+                }
                 GaussianBlur blur = new GaussianBlur();
                 blur.blurGaussian(img.getProcessor(), 8);
                 headerBackground = img.getBufferedImage();

@@ -36,7 +36,7 @@ import java.util.function.Supplier;
         "are assigned the EDM value, which is equal to the radius of the largest circle " +
         "that fits into the particle, with the UEP as the center. " +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
-@JIPipeOrganization(menuPath = "Binary", algorithmCategory = JIPipeAlgorithmCategory.Processor)
+@JIPipeOrganization(menuPath = "Binary", algorithmCategory = JIPipeNodeCategory.Processor)
 @JIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Input")
 @JIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output")
 public class UltimateErodedPoints2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {

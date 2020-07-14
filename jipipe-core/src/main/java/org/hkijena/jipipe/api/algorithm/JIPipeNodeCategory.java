@@ -18,7 +18,7 @@ import java.awt.*;
 /**
  * Available algorithm categories
  */
-public enum JIPipeAlgorithmCategory {
+public enum JIPipeNodeCategory {
     /**
      * Algorithms that convert one data type to another
      */
@@ -60,7 +60,7 @@ public enum JIPipeAlgorithmCategory {
      * @return Color instance
      */
     public Color getColor(float s, float v) {
-        JIPipeAlgorithmCategory[] values = JIPipeAlgorithmCategory.values();
+        JIPipeNodeCategory[] values = JIPipeNodeCategory.values();
         for (int i = 0; i < values.length; ++i) {
             if (values[i] == this) {
                 return Color.getHSBColor(i * 1.0f / values.length, s, v);

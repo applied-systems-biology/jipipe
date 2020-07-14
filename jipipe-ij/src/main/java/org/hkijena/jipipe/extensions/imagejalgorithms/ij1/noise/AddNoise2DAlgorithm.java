@@ -34,7 +34,7 @@ import static org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExt
  */
 @JIPipeDocumentation(name = "Add normal distributed noise 2D", description = "Adds normal distributed noise with mean zero and customizable standard deviation to the image. " +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
-@JIPipeOrganization(menuPath = "Noise", algorithmCategory = JIPipeAlgorithmCategory.Processor)
+@JIPipeOrganization(menuPath = "Noise", algorithmCategory = JIPipeNodeCategory.Processor)
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input")
 @JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output")
 public class AddNoise2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {

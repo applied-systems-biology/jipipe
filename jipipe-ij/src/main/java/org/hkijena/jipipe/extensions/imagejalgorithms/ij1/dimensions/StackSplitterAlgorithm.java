@@ -47,7 +47,7 @@ import java.util.stream.Collectors;
  */
 @JIPipeDocumentation(name = "Reduce & split stacks", description = "Splits incoming stacks into a customizable amount of stacks based on stack indices. Add more output slots " +
         "to create more groups.")
-@JIPipeOrganization(menuPath = "Dimensions", algorithmCategory = JIPipeAlgorithmCategory.Processor)
+@JIPipeOrganization(menuPath = "Dimensions", algorithmCategory = JIPipeNodeCategory.Processor)
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input")
 @JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output")
 public class StackSplitterAlgorithm extends JIPipeSimpleIteratingAlgorithm {

@@ -191,7 +191,7 @@ public class JIPipeProject implements JIPipeValidatable {
     private void initializeCompartment(JIPipeProjectCompartment compartment) {
         compartment.setProject(this);
         JIPipeCompartmentOutput compartmentOutput = null;
-        for (JIPipeGraphNode algorithm : graph.getAlgorithmNodes().values()) {
+        for (JIPipeGraphNode algorithm : graph.getNodes().values()) {
             if (algorithm instanceof JIPipeCompartmentOutput && algorithm.getCompartment().equals(compartment.getProjectCompartmentId())) {
                 compartmentOutput = (JIPipeCompartmentOutput) algorithm;
             }
@@ -239,7 +239,7 @@ public class JIPipeProject implements JIPipeValidatable {
     @Subscribe
     public void onCompartmentGraphChanged(AlgorithmGraphChangedEvent event) {
         if (event.getAlgorithmGraph() == compartmentGraph) {
-            for (JIPipeGraphNode algorithm : compartmentGraph.getAlgorithmNodes().values()) {
+            for (JIPipeGraphNode algorithm : compartmentGraph.getNodes().values()) {
                 JIPipeProjectCompartment compartment = (JIPipeProjectCompartment) algorithm;
                 if (!compartment.isInitialized()) {
                     compartments.put(compartment.getProjectCompartmentId(), compartment);
@@ -309,7 +309,7 @@ public class JIPipeProject implements JIPipeValidatable {
      */
     public void setWorkDirectory(Path workDirectory) {
         this.workDirectory = workDirectory;
-        for (JIPipeGraphNode algorithm : graph.getAlgorithmNodes().values()) {
+        for (JIPipeGraphNode algorithm : graph.getNodes().values()) {
             algorithm.setWorkDirectory(workDirectory);
         }
         eventBus.post(new WorkDirectoryChangedEvent(workDirectory));
@@ -331,7 +331,7 @@ public class JIPipeProject implements JIPipeValidatable {
         Map<String, String> compartmentRenames = compartmentGraph.cleanupIds();
         Map<String, Set<JIPipeGraphNode>> compartmentNodes = new HashMap<>();
         for (Map.Entry<String, String> entry : compartmentRenames.entrySet()) {
-            Set<JIPipeGraphNode> nodes = graph.getAlgorithmNodes().values().stream().filter(node -> Objects.equals(node.getCompartment(), entry.getKey())).collect(Collectors.toSet());
+            Set<JIPipeGraphNode> nodes = graph.getNodes().values().stream().filter(node -> Objects.equals(node.getCompartment(), entry.getKey())).collect(Collectors.toSet());
             compartmentNodes.put(entry.getKey(), nodes);
         }
         for (Map.Entry<String, Set<JIPipeGraphNode>> entry : compartmentNodes.entrySet()) {
@@ -342,7 +342,7 @@ public class JIPipeProject implements JIPipeValidatable {
                 node.setCompartment(newCompartment);
             }
         }
-        for (JIPipeGraphNode node : graph.getAlgorithmNodes().values()) {
+        for (JIPipeGraphNode node : graph.getNodes().values()) {
             // Rename visible compartments
             node.setVisibleCompartments(node.getVisibleCompartments().stream().map(compartmentRenames::get).collect(Collectors.toSet()));
 
@@ -489,7 +489,7 @@ public class JIPipeProject implements JIPipeValidatable {
 
             // read compartments
             project.compartmentGraph.fromJson(node.get("compartments").get("compartment-graph"));
-            for (JIPipeGraphNode algorithm : project.compartmentGraph.getAlgorithmNodes().values()) {
+            for (JIPipeGraphNode algorithm : project.compartmentGraph.getNodes().values()) {
                 JIPipeProjectCompartment compartment = (JIPipeProjectCompartment) algorithm;
                 compartment.setProject(project);
                 project.compartments.put(compartment.getProjectCompartmentId(), compartment);

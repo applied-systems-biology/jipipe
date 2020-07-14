@@ -17,7 +17,7 @@ import org.hkijena.jipipe.JIPipeJsonExtension;
 import org.hkijena.jipipe.api.algorithm.JIPipeGraph;
 import org.hkijena.jipipe.api.grouping.JsonNodeInfo;
 import org.hkijena.jipipe.api.grouping.NodeGroup;
-import org.hkijena.jipipe.api.registries.JIPipeAlgorithmRegistry;
+import org.hkijena.jipipe.api.registries.JIPipeNodeRegistry;
 import org.hkijena.jipipe.ui.JIPipeJsonExtensionWindow;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.components.DocumentTabPane;
@@ -129,7 +129,7 @@ public class JIPipeJsonExporter extends JIPipeGraphEditorUI {
             name = "my-algorithm";
         }
         name = StringUtils.jsonify(name);
-        name = StringUtils.makeUniqueString(name, "-", id -> JIPipeAlgorithmRegistry.getInstance().hasAlgorithmWithId(id));
+        name = StringUtils.makeUniqueString(name, "-", id -> JIPipeNodeRegistry.getInstance().hasNodeInfoWithId(id));
         nodeInfo.setId(name);
     }
 

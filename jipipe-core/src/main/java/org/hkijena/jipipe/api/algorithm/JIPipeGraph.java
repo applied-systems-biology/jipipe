@@ -30,7 +30,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.events.*;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
-import org.hkijena.jipipe.api.registries.JIPipeAlgorithmRegistry;
+import org.hkijena.jipipe.api.registries.JIPipeNodeRegistry;
 import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.utils.GraphUtils;
@@ -192,7 +192,7 @@ public class JIPipeGraph implements JIPipeValidatable {
      * @return True if the user can delete the algorithm
      */
     public boolean canUserDelete(JIPipeGraphNode algorithm) {
-        return algorithm.getCategory() != JIPipeAlgorithmCategory.Internal || algorithm instanceof JIPipeProjectCompartment;
+        return algorithm.getCategory() != JIPipeNodeCategory.Internal || algorithm instanceof JIPipeProjectCompartment;
     }
 
     /**
@@ -246,7 +246,7 @@ public class JIPipeGraph implements JIPipeValidatable {
      * @param user      if a user triggered the operation. If true, will not remove internal nodes
      */
     public void removeNode(JIPipeGraphNode algorithm, boolean user) {
-        if (user && algorithm.getCategory() == JIPipeAlgorithmCategory.Internal)
+        if (user && algorithm.getCategory() == JIPipeNodeCategory.Internal)
             return;
         ++preventTriggerEvents;
         // Do regular disconnect
@@ -345,7 +345,7 @@ public class JIPipeGraph implements JIPipeValidatable {
      */
     public JIPipeParameterTree getParameterTree() {
         JIPipeParameterTree tree = new JIPipeParameterTree();
-        for (Map.Entry<String, JIPipeGraphNode> entry : getAlgorithmNodes().entrySet()) {
+        for (Map.Entry<String, JIPipeGraphNode> entry : getNodes().entrySet()) {
             JIPipeParameterTree.Node node = tree.add(entry.getValue(), entry.getKey(), null);
             node.setName(entry.getValue().getName());
             node.setDescription(entry.getValue().getCustomDescription());
@@ -603,7 +603,7 @@ public class JIPipeGraph implements JIPipeValidatable {
      *
      * @return Map from algorithm instance ID to algorithm instance
      */
-    public BiMap<String, JIPipeGraphNode> getAlgorithmNodes() {
+    public BiMap<String, JIPipeGraphNode> getNodes() {
         return ImmutableBiMap.copyOf(algorithms);
     }
 
@@ -646,7 +646,7 @@ public class JIPipeGraph implements JIPipeValidatable {
         for (Map.Entry<String, JsonNode> kv : ImmutableList.copyOf(node.get("nodes").fields())) {
             if (!algorithms.containsKey(kv.getKey())) {
                 String infoInfo = kv.getValue().get("jipipe:algorithm-type").asText();
-                JIPipeNodeInfo info = JIPipeAlgorithmRegistry.getInstance().getInfoById(infoInfo);
+                JIPipeNodeInfo info = JIPipeNodeRegistry.getInstance().getInfoById(infoInfo);
                 JIPipeGraphNode algorithm = info.newInstance();
                 algorithm.fromJson(kv.getValue());
                 insertNode(StringUtils.jsonify(kv.getKey()), algorithm, algorithm.getCompartment());
@@ -698,7 +698,7 @@ public class JIPipeGraph implements JIPipeValidatable {
      */
     public Map<String, JIPipeGraphNode> mergeWith(JIPipeGraph otherGraph) {
         Map<String, JIPipeGraphNode> insertedNodes = new HashMap<>();
-        for (JIPipeGraphNode algorithm : otherGraph.getAlgorithmNodes().values()) {
+        for (JIPipeGraphNode algorithm : otherGraph.getNodes().values()) {
             String newId = insertNode(algorithm, algorithm.getCompartment());
             insertedNodes.put(newId, algorithm);
         }
@@ -721,7 +721,7 @@ public class JIPipeGraph implements JIPipeValidatable {
     public JIPipeGraph extract(Collection<JIPipeGraphNode> nodes, boolean withInternal) {
         JIPipeGraph graph = new JIPipeGraph();
         for (JIPipeGraphNode algorithm : nodes) {
-            if (!withInternal && algorithm.getCategory() == JIPipeAlgorithmCategory.Internal)
+            if (!withInternal && algorithm.getCategory() == JIPipeNodeCategory.Internal)
                 continue;
             JIPipeGraphNode copy = algorithm.getInfo().clone(algorithm);
             if (copy.getCompartment() != null) {
@@ -1017,7 +1017,7 @@ public class JIPipeGraph implements JIPipeValidatable {
      * @return True if this graph contains an equivalent algorithm (with the same ID)
      */
     public boolean containsEquivalentOf(JIPipeGraphNode foreign, JIPipeGraph foreignGraph) {
-        return getAlgorithmNodes().containsKey(foreignGraph.getIdOf(foreign));
+        return getNodes().containsKey(foreignGraph.getIdOf(foreign));
     }
 
     /**
@@ -1027,7 +1027,7 @@ public class JIPipeGraph implements JIPipeValidatable {
      * @return Equivalent algorithm within this graph
      */
     public JIPipeGraphNode getEquivalentAlgorithm(JIPipeGraphNode foreign) {
-        return getAlgorithmNodes().get(foreign.getIdInGraph());
+        return getNodes().get(foreign.getIdInGraph());
     }
 
     /**
@@ -1038,9 +1038,9 @@ public class JIPipeGraph implements JIPipeValidatable {
      */
     public JIPipeDataSlot getEquivalentSlot(JIPipeDataSlot foreign) {
         if (foreign.isInput())
-            return getAlgorithmNodes().get(foreign.getNode().getIdInGraph()).getInputSlotMap().get(foreign.getName());
+            return getNodes().get(foreign.getNode().getIdInGraph()).getInputSlotMap().get(foreign.getName());
         else
-            return getAlgorithmNodes().get(foreign.getNode().getIdInGraph()).getOutputSlotMap().get(foreign.getName());
+            return getNodes().get(foreign.getNode().getIdInGraph()).getOutputSlotMap().get(foreign.getName());
     }
 
     /**

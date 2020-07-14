@@ -25,7 +25,7 @@ import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.algorithm.*;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.registries.JIPipeAlgorithmRegistry;
+import org.hkijena.jipipe.api.registries.JIPipeNodeRegistry;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.greyscale.ImagePlus2DGreyscaleData;
@@ -43,7 +43,7 @@ import static org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExt
  */
 @JIPipeDocumentation(name = "Bright spots segmentation 2D", description = "Applies thresholding by applying a background subtraction, auto thresholding, and " +
         "various morphological operations. If higher-dimensional data is provided, the filter is applied to each 2D slice.")
-@JIPipeOrganization(menuPath = "Threshold", algorithmCategory = JIPipeAlgorithmCategory.Processor)
+@JIPipeOrganization(menuPath = "Threshold", algorithmCategory = JIPipeNodeCategory.Processor)
 
 // Algorithm flow
 @JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input")
@@ -68,7 +68,7 @@ public class BrightSpotsSegmentation2DAlgorithm extends JIPipeSimpleIteratingAlg
                 .allowOutputSlotInheritance(true)
                 .seal()
                 .build());
-        this.autoThresholding = (AutoThreshold2DAlgorithm) JIPipeAlgorithmRegistry.getInstance().getInfoById("ij1-threshold-auto2d").newInstance();
+        this.autoThresholding = (AutoThreshold2DAlgorithm) JIPipeNodeRegistry.getInstance().getInfoById("ij1-threshold-auto2d").newInstance();
     }
 
     /**

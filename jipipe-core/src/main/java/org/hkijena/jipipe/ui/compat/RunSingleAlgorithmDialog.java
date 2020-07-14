@@ -26,7 +26,7 @@ import org.hkijena.jipipe.api.data.JIPipeMutableSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.events.AlgorithmSlotsChangedEvent;
 import org.hkijena.jipipe.api.history.JIPipeGraphHistory;
-import org.hkijena.jipipe.api.registries.JIPipeAlgorithmRegistry;
+import org.hkijena.jipipe.api.registries.JIPipeNodeRegistry;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.*;
@@ -137,7 +137,7 @@ public class RunSingleAlgorithmDialog extends JDialog implements JIPipeWorkbench
     private List<JIPipeNodeInfo> getFilteredAndSortedInfos() {
         Predicate<JIPipeNodeInfo> filterFunction = info -> searchField.test(info.getName() + " " + info.getDescription() + " " + info.getMenuPath());
 
-        return JIPipeAlgorithmRegistry.getInstance().getRegisteredAlgorithms().values().stream().filter(filterFunction)
+        return JIPipeNodeRegistry.getInstance().getRegisteredNodeInfos().values().stream().filter(filterFunction)
                 .sorted(Comparator.comparing(JIPipeNodeInfo::getName)).collect(Collectors.toList());
     }
 

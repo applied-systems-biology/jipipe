@@ -36,7 +36,7 @@ import java.util.function.Supplier;
  * Filters input files
  */
 @JIPipeDocumentation(name = "Annotation table to paths", description = "Converts an annotation table to path data. If available, annotation are added to the output.")
-@JIPipeOrganization(menuPath = "Filesystem", algorithmCategory = JIPipeAlgorithmCategory.Converter)
+@JIPipeOrganization(menuPath = "Filesystem", algorithmCategory = JIPipeNodeCategory.Converter)
 
 // Algorithm flow
 @JIPipeInputSlot(value = AnnotationTableData.class, slotName = "Input", autoCreate = true)

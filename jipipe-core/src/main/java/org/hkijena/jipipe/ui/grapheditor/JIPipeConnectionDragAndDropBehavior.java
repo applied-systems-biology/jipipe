@@ -83,7 +83,7 @@ public class JIPipeConnectionDragAndDropBehavior implements DropTargetListener, 
                     JsonNode graphSlotLink = node.path("slot");
                     JsonNode graphSlotTypeLink = node.path("slot-type");
                     if (!graphNodeLink.isMissingNode() && !graphSlotLink.isMissingNode() && !graphSlotTypeLink.isMissingNode()) {
-                        JIPipeGraphNode graphNode = slotUI.getGraph().getAlgorithmNodes().getOrDefault(graphNodeLink.asText(), null);
+                        JIPipeGraphNode graphNode = slotUI.getGraph().getNodes().getOrDefault(graphNodeLink.asText(), null);
                         if (graphNode != null) {
                             JIPipeSlotType slotType = JIPipeSlotType.valueOf(graphSlotTypeLink.asText());
                             JIPipeDataSlot secondSlot = null;

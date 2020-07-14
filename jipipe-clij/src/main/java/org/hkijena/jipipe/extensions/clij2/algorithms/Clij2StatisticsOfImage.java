@@ -10,7 +10,7 @@ import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.algorithm.JIPipeInputSlot;
 import org.hkijena.jipipe.api.algorithm.JIPipeOutputSlot;
-import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmCategory;
+import org.hkijena.jipipe.api.algorithm.JIPipeNodeCategory;
 import org.hkijena.jipipe.api.algorithm.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.algorithm.JIPipeDataBatch;
 import org.hkijena.jipipe.api.algorithm.JIPipeSimpleIteratingAlgorithm;
@@ -24,7 +24,7 @@ import java.util.function.Supplier;
  * CLIJ2 algorithm ported from {@link net.haesleinhuepf.clij2.plugins.StatisticsOfImage}
  */
 @JIPipeDocumentation(name = "CLIJ2 Statistics Of Image", description = "")
-@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Analysis, menuPath = "Statistics")
+@JIPipeOrganization(algorithmCategory = JIPipeNodeCategory.Analysis, menuPath = "Statistics")
 @JIPipeInputSlot(value = CLIJImageData.class, slotName = "inputImage", autoCreate = true)
 @JIPipeOutputSlot(value = ResultsTableData.class, slotName = "resultsTable", autoCreate = true)
 

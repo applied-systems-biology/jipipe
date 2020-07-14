@@ -44,7 +44,7 @@ import java.util.function.Supplier;
 @JIPipeDocumentation(name = "Modify annotation rows (Script)", description = "Executes a Python-script for each annotation row. " +
         "All annotations are passed as dictionary 'annotations' that can be modified using Python functions. The values are then extracted and " +
         "converted into their respective JIPipe types.")
-@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Annotation, menuPath = "Modify")
+@JIPipeOrganization(algorithmCategory = JIPipeNodeCategory.Annotation, menuPath = "Modify")
 @JIPipeInputSlot(value = JIPipeData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = JIPipeData.class, slotName = "Output", inheritedSlot = "Input", autoCreate = true)
 public class ModifyAnnotationScript extends JIPipeSimpleIteratingAlgorithm {

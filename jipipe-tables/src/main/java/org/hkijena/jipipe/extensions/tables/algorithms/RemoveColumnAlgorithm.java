@@ -29,7 +29,7 @@ import java.util.function.Supplier;
  * Algorithm that removes columns
  */
 @JIPipeDocumentation(name = "Remove table column", description = "Removes one or multiple columns by name")
-@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "Tables")
+@JIPipeOrganization(algorithmCategory = JIPipeNodeCategory.Processor, menuPath = "Tables")
 @JIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
 public class RemoveColumnAlgorithm extends JIPipeSimpleIteratingAlgorithm {

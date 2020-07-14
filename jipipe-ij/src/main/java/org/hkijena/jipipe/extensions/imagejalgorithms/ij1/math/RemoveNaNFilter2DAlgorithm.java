@@ -35,7 +35,7 @@ import java.util.function.Supplier;
 @JIPipeDocumentation(name = "Replace NaN by local median", description = "Filter that removes NaN values from floating point images by replacing them by the local median. " +
         "If a multi-channel image is provided, the operation is applied to each channel. " +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
-@JIPipeOrganization(menuPath = "Math", algorithmCategory = JIPipeAlgorithmCategory.Processor)
+@JIPipeOrganization(menuPath = "Math", algorithmCategory = JIPipeNodeCategory.Processor)
 @JIPipeInputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Input")
 @JIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Output")
 public class RemoveNaNFilter2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {

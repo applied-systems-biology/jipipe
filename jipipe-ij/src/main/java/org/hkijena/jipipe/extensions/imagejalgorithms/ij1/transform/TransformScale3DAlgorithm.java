@@ -34,7 +34,7 @@ import java.util.function.Supplier;
  * Wrapper around {@link ImageProcessor}
  */
 @JIPipeDocumentation(name = "Scale 3D image", description = "Scales a 3D image.")
-@JIPipeOrganization(menuPath = "Transform", algorithmCategory = JIPipeAlgorithmCategory.Processor)
+@JIPipeOrganization(menuPath = "Transform", algorithmCategory = JIPipeNodeCategory.Processor)
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input")
 @JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output")
 public class TransformScale3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {

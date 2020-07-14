@@ -21,7 +21,7 @@ import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
-import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmCategory;
+import org.hkijena.jipipe.api.algorithm.JIPipeNodeCategory;
 import org.hkijena.jipipe.api.algorithm.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.algorithm.JIPipeGraph;
 import org.hkijena.jipipe.api.algorithm.JIPipeGraphNode;
@@ -35,7 +35,7 @@ import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameterReferenceAcc
 import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameters;
 import org.hkijena.jipipe.api.grouping.parameters.NodeGroupContents;
 import org.hkijena.jipipe.api.parameters.*;
-import org.hkijena.jipipe.api.registries.JIPipeAlgorithmRegistry;
+import org.hkijena.jipipe.api.registries.JIPipeNodeRegistry;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.util.HashMap;
@@ -45,7 +45,7 @@ import java.util.Map;
  * A sub-graph algorithm that can be defined by a user
  */
 @JIPipeDocumentation(name = "Group", description = "A sub-graph that contains its own pipeline.")
-@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Miscellaneous)
+@JIPipeOrganization(algorithmCategory = JIPipeNodeCategory.Miscellaneous)
 public class NodeGroup extends GraphWrapperAlgorithm implements JIPipeCustomParameterCollection {
 
     private NodeGroupContents contents;
@@ -81,7 +81,7 @@ public class NodeGroup extends GraphWrapperAlgorithm implements JIPipeCustomPara
      * @param autoCreateSlots automatically create input and output slots
      */
     public NodeGroup(JIPipeGraph graph, boolean autoCreateSlots) {
-        super(JIPipeAlgorithmRegistry.getInstance().getInfoById("node-group"), new JIPipeGraph());
+        super(JIPipeNodeRegistry.getInstance().getInfoById("node-group"), new JIPipeGraph());
 
         // Remove all algorithms with no i/o
 //        for (JIPipeGraphNode node : ImmutableList.copyOf(graph.getAlgorithmNodes().values())) {
@@ -91,12 +91,12 @@ public class NodeGroup extends GraphWrapperAlgorithm implements JIPipeCustomPara
 //        }
 
         // Clear locations
-        for (JIPipeGraphNode node : graph.getAlgorithmNodes().values()) {
+        for (JIPipeGraphNode node : graph.getNodes().values()) {
             node.clearLocations();
         }
 
         // Replace all JIPipeCompartmentOutput by IOInterfaceAlgorithm
-        for (JIPipeGraphNode node : ImmutableList.copyOf(graph.getAlgorithmNodes().values())) {
+        for (JIPipeGraphNode node : ImmutableList.copyOf(graph.getNodes().values())) {
             if (node instanceof JIPipeCompartmentOutput) {
                 IOInterfaceAlgorithm.replaceCompartmentOutput((JIPipeCompartmentOutput) node);
             }

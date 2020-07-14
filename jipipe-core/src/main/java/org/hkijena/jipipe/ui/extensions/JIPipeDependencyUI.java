@@ -19,7 +19,7 @@ import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.algorithm.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeSlotDefinition;
-import org.hkijena.jipipe.api.registries.JIPipeAlgorithmRegistry;
+import org.hkijena.jipipe.api.registries.JIPipeNodeRegistry;
 import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
 import org.hkijena.jipipe.api.registries.JIPipeImageJAdapterRegistry;
 import org.hkijena.jipipe.ui.components.FormPanel;
@@ -144,7 +144,7 @@ public class JIPipeDependencyUI extends JPanel {
     }
 
     private void insertAddedAlgorithms(FormPanel formPanel) {
-        List<JIPipeNodeInfo> list = new ArrayList<>(JIPipeAlgorithmRegistry.getInstance().getDeclaredBy(dependency));
+        List<JIPipeNodeInfo> list = new ArrayList<>(JIPipeNodeRegistry.getInstance().getDeclaredBy(dependency));
         if (list.isEmpty())
             return;
         DefaultTableModel model = new DefaultTableModel();

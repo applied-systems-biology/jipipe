@@ -42,7 +42,7 @@ import static org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExt
  */
 @JIPipeDocumentation(name = "Hough segmentation 2D", description = "Finds circular 2D objects via a Hough transform. " +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
-@JIPipeOrganization(menuPath = "Threshold", algorithmCategory = JIPipeAlgorithmCategory.Processor)
+@JIPipeOrganization(menuPath = "Threshold", algorithmCategory = JIPipeNodeCategory.Processor)
 
 // Algorithm flow
 @JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input")

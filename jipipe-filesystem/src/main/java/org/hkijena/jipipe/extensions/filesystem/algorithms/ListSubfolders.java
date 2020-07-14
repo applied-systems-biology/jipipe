@@ -39,7 +39,7 @@ import java.util.stream.Stream;
  * Algorithms that lists the sub folders for each input folder
  */
 @JIPipeDocumentation(name = "List subfolders", description = "Lists all subfolders")
-@JIPipeOrganization(menuPath = "List", algorithmCategory = JIPipeAlgorithmCategory.FileSystem)
+@JIPipeOrganization(menuPath = "List", algorithmCategory = JIPipeNodeCategory.FileSystem)
 
 // Algorithm flow
 @JIPipeInputSlot(value = FolderData.class, slotName = "Folders", autoCreate = true)

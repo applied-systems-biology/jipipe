@@ -15,7 +15,7 @@ package org.hkijena.jipipe.ui.grapheditor;
 
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipeDefaultRegistry;
-import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmCategory;
+import org.hkijena.jipipe.api.algorithm.JIPipeNodeCategory;
 import org.hkijena.jipipe.api.algorithm.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.algorithm.JIPipeGraph;
 import org.hkijena.jipipe.api.algorithm.JIPipeGraphNode;
@@ -182,32 +182,32 @@ public class JIPipeGraphCompartmentUI extends JIPipeGraphEditorUI {
 
         JMenu addFilesystemMenu = new JMenu("Filesystem");
         addFilesystemMenu.setIcon(UIUtils.getIconFromResources("tree.png"));
-        initializeMenuForCategory(graphEditorUI, addFilesystemMenu, JIPipeAlgorithmCategory.FileSystem, addedAlgorithms);
+        initializeMenuForCategory(graphEditorUI, addFilesystemMenu, JIPipeNodeCategory.FileSystem, addedAlgorithms);
         menuBar.add(addFilesystemMenu);
 
         JMenu addAnnotationMenu = new JMenu("Annotation");
         addAnnotationMenu.setIcon(UIUtils.getIconFromResources("label.png"));
-        initializeMenuForCategory(graphEditorUI, addAnnotationMenu, JIPipeAlgorithmCategory.Annotation, addedAlgorithms);
+        initializeMenuForCategory(graphEditorUI, addAnnotationMenu, JIPipeNodeCategory.Annotation, addedAlgorithms);
         menuBar.add(addAnnotationMenu);
 
         JMenu addEnhancerMenu = new JMenu("Process");
         addEnhancerMenu.setIcon(UIUtils.getIconFromResources("magic.png"));
-        initializeMenuForCategory(graphEditorUI, addEnhancerMenu, JIPipeAlgorithmCategory.Processor, addedAlgorithms);
+        initializeMenuForCategory(graphEditorUI, addEnhancerMenu, JIPipeNodeCategory.Processor, addedAlgorithms);
         menuBar.add(addEnhancerMenu);
 
         JMenu addConverterMenu = new JMenu("Convert");
         addConverterMenu.setIcon(UIUtils.getIconFromResources("convert.png"));
-        initializeMenuForCategory(graphEditorUI, addConverterMenu, JIPipeAlgorithmCategory.Converter, addedAlgorithms);
+        initializeMenuForCategory(graphEditorUI, addConverterMenu, JIPipeNodeCategory.Converter, addedAlgorithms);
         menuBar.add(addConverterMenu);
 
         JMenu addQuantifierMenu = new JMenu("Analyze");
         addQuantifierMenu.setIcon(UIUtils.getIconFromResources("statistics.png"));
-        initializeMenuForCategory(graphEditorUI, addQuantifierMenu, JIPipeAlgorithmCategory.Analysis, addedAlgorithms);
+        initializeMenuForCategory(graphEditorUI, addQuantifierMenu, JIPipeNodeCategory.Analysis, addedAlgorithms);
         menuBar.add(addQuantifierMenu);
 
         JMenu addMiscMenu = new JMenu("Miscellaneous");
         addMiscMenu.setIcon(UIUtils.getIconFromResources("module.png"));
-        initializeMenuForCategory(graphEditorUI, addMiscMenu, JIPipeAlgorithmCategory.Miscellaneous, addedAlgorithms);
+        initializeMenuForCategory(graphEditorUI, addMiscMenu, JIPipeNodeCategory.Miscellaneous, addedAlgorithms);
         menuBar.add(addMiscMenu);
     }
 
@@ -219,11 +219,11 @@ public class JIPipeGraphCompartmentUI extends JIPipeGraphEditorUI {
      * @param category        The algorithm category
      * @param addedAlgorithms added algorithm types are added to this list
      */
-    public static void initializeMenuForCategory(JIPipeGraphEditorUI graphEditorUI, JMenu menu, JIPipeAlgorithmCategory category, Set<JIPipeNodeInfo> addedAlgorithms) {
+    public static void initializeMenuForCategory(JIPipeGraphEditorUI graphEditorUI, JMenu menu, JIPipeNodeCategory category, Set<JIPipeNodeInfo> addedAlgorithms) {
         JIPipeGraph algorithmGraph = graphEditorUI.getAlgorithmGraph();
         String compartment = graphEditorUI.getCompartment();
         JIPipeDefaultRegistry registryService = JIPipeDefaultRegistry.getInstance();
-        Set<JIPipeNodeInfo> algorithmsOfCategory = registryService.getAlgorithmRegistry().getAlgorithmsOfCategory(category);
+        Set<JIPipeNodeInfo> algorithmsOfCategory = registryService.getAlgorithmRegistry().getNodesOfCategory(category);
         if (algorithmsOfCategory.isEmpty()) {
             menu.setVisible(false);
             return;

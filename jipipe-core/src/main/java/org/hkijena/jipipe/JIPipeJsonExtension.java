@@ -35,7 +35,7 @@ import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.grouping.JsonNodeInfo;
 import org.hkijena.jipipe.api.grouping.JsonAlgorithmRegistrationTask;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.registries.JIPipeAlgorithmRegistry;
+import org.hkijena.jipipe.api.registries.JIPipeNodeRegistry;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
 import org.hkijena.jipipe.utils.JsonUtils;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -186,7 +186,7 @@ public class JIPipeJsonExtension implements JIPipeDependency, JIPipeValidatable 
      */
     public void register() {
         for (JsonNode entry : ImmutableList.copyOf(serializedJson.get("algorithms").elements())) {
-            JIPipeAlgorithmRegistry.getInstance().scheduleRegister(new JsonAlgorithmRegistrationTask(entry, this));
+            JIPipeNodeRegistry.getInstance().scheduleRegister(new JsonAlgorithmRegistrationTask(entry, this));
         }
     }
 

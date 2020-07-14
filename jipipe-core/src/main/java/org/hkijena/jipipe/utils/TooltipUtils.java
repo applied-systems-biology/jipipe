@@ -22,7 +22,7 @@ import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeSlotDefinition;
-import org.hkijena.jipipe.api.registries.JIPipeAlgorithmRegistry;
+import org.hkijena.jipipe.api.registries.JIPipeNodeRegistry;
 import org.hkijena.jipipe.ui.components.MarkdownDocument;
 import org.hkijena.jipipe.ui.registries.JIPipeUIDatatypeRegistry;
 
@@ -113,7 +113,7 @@ public class TooltipUtils {
         builder.append("</table>\n\n");
 
         // Write author information
-        JIPipeDependency source = JIPipeAlgorithmRegistry.getInstance().getSourceOf(info.getId());
+        JIPipeDependency source = JIPipeNodeRegistry.getInstance().getSourceOf(info.getId());
         if (source != null) {
             builder.append("## Developer information\n\n");
             builder.append("<table>");

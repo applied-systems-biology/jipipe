@@ -31,7 +31,7 @@ import java.util.function.Supplier;
  * Algorithm that passes the input to the output
  */
 @JIPipeDocumentation(name = "IO Interface", description = "Passes its input to its output without changes.")
-@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Miscellaneous)
+@JIPipeOrganization(algorithmCategory = JIPipeNodeCategory.Miscellaneous)
 public class IOInterfaceAlgorithm extends JIPipeAlgorithm {
 
     /**

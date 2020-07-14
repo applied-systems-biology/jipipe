@@ -36,7 +36,7 @@ import static org.hkijena.jipipe.api.algorithm.JIPipeIteratingAlgorithm.ITERATIN
  */
 @JIPipeDocumentation(name = "Define rectangular ROI (referenced)", description = "Manually defines a rectangular ROI. This algorithm requires a reference " +
         "image, but also allows more flexibility in defining the rectangles." + "\n\n" + ITERATING_ALGORITHM_DESCRIPTION)
-@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.DataSource)
+@JIPipeOrganization(algorithmCategory = JIPipeNodeCategory.DataSource)
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference")
 @JIPipeOutputSlot(value = ROIListData.class, slotName = "Output")
 public class ReferencedDefineRectangularRoiAlgorithm extends JIPipeIteratingAlgorithm {

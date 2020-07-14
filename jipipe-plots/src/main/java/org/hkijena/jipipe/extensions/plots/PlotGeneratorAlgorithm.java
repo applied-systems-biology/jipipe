@@ -47,7 +47,7 @@ import java.util.function.Supplier;
  * Algorithm that creates {@link PlotData} from {@link ResultsTableData}
  */
 @JIPipeDocumentation(name = "Plot tables", description = "Converts input data tables into plots.")
-@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Analysis, menuPath = "Plot")
+@JIPipeOrganization(algorithmCategory = JIPipeNodeCategory.Analysis, menuPath = "Plot")
 @JIPipeInputSlot(ResultsTableData.class)
 @JIPipeOutputSlot(PlotData.class)
 public class PlotGeneratorAlgorithm extends JIPipeAlgorithm {

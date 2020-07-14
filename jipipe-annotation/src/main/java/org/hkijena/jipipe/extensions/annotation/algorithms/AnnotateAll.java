@@ -32,7 +32,7 @@ import java.util.function.Supplier;
  * Algorithm that annotates all data with the same annotation
  */
 @JIPipeDocumentation(name = "Set annotations", description = "Sets the specified annotations to the specified values")
-@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Annotation, menuPath = "Modify")
+@JIPipeOrganization(algorithmCategory = JIPipeNodeCategory.Annotation, menuPath = "Modify")
 @JIPipeInputSlot(value = JIPipeData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = JIPipeData.class, slotName = "Output", inheritedSlot = "Input", autoCreate = true)
 public class AnnotateAll extends JIPipeSimpleIteratingAlgorithm {

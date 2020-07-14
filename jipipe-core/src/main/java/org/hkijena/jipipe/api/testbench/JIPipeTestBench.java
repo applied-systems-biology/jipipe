@@ -61,14 +61,14 @@ public class JIPipeTestBench implements JIPipeRunnable, JIPipeValidatable {
         configuration.setSaveOutputs(settings.isSaveOutputs());
 
         testBenchRun = new JIPipeRun(project, configuration);
-        benchedAlgorithm = testBenchRun.getGraph().getAlgorithmNodes().get(projectAlgorithm.getIdInGraph());
+        benchedAlgorithm = testBenchRun.getGraph().getNodes().get(projectAlgorithm.getIdInGraph());
         ((JIPipeAlgorithm) benchedAlgorithm).setEnabled(true);
 
         // Disable all algorithms that are not dependencies of the benched algorithm
         List<JIPipeGraphNode> predecessorAlgorithms = testBenchRun.getGraph()
                 .getPredecessorAlgorithms(benchedAlgorithm, testBenchRun.getGraph().traverseAlgorithms());
         predecessorAlgorithms.add(benchedAlgorithm);
-        for (JIPipeGraphNode node : testBenchRun.getGraph().getAlgorithmNodes().values()) {
+        for (JIPipeGraphNode node : testBenchRun.getGraph().getNodes().values()) {
             if (!predecessorAlgorithms.contains(node)) {
                 if (node instanceof JIPipeAlgorithm) {
                     ((JIPipeAlgorithm) node).setEnabled(false);
@@ -95,7 +95,7 @@ public class JIPipeTestBench implements JIPipeRunnable, JIPipeValidatable {
         }
 
         // Clear all data
-        for (JIPipeGraphNode node : testBenchRun.getGraph().getAlgorithmNodes().values()) {
+        for (JIPipeGraphNode node : testBenchRun.getGraph().getNodes().values()) {
             for (JIPipeDataSlot inputSlot : node.getInputSlots()) {
                 inputSlot.clearData(false);
             }

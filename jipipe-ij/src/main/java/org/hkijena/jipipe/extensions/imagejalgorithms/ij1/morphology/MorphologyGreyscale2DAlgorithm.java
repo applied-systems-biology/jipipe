@@ -35,7 +35,7 @@ import java.util.function.Supplier;
 @JIPipeDocumentation(name = "Morphological operation (greyscale) 2D", description = "Applies a morphological operation to greyscale images. " +
         "If a multi-channel image is provided, the operation is applied to each channel. " +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
-@JIPipeOrganization(menuPath = "Morphology", algorithmCategory = JIPipeAlgorithmCategory.Processor)
+@JIPipeOrganization(menuPath = "Morphology", algorithmCategory = JIPipeNodeCategory.Processor)
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input")
 @JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output")
 public class MorphologyGreyscale2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {

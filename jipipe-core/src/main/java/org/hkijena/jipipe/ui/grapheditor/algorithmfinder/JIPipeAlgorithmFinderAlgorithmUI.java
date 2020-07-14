@@ -40,26 +40,19 @@ public class JIPipeAlgorithmFinderAlgorithmUI extends JPanel {
     private final JIPipeGraphCanvasUI canvasUI;
     private final JIPipeDataSlot outputSlot;
     private final JIPipeGraphNode algorithm;
-    private final int score;
-    private final int maxScore;
     private final boolean isExistingInstance;
     private final EventBus eventBus = new EventBus();
     private JPanel slotPanel;
 
     /**
      * Creates an algorithm UI for one target algorithm
-     *
-     * @param canvasUI    the canvas
+     *  @param canvasUI    the canvas
      * @param outputSlot  The output slot to connect
      * @param info The target algorithm
-     * @param score       Score of the target algorithm
-     * @param maxScore    Maximum score that was possible
      */
-    public JIPipeAlgorithmFinderAlgorithmUI(JIPipeGraphCanvasUI canvasUI, JIPipeDataSlot outputSlot, JIPipeNodeInfo info, int score, int maxScore) {
+    public JIPipeAlgorithmFinderAlgorithmUI(JIPipeGraphCanvasUI canvasUI, JIPipeDataSlot outputSlot, JIPipeNodeInfo info) {
         this.canvasUI = canvasUI;
         this.outputSlot = outputSlot;
-        this.score = score;
-        this.maxScore = maxScore;
         this.algorithm = info.newInstance();
         this.isExistingInstance = false;
 
@@ -68,18 +61,13 @@ public class JIPipeAlgorithmFinderAlgorithmUI extends JPanel {
 
     /**
      * Creates an algorithm UI for one target algorithm
-     *
-     * @param canvasUI   the canvas
+     *  @param canvasUI   the canvas
      * @param outputSlot The output slot to connect
      * @param algorithm  The target algorithm
-     * @param score      Score of the target algorithm
-     * @param maxScore   Maximum score that was possible
      */
-    public JIPipeAlgorithmFinderAlgorithmUI(JIPipeGraphCanvasUI canvasUI, JIPipeDataSlot outputSlot, JIPipeGraphNode algorithm, int score, int maxScore) {
+    public JIPipeAlgorithmFinderAlgorithmUI(JIPipeGraphCanvasUI canvasUI, JIPipeDataSlot outputSlot, JIPipeGraphNode algorithm) {
         this.canvasUI = canvasUI;
         this.outputSlot = outputSlot;
-        this.score = score;
-        this.maxScore = maxScore;
         this.algorithm = algorithm;
         this.isExistingInstance = true;
 

@@ -18,7 +18,7 @@ import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.algorithm.JIPipeInputSlot;
 import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithm;
-import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmCategory;
+import org.hkijena.jipipe.api.algorithm.JIPipeNodeCategory;
 import org.hkijena.jipipe.api.algorithm.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -42,7 +42,7 @@ import java.util.function.Supplier;
         "The output files are named according to the metadata columns and can be easily processed by humans or third-party scripts.")
 @JIPipeInputSlot(JIPipeData.class)
 @JIPipeInputSlot(FolderData.class)
-@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Miscellaneous)
+@JIPipeOrganization(algorithmCategory = JIPipeNodeCategory.Miscellaneous)
 public class CollectDataAlgorithm extends JIPipeAlgorithm {
 
     private boolean splitByInputSlots = true;

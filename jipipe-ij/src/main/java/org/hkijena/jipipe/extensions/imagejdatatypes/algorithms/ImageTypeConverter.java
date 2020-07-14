@@ -36,7 +36,7 @@ import java.util.function.Supplier;
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input")
 @JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output")
 @JIPipeDocumentation(name = "Convert ImageJ image", description = "Converts an ImageJ image into another ImageJ image data type")
-@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Converter)
+@JIPipeOrganization(algorithmCategory = JIPipeNodeCategory.Converter)
 public class ImageTypeConverter extends JIPipeAlgorithm {
 
     /**

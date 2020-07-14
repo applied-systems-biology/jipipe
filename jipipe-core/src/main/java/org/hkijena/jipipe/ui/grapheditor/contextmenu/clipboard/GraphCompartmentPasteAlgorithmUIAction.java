@@ -52,7 +52,7 @@ public class GraphCompartmentPasteAlgorithmUIAction implements AlgorithmUIAction
 
                 // Collect all compartments
                 Set<String> compartments = new HashSet<>();
-                for (JIPipeGraphNode algorithm : sourceGraph.getAlgorithmNodes().values()) {
+                for (JIPipeGraphNode algorithm : sourceGraph.getNodes().values()) {
                     compartments.add(algorithm.getCompartment());
                 }
 
@@ -66,7 +66,7 @@ public class GraphCompartmentPasteAlgorithmUIAction implements AlgorithmUIAction
 
                 // Add nodes
                 JIPipeGraph targetGraph = project.getGraph();
-                for (JIPipeGraphNode algorithm : sourceGraph.getAlgorithmNodes().values()) {
+                for (JIPipeGraphNode algorithm : sourceGraph.getNodes().values()) {
                     String sourceCompartment = algorithm.getCompartment();
                     String targetCompartment = compartmentNodeMap.get(sourceCompartment).getProjectCompartmentId();
 

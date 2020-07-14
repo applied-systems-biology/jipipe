@@ -43,7 +43,7 @@ public class ExportCompartmentToAlgorithmUIAction implements AlgorithmUIAction {
         JIPipeProject project = projectWorkbench.getProject();
         final String compartmentId = compartment.getProjectCompartmentId();
         JIPipeValidityReport report = new JIPipeValidityReport();
-        for (Map.Entry<String, JIPipeGraphNode> entry : project.getGraph().getAlgorithmNodes().entrySet()) {
+        for (Map.Entry<String, JIPipeGraphNode> entry : project.getGraph().getNodes().entrySet()) {
             if (Objects.equals(entry.getValue().getCompartment(), compartmentId)) {
                 report.forCategory(entry.getKey()).report(entry.getValue());
             }

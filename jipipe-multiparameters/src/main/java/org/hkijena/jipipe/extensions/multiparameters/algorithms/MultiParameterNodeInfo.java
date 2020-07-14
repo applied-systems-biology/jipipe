@@ -43,7 +43,7 @@ public class MultiParameterNodeInfo implements JIPipeNodeInfo {
     }
 
     @Override
-    public Class<? extends JIPipeGraphNode> getAlgorithmClass() {
+    public Class<? extends JIPipeGraphNode> getInstanceClass() {
         return MultiParameterAlgorithm.class;
     }
 
@@ -73,8 +73,8 @@ public class MultiParameterNodeInfo implements JIPipeNodeInfo {
     }
 
     @Override
-    public JIPipeAlgorithmCategory getCategory() {
-        return JIPipeAlgorithmCategory.Miscellaneous;
+    public JIPipeNodeCategory getCategory() {
+        return JIPipeNodeCategory.Miscellaneous;
     }
 
     @Override

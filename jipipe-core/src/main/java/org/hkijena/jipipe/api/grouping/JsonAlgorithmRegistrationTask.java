@@ -16,7 +16,7 @@ package org.hkijena.jipipe.api.grouping;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.JIPipeJsonExtension;
-import org.hkijena.jipipe.api.registries.JIPipeAlgorithmRegistry;
+import org.hkijena.jipipe.api.registries.JIPipeNodeRegistry;
 import org.hkijena.jipipe.api.registries.JIPipeDefaultAlgorithmRegistrationTask;
 import org.hkijena.jipipe.ui.registries.JIPipeUIAlgorithmRegistry;
 import org.hkijena.jipipe.utils.JsonUtils;
@@ -61,7 +61,7 @@ public class JsonAlgorithmRegistrationTask extends JIPipeDefaultAlgorithmRegistr
             JsonNodeInfo info = JsonUtils.getObjectMapper().readerFor(JsonNodeInfo.class).readValue(jsonNode);
             if (info == null)
                 throw new NullPointerException("Algorithm is null!");
-            JIPipeAlgorithmRegistry.getInstance().register(info, source);
+            JIPipeNodeRegistry.getInstance().register(info, source);
             if (info.getIcon().getIconName() != null) {
                 JIPipeUIAlgorithmRegistry.getInstance().registerIcon(info,
                         ResourceUtils.getPluginResource("icons/algorithms/" + info.getIcon().getIconName()));

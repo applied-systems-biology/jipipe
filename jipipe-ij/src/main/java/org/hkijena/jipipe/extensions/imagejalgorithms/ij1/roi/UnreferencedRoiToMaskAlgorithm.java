@@ -38,7 +38,7 @@ import java.util.function.Supplier;
  */
 @JIPipeDocumentation(name = "Convert only ROI to mask", description = "Converts ROI lists to masks. " +
         "This algorithm does not need a reference image that determines the output size.")
-@JIPipeOrganization(menuPath = "ROI", algorithmCategory = JIPipeAlgorithmCategory.Converter)
+@JIPipeOrganization(menuPath = "ROI", algorithmCategory = JIPipeNodeCategory.Converter)
 @JIPipeInputSlot(value = ROIListData.class, slotName = "Input")
 @JIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output")
 public class UnreferencedRoiToMaskAlgorithm extends JIPipeSimpleIteratingAlgorithm {

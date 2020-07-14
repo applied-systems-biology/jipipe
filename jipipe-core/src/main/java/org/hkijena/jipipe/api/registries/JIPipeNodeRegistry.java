@@ -20,7 +20,7 @@ import org.hkijena.jipipe.JIPipeDefaultRegistry;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.JIPipeValidatable;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
-import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmCategory;
+import org.hkijena.jipipe.api.algorithm.JIPipeNodeCategory;
 import org.hkijena.jipipe.api.algorithm.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.events.AlgorithmRegisteredEvent;
@@ -33,10 +33,10 @@ import java.util.stream.Collectors;
 /**
  * Manages known algorithms and their annotations
  */
-public class JIPipeAlgorithmRegistry implements JIPipeValidatable {
-    private Map<String, JIPipeNodeInfo> registeredAlgorithms = new HashMap<>();
+public class JIPipeNodeRegistry implements JIPipeValidatable {
+    private Map<String, JIPipeNodeInfo> registeredNodeInfos = new HashMap<>();
     private Set<JIPipeAlgorithmRegistrationTask> registrationTasks = new HashSet<>();
-    private Map<String, JIPipeDependency> registeredAlgorithmSources = new HashMap<>();
+    private Map<String, JIPipeDependency> registeredNodeInfoSources = new HashMap<>();
     private boolean stateChanged;
     private boolean isRunning;
     private EventBus eventBus = new EventBus();
@@ -44,7 +44,7 @@ public class JIPipeAlgorithmRegistry implements JIPipeValidatable {
     /**
      * Creates a new registry
      */
-    public JIPipeAlgorithmRegistry() {
+    public JIPipeNodeRegistry() {
 
     }
 
@@ -99,8 +99,8 @@ public class JIPipeAlgorithmRegistry implements JIPipeValidatable {
      * @param source      The dependency that registers the info
      */
     public void register(JIPipeNodeInfo info, JIPipeDependency source) {
-        registeredAlgorithms.put(info.getId(), info);
-        registeredAlgorithmSources.put(info.getId(), source);
+        registeredNodeInfos.put(info.getId(), info);
+        registeredNodeInfoSources.put(info.getId(), source);
         eventBus.post(new AlgorithmRegisteredEvent(info));
         System.out.println("Registered algorithm '" + info.getName() + "' [" + info.getId() + "]");
         runRegistrationTasks();
@@ -111,8 +111,8 @@ public class JIPipeAlgorithmRegistry implements JIPipeValidatable {
      *
      * @return Map from algorithm ID to algorithm info
      */
-    public Map<String, JIPipeNodeInfo> getRegisteredAlgorithms() {
-        return Collections.unmodifiableMap(registeredAlgorithms);
+    public Map<String, JIPipeNodeInfo> getRegisteredNodeInfos() {
+        return Collections.unmodifiableMap(registeredNodeInfos);
     }
 
     /**
@@ -124,8 +124,8 @@ public class JIPipeAlgorithmRegistry implements JIPipeValidatable {
      */
     public <T extends JIPipeData> Set<JIPipeNodeInfo> getDataSourcesFor(Class<? extends T> dataClass) {
         Set<JIPipeNodeInfo> result = new HashSet<>();
-        for (JIPipeNodeInfo info : registeredAlgorithms.values()) {
-            if (info.getCategory() == JIPipeAlgorithmCategory.DataSource) {
+        for (JIPipeNodeInfo info : registeredNodeInfos.values()) {
+            if (info.getCategory() == JIPipeNodeCategory.DataSource) {
                 if (info.getOutputSlots().stream().anyMatch(slot -> slot.value() == dataClass)) {
                     result.add(info);
                 }
@@ -140,8 +140,8 @@ public class JIPipeAlgorithmRegistry implements JIPipeValidatable {
      * @param category The category
      * @return Algorithms within the specified category
      */
-    public Set<JIPipeNodeInfo> getAlgorithmsOfCategory(JIPipeAlgorithmCategory category) {
-        return registeredAlgorithms.values().stream().filter(d -> d.getCategory() == category).collect(Collectors.toSet());
+    public Set<JIPipeNodeInfo> getNodesOfCategory(JIPipeNodeCategory category) {
+        return registeredNodeInfos.values().stream().filter(d -> d.getCategory() == category).collect(Collectors.toSet());
     }
 
     /**
@@ -151,10 +151,10 @@ public class JIPipeAlgorithmRegistry implements JIPipeValidatable {
      * @return The info
      */
     public JIPipeNodeInfo getInfoById(String id) {
-        JIPipeNodeInfo info = registeredAlgorithms.getOrDefault(id, null);
+        JIPipeNodeInfo info = registeredNodeInfos.getOrDefault(id, null);
         if (info == null) {
             throw new UserFriendlyRuntimeException(new NullPointerException("Could not find algorithm info with id '" + id + "' in " +
-                    String.join(", ", registeredAlgorithms.keySet())),
+                    String.join(", ", registeredNodeInfos.keySet())),
                     "Unable to find an algorithm type!",
                     "JIPipe plugin manager",
                     "A project or extension requires an algorithm of type '" + id + "'. It could not be found.",
@@ -170,8 +170,8 @@ public class JIPipeAlgorithmRegistry implements JIPipeValidatable {
      * @param id The info ID
      * @return If true, the ID exists
      */
-    public boolean hasAlgorithmWithId(String id) {
-        return registeredAlgorithms.containsKey(id);
+    public boolean hasNodeInfoWithId(String id) {
+        return registeredNodeInfos.containsKey(id);
     }
 
     /**
@@ -209,7 +209,7 @@ public class JIPipeAlgorithmRegistry implements JIPipeValidatable {
      * @return The dependency that registered the algorithm
      */
     public JIPipeDependency getSourceOf(String algorithmId) {
-        return registeredAlgorithmSources.getOrDefault(algorithmId, null);
+        return registeredNodeInfoSources.getOrDefault(algorithmId, null);
     }
 
     /**
@@ -220,7 +220,7 @@ public class JIPipeAlgorithmRegistry implements JIPipeValidatable {
      */
     public Set<JIPipeNodeInfo> getDeclaredBy(JIPipeDependency dependency) {
         Set<JIPipeNodeInfo> result = new HashSet<>();
-        for (Map.Entry<String, JIPipeNodeInfo> entry : registeredAlgorithms.entrySet()) {
+        for (Map.Entry<String, JIPipeNodeInfo> entry : registeredNodeInfos.entrySet()) {
             JIPipeDependency source = getSourceOf(entry.getKey());
             if (source == dependency)
                 result.add(entry.getValue());
@@ -238,7 +238,7 @@ public class JIPipeAlgorithmRegistry implements JIPipeValidatable {
     /**
      * @return Singleton instance
      */
-    public static JIPipeAlgorithmRegistry getInstance() {
+    public static JIPipeNodeRegistry getInstance() {
         return JIPipeDefaultRegistry.getInstance().getAlgorithmRegistry();
     }
 

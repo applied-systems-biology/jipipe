@@ -108,7 +108,7 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm {
      */
     public GraphWrapperAlgorithmInput getGroupInput() {
         if (algorithmInput == null) {
-            for (JIPipeGraphNode node : wrappedGraph.getAlgorithmNodes().values()) {
+            for (JIPipeGraphNode node : wrappedGraph.getNodes().values()) {
                 if (node instanceof GraphWrapperAlgorithmInput) {
                     algorithmInput = (GraphWrapperAlgorithmInput) node;
                     break;
@@ -130,7 +130,7 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm {
      */
     public GraphWrapperAlgorithmOutput getGroupOutput() {
         if (algorithmOutput == null) {
-            for (JIPipeGraphNode node : wrappedGraph.getAlgorithmNodes().values()) {
+            for (JIPipeGraphNode node : wrappedGraph.getNodes().values()) {
                 if (node instanceof GraphWrapperAlgorithmOutput) {
                     algorithmOutput = (GraphWrapperAlgorithmOutput) node;
                     break;
@@ -159,7 +159,7 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm {
                 runnerStatus.getMaxProgress(),
                 runnerStatus.getMessage())));
         try {
-            for (JIPipeGraphNode value : wrappedGraph.getAlgorithmNodes().values()) {
+            for (JIPipeGraphNode value : wrappedGraph.getNodes().values()) {
                 if (value instanceof JIPipeAlgorithm) {
                     ((JIPipeAlgorithm) value).setThreadPool(getThreadPool());
                 }
@@ -168,7 +168,7 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm {
             runner.setAlgorithmsWithExternalInput(Collections.singleton(getGroupInput()));
             runner.run(subGraphStatus, isCancelled);
         } finally {
-            for (JIPipeGraphNode value : wrappedGraph.getAlgorithmNodes().values()) {
+            for (JIPipeGraphNode value : wrappedGraph.getNodes().values()) {
                 if (value instanceof JIPipeAlgorithm) {
                     ((JIPipeAlgorithm) value).setThreadPool(null);
                 }
@@ -216,7 +216,7 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm {
 
     public void setWrappedGraph(JIPipeGraph wrappedGraph) {
         if (this.wrappedGraph != wrappedGraph) {
-            for (JIPipeGraphNode value : wrappedGraph.getAlgorithmNodes().values()) {
+            for (JIPipeGraphNode value : wrappedGraph.getNodes().values()) {
                 value.setCompartment(JIPipeGraph.COMPARTMENT_DEFAULT);
             }
             this.wrappedGraph = wrappedGraph;

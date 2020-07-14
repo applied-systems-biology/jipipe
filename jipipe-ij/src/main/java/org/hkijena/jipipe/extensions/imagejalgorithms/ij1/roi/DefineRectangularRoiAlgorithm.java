@@ -19,7 +19,7 @@ import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.algorithm.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithm;
-import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmCategory;
+import org.hkijena.jipipe.api.algorithm.JIPipeNodeCategory;
 import org.hkijena.jipipe.api.algorithm.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -34,7 +34,7 @@ import java.util.function.Supplier;
  * Wrapper around {@link ij.plugin.frame.RoiManager}
  */
 @JIPipeDocumentation(name = "Define rectangular ROI", description = "Manually defines rectangular ROI")
-@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.DataSource)
+@JIPipeOrganization(algorithmCategory = JIPipeNodeCategory.DataSource)
 @JIPipeOutputSlot(value = ROIListData.class, slotName = "Output")
 public class DefineRectangularRoiAlgorithm extends JIPipeAlgorithm {
 

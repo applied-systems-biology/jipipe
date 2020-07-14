@@ -37,7 +37,7 @@ import java.util.function.Supplier;
  */
 @JIPipeDocumentation(name = "Local maxima 2D", description = "Finds the local maxima of each image. " +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
-@JIPipeOrganization(menuPath = "Features", algorithmCategory = JIPipeAlgorithmCategory.Processor)
+@JIPipeOrganization(menuPath = "Features", algorithmCategory = JIPipeNodeCategory.Processor)
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input")
 @JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output")
 public class LocalMaxima2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {

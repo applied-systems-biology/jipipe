@@ -37,7 +37,7 @@ import java.util.function.Supplier;
  */
 @JIPipeDocumentation(name = "Crop 2D image", description = "Crops a 2D image. " +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
-@JIPipeOrganization(menuPath = "Transform", algorithmCategory = JIPipeAlgorithmCategory.Processor)
+@JIPipeOrganization(menuPath = "Transform", algorithmCategory = JIPipeNodeCategory.Processor)
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input")
 @JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output")
 public class TransformCrop2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {

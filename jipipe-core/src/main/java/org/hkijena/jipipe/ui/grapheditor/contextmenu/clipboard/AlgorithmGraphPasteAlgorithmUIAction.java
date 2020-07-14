@@ -17,7 +17,7 @@ import org.hkijena.jipipe.api.algorithm.JIPipeGraph;
 import org.hkijena.jipipe.api.algorithm.JIPipeGraphNode;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeCompartmentOutput;
 import org.hkijena.jipipe.api.history.PasteNodeGraphHistorySnapshot;
-import org.hkijena.jipipe.api.registries.JIPipeAlgorithmRegistry;
+import org.hkijena.jipipe.api.registries.JIPipeNodeRegistry;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphCanvasUI;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeNodeUI;
 import org.hkijena.jipipe.ui.grapheditor.contextmenu.AlgorithmUIAction;
@@ -45,9 +45,9 @@ public class AlgorithmGraphPasteAlgorithmUIAction implements AlgorithmUIAction {
                 JIPipeGraph graph = JsonUtils.getObjectMapper().readValue(json, JIPipeGraph.class);
 
                 // Replace project compartment with IOInterface
-                for (JIPipeGraphNode node : graph.getAlgorithmNodes().values()) {
+                for (JIPipeGraphNode node : graph.getNodes().values()) {
                     if (node instanceof JIPipeCompartmentOutput) {
-                        node.setInfo(JIPipeAlgorithmRegistry.getInstance().getInfoById("io-interface"));
+                        node.setInfo(JIPipeNodeRegistry.getInstance().getInfoById("io-interface"));
                     }
                 }
 
@@ -55,7 +55,7 @@ public class AlgorithmGraphPasteAlgorithmUIAction implements AlgorithmUIAction {
                 int minX = Integer.MAX_VALUE;
                 int minY = Integer.MAX_VALUE;
                 Map<JIPipeGraphNode, Point> originalLocations = new HashMap<>();
-                for (JIPipeGraphNode algorithm : graph.getAlgorithmNodes().values()) {
+                for (JIPipeGraphNode algorithm : graph.getNodes().values()) {
                     Point point = algorithm.getLocationWithin(algorithm.getCompartment(), canvasUI.getViewMode().name());
                     if (point != null) {
                         originalLocations.put(algorithm, point);
@@ -66,13 +66,13 @@ public class AlgorithmGraphPasteAlgorithmUIAction implements AlgorithmUIAction {
 
                 // Change the compartment
                 String compartment = canvasUI.getCompartment();
-                for (JIPipeGraphNode algorithm : graph.getAlgorithmNodes().values()) {
+                for (JIPipeGraphNode algorithm : graph.getNodes().values()) {
                     algorithm.setCompartment(compartment);
                 }
 
                 // Update the location relative to the mouse
                 Point cursor = canvasUI.getGraphEditorCursor();
-                for (JIPipeGraphNode algorithm : graph.getAlgorithmNodes().values()) {
+                for (JIPipeGraphNode algorithm : graph.getNodes().values()) {
                     Point original = originalLocations.getOrDefault(algorithm, null);
                     if (original != null) {
                         original.x = original.x - minX + cursor.x;
@@ -83,7 +83,7 @@ public class AlgorithmGraphPasteAlgorithmUIAction implements AlgorithmUIAction {
 
                 // Add to graph
                 canvasUI.getGraphHistory().addSnapshotBefore(new PasteNodeGraphHistorySnapshot(canvasUI.getGraph(),
-                        new HashSet<>(graph.getAlgorithmNodes().values())));
+                        new HashSet<>(graph.getNodes().values())));
                 canvasUI.getGraph().mergeWith(graph);
             }
         } catch (Exception e) {

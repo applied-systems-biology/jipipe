@@ -30,7 +30,7 @@ import java.util.function.Supplier;
  * Applies subfolder navigation to each input folder
  */
 @JIPipeDocumentation(name = "Subfolders", description = "Goes to the specified subfolder")
-@JIPipeOrganization(menuPath = "Navigate", algorithmCategory = JIPipeAlgorithmCategory.FileSystem)
+@JIPipeOrganization(menuPath = "Navigate", algorithmCategory = JIPipeNodeCategory.FileSystem)
 
 // Algorithm flow
 @JIPipeInputSlot(value = FolderData.class, slotName = "Folders", autoCreate = true)

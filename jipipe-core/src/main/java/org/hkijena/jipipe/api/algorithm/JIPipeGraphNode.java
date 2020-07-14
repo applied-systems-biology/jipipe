@@ -34,7 +34,7 @@ import org.hkijena.jipipe.api.events.*;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterVisibility;
-import org.hkijena.jipipe.api.registries.JIPipeAlgorithmRegistry;
+import org.hkijena.jipipe.api.registries.JIPipeNodeRegistry;
 import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -277,7 +277,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
      *
      * @return The category
      */
-    public JIPipeAlgorithmCategory getCategory() {
+    public JIPipeNodeCategory getCategory() {
         return getInfo().getCategory();
     }
 
@@ -826,7 +826,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
      */
     public Set<JIPipeDependency> getDependencies() {
         Set<JIPipeDependency> result = new HashSet<>();
-        result.add(JIPipeAlgorithmRegistry.getInstance().getSourceOf(getInfo().getId()));
+        result.add(JIPipeNodeRegistry.getInstance().getSourceOf(getInfo().getId()));
 
         // Add data slots
         for (JIPipeDataSlot slot : inputSlots) {
@@ -941,7 +941,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
      * @return Algorithm instance
      */
     public static <T extends JIPipeGraphNode> T newInstance(String id) {
-        return (T) JIPipeAlgorithmRegistry.getInstance().getInfoById(id).newInstance();
+        return (T) JIPipeNodeRegistry.getInstance().getInfoById(id).newInstance();
     }
 
     /**

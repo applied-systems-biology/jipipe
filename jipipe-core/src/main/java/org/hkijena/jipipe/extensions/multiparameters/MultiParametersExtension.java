@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.extensions.multiparameters;
 
 import org.hkijena.jipipe.JIPipeJavaExtension;
-import org.hkijena.jipipe.api.registries.JIPipeAlgorithmRegistry;
+import org.hkijena.jipipe.api.registries.JIPipeNodeRegistry;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.multiparameters.datatypes.ParametersData;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
@@ -44,7 +44,7 @@ public class MultiParametersExtension extends JIPipePrepackagedDefaultJavaExtens
 
     @Override
     public void register() {
-        JIPipeAlgorithmRegistry.getInstance().getEventBus().register(this);
+        JIPipeNodeRegistry.getInstance().getEventBus().register(this);
 
         // Register data types
         registerDatatype("parameters", ParametersData.class,

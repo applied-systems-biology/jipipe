@@ -88,7 +88,7 @@ public class JIPipeResultUI extends JIPipeProjectWorkbenchPanel {
 
     private void showAllDataSlots() {
         List<JIPipeDataSlot> result = new ArrayList<>();
-        for (JIPipeGraphNode algorithm : run.getGraph().getAlgorithmNodes().values()) {
+        for (JIPipeGraphNode algorithm : run.getGraph().getNodes().values()) {
             for (JIPipeDataSlot outputSlot : algorithm.getOutputSlots()) {
                 if (Files.exists(outputSlot.getStoragePath().resolve("data-table.json"))) {
                     result.add(outputSlot);
@@ -110,7 +110,7 @@ public class JIPipeResultUI extends JIPipeProjectWorkbenchPanel {
 
     private void showDataSlotsOfCompartment(JIPipeProjectCompartment compartment) {
         List<JIPipeDataSlot> result = new ArrayList<>();
-        for (JIPipeGraphNode algorithm : run.getGraph().getAlgorithmNodes().values()) {
+        for (JIPipeGraphNode algorithm : run.getGraph().getNodes().values()) {
             if (algorithm.getCompartment().equals(compartment.getProjectCompartmentId())) {
                 for (JIPipeDataSlot outputSlot : algorithm.getOutputSlots()) {
                     if (Files.exists(outputSlot.getStoragePath().resolve("data-table.json"))) {

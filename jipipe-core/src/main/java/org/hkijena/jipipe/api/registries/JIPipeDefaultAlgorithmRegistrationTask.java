@@ -50,7 +50,7 @@ public abstract class JIPipeDefaultAlgorithmRegistrationTask implements JIPipeAl
     @Override
     public boolean canRegister() {
         for (String id : dependencyAlgorithmIds) {
-            if (!JIPipeAlgorithmRegistry.getInstance().hasAlgorithmWithId(id))
+            if (!JIPipeNodeRegistry.getInstance().hasNodeInfoWithId(id))
                 return false;
         }
         for (String id : dependencyDatatypeIds) {
@@ -98,7 +98,7 @@ public abstract class JIPipeDefaultAlgorithmRegistrationTask implements JIPipeAl
     @Override
     public void reportValidity(JIPipeValidityReport report) {
         for (String id : dependencyAlgorithmIds) {
-            if (!JIPipeAlgorithmRegistry.getInstance().hasAlgorithmWithId(id))
+            if (!JIPipeNodeRegistry.getInstance().hasNodeInfoWithId(id))
                 report.forCategory("Dependency Algorithms").reportIsInvalid("A dependency is missing!",
                         "Dependency algorithm '" + id + "' is missing!",
                         "Please make sure to install dependency plugins.",

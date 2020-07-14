@@ -38,7 +38,7 @@ public class JIPipeEmptyNodeInfo implements JIPipeNodeInfo {
     }
 
     @Override
-    public Class<? extends JIPipeGraphNode> getAlgorithmClass() {
+    public Class<? extends JIPipeGraphNode> getInstanceClass() {
         return null;
     }
 
@@ -68,8 +68,8 @@ public class JIPipeEmptyNodeInfo implements JIPipeNodeInfo {
     }
 
     @Override
-    public JIPipeAlgorithmCategory getCategory() {
-        return JIPipeAlgorithmCategory.Internal;
+    public JIPipeNodeCategory getCategory() {
+        return JIPipeNodeCategory.Internal;
     }
 
     @Override

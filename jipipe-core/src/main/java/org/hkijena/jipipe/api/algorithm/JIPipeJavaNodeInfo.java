@@ -57,10 +57,10 @@ public class JIPipeJavaNodeInfo extends JIPipeMutableNodeInfo {
     }
 
     private void initializeSlots() {
-        for (JIPipeInputSlot slot : getAlgorithmClass().getAnnotationsByType(JIPipeInputSlot.class)) {
+        for (JIPipeInputSlot slot : getInstanceClass().getAnnotationsByType(JIPipeInputSlot.class)) {
             getInputSlots().add(slot);
         }
-        for (JIPipeOutputSlot slot : getAlgorithmClass().getAnnotationsByType(JIPipeOutputSlot.class)) {
+        for (JIPipeOutputSlot slot : getInstanceClass().getAnnotationsByType(JIPipeOutputSlot.class)) {
             getOutputSlots().add(slot);
         }
     }
@@ -68,7 +68,7 @@ public class JIPipeJavaNodeInfo extends JIPipeMutableNodeInfo {
     @Override
     public JIPipeGraphNode clone(JIPipeGraphNode algorithm) {
         try {
-            return ConstructorUtils.getMatchingAccessibleConstructor(getAlgorithmClass(), algorithm.getClass()).newInstance(algorithm);
+            return ConstructorUtils.getMatchingAccessibleConstructor(getInstanceClass(), algorithm.getClass()).newInstance(algorithm);
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
             throw new UserFriendlyRuntimeException(e, "Unable to copy algorithm '" + algorithm.getName() + "'!",
                     "Undefined", "There is a programming error in the algorithm's code.",
@@ -84,7 +84,7 @@ public class JIPipeJavaNodeInfo extends JIPipeMutableNodeInfo {
     @Override
     public JIPipeGraphNode newInstance() {
         try {
-            return getAlgorithmClass().getConstructor(JIPipeNodeInfo.class).newInstance(this);
+            return getInstanceClass().getConstructor(JIPipeNodeInfo.class).newInstance(this);
         } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
             throw new UserFriendlyRuntimeException(e, "Unable to create an algorithm instance!",
                     "Undefined", "There is a programming error in an algorithm's code.",
@@ -128,12 +128,12 @@ public class JIPipeJavaNodeInfo extends JIPipeMutableNodeInfo {
      * @param klass The algorithm class
      * @return The category
      */
-    public static JIPipeAlgorithmCategory getCategoryOf(Class<? extends JIPipeGraphNode> klass) {
+    public static JIPipeNodeCategory getCategoryOf(Class<? extends JIPipeGraphNode> klass) {
         JIPipeOrganization[] annotations = klass.getAnnotationsByType(JIPipeOrganization.class);
         if (annotations.length > 0) {
             return annotations[0].algorithmCategory();
         } else {
-            return JIPipeAlgorithmCategory.Internal;
+            return JIPipeNodeCategory.Internal;
         }
     }
 
@@ -159,7 +159,7 @@ public class JIPipeJavaNodeInfo extends JIPipeMutableNodeInfo {
         @Override
         public void serialize(JIPipeJavaNodeInfo info, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
             jsonGenerator.writeStartObject();
-            jsonGenerator.writeObjectField("jipipe:algorithm-class", info.getAlgorithmClass().getCanonicalName());
+            jsonGenerator.writeObjectField("jipipe:algorithm-class", info.getInstanceClass().getCanonicalName());
             jsonGenerator.writeEndObject();
         }
     }

@@ -42,7 +42,7 @@ import java.util.function.Supplier;
 @JIPipeDocumentation(name = "Bioformats importer", description = "Imports images via the Bioformats plugin")
 @JIPipeInputSlot(value = FileData.class, slotName = "Files")
 @JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Image")
-@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.DataSource)
+@JIPipeOrganization(algorithmCategory = JIPipeNodeCategory.DataSource)
 public class BioFormatsImporter extends JIPipeSimpleIteratingAlgorithm {
 
     private ColorMode colorMode = ColorMode.Default;

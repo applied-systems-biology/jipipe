@@ -32,7 +32,7 @@ import java.util.function.Supplier;
  * Applies a FFT forward transformation
  */
 @JIPipeDocumentation(name = "2D FFT swap quadrants", description = "Swaps the quadrants of a frequency space image.")
-@JIPipeOrganization(menuPath = "FFT", algorithmCategory = JIPipeAlgorithmCategory.Processor)
+@JIPipeOrganization(menuPath = "FFT", algorithmCategory = JIPipeNodeCategory.Processor)
 @JIPipeInputSlot(ImagePlusFFT2DData.class)
 @JIPipeOutputSlot(ImagePlusFFT2DData.class)
 public class FFT2DSwapQuadrants extends JIPipeSimpleIteratingAlgorithm {

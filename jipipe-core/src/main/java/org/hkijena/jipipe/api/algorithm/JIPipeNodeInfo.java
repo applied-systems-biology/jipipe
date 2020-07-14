@@ -36,7 +36,7 @@ public interface JIPipeNodeInfo {
      *
      * @return The algorithm class
      */
-    Class<? extends JIPipeGraphNode> getAlgorithmClass();
+    Class<? extends JIPipeGraphNode> getInstanceClass();
 
     /**
      * Creates a new algorithm instance
@@ -79,7 +79,7 @@ public interface JIPipeNodeInfo {
      *
      * @return The category
      */
-    JIPipeAlgorithmCategory getCategory();
+    JIPipeNodeCategory getCategory();
 
     /**
      * Returns general input data.

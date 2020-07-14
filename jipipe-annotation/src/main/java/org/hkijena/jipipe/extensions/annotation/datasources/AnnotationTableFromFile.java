@@ -32,7 +32,7 @@ import java.util.function.Supplier;
 @JIPipeDocumentation(name = "Annotation table from file")
 @JIPipeInputSlot(value = FileData.class, slotName = "Files", autoCreate = true)
 @JIPipeOutputSlot(value = AnnotationTableData.class, slotName = "Annotation table", autoCreate = true)
-@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.DataSource)
+@JIPipeOrganization(algorithmCategory = JIPipeNodeCategory.DataSource)
 public class AnnotationTableFromFile extends JIPipeSimpleIteratingAlgorithm {
 
     /**

@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.ui.grapheditor.settings;
 
 import org.hkijena.jipipe.api.algorithm.JIPipeGraphNode;
-import org.hkijena.jipipe.api.registries.JIPipeAlgorithmRegistry;
+import org.hkijena.jipipe.api.registries.JIPipeNodeRegistry;
 import org.hkijena.jipipe.api.testbench.JIPipeTestBenchSettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
@@ -123,7 +123,7 @@ public class JIPipeSingleAlgorithmSelectionPanelUI extends JIPipeProjectWorkbenc
                 canvas.getContextActions(),
                 canvas);
 
-        if (JIPipeAlgorithmRegistry.getInstance().getRegisteredAlgorithms().containsValue(algorithm.getInfo())) {
+        if (JIPipeNodeRegistry.getInstance().getRegisteredNodeInfos().containsValue(algorithm.getInfo())) {
             JButton openCompendiumButton = new JButton(UIUtils.getIconFromResources("help.png"));
             openCompendiumButton.setToolTipText("Open in algorithm compendium");
             openCompendiumButton.addActionListener(e -> {

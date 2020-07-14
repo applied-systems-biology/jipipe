@@ -39,7 +39,7 @@ import static org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExt
  * Applies CLAHE image enhancing
  */
 @JIPipeDocumentation(name = "Frangi vesselness", description = "Applies the vesselness filter developed by Frangi et al.")
-@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "Features")
+@JIPipeOrganization(algorithmCategory = JIPipeNodeCategory.Processor, menuPath = "Features")
 
 // Algorithm flow
 @JIPipeInputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Input")

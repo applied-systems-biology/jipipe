@@ -25,14 +25,14 @@ public abstract class JIPipeMutableNodeInfo implements JIPipeNodeInfo {
     private String id;
     private String name;
     private String description;
-    private JIPipeAlgorithmCategory category;
+    private JIPipeNodeCategory category;
     private List<JIPipeInputSlot> inputSlots = new ArrayList<>();
     private List<JIPipeOutputSlot> outputSlots = new ArrayList<>();
     private String menuPath;
     private boolean hidden = false;
 
     @Override
-    public Class<? extends JIPipeGraphNode> getAlgorithmClass() {
+    public Class<? extends JIPipeGraphNode> getInstanceClass() {
         return algorithmClass;
     }
 
@@ -74,7 +74,7 @@ public abstract class JIPipeMutableNodeInfo implements JIPipeNodeInfo {
     }
 
     @Override
-    public JIPipeAlgorithmCategory getCategory() {
+    public JIPipeNodeCategory getCategory() {
         return category;
     }
 
@@ -83,7 +83,7 @@ public abstract class JIPipeMutableNodeInfo implements JIPipeNodeInfo {
      *
      * @param category The category
      */
-    public void setCategory(JIPipeAlgorithmCategory category) {
+    public void setCategory(JIPipeNodeCategory category) {
         this.category = category;
     }
 

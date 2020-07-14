@@ -35,7 +35,7 @@ import static org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExt
  * Wrapper around {@link ij.plugin.ZProjector}
  */
 @JIPipeDocumentation(name = "Z-Project", description = "Performs a Z-Projection.")
-@JIPipeOrganization(menuPath = "Dimensions", algorithmCategory = JIPipeAlgorithmCategory.Processor)
+@JIPipeOrganization(menuPath = "Dimensions", algorithmCategory = JIPipeNodeCategory.Processor)
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input")
 @JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output")
 public class ZProjectorAlgorithm extends JIPipeSimpleIteratingAlgorithm {

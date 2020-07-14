@@ -50,7 +50,7 @@ public class JsonNodeInfo implements JIPipeNodeInfo, JIPipeValidatable, JIPipePa
     private String id;
     private String name;
     private String description;
-    private JIPipeAlgorithmCategory category = JIPipeAlgorithmCategory.Miscellaneous;
+    private JIPipeNodeCategory category = JIPipeNodeCategory.Miscellaneous;
     private List<JIPipeInputSlot> inputSlots = new ArrayList<>();
     private List<JIPipeOutputSlot> outputSlots = new ArrayList<>();
     private JIPipeGraph graph = new JIPipeGraph();
@@ -106,7 +106,7 @@ public class JsonNodeInfo implements JIPipeNodeInfo, JIPipeValidatable, JIPipePa
     }
 
     @Override
-    public Class<? extends JIPipeGraphNode> getAlgorithmClass() {
+    public Class<? extends JIPipeGraphNode> getInstanceClass() {
         return JsonAlgorithm.class;
     }
 
@@ -159,13 +159,13 @@ public class JsonNodeInfo implements JIPipeNodeInfo, JIPipeValidatable, JIPipePa
     @JIPipeParameter(value = "category", uiOrder = 20)
     @JsonGetter("category")
     @Override
-    public JIPipeAlgorithmCategory getCategory() {
+    public JIPipeNodeCategory getCategory() {
         return category;
     }
 
     @JIPipeParameter("category")
     @JsonSetter("category")
-    public void setCategory(JIPipeAlgorithmCategory category) {
+    public void setCategory(JIPipeNodeCategory category) {
         this.category = category;
 
     }
@@ -269,7 +269,7 @@ public class JsonNodeInfo implements JIPipeNodeInfo, JIPipeValidatable, JIPipePa
      */
     public GraphWrapperAlgorithmInput getGroupInput() {
         if (algorithmInput == null) {
-            for (JIPipeGraphNode node : graph.getAlgorithmNodes().values()) {
+            for (JIPipeGraphNode node : graph.getNodes().values()) {
                 if (node instanceof GraphWrapperAlgorithmInput) {
                     algorithmInput = (GraphWrapperAlgorithmInput) node;
                     break;
@@ -291,7 +291,7 @@ public class JsonNodeInfo implements JIPipeNodeInfo, JIPipeValidatable, JIPipePa
      */
     public GraphWrapperAlgorithmOutput getGroupOutput() {
         if (algorithmOutput == null) {
-            for (JIPipeGraphNode node : graph.getAlgorithmNodes().values()) {
+            for (JIPipeGraphNode node : graph.getNodes().values()) {
                 if (node instanceof GraphWrapperAlgorithmOutput) {
                     algorithmOutput = (GraphWrapperAlgorithmOutput) node;
                     break;
@@ -335,7 +335,7 @@ public class JsonNodeInfo implements JIPipeNodeInfo, JIPipeValidatable, JIPipePa
                     "Please provide a valid algorithm ID.",
                     this);
         }
-        if (category == JIPipeAlgorithmCategory.Internal) {
+        if (category == JIPipeNodeCategory.Internal) {
             report.reportIsInvalid("The category cannot be 'Internal'!",
                     "This is reserved for algorithm nodes used by JIPipe to control program flow.",
                     "Please choose another algorithm category.",

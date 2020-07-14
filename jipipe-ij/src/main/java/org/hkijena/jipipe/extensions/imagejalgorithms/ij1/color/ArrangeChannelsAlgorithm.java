@@ -37,7 +37,7 @@ import java.util.function.Supplier;
  * Wrapper around {@link ij.plugin.ChannelArranger}
  */
 @JIPipeDocumentation(name = "Arrange channels", description = "Reorders the channels of each input image")
-@JIPipeOrganization(menuPath = "Colors", algorithmCategory = JIPipeAlgorithmCategory.Processor)
+@JIPipeOrganization(menuPath = "Colors", algorithmCategory = JIPipeNodeCategory.Processor)
 @JIPipeInputSlot(value = ImagePlusColorData.class, slotName = "Input")
 @JIPipeOutputSlot(value = ImagePlusColorData.class, slotName = "Output")
 public class ArrangeChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {

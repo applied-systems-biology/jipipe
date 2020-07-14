@@ -67,8 +67,14 @@ public class JIPipeAlgorithmFinderSlotUI extends JPanel {
     private void initialize() {
         setLayout(new BorderLayout());
 
-        assignButton = new JButton(UIUtils.getIconFromResources("chevron-right.png"));
+        Icon icon;
+        if(inputSlot.getNode().getGraph() == null || inputSlot.getNode().getGraph().getSourceSlot(inputSlot) == null)
+            icon = UIUtils.getIconFromResources("chevron-right-thin.png");
+        else
+            icon = UIUtils.getIconFromResources("chevron-right.png");
+        assignButton = new JButton(icon);
         assignButton.setPreferredSize(new Dimension(25, 50));
+        assignButton.setBorder(BorderFactory.createMatteBorder(0, 1,0,0, Color.GRAY));
         assignButtonMenu = UIUtils.addPopupMenuToComponent(assignButton);
         UIUtils.makeFlat(assignButton);
 
@@ -79,7 +85,7 @@ public class JIPipeAlgorithmFinderSlotUI extends JPanel {
 
         add(nameLabel, BorderLayout.CENTER);
 
-        add(assignButton, BorderLayout.WEST);
+        add(assignButton, BorderLayout.EAST);
         nameLabel.setHorizontalAlignment(JLabel.LEFT);
         nameLabel.setHorizontalTextPosition(JLabel.RIGHT);
 

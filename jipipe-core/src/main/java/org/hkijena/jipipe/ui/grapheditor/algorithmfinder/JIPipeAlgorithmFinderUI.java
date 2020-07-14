@@ -19,7 +19,7 @@ import org.hkijena.jipipe.api.algorithm.*;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeMutableSlotConfiguration;
-import org.hkijena.jipipe.api.registries.JIPipeAlgorithmRegistry;
+import org.hkijena.jipipe.api.registries.JIPipeNodeRegistry;
 import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
 import org.hkijena.jipipe.ui.components.ColorIcon;
 import org.hkijena.jipipe.ui.components.FormPanel;
@@ -27,7 +27,9 @@ import org.hkijena.jipipe.ui.components.SearchTextField;
 import org.hkijena.jipipe.ui.events.AlgorithmFinderSuccessEvent;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphCanvasUI;
 import org.hkijena.jipipe.ui.registries.JIPipeUIDatatypeRegistry;
+import org.hkijena.jipipe.utils.RankedData;
 import org.hkijena.jipipe.utils.RankingFunction;
+import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -35,7 +37,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.List;
 import java.util.*;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
@@ -47,8 +48,10 @@ public class JIPipeAlgorithmFinderUI extends JPanel {
     private final JIPipeGraphNode algorithm;
     private final JIPipeGraph graph;
     private final String compartment;
+    private final Ranking ranking;
     private final EventBus eventBus = new EventBus();
     private SearchTextField searchField;
+    private List<Object> availableContents = new ArrayList<>();
     private FormPanel formPanel;
 
     /**
@@ -65,8 +68,23 @@ public class JIPipeAlgorithmFinderUI extends JPanel {
         this.outputSlot = outputSlot;
         this.algorithm = outputSlot.getNode();
         this.graph = canvasUI.getGraph();
+        this.ranking = new Ranking(outputSlot);
         initialize();
+        initializeAvailableContents();
         reloadAlgorithmList();
+    }
+
+    private void initializeAvailableContents() {
+        for (JIPipeGraphNode node : canvasUI.getGraph().getNodes().values()) {
+            if(node.isVisibleIn(canvasUI.getCompartment())) {
+                availableContents.add(node);
+            }
+        }
+        for (JIPipeNodeInfo info : JIPipeNodeRegistry.getInstance().getRegisteredNodeInfos().values()) {
+            if(!info.isHidden())
+                availableContents.add(info);
+        }
+
     }
 
     private void initialize() {
@@ -102,13 +120,20 @@ public class JIPipeAlgorithmFinderUI extends JPanel {
         formPanel.clear();
 
         // Add possible algorithms
-        List<JIPipeNodeInfo> algorithms = getFilteredAndSortedCompatibleTargetAlgorithms();
+        List<RankedData<Object>> rankedData = new ArrayList<>();
+        for (Object content : availableContents) {
+            int[] rank = ranking.rank(content, searchField.getSearchStrings());
+            if(rank == null)
+                continue;
+            rankedData.add(new RankedData<>(content, rank));
+        }
+        rankedData.sort(Comparator.naturalOrder());
 
         // Add open slots
         Set<JIPipeGraphNode> knownTargetAlgorithms = graph.getTargetSlots(outputSlot).stream().map(JIPipeDataSlot::getNode).collect(Collectors.toSet());
 
         // Add algorithms that allow adding slots of given type
-        for (JIPipeGraphNode algorithm : graph.getAlgorithmNodes().values()) {
+        for (JIPipeGraphNode algorithm : graph.getNodes().values()) {
             if (algorithm.getSlotConfiguration() instanceof JIPipeMutableSlotConfiguration) {
                 JIPipeMutableSlotConfiguration configuration = (JIPipeMutableSlotConfiguration) algorithm.getSlotConfiguration();
                 if (configuration.canCreateCompatibleInputSlot(outputSlot.getAcceptedDataType())) {
@@ -117,56 +142,31 @@ public class JIPipeAlgorithmFinderUI extends JPanel {
             }
         }
 
-        if (!algorithms.isEmpty()) {
-            Map<JIPipeNodeInfo, Integer> scores = new HashMap<>();
-            for (JIPipeNodeInfo targetAlgorithm : algorithms) {
-                scores.put(targetAlgorithm, scoreAlgorithmForOutputSlot(targetAlgorithm, outputSlot, graph));
+        for (RankedData<Object> data : rankedData) {
+            if(data.getData() instanceof JIPipeNodeInfo) {
+                JIPipeNodeInfo info = (JIPipeNodeInfo) data.getData();
+                JIPipeAlgorithmFinderAlgorithmUI algorithmUI = new JIPipeAlgorithmFinderAlgorithmUI(canvasUI, outputSlot, info);
+                algorithmUI.getEventBus().register(this);
+                formPanel.addToForm(algorithmUI, null);
             }
-            int maxScore = scores.values().stream().max(Integer::compareTo).orElse(0);
-
-            for (JIPipeNodeInfo targetAlgorithm : algorithms) {
-                int score = scores.get(targetAlgorithm);
-                // Add a generic one for creating a new instance
-                if (targetAlgorithm.getCategory() != JIPipeAlgorithmCategory.Internal && !targetAlgorithm.isHidden()) {
-                    JIPipeAlgorithmFinderAlgorithmUI algorithmUI = new JIPipeAlgorithmFinderAlgorithmUI(canvasUI, outputSlot, targetAlgorithm, score, maxScore);
-                    algorithmUI.getEventBus().register(this);
-                    formPanel.addToForm(algorithmUI, null);
-                }
-
-                // Add existing instances
-                for (JIPipeGraphNode existing : graph.getAlgorithmNodes().values().stream().filter(a -> a.getInfo() == targetAlgorithm).collect(Collectors.toList())) {
-                    if (existing == outputSlot.getNode())
-                        continue;
-                    if (!algorithm.isVisibleIn(compartment))
-                        continue;
-                    if (knownTargetAlgorithms.contains(existing)) {
-                        if (existing.getSlotConfiguration() instanceof JIPipeMutableSlotConfiguration) {
-                            if (!((JIPipeMutableSlotConfiguration) existing.getSlotConfiguration()).canModifyInputSlots())
-                                continue;
-                        } else {
+            else if(data.getData() instanceof JIPipeGraphNode) {
+                JIPipeGraphNode node = (JIPipeGraphNode) data.getData();
+                if (knownTargetAlgorithms.contains(node)) {
+                    if (node.getSlotConfiguration() instanceof JIPipeMutableSlotConfiguration) {
+                        if (!((JIPipeMutableSlotConfiguration) node.getSlotConfiguration()).canModifyInputSlots())
                             continue;
-                        }
+                    } else {
+                        continue;
                     }
-                    JIPipeAlgorithmFinderAlgorithmUI algorithmUI = new JIPipeAlgorithmFinderAlgorithmUI(canvasUI, outputSlot, existing, score, maxScore);
-                    algorithmUI.getEventBus().register(this);
-                    formPanel.addToForm(algorithmUI, null);
                 }
-
+                JIPipeAlgorithmFinderAlgorithmUI algorithmUI = new JIPipeAlgorithmFinderAlgorithmUI(canvasUI, outputSlot, node);
+                algorithmUI.getEventBus().register(this);
+                formPanel.addToForm(algorithmUI, null);
             }
         }
 
         formPanel.addVerticalGlue();
         SwingUtilities.invokeLater(() -> formPanel.getScrollPane().getVerticalScrollBar().setValue(0));
-    }
-
-    private List<JIPipeNodeInfo> getFilteredAndSortedCompatibleTargetAlgorithms() {
-        Predicate<JIPipeNodeInfo> filterFunction = info -> searchField.test(info.getName());
-        return findCompatibleTargetAlgorithms(outputSlot).stream().filter(filterFunction).sorted(this::compareAlgorithmScore).collect(Collectors.toList());
-    }
-
-    private int compareAlgorithmScore(JIPipeNodeInfo algorithmClass, JIPipeNodeInfo algorithmClass2) {
-        return -Integer.compare(scoreAlgorithmForOutputSlot(algorithmClass, outputSlot, graph),
-                scoreAlgorithmForOutputSlot(algorithmClass2, outputSlot, graph));
     }
 
     /**
@@ -198,19 +198,6 @@ public class JIPipeAlgorithmFinderUI extends JPanel {
     }
 
     /**
-     * Scores how well an algorithm fits to the specified target slot
-     *
-     * @param info The algorithm
-     * @param slot        The target slot
-     * @param graph       The algorithm graph
-     * @return Non-normalized score
-     */
-    public static int scoreAlgorithmForOutputSlot(JIPipeNodeInfo info, JIPipeDataSlot slot, JIPipeGraph graph) {
-        int score = 0;
-        return score;
-    }
-
-    /**
      * Finds all algorithms that fit to the slot according to the information in {@link JIPipeNodeInfo}
      *
      * @param slot The target slot
@@ -219,7 +206,7 @@ public class JIPipeAlgorithmFinderUI extends JPanel {
     public static List<JIPipeNodeInfo> findCompatibleTargetAlgorithms(JIPipeDataSlot slot) {
         Class<? extends JIPipeData> outputSlotDataClass = slot.getAcceptedDataType();
         List<JIPipeNodeInfo> result = new ArrayList<>();
-        for (JIPipeNodeInfo info : JIPipeAlgorithmRegistry.getInstance().getRegisteredAlgorithms().values()) {
+        for (JIPipeNodeInfo info : JIPipeNodeRegistry.getInstance().getRegisteredNodeInfos().values()) {
             for (Class<? extends JIPipeData> inputSlotDataClass : info.getInputSlots().stream().map(JIPipeInputSlot::value).collect(Collectors.toList())) {
                 if (JIPipeDatatypeRegistry.getInstance().isConvertible(outputSlotDataClass, inputSlotDataClass)) {
                     result.add(info);
@@ -235,8 +222,8 @@ public class JIPipeAlgorithmFinderUI extends JPanel {
      * It ranks by following values:
      * - search string (node name)
      * - search string (node description)
-     * - data type compatibility (0=nontrivial, -1=trivial, -2=exact match)
-     * - already occupied or not
+     * - data type compatibility (0 = not, -1=nontrivial, -2=trivial, -3=exact match)
+     * - already occupied or not (no = 0, yes = 1)
      */
     public static class Ranking implements RankingFunction<Object> {
         private final JIPipeDataSlot sourceSlot;
@@ -247,14 +234,87 @@ public class JIPipeAlgorithmFinderUI extends JPanel {
 
         @Override
         public int[] rank(Object value, String[] filterStrings) {
-            int[] rank = new int[4];
+            if(value == null)
+                return null;
+            int[] ranks = new int[4];
+            String nameHayStack;
+            String descriptionHayStack;
             if(value instanceof JIPipeGraphNode) {
-
+                JIPipeGraphNode node = ((JIPipeGraphNode) value);
+                nameHayStack = node.getName();
+                descriptionHayStack = StringUtils.orElse(node.getCustomDescription(), node.getInfo().getDescription());
             }
             else if(value instanceof JIPipeNodeInfo) {
-
+                JIPipeNodeInfo info = (JIPipeNodeInfo) value;
+                if (info.isHidden())
+                    return null;
+                nameHayStack = info.getName().toLowerCase();
+                descriptionHayStack = info.getDescription().toLowerCase();
             }
-            return rank;
+            else {
+                return null;
+            }
+
+            if(filterStrings != null && filterStrings.length > 0) {
+                nameHayStack = nameHayStack.toLowerCase();
+                descriptionHayStack = descriptionHayStack.toLowerCase();
+
+                for (String string : filterStrings) {
+                    if (nameHayStack.contains(string.toLowerCase()))
+                        --ranks[0];
+                    if (descriptionHayStack.contains(string.toLowerCase()))
+                        --ranks[1];
+                }
+
+                // Name/description does not match -> ignore
+                if (ranks[0] == 0 && ranks[1] == 0)
+                    return null;
+            }
+
+            // Rank by data type compatibility
+            if(value instanceof JIPipeGraphNode) {
+                JIPipeGraphNode node = ((JIPipeGraphNode) value);
+                for (JIPipeDataSlot targetSlot : node.getInputSlots()) {
+                    int compatibilityRanking = 0;
+                    if(targetSlot.getAcceptedDataType() == sourceSlot.getAcceptedDataType()) {
+                        compatibilityRanking = -3;
+                    }
+                    else if(JIPipeDatatypeRegistry.isTriviallyConvertible(sourceSlot.getAcceptedDataType(), targetSlot.getAcceptedDataType())) {
+                        compatibilityRanking = -2;
+                    }
+                    else if(JIPipeDatatypeRegistry.getInstance().isConvertible(sourceSlot.getAcceptedDataType(), targetSlot.getAcceptedDataType())) {
+                        compatibilityRanking = -1;
+                    }
+                    ranks[2] = Math.min(compatibilityRanking, ranks[2]);
+                    if(sourceSlot.getNode().getGraph().getSourceSlot(targetSlot) != null) {
+                        ranks[3] = 1;
+                    }
+                }
+            }
+            else {
+                JIPipeNodeInfo info = (JIPipeNodeInfo) value;
+                if (info.isHidden() || info.getCategory() == JIPipeNodeCategory.Internal)
+                    return null;
+                for (JIPipeInputSlot inputSlot : info.getInputSlots()) {
+                    int compatibilityRanking = 0;
+                    if(inputSlot.value() == sourceSlot.getAcceptedDataType()) {
+                        compatibilityRanking = -3;
+                    }
+                    else if(JIPipeDatatypeRegistry.isTriviallyConvertible(sourceSlot.getAcceptedDataType(), inputSlot.value())) {
+                        compatibilityRanking = -2;
+                    }
+                    else if(JIPipeDatatypeRegistry.getInstance().isConvertible(sourceSlot.getAcceptedDataType(), inputSlot.value())) {
+                        compatibilityRanking = -1;
+                    }
+                    ranks[2] = Math.min(compatibilityRanking, ranks[2]);
+                }
+            }
+
+            // Not compatible to slot
+            if(ranks[2] == 0)
+                return null;
+
+            return ranks;
         }
     }
 }

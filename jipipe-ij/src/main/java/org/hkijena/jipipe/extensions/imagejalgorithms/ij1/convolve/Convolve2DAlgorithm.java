@@ -35,7 +35,7 @@ import java.util.function.Supplier;
  */
 @JIPipeDocumentation(name = "Convolve 2D", description = "Applies a convolution with a user-defined filter kernel. " +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
-@JIPipeOrganization(menuPath = "Convolve", algorithmCategory = JIPipeAlgorithmCategory.Processor)
+@JIPipeOrganization(menuPath = "Convolve", algorithmCategory = JIPipeNodeCategory.Processor)
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input")
 @JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output")
 public class Convolve2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {

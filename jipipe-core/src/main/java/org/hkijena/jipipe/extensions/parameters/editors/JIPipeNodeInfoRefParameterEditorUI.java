@@ -14,10 +14,10 @@
 package org.hkijena.jipipe.extensions.parameters.editors;
 
 import com.google.common.eventbus.Subscribe;
-import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmCategory;
+import org.hkijena.jipipe.api.algorithm.JIPipeNodeCategory;
 import org.hkijena.jipipe.api.algorithm.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.api.registries.JIPipeAlgorithmRegistry;
+import org.hkijena.jipipe.api.registries.JIPipeNodeRegistry;
 import org.hkijena.jipipe.extensions.parameters.references.JIPipeNodeInfoRef;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.JIPipeNodeInfoPicker;
@@ -92,8 +92,8 @@ public class JIPipeNodeInfoRefParameterEditorUI extends JIPipeParameterEditorUI 
     }
 
     private void initializePicker() {
-        picker = new JIPipeNodeInfoPicker(JIPipeNodeInfoPicker.Mode.Single, JIPipeAlgorithmRegistry.getInstance().getRegisteredAlgorithms().values().stream()
-                .filter(d -> d.getCategory() != JIPipeAlgorithmCategory.Internal).collect(Collectors.toSet()));
+        picker = new JIPipeNodeInfoPicker(JIPipeNodeInfoPicker.Mode.Single, JIPipeNodeRegistry.getInstance().getRegisteredNodeInfos().values().stream()
+                .filter(d -> d.getCategory() != JIPipeNodeCategory.Internal).collect(Collectors.toSet()));
         picker.getEventBus().register(this);
     }
 

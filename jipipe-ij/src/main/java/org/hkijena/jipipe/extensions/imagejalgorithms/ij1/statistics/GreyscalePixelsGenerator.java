@@ -40,7 +40,7 @@ import java.util.function.Supplier;
  */
 @JIPipeDocumentation(name = "Get pixel values (Greyscale)", description = "Extracts the greyscale values of an image and puts them into a table. " +
         "It generates following output columns: <pre>value</pre>")
-@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Analysis, menuPath = "Statistics")
+@JIPipeOrganization(algorithmCategory = JIPipeNodeCategory.Analysis, menuPath = "Statistics")
 @JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
 public class GreyscalePixelsGenerator extends JIPipeSimpleIteratingAlgorithm {

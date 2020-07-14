@@ -32,7 +32,7 @@ import java.util.function.Supplier;
  * Algorithm that removes columns
  */
 @JIPipeDocumentation(name = "Rename single columns", description = "Renames columns")
-@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "Tables")
+@JIPipeOrganization(algorithmCategory = JIPipeNodeCategory.Processor, menuPath = "Tables")
 @JIPipeInputSlot(value = TableColumn.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = TableColumn.class, slotName = "Output", autoCreate = true)
 public class RenameColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm {

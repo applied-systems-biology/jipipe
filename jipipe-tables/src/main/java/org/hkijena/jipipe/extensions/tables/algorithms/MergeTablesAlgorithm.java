@@ -30,7 +30,7 @@ import static org.hkijena.jipipe.api.algorithm.JIPipeMergingAlgorithm.MERGING_AL
  */
 @JIPipeDocumentation(name = "Merge tables", description = "Merges multiple tables into one table. Columns are automatically created if they do not exist."
         + "\n\n" + MERGING_ALGORITHM_DESCRIPTION)
-@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "Tables")
+@JIPipeOrganization(algorithmCategory = JIPipeNodeCategory.Processor, menuPath = "Tables")
 @JIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
 public class MergeTablesAlgorithm extends JIPipeMergingAlgorithm {

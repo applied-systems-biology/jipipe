@@ -42,7 +42,7 @@ import java.util.function.Supplier;
         "All annotations are passed as dictionary 'annotations' that can be modified using Python functions. The values are then extracted and " +
         "converted into their respective JIPipe types. The target slot is extracted from a variable 'output_slot' that should be present within the script." +
         " If the variable is set to null or empty, the data is discarded.")
-@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Annotation, menuPath = "Modify")
+@JIPipeOrganization(algorithmCategory = JIPipeNodeCategory.Annotation, menuPath = "Modify")
 @JIPipeInputSlot(value = JIPipeData.class, slotName = "Input")
 @JIPipeOutputSlot(value = JIPipeData.class, slotName = "Output")
 public class SplitByAnnotationScript extends JIPipeSimpleIteratingAlgorithm {

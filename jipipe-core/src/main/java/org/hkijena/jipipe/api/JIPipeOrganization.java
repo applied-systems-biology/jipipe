@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.api;
 
-import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmCategory;
+import org.hkijena.jipipe.api.algorithm.JIPipeNodeCategory;
 import org.hkijena.jipipe.api.algorithm.JIPipeGraphNode;
 import org.hkijena.jipipe.api.algorithm.JIPipeJavaNodeInfo;
 import org.hkijena.jipipe.api.algorithm.JIPipeNodeInfo;
@@ -44,7 +44,7 @@ public @interface JIPipeOrganization {
      *
      * @return the algorithm category
      */
-    JIPipeAlgorithmCategory algorithmCategory() default JIPipeAlgorithmCategory.Internal;
+    JIPipeNodeCategory algorithmCategory() default JIPipeNodeCategory.Internal;
 
     /**
      * Only used if attached to a {@link MenuExtension}.

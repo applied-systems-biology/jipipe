@@ -31,7 +31,7 @@ import java.util.function.Supplier;
  * Applies a FFT forward transformation
  */
 @JIPipeDocumentation(name = "2D FFT forward transformation", description = "Converts a real space image into an image in frequency space.")
-@JIPipeOrganization(menuPath = "FFT", algorithmCategory = JIPipeAlgorithmCategory.Converter)
+@JIPipeOrganization(menuPath = "FFT", algorithmCategory = JIPipeNodeCategory.Converter)
 @JIPipeInputSlot(ImagePlus2DData.class)
 @JIPipeOutputSlot(ImagePlusFFT2DData.class)
 public class FFT2DForwardTransform extends JIPipeSimpleIteratingAlgorithm {

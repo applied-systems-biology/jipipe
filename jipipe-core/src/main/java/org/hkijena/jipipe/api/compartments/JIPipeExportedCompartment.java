@@ -62,7 +62,7 @@ public class JIPipeExportedCompartment {
         JIPipeGraph sourceGraph = compartment.getProject().getGraph();
         Map<String, JIPipeGraphNode> copies = new HashMap<>();
         String compartmentId = compartment.getProjectCompartmentId();
-        for (JIPipeGraphNode algorithm : sourceGraph.getAlgorithmNodes().values()) {
+        for (JIPipeGraphNode algorithm : sourceGraph.getNodes().values()) {
             if (!algorithm.getCompartment().equals(compartmentId))
                 continue;
             JIPipeGraphNode copy = algorithm.getInfo().clone(algorithm);
@@ -108,12 +108,12 @@ public class JIPipeExportedCompartment {
         compartmentName = compartment.getProjectCompartmentId();
         JIPipeCompartmentOutput projectOutputNode = compartment.getOutputNode();
 
-        for (JIPipeGraphNode algorithm : graph.getAlgorithmNodes().values()) {
+        for (JIPipeGraphNode algorithm : graph.getNodes().values()) {
             algorithm.setCompartment(compartmentName);
         }
 
         Map<String, JIPipeGraphNode> copies = new HashMap<>();
-        for (JIPipeGraphNode algorithm : graph.getAlgorithmNodes().values()) {
+        for (JIPipeGraphNode algorithm : graph.getNodes().values()) {
             if (algorithm instanceof JIPipeCompartmentOutput) {
                 copies.put(algorithm.getIdInGraph(), projectOutputNode);
 

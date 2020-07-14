@@ -44,7 +44,7 @@ import java.util.function.Supplier;
 // Algorithm metadata
 @JIPipeDocumentation(name = "Find particles 2D", description = "Converts mask images into ROI and generates measurements. " +
         "If higher-dimensional data is provided, the results are generated for each 2D slice.")
-@JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Analysis)
+@JIPipeOrganization(algorithmCategory = JIPipeNodeCategory.Analysis)
 
 // Algorithm data flow
 @JIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Mask")

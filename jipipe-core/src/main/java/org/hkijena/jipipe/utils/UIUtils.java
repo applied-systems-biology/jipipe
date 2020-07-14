@@ -15,7 +15,7 @@ package org.hkijena.jipipe.utils;
 
 import ij.IJ;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
-import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmCategory;
+import org.hkijena.jipipe.api.algorithm.JIPipeNodeCategory;
 import org.hkijena.jipipe.api.algorithm.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
@@ -441,18 +441,18 @@ public class UIUtils {
      * @return the fill color
      */
     public static Color getFillColorFor(JIPipeNodeInfo info) {
-        if (info.getAlgorithmClass() == JIPipeProjectCompartment.class)
+        if (info.getInstanceClass() == JIPipeProjectCompartment.class)
             return new Color(254, 254, 255);
         return info.getCategory().getColor(0.1f, 0.9f);
     }
 
     /**
-     * Returns a fill color for {@link JIPipeAlgorithmCategory}
+     * Returns a fill color for {@link JIPipeNodeCategory}
      *
      * @param category the category
      * @return the fill color
      */
-    public static Color getFillColorFor(JIPipeAlgorithmCategory category) {
+    public static Color getFillColorFor(JIPipeNodeCategory category) {
         return category.getColor(0.1f, 0.9f);
     }
 
@@ -463,7 +463,7 @@ public class UIUtils {
      * @return the border color
      */
     public static Color getBorderColorFor(JIPipeNodeInfo info) {
-        if (info.getAlgorithmClass() == JIPipeProjectCompartment.class)
+        if (info.getInstanceClass() == JIPipeProjectCompartment.class)
             return new Color(6, 20, 57);
         return info.getCategory().getColor(0.1f, 0.5f);
     }

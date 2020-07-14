@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.ui.registries;
 
 import org.hkijena.jipipe.JIPipeDefaultRegistry;
-import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithmCategory;
+import org.hkijena.jipipe.api.algorithm.JIPipeNodeCategory;
 import org.hkijena.jipipe.api.algorithm.JIPipeNodeInfo;
 import org.hkijena.jipipe.utils.ResourceUtils;
 
@@ -66,7 +66,7 @@ public class JIPipeUIAlgorithmRegistry {
         URL uri = icons.getOrDefault(info, null);
         if (uri == null) {
             URL defaultIcon;
-            if (info.getCategory() == JIPipeAlgorithmCategory.DataSource) {
+            if (info.getCategory() == JIPipeNodeCategory.DataSource) {
                 if (!info.getOutputSlots().isEmpty()) {
                     defaultIcon = JIPipeUIDatatypeRegistry.getInstance().getIconURLFor(info.getOutputSlots().get(0).value());
                 } else {
