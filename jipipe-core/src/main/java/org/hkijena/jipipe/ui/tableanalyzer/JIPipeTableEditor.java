@@ -23,6 +23,8 @@ import org.hkijena.jipipe.extensions.tables.ConvertingColumnOperation;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
+import org.hkijena.jipipe.ui.JIPipeWorkbench;
+import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.DocumentTabPane;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.MarkdownDocument;
@@ -50,7 +52,7 @@ import java.util.stream.Collectors;
 /**
  * Spreadsheet UI
  */
-public class JIPipeTableEditor extends JIPipeProjectWorkbenchPanel {
+public class JIPipeTableEditor extends JIPipeWorkbenchPanel {
     private static final int MAX_UNDO = 10;
     private ResultsTableData tableModel;
     private JXTable jxTable;
@@ -67,7 +69,7 @@ public class JIPipeTableEditor extends JIPipeProjectWorkbenchPanel {
      * @param workbench  the workbench
      * @param tableModel the table
      */
-    public JIPipeTableEditor(JIPipeProjectWorkbench workbench, ResultsTableData tableModel) {
+    public JIPipeTableEditor(JIPipeWorkbench workbench, ResultsTableData tableModel) {
         super(workbench);
         this.tableModel = tableModel;
         initialize();
@@ -350,13 +352,13 @@ public class JIPipeTableEditor extends JIPipeProjectWorkbenchPanel {
     }
 
     private void createNewPlot() {
-        JIPipePlotBuilderUI plotBuilderUI = new JIPipePlotBuilderUI(getProjectWorkbench());
-        plotBuilderUI.importData(tableModel, getProjectWorkbench().documentTabPane.findTabNameFor(this));
-        getProjectWorkbench().getDocumentTabPane().addTab("Plot",
+        JIPipePlotBuilderUI plotBuilderUI = new JIPipePlotBuilderUI(getWorkbench());
+        plotBuilderUI.importData(tableModel, getWorkbench().getDocumentTabPane().findTabNameFor(this));
+        getWorkbench().getDocumentTabPane().addTab("Plot",
                 UIUtils.getIconFromResources("data-types/data-type-plot.png"),
                 plotBuilderUI,
                 DocumentTabPane.CloseMode.withAskOnCloseButton, true);
-        getProjectWorkbench().getDocumentTabPane().switchToLastTab();
+        getWorkbench().getDocumentTabPane().switchToLastTab();
     }
 
     private void integrateColumns() {
@@ -458,11 +460,11 @@ public class JIPipeTableEditor extends JIPipeProjectWorkbenchPanel {
     }
 
     private void cloneDataToNewTab() {
-        getProjectWorkbench().getDocumentTabPane().addTab("Table",
+        getWorkbench().getDocumentTabPane().addTab("Table",
                 UIUtils.getIconFromResources("table.png"),
-                new JIPipeTableEditor(getProjectWorkbench(), new ResultsTableData(tableModel)),
+                new JIPipeTableEditor(getWorkbench(), new ResultsTableData(tableModel)),
                 DocumentTabPane.CloseMode.withAskOnCloseButton, true);
-        getProjectWorkbench().getDocumentTabPane().switchToLastTab();
+        getWorkbench().getDocumentTabPane().switchToLastTab();
     }
 
     private void updateConvertMenu() {

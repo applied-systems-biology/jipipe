@@ -20,10 +20,12 @@ import org.hkijena.jipipe.extensions.tables.algorithms.*;
 import org.hkijena.jipipe.extensions.tables.datatypes.*;
 import org.hkijena.jipipe.extensions.tables.operations.converting.*;
 import org.hkijena.jipipe.extensions.tables.operations.integrating.*;
+import org.hkijena.jipipe.extensions.tables.parameters.ResultsTableDataParameterEditorUI;
 import org.hkijena.jipipe.extensions.tables.parameters.TableColumnSourceParameter;
 import org.hkijena.jipipe.extensions.tables.parameters.TableColumnSourceParameterEditorUI;
 import org.hkijena.jipipe.extensions.tables.parameters.collections.ConvertingTableColumnProcessorParameterList;
 import org.hkijena.jipipe.extensions.tables.parameters.collections.IntegratingTableColumnProcessorParameterList;
+import org.hkijena.jipipe.extensions.tables.parameters.collections.ResultsTableDataList;
 import org.hkijena.jipipe.extensions.tables.parameters.collections.TableColumnGeneratorProcessorParameterList;
 import org.hkijena.jipipe.extensions.tables.parameters.enums.TableColumnGeneratorParameter;
 import org.hkijena.jipipe.extensions.tables.parameters.enums.TableColumnGeneratorParameterEditorUI;
@@ -137,6 +139,7 @@ public class TablesExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerAlgorithm("modify-and-merge-tables", ModifyAndMergeTablesScript.class, UIUtils.getAlgorithmIconURL("python.png"));
         registerAlgorithm("tables-from-script", TablesFromScript.class, UIUtils.getAlgorithmIconURL("python.png"));
         registerAlgorithm("tables-set-column", SetColumnAlgorithm.class, UIUtils.getAlgorithmIconURL("edit-table-insert-column-right.png"));
+        registerAlgorithm("define-tables", DefineTablesAlgorithm.class, UIUtils.getAlgorithmIconURL("results-table.png"));
     }
 
     private void registerParameters() {
@@ -158,6 +161,14 @@ public class TablesExtension extends JIPipePrepackagedDefaultJavaExtension {
                 "Column source",
                 "Defines a column source",
                 TableColumnSourceParameterEditorUI.class);
+        registerParameterType("results-table",
+                ResultsTableData.class,
+                ResultsTableDataList.class,
+                null,
+                null,
+                "Results table",
+                "A table",
+                ResultsTableDataParameterEditorUI.class);
 
         // Processors
         registerParameterType("integrating-table-column-processor",

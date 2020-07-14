@@ -39,7 +39,7 @@ public class JIPipeMergeTablesDialogUI extends JDialog {
         this.tableAnalyzerUI = tableAnalyzerUI;
         initialize();
 
-        for (DocumentTabPane.DocumentTab tab : tableAnalyzerUI.getProjectWorkbench().getDocumentTabPane().getTabs()) {
+        for (DocumentTabPane.DocumentTab tab : tableAnalyzerUI.getWorkbench().getDocumentTabPane().getTabs()) {
             if (tab.getContent() instanceof JIPipeTableEditor) {
                 tableSelection.addItem(tab);
             }
