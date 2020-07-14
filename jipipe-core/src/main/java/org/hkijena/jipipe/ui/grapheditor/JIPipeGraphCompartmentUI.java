@@ -162,7 +162,7 @@ public class JIPipeGraphCompartmentUI extends JIPipeGraphEditorUI {
                     event.getUi().getNode());
             setPropertyPanel(panel);
             panel.runTestBench(runAndShowResults,
-                    updateCache, !updateCache);
+                    updateCache, false, !updateCache, false);
             SwingUtilities.invokeLater(() -> disableUpdateOnSelection = false);
         }
     }

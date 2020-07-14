@@ -14,10 +14,13 @@
 package org.hkijena.jipipe.ui.grapheditor.settings;
 
 import org.hkijena.jipipe.api.algorithm.JIPipeGraphNode;
+import org.hkijena.jipipe.api.algorithm.JIPipeIteratingAlgorithm;
+import org.hkijena.jipipe.api.algorithm.JIPipeMergingAlgorithm;
 import org.hkijena.jipipe.api.registries.JIPipeNodeRegistry;
 import org.hkijena.jipipe.api.testbench.JIPipeTestBenchSettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
+import org.hkijena.jipipe.ui.batchassistant.DataBatchAssistantUI;
 import org.hkijena.jipipe.ui.cache.JIPipeAlgorithmCacheBrowserUI;
 import org.hkijena.jipipe.ui.compendium.JIPipeAlgorithmCompendiumUI;
 import org.hkijena.jipipe.ui.components.ColorIcon;
@@ -41,6 +44,7 @@ public class JIPipeSingleAlgorithmSelectionPanelUI extends JIPipeProjectWorkbenc
     private final JIPipeGraphNode algorithm;
     private JPanel testBenchTabContent;
     private JPanel cacheBrowserTabContent;
+    private JPanel batchAssistantTabContent;
     private DocumentTabPane tabbedPane;
 
     /**
@@ -80,6 +84,14 @@ public class JIPipeSingleAlgorithmSelectionPanelUI extends JIPipeProjectWorkbenc
                 DocumentTabPane.CloseMode.withoutCloseButton,
                 false);
 
+        if(algorithm instanceof JIPipeIteratingAlgorithm || algorithm instanceof JIPipeMergingAlgorithm) {
+            batchAssistantTabContent = new JPanel(new BorderLayout());
+            tabbedPane.addTab("Data batches", UIUtils.getIconFromResources("algorithms/boxes.png"),
+                    batchAssistantTabContent,
+                    DocumentTabPane.CloseMode.withoutCloseButton,
+                    false);
+        }
+
         testBenchTabContent = new JPanel(new BorderLayout());
         tabbedPane.addTab("Quick run", UIUtils.getIconFromResources("play.png"),
                 testBenchTabContent,
@@ -105,6 +117,15 @@ public class JIPipeSingleAlgorithmSelectionPanelUI extends JIPipeProjectWorkbenc
             if (cacheBrowserTabContent.getComponentCount() == 0) {
                 JIPipeAlgorithmCacheBrowserUI browserUI = new JIPipeAlgorithmCacheBrowserUI(getProjectWorkbench(), algorithm);
                 cacheBrowserTabContent.add(browserUI, BorderLayout.CENTER);
+            }
+        }
+        if(algorithm instanceof JIPipeIteratingAlgorithm || algorithm instanceof JIPipeMergingAlgorithm) {
+            if(batchAssistantTabContent != null && tabbedPane.getCurrentContent() == batchAssistantTabContent) {
+                if (batchAssistantTabContent.getComponentCount() == 0) {
+                    DataBatchAssistantUI browserUI = new DataBatchAssistantUI(getProjectWorkbench(), algorithm,
+                            () -> runTestBench(false, false, true, false, true));
+                    batchAssistantTabContent.add(browserUI, BorderLayout.CENTER);
+                }
             }
         }
     }
@@ -151,19 +172,27 @@ public class JIPipeSingleAlgorithmSelectionPanelUI extends JIPipeProjectWorkbenc
 
     /**
      * Activates and runs the quick run as automatically as possible.
-     *  @param showResults show results after a successful run
+     * @param showResults show results after a successful run
      * @param showCache   show slot cache after a successful run
+     * @param showBatchAssistant show batch assistant after a run
      * @param saveOutputs if the run should save outputs
+     * @param excludeSelected if the current algorithm should be excluded
      */
-    public void runTestBench(boolean showResults, boolean showCache, boolean saveOutputs) {
+    public void runTestBench(boolean showResults, boolean showCache, boolean showBatchAssistant, boolean saveOutputs, boolean excludeSelected) {
         // Activate the quick run
         tabbedPane.switchToContent(testBenchTabContent);
         JIPipeTestBenchSetupUI testBenchSetupUI = (JIPipeTestBenchSetupUI) testBenchTabContent.getComponent(0);
         JIPipeTestBenchSettings settings = new JIPipeTestBenchSettings();
         settings.setSaveOutputs(saveOutputs);
+        settings.setExcludeSelected(excludeSelected);
         boolean success = testBenchSetupUI.tryAutoRun(showResults, settings, testBench -> {
             if (showCache) {
                 SwingUtilities.invokeLater(() -> tabbedPane.switchToContent(cacheBrowserTabContent));
+            }
+            else if(showBatchAssistant) {
+                if(algorithm instanceof JIPipeIteratingAlgorithm || algorithm instanceof JIPipeMergingAlgorithm) {
+                    SwingUtilities.invokeLater(() -> tabbedPane.switchToContent(batchAssistantTabContent));
+                }
             }
         });
         if (!success) {

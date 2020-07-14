@@ -223,7 +223,7 @@ public class JIPipeAlgorithmFinderAlgorithmUI extends JPanel {
             JPanel panel = new JPanel(new BorderLayout());
 //            panel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(0,0,0,1, getAlgorithmBorderColor()),
 //                    BorderFactory.createEmptyBorder(0,0,0,4)));
-            panel.add(addInputSlotButton, BorderLayout.WEST);
+            panel.add(addInputSlotButton, BorderLayout.EAST);
             slotPanel.add(panel);
         }
 
