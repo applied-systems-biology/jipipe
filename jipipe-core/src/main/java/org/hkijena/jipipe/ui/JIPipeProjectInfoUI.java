@@ -17,6 +17,7 @@ import com.google.common.eventbus.Subscribe;
 import com.google.common.html.HtmlEscapers;
 import ij.ImagePlus;
 import ij.plugin.filter.GaussianBlur;
+import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.events.ParameterChangedEvent;
 import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
@@ -151,17 +152,20 @@ public class JIPipeProjectInfoUI extends JIPipeProjectWorkbenchPanel {
         JIPipeGraphCanvasUI canvasUI = new JIPipeGraphCanvasUI(getWorkbench(), getProject().getGraph(), null);
         canvasUI.setViewMode(JIPipeGraphViewMode.Horizontal);
         canvasUI.autoLayoutAll();
+        canvasUI.crop();
         BufferedImage headerBackground = null;
         try {
             if (GeneralUISettings.getInstance().isProjectInfoGeneratesPreview()) {
                 BufferedImage screenshot = canvasUI.createScreenshotPNG();
                 ImagePlus img = new ImagePlus("screenshot", screenshot);
-                if(img.getWidth() > 1000 || img.getHeight() > 1000) {
-                    double factor = Math.min(1000.0 / img.getWidth(), 1000.0 / img.getHeight());
-                    img.getProcessor().scale(factor, factor);
+                final double maxSize = 2000;
+                if(img.getWidth() > maxSize || img.getHeight() > maxSize) {
+                    double factor = Math.min(maxSize / img.getWidth(), maxSize / img.getHeight());
+                    ImageProcessor resized = img.getProcessor().resize((int) (img.getWidth() * factor), (int) (img.getHeight() * factor), true);
+                    img = new ImagePlus("screenshot", resized);
                 }
                 GaussianBlur blur = new GaussianBlur();
-                blur.blurGaussian(img.getProcessor(), 8);
+                blur.blurGaussian(img.getProcessor(), 2);
                 headerBackground = img.getBufferedImage();
             }
         } catch (Exception e) {
