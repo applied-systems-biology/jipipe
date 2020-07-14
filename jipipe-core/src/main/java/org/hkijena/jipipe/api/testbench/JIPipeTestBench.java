@@ -67,7 +67,8 @@ public class JIPipeTestBench implements JIPipeRunnable, JIPipeValidatable {
         // Disable all algorithms that are not dependencies of the benched algorithm
         List<JIPipeGraphNode> predecessorAlgorithms = testBenchRun.getGraph()
                 .getPredecessorAlgorithms(benchedAlgorithm, testBenchRun.getGraph().traverseAlgorithms());
-        predecessorAlgorithms.add(benchedAlgorithm);
+        if(!settings.isExcludeSelected())
+            predecessorAlgorithms.add(benchedAlgorithm);
         for (JIPipeGraphNode node : testBenchRun.getGraph().getNodes().values()) {
             if (!predecessorAlgorithms.contains(node)) {
                 if (node instanceof JIPipeAlgorithm) {

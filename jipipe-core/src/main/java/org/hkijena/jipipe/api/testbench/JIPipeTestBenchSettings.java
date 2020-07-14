@@ -32,6 +32,7 @@ public class JIPipeTestBenchSettings implements JIPipeParameterCollection {
     private boolean loadFromCache = true;
     private boolean storeToCache = true;
     private boolean saveOutputs = true;
+    private boolean excludeSelected = false;
     private int numThreads = RuntimeSettings.getInstance().getDefaultTestBenchThreads();
 
     /**
@@ -104,5 +105,17 @@ public class JIPipeTestBenchSettings implements JIPipeParameterCollection {
     @JIPipeParameter("save-outputs")
     public void setSaveOutputs(boolean saveOutputs) {
         this.saveOutputs = saveOutputs;
+    }
+
+    @JIPipeDocumentation(name = "Exclude selected algorithm", description = "If enabled, only dependency algorithms are executed. " +
+            "The currently selected algorithm is skipped. This might be useful when debugging the current algorithm.")
+    @JIPipeParameter("exclude-selected")
+    public boolean isExcludeSelected() {
+        return excludeSelected;
+    }
+
+    @JIPipeParameter("exclude-selected")
+    public void setExcludeSelected(boolean excludeSelected) {
+        this.excludeSelected = excludeSelected;
     }
 }
