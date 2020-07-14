@@ -49,15 +49,15 @@ public class Clij2MaximumOfTouchingNeighbors extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataInterface, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         CLIJ2 clij2 = CLIJ2.getInstance();
         CLIJ clij = clij2.getCLIJ();
-        ClearCLBuffer src_values = dataInterface.getInputData(getInputSlot("src_values"), CLIJImageData.class).getImage();
-        ClearCLBuffer touch_matrix = dataInterface.getInputData(getInputSlot("touch_matrix"), CLIJImageData.class).getImage();
+        ClearCLBuffer src_values = dataBatch.getInputData(getInputSlot("src_values"), CLIJImageData.class).getImage();
+        ClearCLBuffer touch_matrix = dataBatch.getInputData(getInputSlot("touch_matrix"), CLIJImageData.class).getImage();
         ClearCLBuffer dst_values = clij2.create(src_values);
         MaximumOfTouchingNeighbors.maximumOfTouchingNeighbors(clij2, src_values, touch_matrix, dst_values);
 
-        dataInterface.addOutputData(getOutputSlot("dst_values"), new CLIJImageData(dst_values));
+        dataBatch.addOutputData(getOutputSlot("dst_values"), new CLIJImageData(dst_values));
     }
 
 }

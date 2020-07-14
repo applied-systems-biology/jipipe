@@ -79,8 +79,8 @@ public class IlluminationCorrection2DAlgorithm extends JIPipeSimpleIteratingAlgo
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataInterface, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
-        ImagePlusGreyscale32FData inputData = dataInterface.getInputData(getFirstInputSlot(), ImagePlusGreyscale32FData.class);
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+        ImagePlusGreyscale32FData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscale32FData.class);
 
         GaussianBlur2DAlgorithm gaussianAlgorithmCopy = new GaussianBlur2DAlgorithm(gaussianAlgorithm);
         gaussianAlgorithmCopy.getFirstInputSlot().addData(inputData);
@@ -95,7 +95,7 @@ public class IlluminationCorrection2DAlgorithm extends JIPipeSimpleIteratingAlgo
         ImageCalculator calculator = new ImageCalculator();
         ImagePlus result = calculator.run("Divide stack create 32-bit", inputData.getImage(), background);
 
-        dataInterface.addOutputData(getFirstOutputSlot(), new ImagePlusData(result));
+        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(result));
     }
 
     @JIPipeDocumentation(name = "Gaussian filter")

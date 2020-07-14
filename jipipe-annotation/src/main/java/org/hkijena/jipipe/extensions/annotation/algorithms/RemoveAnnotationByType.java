@@ -60,11 +60,11 @@ public class RemoveAnnotationByType extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataInterface, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         for (String annotationType : annotationTypes) {
-            dataInterface.removeGlobalAnnotation(annotationType);
+            dataBatch.removeGlobalAnnotation(annotationType);
         }
-        dataInterface.addOutputData(getFirstOutputSlot(), dataInterface.getInputData(getFirstInputSlot(), JIPipeData.class));
+        dataBatch.addOutputData(getFirstOutputSlot(), dataBatch.getInputData(getFirstInputSlot(), JIPipeData.class));
     }
 
     @JIPipeDocumentation(name = "Removed annotation", description = "This annotation is removed from each input data")

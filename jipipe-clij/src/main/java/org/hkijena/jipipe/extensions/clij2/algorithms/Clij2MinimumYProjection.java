@@ -48,14 +48,14 @@ public class Clij2MinimumYProjection extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataInterface, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         CLIJ2 clij2 = CLIJ2.getInstance();
         CLIJ clij = clij2.getCLIJ();
-        ClearCLBuffer src = dataInterface.getInputData(getInputSlot("src"), CLIJImageData.class).getImage();
+        ClearCLBuffer src = dataBatch.getInputData(getInputSlot("src"), CLIJImageData.class).getImage();
         ClearCLBuffer dst_min = clij2.create(src);
         MinimumYProjection.minimumYProjection(clij2, src, dst_min);
 
-        dataInterface.addOutputData(getOutputSlot("dst_min"), new CLIJImageData(dst_min));
+        dataBatch.addOutputData(getOutputSlot("dst_min"), new CLIJImageData(dst_min));
     }
 
 }

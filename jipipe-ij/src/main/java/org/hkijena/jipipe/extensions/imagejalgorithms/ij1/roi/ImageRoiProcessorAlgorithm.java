@@ -79,18 +79,18 @@ public abstract class ImageRoiProcessorAlgorithm extends JIPipeIteratingAlgorith
      * Extracts or generates the reference image.
      * Please note that the reference is not safe to modify
      *
-     * @param dataInterface     the input data
+     * @param dataBatch     the input data
      * @param subProgress       progress
      * @param algorithmProgress progress
      * @param isCancelled       if cancelled
      * @return reference image
      */
-    protected ImagePlus getReferenceImage(JIPipeDataBatch dataInterface, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+    protected ImagePlus getReferenceImage(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         if (requireReferenceImage) {
-            return dataInterface.getInputData("Reference", ImagePlusData.class).getImage();
+            return dataBatch.getInputData("Reference", ImagePlusData.class).getImage();
         } else {
             toMaskAlgorithm.clearSlotData();
-            toMaskAlgorithm.getFirstInputSlot().addData(dataInterface.getInputData("ROI", ROIListData.class));
+            toMaskAlgorithm.getFirstInputSlot().addData(dataBatch.getInputData("ROI", ROIListData.class));
             toMaskAlgorithm.run(subProgress.resolve("Generate reference image"), algorithmProgress, isCancelled);
             return toMaskAlgorithm.getFirstOutputSlot().getData(0, ImagePlusData.class).getImage();
         }

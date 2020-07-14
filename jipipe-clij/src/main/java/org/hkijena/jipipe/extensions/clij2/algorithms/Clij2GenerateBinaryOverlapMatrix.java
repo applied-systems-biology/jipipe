@@ -49,15 +49,15 @@ public class Clij2GenerateBinaryOverlapMatrix extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataInterface, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         CLIJ2 clij2 = CLIJ2.getInstance();
         CLIJ clij = clij2.getCLIJ();
-        ClearCLBuffer src_label_map1 = dataInterface.getInputData(getInputSlot("src_label_map1"), CLIJImageData.class).getImage();
-        ClearCLBuffer src_label_map2 = dataInterface.getInputData(getInputSlot("src_label_map2"), CLIJImageData.class).getImage();
+        ClearCLBuffer src_label_map1 = dataBatch.getInputData(getInputSlot("src_label_map1"), CLIJImageData.class).getImage();
+        ClearCLBuffer src_label_map2 = dataBatch.getInputData(getInputSlot("src_label_map2"), CLIJImageData.class).getImage();
         ClearCLBuffer dst_touch_matrix = clij2.create(src_label_map1);
         GenerateBinaryOverlapMatrix.generateBinaryOverlapMatrix(clij2, src_label_map1, src_label_map2, dst_touch_matrix);
 
-        dataInterface.addOutputData(getOutputSlot("dst_touch_matrix"), new CLIJImageData(dst_touch_matrix));
+        dataBatch.addOutputData(getOutputSlot("dst_touch_matrix"), new CLIJImageData(dst_touch_matrix));
     }
 
 }

@@ -70,8 +70,8 @@ public class ConvertToAnnotationTable extends JIPipeMergingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeMergingDataBatch dataInterface, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
-        Set<Integer> inputDataRows = dataInterface.getInputRows(getFirstInputSlot());
+    protected void runIteration(JIPipeMergingDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+        Set<Integer> inputDataRows = dataBatch.getInputRows(getFirstInputSlot());
 
         AnnotationTableData output = new AnnotationTableData();
         int dataColumn = output.addColumn(generatedColumn, true);
@@ -90,9 +90,9 @@ public class ConvertToAnnotationTable extends JIPipeMergingAlgorithm {
         }
 
         if (removeOutputAnnotations)
-            dataInterface.getAnnotations().clear();
+            dataBatch.getAnnotations().clear();
 
-        dataInterface.addOutputData(getFirstOutputSlot(), output);
+        dataBatch.addOutputData(getFirstOutputSlot(), output);
 
     }
 

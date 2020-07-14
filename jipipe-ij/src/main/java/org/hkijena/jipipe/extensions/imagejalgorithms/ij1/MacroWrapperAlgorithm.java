@@ -109,9 +109,9 @@ public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataInterface, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         backupWindows();
-        prepareInputData(dataInterface);
+        prepareInputData(dataBatch);
 
         StringBuilder finalCode = new StringBuilder();
         // Inject parameters
@@ -150,7 +150,7 @@ public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm {
 
         // Inject path data
         for (JIPipeDataSlot inputSlot : getInputSlots()) {
-            JIPipeData data = dataInterface.getInputData(inputSlot, JIPipeData.class);
+            JIPipeData data = dataBatch.getInputData(inputSlot, JIPipeData.class);
             if (data instanceof PathData) {
                 if (!MacroUtils.isValidVariableName(inputSlot.getName()))
                     throw new IllegalArgumentException("Invalid variable name " + inputSlot.getName());
@@ -169,16 +169,16 @@ public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm {
         } catch (Exception e) {
             throw new RuntimeException(e);
         } finally {
-            passOutputData(dataInterface);
+            passOutputData(dataBatch);
             clearData();
         }
     }
 
-    private void passOutputData(JIPipeDataBatch dataInterface) {
+    private void passOutputData(JIPipeDataBatch dataBatch) {
         for (JIPipeDataSlot outputSlot : getOutputSlots()) {
             ImageJDatatypeAdapter adapter = JIPipeImageJAdapterRegistry.getInstance().getAdapterForJIPipeData(outputSlot.getAcceptedDataType());
             JIPipeData data = adapter.importFromImageJ(outputSlot.getName());
-            dataInterface.addOutputData(outputSlot, data);
+            dataBatch.addOutputData(outputSlot, data);
 
             // Workaround bug: Not closing all outputs
             if (ImagePlusData.class.isAssignableFrom(outputSlot.getAcceptedDataType())) {
@@ -250,14 +250,14 @@ public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm {
     /**
      * Loads input data, so it can be discovered by ImageJ
      */
-    private void prepareInputData(JIPipeDataBatch dataInterface) {
+    private void prepareInputData(JIPipeDataBatch dataBatch) {
 //        long imageInputSlotCount = getInputSlots().stream().filter(slot -> JIPipeMultichannelImageData.class.isAssignableFrom(slot.getAcceptedDataType())).count();
         initiallyOpenedImages.clear();
         for (int i = 0; i < WindowManager.getImageCount(); ++i) {
             initiallyOpenedImages.add(WindowManager.getImage(i + 1));
         }
         for (JIPipeDataSlot inputSlot : getInputSlots()) {
-            JIPipeData data = dataInterface.getInputData(inputSlot, JIPipeData.class);
+            JIPipeData data = dataBatch.getInputData(inputSlot, JIPipeData.class);
             if (data instanceof PathData)
                 continue;
             ImageJDatatypeAdapter adapter = JIPipeImageJAdapterRegistry.getInstance().getAdapterForJIPipeData(data);

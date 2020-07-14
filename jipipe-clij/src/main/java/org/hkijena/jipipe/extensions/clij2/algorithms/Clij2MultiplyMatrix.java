@@ -49,15 +49,15 @@ public class Clij2MultiplyMatrix extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataInterface, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         CLIJ2 clij2 = CLIJ2.getInstance();
         CLIJ clij = clij2.getCLIJ();
-        ClearCLBuffer input1 = dataInterface.getInputData(getInputSlot("input1"), CLIJImageData.class).getImage();
-        ClearCLBuffer input2 = dataInterface.getInputData(getInputSlot("input2"), CLIJImageData.class).getImage();
+        ClearCLBuffer input1 = dataBatch.getInputData(getInputSlot("input1"), CLIJImageData.class).getImage();
+        ClearCLBuffer input2 = dataBatch.getInputData(getInputSlot("input2"), CLIJImageData.class).getImage();
         ClearCLBuffer output = clij2.create(input1);
         MultiplyMatrix.multiplyMatrix(clij2, input1, input2, output);
 
-        dataInterface.addOutputData(getOutputSlot("output"), new CLIJImageData(output));
+        dataBatch.addOutputData(getOutputSlot("output"), new CLIJImageData(output));
     }
 
 }

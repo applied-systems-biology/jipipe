@@ -49,15 +49,15 @@ public class Clij2NonzeroMinimumDiamond extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataInterface, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         CLIJ2 clij2 = CLIJ2.getInstance();
         CLIJ clij = clij2.getCLIJ();
-        ClearCLBuffer src = dataInterface.getInputData(getInputSlot("src"), CLIJImageData.class).getImage();
-        ClearCLBuffer flag = dataInterface.getInputData(getInputSlot("flag"), CLIJImageData.class).getImage();
+        ClearCLBuffer src = dataBatch.getInputData(getInputSlot("src"), CLIJImageData.class).getImage();
+        ClearCLBuffer flag = dataBatch.getInputData(getInputSlot("flag"), CLIJImageData.class).getImage();
         ClearCLBuffer dst = clij2.create(src);
         NonzeroMinimumDiamond.nonzeroMinimumDiamond(clij2, src, flag, dst);
 
-        dataInterface.addOutputData(getOutputSlot("dst"), new CLIJImageData(dst));
+        dataBatch.addOutputData(getOutputSlot("dst"), new CLIJImageData(dst));
     }
 
 }

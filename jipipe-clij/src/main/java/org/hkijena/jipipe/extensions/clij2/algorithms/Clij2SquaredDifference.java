@@ -49,15 +49,15 @@ public class Clij2SquaredDifference extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataInterface, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         CLIJ2 clij2 = CLIJ2.getInstance();
         CLIJ clij = clij2.getCLIJ();
-        ClearCLBuffer buffer1 = dataInterface.getInputData(getInputSlot("buffer1"), CLIJImageData.class).getImage();
-        ClearCLBuffer buffer2 = dataInterface.getInputData(getInputSlot("buffer2"), CLIJImageData.class).getImage();
+        ClearCLBuffer buffer1 = dataBatch.getInputData(getInputSlot("buffer1"), CLIJImageData.class).getImage();
+        ClearCLBuffer buffer2 = dataBatch.getInputData(getInputSlot("buffer2"), CLIJImageData.class).getImage();
         ClearCLBuffer result = clij2.create(buffer1);
         SquaredDifference.squaredDifference(clij2, buffer1, buffer2, result);
 
-        dataInterface.addOutputData(getOutputSlot("result"), new CLIJImageData(result));
+        dataBatch.addOutputData(getOutputSlot("result"), new CLIJImageData(result));
     }
 
 }

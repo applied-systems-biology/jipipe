@@ -59,8 +59,8 @@ public class RenameColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataInterface, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
-        TableColumn input = dataInterface.getInputData(getFirstInputSlot(), TableColumn.class);
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+        TableColumn input = dataBatch.getInputData(getFirstInputSlot(), TableColumn.class);
         String name = input.getLabel();
         for (StringFilterAndStringPair renamingEntry : renamingEntries) {
             if (renamingEntry.getKey().test(name)) {
@@ -70,9 +70,9 @@ public class RenameColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         }
 
         if (input.isNumeric()) {
-            dataInterface.addOutputData(getFirstOutputSlot(), new DoubleArrayTableColumn(input.getDataAsDouble(input.getRows()), name));
+            dataBatch.addOutputData(getFirstOutputSlot(), new DoubleArrayTableColumn(input.getDataAsDouble(input.getRows()), name));
         } else {
-            dataInterface.addOutputData(getFirstOutputSlot(), new StringArrayTableColumn(input.getDataAsString(input.getRows()), name));
+            dataBatch.addOutputData(getFirstOutputSlot(), new StringArrayTableColumn(input.getDataAsString(input.getRows()), name));
         }
     }
 

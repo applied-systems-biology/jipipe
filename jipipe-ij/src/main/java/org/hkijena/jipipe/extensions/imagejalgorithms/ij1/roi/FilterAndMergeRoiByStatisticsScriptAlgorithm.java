@@ -135,9 +135,9 @@ public class FilterAndMergeRoiByStatisticsScriptAlgorithm extends ImageRoiProces
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataInterface, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
-        ROIListData inputData = dataInterface.getInputData("ROI", ROIListData.class);
-        ImagePlusData referenceImageData = new ImagePlusData(getReferenceImage(dataInterface, subProgress.resolve("Generate reference image"), algorithmProgress, isCancelled));
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+        ROIListData inputData = dataBatch.getInputData("ROI", ROIListData.class);
+        ImagePlusData referenceImageData = new ImagePlusData(getReferenceImage(dataBatch, subProgress.resolve("Generate reference image"), algorithmProgress, isCancelled));
 
         // Obtain statistics
         roiStatisticsAlgorithm.clearSlotData();
@@ -158,7 +158,7 @@ public class FilterAndMergeRoiByStatisticsScriptAlgorithm extends ImageRoiProces
             roiList.add(roiItemDictionary);
         }
 
-        PyDictionary annotationDict = JIPipeAnnotation.annotationMapToPython(dataInterface.getAnnotations());
+        PyDictionary annotationDict = JIPipeAnnotation.annotationMapToPython(dataBatch.getAnnotations());
         PyDictionary rowDict = new PyDictionary();
         rowDict.put("annotations", annotationDict);
         rowDict.put("roi_list", roiList);

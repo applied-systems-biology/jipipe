@@ -84,9 +84,9 @@ public class FilterRoiByStatisticsAlgorithm extends ImageRoiProcessorAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataInterface, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
-        ROIListData inputData = dataInterface.getInputData("ROI", ROIListData.class);
-        ImagePlusData referenceImageData = new ImagePlusData(getReferenceImage(dataInterface, subProgress.resolve("Generate reference image"), algorithmProgress, isCancelled));
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+        ROIListData inputData = dataBatch.getInputData("ROI", ROIListData.class);
+        ImagePlusData referenceImageData = new ImagePlusData(getReferenceImage(dataBatch, subProgress.resolve("Generate reference image"), algorithmProgress, isCancelled));
 
         // Obtain statistics
         roiStatisticsAlgorithm.clearSlotData();
@@ -118,7 +118,7 @@ public class FilterRoiByStatisticsAlgorithm extends ImageRoiProcessorAlgorithm {
             }
         }
 
-        dataInterface.addOutputData(getFirstOutputSlot(), outputData);
+        dataBatch.addOutputData(getFirstOutputSlot(), outputData);
     }
 
 

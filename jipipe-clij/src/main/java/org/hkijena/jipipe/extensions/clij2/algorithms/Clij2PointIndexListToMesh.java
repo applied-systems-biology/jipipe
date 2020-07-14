@@ -49,15 +49,15 @@ public class Clij2PointIndexListToMesh extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataInterface, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         CLIJ2 clij2 = CLIJ2.getInstance();
         CLIJ clij = clij2.getCLIJ();
-        ClearCLBuffer pointlist = dataInterface.getInputData(getInputSlot("pointlist"), CLIJImageData.class).getImage();
-        ClearCLBuffer indexlist = dataInterface.getInputData(getInputSlot("indexlist"), CLIJImageData.class).getImage();
+        ClearCLBuffer pointlist = dataBatch.getInputData(getInputSlot("pointlist"), CLIJImageData.class).getImage();
+        ClearCLBuffer indexlist = dataBatch.getInputData(getInputSlot("indexlist"), CLIJImageData.class).getImage();
         ClearCLBuffer mesh = clij2.create(pointlist);
         PointIndexListToMesh.pointIndexListToMesh(clij2, pointlist, indexlist, mesh);
 
-        dataInterface.addOutputData(getOutputSlot("mesh"), new CLIJImageData(mesh));
+        dataBatch.addOutputData(getOutputSlot("mesh"), new CLIJImageData(mesh));
     }
 
 }

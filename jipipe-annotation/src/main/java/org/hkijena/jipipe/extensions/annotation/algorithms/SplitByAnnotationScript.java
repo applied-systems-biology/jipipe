@@ -97,15 +97,15 @@ public class SplitByAnnotationScript extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataInterface, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
-        PyDictionary annotationDict = JIPipeAnnotation.annotationMapToPython(dataInterface.getAnnotations());
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+        PyDictionary annotationDict = JIPipeAnnotation.annotationMapToPython(dataBatch.getAnnotations());
         pythonInterpreter.set("annotations", annotationDict);
         pythonInterpreter.exec(code.getCode());
         annotationDict = (PyDictionary) pythonInterpreter.get("annotations");
 
         // Convert the results back into JIPipe
-        dataInterface.getAnnotations().clear();
-        JIPipeAnnotation.setAnnotationsFromPython(annotationDict, dataInterface.getAnnotations());
+        dataBatch.getAnnotations().clear();
+        JIPipeAnnotation.setAnnotationsFromPython(annotationDict, dataBatch.getAnnotations());
 
         // Get the output slot
         PyObject outputSlotPy = pythonInterpreter.get("output_slot");
@@ -115,7 +115,7 @@ public class SplitByAnnotationScript extends JIPipeSimpleIteratingAlgorithm {
         }
 
         if (!StringUtils.isNullOrEmpty(outputSlotName)) {
-            dataInterface.addOutputData(getOutputSlot(outputSlotName), dataInterface.getInputData(getFirstInputSlot(), JIPipeData.class));
+            dataBatch.addOutputData(getOutputSlot(outputSlotName), dataBatch.getInputData(getFirstInputSlot(), JIPipeData.class));
         }
     }
 

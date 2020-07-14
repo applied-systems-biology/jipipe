@@ -49,15 +49,15 @@ public class Clij2ExcludeLabels extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataInterface, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         CLIJ2 clij2 = CLIJ2.getInstance();
         CLIJ clij = clij2.getCLIJ();
-        ClearCLBuffer flaglist = dataInterface.getInputData(getInputSlot("flaglist"), CLIJImageData.class).getImage();
-        ClearCLBuffer label_map_in = dataInterface.getInputData(getInputSlot("label_map_in"), CLIJImageData.class).getImage();
+        ClearCLBuffer flaglist = dataBatch.getInputData(getInputSlot("flaglist"), CLIJImageData.class).getImage();
+        ClearCLBuffer label_map_in = dataBatch.getInputData(getInputSlot("label_map_in"), CLIJImageData.class).getImage();
         ClearCLBuffer label_map_out = clij2.create(flaglist);
         ExcludeLabels.excludeLabels(clij2, flaglist, label_map_in, label_map_out);
 
-        dataInterface.addOutputData(getOutputSlot("label_map_out"), new CLIJImageData(label_map_out));
+        dataBatch.addOutputData(getOutputSlot("label_map_out"), new CLIJImageData(label_map_out));
     }
 
 }

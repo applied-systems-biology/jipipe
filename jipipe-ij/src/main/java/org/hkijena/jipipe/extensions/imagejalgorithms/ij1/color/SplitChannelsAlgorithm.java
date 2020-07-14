@@ -101,8 +101,8 @@ public class SplitChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataInterface, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
-        ImagePlus image = dataInterface.getInputData(getFirstInputSlot(), ImagePlusData.class).getImage();
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+        ImagePlus image = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class).getImage();
 
         // If we have a grayscale image then we can just skip everything
         if (!image.isComposite() && image.getType() != ImagePlus.COLOR_256 && image.getType() != ImagePlus.COLOR_RGB) {
@@ -130,7 +130,7 @@ public class SplitChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                 if(annotateWithChannelIndex) {
                     annotations.add(new JIPipeAnnotation(annotationColumnChannelIndex, "" + channelIndex));
                 }
-                dataInterface.addOutputData(slotName, new ImagePlusGreyscaleData(image), annotations);
+                dataBatch.addOutputData(slotName, new ImagePlusGreyscaleData(image), annotations);
             }
             return;
         }
@@ -200,7 +200,7 @@ public class SplitChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             }
 
             ImagePlus output = new ImagePlus(image.getTitle() + " C=" + channelIndex, stack);
-            dataInterface.addOutputData(slotName, new ImagePlusGreyscaleData(output), annotations);
+            dataBatch.addOutputData(slotName, new ImagePlusGreyscaleData(output), annotations);
         }
     }
 

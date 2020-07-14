@@ -24,6 +24,7 @@ import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.jipipe.extensions.parameters.roi.Anchor;
 import org.hkijena.jipipe.extensions.parameters.roi.Margin;
 
 import java.awt.*;
@@ -57,7 +58,7 @@ public class RemoveBorderRoisAlgorithm extends JIPipeIteratingAlgorithm {
                 .addOutputSlot("Cleaned ROI", ROIListData.class, null)
                 .seal()
                 .build());
-        borderDefinition.setAnchor(Margin.Anchor.CenterCenter);
+        borderDefinition.setAnchor(Anchor.CenterCenter);
     }
 
     /**
@@ -72,10 +73,10 @@ public class RemoveBorderRoisAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataInterface, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
-        ROIListData data = (ROIListData) dataInterface.getInputData("ROI", ROIListData.class).duplicate();
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+        ROIListData data = (ROIListData) dataBatch.getInputData("ROI", ROIListData.class).duplicate();
         data.outline(outline);
-        ImagePlus reference = dataInterface.getInputData("Image", ImagePlusData.class).getImage();
+        ImagePlus reference = dataBatch.getInputData("Image", ImagePlusData.class).getImage();
         Rectangle inside = borderDefinition.apply(new Rectangle(0, 0, reference.getWidth(), reference.getHeight()));
 
         data.removeIf(roi -> {
@@ -88,7 +89,7 @@ public class RemoveBorderRoisAlgorithm extends JIPipeIteratingAlgorithm {
             return false;
         });
 
-        dataInterface.addOutputData(getFirstOutputSlot(), data);
+        dataBatch.addOutputData(getFirstOutputSlot(), data);
     }
 
 

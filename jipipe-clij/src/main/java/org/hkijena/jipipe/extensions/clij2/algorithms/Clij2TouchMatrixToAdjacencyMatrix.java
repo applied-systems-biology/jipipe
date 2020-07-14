@@ -48,14 +48,14 @@ public class Clij2TouchMatrixToAdjacencyMatrix extends JIPipeSimpleIteratingAlgo
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataInterface, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         CLIJ2 clij2 = CLIJ2.getInstance();
         CLIJ clij = clij2.getCLIJ();
-        ClearCLBuffer touch_matrix = dataInterface.getInputData(getInputSlot("touch_matrix"), CLIJImageData.class).getImage();
+        ClearCLBuffer touch_matrix = dataBatch.getInputData(getInputSlot("touch_matrix"), CLIJImageData.class).getImage();
         ClearCLBuffer adjacency_matrix = clij2.create(touch_matrix);
         TouchMatrixToAdjacencyMatrix.touchMatrixToAdjacencyMatrix(clij2, touch_matrix, adjacency_matrix);
 
-        dataInterface.addOutputData(getOutputSlot("adjacency_matrix"), new CLIJImageData(adjacency_matrix));
+        dataBatch.addOutputData(getOutputSlot("adjacency_matrix"), new CLIJImageData(adjacency_matrix));
     }
 
 }

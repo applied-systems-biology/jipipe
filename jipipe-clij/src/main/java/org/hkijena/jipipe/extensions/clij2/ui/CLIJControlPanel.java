@@ -3,9 +3,9 @@ package org.hkijena.jipipe.extensions.clij2.ui;
 import net.haesleinhuepf.clij.converters.CLIJConverterService;
 import net.haesleinhuepf.clij2.CLIJ2;
 import org.hkijena.jipipe.extensions.clij2.CLIJSettings;
-import org.hkijena.jipipe.ui.JIPipeInfoUI;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
+import org.hkijena.jipipe.ui.components.BackgroundPanel;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.MarkdownReader;
@@ -13,12 +13,14 @@ import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.io.IOException;
 
 /**
  * Graphical control panel for CLIJ
@@ -66,7 +68,12 @@ public class CLIJControlPanel extends JIPipeWorkbenchPanel {
     }
 
     private void initializeHeaderPanel() {
-        JPanel headerPanel = new JIPipeInfoUI.BackgroundPanel();
+        JPanel headerPanel;
+        try {
+            headerPanel = new BackgroundPanel(ImageIO.read(ResourceUtils.getPluginResource("infoui-background.png")), false);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         headerPanel.setLayout(new BorderLayout());
         headerPanel.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.DARK_GRAY));
         headerPanel.setPreferredSize(new Dimension(headerPanel.getPreferredSize().width, 200));

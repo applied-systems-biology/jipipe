@@ -51,15 +51,15 @@ public class Clij2StatisticsOfBackgroundAndLabelledPixels extends JIPipeIteratin
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataInterface, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         CLIJ2 clij2 = CLIJ2.getInstance();
         CLIJ clij = clij2.getCLIJ();
-        ClearCLBuffer inputImage = dataInterface.getInputData(getInputSlot("inputImage"), CLIJImageData.class).getImage();
-        ClearCLBuffer inputLabelMap = dataInterface.getInputData(getInputSlot("inputLabelMap"), CLIJImageData.class).getImage();
+        ClearCLBuffer inputImage = dataBatch.getInputData(getInputSlot("inputImage"), CLIJImageData.class).getImage();
+        ClearCLBuffer inputLabelMap = dataBatch.getInputData(getInputSlot("inputLabelMap"), CLIJImageData.class).getImage();
         ResultsTable resultsTable = new ResultsTable();
         StatisticsOfBackgroundAndLabelledPixels.statisticsOfBackgroundAndLabelledPixels(clij2, inputImage, inputLabelMap, resultsTable);
 
-        dataInterface.addOutputData(getOutputSlot("resultsTable"), new ResultsTableData(resultsTable));
+        dataBatch.addOutputData(getOutputSlot("resultsTable"), new ResultsTableData(resultsTable));
     }
 
 }

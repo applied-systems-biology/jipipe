@@ -53,14 +53,14 @@ public class Clij2MeanZProjectionBounded extends JIPipeSimpleIteratingAlgorithm 
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataInterface, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         CLIJ2 clij2 = CLIJ2.getInstance();
         CLIJ clij = clij2.getCLIJ();
-        ClearCLBuffer src = dataInterface.getInputData(getInputSlot("src"), CLIJImageData.class).getImage();
+        ClearCLBuffer src = dataBatch.getInputData(getInputSlot("src"), CLIJImageData.class).getImage();
         ClearCLBuffer dst_mean = clij2.create(src);
         MeanZProjectionBounded.meanZProjectionBounded(clij, src, dst_mean, min_z, max_z);
 
-        dataInterface.addOutputData(getOutputSlot("dst_mean"), new CLIJImageData(dst_mean));
+        dataBatch.addOutputData(getOutputSlot("dst_mean"), new CLIJImageData(dst_mean));
     }
 
     @JIPipeParameter("min-z")

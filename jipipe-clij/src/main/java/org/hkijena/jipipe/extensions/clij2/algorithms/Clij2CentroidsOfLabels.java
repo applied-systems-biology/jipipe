@@ -48,14 +48,14 @@ public class Clij2CentroidsOfLabels extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataInterface, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         CLIJ2 clij2 = CLIJ2.getInstance();
         CLIJ clij = clij2.getCLIJ();
-        ClearCLBuffer labelMap = dataInterface.getInputData(getInputSlot("labelMap"), CLIJImageData.class).getImage();
+        ClearCLBuffer labelMap = dataBatch.getInputData(getInputSlot("labelMap"), CLIJImageData.class).getImage();
         ClearCLBuffer pointlist = clij2.create(labelMap);
         CentroidsOfLabels.centroidsOfLabels(clij2, labelMap, pointlist);
 
-        dataInterface.addOutputData(getOutputSlot("pointlist"), new CLIJImageData(pointlist));
+        dataBatch.addOutputData(getOutputSlot("pointlist"), new CLIJImageData(pointlist));
     }
 
 }

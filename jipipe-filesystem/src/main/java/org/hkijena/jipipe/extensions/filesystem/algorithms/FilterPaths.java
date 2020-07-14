@@ -72,8 +72,8 @@ public class FilterPaths extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataInterface, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
-        PathData inputData = dataInterface.getInputData(getFirstInputSlot(), PathData.class);
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+        PathData inputData = dataBatch.getInputData(getFirstInputSlot(), PathData.class);
         JIPipeDataSlot firstOutputSlot = getFirstOutputSlot();
         Path inputPath = inputData.getPath();
         if (filterOnlyNames)
@@ -87,7 +87,7 @@ public class FilterPaths extends JIPipeSimpleIteratingAlgorithm {
             if (!invert) {
                 for (PathPredicate filter : filters) {
                     if (filter.test(inputPath)) {
-                        dataInterface.addOutputData(firstOutputSlot, inputData);
+                        dataBatch.addOutputData(firstOutputSlot, inputData);
                         break;
                     }
                 }
@@ -100,10 +100,10 @@ public class FilterPaths extends JIPipeSimpleIteratingAlgorithm {
                     }
                 }
                 if (canPass)
-                    dataInterface.addOutputData(firstOutputSlot, inputData);
+                    dataBatch.addOutputData(firstOutputSlot, inputData);
             }
         } else {
-            dataInterface.addOutputData(firstOutputSlot, inputData);
+            dataBatch.addOutputData(firstOutputSlot, inputData);
         }
     }
 

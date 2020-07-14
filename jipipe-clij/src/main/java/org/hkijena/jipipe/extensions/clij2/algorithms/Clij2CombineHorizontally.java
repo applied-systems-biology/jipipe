@@ -49,15 +49,15 @@ public class Clij2CombineHorizontally extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataInterface, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         CLIJ2 clij2 = CLIJ2.getInstance();
         CLIJ clij = clij2.getCLIJ();
-        ClearCLBuffer stack1 = dataInterface.getInputData(getInputSlot("stack1"), CLIJImageData.class).getImage();
-        ClearCLBuffer stack2 = dataInterface.getInputData(getInputSlot("stack2"), CLIJImageData.class).getImage();
+        ClearCLBuffer stack1 = dataBatch.getInputData(getInputSlot("stack1"), CLIJImageData.class).getImage();
+        ClearCLBuffer stack2 = dataBatch.getInputData(getInputSlot("stack2"), CLIJImageData.class).getImage();
         ClearCLBuffer dst = clij2.create(stack1);
         CombineHorizontally.combineHorizontally(clij2, stack1, stack2, dst);
 
-        dataInterface.addOutputData(getOutputSlot("dst"), new CLIJImageData(dst));
+        dataBatch.addOutputData(getOutputSlot("dst"), new CLIJImageData(dst));
     }
 
 }

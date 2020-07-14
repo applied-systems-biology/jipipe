@@ -157,11 +157,11 @@ public class Clij2ExecuteKernelSimpleIterating extends JIPipeSimpleIteratingAlgo
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataInterface, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         CLIJ2 clij2 = CLIJ2.getInstance();
         PythonInterpreter pythonInterpreter = new PythonInterpreter();
         pythonInterpreter.set("clij2", clij2);
-        pythonInterpreter.set("data_batch", dataInterface);
+        pythonInterpreter.set("data_batch", dataBatch);
         PyDictionary inputSlotMap = new PyDictionary();
         PyDictionary outputSlotMap = new PyDictionary();
         for (JIPipeDataSlot inputSlot : getInputSlots()) {
@@ -194,7 +194,7 @@ public class Clij2ExecuteKernelSimpleIterating extends JIPipeSimpleIteratingAlgo
 
         // Fetch parameters (data)
         for (Map.Entry<String, JIPipeDataSlot> entry : getInputSlotMap().entrySet()) {
-            clParameters.put(entry.getKey(), dataInterface.getInputData(entry.getValue(), CLIJImageData.class).getImage());
+            clParameters.put(entry.getKey(), dataBatch.getInputData(entry.getValue(), CLIJImageData.class).getImage());
         }
         PyDictionary clOutputBuffersDict = pythonInterpreter.get("cl_output_buffers", PyDictionary.class);
         for (Object key : clOutputBuffersDict.keySet()) {
@@ -217,7 +217,7 @@ public class Clij2ExecuteKernelSimpleIterating extends JIPipeSimpleIteratingAlgo
 
         // Extract outputs
         for (Map.Entry<String, JIPipeDataSlot> entry : getOutputSlotMap().entrySet()) {
-            dataInterface.addOutputData(entry.getKey(), new CLIJImageData((ClearCLBuffer) clParameters.get(entry.getKey())));
+            dataBatch.addOutputData(entry.getKey(), new CLIJImageData((ClearCLBuffer) clParameters.get(entry.getKey())));
         }
     }
 

@@ -67,11 +67,11 @@ public class AnnotateAll extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataInterface, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         for (StringAndStringPair annotation : annotations) {
-            dataInterface.addGlobalAnnotation(new JIPipeAnnotation(annotation.getKey(), annotation.getValue()), overwrite);
+            dataBatch.addGlobalAnnotation(new JIPipeAnnotation(annotation.getKey(), annotation.getValue()), overwrite);
         }
-        dataInterface.addOutputData(getFirstOutputSlot(), dataInterface.getInputData(getFirstInputSlot(), JIPipeData.class));
+        dataBatch.addOutputData(getFirstOutputSlot(), dataBatch.getInputData(getFirstInputSlot(), JIPipeData.class));
     }
 
     @JIPipeDocumentation(name = "Annotations", description = "Allows you to set the annotation to add/modify")

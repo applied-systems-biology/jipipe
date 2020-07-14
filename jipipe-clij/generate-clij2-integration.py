@@ -263,7 +263,7 @@ def generate_jipipe_class(method, class_name):
     class_code += "}\n\n"
 
     # Write workload
-    class_code += "@Override\nprotected void runIteration(JIPipeDataBatch dataInterface," \
+    class_code += "@Override\nprotected void runIteration(JIPipeDataBatch dataBatch," \
                   " JIPipeRunnerSubStatus subProgress," \
                   " Consumer<JIPipeRunnerSubStatus> algorithmProgress," \
                   " Supplier<Boolean> isCancelled) {\n"
@@ -271,10 +271,10 @@ def generate_jipipe_class(method, class_name):
     class_code += "CLIJ clij = clij2.getCLIJ();\n"
     for parameter in method["input_slots"].values():
         if parameter["jipipe_type"] == "CLIJImageData":
-            class_code += 'ClearCLBuffer {name} = dataInterface.' \
+            class_code += 'ClearCLBuffer {name} = dataBatch.' \
                           'getInputData(getInputSlot("{name}"), CLIJImageData.class).getImage();\n'.format(name=parameter["name"])
         elif parameter["jipipe_type"] == "ResultsTableData":
-            class_code += 'ResultsTable {name} = dataInterface.' \
+            class_code += 'ResultsTable {name} = dataBatch.' \
                           'getInputData(getInputSlot("{name}"), ResultsTableData.class).getTable();\n'.format(name=parameter["name"])
     reference_input_name = list(method["input_slots"].values())[0]["name"]
     for parameter in method["output_slots"].values():
@@ -287,7 +287,7 @@ def generate_jipipe_class(method, class_name):
     class_code += method["class"].name + "." + method["method"].name + "(" + ", ".join([x.name for x in method["method"].parameters]) + ");\n\n"
 
     for parameter in method["output_slots"].values():
-        class_code += 'dataInterface.addOutputData(getOutputSlot("{name}"),' \
+        class_code += 'dataBatch.addOutputData(getOutputSlot("{name}"),' \
                       ' new {type}({name}));\n'.format(name=parameter["name"], type=parameter["jipipe_type"])
 
     class_code += "}\n\n"

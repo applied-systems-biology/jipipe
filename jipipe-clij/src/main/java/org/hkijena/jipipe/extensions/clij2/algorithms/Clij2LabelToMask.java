@@ -51,14 +51,14 @@ public class Clij2LabelToMask extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataInterface, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         CLIJ2 clij2 = CLIJ2.getInstance();
         CLIJ clij = clij2.getCLIJ();
-        ClearCLBuffer labelMap = dataInterface.getInputData(getInputSlot("labelMap"), CLIJImageData.class).getImage();
+        ClearCLBuffer labelMap = dataBatch.getInputData(getInputSlot("labelMap"), CLIJImageData.class).getImage();
         ClearCLBuffer maskOutput = clij2.create(labelMap);
         LabelToMask.labelToMask(clij2, labelMap, maskOutput, index);
 
-        dataInterface.addOutputData(getOutputSlot("maskOutput"), new CLIJImageData(maskOutput));
+        dataBatch.addOutputData(getOutputSlot("maskOutput"), new CLIJImageData(maskOutput));
     }
 
     @JIPipeParameter("index")

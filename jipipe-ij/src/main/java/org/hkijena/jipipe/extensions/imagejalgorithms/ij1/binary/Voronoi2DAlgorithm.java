@@ -62,13 +62,13 @@ public class Voronoi2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataInterface, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
-        ImagePlusData inputData = dataInterface.getInputData(getFirstInputSlot(), ImagePlusGreyscaleMaskData.class);
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+        ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscaleMaskData.class);
         ImagePlus img = inputData.getImage().duplicate();
         EDM edm = new EDM();
         edm.setup("voronoi", img);
         ImageJUtils.forEachSlice(img, edm::run);
-        dataInterface.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscale8UData(img));
+        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscale8UData(img));
     }
 
 

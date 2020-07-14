@@ -80,10 +80,10 @@ public class RoiStatisticsAlgorithm extends ImageRoiProcessorAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataInterface, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
-        ROIListData inputData = dataInterface.getInputData("ROI", ROIListData.class);
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+        ROIListData inputData = dataBatch.getInputData("ROI", ROIListData.class);
         Map<SliceIndex, List<Roi>> grouped = inputData.groupByPosition(applyPerSlice, applyPerChannel, applyPerFrame);
-        ImagePlus reference = getReferenceImage(dataInterface, subProgress.resolve("Generate reference image"), algorithmProgress, isCancelled);
+        ImagePlus reference = getReferenceImage(dataBatch, subProgress.resolve("Generate reference image"), algorithmProgress, isCancelled);
 
         for (Map.Entry<SliceIndex, List<Roi>> entry : grouped.entrySet()) {
             ROIListData data = new ROIListData(entry.getValue());
@@ -94,7 +94,7 @@ public class RoiStatisticsAlgorithm extends ImageRoiProcessorAlgorithm {
                 annotations.add(new JIPipeAnnotation(indexAnnotation, entry.getKey().toString()));
             }
 
-            dataInterface.addOutputData(getFirstOutputSlot(), result, annotations);
+            dataBatch.addOutputData(getFirstOutputSlot(), result, annotations);
         }
     }
 

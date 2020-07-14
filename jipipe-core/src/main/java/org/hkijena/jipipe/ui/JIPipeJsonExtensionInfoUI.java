@@ -18,6 +18,7 @@ import com.google.common.html.HtmlEscapers;
 import ij.IJ;
 import org.hkijena.jipipe.api.events.ParameterChangedEvent;
 import org.hkijena.jipipe.extensions.settings.ProjectsSettings;
+import org.hkijena.jipipe.ui.components.BackgroundPanel;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.MarkdownReader;
@@ -111,7 +112,12 @@ public class JIPipeJsonExtensionInfoUI extends JIPipeJsonExtensionWorkbenchPanel
     }
 
     private void initializeHeaderPanel() {
-        JPanel headerPanel = new BackgroundPanel();
+        JPanel headerPanel;
+        try {
+            headerPanel = new BackgroundPanel(ImageIO.read(ResourceUtils.getPluginResource("infoui-background.png")), true);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         headerPanel.setLayout(new BorderLayout());
         headerPanel.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.DARK_GRAY));
         headerPanel.setPreferredSize(new Dimension(headerPanel.getPreferredSize().width, 200));
@@ -179,37 +185,6 @@ public class JIPipeJsonExtensionInfoUI extends JIPipeJsonExtensionWorkbenchPanel
         toolBar.add(Box.createHorizontalStrut(4));
 
         topPanel.add(toolBar, BorderLayout.SOUTH);
-    }
-
-    private static class BackgroundPanel extends JPanel {
-
-        private final BufferedImage backgroundImage;
-
-        public BackgroundPanel() {
-            setOpaque(false);
-            try {
-                this.backgroundImage = ImageIO.read(ResourceUtils.getPluginResource("infoui-background.png"));
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-
-        @Override
-        public void paint(Graphics g) {
-            double factor = 1.0 * getHeight() / backgroundImage.getHeight();
-            g.drawImage(backgroundImage, 0, 0, (int) (backgroundImage.getWidth() * factor), getHeight(), null);
-
-            final int gs = 25;
-            g.setColor(new Color(185, 206, 227, 50));
-            for (int x = gs; x < getWidth(); x += gs) {
-                g.drawLine(x, 0, x, getHeight());
-            }
-            for (int y = gs; y < getHeight(); y += gs) {
-                g.drawLine(0, y, getWidth(), y);
-            }
-
-            super.paint(g);
-        }
     }
 
     /**

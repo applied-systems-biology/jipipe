@@ -91,9 +91,9 @@ public class SortAndExtractRoiByStatisticsAlgorithm extends ImageRoiProcessorAlg
 
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataInterface, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
-        ROIListData data = dataInterface.getInputData("ROI", ROIListData.class);
-        ImagePlusData referenceImageData = new ImagePlusData(getReferenceImage(dataInterface, subProgress.resolve("Generate reference image"), algorithmProgress, isCancelled));
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+        ROIListData data = dataBatch.getInputData("ROI", ROIListData.class);
+        ImagePlusData referenceImageData = new ImagePlusData(getReferenceImage(dataBatch, subProgress.resolve("Generate reference image"), algorithmProgress, isCancelled));
 
         // Obtain statistics
         roiStatisticsAlgorithm.clearSlotData();
@@ -141,7 +141,7 @@ public class SortAndExtractRoiByStatisticsAlgorithm extends ImageRoiProcessorAlg
             outputData.add(roi);
         }
 
-        dataInterface.addOutputData(getFirstOutputSlot(), outputData);
+        dataBatch.addOutputData(getFirstOutputSlot(), outputData);
     }
 
 

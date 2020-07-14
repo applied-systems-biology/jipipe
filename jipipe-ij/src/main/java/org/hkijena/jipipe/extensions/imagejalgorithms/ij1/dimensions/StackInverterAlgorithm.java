@@ -64,11 +64,11 @@ public class StackInverterAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataInterface, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
-        ImagePlus img = dataInterface.getInputData(getFirstInputSlot(), ImagePlus3DData.class).getImage().duplicate();
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+        ImagePlus img = dataBatch.getInputData(getFirstInputSlot(), ImagePlus3DData.class).getImage().duplicate();
         StackReverser reverser = new StackReverser();
         reverser.flipStack(img);
-        dataInterface.addOutputData(getFirstOutputSlot(), new ImagePlus3DData(img));
+        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlus3DData(img));
     }
 
     @Override

@@ -77,14 +77,14 @@ public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataInterface, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
-        FileData fileData = dataInterface.getInputData(getFirstInputSlot(), FileData.class);
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+        FileData fileData = dataBatch.getInputData(getFirstInputSlot(), FileData.class);
         ImagePlusData data = (ImagePlusData) readImageFrom(fileData.getPath());
         List<JIPipeAnnotation> traits = new ArrayList<>();
         if (titleAnnotation.isEnabled()) {
             traits.add(new JIPipeAnnotation(titleAnnotation.getContent(), data.getImage().getTitle()));
         }
-        dataInterface.addOutputData(getFirstOutputSlot(), data, traits);
+        dataBatch.addOutputData(getFirstOutputSlot(), data, traits);
     }
 
     @JIPipeDocumentation(name = "Title annotation", description = "Optional annotation type where the image title is written.")

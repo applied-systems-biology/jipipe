@@ -52,11 +52,11 @@ public class ResultsTableFromFile extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataInterface, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
-        FileData fileData = dataInterface.getInputData(getFirstInputSlot(), FileData.class);
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+        FileData fileData = dataBatch.getInputData(getFirstInputSlot(), FileData.class);
         try {
             ResultsTable resultsTable = ResultsTable.open(fileData.getPath().toString());
-            dataInterface.addOutputData(getFirstOutputSlot(), new ResultsTableData(resultsTable));
+            dataBatch.addOutputData(getFirstOutputSlot(), new ResultsTableData(resultsTable));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

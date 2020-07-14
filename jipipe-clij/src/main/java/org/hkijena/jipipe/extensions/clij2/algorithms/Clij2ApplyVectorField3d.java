@@ -51,17 +51,17 @@ public class Clij2ApplyVectorField3d extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataInterface, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         CLIJ2 clij2 = CLIJ2.getInstance();
         CLIJ clij = clij2.getCLIJ();
-        ClearCLBuffer src = dataInterface.getInputData(getInputSlot("src"), CLIJImageData.class).getImage();
-        ClearCLBuffer vectorX = dataInterface.getInputData(getInputSlot("vectorX"), CLIJImageData.class).getImage();
-        ClearCLBuffer vectorY = dataInterface.getInputData(getInputSlot("vectorY"), CLIJImageData.class).getImage();
-        ClearCLBuffer vectorZ = dataInterface.getInputData(getInputSlot("vectorZ"), CLIJImageData.class).getImage();
+        ClearCLBuffer src = dataBatch.getInputData(getInputSlot("src"), CLIJImageData.class).getImage();
+        ClearCLBuffer vectorX = dataBatch.getInputData(getInputSlot("vectorX"), CLIJImageData.class).getImage();
+        ClearCLBuffer vectorY = dataBatch.getInputData(getInputSlot("vectorY"), CLIJImageData.class).getImage();
+        ClearCLBuffer vectorZ = dataBatch.getInputData(getInputSlot("vectorZ"), CLIJImageData.class).getImage();
         ClearCLBuffer dst = clij2.create(src);
         ApplyVectorField3D.applyVectorField(clij2, src, vectorX, vectorY, vectorZ, dst);
 
-        dataInterface.addOutputData(getOutputSlot("dst"), new CLIJImageData(dst));
+        dataBatch.addOutputData(getOutputSlot("dst"), new CLIJImageData(dst));
     }
 
 }

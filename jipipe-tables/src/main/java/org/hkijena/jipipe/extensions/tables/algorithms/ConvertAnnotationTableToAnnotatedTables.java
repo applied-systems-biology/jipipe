@@ -59,15 +59,15 @@ public class ConvertAnnotationTableToAnnotatedTables extends JIPipeSimpleIterati
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataInterface, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
-        AnnotationTableData inputData = dataInterface.getInputData(getFirstInputSlot(), AnnotationTableData.class);
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+        AnnotationTableData inputData = dataBatch.getInputData(getFirstInputSlot(), AnnotationTableData.class);
         TableColumn mergedColumn = inputData.getMergedColumn(inputData.getAnnotationColumns(), ", ", "=");
         for (Map.Entry<String, ResultsTableData> entry : inputData.splitBy(mergedColumn).entrySet()) {
             ResultsTableData data = entry.getValue();
             if (!keepAnnotationColumns) {
                 data.removeColumns(inputData.getAnnotationColumns());
             }
-            dataInterface.addOutputData(getFirstOutputSlot(), data);
+            dataBatch.addOutputData(getFirstOutputSlot(), data);
         }
     }
 

@@ -58,12 +58,12 @@ public class SimpleFolderAnnotationGenerator extends JIPipeSimpleIteratingAlgori
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataInterface, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         if (!StringUtils.isNullOrEmpty(generatedAnnotation)) {
-            FolderData inputData = dataInterface.getInputData(getFirstInputSlot(), FolderData.class);
+            FolderData inputData = dataBatch.getInputData(getFirstInputSlot(), FolderData.class);
             String discriminator = inputData.getPath().getFileName().toString();
-            dataInterface.addGlobalAnnotation(new JIPipeAnnotation(generatedAnnotation, discriminator));
-            dataInterface.addOutputData(getFirstOutputSlot(), inputData);
+            dataBatch.addGlobalAnnotation(new JIPipeAnnotation(generatedAnnotation, discriminator));
+            dataBatch.addOutputData(getFirstOutputSlot(), inputData);
         }
     }
 

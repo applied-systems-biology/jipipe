@@ -110,8 +110,8 @@ public class ImagePropertiesToAnnotationAlgorithm extends JIPipeSimpleIteratingA
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataInterface, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
-        ImagePlusData inputData = dataInterface.getInputData(getFirstInputSlot(), ImagePlusData.class);
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+        ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class);
         List<JIPipeAnnotation> annotations = new ArrayList<>();
 
         if (getTitleAnnotation().isEnabled()) {
@@ -163,7 +163,7 @@ public class ImagePropertiesToAnnotationAlgorithm extends JIPipeSimpleIteratingA
             annotations.add(new JIPipeAnnotation(getBitDepthAnnotation().getContent(), "" + inputData.getImage().getBitDepth()));
         }
 
-        dataInterface.addOutputData(getFirstOutputSlot(), inputData, annotations);
+        dataBatch.addOutputData(getFirstOutputSlot(), inputData, annotations);
     }
 
     @JIPipeDocumentation(name = "Annotate with title", description = "If enabled, an annotation with provided name is created. The annotation " +

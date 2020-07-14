@@ -115,9 +115,9 @@ public class FilterRoiByStatisticsScriptAlgorithm extends ImageRoiProcessorAlgor
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataInterface, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
-        ROIListData inputData = dataInterface.getInputData("ROI", ROIListData.class);
-        ImagePlusData referenceImageData = new ImagePlusData(getReferenceImage(dataInterface, subProgress.resolve("Generate reference image"), algorithmProgress, isCancelled));
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+        ROIListData inputData = dataBatch.getInputData("ROI", ROIListData.class);
+        ImagePlusData referenceImageData = new ImagePlusData(getReferenceImage(dataBatch, subProgress.resolve("Generate reference image"), algorithmProgress, isCancelled));
 
         // Obtain statistics
         roiStatisticsAlgorithm.clearSlotData();
@@ -138,7 +138,7 @@ public class FilterRoiByStatisticsScriptAlgorithm extends ImageRoiProcessorAlgor
             roiList.add(roiItemDictionary);
         }
 
-        PyDictionary annotationDict = JIPipeAnnotation.annotationMapToPython(dataInterface.getAnnotations());
+        PyDictionary annotationDict = JIPipeAnnotation.annotationMapToPython(dataBatch.getAnnotations());
         pythonInterpreter.set("annotations", annotationDict);
         pythonInterpreter.set("roi_list", roiList);
         pythonInterpreter.exec(code.getCode());
@@ -150,10 +150,10 @@ public class FilterRoiByStatisticsScriptAlgorithm extends ImageRoiProcessorAlgor
             Roi roi = (Roi) roiItemDictionary.get("data");
             outputData.add(roi);
         }
-        dataInterface.getAnnotations().clear();
-        JIPipeAnnotation.setAnnotationsFromPython(annotationDict, dataInterface.getAnnotations());
+        dataBatch.getAnnotations().clear();
+        JIPipeAnnotation.setAnnotationsFromPython(annotationDict, dataBatch.getAnnotations());
 
-        dataInterface.addOutputData(getFirstOutputSlot(), outputData);
+        dataBatch.addOutputData(getFirstOutputSlot(), outputData);
     }
 
     @Override

@@ -62,11 +62,11 @@ public class SortTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataInterface, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
-        ResultsTableData input = dataInterface.getInputData(getFirstInputSlot(), ResultsTableData.class);
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+        ResultsTableData input = dataBatch.getInputData(getFirstInputSlot(), ResultsTableData.class);
 
         if (sortOrderList.isEmpty()) {
-            dataInterface.addOutputData(getFirstOutputSlot(), input.duplicate());
+            dataBatch.addOutputData(getFirstOutputSlot(), input.duplicate());
             return;
         }
         Comparator<Integer> comparator = getRowComparator(sortOrderList.get(0), input);
@@ -81,7 +81,7 @@ public class SortTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         sortedRows.sort(comparator);
 
         ResultsTableData output = input.getRows(sortedRows);
-        dataInterface.addOutputData(getFirstOutputSlot(), output);
+        dataBatch.addOutputData(getFirstOutputSlot(), output);
     }
 
     private Comparator<Integer> getRowComparator(StringFilterAndSortOrderPair pair, ResultsTableData input) {

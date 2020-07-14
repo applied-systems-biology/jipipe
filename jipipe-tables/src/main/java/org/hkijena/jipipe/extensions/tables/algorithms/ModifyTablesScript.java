@@ -107,11 +107,11 @@ public class ModifyTablesScript extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataInterface, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
-        ResultsTableData inputData = dataInterface.getInputData(getFirstInputSlot(), ResultsTableData.class);
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+        ResultsTableData inputData = dataBatch.getInputData(getFirstInputSlot(), ResultsTableData.class);
         PyDictionary tableDict = inputData.toPython();
 
-        PyDictionary annotationDict = JIPipeAnnotation.annotationMapToPython(dataInterface.getAnnotations());
+        PyDictionary annotationDict = JIPipeAnnotation.annotationMapToPython(dataBatch.getAnnotations());
         pythonInterpreter.set("annotations", annotationDict);
         pythonInterpreter.set("table", tableDict);
         pythonInterpreter.set("nrow", inputData.getRowCount());
@@ -119,10 +119,10 @@ public class ModifyTablesScript extends JIPipeSimpleIteratingAlgorithm {
         tableDict = (PyDictionary) pythonInterpreter.get("table");
         annotationDict = (PyDictionary) pythonInterpreter.get("annotations");
 
-        dataInterface.getAnnotations().clear();
-        JIPipeAnnotation.setAnnotationsFromPython(annotationDict, dataInterface.getAnnotations());
+        dataBatch.getAnnotations().clear();
+        JIPipeAnnotation.setAnnotationsFromPython(annotationDict, dataBatch.getAnnotations());
 
-        dataInterface.addOutputData(getFirstOutputSlot(), ResultsTableData.fromPython(tableDict));
+        dataBatch.addOutputData(getFirstOutputSlot(), ResultsTableData.fromPython(tableDict));
     }
 
     @JIPipeDocumentation(name = "Script", description = "Each table is passed as dictionary 'table' " +

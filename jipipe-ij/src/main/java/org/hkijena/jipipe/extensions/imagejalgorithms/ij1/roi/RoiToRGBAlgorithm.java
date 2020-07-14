@@ -94,9 +94,9 @@ public class RoiToRGBAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataInterface, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
-        ROIListData inputData = (ROIListData) dataInterface.getInputData("ROI", ROIListData.class).duplicate();
-        ImagePlus reference = dataInterface.getInputData("Image", ImagePlusData.class).getImage();
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+        ROIListData inputData = (ROIListData) dataBatch.getInputData("ROI", ROIListData.class).duplicate();
+        ImagePlus reference = dataBatch.getInputData("Image", ImagePlusData.class).getImage();
 
         // Find the bounds and future stack position
         int sx = reference.getWidth();
@@ -170,7 +170,7 @@ public class RoiToRGBAlgorithm extends JIPipeIteratingAlgorithm {
             }
         }
 
-        dataInterface.addOutputData(getFirstOutputSlot(), new ImagePlusData(result));
+        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(result));
     }
 
 

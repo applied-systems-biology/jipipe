@@ -20,6 +20,7 @@ import ij.plugin.filter.GaussianBlur;
 import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.events.ParameterChangedEvent;
 import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
+import org.hkijena.jipipe.ui.components.BackgroundPanel;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.MarkdownReader;
@@ -52,7 +53,7 @@ public class JIPipeProjectInfoUI extends JIPipeProjectWorkbenchPanel {
     private JTextField projectName;
     private JTextField projectStats;
     private JTextPane projectAuthors;
-    private BufferedImage headerBackground;
+    private BackgroundPanel headerPanel;
     private JButton openWebsiteButton;
     private JButton copyCitationButton;
     private JButton copyDependencyCitationsButton;
@@ -150,7 +151,7 @@ public class JIPipeProjectInfoUI extends JIPipeProjectWorkbenchPanel {
         JIPipeGraphCanvasUI canvasUI = new JIPipeGraphCanvasUI(getWorkbench(), getProject().getGraph(), null);
         canvasUI.setViewMode(JIPipeGraphViewMode.Horizontal);
         canvasUI.autoLayoutAll();
-        headerBackground = null;
+        BufferedImage headerBackground = null;
         try {
             if (GeneralUISettings.getInstance().isProjectInfoGeneratesPreview()) {
                 BufferedImage screenshot = canvasUI.createScreenshotPNG();
@@ -172,7 +173,8 @@ public class JIPipeProjectInfoUI extends JIPipeProjectWorkbenchPanel {
                 throw new RuntimeException(e);
             }
         }
-        repaint();
+
+        headerPanel.setBackgroundImage(headerBackground);
     }
 
     private void refreshDescription() {
@@ -213,7 +215,7 @@ public class JIPipeProjectInfoUI extends JIPipeProjectWorkbenchPanel {
     }
 
     private void initializeHeaderPanel() {
-        JPanel headerPanel = new BackgroundPanel();
+        headerPanel = new BackgroundPanel(null, false);
         headerPanel.setLayout(new BorderLayout());
         headerPanel.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.DARK_GRAY));
         headerPanel.setPreferredSize(new Dimension(headerPanel.getPreferredSize().width, 200));
@@ -323,22 +325,6 @@ public class JIPipeProjectInfoUI extends JIPipeProjectWorkbenchPanel {
         }
         result.setProject(getProject());
         return result;
-    }
-
-    private class BackgroundPanel extends JPanel {
-
-        public BackgroundPanel() {
-            setOpaque(false);
-        }
-
-        @Override
-        public void paint(Graphics g) {
-            double factor = 1.0 * getHeight() / headerBackground.getHeight();
-            g.setColor(Color.WHITE);
-            g.fillRect(0, 0, getWidth(), getHeight());
-            g.drawImage(headerBackground, 0, 0, (int) (headerBackground.getWidth() * factor), getHeight(), null);
-            super.paint(g);
-        }
     }
 
 }

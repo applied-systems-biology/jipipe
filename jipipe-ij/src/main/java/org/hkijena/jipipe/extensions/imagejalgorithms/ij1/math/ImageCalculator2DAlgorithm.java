@@ -103,15 +103,15 @@ public class ImageCalculator2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataInterface, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         ImagePlusData leftOperand = null;
         ImagePlusData rightOperand = null;
         for (Map.Entry<String, JIPipeParameterAccess> entry : operands.getParameters().entrySet()) {
             Operand operand = entry.getValue().get(Operand.class);
             if (operand == Operand.LeftOperand) {
-                leftOperand = dataInterface.getInputData(entry.getKey(), ImagePlusData.class);
+                leftOperand = dataBatch.getInputData(entry.getKey(), ImagePlusData.class);
             } else if (operand == Operand.RightOperand) {
-                rightOperand = dataInterface.getInputData(entry.getKey(), ImagePlusData.class);
+                rightOperand = dataBatch.getInputData(entry.getKey(), ImagePlusData.class);
             }
         }
 
@@ -127,7 +127,7 @@ public class ImageCalculator2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
         ImageCalculator calculator = new ImageCalculator();
         ImagePlus img = calculator.run(operation.getId() + " stack create", leftOperand.getImage(), rightOperand.getImage());
-        dataInterface.addOutputData(getFirstOutputSlot(), new ImagePlusData(img));
+        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(img));
     }
 
 

@@ -136,6 +136,7 @@ public class TablesExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerAlgorithm("modify-tables", ModifyTablesScript.class, UIUtils.getAlgorithmIconURL("python.png"));
         registerAlgorithm("modify-and-merge-tables", ModifyAndMergeTablesScript.class, UIUtils.getAlgorithmIconURL("python.png"));
         registerAlgorithm("tables-from-script", TablesFromScript.class, UIUtils.getAlgorithmIconURL("python.png"));
+        registerAlgorithm("tables-set-column", SetColumnAlgorithm.class, UIUtils.getAlgorithmIconURL("edit-table-insert-column-right.png"));
     }
 
     private void registerParameters() {

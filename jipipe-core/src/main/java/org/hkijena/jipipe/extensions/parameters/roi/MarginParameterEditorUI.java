@@ -33,8 +33,7 @@ import java.util.Set;
 public class MarginParameterEditorUI extends JIPipeParameterEditorUI {
 
     private boolean skipNextReload = false;
-    private boolean isReloading = false;
-    private Map<Margin.Anchor, JToggleButton> anchorSelectionMap = new HashMap<>();
+    private Map<Anchor, JToggleButton> anchorSelectionMap = new HashMap<>();
     private ParameterPanel parameterPanel;
 
     /**
@@ -76,61 +75,61 @@ public class MarginParameterEditorUI extends JIPipeParameterEditorUI {
         topLeft.setPreferredSize(new Dimension(25, 25));
         anchorGroup.add(topLeft);
         anchorPanel.add(topLeft);
-        anchorSelectionMap.put(Margin.Anchor.TopLeft, topLeft);
+        anchorSelectionMap.put(Anchor.TopLeft, topLeft);
 
         JToggleButton topCenter = new JToggleButton(UIUtils.getIconFromResources("anchor-top-center.png"));
         UIUtils.makeFlat(topCenter);
         anchorGroup.add(topCenter);
         anchorPanel.add(topCenter);
-        anchorSelectionMap.put(Margin.Anchor.TopCenter, topCenter);
+        anchorSelectionMap.put(Anchor.TopCenter, topCenter);
 
         JToggleButton topRight = new JToggleButton(UIUtils.getIconFromResources("anchor-top-right.png"));
         UIUtils.makeFlat(topRight);
         anchorGroup.add(topRight);
         anchorPanel.add(topRight);
-        anchorSelectionMap.put(Margin.Anchor.TopRight, topRight);
+        anchorSelectionMap.put(Anchor.TopRight, topRight);
 
         // Center
         JToggleButton centerLeft = new JToggleButton(UIUtils.getIconFromResources("anchor-center-left.png"));
         UIUtils.makeFlat(centerLeft);
         anchorGroup.add(centerLeft);
         anchorPanel.add(centerLeft);
-        anchorSelectionMap.put(Margin.Anchor.CenterLeft, centerLeft);
+        anchorSelectionMap.put(Anchor.CenterLeft, centerLeft);
 
         JToggleButton centerCenter = new JToggleButton(UIUtils.getIconFromResources("move.png"));
         UIUtils.makeFlat(centerCenter);
         anchorGroup.add(centerCenter);
         anchorPanel.add(centerCenter);
-        anchorSelectionMap.put(Margin.Anchor.CenterCenter, centerCenter);
+        anchorSelectionMap.put(Anchor.CenterCenter, centerCenter);
 
         JToggleButton centerRight = new JToggleButton(UIUtils.getIconFromResources("anchor-center-right.png"));
         UIUtils.makeFlat(centerRight);
         anchorGroup.add(centerRight);
         anchorPanel.add(centerRight);
-        anchorSelectionMap.put(Margin.Anchor.CenterRight, centerRight);
+        anchorSelectionMap.put(Anchor.CenterRight, centerRight);
 
         // Bottom
         JToggleButton bottomLeft = new JToggleButton(UIUtils.getIconFromResources("anchor-bottom-left.png"));
         UIUtils.makeFlat(bottomLeft);
         anchorGroup.add(bottomLeft);
         anchorPanel.add(bottomLeft);
-        anchorSelectionMap.put(Margin.Anchor.BottomLeft, bottomLeft);
+        anchorSelectionMap.put(Anchor.BottomLeft, bottomLeft);
 
         JToggleButton bottomCenter = new JToggleButton(UIUtils.getIconFromResources("anchor-bottom-center.png"));
         UIUtils.makeFlat(bottomCenter);
         anchorGroup.add(bottomCenter);
         anchorPanel.add(bottomCenter);
-        anchorSelectionMap.put(Margin.Anchor.BottomCenter, bottomCenter);
+        anchorSelectionMap.put(Anchor.BottomCenter, bottomCenter);
 
         JToggleButton bottomRight = new JToggleButton(UIUtils.getIconFromResources("anchor-bottom-right.png"));
         UIUtils.makeFlat(bottomRight);
         anchorGroup.add(bottomRight);
         anchorPanel.add(bottomRight);
-        anchorSelectionMap.put(Margin.Anchor.BottomRight, bottomRight);
+        anchorSelectionMap.put(Anchor.BottomRight, bottomRight);
 
         content.add(anchorPanel, BorderLayout.NORTH);
 
-        for (Map.Entry<Margin.Anchor, JToggleButton> entry : anchorSelectionMap.entrySet()) {
+        for (Map.Entry<Anchor, JToggleButton> entry : anchorSelectionMap.entrySet()) {
             entry.getValue().addActionListener(e -> {
                 if (entry.getValue().isSelected()) {
                     Margin roi = getParameter(Margin.class);
@@ -152,7 +151,6 @@ public class MarginParameterEditorUI extends JIPipeParameterEditorUI {
             skipNextReload = false;
             return;
         }
-        isReloading = true;
         Margin roi = getParameter(Margin.class);
         anchorSelectionMap.get(roi.getAnchor()).setSelected(true);
 
@@ -166,6 +164,5 @@ public class MarginParameterEditorUI extends JIPipeParameterEditorUI {
         }
         parameterPanel.setDisplayedParameters(traversedParameterCollection);
 
-        isReloading = false;
     }
 }

@@ -85,9 +85,9 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
             final int row = 0;
             JIPipeRunnerSubStatus slotProgress = subProgress.resolve("Data row " + (row + 1) + " / " + 1);
             algorithmProgress.accept(slotProgress);
-            JIPipeDataBatch dataInterface = new JIPipeDataBatch(this);
-            dataInterface.addGlobalAnnotations(parameterAnnotations, true);
-            runIteration(dataInterface, slotProgress, algorithmProgress, isCancelled);
+            JIPipeDataBatch dataBatch = new JIPipeDataBatch(this);
+            dataBatch.addGlobalAnnotations(parameterAnnotations, true);
+            runIteration(dataBatch, slotProgress, algorithmProgress, isCancelled);
         } else {
             if (!supportsParallelization() || !isParallelizationEnabled() || getThreadPool() == null || getThreadPool().getMaxThreads() <= 1) {
                 for (int i = 0; i < getFirstInputSlot().getRowCount(); i++) {
@@ -95,11 +95,11 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
                         return;
                     JIPipeRunnerSubStatus slotProgress = subProgress.resolve("Data row " + (i + 1) + " / " + getFirstInputSlot().getRowCount());
                     algorithmProgress.accept(slotProgress);
-                    JIPipeDataBatch dataInterface = new JIPipeDataBatch(this);
-                    dataInterface.setData(getFirstInputSlot(), i);
-                    dataInterface.addGlobalAnnotations(getFirstInputSlot().getAnnotations(i), true);
-                    dataInterface.addGlobalAnnotations(parameterAnnotations, true);
-                    runIteration(dataInterface, slotProgress, algorithmProgress, isCancelled);
+                    JIPipeDataBatch dataBatch = new JIPipeDataBatch(this);
+                    dataBatch.setData(getFirstInputSlot(), i);
+                    dataBatch.addGlobalAnnotations(getFirstInputSlot().getAnnotations(i), true);
+                    dataBatch.addGlobalAnnotations(parameterAnnotations, true);
+                    runIteration(dataBatch, slotProgress, algorithmProgress, isCancelled);
                 }
             } else {
                 List<Runnable> tasks = new ArrayList<>();
@@ -110,11 +110,11 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
                             return;
                         JIPipeRunnerSubStatus slotProgress = subProgress.resolve("Data row " + (rowIndex + 1) + " / " + getFirstInputSlot().getRowCount());
                         algorithmProgress.accept(slotProgress);
-                        JIPipeDataBatch dataInterface = new JIPipeDataBatch(this);
-                        dataInterface.setData(getFirstInputSlot(), rowIndex);
-                        dataInterface.addGlobalAnnotations(getFirstInputSlot().getAnnotations(rowIndex), true);
-                        dataInterface.addGlobalAnnotations(parameterAnnotations, true);
-                        runIteration(dataInterface, slotProgress, algorithmProgress, isCancelled);
+                        JIPipeDataBatch dataBatch = new JIPipeDataBatch(this);
+                        dataBatch.setData(getFirstInputSlot(), rowIndex);
+                        dataBatch.addGlobalAnnotations(getFirstInputSlot().getAnnotations(rowIndex), true);
+                        dataBatch.addGlobalAnnotations(parameterAnnotations, true);
+                        runIteration(dataBatch, slotProgress, algorithmProgress, isCancelled);
                     });
                 }
                 algorithmProgress.accept(subProgress.resolve(String.format("Running %d batches (batch size %d) in parallel. Available threads = %d", tasks.size(), getParallelizationBatchSize(), getThreadPool().getMaxThreads())));
@@ -145,12 +145,12 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
     /**
      * Runs code on one data row
      *
-     * @param dataInterface     The data interface
+     * @param dataBatch     The data interface
      * @param subProgress       The current sub-progress this algorithm is scheduled in
      * @param algorithmProgress Consumer to publish a new sub-progress
      * @param isCancelled       Supplier that informs if the current task was canceled
      */
-    protected abstract void runIteration(JIPipeDataBatch dataInterface, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled);
+    protected abstract void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled);
 
     @Override
     public boolean supportsParallelization() {

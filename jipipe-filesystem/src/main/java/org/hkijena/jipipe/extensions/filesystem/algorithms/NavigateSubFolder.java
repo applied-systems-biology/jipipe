@@ -59,9 +59,9 @@ public class NavigateSubFolder extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataInterface, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
-        FolderData inputFolder = dataInterface.getInputData("Folders", FolderData.class);
-        dataInterface.addOutputData("Subfolders", new FolderData(inputFolder.getPath().resolve(subFolder)));
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+        FolderData inputFolder = dataBatch.getInputData("Folders", FolderData.class);
+        dataBatch.addOutputData("Subfolders", new FolderData(inputFolder.getPath().resolve(subFolder)));
     }
 
     @Override

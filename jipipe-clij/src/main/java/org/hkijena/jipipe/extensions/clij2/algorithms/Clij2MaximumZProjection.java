@@ -48,14 +48,14 @@ public class Clij2MaximumZProjection extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataInterface, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         CLIJ2 clij2 = CLIJ2.getInstance();
         CLIJ clij = clij2.getCLIJ();
-        ClearCLBuffer src = dataInterface.getInputData(getInputSlot("src"), CLIJImageData.class).getImage();
+        ClearCLBuffer src = dataBatch.getInputData(getInputSlot("src"), CLIJImageData.class).getImage();
         ClearCLBuffer dst_max = clij2.create(src);
         MaximumZProjection.maximumZProjection(clij2, src, dst_max);
 
-        dataInterface.addOutputData(getOutputSlot("dst_max"), new CLIJImageData(dst_max));
+        dataBatch.addOutputData(getOutputSlot("dst_max"), new CLIJImageData(dst_max));
     }
 
 }

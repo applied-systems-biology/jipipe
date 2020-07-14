@@ -109,9 +109,9 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
             final int row = 0;
             JIPipeRunnerSubStatus slotProgress = subProgress.resolve("Data row " + (row + 1) + " / " + 1);
             algorithmProgress.accept(slotProgress);
-            JIPipeMergingDataBatch dataInterface = new JIPipeMergingDataBatch(this);
-            dataInterface.addGlobalAnnotations(parameterAnnotations, true);
-            runIteration(dataInterface, slotProgress, algorithmProgress, isCancelled);
+            JIPipeMergingDataBatch dataBatch = new JIPipeMergingDataBatch(this);
+            dataBatch.addGlobalAnnotations(parameterAnnotations, true);
+            runIteration(dataBatch, slotProgress, algorithmProgress, isCancelled);
             return;
         }
 
@@ -191,10 +191,10 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
         }
 
         // Generate data interfaces
-        List<JIPipeMergingDataBatch> dataInterfaces = new ArrayList<>();
+        List<JIPipeMergingDataBatch> dataBatchs = new ArrayList<>();
         for (Map.Entry<JIPipeUniqueDataBatch, Map<String, TIntSet>> dataSetEntry : ImmutableList.copyOf(dataSets.entrySet())) {
 
-            JIPipeMergingDataBatch dataInterface = new JIPipeMergingDataBatch(this);
+            JIPipeMergingDataBatch dataBatch = new JIPipeMergingDataBatch(this);
             Multimap<String, String> compoundTraits = HashMultimap.create();
             for (Map.Entry<String, TIntSet> dataSlotEntry : dataSetEntry.getValue().entrySet()) {
                 JIPipeDataSlot inputSlot = getInputSlot(dataSlotEntry.getKey());
@@ -203,7 +203,7 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
                 TIntSet rows = dataSetEntry.getValue().get(inputSlot.getName());
                 for (TIntIterator it = rows.iterator(); it.hasNext(); ) {
                     int row = it.next();
-                    dataInterface.addData(inputSlot, row);
+                    dataBatch.addData(inputSlot, row);
 
                     // Store all annotations
                     for (JIPipeAnnotation annotation : inputSlot.getAnnotations(row)) {
@@ -223,22 +223,22 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
                 } catch (JsonProcessingException e) {
                     throw new RuntimeException(e);
                 }
-                dataInterface.addGlobalAnnotation(new JIPipeAnnotation(info, value));
+                dataBatch.addGlobalAnnotation(new JIPipeAnnotation(info, value));
             }
 
             // Add parameter annotations
-            dataInterface.addGlobalAnnotations(parameterAnnotations, true);
+            dataBatch.addGlobalAnnotations(parameterAnnotations, true);
 
-            dataInterfaces.add(dataInterface);
+            dataBatchs.add(dataBatch);
         }
 
         if (!supportsParallelization() || !isParallelizationEnabled() || getThreadPool() == null || getThreadPool().getMaxThreads() <= 1) {
-            for (int i = 0; i < dataInterfaces.size(); i++) {
+            for (int i = 0; i < dataBatchs.size(); i++) {
                 if (isCancelled.get())
                     return;
-                JIPipeRunnerSubStatus slotProgress = subProgress.resolve("Data row " + (i + 1) + " / " + dataInterfaces.size());
+                JIPipeRunnerSubStatus slotProgress = subProgress.resolve("Data row " + (i + 1) + " / " + dataBatchs.size());
                 algorithmProgress.accept(slotProgress);
-                runIteration(dataInterfaces.get(i), slotProgress, algorithmProgress, isCancelled);
+                runIteration(dataBatchs.get(i), slotProgress, algorithmProgress, isCancelled);
             }
         } else {
             List<Runnable> tasks = new ArrayList<>();
@@ -249,8 +249,8 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
                         return;
                     JIPipeRunnerSubStatus slotProgress = subProgress.resolve("Data row " + (rowIndex + 1) + " / " + getFirstInputSlot().getRowCount());
                     algorithmProgress.accept(slotProgress);
-                    JIPipeMergingDataBatch dataInterface = dataInterfaces.get(rowIndex);
-                    runIteration(dataInterface, slotProgress, algorithmProgress, isCancelled);
+                    JIPipeMergingDataBatch dataBatch = dataBatchs.get(rowIndex);
+                    runIteration(dataBatch, slotProgress, algorithmProgress, isCancelled);
                 });
             }
             algorithmProgress.accept(subProgress.resolve(String.format("Running %d batches (batch size %d) in parallel. Available threads = %d", tasks.size(), getParallelizationBatchSize(), getThreadPool().getMaxThreads())));
@@ -295,12 +295,12 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
     /**
      * Runs code on one data row
      *
-     * @param dataInterface     The data interface
+     * @param dataBatch     The data interface
      * @param subProgress       The current sub-progress this algorithm is scheduled in
      * @param algorithmProgress Consumer to publish a new sub-progress
      * @param isCancelled       Supplier that informs if the current task was canceled
      */
-    protected abstract void runIteration(JIPipeMergingDataBatch dataInterface, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled);
+    protected abstract void runIteration(JIPipeMergingDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled);
 
     @Override
     public boolean supportsParallelization() {

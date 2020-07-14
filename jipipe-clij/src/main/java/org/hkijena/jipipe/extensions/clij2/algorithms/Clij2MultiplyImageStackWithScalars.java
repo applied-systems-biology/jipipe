@@ -49,15 +49,15 @@ public class Clij2MultiplyImageStackWithScalars extends JIPipeIteratingAlgorithm
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataInterface, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         CLIJ2 clij2 = CLIJ2.getInstance();
         CLIJ clij = clij2.getCLIJ();
-        ClearCLBuffer src = dataInterface.getInputData(getInputSlot("src"), CLIJImageData.class).getImage();
-        ClearCLBuffer scalar_list = dataInterface.getInputData(getInputSlot("scalar_list"), CLIJImageData.class).getImage();
+        ClearCLBuffer src = dataBatch.getInputData(getInputSlot("src"), CLIJImageData.class).getImage();
+        ClearCLBuffer scalar_list = dataBatch.getInputData(getInputSlot("scalar_list"), CLIJImageData.class).getImage();
         ClearCLBuffer dst = clij2.create(src);
         MultiplyImageStackWithScalars.multiplyImageStackWithScalars(clij2, src, dst, scalar_list);
 
-        dataInterface.addOutputData(getOutputSlot("dst"), new CLIJImageData(dst));
+        dataBatch.addOutputData(getOutputSlot("dst"), new CLIJImageData(dst));
     }
 
 }

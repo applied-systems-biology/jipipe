@@ -85,9 +85,9 @@ public class ColorRoiByStatisticsAlgorithm extends ImageRoiProcessorAlgorithm {
 
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataInterface, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
-        ROIListData data = (ROIListData) dataInterface.getInputData("ROI", ROIListData.class).duplicate();
-        ImagePlusData referenceImageData = new ImagePlusData(getReferenceImage(dataInterface, subProgress.resolve("Generate reference image"), algorithmProgress, isCancelled));
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+        ROIListData data = (ROIListData) dataBatch.getInputData("ROI", ROIListData.class).duplicate();
+        ImagePlusData referenceImageData = new ImagePlusData(getReferenceImage(dataBatch, subProgress.resolve("Generate reference image"), algorithmProgress, isCancelled));
 
         // Obtain statistics
         roiStatisticsAlgorithm.clearSlotData();
@@ -129,7 +129,7 @@ public class ColorRoiByStatisticsAlgorithm extends ImageRoiProcessorAlgorithm {
             }
         }
 
-        dataInterface.addOutputData(getFirstOutputSlot(), data);
+        dataBatch.addOutputData(getFirstOutputSlot(), data);
     }
 
 

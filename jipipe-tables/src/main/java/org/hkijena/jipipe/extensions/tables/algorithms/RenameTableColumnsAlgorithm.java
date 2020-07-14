@@ -60,8 +60,8 @@ public class RenameTableColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm 
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataInterface, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
-        ResultsTableData table = (ResultsTableData) dataInterface.getInputData(getFirstInputSlot(), ResultsTableData.class).duplicate();
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+        ResultsTableData table = (ResultsTableData) dataBatch.getInputData(getFirstInputSlot(), ResultsTableData.class).duplicate();
         for (StringFilterAndStringPair renamingEntry : renamingEntries) {
             for (int col = 0; col < table.getColumnCount(); col++) {
                 String oldName = table.getColumnName(col);
@@ -71,7 +71,7 @@ public class RenameTableColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm 
                 }
             }
         }
-        dataInterface.addOutputData(getFirstOutputSlot(), table);
+        dataBatch.addOutputData(getFirstOutputSlot(), table);
     }
 
     @Override

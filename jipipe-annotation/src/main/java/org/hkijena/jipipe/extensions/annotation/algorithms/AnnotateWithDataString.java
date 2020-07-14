@@ -60,12 +60,12 @@ public class AnnotateWithDataString extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataInterface, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         if (!StringUtils.isNullOrEmpty(generatedAnnotation)) {
-            JIPipeData inputData = dataInterface.getInputData(getFirstInputSlot(), JIPipeData.class);
+            JIPipeData inputData = dataBatch.getInputData(getFirstInputSlot(), JIPipeData.class);
             String discriminator = "" + inputData;
-            dataInterface.addGlobalAnnotation(new JIPipeAnnotation(generatedAnnotation, discriminator));
-            dataInterface.addOutputData(getFirstOutputSlot(), inputData);
+            dataBatch.addGlobalAnnotation(new JIPipeAnnotation(generatedAnnotation, discriminator));
+            dataBatch.addOutputData(getFirstOutputSlot(), inputData);
         }
     }
 

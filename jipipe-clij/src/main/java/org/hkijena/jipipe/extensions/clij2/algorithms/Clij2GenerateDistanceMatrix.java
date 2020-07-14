@@ -49,15 +49,15 @@ public class Clij2GenerateDistanceMatrix extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataInterface, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         CLIJ2 clij2 = CLIJ2.getInstance();
         CLIJ clij = clij2.getCLIJ();
-        ClearCLBuffer src_pointlist1 = dataInterface.getInputData(getInputSlot("src_pointlist1"), CLIJImageData.class).getImage();
-        ClearCLBuffer src_pointlist2 = dataInterface.getInputData(getInputSlot("src_pointlist2"), CLIJImageData.class).getImage();
+        ClearCLBuffer src_pointlist1 = dataBatch.getInputData(getInputSlot("src_pointlist1"), CLIJImageData.class).getImage();
+        ClearCLBuffer src_pointlist2 = dataBatch.getInputData(getInputSlot("src_pointlist2"), CLIJImageData.class).getImage();
         ClearCLBuffer dst_distance_matrix = clij2.create(src_pointlist1);
         GenerateDistanceMatrix.generateDistanceMatrix(clij2, src_pointlist1, src_pointlist2, dst_distance_matrix);
 
-        dataInterface.addOutputData(getOutputSlot("dst_distance_matrix"), new CLIJImageData(dst_distance_matrix));
+        dataBatch.addOutputData(getOutputSlot("dst_distance_matrix"), new CLIJImageData(dst_distance_matrix));
     }
 
 }

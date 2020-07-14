@@ -49,15 +49,15 @@ public class Clij2GenerateParametricImage extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataInterface, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         CLIJ2 clij2 = CLIJ2.getInstance();
         CLIJ clij = clij2.getCLIJ();
-        ClearCLBuffer label_map = dataInterface.getInputData(getInputSlot("label_map"), CLIJImageData.class).getImage();
-        ClearCLBuffer parameter_value_vector = dataInterface.getInputData(getInputSlot("parameter_value_vector"), CLIJImageData.class).getImage();
+        ClearCLBuffer label_map = dataBatch.getInputData(getInputSlot("label_map"), CLIJImageData.class).getImage();
+        ClearCLBuffer parameter_value_vector = dataBatch.getInputData(getInputSlot("parameter_value_vector"), CLIJImageData.class).getImage();
         ClearCLBuffer parametric_image_destination = clij2.create(label_map);
         GenerateParametricImage.generateParametricImage(clij2, label_map, parameter_value_vector, parametric_image_destination);
 
-        dataInterface.addOutputData(getOutputSlot("parametric_image_destination"), new CLIJImageData(parametric_image_destination));
+        dataBatch.addOutputData(getOutputSlot("parametric_image_destination"), new CLIJImageData(parametric_image_destination));
     }
 
 }

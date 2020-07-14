@@ -128,10 +128,10 @@ public class SimpleIteratingPythonScriptAlgorithm extends JIPipeSimpleIteratingA
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataInterface, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         PythonInterpreter pythonInterpreter = new PythonInterpreter();
         PythonUtils.passParametersToPython(pythonInterpreter, scriptParameters);
-        pythonInterpreter.set("data_batch", dataInterface);
+        pythonInterpreter.set("data_batch", dataBatch);
         PyDictionary inputSlotMap = new PyDictionary();
         PyDictionary outputSlotMap = new PyDictionary();
         for (JIPipeDataSlot inputSlot : getInputSlots()) {

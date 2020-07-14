@@ -31,12 +31,12 @@ import java.util.function.Function;
  * Users can define a rectangle the classical way (x, y, width, height), but also other ways.
  */
 public class Margin implements Function<Rectangle, Rectangle>, JIPipeParameterCollection {
-    private static final int PARAM_LEFT = 1;
-    private static final int PARAM_TOP = 2;
-    private static final int PARAM_RIGHT = 4;
-    private static final int PARAM_BOTTOM = 8;
-    private static final int PARAM_WIDTH = 16;
-    private static final int PARAM_HEIGHT = 32;
+    public static final int PARAM_LEFT = 1;
+    public static final int PARAM_TOP = 2;
+    public static final int PARAM_RIGHT = 4;
+    public static final int PARAM_BOTTOM = 8;
+    public static final int PARAM_WIDTH = 16;
+    public static final int PARAM_HEIGHT = 32;
     private EventBus eventBus = new EventBus();
     private IntModificationParameter left = new IntModificationParameter();
     private IntModificationParameter top = new IntModificationParameter();
@@ -288,31 +288,6 @@ public class Margin implements Function<Rectangle, Rectangle>, JIPipeParameterCo
     @Override
     public EventBus getEventBus() {
         return eventBus;
-    }
-
-    /**
-     * Available anchors
-     */
-    public enum Anchor {
-        TopLeft(PARAM_LEFT | PARAM_TOP | PARAM_WIDTH | PARAM_HEIGHT),
-        TopCenter(PARAM_LEFT | PARAM_TOP | PARAM_RIGHT | PARAM_HEIGHT),
-        TopRight(PARAM_RIGHT | PARAM_TOP | PARAM_WIDTH | PARAM_HEIGHT),
-        BottomLeft(PARAM_LEFT | PARAM_BOTTOM | PARAM_HEIGHT | PARAM_WIDTH),
-        BottomCenter(PARAM_LEFT | PARAM_BOTTOM | PARAM_HEIGHT | PARAM_RIGHT),
-        BottomRight(PARAM_WIDTH | PARAM_BOTTOM | PARAM_HEIGHT | PARAM_RIGHT),
-        CenterLeft(PARAM_TOP | PARAM_BOTTOM | PARAM_WIDTH | PARAM_LEFT),
-        CenterRight(PARAM_TOP | PARAM_BOTTOM | PARAM_WIDTH | PARAM_RIGHT),
-        CenterCenter(PARAM_LEFT | PARAM_TOP | PARAM_RIGHT | PARAM_BOTTOM);
-
-        private final int relevantParameters;
-
-        Anchor(int relevantParameters) {
-            this.relevantParameters = relevantParameters;
-        }
-
-        public int getRelevantParameters() {
-            return relevantParameters;
-        }
     }
 
     /**

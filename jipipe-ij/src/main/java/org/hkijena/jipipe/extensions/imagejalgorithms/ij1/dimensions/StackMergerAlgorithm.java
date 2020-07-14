@@ -89,14 +89,14 @@ public class StackMergerAlgorithm extends JIPipeMergingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeMergingDataBatch dataInterface, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
-        Set<Integer> inputRows = dataInterface.getInputRows(getFirstInputSlot());
+    protected void runIteration(JIPipeMergingDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+        Set<Integer> inputRows = dataBatch.getInputRows(getFirstInputSlot());
         List<Integer> sortedInputRows;
         if (!StringUtils.isNullOrEmpty(counterAnnotation)) {
             JIPipeAnnotation defaultCounter = new JIPipeAnnotation(counterAnnotation, "");
             sortedInputRows = inputRows.stream().sorted(Comparator.comparing(row ->
                     (JIPipeAnnotation) (getFirstInputSlot().getAnnotationOr(row, counterAnnotation, defaultCounter)))).collect(Collectors.toList());
-            dataInterface.removeGlobalAnnotation(counterAnnotation);
+            dataBatch.removeGlobalAnnotation(counterAnnotation);
         } else {
             sortedInputRows = new ArrayList<>(inputRows);
         }
@@ -112,7 +112,7 @@ public class StackMergerAlgorithm extends JIPipeMergingAlgorithm {
             stack.setSliceLabel("slice=" + i, i + 1);
         }
 
-        dataInterface.addOutputData(getFirstOutputSlot(), new ImagePlusData(new ImagePlus("Stack", stack)));
+        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(new ImagePlus("Stack", stack)));
     }
 
     @Override

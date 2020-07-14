@@ -81,8 +81,8 @@ public class ListFiles extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataInterface, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
-        FolderData inputFolder = dataInterface.getInputData(getFirstInputSlot(), FolderData.class);
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+        FolderData inputFolder = dataBatch.getInputData(getFirstInputSlot(), FolderData.class);
         Path inputPath = inputFolder.getPath();
         if (!StringUtils.isNullOrEmpty(subFolder)) {
             inputPath = inputPath.resolve(subFolder);
@@ -105,7 +105,7 @@ public class ListFiles extends JIPipeSimpleIteratingAlgorithm {
                 else
                     testedFile = file;
                 if (filters.isEmpty() || filters.stream().anyMatch(f -> f.test(testedFile))) {
-                    dataInterface.addOutputData(getFirstOutputSlot(), new FileData(file));
+                    dataBatch.addOutputData(getFirstOutputSlot(), new FileData(file));
                 }
             }
         } catch (IOException e) {

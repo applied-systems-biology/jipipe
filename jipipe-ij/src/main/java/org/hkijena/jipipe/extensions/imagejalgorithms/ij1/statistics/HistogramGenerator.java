@@ -74,10 +74,10 @@ public class HistogramGenerator extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataInterface, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress,
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress,
                                 Supplier<Boolean> isCancelled) {
         if (applyPerSlice) {
-            ImagePlusData inputData = dataInterface.getInputData(getFirstInputSlot(), ImagePlusData.class);
+            ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class);
             ImageJUtils.forEachIndexedSlice(inputData.getImage(), (imp, index) -> {
                 TDoubleDoubleMap histogram;
                 if (imp instanceof ColorProcessor) {
@@ -90,15 +90,15 @@ public class HistogramGenerator extends JIPipeSimpleIteratingAlgorithm {
                 }
                 ResultsTableData resultsTable = toResultsTable(histogram);
                 if (!StringUtils.isNullOrEmpty(sliceAnnotation)) {
-                    dataInterface.addOutputData(getFirstOutputSlot(), resultsTable,
+                    dataBatch.addOutputData(getFirstOutputSlot(), resultsTable,
                             Collections.singletonList(new JIPipeAnnotation(sliceAnnotation, "slice=" + index)));
                 } else {
-                    dataInterface.addOutputData(getFirstOutputSlot(), resultsTable);
+                    dataBatch.addOutputData(getFirstOutputSlot(), resultsTable);
                 }
             });
         } else {
             final TDoubleDoubleMap histogram = new TDoubleDoubleHashMap();
-            ImagePlusData inputData = dataInterface.getInputData(getFirstInputSlot(), ImagePlusData.class);
+            ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class);
             ImageJUtils.forEachSlice(inputData.getImage(), imp -> {
                 TDoubleDoubleMap sliceHistogram;
                 if (imp instanceof ColorProcessor) {
@@ -111,10 +111,10 @@ public class HistogramGenerator extends JIPipeSimpleIteratingAlgorithm {
             if (normalize) {
                 TDoubleDoubleMap normalizedHistogram = normalizeHistogram(histogram);
                 ResultsTableData resultsTable = toResultsTable(normalizedHistogram);
-                dataInterface.addOutputData(getFirstOutputSlot(), resultsTable);
+                dataBatch.addOutputData(getFirstOutputSlot(), resultsTable);
             } else {
                 ResultsTableData resultsTable = toResultsTable(histogram);
-                dataInterface.addOutputData(getFirstOutputSlot(), resultsTable);
+                dataBatch.addOutputData(getFirstOutputSlot(), resultsTable);
             }
         }
     }

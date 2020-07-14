@@ -48,14 +48,14 @@ public class Clij2VarianceOfMaskedPixels extends JIPipeSimpleIteratingAlgorithm 
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataInterface, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         CLIJ2 clij2 = CLIJ2.getInstance();
         CLIJ clij = clij2.getCLIJ();
-        ClearCLBuffer buffer1 = dataInterface.getInputData(getInputSlot("buffer1"), CLIJImageData.class).getImage();
+        ClearCLBuffer buffer1 = dataBatch.getInputData(getInputSlot("buffer1"), CLIJImageData.class).getImage();
         ClearCLBuffer mask = clij2.create(buffer1);
         VarianceOfMaskedPixels.varianceOfMaskedPixels(clij2, buffer1, mask);
 
-        dataInterface.addOutputData(getOutputSlot("mask"), new CLIJImageData(mask));
+        dataBatch.addOutputData(getOutputSlot("mask"), new CLIJImageData(mask));
     }
 
 }

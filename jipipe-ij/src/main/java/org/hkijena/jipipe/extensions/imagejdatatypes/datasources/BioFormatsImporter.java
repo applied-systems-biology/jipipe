@@ -88,8 +88,8 @@ public class BioFormatsImporter extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataInterface, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
-        FileData inputFile = dataInterface.getInputData(getFirstInputSlot(), FileData.class);
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+        FileData inputFile = dataBatch.getInputData(getFirstInputSlot(), FileData.class);
         ImporterOptions options;
         try {
             options = new ImporterOptions();
@@ -131,7 +131,7 @@ public class BioFormatsImporter extends JIPipeSimpleIteratingAlgorithm {
                 if (titleAnnotation.isEnabled()) {
                     traits.add(new JIPipeAnnotation(titleAnnotation.getContent(), image.getTitle()));
                 }
-                dataInterface.addOutputData(getFirstOutputSlot(), new ImagePlusData(image), traits);
+                dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(image), traits);
             }
 
             if (!process.getOptions().isVirtual())

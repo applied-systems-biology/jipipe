@@ -94,19 +94,19 @@ public class MergeChannelsAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataInterface, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         ImagePlus[] channels = new ImagePlus[ChannelColor.values().length];
         for (int i = 0; i < ChannelColor.values().length; ++i) {
             ChannelColor color = ChannelColor.values()[i];
             for (Map.Entry<String, JIPipeParameterAccess> entry : channelColorAssignment.getParameters().entrySet()) {
                 ChannelColor entryColor = entry.getValue().get(ChannelColor.class);
                 if (entryColor == color) {
-                    channels[i] = new ImagePlusGreyscale8UData(dataInterface.getInputData(entry.getKey(), ImagePlusGreyscaleData.class).getImage().duplicate()).getImage();
+                    channels[i] = new ImagePlusGreyscale8UData(dataBatch.getInputData(entry.getKey(), ImagePlusGreyscaleData.class).getImage().duplicate()).getImage();
                 }
             }
         }
         ImagePlus merged = RGBStackMerge.mergeChannels(channels, true);
-        dataInterface.addOutputData(getFirstOutputSlot(), new ImagePlusColorRGBData(merged));
+        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusColorRGBData(merged));
     }
 
 

@@ -54,12 +54,12 @@ public class CalibrationContrastEnhancer extends JIPipeSimpleIteratingAlgorithm 
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataInterface, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
-        ImagePlusData data = dataInterface.getInputData(getFirstInputSlot(), ImagePlusData.class);
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+        ImagePlusData data = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class);
         if(duplicateImage)
             data = (ImagePlusData) data.duplicate();
         calibrate(data.getImage(), calibrationMode, customMin, customMax);
-        dataInterface.addOutputData(getFirstOutputSlot(), data);
+        dataBatch.addOutputData(getFirstOutputSlot(), data);
     }
 
     @JIPipeDocumentation(name = "Calibration method", description = "The method to apply for calibration.")

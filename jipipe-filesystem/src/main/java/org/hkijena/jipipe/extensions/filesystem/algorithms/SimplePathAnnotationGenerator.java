@@ -65,9 +65,9 @@ public class SimplePathAnnotationGenerator extends JIPipeSimpleIteratingAlgorith
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataInterface, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         if (!StringUtils.isNullOrEmpty(generatedAnnotation)) {
-            FolderData inputData = dataInterface.getInputData(getFirstInputSlot(), FolderData.class);
+            FolderData inputData = dataBatch.getInputData(getFirstInputSlot(), FolderData.class);
             boolean removeThisExtension = removeExtensions && Files.isRegularFile(inputData.getPath());
 
             String annotationValue;
@@ -86,8 +86,8 @@ public class SimplePathAnnotationGenerator extends JIPipeSimpleIteratingAlgorith
                 }
             }
 
-            dataInterface.addGlobalAnnotation(new JIPipeAnnotation(generatedAnnotation, annotationValue));
-            dataInterface.addOutputData(getFirstOutputSlot(), inputData);
+            dataBatch.addGlobalAnnotation(new JIPipeAnnotation(generatedAnnotation, annotationValue));
+            dataBatch.addOutputData(getFirstOutputSlot(), inputData);
         }
     }
 

@@ -325,9 +325,9 @@ public class StandardParametersExtension extends JIPipePrepackagedDefaultJavaExt
 
         // Enums
         registerEnumParameterType("color-map", ColorMap.class, "Color map", "Available color maps that convert a scalar to a color");
-        registerEnumParameterType("rectangle-roi:anchor", Margin.Anchor.class, "Anchor", "Available rectangle anchors");
-        registerEnumParameterType("path-filter:mode", PathPredicate.Mode.class, "Mode", "Available modes");
-        registerEnumParameterType("string-filter:mode", StringPredicate.Mode.class, "Mode", "Available modes");
+        registerEnumParameterType("rectangle-roi:anchor", Anchor.class, "Anchor", "Available rectangle anchors");
+        registerEnumParameterType("path-predicate:mode", PathPredicate.Mode.class, "Mode", "Available modes");
+        registerEnumParameterType("string-predicate:mode", StringPredicate.Mode.class, "Mode", "Available modes");
         registerEnumParameterType("column-matching", JIPipeIteratingAlgorithm.ColumnMatching.class, "Column matching strategy", "Determines how columns for dataset matching are selected");
         registerEnumParameterType("jipipe:ui:graph-editor-view-mode", JIPipeGraphViewMode.class, "Graph editor view mode", "Determines how the graphs are displayed");
         registerEnumParameterType("jipipe:ui:graph-editor-auto-layout", GraphAutoLayout.class, "Graph auto layout", "Determines which method is used to apply graph auto-layout");
@@ -338,7 +338,7 @@ public class StandardParametersExtension extends JIPipePrepackagedDefaultJavaExt
     private void registerPairParameters() {
         // Pair-like parameters
         registerParameterEditor(Pair.class, PairParameterEditorUI.class);
-        registerParameterType("string-filter:string:pair",
+        registerParameterType("string-predicate:string:pair",
                 StringFilterAndStringPair.class,
                 StringFilterAndStringPair.List.class,
                 StringFilterAndStringPair::new,
@@ -362,21 +362,21 @@ public class StandardParametersExtension extends JIPipePrepackagedDefaultJavaExt
                 "Double pair",
                 "A pair of 64-bit floating point numbers",
                 null);
-        registerParameterType("string-filter:string-or-double-filter:pair",
+        registerParameterType("string-predicate:string-or-double-predicate:pair",
                 StringFilterAndStringOrDoubleFilterPair.class,
                 StringFilterAndStringOrDoubleFilterPair.List.class,
                 StringFilterAndStringOrDoubleFilterPair::new,
                 r -> new StringFilterAndStringOrDoubleFilterPair((StringFilterAndStringOrDoubleFilterPair) r),
-                "String filter to string/double filter",
-                "Mapping from a string filter to a string/double filter",
+                "String predicate to string/double predicate",
+                "Mapping from a string predicate to a string/double predicate",
                 null);
-        registerParameterType("string-filter:sort-order:pair",
+        registerParameterType("string-predicate:sort-order:pair",
                 StringFilterAndSortOrderPair.class,
                 StringFilterAndSortOrderPair.List.class,
                 StringFilterAndSortOrderPair::new,
                 r -> new StringFilterAndSortOrderPair((StringFilterAndSortOrderPair) r),
-                "String filter to sort order",
-                "Mapping from a string filter to a sort order",
+                "String predicate to sort order",
+                "Mapping from a string predicate to a sort order",
                 null);
         registerParameterType("string:string-predicate:pair",
                 StringAndStringPredicatePair.class,
@@ -393,6 +393,14 @@ public class StandardParametersExtension extends JIPipePrepackagedDefaultJavaExt
                 null,
                 "String pair",
                 "A pair of strings",
+                null);
+        registerParameterType("string:string-or-double:pair",
+                StringAndStringOrDoublePair.class,
+                StringAndStringOrDoublePair.List.class,
+                null,
+                null,
+                "String and String/Double pair",
+                "A pair of string and a String/Double",
                 null);
     }
 
@@ -417,32 +425,32 @@ public class StandardParametersExtension extends JIPipePrepackagedDefaultJavaExt
                 PathPredicate.List.class,
                 PathPredicate::new,
                 f -> new PathPredicate((PathPredicate) f),
-                "Path filter",
-                "A filter for file or folder names",
+                "Path predicate",
+                "A predicate for file or folder names",
                 PathPredicateParameterEditorUI.class);
         registerParameterType("string-predicate",
                 StringPredicate.class,
                 StringPredicate.List.class,
                 StringPredicate::new,
                 f -> new StringPredicate((StringPredicate) f),
-                "String filter",
-                "A filter for text values",
+                "String predicate",
+                "A predicate for text values",
                 StringPredicateParameterEditorUI.class);
         registerParameterType("double-predicate",
                 DoublePredicate.class,
                 DoublePredicate.List.class,
                 DoublePredicate::new,
                 f -> new DoublePredicate((DoublePredicate) f),
-                "Double filter",
-                "A filter for numbers",
+                "Double predicate",
+                "A predicate for numbers",
                 DoublePredicateParameterEditorUI.class);
         registerParameterType("string-or-double-predicate",
                 StringOrDoublePredicate.class,
                 StringOrDoublePredicate.List.class,
                 StringOrDoublePredicate::new,
                 f -> new StringOrDoublePredicate((StringOrDoublePredicate) f),
-                "String/Double filter",
-                "A filter for numbers or strings",
+                "String/Double predicate",
+                "A predicate for numbers or strings",
                 StringOrDoublePredicateParameterEditorUI.class);
     }
 
@@ -494,6 +502,14 @@ public class StandardParametersExtension extends JIPipePrepackagedDefaultJavaExt
         registerParameterType("rectangle", Rectangle.class, RectangleList.class, Rectangle::new, o -> new Rectangle((Rectangle) o), "Rectangle", "A rectangle", RectangleParameterEditorUI.class);
         registerColorJsonSerializer();
         registerRectangleJsonSerializer();
+        // Compound types
+        registerParameterType("string-or-double",
+                StringOrDouble.class,
+                null,
+                null,
+                "String/Double",
+                "An object that can either hold a string or double.",
+                StringOrDoubleParameterEditorUI.class);
     }
 
     private void registerPrimitives() {

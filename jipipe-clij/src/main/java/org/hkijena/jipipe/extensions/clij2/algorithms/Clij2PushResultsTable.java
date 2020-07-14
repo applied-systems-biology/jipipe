@@ -51,14 +51,14 @@ public class Clij2PushResultsTable extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataInterface, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         CLIJ2 clij2 = CLIJ2.getInstance();
         CLIJ clij = clij2.getCLIJ();
-        ResultsTable table = dataInterface.getInputData(getFirstInputSlot(), ResultsTableData.class).getTable();
+        ResultsTable table = dataBatch.getInputData(getFirstInputSlot(), ResultsTableData.class).getTable();
         ClearCLBuffer buffer = clij.create(new long[]{table.getHeadings().length, table.getCounter()}, NativeTypeEnum.Float);
         PushResultsTable.pushResultsTable(clij2, buffer, table);
 
-        dataInterface.addOutputData(getFirstOutputSlot(), new CLIJImageData(buffer));
+        dataBatch.addOutputData(getFirstOutputSlot(), new CLIJImageData(buffer));
     }
 
 }

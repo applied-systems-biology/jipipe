@@ -69,27 +69,27 @@ public class GreyscalePixelsGenerator extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataInterface, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress,
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress,
                                 Supplier<Boolean> isCancelled) {
         if (applyPerSlice) {
-            ImagePlusData inputData = dataInterface.getInputData(getFirstInputSlot(), ImagePlusData.class);
+            ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class);
             ImageJUtils.forEachIndexedSlice(inputData.getImage(), (imp, index) -> {
                 TDoubleList pixels = new TDoubleArrayList(imp.getPixelCount());
                 getPixels(imp, pixels);
                 ResultsTableData resultsTable = toResultsTable(pixels);
                 if (!StringUtils.isNullOrEmpty(sliceAnnotation)) {
-                    dataInterface.addOutputData(getFirstOutputSlot(), resultsTable,
+                    dataBatch.addOutputData(getFirstOutputSlot(), resultsTable,
                             Collections.singletonList(new JIPipeAnnotation(sliceAnnotation, "slice=" + index)));
                 } else {
-                    dataInterface.addOutputData(getFirstOutputSlot(), resultsTable);
+                    dataBatch.addOutputData(getFirstOutputSlot(), resultsTable);
                 }
             });
         } else {
-            ImagePlusData inputData = dataInterface.getInputData(getFirstInputSlot(), ImagePlusData.class);
+            ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class);
             final TDoubleList pixels = new TDoubleArrayList();
             ImageJUtils.forEachSlice(inputData.getImage(), imp -> getPixels(imp, pixels));
             ResultsTableData resultsTable = toResultsTable(pixels);
-            dataInterface.addOutputData(getFirstOutputSlot(), resultsTable);
+            dataBatch.addOutputData(getFirstOutputSlot(), resultsTable);
         }
     }
 

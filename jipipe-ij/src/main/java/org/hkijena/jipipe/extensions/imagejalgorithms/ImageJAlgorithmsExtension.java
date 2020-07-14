@@ -263,6 +263,17 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         registerAlgorithm("ij1-roi-to-rgb", RoiToRGBAlgorithm.class, UIUtils.getAlgorithmIconURL("color-management.png"));
         registerAlgorithm("ij1-roi-filter-statistics-script", FilterRoiByStatisticsScriptAlgorithm.class, UIUtils.getAlgorithmIconURL("python.png"));
         registerAlgorithm("ij1-roi-filter-and-merge-statistics-script", FilterAndMergeRoiByStatisticsScriptAlgorithm.class, UIUtils.getAlgorithmIconURL("python.png"));
+        registerAlgorithm("ij1-roi-from-table-rectangular", TableToRectangularROIAlgorithm.class, UIUtils.getAlgorithmIconURL("draw-rectangle.png"));
+        registerAlgorithm("ij1-roi-from-table-circle", TableToCircularROIAlgorithm.class, UIUtils.getAlgorithmIconURL("draw-circle.png"));
+
+        registerEnumParameterType("ij1-roi-from-table-rectangular:anchor",
+                TableToRectangularROIAlgorithm.Anchor.class,
+                "Anchor",
+                "Describes how objects are created.");
+        registerEnumParameterType("ij1-roi-from-table-rectangular:mode",
+                TableToRectangularROIAlgorithm.Mode.class,
+                "Mode",
+                "Describes which objects are created.");
     }
 
     private void registerConvolutionAlgorithms() {

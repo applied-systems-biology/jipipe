@@ -82,7 +82,9 @@ public class ImagePlusData implements JIPipeData {
 
     @Override
     public JIPipeData duplicate() {
-        return JIPipeData.createInstance(getClass(), image.duplicate());
+        ImagePlus imp = image.duplicate();
+        imp.setTitle(getImage().getTitle());
+        return JIPipeData.createInstance(getClass(), imp);
     }
 
     @Override

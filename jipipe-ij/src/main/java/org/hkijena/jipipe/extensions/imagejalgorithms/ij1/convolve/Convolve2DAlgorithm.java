@@ -71,8 +71,8 @@ public class Convolve2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataInterface, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
-        ImagePlusData inputData = dataInterface.getInputData(getFirstInputSlot(), ImagePlusData.class);
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+        ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class);
         ImagePlus img = inputData.getImage().duplicate();
 
         Convolver convolver = new Convolver();
@@ -85,7 +85,7 @@ public class Convolve2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
         ImageJUtils.forEachSlice(img, imp -> convolver.convolve(imp, kernel, matrix.getColumnCount(), matrix.getRowCount()));
 
-        dataInterface.addOutputData(getFirstOutputSlot(), new ImagePlusData(img));
+        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(img));
     }
 
 
