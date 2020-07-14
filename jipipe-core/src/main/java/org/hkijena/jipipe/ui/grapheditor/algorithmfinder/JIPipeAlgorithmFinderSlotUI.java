@@ -20,6 +20,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeMutableSlotConfiguration;
 import org.hkijena.jipipe.api.history.*;
+import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
 import org.hkijena.jipipe.ui.events.AlgorithmFinderSuccessEvent;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphCanvasUI;
 import org.hkijena.jipipe.ui.registries.JIPipeUIDatatypeRegistry;
@@ -73,6 +74,7 @@ public class JIPipeAlgorithmFinderSlotUI extends JPanel {
         else
             icon = UIUtils.getIconFromResources("chevron-right.png");
         assignButton = new JButton(icon);
+        assignButton.setEnabled(JIPipeDatatypeRegistry.getInstance().isConvertible(outputSlot.getAcceptedDataType(), inputSlot.getAcceptedDataType()));
         assignButton.setPreferredSize(new Dimension(25, 50));
         assignButton.setBorder(BorderFactory.createMatteBorder(0, 1,0,0, Color.GRAY));
         assignButtonMenu = UIUtils.addPopupMenuToComponent(assignButton);
