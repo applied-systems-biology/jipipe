@@ -85,7 +85,7 @@ public class LocalMaxima2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class);
-        ImagePlus img = inputData.getImage().duplicate();
+        ImagePlus img = inputData.getDuplicateImage();
 
         ImageStack resultStack = new ImageStack(img.getWidth(), img.getHeight(), img.getStackSize());
         MaximumFinder maximumFinder = new MaximumFinder();

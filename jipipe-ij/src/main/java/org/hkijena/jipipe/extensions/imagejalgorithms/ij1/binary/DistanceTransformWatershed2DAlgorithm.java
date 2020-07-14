@@ -63,7 +63,7 @@ public class DistanceTransformWatershed2DAlgorithm extends JIPipeSimpleIterating
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscaleMaskData.class);
-        ImagePlus img = inputData.getImage().duplicate();
+        ImagePlus img = inputData.getDuplicateImage();
         EDM edm = new EDM();
         ImageJUtils.forEachSlice(img, edm::toWatershed);
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleMaskData(img));

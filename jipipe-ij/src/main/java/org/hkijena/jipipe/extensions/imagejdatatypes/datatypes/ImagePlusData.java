@@ -87,9 +87,19 @@ public class ImagePlusData implements JIPipeData {
         return JIPipeData.createInstance(getClass(), imp);
     }
 
+    /**
+     * Returns a duplicate of the contained image
+     * @return the duplicate
+     */
+    public ImagePlus getDuplicateImage() {
+        ImagePlus imp = image.duplicate();
+        imp.setTitle(getImage().getTitle());
+        return imp;
+    }
+
     @Override
     public void display(String displayName, JIPipeWorkbench workbench) {
-        image.duplicate().show();
+        getDuplicateImage().show();
     }
 
     @Override

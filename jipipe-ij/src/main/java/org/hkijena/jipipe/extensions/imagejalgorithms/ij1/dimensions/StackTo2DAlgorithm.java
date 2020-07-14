@@ -79,7 +79,7 @@ public class StackTo2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class);
-        ImagePlus img = inputData.getImage().duplicate();
+        ImagePlus img = inputData.getDuplicateImage();
         ImageJUtils.forEachIndexedSlice(img, (ip, index) -> {
             if (annotateSlices) {
                 JIPipeAnnotation trait = new JIPipeAnnotation(annotationType, "slice=" + index);

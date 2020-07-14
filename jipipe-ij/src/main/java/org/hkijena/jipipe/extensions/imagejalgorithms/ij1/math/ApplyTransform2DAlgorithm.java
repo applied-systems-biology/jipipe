@@ -66,7 +66,7 @@ public class ApplyTransform2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class);
-        ImagePlus img = inputData.getImage().duplicate();
+        ImagePlus img = inputData.getDuplicateImage();
         ImageJUtils.forEachSlice(img, ip -> {
             switch (transformation) {
                 case Absolute:

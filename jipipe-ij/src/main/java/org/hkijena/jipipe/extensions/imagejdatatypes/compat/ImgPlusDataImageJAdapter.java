@@ -87,7 +87,7 @@ public class ImgPlusDataImageJAdapter implements ImageJDatatypeAdapter {
 
     @Override
     public Object convertJIPipeToImageJ(JIPipeData jipipeData, boolean activate, boolean noWindow, String windowName) {
-        ImagePlus img = ((ImagePlusData) jipipeData).getImage().duplicate();
+        ImagePlus img = ((ImagePlusData) jipipeData).getDuplicateImage();
         if (activate) {
             if (!noWindow) {
                 img.show();

@@ -66,7 +66,7 @@ public class UltimateErodedPoints2DAlgorithm extends JIPipeSimpleIteratingAlgori
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscaleMaskData.class);
-        ImagePlus img = inputData.getImage().duplicate();
+        ImagePlus img = inputData.getDuplicateImage();
         EDM edm = new EDM();
         edm.setup("points", img);
         ImageJUtils.forEachSlice(img, edm::run);

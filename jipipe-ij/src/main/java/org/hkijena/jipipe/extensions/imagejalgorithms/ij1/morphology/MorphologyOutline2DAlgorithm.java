@@ -68,7 +68,7 @@ public class MorphologyOutline2DAlgorithm extends JIPipeSimpleIteratingAlgorithm
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscaleMaskData.class);
-        ImagePlus img = inputData.getImage().duplicate();
+        ImagePlus img = inputData.getDuplicateImage();
         ImageJUtils.forEachSlice(img, ip -> ((ByteProcessor) ip).outline());
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleMaskData(img));
     }

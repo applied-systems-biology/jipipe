@@ -74,7 +74,7 @@ public class MedianBlurFilter2DAlgorithm extends JIPipeSimpleIteratingAlgorithm 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class);
-        ImagePlus img = inputData.getImage().duplicate();
+        ImagePlus img = inputData.getDuplicateImage();
         RankFilters rankFilters = new RankFilters();
         ImageJUtils.forEachSlice(img, ip -> rankFilters.rank(ip, radius, RankFilters.MEDIAN));
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(img));

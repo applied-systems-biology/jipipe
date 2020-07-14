@@ -82,7 +82,7 @@ public class RollingBallBackgroundEstimator2DAlgorithm extends JIPipeSimpleItera
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class);
-        ImagePlus img = inputData.getImage().duplicate();
+        ImagePlus img = inputData.getDuplicateImage();
         BackgroundSubtracter backgroundSubtracter = new BackgroundSubtracter();
         ImageJUtils.forEachSlice(img, ip -> {
             if (ip instanceof ColorProcessor && !separateChannels) {

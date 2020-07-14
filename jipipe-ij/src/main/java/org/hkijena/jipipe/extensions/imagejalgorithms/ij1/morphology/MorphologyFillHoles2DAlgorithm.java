@@ -70,7 +70,7 @@ public class MorphologyFillHoles2DAlgorithm extends JIPipeSimpleIteratingAlgorit
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscaleMaskData.class);
-        ImagePlus img = inputData.getImage().duplicate();
+        ImagePlus img = inputData.getDuplicateImage();
         ImageJUtils.forEachSlice(img, ip -> {
             int fg = Prefs.blackBackground ? 255 : 0;
             int foreground = ip.isInvertedLut() ? 255 - fg : fg;

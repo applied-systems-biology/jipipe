@@ -73,7 +73,7 @@ public class TransformFlip2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class);
-        ImagePlus img = inputData.getImage().duplicate();
+        ImagePlus img = inputData.getDuplicateImage();
         boolean fliph = flipMode == FlipMode.Horizontal || flipMode == FlipMode.Both;
         boolean flipv = flipMode == FlipMode.Vertical || flipMode == FlipMode.Both;
         ImageJUtils.forEachSlice(img, ip -> {

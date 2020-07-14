@@ -75,7 +75,7 @@ public class MorphologyGreyscale2DAlgorithm extends JIPipeSimpleIteratingAlgorit
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscaleMaskData.class);
-        ImagePlus img = inputData.getImage().duplicate();
+        ImagePlus img = inputData.getDuplicateImage();
         RankFilters rankFilters = new RankFilters();
         ImageJUtils.forEachSlice(img, ip -> {
             switch (operation) {

@@ -82,7 +82,7 @@ public class CLAHEContrastEnhancer extends JIPipeSimpleIteratingAlgorithm {
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class);
-        ImagePlus result = inputData.getImage().duplicate();
+        ImagePlus result = inputData.getDuplicateImage();
         Flat clahe = fastMode ? Flat.getFastInstance() : Flat.getInstance();
         clahe.run(result, blockRadius, bins, maxSlope, null, true);
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(result));
