@@ -61,10 +61,6 @@ public class StandardSettingsExtension extends JIPipePrepackagedDefaultJavaExten
                 ProjectsSettings.StarterProject.class,
                 "Empty project configuration",
                 "Available ways how an empty project is initialized");
-        registerEnumParameterType("jipipe:settings:ui:look-and-feel",
-                GeneralUISettings.LookAndFeel.class,
-                "Theme",
-                "Available themes");
     }
 
 }

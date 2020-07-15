@@ -71,7 +71,10 @@ public class UIUtils {
             try {
                 JsonNode node = JsonUtils.getObjectMapper().readValue(propertyFile.toFile(), JsonNode.class);
                 JsonNode value = node.path("general-ui/force-cross-platform-look-and-feel");
-                forceMetal = value.booleanValue();
+                if(!value.isMissingNode())
+                    forceMetal = value.booleanValue();
+                else
+                    forceMetal = true;
             }
             catch(Exception e) {
                 forceMetal = true;
@@ -83,7 +86,7 @@ public class UIUtils {
                 UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
             }
             catch (Exception e) {
-
+                e.printStackTrace();
             }
         }
 

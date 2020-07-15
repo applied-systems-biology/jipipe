@@ -30,7 +30,6 @@ public class GeneralUISettings implements JIPipeParameterCollection {
     private EventBus eventBus = new EventBus();
     private boolean showIntroduction = true;
     private boolean showProjectInfo = true;
-    private LookAndFeel lookAndFeel = LookAndFeel.Metal;
     private boolean showParameterSearchBar = true;
     private boolean neverAskOnClosingTabs = false;
     private boolean validateOnSave = true;
@@ -52,18 +51,6 @@ public class GeneralUISettings implements JIPipeParameterCollection {
     @JIPipeParameter("show-introduction")
     public void setShowIntroduction(boolean showIntroduction) {
         this.showIntroduction = showIntroduction;
-
-    }
-
-    @JIPipeDocumentation(name = "Theme", description = "Allows you to select a theme (Restart ImageJ to apply changes)")
-    @JIPipeParameter("look-and-feel")
-    public LookAndFeel getLookAndFeel() {
-        return lookAndFeel;
-    }
-
-    @JIPipeParameter("look-and-feel")
-    public void setLookAndFeel(LookAndFeel lookAndFeel) {
-        this.lookAndFeel = lookAndFeel;
 
     }
 
@@ -140,12 +127,5 @@ public class GeneralUISettings implements JIPipeParameterCollection {
     @JIPipeParameter("force-cross-platform-look-and-feel")
     public void setForceCrossPlatformLookAndFeel(boolean forceCrossPlatformLookAndFeel) {
         this.forceCrossPlatformLookAndFeel = forceCrossPlatformLookAndFeel;
-    }
-
-    /**
-     * Available designs
-     */
-    public enum LookAndFeel {
-        Metal
     }
 }
