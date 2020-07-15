@@ -13,11 +13,13 @@
 
 package org.hkijena.jipipe.utils;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import ij.IJ;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.algorithm.JIPipeNodeCategory;
 import org.hkijena.jipipe.api.algorithm.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
+import org.hkijena.jipipe.api.registries.JIPipeSettingsRegistry;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.ColorIcon;
 import org.hkijena.jipipe.ui.components.JIPipeValidityReportUI;
@@ -41,6 +43,8 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.*;
 import java.util.function.Predicate;
@@ -53,6 +57,37 @@ public class UIUtils {
 
     public static final Insets UI_PADDING = new Insets(4, 4, 4, 4);
     public static final Map<String, ImageIcon> ICON_FROM_RESOURCES_CACHE = new HashMap<>();
+
+    /**
+     * Attempts to override the look & feel based on the JIPipe settings
+     */
+    public static void loadLookAndFeelFromSettings() {
+        Path propertyFile = JIPipeSettingsRegistry.getPropertyFile();
+        boolean forceMetal;
+        if(!Files.exists(propertyFile)) {
+            forceMetal = true;
+        }
+        else {
+            try {
+                JsonNode node = JsonUtils.getObjectMapper().readValue(propertyFile.toFile(), JsonNode.class);
+                JsonNode value = node.path("general-ui/force-cross-platform-look-and-feel");
+                forceMetal = value.booleanValue();
+            }
+            catch(Exception e) {
+                forceMetal = true;
+            }
+        }
+        if(forceMetal) {
+            try {
+                // Set cross-platform Java L&F (also called "Metal")
+                UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+            }
+            catch (Exception e) {
+
+            }
+        }
+
+    }
 
     /**
      * Equivalent of {@link Box}.verticalGlue() for {@link GridBagLayout}

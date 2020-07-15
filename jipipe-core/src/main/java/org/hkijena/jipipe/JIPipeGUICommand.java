@@ -17,6 +17,7 @@ import net.imagej.ImageJ;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.ui.JIPipeProjectWindow;
 import org.hkijena.jipipe.ui.components.SplashScreen;
+import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Context;
 import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
@@ -39,6 +40,7 @@ public class JIPipeGUICommand implements Command {
 
     @Override
     public void run() {
+        UIUtils.loadLookAndFeelFromSettings();
         if (!JIPipeDefaultRegistry.isInstantiated()) {
             SwingUtilities.invokeLater(() -> SplashScreen.getInstance().showSplash());
         }

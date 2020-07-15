@@ -67,6 +67,7 @@ public class JIPipeRunAlgorithmCommand extends DynamicCommand implements Initial
         JIPipeGraphNode algorithm;
         SingleImageJAlgorithmRun settings;
         if (StringUtils.isNullOrEmpty(algorithmId) || StringUtils.isNullOrEmpty(algorithmParameters)) {
+            UIUtils.loadLookAndFeelFromSettings();
             RunSingleAlgorithmDialog dialog = new RunSingleAlgorithmDialog(getContext());
             dialog.setTitle("Run JIPipe algorithm");
             dialog.setIconImage(UIUtils.getIconFromResources("jipipe-128.png").getImage());
