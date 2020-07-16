@@ -11,24 +11,21 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.ui.grapheditor.contextmenu.clipboard;
+package org.hkijena.jipipe.ui.grapheditor.contextmenu;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.hkijena.jipipe.api.algorithm.JIPipeGraph;
+import org.hkijena.jipipe.api.algorithm.JIPipeGraphNode;
+import org.hkijena.jipipe.api.grouping.NodeGroup;
+import org.hkijena.jipipe.api.history.GraphChangedHistorySnapshot;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphCanvasUI;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeNodeUI;
-import org.hkijena.jipipe.ui.grapheditor.contextmenu.AlgorithmUIAction;
-import org.hkijena.jipipe.utils.JsonUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.*;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.StringSelection;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class AlgorithmGraphCopyAlgorithmUIAction implements AlgorithmUIAction {
+public class GroupNodeUIContextAction implements NodeUIContextAction {
     @Override
     public boolean matches(Set<JIPipeNodeUI> selection) {
         return !selection.isEmpty();
@@ -36,31 +33,30 @@ public class AlgorithmGraphCopyAlgorithmUIAction implements AlgorithmUIAction {
 
     @Override
     public void run(JIPipeGraphCanvasUI canvasUI, Set<JIPipeNodeUI> selection) {
-        JIPipeGraph graph = canvasUI.getGraph()
-                .extract(selection.stream().map(JIPipeNodeUI::getNode).collect(Collectors.toSet()), true);
-        try {
-            String json = JsonUtils.getObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(graph);
-            StringSelection stringSelection = new StringSelection(json);
-            Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-            clipboard.setContents(stringSelection, stringSelection);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
+        canvasUI.getGraphHistory().addSnapshotBefore(new GraphChangedHistorySnapshot(canvasUI.getGraph(), "Group"));
+        Set<JIPipeGraphNode> algorithms = selection.stream().map(JIPipeNodeUI::getNode).collect(Collectors.toSet());
+        JIPipeGraph graph = canvasUI.getGraph();
+        JIPipeGraph subGraph = graph.extract(algorithms, false);
+        NodeGroup group = new NodeGroup(subGraph, true);
+        for (JIPipeGraphNode algorithm : algorithms) {
+            graph.removeNode(algorithm, true);
         }
+        graph.insertNode(group, canvasUI.getCompartment());
     }
 
     @Override
     public String getName() {
-        return "Copy";
+        return "Group";
     }
 
     @Override
     public String getDescription() {
-        return "Copies the selection to the clipboard";
+        return "Moves the selected nodes into a group node.";
     }
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("copy.png");
+        return UIUtils.getIconFromResources("group.png");
     }
 
     @Override

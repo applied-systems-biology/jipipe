@@ -17,7 +17,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import org.hkijena.jipipe.api.algorithm.JIPipeGraph;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphCanvasUI;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeNodeUI;
-import org.hkijena.jipipe.ui.grapheditor.contextmenu.AlgorithmUIAction;
+import org.hkijena.jipipe.ui.grapheditor.contextmenu.NodeUIContextAction;
 import org.hkijena.jipipe.utils.JsonUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -28,7 +28,7 @@ import java.awt.datatransfer.StringSelection;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class GraphCompartmentCopyAlgorithmUIAction implements AlgorithmUIAction {
+public class AlgorithmGraphCopyNodeUIContextAction implements NodeUIContextAction {
     @Override
     public boolean matches(Set<JIPipeNodeUI> selection) {
         return !selection.isEmpty();

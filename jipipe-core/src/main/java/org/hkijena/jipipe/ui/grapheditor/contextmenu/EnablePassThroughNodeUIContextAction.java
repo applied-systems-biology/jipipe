@@ -13,7 +13,8 @@
 
 package org.hkijena.jipipe.ui.grapheditor.contextmenu;
 
-import org.hkijena.jipipe.ui.events.AlgorithmUIActionRequestedEvent;
+import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithm;
+import org.hkijena.jipipe.api.events.ParameterChangedEvent;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphCanvasUI;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeNodeUI;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -21,37 +22,52 @@ import org.hkijena.jipipe.utils.UIUtils;
 import javax.swing.*;
 import java.util.Set;
 
-import static org.hkijena.jipipe.ui.grapheditor.JIPipeNodeUI.REQUEST_UPDATE_CACHE;
-
-public class UpdateCacheAlgorithmUIAction implements AlgorithmUIAction {
+public class EnablePassThroughNodeUIContextAction implements NodeUIContextAction {
     @Override
     public boolean matches(Set<JIPipeNodeUI> selection) {
-        return selection.size() == 1;
+        for (JIPipeNodeUI ui : selection) {
+            if (ui.getNode() instanceof JIPipeAlgorithm) {
+                JIPipeAlgorithm algorithm = (JIPipeAlgorithm) ui.getNode();
+                if (!algorithm.isPassThrough())
+                    return true;
+            }
+        }
+        return false;
     }
 
     @Override
     public void run(JIPipeGraphCanvasUI canvasUI, Set<JIPipeNodeUI> selection) {
-        JIPipeNodeUI ui = selection.iterator().next();
-        ui.getEventBus().post(new AlgorithmUIActionRequestedEvent(ui, REQUEST_UPDATE_CACHE));
+        for (JIPipeNodeUI ui : selection) {
+            if (ui.getNode() instanceof JIPipeAlgorithm) {
+                JIPipeAlgorithm algorithm = (JIPipeAlgorithm) ui.getNode();
+                algorithm.setPassThrough(true);
+                algorithm.getEventBus().post(new ParameterChangedEvent(algorithm, "jipipe:algorithm:pass-through"));
+            }
+        }
     }
 
     @Override
     public String getName() {
-        return "Update cache";
+        return "Pass-through";
     }
 
     @Override
     public String getDescription() {
-        return "Runs the pipeline up until this algorithm and caches the results. Nothing is written to disk.";
+        return "Sets the selected algorithms to pass-though their input to their output without changes.";
     }
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("database.png");
+        return UIUtils.getIconFromResources("pass-through.png");
     }
 
     @Override
     public boolean isShowingInOverhang() {
         return true;
+    }
+
+    @Override
+    public boolean disableOnNonMatch() {
+        return false;
     }
 }

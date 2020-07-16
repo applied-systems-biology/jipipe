@@ -30,9 +30,9 @@ import org.hkijena.jipipe.ui.components.MarkdownReader;
 import org.hkijena.jipipe.ui.events.DefaultAlgorithmUIActionRequestedEvent;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphEditorUI;
 import org.hkijena.jipipe.ui.grapheditor.contextmenu.*;
-import org.hkijena.jipipe.ui.grapheditor.contextmenu.clipboard.GraphCompartmentCopyAlgorithmUIAction;
-import org.hkijena.jipipe.ui.grapheditor.contextmenu.clipboard.GraphCompartmentCutAlgorithmUIAction;
-import org.hkijena.jipipe.ui.grapheditor.contextmenu.clipboard.GraphCompartmentPasteAlgorithmUIAction;
+import org.hkijena.jipipe.ui.grapheditor.contextmenu.clipboard.GraphCompartmentCopyNodeUIContextAction;
+import org.hkijena.jipipe.ui.grapheditor.contextmenu.clipboard.GraphCompartmentCutNodeUIContextAction;
+import org.hkijena.jipipe.ui.grapheditor.contextmenu.clipboard.GraphCompartmentPasteNodeUIContextAction;
 import org.hkijena.jipipe.utils.JsonUtils;
 import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -62,16 +62,16 @@ public class JIPipeCompartmentGraphUI extends JIPipeGraphEditorUI {
 
         // Copy & paste behavior
         getCanvasUI().setContextActions(Arrays.asList(
-                new GraphCompartmentCutAlgorithmUIAction(),
-                new GraphCompartmentCopyAlgorithmUIAction(),
-                new GraphCompartmentPasteAlgorithmUIAction(),
-                AlgorithmUIAction.SEPARATOR,
-                new ExportCompartmentAsJsonAlgorithmUIAction(),
-                new ExportCompartmentToAlgorithmUIAction(),
-                AlgorithmUIAction.SEPARATOR,
-                new DeleteCompartmentUIAction(),
-                AlgorithmUIAction.SEPARATOR,
-                new SelectAndMoveNodeHereAlgorithmUIAction()
+                new GraphCompartmentCutNodeUIContextAction(),
+                new GraphCompartmentCopyNodeUIContextAction(),
+                new GraphCompartmentPasteNodeUIContextAction(),
+                NodeUIContextAction.SEPARATOR,
+                new ExportCompartmentAsJsonNodeUIContextAction(),
+                new ExportCompartmentToNodeUIContextAction(),
+                NodeUIContextAction.SEPARATOR,
+                new DeleteCompartmentUIContextAction(),
+                NodeUIContextAction.SEPARATOR,
+                new SelectAndMoveNodeHereNodeUIContextAction()
         ));
     }
 

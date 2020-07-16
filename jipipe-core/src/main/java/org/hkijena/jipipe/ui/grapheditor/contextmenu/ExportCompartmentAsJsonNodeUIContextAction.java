@@ -26,7 +26,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Set;
 
-public class ExportCompartmentAsJsonAlgorithmUIAction implements AlgorithmUIAction {
+public class ExportCompartmentAsJsonNodeUIContextAction implements NodeUIContextAction {
     @Override
     public boolean matches(Set<JIPipeNodeUI> selection) {
         return selection.size() == 1;

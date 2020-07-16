@@ -29,7 +29,7 @@ import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.events.*;
 import org.hkijena.jipipe.ui.grapheditor.connections.RectangularLineDrawer;
-import org.hkijena.jipipe.ui.grapheditor.contextmenu.AlgorithmUIAction;
+import org.hkijena.jipipe.ui.grapheditor.contextmenu.NodeUIContextAction;
 import org.hkijena.jipipe.ui.grapheditor.layout.MSTGraphAutoLayoutMethod;
 import org.hkijena.jipipe.ui.grapheditor.layout.SugiyamaGraphAutoLayoutMethod;
 import org.hkijena.jipipe.utils.PointRange;
@@ -63,7 +63,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
     private JIPipeGraphDragAndDropBehavior dragAndDropBehavior;
     private Point cursor;
     private long lastTimeExpandedNegative = 0;
-    private List<AlgorithmUIAction> contextActions = new ArrayList<>();
+    private List<NodeUIContextAction> contextActions = new ArrayList<>();
     private MoveNodesGraphHistorySnapshot currentlyDraggedSnapshot;
     private Map<JIPipeNodeUI, Point> currentlyDraggedOffsets = new HashMap<>();
     private JIPipeDataSlotUI currentConnectionDragSource;
@@ -447,7 +447,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
         setGraphEditorCursor(new Point(point.x, point.y));
         JPopupMenu menu = new JPopupMenu();
         boolean scheduleSeparator = false;
-        for (AlgorithmUIAction action : contextActions) {
+        for (NodeUIContextAction action : contextActions) {
             if (action == null) {
                 scheduleSeparator = true;
                 continue;
@@ -1098,11 +1098,11 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
         addNewNodes();
     }
 
-    public List<AlgorithmUIAction> getContextActions() {
+    public List<NodeUIContextAction> getContextActions() {
         return contextActions;
     }
 
-    public void setContextActions(List<AlgorithmUIAction> contextActions) {
+    public void setContextActions(List<NodeUIContextAction> contextActions) {
         this.contextActions = contextActions;
     }
 

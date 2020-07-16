@@ -13,10 +13,14 @@
 
 package org.hkijena.jipipe.ui.grapheditor.contextmenu;
 
+import org.hkijena.jipipe.api.JIPipeProject;
+import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.algorithm.JIPipeGraph;
 import org.hkijena.jipipe.api.algorithm.JIPipeGraphNode;
 import org.hkijena.jipipe.api.grouping.NodeGroup;
-import org.hkijena.jipipe.api.history.GraphChangedHistorySnapshot;
+import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
+import org.hkijena.jipipe.ui.components.DocumentTabPane;
+import org.hkijena.jipipe.ui.extensionbuilder.JIPipeJsonExporter;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphCanvasUI;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeNodeUI;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -25,7 +29,7 @@ import javax.swing.*;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class GroupAlgorithmUIAction implements AlgorithmUIAction {
+public class ExportNodeUIContextAction implements NodeUIContextAction {
     @Override
     public boolean matches(Set<JIPipeNodeUI> selection) {
         return !selection.isEmpty();
@@ -33,34 +37,50 @@ public class GroupAlgorithmUIAction implements AlgorithmUIAction {
 
     @Override
     public void run(JIPipeGraphCanvasUI canvasUI, Set<JIPipeNodeUI> selection) {
-        canvasUI.getGraphHistory().addSnapshotBefore(new GraphChangedHistorySnapshot(canvasUI.getGraph(), "Group"));
         Set<JIPipeGraphNode> algorithms = selection.stream().map(JIPipeNodeUI::getNode).collect(Collectors.toSet());
-        JIPipeGraph graph = canvasUI.getGraph();
-        JIPipeGraph subGraph = graph.extract(algorithms, false);
-        NodeGroup group = new NodeGroup(subGraph, true);
+        JIPipeValidityReport report = new JIPipeValidityReport();
         for (JIPipeGraphNode algorithm : algorithms) {
-            graph.removeNode(algorithm, true);
+            algorithm.reportValidity(report.forCategory(algorithm.getName()));
         }
-        graph.insertNode(group, canvasUI.getCompartment());
+        if (!report.isValid()) {
+            UIUtils.openValidityReportDialog(canvasUI, report, false);
+            return;
+        }
+
+        JIPipeProjectWorkbench projectWorkbench = (JIPipeProjectWorkbench) canvasUI.getWorkbench();
+        JIPipeProject project = projectWorkbench.getProject();
+        JIPipeGraph graph = project.getGraph().extract(algorithms, true);
+        NodeGroup group = new NodeGroup(graph, true);
+        JIPipeJsonExporter exporter = new JIPipeJsonExporter(projectWorkbench, group);
+        projectWorkbench.getDocumentTabPane().addTab("Export custom algorithm",
+                UIUtils.getIconFromResources("export.png"),
+                exporter,
+                DocumentTabPane.CloseMode.withAskOnCloseButton);
+        projectWorkbench.getDocumentTabPane().switchToLastTab();
     }
 
     @Override
     public String getName() {
-        return "Group";
+        return "Export";
     }
 
     @Override
     public String getDescription() {
-        return "Moves the selected nodes into a group node.";
+        return "Exports the algorithms as custom algorithm";
     }
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("group.png");
+        return UIUtils.getIconFromResources("export.png");
     }
 
     @Override
     public boolean isShowingInOverhang() {
+        return false;
+    }
+
+    @Override
+    public boolean disableOnNonMatch() {
         return false;
     }
 }

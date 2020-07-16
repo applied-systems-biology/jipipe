@@ -13,8 +13,8 @@
 
 package org.hkijena.jipipe.ui.grapheditor.contextmenu;
 
-import org.hkijena.jipipe.api.grouping.JsonAlgorithm;
-import org.hkijena.jipipe.api.history.GraphChangedHistorySnapshot;
+import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithm;
+import org.hkijena.jipipe.api.events.ParameterChangedEvent;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphCanvasUI;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeNodeUI;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -22,35 +22,43 @@ import org.hkijena.jipipe.utils.UIUtils;
 import javax.swing.*;
 import java.util.Set;
 
-public class JsonAlgorithmToGroupAlgorithmUIAction implements AlgorithmUIAction {
+public class DisablePassThroughNodeUIContextAction implements NodeUIContextAction {
     @Override
     public boolean matches(Set<JIPipeNodeUI> selection) {
-        return selection.stream().map(JIPipeNodeUI::getNode).anyMatch(a -> a instanceof JsonAlgorithm);
+        for (JIPipeNodeUI ui : selection) {
+            if (ui.getNode() instanceof JIPipeAlgorithm) {
+                JIPipeAlgorithm algorithm = (JIPipeAlgorithm) ui.getNode();
+                if (algorithm.isPassThrough())
+                    return true;
+            }
+        }
+        return false;
     }
 
     @Override
     public void run(JIPipeGraphCanvasUI canvasUI, Set<JIPipeNodeUI> selection) {
-        canvasUI.getGraphHistory().addSnapshotBefore(new GraphChangedHistorySnapshot(canvasUI.getGraph(), "Convert to group"));
         for (JIPipeNodeUI ui : selection) {
-            if (ui.getNode() instanceof JsonAlgorithm) {
-                JsonAlgorithm.unpackToNodeGroup((JsonAlgorithm) ui.getNode());
+            if (ui.getNode() instanceof JIPipeAlgorithm) {
+                JIPipeAlgorithm algorithm = (JIPipeAlgorithm) ui.getNode();
+                algorithm.setPassThrough(false);
+                algorithm.getEventBus().post(new ParameterChangedEvent(algorithm, "jipipe:algorithm:pass-through"));
             }
         }
     }
 
     @Override
     public String getName() {
-        return "Convert to group";
+        return "Disable pass-through";
     }
 
     @Override
     public String getDescription() {
-        return "Converts selected JSON algorithms into distinct group nodes";
+        return "Sets the selected algorithms to process input to output.";
     }
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("archive-extract.png");
+        return UIUtils.getIconFromResources("pass-through.png");
     }
 
     @Override

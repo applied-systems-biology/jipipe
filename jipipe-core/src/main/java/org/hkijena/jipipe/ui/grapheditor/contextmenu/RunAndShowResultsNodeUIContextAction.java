@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.ui.grapheditor.contextmenu;
 
-import org.hkijena.jipipe.api.compartments.algorithms.IOInterfaceAlgorithm;
+import org.hkijena.jipipe.ui.events.AlgorithmUIActionRequestedEvent;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphCanvasUI;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeNodeUI;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -21,43 +21,37 @@ import org.hkijena.jipipe.utils.UIUtils;
 import javax.swing.*;
 import java.util.Set;
 
-public class CollapseIOInterfaceAlgorithmUIAction implements AlgorithmUIAction {
+import static org.hkijena.jipipe.ui.grapheditor.JIPipeNodeUI.REQUEST_RUN_AND_SHOW_RESULTS;
+
+public class RunAndShowResultsNodeUIContextAction implements NodeUIContextAction {
     @Override
     public boolean matches(Set<JIPipeNodeUI> selection) {
-        return selection.stream().map(JIPipeNodeUI::getNode).anyMatch(a -> a instanceof IOInterfaceAlgorithm);
+        return selection.size() == 1;
     }
 
     @Override
     public void run(JIPipeGraphCanvasUI canvasUI, Set<JIPipeNodeUI> selection) {
-        for (JIPipeNodeUI ui : selection) {
-            if (ui.getNode() instanceof IOInterfaceAlgorithm) {
-                IOInterfaceAlgorithm.collapse((IOInterfaceAlgorithm) ui.getNode());
-            }
-        }
+        JIPipeNodeUI ui = selection.iterator().next();
+        ui.getEventBus().post(new AlgorithmUIActionRequestedEvent(ui, REQUEST_RUN_AND_SHOW_RESULTS));
     }
 
     @Override
     public String getName() {
-        return "Collapse";
+        return "Run & show results";
     }
 
     @Override
     public String getDescription() {
-        return "Deletes the algorithm, but keeps the connections that were passed through it";
+        return "Runs the pipeline up until this algorithm and shows the results.";
     }
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("delete.png");
+        return UIUtils.getIconFromResources("play.png");
     }
 
     @Override
     public boolean isShowingInOverhang() {
         return true;
-    }
-
-    @Override
-    public boolean disableOnNonMatch() {
-        return false;
     }
 }

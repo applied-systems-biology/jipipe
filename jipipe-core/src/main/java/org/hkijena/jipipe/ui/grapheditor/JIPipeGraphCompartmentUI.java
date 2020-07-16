@@ -30,9 +30,9 @@ import org.hkijena.jipipe.ui.components.MarkdownReader;
 import org.hkijena.jipipe.ui.events.AlgorithmUIActionRequestedEvent;
 import org.hkijena.jipipe.ui.events.DefaultAlgorithmUIActionRequestedEvent;
 import org.hkijena.jipipe.ui.grapheditor.contextmenu.*;
-import org.hkijena.jipipe.ui.grapheditor.contextmenu.clipboard.AlgorithmGraphCopyAlgorithmUIAction;
-import org.hkijena.jipipe.ui.grapheditor.contextmenu.clipboard.AlgorithmGraphCutAlgorithmUIAction;
-import org.hkijena.jipipe.ui.grapheditor.contextmenu.clipboard.AlgorithmGraphPasteAlgorithmUIAction;
+import org.hkijena.jipipe.ui.grapheditor.contextmenu.clipboard.AlgorithmGraphCopyNodeUIContextAction;
+import org.hkijena.jipipe.ui.grapheditor.contextmenu.clipboard.AlgorithmGraphCutNodeUIContextAction;
+import org.hkijena.jipipe.ui.grapheditor.contextmenu.clipboard.AlgorithmGraphPasteNodeUIContextAction;
 import org.hkijena.jipipe.ui.grapheditor.settings.JIPipeMultiAlgorithmSelectionPanelUI;
 import org.hkijena.jipipe.ui.grapheditor.settings.JIPipeSingleAlgorithmSelectionPanelUI;
 import org.hkijena.jipipe.ui.grouping.JIPipeNodeGroupUI;
@@ -68,26 +68,26 @@ public class JIPipeGraphCompartmentUI extends JIPipeGraphEditorUI {
         // Set D&D and Copy&Paste behavior
         getCanvasUI().setDragAndDropBehavior(new JIPipeStandardDragAndDropBehavior());
         getCanvasUI().setContextActions(Arrays.asList(
-                new AlgorithmGraphCutAlgorithmUIAction(),
-                new AlgorithmGraphCopyAlgorithmUIAction(),
-                new AlgorithmGraphPasteAlgorithmUIAction(),
-                AlgorithmUIAction.SEPARATOR,
-                new RunAndShowResultsAlgorithmUIAction(),
-                new UpdateCacheAlgorithmUIAction(),
-                AlgorithmUIAction.SEPARATOR,
-                new ExportAlgorithmUIAction(),
-                AlgorithmUIAction.SEPARATOR,
-                new JsonAlgorithmToGroupAlgorithmUIAction(),
-                new GroupAlgorithmUIAction(),
-                new CollapseIOInterfaceAlgorithmUIAction(),
-                AlgorithmUIAction.SEPARATOR,
-                new EnableAlgorithmUIAction(),
-                new DisableAlgorithmUIAction(),
-                new EnablePassThroughAlgorithmUIAction(),
-                new DisablePassThroughAlgorithmUIAction(),
-                new DeleteAlgorithmUIAction(),
-                AlgorithmUIAction.SEPARATOR,
-                new SelectAndMoveNodeHereAlgorithmUIAction()
+                new AlgorithmGraphCutNodeUIContextAction(),
+                new AlgorithmGraphCopyNodeUIContextAction(),
+                new AlgorithmGraphPasteNodeUIContextAction(),
+                NodeUIContextAction.SEPARATOR,
+                new RunAndShowResultsNodeUIContextAction(),
+                new UpdateCacheNodeUIContextAction(),
+                NodeUIContextAction.SEPARATOR,
+                new ExportNodeUIContextAction(),
+                NodeUIContextAction.SEPARATOR,
+                new JsonAlgorithmToGroupNodeUIContextAction(),
+                new GroupNodeUIContextAction(),
+                new CollapseIOInterfaceNodeUIContextAction(),
+                NodeUIContextAction.SEPARATOR,
+                new EnableNodeUIContextAction(),
+                new DisableNodeUIContextAction(),
+                new EnablePassThroughNodeUIContextAction(),
+                new DisablePassThroughNodeUIContextAction(),
+                new DeleteNodeUIContextAction(),
+                NodeUIContextAction.SEPARATOR,
+                new SelectAndMoveNodeHereNodeUIContextAction()
         ));
     }
 

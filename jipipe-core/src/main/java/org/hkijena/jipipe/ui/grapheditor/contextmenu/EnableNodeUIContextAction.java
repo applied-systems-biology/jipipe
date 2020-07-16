@@ -22,13 +22,13 @@ import org.hkijena.jipipe.utils.UIUtils;
 import javax.swing.*;
 import java.util.Set;
 
-public class DisablePassThroughAlgorithmUIAction implements AlgorithmUIAction {
+public class EnableNodeUIContextAction implements NodeUIContextAction {
     @Override
     public boolean matches(Set<JIPipeNodeUI> selection) {
         for (JIPipeNodeUI ui : selection) {
             if (ui.getNode() instanceof JIPipeAlgorithm) {
                 JIPipeAlgorithm algorithm = (JIPipeAlgorithm) ui.getNode();
-                if (algorithm.isPassThrough())
+                if (!algorithm.isEnabled())
                     return true;
             }
         }
@@ -40,25 +40,25 @@ public class DisablePassThroughAlgorithmUIAction implements AlgorithmUIAction {
         for (JIPipeNodeUI ui : selection) {
             if (ui.getNode() instanceof JIPipeAlgorithm) {
                 JIPipeAlgorithm algorithm = (JIPipeAlgorithm) ui.getNode();
-                algorithm.setPassThrough(false);
-                algorithm.getEventBus().post(new ParameterChangedEvent(algorithm, "jipipe:algorithm:pass-through"));
+                algorithm.setEnabled(true);
+                algorithm.getEventBus().post(new ParameterChangedEvent(algorithm, "jipipe:algorithm:enabled"));
             }
         }
     }
 
     @Override
     public String getName() {
-        return "Disable pass-through";
+        return "Enable";
     }
 
     @Override
     public String getDescription() {
-        return "Sets the selected algorithms to process input to output.";
+        return "Enables the selected algorithms";
     }
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("pass-through.png");
+        return UIUtils.getIconFromResources("block.png");
     }
 
     @Override

@@ -11,12 +11,9 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.ui.grapheditor.contextmenu.clipboard;
+package org.hkijena.jipipe.ui.grapheditor.contextmenu;
 
-import org.hkijena.jipipe.api.JIPipeProject;
-import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
-import org.hkijena.jipipe.api.history.CutCompartmentGraphHistorySnapshot;
-import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
+import org.hkijena.jipipe.ui.events.AlgorithmUIActionRequestedEvent;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphCanvasUI;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeNodeUI;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -24,36 +21,37 @@ import org.hkijena.jipipe.utils.UIUtils;
 import javax.swing.*;
 import java.util.Set;
 
-public class GraphCompartmentCutAlgorithmUIAction extends GraphCompartmentCopyAlgorithmUIAction {
+import static org.hkijena.jipipe.ui.grapheditor.JIPipeNodeUI.REQUEST_UPDATE_CACHE;
+
+public class UpdateCacheNodeUIContextAction implements NodeUIContextAction {
+    @Override
+    public boolean matches(Set<JIPipeNodeUI> selection) {
+        return selection.size() == 1;
+    }
 
     @Override
     public void run(JIPipeGraphCanvasUI canvasUI, Set<JIPipeNodeUI> selection) {
-        super.run(canvasUI, selection);
-        JIPipeProject project = ((JIPipeProjectWorkbench) canvasUI.getWorkbench()).getProject();
-        for (JIPipeNodeUI ui : selection) {
-            JIPipeProjectCompartment compartment = (JIPipeProjectCompartment) ui.getNode();
-            canvasUI.getGraphHistory().addSnapshotBefore(new CutCompartmentGraphHistorySnapshot(project, compartment));
-            project.removeCompartment(compartment);
-        }
+        JIPipeNodeUI ui = selection.iterator().next();
+        ui.getEventBus().post(new AlgorithmUIActionRequestedEvent(ui, REQUEST_UPDATE_CACHE));
     }
 
     @Override
     public String getName() {
-        return "Cut";
+        return "Update cache";
     }
 
     @Override
     public String getDescription() {
-        return "Cuts the selection into the clipboard";
+        return "Runs the pipeline up until this algorithm and caches the results. Nothing is written to disk.";
     }
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("cut.png");
+        return UIUtils.getIconFromResources("database.png");
     }
 
     @Override
     public boolean isShowingInOverhang() {
-        return false;
+        return true;
     }
 }

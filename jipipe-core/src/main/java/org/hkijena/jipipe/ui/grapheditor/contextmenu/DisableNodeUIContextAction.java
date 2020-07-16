@@ -13,7 +13,8 @@
 
 package org.hkijena.jipipe.ui.grapheditor.contextmenu;
 
-import org.hkijena.jipipe.ui.events.AlgorithmUIActionRequestedEvent;
+import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithm;
+import org.hkijena.jipipe.api.events.ParameterChangedEvent;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphCanvasUI;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeNodeUI;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -21,37 +22,52 @@ import org.hkijena.jipipe.utils.UIUtils;
 import javax.swing.*;
 import java.util.Set;
 
-import static org.hkijena.jipipe.ui.grapheditor.JIPipeNodeUI.REQUEST_RUN_AND_SHOW_RESULTS;
-
-public class RunAndShowResultsAlgorithmUIAction implements AlgorithmUIAction {
+public class DisableNodeUIContextAction implements NodeUIContextAction {
     @Override
     public boolean matches(Set<JIPipeNodeUI> selection) {
-        return selection.size() == 1;
+        for (JIPipeNodeUI ui : selection) {
+            if (ui.getNode() instanceof JIPipeAlgorithm) {
+                JIPipeAlgorithm algorithm = (JIPipeAlgorithm) ui.getNode();
+                if (algorithm.isEnabled())
+                    return true;
+            }
+        }
+        return false;
     }
 
     @Override
     public void run(JIPipeGraphCanvasUI canvasUI, Set<JIPipeNodeUI> selection) {
-        JIPipeNodeUI ui = selection.iterator().next();
-        ui.getEventBus().post(new AlgorithmUIActionRequestedEvent(ui, REQUEST_RUN_AND_SHOW_RESULTS));
+        for (JIPipeNodeUI ui : selection) {
+            if (ui.getNode() instanceof JIPipeAlgorithm) {
+                JIPipeAlgorithm algorithm = (JIPipeAlgorithm) ui.getNode();
+                algorithm.setEnabled(false);
+                algorithm.getEventBus().post(new ParameterChangedEvent(algorithm, "jipipe:algorithm:enabled"));
+            }
+        }
     }
 
     @Override
     public String getName() {
-        return "Run & show results";
+        return "Disable";
     }
 
     @Override
     public String getDescription() {
-        return "Runs the pipeline up until this algorithm and shows the results.";
+        return "Disables the selected algorithms";
     }
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("play.png");
+        return UIUtils.getIconFromResources("block.png");
     }
 
     @Override
     public boolean isShowingInOverhang() {
         return true;
+    }
+
+    @Override
+    public boolean disableOnNonMatch() {
+        return false;
     }
 }

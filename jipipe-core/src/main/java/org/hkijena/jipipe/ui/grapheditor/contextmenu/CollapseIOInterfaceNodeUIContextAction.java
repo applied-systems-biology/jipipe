@@ -13,10 +13,7 @@
 
 package org.hkijena.jipipe.ui.grapheditor.contextmenu;
 
-import org.hkijena.jipipe.api.algorithm.JIPipeGraphNode;
-import org.hkijena.jipipe.api.history.MoveNodesGraphHistorySnapshot;
-import org.hkijena.jipipe.ui.components.PickAlgorithmDialog;
-import org.hkijena.jipipe.ui.events.AlgorithmEvent;
+import org.hkijena.jipipe.api.compartments.algorithms.IOInterfaceAlgorithm;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphCanvasUI;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeNodeUI;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -24,44 +21,39 @@ import org.hkijena.jipipe.utils.UIUtils;
 import javax.swing.*;
 import java.util.Set;
 
-public class SelectAndMoveNodeHereAlgorithmUIAction implements AlgorithmUIAction {
+public class CollapseIOInterfaceNodeUIContextAction implements NodeUIContextAction {
     @Override
     public boolean matches(Set<JIPipeNodeUI> selection) {
-        return selection.isEmpty();
+        return selection.stream().map(JIPipeNodeUI::getNode).anyMatch(a -> a instanceof IOInterfaceAlgorithm);
     }
 
     @Override
     public void run(JIPipeGraphCanvasUI canvasUI, Set<JIPipeNodeUI> selection) {
-        JIPipeGraphNode algorithm = PickAlgorithmDialog.showDialog(canvasUI, canvasUI.getNodeUIs().keySet(), "Move node");
-        if (algorithm != null) {
-            JIPipeNodeUI ui = canvasUI.getNodeUIs().getOrDefault(algorithm, null);
-            if (ui != null) {
-                canvasUI.getGraphHistory().addSnapshotBefore(new MoveNodesGraphHistorySnapshot(canvasUI.getGraph(), "Move node here ..."));
-                ui.trySetLocationAtNextGridPoint(canvasUI.getGraphEditorCursor().x, canvasUI.getGraphEditorCursor().y);
-                canvasUI.repaint();
-                canvasUI.getEventBus().post(new AlgorithmEvent(ui));
+        for (JIPipeNodeUI ui : selection) {
+            if (ui.getNode() instanceof IOInterfaceAlgorithm) {
+                IOInterfaceAlgorithm.collapse((IOInterfaceAlgorithm) ui.getNode());
             }
         }
     }
 
     @Override
     public String getName() {
-        return "Move node here ...";
+        return "Collapse";
     }
 
     @Override
     public String getDescription() {
-        return "Shows a window to select a node and move it to the current cursor.";
+        return "Deletes the algorithm, but keeps the connections that were passed through it";
     }
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("move.png");
+        return UIUtils.getIconFromResources("delete.png");
     }
 
     @Override
     public boolean isShowingInOverhang() {
-        return false;
+        return true;
     }
 
     @Override

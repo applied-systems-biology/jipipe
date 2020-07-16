@@ -13,8 +13,10 @@
 
 package org.hkijena.jipipe.ui.grapheditor.contextmenu;
 
-import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithm;
-import org.hkijena.jipipe.api.events.ParameterChangedEvent;
+import org.hkijena.jipipe.api.algorithm.JIPipeGraphNode;
+import org.hkijena.jipipe.api.history.MoveNodesGraphHistorySnapshot;
+import org.hkijena.jipipe.ui.components.PickAlgorithmDialog;
+import org.hkijena.jipipe.ui.events.AlgorithmEvent;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphCanvasUI;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeNodeUI;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -22,48 +24,44 @@ import org.hkijena.jipipe.utils.UIUtils;
 import javax.swing.*;
 import java.util.Set;
 
-public class EnablePassThroughAlgorithmUIAction implements AlgorithmUIAction {
+public class SelectAndMoveNodeHereNodeUIContextAction implements NodeUIContextAction {
     @Override
     public boolean matches(Set<JIPipeNodeUI> selection) {
-        for (JIPipeNodeUI ui : selection) {
-            if (ui.getNode() instanceof JIPipeAlgorithm) {
-                JIPipeAlgorithm algorithm = (JIPipeAlgorithm) ui.getNode();
-                if (!algorithm.isPassThrough())
-                    return true;
-            }
-        }
-        return false;
+        return selection.isEmpty();
     }
 
     @Override
     public void run(JIPipeGraphCanvasUI canvasUI, Set<JIPipeNodeUI> selection) {
-        for (JIPipeNodeUI ui : selection) {
-            if (ui.getNode() instanceof JIPipeAlgorithm) {
-                JIPipeAlgorithm algorithm = (JIPipeAlgorithm) ui.getNode();
-                algorithm.setPassThrough(true);
-                algorithm.getEventBus().post(new ParameterChangedEvent(algorithm, "jipipe:algorithm:pass-through"));
+        JIPipeGraphNode algorithm = PickAlgorithmDialog.showDialog(canvasUI, canvasUI.getNodeUIs().keySet(), "Move node");
+        if (algorithm != null) {
+            JIPipeNodeUI ui = canvasUI.getNodeUIs().getOrDefault(algorithm, null);
+            if (ui != null) {
+                canvasUI.getGraphHistory().addSnapshotBefore(new MoveNodesGraphHistorySnapshot(canvasUI.getGraph(), "Move node here ..."));
+                ui.trySetLocationAtNextGridPoint(canvasUI.getGraphEditorCursor().x, canvasUI.getGraphEditorCursor().y);
+                canvasUI.repaint();
+                canvasUI.getEventBus().post(new AlgorithmEvent(ui));
             }
         }
     }
 
     @Override
     public String getName() {
-        return "Pass-through";
+        return "Move node here ...";
     }
 
     @Override
     public String getDescription() {
-        return "Sets the selected algorithms to pass-though their input to their output without changes.";
+        return "Shows a window to select a node and move it to the current cursor.";
     }
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("pass-through.png");
+        return UIUtils.getIconFromResources("move.png");
     }
 
     @Override
     public boolean isShowingInOverhang() {
-        return true;
+        return false;
     }
 
     @Override

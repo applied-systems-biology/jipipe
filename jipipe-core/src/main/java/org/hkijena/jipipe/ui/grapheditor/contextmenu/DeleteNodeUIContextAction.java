@@ -13,57 +13,53 @@
 
 package org.hkijena.jipipe.ui.grapheditor.contextmenu;
 
-import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithm;
-import org.hkijena.jipipe.api.events.ParameterChangedEvent;
+import org.hkijena.jipipe.api.algorithm.JIPipeGraphNode;
+import org.hkijena.jipipe.api.history.RemoveNodeGraphHistorySnapshot;
+import org.hkijena.jipipe.extensions.settings.GraphEditorUISettings;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphCanvasUI;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeNodeUI;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.util.Set;
+import java.util.stream.Collectors;
 
-public class EnableAlgorithmUIAction implements AlgorithmUIAction {
+public class DeleteNodeUIContextAction implements NodeUIContextAction {
     @Override
     public boolean matches(Set<JIPipeNodeUI> selection) {
-        for (JIPipeNodeUI ui : selection) {
-            if (ui.getNode() instanceof JIPipeAlgorithm) {
-                JIPipeAlgorithm algorithm = (JIPipeAlgorithm) ui.getNode();
-                if (!algorithm.isEnabled())
-                    return true;
-            }
-        }
-        return false;
+        return !selection.isEmpty();
     }
 
     @Override
     public void run(JIPipeGraphCanvasUI canvasUI, Set<JIPipeNodeUI> selection) {
-        for (JIPipeNodeUI ui : selection) {
-            if (ui.getNode() instanceof JIPipeAlgorithm) {
-                JIPipeAlgorithm algorithm = (JIPipeAlgorithm) ui.getNode();
-                algorithm.setEnabled(true);
-                algorithm.getEventBus().post(new ParameterChangedEvent(algorithm, "jipipe:algorithm:enabled"));
-            }
+        if (!GraphEditorUISettings.getInstance().isAskOnDeleteNode() || JOptionPane.showConfirmDialog(canvasUI,
+                "Do you really want to remove the following algorithms: " +
+                        selection.stream().map(JIPipeNodeUI::getNode).map(JIPipeGraphNode::getName).collect(Collectors.joining(", ")), "Delete algorithms",
+                JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+            Set<JIPipeGraphNode> nodes = selection.stream().map(JIPipeNodeUI::getNode).collect(Collectors.toSet());
+            canvasUI.getGraphHistory().addSnapshotBefore(new RemoveNodeGraphHistorySnapshot(canvasUI.getGraph(), nodes));
+            canvasUI.getGraph().removeNodes(nodes, true);
         }
     }
 
     @Override
     public String getName() {
-        return "Enable";
+        return "Delete";
     }
 
     @Override
     public String getDescription() {
-        return "Enables the selected algorithms";
+        return "Deletes the selected nodes";
     }
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("block.png");
+        return UIUtils.getIconFromResources("delete.png");
     }
 
     @Override
     public boolean isShowingInOverhang() {
-        return true;
+        return false;
     }
 
     @Override

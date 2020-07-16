@@ -23,7 +23,7 @@ import org.hkijena.jipipe.api.history.PasteCompartmentGraphHistorySnapshot;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphCanvasUI;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeNodeUI;
-import org.hkijena.jipipe.ui.grapheditor.contextmenu.AlgorithmUIAction;
+import org.hkijena.jipipe.ui.grapheditor.contextmenu.NodeUIContextAction;
 import org.hkijena.jipipe.utils.JsonUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -36,7 +36,7 @@ import java.util.Set;
 
 import static org.hkijena.jipipe.utils.UIUtils.getStringFromClipboard;
 
-public class GraphCompartmentPasteAlgorithmUIAction implements AlgorithmUIAction {
+public class GraphCompartmentPasteNodeUIContextAction implements NodeUIContextAction {
     @Override
     public boolean matches(Set<JIPipeNodeUI> selection) {
         return !StringUtils.isNullOrEmpty(UIUtils.getStringFromClipboard());

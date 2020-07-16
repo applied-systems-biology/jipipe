@@ -22,9 +22,9 @@ import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphCompartmentUI;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphEditorUI;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeNodeUI;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeStandardDragAndDropBehavior;
-import org.hkijena.jipipe.ui.grapheditor.contextmenu.clipboard.AlgorithmGraphCopyAlgorithmUIAction;
-import org.hkijena.jipipe.ui.grapheditor.contextmenu.clipboard.AlgorithmGraphCutAlgorithmUIAction;
-import org.hkijena.jipipe.ui.grapheditor.contextmenu.clipboard.AlgorithmGraphPasteAlgorithmUIAction;
+import org.hkijena.jipipe.ui.grapheditor.contextmenu.clipboard.AlgorithmGraphCopyNodeUIContextAction;
+import org.hkijena.jipipe.ui.grapheditor.contextmenu.clipboard.AlgorithmGraphCutNodeUIContextAction;
+import org.hkijena.jipipe.ui.grapheditor.contextmenu.clipboard.AlgorithmGraphPasteNodeUIContextAction;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;
@@ -52,9 +52,9 @@ public class JIPipeJsonExtensionGraphUI extends JIPipeGraphEditorUI {
         // Set D&D and Copy&Paste behavior
         getCanvasUI().setDragAndDropBehavior(new JIPipeStandardDragAndDropBehavior());
         getCanvasUI().setContextActions(Arrays.asList(
-                new AlgorithmGraphCutAlgorithmUIAction(),
-                new AlgorithmGraphCopyAlgorithmUIAction(),
-                new AlgorithmGraphPasteAlgorithmUIAction()
+                new AlgorithmGraphCutNodeUIContextAction(),
+                new AlgorithmGraphCopyNodeUIContextAction(),
+                new AlgorithmGraphPasteNodeUIContextAction()
         ));
     }
 

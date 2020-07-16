@@ -13,24 +13,28 @@
 
 package org.hkijena.jipipe.ui.grapheditor.contextmenu.clipboard;
 
-import org.hkijena.jipipe.api.algorithm.JIPipeGraphNode;
-import org.hkijena.jipipe.api.history.CutNodeGraphHistorySnapshot;
+import org.hkijena.jipipe.api.JIPipeProject;
+import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
+import org.hkijena.jipipe.api.history.CutCompartmentGraphHistorySnapshot;
+import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphCanvasUI;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeNodeUI;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.util.Set;
-import java.util.stream.Collectors;
 
-public class AlgorithmGraphCutAlgorithmUIAction extends AlgorithmGraphCopyAlgorithmUIAction {
+public class GraphCompartmentCutNodeUIContextAction extends GraphCompartmentCopyNodeUIContextAction {
 
     @Override
     public void run(JIPipeGraphCanvasUI canvasUI, Set<JIPipeNodeUI> selection) {
         super.run(canvasUI, selection);
-        Set<JIPipeGraphNode> nodes = selection.stream().map(JIPipeNodeUI::getNode).collect(Collectors.toSet());
-        canvasUI.getGraphHistory().addSnapshotBefore(new CutNodeGraphHistorySnapshot(canvasUI.getGraph(), nodes));
-        canvasUI.getGraph().removeNodes(nodes, true);
+        JIPipeProject project = ((JIPipeProjectWorkbench) canvasUI.getWorkbench()).getProject();
+        for (JIPipeNodeUI ui : selection) {
+            JIPipeProjectCompartment compartment = (JIPipeProjectCompartment) ui.getNode();
+            canvasUI.getGraphHistory().addSnapshotBefore(new CutCompartmentGraphHistorySnapshot(project, compartment));
+            project.removeCompartment(compartment);
+        }
     }
 
     @Override

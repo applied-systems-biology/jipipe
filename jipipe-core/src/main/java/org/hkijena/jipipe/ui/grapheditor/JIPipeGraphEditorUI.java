@@ -32,7 +32,7 @@ import org.hkijena.jipipe.ui.components.SearchBox;
 import org.hkijena.jipipe.ui.events.AlgorithmEvent;
 import org.hkijena.jipipe.ui.events.AlgorithmSelectedEvent;
 import org.hkijena.jipipe.ui.events.AlgorithmSelectionChangedEvent;
-import org.hkijena.jipipe.ui.grapheditor.contextmenu.AlgorithmUIAction;
+import org.hkijena.jipipe.ui.grapheditor.contextmenu.NodeUIContextAction;
 import org.hkijena.jipipe.ui.registries.JIPipeUIAlgorithmRegistry;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -580,10 +580,10 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         }
     }
 
-    public static void installContextActionsInto(JToolBar toolBar, Set<JIPipeNodeUI> selection, List<AlgorithmUIAction> actionList, JIPipeGraphCanvasUI canvasUI) {
+    public static void installContextActionsInto(JToolBar toolBar, Set<JIPipeNodeUI> selection, List<NodeUIContextAction> actionList, JIPipeGraphCanvasUI canvasUI) {
         JPopupMenu overhang = new JPopupMenu();
         boolean scheduledSeparator = false;
-        for (AlgorithmUIAction action : actionList) {
+        for (NodeUIContextAction action : actionList) {
             if (action == null) {
                 scheduledSeparator = true;
                 continue;

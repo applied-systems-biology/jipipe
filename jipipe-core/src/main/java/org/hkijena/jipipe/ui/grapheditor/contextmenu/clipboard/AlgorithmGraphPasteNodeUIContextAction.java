@@ -20,7 +20,7 @@ import org.hkijena.jipipe.api.history.PasteNodeGraphHistorySnapshot;
 import org.hkijena.jipipe.api.registries.JIPipeNodeRegistry;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphCanvasUI;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeNodeUI;
-import org.hkijena.jipipe.ui.grapheditor.contextmenu.AlgorithmUIAction;
+import org.hkijena.jipipe.ui.grapheditor.contextmenu.NodeUIContextAction;
 import org.hkijena.jipipe.utils.JsonUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -31,7 +31,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class AlgorithmGraphPasteAlgorithmUIAction implements AlgorithmUIAction {
+public class AlgorithmGraphPasteNodeUIContextAction implements NodeUIContextAction {
     @Override
     public boolean matches(Set<JIPipeNodeUI> selection) {
         return true;

@@ -30,7 +30,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
-public class ExportCompartmentToAlgorithmUIAction implements AlgorithmUIAction {
+public class ExportCompartmentToNodeUIContextAction implements NodeUIContextAction {
     @Override
     public boolean matches(Set<JIPipeNodeUI> selection) {
         return selection.size() == 1;

@@ -22,12 +22,12 @@ import java.util.Set;
 /**
  * An action that is applied one or multiple algorithms
  */
-public interface AlgorithmUIAction {
+public interface NodeUIContextAction {
 
     /**
      * Indicates that a separator is created
      */
-    AlgorithmUIAction SEPARATOR = null;
+    NodeUIContextAction SEPARATOR = null;
 
     /**
      * Returns if the action shows up
