@@ -30,11 +30,11 @@ public class GeneralUISettings implements JIPipeParameterCollection {
     private EventBus eventBus = new EventBus();
     private boolean showIntroduction = true;
     private boolean showProjectInfo = true;
-    private LookAndFeel lookAndFeel = LookAndFeel.Metal;
     private boolean showParameterSearchBar = true;
     private boolean neverAskOnClosingTabs = false;
     private boolean validateOnSave = true;
     private boolean projectInfoGeneratesPreview = true;
+    private boolean forceCrossPlatformLookAndFeel = true;
 
     @Override
     public EventBus getEventBus() {
@@ -51,18 +51,6 @@ public class GeneralUISettings implements JIPipeParameterCollection {
     @JIPipeParameter("show-introduction")
     public void setShowIntroduction(boolean showIntroduction) {
         this.showIntroduction = showIntroduction;
-
-    }
-
-    @JIPipeDocumentation(name = "Theme", description = "Allows you to select a theme (Restart ImageJ to apply changes)")
-    @JIPipeParameter("look-and-feel")
-    public LookAndFeel getLookAndFeel() {
-        return lookAndFeel;
-    }
-
-    @JIPipeParameter("look-and-feel")
-    public void setLookAndFeel(LookAndFeel lookAndFeel) {
-        this.lookAndFeel = lookAndFeel;
 
     }
 
@@ -128,10 +116,16 @@ public class GeneralUISettings implements JIPipeParameterCollection {
         return JIPipeDefaultRegistry.getInstance().getSettingsRegistry().getSettings(ID, GeneralUISettings.class);
     }
 
-    /**
-     * Available designs
-     */
-    public enum LookAndFeel {
-        Metal
+    @JIPipeDocumentation(name = "Force cross-platform look & feel", description = "If enabled, the design is set to the 'Metal' look & feel that " +
+            "looks the same on all platforms. We recommend to keep this setting, as other designs might cause flaws in the UI. " +
+            "This requires an ImageJ restart to take effect.")
+    @JIPipeParameter("force-cross-platform-look-and-feel")
+    public boolean isForceCrossPlatformLookAndFeel() {
+        return forceCrossPlatformLookAndFeel;
+    }
+
+    @JIPipeParameter("force-cross-platform-look-and-feel")
+    public void setForceCrossPlatformLookAndFeel(boolean forceCrossPlatformLookAndFeel) {
+        this.forceCrossPlatformLookAndFeel = forceCrossPlatformLookAndFeel;
     }
 }

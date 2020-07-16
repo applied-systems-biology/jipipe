@@ -10,6 +10,16 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="Maven: net.imagej:imagej-legacy:0.35.0" level="project" />
+    <orderEntry type="library" name="Maven: net.imagej:ij1-patcher:1.0.0" level="project" />
+    <orderEntry type="library" name="Maven: sc.fiji:Feature_Detection:2.0.2" level="project" />
+    <orderEntry type="library" name="Maven: sc.fiji:legacy-imglib1:1.1.9" level="project" />
+    <orderEntry type="library" name="Maven: org.scijava:vecmath:1.6.0-scijava-2" level="project" />
+    <orderEntry type="library" name="Maven: mpicbg:mpicbg:1.3.0" level="project" />
+    <orderEntry type="library" name="Maven: org.swinglabs:swingx:1.6.1" level="project" />
+    <orderEntry type="library" name="Maven: com.jhlabs:filters:2.0.235" level="project" />
+    <orderEntry type="library" name="Maven: org.swinglabs:swing-worker:1.1" level="project" />
+    <orderEntry type="library" name="Maven: org.scijava:jython-shaded:2.5.3" level="project" />
     <orderEntry type="module" module-name="jipipe-core" />
     <orderEntry type="library" name="Maven: net.imagej:imagej:2.0.0-rc-72" level="project" />
     <orderEntry type="library" name="Maven: net.imagej:imagej-common:0.31.0" level="project" />
