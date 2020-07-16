@@ -26,12 +26,14 @@ import java.util.Map;
 public interface JIPipeDataBatchAlgorithm {
     /**
      * Returns the batch generation settings as interface
+     *
      * @return batch generation settings as interface
      */
     JIPipeParameterCollection getGenerationSettingsInterface();
 
     /**
      * Generate the initial data batches based on the slot map
+     *
      * @param slotMap the slot map
      * @return map from metadata table to the selected row indices per slot
      */
@@ -40,6 +42,7 @@ public interface JIPipeDataBatchAlgorithm {
     /**
      * Generates data batches for the groups.
      * This is a dry-run function that should never throw errors
+     *
      * @param groups the grouped data
      * @return the batches
      */

@@ -40,8 +40,7 @@ public class CLIJControlPanelMenuExtension extends MenuExtension {
                     DocumentTabPane.CloseMode.withSilentCloseButton,
                     false);
             getWorkbench().getDocumentTabPane().switchToLastTab();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             UIUtils.openErrorDialog(this, new UserFriendlyRuntimeException(
                     e,
                     "Could not open CLIJ2 control panel!",

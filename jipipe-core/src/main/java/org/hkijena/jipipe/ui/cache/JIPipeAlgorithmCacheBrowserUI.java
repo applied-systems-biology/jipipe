@@ -165,7 +165,7 @@ public class JIPipeAlgorithmCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
      */
     @Subscribe
     public void onCacheUpdated(JIPipeProjectCache.ModifiedEvent event) {
-        if(JIPipeRunnerQueue.getInstance().getCurrentRun() == null) {
+        if (JIPipeRunnerQueue.getInstance().getCurrentRun() == null) {
             tree.refreshTree();
             showAllDataSlots();
         }

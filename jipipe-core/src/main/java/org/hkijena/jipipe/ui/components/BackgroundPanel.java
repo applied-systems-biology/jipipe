@@ -14,14 +14,13 @@
 package org.hkijena.jipipe.ui.components;
 
 import javax.swing.*;
-import java.awt.Color;
-import java.awt.Graphics;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 
 public class BackgroundPanel extends JPanel {
 
-    private BufferedImage backgroundImage;
     private final boolean withGrid;
+    private BufferedImage backgroundImage;
 
     public BackgroundPanel(BufferedImage backgroundImage, boolean withGrid) {
         this.backgroundImage = backgroundImage;
@@ -40,15 +39,15 @@ public class BackgroundPanel extends JPanel {
 
     @Override
     public void paint(Graphics g) {
-        g.fillRect(0,0, getWidth(), getHeight());
-        if(backgroundImage != null) {
+        g.fillRect(0, 0, getWidth(), getHeight());
+        if (backgroundImage != null) {
             double factorh = 1.0 * getHeight() / backgroundImage.getHeight();
             double factorw = 1.0 * getWidth() / backgroundImage.getWidth();
             double factor = Math.max(factorw, factorh);
-            g.drawImage(backgroundImage, 0, 0, (int) (backgroundImage.getWidth() * factor), (int)(backgroundImage.getHeight() * factor), null);
+            g.drawImage(backgroundImage, 0, 0, (int) (backgroundImage.getWidth() * factor), (int) (backgroundImage.getHeight() * factor), null);
         }
 
-        if(withGrid) {
+        if (withGrid) {
             final int gs = 25;
             g.setColor(new Color(185, 206, 227, 50));
             for (int x = gs; x < getWidth(); x += gs) {

@@ -137,8 +137,8 @@ public class TooltipUtils {
     /**
      * Creates a tooltip for an algorithm
      *
-     * @param info the algorithm
-     * @param withTitle   if a title is displayed
+     * @param info      the algorithm
+     * @param withTitle if a title is displayed
      * @return the tooltip
      */
     public static String getAlgorithmTooltip(JIPipeNodeInfo info, boolean withTitle) {

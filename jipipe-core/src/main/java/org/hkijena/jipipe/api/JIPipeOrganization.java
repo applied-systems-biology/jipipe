@@ -13,9 +13,9 @@
 
 package org.hkijena.jipipe.api;
 
-import org.hkijena.jipipe.api.algorithm.JIPipeNodeCategory;
 import org.hkijena.jipipe.api.algorithm.JIPipeGraphNode;
 import org.hkijena.jipipe.api.algorithm.JIPipeJavaNodeInfo;
+import org.hkijena.jipipe.api.algorithm.JIPipeNodeCategory;
 import org.hkijena.jipipe.api.algorithm.JIPipeNodeInfo;
 import org.hkijena.jipipe.ui.extension.MenuExtension;
 import org.hkijena.jipipe.ui.extension.MenuTarget;

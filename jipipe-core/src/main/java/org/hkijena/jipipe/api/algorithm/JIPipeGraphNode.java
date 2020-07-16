@@ -34,8 +34,8 @@ import org.hkijena.jipipe.api.events.*;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterVisibility;
-import org.hkijena.jipipe.api.registries.JIPipeNodeRegistry;
 import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
+import org.hkijena.jipipe.api.registries.JIPipeNodeRegistry;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
 import org.hkijena.jipipe.utils.StringUtils;
 
@@ -77,7 +77,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
     /**
      * Initializes this algorithm with a custom provided slot configuration and trait configuration
      *
-     * @param info       Contains algorithm metadata
+     * @param info              Contains algorithm metadata
      * @param slotConfiguration if null, generate the slot configuration
      */
     public JIPipeGraphNode(JIPipeNodeInfo info, JIPipeSlotConfiguration slotConfiguration) {
@@ -771,7 +771,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
             inheritedType = JIPipeSlotDefinition.applyInheritanceConversion(slotDefinition, sourceSlot.getAcceptedDataType());
 
         // Check if the inherited type is even compatible with the actual type
-        if(slotDefinition.getDataClass().isAssignableFrom(inheritedType))
+        if (slotDefinition.getDataClass().isAssignableFrom(inheritedType))
             return inheritedType;
         else
             return slotDefinition.getDataClass();

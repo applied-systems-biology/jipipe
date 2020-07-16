@@ -15,7 +15,7 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.contrast;
 
 public enum CalibrationMode {
     AutomaticImageJ(0, 0),
-    MinMax(0,0),
+    MinMax(0, 0),
     Custom(0, 0),
     Depth8Bit(0, 255),
     Depth10Bit(0, 1023),
@@ -64,10 +64,9 @@ public enum CalibrationMode {
                 name = "Unit around zero";
                 break;
         }
-        if(name == null) {
+        if (name == null) {
             return this.name();
-        }
-        else {
+        } else {
             return name + " (" + min + " - " + max + ")";
         }
     }

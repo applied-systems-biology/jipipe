@@ -18,12 +18,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
-import org.hkijena.jipipe.api.algorithm.JIPipeDataBatch;
-import org.hkijena.jipipe.api.algorithm.JIPipeInputSlot;
-import org.hkijena.jipipe.api.algorithm.JIPipeNodeCategory;
-import org.hkijena.jipipe.api.algorithm.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.algorithm.JIPipeOutputSlot;
-import org.hkijena.jipipe.api.algorithm.JIPipeSimpleIteratingAlgorithm;
+import org.hkijena.jipipe.api.algorithm.*;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -33,7 +28,6 @@ import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.extensions.tables.datatypes.TableColumn;
 import org.hkijena.jipipe.extensions.tables.parameters.TableColumnSourceParameter;
 
-import java.awt.Rectangle;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -68,6 +62,7 @@ public class TableToCircularROIAlgorithm extends JIPipeSimpleIteratingAlgorithm 
 
     /**
      * Creates a copy
+     *
      * @param other the original
      */
     public TableToCircularROIAlgorithm(TableToCircularROIAlgorithm other) {
@@ -92,21 +87,21 @@ public class TableToCircularROIAlgorithm extends JIPipeSimpleIteratingAlgorithm 
         TableColumn colX1 = columnX1.pickColumn(table);
         TableColumn colY1 = columnY1.pickColumn(table);
         TableColumn colRadius = columnRadius.pickColumn(table);
-        if(colX1 == null) {
+        if (colX1 == null) {
             throw new UserFriendlyRuntimeException("Could not find column for X1!",
                     "The algorithm requires a column that provides coordinate X1.",
                     getName() + ", table " + table,
                     "A column reference or generator is required that supplies the coordinates.",
                     "Please check if the settings are correct and if your table contains the requested column.");
         }
-        if(colY1 == null) {
+        if (colY1 == null) {
             throw new UserFriendlyRuntimeException("Could not find column for Y1!",
                     "The algorithm requires a column that provides coordinate Y1.",
                     getName() + ", table " + table,
                     "A column reference or generator is required that supplies the coordinates.",
                     "Please check if the settings are correct and if your table contains the requested column.");
         }
-        if(colRadius == null) {
+        if (colRadius == null) {
             throw new UserFriendlyRuntimeException("Could not find column for width!",
                     "The algorithm requires a column that provides the width.",
                     getName() + ", table " + table,
@@ -115,15 +110,15 @@ public class TableToCircularROIAlgorithm extends JIPipeSimpleIteratingAlgorithm 
         }
 
         for (int row = 0; row < table.getRowCount(); row++) {
-            int x1 = (int)colX1.getRowAsDouble(row);
-            int y1 = (int)colY1.getRowAsDouble(row);
-            int r = (int)colRadius.getRowAsDouble(row);
-                           int x = x1 - r;
-                int y = y1 - r;
-                rois.add(new OvalRoi(x,y,r * 2, r* 2));
+            int x1 = (int) colX1.getRowAsDouble(row);
+            int y1 = (int) colY1.getRowAsDouble(row);
+            int r = (int) colRadius.getRowAsDouble(row);
+            int x = x1 - r;
+            int y = y1 - r;
+            rois.add(new OvalRoi(x, y, r * 2, r * 2));
         }
 
-       dataBatch.addOutputData(getFirstOutputSlot(), rois);
+        dataBatch.addOutputData(getFirstOutputSlot(), rois);
     }
 
     @JIPipeDocumentation(name = "Column 'X1'", description = "The table column that is used for the X1 coordinate.")
@@ -148,7 +143,7 @@ public class TableToCircularROIAlgorithm extends JIPipeSimpleIteratingAlgorithm 
         this.columnY1 = columnY1;
     }
 
-        @JIPipeDocumentation(name = "Column 'Radius'", description = "The table column that is used for the radius. " )
+    @JIPipeDocumentation(name = "Column 'Radius'", description = "The table column that is used for the radius. ")
     @JIPipeParameter(value = "column-radius")
     public TableColumnSourceParameter getColumnRadius() {
         return columnRadius;

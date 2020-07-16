@@ -17,9 +17,9 @@ import ij.ImagePlus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithm;
-import org.hkijena.jipipe.api.algorithm.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.algorithm.JIPipeDataBatch;
 import org.hkijena.jipipe.api.algorithm.JIPipeIteratingAlgorithm;
+import org.hkijena.jipipe.api.algorithm.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeSlotDefinition;
@@ -49,9 +49,9 @@ public abstract class ImageRoiProcessorAlgorithm extends JIPipeIteratingAlgorith
     /**
      * Creates a new instance
      *
-     * @param info algorithm info
-     * @param output      the generated output
-     * @param outputName  name of the output slot
+     * @param info       algorithm info
+     * @param output     the generated output
+     * @param outputName name of the output slot
      */
     public ImageRoiProcessorAlgorithm(JIPipeNodeInfo info, Class<? extends JIPipeData> output, String outputName) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("ROI", ROIListData.class)
@@ -79,7 +79,7 @@ public abstract class ImageRoiProcessorAlgorithm extends JIPipeIteratingAlgorith
      * Extracts or generates the reference image.
      * Please note that the reference is not safe to modify
      *
-     * @param dataBatch     the input data
+     * @param dataBatch         the input data
      * @param subProgress       progress
      * @param algorithmProgress progress
      * @param isCancelled       if cancelled

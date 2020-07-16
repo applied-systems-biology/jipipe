@@ -159,7 +159,7 @@ public class JIPipeProjectInfoUI extends JIPipeProjectWorkbenchPanel {
                 BufferedImage screenshot = canvasUI.createScreenshotPNG();
                 ImagePlus img = new ImagePlus("screenshot", screenshot);
                 final double maxSize = 2000;
-                if(img.getWidth() > maxSize || img.getHeight() > maxSize) {
+                if (img.getWidth() > maxSize || img.getHeight() > maxSize) {
                     double factor = Math.min(maxSize / img.getWidth(), maxSize / img.getHeight());
                     ImageProcessor resized = img.getProcessor().resize((int) (img.getWidth() * factor), (int) (img.getHeight() * factor), true);
                     img = new ImagePlus("screenshot", resized);

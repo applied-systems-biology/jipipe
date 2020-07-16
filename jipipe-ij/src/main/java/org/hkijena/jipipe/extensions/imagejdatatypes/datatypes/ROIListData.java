@@ -29,23 +29,22 @@ import ij.measure.ResultsTable;
 import ij.plugin.filter.Analyzer;
 import ij.plugin.frame.RoiManager;
 import ij.process.FloatPolygon;
+import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.measure.ImageStatisticsParameters;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.RoiOutline;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.SliceIndex;
+import org.hkijena.jipipe.extensions.parameters.roi.Margin;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.PathUtils;
 
-import javax.swing.*;
 import java.awt.*;
 import java.io.*;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -87,7 +86,10 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
      */
     public ROIListData(List<Roi> other) {
         for (Roi roi : other) {
-            add((Roi) roi.clone());
+            Roi clone = (Roi) roi.clone();
+            // Keep the image reference
+            clone.setImage(roi.getImage());
+            add(clone);
         }
     }
 
@@ -168,11 +170,17 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
 
     @Override
     public void display(String displayName, JIPipeWorkbench workbench) {
-        if (IJ.getImage() == null) {
-            JOptionPane.showMessageDialog(null, "There is no current image open in ImageJ!", "Import ROI", JOptionPane.ERROR_MESSAGE);
-            return;
+        Map<Optional<ImagePlus>, ROIListData> byImage = new HashMap<>();
+        for (Roi roi : this) {
+            Optional<ImagePlus> key = Optional.ofNullable(roi.getImage());
+            ROIListData rois = byImage.getOrDefault(key, null);
+            if (rois == null) {
+                rois = new ROIListData();
+                byImage.put(key, rois);
+            }
+            rois.add(roi);
         }
-        ImagePlus imp = IJ.getImage();
+
         RoiManager roiManager = null;
         if (roiManager == null) {
             if (Macro.getOptions() != null && Interpreter.isBatchMode())
@@ -188,10 +196,81 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
                 roiManager = (RoiManager) frame;
             }
         }
-        for (Roi roi : this) {
-            roiManager.add(imp, (Roi) roi.clone(), -1);
+
+        ImagePlus fallbackImage = WindowManager.getCurrentImage();
+        Margin margin = new Margin();
+        margin.getWidth().setUseExactValue(false);
+        margin.getHeight().setUseExactValue(false);
+
+        for (Map.Entry<Optional<ImagePlus>, ROIListData> entry : byImage.entrySet()) {
+            if (!entry.getKey().isPresent()) {
+                if (fallbackImage == null) {
+                    fallbackImage = entry.getValue().toMask(margin, false, true, 1);
+                    fallbackImage.setTitle("Auto-generated based on ROI");
+                    fallbackImage.show();
+                }
+                for (Roi roi : entry.getValue()) {
+                    roiManager.add(fallbackImage, (Roi) roi.clone(), -1);
+                }
+            } else {
+                ImagePlus target = entry.getKey().get().duplicate();
+                target.setTitle(entry.getKey().get().getTitle());
+                target.show();
+                for (Roi roi : entry.getValue()) {
+                    roiManager.add(target, (Roi) roi.clone(), -1);
+                }
+            }
         }
+
         roiManager.runCommand("show all with labels");
+    }
+
+    /**
+     * Generates a mask image from pure ROI data.
+     * The ROI's reference images are ignored.
+     *
+     * @param imageArea         modifications for the image area
+     * @param drawOutline       whether to draw an outline
+     * @param drawFilledOutline whether to fill the area
+     * @param lineThickness     line thickness for drawing
+     * @return the image
+     */
+    public ImagePlus toMask(Margin imageArea, boolean drawOutline, boolean drawFilledOutline, int lineThickness) {
+        // Find the bounds and future stack position
+        Rectangle bounds = imageArea.apply(this.getBounds());
+        int sx = bounds.width + bounds.x;
+        int sy = bounds.height + bounds.y;
+        int sz = 1;
+        int sc = 1;
+        int st = 1;
+        for (Roi roi : this) {
+            int z = roi.getZPosition();
+            int c = roi.getCPosition();
+            int t = roi.getTPosition();
+            sz = Math.max(sz, z);
+            sc = Math.max(sc, c);
+            st = Math.max(st, t);
+        }
+
+        ImagePlus result = IJ.createImage("ROIs", "8-bit", sx, sy, sc, sz, st);
+        for (int z = 0; z < sz; z++) {
+            for (int c = 0; c < sc; c++) {
+                for (int t = 0; t < st; t++) {
+                    int stackIndex = result.getStackIndex(c + 1, z + 1, t + 1);
+                    ImageProcessor processor = result.getStack().getProcessor(stackIndex);
+                    processor.setLineWidth(lineThickness);
+                    processor.setColor(255);
+
+                    for (Roi roi : this) {
+                        if (drawFilledOutline)
+                            processor.fill(roi);
+                        if (drawOutline)
+                            roi.drawPixels(processor);
+                    }
+                }
+            }
+        }
+        return result;
     }
 
     /**

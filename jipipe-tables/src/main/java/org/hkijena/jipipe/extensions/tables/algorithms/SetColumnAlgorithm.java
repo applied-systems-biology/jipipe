@@ -18,12 +18,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
-import org.hkijena.jipipe.api.algorithm.JIPipeDataBatch;
-import org.hkijena.jipipe.api.algorithm.JIPipeInputSlot;
-import org.hkijena.jipipe.api.algorithm.JIPipeNodeCategory;
-import org.hkijena.jipipe.api.algorithm.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.algorithm.JIPipeOutputSlot;
-import org.hkijena.jipipe.api.algorithm.JIPipeSimpleIteratingAlgorithm;
+import org.hkijena.jipipe.api.algorithm.*;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
@@ -34,12 +29,8 @@ import org.hkijena.jipipe.extensions.parameters.pairs.PairParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.pairs.StringAndStringOrDoublePair;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringOrDouble;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
-import org.hkijena.jipipe.extensions.tables.ColumnContentType;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.extensions.tables.datatypes.TableColumn;
-import org.hkijena.jipipe.extensions.tables.parameters.collections.TableColumnGeneratorProcessorParameterList;
-import org.hkijena.jipipe.extensions.tables.parameters.enums.TableColumnGeneratorParameter;
-import org.hkijena.jipipe.extensions.tables.parameters.processors.TableColumnGeneratorProcessor;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.util.function.Consumer;
@@ -54,7 +45,7 @@ import java.util.function.Supplier;
 @JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
 public class SetColumnAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
-    private StringAndStringOrDoublePair.List columns =new StringAndStringOrDoublePair.List();
+    private StringAndStringOrDoublePair.List columns = new StringAndStringOrDoublePair.List();
     private boolean replaceIfExists = false;
 
     /**
@@ -106,7 +97,7 @@ public class SetColumnAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @Override
     public void reportValidity(JIPipeValidityReport report) {
         for (StringAndStringOrDoublePair column : columns) {
-            if(StringUtils.isNullOrEmpty(column.getKey())) {
+            if (StringUtils.isNullOrEmpty(column.getKey())) {
                 report.forCategory("Columns").reportIsInvalid("Column names cannot be empty!",
                         "It is not allowed that column names are empty.",
                         "Check if all column names are non-empty.",

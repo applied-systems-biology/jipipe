@@ -40,14 +40,6 @@ public class JIPipeMergingDataBatch {
     }
 
     /**
-     * Raw access to all data stored in the  batch
-     * @return map from data slot to set of row indices
-     */
-    public Map<JIPipeDataSlot, Set<Integer>> getInputSlotRows() {
-        return inputSlotRows;
-    }
-
-    /**
      * Creates a copy
      *
      * @param other the original
@@ -56,6 +48,15 @@ public class JIPipeMergingDataBatch {
         this.algorithm = other.algorithm;
         this.inputSlotRows = new HashMap<>(other.inputSlotRows);
         this.annotations = new HashMap<>(other.annotations);
+    }
+
+    /**
+     * Raw access to all data stored in the  batch
+     *
+     * @return map from data slot to set of row indices
+     */
+    public Map<JIPipeDataSlot, Set<Integer>> getInputSlotRows() {
+        return inputSlotRows;
     }
 
     /**
@@ -75,8 +76,9 @@ public class JIPipeMergingDataBatch {
 
     /**
      * Sets the input slot to only one row
+     *
      * @param slot the slot
-     * @param row the row
+     * @param row  the row
      */
     public void setData(JIPipeDataSlot slot, int row) {
         Set<Integer> rows = inputSlotRows.getOrDefault(slot, null);

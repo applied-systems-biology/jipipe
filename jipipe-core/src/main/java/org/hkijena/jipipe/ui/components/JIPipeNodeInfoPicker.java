@@ -43,7 +43,7 @@ public class JIPipeNodeInfoPicker extends JPanel {
     private Set<JIPipeNodeInfo> selectedInfos = new HashSet<>();
 
     /**
-     * @param mode                  the mode
+     * @param mode           the mode
      * @param availableInfos list of available trait types
      */
     public JIPipeNodeInfoPicker(Mode mode, Set<JIPipeNodeInfo> availableInfos) {
@@ -301,8 +301,8 @@ public class JIPipeNodeInfoPicker extends JPanel {
         private JIPipeNodeInfo info;
 
         /**
-         * @param picker      event source
-         * @param info picked trait
+         * @param picker event source
+         * @param info   picked trait
          */
         public NodeSelectedEvent(JIPipeNodeInfoPicker picker, JIPipeNodeInfo info) {
             this.picker = picker;
@@ -326,8 +326,8 @@ public class JIPipeNodeInfoPicker extends JPanel {
         private JIPipeNodeInfo info;
 
         /**
-         * @param picker      event source
-         * @param info deselected trait
+         * @param picker event source
+         * @param info   deselected trait
          */
         public AlgorithmDeselectedEvent(JIPipeNodeInfoPicker picker, JIPipeNodeInfo info) {
             this.picker = picker;

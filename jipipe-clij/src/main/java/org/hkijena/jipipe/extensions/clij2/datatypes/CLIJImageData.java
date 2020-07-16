@@ -81,7 +81,7 @@ public class CLIJImageData implements JIPipeData {
     public ImagePlusData pull() {
         CLIJ2 clij = CLIJ2.getInstance();
         ImagePlus imagePlus = clij.pull(image);
-        if(CLIJSettings.getInstance().isAutoCalibrateAfterPulling()) {
+        if (CLIJSettings.getInstance().isAutoCalibrateAfterPulling()) {
             CalibrationContrastEnhancer contrastEnhancer = CLIJSettings.getInstance().getContrastEnhancer();
             CalibrationContrastEnhancer.calibrate(imagePlus,
                     contrastEnhancer.getCalibrationMode(),

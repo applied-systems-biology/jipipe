@@ -15,12 +15,14 @@ package org.hkijena.jipipe.utils;
 
 /**
  * Models a search ranking function
+ *
  * @param <T> the items
  */
 public interface RankingFunction<T> {
     /**
      * Ranks the value in conjunction with the filter strings
-     * @param value the value
+     *
+     * @param value         the value
      * @param filterStrings the filter strings (can be null or empty)
      * @return a rank for each category. each item represents the ranking score (lower values are higher ranks) for a column. if null, the item does not match
      */

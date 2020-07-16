@@ -43,14 +43,6 @@ public class JIPipeDataBatch {
     }
 
     /**
-     * Raw access to all data stored in the  batch
-     * @return map from data slot to row index
-     */
-    public Map<JIPipeDataSlot, Integer> getInputSlotRows() {
-        return inputSlotRows;
-    }
-
-    /**
      * Creates a copy
      *
      * @param other the original
@@ -59,6 +51,15 @@ public class JIPipeDataBatch {
         this.algorithm = other.algorithm;
         this.inputSlotRows = new HashMap<>(other.inputSlotRows);
         this.annotations = new HashMap<>(other.annotations);
+    }
+
+    /**
+     * Raw access to all data stored in the  batch
+     *
+     * @return map from data slot to row index
+     */
+    public Map<JIPipeDataSlot, Integer> getInputSlotRows() {
+        return inputSlotRows;
     }
 
     /**

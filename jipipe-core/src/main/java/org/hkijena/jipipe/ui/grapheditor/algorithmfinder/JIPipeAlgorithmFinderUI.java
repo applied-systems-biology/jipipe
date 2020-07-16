@@ -19,24 +19,22 @@ import org.hkijena.jipipe.api.algorithm.*;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeMutableSlotConfiguration;
-import org.hkijena.jipipe.api.registries.JIPipeNodeRegistry;
 import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
+import org.hkijena.jipipe.api.registries.JIPipeNodeRegistry;
 import org.hkijena.jipipe.ui.components.ColorIcon;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.SearchTextField;
 import org.hkijena.jipipe.ui.events.AlgorithmFinderSuccessEvent;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphCanvasUI;
 import org.hkijena.jipipe.ui.registries.JIPipeUIDatatypeRegistry;
-import org.hkijena.jipipe.utils.RankedData;
-import org.hkijena.jipipe.utils.RankingFunction;
-import org.hkijena.jipipe.utils.StringUtils;
-import org.hkijena.jipipe.utils.TooltipUtils;
-import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.*;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
-import java.util.*;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -76,12 +74,12 @@ public class JIPipeAlgorithmFinderUI extends JPanel {
 
     private void initializeAvailableContents() {
         for (JIPipeGraphNode node : canvasUI.getGraph().getNodes().values()) {
-            if(node.isVisibleIn(canvasUI.getCompartment())) {
+            if (node.isVisibleIn(canvasUI.getCompartment())) {
                 availableContents.add(node);
             }
         }
         for (JIPipeNodeInfo info : JIPipeNodeRegistry.getInstance().getRegisteredNodeInfos().values()) {
-            if(!info.isHidden())
+            if (!info.isHidden())
                 availableContents.add(info);
         }
 
@@ -123,7 +121,7 @@ public class JIPipeAlgorithmFinderUI extends JPanel {
         List<RankedData<Object>> rankedData = new ArrayList<>();
         for (Object content : availableContents) {
             int[] rank = ranking.rank(content, searchField.getSearchStrings());
-            if(rank == null)
+            if (rank == null)
                 continue;
             rankedData.add(new RankedData<>(content, rank));
         }
@@ -143,13 +141,12 @@ public class JIPipeAlgorithmFinderUI extends JPanel {
         }
 
         for (RankedData<Object> data : rankedData) {
-            if(data.getData() instanceof JIPipeNodeInfo) {
+            if (data.getData() instanceof JIPipeNodeInfo) {
                 JIPipeNodeInfo info = (JIPipeNodeInfo) data.getData();
                 JIPipeAlgorithmFinderAlgorithmUI algorithmUI = new JIPipeAlgorithmFinderAlgorithmUI(canvasUI, outputSlot, info);
                 algorithmUI.getEventBus().register(this);
                 formPanel.addToForm(algorithmUI, null);
-            }
-            else if(data.getData() instanceof JIPipeGraphNode) {
+            } else if (data.getData() instanceof JIPipeGraphNode) {
                 JIPipeGraphNode node = (JIPipeGraphNode) data.getData();
                 if (knownTargetAlgorithms.contains(node)) {
                     if (node.getSlotConfiguration() instanceof JIPipeMutableSlotConfiguration) {
@@ -234,28 +231,26 @@ public class JIPipeAlgorithmFinderUI extends JPanel {
 
         @Override
         public int[] rank(Object value, String[] filterStrings) {
-            if(value == null)
+            if (value == null)
                 return null;
             int[] ranks = new int[4];
             String nameHayStack;
             String descriptionHayStack;
-            if(value instanceof JIPipeGraphNode) {
+            if (value instanceof JIPipeGraphNode) {
                 JIPipeGraphNode node = ((JIPipeGraphNode) value);
                 nameHayStack = node.getName();
                 descriptionHayStack = StringUtils.orElse(node.getCustomDescription(), node.getInfo().getDescription());
-            }
-            else if(value instanceof JIPipeNodeInfo) {
+            } else if (value instanceof JIPipeNodeInfo) {
                 JIPipeNodeInfo info = (JIPipeNodeInfo) value;
                 if (info.isHidden())
                     return null;
                 nameHayStack = info.getName().toLowerCase();
                 descriptionHayStack = info.getDescription().toLowerCase();
-            }
-            else {
+            } else {
                 return null;
             }
 
-            if(filterStrings != null && filterStrings.length > 0) {
+            if (filterStrings != null && filterStrings.length > 0) {
                 nameHayStack = nameHayStack.toLowerCase();
                 descriptionHayStack = descriptionHayStack.toLowerCase();
 
@@ -272,38 +267,33 @@ public class JIPipeAlgorithmFinderUI extends JPanel {
             }
 
             // Rank by data type compatibility
-            if(value instanceof JIPipeGraphNode) {
+            if (value instanceof JIPipeGraphNode) {
                 JIPipeGraphNode node = ((JIPipeGraphNode) value);
                 for (JIPipeDataSlot targetSlot : node.getInputSlots()) {
                     int compatibilityRanking = 0;
-                    if(targetSlot.getAcceptedDataType() == sourceSlot.getAcceptedDataType()) {
+                    if (targetSlot.getAcceptedDataType() == sourceSlot.getAcceptedDataType()) {
                         compatibilityRanking = -3;
-                    }
-                    else if(JIPipeDatatypeRegistry.isTriviallyConvertible(sourceSlot.getAcceptedDataType(), targetSlot.getAcceptedDataType())) {
+                    } else if (JIPipeDatatypeRegistry.isTriviallyConvertible(sourceSlot.getAcceptedDataType(), targetSlot.getAcceptedDataType())) {
                         compatibilityRanking = -2;
-                    }
-                    else if(JIPipeDatatypeRegistry.getInstance().isConvertible(sourceSlot.getAcceptedDataType(), targetSlot.getAcceptedDataType())) {
+                    } else if (JIPipeDatatypeRegistry.getInstance().isConvertible(sourceSlot.getAcceptedDataType(), targetSlot.getAcceptedDataType())) {
                         compatibilityRanking = -1;
                     }
                     ranks[2] = Math.min(compatibilityRanking, ranks[2]);
-                    if(sourceSlot.getNode().getGraph().getSourceSlot(targetSlot) != null) {
+                    if (sourceSlot.getNode().getGraph().getSourceSlot(targetSlot) != null) {
                         ranks[3] = 1;
                     }
                 }
-            }
-            else {
+            } else {
                 JIPipeNodeInfo info = (JIPipeNodeInfo) value;
                 if (info.isHidden() || info.getCategory() == JIPipeNodeCategory.Internal)
                     return null;
                 for (JIPipeInputSlot inputSlot : info.getInputSlots()) {
                     int compatibilityRanking = 0;
-                    if(inputSlot.value() == sourceSlot.getAcceptedDataType()) {
+                    if (inputSlot.value() == sourceSlot.getAcceptedDataType()) {
                         compatibilityRanking = -3;
-                    }
-                    else if(JIPipeDatatypeRegistry.isTriviallyConvertible(sourceSlot.getAcceptedDataType(), inputSlot.value())) {
+                    } else if (JIPipeDatatypeRegistry.isTriviallyConvertible(sourceSlot.getAcceptedDataType(), inputSlot.value())) {
                         compatibilityRanking = -2;
-                    }
-                    else if(JIPipeDatatypeRegistry.getInstance().isConvertible(sourceSlot.getAcceptedDataType(), inputSlot.value())) {
+                    } else if (JIPipeDatatypeRegistry.getInstance().isConvertible(sourceSlot.getAcceptedDataType(), inputSlot.value())) {
                         compatibilityRanking = -1;
                     }
                     ranks[2] = Math.min(compatibilityRanking, ranks[2]);
@@ -311,7 +301,7 @@ public class JIPipeAlgorithmFinderUI extends JPanel {
             }
 
             // Not compatible to slot
-            if(ranks[2] == 0)
+            if (ranks[2] == 0)
                 return null;
 
             return ranks;

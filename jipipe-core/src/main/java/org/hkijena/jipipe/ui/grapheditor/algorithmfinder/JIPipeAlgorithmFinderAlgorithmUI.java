@@ -15,8 +15,8 @@ package org.hkijena.jipipe.ui.grapheditor.algorithmfinder;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import org.hkijena.jipipe.api.algorithm.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.algorithm.JIPipeGraphNode;
+import org.hkijena.jipipe.api.algorithm.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeMutableSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
@@ -46,9 +46,10 @@ public class JIPipeAlgorithmFinderAlgorithmUI extends JPanel {
 
     /**
      * Creates an algorithm UI for one target algorithm
-     *  @param canvasUI    the canvas
-     * @param outputSlot  The output slot to connect
-     * @param info The target algorithm
+     *
+     * @param canvasUI   the canvas
+     * @param outputSlot The output slot to connect
+     * @param info       The target algorithm
      */
     public JIPipeAlgorithmFinderAlgorithmUI(JIPipeGraphCanvasUI canvasUI, JIPipeDataSlot outputSlot, JIPipeNodeInfo info) {
         this.canvasUI = canvasUI;
@@ -61,7 +62,8 @@ public class JIPipeAlgorithmFinderAlgorithmUI extends JPanel {
 
     /**
      * Creates an algorithm UI for one target algorithm
-     *  @param canvasUI   the canvas
+     *
+     * @param canvasUI   the canvas
      * @param outputSlot The output slot to connect
      * @param algorithm  The target algorithm
      */
@@ -104,13 +106,12 @@ public class JIPipeAlgorithmFinderAlgorithmUI extends JPanel {
 
         // Label showing if a new or existing instance is shown
         JLabel actionLabel = new JLabel();
-        if(isExistingInstance) {
+        if (isExistingInstance) {
             actionLabel.setText("Existing");
             actionLabel.setForeground(Color.BLUE);
-        }
-        else {
+        } else {
             actionLabel.setText("Create");
-            actionLabel.setForeground(new Color(0,128,0));
+            actionLabel.setForeground(new Color(0, 128, 0));
         }
         centerPanel.add(actionLabel, new GridBagConstraints() {
             {
@@ -167,7 +168,7 @@ public class JIPipeAlgorithmFinderAlgorithmUI extends JPanel {
         });
 
         // Outputs
-        if(!algorithm.getOutputSlots().isEmpty()) {
+        if (!algorithm.getOutputSlots().isEmpty()) {
             int row = 3;
             centerPanel.add(new JLabel("Generates following outputs:"), new GridBagConstraints() {
                 {

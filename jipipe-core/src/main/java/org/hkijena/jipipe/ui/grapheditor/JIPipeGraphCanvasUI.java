@@ -635,12 +635,12 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
 
         g.setStroke(new BasicStroke(2));
         graphics.setColor(Color.LIGHT_GRAY);
-        if(GraphEditorUISettings.getInstance().isDrawOutsideEdges())
+        if (GraphEditorUISettings.getInstance().isDrawOutsideEdges())
             paintOutsideEdges(g, drawer, false);
         paintEdges(graphics, g, drawer, false);
 
         g.setStroke(new BasicStroke(7));
-        if(GraphEditorUISettings.getInstance().isDrawOutsideEdges())
+        if (GraphEditorUISettings.getInstance().isDrawOutsideEdges())
             paintOutsideEdges(g, drawer, true);
         paintEdges(graphics, g, drawer, true);
 

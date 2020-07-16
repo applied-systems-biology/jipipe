@@ -1,10 +1,7 @@
 package org.hkijena.jipipe.extensions.tables.parameters;
 
-import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameters;
-import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParametersUI;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
-import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.DocumentTabPane;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
@@ -39,8 +36,8 @@ public class ResultsTableDataParameterEditorUI extends JIPipeParameterEditorUI {
     private void editParameters() {
         ResultsTableData parameters = getParameter(ResultsTableData.class);
         for (DocumentTabPane.DocumentTab tab : getWorkbench().getDocumentTabPane().getTabs()) {
-            if(tab.getContent() instanceof JIPipeTableEditor) {
-                if(((JIPipeTableEditor) tab.getContent()).getTableModel() == parameters) {
+            if (tab.getContent() instanceof JIPipeTableEditor) {
+                if (((JIPipeTableEditor) tab.getContent()).getTableModel() == parameters) {
                     getWorkbench().getDocumentTabPane().switchToContent(tab.getContent());
                     return;
                 }

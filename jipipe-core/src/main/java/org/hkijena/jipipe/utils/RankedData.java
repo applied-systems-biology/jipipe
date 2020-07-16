@@ -13,9 +13,7 @@
 
 package org.hkijena.jipipe.utils;
 
-import org.hkijena.jipipe.ui.components.SearchBox;
-
-public class RankedData<T> implements Comparable<RankedData<T>>{
+public class RankedData<T> implements Comparable<RankedData<T>> {
     private final T data;
     private final int[] rank;
 
@@ -30,14 +28,14 @@ public class RankedData<T> implements Comparable<RankedData<T>>{
 
     @Override
     public int compareTo(RankedData<T> o) {
-        if(o.rank.length == 0 && rank.length == 0)
+        if (o.rank.length == 0 && rank.length == 0)
             return 0;
         int num = Math.min(o.rank.length, rank.length);
         for (int i = 0; i < num; i++) {
             int lhs = getRankAt(i);
             int rhs = o.getRankAt(i);
             int compare = Integer.compare(lhs, rhs);
-            if(compare != 0)
+            if (compare != 0)
                 return compare;
         }
         return 0;

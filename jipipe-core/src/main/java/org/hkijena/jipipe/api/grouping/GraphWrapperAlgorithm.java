@@ -20,9 +20,9 @@ import org.hkijena.jipipe.api.JIPipeRunnerStatus;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithm;
-import org.hkijena.jipipe.api.algorithm.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.algorithm.JIPipeGraph;
 import org.hkijena.jipipe.api.algorithm.JIPipeGraphNode;
+import org.hkijena.jipipe.api.algorithm.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeMutableSlotConfiguration;
@@ -48,7 +48,7 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm {
     private boolean slotConfigurationIsComplete;
 
     /**
-     * @param info  the info
+     * @param info         the info
      * @param wrappedGraph the graph wrapper
      */
     public GraphWrapperAlgorithm(JIPipeNodeInfo info, JIPipeGraph wrappedGraph) {

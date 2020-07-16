@@ -15,8 +15,8 @@ package org.hkijena.jipipe.ui.extensionbuilder;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.Subscribe;
-import org.hkijena.jipipe.api.algorithm.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.algorithm.JIPipeGraph;
+import org.hkijena.jipipe.api.algorithm.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.events.ExtensionContentAddedEvent;
 import org.hkijena.jipipe.api.events.ExtensionContentRemovedEvent;
 import org.hkijena.jipipe.api.events.ParameterChangedEvent;

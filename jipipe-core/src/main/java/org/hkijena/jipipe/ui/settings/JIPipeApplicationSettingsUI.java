@@ -50,7 +50,7 @@ public class JIPipeApplicationSettingsUI extends JIPipeWorkbenchPanel {
         Map<String, List<JIPipeSettingsRegistry.Sheet>> byCategory =
                 JIPipeSettingsRegistry.getInstance().getRegisteredSheets().values().stream().collect(Collectors.groupingBy(JIPipeSettingsRegistry.Sheet::getCategory));
         List<String> categories = byCategory.keySet().stream().sorted().collect(Collectors.toList());
-        if(categories.contains("General")) {
+        if (categories.contains("General")) {
             categories.remove("General");
             categories.add(0, "General");
         }

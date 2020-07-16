@@ -13,10 +13,7 @@
 
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi;
 
-import ij.IJ;
 import ij.ImagePlus;
-import ij.gui.Roi;
-import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
@@ -29,7 +26,6 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
 import org.hkijena.jipipe.extensions.parameters.roi.Margin;
 
-import java.awt.*;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -78,45 +74,9 @@ public class UnreferencedRoiToMaskAlgorithm extends JIPipeSimpleIteratingAlgorit
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         ROIListData inputData = (ROIListData) dataBatch.getInputData(getFirstInputSlot(), ROIListData.class).duplicate();
-
-        // Find the bounds and future stack position
-        Rectangle bounds = imageArea.apply(inputData.getBounds());
-        int sx = bounds.width + bounds.x;
-        int sy = bounds.height + bounds.y;
-        int sz = 1;
-        int sc = 1;
-        int st = 1;
-        for (Roi roi : inputData) {
-            int z = roi.getZPosition();
-            int c = roi.getCPosition();
-            int t = roi.getTPosition();
-            sz = Math.max(sz, z);
-            sc = Math.max(sc, c);
-            st = Math.max(st, t);
-        }
-
-        ImagePlus result = IJ.createImage("ROIs", "8-bit", sx, sy, sc, sz, st);
-        for (int z = 0; z < sz; z++) {
-            for (int c = 0; c < sc; c++) {
-                for (int t = 0; t < st; t++) {
-                    int stackIndex = result.getStackIndex(c + 1, z + 1, t + 1);
-                    ImageProcessor processor = result.getStack().getProcessor(stackIndex);
-                    processor.setLineWidth(lineThickness);
-                    processor.setColor(255);
-
-                    for (Roi roi : inputData) {
-                        if (drawFilledOutline)
-                            processor.fill(roi);
-                        if (drawOutline)
-                            roi.drawPixels(processor);
-                    }
-                }
-            }
-        }
-
+        ImagePlus result = inputData.toMask(imageArea, drawOutline, drawFilledOutline, lineThickness);
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(result));
     }
-
 
     @Override
     public void reportValidity(JIPipeValidityReport report) {

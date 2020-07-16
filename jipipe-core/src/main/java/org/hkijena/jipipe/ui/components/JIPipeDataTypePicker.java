@@ -266,8 +266,8 @@ public class JIPipeDataTypePicker extends JPanel {
         private JIPipeDataInfo dataInfo;
 
         /**
-         * @param dataTypePicker  event source
-         * @param dataInfo picked trait
+         * @param dataTypePicker event source
+         * @param dataInfo       picked trait
          */
         public DataTypeSelectedEvent(JIPipeDataTypePicker dataTypePicker, JIPipeDataInfo dataInfo) {
             this.dataTypePicker = dataTypePicker;
@@ -291,8 +291,8 @@ public class JIPipeDataTypePicker extends JPanel {
         private JIPipeDataInfo dataInfo;
 
         /**
-         * @param dataTypePicker  event source
-         * @param dataInfo deselected trait
+         * @param dataTypePicker event source
+         * @param dataInfo       deselected trait
          */
         public DataTypeDeselectedEvent(JIPipeDataTypePicker dataTypePicker, JIPipeDataInfo dataInfo) {
             this.dataTypePicker = dataTypePicker;

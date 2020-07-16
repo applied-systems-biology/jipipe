@@ -15,9 +15,9 @@ package org.hkijena.jipipe.api.compartments.algorithms;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
+import org.hkijena.jipipe.api.algorithm.JIPipeGraphNode;
 import org.hkijena.jipipe.api.algorithm.JIPipeNodeCategory;
 import org.hkijena.jipipe.api.algorithm.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.algorithm.JIPipeGraphNode;
 
 /**
  * A graph compartment output

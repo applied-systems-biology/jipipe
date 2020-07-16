@@ -7,12 +7,7 @@ import net.haesleinhuepf.clij2.plugins.AddImagesWeighted;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
-import org.hkijena.jipipe.api.algorithm.JIPipeInputSlot;
-import org.hkijena.jipipe.api.algorithm.JIPipeOutputSlot;
-import org.hkijena.jipipe.api.algorithm.JIPipeNodeCategory;
-import org.hkijena.jipipe.api.algorithm.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.algorithm.JIPipeDataBatch;
-import org.hkijena.jipipe.api.algorithm.JIPipeIteratingAlgorithm;
+import org.hkijena.jipipe.api.algorithm.*;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.clij2.datatypes.CLIJImageData;
 

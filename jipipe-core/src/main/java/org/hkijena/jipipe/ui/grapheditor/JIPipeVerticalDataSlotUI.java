@@ -132,7 +132,7 @@ public class JIPipeVerticalDataSlotUI extends JIPipeDataSlotUI {
         TextLayout layout = new TextLayout(getDisplayedName(), getFont(), frc);
         double w = layout.getBounds().getWidth();
         int labelWidth = (int) Math.ceil(w * 1.0 / JIPipeGraphViewMode.Vertical.getGridWidth())
-                *  JIPipeGraphViewMode.Vertical.getGridWidth();
+                * JIPipeGraphViewMode.Vertical.getGridWidth();
         int width = labelWidth + 75;
 
         return width;

@@ -17,9 +17,9 @@ import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.JIPipeMetadata;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.algorithm.JIPipeGraphNode;
 import org.hkijena.jipipe.api.algorithm.JIPipeJavaNodeInfo;
 import org.hkijena.jipipe.api.algorithm.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.algorithm.JIPipeGraphNode;
 import org.hkijena.jipipe.api.compat.ImageJDatatypeAdapter;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataConverter;
@@ -218,7 +218,7 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
      * If the dependency situation is unclear, register an {@link JIPipeAlgorithmRegistrationTask} instead
      *
      * @param info Algorithm info
-     * @param icon        custom algorithm icon
+     * @param icon custom algorithm icon
      */
     public void registerAlgorithm(JIPipeNodeInfo info, URL icon) {
         registry.getAlgorithmRegistry().register(info, this);
@@ -301,8 +301,8 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
     /**
      * Registers a new parameter type and respective editor
      *
-     * @param info the info
-     * @param uiClass     Parameter editor UI. Can be null if the editor is already provided.
+     * @param info    the info
+     * @param uiClass Parameter editor UI. Can be null if the editor is already provided.
      */
     public void registerParameterType(JIPipeParameterTypeInfo info, Class<? extends JIPipeParameterEditorUI> uiClass) {
         registry.getParameterTypeRegistry().register(info);
@@ -314,9 +314,9 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
     /**
      * Registers a new parameter type and respective editor
      *
-     * @param info the info
-     * @param listClass   a parameter type that is a list of the registered type
-     * @param uiClass     Parameter editor UI. Can be null if the editor is already provided.
+     * @param info      the info
+     * @param listClass a parameter type that is a list of the registered type
+     * @param uiClass   Parameter editor UI. Can be null if the editor is already provided.
      */
     public void registerParameterType(JIPipeParameterTypeInfo info, Class<?> listClass, Class<? extends JIPipeParameterEditorUI> uiClass) {
         registry.getParameterTypeRegistry().register(info);

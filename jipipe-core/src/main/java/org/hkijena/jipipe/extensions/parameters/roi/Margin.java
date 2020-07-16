@@ -197,11 +197,11 @@ public class Margin implements Function<Rectangle, Rectangle>, JIPipeParameterCo
     @Override
     public Rectangle apply(Rectangle rectangle) {
         final int left_ = left.apply(rectangle.width);
-        final int top_ = top.apply(rectangle.width);
+        final int top_ = top.apply(rectangle.height);
         final int right_ = right.apply(rectangle.width);
-        final int bottom_ = bottom.apply(rectangle.width);
+        final int bottom_ = bottom.apply(rectangle.height);
         final int width_ = width.apply(rectangle.width);
-        final int height_ = height.apply(rectangle.width);
+        final int height_ = height.apply(rectangle.height);
         final int aw = rectangle.width;
         final int ah = rectangle.height;
 

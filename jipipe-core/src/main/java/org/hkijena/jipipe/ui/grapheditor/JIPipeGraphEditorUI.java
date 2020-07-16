@@ -15,9 +15,9 @@ package org.hkijena.jipipe.ui.grapheditor;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.eventbus.Subscribe;
-import org.hkijena.jipipe.api.algorithm.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.algorithm.JIPipeGraph;
 import org.hkijena.jipipe.api.algorithm.JIPipeGraphNode;
+import org.hkijena.jipipe.api.algorithm.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.events.GraphChangedEvent;
 import org.hkijena.jipipe.api.events.NodeInfoRegisteredEvent;
 import org.hkijena.jipipe.api.history.AddNodeGraphHistorySnapshot;
@@ -123,44 +123,6 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         navigator.setRenderer(new NavigationRenderer());
         navigator.addItemListener(e -> navigatorNavigate());
         navigator.setRankingFunction(JIPipeGraphEditorUI::rankNavigationEntry);
-    }
-
-    private static int[] rankNavigationEntry(Object value, String[] searchStrings) {
-        if(searchStrings == null || searchStrings.length == 0)
-            return new int[0];
-        String nameHayStack;
-        String descriptionHayStack;
-        if (value instanceof JIPipeNodeUI) {
-            JIPipeGraphNode node = ((JIPipeNodeUI) value).getNode();
-            nameHayStack = node.getName();
-            descriptionHayStack = StringUtils.orElse(node.getCustomDescription(), node.getInfo().getDescription());
-        } else if (value instanceof JIPipeNodeInfo) {
-            JIPipeNodeInfo info = (JIPipeNodeInfo) value;
-            if (info.isHidden())
-                return null;
-            nameHayStack = info.getName().toLowerCase();
-            descriptionHayStack = info.getDescription().toLowerCase();
-        }
-        else {
-            return null;
-        }
-
-        nameHayStack = nameHayStack.toLowerCase();
-        descriptionHayStack = descriptionHayStack.toLowerCase();
-
-        int[] ranks = new int[2];
-
-        for (String string : searchStrings) {
-            if(nameHayStack.contains(string.toLowerCase()))
-                --ranks[0];
-            if(descriptionHayStack.contains(string.toLowerCase()))
-                --ranks[1];
-        }
-
-        if(ranks[0] == 0 && ranks[1] == 0)
-            return null;
-
-        return ranks;
     }
 
     private void navigatorNavigate() {
@@ -580,6 +542,43 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         }
     }
 
+    private static int[] rankNavigationEntry(Object value, String[] searchStrings) {
+        if (searchStrings == null || searchStrings.length == 0)
+            return new int[0];
+        String nameHayStack;
+        String descriptionHayStack;
+        if (value instanceof JIPipeNodeUI) {
+            JIPipeGraphNode node = ((JIPipeNodeUI) value).getNode();
+            nameHayStack = node.getName();
+            descriptionHayStack = StringUtils.orElse(node.getCustomDescription(), node.getInfo().getDescription());
+        } else if (value instanceof JIPipeNodeInfo) {
+            JIPipeNodeInfo info = (JIPipeNodeInfo) value;
+            if (info.isHidden())
+                return null;
+            nameHayStack = info.getName().toLowerCase();
+            descriptionHayStack = info.getDescription().toLowerCase();
+        } else {
+            return null;
+        }
+
+        nameHayStack = nameHayStack.toLowerCase();
+        descriptionHayStack = descriptionHayStack.toLowerCase();
+
+        int[] ranks = new int[2];
+
+        for (String string : searchStrings) {
+            if (nameHayStack.contains(string.toLowerCase()))
+                --ranks[0];
+            if (descriptionHayStack.contains(string.toLowerCase()))
+                --ranks[1];
+        }
+
+        if (ranks[0] == 0 && ranks[1] == 0)
+            return null;
+
+        return ranks;
+    }
+
     public static void installContextActionsInto(JToolBar toolBar, Set<JIPipeNodeUI> selection, List<NodeUIContextAction> actionList, JIPipeGraphCanvasUI canvasUI) {
         JPopupMenu overhang = new JPopupMenu();
         boolean scheduledSeparator = false;
@@ -642,7 +641,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
             setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
 
 
-            icon = new ColorIcon(16,40);
+            icon = new ColorIcon(16, 40);
             iconLabel = new JLabel(icon);
             Insets border = new Insets(2, 4, 2, 2);
             add(iconLabel, new GridBagConstraints() {
@@ -707,7 +706,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
                 icon.setFillColor(Color.WHITE);
                 icon.setBorderColor(UIUtils.getFillColorFor(info));
                 actionLabel.setText("Create");
-                actionLabel.setForeground(new Color(0,128,0));
+                actionLabel.setForeground(new Color(0, 128, 0));
                 algorithmLabel.setText(info.getName());
                 algorithmLabel.setIcon(JIPipeUIAlgorithmRegistry.getInstance().getIconFor(info));
                 menuLabel.setText(menuPath);

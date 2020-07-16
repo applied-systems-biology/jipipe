@@ -25,13 +25,9 @@ import org.hkijena.jipipe.ui.registries.JIPipeUIDatatypeRegistry;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Font;
+import java.awt.*;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public class DataBatchUI extends JIPipeProjectWorkbenchPanel {
 
@@ -42,8 +38,8 @@ public class DataBatchUI extends JIPipeProjectWorkbenchPanel {
 
     /**
      * @param workbenchUI The workbench UI
-     * @param node the node
-     * @param batch the batch to be displayed
+     * @param node        the node
+     * @param batch       the batch to be displayed
      */
     public DataBatchUI(JIPipeProjectWorkbench workbenchUI, JIPipeGraphNode node, JIPipeMergingDataBatch batch) {
         super(workbenchUI);
@@ -69,7 +65,7 @@ public class DataBatchUI extends JIPipeProjectWorkbenchPanel {
         setBorder(BorderFactory.createLineBorder(Color.GRAY, 1, true));
         setLayout(new BorderLayout());
         JLabel dataBatchName = new JLabel("Data batch");
-        dataBatchName.setBorder(BorderFactory.createEmptyBorder(4,4,4,4));
+        dataBatchName.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
         dataBatchName.setFont(new Font(Font.DIALOG, Font.BOLD, 16));
         add(dataBatchName, BorderLayout.NORTH);
 
@@ -88,23 +84,21 @@ public class DataBatchUI extends JIPipeProjectWorkbenchPanel {
             Icon dataTypeIcon = JIPipeUIDatatypeRegistry.getInstance().getIconFor(slot.getAcceptedDataType());
             JToggleButton toggleButton = new JToggleButton(slot.getName(), dataTypeIcon);
             UIUtils.makeFlat(toggleButton);
-            if(!rows.isEmpty()) {
+            if (!rows.isEmpty()) {
                 toggleButton.setHorizontalAlignment(SwingConstants.LEFT);
                 toggleButton.addActionListener(e -> {
                     if (toggleButton.isSelected())
                         displayData(slot, batch.getInputSlotRows().get(slot));
                 });
-            }
-            else {
+            } else {
                 toggleButton.setEnabled(false);
             }
             dataDisplayToggle.add(toggleButton);
 
             JLabel statusLabel;
-            if(rows.isEmpty()) {
+            if (rows.isEmpty()) {
                 statusLabel = new JLabel("Missing!", UIUtils.getIconFromResources("error.png"), JLabel.LEFT);
-            }
-            else {
+            } else {
                 statusLabel = new JLabel(rows.size() == 1 ? "1 item" : rows.size() + " items", UIUtils.getIconFromResources("check-circle-green.png"), JLabel.LEFT);
             }
 
@@ -114,14 +108,14 @@ public class DataBatchUI extends JIPipeProjectWorkbenchPanel {
     }
 
     private void displayData(JIPipeDataSlot slot, Set<Integer> rows) {
-        if(currentDataDisplay != null) {
+        if (currentDataDisplay != null) {
             remove(currentDataDisplay);
         }
 
         currentDataDisplay = new JPanel(new BorderLayout());
         JPanel separator = new JPanel();
-        separator.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(4,0,0,0),
-                BorderFactory.createMatteBorder(1,0,0,0, Color.GRAY)));
+        separator.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(4, 0, 0, 0),
+                BorderFactory.createMatteBorder(1, 0, 0, 0, Color.GRAY)));
         currentDataDisplay.add(separator, BorderLayout.NORTH);
 
         JIPipeDataSlot copySlot = new JIPipeDataSlot(slot.getDefinition(), slot.getNode());

@@ -52,7 +52,7 @@ public abstract class JIPipeAlgorithm extends JIPipeGraphNode {
     /**
      * Initializes a new algorithm instance and sets a custom slot configuration
      *
-     * @param info       The algorithm info
+     * @param info              The algorithm info
      * @param slotConfiguration The slot configuration
      */
     public JIPipeAlgorithm(JIPipeNodeInfo info, JIPipeSlotConfiguration slotConfiguration) {

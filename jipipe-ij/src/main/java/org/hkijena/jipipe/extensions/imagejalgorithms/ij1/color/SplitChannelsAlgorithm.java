@@ -127,7 +127,7 @@ public class SplitChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                 if (annotateWithSlotName) {
                     annotations.add(new JIPipeAnnotation(annotationColumnSlotName, slotName));
                 }
-                if(annotateWithChannelIndex) {
+                if (annotateWithChannelIndex) {
                     annotations.add(new JIPipeAnnotation(annotationColumnChannelIndex, "" + channelIndex));
                 }
                 dataBatch.addOutputData(slotName, new ImagePlusGreyscaleData(image), annotations);
@@ -182,7 +182,7 @@ public class SplitChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             if (annotateWithSlotName) {
                 annotations.add(new JIPipeAnnotation(annotationColumnSlotName, slotName));
             }
-            if(annotateWithChannelIndex) {
+            if (annotateWithChannelIndex) {
                 annotations.add(new JIPipeAnnotation(annotationColumnChannelIndex, "" + channelIndex));
             }
 
@@ -206,13 +206,13 @@ public class SplitChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @Override
     public void reportValidity(JIPipeValidityReport report) {
-        if(annotateWithChannelIndex && StringUtils.isNullOrEmpty(annotationColumnChannelIndex)) {
+        if (annotateWithChannelIndex && StringUtils.isNullOrEmpty(annotationColumnChannelIndex)) {
             report.forCategory("Channel index annotation column").reportIsInvalid("Column name is empty!",
                     "You enabled adding the channel index as output annotation, but the column name is empty",
                     "Change the column name to a non-empty string",
                     this);
         }
-        if(annotateWithSlotName && StringUtils.isNullOrEmpty(annotationColumnSlotName)) {
+        if (annotateWithSlotName && StringUtils.isNullOrEmpty(annotationColumnSlotName)) {
             report.forCategory("Slot name annotation column").reportIsInvalid("Column name is empty!",
                     "You enabled adding the channel index as output annotation, but the column name is empty",
                     "Change the column name to a non-empty string",

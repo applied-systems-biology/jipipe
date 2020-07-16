@@ -69,14 +69,14 @@ public class JIPipeAlgorithmFinderSlotUI extends JPanel {
         setLayout(new BorderLayout());
 
         Icon icon;
-        if(inputSlot.getNode().getGraph() == null || inputSlot.getNode().getGraph().getSourceSlot(inputSlot) == null)
+        if (inputSlot.getNode().getGraph() == null || inputSlot.getNode().getGraph().getSourceSlot(inputSlot) == null)
             icon = UIUtils.getIconFromResources("chevron-right-thin.png");
         else
             icon = UIUtils.getIconFromResources("chevron-right.png");
         assignButton = new JButton(icon);
         assignButton.setEnabled(JIPipeDatatypeRegistry.getInstance().isConvertible(outputSlot.getAcceptedDataType(), inputSlot.getAcceptedDataType()));
         assignButton.setPreferredSize(new Dimension(25, 50));
-        assignButton.setBorder(BorderFactory.createMatteBorder(0, 1,0,0, Color.GRAY));
+        assignButton.setBorder(BorderFactory.createMatteBorder(0, 1, 0, 0, Color.GRAY));
         assignButtonMenu = UIUtils.addPopupMenuToComponent(assignButton);
         UIUtils.makeFlat(assignButton);
 

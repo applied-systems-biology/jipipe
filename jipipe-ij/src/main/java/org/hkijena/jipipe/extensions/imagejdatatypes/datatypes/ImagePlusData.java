@@ -89,6 +89,7 @@ public class ImagePlusData implements JIPipeData {
 
     /**
      * Returns a duplicate of the contained image
+     *
      * @return the duplicate
      */
     public ImagePlus getDuplicateImage() {

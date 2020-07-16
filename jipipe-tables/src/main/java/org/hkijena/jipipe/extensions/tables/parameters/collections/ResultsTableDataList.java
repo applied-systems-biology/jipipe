@@ -17,6 +17,7 @@ public class ResultsTableDataList extends ListParameter<ResultsTableData> {
 
     /**
      * Creates a copy
+     *
      * @param other the original
      */
     public ResultsTableDataList(ResultsTableDataList other) {

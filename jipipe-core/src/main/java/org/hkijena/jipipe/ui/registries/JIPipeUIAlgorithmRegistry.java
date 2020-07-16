@@ -39,7 +39,7 @@ public class JIPipeUIAlgorithmRegistry {
     /**
      * Registers a custom icon for a trait
      *
-     * @param info  the trait type
+     * @param info         the trait type
      * @param resourcePath icon url
      */
     public void registerIcon(JIPipeNodeInfo info, URL resourcePath) {

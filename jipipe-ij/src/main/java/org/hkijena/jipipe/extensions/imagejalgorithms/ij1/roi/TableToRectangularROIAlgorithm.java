@@ -14,29 +14,21 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi;
 
 import ij.gui.OvalRoi;
-import org.checkerframework.checker.units.qual.C;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
-import org.hkijena.jipipe.api.algorithm.JIPipeDataBatch;
-import org.hkijena.jipipe.api.algorithm.JIPipeInputSlot;
-import org.hkijena.jipipe.api.algorithm.JIPipeNodeCategory;
-import org.hkijena.jipipe.api.algorithm.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.algorithm.JIPipeOutputSlot;
-import org.hkijena.jipipe.api.algorithm.JIPipeSimpleIteratingAlgorithm;
+import org.hkijena.jipipe.api.algorithm.*;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.parameters.predicates.StringPredicate;
-import org.hkijena.jipipe.extensions.parameters.roi.Margin;
-import org.hkijena.jipipe.extensions.tables.TableColumnReference;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.extensions.tables.datatypes.TableColumn;
 import org.hkijena.jipipe.extensions.tables.parameters.TableColumnSourceParameter;
 
-import java.awt.Rectangle;
+import java.awt.*;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -79,6 +71,7 @@ public class TableToRectangularROIAlgorithm extends JIPipeSimpleIteratingAlgorit
 
     /**
      * Creates a copy
+     *
      * @param other the original
      */
     public TableToRectangularROIAlgorithm(TableToRectangularROIAlgorithm other) {
@@ -90,18 +83,18 @@ public class TableToRectangularROIAlgorithm extends JIPipeSimpleIteratingAlgorit
         this.columnX2 = new TableColumnSourceParameter(other.columnX2);
         this.columnY2 = new TableColumnSourceParameter(other.columnY2);
         this.columnWidth = new TableColumnSourceParameter(other.columnWidth);
-        this.columnHeight =new TableColumnSourceParameter( other.columnHeight);
+        this.columnHeight = new TableColumnSourceParameter(other.columnHeight);
     }
 
     @Override
     public void reportValidity(JIPipeValidityReport report) {
         report.forCategory("Column 'X1'").report(columnX1);
         report.forCategory("Column 'Y1'").report(columnY1);
-        if(anchor == Anchor.TopLeft || anchor == Anchor.Center) {
+        if (anchor == Anchor.TopLeft || anchor == Anchor.Center) {
             report.forCategory("Column 'Width'").report(columnWidth);
             report.forCategory("Column 'Height'").report(columnHeight);
         }
-        if(anchor == Anchor.TwoPoints) {
+        if (anchor == Anchor.TwoPoints) {
             report.forCategory("Column 'X2'").report(columnX2);
             report.forCategory("Column 'Y2'").report(columnY2);
         }
@@ -114,95 +107,93 @@ public class TableToRectangularROIAlgorithm extends JIPipeSimpleIteratingAlgorit
 
         TableColumn colX1 = columnX1.pickColumn(table);
         TableColumn colY1 = columnY1.pickColumn(table);
-        if(colX1 == null) {
+        if (colX1 == null) {
             throw new UserFriendlyRuntimeException("Could not find column for X1!",
                     "The algorithm requires a column that provides coordinate X1.",
                     getName() + ", table " + table,
                     "A column reference or generator is required that supplies the coordinates.",
                     "Please check if the settings are correct and if your table contains the requested column.");
         }
-        if(colY1 == null) {
+        if (colY1 == null) {
             throw new UserFriendlyRuntimeException("Could not find column for Y1!",
                     "The algorithm requires a column that provides coordinate Y1.",
                     getName() + ", table " + table,
                     "A column reference or generator is required that supplies the coordinates.",
                     "Please check if the settings are correct and if your table contains the requested column.");
         }
-        
-            if(anchor == Anchor.TopLeft || anchor == Anchor.Center) {
-             
-                TableColumn colWidth = columnWidth.pickColumn(table);
-                TableColumn colHeight = columnHeight.pickColumn(table);
 
-                if(colWidth == null) {
-                    throw new UserFriendlyRuntimeException("Could not find column for width!",
-                            "The algorithm requires a column that provides the width.",
-                            getName() + ", table " + table,
-                            "A column reference or generator is required that supplies the width.",
-                            "Please check if the settings are correct and if your table contains the requested column.");
-                }
-                if(colHeight == null) {
-                    throw new UserFriendlyRuntimeException("Could not find column for height!",
-                            "The algorithm requires a column that provides the height.",
-                            getName() + ", table " + table,
-                            "A column reference or generator is required that supplies the height.",
-                            "Please check if the settings are correct and if your table contains the requested column.");
-                }
-                
-                for (int row = 0; row < table.getRowCount(); row++) {
-                    int x1 = (int)colX1.getRowAsDouble(row);
-                    int y1 = (int)colY1.getRowAsDouble(row);
-                    int w = (int)colWidth.getRowAsDouble(row);
-                    int h = (int)colHeight.getRowAsDouble(row);
-                    int x;
-                    int y;
-                    if(anchor == Anchor.TopLeft) {
-                        x = x1;
-                        y = y1;
-                    }
-                    else {
-                        x = x1 - w / 2;
-                        y = y1 - h / 2;
-                    }
-                    createROI(rois, w, h, x, y);
-                }
+        if (anchor == Anchor.TopLeft || anchor == Anchor.Center) {
+
+            TableColumn colWidth = columnWidth.pickColumn(table);
+            TableColumn colHeight = columnHeight.pickColumn(table);
+
+            if (colWidth == null) {
+                throw new UserFriendlyRuntimeException("Could not find column for width!",
+                        "The algorithm requires a column that provides the width.",
+                        getName() + ", table " + table,
+                        "A column reference or generator is required that supplies the width.",
+                        "Please check if the settings are correct and if your table contains the requested column.");
             }
-            else {
-                TableColumn colX2 = columnX2.pickColumn(table);
-                TableColumn colY2 = columnY2.pickColumn(table);
-                if(colX2 == null) {
-                    throw new UserFriendlyRuntimeException("Could not find column for X2!",
-                            "The algorithm requires a column that provides coordinate X2.",
-                            getName() + ", table " + table,
-                            "A column reference or generator is required that supplies the coordinates.",
-                            "Please check if the settings are correct and if your table contains the requested column.");
-                }
-                if(colY2 == null) {
-                    throw new UserFriendlyRuntimeException("Could not find column for Y2!",
-                            "The algorithm requires a column that provides coordinate Y2.",
-                            getName() + ", table " + table,
-                            "A column reference or generator is required that supplies the coordinates.",
-                            "Please check if the settings are correct and if your table contains the requested column.");
-                }
-
-                for (int row = 0; row < table.getRowCount(); row++) {
-                    int x1 = (int)colX1.getRowAsDouble(row);
-                    int y1 = (int)colY1.getRowAsDouble(row);
-                    int x2 = (int)colX2.getRowAsDouble(row);
-                    int y2 = (int)colX2.getRowAsDouble(row);
-                    int w = Math.abs(x1 - x2);
-                    int h = Math.abs(y1 - y2);
-                    int x = Math.min(x1, x2);
-                    int y = Math.min(y1, y2);
-                    createROI(rois, w, h, x, y);
-                }
+            if (colHeight == null) {
+                throw new UserFriendlyRuntimeException("Could not find column for height!",
+                        "The algorithm requires a column that provides the height.",
+                        getName() + ", table " + table,
+                        "A column reference or generator is required that supplies the height.",
+                        "Please check if the settings are correct and if your table contains the requested column.");
             }
 
-       dataBatch.addOutputData(getFirstOutputSlot(), rois);
+            for (int row = 0; row < table.getRowCount(); row++) {
+                int x1 = (int) colX1.getRowAsDouble(row);
+                int y1 = (int) colY1.getRowAsDouble(row);
+                int w = (int) colWidth.getRowAsDouble(row);
+                int h = (int) colHeight.getRowAsDouble(row);
+                int x;
+                int y;
+                if (anchor == Anchor.TopLeft) {
+                    x = x1;
+                    y = y1;
+                } else {
+                    x = x1 - w / 2;
+                    y = y1 - h / 2;
+                }
+                createROI(rois, w, h, x, y);
+            }
+        } else {
+            TableColumn colX2 = columnX2.pickColumn(table);
+            TableColumn colY2 = columnY2.pickColumn(table);
+            if (colX2 == null) {
+                throw new UserFriendlyRuntimeException("Could not find column for X2!",
+                        "The algorithm requires a column that provides coordinate X2.",
+                        getName() + ", table " + table,
+                        "A column reference or generator is required that supplies the coordinates.",
+                        "Please check if the settings are correct and if your table contains the requested column.");
+            }
+            if (colY2 == null) {
+                throw new UserFriendlyRuntimeException("Could not find column for Y2!",
+                        "The algorithm requires a column that provides coordinate Y2.",
+                        getName() + ", table " + table,
+                        "A column reference or generator is required that supplies the coordinates.",
+                        "Please check if the settings are correct and if your table contains the requested column.");
+            }
+
+            for (int row = 0; row < table.getRowCount(); row++) {
+                int x1 = (int) colX1.getRowAsDouble(row);
+                int y1 = (int) colY1.getRowAsDouble(row);
+                int x2 = (int) colX2.getRowAsDouble(row);
+                int y2 = (int) colX2.getRowAsDouble(row);
+                int w = Math.abs(x1 - x2);
+                int h = Math.abs(y1 - y2);
+                int x = Math.min(x1, x2);
+                int y = Math.min(y1, y2);
+                createROI(rois, w, h, x, y);
+            }
+        }
+
+        dataBatch.addOutputData(getFirstOutputSlot(), rois);
     }
 
     private void createROI(ROIListData rois, int w, int h, int x, int y) {
-        switch(mode) {
+        switch (mode) {
             case Rectangle:
                 rois.addRectangle(new Rectangle(x, y, w, h), true);
                 break;
@@ -297,18 +288,18 @@ public class TableToRectangularROIAlgorithm extends JIPipeSimpleIteratingAlgorit
         this.columnHeight = columnHeight;
     }
 
-    @JIPipeDocumentation(name = "Anchor", description = "Determines how the ROI are generated.\n" +
-            "'Top left' creates the ROI at the top left X1 and Y1 coordinates with provided width and height. " +
-            "'Center' creates centers the ROI at the X1 and Y1 coordinates and also requires that width and height are set. " +
-            "'Two points' defines the ROI, so it fits into the rectangle defined by the points (X1, Y1) and (X2, Y2)." )
-    @JIPipeParameter(value = "anchor")
-    public void setAnchor(Anchor anchor) {
-        this.anchor = anchor;
-    }
-
     @JIPipeParameter(value = "anchor")
     public Anchor getAnchor() {
         return anchor;
+    }
+
+    @JIPipeDocumentation(name = "Anchor", description = "Determines how the ROI are generated.\n" +
+            "'Top left' creates the ROI at the top left X1 and Y1 coordinates with provided width and height. " +
+            "'Center' creates centers the ROI at the X1 and Y1 coordinates and also requires that width and height are set. " +
+            "'Two points' defines the ROI, so it fits into the rectangle defined by the points (X1, Y1) and (X2, Y2).")
+    @JIPipeParameter(value = "anchor")
+    public void setAnchor(Anchor anchor) {
+        this.anchor = anchor;
     }
 
     @JIPipeDocumentation(name = "Created ROI type", description = "Determines which ROI to create. \n" +

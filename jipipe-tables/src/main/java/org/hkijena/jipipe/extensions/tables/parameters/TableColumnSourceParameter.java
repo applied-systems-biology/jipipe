@@ -94,21 +94,20 @@ public class TableColumnSourceParameter implements JIPipeParameterCollection, JI
 
     /**
      * Returns a column according to the data
+     *
      * @param tableData the table
      * @return the column or null if none could be found
      */
     public TableColumn pickColumn(ResultsTableData tableData) {
-        if(mode == Mode.GenerateColumn) {
-            if(generatorSource.getGeneratorType() != null && generatorSource.getGeneratorType().getInfo() != null) {
-                return (TableColumn)generatorSource.getGeneratorType().getInfo().newInstance();
-            }
-            else {
+        if (mode == Mode.GenerateColumn) {
+            if (generatorSource.getGeneratorType() != null && generatorSource.getGeneratorType().getInfo() != null) {
+                return (TableColumn) generatorSource.getGeneratorType().getInfo().newInstance();
+            } else {
                 return null;
             }
-        }
-        else {
+        } else {
             for (int col = 0; col < tableData.getColumnCount(); col++) {
-                if(columnSource.test(tableData.getColumnName(col))) {
+                if (columnSource.test(tableData.getColumnName(col))) {
                     return tableData.getColumnReference(col);
                 }
             }

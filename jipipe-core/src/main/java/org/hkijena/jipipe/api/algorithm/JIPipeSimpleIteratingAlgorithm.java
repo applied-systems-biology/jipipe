@@ -41,7 +41,7 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
     /**
      * Creates a new instance
      *
-     * @param info       Algorithm info
+     * @param info              Algorithm info
      * @param slotConfiguration Slot configuration override
      */
     public JIPipeSimpleIteratingAlgorithm(JIPipeNodeInfo info, JIPipeSlotConfiguration slotConfiguration) {
@@ -145,7 +145,7 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
     /**
      * Runs code on one data row
      *
-     * @param dataBatch     The data interface
+     * @param dataBatch         The data interface
      * @param subProgress       The current sub-progress this algorithm is scheduled in
      * @param algorithmProgress Consumer to publish a new sub-progress
      * @param isCancelled       Supplier that informs if the current task was canceled

@@ -38,7 +38,7 @@ public class JsonNodeInfoUI extends JIPipeJsonExtensionWorkbenchPanel {
 
     /**
      * @param workbenchUI the workbench
-     * @param info the algorithm info
+     * @param info        the algorithm info
      */
     public JsonNodeInfoUI(JIPipeJsonExtensionWorkbench workbenchUI, JsonNodeInfo info) {
         super(workbenchUI);

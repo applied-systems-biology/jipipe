@@ -19,9 +19,9 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.algorithm.JIPipeDataBatch;
 import org.hkijena.jipipe.api.algorithm.JIPipeNodeCategory;
 import org.hkijena.jipipe.api.algorithm.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.algorithm.JIPipeDataBatch;
 import org.hkijena.jipipe.api.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeData;
@@ -51,8 +51,8 @@ public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
     private OptionalStringParameter titleAnnotation = new OptionalStringParameter();
 
     /**
-     * @param info algorithm info
-     * @param dataClass   loaded data class
+     * @param info      algorithm info
+     * @param dataClass loaded data class
      */
     public ImagePlusFromFile(JIPipeNodeInfo info, Class<? extends JIPipeData> dataClass) {
         super(info,

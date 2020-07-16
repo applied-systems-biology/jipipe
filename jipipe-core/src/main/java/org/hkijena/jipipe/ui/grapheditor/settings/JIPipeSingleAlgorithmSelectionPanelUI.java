@@ -15,8 +15,6 @@ package org.hkijena.jipipe.ui.grapheditor.settings;
 
 import org.hkijena.jipipe.api.algorithm.JIPipeDataBatchAlgorithm;
 import org.hkijena.jipipe.api.algorithm.JIPipeGraphNode;
-import org.hkijena.jipipe.api.algorithm.JIPipeIteratingAlgorithm;
-import org.hkijena.jipipe.api.algorithm.JIPipeMergingAlgorithm;
 import org.hkijena.jipipe.api.registries.JIPipeNodeRegistry;
 import org.hkijena.jipipe.api.testbench.JIPipeTestBenchSettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
@@ -85,7 +83,7 @@ public class JIPipeSingleAlgorithmSelectionPanelUI extends JIPipeProjectWorkbenc
                 DocumentTabPane.CloseMode.withoutCloseButton,
                 false);
 
-        if(algorithm instanceof JIPipeDataBatchAlgorithm) {
+        if (algorithm instanceof JIPipeDataBatchAlgorithm) {
             batchAssistantTabContent = new JPanel(new BorderLayout());
             tabbedPane.addTab("Data batches", UIUtils.getIconFromResources("algorithms/boxes.png"),
                     batchAssistantTabContent,
@@ -120,8 +118,8 @@ public class JIPipeSingleAlgorithmSelectionPanelUI extends JIPipeProjectWorkbenc
                 cacheBrowserTabContent.add(browserUI, BorderLayout.CENTER);
             }
         }
-        if(algorithm instanceof JIPipeDataBatchAlgorithm) {
-            if(batchAssistantTabContent != null && tabbedPane.getCurrentContent() == batchAssistantTabContent) {
+        if (algorithm instanceof JIPipeDataBatchAlgorithm) {
+            if (batchAssistantTabContent != null && tabbedPane.getCurrentContent() == batchAssistantTabContent) {
                 if (batchAssistantTabContent.getComponentCount() == 0) {
                     DataBatchAssistantUI browserUI = new DataBatchAssistantUI(getProjectWorkbench(), algorithm,
                             () -> runTestBench(false, false, true, false, true));
@@ -173,11 +171,12 @@ public class JIPipeSingleAlgorithmSelectionPanelUI extends JIPipeProjectWorkbenc
 
     /**
      * Activates and runs the quick run as automatically as possible.
-     * @param showResults show results after a successful run
-     * @param showCache   show slot cache after a successful run
+     *
+     * @param showResults        show results after a successful run
+     * @param showCache          show slot cache after a successful run
      * @param showBatchAssistant show batch assistant after a run
-     * @param saveOutputs if the run should save outputs
-     * @param excludeSelected if the current algorithm should be excluded
+     * @param saveOutputs        if the run should save outputs
+     * @param excludeSelected    if the current algorithm should be excluded
      */
     public void runTestBench(boolean showResults, boolean showCache, boolean showBatchAssistant, boolean saveOutputs, boolean excludeSelected) {
         // Activate the quick run
@@ -189,9 +188,8 @@ public class JIPipeSingleAlgorithmSelectionPanelUI extends JIPipeProjectWorkbenc
         boolean success = testBenchSetupUI.tryAutoRun(showResults, settings, testBench -> {
             if (showCache) {
                 SwingUtilities.invokeLater(() -> tabbedPane.switchToContent(cacheBrowserTabContent));
-            }
-            else if(showBatchAssistant) {
-                if(algorithm instanceof JIPipeDataBatchAlgorithm) {
+            } else if (showBatchAssistant) {
+                if (algorithm instanceof JIPipeDataBatchAlgorithm) {
                     SwingUtilities.invokeLater(() -> tabbedPane.switchToContent(batchAssistantTabContent));
                 }
             }

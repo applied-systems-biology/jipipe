@@ -16,12 +16,7 @@ package org.hkijena.jipipe.ui.batchassistant;
 import com.google.common.eventbus.Subscribe;
 import gnu.trove.set.TIntSet;
 import org.hkijena.jipipe.api.JIPipeProjectCache;
-import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithm;
-import org.hkijena.jipipe.api.algorithm.JIPipeDataBatchAlgorithm;
-import org.hkijena.jipipe.api.algorithm.JIPipeDataBatchKey;
-import org.hkijena.jipipe.api.algorithm.JIPipeGraphNode;
-import org.hkijena.jipipe.api.algorithm.JIPipeMergingDataBatch;
-import org.hkijena.jipipe.api.algorithm.JIPipeParameterSlotAlgorithm;
+import org.hkijena.jipipe.api.algorithm.*;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.events.NodeDisconnectedEvent;
 import org.hkijena.jipipe.api.events.NodeSlotsChangedEvent;
@@ -32,8 +27,7 @@ import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
-import java.awt.Component;
+import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.util.HashMap;
@@ -54,8 +48,8 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
     private FormPanel batchPreviewPanel = new FormPanel(null, FormPanel.WITH_SCROLLING);
 
     /**
-     * @param workbenchUI The workbench UI
-     * @param algorithm the target algorithm
+     * @param workbenchUI  The workbench UI
+     * @param algorithm    the target algorithm
      * @param runTestBench function that updates the cache
      */
     public DataBatchAssistantUI(JIPipeProjectWorkbench workbenchUI, JIPipeGraphNode algorithm, Runnable runTestBench) {
@@ -69,59 +63,55 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
         algorithm.getGraph().getEventBus().register(this);
     }
 
-   private void updateCurrentCache() {
+    private void updateCurrentCache() {
 
         currentCache.clear();
-        if(algorithm.getInputSlots().isEmpty()) {
+        if (algorithm.getInputSlots().isEmpty()) {
             errorLabel.setText("No input slots");
             return;
         }
-       List<JIPipeGraphNode> traversedAlgorithms = algorithm.getGraph().traverseAlgorithms();
-       for (JIPipeDataSlot inputSlot : algorithm.getInputSlots()) {
-           JIPipeDataSlot sourceSlot = algorithm.getGraph().getSourceSlot(inputSlot);
-           if(sourceSlot != null) {
-               Map<JIPipeProjectCache.State, Map<String, JIPipeDataSlot>> sourceCaches = getProject().getCache().extract((JIPipeAlgorithm) sourceSlot.getNode());
-               if(sourceCaches == null || sourceCaches.isEmpty()) {
-                   errorLabel.setText("No cached data available");
-                   currentCache.clear();
-                   return;
-               }
-               Map<String, JIPipeDataSlot> sourceCache = sourceCaches.getOrDefault(getProject().getStateIdOf((JIPipeAlgorithm) sourceSlot.getNode(),
-                       traversedAlgorithms), null);
-               if(sourceCache != null) {
-                   JIPipeDataSlot cache = sourceCache.getOrDefault(sourceSlot.getName(), null);
-                   if(cache != null) {
-                       currentCache.put(inputSlot.getName(), cache);
-                   }
-                   else {
-                       currentCache.clear();
-                       errorLabel.setText("No up-to-date cached data available");
-                       return;
-                   }
-               }
-               else {
-                   currentCache.clear();
-                   errorLabel.setText("No up-to-date cached data available");
-                   return;
-               }
-           }
-           else {
-               currentCache.clear();
-               errorLabel.setText("Unconnected input slots");
-               return;
-           }
-       }
-   }
+        List<JIPipeGraphNode> traversedAlgorithms = algorithm.getGraph().traverseAlgorithms();
+        for (JIPipeDataSlot inputSlot : algorithm.getInputSlots()) {
+            JIPipeDataSlot sourceSlot = algorithm.getGraph().getSourceSlot(inputSlot);
+            if (sourceSlot != null) {
+                Map<JIPipeProjectCache.State, Map<String, JIPipeDataSlot>> sourceCaches = getProject().getCache().extract((JIPipeAlgorithm) sourceSlot.getNode());
+                if (sourceCaches == null || sourceCaches.isEmpty()) {
+                    errorLabel.setText("No cached data available");
+                    currentCache.clear();
+                    return;
+                }
+                Map<String, JIPipeDataSlot> sourceCache = sourceCaches.getOrDefault(getProject().getStateIdOf((JIPipeAlgorithm) sourceSlot.getNode(),
+                        traversedAlgorithms), null);
+                if (sourceCache != null) {
+                    JIPipeDataSlot cache = sourceCache.getOrDefault(sourceSlot.getName(), null);
+                    if (cache != null) {
+                        currentCache.put(inputSlot.getName(), cache);
+                    } else {
+                        currentCache.clear();
+                        errorLabel.setText("No up-to-date cached data available");
+                        return;
+                    }
+                } else {
+                    currentCache.clear();
+                    errorLabel.setText("No up-to-date cached data available");
+                    return;
+                }
+            } else {
+                currentCache.clear();
+                errorLabel.setText("Unconnected input slots");
+                return;
+            }
+        }
+    }
 
     private void updateStatus() {
         updateCurrentCache();
-        if(currentCache.isEmpty()) {
+        if (currentCache.isEmpty()) {
             removeAll();
             add(errorUI, BorderLayout.CENTER);
             revalidate();
             repaint();
-        }
-        else {
+        } else {
             removeAll();
             switchToEditor();
             revalidate();
@@ -154,7 +144,7 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
         add(splitPane, BorderLayout.CENTER);
 
         ParameterPanel parameterPanel = new ParameterPanel(getWorkbench(),
-                ((JIPipeDataBatchAlgorithm)algorithm).getGenerationSettingsInterface(),
+                ((JIPipeDataBatchAlgorithm) algorithm).getGenerationSettingsInterface(),
                 null,
                 ParameterPanel.WITH_SCROLLING);
         splitPane.setTopComponent(parameterPanel);
@@ -166,7 +156,7 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
     private void refreshBatchPreview() {
         batchPreviewPanel.clear();
         JIPipeGraphNode copy = algorithm.getInfo().clone(algorithm);
-        if(copy instanceof JIPipeParameterSlotAlgorithm)
+        if (copy instanceof JIPipeParameterSlotAlgorithm)
             ((JIPipeParameterSlotAlgorithm) copy).getParameterSlotAlgorithmSettings().setHasParameterSlot(false);
         // Pass cache as input slots
         for (JIPipeDataSlot inputSlot : copy.getInputSlots()) {
@@ -210,7 +200,7 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
 
         JTextArea explanation = UIUtils.makeReadonlyBorderlessTextArea("This tool can only work if it knows which metadata columns are available. " +
                 "Such data is stored in the project-wide cache. You might need to generate or update the cache by clicking the 'Update cache' button at the top-right corner.");
-        explanation.setBorder(BorderFactory.createEmptyBorder(8,8,8,8));
+        explanation.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
         errorContent.add(explanation, BorderLayout.CENTER);
         errorUI.add(errorContent, BorderLayout.CENTER);
 
@@ -228,6 +218,7 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
 
     /**
      * Triggered when the slots were changed
+     *
      * @param event generated event
      */
     @Subscribe
@@ -237,11 +228,12 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
 
     /**
      * Triggered when an algorithm input is disconnected
+     *
      * @param event generated event
      */
     @Subscribe
     public void onDisconnected(NodeDisconnectedEvent event) {
-        if(event.getTarget().getNode() == algorithm) {
+        if (event.getTarget().getNode() == algorithm) {
             updateStatus();
         }
     }

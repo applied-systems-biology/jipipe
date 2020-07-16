@@ -18,12 +18,7 @@ import ij.process.ImageStatistics;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
-import org.hkijena.jipipe.api.algorithm.JIPipeInputSlot;
-import org.hkijena.jipipe.api.algorithm.JIPipeOutputSlot;
-import org.hkijena.jipipe.api.algorithm.JIPipeNodeCategory;
-import org.hkijena.jipipe.api.algorithm.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.algorithm.JIPipeDataBatch;
-import org.hkijena.jipipe.api.algorithm.JIPipeSimpleIteratingAlgorithm;
+import org.hkijena.jipipe.api.algorithm.*;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 
@@ -56,7 +51,7 @@ public class CalibrationContrastEnhancer extends JIPipeSimpleIteratingAlgorithm 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         ImagePlusData data = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class);
-        if(duplicateImage)
+        if (duplicateImage)
             data = (ImagePlusData) data.duplicate();
         calibrate(data.getImage(), calibrationMode, customMin, customMax);
         dataBatch.addOutputData(getFirstOutputSlot(), data);
@@ -108,64 +103,65 @@ public class CalibrationContrastEnhancer extends JIPipeSimpleIteratingAlgorithm 
 
     /**
      * Calibrates the image. Ported from {@link ij.plugin.frame.ContrastAdjuster}
-     * @param imp the image
+     *
+     * @param imp             the image
      * @param calibrationMode the calibration mode
-     * @param customMin custom min value (only used if calibrationMode is Custom)
-     * @param customMax custom max value (only used if calibrationMode is Custom)
+     * @param customMin       custom min value (only used if calibrationMode is Custom)
+     * @param customMax       custom max value (only used if calibrationMode is Custom)
      */
     public static void calibrate(ImagePlus imp, CalibrationMode calibrationMode, double customMin, double customMax) {
         double min = calibrationMode.getMin();
         double max = calibrationMode.getMax();
-        if(calibrationMode == CalibrationMode.Custom) {
+        if (calibrationMode == CalibrationMode.Custom) {
             min = customMin;
             max = customMax;
-        }
-        else if(calibrationMode == CalibrationMode.AutomaticImageJ) {
+        } else if (calibrationMode == CalibrationMode.AutomaticImageJ) {
             ImageStatistics stats = imp.getRawStatistics();
-            int limit = stats.pixelCount/10;
+            int limit = stats.pixelCount / 10;
             int[] histogram = stats.histogram;
-            int threshold = stats.pixelCount/5000;
+            int threshold = stats.pixelCount / 5000;
             int i = -1;
             boolean found = false;
             int count;
             do {
                 i++;
                 count = histogram[i];
-                if (count>limit) count = 0;
-                found = count> threshold;
-            } while (!found && i<255);
+                if (count > limit) count = 0;
+                found = count > threshold;
+            } while (!found && i < 255);
             int hmin = i;
             i = 256;
             do {
                 i--;
                 count = histogram[i];
-                if (count>limit) count = 0;
+                if (count > limit) count = 0;
                 found = count > threshold;
-            } while (!found && i>0);
+            } while (!found && i > 0);
             int hmax = i;
-            if (hmax>=hmin) {
-                min = stats.histMin+hmin*stats.binSize;
-                max = stats.histMin+hmax*stats.binSize;
-                if (min==max)
-                {min=stats.min; max=stats.max;}
+            if (hmax >= hmin) {
+                min = stats.histMin + hmin * stats.binSize;
+                max = stats.histMin + hmax * stats.binSize;
+                if (min == max) {
+                    min = stats.min;
+                    max = stats.max;
+                }
             } else {
                 int bitDepth = imp.getBitDepth();
-                if (bitDepth==16 || bitDepth==32) {
+                if (bitDepth == 16 || bitDepth == 32) {
                     imp.resetDisplayRange();
                     min = imp.getDisplayRangeMin();
                     max = imp.getDisplayRangeMax();
                 }
             }
-        }
-        else if(calibrationMode == CalibrationMode.MinMax) {
+        } else if (calibrationMode == CalibrationMode.MinMax) {
             ImageStatistics stats = imp.getRawStatistics();
             min = stats.min;
             max = stats.max;
         }
 
-        boolean rgb = imp.getType()==ImagePlus.COLOR_RGB;
+        boolean rgb = imp.getType() == ImagePlus.COLOR_RGB;
         int channels = imp.getNChannels();
-        if (channels!=7 && rgb)
+        if (channels != 7 && rgb)
             imp.setDisplayRange(min, max, channels);
         else
             imp.setDisplayRange(min, max);

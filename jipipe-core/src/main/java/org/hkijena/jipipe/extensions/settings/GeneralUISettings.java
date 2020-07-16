@@ -112,10 +112,6 @@ public class GeneralUISettings implements JIPipeParameterCollection {
         this.projectInfoGeneratesPreview = projectInfoGeneratesPreview;
     }
 
-    public static GeneralUISettings getInstance() {
-        return JIPipeDefaultRegistry.getInstance().getSettingsRegistry().getSettings(ID, GeneralUISettings.class);
-    }
-
     @JIPipeDocumentation(name = "Force cross-platform look & feel", description = "If enabled, the design is set to the 'Metal' look & feel that " +
             "looks the same on all platforms. We recommend to keep this setting, as other designs might cause flaws in the UI. " +
             "This requires an ImageJ restart to take effect.")
@@ -127,5 +123,9 @@ public class GeneralUISettings implements JIPipeParameterCollection {
     @JIPipeParameter("force-cross-platform-look-and-feel")
     public void setForceCrossPlatformLookAndFeel(boolean forceCrossPlatformLookAndFeel) {
         this.forceCrossPlatformLookAndFeel = forceCrossPlatformLookAndFeel;
+    }
+
+    public static GeneralUISettings getInstance() {
+        return JIPipeDefaultRegistry.getInstance().getSettingsRegistry().getSettings(ID, GeneralUISettings.class);
     }
 }

@@ -225,7 +225,7 @@ public class SearchBox<T> extends JPanel {
             }
 
             // Sort according to rank
-            if(maxRankLength > 0) {
+            if (maxRankLength > 0) {
                 rankedData.sort(Comparator.naturalOrder());
             }
 

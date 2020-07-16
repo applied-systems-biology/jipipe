@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.analyze;
 
+import ij.ImagePlus;
 import ij.gui.Roi;
 import ij.measure.ResultsTable;
 import ij.plugin.filter.ParticleAnalyzer;
@@ -135,8 +136,10 @@ public class FindParticles2D extends JIPipeSimpleIteratingAlgorithm {
                     traits.add(new JIPipeAnnotation(annotationType.getContent(), "slice=" + index));
                 }
                 ROIListData rois = new ROIListData(Arrays.asList(manager.getRoisAsArray()));
+                ImagePlus roiReferenceImage = new ImagePlus(inputData.getImage().getTitle(), ip.duplicate());
                 for (Roi roi : rois) {
                     roi.setPosition(index + 1);
+                    roi.setImage(roiReferenceImage);
                 }
 
                 dataBatch.addOutputData("ROI", rois, traits);
@@ -145,6 +148,7 @@ public class FindParticles2D extends JIPipeSimpleIteratingAlgorithm {
         } else {
             ResultsTableData mergedResultsTable = new ResultsTableData(new ResultsTable());
             ROIListData mergedROI = new ROIListData(new ArrayList<>());
+            ImagePlus roiReferenceImage = inputData.getDuplicateImage();
 
             ImageJUtils.forEachIndexedSlice(inputData.getImage(), (ip, index) -> {
                 RoiManager manager = new RoiManager(true);
@@ -169,6 +173,7 @@ public class FindParticles2D extends JIPipeSimpleIteratingAlgorithm {
                 ROIListData rois = new ROIListData(Arrays.asList(manager.getRoisAsArray()));
                 for (Roi roi : rois) {
                     roi.setPosition(index + 1);
+                    roi.setImage(roiReferenceImage);
                 }
 
                 // Merge into one result
@@ -179,8 +184,6 @@ public class FindParticles2D extends JIPipeSimpleIteratingAlgorithm {
             dataBatch.addOutputData("ROI", mergedROI);
             dataBatch.addOutputData("Measurements", mergedResultsTable);
         }
-
-
     }
 
     @JIPipeParameter("min-particle-size")

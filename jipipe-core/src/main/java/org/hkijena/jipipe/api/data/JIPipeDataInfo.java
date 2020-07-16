@@ -119,6 +119,7 @@ public class JIPipeDataInfo implements Comparable<JIPipeDataInfo> {
 
     /**
      * Creates a new instance
+     *
      * @param args arguments passed to the data type constructor
      * @return the instance
      */

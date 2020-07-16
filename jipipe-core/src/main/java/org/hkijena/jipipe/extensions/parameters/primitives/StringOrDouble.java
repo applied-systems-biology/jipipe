@@ -17,13 +17,9 @@ import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeValidatable;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.parameters.collections.ListParameter;
-
-import java.util.function.Predicate;
 
 /**
  * Can either filter a string or a double
@@ -101,6 +97,7 @@ public class StringOrDouble implements JIPipeParameterCollection {
 
     /**
      * Returns the current value
+     *
      * @return the value according the the current mode
      */
     public Object getValue() {

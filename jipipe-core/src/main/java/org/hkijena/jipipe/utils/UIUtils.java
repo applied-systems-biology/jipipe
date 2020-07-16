@@ -64,28 +64,25 @@ public class UIUtils {
     public static void loadLookAndFeelFromSettings() {
         Path propertyFile = JIPipeSettingsRegistry.getPropertyFile();
         boolean forceMetal;
-        if(!Files.exists(propertyFile)) {
+        if (!Files.exists(propertyFile)) {
             forceMetal = true;
-        }
-        else {
+        } else {
             try {
                 JsonNode node = JsonUtils.getObjectMapper().readValue(propertyFile.toFile(), JsonNode.class);
                 JsonNode value = node.path("general-ui/force-cross-platform-look-and-feel");
-                if(!value.isMissingNode())
+                if (!value.isMissingNode())
                     forceMetal = value.booleanValue();
                 else
                     forceMetal = true;
-            }
-            catch(Exception e) {
+            } catch (Exception e) {
                 forceMetal = true;
             }
         }
-        if(forceMetal) {
+        if (forceMetal) {
             try {
                 // Set cross-platform Java L&F (also called "Metal")
                 UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
@@ -135,12 +132,12 @@ public class UIUtils {
             @Override
             public void mouseClicked(MouseEvent mouseEvent) {
                 super.mouseClicked(mouseEvent);
-                if(target.isEnabled())
+                if (target.isEnabled())
                     popupMenu.show(mouseEvent.getComponent(), mouseEvent.getX(), mouseEvent.getY());
             }
         });
         target.addActionListener(e -> {
-            if(target.isEnabled()) {
+            if (target.isEnabled()) {
                 if (MouseInfo.getPointerInfo().getLocation().x < target.getLocationOnScreen().x
                         || MouseInfo.getPointerInfo().getLocation().x > target.getLocationOnScreen().x + target.getWidth()
                         || MouseInfo.getPointerInfo().getLocation().y < target.getLocationOnScreen().y
@@ -195,7 +192,7 @@ public class UIUtils {
      */
     public static ImageIcon getIconFromResources(String iconName) {
         ImageIcon icon = ICON_FROM_RESOURCES_CACHE.getOrDefault(iconName, null);
-        if(icon == null) {
+        if (icon == null) {
             icon = new ImageIcon(ResourceUtils.getPluginResource("icons/" + iconName));
             ICON_FROM_RESOURCES_CACHE.put(iconName, icon);
         }
