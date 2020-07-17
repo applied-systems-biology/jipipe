@@ -55,9 +55,9 @@ public class TableToCircularROIAlgorithm extends JIPipeSimpleIteratingAlgorithm 
                 .addOutputSlot("Output", ROIListData.class, null)
                 .seal()
                 .build());
-        columnX1.setColumnSource(new StringPredicate(StringPredicate.Mode.Equals, "X"));
-        columnY1.setColumnSource(new StringPredicate(StringPredicate.Mode.Equals, "Y"));
-        columnRadius.setColumnSource(new StringPredicate(StringPredicate.Mode.Equals, "Radius"));
+        columnX1.setColumnSource(new StringPredicate(StringPredicate.Mode.Equals, "X", false));
+        columnY1.setColumnSource(new StringPredicate(StringPredicate.Mode.Equals, "Y", false));
+        columnRadius.setColumnSource(new StringPredicate(StringPredicate.Mode.Equals, "Radius", false));
     }
 
     /**

@@ -47,6 +47,18 @@ public class PathPredicateParameterEditorUI extends JIPipeParameterEditorUI {
     public void reload() {
         removeAll();
         PathPredicate filter = getParameter(PathPredicate.class);
+
+        JToggleButton invertButton = new JToggleButton(UIUtils.getIconFromResources("not.png"));
+        UIUtils.makeFlat25x25(invertButton);
+        invertButton.setToolTipText("Inverts the predicate");
+        invertButton.setSelected(filter.isInvert());
+        invertButton.addActionListener(e -> {
+            filter.setInvert(invertButton.isSelected());
+            setParameter(filter, false);
+        });
+        add(invertButton);
+        add(Box.createHorizontalStrut(4));
+
         JTextField filterStringEditor = new JTextField(filter.getFilterString());
         filterStringEditor.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
         filterStringEditor.getDocument().addDocumentListener(new DocumentChangeListener() {

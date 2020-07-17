@@ -18,6 +18,7 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 import org.hkijena.jipipe.api.JIPipeValidatable;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.extensions.parameters.collections.ListParameter;
+import org.hkijena.jipipe.utils.StringUtils;
 
 import java.util.Objects;
 import java.util.function.Predicate;
@@ -31,6 +32,7 @@ public class StringPredicate implements Predicate<String>, JIPipeValidatable {
 
     private Mode mode = Mode.Equals;
     private String filterString;
+    private boolean invert = false;
 
     /**
      * Initializes a new filter. Defaults to no filter string and Mode.Contains
@@ -41,13 +43,14 @@ public class StringPredicate implements Predicate<String>, JIPipeValidatable {
 
     /**
      * Initializes a new filter
-     *
-     * @param mode         filter mode
+     *  @param mode         filter mode
      * @param filterString filter string
+     * @param invert if the predicate should be inverted
      */
-    public StringPredicate(Mode mode, String filterString) {
+    public StringPredicate(Mode mode, String filterString, boolean invert) {
         this.mode = mode;
         this.filterString = filterString;
+        this.invert = invert;
     }
 
     /**
@@ -58,40 +61,59 @@ public class StringPredicate implements Predicate<String>, JIPipeValidatable {
     public StringPredicate(StringPredicate other) {
         this.mode = other.mode;
         this.filterString = other.filterString;
+        this.invert = other.invert;
     }
 
-    @JsonGetter
+    @JsonGetter("mode")
     public Mode getMode() {
         return mode;
     }
 
-    @JsonSetter
+    @JsonSetter("mode")
     public void setMode(Mode mode) {
         this.mode = mode;
     }
 
-    @JsonGetter
+    @JsonGetter("filter-string")
     public String getFilterString() {
         return filterString;
     }
 
-    @JsonSetter
+    @JsonSetter("filter-string")
     public void setFilterString(String filterString) {
         this.filterString = filterString;
     }
 
+    @JsonGetter("invert")
+    public boolean isInvert() {
+        return invert;
+    }
+
+    @JsonSetter("invert")
+    public void setInvert(boolean invert) {
+        this.invert = invert;
+    }
+
     @Override
     public boolean test(String path) {
+        boolean result;
         switch (mode) {
             case Equals:
-                return ("" + path).equals(filterString);
+                result =  StringUtils.orElse(path, "").equals(filterString);
+                break;
             case Contains:
-                return ("" + path).contains(filterString);
+                result =  StringUtils.orElse(path, "").contains(filterString);
+                break;
             case Regex:
-                return ("" + path).matches(filterString);
+                result =   StringUtils.orElse(path, "").matches(filterString);
+                break;
             default:
                 throw new RuntimeException("Unknown mode!");
         }
+        if(!invert)
+            return result;
+        else
+            return !result;
     }
 
     @Override
@@ -110,7 +132,7 @@ public class StringPredicate implements Predicate<String>, JIPipeValidatable {
 
     @Override
     public String toString() {
-        return mode + "(\"" + Objects.toString(filterString, "").replace("\\", "\\\\").replace("\"", "\\\"") + "\")";
+        return (invert ? "!" : "") + mode + "(\"" + Objects.toString(filterString, "").replace("\\", "\\\\").replace("\"", "\\\"") + "\")";
     }
 
     @Override
@@ -118,13 +140,13 @@ public class StringPredicate implements Predicate<String>, JIPipeValidatable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         StringPredicate that = (StringPredicate) o;
-        return mode == that.mode &&
+        return mode == that.mode && invert == that.invert &&
                 Objects.equals(filterString, that.filterString);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(mode, filterString);
+        return Objects.hash(mode, filterString, invert);
     }
 
     /**

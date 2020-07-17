@@ -218,7 +218,7 @@ public class PlotGeneratorAlgorithm extends JIPipeAlgorithm {
                 parameterAccess.setFieldClass(TableColumnSourceParameter.class);
                 TableColumnSourceParameter initialValue = new TableColumnSourceParameter();
                 initialValue.setMode(TableColumnSourceParameter.Mode.PickColumn);
-                initialValue.setColumnSource(new StringPredicate(StringPredicate.Mode.Equals, column.name()));
+                initialValue.setColumnSource(new StringPredicate(StringPredicate.Mode.Equals, column.name(), false));
                 initialValue.getGeneratorSource().setGeneratedType(column.isNumeric() ? ColumnContentType.NumericColumn : ColumnContentType.StringColumn);
                 parameterAccess.set(initialValue);
                 parameterAccess.setDescription(column.description() + " " + (column.isNumeric() ? "(Numeric column)" : "(String column)"));

@@ -33,6 +33,7 @@ public class PathPredicate implements Predicate<Path>, JIPipeValidatable {
     private Mode mode = Mode.Contains;
     private String filterString;
     private PathMatcher globPathMatcher;
+    private boolean invert = false;
 
     /**
      * Initializes a new filter. Defaults to no filter string and Mode.Contains
@@ -50,26 +51,27 @@ public class PathPredicate implements Predicate<Path>, JIPipeValidatable {
         this.mode = other.mode;
         this.filterString = other.filterString;
         this.globPathMatcher = other.globPathMatcher;
+        this.invert = other.invert;
     }
 
-    @JsonGetter
+    @JsonGetter("mode")
     public Mode getMode() {
         return mode;
     }
 
-    @JsonSetter
+    @JsonSetter("mode")
     public void setMode(Mode mode) {
         this.mode = mode;
         if (mode == Mode.Glob)
             setFilterString(filterString);
     }
 
-    @JsonGetter
+    @JsonGetter("filter-string")
     public String getFilterString() {
         return filterString;
     }
 
-    @JsonSetter
+    @JsonSetter("filter-string")
     public void setFilterString(String filterString) {
         this.filterString = filterString;
         if (mode == Mode.Glob && filterString != null && !filterString.isEmpty()) {
@@ -85,16 +87,34 @@ public class PathPredicate implements Predicate<Path>, JIPipeValidatable {
 
     @Override
     public boolean test(Path path) {
+        boolean result;
         switch (mode) {
             case Contains:
-                return path.toString().contains(filterString);
+                result =  path.toString().contains(filterString);
+                break;
             case Glob:
-                return globPathMatcher.matches(path);
+                result =   globPathMatcher.matches(path);
+                break;
             case Regex:
-                return path.toString().matches(filterString);
+                result =   path.toString().matches(filterString);
+                break;
             default:
                 throw new RuntimeException("Unknown mode!");
         }
+        if(!invert)
+            return result;
+        else
+            return !result;
+    }
+
+    @JsonGetter("invert")
+    public boolean isInvert() {
+        return invert;
+    }
+
+    @JsonSetter("invert")
+    public void setInvert(boolean invert) {
+        this.invert = invert;
     }
 
     @Override
@@ -109,7 +129,7 @@ public class PathPredicate implements Predicate<Path>, JIPipeValidatable {
 
     @Override
     public String toString() {
-        return mode + "(\"" + Objects.toString(filterString, "").replace("\\", "\\\\").replace("\"", "\\\"") + "\")";
+        return (invert ? "!" : "") + mode + "(\"" + Objects.toString(filterString, "").replace("\\", "\\\\").replace("\"", "\\\"") + "\")";
     }
 
     @Override
@@ -117,13 +137,13 @@ public class PathPredicate implements Predicate<Path>, JIPipeValidatable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         PathPredicate that = (PathPredicate) o;
-        return mode == that.mode &&
+        return mode == that.mode && invert == that.invert &&
                 Objects.equals(filterString, that.filterString);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(mode, filterString);
+        return Objects.hash(mode, filterString, invert);
     }
 
     /**

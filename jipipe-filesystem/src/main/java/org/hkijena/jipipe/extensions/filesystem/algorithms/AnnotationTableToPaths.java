@@ -45,7 +45,7 @@ import java.util.function.Supplier;
 // Traits
 public class AnnotationTableToPaths extends JIPipeSimpleIteratingAlgorithm {
 
-    private StringPredicate column = new StringPredicate(StringPredicate.Mode.Equals, "data");
+    private StringPredicate column = new StringPredicate(StringPredicate.Mode.Equals, "data", false);
 
     /**
      * Instantiates the algorithm

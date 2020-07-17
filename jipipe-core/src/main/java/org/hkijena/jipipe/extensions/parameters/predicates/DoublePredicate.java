@@ -29,6 +29,7 @@ public class DoublePredicate implements Predicate<Double>, JIPipeValidatable {
 
     private Mode mode = Mode.Equals;
     private double reference = 0;
+    private boolean invert = false;
 
     /**
      * Initializes a new filter. Defaults to no filter string and Mode.Contains
@@ -39,13 +40,14 @@ public class DoublePredicate implements Predicate<Double>, JIPipeValidatable {
 
     /**
      * Initializes a new filter
-     *
-     * @param mode      filter mode
+     *  @param mode      filter mode
      * @param reference reference value
+     * @param invert if the result is inverted
      */
-    public DoublePredicate(Mode mode, double reference) {
+    public DoublePredicate(Mode mode, double reference, boolean invert) {
         this.mode = mode;
         this.reference = reference;
+        this.invert = invert;
     }
 
     /**
@@ -56,44 +58,65 @@ public class DoublePredicate implements Predicate<Double>, JIPipeValidatable {
     public DoublePredicate(DoublePredicate other) {
         this.mode = other.mode;
         this.reference = other.reference;
+        this.invert = other.invert;
     }
 
-    @JsonGetter
+    @JsonGetter("mode")
     public Mode getMode() {
         return mode;
     }
 
-    @JsonSetter
+    @JsonSetter("mode")
     public void setMode(Mode mode) {
         this.mode = mode;
     }
 
-    @JsonGetter
+    @JsonGetter("reference")
     public double getReference() {
         return reference;
     }
 
-    @JsonSetter
+    @JsonSetter("reference")
     public void setReference(double reference) {
         this.reference = reference;
     }
 
     @Override
     public boolean test(Double other) {
+        boolean result;
         switch (mode) {
             case Equals:
-                return other == reference;
+                result = other == reference;
+                break;
             case LessThan:
-                return other < reference;
+                result =  other < reference;
+                break;
             case GreaterThan:
-                return other > reference;
+                result =  other > reference;
+                break;
             case LessThanOrEquals:
-                return other <= reference;
+                result =  other <= reference;
+                break;
             case GreaterThanOrEquals:
-                return other >= reference;
+                result =  other >= reference;
+                break;
             default:
                 throw new RuntimeException("Unknown mode!");
         }
+        if(!invert)
+            return result;
+        else
+            return !result;
+    }
+
+    @JsonGetter("invert")
+    public boolean isInvert() {
+        return invert;
+    }
+
+    @JsonSetter("invert")
+    public void setInvert(boolean invert) {
+        this.invert = invert;
     }
 
     @Override
@@ -102,7 +125,7 @@ public class DoublePredicate implements Predicate<Double>, JIPipeValidatable {
 
     @Override
     public String toString() {
-        return "(x " + mode.getStringRepresentation() + " " + reference + ")";
+        return (invert ? "!" : "") + "(x " + mode.getStringRepresentation() + " " + reference + ")";
     }
 
     @Override
@@ -110,13 +133,13 @@ public class DoublePredicate implements Predicate<Double>, JIPipeValidatable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         DoublePredicate that = (DoublePredicate) o;
-        return mode == that.mode &&
+        return mode == that.mode && invert == that.invert &&
                 Objects.equals(reference, that.reference);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(mode, reference);
+        return Objects.hash(mode, reference, invert);
     }
 
     /**
@@ -141,7 +164,7 @@ public class DoublePredicate implements Predicate<Double>, JIPipeValidatable {
     }
 
     /**
-     * A collection of multiple {@link PathPredicate}
+     * A collection of multiple {@link DoublePredicate}
      * The filters are connected via "OR"
      */
     public static class List extends ListParameter<DoublePredicate> {
