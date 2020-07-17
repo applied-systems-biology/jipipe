@@ -764,7 +764,8 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
                 if(node.getInputSlots().size() <= 1) {
                     for (JIPipeDataSlot target : node.getInputSlots()) {
                         JIPipeDataSlot source = graph.getSourceSlot(target);
-                        paintSlotEdge(g, drawer, stroke, onlySelected, source, target);
+                        if(source != null)
+                            paintSlotEdge(g, drawer, stroke, onlySelected, source, target);
                     }
                 }
                 else {
