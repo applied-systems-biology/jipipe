@@ -71,7 +71,8 @@ public class ImagePlusFromFileNodeInfo implements JIPipeNodeInfo {
 
     @Override
     public String getDescription() {
-        return "Imports an image via native ImageJ functions";
+        return "Loads an image via the native ImageJ functions. Please note that you might run into issues " +
+        "if you open a file that is imported via Bio-Formats (for example .czi files). In such cases, please use the Bio-Formats importer algorithm.";
     }
 
     @Override

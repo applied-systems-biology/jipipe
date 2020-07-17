@@ -43,7 +43,8 @@ import java.util.function.Supplier;
 /**
  * Loads an image data from a file via IJ.openFile()
  */
-@JIPipeDocumentation(name = "Import 2D image")
+@JIPipeDocumentation(name = "Import image", description = "Loads an image via the native ImageJ functions. Please note that you might run into issues " +
+        "if you open a file that is imported via Bio-Formats (for example .czi files). In such cases, please use the Bio-Formats importer algorithm.")
 @JIPipeOrganization(algorithmCategory = JIPipeNodeCategory.DataSource)
 public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
 

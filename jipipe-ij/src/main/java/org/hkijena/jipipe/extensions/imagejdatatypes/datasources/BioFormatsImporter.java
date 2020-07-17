@@ -14,7 +14,9 @@
 package org.hkijena.jipipe.extensions.imagejdatatypes.datasources;
 
 import ij.ImagePlus;
+import loci.common.Region;
 import loci.formats.FormatException;
+import loci.plugins.BF;
 import loci.plugins.in.*;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
@@ -28,9 +30,12 @@ import org.hkijena.jipipe.extensions.filesystem.dataypes.FileData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.parameters.primitives.OptionalStringParameter;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
+import org.hkijena.jipipe.extensions.parameters.roi.RectangleList;
 import org.hkijena.jipipe.utils.ResourceUtils;
 
+import java.awt.*;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -39,7 +44,7 @@ import java.util.function.Supplier;
 /**
  * BioFormats importer wrapper
  */
-@JIPipeDocumentation(name = "Bioformats importer", description = "Imports images via the Bioformats plugin")
+@JIPipeDocumentation(name = "Bio-Formats importer", description = "Imports images via the Bio-Formats plugin")
 @JIPipeInputSlot(value = FileData.class, slotName = "Files")
 @JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Image")
 @JIPipeOrganization(algorithmCategory = JIPipeNodeCategory.DataSource)
@@ -54,7 +59,9 @@ public class BioFormatsImporter extends JIPipeSimpleIteratingAlgorithm {
     private boolean concatenate;
     private boolean crop;
     private boolean stitchTiles;
+    private boolean autoScale = true;
     private OptionalStringParameter titleAnnotation = new OptionalStringParameter();
+    private RectangleList cropRegions = new RectangleList();
 
     /**
      * @param info the info
@@ -84,6 +91,8 @@ public class BioFormatsImporter extends JIPipeSimpleIteratingAlgorithm {
         this.concatenate = other.concatenate;
         this.crop = other.crop;
         this.stitchTiles = other.stitchTiles;
+        this.autoScale = other.autoScale;
+        this.cropRegions = new RectangleList(other.cropRegions);
         this.titleAnnotation = new OptionalStringParameter(other.titleAnnotation);
     }
 
@@ -103,6 +112,7 @@ public class BioFormatsImporter extends JIPipeSimpleIteratingAlgorithm {
         options.setShowMetadata(false);
         options.setShowOMEXML(false);
         options.setShowROIs(false);
+        options.setVirtual(false);
         options.setColorMode(colorMode.name());
         options.setStackOrder(stackOrder.name());
         options.setSplitChannels(splitChannels);
@@ -111,31 +121,21 @@ public class BioFormatsImporter extends JIPipeSimpleIteratingAlgorithm {
         options.setSwapDimensions(swapDimensions);
         options.setConcatenate(concatenate);
         options.setCrop(crop);
+        options.setAutoscale(autoScale);
         options.setStitchTiles(stitchTiles);
-
-        ImportProcess process = new ImportProcess(options);
+        for (int i = 0; i < cropRegions.size(); i++) {
+            Rectangle rectangle = cropRegions.get(i);
+            options.setCropRegion(i, new Region(rectangle.x, rectangle.y, rectangle.width, rectangle.height));
+        }
 
         try {
-            new ImporterPrompter(process);
-            process.execute();
-
-            DisplayHandler displayHandler = new DisplayHandler(process);
-            displayHandler.displayOriginalMetadata();
-            displayHandler.displayOMEXML();
-
-            ImagePlusReader reader = new ImagePlusReader(process);
-            ImagePlus[] images = reader.openImagePlus();
-
-            for (ImagePlus image : images) {
+            for (ImagePlus image : BF.openImagePlus(options)) {
                 List<JIPipeAnnotation> traits = new ArrayList<>();
                 if (titleAnnotation.isEnabled()) {
                     traits.add(new JIPipeAnnotation(titleAnnotation.getContent(), image.getTitle()));
                 }
                 dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(image), traits);
             }
-
-            if (!process.getOptions().isVirtual())
-                process.getReader().close();
         } catch (FormatException | IOException e) {
             throw new RuntimeException(e);
         }
@@ -144,10 +144,35 @@ public class BioFormatsImporter extends JIPipeSimpleIteratingAlgorithm {
     @Override
     public void reportValidity(JIPipeValidityReport report) {
         super.reportValidity(report);
-        report.forCategory("Title annotation").checkNonEmpty(getTitleAnnotation().getContent(), null);
+        if(titleAnnotation.isEnabled())
+            report.forCategory("Title annotation").checkNonEmpty(getTitleAnnotation().getContent(), null);
     }
 
-    @JIPipeDocumentation(name = "Color mode")
+    @JIPipeDocumentation(name = "Auto scale", description = "Stretches the channel histograms to each channel's global minimum and maximum value throughout the stack. " +
+            "Does not alter underlying values in the image.  " +
+            "If unselected, all channel histograms are scaled to the image's digitization bit depth. " +
+            "Note that this range may be narrower than the bit depth of the file. " +
+            "For example, a 16-bit file may contain intensities digitized to 16-bits (0-65,535), " +
+            "to 12-bits (0-4,095), to 10-bits (0-1,023), etc.  " +
+            "Note that you can use the Brightness & Contrast or Window/Level controls to adjust the contrast range" +
+            " regardless of whether this option is used. The histogram will provide min/max values in the stack.")
+    @JIPipeParameter("auto-scale")
+    public boolean isAutoScale() {
+        return autoScale;
+    }
+
+    @JIPipeParameter("auto-scale")
+    public void setAutoScale(boolean autoScale) {
+        this.autoScale = autoScale;
+    }
+
+    @JIPipeDocumentation(name = "Color mode", description = "Color mode - Visualizes channels according to the specified scheme.  Possible choices are:\n" +
+            "Default - Display channels as closely as possible to how they are stored in the file.\n" +
+            "Composite - Open as a merged composite image. Channels are colorized according to metadata present in the dataset (if any), or in the following default order: 1=red, 2=green, 3=blue, 4=gray, 5=cyan, 6=magenta, 7=yellow.\n" +
+            "Colorized - Open with each channel in a separate plane, colorized according to metadata present in the dataset (if any), or in the default order (see Composite above).\n" +
+            "Grayscale - Open with each channel in a separate plane, displayed in plain grayscale.\n" +
+            "Custom - Same as Colorized, except that you can explicitly choose how to colorize each channel.\n" +
+            "Note that ImageJ can only composite together 7 or fewer channels. With more than 7 channels, some of the modes above may not work.")
     @JIPipeParameter("color-mode")
     public ColorMode getColorMode() {
         return colorMode;
@@ -156,7 +181,17 @@ public class BioFormatsImporter extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeParameter("color-mode")
     public void setColorMode(ColorMode colorMode) {
         this.colorMode = colorMode;
+    }
 
+    @JIPipeDocumentation(name = "Crop regions")
+    @JIPipeParameter("crop-regions")
+    public RectangleList getCropRegions() {
+        return cropRegions;
+    }
+
+    @JIPipeParameter("crop-regions")
+    public void setCropRegions(RectangleList cropRegions) {
+        this.cropRegions = cropRegions;
     }
 
     @JIPipeDocumentation(name = "Stack order")
@@ -171,7 +206,9 @@ public class BioFormatsImporter extends JIPipeSimpleIteratingAlgorithm {
 
     }
 
-    @JIPipeDocumentation(name = "Split channels")
+    @JIPipeDocumentation(name = "Split channels", description = "Each channel is opened as a separate stack.  " +
+            "This option is especially useful if you want to merge the channels into a specific order, " +
+            "rather than automatically assign channels to the order of RGB. The bit depth is preserved.")
     @JIPipeParameter("split-channels")
     public boolean isSplitChannels() {
         return splitChannels;
@@ -183,7 +220,7 @@ public class BioFormatsImporter extends JIPipeSimpleIteratingAlgorithm {
 
     }
 
-    @JIPipeDocumentation(name = "Split focal planes")
+    @JIPipeDocumentation(name = "Split focal planes", description = "Each focal plane is opened as a separate stack.")
     @JIPipeParameter("split-focal-planes")
     public boolean isSplitFocalPlanes() {
         return splitFocalPlanes;
@@ -195,7 +232,7 @@ public class BioFormatsImporter extends JIPipeSimpleIteratingAlgorithm {
 
     }
 
-    @JIPipeDocumentation(name = "Split time points")
+    @JIPipeDocumentation(name = "Split time points", description = "Timelapse data will be opened as a separate stack for each timepoint.")
     @JIPipeParameter("split-time-points")
     public boolean isSplitTimePoints() {
         return splitTimePoints;
@@ -207,7 +244,11 @@ public class BioFormatsImporter extends JIPipeSimpleIteratingAlgorithm {
 
     }
 
-    @JIPipeDocumentation(name = "Swap dimensions")
+    @JIPipeDocumentation(name = "Swap dimensions", description = "Allows reassignment of dimensional axes (e.g., channel, Z and time).  " +
+            "Bio-Formats is supposed to be smart about handling multidimensional image data, but in some cases gets things wrong. " +
+            "For example, when stitching together a dataset from multiple files using the Group files with similar names option, " +
+            "Bio-Formats may not know which dimensional axis the file numbering is supposed to represent. " +
+            "It will take a guess, but in case it guesses wrong, you can use Swap dimensions to reassign which dimensions are which.")
     @JIPipeParameter("swap-dimensions")
     public boolean isSwapDimensions() {
         return swapDimensions;
@@ -219,7 +260,8 @@ public class BioFormatsImporter extends JIPipeSimpleIteratingAlgorithm {
 
     }
 
-    @JIPipeDocumentation(name = "Concatenate compatible series")
+    @JIPipeDocumentation(name = "Concatenate compatible series", description = "Allows multiple image series to be joined end to end.  " +
+            "Example: You want to join two sequential timelapse series.")
     @JIPipeParameter("concatenate")
     public boolean isConcatenate() {
         return concatenate;
@@ -231,7 +273,8 @@ public class BioFormatsImporter extends JIPipeSimpleIteratingAlgorithm {
 
     }
 
-    @JIPipeDocumentation(name = "Crop images")
+    @JIPipeDocumentation(name = "Crop images", description = "Image planes may be cropped during import to conserve memory. Use the 'Crop regions' parameter " +
+            "to define which regions should be cropped.")
     @JIPipeParameter("crop")
     public boolean isCrop() {
         return crop;
@@ -243,7 +286,10 @@ public class BioFormatsImporter extends JIPipeSimpleIteratingAlgorithm {
 
     }
 
-    @JIPipeDocumentation(name = "Stitch tiles")
+    @JIPipeDocumentation(name = "Stitch tiles", description = "Stitch tiles - Performs very simple stitching of tiles. " +
+            " The overlap is assumed to be 0%, and the stage coordinates are used to determine the proper placement of the tiles. " +
+            "This is useful for seeing a quick preview of what the stitched image might look like, " +
+            "but is not a substitute for proper stitching plugins such as the 2D/3D Stitching plugin.")
     @JIPipeParameter("stitch-tiles")
     public boolean isStitchTiles() {
         return stitchTiles;
