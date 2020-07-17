@@ -151,7 +151,7 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
                     JMenuItem showButton = new JMenuItem("Show incoming edge", UIUtils.getIconFromResources("eye.png"));
                     showButton.setToolTipText("Un-hides the incoming edge");
                     showButton.addActionListener(e -> {
-                        nodeUI.getGraphUI().getGraphHistory().addSnapshotBefore(new EdgeHideGraphHistorySnapshot(getGraph(), sourceSlot, slot, false));
+                        nodeUI.getGraphUI().getGraphHistory().addSnapshotBefore(new GraphChangedHistorySnapshot(getGraph(), "Un-hide edge"));
                         edge.setUiHidden(false);
                         nodeUI.getGraphUI().repaint();
                     });
@@ -161,7 +161,7 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
                     JMenuItem hideButton = new JMenuItem("Hide incoming edge", UIUtils.getIconFromResources("eye-slash.png"));
                     hideButton.setToolTipText("Hides the incoming edge");
                     hideButton.addActionListener(e -> {
-                        nodeUI.getGraphUI().getGraphHistory().addSnapshotBefore(new EdgeHideGraphHistorySnapshot(getGraph(), sourceSlot, slot, true));
+                        nodeUI.getGraphUI().getGraphHistory().addSnapshotBefore(new GraphChangedHistorySnapshot(getGraph(), "Hide edge"));
                         edge.setUiHidden(true);
                         nodeUI.getGraphUI().repaint();
                     });
@@ -201,6 +201,7 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
                     }
                 }
 
+
                 if (allowDisconnect) {
                     JMenuItem disconnectButton = new JMenuItem("Disconnect all", UIUtils.getIconFromResources("remove.png"));
                     disconnectButton.addActionListener(e -> disconnectSlot());
@@ -209,6 +210,44 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
 
                     assignButtonMenu.addSeparator();
                 }
+
+                Set<JIPipeGraphEdge> hiddenEdges = new HashSet<>();
+                Set<JIPipeGraphEdge> visibleEdges = new HashSet<>();
+                for (JIPipeDataSlot targetSlot : targetSlots) {
+                    JIPipeGraphEdge edge = getGraph().getGraph().getEdge(slot, targetSlot);
+                    if(edge.isUiHidden()) {
+                        hiddenEdges.add(edge);
+                    }
+                    else {
+                        visibleEdges.add(edge);
+                    }
+                }
+
+                if(!hiddenEdges.isEmpty()) {
+                    JMenuItem showButton = new JMenuItem("Show all outgoing edges", UIUtils.getIconFromResources("eye.png"));
+                    showButton.setToolTipText("Un-hides all outgoing edges");
+                    showButton.addActionListener(e -> {
+                        nodeUI.getGraphUI().getGraphHistory().addSnapshotBefore(new GraphChangedHistorySnapshot(getGraph(), "Un-hide edges"));
+                        for (JIPipeGraphEdge target : hiddenEdges) {
+                            target.setUiHidden(false);
+                        }
+                        nodeUI.getGraphUI().repaint();
+                    });
+                    assignButtonMenu.add(showButton);
+                }
+                if(!visibleEdges.isEmpty()) {
+                    JMenuItem showButton = new JMenuItem("Hide all outgoing edges", UIUtils.getIconFromResources("eye-slash.png"));
+                    showButton.setToolTipText("Hides all outgoing edges");
+                    showButton.addActionListener(e -> {
+                        nodeUI.getGraphUI().getGraphHistory().addSnapshotBefore(new GraphChangedHistorySnapshot(getGraph(), "Hide edges"));
+                        for (JIPipeGraphEdge target : visibleEdges) {
+                            target.setUiHidden(true);
+                        }
+                        nodeUI.getGraphUI().repaint();
+                    });
+                    assignButtonMenu.add(showButton);
+                }
+
             }
             Set<JIPipeDataSlot> availableTargets = getGraph().getAvailableTargets(slot, true, true);
             availableTargets.removeIf(slot -> !slot.getNode().isVisibleIn(compartment));
