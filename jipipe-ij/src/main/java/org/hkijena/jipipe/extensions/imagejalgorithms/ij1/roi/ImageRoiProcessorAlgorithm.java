@@ -29,6 +29,9 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.scijava.Priority;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -43,8 +46,9 @@ public abstract class ImageRoiProcessorAlgorithm extends JIPipeIteratingAlgorith
             "The reference image provides information about the area where the ROI are located and can be used to extract statistics. " +
             "You can choose to disable the reference image slot via the 'Require reference image' parameter.\n\n" + ITERATING_ALGORITHM_DESCRIPTION;
 
-    private boolean requireReferenceImage = true;
+    private boolean overrideReferenceImage = false;
     private UnreferencedRoiToMaskAlgorithm toMaskAlgorithm;
+    private boolean preferAssociatedImage = true;
 
     /**
      * Creates a new instance
@@ -70,8 +74,9 @@ public abstract class ImageRoiProcessorAlgorithm extends JIPipeIteratingAlgorith
      */
     public ImageRoiProcessorAlgorithm(ImageRoiProcessorAlgorithm other) {
         super(other);
-        this.setRequireReferenceImage(other.requireReferenceImage);
+        this.setOverrideReferenceImage(other.overrideReferenceImage);
         this.toMaskAlgorithm = new UnreferencedRoiToMaskAlgorithm(other.toMaskAlgorithm);
+        this.preferAssociatedImage = other.preferAssociatedImage;
         registerSubParameter(toMaskAlgorithm);
     }
 
@@ -85,27 +90,50 @@ public abstract class ImageRoiProcessorAlgorithm extends JIPipeIteratingAlgorith
      * @param isCancelled       if cancelled
      * @return reference image
      */
-    protected ImagePlus getReferenceImage(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
-        if (requireReferenceImage) {
-            return dataBatch.getInputData("Reference", ImagePlusData.class).getImage();
+    protected Map<ImagePlusData, ROIListData> getReferenceImage(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+        if (overrideReferenceImage) {
+            ImagePlusData reference = dataBatch.getInputData("Reference", ImagePlusData.class);
+            Map<ImagePlusData, ROIListData> result = new HashMap<>();
+            result.put(reference, dataBatch.getInputData("ROI", ROIListData.class));
+            return result;
         } else {
-            toMaskAlgorithm.clearSlotData();
-            toMaskAlgorithm.getFirstInputSlot().addData(dataBatch.getInputData("ROI", ROIListData.class));
-            toMaskAlgorithm.run(subProgress.resolve("Generate reference image"), algorithmProgress, isCancelled);
-            return toMaskAlgorithm.getFirstOutputSlot().getData(0, ImagePlusData.class).getImage();
+            Map<Optional<ImagePlus>, ROIListData> byReferenceImage = dataBatch.getInputData("ROI", ROIListData.class).groupByReferenceImage();
+            Map<ImagePlusData, ROIListData> result = new HashMap<>();
+            if(preferAssociatedImage) {
+                for (Map.Entry<Optional<ImagePlus>, ROIListData> entry : byReferenceImage.entrySet()) {
+                    if (entry.getKey().isPresent()) {
+                        result.put(new ImagePlusData(entry.getKey().get()), entry.getValue());
+                    } else {
+                        toMaskAlgorithm.clearSlotData();
+                        toMaskAlgorithm.getFirstInputSlot().addData(entry.getValue());
+                        toMaskAlgorithm.run(subProgress.resolve("Generate reference image"), algorithmProgress, isCancelled);
+                        ImagePlusData reference = toMaskAlgorithm.getFirstOutputSlot().getData(0, ImagePlusData.class);
+                        result.put(reference, entry.getValue());
+                    }
+                }
+            }
+            else {
+                ROIListData inputRois = dataBatch.getInputData("ROI", ROIListData.class);
+                toMaskAlgorithm.clearSlotData();
+                toMaskAlgorithm.getFirstInputSlot().addData(inputRois);
+                toMaskAlgorithm.run(subProgress.resolve("Generate reference image"), algorithmProgress, isCancelled);
+                ImagePlusData reference = toMaskAlgorithm.getFirstOutputSlot().getData(0, ImagePlusData.class);
+                result.put(reference, inputRois);
+            }
+            return result;
         }
     }
 
-    @JIPipeDocumentation(name = "Require reference image", description = "If enabled, this algorithm requires a reference image for its calculations." +
-            " If disabled, the reference image is generated automatically.")
-    @JIPipeParameter(value = "require-reference-image", priority = Priority.HIGH)
-    public boolean isRequireReferenceImage() {
-        return requireReferenceImage;
+    @JIPipeDocumentation(name = "Override reference image", description = "If enabled, this algorithm requires a manually set reference image for its calculations." +
+            " If disabled, the reference image is generated automatically or extracted from the ROI itself.")
+    @JIPipeParameter(value = "override-reference-image", priority = Priority.HIGH)
+    public boolean isOverrideReferenceImage() {
+        return overrideReferenceImage;
     }
 
-    @JIPipeParameter(value = "require-reference-image")
-    public void setRequireReferenceImage(boolean requireReferenceImage) {
-        this.requireReferenceImage = requireReferenceImage;
+    @JIPipeParameter(value = "override-reference-image")
+    public void setOverrideReferenceImage(boolean overrideReferenceImage) {
+        this.overrideReferenceImage = overrideReferenceImage;
         updateSlots();
     }
 
@@ -117,11 +145,24 @@ public abstract class ImageRoiProcessorAlgorithm extends JIPipeIteratingAlgorith
         return toMaskAlgorithm;
     }
 
+    @JIPipeDocumentation(name = "Prefer ROI-associated images", description = "Only relevant if 'Require reference image' is disabled. " +
+            "ROI can carry a reference to an image (e.g. the thresholding input). With this option enabled, this image is preferred to generating " +
+            "a mask based on the pure ROIs.")
+    @JIPipeParameter("prefer-associated-image")
+    public boolean isPreferAssociatedImage() {
+        return preferAssociatedImage;
+    }
+
+    @JIPipeParameter("prefer-associated-image")
+    public void setPreferAssociatedImage(boolean preferAssociatedImage) {
+        this.preferAssociatedImage = preferAssociatedImage;
+    }
+
     private void updateSlots() {
         JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) getSlotConfiguration();
-        if (requireReferenceImage && !getInputSlotMap().containsKey("Reference")) {
+        if (overrideReferenceImage && !getInputSlotMap().containsKey("Reference")) {
             slotConfiguration.addSlot("Reference", new JIPipeSlotDefinition(ImagePlusData.class, JIPipeSlotType.Input, null), false);
-        } else if (!requireReferenceImage && getInputSlotMap().containsKey("Reference")) {
+        } else if (!overrideReferenceImage && getInputSlotMap().containsKey("Reference")) {
             slotConfiguration.removeInputSlot("Reference", false);
         }
     }

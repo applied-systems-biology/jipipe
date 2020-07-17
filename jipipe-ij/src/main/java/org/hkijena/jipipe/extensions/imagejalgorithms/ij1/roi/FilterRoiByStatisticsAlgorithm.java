@@ -15,6 +15,7 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import ij.gui.Roi;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
@@ -29,6 +30,8 @@ import org.hkijena.jipipe.extensions.parameters.util.LogicalOperation;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -85,15 +88,19 @@ public class FilterRoiByStatisticsAlgorithm extends ImageRoiProcessorAlgorithm {
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
-        ROIListData inputData = dataBatch.getInputData("ROI", ROIListData.class);
-        ImagePlusData referenceImageData = new ImagePlusData(getReferenceImage(dataBatch, subProgress.resolve("Generate reference image"), algorithmProgress, isCancelled));
+        ROIListData allROIs = new ROIListData();
+        ResultsTableData allStatistics = new ResultsTableData();
 
-        // Obtain statistics
-        roiStatisticsAlgorithm.clearSlotData();
-        roiStatisticsAlgorithm.getInputSlot("ROI").addData(inputData);
-        roiStatisticsAlgorithm.getInputSlot("Reference").addData(referenceImageData);
-        roiStatisticsAlgorithm.run(subProgress.resolve("ROI statistics"), algorithmProgress, isCancelled);
-        ResultsTableData statistics = roiStatisticsAlgorithm.getFirstOutputSlot().getData(0, ResultsTableData.class);
+        for (Map.Entry<ImagePlusData, ROIListData> entry : getReferenceImage(dataBatch, subProgress.resolve("Generate reference image"), algorithmProgress, isCancelled).entrySet()) {
+            // Obtain statistics
+            roiStatisticsAlgorithm.clearSlotData();
+            roiStatisticsAlgorithm.getInputSlot("ROI").addData(entry.getValue());
+            roiStatisticsAlgorithm.getInputSlot("Reference").addData(entry.getKey());
+            roiStatisticsAlgorithm.run(subProgress.resolve("ROI statistics"), algorithmProgress, isCancelled);
+            ResultsTableData statistics = roiStatisticsAlgorithm.getFirstOutputSlot().getData(0, ResultsTableData.class);
+            allROIs.addAll(entry.getValue());
+            allStatistics.mergeWith(statistics);
+        }
 
         // Apply filter
         Multimap<MeasurementColumn, MeasurementFilter> filtersPerColumn = HashMultimap.create();
@@ -102,11 +109,11 @@ public class FilterRoiByStatisticsAlgorithm extends ImageRoiProcessorAlgorithm {
         }
 
         ROIListData outputData = new ROIListData();
-        for (int row = 0; row < statistics.getRowCount(); row++) {
-            java.util.List betweenMeasurements = new ArrayList<>();
+        for (int row = 0; row < allStatistics.getRowCount(); row++) {
+            List<Boolean> betweenMeasurements = new ArrayList<>();
             for (MeasurementColumn measurementColumn : filtersPerColumn.keySet()) {
-                double value = statistics.getTable().getValue(measurementColumn.getColumnName(), row);
-                java.util.List withinMeasurement = new ArrayList<>();
+                double value = allStatistics.getTable().getValue(measurementColumn.getColumnName(), row);
+                List<Boolean> withinMeasurement = new ArrayList<>();
                 for (MeasurementFilter measurementFilter : filtersPerColumn.get(measurementColumn)) {
                     withinMeasurement.add(measurementFilter.getValue().test(value));
                 }
@@ -114,7 +121,7 @@ public class FilterRoiByStatisticsAlgorithm extends ImageRoiProcessorAlgorithm {
             }
             boolean rowResult = betweenMeasurementOperation.apply(betweenMeasurements);
             if (rowResult == !invert) {
-                outputData.add(inputData.get(row));
+                outputData.add(allROIs.get(row));
             }
         }
 

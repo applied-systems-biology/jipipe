@@ -32,6 +32,7 @@ import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -92,53 +93,55 @@ public class SortAndExtractRoiByStatisticsAlgorithm extends ImageRoiProcessorAlg
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
-        ROIListData data = dataBatch.getInputData("ROI", ROIListData.class);
-        ImagePlusData referenceImageData = new ImagePlusData(getReferenceImage(dataBatch, subProgress.resolve("Generate reference image"), algorithmProgress, isCancelled));
-
-        // Obtain statistics
-        roiStatisticsAlgorithm.clearSlotData();
-        roiStatisticsAlgorithm.getInputSlot("ROI").addData(data);
-        roiStatisticsAlgorithm.getInputSlot("Reference").addData(referenceImageData);
-        roiStatisticsAlgorithm.run(subProgress.resolve("ROI statistics"), algorithmProgress, isCancelled);
-        ResultsTableData statistics = roiStatisticsAlgorithm.getFirstOutputSlot().getData(0, ResultsTableData.class);
-
-        // Apply sorting
-        if (!sortOrderList.isEmpty()) {
-            Comparator<Integer> comparator = sortOrderList.get(0).getRowComparator(statistics);
-            for (int i = 1; i < sortOrderList.size(); i++) {
-                comparator = comparator.thenComparing(sortOrderList.get(i).getRowComparator(statistics));
-            }
-            List<Integer> rowIndices = new ArrayList<>(statistics.getRowCount());
-            for (int i = 0; i < statistics.getRowCount(); i++) {
-                rowIndices.add(i);
-            }
-            rowIndices.sort(comparator);
-
-            ROIListData sortedData = new ROIListData();
-            for (int i = 0; i < data.size(); i++) {
-                sortedData.add(null);
-            }
-            for (int i = 0; i < data.size(); i++) {
-                sortedData.set(i, data.get(rowIndices.get(i)));
-            }
-            data = sortedData;
-        }
-
-        int topN = selection.apply(data.size());
-        if (autoClamp) {
-            topN = Math.min(topN, data.size());
-        }
 
         ROIListData outputData = new ROIListData();
-        for (int i = 0; i < topN; i++) {
-            Roi roi = data.get(i);
-            if (mapFillColor.isEnabled()) {
-                roi.setFillColor(mapFillColor.getContent().apply(i * 1.0 / topN));
+
+        for (Map.Entry<ImagePlusData, ROIListData> entry : getReferenceImage(dataBatch, subProgress.resolve("Generate reference image"), algorithmProgress, isCancelled).entrySet()) {
+            ROIListData data = entry.getValue();
+            // Obtain statistics
+            roiStatisticsAlgorithm.clearSlotData();
+            roiStatisticsAlgorithm.getInputSlot("ROI").addData(data);
+            roiStatisticsAlgorithm.getInputSlot("Reference").addData(entry.getKey());
+            roiStatisticsAlgorithm.run(subProgress.resolve("ROI statistics"), algorithmProgress, isCancelled);
+            ResultsTableData statistics = roiStatisticsAlgorithm.getFirstOutputSlot().getData(0, ResultsTableData.class);
+
+            // Apply sorting
+            if (!sortOrderList.isEmpty()) {
+                Comparator<Integer> comparator = sortOrderList.get(0).getRowComparator(statistics);
+                for (int i = 1; i < sortOrderList.size(); i++) {
+                    comparator = comparator.thenComparing(sortOrderList.get(i).getRowComparator(statistics));
+                }
+                List<Integer> rowIndices = new ArrayList<>(statistics.getRowCount());
+                for (int i = 0; i < statistics.getRowCount(); i++) {
+                    rowIndices.add(i);
+                }
+                rowIndices.sort(comparator);
+
+                ROIListData sortedData = new ROIListData();
+                for (int i = 0; i < data.size(); i++) {
+                    sortedData.add(null);
+                }
+                for (int i = 0; i < data.size(); i++) {
+                    sortedData.set(i, data.get(rowIndices.get(i)));
+                }
+                data = sortedData;
             }
-            if (mapLineColor.isEnabled()) {
-                roi.setStrokeColor(mapLineColor.getContent().apply(i * 1.0 / topN));
+
+            int topN = selection.apply(data.size());
+            if (autoClamp) {
+                topN = Math.min(topN, data.size());
             }
-            outputData.add(roi);
+
+            for (int i = 0; i < topN; i++) {
+                Roi roi = data.get(i);
+                if (mapFillColor.isEnabled()) {
+                    roi.setFillColor(mapFillColor.getContent().apply(i * 1.0 / topN));
+                }
+                if (mapLineColor.isEnabled()) {
+                    roi.setStrokeColor(mapLineColor.getContent().apply(i * 1.0 / topN));
+                }
+                outputData.add(roi);
+            }
         }
 
         dataBatch.addOutputData(getFirstOutputSlot(), outputData);

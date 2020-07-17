@@ -170,16 +170,7 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
 
     @Override
     public void display(String displayName, JIPipeWorkbench workbench) {
-        Map<Optional<ImagePlus>, ROIListData> byImage = new HashMap<>();
-        for (Roi roi : this) {
-            Optional<ImagePlus> key = Optional.ofNullable(roi.getImage());
-            ROIListData rois = byImage.getOrDefault(key, null);
-            if (rois == null) {
-                rois = new ROIListData();
-                byImage.put(key, rois);
-            }
-            rois.add(roi);
-        }
+        Map<Optional<ImagePlus>, ROIListData> byImage = groupByReferenceImage();
 
         RoiManager roiManager = null;
         if (roiManager == null) {
@@ -226,6 +217,24 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
     }
 
     /**
+     * Groups the ROI by their reference image
+     * @return map of reference image to ROI
+     */
+    public Map<Optional<ImagePlus>, ROIListData> groupByReferenceImage() {
+        Map<Optional<ImagePlus>, ROIListData> byImage = new HashMap<>();
+        for (Roi roi : this) {
+            Optional<ImagePlus> key = Optional.ofNullable(roi.getImage());
+            ROIListData rois = byImage.getOrDefault(key, null);
+            if (rois == null) {
+                rois = new ROIListData();
+                byImage.put(key, rois);
+            }
+            rois.add(roi);
+        }
+        return byImage;
+    }
+
+    /**
      * Generates a mask image from pure ROI data.
      * The ROI's reference images are ignored.
      *
@@ -253,9 +262,21 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
         }
 
         ImagePlus result = IJ.createImage("ROIs", "8-bit", sx, sy, sc, sz, st);
-        for (int z = 0; z < sz; z++) {
-            for (int c = 0; c < sc; c++) {
-                for (int t = 0; t < st; t++) {
+        drawMask(drawOutline, drawFilledOutline, lineThickness, result);
+        return result;
+    }
+
+    /**
+     * Draws the ROI over an existing mask image
+     * @param drawOutline  whether to draw an outline
+     * @param drawFilledOutline whether to fill the area
+     * @param lineThickness line thickness for drawing
+     * @param result the target image
+     */
+    public void drawMask(boolean drawOutline, boolean drawFilledOutline, int lineThickness, ImagePlus result) {
+        for (int z = 0; z < result.getNSlices(); z++) {
+            for (int c = 0; c < result.getNChannels(); c++) {
+                for (int t = 0; t < result.getNFrames(); t++) {
                     int stackIndex = result.getStackIndex(c + 1, z + 1, t + 1);
                     ImageProcessor processor = result.getStack().getProcessor(stackIndex);
                     processor.setLineWidth(lineThickness);
@@ -270,7 +291,6 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
                 }
             }
         }
-        return result;
     }
 
     /**

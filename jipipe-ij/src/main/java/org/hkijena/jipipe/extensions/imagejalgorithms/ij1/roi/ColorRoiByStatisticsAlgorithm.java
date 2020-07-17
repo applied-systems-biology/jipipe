@@ -30,6 +30,7 @@ import org.hkijena.jipipe.extensions.parameters.colors.OptionalColorMapParameter
 import org.hkijena.jipipe.extensions.parameters.primitives.EnumParameterSettings;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 
+import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -86,50 +87,55 @@ public class ColorRoiByStatisticsAlgorithm extends ImageRoiProcessorAlgorithm {
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
-        ROIListData data = (ROIListData) dataBatch.getInputData("ROI", ROIListData.class).duplicate();
-        ImagePlusData referenceImageData = new ImagePlusData(getReferenceImage(dataBatch, subProgress.resolve("Generate reference image"), algorithmProgress, isCancelled));
+        ROIListData outputData = new ROIListData();
 
-        // Obtain statistics
-        roiStatisticsAlgorithm.clearSlotData();
-        roiStatisticsAlgorithm.getInputSlot("ROI").addData(data);
-        roiStatisticsAlgorithm.getInputSlot("Reference").addData(referenceImageData);
-        roiStatisticsAlgorithm.run(subProgress.resolve("ROI statistics"), algorithmProgress, isCancelled);
-        ResultsTableData statistics = roiStatisticsAlgorithm.getFirstOutputSlot().getData(0, ResultsTableData.class);
+        for (Map.Entry<ImagePlusData, ROIListData> entry : getReferenceImage(dataBatch, subProgress.resolve("Generate reference image"), algorithmProgress, isCancelled).entrySet()) {
+            ROIListData data = (ROIListData) entry.getValue().duplicate();
 
-        // Apply color map
-        double fillMin = Double.POSITIVE_INFINITY;
-        double fillMax = Double.NEGATIVE_INFINITY;
-        double lineMin = Double.POSITIVE_INFINITY;
-        double lineMax = Double.NEGATIVE_INFINITY;
-        TDoubleList fillValues = new TDoubleArrayList();
-        TDoubleList lineValues = new TDoubleArrayList();
-        for (int row = 0; row < data.size(); row++) {
-            double fillValue = statistics.getTable().getValue(fillMeasurement.getColumnName(), row);
-            double lineValue = statistics.getTable().getValue(fillMeasurement.getColumnName(), row);
+            // Obtain statistics
+            roiStatisticsAlgorithm.clearSlotData();
+            roiStatisticsAlgorithm.getInputSlot("ROI").addData(data);
+            roiStatisticsAlgorithm.getInputSlot("Reference").addData(entry.getKey());
+            roiStatisticsAlgorithm.run(subProgress.resolve("ROI statistics"), algorithmProgress, isCancelled);
+            ResultsTableData statistics = roiStatisticsAlgorithm.getFirstOutputSlot().getData(0, ResultsTableData.class);
 
-            fillValues.add(fillValue);
-            fillMin = Math.min(fillValue, fillMin);
-            fillMax = Math.max(fillValue, fillMax);
+            // Apply color map
+            double fillMin = Double.POSITIVE_INFINITY;
+            double fillMax = Double.NEGATIVE_INFINITY;
+            double lineMin = Double.POSITIVE_INFINITY;
+            double lineMax = Double.NEGATIVE_INFINITY;
+            TDoubleList fillValues = new TDoubleArrayList();
+            TDoubleList lineValues = new TDoubleArrayList();
+            for (int row = 0; row < data.size(); row++) {
+                double fillValue = statistics.getTable().getValue(fillMeasurement.getColumnName(), row);
+                double lineValue = statistics.getTable().getValue(fillMeasurement.getColumnName(), row);
 
-            lineValues.add(lineValue);
-            lineMin = Math.min(lineValue, lineMin);
-            lineMax = Math.max(lineValue, lineMax);
-        }
-        for (int row = 0; row < data.size(); row++) {
-            double fillValue = fillValues.get(row);
-            double relativeFill = (fillValue - fillMin) / (fillMax - fillMin);
-            double lineValue = lineValues.get(row);
-            double relativeLine = (lineValue - lineMin) / (lineMax - lineMin);
-            Roi roi = data.get(row);
-            if (mapFillColor.isEnabled()) {
-                roi.setFillColor(mapFillColor.getContent().apply(relativeFill));
+                fillValues.add(fillValue);
+                fillMin = Math.min(fillValue, fillMin);
+                fillMax = Math.max(fillValue, fillMax);
+
+                lineValues.add(lineValue);
+                lineMin = Math.min(lineValue, lineMin);
+                lineMax = Math.max(lineValue, lineMax);
             }
-            if (mapLineColor.isEnabled()) {
-                roi.setStrokeColor(mapLineColor.getContent().apply(relativeLine));
+            for (int row = 0; row < data.size(); row++) {
+                double fillValue = fillValues.get(row);
+                double relativeFill = (fillValue - fillMin) / (fillMax - fillMin);
+                double lineValue = lineValues.get(row);
+                double relativeLine = (lineValue - lineMin) / (lineMax - lineMin);
+                Roi roi = data.get(row);
+                if (mapFillColor.isEnabled()) {
+                    roi.setFillColor(mapFillColor.getContent().apply(relativeFill));
+                }
+                if (mapLineColor.isEnabled()) {
+                    roi.setStrokeColor(mapLineColor.getContent().apply(relativeLine));
+                }
             }
+
+            outputData.addAll(data);
         }
 
-        dataBatch.addOutputData(getFirstOutputSlot(), data);
+        dataBatch.addOutputData(getFirstOutputSlot(), outputData);
     }
 
 

@@ -59,7 +59,7 @@ public class RoiToRGBAlgorithm extends JIPipeIteratingAlgorithm {
     private OptionalColorParameter overrideFillColor = new OptionalColorParameter();
     private OptionalColorParameter overrideLineColor = new OptionalColorParameter();
     private OptionalDoubleParameter overrideLineWidth = new OptionalDoubleParameter();
-    private boolean drawOver = false;
+    private boolean drawOver = true;
 
     /**
      * Instantiates a new algorithm.
@@ -111,7 +111,7 @@ public class RoiToRGBAlgorithm extends JIPipeIteratingAlgorithm {
         Filler roiFiller = new Filler();
         if (drawLabel) {
             RoiStatisticsAlgorithm statisticsAlgorithm = JIPipeAlgorithm.newInstance("ij1-roi-statistics");
-            statisticsAlgorithm.setRequireReferenceImage(true);
+            statisticsAlgorithm.setOverrideReferenceImage(true);
             statisticsAlgorithm.getMeasurements().setNativeValue(Measurement.Centroid.getNativeValue());
             statisticsAlgorithm.getInputSlot("ROI").addData(inputData);
             statisticsAlgorithm.getInputSlot("Reference").addData(new ImagePlusData(reference));

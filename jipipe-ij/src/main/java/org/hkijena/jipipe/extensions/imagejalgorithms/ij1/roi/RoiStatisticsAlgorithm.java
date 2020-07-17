@@ -81,20 +81,20 @@ public class RoiStatisticsAlgorithm extends ImageRoiProcessorAlgorithm {
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
-        ROIListData inputData = dataBatch.getInputData("ROI", ROIListData.class);
-        Map<SliceIndex, List<Roi>> grouped = inputData.groupByPosition(applyPerSlice, applyPerChannel, applyPerFrame);
-        ImagePlus reference = getReferenceImage(dataBatch, subProgress.resolve("Generate reference image"), algorithmProgress, isCancelled);
+        Map<ImagePlusData, ROIListData> groupedByReference = getReferenceImage(dataBatch, subProgress.resolve("Generate reference image"), algorithmProgress, isCancelled);
+        for (Map.Entry<ImagePlusData, ROIListData> referenceEntry : groupedByReference.entrySet()) {
+            Map<SliceIndex, List<Roi>> grouped = referenceEntry.getValue().groupByPosition(applyPerSlice, applyPerChannel, applyPerFrame);
+            for (Map.Entry<SliceIndex, List<Roi>> entry : grouped.entrySet()) {
+                ROIListData data = new ROIListData(entry.getValue());
 
-        for (Map.Entry<SliceIndex, List<Roi>> entry : grouped.entrySet()) {
-            ROIListData data = new ROIListData(entry.getValue());
+                ResultsTableData result = data.measure(referenceEntry.getKey().getImage(), measurements);
+                List<JIPipeAnnotation> annotations = new ArrayList<>();
+                if (!StringUtils.isNullOrEmpty(indexAnnotation)) {
+                    annotations.add(new JIPipeAnnotation(indexAnnotation, entry.getKey().toString()));
+                }
 
-            ResultsTableData result = data.measure(reference, measurements);
-            List<JIPipeAnnotation> annotations = new ArrayList<>();
-            if (!StringUtils.isNullOrEmpty(indexAnnotation)) {
-                annotations.add(new JIPipeAnnotation(indexAnnotation, entry.getKey().toString()));
+                dataBatch.addOutputData(getFirstOutputSlot(), result, annotations);
             }
-
-            dataBatch.addOutputData(getFirstOutputSlot(), result, annotations);
         }
     }
 

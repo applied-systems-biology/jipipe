@@ -39,6 +39,7 @@ import org.python.util.PythonInterpreter;
 import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -136,25 +137,29 @@ public class FilterAndMergeRoiByStatisticsScriptAlgorithm extends ImageRoiProces
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
-        ROIListData inputData = dataBatch.getInputData("ROI", ROIListData.class);
-        ImagePlusData referenceImageData = new ImagePlusData(getReferenceImage(dataBatch, subProgress.resolve("Generate reference image"), algorithmProgress, isCancelled));
+        ROIListData allROIs = new ROIListData();
+        ResultsTableData allStatistics = new ResultsTableData();
 
-        // Obtain statistics
-        roiStatisticsAlgorithm.clearSlotData();
-        roiStatisticsAlgorithm.getInputSlot("ROI").addData(inputData);
-        roiStatisticsAlgorithm.getInputSlot("Reference").addData(referenceImageData);
-        roiStatisticsAlgorithm.run(subProgress.resolve("ROI statistics"), algorithmProgress, isCancelled);
-        ResultsTableData statistics = roiStatisticsAlgorithm.getFirstOutputSlot().getData(0, ResultsTableData.class);
+        for (Map.Entry<ImagePlusData, ROIListData> entry : getReferenceImage(dataBatch, subProgress.resolve("Generate reference image"), algorithmProgress, isCancelled).entrySet()) {
+            // Obtain statistics
+            roiStatisticsAlgorithm.clearSlotData();
+            roiStatisticsAlgorithm.getInputSlot("ROI").addData(entry.getValue());
+            roiStatisticsAlgorithm.getInputSlot("Reference").addData(entry.getKey());
+            roiStatisticsAlgorithm.run(subProgress.resolve("ROI statistics"), algorithmProgress, isCancelled);
+            ResultsTableData statistics = roiStatisticsAlgorithm.getFirstOutputSlot().getData(0, ResultsTableData.class);
+            allROIs.addAll(entry.getValue());
+            allStatistics.mergeWith(statistics);
+        }
 
         List<PyDictionary> roiList = new ArrayList<>();
-        for (int row = 0; row < inputData.size(); row++) {
+        for (int row = 0; row < allROIs.size(); row++) {
             PyDictionary roiItemDictionary = new PyDictionary();
             PyDictionary statisticsDictionary = new PyDictionary();
-            for (int col = 0; col < statistics.getColumnCount(); col++) {
-                statisticsDictionary.put(statistics.getColumnName(col), statistics.getValueAsDouble(row, col));
+            for (int col = 0; col < allStatistics.getColumnCount(); col++) {
+                statisticsDictionary.put(allStatistics.getColumnName(col), allStatistics.getValueAsDouble(row, col));
             }
             roiItemDictionary.put("stats", statisticsDictionary);
-            roiItemDictionary.put("data", inputData.get(row));
+            roiItemDictionary.put("data", allROIs.get(row));
             roiList.add(roiItemDictionary);
         }
 

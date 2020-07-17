@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi;
 
+import ij.IJ;
 import ij.ImagePlus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
@@ -26,6 +27,8 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
 import org.hkijena.jipipe.extensions.parameters.roi.Margin;
 
+import java.util.Map;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -43,6 +46,7 @@ public class UnreferencedRoiToMaskAlgorithm extends JIPipeSimpleIteratingAlgorit
     private boolean drawOutline = false;
     private boolean drawFilledOutline = true;
     private int lineThickness = 1;
+    private boolean preferAssociatedImage = true;
 
     /**
      * Instantiates a new algorithm.
@@ -69,13 +73,44 @@ public class UnreferencedRoiToMaskAlgorithm extends JIPipeSimpleIteratingAlgorit
         this.drawOutline = other.drawOutline;
         this.drawFilledOutline = other.drawFilledOutline;
         this.lineThickness = other.lineThickness;
+        this.preferAssociatedImage = other.preferAssociatedImage;
+    }
+
+    @JIPipeDocumentation(name = "Prefer ROI-associated images", description =
+            "ROI can carry a reference to an image (e.g. the thresholding input). With this option enabled, this image is preferred to generating " +
+                    "a mask based on the pure ROIs.")
+    @JIPipeParameter("prefer-associated-image")
+    public boolean isPreferAssociatedImage() {
+        return preferAssociatedImage;
     }
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         ROIListData inputData = (ROIListData) dataBatch.getInputData(getFirstInputSlot(), ROIListData.class).duplicate();
-        ImagePlus result = inputData.toMask(imageArea, drawOutline, drawFilledOutline, lineThickness);
-        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(result));
+        if(preferAssociatedImage) {
+            for (Map.Entry<Optional<ImagePlus>, ROIListData> entry : inputData.groupByReferenceImage().entrySet()) {
+                if(entry.getKey().isPresent()) {
+                    ImagePlus reference = entry.getKey().get();
+                    ImagePlus target = IJ.createImage("ROIs",
+                            "8-bit",
+                            reference.getWidth(),
+                            reference.getHeight(),
+                            reference.getNChannels(),
+                            reference.getNSlices(),
+                            reference.getNFrames());
+                    entry.getValue().drawMask(drawOutline, drawFilledOutline, lineThickness, target);
+                    dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(target));
+                }
+                else {
+                    ImagePlus result = entry.getValue().toMask(imageArea, drawOutline, drawFilledOutline, lineThickness);
+                    dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(result));
+                }
+            }
+        }
+        else {
+            ImagePlus result = inputData.toMask(imageArea, drawOutline, drawFilledOutline, lineThickness);
+            dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(result));
+        }
     }
 
     @Override

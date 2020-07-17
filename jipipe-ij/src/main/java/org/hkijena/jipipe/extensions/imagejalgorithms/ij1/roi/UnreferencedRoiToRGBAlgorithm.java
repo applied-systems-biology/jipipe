@@ -37,6 +37,7 @@ import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -57,6 +58,8 @@ public class UnreferencedRoiToRGBAlgorithm extends JIPipeSimpleIteratingAlgorith
     private OptionalColorParameter overrideFillColor = new OptionalColorParameter();
     private OptionalColorParameter overrideLineColor = new OptionalColorParameter();
     private OptionalDoubleParameter overrideLineWidth = new OptionalDoubleParameter();
+    private boolean preferAssociatedImage = true;
+    private boolean drawOver = true;
 
     /**
      * Instantiates a new algorithm.
@@ -89,12 +92,39 @@ public class UnreferencedRoiToRGBAlgorithm extends JIPipeSimpleIteratingAlgorith
         this.overrideFillColor = new OptionalColorParameter(other.overrideFillColor);
         this.overrideLineColor = new OptionalColorParameter(other.overrideLineColor);
         this.overrideLineWidth = new OptionalDoubleParameter(other.overrideLineWidth);
+        this.preferAssociatedImage = other.preferAssociatedImage;
+        this.drawOver = other.drawOver;
+    }
+
+    @JIPipeDocumentation(name = "Prefer ROI-associated images", description =
+            "ROI can carry a reference to an image (e.g. the thresholding input). With this option enabled, this image is preferred to generating " +
+            "an output based on the pure ROIs.")
+    @JIPipeParameter("prefer-associated-image")
+    public boolean isPreferAssociatedImage() {
+        return preferAssociatedImage;
+    }
+
+    @JIPipeParameter("prefer-associated-image")
+    public void setPreferAssociatedImage(boolean preferAssociatedImage) {
+        this.preferAssociatedImage = preferAssociatedImage;
     }
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
-        ROIListData inputData = (ROIListData) dataBatch.getInputData(getFirstInputSlot(), ROIListData.class).duplicate();
+        if(preferAssociatedImage) {
+            for (Map.Entry<Optional<ImagePlus>, ROIListData> referenceEntry : dataBatch.getInputData(getFirstInputSlot(), ROIListData.class).groupByReferenceImage().entrySet()) {
+                ROIListData inputData = (ROIListData)referenceEntry.getValue().duplicate();
+                processROILIst(dataBatch, subProgress, algorithmProgress, isCancelled, inputData, referenceEntry.getKey().orElse(null));
+            }
+        }
+        else {
+            ROIListData inputData = (ROIListData) dataBatch.getInputData(getFirstInputSlot(), ROIListData.class).duplicate();
+            processROILIst(dataBatch, subProgress, algorithmProgress, isCancelled, inputData, null);
+        }
 
+    }
+
+    private void processROILIst(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled, ROIListData inputData, ImagePlus reference) {
         // Find the bounds and future stack position
         Rectangle bounds = imageArea.apply(inputData.getBounds());
         int sx = bounds.width + bounds.x;
@@ -117,7 +147,7 @@ public class UnreferencedRoiToRGBAlgorithm extends JIPipeSimpleIteratingAlgorith
         Filler roiFiller = new Filler();
         if (drawLabel) {
             RoiStatisticsAlgorithm statisticsAlgorithm = JIPipeAlgorithm.newInstance("ij1-roi-statistics");
-            statisticsAlgorithm.setRequireReferenceImage(false);
+            statisticsAlgorithm.setOverrideReferenceImage(false);
             statisticsAlgorithm.getMeasurements().setNativeValue(Measurement.Centroid.getNativeValue());
             statisticsAlgorithm.getInputSlot("ROI").addData(inputData);
             statisticsAlgorithm.run(subProgress.resolve("ROI statistics"), algorithmProgress, isCancelled);
@@ -130,7 +160,23 @@ public class UnreferencedRoiToRGBAlgorithm extends JIPipeSimpleIteratingAlgorith
             }
         }
 
-        ImagePlus result = IJ.createImage("ROIs", "RGB", sx, sy, sc, sz, st);
+        ImagePlus result;
+        if(reference == null)
+            result = IJ.createImage("ROIs", "RGB", sx, sy, sc, sz, st);
+        else if(drawOver) {
+            result = new ImagePlusColorRGBData(reference).getDuplicateImage();
+            result.setTitle("ROIs+Reference");
+        }
+        else {
+            result = IJ.createImage("ROIs",
+                    "RGB",
+                    reference.getWidth(),
+                    reference.getHeight(),
+                    reference.getNChannels(),
+                    reference.getNSlices(),
+                    reference.getNFrames());
+        }
+
 
         // Draw ROI
         for (int z = 0; z < sz; z++) {
@@ -255,5 +301,16 @@ public class UnreferencedRoiToRGBAlgorithm extends JIPipeSimpleIteratingAlgorith
     @JIPipeParameter("draw-label")
     public void setDrawLabel(boolean drawLabel) {
         this.drawLabel = drawLabel;
+    }
+
+    @JIPipeDocumentation(name = "Draw over reference", description = "If enabled, draw the ROI over the reference image.")
+    @JIPipeParameter("draw-over")
+    public boolean isDrawOver() {
+        return drawOver;
+    }
+
+    @JIPipeParameter("draw-over")
+    public void setDrawOver(boolean drawOver) {
+        this.drawOver = drawOver;
     }
 }
