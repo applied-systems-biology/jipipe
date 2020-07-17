@@ -18,14 +18,15 @@ import org.hkijena.jipipe.api.algorithm.JIPipeGraph;
 import org.hkijena.jipipe.ui.JIPipeJsonExtensionWorkbench;
 import org.hkijena.jipipe.ui.components.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.MarkdownReader;
-import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphCompartmentUI;
-import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphEditorUI;
-import org.hkijena.jipipe.ui.grapheditor.JIPipeNodeUI;
-import org.hkijena.jipipe.ui.grapheditor.JIPipeStandardDragAndDropBehavior;
+import org.hkijena.jipipe.ui.grapheditor.*;
 import org.hkijena.jipipe.ui.grapheditor.contextmenu.clipboard.AlgorithmGraphCopyNodeUIContextAction;
 import org.hkijena.jipipe.ui.grapheditor.contextmenu.clipboard.AlgorithmGraphCutNodeUIContextAction;
 import org.hkijena.jipipe.ui.grapheditor.contextmenu.clipboard.AlgorithmGraphPasteNodeUIContextAction;
 
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
@@ -34,7 +35,7 @@ import java.util.stream.Collectors;
  */
 public class JIPipeJsonExtensionGraphUI extends JIPipeGraphEditorUI {
 
-    private MarkdownReader documentationPanel;
+    private JPanel defaultPanel;
 
     /**
      * Creates a new instance
@@ -45,9 +46,8 @@ public class JIPipeJsonExtensionGraphUI extends JIPipeGraphEditorUI {
      */
     public JIPipeJsonExtensionGraphUI(JIPipeJsonExtensionWorkbench workbenchUI, JIPipeGraph algorithmGraph, String compartment) {
         super(workbenchUI, algorithmGraph, compartment);
-        documentationPanel = new MarkdownReader(false);
-        documentationPanel.setDocument(MarkdownDocument.fromPluginResource("documentation/algorithm-graph.md"));
-        setPropertyPanel(documentationPanel);
+        initializeDefaultPanel();
+        setPropertyPanel(defaultPanel);
 
         // Set D&D and Copy&Paste behavior
         getCanvasUI().setDragAndDropBehavior(new JIPipeStandardDragAndDropBehavior());
@@ -56,6 +56,29 @@ public class JIPipeJsonExtensionGraphUI extends JIPipeGraphEditorUI {
                 new AlgorithmGraphCopyNodeUIContextAction(),
                 new AlgorithmGraphPasteNodeUIContextAction()
         ));
+    }
+
+    private void initializeDefaultPanel() {
+        defaultPanel = new JPanel(new BorderLayout());
+
+        JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
+        splitPane.setDividerSize(3);
+        splitPane.setResizeWeight(0.33);
+        addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                super.componentResized(e);
+                splitPane.setDividerLocation(0.33);
+            }
+        });
+        defaultPanel.add(splitPane, BorderLayout.CENTER);
+
+        JIPipeGraphEditorMinimap minimap = new JIPipeGraphEditorMinimap(this);
+        splitPane.setTopComponent(minimap);
+
+        MarkdownReader markdownReader = new MarkdownReader(false);
+        markdownReader.setDocument(MarkdownDocument.fromPluginResource("documentation/algorithm-graph.md"));
+        splitPane.setBottomComponent(markdownReader);
     }
 
     /**
@@ -88,7 +111,7 @@ public class JIPipeJsonExtensionGraphUI extends JIPipeGraphEditorUI {
     protected void updateSelection() {
         super.updateSelection();
         if (getSelection().isEmpty()) {
-            setPropertyPanel(documentationPanel);
+            setPropertyPanel(defaultPanel);
         } else if (getSelection().size() == 1) {
             setPropertyPanel(new JIPipeJsonExtensionSingleAlgorithmSelectionPanelUI(this,
                     getSelection().iterator().next().getNode()));

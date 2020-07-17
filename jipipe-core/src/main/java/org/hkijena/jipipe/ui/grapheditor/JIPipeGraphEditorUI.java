@@ -87,6 +87,10 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         updateNavigation();
     }
 
+    public JScrollPane getScrollPane() {
+        return scrollPane;
+    }
+
     public JIPipeGraphCanvasUI getCanvasUI() {
         return canvasUI;
     }

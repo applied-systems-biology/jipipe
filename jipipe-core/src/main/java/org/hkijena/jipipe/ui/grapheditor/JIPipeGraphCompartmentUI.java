@@ -41,6 +41,9 @@ import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -49,7 +52,7 @@ import java.util.stream.Collectors;
  */
 public class JIPipeGraphCompartmentUI extends JIPipeGraphEditorUI {
 
-    private final MarkdownReader documentationPanel;
+    private JPanel defaultPanel;
     private boolean disableUpdateOnSelection = false;
 
     /**
@@ -61,9 +64,8 @@ public class JIPipeGraphCompartmentUI extends JIPipeGraphEditorUI {
      */
     public JIPipeGraphCompartmentUI(JIPipeWorkbench workbenchUI, JIPipeGraph algorithmGraph, String compartment) {
         super(workbenchUI, algorithmGraph, compartment);
-        documentationPanel = new MarkdownReader(false);
-        documentationPanel.setDocument(MarkdownDocument.fromPluginResource("documentation/algorithm-graph.md"));
-        setPropertyPanel(documentationPanel);
+        initializeDefaultPanel();
+        setPropertyPanel(defaultPanel);
 
         // Set D&D and Copy&Paste behavior
         getCanvasUI().setDragAndDropBehavior(new JIPipeStandardDragAndDropBehavior());
@@ -89,6 +91,29 @@ public class JIPipeGraphCompartmentUI extends JIPipeGraphEditorUI {
                 NodeUIContextAction.SEPARATOR,
                 new SelectAndMoveNodeHereNodeUIContextAction()
         ));
+    }
+
+    private void initializeDefaultPanel() {
+        defaultPanel = new JPanel(new BorderLayout());
+
+        JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
+        splitPane.setDividerSize(3);
+        splitPane.setResizeWeight(0.33);
+        addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                super.componentResized(e);
+                splitPane.setDividerLocation(0.33);
+            }
+        });
+        defaultPanel.add(splitPane, BorderLayout.CENTER);
+
+        JIPipeGraphEditorMinimap minimap = new JIPipeGraphEditorMinimap(this);
+        splitPane.setTopComponent(minimap);
+
+        MarkdownReader markdownReader = new MarkdownReader(false);
+        markdownReader.setDocument(MarkdownDocument.fromPluginResource("documentation/algorithm-graph.md"));
+        splitPane.setBottomComponent(markdownReader);
     }
 
 //    @Override
@@ -124,7 +149,7 @@ public class JIPipeGraphCompartmentUI extends JIPipeGraphEditorUI {
         if (disableUpdateOnSelection)
             return;
         if (getSelection().isEmpty()) {
-            setPropertyPanel(documentationPanel);
+            setPropertyPanel(defaultPanel);
         } else if (getSelection().size() == 1) {
             JIPipeNodeUI ui = getSelection().iterator().next();
             setPropertyPanel(new JIPipeSingleAlgorithmSelectionPanelUI(this, ui.getNode()));

@@ -215,15 +215,14 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
                 Set<JIPipeGraphEdge> visibleEdges = new HashSet<>();
                 for (JIPipeDataSlot targetSlot : targetSlots) {
                     JIPipeGraphEdge edge = getGraph().getGraph().getEdge(slot, targetSlot);
-                    if(edge.isUiHidden()) {
+                    if (edge.isUiHidden()) {
                         hiddenEdges.add(edge);
-                    }
-                    else {
+                    } else {
                         visibleEdges.add(edge);
                     }
                 }
 
-                if(!hiddenEdges.isEmpty()) {
+                if (!hiddenEdges.isEmpty()) {
                     JMenuItem showButton = new JMenuItem("Show all outgoing edges", UIUtils.getIconFromResources("eye.png"));
                     showButton.setToolTipText("Un-hides all outgoing edges");
                     showButton.addActionListener(e -> {
@@ -235,7 +234,7 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
                     });
                     assignButtonMenu.add(showButton);
                 }
-                if(!visibleEdges.isEmpty()) {
+                if (!visibleEdges.isEmpty()) {
                     JMenuItem showButton = new JMenuItem("Hide all outgoing edges", UIUtils.getIconFromResources("eye-slash.png"));
                     showButton.setToolTipText("Hides all outgoing edges");
                     showButton.addActionListener(e -> {

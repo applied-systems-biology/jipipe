@@ -146,6 +146,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
             updateSelection();
             revalidate();
             repaint();
+            getEventBus().post(new GraphCanvasUpdatedEvent(this));
         }
     }
 
@@ -195,6 +196,9 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
         }
         if (ui != null) {
             getEventBus().post(new AlgorithmEvent(ui));
+        }
+        if (newlyPlacedAlgorithms > 0) {
+            getEventBus().post(new GraphCanvasUpdatedEvent(this));
         }
     }
 
@@ -256,6 +260,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
                 break;
         }
         repaint();
+        getEventBus().post(new GraphCanvasUpdatedEvent(this));
     }
 
     /**
@@ -381,6 +386,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
             repaint();
             if (getParent() != null)
                 getParent().revalidate();
+            getEventBus().post(new GraphCanvasUpdatedEvent(this));
         }
     }
 
@@ -614,6 +620,8 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
                 this.cursor = cursorBackup;
             }
         }
+
+        getEventBus().post(new GraphCanvasUpdatedEvent(this));
     }
 
 
@@ -1064,6 +1072,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
             this.viewMode = viewMode;
             removeAllNodes();
             addNewNodes();
+            crop();
         }
     }
 

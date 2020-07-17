@@ -28,6 +28,7 @@ import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.components.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.MarkdownReader;
 import org.hkijena.jipipe.ui.events.DefaultAlgorithmUIActionRequestedEvent;
+import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphEditorMinimap;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphEditorUI;
 import org.hkijena.jipipe.ui.grapheditor.contextmenu.*;
 import org.hkijena.jipipe.ui.grapheditor.contextmenu.clipboard.GraphCompartmentCopyNodeUIContextAction;
@@ -38,6 +39,9 @@ import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Arrays;
@@ -49,16 +53,15 @@ import static org.hkijena.jipipe.api.algorithm.JIPipeGraph.COMPARTMENT_DEFAULT;
  * Graph editor UI for a project compartment graph
  */
 public class JIPipeCompartmentGraphUI extends JIPipeGraphEditorUI {
-    private final MarkdownReader documentationPanel;
+    private JPanel defaultPanel;
 
     /**
      * @param workbenchUI The workbench UI
      */
     public JIPipeCompartmentGraphUI(JIPipeProjectWorkbench workbenchUI) {
         super(workbenchUI, workbenchUI.getProject().getCompartmentGraph(), COMPARTMENT_DEFAULT);
-        documentationPanel = new MarkdownReader(false);
-        documentationPanel.setDocument(MarkdownDocument.fromPluginResource("documentation/compartment-graph.md"));
-        setPropertyPanel(documentationPanel);
+        initializeDefaultPanel();
+        setPropertyPanel(defaultPanel);
 
         // Copy & paste behavior
         getCanvasUI().setContextActions(Arrays.asList(
@@ -73,6 +76,29 @@ public class JIPipeCompartmentGraphUI extends JIPipeGraphEditorUI {
                 NodeUIContextAction.SEPARATOR,
                 new SelectAndMoveNodeHereNodeUIContextAction()
         ));
+    }
+
+    private void initializeDefaultPanel() {
+        defaultPanel = new JPanel(new BorderLayout());
+
+        JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
+        splitPane.setDividerSize(3);
+        splitPane.setResizeWeight(0.33);
+        addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                super.componentResized(e);
+                splitPane.setDividerLocation(0.33);
+            }
+        });
+        defaultPanel.add(splitPane, BorderLayout.CENTER);
+
+        JIPipeGraphEditorMinimap minimap = new JIPipeGraphEditorMinimap(this);
+        splitPane.setTopComponent(minimap);
+
+        MarkdownReader markdownReader = new MarkdownReader(false);
+        markdownReader.setDocument(MarkdownDocument.fromPluginResource("documentation/compartment-graph.md"));
+        splitPane.setBottomComponent(markdownReader);
     }
 
     @Override
@@ -96,7 +122,7 @@ public class JIPipeCompartmentGraphUI extends JIPipeGraphEditorUI {
     protected void updateSelection() {
         super.updateSelection();
         if (getSelection().isEmpty()) {
-            setPropertyPanel(documentationPanel);
+            setPropertyPanel(defaultPanel);
         } else if (getSelection().size() == 1) {
             setPropertyPanel(new JIPipeSingleCompartmentSelectionPanelUI(this,
                     (JIPipeProjectCompartment) getSelection().iterator().next().getNode()));
