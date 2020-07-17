@@ -756,7 +756,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
 
     private void paintEdges(Graphics2D g, RectangularLineDrawer drawer, Stroke stroke, Stroke predecessorStroke, boolean onlySelected, boolean mergePredecessors) {
 
-        if(mergePredecessors) {
+        if(mergePredecessors && GraphEditorUISettings.getInstance().isCollapsePredecessors()) {
            for (JIPipeNodeUI nodeUI : nodeUIs.values()) {
 //               if(!getVisibleRect().intersects(nodeUI.getBounds()))
 //                   continue;
