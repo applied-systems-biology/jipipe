@@ -59,7 +59,6 @@ public abstract class ImageRoiProcessorAlgorithm extends JIPipeIteratingAlgorith
      */
     public ImageRoiProcessorAlgorithm(JIPipeNodeInfo info, Class<? extends JIPipeData> output, String outputName) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("ROI", ROIListData.class)
-                .addInputSlot("Reference", ImagePlusData.class)
                 .addOutputSlot(outputName, output, null)
                 .seal()
                 .build());
