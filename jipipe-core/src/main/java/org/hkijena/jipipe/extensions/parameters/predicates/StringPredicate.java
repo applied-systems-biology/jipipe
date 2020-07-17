@@ -43,9 +43,10 @@ public class StringPredicate implements Predicate<String>, JIPipeValidatable {
 
     /**
      * Initializes a new filter
-     *  @param mode         filter mode
+     *
+     * @param mode         filter mode
      * @param filterString filter string
-     * @param invert if the predicate should be inverted
+     * @param invert       if the predicate should be inverted
      */
     public StringPredicate(Mode mode, String filterString, boolean invert) {
         this.mode = mode;
@@ -99,18 +100,18 @@ public class StringPredicate implements Predicate<String>, JIPipeValidatable {
         boolean result;
         switch (mode) {
             case Equals:
-                result =  StringUtils.orElse(path, "").equals(filterString);
+                result = StringUtils.orElse(path, "").equals(filterString);
                 break;
             case Contains:
-                result =  StringUtils.orElse(path, "").contains(filterString);
+                result = StringUtils.orElse(path, "").contains(filterString);
                 break;
             case Regex:
-                result =   StringUtils.orElse(path, "").matches(filterString);
+                result = StringUtils.orElse(path, "").matches(filterString);
                 break;
             default:
                 throw new RuntimeException("Unknown mode!");
         }
-        if(!invert)
+        if (!invert)
             return result;
         else
             return !result;

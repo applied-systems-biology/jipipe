@@ -92,9 +92,9 @@ public class UnreferencedRoiToMaskAlgorithm extends JIPipeSimpleIteratingAlgorit
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         ROIListData inputData = (ROIListData) dataBatch.getInputData(getFirstInputSlot(), ROIListData.class).duplicate();
-        if(preferAssociatedImage) {
+        if (preferAssociatedImage) {
             for (Map.Entry<Optional<ImagePlus>, ROIListData> entry : inputData.groupByReferenceImage().entrySet()) {
-                if(entry.getKey().isPresent()) {
+                if (entry.getKey().isPresent()) {
                     ImagePlus reference = entry.getKey().get();
                     ImagePlus target = IJ.createImage("ROIs",
                             "8-bit",
@@ -105,14 +105,12 @@ public class UnreferencedRoiToMaskAlgorithm extends JIPipeSimpleIteratingAlgorit
                             reference.getNFrames());
                     entry.getValue().drawMask(drawOutline, drawFilledOutline, lineThickness, target);
                     dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(target));
-                }
-                else {
+                } else {
                     ImagePlus result = entry.getValue().toMask(imageArea, drawOutline, drawFilledOutline, lineThickness);
                     dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(result));
                 }
             }
-        }
-        else {
+        } else {
             ImagePlus result = inputData.toMask(imageArea, drawOutline, drawFilledOutline, lineThickness);
             dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(result));
         }

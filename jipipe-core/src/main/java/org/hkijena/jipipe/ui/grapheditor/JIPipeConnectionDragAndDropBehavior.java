@@ -124,8 +124,8 @@ public class JIPipeConnectionDragAndDropBehavior implements DropTargetListener, 
 
     @Override
     public void dragGestureRecognized(DragGestureEvent dge) {
-        if(dge.getTriggerEvent() instanceof MouseEvent) {
-            if(((MouseEvent) dge.getTriggerEvent()).getButton() != MouseEvent.BUTTON1)
+        if (dge.getTriggerEvent() instanceof MouseEvent) {
+            if (((MouseEvent) dge.getTriggerEvent()).getButton() != MouseEvent.BUTTON1)
                 return;
         }
         ObjectNode node = JsonUtils.getObjectMapper().getNodeFactory().objectNode();

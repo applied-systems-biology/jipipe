@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.ui.grapheditor.settings;
 
+import com.google.common.html.HtmlEscapers;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.ui.registries.JIPipeUIDatatypeRegistry;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -30,7 +31,7 @@ import java.util.Set;
 public class JIPipeDataSlotTreeCellRenderer extends JPanel implements TreeCellRenderer {
 
     private JLabel slotLabel;
-    private  JLabel slotName;
+    private JLabel slotName;
     private JLabel slotEdges;
 
     /**
@@ -81,31 +82,30 @@ public class JIPipeDataSlotTreeCellRenderer extends JPanel implements TreeCellRe
 
             slotName.setText(slot.getName());
             slotName.setIcon(JIPipeUIDatatypeRegistry.getInstance().getIconFor(slot.getAcceptedDataType()));
-            if(!StringUtils.isNullOrEmpty(slot.getDefinition().getCustomName())) {
+            if (!StringUtils.isNullOrEmpty(slot.getDefinition().getCustomName())) {
                 slotLabel.setText(slot.getDefinition().getCustomName());
-            }
-            else {
+            } else {
                 slotLabel.setText(null);
             }
-            if(slot.isInput()) {
+            if (slot.isInput()) {
                 JIPipeDataSlot sourceSlot = slot.getNode().getGraph().getSourceSlot(slot);
-                if(sourceSlot != null) {
-                    slotEdges.setText("Receives data from '" + sourceSlot.getDisplayName() + "'");
-                }
-                else {
+                if (sourceSlot != null) {
+                    slotEdges.setText("<html>Receives data from '<i>" + sourceSlot.getDisplayName() + "</i>'</html>");
+                } else {
                     slotEdges.setText("No connections");
                 }
-            }
-            else {
+            } else {
                 Set<JIPipeDataSlot> targetSlots = slot.getNode().getGraph().getTargetSlots(slot);
-                if(targetSlots.isEmpty()) {
+                if (targetSlots.isEmpty()) {
                     slotEdges.setText("No connections");
-                }
-                else if(targetSlots.size() == 1) {
-                    slotEdges.setText("Connected to one other slot");
-                }
-                else {
-                    slotEdges.setText("Connected to " + targetSlots.size() + " other slots");
+                } else {
+                    StringBuilder stringBuilder = new StringBuilder();
+                    stringBuilder.append("<html>");
+                    for (JIPipeDataSlot targetSlot : targetSlots) {
+                        stringBuilder.append("Sends data to '<i>").append(HtmlEscapers.htmlEscaper().escape(targetSlot.getDisplayName())).append("</i>'<br/>");
+                    }
+                    stringBuilder.append("</html>");
+                    slotEdges.setText(stringBuilder.toString());
                 }
             }
         } else {

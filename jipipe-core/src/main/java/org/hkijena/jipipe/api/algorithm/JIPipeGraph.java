@@ -34,9 +34,9 @@ import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
 import org.hkijena.jipipe.api.registries.JIPipeNodeRegistry;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.utils.GraphUtils;
+import org.hkijena.jipipe.utils.JsonUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.jgrapht.Graph;
-import org.jgrapht.alg.connectivity.ConnectivityInspector;
 import org.jgrapht.alg.cycle.CycleDetector;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.traverse.GraphIterator;
@@ -62,7 +62,6 @@ public class JIPipeGraph implements JIPipeValidatable {
     private Map<JIPipeGraphNode, String> compartments = new HashMap<>();
     private List<JIPipeDataSlot> traversedSlots;
     private List<JIPipeGraphNode> traversedAlgorithms;
-    private ConnectivityInspector<JIPipeDataSlot, JIPipeGraphEdge> connectivityInspector;
     private EventBus eventBus = new EventBus();
     /**
      * If this value is greater than one, no events are triggered
@@ -73,7 +72,6 @@ public class JIPipeGraph implements JIPipeValidatable {
      * Creates a new algorithm graph
      */
     public JIPipeGraph() {
-        connectivityInspector = new ConnectivityInspector<>(graph);
     }
 
     /**
@@ -208,7 +206,7 @@ public class JIPipeGraph implements JIPipeValidatable {
         if (graph.containsEdge(source, target)) {
             JIPipeGraphEdge edge = graph.getEdge(source, target);
             if (edge != null) {
-                return edge.isUserDisconnectable();
+                return edge.isUserCanDisconnect();
             }
         }
         return false;
@@ -688,6 +686,16 @@ public class JIPipeGraph implements JIPipeValidatable {
             }
             if (!graph.containsEdge(source, target))
                 connect(source, target);
+            JsonNode metadataNode = edgeNode.path("metadata");
+            if (!metadataNode.isMissingNode()) {
+                JIPipeGraphEdge edgeInstance = graph.getEdge(source, target);
+                try {
+                    JsonUtils.getObjectMapper().readerForUpdating(edgeInstance).readValue(metadataNode);
+                } catch (IOException e) {
+                    System.err.println("Cannot deserialize edge metadata!");
+                    e.printStackTrace();
+                }
+            }
         }
     }
 
@@ -1120,7 +1128,6 @@ public class JIPipeGraph implements JIPipeValidatable {
             node.getEventBus().register(this);
         }
         this.graph = other.graph;
-        this.connectivityInspector = new ConnectivityInspector<>(graph);
         --preventTriggerEvents;
         postChangedEvent();
     }
@@ -1142,10 +1149,6 @@ public class JIPipeGraph implements JIPipeValidatable {
             }
         }
         return result;
-    }
-
-    public ConnectivityInspector<JIPipeDataSlot, JIPipeGraphEdge> getConnectivityInspector() {
-        return connectivityInspector;
     }
 
     /**
@@ -1182,6 +1185,7 @@ public class JIPipeGraph implements JIPipeValidatable {
                 jsonGenerator.writeStringField("target-algorithm", StringUtils.jsonify(graph.getIdOf(edge.getValue().getNode())));
                 jsonGenerator.writeStringField("source-slot", StringUtils.makeFilesystemCompatible(edge.getKey().getName()));
                 jsonGenerator.writeStringField("target-slot", StringUtils.makeFilesystemCompatible(edge.getValue().getName()));
+                jsonGenerator.writeObjectField("metadata", graph.getGraph().getEdge(edge.getKey(), edge.getValue()));
                 jsonGenerator.writeEndObject();
             }
         }

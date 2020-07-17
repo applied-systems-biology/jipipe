@@ -99,7 +99,7 @@ public abstract class ImageRoiProcessorAlgorithm extends JIPipeIteratingAlgorith
         } else {
             Map<Optional<ImagePlus>, ROIListData> byReferenceImage = dataBatch.getInputData("ROI", ROIListData.class).groupByReferenceImage();
             Map<ImagePlusData, ROIListData> result = new HashMap<>();
-            if(preferAssociatedImage) {
+            if (preferAssociatedImage) {
                 for (Map.Entry<Optional<ImagePlus>, ROIListData> entry : byReferenceImage.entrySet()) {
                     if (entry.getKey().isPresent()) {
                         result.put(new ImagePlusData(entry.getKey().get()), entry.getValue());
@@ -111,8 +111,7 @@ public abstract class ImageRoiProcessorAlgorithm extends JIPipeIteratingAlgorith
                         result.put(reference, entry.getValue());
                     }
                 }
-            }
-            else {
+            } else {
                 ROIListData inputRois = dataBatch.getInputData("ROI", ROIListData.class);
                 toMaskAlgorithm.clearSlotData();
                 toMaskAlgorithm.getFirstInputSlot().addData(inputRois);

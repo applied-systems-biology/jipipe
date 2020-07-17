@@ -218,6 +218,7 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
 
     /**
      * Groups the ROI by their reference image
+     *
      * @return map of reference image to ROI
      */
     public Map<Optional<ImagePlus>, ROIListData> groupByReferenceImage() {
@@ -268,10 +269,11 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
 
     /**
      * Draws the ROI over an existing mask image
-     * @param drawOutline  whether to draw an outline
+     *
+     * @param drawOutline       whether to draw an outline
      * @param drawFilledOutline whether to fill the area
-     * @param lineThickness line thickness for drawing
-     * @param result the target image
+     * @param lineThickness     line thickness for drawing
+     * @param result            the target image
      */
     public void drawMask(boolean drawOutline, boolean drawFilledOutline, int lineThickness, ImagePlus result) {
         for (int z = 0; z < result.getNSlices(); z++) {

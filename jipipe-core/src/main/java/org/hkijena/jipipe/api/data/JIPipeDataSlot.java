@@ -294,7 +294,7 @@ public class JIPipeDataSlot implements TableModel {
      * @return Display name that includes the algorithm name, as well as the slot name.
      */
     public String getDisplayName() {
-        if(!StringUtils.isNullOrEmpty(definition.getCustomName()))
+        if (!StringUtils.isNullOrEmpty(definition.getCustomName()))
             return definition.getCustomName() + " [" + getName() + "] " + " (" + node.getName() + ")";
         else
             return getName() + " (" + node.getName() + ")";

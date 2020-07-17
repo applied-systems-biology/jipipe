@@ -40,9 +40,10 @@ public class DoublePredicate implements Predicate<Double>, JIPipeValidatable {
 
     /**
      * Initializes a new filter
-     *  @param mode      filter mode
+     *
+     * @param mode      filter mode
      * @param reference reference value
-     * @param invert if the result is inverted
+     * @param invert    if the result is inverted
      */
     public DoublePredicate(Mode mode, double reference, boolean invert) {
         this.mode = mode;
@@ -89,21 +90,21 @@ public class DoublePredicate implements Predicate<Double>, JIPipeValidatable {
                 result = other == reference;
                 break;
             case LessThan:
-                result =  other < reference;
+                result = other < reference;
                 break;
             case GreaterThan:
-                result =  other > reference;
+                result = other > reference;
                 break;
             case LessThanOrEquals:
-                result =  other <= reference;
+                result = other <= reference;
                 break;
             case GreaterThanOrEquals:
-                result =  other >= reference;
+                result = other >= reference;
                 break;
             default:
                 throw new RuntimeException("Unknown mode!");
         }
-        if(!invert)
+        if (!invert)
             return result;
         else
             return !result;

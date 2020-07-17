@@ -90,18 +90,18 @@ public class PathPredicate implements Predicate<Path>, JIPipeValidatable {
         boolean result;
         switch (mode) {
             case Contains:
-                result =  path.toString().contains(filterString);
+                result = path.toString().contains(filterString);
                 break;
             case Glob:
-                result =   globPathMatcher.matches(path);
+                result = globPathMatcher.matches(path);
                 break;
             case Regex:
-                result =   path.toString().matches(filterString);
+                result = path.toString().matches(filterString);
                 break;
             default:
                 throw new RuntimeException("Unknown mode!");
         }
-        if(!invert)
+        if (!invert)
             return result;
         else
             return !result;

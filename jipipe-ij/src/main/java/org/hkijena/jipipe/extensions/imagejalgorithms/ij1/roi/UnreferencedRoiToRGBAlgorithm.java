@@ -98,7 +98,7 @@ public class UnreferencedRoiToRGBAlgorithm extends JIPipeSimpleIteratingAlgorith
 
     @JIPipeDocumentation(name = "Prefer ROI-associated images", description =
             "ROI can carry a reference to an image (e.g. the thresholding input). With this option enabled, this image is preferred to generating " +
-            "an output based on the pure ROIs.")
+                    "an output based on the pure ROIs.")
     @JIPipeParameter("prefer-associated-image")
     public boolean isPreferAssociatedImage() {
         return preferAssociatedImage;
@@ -111,13 +111,12 @@ public class UnreferencedRoiToRGBAlgorithm extends JIPipeSimpleIteratingAlgorith
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
-        if(preferAssociatedImage) {
+        if (preferAssociatedImage) {
             for (Map.Entry<Optional<ImagePlus>, ROIListData> referenceEntry : dataBatch.getInputData(getFirstInputSlot(), ROIListData.class).groupByReferenceImage().entrySet()) {
-                ROIListData inputData = (ROIListData)referenceEntry.getValue().duplicate();
+                ROIListData inputData = (ROIListData) referenceEntry.getValue().duplicate();
                 processROILIst(dataBatch, subProgress, algorithmProgress, isCancelled, inputData, referenceEntry.getKey().orElse(null));
             }
-        }
-        else {
+        } else {
             ROIListData inputData = (ROIListData) dataBatch.getInputData(getFirstInputSlot(), ROIListData.class).duplicate();
             processROILIst(dataBatch, subProgress, algorithmProgress, isCancelled, inputData, null);
         }
@@ -161,13 +160,12 @@ public class UnreferencedRoiToRGBAlgorithm extends JIPipeSimpleIteratingAlgorith
         }
 
         ImagePlus result;
-        if(reference == null)
+        if (reference == null)
             result = IJ.createImage("ROIs", "RGB", sx, sy, sc, sz, st);
-        else if(drawOver) {
+        else if (drawOver) {
             result = new ImagePlusColorRGBData(reference).getDuplicateImage();
             result.setTitle("ROIs+Reference");
-        }
-        else {
+        } else {
             result = IJ.createImage("ROIs",
                     "RGB",
                     reference.getWidth(),
