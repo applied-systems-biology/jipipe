@@ -99,16 +99,16 @@ public class JIPipeAlgorithmFinderSlotUI extends JPanel {
 
         if (isExistingInstance) {
             if (graph.getSourceSlot(inputSlot) != null) {
-                JMenuItem disconnectExistingButton = new JMenuItem("Disconnect existing: " + graph.getSourceSlot(inputSlot).getNameWithAlgorithmName(), UIUtils.getIconFromResources("remove.png"));
+                JMenuItem disconnectExistingButton = new JMenuItem("Disconnect existing: " + graph.getSourceSlot(inputSlot).getDisplayName(), UIUtils.getIconFromResources("remove.png"));
                 disconnectExistingButton.addActionListener(e -> disconnectAllExistingInstance());
                 assignButtonMenu.add(disconnectExistingButton);
             } else {
-                JMenuItem connectButton = new JMenuItem(inputSlot.getNameWithAlgorithmName(), JIPipeUIDatatypeRegistry.getInstance().getIconFor(inputSlot.getAcceptedDataType()));
+                JMenuItem connectButton = new JMenuItem(inputSlot.getDisplayName(), JIPipeUIDatatypeRegistry.getInstance().getIconFor(inputSlot.getAcceptedDataType()));
                 connectButton.addActionListener(e -> connectToExistingInstance());
                 assignButtonMenu.add(connectButton);
             }
         } else {
-            JMenuItem connectButton = new JMenuItem(inputSlot.getNameWithAlgorithmName(), JIPipeUIDatatypeRegistry.getInstance().getIconFor(inputSlot.getAcceptedDataType()));
+            JMenuItem connectButton = new JMenuItem(inputSlot.getDisplayName(), JIPipeUIDatatypeRegistry.getInstance().getIconFor(inputSlot.getAcceptedDataType()));
             connectButton.addActionListener(e -> connectToNewInstance());
             assignButtonMenu.add(connectButton);
         }
@@ -128,7 +128,7 @@ public class JIPipeAlgorithmFinderSlotUI extends JPanel {
     private void deleteSlot() {
         JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) inputSlot.getNode().getSlotConfiguration();
         canvasUI.getGraphHistory().addSnapshotBefore(new SlotConfigurationHistorySnapshot(inputSlot.getNode(),
-                "Remove slot '" + inputSlot.getNameWithAlgorithmName() + "'"));
+                "Remove slot '" + inputSlot.getDisplayName() + "'"));
         slotConfiguration.removeInputSlot(inputSlot.getName(), true);
     }
 

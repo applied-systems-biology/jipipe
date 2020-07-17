@@ -15,6 +15,7 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
 import java.awt.dnd.*;
+import java.awt.event.MouseEvent;
 
 /**
  * Adds connection drag & drop behavior to a data slot
@@ -123,6 +124,10 @@ public class JIPipeConnectionDragAndDropBehavior implements DropTargetListener, 
 
     @Override
     public void dragGestureRecognized(DragGestureEvent dge) {
+        if(dge.getTriggerEvent() instanceof MouseEvent) {
+            if(((MouseEvent) dge.getTriggerEvent()).getButton() != MouseEvent.BUTTON1)
+                return;
+        }
         ObjectNode node = JsonUtils.getObjectMapper().getNodeFactory().objectNode();
         node.put("node", slotUI.getSlot().getNode().getIdInGraph());
         node.put("slot", slotUI.getSlot().getName());

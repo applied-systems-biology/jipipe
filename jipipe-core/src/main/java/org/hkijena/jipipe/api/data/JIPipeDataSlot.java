@@ -18,6 +18,7 @@ import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.algorithm.JIPipeGraphNode;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
+import org.hkijena.jipipe.utils.StringUtils;
 
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
@@ -292,8 +293,11 @@ public class JIPipeDataSlot implements TableModel {
      *
      * @return Display name that includes the algorithm name, as well as the slot name.
      */
-    public String getNameWithAlgorithmName() {
-        return node.getName() + " \uD83E\uDC92 " + getName();
+    public String getDisplayName() {
+        if(!StringUtils.isNullOrEmpty(definition.getCustomName()))
+            return definition.getCustomName() + " [" + getName() + "] " + " (" + node.getName() + ")";
+        else
+            return getName() + " (" + node.getName() + ")";
     }
 
     /**
@@ -394,7 +398,7 @@ public class JIPipeDataSlot implements TableModel {
                         Files.createDirectories(path);
                     } catch (IOException e) {
                         throw new UserFriendlyRuntimeException(e, "Unable to create directory '" + path + "'!",
-                                "Data slot '" + getNameWithAlgorithmName() + "'", "The path might be invalid, or you might not have the permissions to write in a parent folder.",
+                                "Data slot '" + getDisplayName() + "'", "The path might be invalid, or you might not have the permissions to write in a parent folder.",
                                 "Check if the path is valid, and you have write-access.");
                     }
                 }
@@ -409,7 +413,7 @@ public class JIPipeDataSlot implements TableModel {
                 dataTable.saveAsCSV(storagePath.resolve("data-table.csv"));
             } catch (IOException e) {
                 throw new UserFriendlyRuntimeException(e, "Unable to save data table!",
-                        "Data slot '" + getNameWithAlgorithmName() + "'", "JIPipe tried to write files into '" + storagePath + "'.",
+                        "Data slot '" + getDisplayName() + "'", "JIPipe tried to write files into '" + storagePath + "'.",
                         "Check if you have permissions to write into the path, and if there is enough disk space.");
             }
         }

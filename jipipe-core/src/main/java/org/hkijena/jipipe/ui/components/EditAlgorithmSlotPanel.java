@@ -174,7 +174,7 @@ public class EditAlgorithmSlotPanel extends JPanel {
             return;
 
         // Create a undo snapshot
-        graphHistory.addSnapshotBefore(new SlotConfigurationHistorySnapshot(existingSlot.getNode(), "Edit slot '" + existingSlot.getNameWithAlgorithmName() + "'"));
+        graphHistory.addSnapshotBefore(new SlotConfigurationHistorySnapshot(existingSlot.getNode(), "Edit slot '" + existingSlot.getDisplayName() + "'"));
 
         String slotName = nameEditor.getText().trim();
         JIPipeGraphNode algorithm = existingSlot.getNode();

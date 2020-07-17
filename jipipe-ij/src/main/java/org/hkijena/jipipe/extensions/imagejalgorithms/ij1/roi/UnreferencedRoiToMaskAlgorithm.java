@@ -84,6 +84,11 @@ public class UnreferencedRoiToMaskAlgorithm extends JIPipeSimpleIteratingAlgorit
         return preferAssociatedImage;
     }
 
+    @JIPipeParameter("prefer-associated-image")
+    public void setPreferAssociatedImage(boolean preferAssociatedImage) {
+        this.preferAssociatedImage = preferAssociatedImage;
+    }
+
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         ROIListData inputData = (ROIListData) dataBatch.getInputData(getFirstInputSlot(), ROIListData.class).duplicate();

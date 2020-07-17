@@ -156,7 +156,7 @@ public class JIPipeSlotEditorUI extends JPanel {
                     "Please enter a new label for the slot.\nLeave the text empty to remove an existing label.",
                     slot.getDefinition().getCustomName());
             editorUI.getCanvasUI().getGraphHistory().addSnapshotBefore(new SlotConfigurationHistorySnapshot(slot.getNode(),
-                    "Relabel slot '" + slot.getNameWithAlgorithmName() + "'"));
+                    "Relabel slot '" + slot.getDisplayName() + "'"));
             slot.getDefinition().setCustomName(newLabel);
         }
     }
@@ -165,7 +165,7 @@ public class JIPipeSlotEditorUI extends JPanel {
         JIPipeDataSlot slot = getSelectedSlot();
         if (slot != null) {
             editorUI.getCanvasUI().getGraphHistory().addSnapshotBefore(new SlotConfigurationHistorySnapshot(slot.getNode(),
-                    "Move slot '" + slot.getNameWithAlgorithmName() + "' down"));
+                    "Move slot '" + slot.getDisplayName() + "' down"));
             ((JIPipeMutableSlotConfiguration) algorithm.getSlotConfiguration()).moveDown(slot.getName(), slot.getSlotType());
             editorUI.getCanvasUI().repaint();
         }
@@ -175,7 +175,7 @@ public class JIPipeSlotEditorUI extends JPanel {
         JIPipeDataSlot slot = getSelectedSlot();
         if (slot != null) {
             editorUI.getCanvasUI().getGraphHistory().addSnapshotBefore(new SlotConfigurationHistorySnapshot(slot.getNode(),
-                    "Move slot '" + slot.getNameWithAlgorithmName() + "' up"));
+                    "Move slot '" + slot.getDisplayName() + "' up"));
             ((JIPipeMutableSlotConfiguration) algorithm.getSlotConfiguration()).moveUp(slot.getName(), slot.getSlotType());
             editorUI.getCanvasUI().repaint();
         }
@@ -223,7 +223,7 @@ public class JIPipeSlotEditorUI extends JPanel {
         JIPipeMutableSlotConfiguration slotConfiguration = (JIPipeMutableSlotConfiguration) algorithm.getSlotConfiguration();
         for (JIPipeDataSlot slot : toRemove) {
             editorUI.getCanvasUI().getGraphHistory().addSnapshotBefore(new SlotConfigurationHistorySnapshot(slot.getNode(),
-                    "Remove slot '" + slot.getNameWithAlgorithmName() + "'"));
+                    "Remove slot '" + slot.getDisplayName() + "'"));
             if (slot.isInput())
                 slotConfiguration.removeInputSlot(slot.getName(), true);
             else

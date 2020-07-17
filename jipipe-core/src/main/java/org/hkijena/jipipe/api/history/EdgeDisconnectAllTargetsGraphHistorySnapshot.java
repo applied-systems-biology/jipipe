@@ -32,7 +32,7 @@ public class EdgeDisconnectAllTargetsGraphHistorySnapshot implements JIPipeAlgor
 
     @Override
     public String getName() {
-        return "Disconnect all targets of " + source.getNameWithAlgorithmName();
+        return "Disconnect all targets of " + source.getDisplayName();
     }
 
     @Override

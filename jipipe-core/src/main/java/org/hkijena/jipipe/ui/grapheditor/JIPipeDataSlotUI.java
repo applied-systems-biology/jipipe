@@ -132,7 +132,7 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
                 for (JIPipeDataSlot source : sortSlotsByDistance(availableSources)) {
                     if (!source.getNode().isVisibleIn(compartment))
                         continue;
-                    JMenuItem connectButton = new JMenuItem(source.getNameWithAlgorithmName(),
+                    JMenuItem connectButton = new JMenuItem(source.getDisplayName(),
                             JIPipeUIDatatypeRegistry.getInstance().getIconFor(source.getAcceptedDataType()));
                     connectButton.addActionListener(e -> connectSlot(source, slot));
                     connectButton.addMouseListener(new MouseAdapter() {
@@ -217,7 +217,7 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
                 assignButtonMenu.addSeparator();
 
             for (JIPipeDataSlot target : sortSlotsByDistance(availableTargets)) {
-                JMenuItem connectButton = new JMenuItem(target.getNameWithAlgorithmName(),
+                JMenuItem connectButton = new JMenuItem(target.getDisplayName(),
                         JIPipeUIDatatypeRegistry.getInstance().getIconFor(target.getAcceptedDataType()));
                 connectButton.addActionListener(e -> connectSlot(slot, target));
                 connectButton.setToolTipText(TooltipUtils.getAlgorithmTooltip(target.getNode().getInfo()));
@@ -296,13 +296,13 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
         String newLabel = JOptionPane.showInputDialog(this,
                 "Please enter a new label for the slot.\nLeave the text empty to remove an existing label.",
                 slot.getDefinition().getCustomName());
-        getGraphUI().getGraphHistory().addSnapshotBefore(new SlotConfigurationHistorySnapshot(slot.getNode(), "Relabel slot '" + slot.getNameWithAlgorithmName() + "'"));
+        getGraphUI().getGraphHistory().addSnapshotBefore(new SlotConfigurationHistorySnapshot(slot.getNode(), "Relabel slot '" + slot.getDisplayName() + "'"));
         slot.getDefinition().setCustomName(newLabel);
     }
 
     private void deleteSlot() {
         JIPipeMutableSlotConfiguration slotConfiguration = (JIPipeMutableSlotConfiguration) slot.getNode().getSlotConfiguration();
-        getGraphUI().getGraphHistory().addSnapshotBefore(new SlotConfigurationHistorySnapshot(slot.getNode(), "Remove slot '" + slot.getNameWithAlgorithmName() + "'"));
+        getGraphUI().getGraphHistory().addSnapshotBefore(new SlotConfigurationHistorySnapshot(slot.getNode(), "Remove slot '" + slot.getDisplayName() + "'"));
         if (slot.isInput())
             slotConfiguration.removeInputSlot(slot.getName(), true);
         else if (slot.isOutput())

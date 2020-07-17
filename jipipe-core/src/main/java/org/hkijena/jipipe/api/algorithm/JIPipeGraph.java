@@ -36,6 +36,7 @@ import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.utils.GraphUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.jgrapht.Graph;
+import org.jgrapht.alg.connectivity.ConnectivityInspector;
 import org.jgrapht.alg.cycle.CycleDetector;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.traverse.GraphIterator;
@@ -61,6 +62,7 @@ public class JIPipeGraph implements JIPipeValidatable {
     private Map<JIPipeGraphNode, String> compartments = new HashMap<>();
     private List<JIPipeDataSlot> traversedSlots;
     private List<JIPipeGraphNode> traversedAlgorithms;
+    private ConnectivityInspector<JIPipeDataSlot, JIPipeGraphEdge> connectivityInspector;
     private EventBus eventBus = new EventBus();
     /**
      * If this value is greater than one, no events are triggered
@@ -71,7 +73,7 @@ public class JIPipeGraph implements JIPipeValidatable {
      * Creates a new algorithm graph
      */
     public JIPipeGraph() {
-
+        connectivityInspector = new ConnectivityInspector<>(graph);
     }
 
     /**
@@ -327,8 +329,8 @@ public class JIPipeGraph implements JIPipeValidatable {
      */
     public void connect(JIPipeDataSlot source, JIPipeDataSlot target, boolean userCanDisconnect) {
         if (!canConnect(source, target, false))
-            throw new UserFriendlyRuntimeException("Cannot connect data slots: " + source.getNameWithAlgorithmName() + " ==> " + target.getNameWithAlgorithmName(),
-                    "Cannot create a connection between '" + source.getNameWithAlgorithmName() + "' and '" + target.getNameWithAlgorithmName() + "'!",
+            throw new UserFriendlyRuntimeException("Cannot connect data slots: " + source.getDisplayName() + " ==> " + target.getDisplayName(),
+                    "Cannot create a connection between '" + source.getDisplayName() + "' and '" + target.getDisplayName() + "'!",
                     "Algorithm graph", "The connection is invalid, such as one that causes cycles in the graph, or a connection where a slot receives multiple inputs",
                     "Check if your pipeline contains complicated sections prone to cycles. Reorganize the graph by dragging the nodes around.");
         graph.addEdge(source, target, new JIPipeGraphEdge(userCanDisconnect));
@@ -1118,6 +1120,7 @@ public class JIPipeGraph implements JIPipeValidatable {
             node.getEventBus().register(this);
         }
         this.graph = other.graph;
+        this.connectivityInspector = new ConnectivityInspector<>(graph);
         --preventTriggerEvents;
         postChangedEvent();
     }
@@ -1139,6 +1142,10 @@ public class JIPipeGraph implements JIPipeValidatable {
             }
         }
         return result;
+    }
+
+    public ConnectivityInspector<JIPipeDataSlot, JIPipeGraphEdge> getConnectivityInspector() {
+        return connectivityInspector;
     }
 
     /**

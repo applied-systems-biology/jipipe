@@ -30,7 +30,7 @@ public class EdgeConnectGraphHistorySnapshot implements JIPipeAlgorithmGraphHist
 
     @Override
     public String getName() {
-        return "Connect " + source.getNameWithAlgorithmName() + " and " + target.getNameWithAlgorithmName();
+        return "Connect " + source.getDisplayName() + " and " + target.getDisplayName();
     }
 
     @Override

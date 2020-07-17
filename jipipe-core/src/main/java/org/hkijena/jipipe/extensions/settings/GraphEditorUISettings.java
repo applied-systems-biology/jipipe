@@ -38,6 +38,7 @@ public class GraphEditorUISettings implements JIPipeParameterCollection {
     private boolean askOnDeleteCompartment = true;
     private boolean askOnDeleteParameter = true;
     private boolean drawOutsideEdges = true;
+    private boolean collapsePredecessors = true;
 
     @Override
     public EventBus getEventBus() {
@@ -136,6 +137,18 @@ public class GraphEditorUISettings implements JIPipeParameterCollection {
     @JIPipeParameter("draw-outside-edges")
     public void setDrawOutsideEdges(boolean drawOutsideEdges) {
         this.drawOutsideEdges = drawOutsideEdges;
+    }
+
+    @JIPipeDocumentation(name = "Collapse predecessor edges", description = "If enabled, edges between multiple predecessor sets are automatically collapsed into one edge. " +
+            "This can increase the readability of the graph.")
+    @JIPipeParameter("collapse-predecessors")
+    public boolean isCollapsePredecessors() {
+        return collapsePredecessors;
+    }
+
+    @JIPipeParameter("collapse-predecessors")
+    public void setCollapsePredecessors(boolean collapsePredecessors) {
+        this.collapsePredecessors = collapsePredecessors;
     }
 
     public static GraphEditorUISettings getInstance() {

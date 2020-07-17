@@ -51,6 +51,13 @@ import java.util.stream.Collectors;
  * UI that displays an {@link JIPipeGraph}
  */
 public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMotionListener, MouseListener {
+
+    public final Stroke STROKE_UNIT = new BasicStroke(1);
+    public final Stroke STROKE_DEFAULT = new BasicStroke(2);
+    public final Stroke STROKE_HIGHLIGHT = new BasicStroke(7);
+    public final Stroke STROKE_SELECTION = new BasicStroke(3, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL, 0, new float[]{9}, 0);
+    public final Stroke STROKE_PREDECESSOR = new BasicStroke(2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL, 0, new float[]{2}, 0);
+
     private final ImageIcon cursorImage = UIUtils.getIconFromResources("target.png");
     private final JIPipeGraph graph;
     private final BiMap<JIPipeGraphNode, JIPipeNodeUI> nodeUIs = HashBiMap.create();
@@ -515,6 +522,8 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
     @Override
     public void mouseReleased(MouseEvent mouseEvent) {
         currentlyDraggedOffsets.clear();
+        if(mouseEvent.getButton() == MouseEvent.BUTTON2)
+            return;
         JIPipeNodeUI ui = pickComponent(mouseEvent);
         if (ui == null) {
             selectOnly(null);
@@ -633,19 +642,19 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
 
         RectangularLineDrawer drawer = new RectangularLineDrawer();
 
-        g.setStroke(new BasicStroke(2));
+        g.setStroke(STROKE_DEFAULT);
         graphics.setColor(Color.LIGHT_GRAY);
         if (GraphEditorUISettings.getInstance().isDrawOutsideEdges())
             paintOutsideEdges(g, drawer, false);
-        paintEdges(graphics, g, drawer, false);
+        paintEdges(g, drawer, STROKE_DEFAULT, STROKE_PREDECESSOR, false, true);
 
-        g.setStroke(new BasicStroke(7));
+        g.setStroke(STROKE_HIGHLIGHT);
         if (GraphEditorUISettings.getInstance().isDrawOutsideEdges())
             paintOutsideEdges(g, drawer, true);
-        paintEdges(graphics, g, drawer, true);
+        paintEdges(g, drawer, STROKE_HIGHLIGHT, STROKE_PREDECESSOR, true, false);
 
         // Draw selections
-        g.setStroke(new BasicStroke(3, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL, 0, new float[]{9}, 0));
+        g.setStroke(STROKE_SELECTION);
         for (JIPipeNodeUI ui : selection) {
             Rectangle bounds = ui.getBounds();
             bounds.x -= 4;
@@ -658,7 +667,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
 
         // Draw currently dragged connection
         if (currentConnectionDragSource != null) {
-            g.setStroke(new BasicStroke(7));
+            g.setStroke(STROKE_HIGHLIGHT);
             graphics.setColor(new Color(0, 128, 0));
             PointRange sourcePoint;
             PointRange targetPoint;
@@ -685,7 +694,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
         }
 
         if (currentHighlightedForDisconnect != null) {
-            g.setStroke(new BasicStroke(7));
+            g.setStroke(STROKE_HIGHLIGHT);
             g.setColor(Color.RED);
             if (currentHighlightedForDisconnect.getSlot().isInput()) {
                 JIPipeDataSlot source = getGraph().getSourceSlot(currentHighlightedForDisconnect.getSlot());
@@ -735,7 +744,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
             }
         }
 
-        g.setStroke(new BasicStroke(1));
+        g.setStroke(STROKE_UNIT);
 
         if (cursor != null) {
             g.drawImage(cursorImage.getImage(),
@@ -745,43 +754,106 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
         }
     }
 
-    private void paintEdges(Graphics graphics, Graphics2D g, RectangularLineDrawer drawer, boolean onlySelected) {
-        for (Map.Entry<JIPipeDataSlot, JIPipeDataSlot> kv : graph.getSlotEdges()) {
-            JIPipeDataSlot source = kv.getKey();
-            JIPipeDataSlot target = kv.getValue();
-            JIPipeNodeUI sourceUI = nodeUIs.getOrDefault(source.getNode(), null);
-            JIPipeNodeUI targetUI = nodeUIs.getOrDefault(target.getNode(), null);
+    private void paintEdges(Graphics2D g, RectangularLineDrawer drawer, Stroke stroke, Stroke predecessorStroke, boolean onlySelected, boolean mergePredecessors) {
 
-            if (sourceUI == null || targetUI == null)
-                continue;
-            if (onlySelected) {
-                if (!selection.contains(sourceUI) && !selection.contains(targetUI))
-                    continue;
-            } else {
-                if (selection.contains(sourceUI) || selection.contains(targetUI))
-                    continue;
+        if(mergePredecessors) {
+           for (JIPipeNodeUI nodeUI : nodeUIs.values()) {
+//               if(!getVisibleRect().intersects(nodeUI.getBounds()))
+//                   continue;
+                JIPipeGraphNode node = nodeUI.getNode();
+                if(node.getInputSlots().size() <= 1) {
+                    for (JIPipeDataSlot target : node.getInputSlots()) {
+                        JIPipeDataSlot source = graph.getSourceSlot(target);
+                        paintSlotEdge(g, drawer, stroke, onlySelected, source, target);
+                    }
+                }
+                else {
+                    Map<Set<JIPipeDataSlot>, List<JIPipeDataSlot>> byConnectedSet = node.getInputSlots().stream().collect(Collectors.groupingBy(slot -> graph.getConnectivityInspector().connectedSetOf(slot)));
+                    for (List<JIPipeDataSlot> slots : byConnectedSet.values()) {
+                        slots.sort(Comparator.comparing(s -> node.getInputSlots().indexOf(s)));
+                        JIPipeDataSlot source = null;
+                        JIPipeDataSlot reference = null;
+                        for (JIPipeDataSlot slot : slots) {
+                            reference = slot;
+                            source =  graph.getSourceSlot(slot);
+                            if(source != null)
+                                break;
+                        }
+                        if(source == null)
+                            continue;
+                        Map.Entry<PointRange, PointRange> referencePoints = paintSlotEdge(g, drawer, stroke, onlySelected, source, reference);
+                        if(referencePoints == null)
+                            continue;
+                        PointRange target = referencePoints.getValue();
+
+                        for (JIPipeDataSlot sideSlot : slots) {
+                            if(sideSlot == reference)
+                                continue;
+                            if(graph.getSourceSlot(sideSlot) == null)
+                                continue;
+                            PointRange sideSlotLocation = nodeUI.getSlotLocation(sideSlot);
+                            sideSlotLocation.add(nodeUI.getLocation());
+                            if (viewMode == JIPipeGraphViewMode.Vertical) {
+                                drawer.start(sideSlotLocation.center.y, sideSlotLocation.center.x);
+                                drawer.addToMajor(-viewMode.getGridHeight() / 2);
+                                drawer.moveToMinor(target.center.x);
+                                g.setStroke(predecessorStroke);
+                                drawer.drawCurrentSegment(g, viewMode);
+                            }
+                        }
+                    }
+                }
             }
-            if (JIPipeDatatypeRegistry.isTriviallyConvertible(source.getAcceptedDataType(), target.getAcceptedDataType()))
-                graphics.setColor(Color.DARK_GRAY);
-            else if (JIPipeDatatypeRegistry.getInstance().isConvertible(source.getAcceptedDataType(), target.getAcceptedDataType()))
-                graphics.setColor(Color.BLUE);
-            else
-                graphics.setColor(Color.RED);
-
-            PointRange sourcePoint;
-            PointRange targetPoint;
-
-            sourcePoint = sourceUI.getSlotLocation(source);
-            sourcePoint.add(sourceUI.getLocation());
-            targetPoint = targetUI.getSlotLocation(target);
-            targetPoint.add(targetUI.getLocation());
-
-            // Tighten the point ranges: Bringing the centers together
-            PointRange.tighten(sourcePoint, targetPoint);
-
-            // Draw arrow
-            drawEdge(g, sourcePoint.center, sourceUI.getBounds(), targetPoint.center, drawer);
         }
+        else {
+            for (Map.Entry<JIPipeDataSlot, JIPipeDataSlot> kv : graph.getSlotEdges()) {
+                JIPipeDataSlot source = kv.getKey();
+                JIPipeDataSlot target = kv.getValue();
+                paintSlotEdge(g, drawer, stroke, onlySelected, source, target);
+            }
+        }
+    }
+
+    private Color getEdgeColor(JIPipeDataSlot source, JIPipeDataSlot target) {
+        if (JIPipeDatatypeRegistry.isTriviallyConvertible(source.getAcceptedDataType(), target.getAcceptedDataType()))
+            return Color.DARK_GRAY;
+        else if (JIPipeDatatypeRegistry.getInstance().isConvertible(source.getAcceptedDataType(), target.getAcceptedDataType()))
+            return Color.BLUE;
+        else
+            return Color.RED;
+    }
+
+    private Map.Entry<PointRange, PointRange> paintSlotEdge(Graphics2D g, RectangularLineDrawer drawer, Stroke stroke, boolean onlySelected, JIPipeDataSlot source, JIPipeDataSlot target) {
+        JIPipeNodeUI sourceUI = nodeUIs.getOrDefault(source.getNode(), null);
+        JIPipeNodeUI targetUI = nodeUIs.getOrDefault(target.getNode(), null);
+
+        if (sourceUI == null || targetUI == null)
+            return null;
+
+        if (onlySelected) {
+            if (!selection.contains(sourceUI) && !selection.contains(targetUI))
+                return null;
+        } else {
+            if (selection.contains(sourceUI) || selection.contains(targetUI))
+                return null;
+        }
+        g.setStroke(stroke);
+       g.setColor(getEdgeColor(source, target));
+
+        PointRange sourcePoint;
+        PointRange targetPoint;
+
+        sourcePoint = sourceUI.getSlotLocation(source);
+        sourcePoint.add(sourceUI.getLocation());
+        targetPoint = targetUI.getSlotLocation(target);
+        targetPoint.add(targetUI.getLocation());
+
+        // Tighten the point ranges: Bringing the centers together
+        PointRange.tighten(sourcePoint, targetPoint);
+
+        // Draw arrow
+        drawEdge(g, sourcePoint.center, sourceUI.getBounds(), targetPoint.center, drawer);
+        return new AbstractMap.SimpleEntry<>(sourcePoint, targetPoint);
     }
 
     private void paintOutsideEdges(Graphics2D g, RectangularLineDrawer drawer, boolean onlySelected) {

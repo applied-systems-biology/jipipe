@@ -16,44 +16,103 @@ package org.hkijena.jipipe.ui.grapheditor.settings;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.ui.registries.JIPipeUIDatatypeRegistry;
 import org.hkijena.jipipe.utils.StringUtils;
+import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeCellRenderer;
 import java.awt.*;
+import java.util.Set;
 
 /**
  * Renders an {@link JIPipeDataSlot} in a {@link JTree}
  */
-public class JIPipeDataSlotTreeCellRenderer extends JLabel implements TreeCellRenderer {
+public class JIPipeDataSlotTreeCellRenderer extends JPanel implements TreeCellRenderer {
 
+    private JLabel slotLabel;
+    private  JLabel slotName;
+    private JLabel slotEdges;
 
     /**
      * Creates a new renderer
      */
     public JIPipeDataSlotTreeCellRenderer() {
         setOpaque(true);
-        setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+        setLayout(new GridBagLayout());
+        slotName = new JLabel();
+        slotName.setFont(new Font(Font.DIALOG, Font.BOLD, 12));
+        add(slotName, new GridBagConstraints() {
+            {
+                gridx = 0;
+                gridy = 0;
+                insets = UIUtils.UI_PADDING;
+            }
+        });
+
+        slotLabel = new JLabel();
+        slotLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, 12));
+        add(slotLabel, new GridBagConstraints() {
+            {
+                gridx = 1;
+                gridy = 0;
+                insets = UIUtils.UI_PADDING;
+            }
+        });
+
+        slotEdges = new JLabel();
+        slotEdges.setFont(new Font(Font.DIALOG, Font.PLAIN, 12));
+        add(slotEdges, new GridBagConstraints() {
+            {
+                gridx = 0;
+                gridy = 1;
+                gridwidth = 2;
+                insets = UIUtils.UI_PADDING;
+            }
+        });
+
     }
 
     @Override
     public Component getTreeCellRendererComponent(JTree tree, Object value, boolean selected, boolean expanded, boolean leaf, int row, boolean hasFocus) {
-        if (tree.getFont() != null) {
-            setFont(tree.getFont());
-        }
 
         Object o = ((DefaultMutableTreeNode) value).getUserObject();
         if (o instanceof JIPipeDataSlot) {
             JIPipeDataSlot slot = (JIPipeDataSlot) o;
-            if (!StringUtils.isNullOrEmpty(slot.getDefinition().getCustomName())) {
-                setText("<html><i>" + slot.getDefinition().getCustomName() + "</i> [" + slot.getName() + "]</html>");
-            } else {
-                setText(slot.getName());
+
+            slotName.setText(slot.getName());
+            slotName.setIcon(JIPipeUIDatatypeRegistry.getInstance().getIconFor(slot.getAcceptedDataType()));
+            if(!StringUtils.isNullOrEmpty(slot.getDefinition().getCustomName())) {
+                slotLabel.setText(slot.getDefinition().getCustomName());
             }
-            setIcon(JIPipeUIDatatypeRegistry.getInstance().getIconFor(slot.getAcceptedDataType()));
+            else {
+                slotLabel.setText(null);
+            }
+            if(slot.isInput()) {
+                JIPipeDataSlot sourceSlot = slot.getNode().getGraph().getSourceSlot(slot);
+                if(sourceSlot != null) {
+                    slotEdges.setText("Receives data from '" + sourceSlot.getDisplayName() + "'");
+                }
+                else {
+                    slotEdges.setText("No connections");
+                }
+            }
+            else {
+                Set<JIPipeDataSlot> targetSlots = slot.getNode().getGraph().getTargetSlots(slot);
+                if(targetSlots.isEmpty()) {
+                    slotEdges.setText("No connections");
+                }
+                else if(targetSlots.size() == 1) {
+                    slotEdges.setText("Connected to one other slot");
+                }
+                else {
+                    slotEdges.setText("Connected to " + targetSlots.size() + " other slots");
+                }
+            }
         } else {
-            setText(o.toString());
-            setIcon(null);
+            slotName.setText("" + o);
+            slotName.setIcon(null);
+            slotLabel.setText(null);
+            slotEdges.setText(null);
         }
 
         // Update status

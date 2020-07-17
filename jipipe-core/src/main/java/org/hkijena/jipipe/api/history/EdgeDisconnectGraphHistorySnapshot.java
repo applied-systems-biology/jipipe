@@ -30,7 +30,7 @@ public class EdgeDisconnectGraphHistorySnapshot implements JIPipeAlgorithmGraphH
 
     @Override
     public String getName() {
-        return "Disconnect " + source.getNameWithAlgorithmName() + " and " + target.getNameWithAlgorithmName();
+        return "Disconnect " + source.getDisplayName() + " and " + target.getDisplayName();
     }
 
     @Override
