@@ -95,12 +95,13 @@ public class FilesystemExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerAlgorithm("path-extract-filename", ExtractFileName.class, UIUtils.getAlgorithmIconURL("files.png"));
         registerAlgorithm("path-extract-parent", ExtractParent.class, UIUtils.getAlgorithmIconURL("go-parent-folder.png"));
         registerAlgorithm("path-concatenate", ConcatenatePaths.class, UIUtils.getAlgorithmIconURL("list-add.png"));
-        registerAlgorithm("folder-mkdir", ConcatenatePaths.class, UIUtils.getAlgorithmIconURL("folder-new.png"));
+        registerAlgorithm("path-concatenate-string", ConcatenateByString.class, UIUtils.getAlgorithmIconURL("list-add.png"));
+        registerAlgorithm("folder-mkdir", CreateDirectory.class, UIUtils.getAlgorithmIconURL("folder-new.png"));
+        registerAlgorithm("path-rename-string", RenameByString.class, UIUtils.getAlgorithmIconURL("tag.png"));
         registerAlgorithm("path-copy", CopyPath.class, UIUtils.getAlgorithmIconURL("copy.png"));
         registerAlgorithm("path-filter", FilterPaths.class, UIUtils.getAlgorithmIconURL("filter.png"));
         registerAlgorithm("folder-list-files", ListFiles.class, UIUtils.getAlgorithmIconURL("list.png"));
         registerAlgorithm("folder-list-subfolders", ListSubfolders.class, UIUtils.getAlgorithmIconURL("list.png"));
-        registerAlgorithm("folder-navigate-subfolders", NavigateSubFolder.class, UIUtils.getAlgorithmIconURL("go-parent-folder.png"));
 
         registerAlgorithm("folder-annotate-by-name", SimpleFolderAnnotationGenerator.class, UIUtils.getAlgorithmIconURL("tools-wizard.png"));
         registerAlgorithm("file-annotate-by-name", SimpleFileAnnotationGenerator.class, UIUtils.getAlgorithmIconURL("tools-wizard.png"));

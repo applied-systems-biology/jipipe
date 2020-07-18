@@ -21,7 +21,7 @@ import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.data.JIPipeSlotDefinition;
+import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.registries.JIPipeNodeRegistry;
 import org.hkijena.jipipe.ui.components.MarkdownDocument;
 import org.hkijena.jipipe.ui.registries.JIPipeUIDatatypeRegistry;
@@ -278,10 +278,10 @@ public class TooltipUtils {
      * @param slotDefinitions the slots
      * @return the tooltip
      */
-    public static String getSlotTable(Collection<JIPipeSlotDefinition> slotDefinitions) {
+    public static String getSlotTable(Collection<JIPipeDataSlotInfo> slotDefinitions) {
         StringBuilder builder = new StringBuilder();
         builder.append("<html><table>");
-        for (JIPipeSlotDefinition definition : slotDefinitions) {
+        for (JIPipeDataSlotInfo definition : slotDefinitions) {
             builder.append("<tr>");
             builder.append("<td>").append("<img src=\"")
                     .append(JIPipeUIDatatypeRegistry.getInstance().getIconURLFor(definition.getDataClass()))

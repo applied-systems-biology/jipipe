@@ -37,7 +37,7 @@ import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.compartments.datatypes.JIPipeCompartmentOutputData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeMutableSlotConfiguration;
-import org.hkijena.jipipe.api.data.JIPipeSlotDefinition;
+import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.events.CompartmentRemovedEvent;
 import org.hkijena.jipipe.api.events.GraphChangedEvent;
@@ -179,7 +179,7 @@ public class JIPipeProject implements JIPipeValidatable {
         List<JIPipeDataSlot> openInputSlots = target.getOpenInputSlots();
         if (openInputSlots.isEmpty()) {
             JIPipeMutableSlotConfiguration slotConfiguration = (JIPipeMutableSlotConfiguration) target.getSlotConfiguration();
-            JIPipeSlotDefinition slotDefinition = new JIPipeSlotDefinition(JIPipeCompartmentOutputData.class, JIPipeSlotType.Input,
+            JIPipeDataSlotInfo slotDefinition = new JIPipeDataSlotInfo(JIPipeCompartmentOutputData.class, JIPipeSlotType.Input,
                     StringUtils.makeUniqueString(source.getName(), " ", slotConfiguration::hasInputSlot),
                     null);
             slotConfiguration.addSlot(slotDefinition.getName(), slotDefinition, false);

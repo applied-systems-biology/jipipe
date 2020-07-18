@@ -214,7 +214,7 @@ public abstract class JIPipeAlgorithm extends JIPipeGraphNode {
         @Override
         public void serialize(JIPipeGraphNode algorithm, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
             jsonGenerator.writeStartObject();
-            jsonGenerator.writeStringField("jipipe:algorithm-type", algorithm.getInfo().getId());
+            jsonGenerator.writeStringField("jipipe:node-info-id", algorithm.getInfo().getId());
             JIPipeParameterCollection.serializeParametersToJson(algorithm, jsonGenerator, this::serializeParameter);
             jsonGenerator.writeEndObject();
         }

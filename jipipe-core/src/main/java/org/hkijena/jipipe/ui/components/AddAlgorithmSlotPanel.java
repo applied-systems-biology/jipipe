@@ -17,7 +17,7 @@ import org.hkijena.jipipe.api.algorithm.JIPipeGraphNode;
 import org.hkijena.jipipe.api.algorithm.JIPipeIOSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
-import org.hkijena.jipipe.api.data.JIPipeSlotDefinition;
+import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.history.JIPipeGraphHistory;
 import org.hkijena.jipipe.api.history.SlotConfigurationHistorySnapshot;
@@ -204,16 +204,16 @@ public class AddAlgorithmSlotPanel extends JPanel {
         graphHistory.addSnapshotBefore(new SlotConfigurationHistorySnapshot(algorithm, "Add slot '" + slotName + "'"));
 
         JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) algorithm.getSlotConfiguration();
-        JIPipeSlotDefinition slotDefinition;
+        JIPipeDataSlotInfo slotDefinition;
         if (slotType == JIPipeSlotType.Input) {
-            slotDefinition = new JIPipeSlotDefinition(selectedInfo.getDataClass(), slotType, slotName, null);
+            slotDefinition = new JIPipeDataSlotInfo(selectedInfo.getDataClass(), slotType, slotName, null);
         } else if (slotType == JIPipeSlotType.Output) {
             String inheritedSlot = null;
             if (inheritedSlotList != null && inheritedSlotList.getSelectedItem() != null) {
                 inheritedSlot = inheritedSlotList.getSelectedItem().toString();
             }
 
-            slotDefinition = new JIPipeSlotDefinition(selectedInfo.getDataClass(), slotType, slotName, inheritedSlot);
+            slotDefinition = new JIPipeDataSlotInfo(selectedInfo.getDataClass(), slotType, slotName, inheritedSlot);
         } else {
             throw new UnsupportedOperationException();
         }

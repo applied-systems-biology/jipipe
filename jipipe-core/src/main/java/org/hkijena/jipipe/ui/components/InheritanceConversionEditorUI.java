@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.ui.components;
 
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
+import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -23,7 +24,7 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * Editor for an inheritance conversion stored in an {@link org.hkijena.jipipe.api.data.JIPipeSlotDefinition}
+ * Editor for an inheritance conversion stored in an {@link JIPipeDataSlotInfo}
  */
 public class InheritanceConversionEditorUI extends JPanel {
     private Map<JIPipeDataInfo, JIPipeDataInfo> inheritanceConversions;

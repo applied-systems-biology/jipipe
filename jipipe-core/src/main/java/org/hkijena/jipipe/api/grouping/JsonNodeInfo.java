@@ -25,7 +25,7 @@ import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.algorithm.*;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeMutableSlotConfiguration;
-import org.hkijena.jipipe.api.data.JIPipeSlotDefinition;
+import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.events.GraphChangedEvent;
 import org.hkijena.jipipe.api.events.ParameterStructureChangedEvent;
@@ -242,7 +242,7 @@ public class JsonNodeInfo implements JIPipeNodeInfo, JIPipeValidatable, JIPipePa
         Set<String> usedSlotNames = new HashSet<>();
         JIPipeMutableSlotConfiguration inputSlotConfiguration = (JIPipeMutableSlotConfiguration) getGroupInput().getSlotConfiguration();
         JIPipeMutableSlotConfiguration outputSlotConfiguration = (JIPipeMutableSlotConfiguration) getGroupOutput().getSlotConfiguration();
-        for (Map.Entry<String, JIPipeSlotDefinition> entry : inputSlotConfiguration.getInputSlots().entrySet()) {
+        for (Map.Entry<String, JIPipeDataSlotInfo> entry : inputSlotConfiguration.getInputSlots().entrySet()) {
             if (entry.getValue().getSlotType() == JIPipeSlotType.Input) {
                 inputSlots.add(new DefaultJIPipeInputSlot(entry.getValue().getDataClass(),
                         entry.getKey(),
@@ -250,7 +250,7 @@ public class JsonNodeInfo implements JIPipeNodeInfo, JIPipeValidatable, JIPipePa
                 usedSlotNames.add(entry.getKey());
             }
         }
-        for (Map.Entry<String, JIPipeSlotDefinition> entry : outputSlotConfiguration.getOutputSlots().entrySet()) {
+        for (Map.Entry<String, JIPipeDataSlotInfo> entry : outputSlotConfiguration.getOutputSlots().entrySet()) {
             if (entry.getValue().getSlotType() == JIPipeSlotType.Output) {
                 if (!usedSlotNames.contains(entry.getKey())) {
                     outputSlots.add(new DefaultJIPipeOutputSlot(entry.getValue().getDataClass(),

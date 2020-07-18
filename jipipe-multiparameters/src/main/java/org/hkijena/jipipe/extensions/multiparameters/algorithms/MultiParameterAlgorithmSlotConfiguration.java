@@ -15,7 +15,7 @@ package org.hkijena.jipipe.extensions.multiparameters.algorithms;
 
 import org.hkijena.jipipe.api.algorithm.JIPipeGraphNode;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
-import org.hkijena.jipipe.api.data.JIPipeSlotDefinition;
+import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.extensions.multiparameters.datatypes.ParametersData;
 
@@ -37,7 +37,7 @@ public class MultiParameterAlgorithmSlotConfiguration extends JIPipeDefaultMutab
     }
 
     @Override
-    public JIPipeSlotDefinition addSlot(String name, JIPipeSlotDefinition definition, boolean user) {
+    public JIPipeDataSlotInfo addSlot(String name, JIPipeDataSlotInfo definition, boolean user) {
         if (definition.getDataClass() != ParametersData.class) {
             if (!isLoading) {
                 // Add slots to the wrapped algorithm
@@ -66,7 +66,7 @@ public class MultiParameterAlgorithmSlotConfiguration extends JIPipeDefaultMutab
         }
 
         // Add the parameter input slot
-        addSlot("Parameters", new JIPipeSlotDefinition(ParametersData.class, JIPipeSlotType.Input), false);
+        addSlot("Parameters", new JIPipeDataSlotInfo(ParametersData.class, JIPipeSlotType.Input), false);
 
         // Load configuration from wrapped algorithm
         JIPipeDefaultMutableSlotConfiguration instanceSlotConfiguration = (JIPipeDefaultMutableSlotConfiguration) algorithmInstance.getSlotConfiguration();
@@ -75,10 +75,10 @@ public class MultiParameterAlgorithmSlotConfiguration extends JIPipeDefaultMutab
         setAllowedOutputSlotTypes(instanceSlotConfiguration.getAllowedOutputSlotTypes());
         setMaxInputSlots(instanceSlotConfiguration.getMaxInputSlots() + 1); // For the parameter slot
         setMaxOutputSlots(instanceSlotConfiguration.getMaxOutputSlots());
-        for (Map.Entry<String, JIPipeSlotDefinition> entry : instanceSlotConfiguration.getInputSlots().entrySet()) {
+        for (Map.Entry<String, JIPipeDataSlotInfo> entry : instanceSlotConfiguration.getInputSlots().entrySet()) {
             addDataSlot(entry);
         }
-        for (Map.Entry<String, JIPipeSlotDefinition> entry : instanceSlotConfiguration.getOutputSlots().entrySet()) {
+        for (Map.Entry<String, JIPipeDataSlotInfo> entry : instanceSlotConfiguration.getOutputSlots().entrySet()) {
             addDataSlot(entry);
         }
         setInputSealed(instanceSlotConfiguration.isInputSlotsSealed());
@@ -87,13 +87,13 @@ public class MultiParameterAlgorithmSlotConfiguration extends JIPipeDefaultMutab
         isLoading = false;
     }
 
-    private void addDataSlot(Map.Entry<String, JIPipeSlotDefinition> entry) {
-        JIPipeSlotDefinition original = entry.getValue();
+    private void addDataSlot(Map.Entry<String, JIPipeDataSlotInfo> entry) {
+        JIPipeDataSlotInfo original = entry.getValue();
         String inheritedSlot = original.getInheritedSlot();
         if (inheritedSlot != null && !inheritedSlot.isEmpty() && !"*".equals(inheritedSlot)) {
             inheritedSlot = "Data " + inheritedSlot;
         }
-        JIPipeSlotDefinition copy = new JIPipeSlotDefinition(original.getDataClass(),
+        JIPipeDataSlotInfo copy = new JIPipeDataSlotInfo(original.getDataClass(),
                 original.getSlotType(),
                 original.getName(),
                 inheritedSlot);

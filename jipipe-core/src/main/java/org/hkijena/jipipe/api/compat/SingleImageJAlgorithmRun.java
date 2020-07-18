@@ -151,7 +151,7 @@ public class SingleImageJAlgorithmRun implements JIPipeValidatable {
             JIPipeMutableSlotConfiguration slotConfiguration = (JIPipeMutableSlotConfiguration) algorithm.getSlotConfiguration();
             for (Map.Entry<String, JsonNode> entry : ImmutableList.copyOf(jsonNode.get("add-input").fields())) {
                 JIPipeDataInfo info = JIPipeDataInfo.getInstance(entry.getValue().textValue());
-                slotConfiguration.addSlot(entry.getKey(), new JIPipeSlotDefinition(info.getDataClass(),
+                slotConfiguration.addSlot(entry.getKey(), new JIPipeDataSlotInfo(info.getDataClass(),
                         JIPipeSlotType.Input,
                         entry.getKey(),
                         null), false);
@@ -161,7 +161,7 @@ public class SingleImageJAlgorithmRun implements JIPipeValidatable {
             JIPipeMutableSlotConfiguration slotConfiguration = (JIPipeMutableSlotConfiguration) algorithm.getSlotConfiguration();
             for (Map.Entry<String, JsonNode> entry : ImmutableList.copyOf(jsonNode.get("add-output").fields())) {
                 JIPipeDataInfo info = JIPipeDataInfo.getInstance(entry.getValue().textValue());
-                slotConfiguration.addSlot(entry.getKey(), new JIPipeSlotDefinition(info.getDataClass(),
+                slotConfiguration.addSlot(entry.getKey(), new JIPipeDataSlotInfo(info.getDataClass(),
                         JIPipeSlotType.Output,
                         entry.getKey(),
                         null), false);

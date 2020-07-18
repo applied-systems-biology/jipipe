@@ -26,7 +26,7 @@ import org.hkijena.jipipe.api.algorithm.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeMutableSlotConfiguration;
-import org.hkijena.jipipe.api.data.JIPipeSlotDefinition;
+import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.events.SlotsChangedEvent;
 
 import java.util.Collections;
@@ -82,10 +82,10 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm {
         slotConfiguration.clearInputSlots(false);
         slotConfiguration.clearOutputSlots(false);
         slotConfigurationIsComplete = true;
-        for (Map.Entry<String, JIPipeSlotDefinition> entry : inputSlotConfiguration.getInputSlots().entrySet()) {
+        for (Map.Entry<String, JIPipeDataSlotInfo> entry : inputSlotConfiguration.getInputSlots().entrySet()) {
             slotConfiguration.addSlot(entry.getKey(), entry.getValue(), false);
         }
-        for (Map.Entry<String, JIPipeSlotDefinition> entry : outputSlotConfiguration.getOutputSlots().entrySet()) {
+        for (Map.Entry<String, JIPipeDataSlotInfo> entry : outputSlotConfiguration.getOutputSlots().entrySet()) {
             if (!slotConfiguration.getInputSlots().containsKey(entry.getKey()))
                 slotConfiguration.addSlot(entry.getKey(), entry.getValue(), false);
             else

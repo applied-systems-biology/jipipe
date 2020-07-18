@@ -21,7 +21,7 @@ import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.algorithm.*;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
-import org.hkijena.jipipe.api.data.JIPipeSlotDefinition;
+import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.events.NodeSlotsChangedEvent;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
@@ -176,7 +176,7 @@ public class ImageCalculator2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     public void setFloatingPointOutput(boolean floatingPointOutput) {
         this.floatingPointOutput = floatingPointOutput;
 
-        JIPipeSlotDefinition definition = getFirstOutputSlot().getDefinition();
+        JIPipeDataSlotInfo definition = getFirstOutputSlot().getDefinition();
         if (floatingPointOutput) {
             getFirstOutputSlot().setAcceptedDataType(ImagePlusGreyscale32FData.class);
             definition.setInheritanceConversionsFromRaw(TO_GRAYSCALE32F_CONVERSION);

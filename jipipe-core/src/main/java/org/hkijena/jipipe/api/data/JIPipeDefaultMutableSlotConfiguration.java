@@ -35,8 +35,8 @@ import java.util.stream.Collectors;
 @JsonSerialize(using = JIPipeSlotConfiguration.Serializer.class)
 public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotConfiguration {
     private final EventBus eventBus = new EventBus();
-    private Map<String, JIPipeSlotDefinition> inputSlots = new HashMap<>();
-    private Map<String, JIPipeSlotDefinition> outputSlots = new HashMap<>();
+    private Map<String, JIPipeDataSlotInfo> inputSlots = new HashMap<>();
+    private Map<String, JIPipeDataSlotInfo> outputSlots = new HashMap<>();
     private List<String> inputSlotOrder = new ArrayList<>();
     private List<String> outputSlotOrder = new ArrayList<>();
 
@@ -86,7 +86,7 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
      * @param user       if the change was triggered by a user. If false, checks for slot sealing, types, etc. do not apply
      * @return the slot definition of the added slot
      */
-    public JIPipeSlotDefinition addSlot(String name, JIPipeSlotDefinition definition, boolean user) {
+    public JIPipeDataSlotInfo addSlot(String name, JIPipeDataSlotInfo definition, boolean user) {
         if (!Objects.equals(name, definition.getName())) {
             definition = definition.renamedCopy(name);
         }
@@ -184,7 +184,7 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
      * @param user if the change was triggered by a user. If false, checks for slot modification, counts, etc. do not apply.
      */
     public void removeInputSlot(String name, boolean user) {
-        JIPipeSlotDefinition slot = inputSlots.getOrDefault(name, null);
+        JIPipeDataSlotInfo slot = inputSlots.getOrDefault(name, null);
         if (slot != null) {
             if (user) {
                 if (!canModifyInputSlots())
@@ -206,7 +206,7 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
      * @param user if the change was triggered by a user. If false, checks for slot modification, counts, etc. do not apply.
      */
     public void removeOutputSlot(String name, boolean user) {
-        JIPipeSlotDefinition slot = outputSlots.getOrDefault(name, null);
+        JIPipeDataSlotInfo slot = outputSlots.getOrDefault(name, null);
         if (slot != null) {
             if (user) {
                 if (!canModifyOutputSlots())
@@ -222,12 +222,12 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
     }
 
     @Override
-    public Map<String, JIPipeSlotDefinition> getInputSlots() {
+    public Map<String, JIPipeDataSlotInfo> getInputSlots() {
         return Collections.unmodifiableMap(inputSlots);
     }
 
     @Override
-    public Map<String, JIPipeSlotDefinition> getOutputSlots() {
+    public Map<String, JIPipeDataSlotInfo> getOutputSlots() {
         return Collections.unmodifiableMap(outputSlots);
     }
 
@@ -254,11 +254,11 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
         outputSlots.clear();
         inputSlotOrder.clear();
         outputSlotOrder.clear();
-        for (Map.Entry<String, JIPipeSlotDefinition> kv : configuration.getInputSlots().entrySet()) {
-            inputSlots.put(kv.getKey(), new JIPipeSlotDefinition(kv.getValue()));
+        for (Map.Entry<String, JIPipeDataSlotInfo> kv : configuration.getInputSlots().entrySet()) {
+            inputSlots.put(kv.getKey(), new JIPipeDataSlotInfo(kv.getValue()));
         }
-        for (Map.Entry<String, JIPipeSlotDefinition> kv : configuration.getOutputSlots().entrySet()) {
-            outputSlots.put(kv.getKey(), new JIPipeSlotDefinition(kv.getValue()));
+        for (Map.Entry<String, JIPipeDataSlotInfo> kv : configuration.getOutputSlots().entrySet()) {
+            outputSlots.put(kv.getKey(), new JIPipeDataSlotInfo(kv.getValue()));
         }
         inputSlotOrder = new ArrayList<>(configuration.getInputSlotOrder());
         outputSlotOrder = new ArrayList<>(configuration.getOutputSlotOrder());
@@ -278,7 +278,7 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
 
     @Override
     public void fromJson(JsonNode node) {
-        ObjectReader objectReader = JsonUtils.getObjectMapper().readerFor(JIPipeSlotDefinition.class);
+        ObjectReader objectReader = JsonUtils.getObjectMapper().readerFor(JIPipeDataSlotInfo.class);
         JsonNode inputsNode = node.path("input");
         JsonNode outputsNode = node.path("output");
         if (!inputsNode.isMissingNode()) {
@@ -286,8 +286,8 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
             for (Map.Entry<String, JsonNode> entry : ImmutableList.copyOf(inputsNode.fields())) {
                 try {
                     definedSlots.add(entry.getKey());
-                    JIPipeSlotDefinition slotDefinition = objectReader.readValue(entry.getValue());
-                    JIPipeSlotDefinition existing = inputSlots.getOrDefault(entry.getKey(), null);
+                    JIPipeDataSlotInfo slotDefinition = objectReader.readValue(entry.getValue());
+                    JIPipeDataSlotInfo existing = inputSlots.getOrDefault(entry.getKey(), null);
                     if (existing != null) {
                         existing.copyMetadata(slotDefinition);
                     } else if (!inputSlotsSealed) {
@@ -310,8 +310,8 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
             for (Map.Entry<String, JsonNode> entry : ImmutableList.copyOf(outputsNode.fields())) {
                 try {
                     definedSlots.add(entry.getKey());
-                    JIPipeSlotDefinition slotDefinition = objectReader.readValue(entry.getValue());
-                    JIPipeSlotDefinition existing = outputSlots.getOrDefault(entry.getKey(), null);
+                    JIPipeDataSlotInfo slotDefinition = objectReader.readValue(entry.getValue());
+                    JIPipeDataSlotInfo existing = outputSlots.getOrDefault(entry.getKey(), null);
                     if (existing != null) {
                         existing.copyMetadata(slotDefinition);
                     } else if (!outputSlotsSealed) {
@@ -335,8 +335,8 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
                 System.err.println("DefaultMutableSlotConfiguration attempts to import slot configuration via legacy method. This is a result of refactoring during development.");
                 try {
                     for (Map.Entry<String, JsonNode> entry : entries) {
-                        JIPipeSlotDefinition slotDefinition = objectReader.readValue(entry.getValue());
-                        JIPipeSlotDefinition existing;
+                        JIPipeDataSlotInfo slotDefinition = objectReader.readValue(entry.getValue());
+                        JIPipeDataSlotInfo existing;
                         if (slotDefinition.isInput())
                             existing = inputSlots.getOrDefault(entry.getKey(), null);
                         else
@@ -422,7 +422,7 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
         ImmutableList<String> before = ImmutableList.copyOf(this.inputSlotOrder);
         this.inputSlotOrder.clear();
         for (String s : newOrder) {
-            JIPipeSlotDefinition slot = inputSlots.getOrDefault(s, null);
+            JIPipeDataSlotInfo slot = inputSlots.getOrDefault(s, null);
             if (slot.getSlotType() != JIPipeSlotType.Input)
                 continue;
             if (inputSlotOrder.contains(s))
@@ -447,7 +447,7 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
         ImmutableList<String> before = ImmutableList.copyOf(this.outputSlotOrder);
         this.outputSlotOrder.clear();
         for (String s : newOrder) {
-            JIPipeSlotDefinition slot = outputSlots.getOrDefault(s, null);
+            JIPipeDataSlotInfo slot = outputSlots.getOrDefault(s, null);
             if (slot.getSlotType() != JIPipeSlotType.Output)
                 continue;
             if (outputSlotOrder.contains(s))
@@ -694,7 +694,7 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
          * @return The builder
          */
         public Builder addInputSlot(String name, Class<? extends JIPipeData> klass) {
-            object.addSlot(name, new JIPipeSlotDefinition(klass, JIPipeSlotType.Input, name, null), false);
+            object.addSlot(name, new JIPipeDataSlotInfo(klass, JIPipeSlotType.Input, name, null), false);
             return this;
         }
 
@@ -707,7 +707,7 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
          * @return The builder
          */
         public Builder addOutputSlot(String name, Class<? extends JIPipeData> klass, String inheritedSlot) {
-            object.addSlot(name, new JIPipeSlotDefinition(klass, JIPipeSlotType.Output, name, inheritedSlot), false);
+            object.addSlot(name, new JIPipeDataSlotInfo(klass, JIPipeSlotType.Output, name, inheritedSlot), false);
             if (inheritedSlot != null && !inheritedSlot.isEmpty()) {
                 object.setAllowInheritedOutputSlots(true);
             }
@@ -724,7 +724,7 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
          * @return The builder
          */
         public Builder addOutputSlot(String name, Class<? extends JIPipeData> klass, String inheritedSlot, Map<Class<? extends JIPipeData>, Class<? extends JIPipeData>> inheritanceConversions) {
-            JIPipeSlotDefinition slotDefinition = object.addSlot(name, new JIPipeSlotDefinition(klass, JIPipeSlotType.Output, name, inheritedSlot), false);
+            JIPipeDataSlotInfo slotDefinition = object.addSlot(name, new JIPipeDataSlotInfo(klass, JIPipeSlotType.Output, name, inheritedSlot), false);
             for (Map.Entry<Class<? extends JIPipeData>, Class<? extends JIPipeData>> entry : inheritanceConversions.entrySet()) {
                 slotDefinition.getInheritanceConversions().put(JIPipeDataInfo.getInstance(entry.getKey()),
                         JIPipeDataInfo.getInstance(entry.getValue()));
@@ -741,7 +741,7 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
          * @param definition Slot definition
          * @return The builder
          */
-        public Builder addSlot(JIPipeSlotDefinition definition) {
+        public Builder addSlot(JIPipeDataSlotInfo definition) {
             object.addSlot(definition.getName(), definition, false);
             return this;
         }

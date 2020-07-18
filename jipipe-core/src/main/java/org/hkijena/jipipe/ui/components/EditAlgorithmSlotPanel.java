@@ -180,16 +180,16 @@ public class EditAlgorithmSlotPanel extends JPanel {
         JIPipeGraphNode algorithm = existingSlot.getNode();
         JIPipeSlotType slotType = existingSlot.getSlotType();
         JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) algorithm.getSlotConfiguration();
-        JIPipeSlotDefinition slotDefinition;
+        JIPipeDataSlotInfo slotDefinition;
         if (slotType == JIPipeSlotType.Input) {
-            slotDefinition = new JIPipeSlotDefinition(selectedInfo.getDataClass(), slotType, slotName, null);
+            slotDefinition = new JIPipeDataSlotInfo(selectedInfo.getDataClass(), slotType, slotName, null);
         } else if (slotType == JIPipeSlotType.Output) {
             String inheritedSlot = null;
             if (inheritedSlotList != null && inheritedSlotList.getSelectedItem() != null) {
                 inheritedSlot = inheritedSlotList.getSelectedItem().toString();
             }
 
-            slotDefinition = new JIPipeSlotDefinition(selectedInfo.getDataClass(), slotType, slotName, inheritedSlot);
+            slotDefinition = new JIPipeDataSlotInfo(selectedInfo.getDataClass(), slotType, slotName, inheritedSlot);
         } else {
             throw new UnsupportedOperationException();
         }

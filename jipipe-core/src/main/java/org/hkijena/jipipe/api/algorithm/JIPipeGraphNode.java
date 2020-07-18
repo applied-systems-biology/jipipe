@@ -143,10 +143,10 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
         boolean changed = false;
 
         // This loop handles add & replace
-        for (Map.Entry<String, JIPipeSlotDefinition> entry : slotConfiguration.getInputSlots().entrySet()) {
+        for (Map.Entry<String, JIPipeDataSlotInfo> entry : slotConfiguration.getInputSlots().entrySet()) {
             changed |= updateAddAndModifySlots(changed, entry, inputSlotMap, inputSlots);
         }
-        for (Map.Entry<String, JIPipeSlotDefinition> entry : slotConfiguration.getOutputSlots().entrySet()) {
+        for (Map.Entry<String, JIPipeDataSlotInfo> entry : slotConfiguration.getOutputSlots().entrySet()) {
             changed |= updateAddAndModifySlots(changed, entry, outputSlotMap, outputSlots);
         }
 
@@ -192,7 +192,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
         return true;
     }
 
-    private boolean updateRemoveSlots(boolean changed, Map<String, JIPipeSlotDefinition> definedSlots, BiMap<String, JIPipeDataSlot> slotMap, List<JIPipeDataSlot> slots) {
+    private boolean updateRemoveSlots(boolean changed, Map<String, JIPipeDataSlotInfo> definedSlots, BiMap<String, JIPipeDataSlot> slotMap, List<JIPipeDataSlot> slots) {
         for (String name : ImmutableList.copyOf(slotMap.keySet())) {
             if (!definedSlots.containsKey(name)) {
                 JIPipeDataSlot existing = slotMap.get(name);
@@ -204,7 +204,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
         return changed;
     }
 
-    private boolean updateAddAndModifySlots(boolean changed, Map.Entry<String, JIPipeSlotDefinition> entry, BiMap<String, JIPipeDataSlot> slotMap, List<JIPipeDataSlot> slots) {
+    private boolean updateAddAndModifySlots(boolean changed, Map.Entry<String, JIPipeDataSlotInfo> entry, BiMap<String, JIPipeDataSlot> slotMap, List<JIPipeDataSlot> slots) {
         JIPipeDataSlot existing = slotMap.getOrDefault(entry.getKey(), null);
         if (existing != null) {
             if (!Objects.equals(existing.getDefinition(), entry.getValue())) {
@@ -432,7 +432,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
             jsonGenerator.writeEndObject();
         }
         jsonGenerator.writeEndObject();
-        jsonGenerator.writeStringField("jipipe:algorithm-type", getInfo().getId());
+        jsonGenerator.writeStringField("jipipe:node-info-id", getInfo().getId());
         jsonGenerator.writeStringField("jipipe:algorithm-compartment", getCompartment());
 
         JIPipeParameterCollection.serializeParametersToJson(this, jsonGenerator);
@@ -750,7 +750,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
         updateSlotInheritance();
     }
 
-    private Class<? extends JIPipeData> getExpectedSlotDataType(JIPipeSlotDefinition slotDefinition, JIPipeDataSlot slotInstance) {
+    private Class<? extends JIPipeData> getExpectedSlotDataType(JIPipeDataSlotInfo slotDefinition, JIPipeDataSlot slotInstance) {
         String inheritedSlotName = slotDefinition.getInheritedSlot();
         if (inheritedSlotName == null || inheritedSlotName.isEmpty())
             return slotInstance.getAcceptedDataType();
@@ -766,9 +766,9 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
         JIPipeDataSlot sourceSlot = graph.getSourceSlot(inheritedSlot);
         Class<? extends JIPipeData> inheritedType;
         if (sourceSlot == null)
-            inheritedType = JIPipeSlotDefinition.applyInheritanceConversion(slotDefinition, inheritedSlot.getAcceptedDataType());
+            inheritedType = JIPipeDataSlotInfo.applyInheritanceConversion(slotDefinition, inheritedSlot.getAcceptedDataType());
         else
-            inheritedType = JIPipeSlotDefinition.applyInheritanceConversion(slotDefinition, sourceSlot.getAcceptedDataType());
+            inheritedType = JIPipeDataSlotInfo.applyInheritanceConversion(slotDefinition, sourceSlot.getAcceptedDataType());
 
         // Check if the inherited type is even compatible with the actual type
         if (slotDefinition.getDataClass().isAssignableFrom(inheritedType))
@@ -784,7 +784,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
     public void updateSlotInheritance() {
         if (graph != null) {
             boolean modified = false;
-            for (Map.Entry<String, JIPipeSlotDefinition> entry : getSlotConfiguration().getOutputSlots().entrySet()) {
+            for (Map.Entry<String, JIPipeDataSlotInfo> entry : getSlotConfiguration().getOutputSlots().entrySet()) {
                 JIPipeDataSlot slotInstance = outputSlotMap.getOrDefault(entry.getKey(), null);
                 if (slotInstance == null || slotInstance.getSlotType() != JIPipeSlotType.Output)
                     continue;

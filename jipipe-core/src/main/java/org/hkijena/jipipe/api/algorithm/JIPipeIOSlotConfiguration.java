@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.api.algorithm;
 
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
-import org.hkijena.jipipe.api.data.JIPipeSlotDefinition;
+import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
 
 /**
@@ -28,13 +28,13 @@ public class JIPipeIOSlotConfiguration extends JIPipeDefaultMutableSlotConfigura
     }
 
     @Override
-    public JIPipeSlotDefinition addSlot(String name, JIPipeSlotDefinition definition, boolean user) {
-        JIPipeSlotDefinition newSlot = super.addSlot(name, definition, user);
+    public JIPipeDataSlotInfo addSlot(String name, JIPipeDataSlotInfo definition, boolean user) {
+        JIPipeDataSlotInfo newSlot = super.addSlot(name, definition, user);
         if (newSlot.isInput()) {
-            JIPipeSlotDefinition sisterSlot = new JIPipeSlotDefinition(definition.getDataClass(), JIPipeSlotType.Output, null);
+            JIPipeDataSlotInfo sisterSlot = new JIPipeDataSlotInfo(definition.getDataClass(), JIPipeSlotType.Output, null);
             super.addSlot(name, sisterSlot, user);
         } else if (newSlot.isOutput()) {
-            JIPipeSlotDefinition sisterSlot = new JIPipeSlotDefinition(definition.getDataClass(), JIPipeSlotType.Input, null);
+            JIPipeDataSlotInfo sisterSlot = new JIPipeDataSlotInfo(definition.getDataClass(), JIPipeSlotType.Input, null);
             super.addSlot(name, sisterSlot, user);
         }
         return newSlot;

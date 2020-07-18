@@ -194,14 +194,14 @@ public abstract class JIPipeParameterSlotAlgorithm extends JIPipeAlgorithm {
         if (getSlotConfiguration() instanceof JIPipeMutableSlotConfiguration) {
             JIPipeMutableSlotConfiguration slotConfiguration = (JIPipeMutableSlotConfiguration) getSlotConfiguration();
             if (parameterSlotAlgorithmSettings.hasParameterSlot) {
-                JIPipeSlotDefinition existing = slotConfiguration.getInputSlots().getOrDefault(SLOT_PARAMETERS, null);
+                JIPipeDataSlotInfo existing = slotConfiguration.getInputSlots().getOrDefault(SLOT_PARAMETERS, null);
                 if (existing != null && existing.getDataClass() != ParametersData.class) {
                     slotConfiguration.removeInputSlot(SLOT_PARAMETERS, false);
                     existing = null;
                 }
                 if (existing == null) {
                     slotConfiguration.addSlot(SLOT_PARAMETERS,
-                            new JIPipeSlotDefinition(ParametersData.class, JIPipeSlotType.Input, null),
+                            new JIPipeDataSlotInfo(ParametersData.class, JIPipeSlotType.Input, null),
                             false);
                 }
             } else {

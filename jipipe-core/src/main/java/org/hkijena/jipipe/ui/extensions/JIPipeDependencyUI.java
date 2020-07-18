@@ -18,7 +18,7 @@ import org.hkijena.jipipe.JIPipeJsonExtension;
 import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.algorithm.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
-import org.hkijena.jipipe.api.data.JIPipeSlotDefinition;
+import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
 import org.hkijena.jipipe.api.registries.JIPipeImageJAdapterRegistry;
 import org.hkijena.jipipe.api.registries.JIPipeNodeRegistry;
@@ -154,8 +154,8 @@ public class JIPipeDependencyUI extends JPanel {
                     info.getName(),
                     info.getId(),
                     StringUtils.wordWrappedHTML(info.getDescription(), 50),
-                    TooltipUtils.getSlotTable(info.getInputSlots().stream().map(JIPipeSlotDefinition::new).collect(Collectors.toList())),
-                    TooltipUtils.getSlotTable(info.getOutputSlots().stream().map(JIPipeSlotDefinition::new).collect(Collectors.toList()))
+                    TooltipUtils.getSlotTable(info.getInputSlots().stream().map(JIPipeDataSlotInfo::new).collect(Collectors.toList())),
+                    TooltipUtils.getSlotTable(info.getOutputSlots().stream().map(JIPipeDataSlotInfo::new).collect(Collectors.toList()))
             });
         }
         insertTable(formPanel, model, "Algorithms", UIUtils.getIconFromResources("run.png"));

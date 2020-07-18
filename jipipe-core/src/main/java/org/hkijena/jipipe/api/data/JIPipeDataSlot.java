@@ -34,7 +34,7 @@ import java.util.*;
  */
 public class JIPipeDataSlot implements TableModel {
     private JIPipeGraphNode node;
-    private JIPipeSlotDefinition definition;
+    private JIPipeDataSlotInfo definition;
     private String name;
     private Class<? extends JIPipeData> acceptedDataType;
     private JIPipeSlotType slotType;
@@ -52,7 +52,7 @@ public class JIPipeDataSlot implements TableModel {
      * @param definition the slot definition
      * @param node       The algorithm that contains the slot
      */
-    public JIPipeDataSlot(JIPipeSlotDefinition definition, JIPipeGraphNode node) {
+    public JIPipeDataSlot(JIPipeDataSlotInfo definition, JIPipeGraphNode node) {
         this.definition = definition;
         this.node = node;
         this.name = definition.getName();
@@ -509,7 +509,7 @@ public class JIPipeDataSlot implements TableModel {
         annotations.clear();
     }
 
-    public JIPipeSlotDefinition getDefinition() {
+    public JIPipeDataSlotInfo getDefinition() {
         return definition;
     }
 

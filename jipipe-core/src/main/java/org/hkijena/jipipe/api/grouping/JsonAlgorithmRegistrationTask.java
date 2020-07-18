@@ -47,7 +47,7 @@ public class JsonAlgorithmRegistrationTask extends JIPipeDefaultAlgorithmRegistr
     private void findDependencyAlgorithms() {
         JsonNode graphNodesNode = jsonNode.get("graph").get("nodes");
         for (Map.Entry<String, JsonNode> entry : ImmutableList.copyOf(graphNodesNode.fields())) {
-            JsonNode infoIdNode = entry.getValue().get("jipipe:algorithm-type");
+            JsonNode infoIdNode = entry.getValue().get("jipipe:node-info-id");
             getDependencyAlgorithmIds().add(infoIdNode.asText());
         }
     }

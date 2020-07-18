@@ -21,7 +21,7 @@ import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.algorithm.*;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
-import org.hkijena.jipipe.api.data.JIPipeSlotDefinition;
+import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 
@@ -55,7 +55,7 @@ public class ZProjectorAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                 .addOutputSlot("Output",
                         ImagePlusData.class,
                         "Input",
-                        JIPipeSlotDefinition.composeRawInheritanceConversions(REMOVE_MASK_QUALIFIER, DECREASE_DIMENSION_CONVERSION))
+                        JIPipeDataSlotInfo.composeRawInheritanceConversions(REMOVE_MASK_QUALIFIER, DECREASE_DIMENSION_CONVERSION))
                 .allowOutputSlotInheritance(true)
                 .seal()
                 .build());

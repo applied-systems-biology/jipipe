@@ -45,6 +45,9 @@ public class FilterPaths extends JIPipeSimpleIteratingAlgorithm {
     private PathPredicate.List filters = new PathPredicate.List();
     private boolean filterOnlyNames = true;
     private boolean invert = false;
+    private boolean outputFiles = true;
+    private boolean outputFolders = true;
+    private boolean outputNonExisting = true;
 
     /**
      * Instantiates the algorithm
@@ -69,6 +72,9 @@ public class FilterPaths extends JIPipeSimpleIteratingAlgorithm {
         }
         this.filterOnlyNames = other.filterOnlyNames;
         this.invert = other.invert;
+        this.outputFiles = other.outputFiles;
+        this.outputFolders = other.outputFolders;
+        this.outputNonExisting = other.outputNonExisting;
     }
 
     @Override
@@ -76,6 +82,8 @@ public class FilterPaths extends JIPipeSimpleIteratingAlgorithm {
         PathData inputData = dataBatch.getInputData(getFirstInputSlot(), PathData.class);
         JIPipeDataSlot firstOutputSlot = getFirstOutputSlot();
         Path inputPath = inputData.getPath();
+        if(!canOutput(inputPath))
+            return;
         if (filterOnlyNames)
             inputPath = inputPath.getFileName();
         else {
@@ -104,6 +112,18 @@ public class FilterPaths extends JIPipeSimpleIteratingAlgorithm {
             }
         } else {
             dataBatch.addOutputData(firstOutputSlot, inputData);
+        }
+    }
+
+    private boolean canOutput(Path data) {
+        if(Files.isDirectory(data)) {
+            return outputFolders;
+        }
+        else if(Files.exists(data)) {
+            return outputFiles;
+        }
+        else {
+            return outputNonExisting;
         }
     }
 
@@ -149,5 +169,38 @@ public class FilterPaths extends JIPipeSimpleIteratingAlgorithm {
     public void setInvert(boolean invert) {
         this.invert = invert;
 
+    }
+
+    @JIPipeDocumentation(name = "Output files", description = "If enabled, existing files are put into the output.")
+    @JIPipeParameter("output-files")
+    public boolean isOutputFiles() {
+        return outputFiles;
+    }
+
+    @JIPipeParameter("output-files")
+    public void setOutputFiles(boolean outputFiles) {
+        this.outputFiles = outputFiles;
+    }
+
+    @JIPipeDocumentation(name = "Output folders", description = "If enabled, existing folders are put into the output.")
+    @JIPipeParameter("output-folders")
+    public boolean isOutputFolders() {
+        return outputFolders;
+    }
+
+    @JIPipeParameter("output-folders")
+    public void setOutputFolders(boolean outputFolders) {
+        this.outputFolders = outputFolders;
+    }
+
+    @JIPipeDocumentation(name = "Output non-existing paths", description = "If enabled, non-existing paths are put into the output.")
+    @JIPipeParameter("output-non-existing")
+    public boolean isOutputNonExisting() {
+        return outputNonExisting;
+    }
+
+    @JIPipeParameter("output-non-existing")
+    public void setOutputNonExisting(boolean outputNonExisting) {
+        this.outputNonExisting = outputNonExisting;
     }
 }

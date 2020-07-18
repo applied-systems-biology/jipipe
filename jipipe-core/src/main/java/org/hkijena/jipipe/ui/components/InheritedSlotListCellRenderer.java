@@ -15,6 +15,7 @@ package org.hkijena.jipipe.ui.components;
 
 import org.hkijena.jipipe.api.algorithm.JIPipeGraphNode;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
+import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.ui.registries.JIPipeUIDatatypeRegistry;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -22,7 +23,7 @@ import javax.swing.*;
 import java.awt.*;
 
 /**
- * Renders an available entry for inherited slot in {@link org.hkijena.jipipe.api.data.JIPipeSlotDefinition}
+ * Renders an available entry for inherited slot in {@link JIPipeDataSlotInfo}
  */
 public class InheritedSlotListCellRenderer extends JLabel implements ListCellRenderer<String> {
 

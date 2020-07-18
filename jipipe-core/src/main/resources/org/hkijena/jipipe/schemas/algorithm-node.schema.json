@@ -6,7 +6,7 @@
     "description": "Node in a graph",
     "required": [
         "jipipe:slot-configuration",
-        "jipipe:algorithm-type",
+        "jipipe:node-info-id",
         "jipipe:algorithm-compartment",
         "name",
         "description"
@@ -38,8 +38,8 @@
               "$ref": "https://applied-systems-biology.github.io/jipipe/schemas/point.schema.json"
             }
         },
-        "jipipe:algorithm-type": {
-            "$id": "#/properties/jipipe:algorithm-type",
+        "jipipe:node-info-id": {
+            "$id": "#/properties/jipipe:node-info-id",
             "type": "string",
             "title": "Algorithm ID",
             "description": "Algorithm type ID",

@@ -59,12 +59,12 @@ public interface JIPipeSlotConfiguration {
     /**
      * @return the input slots
      */
-    Map<String, JIPipeSlotDefinition> getInputSlots();
+    Map<String, JIPipeDataSlotInfo> getInputSlots();
 
     /**
      * @return the output slots
      */
-    Map<String, JIPipeSlotDefinition> getOutputSlots();
+    Map<String, JIPipeDataSlotInfo> getOutputSlots();
 
     /**
      * Makes this slot configuration equivalent to the provided one

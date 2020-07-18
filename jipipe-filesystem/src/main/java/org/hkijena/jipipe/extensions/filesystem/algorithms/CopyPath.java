@@ -42,7 +42,7 @@ import java.util.stream.Collectors;
         "[Folder] to [Folder]: By default, the contents of the source folder are copied into the destination folder. You can enable a parameter that instead " +
         "copies the contents into [Destination]/[Source folder name]\n" +
         "[Folder] to [Not existing]: The destination is automatically created. The [Folder] to [Folder] rule is applied.")
-@JIPipeOrganization(menuPath = "Extract", algorithmCategory = JIPipeNodeCategory.FileSystem)
+@JIPipeOrganization(algorithmCategory = JIPipeNodeCategory.FileSystem)
 
 // Algorithm flow
 @JIPipeInputSlot(value = PathData.class, slotName = "Source", autoCreate = true)

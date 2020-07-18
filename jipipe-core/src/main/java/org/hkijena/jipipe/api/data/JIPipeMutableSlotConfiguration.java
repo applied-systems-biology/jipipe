@@ -47,7 +47,7 @@ public interface JIPipeMutableSlotConfiguration extends JIPipeSlotConfiguration 
 
     boolean canCreateCompatibleInputSlot(Class<? extends JIPipeData> acceptedDataType);
 
-    JIPipeSlotDefinition addSlot(String name, JIPipeSlotDefinition definition, boolean user);
+    JIPipeDataSlotInfo addSlot(String name, JIPipeDataSlotInfo definition, boolean user);
 
     void moveDown(String name, JIPipeSlotType slotType);
 

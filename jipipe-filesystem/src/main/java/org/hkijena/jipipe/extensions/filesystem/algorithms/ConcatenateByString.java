@@ -18,7 +18,11 @@ import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.algorithm.*;
+import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.extensions.filesystem.dataypes.FolderData;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.PathData;
+import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
+import org.hkijena.jipipe.utils.ResourceUtils;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -26,21 +30,22 @@ import java.util.function.Supplier;
 /**
  * Applies subfolder navigation to each input folder
  */
-@JIPipeDocumentation(name = "Concatenate paths", description = "Concatenates two paths")
+@JIPipeDocumentation(name = "Concatenate path with string", description = "Concatenates the input paths by a string.")
 @JIPipeOrganization(menuPath = "Modify", algorithmCategory = JIPipeNodeCategory.FileSystem)
 
 // Algorithm flow
-@JIPipeInputSlot(value = PathData.class, slotName = "Left", autoCreate = true)
-@JIPipeInputSlot(value = PathData.class, slotName = "Right", autoCreate = true)
+@JIPipeInputSlot(value = PathData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = PathData.class, slotName = "Output", autoCreate = true)
 
 // Traits
-public class ConcatenatePaths extends JIPipeIteratingAlgorithm {
+public class ConcatenateByString extends JIPipeSimpleIteratingAlgorithm {
+
+    private String subPath = "";
 
     /**
      * @param info Algorithm info
      */
-    public ConcatenatePaths(JIPipeNodeInfo info) {
+    public ConcatenateByString(JIPipeNodeInfo info) {
         super(info);
     }
 
@@ -49,18 +54,34 @@ public class ConcatenatePaths extends JIPipeIteratingAlgorithm {
      *
      * @param other The original
      */
-    public ConcatenatePaths(ConcatenatePaths other) {
+    public ConcatenateByString(ConcatenateByString other) {
         super(other);
+        this.subPath = other.subPath;
     }
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
-        PathData left = dataBatch.getInputData("Left", PathData.class);
-        PathData right = dataBatch.getInputData("Right", PathData.class);
-        dataBatch.addOutputData(getFirstOutputSlot(), new PathData(left.getPath().resolve(right.getPath())));
+        FolderData inputFolder = dataBatch.getInputData(getFirstInputSlot(), FolderData.class);
+        dataBatch.addOutputData(getFirstOutputSlot(), new FolderData(inputFolder.getPath().resolve(subPath)));
     }
 
-    @Override
-    public void reportValidity(JIPipeValidityReport report) {
+    /**
+     * @return The subfolder
+     */
+    @JIPipeParameter("sub-path")
+    @JIPipeDocumentation(name = "Concatenated path", description = "The path is concatenated by this path. Use forward slashes to make sub-folders.")
+    @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/algorithms/path.png")
+    public String getSubPath() {
+        return subPath;
+    }
+
+    /**
+     * Sets the subfolder
+     *
+     * @param subPath the subfolder
+     */
+    @JIPipeParameter("sub-path")
+    public void setSubPath(String subPath) {
+        this.subPath = subPath;
     }
 }

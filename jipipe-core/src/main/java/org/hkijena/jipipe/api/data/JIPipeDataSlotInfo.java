@@ -37,9 +37,9 @@ import java.util.*;
  * Defines an {@link JIPipeGraphNode} data slot.
  * This class is used within {@link JIPipeSlotConfiguration}
  */
-@JsonSerialize(using = JIPipeSlotDefinition.Serializer.class)
-@JsonDeserialize(using = JIPipeSlotDefinition.Deserializer.class)
-public class JIPipeSlotDefinition implements JIPipeParameterCollection {
+@JsonSerialize(using = JIPipeDataSlotInfo.Serializer.class)
+@JsonDeserialize(using = JIPipeDataSlotInfo.Deserializer.class)
+public class JIPipeDataSlotInfo implements JIPipeParameterCollection {
     private EventBus eventBus = new EventBus();
     private Class<? extends JIPipeData> dataClass;
     private JIPipeSlotType slotType;
@@ -54,7 +54,7 @@ public class JIPipeSlotDefinition implements JIPipeParameterCollection {
      * @param name          unique slot name
      * @param inheritedSlot only relevant if output slot. Can be an input slot name or '*' to automatically select the first input slot
      */
-    public JIPipeSlotDefinition(Class<? extends JIPipeData> dataClass, JIPipeSlotType slotType, String name, String inheritedSlot) {
+    public JIPipeDataSlotInfo(Class<? extends JIPipeData> dataClass, JIPipeSlotType slotType, String name, String inheritedSlot) {
         this.dataClass = dataClass;
         this.slotType = slotType;
         this.name = name;
@@ -69,7 +69,7 @@ public class JIPipeSlotDefinition implements JIPipeParameterCollection {
      * @param slotType      slot type
      * @param inheritedSlot only relevant if output slot. Can be an input slot name or '*' to automatically select the first input slot
      */
-    public JIPipeSlotDefinition(Class<? extends JIPipeData> dataClass, JIPipeSlotType slotType, String inheritedSlot) {
+    public JIPipeDataSlotInfo(Class<? extends JIPipeData> dataClass, JIPipeSlotType slotType, String inheritedSlot) {
         this.dataClass = dataClass;
         this.slotType = slotType;
         this.inheritedSlot = inheritedSlot;
@@ -78,14 +78,14 @@ public class JIPipeSlotDefinition implements JIPipeParameterCollection {
     /**
      * @param slot Imported annotation
      */
-    public JIPipeSlotDefinition(JIPipeInputSlot slot) {
+    public JIPipeDataSlotInfo(JIPipeInputSlot slot) {
         this(slot.value(), JIPipeSlotType.Input, slot.slotName(), null);
     }
 
     /**
      * @param slot Imported annotation
      */
-    public JIPipeSlotDefinition(JIPipeOutputSlot slot) {
+    public JIPipeDataSlotInfo(JIPipeOutputSlot slot) {
         this(slot.value(), JIPipeSlotType.Output, slot.slotName(), null);
     }
 
@@ -94,7 +94,7 @@ public class JIPipeSlotDefinition implements JIPipeParameterCollection {
      *
      * @param other The original
      */
-    public JIPipeSlotDefinition(JIPipeSlotDefinition other) {
+    public JIPipeDataSlotInfo(JIPipeDataSlotInfo other) {
         this.dataClass = other.dataClass;
         this.slotType = other.slotType;
         this.name = other.name;
@@ -109,7 +109,7 @@ public class JIPipeSlotDefinition implements JIPipeParameterCollection {
      * @param dataClass slot data class
      * @param slotType  slot type
      */
-    public JIPipeSlotDefinition(Class<? extends JIPipeData> dataClass, JIPipeSlotType slotType) {
+    public JIPipeDataSlotInfo(Class<? extends JIPipeData> dataClass, JIPipeSlotType slotType) {
         this(dataClass, slotType, null);
     }
 
@@ -117,7 +117,7 @@ public class JIPipeSlotDefinition implements JIPipeParameterCollection {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        JIPipeSlotDefinition that = (JIPipeSlotDefinition) o;
+        JIPipeDataSlotInfo that = (JIPipeDataSlotInfo) o;
         return Objects.equals(dataClass, that.dataClass) &&
                 slotType == that.slotType &&
                 Objects.equals(name, that.name) &&
@@ -142,8 +142,8 @@ public class JIPipeSlotDefinition implements JIPipeParameterCollection {
      * @param newName new name
      * @return Slot definition copy with new name
      */
-    public JIPipeSlotDefinition renamedCopy(String newName) {
-        JIPipeSlotDefinition result = new JIPipeSlotDefinition(this);
+    public JIPipeDataSlotInfo renamedCopy(String newName) {
+        JIPipeDataSlotInfo result = new JIPipeDataSlotInfo(this);
         result.name = newName;
         return result;
     }
@@ -211,7 +211,7 @@ public class JIPipeSlotDefinition implements JIPipeParameterCollection {
      *
      * @param other other slot
      */
-    public void copyMetadata(JIPipeSlotDefinition other) {
+    public void copyMetadata(JIPipeDataSlotInfo other) {
         setCustomName(other.getCustomName());
     }
 
@@ -228,7 +228,7 @@ public class JIPipeSlotDefinition implements JIPipeParameterCollection {
      * @param dataClass  The slot data
      * @return The converted data
      */
-    public static Class<? extends JIPipeData> applyInheritanceConversion(JIPipeSlotDefinition definition, Class<? extends JIPipeData> dataClass) {
+    public static Class<? extends JIPipeData> applyInheritanceConversion(JIPipeDataSlotInfo definition, Class<? extends JIPipeData> dataClass) {
         Set<JIPipeDataInfo> visited = new HashSet<>();
         JIPipeDataInfo currentData = JIPipeDataInfo.getInstance(dataClass);
         JIPipeDataInfo lastData = currentData;
@@ -285,11 +285,11 @@ public class JIPipeSlotDefinition implements JIPipeParameterCollection {
     }
 
     /**
-     * Serializes an {@link JIPipeSlotDefinition}
+     * Serializes an {@link JIPipeDataSlotInfo}
      */
-    public static class Serializer extends JsonSerializer<JIPipeSlotDefinition> {
+    public static class Serializer extends JsonSerializer<JIPipeDataSlotInfo> {
         @Override
-        public void serialize(JIPipeSlotDefinition definition, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
+        public void serialize(JIPipeDataSlotInfo definition, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
             jsonGenerator.writeStartObject();
             jsonGenerator.writeStringField("slot-data-type", JIPipeDatatypeRegistry.getInstance().getIdOf(definition.dataClass));
             jsonGenerator.writeStringField("slot-type", definition.slotType.name());
@@ -307,15 +307,15 @@ public class JIPipeSlotDefinition implements JIPipeParameterCollection {
     }
 
     /**
-     * Deserializes an {@link JIPipeSlotDefinition}
+     * Deserializes an {@link JIPipeDataSlotInfo}
      */
-    public static class Deserializer extends JsonDeserializer<JIPipeSlotDefinition> {
+    public static class Deserializer extends JsonDeserializer<JIPipeDataSlotInfo> {
 
         @Override
-        public JIPipeSlotDefinition deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
+        public JIPipeDataSlotInfo deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
             JsonNode node = jsonParser.getCodec().readTree(jsonParser);
             JsonNode inheritedSlotNode = node.path("inherited-slot");
-            JIPipeSlotDefinition definition = new JIPipeSlotDefinition(JIPipeDatatypeRegistry.getInstance().getById(node.get("slot-data-type").asText()),
+            JIPipeDataSlotInfo definition = new JIPipeDataSlotInfo(JIPipeDatatypeRegistry.getInstance().getById(node.get("slot-data-type").asText()),
                     JIPipeSlotType.valueOf(node.get("slot-type").asText()),
                     node.get("name").asText(),
                     inheritedSlotNode.isMissingNode() ? "" : inheritedSlotNode.asText(null));

@@ -649,8 +649,12 @@ public class JIPipeGraph implements JIPipeValidatable {
 
         for (Map.Entry<String, JsonNode> kv : ImmutableList.copyOf(node.get("nodes").fields())) {
             if (!algorithms.containsKey(kv.getKey())) {
-                String infoInfo = kv.getValue().get("jipipe:algorithm-type").asText();
-                JIPipeNodeInfo info = JIPipeNodeRegistry.getInstance().getInfoById(infoInfo);
+                String id = kv.getValue().get("jipipe:node-info-id").asText();
+                if(!JIPipeNodeRegistry.getInstance().hasNodeInfoWithId(id)) {
+                    System.err.println("Unable to find node with ID '" + id + "'. Skipping.");
+                    continue;
+                }
+                JIPipeNodeInfo info = JIPipeNodeRegistry.getInstance().getInfoById(id);
                 JIPipeGraphNode algorithm = info.newInstance();
                 algorithm.fromJson(kv.getValue());
                 insertNode(StringUtils.jsonify(kv.getKey()), algorithm, algorithm.getCompartment());
@@ -664,11 +668,11 @@ public class JIPipeGraph implements JIPipeValidatable {
             JIPipeGraphNode sourceAlgorithm = algorithms.get(sourceAlgorithmName);
             JIPipeGraphNode targetAlgorithm = algorithms.get(targetAlgorithmName);
             if (sourceAlgorithm == null) {
-                System.err.println("Unable to find algorithm with ID '" + sourceAlgorithmName + "'. Skipping this instruction.");
+                System.err.println("Unable to find node with ID '" + sourceAlgorithmName + "'. Skipping this instruction.");
                 continue;
             }
             if (targetAlgorithm == null) {
-                System.err.println("Unable to find algorithm with ID '" + targetAlgorithmName + "'. Skipping this instruction.");
+                System.err.println("Unable to find node with ID '" + targetAlgorithmName + "'. Skipping this instruction.");
                 continue;
             }
             String sourceSlotName = edgeNode.get("source-slot").asText();
