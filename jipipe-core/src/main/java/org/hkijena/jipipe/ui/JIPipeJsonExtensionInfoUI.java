@@ -18,10 +18,7 @@ import com.google.common.html.HtmlEscapers;
 import ij.IJ;
 import org.hkijena.jipipe.api.events.ParameterChangedEvent;
 import org.hkijena.jipipe.extensions.settings.ProjectsSettings;
-import org.hkijena.jipipe.ui.components.BackgroundPanel;
-import org.hkijena.jipipe.ui.components.FormPanel;
-import org.hkijena.jipipe.ui.components.MarkdownDocument;
-import org.hkijena.jipipe.ui.components.MarkdownReader;
+import org.hkijena.jipipe.ui.components.*;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -97,6 +94,14 @@ public class JIPipeJsonExtensionInfoUI extends JIPipeJsonExtensionWorkbenchPanel
                     Path value = recentProjectsList.getSelectedValue();
                     if (value != null) {
                         ((JIPipeProjectWindow) getExtensionWorkbenchUI().getWindow()).openProject(value);
+                    }
+                }
+                else {
+                    if(recentProjectsList.getMousePosition().x > recentProjectsList.getWidth() - 50) {
+                        Path value = recentProjectsList.getSelectedValue();
+                        if (value != null) {
+                            ((JIPipeProjectWindow) getExtensionWorkbenchUI().getWindow()).openProject(value);
+                        }
                     }
                 }
             }
@@ -184,40 +189,5 @@ public class JIPipeJsonExtensionInfoUI extends JIPipeJsonExtensionWorkbenchPanel
         toolBar.add(Box.createHorizontalStrut(4));
 
         topPanel.add(toolBar, BorderLayout.SOUTH);
-    }
-
-    /**
-     * Renders a recent project
-     */
-    private static class RecentProjectListCellRenderer extends JLabel implements ListCellRenderer<Path> {
-
-        public RecentProjectListCellRenderer() {
-            setOpaque(true);
-            setIcon(UIUtils.getIconFromResources("jipipe-file-32.png"));
-            setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
-            setVerticalAlignment(TOP);
-        }
-
-        @Override
-        public Component getListCellRendererComponent(JList<? extends Path> list, Path value, int index, boolean isSelected, boolean cellHasFocus) {
-
-            if (value != null) {
-                setText(String.format("<html>%s<br/><span style=\"color: gray;\">%s</span></html>",
-                        HtmlEscapers.htmlEscaper().escape(value.getFileName().toString()),
-                        value.getParent().toString()));
-            } else {
-                setIcon(UIUtils.getIconFromResources("jipipe-file-32-disabled.png"));
-                setText(String.format("<html>%s<br/><span style=\"color: gray;\">%s</span></html>",
-                        "No recent projects",
-                        "Your recent projects will appear here"));
-            }
-
-            if (isSelected) {
-                setBackground(new Color(184, 207, 229));
-            } else {
-                setBackground(new Color(255, 255, 255));
-            }
-            return this;
-        }
     }
 }
