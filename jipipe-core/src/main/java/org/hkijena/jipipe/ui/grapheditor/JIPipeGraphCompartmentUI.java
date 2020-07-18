@@ -79,6 +79,7 @@ public class JIPipeGraphCompartmentUI extends JIPipeGraphEditorUI {
                 NodeUIContextAction.SEPARATOR,
                 new ExportNodeUIContextAction(),
                 NodeUIContextAction.SEPARATOR,
+                new IsolateNodesUIContextAction(),
                 new JsonAlgorithmToGroupNodeUIContextAction(),
                 new GroupNodeUIContextAction(),
                 new CollapseIOInterfaceNodeUIContextAction(),

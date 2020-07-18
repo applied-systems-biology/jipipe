@@ -116,6 +116,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
                         if(mousePosition != null) {
                             setGraphEditorCursor(mousePosition);
                         }
+                        getWorkbench().sendStatusBarText("Executed: " + contextAction.getName());
                         SwingUtilities.invokeLater(() -> contextAction.run(this, selection));
                         return true;
                     }
