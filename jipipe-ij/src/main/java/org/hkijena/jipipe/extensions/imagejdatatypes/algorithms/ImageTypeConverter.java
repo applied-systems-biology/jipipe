@@ -23,6 +23,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeSlotConfiguration;
 import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
+import org.hkijena.jipipe.extensions.imagejdatatypes.ImageJDataTypesExtension;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 
 import java.util.HashSet;
@@ -45,7 +46,12 @@ public class ImageTypeConverter extends JIPipeAlgorithm {
      * @param info Algorithm info
      */
     public ImageTypeConverter(JIPipeNodeInfo info) {
-        super(info, createConfiguration());
+        super(info, JIPipeDefaultMutableSlotConfiguration.builder()
+        .addInputSlot("Input", ImagePlusData.class)
+        .restrictOutputTo(ImageJDataTypesExtension.IMAGE_TYPES)
+        .restrictOutputSlotCount(1)
+        .sealInput()
+        .build());
     }
 
     /**
@@ -93,24 +99,5 @@ public class ImageTypeConverter extends JIPipeAlgorithm {
                 }
             }
         }
-    }
-
-    /**
-     * @return The appropriate slot configuration for {@link ImageTypeConverter}
-     */
-    public static JIPipeSlotConfiguration createConfiguration() {
-        JIPipeDefaultMutableSlotConfiguration slotConfiguration = new JIPipeDefaultMutableSlotConfiguration();
-        slotConfiguration.setMaxInputSlots(1);
-        slotConfiguration.setMaxOutputSlots(1);
-        Set<Class<? extends JIPipeData>> allowedTypes = new HashSet<>();
-        for (Class<? extends JIPipeData> type : JIPipeDatatypeRegistry.getInstance().getRegisteredDataTypes().values()) {
-            if (ImagePlusData.class.isAssignableFrom(type)) {
-                allowedTypes.add(type);
-            }
-        }
-        slotConfiguration.setAllowedInputSlotTypes(allowedTypes);
-        slotConfiguration.setAllowedOutputSlotTypes(allowedTypes);
-
-        return slotConfiguration;
     }
 }
