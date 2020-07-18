@@ -141,6 +141,8 @@ public class CopyPath extends JIPipeIteratingAlgorithm {
                         "Please refer to the technical details.",
                         "Please check if the paths is correct.");
         }
+
+        dataBatch.addOutputData(getFirstOutputSlot(), new PathData(destination));
     }
 
     @Override
