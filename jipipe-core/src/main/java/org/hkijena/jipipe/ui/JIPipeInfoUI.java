@@ -163,7 +163,7 @@ public class JIPipeInfoUI extends JIPipeProjectWorkbenchPanel {
         toolBar.add(openWebsiteButton);
         toolBar.add(Box.createHorizontalStrut(4));
 
-        JButton openTutorialsButton = new JButton("Tutorials (Online)", UIUtils.getIconFromResources("algorithms/graduation-cap.png"));
+        JButton openTutorialsButton = new JButton("Tutorials", UIUtils.getIconFromResources("algorithms/graduation-cap.png"));
         openTutorialsButton.setToolTipText("https://applied-systems-biology.github.io/jipipe/tutorials");
         openTutorialsButton.addActionListener(e -> UIUtils.openWebsite("https://applied-systems-biology.github.io/jipipe/tutorials"));
         openTutorialsButton.setOpaque(false);
@@ -171,7 +171,7 @@ public class JIPipeInfoUI extends JIPipeProjectWorkbenchPanel {
         toolBar.add(openTutorialsButton);
         toolBar.add(Box.createHorizontalStrut(4));
 
-        JButton openExamplesButton = new JButton("Examples (Online)", UIUtils.getIconFromResources("algorithms/flask.png"));
+        JButton openExamplesButton = new JButton("Examples", UIUtils.getIconFromResources("algorithms/flask.png"));
         openExamplesButton.setToolTipText("https://applied-systems-biology.github.io/jipipe/examples");
         openExamplesButton.addActionListener(e -> UIUtils.openWebsite("https://applied-systems-biology.github.io/jipipe/examples"));
         openExamplesButton.setOpaque(false);
@@ -179,7 +179,7 @@ public class JIPipeInfoUI extends JIPipeProjectWorkbenchPanel {
         toolBar.add(openExamplesButton);
         toolBar.add(Box.createHorizontalStrut(4));
 
-        JButton openDocumentationButton = new JButton("Documentation (Online)", UIUtils.getIconFromResources("info.png"));
+        JButton openDocumentationButton = new JButton("Documentation", UIUtils.getIconFromResources("info.png"));
         openDocumentationButton.setToolTipText("https://applied-systems-biology.github.io/jipipe/documentation");
         openDocumentationButton.addActionListener(e -> UIUtils.openWebsite("https://applied-systems-biology.github.io/jipipe/documentation"));
         openDocumentationButton.setOpaque(false);
@@ -187,12 +187,20 @@ public class JIPipeInfoUI extends JIPipeProjectWorkbenchPanel {
         toolBar.add(openDocumentationButton);
         toolBar.add(Box.createHorizontalStrut(4));
 
-        JButton openSourceCodeButton = new JButton("Source code (Online)", UIUtils.getIconFromResources("algorithms/dialog-xml-editor.png"));
+        JButton openSourceCodeButton = new JButton("Source code", UIUtils.getIconFromResources("algorithms/dialog-xml-editor.png"));
         openSourceCodeButton.setToolTipText("https://github.com/applied-systems-biology/jipipe/");
         openSourceCodeButton.addActionListener(e -> UIUtils.openWebsite("https://github.com/applied-systems-biology/jipipe/"));
         openSourceCodeButton.setOpaque(false);
         openSourceCodeButton.setBackground(new Color(0, 0, 0, 0));
         toolBar.add(openSourceCodeButton);
+        toolBar.add(Box.createHorizontalStrut(4));
+
+        JButton reportIssueButton = new JButton("Report issue", UIUtils.getIconFromResources("algorithms/bug.png"));
+        reportIssueButton.setToolTipText("https://github.com/applied-systems-biology/jipipe/issues");
+        reportIssueButton.addActionListener(e -> UIUtils.openWebsite("https://github.com/applied-systems-biology/jipipe/issues"));
+        reportIssueButton.setOpaque(false);
+        reportIssueButton.setBackground(new Color(0, 0, 0, 0));
+        toolBar.add(reportIssueButton);
         toolBar.add(Box.createHorizontalStrut(4));
 
         topPanel.add(toolBar, BorderLayout.SOUTH);
