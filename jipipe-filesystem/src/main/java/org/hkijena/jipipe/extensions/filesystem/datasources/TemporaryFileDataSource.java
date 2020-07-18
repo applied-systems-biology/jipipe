@@ -1,7 +1,9 @@
 package org.hkijena.jipipe.extensions.filesystem.datasources;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
+import org.hkijena.jipipe.api.algorithm.JIPipeNodeCategory;
 import org.hkijena.jipipe.api.algorithm.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.algorithm.JIPipeParameterSlotAlgorithm;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
@@ -18,6 +20,7 @@ import java.util.function.Supplier;
 
 @JIPipeDocumentation(name = "Temporary file", description = "Generates a temporary file that will be located within your operating system's temporary directory or " +
         "the directory specified in the JIPipe settings. Please note that there are no guarantees on the actual file name, as the outcome depends on the operating system.")
+@JIPipeOrganization(algorithmCategory = JIPipeNodeCategory.DataSource)
 public class TemporaryFileDataSource extends JIPipeParameterSlotAlgorithm {
 
     private String prefix = "";
