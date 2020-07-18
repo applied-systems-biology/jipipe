@@ -5,10 +5,12 @@ import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.algorithm.JIPipeNodeCategory;
 import org.hkijena.jipipe.api.algorithm.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.algorithm.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.algorithm.JIPipeParameterSlotAlgorithm;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FileData;
+import org.hkijena.jipipe.extensions.filesystem.dataypes.FolderData;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 
@@ -20,6 +22,7 @@ import java.util.function.Supplier;
         "the directory specified in the JIPipe settings. Please note that there are no guarantees on the actual folder name, as the outcome depends on the operating system. " +
         "The folder is already existing, so a 'Create directories' operation is not needed.")
 @JIPipeOrganization(algorithmCategory = JIPipeNodeCategory.DataSource)
+@JIPipeOutputSlot(value = FolderData.class, slotName = "Output", autoCreate = true)
 public class TemporaryFolderDataSource extends JIPipeParameterSlotAlgorithm {
 
     private String baseName = "";
