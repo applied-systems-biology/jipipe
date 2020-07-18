@@ -56,6 +56,10 @@ import java.util.stream.Collectors;
  */
 public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implements MouseListener, MouseMotionListener {
 
+    public static final KeyStroke KEY_STROKE_UNDO = KeyStroke.getKeyStroke(KeyEvent.VK_Z, InputEvent.CTRL_MASK, true);
+    public static final KeyStroke KEY_STROKE_REDO = KeyStroke.getKeyStroke(KeyEvent.VK_Z, InputEvent.CTRL_MASK | InputEvent.SHIFT_MASK, true);
+    public static final KeyStroke KEY_STROKE_AUTO_LAYOUT = KeyStroke.getKeyStroke(KeyEvent.VK_L, InputEvent.CTRL_MASK | InputEvent.SHIFT_MASK, true);
+
     protected JMenuBar menuBar = new JMenuBar();
     private JIPipeGraphCanvasUI canvasUI;
     private JIPipeGraph algorithmGraph;
@@ -85,6 +89,27 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         JIPipeNodeRegistry.getInstance().getEventBus().register(this);
         algorithmGraph.getEventBus().register(this);
         updateNavigation();
+        initializeHotkeys();
+    }
+
+    private void initializeHotkeys() {
+        KeyboardFocusManager focusManager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
+        focusManager.addKeyEventDispatcher(e -> {
+            KeyStroke keyStroke = KeyStroke.getKeyStrokeForEvent(e);
+            if (this.isDisplayable() && FocusManager.getCurrentManager().getFocusOwner() == canvasUI ) {
+                if(Objects.equals(keyStroke, KEY_STROKE_UNDO)) {
+                    undo();
+                }
+                else if(Objects.equals(keyStroke, KEY_STROKE_REDO)) {
+                    redo();
+                }
+                else if(Objects.equals(keyStroke, KEY_STROKE_AUTO_LAYOUT)) {
+                    getWorkbench().sendStatusBarText("Auto-layout");
+                    canvasUI.autoLayoutAll();
+                }
+            }
+            return false;
+        });
     }
 
     public JScrollPane getScrollPane() {
@@ -167,15 +192,15 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         menuBar.add(Box.createHorizontalStrut(8));
 
         JButton undoButton = new JButton(UIUtils.getIconFromResources("undo.png"));
-        undoButton.setToolTipText("Undo");
+        undoButton.setToolTipText("<html>Undo<br><i>Ctrl-Z</i></html>");
         UIUtils.makeFlat25x25(undoButton);
-        undoButton.addActionListener(e -> canvasUI.getGraphHistory().undo());
+        undoButton.addActionListener(e -> undo());
         menuBar.add(undoButton);
 
         JButton redoButton = new JButton(UIUtils.getIconFromResources("redo.png"));
-        redoButton.setToolTipText("Redo");
+        redoButton.setToolTipText("<html>Redo<br><i>Ctrl-Shift-Z</i></html>");
         UIUtils.makeFlat25x25(redoButton);
-        redoButton.addActionListener(e -> canvasUI.getGraphHistory().redo());
+        redoButton.addActionListener(e -> redo());
         menuBar.add(redoButton);
 
         menuBar.add(Box.createHorizontalStrut(8));
@@ -201,7 +226,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         menuBar.add(Box.createHorizontalStrut(8));
 
         JButton autoLayoutButton = new JButton(UIUtils.getIconFromResources("auto-layout-all.png"));
-        autoLayoutButton.setToolTipText("Auto-layout all nodes");
+        autoLayoutButton.setToolTipText("<html>Auto-layout all nodes<br><i>Ctrl-Shift-L</i></html>");
         UIUtils.makeFlat25x25(autoLayoutButton);
         autoLayoutButton.addActionListener(e -> {
             canvasUI.getGraphHistory().addSnapshotBefore(new MoveNodesGraphHistorySnapshot(canvasUI.getGraph(), "Auto-layout all nodes"));
@@ -256,6 +281,36 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         exportAsImageMenu.add(exportAsSvgItem);
 
         menuBar.add(exportButton);
+    }
+
+    private void redo() {
+        int scrollX = scrollPane.getHorizontalScrollBar().getValue();
+        int scrollY = scrollPane.getVerticalScrollBar().getValue();
+        if(canvasUI.getGraphHistory().redo()) {
+            getWorkbench().sendStatusBarText("Redo successful");
+        }
+        else {
+            getWorkbench().sendStatusBarText("Redo unsuccessful");
+        }
+        SwingUtilities.invokeLater(() -> {
+            scrollPane.getHorizontalScrollBar().setValue(scrollX);
+            scrollPane.getVerticalScrollBar().setValue(scrollY);
+        });
+    }
+
+    private void undo() {
+        int scrollX = scrollPane.getHorizontalScrollBar().getValue();
+        int scrollY = scrollPane.getVerticalScrollBar().getValue();
+        if(canvasUI.getGraphHistory().undo()) {
+            getWorkbench().sendStatusBarText("Undo successful");
+        }
+        else {
+            getWorkbench().sendStatusBarText("Undo unsuccessful");
+        }
+        SwingUtilities.invokeLater(() -> {
+            scrollPane.getHorizontalScrollBar().setValue(scrollX);
+            scrollPane.getVerticalScrollBar().setValue(scrollY);
+        });
     }
 
     /**
