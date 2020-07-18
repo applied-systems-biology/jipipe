@@ -91,17 +91,21 @@ public class FilesystemExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerAlgorithm("import-folder-list", FolderListDataSource.class);
         registerAlgorithm("file-temporary", TemporaryFileDataSource.class);
         registerAlgorithm("folder-temporary", TemporaryFolderDataSource.class);
+        registerAlgorithm("folder-run-output", OutputFolderDataSource.class);
 
         registerAlgorithm("path-extract-filename", ExtractFileName.class, UIUtils.getAlgorithmIconURL("files.png"));
         registerAlgorithm("path-extract-parent", ExtractParent.class, UIUtils.getAlgorithmIconURL("go-parent-folder.png"));
+        registerAlgorithm("path-relativize", RelativizePaths.class, UIUtils.getAlgorithmIconURL("path.png"));
+        registerAlgorithm("path-relativize-by-parameter", RelativizeByParameter.class, UIUtils.getAlgorithmIconURL("path.png"));
         registerAlgorithm("path-concatenate", ConcatenatePaths.class, UIUtils.getAlgorithmIconURL("list-add.png"));
-        registerAlgorithm("path-concatenate-string", ConcatenateByString.class, UIUtils.getAlgorithmIconURL("list-add.png"));
+        registerAlgorithm("path-concatenate-by-parameter", ConcatenateByParameter.class, UIUtils.getAlgorithmIconURL("list-add.png"));
         registerAlgorithm("folder-mkdir", CreateDirectory.class, UIUtils.getAlgorithmIconURL("folder-new.png"));
         registerAlgorithm("path-rename-string", RenameByString.class, UIUtils.getAlgorithmIconURL("tag.png"));
         registerAlgorithm("path-copy", CopyPath.class, UIUtils.getAlgorithmIconURL("copy.png"));
         registerAlgorithm("path-filter", FilterPaths.class, UIUtils.getAlgorithmIconURL("filter.png"));
         registerAlgorithm("folder-list-files", ListFiles.class, UIUtils.getAlgorithmIconURL("list.png"));
         registerAlgorithm("folder-list-subfolders", ListSubfolders.class, UIUtils.getAlgorithmIconURL("list.png"));
+        registerAlgorithm("data-to-output-path", ConvertDataToOutputPath.class, UIUtils.getAlgorithmIconURL("folder.png"));
 
         registerAlgorithm("folder-annotate-by-name", SimpleFolderAnnotationGenerator.class, UIUtils.getAlgorithmIconURL("tools-wizard.png"));
         registerAlgorithm("file-annotate-by-name", SimpleFileAnnotationGenerator.class, UIUtils.getAlgorithmIconURL("tools-wizard.png"));
