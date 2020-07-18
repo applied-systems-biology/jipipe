@@ -25,7 +25,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterVisibility;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.FormPanel;
-import org.hkijena.jipipe.ui.components.PickAlgorithmDialog;
+import org.hkijena.jipipe.ui.components.PickNodeDialog;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -85,9 +85,9 @@ public class GraphNodeParametersUI extends JIPipeWorkbenchPanel {
     }
 
     private void autoAddAlgorithm() {
-        JIPipeGraphNode algorithm = PickAlgorithmDialog.showDialog(this,
+        JIPipeGraphNode algorithm = PickNodeDialog.showDialog(this,
                 parameters.getGraph().getNodes().values(),
-                "Add parameters of algorithm");
+                null, "Add parameters of algorithm");
         if (algorithm != null) {
             List<GraphNodeParameterReferenceGroup> groupList = new ArrayList<>();
             Stack<JIPipeParameterCollection> collectionStack = new Stack<>();

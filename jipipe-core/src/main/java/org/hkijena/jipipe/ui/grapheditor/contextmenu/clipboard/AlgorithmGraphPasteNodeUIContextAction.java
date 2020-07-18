@@ -26,6 +26,8 @@ import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -109,5 +111,10 @@ public class AlgorithmGraphPasteNodeUIContextAction implements NodeUIContextActi
     @Override
     public boolean isShowingInOverhang() {
         return false;
+    }
+
+    @Override
+    public KeyStroke getKeyboardShortcut() {
+        return KeyStroke.getKeyStroke(KeyEvent.VK_V, InputEvent.CTRL_MASK, true);
     }
 }

@@ -29,37 +29,40 @@ import java.util.stream.Collectors;
 /**
  * UI that adds slots to an algorithm
  */
-public class PickAlgorithmDialog extends JDialog {
-    private Set<JIPipeGraphNode> algorithms;
+public class PickNodeDialog extends JDialog {
+    private Set<JIPipeGraphNode> nodes;
     private SearchTextField searchField;
-    private JList<JIPipeGraphNode> algorithmList;
-    private JIPipeGraphNode selectedAlgorithm;
+    private JList<JIPipeGraphNode> nodeJList;
+    private JIPipeGraphNode selectedNode;
     private JButton confirmButton;
     private boolean canceled = true;
 
     /**
      * @param parent     parent window
-     * @param algorithms the available algorithms
+     * @param nodes the available algorithms
+     * @param preSelected selected node
      */
-    public PickAlgorithmDialog(Window parent, Set<JIPipeGraphNode> algorithms) {
+    public PickNodeDialog(Window parent, Set<JIPipeGraphNode> nodes, JIPipeGraphNode preSelected) {
         super(parent);
-        this.algorithms = algorithms;
+        this.nodes = nodes;
         initialize();
-        reloadTypeList();
+        reloadNodeList();
+        setSelectedNode(preSelected);
+        nodeJList.setSelectedValue(preSelected, true);
     }
 
     private void initialize() {
         setContentPane(new JPanel(new BorderLayout(8, 8)));
         initializeToolBar();
 
-        algorithmList = new JList<>();
-        algorithmList.setCellRenderer(new JIPipeAlgorithmListCellRenderer());
-        algorithmList.addListSelectionListener(e -> {
-            if (algorithmList.getSelectedValue() != null) {
-                setSelectedAlgorithm(algorithmList.getSelectedValue());
+        nodeJList = new JList<>();
+        nodeJList.setCellRenderer(new JIPipeAlgorithmListCellRenderer());
+        nodeJList.addListSelectionListener(e -> {
+            if (nodeJList.getSelectedValue() != null) {
+                setSelectedNode(nodeJList.getSelectedValue());
             }
         });
-        JScrollPane scrollPane = new JScrollPane(algorithmList);
+        JScrollPane scrollPane = new JScrollPane(nodeJList);
         add(scrollPane, BorderLayout.CENTER);
         initializeButtonPanel();
     }
@@ -99,11 +102,11 @@ public class PickAlgorithmDialog extends JDialog {
         toolBar.setFloatable(false);
 
         searchField = new SearchTextField();
-        searchField.addActionListener(e -> reloadTypeList());
+        searchField.addActionListener(e -> reloadNodeList());
         searchField.addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent e) {
-                if (selectedAlgorithm != null && e.getKeyCode() == KeyEvent.VK_ENTER) {
+                if (selectedNode != null && e.getKeyCode() == KeyEvent.VK_ENTER) {
                     confirmButton.requestFocusInWindow();
                 }
             }
@@ -115,28 +118,38 @@ public class PickAlgorithmDialog extends JDialog {
 
     private List<JIPipeGraphNode> getFilteredAndSortedInfos() {
         Predicate<JIPipeGraphNode> filterFunction = info -> searchField.test(info.getName());
-        return algorithms.stream().filter(filterFunction).sorted(Comparator.comparing(JIPipeGraphNode::getName)).collect(Collectors.toList());
+        return nodes.stream().filter(filterFunction).sorted(Comparator.comparing(JIPipeGraphNode::getName)).collect(Collectors.toList());
     }
 
-    private void reloadTypeList() {
-        setSelectedAlgorithm(null);
+    private void reloadNodeList() {
+        setSelectedNode(null);
         List<JIPipeGraphNode> available = getFilteredAndSortedInfos();
         DefaultListModel<JIPipeGraphNode> listModel = new DefaultListModel<>();
+        int selectedIndex = -1;
+        int index = 0;
         for (JIPipeGraphNode type : available) {
             listModel.addElement(type);
+            if(type == selectedNode)
+                selectedIndex = index;
+            ++index;
         }
-        algorithmList.setModel(listModel);
-        if (!listModel.isEmpty()) {
-            algorithmList.setSelectedIndex(0);
+        nodeJList.setModel(listModel);
+        if(selectedIndex >= 0) {
+            nodeJList.setSelectedIndex(selectedIndex);
+        }
+        else {
+            if (!listModel.isEmpty()) {
+                nodeJList.setSelectedIndex(0);
+            }
         }
     }
 
-    public JIPipeGraphNode getSelectedAlgorithm() {
-        return selectedAlgorithm;
+    public JIPipeGraphNode getSelectedNode() {
+        return selectedNode;
     }
 
-    public void setSelectedAlgorithm(JIPipeGraphNode selectedAlgorithm) {
-        this.selectedAlgorithm = selectedAlgorithm;
+    public void setSelectedNode(JIPipeGraphNode selectedNode) {
+        this.selectedNode = selectedNode;
     }
 
     /**
@@ -144,11 +157,12 @@ public class PickAlgorithmDialog extends JDialog {
      *
      * @param parent     parent component
      * @param algorithms available algorithms
+     * @param preSelected optionally pre-selected node
      * @param title      the dialog title
      * @return the selected  algorithm or null of none was selected
      */
-    public static JIPipeGraphNode showDialog(Component parent, Set<JIPipeGraphNode> algorithms, String title) {
-        PickAlgorithmDialog dialog = new PickAlgorithmDialog(SwingUtilities.getWindowAncestor(parent), algorithms);
+    public static JIPipeGraphNode showDialog(Component parent, Set<JIPipeGraphNode> algorithms, JIPipeGraphNode preSelected, String title) {
+        PickNodeDialog dialog = new PickNodeDialog(SwingUtilities.getWindowAncestor(parent), algorithms, preSelected);
         dialog.setTitle(title);
         dialog.setModal(true);
         dialog.pack();
@@ -157,7 +171,7 @@ public class PickAlgorithmDialog extends JDialog {
         UIUtils.addEscapeListener(dialog);
         dialog.setVisible(true);
         if (!dialog.canceled)
-            return dialog.getSelectedAlgorithm();
+            return dialog.getSelectedNode();
         else
             return null;
     }

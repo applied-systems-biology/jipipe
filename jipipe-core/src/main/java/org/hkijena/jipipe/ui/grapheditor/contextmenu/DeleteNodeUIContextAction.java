@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.ui.grapheditor.contextmenu;
 
 import org.hkijena.jipipe.api.algorithm.JIPipeGraphNode;
+import org.hkijena.jipipe.api.algorithm.JIPipeNodeCategory;
 import org.hkijena.jipipe.api.history.RemoveNodeGraphHistorySnapshot;
 import org.hkijena.jipipe.extensions.settings.GraphEditorUISettings;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphCanvasUI;
@@ -21,13 +22,21 @@ import org.hkijena.jipipe.ui.grapheditor.JIPipeNodeUI;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 public class DeleteNodeUIContextAction implements NodeUIContextAction {
     @Override
     public boolean matches(Set<JIPipeNodeUI> selection) {
-        return !selection.isEmpty();
+        if(selection.isEmpty())
+            return false;
+        for (JIPipeNodeUI ui : selection) {
+            if(ui.getNode().getCategory() == JIPipeNodeCategory.Internal)
+                return false;
+        }
+        return true;
     }
 
     @Override
@@ -65,5 +74,10 @@ public class DeleteNodeUIContextAction implements NodeUIContextAction {
     @Override
     public boolean disableOnNonMatch() {
         return false;
+    }
+
+    @Override
+    public KeyStroke getKeyboardShortcut() {
+        return KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0, true);
     }
 }

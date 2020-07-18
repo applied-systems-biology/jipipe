@@ -25,6 +25,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -66,5 +68,10 @@ public class GraphCompartmentCopyNodeUIContextAction implements NodeUIContextAct
     @Override
     public boolean isShowingInOverhang() {
         return false;
+    }
+
+    @Override
+    public KeyStroke getKeyboardShortcut() {
+        return KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.CTRL_MASK, true);
     }
 }

@@ -19,6 +19,8 @@ import org.hkijena.jipipe.ui.grapheditor.JIPipeNodeUI;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
 import java.util.Set;
 
 import static org.hkijena.jipipe.ui.grapheditor.JIPipeNodeUI.REQUEST_RUN_AND_SHOW_RESULTS;
@@ -53,5 +55,10 @@ public class RunAndShowResultsNodeUIContextAction implements NodeUIContextAction
     @Override
     public boolean isShowingInOverhang() {
         return true;
+    }
+
+    @Override
+    public KeyStroke getKeyboardShortcut() {
+        return KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, InputEvent.CTRL_MASK, true);
     }
 }

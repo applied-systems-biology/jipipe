@@ -98,6 +98,31 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
         initialize();
         addNewNodes();
         graph.getEventBus().register(this);
+        initializeHotkeys();
+    }
+
+    private void initializeHotkeys() {
+        KeyboardFocusManager focusManager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
+        focusManager.addKeyEventDispatcher(e -> {
+            KeyStroke keyStroke = KeyStroke.getKeyStrokeForEvent(e);
+            if(this.isDisplayable() && FocusManager.getCurrentManager().getFocusOwner() == this) {
+                for (NodeUIContextAction contextAction : contextActions) {
+                    if(contextAction == null)
+                        continue;
+                    if(!contextAction.matches(selection))
+                        continue;
+                    if (contextAction.getKeyboardShortcut() != null && Objects.equals(contextAction.getKeyboardShortcut(), keyStroke)) {
+                        Point mousePosition = this.getMousePosition(true);
+                        if(mousePosition != null) {
+                            setGraphEditorCursor(mousePosition);
+                        }
+                        SwingUtilities.invokeLater(() -> contextAction.run(this, selection));
+                        return true;
+                    }
+                }
+            }
+            return false;
+        });
     }
 
     private void initialize() {
@@ -544,8 +569,12 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
             }
             JMenuItem item = new JMenuItem(action.getName(), action.getIcon());
             item.setToolTipText(action.getDescription());
-            if (matches)
+            if (matches) {
                 item.addActionListener(e -> action.run(this, ImmutableSet.copyOf(selection)));
+                if(action.getKeyboardShortcut() != null) {
+                    item.setAccelerator(action.getKeyboardShortcut());
+                }
+            }
             else
                 item.setEnabled(false);
             menu.add(item);

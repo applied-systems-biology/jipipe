@@ -20,6 +20,8 @@ import org.hkijena.jipipe.ui.grapheditor.JIPipeNodeUI;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
 import java.util.Set;
 
 public class DisableNodeUIContextAction implements NodeUIContextAction {
@@ -69,5 +71,10 @@ public class DisableNodeUIContextAction implements NodeUIContextAction {
     @Override
     public boolean disableOnNonMatch() {
         return false;
+    }
+
+    @Override
+    public KeyStroke getKeyboardShortcut() {
+        return KeyStroke.getKeyStroke(KeyEvent.VK_E, InputEvent.CTRL_MASK | InputEvent.SHIFT_MASK, true);
     }
 }

@@ -22,6 +22,8 @@ import org.hkijena.jipipe.ui.grapheditor.JIPipeNodeUI;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
 import java.util.Set;
 
 public class GraphCompartmentCutNodeUIContextAction extends GraphCompartmentCopyNodeUIContextAction {
@@ -55,5 +57,10 @@ public class GraphCompartmentCutNodeUIContextAction extends GraphCompartmentCopy
     @Override
     public boolean isShowingInOverhang() {
         return false;
+    }
+
+    @Override
+    public KeyStroke getKeyboardShortcut() {
+        return KeyStroke.getKeyStroke(KeyEvent.VK_X, InputEvent.CTRL_MASK, true);
     }
 }

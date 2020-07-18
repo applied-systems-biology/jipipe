@@ -24,6 +24,7 @@ import org.hkijena.jipipe.ui.grapheditor.JIPipeNodeUI;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
+import java.awt.event.KeyEvent;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -71,5 +72,10 @@ public class DeleteCompartmentUIContextAction implements NodeUIContextAction {
     @Override
     public boolean disableOnNonMatch() {
         return false;
+    }
+
+    @Override
+    public KeyStroke getKeyboardShortcut() {
+        return KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0, true);
     }
 }

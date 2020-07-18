@@ -15,24 +15,27 @@ package org.hkijena.jipipe.ui.grapheditor.contextmenu;
 
 import org.hkijena.jipipe.api.algorithm.JIPipeGraphNode;
 import org.hkijena.jipipe.api.history.MoveNodesGraphHistorySnapshot;
-import org.hkijena.jipipe.ui.components.PickAlgorithmDialog;
+import org.hkijena.jipipe.ui.components.PickNodeDialog;
 import org.hkijena.jipipe.ui.events.AlgorithmEvent;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphCanvasUI;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeNodeUI;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
 import java.util.Set;
 
 public class SelectAndMoveNodeHereNodeUIContextAction implements NodeUIContextAction {
     @Override
     public boolean matches(Set<JIPipeNodeUI> selection) {
-        return selection.isEmpty();
+        return selection.size() <= 1;
     }
 
     @Override
     public void run(JIPipeGraphCanvasUI canvasUI, Set<JIPipeNodeUI> selection) {
-        JIPipeGraphNode algorithm = PickAlgorithmDialog.showDialog(canvasUI, canvasUI.getNodeUIs().keySet(), "Move node");
+        JIPipeGraphNode preSelected = selection.isEmpty() ? null : selection.iterator().next().getNode();
+        JIPipeGraphNode algorithm = PickNodeDialog.showDialog(canvasUI, canvasUI.getNodeUIs().keySet(), preSelected, "Move node");
         if (algorithm != null) {
             JIPipeNodeUI ui = canvasUI.getNodeUIs().getOrDefault(algorithm, null);
             if (ui != null) {
@@ -67,5 +70,10 @@ public class SelectAndMoveNodeHereNodeUIContextAction implements NodeUIContextAc
     @Override
     public boolean disableOnNonMatch() {
         return false;
+    }
+
+    @Override
+    public KeyStroke getKeyboardShortcut() {
+        return KeyStroke.getKeyStroke(KeyEvent.VK_G, InputEvent.CTRL_MASK, true);
     }
 }
