@@ -23,6 +23,7 @@ import org.hkijena.jipipe.ui.plotbuilder.PlotDataSeriesColumnListCellRenderer;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Objects;
 
 /**
  * Works for {@link TableColumn}.
@@ -50,7 +51,8 @@ public class UIPlotDataSeriesColumnEnumParameterEditorUI extends JIPipeParameter
     @Override
     public void reload() {
         DynamicEnumParameter parameter = getParameter(DynamicEnumParameter.class);
-        comboBox.setSelectedItem(parameter.getValue());
+        if(!Objects.equals(parameter.getValue(), comboBox.getSelectedItem()))
+            comboBox.setSelectedItem(parameter.getValue());
     }
 
     private void initialize() {
@@ -61,7 +63,10 @@ public class UIPlotDataSeriesColumnEnumParameterEditorUI extends JIPipeParameter
         comboBox = new JComboBox<>(new DefaultComboBoxModel<>(values));
         comboBox.setRenderer(new PlotDataSeriesColumnListCellRenderer());
         comboBox.setSelectedItem(parameter.getValue());
-        comboBox.addActionListener(e -> setParameter(parameter, false));
+        comboBox.addActionListener(e -> {
+            parameter.setValue(comboBox.getSelectedItem());
+            setParameter(parameter, false);
+        });
         add(comboBox, BorderLayout.CENTER);
     }
 

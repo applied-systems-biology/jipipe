@@ -315,6 +315,8 @@ public class JIPipePlotBuilderUI extends JIPipeWorkbenchPanel implements JIPipeP
             columnMapping.put(table.getColumnHeading(col), name);
         }
 
+        getEventBus().post(new ParameterChangedEvent(this, "available-data"));
+
         return columnMapping;
     }
 
@@ -349,6 +351,8 @@ public class JIPipePlotBuilderUI extends JIPipeWorkbenchPanel implements JIPipeP
             availableData.put(name, dataSource);
             columnMapping.put(model.getColumnName(col), name);
         }
+
+        getEventBus().post(new ParameterChangedEvent(this, "available-data"));
 
         return columnMapping;
     }
