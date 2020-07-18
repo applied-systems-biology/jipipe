@@ -38,7 +38,7 @@ public class TemporaryFolderDataSource extends JIPipeParameterSlotAlgorithm {
 
     @Override
     public void runParameterSet(JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled, List<JIPipeAnnotation> parameterAnnotations) {
-        getFirstInputSlot().addData(new FileData(RuntimeSettings.generateTempDirectory(baseName)));
+        getFirstOutputSlot().addData(new FileData(RuntimeSettings.generateTempDirectory(baseName)));
     }
 
     @JIPipeDocumentation(name = "Base name", description = "Optional string that will be put into the directory name.")
