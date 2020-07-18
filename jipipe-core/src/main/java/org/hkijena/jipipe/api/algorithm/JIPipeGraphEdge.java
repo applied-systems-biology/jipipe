@@ -61,4 +61,8 @@ public class JIPipeGraphEdge extends DefaultEdge {
     public void setUiHidden(boolean uiHidden) {
         this.uiHidden = uiHidden;
     }
+
+    public void setMetadataFrom(JIPipeGraphEdge other) {
+        this.uiHidden = other.uiHidden;
+    }
 }

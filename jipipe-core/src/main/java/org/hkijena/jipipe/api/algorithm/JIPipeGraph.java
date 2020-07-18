@@ -95,8 +95,12 @@ public class JIPipeGraph implements JIPipeValidatable {
             String targetAlgorithmName = other.algorithms.inverse().get(edge.getValue().getNode());
             JIPipeGraphNode sourceAlgorithm = algorithms.get(sourceAlgorithmName);
             JIPipeGraphNode targetAlgorithm = algorithms.get(targetAlgorithmName);
-            connect(sourceAlgorithm.getOutputSlotMap().get(edge.getKey().getName()),
-                    targetAlgorithm.getInputSlotMap().get(edge.getValue().getName()));
+            JIPipeDataSlot source = sourceAlgorithm.getOutputSlotMap().get(edge.getKey().getName());
+            JIPipeDataSlot target = targetAlgorithm.getInputSlotMap().get(edge.getValue().getName());
+            connect(source, target);
+            JIPipeGraphEdge copyEdge = graph.getEdge(source, target);
+            JIPipeGraphEdge originalEdge = graph.getEdge(edge.getKey(), edge.getValue());
+            copyEdge.setMetadataFrom(originalEdge);
         }
     }
 
