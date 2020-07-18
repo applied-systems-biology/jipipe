@@ -368,6 +368,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
             return;
         }
 
+        Set<JIPipeNodeUI> nodesAfter = getNodesAfter(sourceAlgorithmUI.getRightX(), sourceAlgorithmUI.getBottomY());
         if (viewMode == JIPipeGraphViewMode.Horizontal) {
             int sourceSlotInternalY = sourceSlotIndex * viewMode.getGridHeight();
             int targetSlotInternalY = targetSlotIndex * viewMode.getGridHeight();
@@ -380,7 +381,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
             if (!targetAlgorithmUI.trySetLocationNoGrid(x, y)) {
                 // Move all other algorithms
                 int minDistance = Integer.MAX_VALUE;
-                for (JIPipeNodeUI ui : getNodesAfter(sourceAlgorithmUI.getRightX(), sourceAlgorithmUI.getBottomY())) {
+                for (JIPipeNodeUI ui : nodesAfter) {
                     if(ui == targetAlgorithmUI || ui == sourceAlgorithmUI)
                         continue;
                     minDistance = Math.min(minDistance, ui.getX() - sourceAlgorithmUI.getRightX());
@@ -388,7 +389,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
                 if(minDistance > 0 && minDistance != Integer.MAX_VALUE) {
                     int translateX = targetAlgorithmUI.getWidth() +  viewMode.getGridWidth() * 4 - minDistance;
                     boolean success = true;
-                    for (JIPipeNodeUI ui : getNodesAfter(sourceAlgorithmUI.getRightX(), sourceAlgorithmUI.getBottomY())) {
+                    for (JIPipeNodeUI ui : nodesAfter) {
                         if(ui == targetAlgorithmUI || ui == sourceAlgorithmUI)
                             continue;
                         success &= ui.trySetLocationAtNextGridPoint(ui.getX()+ translateX, ui.getY() );
@@ -413,25 +414,19 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
             if (!targetAlgorithmUI.trySetLocationNoGrid(x, y)) {
                 // Move all other algorithms
                 int minDistance = Integer.MAX_VALUE;
-                for (JIPipeNodeUI ui : getNodesAfter(sourceAlgorithmUI.getRightX(), sourceAlgorithmUI.getBottomY())) {
+                for (JIPipeNodeUI ui : nodesAfter) {
                     if(ui == targetAlgorithmUI || ui == sourceAlgorithmUI)
                         continue;
                     minDistance = Math.min(minDistance, ui.getY() - sourceAlgorithmUI.getBottomY());
                 }
                 if(minDistance > 0 && minDistance != Integer.MAX_VALUE) {
                     int translateY = targetAlgorithmUI.getHeight() +  viewMode.getGridHeight() * 2 - minDistance;
-                    boolean success = true;
-                    for (JIPipeNodeUI ui : getNodesAfter(sourceAlgorithmUI.getRightX(), sourceAlgorithmUI.getBottomY())) {
+                    for (JIPipeNodeUI ui : nodesAfter) {
                         if(ui == targetAlgorithmUI || ui == sourceAlgorithmUI)
                             continue;
-                        success &= ui.trySetLocationAtNextGridPoint(ui.getX(), ui.getY() + translateY);
+                        ui.setLocationAtNextGridPoint(ui.getX(), ui.getY() + translateY);
                     }
-                    if(success) {
-                        if (!targetAlgorithmUI.trySetLocationNoGrid(x, y)) {
-                            autoPlaceCloseToCursor(targetAlgorithmUI);
-                        }
-                    }
-                    else {
+                    if (!targetAlgorithmUI.trySetLocationNoGrid(x, y)) {
                         autoPlaceCloseToCursor(targetAlgorithmUI);
                     }
                 }

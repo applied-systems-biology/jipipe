@@ -106,6 +106,18 @@ public abstract class JIPipeNodeUI extends JIPipeWorkbenchPanel {
     }
 
     /**
+     * Moves the node to the provided location
+     * A grid is applied to the input coordinates
+     *
+     * @param x x coordinate
+     * @param y y coordinate
+     */
+    public void setLocationAtNextGridPoint(int x, int y) {
+        Point nextGridPoint = viewMode.getNextGridPoint(new Point(x, y));
+        setLocation(nextGridPoint);
+    }
+
+    /**
      * Returns true if this component overlaps with another component
      *
      * @return True if an overlap was found
@@ -252,4 +264,6 @@ public abstract class JIPipeNodeUI extends JIPipeWorkbenchPanel {
     public abstract Map<String, JIPipeDataSlotUI> getInputSlotUIs();
 
     public abstract Map<String, JIPipeDataSlotUI> getOutputSlotUIs();
+
+
 }
