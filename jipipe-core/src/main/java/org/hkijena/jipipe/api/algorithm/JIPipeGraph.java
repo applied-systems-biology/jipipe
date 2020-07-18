@@ -99,7 +99,7 @@ public class JIPipeGraph implements JIPipeValidatable {
             JIPipeDataSlot target = targetAlgorithm.getInputSlotMap().get(edge.getValue().getName());
             connect(source, target);
             JIPipeGraphEdge copyEdge = graph.getEdge(source, target);
-            JIPipeGraphEdge originalEdge = graph.getEdge(edge.getKey(), edge.getValue());
+            JIPipeGraphEdge originalEdge = other.graph.getEdge(edge.getKey(), edge.getValue());
             copyEdge.setMetadataFrom(originalEdge);
         }
     }
