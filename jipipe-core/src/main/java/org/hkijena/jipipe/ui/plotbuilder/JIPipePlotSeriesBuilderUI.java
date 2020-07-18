@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.ui.plotbuilder;
 
+import org.hkijena.jipipe.api.events.ParameterChangedEvent;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
@@ -94,6 +95,7 @@ public class JIPipePlotSeriesBuilderUI extends JIPipeWorkbenchPanel {
 
     private void toggleEnableDisable() {
         seriesBuilder.setEnabled(!seriesBuilder.isEnabled());
+        seriesBuilder.getEventBus().post(new ParameterChangedEvent(seriesBuilder, "enabled"));
         updateEnableDisableToggleButton();
     }
 

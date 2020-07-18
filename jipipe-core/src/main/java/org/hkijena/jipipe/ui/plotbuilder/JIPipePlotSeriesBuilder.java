@@ -148,20 +148,21 @@ public class JIPipePlotSeriesBuilder implements JIPipeParameterCollection, JIPip
     @JIPipeParameter("name")
     public void setName(String name) {
         this.name = name;
-
     }
 
     public JIPipePlotBuilderUI getPlotBuilderUI() {
         return plotBuilderUI;
     }
 
+    @JIPipeDocumentation(name = "Enabled", description = "If the series is shown")
+    @JIPipeParameter(value = "enabled", visibility = JIPipeParameterVisibility.Hidden)
     public boolean isEnabled() {
         return enabled;
     }
 
+    @JIPipeParameter("enabled")
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
-
     }
 
     @Override
