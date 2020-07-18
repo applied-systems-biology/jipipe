@@ -13,15 +13,14 @@
 
 package org.hkijena.jipipe.ui.components;
 
+import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.utils.RankedData;
 import org.hkijena.jipipe.utils.RankingFunction;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jdesktop.swingx.JXTextField;
 
 import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.ListDataEvent;
-import javax.swing.event.ListDataListener;
+import javax.swing.event.*;
 import java.awt.*;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
@@ -40,12 +39,18 @@ public class SearchBox<T> extends JPanel {
     private RankingFunction<T> rankingFunction;
     private FilteringModel<T> filteringModel;
     private JComboBox<T> comboBox = new JComboBox<>();
+    private final EventBus eventBus = new EventBus();
 
     /**
      * Creates a new instance
      */
     public SearchBox() {
         initialize();
+    }
+
+    @Override
+    public boolean requestFocusInWindow() {
+        return comboBox.requestFocusInWindow();
     }
 
     public JComboBox<T> getComboBox() {
@@ -71,9 +76,25 @@ public class SearchBox<T> extends JPanel {
             }
         });
         textField.setBorder(null);
-        comboBox.addItemListener(e -> {
-            comboBox.setPopupVisible(false);
-            getRootPane().requestFocusInWindow();
+//        comboBox.addItemListener(e -> {
+////            comboBox.setPopupVisible(false);
+////            getRootPane().requestFocusInWindow();
+//        });
+        comboBox.addPopupMenuListener(new PopupMenuListener() {
+            @Override
+            public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
+
+            }
+
+            @Override
+            public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
+                postItemSelectedEvent();
+            }
+
+            @Override
+            public void popupMenuCanceled(PopupMenuEvent e) {
+
+            }
         });
         add(comboBox, BorderLayout.CENTER);
 
@@ -102,6 +123,10 @@ public class SearchBox<T> extends JPanel {
                 comboBox.setPopupVisible(true);
             }
         });
+    }
+
+    private void postItemSelectedEvent() {
+        getEventBus().post(new SelectedEvent<>(this, getSelectedItem()));
     }
 
     @Override
@@ -138,21 +163,16 @@ public class SearchBox<T> extends JPanel {
         comboBox.setRenderer(renderer);
     }
 
-    /**
-     * Adds an item listener
-     *
-     * @param listener the listener
-     */
-    public void addItemListener(ItemListener listener) {
-        comboBox.addItemListener(listener);
-    }
-
     public T getSelectedItem() {
         return (T) comboBox.getSelectedItem();
     }
 
     public void setSelectedItem(T item) {
         comboBox.setSelectedItem(item);
+    }
+
+    public EventBus getEventBus() {
+        return eventBus;
     }
 
     /**
@@ -286,6 +306,24 @@ public class SearchBox<T> extends JPanel {
 
         @Override
         public void setItem(Object anObject) {
+        }
+    }
+
+    public static class SelectedEvent<T> {
+        private final SearchBox<T> source;
+        private final T value;
+
+        public SelectedEvent(SearchBox<T> source, T value) {
+            this.source = source;
+            this.value = value;
+        }
+
+        public SearchBox<T> getSource() {
+            return source;
+        }
+
+        public T getValue() {
+            return value;
         }
     }
 }

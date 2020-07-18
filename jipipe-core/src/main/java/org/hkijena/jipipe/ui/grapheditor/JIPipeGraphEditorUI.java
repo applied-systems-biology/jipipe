@@ -59,6 +59,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
     public static final KeyStroke KEY_STROKE_UNDO = KeyStroke.getKeyStroke(KeyEvent.VK_Z, InputEvent.CTRL_MASK, true);
     public static final KeyStroke KEY_STROKE_REDO = KeyStroke.getKeyStroke(KeyEvent.VK_Z, InputEvent.CTRL_MASK | InputEvent.SHIFT_MASK, true);
     public static final KeyStroke KEY_STROKE_AUTO_LAYOUT = KeyStroke.getKeyStroke(KeyEvent.VK_L, InputEvent.CTRL_MASK | InputEvent.SHIFT_MASK, true);
+    public static final KeyStroke KEY_STROKE_NAVIGATE = KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0, true);
 
     protected JMenuBar menuBar = new JMenuBar();
     private JIPipeGraphCanvasUI canvasUI;
@@ -99,13 +100,20 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
             if (this.isDisplayable() && FocusManager.getCurrentManager().getFocusOwner() == canvasUI ) {
                 if(Objects.equals(keyStroke, KEY_STROKE_UNDO)) {
                     undo();
+                    return true;
                 }
                 else if(Objects.equals(keyStroke, KEY_STROKE_REDO)) {
                     redo();
+                    return true;
                 }
                 else if(Objects.equals(keyStroke, KEY_STROKE_AUTO_LAYOUT)) {
                     getWorkbench().sendStatusBarText("Auto-layout");
                     canvasUI.autoLayoutAll();
+                    return true;
+                }
+                else if(Objects.equals(keyStroke, KEY_STROKE_NAVIGATE)) {
+                    navigator.requestFocusInWindow();
+                    return true;
                 }
             }
             return false;
@@ -150,22 +158,26 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         add(menuBar, BorderLayout.NORTH);
         navigator.setModel(new DefaultComboBoxModel<>());
         navigator.setRenderer(new NavigationRenderer());
-        navigator.addItemListener(e -> navigatorNavigate());
+        navigator.getEventBus().register(this);
         navigator.setRankingFunction(JIPipeGraphEditorUI::rankNavigationEntry);
     }
 
-    private void navigatorNavigate() {
-        if (navigator.getSelectedItem() instanceof JIPipeNodeUI) {
-            selectOnly((JIPipeNodeUI) navigator.getSelectedItem());
+    /**
+     * Triggered when the user selected something in the navigator
+     * @param event the event
+     */
+    @Subscribe
+    public void onNavigatorNavigate(SearchBox.SelectedEvent<Object> event) {
+        if (event.getValue() instanceof JIPipeNodeUI) {
+            selectOnly((JIPipeNodeUI) event.getValue());
             navigator.setSelectedItem(null);
-        } else if (navigator.getSelectedItem() instanceof JIPipeNodeInfo) {
-            JIPipeNodeInfo info = (JIPipeNodeInfo) navigator.getSelectedItem();
+        } else if (event.getValue() instanceof JIPipeNodeInfo) {
+            JIPipeNodeInfo info = (JIPipeNodeInfo) event.getValue();
             JIPipeGraphNode node = info.newInstance();
             getCanvasUI().getGraphHistory().addSnapshotBefore(new AddNodeGraphHistorySnapshot(algorithmGraph, Collections.singleton(node)));
             algorithmGraph.insertNode(node, compartment);
             navigator.setSelectedItem(null);
         }
-
     }
 
     public Set<JIPipeNodeUI> getSelection() {

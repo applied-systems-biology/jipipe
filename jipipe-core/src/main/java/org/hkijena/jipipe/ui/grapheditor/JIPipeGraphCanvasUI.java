@@ -69,7 +69,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
     private boolean layoutHelperEnabled;
     private JIPipeGraphViewMode viewMode = GraphEditorUISettings.getInstance().getDefaultViewMode();
     private JIPipeGraphDragAndDropBehavior dragAndDropBehavior;
-    private Point cursor;
+    private Point graphEditCursor;
     private long lastTimeExpandedNegative = 0;
     private List<NodeUIContextAction> contextActions = new ArrayList<>();
     private MoveNodesGraphHistorySnapshot currentlyDraggedSnapshot;
@@ -114,7 +114,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
                     if (contextAction.getKeyboardShortcut() != null && Objects.equals(contextAction.getKeyboardShortcut(), keyStroke)) {
                         Point mousePosition = this.getMousePosition(true);
                         if(mousePosition != null) {
-                            setGraphEditorCursor(mousePosition);
+                            setGraphEditCursor(mousePosition);
                         }
                         getWorkbench().sendStatusBarText("Executed: " + contextAction.getName());
                         SwingUtilities.invokeLater(() -> contextAction.run(this, selection));
@@ -308,9 +308,9 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
     private void autoPlaceCloseToCursor(JIPipeNodeUI ui) {
         int minX = 0;
         int minY = 0;
-        if (cursor != null) {
-            minX = cursor.x;
-            minY = cursor.y;
+        if (graphEditCursor != null) {
+            minX = graphEditCursor.x;
+            minY = graphEditCursor.y;
         }
 
         Set<Rectangle> otherShapes = new HashSet<>();
@@ -499,9 +499,9 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
                 value.setLocation(value.getX() + ex, value.getY() + ey);
             }
         }
-        if (cursor != null) {
-            cursor.x += ex;
-            cursor.y += ey;
+        if (graphEditCursor != null) {
+            graphEditCursor.x += ex;
+            graphEditCursor.y += ey;
         }
         if (getParent() != null)
             getParent().revalidate();
@@ -534,7 +534,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
             if (ui != null)
                 eventBus.post(new DefaultAlgorithmUIActionRequestedEvent(ui));
         } else if (SwingUtilities.isLeftMouseButton(mouseEvent)) {
-            cursor = new Point(mouseEvent.getX(), mouseEvent.getY());
+            setGraphEditCursor(new Point(mouseEvent.getX(), mouseEvent.getY()));
             requestFocusInWindow();
             repaint();
         } else if (SwingUtilities.isRightMouseButton(mouseEvent)) {
@@ -553,7 +553,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
      * @param point the location
      */
     public void openContextMenu(Point point) {
-        setGraphEditorCursor(new Point(point.x, point.y));
+        setGraphEditCursor(new Point(point.x, point.y));
         JPopupMenu menu = new JPopupMenu();
         boolean scheduleSeparator = false;
         for (NodeUIContextAction action : contextActions) {
@@ -707,16 +707,16 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
         }
 
         if (sourceNode != null && targetNode != null && layoutHelperEnabled) {
-            Point cursorBackup = cursor;
+            Point cursorBackup = graphEditCursor;
             try {
                 if (viewMode == JIPipeGraphViewMode.Horizontal)
-                    this.cursor = new Point(targetNode.getRightX() + 4 * viewMode.getGridWidth(),
+                    this.graphEditCursor = new Point(targetNode.getRightX() + 4 * viewMode.getGridWidth(),
                             targetNode.getY());
                 else
-                    this.cursor = new Point(targetNode.getX(), targetNode.getBottomY() + 4 * viewMode.getGridHeight());
+                    this.graphEditCursor = new Point(targetNode.getX(), targetNode.getBottomY() + 4 * viewMode.getGridHeight());
                 autoPlaceTargetAdjacent(sourceNode, event.getSource(), targetNode, event.getTarget());
             } finally {
-                this.cursor = cursorBackup;
+                this.graphEditCursor = cursorBackup;
             }
         }
 
@@ -854,10 +854,10 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
 
         g.setStroke(STROKE_UNIT);
 
-        if (cursor != null) {
+        if (graphEditCursor != null) {
             g.drawImage(cursorImage.getImage(),
-                    cursor.x - cursorImage.getIconWidth() / 2,
-                    cursor.y - cursorImage.getIconHeight() / 2,
+                    graphEditCursor.x - cursorImage.getIconWidth() / 2,
+                    graphEditCursor.y - cursorImage.getIconHeight() / 2,
                     null);
         }
     }
@@ -1275,19 +1275,14 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
             ui.setLocation(ui.getX() - minX + viewMode.getGridWidth(),
                     ui.getY() - minY + viewMode.getGridHeight());
         }
-        cursor = viewMode.getGridPoint(new Point(1, 1));
+        setGraphEditCursor(viewMode.getGridPoint(new Point(1, 1)));
         minDimensions = null;
         if (getParent() != null)
             getParent().revalidate();
     }
 
     public Point getGraphEditorCursor() {
-        return cursor;
-    }
-
-    public void setGraphEditorCursor(Point cursor) {
-        this.cursor = cursor;
-        repaint();
+        return graphEditCursor;
     }
 
     /**
@@ -1345,4 +1340,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
         this.currentHighlightedForDisconnect = currentHighlightedForDisconnect;
     }
 
+    public void setGraphEditCursor(Point graphEditCursor) {
+        this.graphEditCursor = graphEditCursor;
+    }
 }
