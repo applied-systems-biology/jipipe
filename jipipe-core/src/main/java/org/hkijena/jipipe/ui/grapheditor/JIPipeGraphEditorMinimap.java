@@ -47,6 +47,15 @@ public class JIPipeGraphEditorMinimap extends JIPipeWorkbenchPanel implements Mo
         graphEditorUI.getScrollPane().getHorizontalScrollBar().addAdjustmentListener(this);
         graphEditorUI.getScrollPane().getVerticalScrollBar().addAdjustmentListener(this);
         graphEditorUI.getCanvasUI().getEventBus().register(this);
+        graphEditorUI.getCanvasUI().addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                if (isDisplayable()) {
+                    refreshGraphImage();
+                    repaint();
+                }
+            }
+        });
         addHierarchyListener(e -> {
             if ((e.getChangeFlags() & HierarchyEvent.SHOWING_CHANGED) > 0 && JIPipeGraphEditorMinimap.this.isShowing()) {
                 SwingUtilities.invokeLater(() -> {
