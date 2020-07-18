@@ -50,7 +50,7 @@ public class ExportData extends JIPipeIteratingAlgorithm {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder()
                 .addInputSlot("Data", JIPipeData.class)
                 .addInputSlot("Path", PathData.class)
-                .sealOutput()
+                .seal()
                 .build());
     }
 
