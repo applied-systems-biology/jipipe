@@ -21,6 +21,7 @@ import org.hkijena.jipipe.api.algorithm.*;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.extensions.parameters.pairs.PairParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.pairs.StringAndStringPredicatePair;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
 
@@ -72,9 +73,10 @@ public class RemoveAnnotationByValue extends JIPipeSimpleIteratingAlgorithm {
         dataBatch.addOutputData(getFirstOutputSlot(), dataBatch.getInputData(getFirstInputSlot(), JIPipeData.class));
     }
 
-    @JIPipeDocumentation(name = "Removed annotation", description = "This annotation is removed from each input data")
+    @JIPipeDocumentation(name = "Filters", description = "This annotation is removed from each input data")
     @JIPipeParameter("filters")
     @StringParameterSettings(monospace = true)
+    @PairParameterSettings(singleRow = false, keyLabel = "Annotation column", valueLabel = "Remove value if")
     public StringAndStringPredicatePair.List getFilters() {
         return filters;
     }

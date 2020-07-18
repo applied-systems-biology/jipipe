@@ -20,12 +20,14 @@ import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.algorithm.*;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
+import org.hkijena.jipipe.extensions.parameters.predicates.StringPredicate;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
 import org.hkijena.jipipe.utils.ResourceUtils;
 
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 /**
  * Removes a specified annotation
@@ -36,13 +38,14 @@ import java.util.function.Supplier;
 @JIPipeOutputSlot(value = JIPipeData.class, slotName = "Output", inheritedSlot = "Input", autoCreate = true)
 public class RemoveAnnotationByType extends JIPipeSimpleIteratingAlgorithm {
 
-    private StringList annotationTypes = new StringList();
+    private StringPredicate.List annotationTypes = new StringPredicate.List();
 
     /**
      * @param info algorithm info
      */
     public RemoveAnnotationByType(JIPipeNodeInfo info) {
         super(info);
+        annotationTypes.addNewInstance();
     }
 
     /**
@@ -52,7 +55,7 @@ public class RemoveAnnotationByType extends JIPipeSimpleIteratingAlgorithm {
      */
     public RemoveAnnotationByType(RemoveAnnotationByType other) {
         super(other);
-        this.annotationTypes = other.annotationTypes;
+        this.annotationTypes = new StringPredicate.List(other.annotationTypes);
     }
 
     @Override
@@ -61,21 +64,24 @@ public class RemoveAnnotationByType extends JIPipeSimpleIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
-        for (String annotationType : annotationTypes) {
-            dataBatch.removeGlobalAnnotation(annotationType);
+        for (StringPredicate filter : annotationTypes) {
+            Set<String> toRemove = dataBatch.getAnnotations().keySet().stream().filter(filter).collect(Collectors.toSet());
+            for (String key : toRemove) {
+                dataBatch.removeGlobalAnnotation(key);
+            }
         }
         dataBatch.addOutputData(getFirstOutputSlot(), dataBatch.getInputData(getFirstInputSlot(), JIPipeData.class));
     }
 
-    @JIPipeDocumentation(name = "Removed annotation", description = "This annotation is removed from each input data")
+    @JIPipeDocumentation(name = "Removed annotations", description = "Annotations that match any of the filters are removed.")
     @JIPipeParameter("annotation-type")
     @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/annotation.png")
-    public StringList getAnnotationTypes() {
+    public StringPredicate.List getAnnotationTypes() {
         return annotationTypes;
     }
 
     @JIPipeParameter("annotation-type")
-    public void setAnnotationTypes(StringList annotationTypes) {
+    public void setAnnotationTypes(StringPredicate.List annotationTypes) {
         this.annotationTypes = annotationTypes;
 
     }

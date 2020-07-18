@@ -106,6 +106,9 @@ public class FilesystemExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerAlgorithm("folder-list-files", ListFiles.class, UIUtils.getAlgorithmIconURL("list.png"));
         registerAlgorithm("folder-list-subfolders", ListSubfolders.class, UIUtils.getAlgorithmIconURL("list.png"));
         registerAlgorithm("data-to-output-path", ConvertDataToOutputPath.class, UIUtils.getAlgorithmIconURL("folder.png"));
+        registerAlgorithm("export-data-by-parameter", ExportDataByParameter.class, UIUtils.getAlgorithmIconURL("document-export.png"));
+        registerAlgorithm("export-data", ExportData.class, UIUtils.getAlgorithmIconURL("document-export.png"));
+        registerAlgorithm("annotation-to-path", AnnotationToPath.class, UIUtils.getAlgorithmIconURL("path.png"));
 
         registerAlgorithm("folder-annotate-by-name", SimpleFolderAnnotationGenerator.class, UIUtils.getAlgorithmIconURL("tools-wizard.png"));
         registerAlgorithm("file-annotate-by-name", SimpleFileAnnotationGenerator.class, UIUtils.getAlgorithmIconURL("tools-wizard.png"));

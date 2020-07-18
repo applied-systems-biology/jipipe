@@ -11,15 +11,12 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.extensions.annotation.algorithms;
+package org.hkijena.jipipe.extensions.filesystem.algorithms;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
-import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithm;
-import org.hkijena.jipipe.api.algorithm.JIPipeInputSlot;
-import org.hkijena.jipipe.api.algorithm.JIPipeNodeCategory;
-import org.hkijena.jipipe.api.algorithm.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.algorithm.*;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FolderData;
@@ -38,12 +35,14 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-@JIPipeDocumentation(name = "Collect data", description = "Collects all incoming data into one or multiple folders that contain the raw output files. " +
-        "The output files are named according to the metadata columns and can be easily processed by humans or third-party scripts.")
+@JIPipeDocumentation(name = "Export data by parameter", description = "Collects all incoming data into one or multiple folders that contain the raw output files. " +
+        "The output files are named according to the metadata columns and can be easily processed by humans or third-party scripts. " +
+        "The output of this algorithm is the selected output directory. " +
+        "Please note that you do not need to explicitly export data, as JIPipe automatically saves all output data.")
 @JIPipeInputSlot(JIPipeData.class)
-@JIPipeInputSlot(FolderData.class)
+@JIPipeOutputSlot(FolderData.class)
 @JIPipeOrganization(algorithmCategory = JIPipeNodeCategory.Miscellaneous)
-public class CollectDataAlgorithm extends JIPipeAlgorithm {
+public class ExportDataByParameter extends JIPipeAlgorithm {
 
     private boolean splitByInputSlots = true;
     private boolean ignoreMissingMetadata = false;
@@ -54,9 +53,9 @@ public class CollectDataAlgorithm extends JIPipeAlgorithm {
     private String separatorString = "_";
     private String equalsString = "=";
     private String missingString = "NA";
-    private Path outputDirectory = Paths.get("collected-data");
+    private Path outputDirectory = Paths.get("exported-data");
 
-    public CollectDataAlgorithm(JIPipeNodeInfo info) {
+    public ExportDataByParameter(JIPipeNodeInfo info) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder()
                 .addInputSlot("Input", JIPipeData.class)
                 .addOutputSlot("Output path", FolderData.class, null)
@@ -64,7 +63,7 @@ public class CollectDataAlgorithm extends JIPipeAlgorithm {
                 .build());
     }
 
-    public CollectDataAlgorithm(CollectDataAlgorithm other) {
+    public ExportDataByParameter(ExportDataByParameter other) {
         super(other);
         this.splitByInputSlots = other.splitByInputSlots;
         this.separatorString = other.separatorString;
