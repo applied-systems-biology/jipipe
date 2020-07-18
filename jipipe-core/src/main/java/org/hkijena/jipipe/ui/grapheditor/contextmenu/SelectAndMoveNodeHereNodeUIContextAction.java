@@ -64,7 +64,7 @@ public class SelectAndMoveNodeHereNodeUIContextAction implements NodeUIContextAc
 
     @Override
     public boolean isShowingInOverhang() {
-        return false;
+        return true;
     }
 
     @Override
