@@ -18,10 +18,7 @@ import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.filesystem.algorithms.*;
 import org.hkijena.jipipe.extensions.filesystem.compat.PathDataImageJAdapter;
 import org.hkijena.jipipe.extensions.filesystem.compat.PathDataImporterUI;
-import org.hkijena.jipipe.extensions.filesystem.datasources.FileDataSource;
-import org.hkijena.jipipe.extensions.filesystem.datasources.FileListDataSource;
-import org.hkijena.jipipe.extensions.filesystem.datasources.FolderDataSource;
-import org.hkijena.jipipe.extensions.filesystem.datasources.FolderListDataSource;
+import org.hkijena.jipipe.extensions.filesystem.datasources.*;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FileData;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FolderData;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.PathData;
@@ -92,7 +89,14 @@ public class FilesystemExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerAlgorithm("import-file-list", FileListDataSource.class);
         registerAlgorithm("import-folder", FolderDataSource.class);
         registerAlgorithm("import-folder-list", FolderListDataSource.class);
+        registerAlgorithm("file-temporary", TemporaryFileDataSource.class);
+        registerAlgorithm("folder-temporary", TemporaryFolderDataSource.class);
 
+        registerAlgorithm("path-extract-filename", ExtractFileName.class, UIUtils.getAlgorithmIconURL("files.png"));
+        registerAlgorithm("path-extract-parent", ExtractParent.class, UIUtils.getAlgorithmIconURL("go-parent-folder.png"));
+        registerAlgorithm("path-concatenate", ConcatenatePaths.class, UIUtils.getAlgorithmIconURL("list-add.png"));
+        registerAlgorithm("folder-mkdir", ConcatenatePaths.class, UIUtils.getAlgorithmIconURL("folder-new.png"));
+        registerAlgorithm("path-copy", CopyPath.class, UIUtils.getAlgorithmIconURL("copy.png"));
         registerAlgorithm("path-filter", FilterPaths.class, UIUtils.getAlgorithmIconURL("filter.png"));
         registerAlgorithm("folder-list-files", ListFiles.class, UIUtils.getAlgorithmIconURL("list.png"));
         registerAlgorithm("folder-list-subfolders", ListSubfolders.class, UIUtils.getAlgorithmIconURL("list.png"));

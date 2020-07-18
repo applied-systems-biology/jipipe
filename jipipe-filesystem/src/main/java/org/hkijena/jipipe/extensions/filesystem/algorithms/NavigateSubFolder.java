@@ -29,7 +29,7 @@ import java.util.function.Supplier;
 /**
  * Applies subfolder navigation to each input folder
  */
-@JIPipeDocumentation(name = "Subfolders", description = "Goes to the specified subfolder")
+@JIPipeDocumentation(name = "Subfolders", description = "Modifies all incoming paths so that they reference a subfolder.")
 @JIPipeOrganization(menuPath = "Navigate", algorithmCategory = JIPipeNodeCategory.FileSystem)
 
 // Algorithm flow
