@@ -34,6 +34,7 @@ import org.hkijena.jipipe.ui.events.AlgorithmSelectedEvent;
 import org.hkijena.jipipe.ui.events.AlgorithmSelectionChangedEvent;
 import org.hkijena.jipipe.ui.grapheditor.contextmenu.NodeUIContextAction;
 import org.hkijena.jipipe.ui.registries.JIPipeUIAlgorithmRegistry;
+import org.hkijena.jipipe.utils.CustomScrollPane;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jfree.graphics2d.svg.SVGGraphics2D;
@@ -144,11 +145,11 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         canvasUI.getEventBus().register(this);
         canvasUI.addMouseListener(this);
         canvasUI.addMouseMotionListener(this);
-        scrollPane = new JScrollPane(canvasUI);
+        scrollPane = new CustomScrollPane(canvasUI);
         scrollPane.getVerticalScrollBar().setUnitIncrement(25);
         scrollPane.getHorizontalScrollBar().setUnitIncrement(25);
-        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         splitPane.setLeftComponent(scrollPane);
         splitPane.setRightComponent(new JPanel());
         add(splitPane, BorderLayout.CENTER);
@@ -214,7 +215,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         redoButton.addActionListener(e -> redo());
         menuBar.add(redoButton);
 
-        menuBar.add(Box.createHorizontalStrut(8));
+        menuBar.add(new JSeparator(JSeparator.VERTICAL));
 
         ButtonGroup viewModeGroup = new ButtonGroup();
 
@@ -234,7 +235,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         viewModeGroup.add(viewModeVerticalButton);
         menuBar.add(viewModeVerticalButton);
 
-        menuBar.add(Box.createHorizontalStrut(8));
+        menuBar.add(new JSeparator(JSeparator.VERTICAL));
 
         JButton autoLayoutButton = new JButton(UIUtils.getIconFromResources("auto-layout-all.png"));
         autoLayoutButton.setToolTipText("<html>Auto-layout all nodes<br><i>Ctrl-Shift-L</i></html>");
@@ -254,7 +255,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         });
         menuBar.add(centerViewButton);
 
-        menuBar.add(Box.createHorizontalStrut(8));
+        menuBar.add(new JSeparator(JSeparator.VERTICAL));
 
         switchPanningDirectionButton = new JToggleButton(UIUtils.getIconFromResources("cursor-arrow.png"),
                 GraphEditorUISettings.getInstance().isSwitchPanningDirection());
@@ -276,7 +277,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         });
         menuBar.add(layoutHelperButton);
 
-        menuBar.add(Box.createHorizontalStrut(8));
+        menuBar.add(new JSeparator(JSeparator.VERTICAL));
 
         JButton exportButton = new JButton(UIUtils.getIconFromResources("export.png"));
         exportButton.setToolTipText("Export graph");
@@ -662,6 +663,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
                 if (scheduledSeparator)
                     toolBar.add(Box.createHorizontalStrut(4));
                 JButton button = new JButton(action.getIcon());
+                UIUtils.makeFlat25x25(button);
                 button.setToolTipText("<html><strong>" + action.getName() + "</strong><br/>" + action.getDescription() + "</html>");
                 if (matches)
                     button.addActionListener(e -> action.run(canvasUI, ImmutableSet.copyOf(selection)));
@@ -681,7 +683,8 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
 
         if (overhang.getComponentCount() > 0) {
             toolBar.add(Box.createHorizontalStrut(4));
-            JButton button = new JButton(UIUtils.getIconFromResources("ellipsis-h.png"));
+            JButton button = new JButton("...");
+            UIUtils.makeFlat25x25(button);
             button.setToolTipText("More actions ...");
             UIUtils.addPopupMenuToComponent(button, overhang);
             toolBar.add(button);

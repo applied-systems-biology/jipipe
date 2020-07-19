@@ -21,6 +21,7 @@ import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.DocumentTabPane;
 import org.hkijena.jipipe.ui.components.ResultsTableDataListCellRenderer;
+import org.hkijena.jipipe.utils.CustomScrollPane;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jdesktop.swingx.JXTable;
 
@@ -83,7 +84,8 @@ public class JIPipeOpenTableFromImageJDialogUI extends JDialog {
         jxTable = new JXTable();
         jxTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         jxTable.setEditable(false);
-        add(new JScrollPane(jxTable), BorderLayout.CENTER);
+        JScrollPane scrollPane = new CustomScrollPane(jxTable);
+        add(scrollPane, BorderLayout.CENTER);
 
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.LINE_AXIS));

@@ -19,6 +19,8 @@ import org.hkijena.jipipe.api.algorithm.JIPipeGraphNode;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
+import org.hkijena.jipipe.utils.ArrowLessScrollBarUI;
+import org.hkijena.jipipe.utils.CustomScrollPane;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -83,7 +85,9 @@ public class JIPipeAlgorithmCacheTree extends JIPipeProjectWorkbenchPanel {
         setLayout(new BorderLayout());
         tree = new JTree();
         tree.setCellRenderer(new JIPipeCacheStateTreeCellRenderer());
-        treeScollPane = new JScrollPane(tree);
+        treeScollPane = new CustomScrollPane(tree);
+        treeScollPane.getVerticalScrollBar().setUI(new ArrowLessScrollBarUI());
+        treeScollPane.getHorizontalScrollBar().setUI(new ArrowLessScrollBarUI());
         add(treeScollPane, BorderLayout.CENTER);
     }
 

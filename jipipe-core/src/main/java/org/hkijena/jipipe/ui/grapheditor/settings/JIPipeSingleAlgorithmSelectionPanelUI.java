@@ -145,6 +145,7 @@ public class JIPipeSingleAlgorithmSelectionPanelUI extends JIPipeProjectWorkbenc
 
         if (JIPipeNodeRegistry.getInstance().getRegisteredNodeInfos().containsValue(algorithm.getInfo())) {
             JButton openCompendiumButton = new JButton(UIUtils.getIconFromResources("help.png"));
+            UIUtils.makeFlat25x25(openCompendiumButton);
             openCompendiumButton.setToolTipText("Open in algorithm compendium");
             openCompendiumButton.addActionListener(e -> {
                 JIPipeAlgorithmCompendiumUI compendiumUI = new JIPipeAlgorithmCompendiumUI();

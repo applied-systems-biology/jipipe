@@ -21,6 +21,7 @@ import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.history.JIPipeGraphHistory;
 import org.hkijena.jipipe.api.history.SlotConfigurationHistorySnapshot;
+import org.hkijena.jipipe.utils.CustomScrollPane;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -112,7 +113,7 @@ public class AddAlgorithmSlotPanel extends JPanel {
                 setSelectedInfo(datatypeList.getSelectedValue());
             }
         });
-        JScrollPane scrollPane = new JScrollPane(datatypeList);
+        JScrollPane scrollPane = new CustomScrollPane(datatypeList);
         add(scrollPane, BorderLayout.CENTER);
 
         // Create form located at the bottom

@@ -29,6 +29,7 @@ import org.hkijena.jipipe.ui.components.SearchTextField;
 import org.hkijena.jipipe.ui.components.SearchTextFieldTableRowFilter;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.ui.registries.JIPipeUIDatatypeRegistry;
+import org.hkijena.jipipe.utils.CustomScrollPane;
 import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jdesktop.swingx.JXTable;
@@ -80,7 +81,7 @@ public class JIPipeMergedResultDataSlotTableUI extends JIPipeProjectWorkbenchPan
         table.setDefaultRenderer(JIPipeAnnotation.class, new JIPipeTraitTableCellRenderer());
         table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
-        JScrollPane scrollPane = new JScrollPane(table);
+        JScrollPane scrollPane = new CustomScrollPane(table);
         scrollPane.getViewport().setBackground(Color.WHITE);
         add(scrollPane, BorderLayout.CENTER);
         add(table.getTableHeader(), BorderLayout.NORTH);

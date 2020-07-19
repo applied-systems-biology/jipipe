@@ -17,6 +17,7 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.primitives.Ints;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.ui.registries.JIPipeUIDatatypeRegistry;
+import org.hkijena.jipipe.utils.CustomScrollPane;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -76,7 +77,8 @@ public class JIPipeDataTypePicker extends JPanel {
             dataTypeList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         }
         dataTypeList.addListSelectionListener(e -> updateSelection());
-        add(new JScrollPane(dataTypeList), BorderLayout.CENTER);
+        JScrollPane scrollPane = new CustomScrollPane(dataTypeList);
+        add(scrollPane, BorderLayout.CENTER);
     }
 
     private void updateSelection() {

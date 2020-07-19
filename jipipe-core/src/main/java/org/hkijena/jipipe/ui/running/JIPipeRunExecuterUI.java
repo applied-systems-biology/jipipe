@@ -17,6 +17,7 @@ import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.JIPipeRunnable;
 import org.hkijena.jipipe.ui.events.RunUIWorkerFinishedEvent;
 import org.hkijena.jipipe.ui.events.RunUIWorkerProgressEvent;
+import org.hkijena.jipipe.utils.CustomScrollPane;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -47,7 +48,7 @@ public class JIPipeRunExecuterUI extends JPanel {
         log = new JTextArea();
         log.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
         log.setEditable(false);
-        logScrollPane = new JScrollPane(log);
+        logScrollPane = new CustomScrollPane(log);
         add(logScrollPane, BorderLayout.CENTER);
 
         JPanel buttonPanel = new JPanel();

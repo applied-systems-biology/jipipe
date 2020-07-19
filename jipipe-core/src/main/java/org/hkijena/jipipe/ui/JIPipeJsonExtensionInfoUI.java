@@ -18,10 +18,7 @@ import ij.IJ;
 import org.hkijena.jipipe.api.events.ParameterChangedEvent;
 import org.hkijena.jipipe.extensions.settings.ProjectsSettings;
 import org.hkijena.jipipe.ui.components.*;
-import org.hkijena.jipipe.utils.ReflectionUtils;
-import org.hkijena.jipipe.utils.ResourceUtils;
-import org.hkijena.jipipe.utils.StringUtils;
-import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.*;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -82,9 +79,9 @@ public class JIPipeJsonExtensionInfoUI extends JIPipeJsonExtensionWorkbenchPanel
 
     private void initRecentProjects() {
         recentProjectsList.setCellRenderer(new RecentProjectListCellRenderer());
-        JScrollPane pane = new JScrollPane(recentProjectsList);
-        pane.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, Color.DARK_GRAY));
-        add(pane, BorderLayout.WEST);
+        JScrollPane scrollPane = new CustomScrollPane(recentProjectsList);
+        scrollPane.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, Color.DARK_GRAY));
+        add(scrollPane, BorderLayout.WEST);
 
         recentProjectsList.addMouseListener(new MouseAdapter() {
             @Override

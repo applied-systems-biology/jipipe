@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.ui.components;
 
 import com.google.common.eventbus.EventBus;
+import org.hkijena.jipipe.utils.CustomScrollPane;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jdesktop.swingx.JXPanel;
@@ -80,7 +81,7 @@ public class FormPanel extends JXPanel {
 
         Component content;
         if ((flags & WITH_SCROLLING) == WITH_SCROLLING) {
-            scrollPane = new JScrollPane(contentPanel);
+            scrollPane = new CustomScrollPane(contentPanel);
             scrollPane.getVerticalScrollBar().setUnitIncrement(10);
             content = scrollPane;
         } else

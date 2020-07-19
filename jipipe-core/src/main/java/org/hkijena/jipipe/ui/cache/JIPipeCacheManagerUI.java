@@ -20,6 +20,8 @@ import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
 import org.hkijena.jipipe.ui.registries.JIPipeUIDatatypeRegistry;
+import org.hkijena.jipipe.utils.ModernMetalTheme;
+import org.hkijena.jipipe.utils.RoundedLineBorder;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -49,8 +51,9 @@ public class JIPipeCacheManagerUI extends JIPipeProjectWorkbenchPanel {
     private void initialize() {
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
         setOpaque(false);
-        setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEtchedBorder(),
-                BorderFactory.createEmptyBorder(5, 15, 5, 15)));
+        setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1),
+                BorderFactory.createCompoundBorder(new RoundedLineBorder(ModernMetalTheme.MEDIUM_GRAY, 1, 2),
+                        BorderFactory.createEmptyBorder(5, 15, 5, 15))));
 
 
         statusLabel = new JLabel();

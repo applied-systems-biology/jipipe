@@ -16,6 +16,7 @@ package org.hkijena.jipipe.extensions.parameters.primitives;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
+import org.hkijena.jipipe.utils.CustomSpinner;
 
 import javax.swing.*;
 import java.awt.*;
@@ -140,9 +141,9 @@ public class NumberParameterEditorUI extends JIPipeParameterEditorUI {
     private void initialize() {
         setLayout(new BorderLayout());
         SpinnerNumberModel model = new SpinnerNumberModel(getCurrentValue(), getMinimumValue(), getMaximumValue(), getStep());
-        spinner = new JSpinner(model);
+        spinner = new CustomSpinner(model);
         spinner.addChangeListener(e -> setCurrentValue(model.getNumber()));
-        spinner.setPreferredSize(new Dimension(100, spinner.getPreferredSize().height));
+        spinner.setPreferredSize(new Dimension(100, 28));
         add(spinner, BorderLayout.CENTER);
     }
 }

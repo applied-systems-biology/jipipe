@@ -20,6 +20,7 @@ import org.hkijena.jipipe.ui.components.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.MarkdownReader;
 import org.hkijena.jipipe.ui.components.SearchTextField;
 import org.hkijena.jipipe.utils.BusyCursor;
+import org.hkijena.jipipe.utils.CustomScrollPane;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -195,7 +196,8 @@ public abstract class JIPipeCompendiumUI<T> extends JPanel {
         itemList.addListSelectionListener(e -> {
             selectItem(itemList.getSelectedValue());
         });
-        listPanel.add(new JScrollPane(itemList), BorderLayout.CENTER);
+        JScrollPane scrollPane = new CustomScrollPane(itemList);
+        listPanel.add(scrollPane, BorderLayout.CENTER);
     }
 
     /**

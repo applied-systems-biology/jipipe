@@ -246,6 +246,7 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
 
     private void initializeMenu() {
         JMenuBar menu = new JMenuBar();
+        menu.setBorderPainted(false);
 
         JMenu projectMenu = new JMenu("Project");
 

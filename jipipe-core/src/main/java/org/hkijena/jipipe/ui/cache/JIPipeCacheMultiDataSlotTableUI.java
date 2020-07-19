@@ -33,6 +33,7 @@ import org.hkijena.jipipe.ui.registries.JIPipeUIDatatypeRegistry;
 import org.hkijena.jipipe.ui.resultanalysis.JIPipeAlgorithmTableCellRenderer;
 import org.hkijena.jipipe.ui.resultanalysis.JIPipeProjectCompartmentTableCellRenderer;
 import org.hkijena.jipipe.ui.resultanalysis.JIPipeTraitTableCellRenderer;
+import org.hkijena.jipipe.utils.CustomScrollPane;
 import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jdesktop.swingx.JXTable;
@@ -100,7 +101,7 @@ public class JIPipeCacheMultiDataSlotTableUI extends JIPipeProjectWorkbenchPanel
         table.setDefaultRenderer(JIPipeAnnotation.class, new JIPipeTraitTableCellRenderer());
         table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
-        JScrollPane scrollPane = new JScrollPane(table);
+        JScrollPane scrollPane = new CustomScrollPane(table);
         scrollPane.getViewport().setBackground(Color.WHITE);
         add(scrollPane, BorderLayout.CENTER);
         add(table.getTableHeader(), BorderLayout.NORTH);

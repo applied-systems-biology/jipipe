@@ -35,6 +35,7 @@ public class GeneralUISettings implements JIPipeParameterCollection {
     private boolean validateOnSave = true;
     private boolean projectInfoGeneratesPreview = true;
     private boolean forceCrossPlatformLookAndFeel = true;
+    private boolean modernizeCrossPlatformLookAndFeel = true;
 
     @Override
     public EventBus getEventBus() {
@@ -123,6 +124,17 @@ public class GeneralUISettings implements JIPipeParameterCollection {
     @JIPipeParameter("force-cross-platform-look-and-feel")
     public void setForceCrossPlatformLookAndFeel(boolean forceCrossPlatformLookAndFeel) {
         this.forceCrossPlatformLookAndFeel = forceCrossPlatformLookAndFeel;
+    }
+
+    @JIPipeDocumentation(name = "Modern cross-platform look & feel", description = "If enabled, the 'Metal' look & feel is modernized to a flat design.")
+    @JIPipeParameter("modernize-cross-platform-look-and-feel")
+    public boolean isModernizeCrossPlatformLookAndFeel() {
+        return modernizeCrossPlatformLookAndFeel;
+    }
+
+    @JIPipeParameter("modernize-cross-platform-look-and-feel")
+    public void setModernizeCrossPlatformLookAndFeel(boolean modernizeCrossPlatformLookAndFeel) {
+        this.modernizeCrossPlatformLookAndFeel = modernizeCrossPlatformLookAndFeel;
     }
 
     public static GeneralUISettings getInstance() {

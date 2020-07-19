@@ -33,6 +33,7 @@ import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
+import javax.swing.plaf.metal.MetalLookAndFeel;
 import javax.swing.text.html.HTMLEditorKit;
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
@@ -64,16 +65,20 @@ public class UIUtils {
     public static void loadLookAndFeelFromSettings() {
         Path propertyFile = JIPipeSettingsRegistry.getPropertyFile();
         boolean forceMetal;
+        boolean modernizeMetal = true;
         if (!Files.exists(propertyFile)) {
             forceMetal = true;
         } else {
             try {
                 JsonNode node = JsonUtils.getObjectMapper().readValue(propertyFile.toFile(), JsonNode.class);
-                JsonNode value = node.path("general-ui/force-cross-platform-look-and-feel");
-                if (!value.isMissingNode())
-                    forceMetal = value.booleanValue();
+                JsonNode forceMetalNode = node.path("general-ui/force-cross-platform-look-and-feel");
+                JsonNode modernizeMetalNode = node.path("general-ui/modernize-cross-platform-look-and-feel");
+                if (!forceMetalNode.isMissingNode())
+                    forceMetal = forceMetalNode.booleanValue();
                 else
                     forceMetal = true;
+                if(!modernizeMetalNode.isMissingNode())
+                    modernizeMetal = modernizeMetalNode.booleanValue();
             } catch (Exception e) {
                 forceMetal = true;
             }
@@ -81,12 +86,46 @@ public class UIUtils {
         if (forceMetal) {
             try {
                 // Set cross-platform Java L&F (also called "Metal")
+                if(modernizeMetal)
+                    MetalLookAndFeel.setCurrentTheme(new ModernMetalTheme());
                 UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+
+//                try(FileWriter writer = new FileWriter("laf-keys.txt")) {
+//                    UIManager.LookAndFeelInfo looks[] = UIManager
+//                            .getInstalledLookAndFeels();
+//                    for (UIManager.LookAndFeelInfo info : looks) {
+//                        SortedSet<String> lafDefaultKeys = new TreeSet<>();
+//                        writer.write("\n\nL&F " + info.getName() + "\n");
+//                        UIDefaults defaults = UIManager.getDefaults();
+//                        Enumeration<Object> newKeys = defaults.keys();
+//
+//                        while (newKeys.hasMoreElements()) {
+//                            lafDefaultKeys.add(newKeys.nextElement().toString());
+//                        }
+//                        for (String lafDefaultKey : lafDefaultKeys) {
+//                            writer.write(lafDefaultKey + "\n");
+//                        }
+//
+//                    }
+//                }
+
+                UIUtils.installCustomTheme();
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
 
+    }
+
+    /**
+     * Installs modifications to the Metal look & feel used by JIPipe
+     */
+    public static void installCustomTheme() {
+        UIManager.put("swing.boldMetal", Boolean.FALSE);
+//        UIManager.put("Button.background",  Color.decode("#eeeeee"));
+//        UIManager.put("ToggleButton.background",  Color.decode("#eeeeee"));
+//        UIManager.put("Button.border", new CompoundBorder(new LineBorder(new Color(200, 200, 200)), new EmptyBorder(2, 2, 2, 2)));
+//        UIManager.put("ToggleButton.border", new CompoundBorder(new LineBorder(new Color(200, 200, 200)), new EmptyBorder(2, 2, 2, 2)));
     }
 
     /**
@@ -238,7 +277,10 @@ public class UIUtils {
         component.setBackground(Color.WHITE);
         component.setOpaque(false);
         Border margin = new EmptyBorder(5, 15, 5, 15);
-        Border compound = new CompoundBorder(BorderFactory.createEtchedBorder(), margin);
+//        Border compound = new CompoundBorder(BorderFactory.createEtchedBorder(), margin);
+        //        Border margin = new EmptyBorder(2, 2, 2, 2);
+        Border compound = new CompoundBorder(BorderFactory.createEmptyBorder(1,1,1,1),
+                new CompoundBorder(new RoundedLineBorder(ModernMetalTheme.MEDIUM_GRAY, 1, 2), margin));
         component.setBorder(compound);
     }
 
@@ -271,9 +313,10 @@ public class UIUtils {
         component.setPreferredSize(new Dimension(25, 25));
         component.setMinimumSize(new Dimension(25, 25));
         component.setMaximumSize(new Dimension(25, 25));
-        Border margin = new EmptyBorder(2, 2, 2, 2);
-        Border compound = new CompoundBorder(BorderFactory.createEtchedBorder(), margin);
-        component.setBorder(compound);
+//        Border margin = new EmptyBorder(2, 2, 2, 2);
+//        Border compound = new CompoundBorder(new RoundedLineBorder(ModernMetalTheme.GRAY2, 1, 2), margin);
+//        component.setBorder(compound);
+        component.setBorder(BorderFactory.createEmptyBorder(3,3,3,3));
     }
 
     /**
@@ -433,10 +476,10 @@ public class UIUtils {
     public static String getMultiLineStringByDialog(Component parent, String title, String message, String initialValue) {
         JTextArea area = new JTextArea(5, 10);
         area.setText(initialValue);
-        JScrollPane pane = new JScrollPane(area);
+        JScrollPane scrollPane = new CustomScrollPane(area);
         int result = JOptionPane.showOptionDialog(
                 parent,
-                new Object[]{message, pane},
+                new Object[]{message, scrollPane},
                 title,
                 JOptionPane.OK_CANCEL_OPTION,
                 JOptionPane.QUESTION_MESSAGE,
