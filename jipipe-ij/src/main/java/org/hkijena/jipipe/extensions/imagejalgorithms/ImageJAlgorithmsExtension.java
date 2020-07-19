@@ -266,6 +266,7 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         registerAlgorithm("ij1-roi-from-table-rectangular", TableToRectangularROIAlgorithm.class, UIUtils.getAlgorithmIconURL("draw-rectangle.png"));
         registerAlgorithm("ij1-roi-from-table-circle", TableToCircularROIAlgorithm.class, UIUtils.getAlgorithmIconURL("draw-circle.png"));
         registerAlgorithm("ij1-roi-set-image", SetRoiImageAlgorithm.class, UIUtils.getAlgorithmIconURL("image.png"));
+        registerAlgorithm("ij1-roi-get-image", GetRoiImageAlgorithm.class, UIUtils.getAlgorithmIconURL("image.png"));
         registerAlgorithm("ij1-roi-unset-image", UnsetRoiImageAlgorithm.class, UIUtils.getAlgorithmIconURL("edit-delete.png"));
 
         registerEnumParameterType("ij1-roi-from-table-rectangular:anchor",
