@@ -33,7 +33,7 @@ import java.util.function.Supplier;
         "Duplicate files might be silently overwritten, meaning that the paths should be unique." +
         "Please note that you do not need to explicitly export data, as JIPipe automatically saves all output data.")
 @JIPipeInputSlot(JIPipeData.class)
-@JIPipeInputSlot(PathData.class)
+@JIPipeOutputSlot(PathData.class)
 @JIPipeOrganization(algorithmCategory = JIPipeNodeCategory.Miscellaneous)
 public class ExportData extends JIPipeIteratingAlgorithm {
 
