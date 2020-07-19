@@ -52,7 +52,7 @@ public class StandardSettingsExtension extends JIPipePrepackagedDefaultJavaExten
     @Override
     public void register() {
         registerSettingsSheet(RuntimeSettings.ID, "Runtime", null, null, new RuntimeSettings());
-        registerSettingsSheet(ProjectsSettings.ID, "Recent projects", null, null, new ProjectsSettings());
+        registerSettingsSheet(ProjectsSettings.ID, "Projects", null, null, new ProjectsSettings());
         registerSettingsSheet(GeneralUISettings.ID, "General", "UI", null, new GeneralUISettings());
         registerSettingsSheet(GraphEditorUISettings.ID, "Graph editor", "UI", null, new GraphEditorUISettings());
         registerSettingsSheet(FileChooserSettings.ID, "File chooser", "UI", null, new FileChooserSettings());

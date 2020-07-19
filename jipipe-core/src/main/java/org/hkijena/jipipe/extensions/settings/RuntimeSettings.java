@@ -66,12 +66,12 @@ public class RuntimeSettings implements JIPipeParameterCollection {
 
     @JIPipeDocumentation(name = "Enable data caching", description = "If enabled, JIPipe can cache generated to prevent repeating previous steps. " +
             "Please note that this can fill up the available memory.")
-    @JIPipeParameter("allow-ache")
+    @JIPipeParameter("allow-cache")
     public boolean isAllowCache() {
         return allowCache;
     }
 
-    @JIPipeParameter("allow-ache")
+    @JIPipeParameter("allow-cache")
     public void setAllowCache(boolean allowCache) {
         this.allowCache = allowCache;
         eventBus.post(new ParameterChangedEvent(this, "allow-cache"));
