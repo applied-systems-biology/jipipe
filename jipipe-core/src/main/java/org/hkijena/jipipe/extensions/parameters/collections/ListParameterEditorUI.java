@@ -18,6 +18,8 @@ import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
 import org.hkijena.jipipe.ui.registries.JIPipeUIParameterTypeRegistry;
+import org.hkijena.jipipe.utils.ModernMetalTheme;
+import org.hkijena.jipipe.utils.RoundedLineBorder;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -43,7 +45,7 @@ public class ListParameterEditorUI extends JIPipeParameterEditorUI {
 
     private void initialize() {
         setLayout(new BorderLayout());
-        setBorder(BorderFactory.createEtchedBorder());
+        setBorder(new RoundedLineBorder(ModernMetalTheme.MEDIUM_GRAY, 1, 2));
         JToolBar toolBar = new JToolBar();
         toolBar.setFloatable(false);
 

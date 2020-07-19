@@ -31,6 +31,8 @@ public class ModernMetalTheme extends DefaultMetalTheme {
             new ColorUIResource(0xf2f2f2);
     public static final ColorUIResource PRIMARY5 =
             new ColorUIResource(0x65a4e3);
+    public static final ColorUIResource PRIMARY6 =
+            new ColorUIResource(0xaa87de);
     public static final Color DARK_GRAY = new ColorUIResource(Color.DARK_GRAY);
     public static final Color MEDIUM_GRAY = new ColorUIResource(0xb8babf);
     public static final Color GRAY = new ColorUIResource(0xe6e6e6);

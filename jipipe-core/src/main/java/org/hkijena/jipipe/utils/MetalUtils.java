@@ -10,6 +10,9 @@ import java.awt.image.FilteredImageSource;
 import java.awt.image.ImageProducer;
 import java.awt.image.RGBImageFilter;
 
+/**
+ * Copy of {@link javax.swing.plaf.metal.MetalUtils} because someone decided to make it internal-access only
+ */
 public class MetalUtils {
     private MetalUtils() {
         

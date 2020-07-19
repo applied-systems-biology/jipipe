@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.ui.components;
 
 import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
+import org.hkijena.jipipe.utils.CustomTabbedPaneUI;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -77,6 +78,9 @@ public class DocumentTabPane extends JPanel {
                 }
             }
         });
+        if(GeneralUISettings.getInstance().isModernizeCrossPlatformLookAndFeel()) {
+            tabbedPane.setUI(new CustomTabbedPaneUI());
+        }
         add(tabbedPane, BorderLayout.CENTER);
     }
 

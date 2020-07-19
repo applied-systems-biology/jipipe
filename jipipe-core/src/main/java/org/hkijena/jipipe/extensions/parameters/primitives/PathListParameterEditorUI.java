@@ -19,6 +19,8 @@ import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.PathEditor;
 import org.hkijena.jipipe.ui.components.PathListCellRenderer;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
+import org.hkijena.jipipe.utils.ModernMetalTheme;
+import org.hkijena.jipipe.utils.RoundedLineBorder;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -57,7 +59,7 @@ public class PathListParameterEditorUI extends JIPipeParameterEditorUI {
 
     private void initialize() {
         setLayout(new BorderLayout());
-        setBorder(BorderFactory.createEtchedBorder());
+        setBorder(new RoundedLineBorder(ModernMetalTheme.MEDIUM_GRAY, 1, 2));
         listPanel = new JList<>();
         listPanel.setCellRenderer(new PathListCellRenderer());
         listPanel.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
