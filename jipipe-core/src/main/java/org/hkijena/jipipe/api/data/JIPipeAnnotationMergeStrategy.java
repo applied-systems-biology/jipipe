@@ -5,6 +5,7 @@ import org.hkijena.jipipe.utils.JsonUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -32,7 +33,7 @@ public enum JIPipeAnnotationMergeStrategy {
         } else if (this == OverwriteExisting) {
             return newValue;
         } else {
-            List<String> components = Arrays.asList(extractMergedAnnotations(existingValue));
+            List<String> components = new ArrayList<>(Arrays.asList(extractMergedAnnotations(existingValue)));
             if (!components.contains(newValue))
                 components.add(newValue);
             if (components.isEmpty())

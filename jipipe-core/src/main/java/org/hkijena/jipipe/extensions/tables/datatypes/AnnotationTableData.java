@@ -15,19 +15,21 @@ package org.hkijena.jipipe.extensions.tables.datatypes;
 
 import ij.measure.ResultsTable;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.data.JIPipeAnnotation;
+import org.hkijena.jipipe.utils.StringUtils;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * A special kind of {@link ResultsTableData} that stores annotation columns.
  */
 @JIPipeDocumentation(name = "Annotation table", description = "A table that contains data annotations and other metadata")
 public class AnnotationTableData extends ResultsTableData {
+
+    public static final String ANNOTATION_COLUMN_IDENTIFIER = "annotation:";
+
     /**
      * {@inheritDoc}
      */
@@ -88,7 +90,7 @@ public class AnnotationTableData extends ResultsTableData {
     public Set<String> getMetadataColumns() {
         Set<String> result = new HashSet<>();
         for (String columnName : getColumnNames()) {
-            if (!columnName.startsWith("annotation:")) {
+            if (!columnName.startsWith(ANNOTATION_COLUMN_IDENTIFIER)) {
                 result.add(columnName);
             }
         }
@@ -111,6 +113,23 @@ public class AnnotationTableData extends ResultsTableData {
         return result;
     }
 
+    /**
+     * Gets all annotations at the specified row
+     * @param row the row
+     * @return annotations
+     */
+    public List<JIPipeAnnotation> getAnnotations(int row) {
+        List<JIPipeAnnotation> result = new ArrayList<>();
+        for (int col = 0; col < getColumnCount(); col++) {
+            String columnName = getColumnName(col);
+            if(columnName.startsWith(ANNOTATION_COLUMN_IDENTIFIER)) {
+                String annotationName = getAnnotationTypeFromColumnName(columnName);
+                result.add(new JIPipeAnnotation(annotationName, StringUtils.orElse(getValueAsString(row, col), "")));
+            }
+        }
+        return result;
+    }
+
     @Override
     public String toString() {
         return "Annotation table (" + getRowCount() + "x" + getColumnCount() + ")";
@@ -123,7 +142,7 @@ public class AnnotationTableData extends ResultsTableData {
      * @return column name
      */
     public static String getAnnotationColumnName(String traitInfo) {
-        return "annotation:" + traitInfo;
+        return ANNOTATION_COLUMN_IDENTIFIER + traitInfo;
     }
 
     /**
@@ -134,8 +153,8 @@ public class AnnotationTableData extends ResultsTableData {
      * @return annotation type or null if not an annotation column name or the annotation type does not exist
      */
     public static String getAnnotationTypeFromColumnName(String columnName) {
-        if (columnName.startsWith("annotation:")) {
-            return columnName.substring("annotation:".length());
+        if (columnName.startsWith(ANNOTATION_COLUMN_IDENTIFIER)) {
+            return columnName.substring(ANNOTATION_COLUMN_IDENTIFIER.length());
         }
         return null;
     }
