@@ -21,6 +21,7 @@ import gnu.trove.set.hash.TIntHashSet;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
+import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeSlotConfiguration;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
@@ -150,7 +151,7 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
                     int row = it.next();
                     JIPipeMergingDataBatch dataBatch = new JIPipeMergingDataBatch(this);
                     dataBatch.addData(inputSlot, row);
-                    dataBatch.addGlobalAnnotations(inputSlot.getAnnotations(row), true);
+                    dataBatch.addGlobalAnnotations(inputSlot.getAnnotations(row), dataBatchGenerationSettings.annotationMergeStrategy);
                     dataBatchesForDataSet.add(dataBatch);
                 }
             }
@@ -171,14 +172,14 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
                         // For the first row just add the row to the existing batches
                         for (JIPipeMergingDataBatch dataBatch : dataBatchesForDataSet) {
                             dataBatch.setData(inputSlot, row);
-                            dataBatch.addGlobalAnnotations(inputSlot.getAnnotations(row), true);
+                            dataBatch.addGlobalAnnotations(inputSlot.getAnnotations(row), dataBatchGenerationSettings.annotationMergeStrategy);
                         }
                     } else {
                         // We have to copy each input entry and adapt it to the row
                         for (JIPipeMergingDataBatch dataBatch : backup) {
                             JIPipeMergingDataBatch copy = new JIPipeMergingDataBatch(dataBatch);
                             copy.setData(inputSlot, row);
-                            copy.addGlobalAnnotations(inputSlot.getAnnotations(row), true);
+                            copy.addGlobalAnnotations(inputSlot.getAnnotations(row), dataBatchGenerationSettings.annotationMergeStrategy);
                             dataBatchesForDataSet.add(copy);
                         }
                     }
@@ -208,7 +209,7 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
             JIPipeRunnerSubStatus slotProgress = subProgress.resolve("Data row " + (row + 1) + " / " + 1);
             algorithmProgress.accept(slotProgress);
             JIPipeDataBatch dataBatch = new JIPipeDataBatch(this);
-            dataBatch.addGlobalAnnotations(parameterAnnotations, true);
+            dataBatch.addGlobalAnnotations(parameterAnnotations, dataBatchGenerationSettings.annotationMergeStrategy);
             runIteration(dataBatch, slotProgress, algorithmProgress, isCancelled);
             return;
         }
@@ -279,7 +280,7 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
                     int row = it.next();
                     JIPipeDataBatch dataBatch = new JIPipeDataBatch(this);
                     dataBatch.setData(inputSlot, row);
-                    dataBatch.addGlobalAnnotations(inputSlot.getAnnotations(row), true);
+                    dataBatch.addGlobalAnnotations(inputSlot.getAnnotations(row), dataBatchGenerationSettings.annotationMergeStrategy);
                     dataBatchesForDataSet.add(dataBatch);
                 }
             }
@@ -300,14 +301,14 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
                         // For the first row just add the row to the existing batches
                         for (JIPipeDataBatch dataBatch : dataBatchesForDataSet) {
                             dataBatch.setData(inputSlot, row);
-                            dataBatch.addGlobalAnnotations(inputSlot.getAnnotations(row), true);
+                            dataBatch.addGlobalAnnotations(inputSlot.getAnnotations(row), dataBatchGenerationSettings.annotationMergeStrategy);
                         }
                     } else {
                         // We have to copy each input entry and adapt it to the row
                         for (JIPipeDataBatch dataBatch : backup) {
                             JIPipeDataBatch copy = new JIPipeDataBatch(dataBatch);
                             copy.setData(inputSlot, row);
-                            copy.addGlobalAnnotations(inputSlot.getAnnotations(row), true);
+                            copy.addGlobalAnnotations(inputSlot.getAnnotations(row), dataBatchGenerationSettings.annotationMergeStrategy);
                             dataBatchesForDataSet.add(copy);
                         }
                     }
@@ -318,7 +319,7 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
 
             // Add parameter annotations
             for (JIPipeDataBatch dataBatch : dataBatchesForDataSet) {
-                dataBatch.addGlobalAnnotations(parameterAnnotations, true);
+                dataBatch.addGlobalAnnotations(parameterAnnotations, dataBatchGenerationSettings.annotationMergeStrategy);
             }
 
 
@@ -449,6 +450,7 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
         private boolean skipIncompleteDataSets = false;
         private StringPredicate.List customColumns = new StringPredicate.List();
         private boolean invertCustomColumns = false;
+        private JIPipeAnnotationMergeStrategy annotationMergeStrategy = JIPipeAnnotationMergeStrategy.Merge;
 
         public DataBatchGenerationSettings() {
         }
@@ -459,6 +461,7 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
             this.skipIncompleteDataSets = other.skipIncompleteDataSets;
             this.customColumns = new StringPredicate.List(other.customColumns);
             this.invertCustomColumns = other.invertCustomColumns;
+            this.annotationMergeStrategy = other.annotationMergeStrategy;
         }
 
         @Override
@@ -535,6 +538,16 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
 
         }
 
+        @JIPipeDocumentation(name = "Merge same annotation values", description = "Determines which strategy is applied if data sets that " +
+                "define different values for the same annotation columns are encountered.")
+        @JIPipeParameter("annotation-merge-strategy")
+        public JIPipeAnnotationMergeStrategy getAnnotationMergeStrategy() {
+            return annotationMergeStrategy;
+        }
 
+        @JIPipeParameter("annotation-merge-strategy")
+        public void setAnnotationMergeStrategy(JIPipeAnnotationMergeStrategy annotationMergeStrategy) {
+            this.annotationMergeStrategy = annotationMergeStrategy;
+        }
     }
 }

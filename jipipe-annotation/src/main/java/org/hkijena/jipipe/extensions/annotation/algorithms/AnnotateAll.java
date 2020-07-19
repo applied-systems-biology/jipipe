@@ -19,6 +19,7 @@ import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.algorithm.*;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
+import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.parameters.pairs.PairParameterSettings;
@@ -38,7 +39,7 @@ import java.util.function.Supplier;
 public class AnnotateAll extends JIPipeSimpleIteratingAlgorithm {
 
     private StringAndStringPair.List annotations = new StringAndStringPair.List();
-    private boolean overwrite = false;
+    private JIPipeAnnotationMergeStrategy annotationMergeStrategy = JIPipeAnnotationMergeStrategy.OverwriteExisting;
 
     /**
      * @param info the info
@@ -56,7 +57,7 @@ public class AnnotateAll extends JIPipeSimpleIteratingAlgorithm {
     public AnnotateAll(AnnotateAll other) {
         super(other);
         this.annotations = new StringAndStringPair.List(other.annotations);
-        this.overwrite = other.overwrite;
+        this.annotationMergeStrategy = other.annotationMergeStrategy;
     }
 
     @Override
@@ -69,7 +70,7 @@ public class AnnotateAll extends JIPipeSimpleIteratingAlgorithm {
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         for (StringAndStringPair annotation : annotations) {
-            dataBatch.addGlobalAnnotation(new JIPipeAnnotation(annotation.getKey(), annotation.getValue()), overwrite);
+            dataBatch.addGlobalAnnotation(new JIPipeAnnotation(annotation.getKey(), annotation.getValue()), annotationMergeStrategy);
         }
         dataBatch.addOutputData(getFirstOutputSlot(), dataBatch.getInputData(getFirstInputSlot(), JIPipeData.class));
     }
@@ -88,15 +89,14 @@ public class AnnotateAll extends JIPipeSimpleIteratingAlgorithm {
 
     }
 
-    @JIPipeDocumentation(name = "Overwrite existing annotations", description = "If disabled, any existing annotation of the same type (not value) is not replaced")
-    @JIPipeParameter("overwrite")
-    public boolean isOverwrite() {
-        return overwrite;
+    @JIPipeDocumentation(name = "Merge same annotation values", description = "Determines which strategy is applied if an annotation already exists.")
+    @JIPipeParameter("annotation-merge-strategy")
+    public JIPipeAnnotationMergeStrategy getAnnotationMergeStrategy() {
+        return annotationMergeStrategy;
     }
 
-    @JIPipeParameter("overwrite")
-    public void setOverwrite(boolean overwrite) {
-        this.overwrite = overwrite;
-
+    @JIPipeParameter("annotation-merge-strategy")
+    public void setAnnotationMergeStrategy(JIPipeAnnotationMergeStrategy annotationMergeStrategy) {
+        this.annotationMergeStrategy = annotationMergeStrategy;
     }
 }

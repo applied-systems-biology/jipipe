@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.api.algorithm;
 
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
+import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 
@@ -77,15 +78,19 @@ public class JIPipeDataBatch {
      * Global annotations are passed to all output slots.
      *
      * @param annotations the annotations
-     * @param overwrite   if true, annotations of the same type are overwritten
+     * @param strategy   strategy to apply on merging existing values
      */
-    public void addGlobalAnnotations(List<JIPipeAnnotation> annotations, boolean overwrite) {
+    public void addGlobalAnnotations(List<JIPipeAnnotation> annotations, JIPipeAnnotationMergeStrategy strategy) {
         for (JIPipeAnnotation annotation : annotations) {
             if (annotation != null) {
-                if (overwrite)
+                JIPipeAnnotation existing = this.annotations.getOrDefault(annotation.getName(), null);
+                if(existing == null) {
                     this.annotations.put(annotation.getName(), annotation);
-                else
-                    this.annotations.putIfAbsent(annotation.getName(), annotation);
+                }
+                else {
+                    String newValue = strategy.merge(existing.getValue(), annotation.getValue());
+                    this.annotations.put(annotation.getName(), new JIPipeAnnotation(annotation.getName(), newValue));
+                }
             }
         }
     }
@@ -152,22 +157,17 @@ public class JIPipeDataBatch {
     /**
      * Adds an annotation to the annotation list
      *
-     * @param trait added annotation. Cannot be null.
+     * @param annotation added annotation. Cannot be null.
      */
-    public void addGlobalAnnotation(JIPipeAnnotation trait) {
-        annotations.put(trait.getName(), trait);
-    }
-
-    /**
-     * Adds an annotation to the annotation list
-     *
-     * @param trait     added annotation. Cannot be null.
-     * @param overwrite if existing annotation types can be overwritten
-     */
-    public void addGlobalAnnotation(JIPipeAnnotation trait, boolean overwrite) {
-        if (overwrite && annotations.containsKey(trait.getName()))
-            return;
-        annotations.put(trait.getName(), trait);
+    public void addGlobalAnnotation(JIPipeAnnotation annotation, JIPipeAnnotationMergeStrategy strategy) {
+        JIPipeAnnotation existing = this.annotations.getOrDefault(annotation.getName(), null);
+        if(existing == null) {
+            this.annotations.put(annotation.getName(), annotation);
+        }
+        else {
+            String newValue = strategy.merge(existing.getValue(), annotation.getValue());
+            this.annotations.put(annotation.getName(), new JIPipeAnnotation(annotation.getName(), newValue));
+        }
     }
 
 

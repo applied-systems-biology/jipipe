@@ -24,6 +24,7 @@ import gnu.trove.set.hash.TIntHashSet;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
+import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeSlotConfiguration;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
@@ -162,7 +163,6 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
         for (Map.Entry<JIPipeDataBatchKey, Map<String, TIntSet>> dataSetEntry : ImmutableList.copyOf(groups.entrySet())) {
 
             JIPipeMergingDataBatch dataBatch = new JIPipeMergingDataBatch(this);
-            Multimap<String, String> compoundTraits = HashMultimap.create();
             for (Map.Entry<String, TIntSet> dataSlotEntry : dataSetEntry.getValue().entrySet()) {
                 JIPipeDataSlot inputSlot = getInputSlot(dataSlotEntry.getKey());
                 if (getParameterSlot() == inputSlot)
@@ -171,28 +171,9 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
                 for (TIntIterator it = rows.iterator(); it.hasNext(); ) {
                     int row = it.next();
                     dataBatch.addData(inputSlot, row);
-
-                    // Store all annotations
-                    for (JIPipeAnnotation annotation : inputSlot.getAnnotations(row)) {
-                        if (annotation != null) {
-                            compoundTraits.put(annotation.getName(), "" + annotation.getValue());
-                        }
-                    }
+                    dataBatch.addGlobalAnnotations(inputSlot.getAnnotations(row), dataBatchGenerationSettings.annotationMergeStrategy);
                 }
             }
-
-            // Create new merged annotations
-            for (String info : compoundTraits.keySet()) {
-                List<String> valueList = compoundTraits.get(info).stream().distinct().sorted().collect(Collectors.toList());
-                String value;
-                try {
-                    value = JsonUtils.getObjectMapper().writeValueAsString(valueList);
-                } catch (JsonProcessingException e) {
-                    throw new RuntimeException(e);
-                }
-                dataBatch.addGlobalAnnotation(new JIPipeAnnotation(info, value));
-            }
-
             dataBatches.add(dataBatch);
         }
         return dataBatches;
@@ -218,7 +199,7 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
             JIPipeRunnerSubStatus slotProgress = subProgress.resolve("Data row " + (row + 1) + " / " + 1);
             algorithmProgress.accept(slotProgress);
             JIPipeMergingDataBatch dataBatch = new JIPipeMergingDataBatch(this);
-            dataBatch.addGlobalAnnotations(parameterAnnotations, true);
+            dataBatch.addGlobalAnnotations(parameterAnnotations, dataBatchGenerationSettings.annotationMergeStrategy);
             runIteration(dataBatch, slotProgress, algorithmProgress, isCancelled);
             return;
         }
@@ -264,7 +245,6 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
         for (Map.Entry<JIPipeDataBatchKey, Map<String, TIntSet>> dataSetEntry : ImmutableList.copyOf(dataSets.entrySet())) {
 
             JIPipeMergingDataBatch dataBatch = new JIPipeMergingDataBatch(this);
-            Multimap<String, String> compoundTraits = HashMultimap.create();
             for (Map.Entry<String, TIntSet> dataSlotEntry : dataSetEntry.getValue().entrySet()) {
                 JIPipeDataSlot inputSlot = getInputSlot(dataSlotEntry.getKey());
                 if (getParameterSlot() == inputSlot)
@@ -273,30 +253,12 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
                 for (TIntIterator it = rows.iterator(); it.hasNext(); ) {
                     int row = it.next();
                     dataBatch.addData(inputSlot, row);
-
-                    // Store all annotations
-                    for (JIPipeAnnotation annotation : inputSlot.getAnnotations(row)) {
-                        if (annotation != null) {
-                            compoundTraits.put(annotation.getName(), "" + annotation.getValue());
-                        }
-                    }
+                    dataBatch.addGlobalAnnotations(inputSlot.getAnnotations(row), dataBatchGenerationSettings.annotationMergeStrategy);
                 }
-            }
-
-            // Create new merged annotations
-            for (String info : compoundTraits.keySet()) {
-                List<String> valueList = compoundTraits.get(info).stream().distinct().sorted().collect(Collectors.toList());
-                String value;
-                try {
-                    value = JsonUtils.getObjectMapper().writeValueAsString(valueList);
-                } catch (JsonProcessingException e) {
-                    throw new RuntimeException(e);
-                }
-                dataBatch.addGlobalAnnotation(new JIPipeAnnotation(info, value));
             }
 
             // Add parameter annotations
-            dataBatch.addGlobalAnnotations(parameterAnnotations, true);
+            dataBatch.addGlobalAnnotations(parameterAnnotations, dataBatchGenerationSettings.annotationMergeStrategy);
 
             dataBatches.add(dataBatch);
         }
@@ -409,6 +371,7 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
         private boolean skipIncompleteDataSets = false;
         private StringPredicate.List customColumns = new StringPredicate.List();
         private boolean invertCustomColumns = false;
+        private JIPipeAnnotationMergeStrategy annotationMergeStrategy = JIPipeAnnotationMergeStrategy.Merge;
 
         public DataBatchGenerationSettings() {
         }
@@ -418,6 +381,7 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
             this.skipIncompleteDataSets = other.skipIncompleteDataSets;
             this.customColumns = new StringPredicate.List(other.customColumns);
             this.invertCustomColumns = other.invertCustomColumns;
+            this.annotationMergeStrategy = other.annotationMergeStrategy;
         }
 
         @Override
@@ -479,6 +443,18 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
         public void setSkipIncompleteDataSets(boolean skipIncompleteDataSets) {
             this.skipIncompleteDataSets = skipIncompleteDataSets;
 
+        }
+
+        @JIPipeDocumentation(name = "Merge same annotation values", description = "Determines which strategy is applied if data sets that " +
+                "define different values for the same annotation columns are encountered.")
+        @JIPipeParameter("annotation-merge-strategy")
+        public JIPipeAnnotationMergeStrategy getAnnotationMergeStrategy() {
+            return annotationMergeStrategy;
+        }
+
+        @JIPipeParameter("annotation-merge-strategy")
+        public void setAnnotationMergeStrategy(JIPipeAnnotationMergeStrategy annotationMergeStrategy) {
+            this.annotationMergeStrategy = annotationMergeStrategy;
         }
     }
 }

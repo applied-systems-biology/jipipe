@@ -72,6 +72,7 @@ public class AnnotationsExtension extends JIPipePrepackagedDefaultJavaExtension 
         registerAlgorithm("extract-and-replace-annotation", ExtractAndReplaceAnnotation.class, UIUtils.getAlgorithmIconURL("edit-find-replace.png"));
         registerAlgorithm("modify-annotation-script", ModifyAnnotationScript.class, UIUtils.getAlgorithmIconURL("python.png"));
         registerAlgorithm("annotate-split-by-annotation-script", SplitByAnnotationScript.class, UIUtils.getAlgorithmIconURL("python.png"));
+        registerAlgorithm("annotation-merge", MergeAnnotations.class, UIUtils.getAlgorithmIconURL("merge.png"));
     }
 
     @Override

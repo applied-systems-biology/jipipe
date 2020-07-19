@@ -19,6 +19,7 @@ import org.fife.ui.rsyntaxtextarea.TokenMakerFactory;
 import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.algorithm.JIPipeColumnGrouping;
+import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollectionVisibilities;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.parameters.collections.ListParameter;
@@ -324,15 +325,46 @@ public class StandardParametersExtension extends JIPipePrepackagedDefaultJavaExt
                 null);
 
         // Enums
-        registerEnumParameterType("color-map", ColorMap.class, "Color map", "Available color maps that convert a scalar to a color");
-        registerEnumParameterType("rectangle-roi:anchor", Anchor.class, "Anchor", "Available rectangle anchors");
-        registerEnumParameterType("path-predicate:mode", PathPredicate.Mode.class, "Mode", "Available modes");
-        registerEnumParameterType("string-predicate:mode", StringPredicate.Mode.class, "Mode", "Available modes");
-        registerEnumParameterType("column-matching", JIPipeColumnGrouping.class, "Column matching strategy", "Determines how columns for dataset matching are selected");
-        registerEnumParameterType("jipipe:ui:graph-editor-view-mode", JIPipeGraphViewMode.class, "Graph editor view mode", "Determines how the graphs are displayed");
-        registerEnumParameterType("jipipe:ui:graph-editor-auto-layout", GraphAutoLayout.class, "Graph auto layout", "Determines which method is used to apply graph auto-layout");
-        registerEnumParameterType("logical-operation", LogicalOperation.class, "Logical operation", "Available logical operations");
-        registerEnumParameterType("sort-order", SortOrder.class, "Sort order", "Available sort orders");
+        registerEnumParameterType("color-map",
+                ColorMap.class,
+                "Color map",
+                "Available color maps that convert a scalar to a color");
+        registerEnumParameterType("rectangle-roi:anchor",
+                Anchor.class,
+                "Anchor",
+                "Available rectangle anchors");
+        registerEnumParameterType("path-predicate:mode",
+                PathPredicate.Mode.class,
+                "Mode",
+                "Available modes");
+        registerEnumParameterType("string-predicate:mode",
+                StringPredicate.Mode.class,
+                "Mode",
+                "Available modes");
+        registerEnumParameterType("column-matching",
+                JIPipeColumnGrouping.class,
+                "Column matching strategy",
+                "Determines how columns for dataset matching are selected");
+        registerEnumParameterType("jipipe:ui:graph-editor-view-mode",
+                JIPipeGraphViewMode.class,
+                "Graph editor view mode",
+                "Determines how the graphs are displayed");
+        registerEnumParameterType("jipipe:ui:graph-editor-auto-layout",
+                GraphAutoLayout.class,
+                "Graph auto layout",
+                "Determines which method is used to apply graph auto-layout");
+        registerEnumParameterType("annotation-merge-strategy",
+                JIPipeAnnotationMergeStrategy.class,
+                "Annotation merge strategy",
+                "Determines how annotations are merged.");
+        registerEnumParameterType("logical-operation",
+                LogicalOperation.class,
+                "Logical operation",
+                "Available logical operations");
+        registerEnumParameterType("sort-order",
+                SortOrder.class,
+                "Sort order",
+                "Available sort orders");
     }
 
     private void registerPairParameters() {

@@ -16,6 +16,7 @@ package org.hkijena.jipipe.extensions.filesystem.algorithms;
 import org.hkijena.jipipe.api.*;
 import org.hkijena.jipipe.api.algorithm.*;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
+import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FileData;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
@@ -61,7 +62,7 @@ public class SimpleFileAnnotationGenerator extends JIPipeSimpleIteratingAlgorith
         if (!StringUtils.isNullOrEmpty(generatedAnnotation)) {
             FileData inputData = dataBatch.getInputData(getFirstInputSlot(), FileData.class);
             String discriminator = inputData.getPath().getFileName().toString();
-            dataBatch.addGlobalAnnotation(new JIPipeAnnotation(generatedAnnotation, discriminator));
+            dataBatch.addGlobalAnnotation(new JIPipeAnnotation(generatedAnnotation, discriminator), JIPipeAnnotationMergeStrategy.OverwriteExisting);
             dataBatch.addOutputData(getFirstOutputSlot(), inputData);
         }
     }

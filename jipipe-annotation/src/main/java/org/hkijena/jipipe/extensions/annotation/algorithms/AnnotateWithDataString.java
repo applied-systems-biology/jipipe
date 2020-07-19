@@ -19,6 +19,7 @@ import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.algorithm.*;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
+import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
@@ -39,6 +40,7 @@ import java.util.function.Supplier;
 public class AnnotateWithDataString extends JIPipeSimpleIteratingAlgorithm {
 
     private String generatedAnnotation = "Data";
+    private JIPipeAnnotationMergeStrategy annotationMergeStrategy = JIPipeAnnotationMergeStrategy.OverwriteExisting;
 
     /**
      * New instance
@@ -57,6 +59,7 @@ public class AnnotateWithDataString extends JIPipeSimpleIteratingAlgorithm {
     public AnnotateWithDataString(AnnotateWithDataString other) {
         super(other);
         this.generatedAnnotation = other.generatedAnnotation;
+        this.annotationMergeStrategy = other.annotationMergeStrategy;
     }
 
     @Override
@@ -64,7 +67,7 @@ public class AnnotateWithDataString extends JIPipeSimpleIteratingAlgorithm {
         if (!StringUtils.isNullOrEmpty(generatedAnnotation)) {
             JIPipeData inputData = dataBatch.getInputData(getFirstInputSlot(), JIPipeData.class);
             String discriminator = "" + inputData;
-            dataBatch.addGlobalAnnotation(new JIPipeAnnotation(generatedAnnotation, discriminator));
+            dataBatch.addGlobalAnnotation(new JIPipeAnnotation(generatedAnnotation, discriminator), annotationMergeStrategy);
             dataBatch.addOutputData(getFirstOutputSlot(), inputData);
         }
     }
@@ -92,5 +95,17 @@ public class AnnotateWithDataString extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeParameter("generated-annotation")
     public void setGeneratedAnnotation(String generatedAnnotation) {
         this.generatedAnnotation = generatedAnnotation;
+    }
+
+
+    @JIPipeDocumentation(name = "Merge same annotation values", description = "Determines which strategy is applied if an annotation already exists.")
+    @JIPipeParameter("annotation-merge-strategy")
+    public JIPipeAnnotationMergeStrategy getAnnotationMergeStrategy() {
+        return annotationMergeStrategy;
+    }
+
+    @JIPipeParameter("annotation-merge-strategy")
+    public void setAnnotationMergeStrategy(JIPipeAnnotationMergeStrategy annotationMergeStrategy) {
+        this.annotationMergeStrategy = annotationMergeStrategy;
     }
 }

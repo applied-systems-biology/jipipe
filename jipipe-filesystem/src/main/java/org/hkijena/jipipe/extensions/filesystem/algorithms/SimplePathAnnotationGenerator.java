@@ -19,6 +19,7 @@ import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.algorithm.*;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
+import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FolderData;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.PathData;
@@ -42,6 +43,7 @@ public class SimplePathAnnotationGenerator extends JIPipeSimpleIteratingAlgorith
     private String generatedAnnotation = "Dataset";
     private boolean fullPath = false;
     private boolean removeExtensions = true;
+    private JIPipeAnnotationMergeStrategy annotationMergeStrategy = JIPipeAnnotationMergeStrategy.OverwriteExisting;
 
     /**
      * Creates a new instance
@@ -62,6 +64,7 @@ public class SimplePathAnnotationGenerator extends JIPipeSimpleIteratingAlgorith
         this.generatedAnnotation = other.generatedAnnotation;
         this.fullPath = other.fullPath;
         this.removeExtensions = other.removeExtensions;
+        this.annotationMergeStrategy = other.annotationMergeStrategy;
     }
 
     @Override
@@ -86,7 +89,7 @@ public class SimplePathAnnotationGenerator extends JIPipeSimpleIteratingAlgorith
                 }
             }
 
-            dataBatch.addGlobalAnnotation(new JIPipeAnnotation(generatedAnnotation, annotationValue));
+            dataBatch.addGlobalAnnotation(new JIPipeAnnotation(generatedAnnotation, annotationValue), annotationMergeStrategy);
             dataBatch.addOutputData(getFirstOutputSlot(), inputData);
         }
     }
@@ -137,5 +140,16 @@ public class SimplePathAnnotationGenerator extends JIPipeSimpleIteratingAlgorith
     @JIPipeParameter("remove-extensions")
     public void setRemoveExtensions(boolean removeExtensions) {
         this.removeExtensions = removeExtensions;
+    }
+
+    @JIPipeDocumentation(name = "Merge same annotation values", description = "Determines which strategy is applied if an annotation already exists.")
+    @JIPipeParameter("annotation-merge-strategy")
+    public JIPipeAnnotationMergeStrategy getAnnotationMergeStrategy() {
+        return annotationMergeStrategy;
+    }
+
+    @JIPipeParameter("annotation-merge-strategy")
+    public void setAnnotationMergeStrategy(JIPipeAnnotationMergeStrategy annotationMergeStrategy) {
+        this.annotationMergeStrategy = annotationMergeStrategy;
     }
 }

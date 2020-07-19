@@ -17,6 +17,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
+import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.data.JIPipeSlotConfiguration;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -86,7 +87,7 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
             JIPipeRunnerSubStatus slotProgress = subProgress.resolve("Data row " + (row + 1) + " / " + 1);
             algorithmProgress.accept(slotProgress);
             JIPipeDataBatch dataBatch = new JIPipeDataBatch(this);
-            dataBatch.addGlobalAnnotations(parameterAnnotations, true);
+            dataBatch.addGlobalAnnotations(parameterAnnotations, JIPipeAnnotationMergeStrategy.Merge);
             runIteration(dataBatch, slotProgress, algorithmProgress, isCancelled);
         } else {
             if (!supportsParallelization() || !isParallelizationEnabled() || getThreadPool() == null || getThreadPool().getMaxThreads() <= 1) {
@@ -97,8 +98,8 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
                     algorithmProgress.accept(slotProgress);
                     JIPipeDataBatch dataBatch = new JIPipeDataBatch(this);
                     dataBatch.setData(getFirstInputSlot(), i);
-                    dataBatch.addGlobalAnnotations(getFirstInputSlot().getAnnotations(i), true);
-                    dataBatch.addGlobalAnnotations(parameterAnnotations, true);
+                    dataBatch.addGlobalAnnotations(getFirstInputSlot().getAnnotations(i), JIPipeAnnotationMergeStrategy.Merge);
+                    dataBatch.addGlobalAnnotations(parameterAnnotations, JIPipeAnnotationMergeStrategy.Merge);
                     runIteration(dataBatch, slotProgress, algorithmProgress, isCancelled);
                 }
             } else {
@@ -112,8 +113,8 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
                         algorithmProgress.accept(slotProgress);
                         JIPipeDataBatch dataBatch = new JIPipeDataBatch(this);
                         dataBatch.setData(getFirstInputSlot(), rowIndex);
-                        dataBatch.addGlobalAnnotations(getFirstInputSlot().getAnnotations(rowIndex), true);
-                        dataBatch.addGlobalAnnotations(parameterAnnotations, true);
+                        dataBatch.addGlobalAnnotations(getFirstInputSlot().getAnnotations(rowIndex), JIPipeAnnotationMergeStrategy.Merge);
+                        dataBatch.addGlobalAnnotations(parameterAnnotations, JIPipeAnnotationMergeStrategy.Merge);
                         runIteration(dataBatch, slotProgress, algorithmProgress, isCancelled);
                     });
                 }

@@ -19,6 +19,7 @@ import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.algorithm.*;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
+import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.parameters.functions.StringPatternExtractionFunction;
@@ -38,6 +39,7 @@ import java.util.function.Supplier;
 public class ExtractAndReplaceAnnotation extends JIPipeSimpleIteratingAlgorithm {
 
     private StringPatternExtractionFunction.List functions = new StringPatternExtractionFunction.List();
+    private JIPipeAnnotationMergeStrategy annotationMergeStrategy = JIPipeAnnotationMergeStrategy.OverwriteExisting;
 
     /**
      * New instance
@@ -57,6 +59,7 @@ public class ExtractAndReplaceAnnotation extends JIPipeSimpleIteratingAlgorithm 
     public ExtractAndReplaceAnnotation(ExtractAndReplaceAnnotation other) {
         super(other);
         this.functions = new StringPatternExtractionFunction.List(other.functions);
+        this.annotationMergeStrategy = other.annotationMergeStrategy;
     }
 
     @Override
@@ -68,7 +71,7 @@ public class ExtractAndReplaceAnnotation extends JIPipeSimpleIteratingAlgorithm 
             String newValue = function.getParameter().apply(inputTrait.getValue());
             if (newValue == null)
                 continue;
-            dataBatch.addGlobalAnnotation(new JIPipeAnnotation(function.getOutput(), newValue));
+            dataBatch.addGlobalAnnotation(new JIPipeAnnotation(function.getOutput(), newValue), annotationMergeStrategy);
         }
         dataBatch.addOutputData(getFirstOutputSlot(), dataBatch.getInputData(getFirstInputSlot(), JIPipeData.class));
     }
@@ -96,5 +99,17 @@ public class ExtractAndReplaceAnnotation extends JIPipeSimpleIteratingAlgorithm 
     @JIPipeParameter("functions")
     public void setFunctions(StringPatternExtractionFunction.List functions) {
         this.functions = functions;
+    }
+
+
+    @JIPipeDocumentation(name = "Merge same annotation values", description = "Determines which strategy is applied if an annotation already exists.")
+    @JIPipeParameter("annotation-merge-strategy")
+    public JIPipeAnnotationMergeStrategy getAnnotationMergeStrategy() {
+        return annotationMergeStrategy;
+    }
+
+    @JIPipeParameter("annotation-merge-strategy")
+    public void setAnnotationMergeStrategy(JIPipeAnnotationMergeStrategy annotationMergeStrategy) {
+        this.annotationMergeStrategy = annotationMergeStrategy;
     }
 }
