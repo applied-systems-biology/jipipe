@@ -13,9 +13,11 @@
 
 package org.hkijena.jipipe.ui.grapheditor;
 
+import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeCompartmentOutput;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
+import org.hkijena.jipipe.api.events.ParameterChangedEvent;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.cache.JIPipeDataSlotCacheManagerUI;
@@ -35,6 +37,7 @@ import java.awt.font.TextLayout;
 public class JIPipeVerticalDataSlotUI extends JIPipeDataSlotUI {
     private JButton assignButton;
     private JLabel nameLabel;
+    private JLabel noSaveLabel;
     private JIPipeDataSlotCacheManagerUI cacheManagerUI;
 
     /**
@@ -49,6 +52,7 @@ public class JIPipeVerticalDataSlotUI extends JIPipeDataSlotUI {
         super(workbench, algorithmUI, compartment, slot);
         initialize();
         reloadButtonStatus();
+        slot.getNode().getEventBus().register(this);
     }
 
     @Override
@@ -64,6 +68,13 @@ public class JIPipeVerticalDataSlotUI extends JIPipeDataSlotUI {
                 assignButton.setIcon(UIUtils.getIconFromResources("chevron-bottom-thin.png"));
             } else {
                 assignButton.setIcon(UIUtils.getIconFromResources("chevron-bottom.png"));
+            }
+            if(noSaveLabel != null) {
+                if (getSlot().getNode() instanceof JIPipeAlgorithm) {
+                    noSaveLabel.setVisible(!((JIPipeAlgorithm) getSlot().getNode()).isSaveOutputs());
+                } else {
+                    noSaveLabel.setVisible(false);
+                }
             }
         }
     }
@@ -101,7 +112,15 @@ public class JIPipeVerticalDataSlotUI extends JIPipeDataSlotUI {
         centerPanel.add(nameLabel);
         centerPanel.add(Box.createHorizontalGlue());
 
+        if(getSlot().isOutput() && getSlot().getNode() instanceof JIPipeAlgorithm) {
+            noSaveLabel = new JLabel(UIUtils.getIconFromResources("no-save.png"));
+            noSaveLabel.setBorder(BorderFactory.createEmptyBorder(3,3,3,3));
+            centerPanel.add(noSaveLabel);
+        }
+
         if (getSlot().isOutput() && getSlot().getNode() instanceof JIPipeAlgorithm && getWorkbench() instanceof JIPipeProjectWorkbench) {
+
+
             JIPipeProjectWorkbench projectWorkbench = (JIPipeProjectWorkbench) getWorkbench();
             cacheManagerUI = new JIPipeDataSlotCacheManagerUI(projectWorkbench, getSlot());
             centerPanel.add(cacheManagerUI);
@@ -136,6 +155,13 @@ public class JIPipeVerticalDataSlotUI extends JIPipeDataSlotUI {
         int width = labelWidth + 75;
 
         return width;
+    }
+
+    @Subscribe
+    public void onNodeParameterChanged(ParameterChangedEvent event) {
+        if(event.getSource() == getSlot().getNode() && "jipipe:algorithm:save-outputs".equals(event.getKey())) {
+            reloadButtonStatus();
+        }
     }
 
 }

@@ -88,6 +88,8 @@ public class JIPipeGraphCompartmentUI extends JIPipeGraphEditorUI {
                 new DisableNodeUIContextAction(),
                 new EnablePassThroughNodeUIContextAction(),
                 new DisablePassThroughNodeUIContextAction(),
+                new EnableSaveOutputsNodeUIContextAction(),
+                new DisableSaveOutputsNodeUIContextAction(),
                 new DeleteNodeUIContextAction(),
                 NodeUIContextAction.SEPARATOR,
                 new SelectAndMoveNodeHereNodeUIContextAction()

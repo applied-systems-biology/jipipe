@@ -196,12 +196,12 @@ public abstract class JIPipeAlgorithm extends JIPipeGraphNode {
     }
 
     @JIPipeDocumentation(name = "Save outputs", description = "If disabled, the output data is not written into the output folder.")
-    @JIPipeParameter(value = "save-outputs", visibility = JIPipeParameterVisibility.Visible)
+    @JIPipeParameter(value = "jipipe:algorithm:save-outputs", visibility = JIPipeParameterVisibility.Visible)
     public boolean isSaveOutputs() {
         return saveOutputs;
     }
 
-    @JIPipeParameter("save-outputs")
+    @JIPipeParameter("jipipe:algorithm:save-outputs")
     public void setSaveOutputs(boolean saveOutputs) {
         this.saveOutputs = saveOutputs;
     }
@@ -226,7 +226,9 @@ public abstract class JIPipeAlgorithm extends JIPipeGraphNode {
          * @return if the parameter should be serialized
          */
         protected boolean serializeParameter(Map.Entry<String, JIPipeParameterAccess> entry) {
-            return !entry.getKey().equals("jipipe:node:name") && !entry.getKey().equals("jipipe:node:description");
+            return !entry.getKey().equals("jipipe:node:name")
+                    && !entry.getKey().equals("jipipe:node:description")
+                    && !entry.getKey().equals("jipipe:algorithm:save-outputs");
         }
     }
 }
