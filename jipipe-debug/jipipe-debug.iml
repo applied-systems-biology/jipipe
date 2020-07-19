@@ -20,6 +20,17 @@
     <orderEntry type="library" name="Maven: sc.fiji:fiji-lib:2.1.2" level="project" />
     <orderEntry type="library" name="Maven: net.haesleinhuepf:clij-clearcl:2.0.0.10" level="project" />
     <orderEntry type="library" name="Maven: org.jocl:jocl:2.0.2" level="project" />
+    <orderEntry type="library" name="Maven: net.haesleinhuepf:clij2_:2.0.0.14" level="project" />
+    <orderEntry type="library" name="Maven: net.haesleinhuepf:clij_:1.7.0.14" level="project" />
+    <orderEntry type="library" name="Maven: net.haesleinhuepf:clij-coremem:2.0.0.10" level="project" />
+    <orderEntry type="library" name="Maven: com.nativelibs4java:bridj:0.7.0" level="project" />
+    <orderEntry type="library" name="Maven: com.google.android.tools:dx:1.7" level="project" />
+    <orderEntry type="library" name="Maven: net.java.dev.jna:jna:4.5.2" level="project" />
+    <orderEntry type="library" name="Maven: net.java.dev.jna:jna-platform:4.5.1" level="project" />
+    <orderEntry type="library" name="Maven: net.haesleinhuepf:clij-core:1.7.0.14" level="project" />
+    <orderEntry type="library" name="Maven: sc.fiji:fiji-lib:2.1.2" level="project" />
+    <orderEntry type="library" name="Maven: net.haesleinhuepf:clij-clearcl:2.0.0.10" level="project" />
+    <orderEntry type="library" name="Maven: org.jocl:jocl:2.0.2" level="project" />
     <orderEntry type="module" module-name="jipipe-core" />
     <orderEntry type="module" module-name="jipipe-python" />
     <orderEntry type="module" module-name="jipipe-annotation" />

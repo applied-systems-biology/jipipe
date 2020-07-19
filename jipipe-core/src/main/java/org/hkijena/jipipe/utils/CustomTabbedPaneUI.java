@@ -816,90 +816,90 @@ public class CustomTabbedPaneUI extends BasicTabbedPaneUI {
                                        Rectangle[] rects, int tabIndex,
                                        Rectangle iconRect, Rectangle textRect,
                                        boolean isSelected) {
-        if ( tabPane.hasFocus() && isSelected ) {
-            Rectangle tabRect = rects[tabIndex];
-            boolean lastInRun = isLastInRun( tabIndex );
-            g.setColor( focus );
-            g.translate( tabRect.x, tabRect.y );
-            int right = tabRect.width - 1;
-            int bottom = tabRect.height - 1;
-            boolean leftToRight = MetalUtils.isLeftToRight(tabPane);
-            switch ( tabPlacement ) {
-                case RIGHT:
-                    g.drawLine( right - 6,2 , right - 2,6 );         // slant
-                    g.drawLine( 1,2 , right - 6,2 );                 // top
-                    g.drawLine( right - 2,6 , right - 2,bottom );    // right
-                    g.drawLine( 1,2 , 1,bottom );                    // left
-                    g.drawLine( 1,bottom , right - 2,bottom );       // bottom
-                    break;
-                case BOTTOM:
-                    if ( leftToRight ) {
-                        g.drawLine( 2, bottom - 6, 6, bottom - 2 );   // slant
-                        g.drawLine( 6, bottom - 2,
-                                right, bottom - 2 );              // bottom
-                        g.drawLine( 2, 0, 2, bottom - 6 );            // left
-                        g.drawLine( 2, 0, right, 0 );                 // top
-                        g.drawLine( right, 0, right, bottom - 2 );    // right
-                    } else {
-                        g.drawLine( right - 2, bottom - 6,
-                                right - 6, bottom - 2 );          // slant
-                        g.drawLine( right - 2, 0,
-                                right - 2, bottom - 6 );          // right
-                        if ( lastInRun ) {
-                            // last tab in run
-                            g.drawLine( 2, bottom - 2,
-                                    right - 6, bottom - 2 );      // bottom
-                            g.drawLine( 2, 0, right - 2, 0 );         // top
-                            g.drawLine( 2, 0, 2, bottom - 2 );        // left
-                        } else {
-                            g.drawLine( 1, bottom - 2,
-                                    right - 6, bottom - 2 );      // bottom
-                            g.drawLine( 1, 0, right - 2, 0 );         // top
-                            g.drawLine( 1, 0, 1, bottom - 2 );        // left
-                        }
-                    }
-                    break;
-                case LEFT:
-                    g.drawLine( 2, 6, 6, 2 );                         // slant
-                    g.drawLine( 2, 6, 2, bottom - 1);                 // left
-                    g.drawLine( 6, 2, right, 2 );                     // top
-                    g.drawLine( right, 2, right, bottom - 1 );        // right
-                    g.drawLine( 2, bottom - 1,
-                            right, bottom - 1 );                  // bottom
-                    break;
-                case TOP:
-                default:
-                    if ( leftToRight ) {
-//                        g.drawLine( 2, 6, 6, 2 );                     // slant
-//                        g.drawLine( 2, 2, 2, bottom - 1);             // left
-//                        g.drawLine( 2, 2, right, 2 );                 // top
-//                        g.drawLine( right, 2, right, bottom - 1 );    // right
-//                        g.drawLine( 2, bottom - 1,
-//                                right, bottom - 1 );              // bottom
-                        g.setColor(ModernMetalTheme.PRIMARY6);
-                        g.fillRect(1, tabRect.height - 2, tabRect.width - 1, 5);
-                    }
-                    else {
-                        g.drawLine( right - 2, 6, right - 6, 2 );     // slant
-                        g.drawLine( right - 2, 6,
-                                right - 2, bottom - 1);           // right
-                        if ( lastInRun ) {
-                            // last tab in run
-                            g.drawLine( right - 6, 2, 2, 2 );         // top
-                            g.drawLine( 2, 2, 2, bottom - 1 );        // left
-                            g.drawLine( right - 2, bottom - 1,
-                                    2, bottom - 1 );              // bottom
-                        }
-                        else {
-                            g.drawLine( right - 6, 2, 1, 2 );         // top
-                            g.drawLine( 1, 2, 1, bottom - 1 );        // left
-                            g.drawLine( right - 2, bottom - 1,
-                                    1, bottom - 1 );              // bottom
-                        }
-                    }
-            }
-            g.translate( -tabRect.x, -tabRect.y );
-        }
+//        if ( tabPane.hasFocus() && isSelected ) {
+//            Rectangle tabRect = rects[tabIndex];
+//            boolean lastInRun = isLastInRun( tabIndex );
+//            g.setColor( focus );
+//            g.translate( tabRect.x, tabRect.y );
+//            int right = tabRect.width - 1;
+//            int bottom = tabRect.height - 1;
+//            boolean leftToRight = MetalUtils.isLeftToRight(tabPane);
+//            switch ( tabPlacement ) {
+//                case RIGHT:
+//                    g.drawLine( right - 6,2 , right - 2,6 );         // slant
+//                    g.drawLine( 1,2 , right - 6,2 );                 // top
+//                    g.drawLine( right - 2,6 , right - 2,bottom );    // right
+//                    g.drawLine( 1,2 , 1,bottom );                    // left
+//                    g.drawLine( 1,bottom , right - 2,bottom );       // bottom
+//                    break;
+//                case BOTTOM:
+//                    if ( leftToRight ) {
+//                        g.drawLine( 2, bottom - 6, 6, bottom - 2 );   // slant
+//                        g.drawLine( 6, bottom - 2,
+//                                right, bottom - 2 );              // bottom
+//                        g.drawLine( 2, 0, 2, bottom - 6 );            // left
+//                        g.drawLine( 2, 0, right, 0 );                 // top
+//                        g.drawLine( right, 0, right, bottom - 2 );    // right
+//                    } else {
+//                        g.drawLine( right - 2, bottom - 6,
+//                                right - 6, bottom - 2 );          // slant
+//                        g.drawLine( right - 2, 0,
+//                                right - 2, bottom - 6 );          // right
+//                        if ( lastInRun ) {
+//                            // last tab in run
+//                            g.drawLine( 2, bottom - 2,
+//                                    right - 6, bottom - 2 );      // bottom
+//                            g.drawLine( 2, 0, right - 2, 0 );         // top
+//                            g.drawLine( 2, 0, 2, bottom - 2 );        // left
+//                        } else {
+//                            g.drawLine( 1, bottom - 2,
+//                                    right - 6, bottom - 2 );      // bottom
+//                            g.drawLine( 1, 0, right - 2, 0 );         // top
+//                            g.drawLine( 1, 0, 1, bottom - 2 );        // left
+//                        }
+//                    }
+//                    break;
+//                case LEFT:
+//                    g.drawLine( 2, 6, 6, 2 );                         // slant
+//                    g.drawLine( 2, 6, 2, bottom - 1);                 // left
+//                    g.drawLine( 6, 2, right, 2 );                     // top
+//                    g.drawLine( right, 2, right, bottom - 1 );        // right
+//                    g.drawLine( 2, bottom - 1,
+//                            right, bottom - 1 );                  // bottom
+//                    break;
+//                case TOP:
+//                default:
+//                    if ( leftToRight ) {
+////                        g.drawLine( 2, 6, 6, 2 );                     // slant
+////                        g.drawLine( 2, 2, 2, bottom - 1);             // left
+////                        g.drawLine( 2, 2, right, 2 );                 // top
+////                        g.drawLine( right, 2, right, bottom - 1 );    // right
+////                        g.drawLine( 2, bottom - 1,
+////                                right, bottom - 1 );              // bottom
+//                        g.setColor(ModernMetalTheme.PRIMARY6);
+//                        g.fillRect(1, tabRect.height - 2, tabRect.width - 1, 5);
+//                    }
+//                    else {
+//                        g.drawLine( right - 2, 6, right - 6, 2 );     // slant
+//                        g.drawLine( right - 2, 6,
+//                                right - 2, bottom - 1);           // right
+//                        if ( lastInRun ) {
+//                            // last tab in run
+//                            g.drawLine( right - 6, 2, 2, 2 );         // top
+//                            g.drawLine( 2, 2, 2, bottom - 1 );        // left
+//                            g.drawLine( right - 2, bottom - 1,
+//                                    2, bottom - 1 );              // bottom
+//                        }
+//                        else {
+//                            g.drawLine( right - 6, 2, 1, 2 );         // top
+//                            g.drawLine( 1, 2, 1, bottom - 1 );        // left
+//                            g.drawLine( right - 2, bottom - 1,
+//                                    1, bottom - 1 );              // bottom
+//                        }
+//                    }
+//            }
+//            g.translate( -tabRect.x, -tabRect.y );
+//        }
     }
 
     protected void paintContentBorderTopEdge( Graphics g, int tabPlacement,
