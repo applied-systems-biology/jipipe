@@ -22,7 +22,6 @@ import org.hkijena.jipipe.ui.grapheditor.JIPipeNodeUI;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -30,10 +29,10 @@ import java.util.stream.Collectors;
 public class DeleteNodeUIContextAction implements NodeUIContextAction {
     @Override
     public boolean matches(Set<JIPipeNodeUI> selection) {
-        if(selection.isEmpty())
+        if (selection.isEmpty())
             return false;
         for (JIPipeNodeUI ui : selection) {
-            if(ui.getNode().getCategory() == JIPipeNodeCategory.Internal)
+            if (ui.getNode().getCategory() == JIPipeNodeCategory.Internal)
                 return false;
         }
         return true;

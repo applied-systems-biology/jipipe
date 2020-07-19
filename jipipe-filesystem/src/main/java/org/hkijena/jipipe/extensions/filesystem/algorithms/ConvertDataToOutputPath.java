@@ -19,13 +19,8 @@ import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.algorithm.*;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
-import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FolderData;
-import org.hkijena.jipipe.extensions.filesystem.dataypes.PathData;
 
-import java.io.IOException;
-import java.nio.file.Files;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 

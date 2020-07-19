@@ -137,7 +137,7 @@ public class GraphEditorUISettings implements JIPipeParameterCollection {
     public void setDrawOutsideEdges(boolean drawOutsideEdges) {
         this.drawOutsideEdges = drawOutsideEdges;
     }
-    
+
 
     public static GraphEditorUISettings getInstance() {
         return JIPipeDefaultRegistry.getInstance().getSettingsRegistry().getSettings(ID, GraphEditorUISettings.class);

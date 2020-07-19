@@ -650,7 +650,7 @@ public class JIPipeGraph implements JIPipeValidatable {
         for (Map.Entry<String, JsonNode> kv : ImmutableList.copyOf(node.get("nodes").fields())) {
             if (!algorithms.containsKey(kv.getKey())) {
                 String id = kv.getValue().get("jipipe:node-info-id").asText();
-                if(!JIPipeNodeRegistry.getInstance().hasNodeInfoWithId(id)) {
+                if (!JIPipeNodeRegistry.getInstance().hasNodeInfoWithId(id)) {
                     System.err.println("Unable to find node with ID '" + id + "'. Skipping.");
                     continue;
                 }

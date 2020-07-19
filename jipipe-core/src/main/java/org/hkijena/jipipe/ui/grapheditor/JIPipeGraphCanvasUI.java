@@ -39,6 +39,7 @@ import org.hkijena.jipipe.utils.ScreenImageSVG;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jfree.graphics2d.svg.SVGGraphics2D;
 
+import javax.swing.FocusManager;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.dnd.DropTarget;
@@ -105,15 +106,15 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
         KeyboardFocusManager focusManager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
         focusManager.addKeyEventDispatcher(e -> {
             KeyStroke keyStroke = KeyStroke.getKeyStrokeForEvent(e);
-            if(this.isDisplayable() && FocusManager.getCurrentManager().getFocusOwner() == this) {
+            if (this.isDisplayable() && FocusManager.getCurrentManager().getFocusOwner() == this) {
                 for (NodeUIContextAction contextAction : contextActions) {
-                    if(contextAction == null)
+                    if (contextAction == null)
                         continue;
-                    if(!contextAction.matches(selection))
+                    if (!contextAction.matches(selection))
                         continue;
                     if (contextAction.getKeyboardShortcut() != null && Objects.equals(contextAction.getKeyboardShortcut(), keyStroke)) {
                         Point mousePosition = this.getMousePosition(true);
-                        if(mousePosition != null) {
+                        if (mousePosition != null) {
                             setGraphEditCursor(mousePosition);
                         }
                         getWorkbench().sendStatusBarText("Executed: " + contextAction.getName());
@@ -347,13 +348,12 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
         Set<JIPipeNodeUI> result = new HashSet<>();
         if (viewMode == JIPipeGraphViewMode.Vertical) {
             for (JIPipeNodeUI ui : nodeUIs.values()) {
-                if(ui.getY() >= y)
+                if (ui.getY() >= y)
                     result.add(ui);
             }
-        }
-        else {
+        } else {
             for (JIPipeNodeUI ui : nodeUIs.values()) {
-                if(ui.getX() >= x)
+                if (ui.getX() >= x)
                     result.add(ui);
             }
         }
@@ -382,28 +382,26 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
                 // Move all other algorithms
                 int minDistance = Integer.MAX_VALUE;
                 for (JIPipeNodeUI ui : nodesAfter) {
-                    if(ui == targetAlgorithmUI || ui == sourceAlgorithmUI)
+                    if (ui == targetAlgorithmUI || ui == sourceAlgorithmUI)
                         continue;
                     minDistance = Math.min(minDistance, ui.getX() - sourceAlgorithmUI.getRightX());
                 }
-                if(minDistance > 0 && minDistance != Integer.MAX_VALUE) {
-                    int translateX = targetAlgorithmUI.getWidth() +  viewMode.getGridWidth() * 4 - minDistance;
+                if (minDistance > 0 && minDistance != Integer.MAX_VALUE) {
+                    int translateX = targetAlgorithmUI.getWidth() + viewMode.getGridWidth() * 4 - minDistance;
                     boolean success = true;
                     for (JIPipeNodeUI ui : nodesAfter) {
-                        if(ui == targetAlgorithmUI || ui == sourceAlgorithmUI)
+                        if (ui == targetAlgorithmUI || ui == sourceAlgorithmUI)
                             continue;
-                        success &= ui.trySetLocationAtNextGridPoint(ui.getX()+ translateX, ui.getY() );
+                        success &= ui.trySetLocationAtNextGridPoint(ui.getX() + translateX, ui.getY());
                     }
-                    if(success) {
+                    if (success) {
                         if (!targetAlgorithmUI.trySetLocationNoGrid(x, y)) {
                             autoPlaceCloseToCursor(targetAlgorithmUI);
                         }
-                    }
-                    else {
+                    } else {
                         autoPlaceCloseToCursor(targetAlgorithmUI);
                     }
-                }
-                else {
+                } else {
                     autoPlaceCloseToCursor(targetAlgorithmUI);
                 }
             }
@@ -415,22 +413,21 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
                 // Move all other algorithms
                 int minDistance = Integer.MAX_VALUE;
                 for (JIPipeNodeUI ui : nodesAfter) {
-                    if(ui == targetAlgorithmUI || ui == sourceAlgorithmUI)
+                    if (ui == targetAlgorithmUI || ui == sourceAlgorithmUI)
                         continue;
                     minDistance = Math.min(minDistance, ui.getY() - sourceAlgorithmUI.getBottomY());
                 }
-                if(minDistance > 0 && minDistance != Integer.MAX_VALUE) {
-                    int translateY = targetAlgorithmUI.getHeight() +  viewMode.getGridHeight() * 2 - minDistance;
+                if (minDistance > 0 && minDistance != Integer.MAX_VALUE) {
+                    int translateY = targetAlgorithmUI.getHeight() + viewMode.getGridHeight() * 2 - minDistance;
                     for (JIPipeNodeUI ui : nodesAfter) {
-                        if(ui == targetAlgorithmUI || ui == sourceAlgorithmUI)
+                        if (ui == targetAlgorithmUI || ui == sourceAlgorithmUI)
                             continue;
                         ui.setLocationAtNextGridPoint(ui.getX(), ui.getY() + translateY);
                     }
                     if (!targetAlgorithmUI.trySetLocationNoGrid(x, y)) {
                         autoPlaceCloseToCursor(targetAlgorithmUI);
                     }
-                }
-                else {
+                } else {
                     autoPlaceCloseToCursor(targetAlgorithmUI);
                 }
             }
@@ -567,11 +564,10 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
             item.setToolTipText(action.getDescription());
             if (matches) {
                 item.addActionListener(e -> action.run(this, ImmutableSet.copyOf(selection)));
-                if(action.getKeyboardShortcut() != null) {
+                if (action.getKeyboardShortcut() != null) {
                     item.setAccelerator(action.getKeyboardShortcut());
                 }
-            }
-            else
+            } else
                 item.setEnabled(false);
             menu.add(item);
         }

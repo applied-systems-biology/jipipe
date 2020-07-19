@@ -26,7 +26,6 @@ import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.imageio.ImageIO;
-import javax.sound.midi.Soundbank;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
@@ -97,9 +96,8 @@ public class JIPipeInfoUI extends JIPipeProjectWorkbenchPanel {
                     if (value != null) {
                         ((JIPipeProjectWindow) getProjectWorkbench().getWindow()).openProject(value);
                     }
-                }
-                else {
-                    if(recentProjectsList.getMousePosition().x > recentProjectsList.getWidth() - 50) {
+                } else {
+                    if (recentProjectsList.getMousePosition().x > recentProjectsList.getWidth() - 50) {
                         Path value = recentProjectsList.getSelectedValue();
                         if (value != null) {
                             ((JIPipeProjectWindow) getProjectWorkbench().getWindow()).openProject(value);

@@ -17,7 +17,7 @@ import ij.ImagePlus;
 import loci.common.Region;
 import loci.formats.FormatException;
 import loci.plugins.BF;
-import loci.plugins.in.*;
+import loci.plugins.in.ImporterOptions;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
@@ -35,7 +35,6 @@ import org.hkijena.jipipe.utils.ResourceUtils;
 
 import java.awt.*;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -144,7 +143,7 @@ public class BioFormatsImporter extends JIPipeSimpleIteratingAlgorithm {
     @Override
     public void reportValidity(JIPipeValidityReport report) {
         super.reportValidity(report);
-        if(titleAnnotation.isEnabled())
+        if (titleAnnotation.isEnabled())
             report.forCategory("Title annotation").checkNonEmpty(getTitleAnnotation().getContent(), null);
     }
 

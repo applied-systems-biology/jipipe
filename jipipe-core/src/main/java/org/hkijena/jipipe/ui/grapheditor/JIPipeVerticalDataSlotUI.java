@@ -69,7 +69,7 @@ public class JIPipeVerticalDataSlotUI extends JIPipeDataSlotUI {
             } else {
                 assignButton.setIcon(UIUtils.getIconFromResources("chevron-bottom.png"));
             }
-            if(noSaveLabel != null) {
+            if (noSaveLabel != null) {
                 if (getSlot().getNode() instanceof JIPipeAlgorithm) {
                     noSaveLabel.setVisible(!((JIPipeAlgorithm) getSlot().getNode()).isSaveOutputs());
                 } else {
@@ -112,9 +112,9 @@ public class JIPipeVerticalDataSlotUI extends JIPipeDataSlotUI {
         centerPanel.add(nameLabel);
         centerPanel.add(Box.createHorizontalGlue());
 
-        if(getSlot().isOutput() && getSlot().getNode() instanceof JIPipeAlgorithm) {
+        if (getSlot().isOutput() && getSlot().getNode() instanceof JIPipeAlgorithm) {
             noSaveLabel = new JLabel(UIUtils.getIconFromResources("no-save.png"));
-            noSaveLabel.setBorder(BorderFactory.createEmptyBorder(3,3,3,3));
+            noSaveLabel.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
             centerPanel.add(noSaveLabel);
         }
 
@@ -159,7 +159,7 @@ public class JIPipeVerticalDataSlotUI extends JIPipeDataSlotUI {
 
     @Subscribe
     public void onNodeParameterChanged(ParameterChangedEvent event) {
-        if(event.getSource() == getSlot().getNode() && "jipipe:algorithm:save-outputs".equals(event.getKey())) {
+        if (event.getSource() == getSlot().getNode() && "jipipe:algorithm:save-outputs".equals(event.getKey())) {
             reloadButtonStatus();
         }
     }

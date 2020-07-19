@@ -18,10 +18,20 @@ import java.util.function.Supplier;
 public class MergeAnnotations extends JIPipeIteratingAlgorithm {
     /**
      * Creates a new instance
+     *
      * @param info the info
      */
     public MergeAnnotations(JIPipeNodeInfo info) {
         super(info, new JIPipeIOSlotConfiguration());
+    }
+
+    /**
+     * Creates a copy
+     *
+     * @param other the original
+     */
+    public MergeAnnotations(MergeAnnotations other) {
+        super(other);
     }
 
     @Override
@@ -30,14 +40,6 @@ public class MergeAnnotations extends JIPipeIteratingAlgorithm {
             JIPipeDataSlot outputSlot = getOutputSlot(inputSlot.getName());
             dataBatch.addOutputData(outputSlot, dataBatch.getInputData(inputSlot, JIPipeData.class));
         }
-    }
-
-    /**
-     * Creates a copy
-     * @param other the original
-     */
-    public MergeAnnotations(MergeAnnotations other) {
-        super(other);
     }
 
     @Override

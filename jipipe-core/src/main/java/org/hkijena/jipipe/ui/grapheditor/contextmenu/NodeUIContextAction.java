@@ -78,7 +78,10 @@ public interface NodeUIContextAction {
 
     /**
      * Returns an optional keyboard shortcut. Can be null
+     *
      * @return Keyboard shortcut or null
      */
-    default KeyStroke getKeyboardShortcut() { return null; }
+    default KeyStroke getKeyboardShortcut() {
+        return null;
+    }
 }

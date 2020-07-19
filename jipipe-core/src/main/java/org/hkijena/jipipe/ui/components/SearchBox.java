@@ -22,7 +22,6 @@ import org.jdesktop.swingx.JXTextField;
 import javax.swing.*;
 import javax.swing.event.*;
 import java.awt.*;
-import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -36,10 +35,10 @@ import java.util.List;
  */
 public class SearchBox<T> extends JPanel {
 
+    private final EventBus eventBus = new EventBus();
     private RankingFunction<T> rankingFunction;
     private FilteringModel<T> filteringModel;
     private JComboBox<T> comboBox = new JComboBox<>();
-    private final EventBus eventBus = new EventBus();
 
     /**
      * Creates a new instance

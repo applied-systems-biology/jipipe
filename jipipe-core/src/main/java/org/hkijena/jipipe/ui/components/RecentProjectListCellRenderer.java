@@ -1,6 +1,5 @@
 package org.hkijena.jipipe.ui.components;
 
-import com.google.common.html.HtmlEscapers;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -63,7 +62,7 @@ public class RecentProjectListCellRenderer extends JPanel implements ListCellRen
                 gridx = 2;
                 gridy = 0;
                 gridheight = 2;
-                insets = new Insets(0, 4,0,0);
+                insets = new Insets(0, 4, 0, 0);
             }
         });
     }

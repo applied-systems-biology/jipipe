@@ -40,6 +40,7 @@ import org.jfree.graphics2d.svg.SVGGraphics2D;
 import org.jfree.graphics2d.svg.SVGUtils;
 
 import javax.imageio.ImageIO;
+import javax.swing.FocusManager;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -97,21 +98,18 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         KeyboardFocusManager focusManager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
         focusManager.addKeyEventDispatcher(e -> {
             KeyStroke keyStroke = KeyStroke.getKeyStrokeForEvent(e);
-            if (this.isDisplayable() && FocusManager.getCurrentManager().getFocusOwner() == canvasUI ) {
-                if(Objects.equals(keyStroke, KEY_STROKE_UNDO)) {
+            if (this.isDisplayable() && FocusManager.getCurrentManager().getFocusOwner() == canvasUI) {
+                if (Objects.equals(keyStroke, KEY_STROKE_UNDO)) {
                     undo();
                     return true;
-                }
-                else if(Objects.equals(keyStroke, KEY_STROKE_REDO)) {
+                } else if (Objects.equals(keyStroke, KEY_STROKE_REDO)) {
                     redo();
                     return true;
-                }
-                else if(Objects.equals(keyStroke, KEY_STROKE_AUTO_LAYOUT)) {
+                } else if (Objects.equals(keyStroke, KEY_STROKE_AUTO_LAYOUT)) {
                     getWorkbench().sendStatusBarText("Auto-layout");
                     canvasUI.autoLayoutAll();
                     return true;
-                }
-                else if(Objects.equals(keyStroke, KEY_STROKE_NAVIGATE)) {
+                } else if (Objects.equals(keyStroke, KEY_STROKE_NAVIGATE)) {
                     navigator.requestFocusInWindow();
                     return true;
                 }
@@ -164,6 +162,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
 
     /**
      * Triggered when the user selected something in the navigator
+     *
      * @param event the event
      */
     @Subscribe
@@ -298,10 +297,9 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
     private void redo() {
         int scrollX = scrollPane.getHorizontalScrollBar().getValue();
         int scrollY = scrollPane.getVerticalScrollBar().getValue();
-        if(canvasUI.getGraphHistory().redo()) {
+        if (canvasUI.getGraphHistory().redo()) {
             getWorkbench().sendStatusBarText("Redo successful");
-        }
-        else {
+        } else {
             getWorkbench().sendStatusBarText("Redo unsuccessful");
         }
         SwingUtilities.invokeLater(() -> {
@@ -313,10 +311,9 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
     private void undo() {
         int scrollX = scrollPane.getHorizontalScrollBar().getValue();
         int scrollY = scrollPane.getVerticalScrollBar().getValue();
-        if(canvasUI.getGraphHistory().undo()) {
+        if (canvasUI.getGraphHistory().undo()) {
             getWorkbench().sendStatusBarText("Undo successful");
-        }
-        else {
+        } else {
             getWorkbench().sendStatusBarText("Undo unsuccessful");
         }
         SwingUtilities.invokeLater(() -> {

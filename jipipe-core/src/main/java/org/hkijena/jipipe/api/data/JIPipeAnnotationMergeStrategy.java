@@ -18,30 +18,28 @@ public enum JIPipeAnnotationMergeStrategy {
 
     /**
      * Merges the new annotation value into the existing one according to the strategy
+     *
      * @param existingValue the existing value
-     * @param newValue the value to be merged
+     * @param newValue      the value to be merged
      * @return the merged result
      */
     public String merge(String existingValue, String newValue) {
-        if(this == SkipExisting) {
-            if(!StringUtils.isNullOrEmpty(existingValue))
+        if (this == SkipExisting) {
+            if (!StringUtils.isNullOrEmpty(existingValue))
                 return existingValue;
             else
                 return newValue;
-        }
-        else if(this == OverwriteExisting) {
+        } else if (this == OverwriteExisting) {
             return newValue;
-        }
-        else {
+        } else {
             List<String> components = Arrays.asList(extractMergedAnnotations(existingValue));
-            if(!components.contains(newValue))
+            if (!components.contains(newValue))
                 components.add(newValue);
-            if(components.isEmpty())
+            if (components.isEmpty())
                 return "";
-            else if(components.size() == 1) {
+            else if (components.size() == 1) {
                 return components.get(0);
-            }
-            else {
+            } else {
                 try {
                     return JsonUtils.getObjectMapper().writeValueAsString(components);
                 } catch (JsonProcessingException e) {
@@ -53,20 +51,20 @@ public enum JIPipeAnnotationMergeStrategy {
 
     /**
      * Extracts merged annotations
+     *
      * @param merged the annotation value
      * @return the components
      */
     public static String[] extractMergedAnnotations(String merged) {
-        if(StringUtils.isNullOrEmpty(merged))
+        if (StringUtils.isNullOrEmpty(merged))
             return new String[0];
-        if(merged.contains("[") && merged.contains("]")) {
+        if (merged.contains("[") && merged.contains("]")) {
             try {
                 return JsonUtils.getObjectMapper().readerFor(String[].class).readValue(merged);
             } catch (IOException e) {
                 return new String[]{merged};
             }
-        }
-        else {
+        } else {
             return new String[]{merged};
         }
     }

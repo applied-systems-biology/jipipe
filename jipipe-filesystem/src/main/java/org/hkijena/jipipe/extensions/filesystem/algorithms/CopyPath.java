@@ -20,13 +20,13 @@ import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.algorithm.*;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.filesystem.dataypes.FolderData;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.PathData;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.nio.file.*;
-import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.FileVisitOption;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -85,7 +85,7 @@ public class CopyPath extends JIPipeIteratingAlgorithm {
             if (Files.isDirectory(input)) {
                 // Input is a directory
                 if (Files.isDirectory(destination)) {
-                    if(appendDirectoryNameToTarget) {
+                    if (appendDirectoryNameToTarget) {
                         destination = destination.resolve(input.getFileName());
                         Files.createDirectories(destination);
                     }
@@ -93,19 +93,19 @@ public class CopyPath extends JIPipeIteratingAlgorithm {
                     throw new IOException("Destination is a file!");
                 } else {
                     Files.createDirectories(destination);
-                    if(appendDirectoryNameToTarget) {
+                    if (appendDirectoryNameToTarget) {
                         destination = destination.resolve(input.getFileName());
                         Files.createDirectories(destination);
                     }
                 }
                 for (Path source : Files.walk(input, FileVisitOption.FOLLOW_LINKS).collect(Collectors.toList())) {
-                    if(Files.isDirectory(source))
+                    if (Files.isDirectory(source))
                         continue;
                     Path targetPath = destination.resolve(input.relativize(source));
-                    if(!Files.exists(targetPath.getParent())) {
+                    if (!Files.exists(targetPath.getParent())) {
                         Files.createDirectories(targetPath.getParent());
                     }
-                    if(Files.exists(targetPath)) {
+                    if (Files.exists(targetPath)) {
                         Files.delete(targetPath);
                     }
                     algorithmProgress.accept(subProgress.resolve(String.format("Copying '%s' to '%s'", source, targetPath)));
@@ -132,8 +132,7 @@ public class CopyPath extends JIPipeIteratingAlgorithm {
                             "The path '" + input + "' does not exist.",
                             "Please check if the path is correct.");
             }
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             if (!skipInvalid)
                 throw new UserFriendlyRuntimeException(e,
                         "Error while copying.",

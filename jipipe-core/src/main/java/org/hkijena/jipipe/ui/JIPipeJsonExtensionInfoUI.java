@@ -14,7 +14,6 @@
 package org.hkijena.jipipe.ui;
 
 import com.google.common.eventbus.Subscribe;
-import com.google.common.html.HtmlEscapers;
 import ij.IJ;
 import org.hkijena.jipipe.api.events.ParameterChangedEvent;
 import org.hkijena.jipipe.extensions.settings.ProjectsSettings;
@@ -95,9 +94,8 @@ public class JIPipeJsonExtensionInfoUI extends JIPipeJsonExtensionWorkbenchPanel
                     if (value != null) {
                         ((JIPipeProjectWindow) getExtensionWorkbenchUI().getWindow()).openProject(value);
                     }
-                }
-                else {
-                    if(recentProjectsList.getMousePosition().x > recentProjectsList.getWidth() - 50) {
+                } else {
+                    if (recentProjectsList.getMousePosition().x > recentProjectsList.getWidth() - 50) {
                         Path value = recentProjectsList.getSelectedValue();
                         if (value != null) {
                             ((JIPipeProjectWindow) getExtensionWorkbenchUI().getWindow()).openProject(value);

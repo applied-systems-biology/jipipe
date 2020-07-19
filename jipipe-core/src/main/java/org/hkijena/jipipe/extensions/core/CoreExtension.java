@@ -1,7 +1,6 @@
 package org.hkijena.jipipe.extensions.core;
 
 import org.hkijena.jipipe.JIPipeJavaExtension;
-import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringList;

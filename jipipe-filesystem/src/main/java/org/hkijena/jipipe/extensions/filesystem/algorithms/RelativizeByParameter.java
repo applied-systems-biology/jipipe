@@ -20,9 +20,6 @@ import org.hkijena.jipipe.api.algorithm.*;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FolderData;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.PathData;
-import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
-import org.hkijena.jipipe.utils.ResourceUtils;
-import org.hkijena.jipipe.utils.StringUtils;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -65,7 +62,7 @@ public class RelativizeByParameter extends JIPipeSimpleIteratingAlgorithm {
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         FolderData inputFolder = dataBatch.getInputData(getFirstInputSlot(), FolderData.class);
-        if(parentPath == null || parentPath.toString().isEmpty())
+        if (parentPath == null || parentPath.toString().isEmpty())
             dataBatch.addOutputData(getFirstOutputSlot(), inputFolder);
         else
             dataBatch.addOutputData(getFirstOutputSlot(), new PathData(parentPath.relativize(inputFolder.getPath())));

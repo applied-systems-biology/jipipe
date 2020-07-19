@@ -21,13 +21,9 @@ import org.hkijena.jipipe.api.algorithm.*;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
-import org.hkijena.jipipe.api.data.JIPipeSlotConfiguration;
-import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
 import org.hkijena.jipipe.extensions.imagejdatatypes.ImageJDataTypesExtension;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 
-import java.util.HashSet;
-import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -47,11 +43,11 @@ public class ImageTypeConverter extends JIPipeAlgorithm {
      */
     public ImageTypeConverter(JIPipeNodeInfo info) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder()
-        .addInputSlot("Input", ImagePlusData.class)
-        .restrictOutputTo(ImageJDataTypesExtension.IMAGE_TYPES)
-        .restrictOutputSlotCount(1)
-        .sealInput()
-        .build());
+                .addInputSlot("Input", ImagePlusData.class)
+                .restrictOutputTo(ImageJDataTypesExtension.IMAGE_TYPES)
+                .restrictOutputSlotCount(1)
+                .sealInput()
+                .build());
     }
 
     /**

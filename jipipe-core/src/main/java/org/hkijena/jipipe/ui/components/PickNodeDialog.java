@@ -38,8 +38,8 @@ public class PickNodeDialog extends JDialog {
     private boolean canceled = true;
 
     /**
-     * @param parent     parent window
-     * @param nodes the available algorithms
+     * @param parent      parent window
+     * @param nodes       the available algorithms
      * @param preSelected selected node
      */
     public PickNodeDialog(Window parent, Set<JIPipeGraphNode> nodes, JIPipeGraphNode preSelected) {
@@ -129,15 +129,14 @@ public class PickNodeDialog extends JDialog {
         int index = 0;
         for (JIPipeGraphNode type : available) {
             listModel.addElement(type);
-            if(type == selectedNode)
+            if (type == selectedNode)
                 selectedIndex = index;
             ++index;
         }
         nodeJList.setModel(listModel);
-        if(selectedIndex >= 0) {
+        if (selectedIndex >= 0) {
             nodeJList.setSelectedIndex(selectedIndex);
-        }
-        else {
+        } else {
             if (!listModel.isEmpty()) {
                 nodeJList.setSelectedIndex(0);
             }
@@ -155,10 +154,10 @@ public class PickNodeDialog extends JDialog {
     /**
      * Shows a dialog for selecting an algorithm
      *
-     * @param parent     parent component
-     * @param algorithms available algorithms
+     * @param parent      parent component
+     * @param algorithms  available algorithms
      * @param preSelected optionally pre-selected node
-     * @param title      the dialog title
+     * @param title       the dialog title
      * @return the selected  algorithm or null of none was selected
      */
     public static JIPipeGraphNode showDialog(Component parent, Set<JIPipeGraphNode> algorithms, JIPipeGraphNode preSelected, String title) {

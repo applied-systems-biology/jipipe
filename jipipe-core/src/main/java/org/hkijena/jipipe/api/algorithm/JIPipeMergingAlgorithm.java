@@ -13,10 +13,7 @@
 
 package org.hkijena.jipipe.api.algorithm;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Multimap;
 import com.google.common.eventbus.EventBus;
 import gnu.trove.iterator.TIntIterator;
 import gnu.trove.set.TIntSet;
@@ -33,7 +30,6 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterVisibility;
 import org.hkijena.jipipe.extensions.parameters.predicates.StringPredicate;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
-import org.hkijena.jipipe.utils.JsonUtils;
 import org.hkijena.jipipe.utils.ResourceUtils;
 
 import java.util.*;
@@ -41,7 +37,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 /**
  * An {@link JIPipeAlgorithm} that applies a similar algorithm to {@link JIPipeIteratingAlgorithm}, but does create {@link JIPipeMergingDataBatch} instead.

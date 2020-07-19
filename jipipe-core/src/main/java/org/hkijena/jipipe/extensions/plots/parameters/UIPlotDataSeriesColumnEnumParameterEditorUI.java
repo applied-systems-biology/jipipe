@@ -51,7 +51,7 @@ public class UIPlotDataSeriesColumnEnumParameterEditorUI extends JIPipeParameter
     @Override
     public void reload() {
         DynamicEnumParameter parameter = getParameter(DynamicEnumParameter.class);
-        if(!Objects.equals(parameter.getValue(), comboBox.getSelectedItem()))
+        if (!Objects.equals(parameter.getValue(), comboBox.getSelectedItem()))
             comboBox.setSelectedItem(parameter.getValue());
     }
 

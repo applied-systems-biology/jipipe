@@ -17,22 +17,13 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.algorithm.*;
-import org.hkijena.jipipe.api.data.*;
-import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.filesystem.dataypes.FolderData;
+import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.PathData;
-import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
-import org.hkijena.jipipe.utils.ResourceUtils;
-import org.hkijena.jipipe.utils.StringUtils;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -54,13 +45,17 @@ public class ExportData extends JIPipeIteratingAlgorithm {
                 .build());
     }
 
+    public ExportData(ExportData other) {
+        super(other);
+    }
+
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         Path basePath = dataBatch.getInputData("Path", PathData.class).getPath();
         Path outputFolder = basePath.getParent();
         String name = basePath.getFileName().toString();
 
-        if(!Files.exists(outputFolder)) {
+        if (!Files.exists(outputFolder)) {
             try {
                 Files.createDirectories(outputFolder);
             } catch (IOException e) {
@@ -69,10 +64,6 @@ public class ExportData extends JIPipeIteratingAlgorithm {
         }
 
         dataBatch.getInputData("Data", JIPipeData.class).saveTo(outputFolder, name, true);
-    }
-
-    public ExportData(ExportData other) {
-        super(other);
     }
 }
 

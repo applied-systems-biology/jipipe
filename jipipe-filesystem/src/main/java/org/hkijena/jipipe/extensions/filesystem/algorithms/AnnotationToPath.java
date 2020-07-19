@@ -20,19 +20,14 @@ import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.algorithm.*;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.PathData;
 import org.hkijena.jipipe.extensions.parameters.predicates.StringPredicate;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
-import org.hkijena.jipipe.extensions.tables.datatypes.AnnotationTableData;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -70,12 +65,12 @@ public class AnnotationToPath extends JIPipeSimpleIteratingAlgorithm {
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         String matchedColumn = dataBatch.getAnnotations().keySet().stream().filter(annotationColumn).findFirst().orElse(null);
-        if(StringUtils.isNullOrEmpty(matchedColumn)) {
+        if (StringUtils.isNullOrEmpty(matchedColumn)) {
             dataBatch.addOutputData(getFirstOutputSlot(), new PathData(Paths.get("")));
             return;
         }
         JIPipeAnnotation annotation = dataBatch.getAnnotationOfType(matchedColumn);
-        if(annotation == null) {
+        if (annotation == null) {
             dataBatch.addOutputData(getFirstOutputSlot(), new PathData(Paths.get("")));
             return;
         }

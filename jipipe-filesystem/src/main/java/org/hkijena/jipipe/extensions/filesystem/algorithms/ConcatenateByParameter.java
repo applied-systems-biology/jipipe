@@ -20,8 +20,6 @@ import org.hkijena.jipipe.api.algorithm.*;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FolderData;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.PathData;
-import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
-import org.hkijena.jipipe.utils.ResourceUtils;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;

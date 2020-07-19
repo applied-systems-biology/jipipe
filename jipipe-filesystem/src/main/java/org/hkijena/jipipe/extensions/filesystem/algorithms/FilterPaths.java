@@ -82,7 +82,7 @@ public class FilterPaths extends JIPipeSimpleIteratingAlgorithm {
         PathData inputData = dataBatch.getInputData(getFirstInputSlot(), PathData.class);
         JIPipeDataSlot firstOutputSlot = getFirstOutputSlot();
         Path inputPath = inputData.getPath();
-        if(!canOutput(inputPath))
+        if (!canOutput(inputPath))
             return;
         if (filterOnlyNames)
             inputPath = inputPath.getFileName();
@@ -116,13 +116,11 @@ public class FilterPaths extends JIPipeSimpleIteratingAlgorithm {
     }
 
     private boolean canOutput(Path data) {
-        if(Files.isDirectory(data)) {
+        if (Files.isDirectory(data)) {
             return outputFolders;
-        }
-        else if(Files.exists(data)) {
+        } else if (Files.exists(data)) {
             return outputFiles;
-        }
-        else {
+        } else {
             return outputNonExisting;
         }
     }
