@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.ui.ijupdater;
 
 import com.google.common.eventbus.Subscribe;
+import ij.IJ;
 import net.imagej.ui.swing.updater.ImageJUpdater;
 import net.imagej.updater.Conflicts;
 import net.imagej.updater.FileObject;
@@ -28,6 +29,7 @@ import org.hkijena.jipipe.ui.events.RunUIWorkerInterruptedEvent;
 import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.scijava.app.App;
 import org.scijava.util.AppUtils;
 
 import javax.swing.*;
@@ -59,6 +61,7 @@ public class JIPipeImageJPluginManager extends JIPipeWorkbenchPanel {
     private ManagerUI managerUI;
     private RefreshRepositoryRun refreshRepositoryRun;
     private ActivateUpdateSiteRun activateUpdateSiteRun;
+    private ApplyRun applyRun;
     private FilesCollection currentFilesCollection;
     private Set<String> updateSitesToActivate = new HashSet<>();
 
@@ -88,6 +91,12 @@ public class JIPipeImageJPluginManager extends JIPipeWorkbenchPanel {
         refreshButton.addActionListener(e -> refreshUpdater());
         toolBar.add(refreshButton);
 
+        toolBar.addSeparator();
+
+        JButton applyButton = new JButton("Apply changes", UIUtils.getIconFromResources("check-circle-green.png"));
+        applyButton.addActionListener(e -> applyChanges());
+        toolBar.add(applyButton);
+
         add(toolBar, BorderLayout.NORTH);
 
         JPanel upgraderPanel = new JPanel(new BorderLayout());
@@ -114,7 +123,15 @@ public class JIPipeImageJPluginManager extends JIPipeWorkbenchPanel {
         });
         add(splitPane, BorderLayout.CENTER);
     }
-    
+
+    private void applyChanges() {
+        final ResolveDependencies resolver = new ResolveDependencies(getWorkbench().getWindow(), currentFilesCollection);
+        if (!resolver.resolve())
+            return;
+        applyRun = new ApplyRun(currentFilesCollection);
+        enqueueRun(applyRun);
+    }
+
     private void enqueueRun(JIPipeRunnable runnable) {
         JIPipeRunExecuterUI executerUI = new JIPipeRunExecuterUI(runnable);
         managerUI.setOptionPanelContent(executerUI);
@@ -183,6 +200,14 @@ public class JIPipeImageJPluginManager extends JIPipeWorkbenchPanel {
             messagePanel.addMessage(MessagePanel.MessageType.Error, "There was an error during the update.", null);
             getWorkbench().sendStatusBarText("Could not refresh ImageJ plugin information from online resources");
         }
+        else if(event.getRun() == activateUpdateSiteRun) {
+            messagePanel.addMessage(MessagePanel.MessageType.Error, "There was an error during activation of update sites.", null);
+            getWorkbench().sendStatusBarText("Could not activate update sites");
+        }
+        else if(event.getRun() == applyRun) {
+            messagePanel.addMessage(MessagePanel.MessageType.Error, "There was an error during installation.", null);
+            getWorkbench().sendStatusBarText("Could not apply changes");
+        }
     }
 
     @Subscribe
@@ -198,6 +223,13 @@ public class JIPipeImageJPluginManager extends JIPipeWorkbenchPanel {
             }
         }
         else if(event.getRun() == activateUpdateSiteRun) {
+            getWorkbench().sendStatusBarText("Activated update sites");
+            showCurrentFilesCollection();
+        }
+        else if(event.getRun() == applyRun) {
+            JButton exitButton = new JButton("Close ImageJ");
+            exitButton.addActionListener(e -> System.exit(0));
+            messagePanel.addMessage(MessagePanel.MessageType.Info, "Changes were successfully applied. Please restart ImageJ.", exitButton);
             showCurrentFilesCollection();
         }
     }

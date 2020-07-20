@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.ui.ijupdater;
 
 import net.imagej.ui.swing.updater.ViewOptions;
+import net.imagej.updater.FileObject;
 import net.imagej.updater.FilesCollection;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
@@ -29,6 +30,8 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.util.HashSet;
+import java.util.Set;
 
 public class ManagerUI extends JIPipeWorkbenchPanel {
 
@@ -61,6 +64,7 @@ public class ManagerUI extends JIPipeWorkbenchPanel {
         table = new JXTable(new DefaultTableModel());
         table.setRowFilter(new SearchTextFieldTableRowFilter(searchTextField));
         table.setRowHeight(25);
+        table.getSelectionModel().addListSelectionListener(e -> showSelectedRows(table.getSelectedRows()));
         CustomScrollPane scrollPane = new CustomScrollPane(table);
         tablePanel.add(scrollPane, BorderLayout.CENTER);
         tablePanel.add(table.getTableHeader(), BorderLayout.NORTH);
@@ -81,6 +85,31 @@ public class ManagerUI extends JIPipeWorkbenchPanel {
         add(splitPane, BorderLayout.CENTER);
     }
 
+    private void showSelectedRows(int[] viewRows) {
+        if(pluginManager.isCurrentlyRunning())
+            return;
+        if(table.getModel() instanceof FileTableModel) {
+            int[] modelRows = new int[viewRows.length];
+            for (int i = 0; i < viewRows.length; i++) {
+                modelRows[i] = table.convertRowIndexToModel(viewRows[i]);
+            }
+
+            if (modelRows.length == 1) {
+                FileObject selected = ((FileTableModel) table.getModel()).rowToFile.get(modelRows[0]);
+                SingleFileSelectionPanel panel = new SingleFileSelectionPanel(getWorkbench(), this, selected);
+                setOptionPanelContent(panel);
+            }
+            else if(modelRows.length > 1) {
+                Set<FileObject> selected = new HashSet<>();
+                for (int row : modelRows) {
+                    selected.add( ((FileTableModel) table.getModel()).rowToFile.get(row));
+                }
+                MultiFileSelectionPanel panel = new MultiFileSelectionPanel(getWorkbench(), this, selected);
+                setOptionPanelContent(panel);
+            }
+        }
+    }
+
     private void initializeToolbar(JToolBar toolBar) {
         searchTextField = new SearchTextField();
         searchTextField.addActionListener(e -> refreshTable());
@@ -96,6 +125,12 @@ public class ManagerUI extends JIPipeWorkbenchPanel {
         addViewOptionButton(toolBar, viewOptionGroup, ViewOptions.Option.CHANGES, UIUtils.getIconFromResources("wrench.png"));
         addViewOptionButton(toolBar, viewOptionGroup, ViewOptions.Option.UPTODATE, UIUtils.getIconFromResources("checkbox-green.png"));
         addViewOptionButton(toolBar, viewOptionGroup, ViewOptions.Option.UPDATEABLE, UIUtils.getIconFromResources("checkbox-orange.png"));
+    }
+
+    public void fireFileChanged(final FileObject file) {
+        if(table.getModel() instanceof FileTableModel) {
+            ((FileTableModel) table.getModel()).fireFileChanged(file);
+        }
     }
 
     private void addViewOptionButton(JToolBar toolBar, ButtonGroup viewOptionGroup, ViewOptions.Option option, Icon icon) {
