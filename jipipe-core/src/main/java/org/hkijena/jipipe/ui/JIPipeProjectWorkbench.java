@@ -36,6 +36,7 @@ import org.hkijena.jipipe.ui.extension.MenuTarget;
 import org.hkijena.jipipe.ui.extensionbuilder.JIPipeJsonExporter;
 import org.hkijena.jipipe.ui.extensions.JIPipePluginManagerUIPanel;
 import org.hkijena.jipipe.ui.extensions.JIPipePluginValidityCheckerPanel;
+import org.hkijena.jipipe.ui.ijupdater.JIPipeImageJPluginManager;
 import org.hkijena.jipipe.ui.running.JIPipeRunSettingsUI;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueueUI;
 import org.hkijena.jipipe.ui.settings.JIPipeApplicationSettingsUI;
@@ -372,6 +373,10 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
         managePluginsButton.addActionListener(e -> managePlugins());
         pluginsMenu.add(managePluginsButton);
 
+        JMenuItem manageImageJPlugins = new JMenuItem("Manage ImageJ plugins", UIUtils.getIconFromResources("imagej.png"));
+        manageImageJPlugins.addActionListener(e -> manageImageJPlugins());
+        pluginsMenu.add(manageImageJPlugins);
+
         UIUtils.installMenuExtension(this, compartmentMenu, MenuTarget.ProjectPluginsMenu, true);
 
         menu.add(pluginsMenu);
@@ -438,6 +443,22 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
         menu.add(helpMenu);
 
         add(menu, BorderLayout.NORTH);
+    }
+
+    private void manageImageJPlugins() {
+        List<DocumentTabPane.DocumentTab> tabs = getDocumentTabPane().getTabsContaining(JIPipeImageJPluginManager.class);
+        if(!tabs.isEmpty()) {
+            getDocumentTabPane().switchToContent(tabs.get(0).getContent());
+        }
+        else {
+            JIPipeImageJPluginManager pluginManager = new JIPipeImageJPluginManager(this);
+            getDocumentTabPane().addTab("Manage ImageJ plugins",
+                    UIUtils.getIconFromResources("imagej.png"),
+                    pluginManager,
+                    DocumentTabPane.CloseMode.withSilentCloseButton,
+                    false);
+            getDocumentTabPane().switchToLastTab();
+        }
     }
 
     private void openCacheBrowser() {

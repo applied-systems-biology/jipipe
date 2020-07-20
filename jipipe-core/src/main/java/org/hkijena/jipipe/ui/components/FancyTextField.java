@@ -83,4 +83,13 @@ public class FancyTextField extends JPanel {
             }
         });
     }
+
+    public void styleText(boolean monospace, boolean italic, boolean bold) {
+        int style = Font.PLAIN;
+        if(italic)
+            style |= Font.ITALIC;
+        if(bold)
+            style |= Font.BOLD;
+        textField.setFont(new Font(monospace ? Font.MONOSPACED : Font.DIALOG, style, 12));
+    }
 }

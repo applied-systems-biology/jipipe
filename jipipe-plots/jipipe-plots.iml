@@ -119,9 +119,6 @@
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.scala-lang:scala-library:2.12.1" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.scala-lang:scala-reflect:2.12.1" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.scala-lang.modules:scala-xml_2.12:1.0.6" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: net.imagej:imagej-ui-swing:0.22.0" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: org.jhotdraw:jhotdraw:7.6.0" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: net.imagej:imagej-ui-awt:0.3.1" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.scijava:scijava-io-http:0.2.0" level="project" />
     <orderEntry type="library" name="Maven: com.squareup.okhttp3:okhttp:3.6.0" level="project" />
     <orderEntry type="library" name="Maven: com.squareup.okio:okio:1.11.0" level="project" />
@@ -148,6 +145,10 @@
     <orderEntry type="library" name="Maven: org.scijava:swing-checkbox-tree:1.0.2" level="project" />
     <orderEntry type="library" name="Maven: net.sourceforge.jdatepicker:jdatepicker:1.3.2" level="project" />
     <orderEntry type="library" name="Maven: org.javassist:javassist:3.25.0-GA" level="project" />
+    <orderEntry type="library" name="Maven: net.imagej:imagej-ui-swing:0.22.0" level="project" />
+    <orderEntry type="library" name="Maven: com.miglayout:miglayout:swing:3.7.4" level="project" />
+    <orderEntry type="library" name="Maven: org.jhotdraw:jhotdraw:7.6.0" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: net.imagej:imagej-ui-awt:0.3.1" level="project" />
     <orderEntry type="library" name="Maven: sc.fiji:Feature_Detection:2.0.2" level="project" />
     <orderEntry type="library" name="Maven: sc.fiji:legacy-imglib1:1.1.9" level="project" />
     <orderEntry type="library" name="Maven: edu.mines:mines-jtk:20151125" level="project" />
@@ -244,7 +245,6 @@
     <orderEntry type="library" name="Maven: com.fifesoft:languagesupport:3.0.0" level="project" />
     <orderEntry type="library" name="Maven: com.fifesoft:autocomplete:3.0.0" level="project" />
     <orderEntry type="library" name="Maven: org.mozilla:rhino:1.7.6" level="project" />
-    <orderEntry type="library" name="Maven: com.miglayout:miglayout:swing:3.7.4" level="project" />
     <orderEntry type="library" name="Maven: org.scijava:batch-processor:0.4.1" level="project" />
     <orderEntry type="library" name="Maven: commons-io:commons-io:2.6" level="project" />
     <orderEntry type="library" name="Maven: org.reflections:reflections:0.9.12" level="project" />

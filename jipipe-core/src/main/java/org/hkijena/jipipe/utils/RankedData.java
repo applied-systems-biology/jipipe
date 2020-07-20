@@ -13,6 +13,12 @@
 
 package org.hkijena.jipipe.utils;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
+
 public class RankedData<T> implements Comparable<RankedData<T>> {
     private final T data;
     private final int[] rank;
@@ -39,6 +45,36 @@ public class RankedData<T> implements Comparable<RankedData<T>> {
                 return compare;
         }
         return 0;
+    }
+
+    /**
+     * Creates a list of sorted ranked data
+     * @param data the data
+     * @param rankingFunction the ranking function
+     * @param searchStrings the search terms. If null or empty, all data gets an empty rank
+     * @param <T> the data type
+     * @return ranked data, sorted according to the rank
+     */
+    public static <T> List<T> getSortedAndFilteredData(Collection<T> data, RankingFunction<T> rankingFunction, String[] searchStrings) {
+        int maxRankLength = 0;
+
+        if (searchStrings == null || searchStrings.length == 0) {
+            return new ArrayList<>(data);
+        } else {
+            List<RankedData<T>> rankedData = new ArrayList<>();
+            for (T item : data) {
+                int[] rank = rankingFunction.rank(item, searchStrings);
+                if (rank != null) {
+                    rankedData.add(new RankedData<>(item, rank));
+                    maxRankLength = Math.max(maxRankLength, rank.length);
+                }
+            }
+            // Sort according to rank
+            if (maxRankLength > 0) {
+                rankedData.sort(Comparator.naturalOrder());
+            }
+            return rankedData.stream().map(RankedData::getData).collect(Collectors.toList());
+        }
     }
 
     public T getData() {

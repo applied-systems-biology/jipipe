@@ -62,8 +62,9 @@ public class JIPipeRunnerQueueUI extends JPanel {
         runningQueuePanel = new JPanel();
         runningQueuePanel.setOpaque(false);
         runningQueuePanel.setLayout(new BoxLayout(runningQueuePanel, BoxLayout.X_AXIS));
-        runningQueuePanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEtchedBorder(),
-                BorderFactory.createEmptyBorder(5, 15, 5, 15)));
+        runningQueuePanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1),
+                BorderFactory.createCompoundBorder(new RoundedLineBorder(ModernMetalTheme.MEDIUM_GRAY, 1, 2),
+                        BorderFactory.createEmptyBorder(5, 15, 5, 15))));
         runningQueueProgress = new JProgressBar();
         runningQueuePanel.add(runningQueueProgress);
         JButton cancelButton = new JButton(UIUtils.getIconFromResources("remove.png"));
