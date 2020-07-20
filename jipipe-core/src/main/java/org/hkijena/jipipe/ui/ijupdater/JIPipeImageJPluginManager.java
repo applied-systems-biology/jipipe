@@ -88,7 +88,15 @@ public class JIPipeImageJPluginManager extends JIPipeWorkbenchPanel {
         toolBar.add(openLegacyUpdaterButton);
 
         JButton refreshButton = new JButton("Reset", UIUtils.getIconFromResources("clear-brush.png"));
-        refreshButton.addActionListener(e -> refreshUpdater());
+        refreshButton.addActionListener(e -> {
+            if(isCurrentlyRunning()) {
+                JOptionPane.showMessageDialog(this,
+                        "There is already an operation running. Please wait until it is finished.",
+                        "Reset", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            refreshUpdater();
+        });
         toolBar.add(refreshButton);
 
         toolBar.addSeparator();
@@ -125,6 +133,12 @@ public class JIPipeImageJPluginManager extends JIPipeWorkbenchPanel {
     }
 
     private void applyChanges() {
+        if(isCurrentlyRunning()) {
+            JOptionPane.showMessageDialog(this,
+                    "There is already an operation running. Please wait until it is finished.",
+                    "Apply changes", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
         final ResolveDependencies resolver = new ResolveDependencies(getWorkbench().getWindow(), currentFilesCollection);
         if (!resolver.resolve())
             return;
