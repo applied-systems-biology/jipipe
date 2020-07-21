@@ -112,7 +112,7 @@ public class FormPanel extends JXPanel {
         super.setOpaque(isOpaque);
     }
 
-    public JPanel getContentPanel() {
+    public JXPanel getContentPanel() {
         return contentPanel;
     }
 

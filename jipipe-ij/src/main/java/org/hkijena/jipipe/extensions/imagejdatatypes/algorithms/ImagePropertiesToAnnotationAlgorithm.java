@@ -169,7 +169,7 @@ public class ImagePropertiesToAnnotationAlgorithm extends JIPipeSimpleIteratingA
     @JIPipeDocumentation(name = "Annotate with title", description = "If enabled, an annotation with provided name is created. The annotation " +
             "contains the ImageJ image name.")
     @JIPipeParameter("title-annotation")
-    @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/annotation.png")
+    @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/annotation.png")
     public OptionalStringParameter getTitleAnnotation() {
         return titleAnnotation;
     }
@@ -182,7 +182,7 @@ public class ImagePropertiesToAnnotationAlgorithm extends JIPipeSimpleIteratingA
     @JIPipeDocumentation(name = "Annotate with image width", description = "If enabled, an annotation with provided name is created. The annotation " +
             "contains image width.")
     @JIPipeParameter(value = "width-annotation")
-    @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/annotation.png")
+    @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/annotation.png")
     public OptionalStringParameter getWidthAnnotation() {
         return widthAnnotation;
     }
@@ -195,7 +195,7 @@ public class ImagePropertiesToAnnotationAlgorithm extends JIPipeSimpleIteratingA
     @JIPipeDocumentation(name = "Annotate with image height", description = "If enabled, an annotation with provided name is created. The annotation " +
             "contains image height.")
     @JIPipeParameter("height-annotation")
-    @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/annotation.png")
+    @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/annotation.png")
     public OptionalStringParameter getHeightAnnotation() {
         return heightAnnotation;
     }
@@ -208,7 +208,7 @@ public class ImagePropertiesToAnnotationAlgorithm extends JIPipeSimpleIteratingA
     @JIPipeDocumentation(name = "Annotate with stack size (Z)", description = "If enabled, an annotation with provided name is created. The annotation " +
             "contains the image stack size (number of Z slices).")
     @JIPipeParameter(value = "stack-size-annotation", uiOrder = 100)
-    @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/annotation.png")
+    @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/annotation.png")
     public OptionalStringParameter getStackSizeAnnotation() {
         return stackSizeAnnotation;
     }
@@ -221,7 +221,7 @@ public class ImagePropertiesToAnnotationAlgorithm extends JIPipeSimpleIteratingA
     @JIPipeDocumentation(name = "Annotate with channel size (C)", description = "If enabled, an annotation with provided name is created. The annotation " +
             "contains the composite image channel size (number of C slices). Please note that is is different from the pixel channels like RGB.")
     @JIPipeParameter(value = "channel-size-annotation", uiOrder = 101)
-    @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/annotation.png")
+    @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/annotation.png")
     public OptionalStringParameter getChannelSizeAnnotation() {
         return channelSizeAnnotation;
     }
@@ -234,7 +234,7 @@ public class ImagePropertiesToAnnotationAlgorithm extends JIPipeSimpleIteratingA
     @JIPipeDocumentation(name = "Annotate with number of frames (T)", description = "If enabled, an annotation with provided name is created. The annotation " +
             "contains the number of frames (number of T slices).")
     @JIPipeParameter(value = "frames-size-annotation", uiOrder = 102)
-    @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/annotation.png")
+    @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/annotation.png")
     public OptionalStringParameter getFramesSizeAnnotation() {
         return framesSizeAnnotation;
     }
@@ -247,7 +247,7 @@ public class ImagePropertiesToAnnotationAlgorithm extends JIPipeSimpleIteratingA
     @JIPipeDocumentation(name = "Annotate with image type", description = "If enabled, an annotation with provided name is created. The annotation " +
             "contains one of the following values: GRAY8, GRAY16, GRAY32, COLOR_256, COLOR_RGB, or UNKNOWN")
     @JIPipeParameter("image-type-annotation")
-    @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/annotation.png")
+    @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/annotation.png")
     public OptionalStringParameter getImageTypeAnnotation() {
         return imageTypeAnnotation;
     }
@@ -260,7 +260,7 @@ public class ImagePropertiesToAnnotationAlgorithm extends JIPipeSimpleIteratingA
     @JIPipeDocumentation(name = "Annotate with bit depth", description = "If enabled, an annotation with provided name is created. The annotation " +
             "contains one of the following values: 0, 8, 16, 24 or 32")
     @JIPipeParameter("image-bit-depth-annotation")
-    @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/annotation.png")
+    @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/annotation.png")
     public OptionalStringParameter getBitDepthAnnotation() {
         return bitDepthAnnotation;
     }
@@ -274,7 +274,7 @@ public class ImagePropertiesToAnnotationAlgorithm extends JIPipeSimpleIteratingA
             "contains the number of 2D image planes (also referred as 'Stack size'). Please note that this value might be different from the number " +
             "of Z slices. This number is size(Z) * size(C) * size(T).")
     @JIPipeParameter("image-plane-number-annotation")
-    @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/annotation.png")
+    @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/annotation.png")
     public OptionalStringParameter getPlaneNumberAnnotation() {
         return planeNumberAnnotation;
     }

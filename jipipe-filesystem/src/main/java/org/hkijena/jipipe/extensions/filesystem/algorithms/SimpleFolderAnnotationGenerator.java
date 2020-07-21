@@ -78,7 +78,7 @@ public class SimpleFolderAnnotationGenerator extends JIPipeSimpleIteratingAlgori
      */
     @JIPipeDocumentation(name = "Generated annotation", description = "Select which annotation type is generated for each folder")
     @JIPipeParameter("generated-annotation")
-    @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/annotation.png")
+    @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/annotation.png")
     public String getGeneratedAnnotation() {
         return generatedAnnotation;
     }

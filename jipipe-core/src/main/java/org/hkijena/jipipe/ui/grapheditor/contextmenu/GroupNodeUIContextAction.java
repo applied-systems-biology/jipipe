@@ -63,4 +63,9 @@ public class GroupNodeUIContextAction implements NodeUIContextAction {
     public boolean isShowingInOverhang() {
         return false;
     }
+
+    @Override
+    public boolean disableOnNonMatch() {
+        return false;
+    }
 }

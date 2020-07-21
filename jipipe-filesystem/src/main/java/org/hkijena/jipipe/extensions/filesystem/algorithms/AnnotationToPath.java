@@ -82,7 +82,7 @@ public class AnnotationToPath extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @JIPipeDocumentation(name = "Annotation column", description = "The annotation column that contains the paths")
-    @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/annotation.png")
+    @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/annotation.png")
     @JIPipeParameter("annotation-column")
     public StringPredicate getAnnotationColumn() {
         return annotationColumn;

@@ -257,7 +257,7 @@ public class ParameterPanel extends FormPanel implements Contextual {
         StringBuilder markdownString = new StringBuilder();
         markdownString.append("# Parameter '").append(access.getName()).append("'\n\n");
         markdownString.append("<table><tr>");
-        markdownString.append("<td><img src=\"").append(ResourceUtils.getPluginResource("icons/algorithms/dialog-xml-editor.png")).append("\" /></td>");
+        markdownString.append("<td><img src=\"").append(ResourceUtils.getPluginResource("icons/actions/dialog-xml-editor.png")).append("\" /></td>");
         markdownString.append("<td><strong>Unique identifier</strong>: <code>");
         markdownString.append(HtmlEscapers.htmlEscaper().escape(access.getKey())).append("</code></td></tr>\n\n");
 

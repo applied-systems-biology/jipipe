@@ -10,12 +10,12 @@ algorithm input and allows you to repeatedly run the algorithm with different pa
 ## Creating a quick run
 
 To create a quick run for an algorithm, open the algorithm settings, and select *Testbench* on
-the right-hand side. Then click ![](image://icons/run.png) *Create* to create a new instance.
+the right-hand side. Then click ![](image://icons/actions/run-build.png) *Create* to create a new instance.
 
 ## Testing parameters
 
 You can change algorithm parameters within the quick run UI on the left-hand side.
-To run the algorithm, click ![](image://icons/run.png) *Add test*. This will run 
+To run the algorithm, click ![](image://icons/actions/run-build.png) *Add test*. This will run 
 the algorithm and add a new *snapshot* in the selection box.
 
 You can go back to previous parameters and their results by selecting them in

@@ -90,7 +90,7 @@ public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
 
     @JIPipeDocumentation(name = "Title annotation", description = "Optional annotation type where the image title is written.")
     @JIPipeParameter("title-annotation")
-    @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/annotation.png")
+    @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/annotation.png")
     public OptionalStringParameter getTitleAnnotation() {
         return titleAnnotation;
     }

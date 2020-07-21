@@ -145,7 +145,7 @@ public class ListFiles extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeDocumentation(name = "Subfolder", description = "Optional. If non-empty, all files are extracted from the provided sub-folder. " +
             "The sub-folder navigation is applied before recursive search (if 'Recursive' is enabled).")
     @JIPipeParameter("subfolder")
-    @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/folder.png")
+    @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/folder-open.png")
     public String getSubFolder() {
         return subFolder;
     }

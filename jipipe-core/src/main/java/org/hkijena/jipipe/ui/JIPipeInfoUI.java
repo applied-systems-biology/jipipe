@@ -195,7 +195,7 @@ public class JIPipeInfoUI extends JIPipeProjectWorkbenchPanel {
         toolBar.add(openSourceCodeButton);
         toolBar.add(Box.createHorizontalStrut(4));
 
-        JButton reportIssueButton = new JButton("Report issue", UIUtils.getIconFromResources("algorithms/bug.png"));
+        JButton reportIssueButton = new JButton("Report issue", UIUtils.getIconFromResources("actions/bug.png"));
         reportIssueButton.setToolTipText("https://github.com/applied-systems-biology/jipipe/issues");
         reportIssueButton.addActionListener(e -> UIUtils.openWebsite("https://github.com/applied-systems-biology/jipipe/issues"));
         reportIssueButton.setOpaque(false);

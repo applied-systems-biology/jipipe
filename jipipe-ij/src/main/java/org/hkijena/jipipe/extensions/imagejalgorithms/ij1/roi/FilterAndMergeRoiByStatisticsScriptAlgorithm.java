@@ -87,7 +87,7 @@ public class FilterAndMergeRoiByStatisticsScriptAlgorithm extends ImageRoiProces
     }
 
     @JIPipeDocumentation(name = "Load example", description = "Loads example parameters that showcase how to use this algorithm.")
-    @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/algorithms/graduation-cap.png")
+    @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/graduation-cap.png")
     public void setToExample(JIPipeWorkbench parent) {
         if (JOptionPane.showConfirmDialog(parent.getWindow(),
                 "This will reset most of the properties. Continue?",

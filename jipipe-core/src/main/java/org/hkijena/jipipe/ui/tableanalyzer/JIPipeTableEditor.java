@@ -33,7 +33,9 @@ import org.hkijena.jipipe.utils.BusyCursor;
 import org.hkijena.jipipe.utils.CustomScrollPane;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.jdesktop.swingx.JXPanel;
 import org.jdesktop.swingx.JXTable;
+import org.jdesktop.swingx.ScrollableSizeHint;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -127,6 +129,10 @@ public class JIPipeTableEditor extends JIPipeWorkbenchPanel {
         // Create palette
         palettePanel = new FormPanel(MarkdownDocument.fromPluginResource("documentation/table-analyzer.md"),
                 FormPanel.WITH_SCROLLING);
+        JXPanel contentPanel = palettePanel.getContentPanel();
+        // This is needed for our flow layout
+        contentPanel.setScrollableWidthHint(ScrollableSizeHint.HORIZONTAL_STRETCH);
+        contentPanel.setScrollableHeightHint(ScrollableSizeHint.VERTICAL_STRETCH);
 
         addPaletteGroup("Rows", UIUtils.getIconFromResources("actions/stock_select-row.png"));
         addActionToPalette("Add",

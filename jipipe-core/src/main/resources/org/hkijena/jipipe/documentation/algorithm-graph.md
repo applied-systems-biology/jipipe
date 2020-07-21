@@ -10,7 +10,7 @@ Click the area to select the node. If you hold `Shift` while clicking, you can s
 You can right-click the graph area or a node to open the context menu. Alternatively, you will also find context 
 actions at the top-right corner after selecting one or multiple nodes.
 
-You will notice a ![](image://icons/target.png) **Cursor** within the graph area that moves to the 
+You will notice a ![](image://icons/actions/target.png) **Cursor** within the graph area that moves to the 
 position where you clicked. New nodes appear at its location.
 
 ## Data slots
@@ -25,13 +25,13 @@ an algorithm node.
 
 ### Connecting data
 
-To connect slots, click the ![](image://icons/chevron-bottom.png) icon to open a menu of
+To connect slots, click the ![](image://icons/emblems/slot-connected-vertical.png) icon to open a menu of
 compatible source or target data slots. On creating a connection, a line will appear between
 the two affected slots to indicate a connection. Alternatively, you can drag a 
 line between the slots with your mouse.
 
-To disconnect two slots, click ![](image://icons/chevron-bottom.png) and select 
-![](image://icons/remove.png) **Disconnect**.
+To disconnect two slots, click ![](image://icons/emblems/slot-connected-vertical.png) and select 
+![](image://icons/actions/cancel.png) **Disconnect**.
 
 The connection type is indicated by its color. <span style="color: #404040">Gray</span> connections 
 are regular edges without any meaning. <span style="color: blue">Blue</span> links indicate that 
@@ -40,7 +40,7 @@ that the data types are incompatible.
 
 ### Modifying slots
 
-Some algorithms allow you to add additional slots. To add another slot, click the ![](image://icons/add.png)
+Some algorithms allow you to add additional slots. To add another slot, click the ![](image://icons/actions/list-add.png)
 **Add** button and select which data type the slot should have. Depending on the algorithm, 
 you can make an output slot inherit the type of an existing input slot.
 

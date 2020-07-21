@@ -122,7 +122,7 @@ public class StackMergerAlgorithm extends JIPipeMergingAlgorithm {
     @JIPipeDocumentation(name = "Slice index annotation",
             description = "Data annotation that is used as reference for ordering the slices. Annotation values are lexicographically sorted.")
     @JIPipeParameter("counter-annotation-type")
-    @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/annotation.png")
+    @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/annotation.png")
     public String getCounterAnnotation() {
         return counterAnnotation;
     }

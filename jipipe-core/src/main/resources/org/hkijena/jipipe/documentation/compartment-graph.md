@@ -14,14 +14,14 @@ an compartment node.
 
 ### Connecting data
 
-To connect slots, click the ![](image://icons/chevron-right.png) icon to open a menu of
+To connect slots, click the ![](image://icons/emblems/slot-connected-vertical.png) icon to open a menu of
 compatible source or target data slots. On creating a connection, a line will appear between
 the two affected slots to indicate a connection.
 
-To disconnect two slots, click ![](image://icons/chevron-right.png) and select 
-the ![](image://icons/remove.png) disconnect command.
+To disconnect two slots, click ![](image://icons/emblems/slot-connected-vertical.png) and select 
+the ![](image://icons/actions/cancel.png) disconnect command.
 
 ### Multiple inputs
 
-Compartments allow multiple inputs. To add another slot, click the ![](image://icons/add.png)
+Compartments allow multiple inputs. To add another slot, click the ![](image://icons/actions/list-add.png)
 add button and select ![](image://icons/data-types/graph-compartment.png) *Output data*.

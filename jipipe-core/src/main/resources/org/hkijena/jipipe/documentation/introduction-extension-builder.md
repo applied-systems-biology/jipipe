@@ -6,8 +6,8 @@ programming.
 On opening the extension builder, you will see three additional tabs:
 
 <table>
-<tr><td><img src="image://icons/wrench.png"/></td><td>Extension settings</td></tr>
-<tr><td><img src="image://icons/module.png"/></td><td>Extension contents</td></tr>
+<tr><td><img src="image://icons/actions/wrench.png"/></td><td>Extension settings</td></tr>
+<tr><td><img src="image://icons/actions/module.png"/></td><td>Extension contents</td></tr>
 </table>
 
 ## Extension settings

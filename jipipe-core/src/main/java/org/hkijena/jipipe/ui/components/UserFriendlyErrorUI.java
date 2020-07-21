@@ -179,7 +179,7 @@ public class UserFriendlyErrorUI extends FormPanel {
             setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4),
                     BorderFactory.createLineBorder(Color.DARK_GRAY, 1, true)));
 
-            String markdown = "<table><tr><td><img src=\"" + ResourceUtils.getPluginResource("icons/error.png") +
+            String markdown = "<table><tr><td><img src=\"" + ResourceUtils.getPluginResource("icons-32/error.png") +
                     "\" /></td><td><strong>" + HtmlEscapers.htmlEscaper().escape(entry.getUserWhat()) + "</strong></td></tr></table>" +
                     "<table>" +
                     "<tr><td><span style=\"color: blue\">Where?</span></td><td>" +

@@ -139,7 +139,7 @@ public class JIPipeMetadata implements JIPipeParameterCollection {
      */
     @JIPipeParameter("website")
     @JsonSetter("website")
-    @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/filetype-html.png")
+    @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/web-browser.png")
     public void setWebsite(String website) {
         this.website = website;
 

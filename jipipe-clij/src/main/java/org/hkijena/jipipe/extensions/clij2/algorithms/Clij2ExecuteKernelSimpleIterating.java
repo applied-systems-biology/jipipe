@@ -94,7 +94,7 @@ public class Clij2ExecuteKernelSimpleIterating extends JIPipeSimpleIteratingAlgo
     }
 
     @JIPipeDocumentation(name = "Load example", description = "Loads example parameters that showcase how to use this algorithm.")
-    @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/algorithms/graduation-cap.png")
+    @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/graduation-cap.png")
     public void setToExample(JIPipeWorkbench parent) {
         if (JOptionPane.showConfirmDialog(parent.getWindow(),
                 "This will reset most of the properties. Continue?",
@@ -247,7 +247,7 @@ public class Clij2ExecuteKernelSimpleIterating extends JIPipeSimpleIteratingAlgo
 
     @JIPipeDocumentation(name = "Kernel program name", description = "The program that should be executed. Might be overwritten by the preprocessing script.")
     @JIPipeParameter("kernel-program-name")
-    @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/algorithms/insert-math-expression.png")
+    @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/insert-math-expression.png")
     public String getKernelFunction() {
         return kernelFunction;
     }

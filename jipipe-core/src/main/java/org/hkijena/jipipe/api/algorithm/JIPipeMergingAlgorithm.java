@@ -403,7 +403,7 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
                 "Determines which annotation columns are referred to group data sets. The filters determine which columns should be included. " +
                 "You can also invert the filters to determine which columns should be excluded.")
         @JIPipeParameter(value = "custom-matched-columns-predicates", uiOrder = 999, visibility = JIPipeParameterVisibility.Visible)
-        @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/annotation.png")
+        @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/annotation.png")
         public StringPredicate.List getCustomColumns() {
             if (customColumns == null)
                 customColumns = new StringPredicate.List();

@@ -207,7 +207,7 @@ public class StackSplitterAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeDocumentation(name = "Generated annotation", description = "An optional annotation that is generated for each output to indicate from which slices the data was generated from. " +
             "The format will be slice=[index0],[index1],...")
     @JIPipeParameter("annotation-type")
-    @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/annotation.png")
+    @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/annotation.png")
     public String getAnnotationType() {
         return annotationType;
     }

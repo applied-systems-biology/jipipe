@@ -117,7 +117,7 @@ public class SplitByAnnotation extends JIPipeAlgorithm {
 
     @JIPipeDocumentation(name = "Annotation", description = "Data is split by this annotation")
     @JIPipeParameter("annotation-type")
-    @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/annotation.png")
+    @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/annotation.png")
     public String getAnnotationType() {
         return annotationType;
     }

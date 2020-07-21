@@ -73,7 +73,7 @@ public class RenameByString extends JIPipeSimpleIteratingAlgorithm {
      */
     @JIPipeParameter("path-name")
     @JIPipeDocumentation(name = "Path name", description = "The file or folder name of the output paths. If empty, no renaming is applied.")
-    @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/algorithms/path.png")
+    @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/path.png")
     public String getPathName() {
         return pathName;
     }

@@ -8,5 +8,5 @@ an algorithm node.
 
 **Output data slots** are located on the right side
 
-Some algorithms allow you to add additional slots. To add another slot, click the ![](image://icons/add.png)
+Some algorithms allow you to add additional slots. To add another slot, click the ![](image://icons/actions/list-add.png)
 add button and select which data type the slot should have.

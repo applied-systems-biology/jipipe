@@ -161,7 +161,7 @@ public class JIPipeAlgorithmCompendiumUI extends JIPipeCompendiumUI<JIPipeNodeIn
     private void generateParameterDocumentation(JIPipeParameterAccess access, StringBuilder builder) {
         builder.append("### ").append(access.getName()).append("\n\n");
         builder.append("<table><tr>");
-        builder.append("<td><img src=\"").append(ResourceUtils.getPluginResource("icons/algorithms/dialog-xml-editor.png")).append("\" /></td>");
+        builder.append("<td><img src=\"").append(ResourceUtils.getPluginResource("icons/actions/dialog-xml-editor.png")).append("\" /></td>");
         builder.append("<td><strong>Unique identifier</strong>: <code>");
         builder.append(HtmlEscapers.htmlEscaper().escape(access.getKey())).append("</code></td></tr>\n\n");
 

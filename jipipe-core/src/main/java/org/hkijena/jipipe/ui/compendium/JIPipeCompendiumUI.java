@@ -92,7 +92,7 @@ public abstract class JIPipeCompendiumUI<T> extends JPanel {
         JButton exportButton = new JButton(UIUtils.getIconFromResources("actions/document-export.png"));
         exportButton.setToolTipText("Export whole compendium");
         JPopupMenu exportMenu = UIUtils.addPopupMenuToComponent(exportButton);
-        JMenuItem saveMarkdown = new JMenuItem("as Markdown (*.md)", UIUtils.getIconFromResources("minetypes/text-markdown.png"));
+        JMenuItem saveMarkdown = new JMenuItem("as Markdown (*.md)", UIUtils.getIconFromResources("mimetypes/text-markdown.png"));
         saveMarkdown.addActionListener(e -> {
             Path selectedPath = FileChooserSettings.saveFile(this, FileChooserSettings.KEY_PROJECT, "Save as Markdown (*.md)", null);
             if (selectedPath != null) {
@@ -124,7 +124,7 @@ public abstract class JIPipeCompendiumUI<T> extends JPanel {
         });
         exportMenu.add(saveHTML);
 
-        JMenuItem savePDF = new JMenuItem("as PDF (*.pdf)", UIUtils.getIconFromResources("minetypes/application-pdf.png"));
+        JMenuItem savePDF = new JMenuItem("as PDF (*.pdf)", UIUtils.getIconFromResources("mimetypes/application-pdf.png"));
         savePDF.addActionListener(e -> {
             Path selectedPath = FileChooserSettings.saveFile(this, FileChooserSettings.KEY_PROJECT, "Save as Portable Document Format (*.pdf)", null);
             if (selectedPath != null) {

@@ -330,7 +330,7 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
 
         projectMenu.addSeparator();
 
-        JMenuItem exitButton = new JMenuItem("Exit", UIUtils.getIconFromResources("actions/exit.png.png"));
+        JMenuItem exitButton = new JMenuItem("Exit", UIUtils.getIconFromResources("actions/exit.png"));
         exitButton.addActionListener(e -> getWindow().dispatchEvent(new WindowEvent(getWindow(), WindowEvent.WINDOW_CLOSING)));
         projectMenu.add(exitButton);
 

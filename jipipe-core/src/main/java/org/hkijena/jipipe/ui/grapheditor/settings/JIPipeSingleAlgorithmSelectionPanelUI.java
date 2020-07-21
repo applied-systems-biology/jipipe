@@ -85,7 +85,7 @@ public class JIPipeSingleAlgorithmSelectionPanelUI extends JIPipeProjectWorkbenc
 
         if (algorithm instanceof JIPipeDataBatchAlgorithm) {
             batchAssistantTabContent = new JPanel(new BorderLayout());
-            tabbedPane.addTab("Data batches", UIUtils.getIconFromResources("algorithms/boxes.png"),
+            tabbedPane.addTab("Data batches", UIUtils.getIconFromResources("actions/package.png"),
                     batchAssistantTabContent,
                     DocumentTabPane.CloseMode.withoutCloseButton,
                     false);

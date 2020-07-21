@@ -75,7 +75,7 @@ public class RemoveAnnotationByType extends JIPipeSimpleIteratingAlgorithm {
 
     @JIPipeDocumentation(name = "Removed annotations", description = "Annotations that match any of the filters are removed.")
     @JIPipeParameter("annotation-type")
-    @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/annotation.png")
+    @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/annotation.png")
     public StringPredicate.List getAnnotationTypes() {
         return annotationTypes;
     }

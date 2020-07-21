@@ -111,7 +111,7 @@ public class StackTo2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @JIPipeDocumentation(name = "Generated annotation", description = "Determines the generated annotation type.")
     @JIPipeParameter("annotation-type")
-    @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/annotation.png")
+    @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/annotation.png")
     public String getAnnotationType() {
         return annotationType;
     }

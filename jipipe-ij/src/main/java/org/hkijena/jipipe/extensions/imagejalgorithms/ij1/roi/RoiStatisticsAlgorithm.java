@@ -113,7 +113,7 @@ public class RoiStatisticsAlgorithm extends ImageRoiProcessorAlgorithm {
     @JIPipeDocumentation(name = "Generated annotation", description = "Optional. The annotation will contain the image slice position that was " +
             "used to generate the statistics.")
     @JIPipeParameter("index-annotation")
-    @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/annotation.png")
+    @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/annotation.png")
     public String getIndexAnnotation() {
         return indexAnnotation;
     }

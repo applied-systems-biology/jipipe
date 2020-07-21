@@ -268,7 +268,7 @@ public class ExportDataByParameter extends JIPipeAlgorithm {
 
     @JIPipeDocumentation(name = "Append data type as", description = "The metadata key that is used to append the data type if enabled. Can be empty.")
     @JIPipeParameter("append-data-type-metadata-key")
-    @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/annotation.png")
+    @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/annotation.png")
     public String getAppendDataTypeMetadataKey() {
         return appendDataTypeMetadataKey;
     }

@@ -314,16 +314,6 @@ public class UIUtils {
     }
 
     /**
-     * Returns an included trait icon from JIPipe resources
-     *
-     * @param iconName relative to the icons/ plugin resource
-     * @return the icon instance
-     */
-    public static URL getAlgorithmIconURL(String iconName) {
-        return ResourceUtils.getPluginResource("icons/algorithms/" + iconName);
-    }
-
-    /**
      * Creates 16x16 a color icon
      *
      * @param color the color
