@@ -57,7 +57,7 @@ public class FormPanel extends JXPanel {
 
     private final EventBus eventBus = new EventBus();
     private int numRows = 0;
-    private JPanel contentPanel = new JPanel();
+    private JXPanel contentPanel = new JXPanel();
     private MarkdownReader parameterHelp;
     private JScrollPane scrollPane;
 
@@ -78,6 +78,8 @@ public class FormPanel extends JXPanel {
 
         setScrollableWidthHint(ScrollableSizeHint.FIT);
         setScrollableHeightHint(ScrollableSizeHint.VERTICAL_STRETCH);
+        contentPanel.setScrollableWidthHint(ScrollableSizeHint.FIT);
+        contentPanel.setScrollableHeightHint(ScrollableSizeHint.VERTICAL_STRETCH);
 
         Component content;
         if ((flags & WITH_SCROLLING) == WITH_SCROLLING) {

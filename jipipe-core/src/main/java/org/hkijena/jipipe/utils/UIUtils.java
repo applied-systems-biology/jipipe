@@ -439,7 +439,7 @@ public class UIUtils {
         dialog.setContentPane(errorUI);
         dialog.setModal(false);
         dialog.pack();
-        dialog.setSize(new Dimension(500, 400));
+        dialog.setSize(new Dimension(800, 600));
         dialog.setLocationRelativeTo(parent);
         dialog.setVisible(true);
     }
@@ -452,14 +452,14 @@ public class UIUtils {
      * @param modal  make the dialog modal
      */
     public static void openValidityReportDialog(Component parent, JIPipeValidityReport report, boolean modal) {
-        JIPipeValidityReportUI ui = new JIPipeValidityReportUI(true);
+        JIPipeValidityReportUI ui = new JIPipeValidityReportUI(false);
         ui.setReport(report);
         JDialog dialog = new JDialog();
         dialog.setTitle("Error");
         dialog.setContentPane(ui);
         dialog.setModal(modal);
         dialog.pack();
-        dialog.setSize(new Dimension(500, 400));
+        dialog.setSize(new Dimension(800, 600));
         dialog.setLocationRelativeTo(parent);
         dialog.setVisible(true);
     }

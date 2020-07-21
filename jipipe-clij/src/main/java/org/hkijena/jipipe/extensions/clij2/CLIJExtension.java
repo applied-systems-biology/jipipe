@@ -1,5 +1,7 @@
 package org.hkijena.jipipe.extensions.clij2;
 
+import net.imagej.updater.UpdateSite;
+import org.hkijena.jipipe.JIPipeImageJUpdateSiteDependency;
 import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
@@ -16,6 +18,9 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.resultanalysis.ImageDataSlo
 import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.plugin.Plugin;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Integrates CLIJ
@@ -41,6 +46,14 @@ public class CLIJExtension extends JIPipePrepackagedDefaultJavaExtension {
     @Override
     public String getDescription() {
         return "Integrates data types and algorithms for GPU computing based on CLIJ2.";
+    }
+
+    @Override
+    public List<JIPipeImageJUpdateSiteDependency> getImageJUpdateSiteDependencies() {
+        return Arrays.asList(
+                new JIPipeImageJUpdateSiteDependency(new UpdateSite("clij", "https://sites.imagej.net/clij/", "", "", "", "", 0)),
+                new JIPipeImageJUpdateSiteDependency(new UpdateSite("clij2", "https://sites.imagej.net/clij2/", "", "", "", "", 0))
+        );
     }
 
     @Override

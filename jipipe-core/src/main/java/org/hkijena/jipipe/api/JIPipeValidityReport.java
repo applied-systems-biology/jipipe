@@ -189,6 +189,20 @@ public class JIPipeValidityReport {
     }
 
     /**
+     * Prints messages to the standard error
+     */
+    public void print() {
+        for (Map.Entry<String, Message> entry : messages.entrySet()) {
+            System.err.println();
+            System.err.println("At " + entry.getKey() + ":");
+            System.err.println("\tWhat: " + entry.getValue().getUserWhat());
+            System.err.println("\tWhy: " + entry.getValue().getUserWhy());
+            System.err.println("\tHow to solve: " + entry.getValue().getUserHow());
+            System.err.println("\tDetails: " + entry.getValue().getDetails());
+        }
+    }
+
+    /**
      * The response type
      */
     public enum Response {

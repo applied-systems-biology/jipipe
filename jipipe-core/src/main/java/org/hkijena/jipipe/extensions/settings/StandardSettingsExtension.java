@@ -56,6 +56,7 @@ public class StandardSettingsExtension extends JIPipePrepackagedDefaultJavaExten
         registerSettingsSheet(GeneralUISettings.ID, "General", "UI", null, new GeneralUISettings());
         registerSettingsSheet(GraphEditorUISettings.ID, "Graph editor", "UI", null, new GraphEditorUISettings());
         registerSettingsSheet(FileChooserSettings.ID, "File chooser", "UI", null, new FileChooserSettings());
+        registerSettingsSheet(ExtensionSettings.ID, "Extensions", "General", null, new ExtensionSettings());
 
         registerEnumParameterType("jipipe:settings:projects:starter-project",
                 ProjectsSettings.StarterProject.class,

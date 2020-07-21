@@ -25,6 +25,7 @@ import org.hkijena.jipipe.api.algorithm.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.compat.SingleImageJAlgorithmRun;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.registries.JIPipeNodeRegistry;
+import org.hkijena.jipipe.extensions.settings.ExtensionSettings;
 import org.hkijena.jipipe.ui.compat.RunSingleAlgorithmDialog;
 import org.hkijena.jipipe.utils.JsonUtils;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -63,7 +64,21 @@ public class JIPipeRunAlgorithmCommand extends DynamicCommand implements Initial
 
     @Override
     public void run() {
-        JIPipeDefaultRegistry.instantiate(getContext());
+        JIPipeRegistryIssues issues = new JIPipeRegistryIssues();
+        ExtensionSettings extensionSettings = ExtensionSettings.getInstanceFromRaw();
+        JIPipeDefaultRegistry.instantiate(getContext(), extensionSettings, issues);
+        if(!extensionSettings.isSilent())
+        {
+            JIPipeValidityReport report = new JIPipeValidityReport();
+            issues.reportValidity(report);
+            if (!report.isValid()) {
+                if (GraphicsEnvironment.isHeadless()) {
+                    report.print();
+                } else {
+                    UIUtils.openValidityReportDialog(null, report, false);
+                }
+            }
+        }
         JIPipeGraphNode algorithm;
         SingleImageJAlgorithmRun settings;
         if (StringUtils.isNullOrEmpty(algorithmId) || StringUtils.isNullOrEmpty(algorithmParameters)) {

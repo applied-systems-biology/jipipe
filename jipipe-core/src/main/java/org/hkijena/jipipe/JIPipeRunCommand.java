@@ -17,8 +17,11 @@ import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.JIPipeRun;
 import org.hkijena.jipipe.api.JIPipeRunSettings;
 import org.hkijena.jipipe.api.JIPipeRunnerStatus;
+import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
+import org.hkijena.jipipe.extensions.settings.ExtensionSettings;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
+import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Context;
 import org.scijava.app.StatusService;
 import org.scijava.command.Command;
@@ -26,6 +29,7 @@ import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.plugin.PluginService;
 
+import java.awt.GraphicsEnvironment;
 import java.io.File;
 import java.io.IOException;
 
@@ -55,7 +59,20 @@ public class JIPipeRunCommand implements Command {
 
     @Override
     public void run() {
-        JIPipeDefaultRegistry.instantiate(context);
+        JIPipeRegistryIssues issues = new JIPipeRegistryIssues();
+        ExtensionSettings extensionSettings = ExtensionSettings.getInstanceFromRaw();
+        JIPipeDefaultRegistry.instantiate(context, extensionSettings, issues);
+        if(!extensionSettings.isSilent()) {
+            JIPipeValidityReport report = new JIPipeValidityReport();
+            issues.reportValidity(report);
+            if (!report.isValid()) {
+                if (GraphicsEnvironment.isHeadless()) {
+                    report.print();
+                } else {
+                    UIUtils.openValidityReportDialog(null, report, false);
+                }
+            }
+        }
         JIPipeProject project;
         try {
             project = JIPipeProject.loadProject(projectFile.toPath());

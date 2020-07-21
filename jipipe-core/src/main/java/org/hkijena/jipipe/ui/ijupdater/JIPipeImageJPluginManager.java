@@ -14,10 +14,8 @@
 package org.hkijena.jipipe.ui.ijupdater;
 
 import com.google.common.eventbus.Subscribe;
-import ij.IJ;
 import net.imagej.ui.swing.updater.ImageJUpdater;
 import net.imagej.updater.Conflicts;
-import net.imagej.updater.FileObject;
 import net.imagej.updater.FilesCollection;
 import net.imagej.updater.UpdateSite;
 import org.hkijena.jipipe.api.JIPipeRunnable;
@@ -29,7 +27,6 @@ import org.hkijena.jipipe.ui.events.RunUIWorkerInterruptedEvent;
 import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.scijava.app.App;
 import org.scijava.util.AppUtils;
 
 import javax.swing.*;
@@ -45,10 +42,8 @@ import java.net.URLConnection;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -64,15 +59,21 @@ public class JIPipeImageJPluginManager extends JIPipeWorkbenchPanel {
     private ApplyRun applyRun;
     private FilesCollection currentFilesCollection;
     private Set<String> updateSitesToActivate = new HashSet<>();
+    private List<UpdateSite> updateSitesToAddAndActivate = new ArrayList<>();
+
+    public JIPipeImageJPluginManager(JIPipeWorkbench workbench) {
+         this(workbench,true);
+    }
 
     /**
      * @param workbench the workbench
      */
-    public JIPipeImageJPluginManager(JIPipeWorkbench workbench) {
+    public JIPipeImageJPluginManager(JIPipeWorkbench workbench, boolean refresh) {
         super(workbench);
         initialize();
         JIPipeRunnerQueue.getInstance().getEventBus().register(this);
-        refreshUpdater();
+        if(refresh)
+            refreshUpdater();
     }
 
     private void initialize() {
@@ -143,6 +144,7 @@ public class JIPipeImageJPluginManager extends JIPipeWorkbenchPanel {
         if (!resolver.resolve())
             return;
         applyRun = new ApplyRun(currentFilesCollection);
+        messagePanel.clear();
         enqueueRun(applyRun);
     }
 
@@ -158,7 +160,7 @@ public class JIPipeImageJPluginManager extends JIPipeWorkbenchPanel {
         updater.run();
     }
 
-    private void refreshUpdater() {
+    public void refreshUpdater() {
         updateSitesToActivate.clear();
         messagePanel.clear();
         if(ImageJUpdater.isDebian()) {
@@ -195,6 +197,14 @@ public class JIPipeImageJPluginManager extends JIPipeWorkbenchPanel {
                 updateConflictsMessage();
             }
         }
+    }
+
+    public List<UpdateSite> getUpdateSitesToAddAndActivate() {
+        return updateSitesToAddAndActivate;
+    }
+
+    public void setUpdateSitesToAddAndActivate(List<UpdateSite> updateSitesToAddAndActivate) {
+        this.updateSitesToAddAndActivate = updateSitesToAddAndActivate;
     }
 
     public static Path getImageJRoot() {
@@ -234,6 +244,35 @@ public class JIPipeImageJPluginManager extends JIPipeWorkbenchPanel {
             }
             else {
                 updateSiteListUI.setFilesCollection(null);
+            }
+            if(!updateSitesToAddAndActivate.isEmpty()) {
+                if(currentFilesCollection != null) {
+                    int activated = 0;
+                    for (UpdateSite updateSite : updateSitesToAddAndActivate) {
+                        // Find equivalent
+                        UpdateSite existing = currentFilesCollection.getUpdateSite(updateSite.getName(), true);
+                        if(existing != null) {
+                            if(!existing.isActive()) {
+                                updateSitesToActivate.add(existing.getName());
+                                ++activated;
+                            }
+                        }
+                        else {
+                            currentFilesCollection.addUpdateSite(updateSite);
+                            updateSitesToActivate.add(updateSite.getName());
+                            ++activated;
+                        }
+                        updateSiteListUI.refreshList();
+
+                        // Trigger activation run
+                        activateStagedUpdateSites();
+                    }
+                    updateSitesToAddAndActivate.clear();
+                    messagePanel.addMessage(MessagePanel.MessageType.Info, "Activated " + activated + " update sites. Click 'Apply changes' to install the files.", null);
+                }
+                else {
+                    messagePanel.addMessage(MessagePanel.MessageType.Error, "Could not activate update sites.", null);
+                }
             }
         }
         else if(event.getRun() == activateUpdateSiteRun) {

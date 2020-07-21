@@ -14,6 +14,7 @@
 package org.hkijena.jipipe;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.JIPipeMetadata;
@@ -22,7 +23,9 @@ import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 
 import java.nio.file.Path;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -57,6 +60,15 @@ public interface JIPipeDependency extends JIPipeParameterCollection, JIPipeValid
      * @return location of the JAR/JSON that defined the dependency
      */
     Path getDependencyLocation();
+
+    /**
+     * List of ImageJ update sites that are dependencies
+     * @return the list of update sites
+     */
+    @JsonSetter("ij:update-sites")
+    default List<JIPipeImageJUpdateSiteDependency> getImageJUpdateSiteDependencies() {
+        return Collections.emptyList();
+    }
 
     @Override
     void reportValidity(JIPipeValidityReport report);
