@@ -76,7 +76,7 @@ public class JIPipeVerticalNodeUI extends JIPipeNodeUI {
 
         nameLabel = new JLabel(getNode().getName());
         nameLabel.setIcon(JIPipeUIAlgorithmRegistry.getInstance().getIconFor(getNode().getInfo()));
-        openSettingsButton = new JButton(UIUtils.getIconFromResources("wrench.png"));
+        openSettingsButton = new JButton(UIUtils.getIconFromResources("actions/wrench.png"));
         UIUtils.makeFlat25x25(openSettingsButton);
         openSettingsButton.setBorder(null);
         openSettingsButton.addActionListener(e -> getEventBus().post(new AlgorithmUIActionRequestedEvent(this, REQUEST_OPEN_CONTEXT_MENU)));
@@ -311,21 +311,21 @@ public class JIPipeVerticalNodeUI extends JIPipeNodeUI {
                 if (!algorithm.isPassThrough()) {
                     setBackground(getFillColor());
                     nameLabel.setForeground(Color.BLACK);
-                    openSettingsButton.setIcon(UIUtils.getIconFromResources("wrench.png"));
+                    openSettingsButton.setIcon(UIUtils.getIconFromResources("actions/wrench.png"));
                 } else {
                     setBackground(Color.WHITE);
                     nameLabel.setForeground(Color.BLACK);
-                    openSettingsButton.setIcon(UIUtils.getIconFromResources("pass-through.png"));
+                    openSettingsButton.setIcon(UIUtils.getIconFromResources("emblems/pass-through.png"));
                 }
             } else {
                 setBackground(new Color(227, 86, 86));
                 nameLabel.setForeground(Color.WHITE);
-                openSettingsButton.setIcon(UIUtils.getIconFromResources("block.png"));
+                openSettingsButton.setIcon(UIUtils.getIconFromResources("emblems/block.png"));
             }
         } else {
             setBackground(getFillColor());
             nameLabel.setForeground(Color.BLACK);
-            openSettingsButton.setIcon(UIUtils.getIconFromResources("wrench.png"));
+            openSettingsButton.setIcon(UIUtils.getIconFromResources("actions/wrench.png"));
         }
     }
 

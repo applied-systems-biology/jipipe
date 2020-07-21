@@ -77,11 +77,11 @@ public class LargeScriptParameterEditorUI extends JIPipeParameterEditorUI {
 
         toolBar.add(Box.createHorizontalGlue());
 
-        JButton undoButton = new JButton("Undo", UIUtils.getIconFromResources("undo.png"));
+        JButton undoButton = new JButton("Undo", UIUtils.getIconFromResources("actions/undo.png"));
         undoButton.addActionListener(e -> textArea.undoLastAction());
         toolBar.add(undoButton);
 
-        JButton redoButton = new JButton("Redo", UIUtils.getIconFromResources("redo.png"));
+        JButton redoButton = new JButton("Redo", UIUtils.getIconFromResources("actions/edit-redo.png"));
         redoButton.addActionListener(e -> textArea.redoLastAction());
         toolBar.add(redoButton);
 

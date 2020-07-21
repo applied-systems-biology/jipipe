@@ -60,7 +60,7 @@ public class JIPipeDataInfoRefParameterEditorUI extends JIPipeParameterEditorUI 
         UIUtils.makeFlat(currentlyDisplayed);
         add(currentlyDisplayed, BorderLayout.CENTER);
 
-        JButton selectButton = new JButton(UIUtils.getIconFromResources("edit.png"));
+        JButton selectButton = new JButton(UIUtils.getIconFromResources("actions/edit.png"));
         UIUtils.makeFlat(selectButton);
         selectButton.setToolTipText("Select data type");
         selectButton.addActionListener(e -> pickTrait());
@@ -92,7 +92,7 @@ public class JIPipeDataInfoRefParameterEditorUI extends JIPipeParameterEditorUI 
                 picker.setSelectedDataTypes(Collections.singleton(info));
         } else {
             currentlyDisplayed.setText("None selected");
-            currentlyDisplayed.setIcon(UIUtils.getIconFromResources("error.png"));
+            currentlyDisplayed.setIcon(UIUtils.getIconFromResources("emblems/vcs-conflicting.png"));
             if (!pickerDialog.isVisible())
                 picker.setSelectedDataTypes(Collections.emptySet());
         }

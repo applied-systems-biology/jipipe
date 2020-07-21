@@ -67,7 +67,7 @@ public class IsolateNodesUIContextAction implements NodeUIContextAction {
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("connect.png");
+        return UIUtils.getIconFromResources("actions/straight-connector.png");
     }
 
     @Override

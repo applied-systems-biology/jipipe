@@ -26,7 +26,7 @@ public class CustomSpinner extends JSpinner {
     private static class ModernSpinnerUI extends BasicSpinnerUI {
         @Override
         protected Component createPreviousButton() {
-            JButton button = new JButton(UIUtils.getIconFromResources("triangle-down.png"));
+            JButton button = new JButton(UIUtils.getIconFromResources("actions/arrow-down.png"));
             button.setBackground(Color.WHITE);
             button.setPreferredSize(new Dimension(21,14));
             button.setBorder(BorderFactory.createEmptyBorder(0,4,0,4));
@@ -36,7 +36,7 @@ public class CustomSpinner extends JSpinner {
 
         @Override
         protected Component createNextButton() {
-            JButton button = new JButton(UIUtils.getIconFromResources("triangle-up.png"));
+            JButton button = new JButton(UIUtils.getIconFromResources("actions/arrow-up.png"));
             button.setBackground(Color.WHITE);
             button.setPreferredSize(new Dimension(21,14));
             button.setBorder(BorderFactory.createEmptyBorder(0,4,0,4));

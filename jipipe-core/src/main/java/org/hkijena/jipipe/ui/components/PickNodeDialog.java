@@ -73,14 +73,14 @@ public class PickNodeDialog extends JDialog {
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
         buttonPanel.add(Box.createHorizontalGlue());
 
-        JButton cancelButton = new JButton("Cancel", UIUtils.getIconFromResources("remove.png"));
+        JButton cancelButton = new JButton("Cancel", UIUtils.getIconFromResources("actions/cancel.png"));
         cancelButton.addActionListener(e -> {
             canceled = true;
             setVisible(false);
         });
         buttonPanel.add(cancelButton);
 
-        confirmButton = new JButton("Pick", UIUtils.getIconFromResources("pick.png"));
+        confirmButton = new JButton("Pick", UIUtils.getIconFromResources("actions/color-select.png"));
         confirmButton.addActionListener(e -> pickAlgorithm());
         confirmButton.addKeyListener(new KeyAdapter() {
             @Override

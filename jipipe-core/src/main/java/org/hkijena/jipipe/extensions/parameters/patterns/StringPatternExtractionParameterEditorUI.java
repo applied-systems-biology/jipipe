@@ -66,17 +66,17 @@ public class StringPatternExtractionParameterEditorUI extends JIPipeParameterEdi
         ButtonGroup group = new ButtonGroup();
         addFilterModeSelection(filter,
                 group,
-                UIUtils.getIconFromResources("pick.png"),
+                UIUtils.getIconFromResources("actions/color-select.png"),
                 StringPatternExtraction.Mode.SplitAndPick,
                 "Split string and picks the n-th component. The first index is zero.");
         addFilterModeSelection(filter,
                 group,
-                UIUtils.getIconFromResources("text2.png"),
+                UIUtils.getIconFromResources("actions/edit-select-text.png"),
                 StringPatternExtraction.Mode.SplitAndFind,
                 "Split string and picks the component that matches the RegEx string.");
         addFilterModeSelection(filter,
                 group,
-                UIUtils.getIconFromResources("regex.png"),
+                UIUtils.getIconFromResources("actions/code-context.png"),
                 StringPatternExtraction.Mode.Regex,
                 "Use a RegEx matcher to extract the pattern. This requires at least one RegEx group defined by a bracket around the expression.");
         revalidate();

@@ -75,7 +75,7 @@ public class JIPipeMergeTablesDialogUI extends JDialog {
 
         buttonPanel.add(Box.createHorizontalGlue());
 
-        JButton calculateButton = new JButton("Merge", UIUtils.getIconFromResources("import.png"));
+        JButton calculateButton = new JButton("Merge", UIUtils.getIconFromResources("actions/document-import.png"));
         calculateButton.addActionListener(e -> calculate());
         buttonPanel.add(calculateButton);
 

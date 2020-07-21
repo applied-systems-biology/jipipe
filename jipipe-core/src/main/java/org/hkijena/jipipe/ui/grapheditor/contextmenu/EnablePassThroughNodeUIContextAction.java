@@ -60,7 +60,7 @@ public class EnablePassThroughNodeUIContextAction implements NodeUIContextAction
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("pass-through.png");
+        return UIUtils.getIconFromResources("emblems/pass-through.png");
     }
 
     @Override

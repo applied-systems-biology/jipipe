@@ -64,25 +64,25 @@ public class ParameterTableEditorUI extends JIPipeParameterEditorUI {
         toolBar.setFloatable(false);
         add(toolBar, BorderLayout.NORTH);
 
-        JButton addButton = new JButton("Add row", UIUtils.getIconFromResources("add.png"));
+        JButton addButton = new JButton("Add row", UIUtils.getIconFromResources("actions/list-add.png"));
         addButton.setToolTipText("Adds a new row to the table. It contains the default values.");
         addButton.addActionListener(e -> addRow());
         toolBar.add(addButton);
 
-        JButton generateButton = new JButton("Generate rows", UIUtils.getIconFromResources("add.png"));
+        JButton generateButton = new JButton("Generate rows", UIUtils.getIconFromResources("actions/list-add.png"));
         generateButton.setToolTipText("Generates new rows and adds them to the table. You can select one column to generate data for.\n" +
                 "The other columns contain default values.");
         generatePopupMenu = UIUtils.addPopupMenuToComponent(generateButton);
         toolBar.add(generateButton);
 
-        JButton replaceButton = new JButton("Replace cells", UIUtils.getIconFromResources("edit.png"));
+        JButton replaceButton = new JButton("Replace cells", UIUtils.getIconFromResources("actions/edit.png"));
         replaceButton.setToolTipText("Replaces the selected cells with generated values. You have to select cells of one specific column.");
         replacePopupMenu = UIUtils.addPopupMenuToComponent(replaceButton);
         toolBar.add(replaceButton);
 
         toolBar.add(Box.createHorizontalGlue());
 
-        JButton removeButton = new JButton(UIUtils.getIconFromResources("delete.png"));
+        JButton removeButton = new JButton(UIUtils.getIconFromResources("actions/delete.png"));
         removeButton.addActionListener(e -> removeSelectedRows());
         toolBar.add(removeButton);
 
@@ -120,7 +120,7 @@ public class ParameterTableEditorUI extends JIPipeParameterEditorUI {
                 JIPipeDocumentation documentation = JIPipeUIParameterTypeRegistry.getInstance().getGeneratorDocumentationFor(generator);
                 JMenuItem replaceCellItem = new JMenuItem(documentation.name());
                 replaceCellItem.setToolTipText(documentation.description());
-                replaceCellItem.setIcon(UIUtils.getIconFromResources("edit.png"));
+                replaceCellItem.setIcon(UIUtils.getIconFromResources("actions/edit.png"));
                 replaceCellItem.addActionListener(e -> replaceColumnValues(col, generator));
 
                 replacePopupMenu.add(replaceCellItem);
@@ -159,14 +159,14 @@ public class ParameterTableEditorUI extends JIPipeParameterEditorUI {
 
             for (int col = 0; col < parameterTable.getColumnCount(); ++col) {
                 JMenu columnMenu = new JMenu(parameterTable.getColumn(col).getName());
-                columnMenu.setIcon(UIUtils.getIconFromResources("data-types/data-type-parameters.png"));
+                columnMenu.setIcon(UIUtils.getIconFromResources("data-types/parameters.png"));
 
                 for (Class<? extends JIPipeParameterGeneratorUI> generator : JIPipeUIParameterTypeRegistry.getInstance()
                         .getGeneratorsFor(parameterTable.getColumn(col).getFieldClass())) {
                     JIPipeDocumentation documentation = JIPipeUIParameterTypeRegistry.getInstance().getGeneratorDocumentationFor(generator);
                     JMenuItem generateRowItem = new JMenuItem(documentation.name());
                     generateRowItem.setToolTipText(documentation.description());
-                    generateRowItem.setIcon(UIUtils.getIconFromResources("add.png"));
+                    generateRowItem.setIcon(UIUtils.getIconFromResources("actions/list-add.png"));
                     int finalCol = col;
                     generateRowItem.addActionListener(e -> generateRow(finalCol, generator));
 

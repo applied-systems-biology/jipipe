@@ -202,7 +202,7 @@ public class ParameterPanel extends FormPanel implements Contextual {
 
 
                 if (isModifiable) {
-                    JButton addButton = new JButton("Add parameter", UIUtils.getIconFromResources("add.png"));
+                    JButton addButton = new JButton("Add parameter", UIUtils.getIconFromResources("actions/list-add.png"));
                     addButton.addActionListener(e -> addDynamicParameter((JIPipeDynamicParameterCollection) parameterHolder));
                     addButton.setToolTipText("Add new parameter");
                     UIUtils.makeFlat(addButton);
@@ -240,7 +240,7 @@ public class ParameterPanel extends FormPanel implements Contextual {
                 labelPanel.add(label, BorderLayout.CENTER);
             }
             if (isModifiable) {
-                JButton removeButton = new JButton(UIUtils.getIconFromResources("close-tab.png"));
+                JButton removeButton = new JButton(UIUtils.getIconFromResources("actions/close-tab.png"));
                 UIUtils.makeBorderlessWithoutMargin(removeButton);
                 removeButton.addActionListener(e -> removeDynamicParameter(parameterAccess.getKey(), (JIPipeDynamicParameterCollection) parameterHolder));
                 labelPanel.add(removeButton, BorderLayout.WEST);

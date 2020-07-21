@@ -47,7 +47,7 @@ public class JIPipePlotSeriesListEditorUI extends JIPipeWorkbenchPanel {
     private void initialize() {
         setLayout(new BorderLayout());
         JToolBar toolBar = new JToolBar();
-        JButton addSeriesButton = new JButton("Add series", UIUtils.getIconFromResources("add.png"));
+        JButton addSeriesButton = new JButton("Add series", UIUtils.getIconFromResources("actions/list-add.png"));
         addSeriesButton.addActionListener(e -> plotBuilderUI.addSeries());
         toolBar.add(addSeriesButton);
         toolBar.setFloatable(false);

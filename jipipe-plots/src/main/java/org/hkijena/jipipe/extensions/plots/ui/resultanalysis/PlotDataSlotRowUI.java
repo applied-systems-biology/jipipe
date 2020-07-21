@@ -59,7 +59,7 @@ public class PlotDataSlotRowUI extends JIPipeDefaultResultDataSlotRowUI {
         if (svgFile != null) {
             registerAction("Open *.svg",
                     "Opens the SVG-rendered plot",
-                    UIUtils.getIconFromResources("filetype-image.png"),
+                    UIUtils.getIconFromResources("actions/viewimage.png"),
                     slot -> {
                         try {
                             Desktop.getDesktop().open(svgFile.toFile());
@@ -71,7 +71,7 @@ public class PlotDataSlotRowUI extends JIPipeDefaultResultDataSlotRowUI {
         if (pngFile != null) {
             registerAction("Open *.png",
                     "Opens the PNG-rendered plot",
-                    UIUtils.getIconFromResources("filetype-image.png"),
+                    UIUtils.getIconFromResources("actions/viewimage.png"),
                     slot -> {
                         try {
                             Desktop.getDesktop().open(pngFile.toFile());
@@ -82,7 +82,7 @@ public class PlotDataSlotRowUI extends JIPipeDefaultResultDataSlotRowUI {
         }
         registerAction("Open in JIPipe",
                 "Opens the plot in JIPipe",
-                UIUtils.getIconFromResources("jipipe.png"),
+                UIUtils.getIconFromResources("apps/jipipe.png"),
                 slot -> openPlot());
     }
 

@@ -50,7 +50,7 @@ public class JsonAlgorithmToGroupNodeUIContextAction implements NodeUIContextAct
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("archive-extract.png");
+        return UIUtils.getIconFromResources("actions/extract-archive.png");
     }
 
     @Override

@@ -43,7 +43,7 @@ public class SearchTextField extends JPanel implements Predicate<String> {
         textField.setBorder(null);
         add(textField, BorderLayout.CENTER);
 
-        JButton clearButton = new JButton(UIUtils.getIconFromResources("clear.png"));
+        JButton clearButton = new JButton(UIUtils.getIconFromResources("actions/edit-clear.png"));
         clearButton.setOpaque(false);
         clearButton.setToolTipText("Clear");
         clearButton.addActionListener(e -> setText(""));

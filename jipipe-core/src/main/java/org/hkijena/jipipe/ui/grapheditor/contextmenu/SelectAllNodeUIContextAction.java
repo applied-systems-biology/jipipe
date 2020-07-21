@@ -45,7 +45,7 @@ public class SelectAllNodeUIContextAction implements NodeUIContextAction {
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("select-all.png");
+        return UIUtils.getIconFromResources("actions/edit-select-all.png");
     }
 
     @Override

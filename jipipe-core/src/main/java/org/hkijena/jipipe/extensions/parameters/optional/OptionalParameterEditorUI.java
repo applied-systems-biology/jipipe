@@ -54,12 +54,12 @@ public class OptionalParameterEditorUI extends JIPipeParameterEditorUI {
         removeAll();
 
         // Create toggle button
-        JToggleButton toggle = new JToggleButton("Enabled", UIUtils.getIconFromResources("check-square.png"));
+        JToggleButton toggle = new JToggleButton("Enabled", UIUtils.getIconFromResources("emblems/check-square.png"));
         UIUtils.makeFlat(toggle);
         toggle.setToolTipText("If enabled, the parameter is not ignored.");
         toggle.setSelected(parameter.isEnabled());
-        toggle.setIcon(toggle.isSelected() ? UIUtils.getIconFromResources("check-square.png") :
-                UIUtils.getIconFromResources("empty-square.png"));
+        toggle.setIcon(toggle.isSelected() ? UIUtils.getIconFromResources("emblems/check-square.png") :
+                UIUtils.getIconFromResources("emblems/empty-square.png"));
         toggle.addActionListener(e -> {
             parameter.setEnabled(toggle.isSelected());
             setParameter(parameter, true);

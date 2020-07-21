@@ -421,7 +421,7 @@ public class ResultsTableData implements JIPipeData, TableModel {
 
     @Override
     public void display(String displayName, JIPipeWorkbench workbench) {
-        workbench.getDocumentTabPane().addTab(displayName, UIUtils.getIconFromResources("table.png"),
+        workbench.getDocumentTabPane().addTab(displayName, UIUtils.getIconFromResources("data-types/results-table.png"),
                 new JIPipeTableEditor((JIPipeProjectWorkbench) workbench, (ResultsTableData) duplicate()), DocumentTabPane.CloseMode.withAskOnCloseButton, true);
         workbench.getDocumentTabPane().switchToLastTab();
     }

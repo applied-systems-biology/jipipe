@@ -68,7 +68,7 @@ public class ExportCompartmentAsJsonNodeUIContextAction implements NodeUIContext
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("export.png");
+        return UIUtils.getIconFromResources("actions/document-export.png");
     }
 
     @Override

@@ -57,7 +57,7 @@ public class ReloadableValidityChecker extends JPanel {
 
         toolBar.add(Box.createHorizontalGlue());
 
-        JButton recheckButton = new JButton("Revalidate", UIUtils.getIconFromResources("checkmark.png"));
+        JButton recheckButton = new JButton("Revalidate", UIUtils.getIconFromResources("actions/checkmark.png"));
         recheckButton.addActionListener(e -> recheckValidity());
         toolBar.add(recheckButton);
 

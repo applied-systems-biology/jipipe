@@ -83,12 +83,12 @@ public class JIPipeImageJPluginManager extends JIPipeWorkbenchPanel {
 
         toolBar.add(Box.createHorizontalGlue());
 
-        JButton openLegacyUpdaterButton = new JButton("Open native updater", UIUtils.getIconFromResources("imagej.png"));
+        JButton openLegacyUpdaterButton = new JButton("Open native updater", UIUtils.getIconFromResources("apps/imagej.png"));
         openLegacyUpdaterButton.setToolTipText("Opens the updater that comes with ImageJ.");
         openLegacyUpdaterButton.addActionListener(e -> openLegacyUpdater());
         toolBar.add(openLegacyUpdaterButton);
 
-        JButton refreshButton = new JButton("Reset", UIUtils.getIconFromResources("clear-brush.png"));
+        JButton refreshButton = new JButton("Reset", UIUtils.getIconFromResources("actions/clear-brush.png"));
         refreshButton.addActionListener(e -> {
             if(isCurrentlyRunning()) {
                 JOptionPane.showMessageDialog(this,
@@ -102,7 +102,7 @@ public class JIPipeImageJPluginManager extends JIPipeWorkbenchPanel {
 
         toolBar.addSeparator();
 
-        JButton applyButton = new JButton("Apply changes", UIUtils.getIconFromResources("check-circle-green.png"));
+        JButton applyButton = new JButton("Apply changes", UIUtils.getIconFromResources("emblems/vcs-normal.png"));
         applyButton.addActionListener(e -> applyChanges());
         toolBar.add(applyButton);
 
@@ -324,7 +324,7 @@ public class JIPipeImageJPluginManager extends JIPipeWorkbenchPanel {
 
     private void updateActivateUpdateSitesMessage() {
         if(!updateSitesToActivate.isEmpty()) {
-            JButton refreshButton = new JButton("Refresh", UIUtils.getIconFromResources("refresh.png"));
+            JButton refreshButton = new JButton("Refresh", UIUtils.getIconFromResources("actions/view-refresh.png"));
             refreshButton.addActionListener(e -> activateStagedUpdateSites());
             messagePanel.addMessage(MessagePanel.MessageType.Info, "You changed the configuration of update sites. Click the following button to " +
                     "download the list of files that is needed.", refreshButton);

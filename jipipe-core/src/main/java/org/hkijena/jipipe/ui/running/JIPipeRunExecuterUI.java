@@ -61,7 +61,7 @@ public class JIPipeRunExecuterUI extends JPanel {
         buttonPanel.add(progressBar);
         buttonPanel.add(Box.createHorizontalStrut(16));
 
-        cancelButton = new JButton("Cancel", UIUtils.getIconFromResources("remove.png"));
+        cancelButton = new JButton("Cancel", UIUtils.getIconFromResources("actions/cancel.png"));
         cancelButton.addActionListener(e -> requestCancelRun());
         buttonPanel.add(cancelButton);
 

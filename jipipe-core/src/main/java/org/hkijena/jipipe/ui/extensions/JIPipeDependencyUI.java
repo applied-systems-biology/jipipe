@@ -59,7 +59,7 @@ public class JIPipeDependencyUI extends JPanel {
         FormPanel formPanel = new FormPanel(null, FormPanel.WITH_SCROLLING);
 
         // Add general metadata
-        formPanel.addGroupHeader("About", UIUtils.getIconFromResources("info.png"));
+        formPanel.addGroupHeader("About", UIUtils.getIconFromResources("actions/help-info.png"));
         formPanel.addToForm(UIUtils.makeReadonlyTextField(dependency.getMetadata().getName()), new JLabel("Name"), null);
         formPanel.addToForm(UIUtils.makeReadonlyTextField(dependency.getDependencyId()), new JLabel("ID"), null);
         formPanel.addToForm(UIUtils.makeReadonlyTextField(dependency.getDependencyVersion()), new JLabel("Version"), null);
@@ -104,7 +104,7 @@ public class JIPipeDependencyUI extends JPanel {
                         "<html>" + JIPipeDependency.toHtmlElement(dependency) + "</html>"
                 });
             }
-            insertTable(formPanel, model, "Dependencies", UIUtils.getIconFromResources("module.png"));
+            insertTable(formPanel, model, "Dependencies", UIUtils.getIconFromResources("actions/plugins.png"));
         }
     }
 
@@ -158,6 +158,6 @@ public class JIPipeDependencyUI extends JPanel {
                     TooltipUtils.getSlotTable(info.getOutputSlots().stream().map(JIPipeDataSlotInfo::new).collect(Collectors.toList()))
             });
         }
-        insertTable(formPanel, model, "Algorithms", UIUtils.getIconFromResources("run.png"));
+        insertTable(formPanel, model, "Algorithms", UIUtils.getIconFromResources("actions/run-build.png"));
     }
 }

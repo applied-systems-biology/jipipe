@@ -54,11 +54,11 @@ public class ResultsTableDataSlotRowUI extends JIPipeDefaultResultDataSlotRowUI 
 
         Path csvFile = findResultsTableFile();
         if (csvFile != null) {
-            registerAction("Open in JIPipe", "Opens the table in JIPipe", UIUtils.getIconFromResources("jipipe.png"), e -> {
+            registerAction("Open in JIPipe", "Opens the table in JIPipe", UIUtils.getIconFromResources("apps/jipipe.png"), e -> {
                 JIPipeTableEditor.importTableFromCSV(csvFile, getProjectWorkbench());
                 getProjectWorkbench().getDocumentTabPane().switchToLastTab();
             });
-            registerAction("Open in ImageJ", "Imports the table '" + csvFile + "' into ImageJ", UIUtils.getIconFromResources("imagej.png"), e -> {
+            registerAction("Open in ImageJ", "Imports the table '" + csvFile + "' into ImageJ", UIUtils.getIconFromResources("apps/imagej.png"), e -> {
                 importCSV(csvFile);
             });
         }

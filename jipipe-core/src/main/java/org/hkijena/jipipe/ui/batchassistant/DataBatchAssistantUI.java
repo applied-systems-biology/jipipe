@@ -124,7 +124,7 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
         toolBar.setFloatable(false);
         toolBar.add(Box.createHorizontalGlue());
 
-        JButton refreshButton = new JButton("Refresh batches", UIUtils.getIconFromResources("refresh.png"));
+        JButton refreshButton = new JButton("Refresh batches", UIUtils.getIconFromResources("actions/view-refresh.png"));
         refreshButton.setToolTipText("Refreshes the preview of generated batches");
         refreshButton.addActionListener(e -> refreshBatchPreview());
         toolBar.add(refreshButton);
@@ -186,7 +186,7 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
         JToolBar toolBar = new JToolBar();
         toolBar.setFloatable(false);
         toolBar.add(Box.createHorizontalGlue());
-        JButton updateCacheButton = new JButton("Update cache", UIUtils.getIconFromResources("database.png"));
+        JButton updateCacheButton = new JButton("Update cache", UIUtils.getIconFromResources("actions/database.png"));
         updateCacheButton.setToolTipText("Updates the data cache, so this tool can be used");
         updateCacheButton.addActionListener(e -> runTestBench.run());
         toolBar.add(updateCacheButton);

@@ -68,7 +68,7 @@ public class JIPipeMultiCompartmentSelectionPanelUI extends JIPipeProjectWorkben
     private void initializeToolbar() {
         JToolBar toolBar = new JToolBar();
         toolBar.setFloatable(false);
-        JLabel nameLabel = new JLabel(compartments.size() + " compartments", UIUtils.getIconFromResources("select.png"), JLabel.LEFT);
+        JLabel nameLabel = new JLabel(compartments.size() + " compartments", UIUtils.getIconFromResources("actions/edit-select-all.png"), JLabel.LEFT);
         toolBar.add(nameLabel);
 
         toolBar.add(Box.createHorizontalGlue());
@@ -78,7 +78,7 @@ public class JIPipeMultiCompartmentSelectionPanelUI extends JIPipeProjectWorkben
                 canvas.getContextActions(),
                 canvas);
 
-        JButton openButton = new JButton("Open in editor", UIUtils.getIconFromResources("edit.png"));
+        JButton openButton = new JButton("Open in editor", UIUtils.getIconFromResources("actions/edit.png"));
         openButton.addActionListener(e -> openInEditor());
         toolBar.add(openButton);
 

@@ -81,7 +81,7 @@ public class MessagePanel extends FormPanel {
                 actionButton.addActionListener(e -> closeMessage());
             }
 
-            JButton closeButton = new JButton(UIUtils.getIconFromResources("close-tab.png"));
+            JButton closeButton = new JButton(UIUtils.getIconFromResources("actions/close-tab.png"));
             UIUtils.makeFlat25x25(closeButton);
             closeButton.addActionListener(e -> {
                 closeMessage();

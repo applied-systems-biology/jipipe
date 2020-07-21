@@ -62,7 +62,7 @@ public class GraphCompartmentCopyNodeUIContextAction implements NodeUIContextAct
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("copy.png");
+        return UIUtils.getIconFromResources("actions/edit-copy.png");
     }
 
     @Override

@@ -49,7 +49,7 @@ public class UpdateCacheNodeUIContextAction implements NodeUIContextAction {
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("database.png");
+        return UIUtils.getIconFromResources("actions/database.png");
     }
 
     @Override

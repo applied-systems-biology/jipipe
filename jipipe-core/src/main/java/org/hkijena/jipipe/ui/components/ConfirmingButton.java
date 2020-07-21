@@ -70,7 +70,7 @@ public class ConfirmingButton extends JButton {
 
     private void initialize() {
         timer = new Timer(1000, this::restoreIcon);
-        confirmIcon = UIUtils.getIconFromResources("check-circle-green.png");
+        confirmIcon = UIUtils.getIconFromResources("emblems/vcs-normal.png");
         addActionListener(this::showConfirmIcon);
     }
 

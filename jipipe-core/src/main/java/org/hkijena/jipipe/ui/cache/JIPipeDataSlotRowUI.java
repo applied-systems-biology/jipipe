@@ -50,12 +50,12 @@ public class JIPipeDataSlotRowUI extends JIPipeWorkbenchPanel {
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
         add(Box.createHorizontalGlue());
 
-        JButton copyButton = new JButton("Copy string", UIUtils.getIconFromResources("copy.png"));
+        JButton copyButton = new JButton("Copy string", UIUtils.getIconFromResources("actions/edit-copy.png"));
         copyButton.setToolTipText("Copies the string representation");
         copyButton.addActionListener(e -> copyString());
         add(copyButton);
 
-        JButton displayButton = new JButton("Show", UIUtils.getIconFromResources("search.png"));
+        JButton displayButton = new JButton("Show", UIUtils.getIconFromResources("actions/find.png"));
         displayButton.setToolTipText("Shows the item");
         displayButton.addActionListener(e -> slot.getData(row, JIPipeData.class).display(slot.getNode().getName() + "/" + slot.getName() + "/" + row,
                 getWorkbench()));

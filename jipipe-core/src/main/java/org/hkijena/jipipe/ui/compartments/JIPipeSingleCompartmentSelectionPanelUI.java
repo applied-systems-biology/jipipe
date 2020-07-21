@@ -65,13 +65,13 @@ public class JIPipeSingleCompartmentSelectionPanelUI extends JIPipeProjectWorkbe
                 false);
 
         JIPipeSlotEditorUI compartmentSlotEditorUI = new JIPipeSlotEditorUI(graphEditorUI, compartment);
-        tabbedPane.addTab("Connections", UIUtils.getIconFromResources("graph-compartment.png"),
+        tabbedPane.addTab("Connections", UIUtils.getIconFromResources("data-types/graph-compartment.png"),
                 compartmentSlotEditorUI,
                 DocumentTabPane.CloseMode.withoutCloseButton,
                 false);
 
         JIPipeSlotEditorUI slotEditorUI = new JIPipeSlotEditorUI(graphEditorUI, compartment.getOutputNode());
-        tabbedPane.addTab("Output data", UIUtils.getIconFromResources("database.png"),
+        tabbedPane.addTab("Output data", UIUtils.getIconFromResources("actions/database.png"),
                 slotEditorUI,
                 DocumentTabPane.CloseMode.withoutCloseButton,
                 false);
@@ -95,7 +95,7 @@ public class JIPipeSingleCompartmentSelectionPanelUI extends JIPipeProjectWorkbe
                 canvas.getContextActions(),
                 canvas);
 
-        JButton openButton = new JButton("Open in editor", UIUtils.getIconFromResources("edit.png"));
+        JButton openButton = new JButton("Open in editor", UIUtils.getIconFromResources("actions/edit.png"));
         openButton.addActionListener(e -> openInEditor());
         toolBar.add(openButton);
 

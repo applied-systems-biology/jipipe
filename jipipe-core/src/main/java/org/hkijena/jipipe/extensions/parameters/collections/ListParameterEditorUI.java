@@ -53,7 +53,7 @@ public class ListParameterEditorUI extends JIPipeParameterEditorUI {
 
         toolBar.add(Box.createHorizontalGlue());
 
-        JButton addButton = new JButton("Add", UIUtils.getIconFromResources("add.png"));
+        JButton addButton = new JButton("Add", UIUtils.getIconFromResources("actions/list-add.png"));
         addButton.addActionListener(e -> addNewEntry());
         toolBar.add(addButton);
         add(toolBar, BorderLayout.NORTH);
@@ -78,7 +78,7 @@ public class ListParameterEditorUI extends JIPipeParameterEditorUI {
         ListParameter<?> parameter = getParameter(ListParameter.class);
         for (int i = 0; i < parameter.size(); ++i) {
             Object entry = parameter.get(i);
-            JButton removeButton = new JButton(UIUtils.getIconFromResources("close-tab.png"));
+            JButton removeButton = new JButton(UIUtils.getIconFromResources("actions/close-tab.png"));
             removeButton.setToolTipText("Remove entry");
             UIUtils.makeBorderlessWithoutMargin(removeButton);
             removeButton.addActionListener(e -> removeEntry(entry));

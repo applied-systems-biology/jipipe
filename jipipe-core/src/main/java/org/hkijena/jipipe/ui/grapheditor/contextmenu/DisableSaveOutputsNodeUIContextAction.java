@@ -58,7 +58,7 @@ public class DisableSaveOutputsNodeUIContextAction implements NodeUIContextActio
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("no-save.png");
+        return UIUtils.getIconFromResources("actions/no-save.png");
     }
 
     @Override

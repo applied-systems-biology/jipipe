@@ -40,7 +40,7 @@ public class NodeGroupContentsParameterEditorUI extends JIPipeParameterEditorUI 
 
     private void initialize() {
         setLayout(new BorderLayout());
-        JButton editGraphButton = new JButton("Edit graph", UIUtils.getIconFromResources("edit.png"));
+        JButton editGraphButton = new JButton("Edit graph", UIUtils.getIconFromResources("actions/edit.png"));
         editGraphButton.addActionListener(e -> editGraph());
         add(editGraphButton, BorderLayout.CENTER);
     }

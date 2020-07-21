@@ -98,6 +98,6 @@ public class TableColumnConversionParameter extends DynamicEnumParameter {
 
     @Override
     public Icon renderIcon(Object value) {
-        return UIUtils.getIconFromResources("inplace-function.png");
+        return UIUtils.getIconFromResources("actions/formula.png");
     }
 }

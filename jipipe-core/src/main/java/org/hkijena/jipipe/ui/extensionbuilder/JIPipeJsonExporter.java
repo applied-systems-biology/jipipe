@@ -77,13 +77,13 @@ public class JIPipeJsonExporter extends JIPipeGraphEditorUI {
         JToolBar toolBar = new JToolBar();
         toolBar.setFloatable(false);
 
-        JButton createRandomIdButton = new JButton("Create random algorithm ID", UIUtils.getIconFromResources("random.png"));
+        JButton createRandomIdButton = new JButton("Create random algorithm ID", UIUtils.getIconFromResources("actions/random.png"));
         createRandomIdButton.addActionListener(e -> createRandomId());
         toolBar.add(createRandomIdButton);
 
         toolBar.add(Box.createHorizontalGlue());
 
-        JButton exportToExtensionButton = new JButton("Export to extension", UIUtils.getIconFromResources("export.png"));
+        JButton exportToExtensionButton = new JButton("Export to extension", UIUtils.getIconFromResources("actions/document-export.png"));
         exportMenu = UIUtils.addPopupMenuToComponent(exportToExtensionButton);
         toolBar.add(exportToExtensionButton);
         reloadExportMenu();
@@ -94,19 +94,19 @@ public class JIPipeJsonExporter extends JIPipeGraphEditorUI {
     private void reloadExportMenu() {
         exportMenu.removeAll();
 
-        JMenuItem exportToNewExtensionButton = new JMenuItem("New extension ...", UIUtils.getIconFromResources("new.png"));
+        JMenuItem exportToNewExtensionButton = new JMenuItem("New extension ...", UIUtils.getIconFromResources("actions/document-new.png"));
         exportToNewExtensionButton.addActionListener(e -> exportToNewExtension());
         exportMenu.add(exportToNewExtensionButton);
 
         exportMenu.addSeparator();
 
         for (JIPipeJsonExtensionWindow window : JIPipeJsonExtensionWindow.getOpenWindows()) {
-            JMenuItem exportToExtensionButton = new JMenuItem(window.getTitle(), UIUtils.getIconFromResources("module.png"));
+            JMenuItem exportToExtensionButton = new JMenuItem(window.getTitle(), UIUtils.getIconFromResources("actions/plugins.png"));
             exportToExtensionButton.addActionListener(e -> exportToExtension(window.getProject()));
             exportMenu.add(exportToExtensionButton);
         }
 
-        JMenuItem reloadButton = new JMenuItem("Reload", UIUtils.getIconFromResources("refresh.png"));
+        JMenuItem reloadButton = new JMenuItem("Reload", UIUtils.getIconFromResources("actions/view-refresh.png"));
         reloadButton.addActionListener(e -> reloadExportMenu());
         exportMenu.add(reloadButton);
     }
@@ -168,7 +168,7 @@ public class JIPipeJsonExporter extends JIPipeGraphEditorUI {
         exporter.getNodeInfo().setName(name);
         exporter.getNodeInfo().setDescription(description);
         workbench.getDocumentTabPane().addTab("Export algorithm '" + name + "'",
-                UIUtils.getIconFromResources("export.png"),
+                UIUtils.getIconFromResources("actions/document-export.png"),
                 exporter,
                 DocumentTabPane.CloseMode.withAskOnCloseButton);
         workbench.getDocumentTabPane().switchToLastTab();

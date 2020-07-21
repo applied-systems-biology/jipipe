@@ -105,7 +105,7 @@ public class AlgorithmGraphPasteNodeUIContextAction implements NodeUIContextActi
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("paste.png");
+        return UIUtils.getIconFromResources("actions/edit-paste.png");
     }
 
     @Override

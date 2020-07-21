@@ -88,15 +88,17 @@ public class JIPipeParameterCollectionVisibilitiesParameterEditorUI extends JIPi
                         .getUIParameterTypeRegistry().createEditorFor(getWorkbench(), parameterAccess);
 
                 JPanel labelPanel = new JPanel(new BorderLayout(8, 8));
-                JToggleButton exportParameterToggle = new JToggleButton(UIUtils.getIconFromResources("eye.png"));
+                JToggleButton exportParameterToggle = new JToggleButton(UIUtils.getIconFromResources("actions/eye.png"));
                 UIUtils.makeFlat25x25(exportParameterToggle);
                 exportParameterToggle.setToolTipText("If enabled, the parameter can be changed by the user.");
                 exportParameterToggle.setSelected(visibilities.isVisible(key));
-                exportParameterToggle.setIcon(exportParameterToggle.isSelected() ? UIUtils.getIconFromResources("eye.png") : UIUtils.getIconFromResources("eye-slash.png"));
+                exportParameterToggle.setIcon(exportParameterToggle.isSelected() ? UIUtils.getIconFromResources("actions/eye.png") :
+                        UIUtils.getIconFromResources("actions/eye-slash.png"));
                 JIPipeParameterCollectionVisibilities finalVisibilities = visibilities;
                 exportParameterToggle.addActionListener(e -> {
                     finalVisibilities.setVisibility(key, exportParameterToggle.isSelected());
-                    exportParameterToggle.setIcon(exportParameterToggle.isSelected() ? UIUtils.getIconFromResources("eye.png") : UIUtils.getIconFromResources("eye-slash.png"));
+                    exportParameterToggle.setIcon(exportParameterToggle.isSelected() ? UIUtils.getIconFromResources("actions/eye.png") :
+                            UIUtils.getIconFromResources("actions/eye-slash.png"));
                 });
                 labelPanel.add(exportParameterToggle, BorderLayout.WEST);
 

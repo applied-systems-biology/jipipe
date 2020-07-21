@@ -80,14 +80,14 @@ public class JIPipeIconPickerDialog extends JDialog implements MouseListener {
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
         buttonPanel.add(Box.createHorizontalGlue());
 
-        JButton cancelButton = new JButton("Cancel", UIUtils.getIconFromResources("remove.png"));
+        JButton cancelButton = new JButton("Cancel", UIUtils.getIconFromResources("actions/cancel.png"));
         cancelButton.addActionListener(e -> {
             this.selectedIcon = null;
             this.setVisible(false);
         });
         buttonPanel.add(cancelButton);
 
-        JButton confirmButton = new JButton("Select", UIUtils.getIconFromResources("pick.png"));
+        JButton confirmButton = new JButton("Select", UIUtils.getIconFromResources("actions/color-select.png"));
         confirmButton.addActionListener(e -> this.setVisible(false));
         buttonPanel.add(confirmButton);
 

@@ -75,11 +75,11 @@ public class MissingUpdateSiteResolver extends JDialog implements JIPipeWorkbenc
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
         buttonPanel.add(Box.createHorizontalGlue());
 
-        JButton ignoreButton = new JButton("Ignore", UIUtils.getIconFromResources("remove.png"));
+        JButton ignoreButton = new JButton("Ignore", UIUtils.getIconFromResources("actions/cancel.png"));
         ignoreButton.addActionListener(e -> setVisible(false));
         buttonPanel.add(ignoreButton);
 
-        JButton resolveButton = new JButton("Resolve", UIUtils.getIconFromResources("check-circle-green.png"));
+        JButton resolveButton = new JButton("Resolve", UIUtils.getIconFromResources("emblems/vcs-normal.png"));
         resolveButton.addActionListener(e -> showResolver());
         buttonPanel.add(resolveButton);
         content.add(buttonPanel, BorderLayout.SOUTH);

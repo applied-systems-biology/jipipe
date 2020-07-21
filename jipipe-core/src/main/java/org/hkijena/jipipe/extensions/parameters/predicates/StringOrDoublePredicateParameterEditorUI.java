@@ -57,8 +57,8 @@ public class StringOrDoublePredicateParameterEditorUI extends JIPipeParameterEdi
         JIPipeParameterTree traversedParameterCollection = new JIPipeParameterTree(parameter);
 
         ButtonGroup buttonGroup = new ButtonGroup();
-        doubleToggle = addToggle(buttonGroup, UIUtils.getIconFromResources("number.png"), "Filter a number");
-        stringToggle = addToggle(buttonGroup, UIUtils.getIconFromResources("text2.png"), "Filter a string");
+        doubleToggle = addToggle(buttonGroup, UIUtils.getIconFromResources("actions/edit-select-number.png"), "Filter a number");
+        stringToggle = addToggle(buttonGroup, UIUtils.getIconFromResources("actions/edit-select-text.png"), "Filter a string");
         add(Box.createHorizontalStrut(8));
 
         if (parameter.getFilterMode() == StringOrDoublePredicate.FilterMode.Double) {

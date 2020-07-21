@@ -60,7 +60,7 @@ public class DisableNodeUIContextAction implements NodeUIContextAction {
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("block.png");
+        return UIUtils.getIconFromResources("emblems/block.png");
     }
 
     @Override

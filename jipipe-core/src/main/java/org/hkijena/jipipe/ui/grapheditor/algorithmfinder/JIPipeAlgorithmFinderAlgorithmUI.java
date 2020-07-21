@@ -233,7 +233,7 @@ public class JIPipeAlgorithmFinderAlgorithmUI extends JPanel {
     }
 
     private JButton createAddSlotButton(JIPipeSlotType slotType) {
-        JButton button = new JButton(UIUtils.getIconFromResources("add.png"));
+        JButton button = new JButton(UIUtils.getIconFromResources("actions/list-add.png"));
         UIUtils.makeFlat(button);
         button.addActionListener(e -> AddAlgorithmSlotPanel.showDialog(this, canvasUI.getGraphHistory(), algorithm, slotType));
         return button;

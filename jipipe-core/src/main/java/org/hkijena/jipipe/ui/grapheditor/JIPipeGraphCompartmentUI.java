@@ -207,37 +207,37 @@ public class JIPipeGraphCompartmentUI extends JIPipeGraphEditorUI {
      */
     public static void initializeAddNodesMenus(JIPipeGraphEditorUI graphEditorUI, JMenuBar menuBar, Set<JIPipeNodeInfo> addedAlgorithms) {
         JMenu addDataSourceMenu = new JMenu("Add data");
-        addDataSourceMenu.setIcon(UIUtils.getIconFromResources("database.png"));
+        addDataSourceMenu.setIcon(UIUtils.getIconFromResources("actions/database.png"));
         initializeAddDataSourceMenu(graphEditorUI, addDataSourceMenu, addedAlgorithms);
         menuBar.add(addDataSourceMenu);
 
         JMenu addFilesystemMenu = new JMenu("Filesystem");
-        addFilesystemMenu.setIcon(UIUtils.getIconFromResources("tree.png"));
+        addFilesystemMenu.setIcon(UIUtils.getIconFromResources("actions/tree.png"));
         initializeMenuForCategory(graphEditorUI, addFilesystemMenu, JIPipeNodeCategory.FileSystem, addedAlgorithms);
         menuBar.add(addFilesystemMenu);
 
         JMenu addAnnotationMenu = new JMenu("Annotation");
-        addAnnotationMenu.setIcon(UIUtils.getIconFromResources("label.png"));
+        addAnnotationMenu.setIcon(UIUtils.getIconFromResources("actions/tag.png"));
         initializeMenuForCategory(graphEditorUI, addAnnotationMenu, JIPipeNodeCategory.Annotation, addedAlgorithms);
         menuBar.add(addAnnotationMenu);
 
         JMenu addEnhancerMenu = new JMenu("Process");
-        addEnhancerMenu.setIcon(UIUtils.getIconFromResources("magic.png"));
+        addEnhancerMenu.setIcon(UIUtils.getIconFromResources("actions/image-auto-adjust.png"));
         initializeMenuForCategory(graphEditorUI, addEnhancerMenu, JIPipeNodeCategory.Processor, addedAlgorithms);
         menuBar.add(addEnhancerMenu);
 
         JMenu addConverterMenu = new JMenu("Convert");
-        addConverterMenu.setIcon(UIUtils.getIconFromResources("convert.png"));
+        addConverterMenu.setIcon(UIUtils.getIconFromResources("actions/view-refresh.png"));
         initializeMenuForCategory(graphEditorUI, addConverterMenu, JIPipeNodeCategory.Converter, addedAlgorithms);
         menuBar.add(addConverterMenu);
 
         JMenu addQuantifierMenu = new JMenu("Analyze");
-        addQuantifierMenu.setIcon(UIUtils.getIconFromResources("statistics.png"));
+        addQuantifierMenu.setIcon(UIUtils.getIconFromResources("actions/statistics.png"));
         initializeMenuForCategory(graphEditorUI, addQuantifierMenu, JIPipeNodeCategory.Analysis, addedAlgorithms);
         menuBar.add(addQuantifierMenu);
 
         JMenu addMiscMenu = new JMenu("Miscellaneous");
-        addMiscMenu.setIcon(UIUtils.getIconFromResources("module.png"));
+        addMiscMenu.setIcon(UIUtils.getIconFromResources("actions/plugins.png"));
         initializeMenuForCategory(graphEditorUI, addMiscMenu, JIPipeNodeCategory.Miscellaneous, addedAlgorithms);
         menuBar.add(addMiscMenu);
     }

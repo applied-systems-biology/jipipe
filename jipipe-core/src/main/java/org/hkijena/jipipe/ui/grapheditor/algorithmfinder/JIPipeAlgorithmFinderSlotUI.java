@@ -70,9 +70,9 @@ public class JIPipeAlgorithmFinderSlotUI extends JPanel {
 
         Icon icon;
         if (inputSlot.getNode().getGraph() == null || inputSlot.getNode().getGraph().getSourceSlot(inputSlot) == null)
-            icon = UIUtils.getIconFromResources("chevron-right-thin.png");
+            icon = UIUtils.getIconFromResources("emblems/slot-free-horizontal.png");
         else
-            icon = UIUtils.getIconFromResources("chevron-right.png");
+            icon = UIUtils.getIconFromResources("emblems/slot-connected-input-horizontal.png");
         assignButton = new JButton(icon);
         assignButton.setEnabled(JIPipeDatatypeRegistry.getInstance().isConvertible(outputSlot.getAcceptedDataType(), inputSlot.getAcceptedDataType()));
         assignButton.setPreferredSize(new Dimension(25, 50));
@@ -99,7 +99,7 @@ public class JIPipeAlgorithmFinderSlotUI extends JPanel {
 
         if (isExistingInstance) {
             if (graph.getSourceSlot(inputSlot) != null) {
-                JMenuItem disconnectExistingButton = new JMenuItem("Disconnect existing: " + graph.getSourceSlot(inputSlot).getDisplayName(), UIUtils.getIconFromResources("remove.png"));
+                JMenuItem disconnectExistingButton = new JMenuItem("Disconnect existing: " + graph.getSourceSlot(inputSlot).getDisplayName(), UIUtils.getIconFromResources("actions/cancel.png"));
                 disconnectExistingButton.addActionListener(e -> disconnectAllExistingInstance());
                 assignButtonMenu.add(disconnectExistingButton);
             } else {
@@ -118,7 +118,7 @@ public class JIPipeAlgorithmFinderSlotUI extends JPanel {
             if (slotConfiguration.canModifyInputSlots()) {
                 if (assignButtonMenu.getComponentCount() > 0)
                     assignButtonMenu.addSeparator();
-                JMenuItem deleteButton = new JMenuItem("Delete this slot", UIUtils.getIconFromResources("delete.png"));
+                JMenuItem deleteButton = new JMenuItem("Delete this slot", UIUtils.getIconFromResources("actions/delete.png"));
                 deleteButton.addActionListener(e -> deleteSlot());
                 assignButtonMenu.add(deleteButton);
             }

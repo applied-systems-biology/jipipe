@@ -139,7 +139,7 @@ public class AddDynamicParameterPanel extends JPanel {
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
         buttonPanel.add(Box.createHorizontalGlue());
 
-        JButton cancelButton = new JButton("Cancel", UIUtils.getIconFromResources("remove.png"));
+        JButton cancelButton = new JButton("Cancel", UIUtils.getIconFromResources("actions/cancel.png"));
         cancelButton.addActionListener(e -> {
             if (dialog != null) {
                 dialog.setVisible(false);
@@ -147,7 +147,7 @@ public class AddDynamicParameterPanel extends JPanel {
         });
         buttonPanel.add(cancelButton);
 
-        confirmButton = new JButton("Add", UIUtils.getIconFromResources("add.png"));
+        confirmButton = new JButton("Add", UIUtils.getIconFromResources("actions/list-add.png"));
         confirmButton.addActionListener(e -> addParameter());
         confirmButton.addKeyListener(new KeyAdapter() {
             @Override

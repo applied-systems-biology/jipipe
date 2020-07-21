@@ -89,10 +89,10 @@ public abstract class JIPipeCompendiumUI<T> extends JPanel {
         searchField.addActionListener(e -> reloadAlgorithmList());
         toolBar.add(searchField);
 
-        JButton exportButton = new JButton(UIUtils.getIconFromResources("export.png"));
+        JButton exportButton = new JButton(UIUtils.getIconFromResources("actions/document-export.png"));
         exportButton.setToolTipText("Export whole compendium");
         JPopupMenu exportMenu = UIUtils.addPopupMenuToComponent(exportButton);
-        JMenuItem saveMarkdown = new JMenuItem("as Markdown (*.md)", UIUtils.getIconFromResources("filetype-markdown.png"));
+        JMenuItem saveMarkdown = new JMenuItem("as Markdown (*.md)", UIUtils.getIconFromResources("minetypes/text-markdown.png"));
         saveMarkdown.addActionListener(e -> {
             Path selectedPath = FileChooserSettings.saveFile(this, FileChooserSettings.KEY_PROJECT, "Save as Markdown (*.md)", null);
             if (selectedPath != null) {
@@ -108,7 +108,7 @@ public abstract class JIPipeCompendiumUI<T> extends JPanel {
         });
         exportMenu.add(saveMarkdown);
 
-        JMenuItem saveHTML = new JMenuItem("as HTML (*.html)", UIUtils.getIconFromResources("filetype-html.png"));
+        JMenuItem saveHTML = new JMenuItem("as HTML (*.html)", UIUtils.getIconFromResources("mimetypes/text-html.png"));
         saveHTML.addActionListener(e -> {
             Path selectedPath = FileChooserSettings.saveFile(this, FileChooserSettings.KEY_PROJECT, "Save as HTML (*.html)", null);
             if (selectedPath != null) {
@@ -124,7 +124,7 @@ public abstract class JIPipeCompendiumUI<T> extends JPanel {
         });
         exportMenu.add(saveHTML);
 
-        JMenuItem savePDF = new JMenuItem("as PDF (*.pdf)", UIUtils.getIconFromResources("filetype-pdf.png"));
+        JMenuItem savePDF = new JMenuItem("as PDF (*.pdf)", UIUtils.getIconFromResources("minetypes/application-pdf.png"));
         savePDF.addActionListener(e -> {
             Path selectedPath = FileChooserSettings.saveFile(this, FileChooserSettings.KEY_PROJECT, "Save as Portable Document Format (*.pdf)", null);
             if (selectedPath != null) {

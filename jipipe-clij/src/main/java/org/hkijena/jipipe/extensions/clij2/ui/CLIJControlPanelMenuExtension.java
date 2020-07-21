@@ -21,7 +21,7 @@ public class CLIJControlPanelMenuExtension extends MenuExtension {
     public CLIJControlPanelMenuExtension(JIPipeWorkbench workbench) {
         super(workbench);
         setText("CLIJ2 control panel");
-        setIcon(UIUtils.getIconFromResources("algorithms/clij.png"));
+        setIcon(UIUtils.getIconFromResources("apps/clij.png"));
         setToolTipText("Opens a control panel to setup CLIJ2");
         addActionListener(e -> openControlPanel());
     }
@@ -35,7 +35,7 @@ public class CLIJControlPanelMenuExtension extends MenuExtension {
         }
         try {
             getWorkbench().getDocumentTabPane().addTab("CLIJ2 control panel",
-                    UIUtils.getIconFromResources("algorithms/clij.png"),
+                    UIUtils.getIconFromResources("apps/clij.png"),
                     new CLIJControlPanel(getWorkbench()),
                     DocumentTabPane.CloseMode.withSilentCloseButton,
                     false);

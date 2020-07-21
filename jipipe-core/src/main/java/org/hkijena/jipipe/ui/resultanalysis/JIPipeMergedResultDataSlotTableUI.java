@@ -112,12 +112,12 @@ public class JIPipeMergedResultDataSlotTableUI extends JIPipeProjectWorkbenchPan
         searchTextField.addActionListener(e -> refreshTable());
         toolBar.add(searchTextField);
 
-        JButton exportButton = new JButton(UIUtils.getIconFromResources("export.png"));
+        JButton exportButton = new JButton(UIUtils.getIconFromResources("actions/document-export.png"));
         toolBar.add(exportButton);
         exportButton.setToolTipText("Export");
         JPopupMenu exportMenu = UIUtils.addPopupMenuToComponent(exportButton);
 
-        JMenuItem exportAsCsvItem = new JMenuItem("as *.csv", UIUtils.getIconFromResources("filetype-csv.png"));
+        JMenuItem exportAsCsvItem = new JMenuItem("as *.csv", UIUtils.getIconFromResources("data-types/results-table.png"));
         exportAsCsvItem.addActionListener(e -> exportAsCSV());
         exportMenu.add(exportAsCsvItem);
     }

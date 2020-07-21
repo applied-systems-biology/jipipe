@@ -94,7 +94,7 @@ public class RunSingleAlgorithmDialog extends JDialog implements JIPipeWorkbench
 
         tabPane = new DocumentTabPane();
         tabPane.addTab("Run single algorithm",
-                UIUtils.getIconFromResources("run.png"),
+                UIUtils.getIconFromResources("actions/run-build.png"),
                 contentPanel,
                 DocumentTabPane.CloseMode.withoutCloseButton,
                 false);
@@ -185,14 +185,14 @@ public class RunSingleAlgorithmDialog extends JDialog implements JIPipeWorkbench
         reloadOutputSlots();
 
         // Add parameter editor
-        formPanel.addGroupHeader("Algorithm parameters", UIUtils.getIconFromResources("wrench.png"));
+        formPanel.addGroupHeader("Algorithm parameters", UIUtils.getIconFromResources("actions/wrench.png"));
         formPanel.addWideToForm(new ParameterPanel(this, runSettings.getAlgorithm(), null, ParameterPanel.NONE), null);
 
         formPanel.addVerticalGlue();
     }
 
     private void reloadRuntimeSettings() {
-        formPanel.addGroupHeader("Runtime", UIUtils.getIconFromResources("run.png"));
+        formPanel.addGroupHeader("Runtime", UIUtils.getIconFromResources("actions/run-build.png"));
         SpinnerNumberModel model = new SpinnerNumberModel(numThreads, 1, Integer.MAX_VALUE, 1);
         JSpinner spinner = new JSpinner(model);
         spinner.addChangeListener(e -> {
@@ -208,7 +208,7 @@ public class RunSingleAlgorithmDialog extends JDialog implements JIPipeWorkbench
         if (inputSlotsAreMutable) {
             JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) getAlgorithm().getSlotConfiguration();
             if (slotConfiguration.canAddInputSlot()) {
-                JButton addButton = new JButton(UIUtils.getIconFromResources("add.png"));
+                JButton addButton = new JButton(UIUtils.getIconFromResources("actions/list-add.png"));
                 addButton.setToolTipText("Add new input");
                 UIUtils.makeFlat25x25(addButton);
                 addButton.addActionListener(e -> AddAlgorithmSlotPanel.showDialog(this, new JIPipeGraphHistory(), getAlgorithm(), JIPipeSlotType.Input));
@@ -224,7 +224,7 @@ public class RunSingleAlgorithmDialog extends JDialog implements JIPipeWorkbench
             if (inputSlotsAreRemovable) {
                 JIPipeMutableSlotConfiguration slotConfiguration = (JIPipeMutableSlotConfiguration) getAlgorithm().getSlotConfiguration();
                 JPanel panel = new JPanel(new BorderLayout(8, 0));
-                JButton removeButton = new JButton(UIUtils.getIconFromResources("close-tab.png"));
+                JButton removeButton = new JButton(UIUtils.getIconFromResources("actions/close-tab.png"));
                 UIUtils.makeBorderlessWithoutMargin(removeButton);
                 removeButton.setToolTipText("Remove input slot");
                 removeButton.addActionListener(e -> slotConfiguration.removeInputSlot(entry.getKey(), true));
@@ -249,7 +249,7 @@ public class RunSingleAlgorithmDialog extends JDialog implements JIPipeWorkbench
         if (outputSlotsAreMutable) {
             JIPipeMutableSlotConfiguration slotConfiguration = (JIPipeMutableSlotConfiguration) getAlgorithm().getSlotConfiguration();
             if (slotConfiguration.canAddInputSlot()) {
-                JButton addButton = new JButton(UIUtils.getIconFromResources("add.png"));
+                JButton addButton = new JButton(UIUtils.getIconFromResources("actions/list-add.png"));
                 addButton.setToolTipText("Add new output");
                 UIUtils.makeFlat25x25(addButton);
                 addButton.addActionListener(e -> AddAlgorithmSlotPanel.showDialog(this, new JIPipeGraphHistory(), getAlgorithm(), JIPipeSlotType.Input));
@@ -264,7 +264,7 @@ public class RunSingleAlgorithmDialog extends JDialog implements JIPipeWorkbench
             if (outputSlotsAreRemovable) {
                 JIPipeMutableSlotConfiguration slotConfiguration = (JIPipeMutableSlotConfiguration) getAlgorithm().getSlotConfiguration();
                 JPanel panel = new JPanel(new BorderLayout(8, 0));
-                JButton removeButton = new JButton(UIUtils.getIconFromResources("close-tab.png"));
+                JButton removeButton = new JButton(UIUtils.getIconFromResources("actions/close-tab.png"));
                 UIUtils.makeBorderlessWithoutMargin(removeButton);
                 removeButton.setToolTipText("Remove output slot");
                 removeButton.addActionListener(e -> slotConfiguration.removeOutputSlot(outputSlot.getName(), true));
@@ -297,20 +297,20 @@ public class RunSingleAlgorithmDialog extends JDialog implements JIPipeWorkbench
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
         buttonPanel.add(Box.createHorizontalGlue());
 
-        JButton copyCommandButton = new JButton("Copy command", UIUtils.getIconFromResources("copy.png"));
+        JButton copyCommandButton = new JButton("Copy command", UIUtils.getIconFromResources("actions/edit-copy.png"));
         copyCommandButton.addActionListener(e -> copyCommand());
         buttonPanel.add(copyCommandButton);
 
         buttonPanel.add(Box.createHorizontalStrut(8));
 
-        JButton cancelButton = new JButton("Cancel", UIUtils.getIconFromResources("remove.png"));
+        JButton cancelButton = new JButton("Cancel", UIUtils.getIconFromResources("actions/cancel.png"));
         cancelButton.addActionListener(e -> {
             this.canceled = true;
             this.setVisible(false);
         });
         buttonPanel.add(cancelButton);
 
-        JButton confirmButton = new JButton("Run", UIUtils.getIconFromResources("run.png"));
+        JButton confirmButton = new JButton("Run", UIUtils.getIconFromResources("actions/run-build.png"));
         confirmButton.addActionListener(e -> runNow());
         buttonPanel.add(confirmButton);
 

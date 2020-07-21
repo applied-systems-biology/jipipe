@@ -75,7 +75,7 @@ public class JIPipeAuthorMetadataParameterEditorUI extends JIPipeParameterEditor
 
         add(Box.createHorizontalStrut(8));
 
-        JButton editAffiliationsButton = new JButton("Affiliations", UIUtils.getIconFromResources("algorithms/graduation-cap.png"));
+        JButton editAffiliationsButton = new JButton("Affiliations", UIUtils.getIconFromResources("actions/graduation-cap.png"));
         UIUtils.makeFlat(editAffiliationsButton);
         editAffiliationsButton.setToolTipText("<html>Edit the affiliations<br/><br/>" + parameter.getAffiliations() + "</html>");
         editAffiliationsButton.addActionListener(e -> {

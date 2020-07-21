@@ -157,7 +157,7 @@ public class DocumentTabPane extends JPanel {
         DocumentTab tab = new DocumentTab(title, icon, tabPanel, component, closeMode);
 
         if (allowRename) {
-            JButton renameButton = new JButton(UIUtils.getIconFromResources("label.png"));
+            JButton renameButton = new JButton(UIUtils.getIconFromResources("actions/tag.png"));
             renameButton.setToolTipText("Rename tab");
             UIUtils.makeBorderlessWithoutMargin(renameButton);
             renameButton.addActionListener(e -> {
@@ -171,7 +171,7 @@ public class DocumentTabPane extends JPanel {
             tabPanel.add(renameButton);
         }
         if (closeMode != CloseMode.withoutCloseButton) {
-            JButton closeButton = new JButton(UIUtils.getIconFromResources("close-tab.png"));
+            JButton closeButton = new JButton(UIUtils.getIconFromResources("actions/close-tab.png"));
             closeButton.setToolTipText("Close tab");
             closeButton.setBorder(null);
 //            if (GeneralUISettings.getInstance().getLookAndFeel() == GeneralUISettings.LookAndFeel.FlatIntelliJLaf) {

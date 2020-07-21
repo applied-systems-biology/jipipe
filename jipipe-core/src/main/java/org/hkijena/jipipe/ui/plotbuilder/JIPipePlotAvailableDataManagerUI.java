@@ -63,18 +63,18 @@ public class JIPipePlotAvailableDataManagerUI extends JIPipeWorkbenchPanel {
         setLayout(new BorderLayout());
         JToolBar toolBar = new JToolBar();
 
-        JButton importDataButton = new JButton("Import", UIUtils.getIconFromResources("import.png"));
+        JButton importDataButton = new JButton("Import", UIUtils.getIconFromResources("actions/document-import.png"));
         this.importPopupMenu = new JPopupMenu();
         UIUtils.addReloadablePopupMenuToComponent(importDataButton, importPopupMenu, this::reloadImportPopupMenu);
         toolBar.add(importDataButton);
 
         toolBar.add(Box.createHorizontalGlue());
 
-        JButton removeSelectedDataButton = new JButton("Remove", UIUtils.getIconFromResources("delete.png"));
+        JButton removeSelectedDataButton = new JButton("Remove", UIUtils.getIconFromResources("actions/delete.png"));
         removeSelectedDataButton.addActionListener(e -> removeSelectedData());
         toolBar.add(removeSelectedDataButton);
 
-        JButton openSelectedDataButton = new JButton("Show", UIUtils.getIconFromResources("search.png"));
+        JButton openSelectedDataButton = new JButton("Show", UIUtils.getIconFromResources("actions/find.png"));
         openSelectedDataButton.addActionListener(e -> showSelectedData());
         toolBar.add(openSelectedDataButton);
 
@@ -102,7 +102,7 @@ public class JIPipePlotAvailableDataManagerUI extends JIPipeWorkbenchPanel {
     private void reloadImportPopupMenu() {
         importPopupMenu.removeAll();
 
-        JMenuItem importCSVItem = new JMenuItem("From *.csv", UIUtils.getIconFromResources("open.png"));
+        JMenuItem importCSVItem = new JMenuItem("From *.csv", UIUtils.getIconFromResources("actions/document-open-folder.png"));
         importCSVItem.addActionListener(e -> importFromCSV());
         importPopupMenu.add(importCSVItem);
 
@@ -110,7 +110,7 @@ public class JIPipePlotAvailableDataManagerUI extends JIPipeWorkbenchPanel {
         if (!tableAnalyzers.isEmpty()) {
             importPopupMenu.addSeparator();
             for (DocumentTabPane.DocumentTab tab : tableAnalyzers) {
-                JMenuItem importItem = new JMenuItem("Import from '" + tab.getTitle() + "'", UIUtils.getIconFromResources("table.png"));
+                JMenuItem importItem = new JMenuItem("Import from '" + tab.getTitle() + "'", UIUtils.getIconFromResources("data-types/results-table.png"));
                 JIPipeTableEditor tableAnalyzerUI = (JIPipeTableEditor) tab.getContent();
                 importItem.addActionListener(e -> importFromTableAnalyzer(tableAnalyzerUI, tab.getTitle()));
                 importPopupMenu.add(importItem);
@@ -164,7 +164,7 @@ public class JIPipePlotAvailableDataManagerUI extends JIPipeWorkbenchPanel {
 
         String name = dataSourceJList.getSelectedValuesList().size() == 1 ? dataSourceJList.getSelectedValuesList().get(0).getLabel() : "Table";
         JIPipeTableEditor tableAnalyzerUI = new JIPipeTableEditor((JIPipeProjectWorkbench) getWorkbench(), tableModel);
-        getWorkbench().getDocumentTabPane().addTab(name, UIUtils.getIconFromResources("table.png"),
+        getWorkbench().getDocumentTabPane().addTab(name, UIUtils.getIconFromResources("data-types/results-table.png"),
                 tableAnalyzerUI,
                 DocumentTabPane.CloseMode.withAskOnCloseButton,
                 true);

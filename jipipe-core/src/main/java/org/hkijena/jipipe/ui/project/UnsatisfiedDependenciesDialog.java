@@ -66,14 +66,14 @@ public class UnsatisfiedDependenciesDialog extends JDialog {
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
         buttonPanel.add(Box.createHorizontalGlue());
 
-        JButton cancelButton = new JButton("Cancel", UIUtils.getIconFromResources("remove.png"));
+        JButton cancelButton = new JButton("Cancel", UIUtils.getIconFromResources("actions/cancel.png"));
         cancelButton.addActionListener(e -> {
             continueLoading = false;
             setVisible(false);
         });
         buttonPanel.add(cancelButton);
 
-        JButton confirmButton = new JButton("Load anyways", UIUtils.getIconFromResources("open.png"));
+        JButton confirmButton = new JButton("Load anyways", UIUtils.getIconFromResources("actions/document-open-folder.png"));
         confirmButton.addActionListener(e -> {
             continueLoading = true;
             setVisible(false);

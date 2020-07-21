@@ -71,7 +71,7 @@ public class JIPipeJsonAlgorithmExporterMultiSelectionPanelUI extends JIPipeWork
     private void initializeToolbar() {
         JToolBar toolBar = new JToolBar();
         toolBar.setFloatable(false);
-        JLabel nameLabel = new JLabel(algorithms.size() + " algorithms", UIUtils.getIconFromResources("select.png"), JLabel.LEFT);
+        JLabel nameLabel = new JLabel(algorithms.size() + " algorithms", UIUtils.getIconFromResources("actions/edit-select-all.png"), JLabel.LEFT);
         toolBar.add(nameLabel);
 
         toolBar.add(Box.createHorizontalGlue());

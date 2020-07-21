@@ -78,7 +78,7 @@ public class PathEditor extends JPanel {
             }
         });
 
-        generateRandomButton = new JButton(UIUtils.getIconFromResources("random.png"));
+        generateRandomButton = new JButton(UIUtils.getIconFromResources("actions/random.png"));
         generateRandomButton.setToolTipText("Generate random file or folder");
         UIUtils.makeFlat25x25(generateRandomButton);
         generateRandomButton.setBorder(null);
@@ -91,7 +91,7 @@ public class PathEditor extends JPanel {
             }
         });
 
-        JButton selectButton = new JButton(UIUtils.getIconFromResources("open.png"));
+        JButton selectButton = new JButton(UIUtils.getIconFromResources("actions/document-open-folder.png"));
         selectButton.setToolTipText("Select from filesystem");
         UIUtils.makeFlat25x25(selectButton);
         selectButton.setBorder(null);

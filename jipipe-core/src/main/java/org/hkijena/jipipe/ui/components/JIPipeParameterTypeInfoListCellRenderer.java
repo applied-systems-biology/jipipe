@@ -24,7 +24,7 @@ public class JIPipeParameterTypeInfoListCellRenderer extends JLabel implements L
     public JIPipeParameterTypeInfoListCellRenderer() {
         setOpaque(true);
         setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
-        setIcon(UIUtils.getIconFromResources("parameters.png"));
+        setIcon(UIUtils.getIconFromResources("data-types/parameters.png"));
     }
 
     @Override

@@ -157,11 +157,11 @@ public class JIPipeCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
         JToolBar toolBar = new JToolBar();
         toolBar.setFloatable(false);
 
-        JButton clearOutdatedButton = new JButton("Clear outdated", UIUtils.getIconFromResources("clear-brush.png"));
+        JButton clearOutdatedButton = new JButton("Clear outdated", UIUtils.getIconFromResources("actions/clear-brush.png"));
         clearOutdatedButton.addActionListener(e -> getProject().getCache().autoClean(false, true));
         toolBar.add(clearOutdatedButton);
 
-        JButton clearAllButton = new JButton("Clear all", UIUtils.getIconFromResources("clear-brush.png"));
+        JButton clearAllButton = new JButton("Clear all", UIUtils.getIconFromResources("actions/clear-brush.png"));
         clearAllButton.addActionListener(e -> getProject().getCache().clear());
         toolBar.add(clearAllButton);
 

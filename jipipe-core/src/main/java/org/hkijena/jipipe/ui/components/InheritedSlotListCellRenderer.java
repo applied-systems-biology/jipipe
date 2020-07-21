@@ -43,13 +43,13 @@ public class InheritedSlotListCellRenderer extends JLabel implements ListCellRen
     public Component getListCellRendererComponent(JList<? extends String> list, String value, int index, boolean isSelected, boolean cellHasFocus) {
 
         if (value == null || value.isEmpty()) {
-            setIcon(UIUtils.getIconFromResources("remove.png"));
+            setIcon(UIUtils.getIconFromResources("actions/cancel.png"));
             setText("<No inheritance>");
         } else if ("*".equals(value)) {
             if (!algorithm.getInputSlotOrder().isEmpty()) {
                 setIcon(JIPipeUIDatatypeRegistry.getInstance().getIconFor(algorithm.getFirstInputSlot().getAcceptedDataType()));
             } else {
-                setIcon(UIUtils.getIconFromResources("remove.png"));
+                setIcon(UIUtils.getIconFromResources("actions/cancel.png"));
             }
             setText("<First data slot>");
         } else {

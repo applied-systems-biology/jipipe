@@ -98,7 +98,7 @@ public class JIPipeTestBenchSetupUI extends JIPipeProjectWorkbenchPanel {
         toolBar.setFloatable(false);
         toolBar.add(Box.createHorizontalGlue());
 
-        JButton refreshButton = new JButton("Retry", UIUtils.getIconFromResources("refresh.png"));
+        JButton refreshButton = new JButton("Retry", UIUtils.getIconFromResources("actions/view-refresh.png"));
         refreshButton.addActionListener(e -> tryShowSetupPanel());
         toolBar.add(refreshButton);
 
@@ -119,11 +119,11 @@ public class JIPipeTestBenchSetupUI extends JIPipeProjectWorkbenchPanel {
         toolBar.setFloatable(false);
         toolBar.add(Box.createHorizontalGlue());
 
-        JButton runOnly = new JButton("Run", UIUtils.getIconFromResources("run.png"));
+        JButton runOnly = new JButton("Run", UIUtils.getIconFromResources("actions/run-build.png"));
         runOnly.addActionListener(e -> generateTestBench(false));
         toolBar.add(runOnly);
 
-        JButton runAndOpen = new JButton("Run & open results", UIUtils.getIconFromResources("run.png"));
+        JButton runAndOpen = new JButton("Run & open results", UIUtils.getIconFromResources("actions/run-build.png"));
         runAndOpen.addActionListener(e -> generateTestBench(true));
         toolBar.add(runAndOpen);
 
@@ -179,7 +179,7 @@ public class JIPipeTestBenchSetupUI extends JIPipeProjectWorkbenchPanel {
         toolBar.setFloatable(false);
         toolBar.add(Box.createHorizontalGlue());
 
-        JButton refreshButton = new JButton("Retry", UIUtils.getIconFromResources("refresh.png"));
+        JButton refreshButton = new JButton("Retry", UIUtils.getIconFromResources("actions/view-refresh.png"));
         refreshButton.addActionListener(e -> tryShowSetupPanel());
         toolBar.add(refreshButton);
         errorPanel.add(toolBar, BorderLayout.NORTH);
@@ -224,7 +224,7 @@ public class JIPipeTestBenchSetupUI extends JIPipeProjectWorkbenchPanel {
                 try {
                     JIPipeTestBenchUI testBenchUI = new JIPipeTestBenchUI(getProjectWorkbench(), currentTestBench);
                     String name = "Quick run: " + algorithm.getName();
-                    getProjectWorkbench().getDocumentTabPane().addTab(name, UIUtils.getIconFromResources("testbench.png"),
+                    getProjectWorkbench().getDocumentTabPane().addTab(name, UIUtils.getIconFromResources("actions/testbench.png"),
                             testBenchUI, DocumentTabPane.CloseMode.withAskOnCloseButton, true);
                     getProjectWorkbench().getDocumentTabPane().switchToLastTab();
                     currentTestBench = null;

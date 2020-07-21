@@ -57,22 +57,22 @@ public class JIPipeCacheManagerUI extends JIPipeProjectWorkbenchPanel {
 
 
         statusLabel = new JLabel();
-        statusLabel.setIcon(UIUtils.getIconFromResources("database.png"));
+        statusLabel.setIcon(UIUtils.getIconFromResources("actions/database.png"));
         add(statusLabel);
 
-        clearButton = new JButton(UIUtils.getIconFromResources("clear-brush.png"));
+        clearButton = new JButton(UIUtils.getIconFromResources("actions/clear-brush.png"));
         add(Box.createHorizontalStrut(4));
         add(clearButton);
         UIUtils.makeBorderlessWithoutMargin(clearButton);
         JPopupMenu clearMenu = UIUtils.addPopupMenuToComponent(clearButton);
 
-        JMenuItem clearOutdated = new JMenuItem("Clear outdated", UIUtils.getIconFromResources("clock.png"));
+        JMenuItem clearOutdated = new JMenuItem("Clear outdated", UIUtils.getIconFromResources("actions/clock.png"));
         clearOutdated.setToolTipText("Removes all cached items that are have no representation in the project graph, anymore. " +
                 "This includes items where the algorithm parameters have been changed.");
         clearOutdated.addActionListener(e -> getProject().getCache().autoClean(false, true));
         clearMenu.add(clearOutdated);
 
-        JMenuItem clearAll = new JMenuItem("Clear all", UIUtils.getIconFromResources("delete.png"));
+        JMenuItem clearAll = new JMenuItem("Clear all", UIUtils.getIconFromResources("actions/delete.png"));
         clearAll.setToolTipText("Removes all cached items.");
         clearAll.addActionListener(e -> getProject().getCache().clear());
         clearMenu.add(clearAll);

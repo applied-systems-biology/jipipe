@@ -132,12 +132,12 @@ public class JIPipeCacheMultiDataSlotTableUI extends JIPipeProjectWorkbenchPanel
         searchTextField.addActionListener(e -> reloadTable());
         toolBar.add(searchTextField);
 
-        JButton exportButton = new JButton(UIUtils.getIconFromResources("export.png"));
+        JButton exportButton = new JButton(UIUtils.getIconFromResources("actions/document-export.png"));
         toolBar.add(exportButton);
         exportButton.setToolTipText("Export");
         JPopupMenu exportMenu = UIUtils.addPopupMenuToComponent(exportButton);
 
-        JMenuItem exportAsCsvItem = new JMenuItem("as *.csv", UIUtils.getIconFromResources("filetype-csv.png"));
+        JMenuItem exportAsCsvItem = new JMenuItem("as *.csv", UIUtils.getIconFromResources("data-types/results-table.png"));
         exportAsCsvItem.addActionListener(e -> exportAsCSV());
         exportMenu.add(exportAsCsvItem);
     }
@@ -221,7 +221,7 @@ public class JIPipeCacheMultiDataSlotTableUI extends JIPipeProjectWorkbenchPanel
             } else {
                 String info = dataTable.getTraitColumns().get(modelColumn - 5);
                 String html = String.format("<html><table><tr><td><img src=\"%s\"/></td><td>%s</tr>",
-                        UIUtils.getIconFromResources("annotation.png"),
+                        UIUtils.getIconFromResources("data-types/annotation.png"),
                         info);
                 return defaultRenderer.getTableCellRendererComponent(table, html, isSelected, hasFocus, row, column);
             }

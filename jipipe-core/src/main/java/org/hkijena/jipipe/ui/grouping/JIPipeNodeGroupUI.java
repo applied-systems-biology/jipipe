@@ -71,7 +71,7 @@ public class JIPipeNodeGroupUI extends JIPipeWorkbenchPanel {
         if (compartmentUIs.isEmpty()) {
             JIPipeNodeGroupUI compartmentUI = new JIPipeNodeGroupUI(workbench, nodeGroup);
             DocumentTabPane.DocumentTab documentTab = workbench.getDocumentTabPane().addTab(nodeGroup.getName(),
-                    UIUtils.getIconFromResources("group.png"),
+                    UIUtils.getIconFromResources("actions/object-group.png"),
                     compartmentUI,
                     DocumentTabPane.CloseMode.withSilentCloseButton,
                     false);

@@ -98,7 +98,7 @@ public class JIPipeRunSettingsUI extends JIPipeProjectWorkbenchPanel {
 
         buttonPanel.add(Box.createHorizontalGlue());
 
-        JButton runButton = new JButton("Retry", UIUtils.getIconFromResources("refresh.png"));
+        JButton runButton = new JButton("Retry", UIUtils.getIconFromResources("actions/view-refresh.png"));
         runButton.addActionListener(e -> {
             report.clear();
             getProjectWorkbench().getProject().reportValidity(report);
@@ -133,7 +133,7 @@ public class JIPipeRunSettingsUI extends JIPipeProjectWorkbenchPanel {
         Set<JIPipeGraphNode> algorithmsWithMissingInput = getProjectWorkbench().getProject().getGraph().getDeactivatedAlgorithms();
         if (!algorithmsWithMissingInput.isEmpty()) {
             formPanel.removeLastRow();
-            FormPanel.GroupHeaderPanel headerPanel = formPanel.addGroupHeader("Unexecuted algorithms", UIUtils.getIconFromResources("warning.png"));
+            FormPanel.GroupHeaderPanel headerPanel = formPanel.addGroupHeader("Unexecuted algorithms", UIUtils.getIconFromResources("emblems/warning.png"));
             headerPanel.getDescriptionArea().setVisible(true);
             headerPanel.getDescriptionArea().setText("There are algorithms that will not be executed, as they are missing input data or are deactivated. " +
                     "If this is not intended, please check if the listed algorithms have all input slots connected and the affected algorithms are activated.");
@@ -167,7 +167,7 @@ public class JIPipeRunSettingsUI extends JIPipeProjectWorkbenchPanel {
 
         buttonPanel.add(Box.createHorizontalGlue());
 
-        JButton runButton = new JButton("Run now", UIUtils.getIconFromResources("run.png"));
+        JButton runButton = new JButton("Run now", UIUtils.getIconFromResources("actions/run-build.png"));
         runButton.addActionListener(e -> runNow());
         buttonPanel.add(runButton);
 
@@ -219,11 +219,11 @@ public class JIPipeRunSettingsUI extends JIPipeProjectWorkbenchPanel {
 
         JToolBar toolBar = new JToolBar();
         toolBar.setFloatable(false);
-        JButton openFolderButton = new JButton("Open output folder", UIUtils.getIconFromResources("open.png"));
+        JButton openFolderButton = new JButton("Open output folder", UIUtils.getIconFromResources("actions/document-open-folder.png"));
         openFolderButton.addActionListener(e -> openOutputFolder());
         toolBar.add(openFolderButton);
         if (Files.isRegularFile(run.getConfiguration().getOutputPath().resolve("log.txt"))) {
-            JButton openLogButton = new JButton("Open log", UIUtils.getIconFromResources("search.png"));
+            JButton openLogButton = new JButton("Open log", UIUtils.getIconFromResources("actions/find.png"));
             openLogButton.addActionListener(e -> openLog());
             toolBar.add(openLogButton);
         }

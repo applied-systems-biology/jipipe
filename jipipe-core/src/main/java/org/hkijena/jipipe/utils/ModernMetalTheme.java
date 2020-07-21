@@ -124,8 +124,8 @@ public class ModernMetalTheme extends DefaultMetalTheme {
         // Button.disabledGrayRange -> Object[] of Integers giving min/max
         // InternalFrame.inactiveTitleGradient -> Gradient when the
         //   internal frame is inactive.
-        Object directoryIcon = UIUtils.getIconFromResources("folder.png");
-        Object fileIcon = UIUtils.getIconFromResources("file.png");
+        Object directoryIcon = UIUtils.getIconFromResources("actions/folder-open.png");
+        Object fileIcon = UIUtils.getIconFromResources("actions/snap-page.png");
         List<Object> sliderGradient = Arrays.asList(new Object[] {
                 .3f, .2f,
                 PRIMARY4, getWhite(), new ColorUIResource(SECONDARY2) });
@@ -151,25 +151,25 @@ public class ModernMetalTheme extends DefaultMetalTheme {
 
                 // home2
                 "FileChooser.homeFolderIcon",
-                UIUtils.getIconFromResources("algorithms/go-home.png"),
+                UIUtils.getIconFromResources("actions/go-home.png"),
                 // directory2
                 "FileChooser.newFolderIcon",
-                UIUtils.getIconFromResources("algorithms/folder-new.png"),
+                UIUtils.getIconFromResources("actions/folder-new.png"),
                 // updir2
                 "FileChooser.upFolderIcon",
-                UIUtils.getIconFromResources("algorithms/go-parent-folder.png"),
+                UIUtils.getIconFromResources("actions/go-parent-folder.png"),
 
                 // computer2
                 "FileView.computerIcon",
-                UIUtils.getIconFromResources("algorithms/desktop.png"),
+                UIUtils.getIconFromResources("devices/computer.png"),
                 "FileView.directoryIcon", directoryIcon,
                 // disk2
                 "FileView.hardDriveIcon",
-                UIUtils.getIconFromResources("algorithms/hdd.png"),
+                UIUtils.getIconFromResources("devices/drive-harddisk.png"),
                 "FileView.fileIcon", fileIcon,
                 // floppy2
                 "FileView.floppyDriveIcon",
-                UIUtils.getIconFromResources("algorithms/hdd.png"),
+                UIUtils.getIconFromResources("devices/media-floppy.png"),
 
                 "Label.disabledForeground", getInactiveControlTextColor(),
 
@@ -190,22 +190,22 @@ public class ModernMetalTheme extends DefaultMetalTheme {
                 "InternalFrame.activeTitleBackground", LIGHT_GRAY,
                 // close2
                 "InternalFrame.closeIcon",
-                UIUtils.getIconFromResources("close-tab.png"),
+                UIUtils.getIconFromResources("actions/close-tab.png"),
                 // minimize
                 "InternalFrame.iconifyIcon",
-                UIUtils.getIconFromResources("algorithms/window-minimize.png"),
+                UIUtils.getIconFromResources("actions/xfce-wm-minimize.png"),
                 // restore
                 "InternalFrame.minimizeIcon",
-                UIUtils.getIconFromResources("algorithms/window-minimize.png"),
+                UIUtils.getIconFromResources("actions/xfce-wm-minimize.png"),
                 // menubutton3
                 "InternalFrame.icon",
-                UIUtils.getIconFromResources("algorithms/show-menu.png"),
+                UIUtils.getIconFromResources("actions/open-menu.png"),
                 // maximize2
                 "InternalFrame.maximizeIcon",
-                UIUtils.getIconFromResources("algorithms/window-maximize.png"),
+                UIUtils.getIconFromResources("actions/xfce-wm-maximize.png"),
                 // paletteclose
                 "InternalFrame.paletteCloseIcon",
-                UIUtils.getIconFromResources("close-tab.png"),
+                UIUtils.getIconFromResources("actions/close-tab.png"),
 
                 "List.focusCellHighlightBorder", focusBorder,
 

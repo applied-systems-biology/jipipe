@@ -45,10 +45,10 @@ public class JIPipePluginValidityCheckerButton extends JButton {
 
         if (report.isValid()) {
             setText("All plugins valid");
-            setIcon(UIUtils.getIconFromResources("check-circle-green.png"));
+            setIcon(UIUtils.getIconFromResources("emblems/vcs-normal.png"));
         } else {
             setText("Some plugins could not be loaded");
-            setIcon(UIUtils.getIconFromResources("error.png"));
+            setIcon(UIUtils.getIconFromResources("emblems/vcs-conflicting.png"));
         }
     }
 

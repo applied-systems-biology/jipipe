@@ -53,7 +53,7 @@ public class ExportNodeUIContextAction implements NodeUIContextAction {
         NodeGroup group = new NodeGroup(graph, true);
         JIPipeJsonExporter exporter = new JIPipeJsonExporter(projectWorkbench, group);
         projectWorkbench.getDocumentTabPane().addTab("Export custom algorithm",
-                UIUtils.getIconFromResources("export.png"),
+                UIUtils.getIconFromResources("actions/document-export.png"),
                 exporter,
                 DocumentTabPane.CloseMode.withAskOnCloseButton);
         projectWorkbench.getDocumentTabPane().switchToLastTab();
@@ -71,7 +71,7 @@ public class ExportNodeUIContextAction implements NodeUIContextAction {
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("export.png");
+        return UIUtils.getIconFromResources("actions/document-export.png");
     }
 
     @Override

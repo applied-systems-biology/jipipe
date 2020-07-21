@@ -62,7 +62,7 @@ public class JIPipeJsonAlgorithmExporterSingleSelectionPanelUI extends JIPipeWor
                 false);
 
         JIPipeSlotEditorUI slotEditorUI = new JIPipeSlotEditorUI(graphEditorUI, algorithm);
-        tabbedPane.addTab("Slots", UIUtils.getIconFromResources("database.png"),
+        tabbedPane.addTab("Slots", UIUtils.getIconFromResources("actions/database.png"),
                 slotEditorUI,
                 DocumentTabPane.CloseMode.withoutCloseButton,
                 false);

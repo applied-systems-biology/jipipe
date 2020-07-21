@@ -85,14 +85,14 @@ public abstract class JIPipeParameterGeneratorUI extends JIPipeWorkbenchPanel im
             buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
             buttonPanel.add(Box.createHorizontalGlue());
 
-            JButton cancelButton = new JButton("Cancel", UIUtils.getIconFromResources("remove.png"));
+            JButton cancelButton = new JButton("Cancel", UIUtils.getIconFromResources("actions/cancel.png"));
             cancelButton.addActionListener(e -> {
                 this.cancelled = true;
                 this.setVisible(false);
             });
             buttonPanel.add(cancelButton);
 
-            JButton confirmButton = new JButton("Generate", UIUtils.getIconFromResources("run.png"));
+            JButton confirmButton = new JButton("Generate", UIUtils.getIconFromResources("actions/run-build.png"));
             confirmButton.addActionListener(e -> {
                 JIPipeValidityReport report = new JIPipeValidityReport();
                 generatorUI.reportValidity(report);

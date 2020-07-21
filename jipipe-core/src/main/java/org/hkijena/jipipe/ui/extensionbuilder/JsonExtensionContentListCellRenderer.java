@@ -40,7 +40,7 @@ public class JsonExtensionContentListCellRenderer extends JLabel implements List
             setIcon(UIUtils.getIcon32FromResources("cogs.png"));
         } else {
             setText("<Unknown entry>");
-            setIcon(UIUtils.getIconFromResources("remove.png"));
+            setIcon(UIUtils.getIconFromResources("actions/cancel.png"));
         }
         if (isSelected) {
             setBackground(new Color(184, 207, 229));

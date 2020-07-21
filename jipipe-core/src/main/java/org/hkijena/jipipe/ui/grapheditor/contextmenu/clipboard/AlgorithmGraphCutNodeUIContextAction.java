@@ -47,7 +47,7 @@ public class AlgorithmGraphCutNodeUIContextAction extends AlgorithmGraphCopyNode
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("cut.png");
+        return UIUtils.getIconFromResources("actions/edit-cut.png");
     }
 
     @Override

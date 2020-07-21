@@ -59,15 +59,15 @@ public class JIPipeVerticalDataSlotUI extends JIPipeDataSlotUI {
     protected void reloadButtonStatus() {
         if (getSlot().isInput()) {
             if (getGraph().getSourceSlot(getSlot()) == null) {
-                assignButton.setIcon(UIUtils.getIconFromResources("chevron-bottom-thin.png"));
+                assignButton.setIcon(UIUtils.getIconFromResources("emblems/slot-unconnected-input-vertical.png"));
             } else {
-                assignButton.setIcon(UIUtils.getIconFromResources("chevron-bottom.png"));
+                assignButton.setIcon(UIUtils.getIconFromResources("emblems/slot-connected-vertical.png"));
             }
         } else if (getSlot().isOutput()) {
             if (getGraph().getTargetSlots(getSlot()).isEmpty()) {
-                assignButton.setIcon(UIUtils.getIconFromResources("chevron-bottom-thin.png"));
+                assignButton.setIcon(UIUtils.getIconFromResources("emblems/slot-unconnected-output-vertical.png"));
             } else {
-                assignButton.setIcon(UIUtils.getIconFromResources("chevron-bottom.png"));
+                assignButton.setIcon(UIUtils.getIconFromResources("emblems/slot-connected-vertical.png"));
             }
             if (noSaveLabel != null) {
                 if (getSlot().getNode() instanceof JIPipeAlgorithm) {
@@ -82,7 +82,7 @@ public class JIPipeVerticalDataSlotUI extends JIPipeDataSlotUI {
     private void initialize() {
         setLayout(new BorderLayout());
 
-        this.assignButton = new JButton(UIUtils.getIconFromResources("chevron-bottom.png"));
+        this.assignButton = new JButton(UIUtils.getIconFromResources("emblems/slot-connected-vertical.png"));
         new JIPipeConnectionDragAndDropBehavior(this, assignButton);
         assignButton.setPreferredSize(new Dimension(25, 25));
         this.assignButtonMenu = UIUtils.addReloadablePopupMenuToComponent(assignButton, new JPopupMenu(), this::reloadPopupMenu);
@@ -113,7 +113,7 @@ public class JIPipeVerticalDataSlotUI extends JIPipeDataSlotUI {
         centerPanel.add(Box.createHorizontalGlue());
 
         if (getSlot().isOutput() && getSlot().getNode() instanceof JIPipeAlgorithm) {
-            noSaveLabel = new JLabel(UIUtils.getIconFromResources("no-save.png"));
+            noSaveLabel = new JLabel(UIUtils.getIconFromResources("actions/no-save.png"));
             noSaveLabel.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
             centerPanel.add(noSaveLabel);
         }

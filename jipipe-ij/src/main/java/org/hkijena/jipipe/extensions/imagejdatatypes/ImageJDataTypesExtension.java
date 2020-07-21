@@ -180,7 +180,7 @@ public class ImageJDataTypesExtension extends JIPipePrepackagedDefaultJavaExtens
         registerSettingsSheet(ImageJDataTypesSettings.ID,
                 "ImageJ data types",
                 "Extensions",
-                UIUtils.getIconFromResources("module.png"),
+                UIUtils.getIconFromResources("actions/plugins.png"),
                 new ImageJDataTypesSettings());
         registerEnumParameterType("ome-tiff-compression",
                 OMETIFFCompression.class,

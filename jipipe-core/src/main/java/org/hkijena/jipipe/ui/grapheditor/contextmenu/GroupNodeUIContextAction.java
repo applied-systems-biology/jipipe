@@ -56,7 +56,7 @@ public class GroupNodeUIContextAction implements NodeUIContextAction {
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("group.png");
+        return UIUtils.getIconFromResources("actions/object-group.png");
     }
 
     @Override

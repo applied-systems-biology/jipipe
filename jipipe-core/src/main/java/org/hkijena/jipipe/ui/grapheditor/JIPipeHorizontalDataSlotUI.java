@@ -59,22 +59,22 @@ public class JIPipeHorizontalDataSlotUI extends JIPipeDataSlotUI {
     protected void reloadButtonStatus() {
         if (getSlot().isInput()) {
             if (getGraph().getSourceSlot(getSlot()) == null) {
-                assignButton.setIcon(UIUtils.getIconFromResources("chevron-right-thin.png"));
+                assignButton.setIcon(UIUtils.getIconFromResources("emblems/slot-unconnected-input-horizontal.png"));
             } else {
-                assignButton.setIcon(UIUtils.getIconFromResources("chevron-right.png"));
+                assignButton.setIcon(UIUtils.getIconFromResources("emblems/slot-connected-horizontal.png"));
             }
         } else if (getSlot().isOutput()) {
             if (getGraph().getTargetSlots(getSlot()).isEmpty()) {
-                assignButton.setIcon(UIUtils.getIconFromResources("chevron-right-thin.png"));
+                assignButton.setIcon(UIUtils.getIconFromResources("emblems/slot-unconnected-output-horizontal.png"));
             } else {
-                assignButton.setIcon(UIUtils.getIconFromResources("chevron-right.png"));
+                assignButton.setIcon(UIUtils.getIconFromResources("emblems/slot-connected-horizontal.png"));
             }
-        }
-        if (noSaveLabel != null) {
-            if (getSlot().getNode() instanceof JIPipeAlgorithm) {
-                noSaveLabel.setVisible(!((JIPipeAlgorithm) getSlot().getNode()).isSaveOutputs());
-            } else {
-                noSaveLabel.setVisible(false);
+            if (noSaveLabel != null) {
+                if (getSlot().getNode() instanceof JIPipeAlgorithm) {
+                    noSaveLabel.setVisible(!((JIPipeAlgorithm) getSlot().getNode()).isSaveOutputs());
+                } else {
+                    noSaveLabel.setVisible(false);
+                }
             }
         }
     }
@@ -82,7 +82,7 @@ public class JIPipeHorizontalDataSlotUI extends JIPipeDataSlotUI {
     private void initialize() {
         setLayout(new BorderLayout());
 
-        this.assignButton = new JButton(UIUtils.getIconFromResources("chevron-right.png"));
+        this.assignButton = new JButton(UIUtils.getIconFromResources("emblems/slot-connected-horizontal.png"));
         new JIPipeConnectionDragAndDropBehavior(this, assignButton);
         assignButton.setPreferredSize(new Dimension(25, JIPipeGraphViewMode.Horizontal.getGridHeight()));
         this.assignButtonMenu = UIUtils.addReloadablePopupMenuToComponent(assignButton, new JPopupMenu(), this::reloadPopupMenu);
@@ -118,7 +118,7 @@ public class JIPipeHorizontalDataSlotUI extends JIPipeDataSlotUI {
         centerPanel.add(bottomPanel);
 
         if (getSlot().isOutput() && getSlot().getNode() instanceof JIPipeAlgorithm) {
-            noSaveLabel = new JLabel(UIUtils.getIconFromResources("no-save.png"));
+            noSaveLabel = new JLabel(UIUtils.getIconFromResources("actions/no-save.png"));
             noSaveLabel.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
             noSaveLabel.setMaximumSize(new Dimension(16, 16));
             bottomPanel.add(noSaveLabel);

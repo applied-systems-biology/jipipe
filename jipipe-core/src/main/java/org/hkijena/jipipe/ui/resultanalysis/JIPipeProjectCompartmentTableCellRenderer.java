@@ -30,7 +30,7 @@ public class JIPipeProjectCompartmentTableCellRenderer extends JLabel implements
      */
     public JIPipeProjectCompartmentTableCellRenderer() {
         setOpaque(true);
-        setIcon(UIUtils.getIconFromResources("graph-compartment.png"));
+        setIcon(UIUtils.getIconFromResources("data-types/graph-compartment.png"));
         setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
     }
 

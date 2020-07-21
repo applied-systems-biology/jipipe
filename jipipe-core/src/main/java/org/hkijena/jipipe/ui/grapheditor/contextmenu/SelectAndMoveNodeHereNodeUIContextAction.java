@@ -59,7 +59,7 @@ public class SelectAndMoveNodeHereNodeUIContextAction implements NodeUIContextAc
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("move.png");
+        return UIUtils.getIconFromResources("actions/transform-move.png");
     }
 
     @Override

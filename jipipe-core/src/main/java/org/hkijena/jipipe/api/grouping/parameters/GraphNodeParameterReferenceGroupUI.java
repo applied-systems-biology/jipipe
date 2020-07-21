@@ -60,13 +60,13 @@ public class GraphNodeParameterReferenceGroupUI extends JPanel {
     private void refreshUI() {
         contentPanel.clear();
         for (GraphNodeParameterReference reference : group.getContent()) {
-            JButton removeButton = new JButton(UIUtils.getIconFromResources("close-tab.png"));
+            JButton removeButton = new JButton(UIUtils.getIconFromResources("actions/close-tab.png"));
             UIUtils.makeBorderlessWithoutMargin(removeButton);
             removeButton.addActionListener(e -> group.removeContent(reference));
 
             contentPanel.addToForm(new GraphNodeParameterReferenceUI(this, reference), removeButton, null);
         }
-        JButton addButton = new JButton("Add parameter", UIUtils.getIconFromResources("add.png"));
+        JButton addButton = new JButton("Add parameter", UIUtils.getIconFromResources("actions/list-add.png"));
         UIUtils.makeFlat(addButton);
         addButton.setBorder(BorderFactory.createDashedBorder(Color.GRAY));
         addButton.addActionListener(e -> addReference());
@@ -120,7 +120,7 @@ public class GraphNodeParameterReferenceGroupUI extends JPanel {
             });
             add(nameEditor, BorderLayout.CENTER);
 
-            JButton changeDescriptionButton = new JButton("Edit description", UIUtils.getIconFromResources("text2.png"));
+            JButton changeDescriptionButton = new JButton("Edit description", UIUtils.getIconFromResources("actions/edit-select-text.png"));
             UIUtils.makeFlat(changeDescriptionButton);
             changeDescriptionButton.setToolTipText("Change description");
             changeDescriptionButton.addActionListener(e -> changeDescription());

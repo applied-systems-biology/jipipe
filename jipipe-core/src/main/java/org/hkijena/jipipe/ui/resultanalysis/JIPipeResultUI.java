@@ -138,11 +138,11 @@ public class JIPipeResultUI extends JIPipeProjectWorkbenchPanel {
         JToolBar toolBar = new JToolBar();
         toolBar.setFloatable(false);
 
-        JButton openFolderButton = new JButton("Open output folder", UIUtils.getIconFromResources("open.png"));
+        JButton openFolderButton = new JButton("Open output folder", UIUtils.getIconFromResources("actions/document-open-folder.png"));
         openFolderButton.addActionListener(e -> openOutputFolder());
         toolBar.add(openFolderButton);
 
-        JButton openLogButton = new JButton("Open log", UIUtils.getIconFromResources("log.png"));
+        JButton openLogButton = new JButton("Open log", UIUtils.getIconFromResources("actions/show_log.png"));
         openLogButton.addActionListener(e -> openLog());
         toolBar.add(openLogButton);
 

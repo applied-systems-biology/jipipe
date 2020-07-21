@@ -58,17 +58,17 @@ public class JsonNodeInfoUI extends JIPipeJsonExtensionWorkbenchPanel {
         JToolBar toolBar = new JToolBar();
         toolBar.setFloatable(false);
 
-        JLabel nameLabel = new JLabel(info.getName(), UIUtils.getIconFromResources("run.png"), JLabel.LEFT);
+        JLabel nameLabel = new JLabel(info.getName(), UIUtils.getIconFromResources("actions/run-build.png"), JLabel.LEFT);
         nameLabel.setToolTipText(TooltipUtils.getAlgorithmTooltip(info));
         toolBar.add(nameLabel);
 
         toolBar.add(Box.createHorizontalGlue());
 
-        JButton editButton = new JButton("Edit algorithm", UIUtils.getIconFromResources("edit.png"));
+        JButton editButton = new JButton("Edit algorithm", UIUtils.getIconFromResources("actions/edit.png"));
         editButton.addActionListener(e -> editAlgorithm());
         toolBar.add(editButton);
 
-        JButton deleteButton = new JButton(UIUtils.getIconFromResources("delete.png"));
+        JButton deleteButton = new JButton(UIUtils.getIconFromResources("actions/delete.png"));
         deleteButton.setToolTipText("Delete algorithm");
         deleteButton.addActionListener(e -> deleteAlgorithm());
         toolBar.add(deleteButton);
@@ -81,7 +81,7 @@ public class JsonNodeInfoUI extends JIPipeJsonExtensionWorkbenchPanel {
                 info,
                 null,
                 ParameterPanel.NO_GROUP_HEADERS);
-        FormPanel.GroupHeaderPanel metadataHeader = parameterEditor.addGroupHeader("Algorithm metadata", UIUtils.getIconFromResources("info.png"));
+        FormPanel.GroupHeaderPanel metadataHeader = parameterEditor.addGroupHeader("Algorithm metadata", UIUtils.getIconFromResources("actions/help-info.png"));
         metadataHeader.setDescription("Please provide following metadata:");
         parameterEditor.addWideToForm(infoParameterEditor, null);
         infoParameterEditor.getEventBus().register(new Object() {
@@ -91,7 +91,7 @@ public class JsonNodeInfoUI extends JIPipeJsonExtensionWorkbenchPanel {
             }
         });
 
-        FormPanel.GroupHeaderPanel parameterHeader = parameterEditor.addGroupHeader("Exported parameters", UIUtils.getIconFromResources("parameters.png"));
+        FormPanel.GroupHeaderPanel parameterHeader = parameterEditor.addGroupHeader("Exported parameters", UIUtils.getIconFromResources("data-types/parameters.png"));
         parameterHeader.setDescription("You can use the following settings to export parameters that then can be changed by users. Parameters are organized in groups " +
                 "with a customizable name and description. You can either manually define groups or add all available parameters of a selected algorithm. " +
                 "If you want to edit the parameter default values, you can find them in 'Edit algorithm'.");

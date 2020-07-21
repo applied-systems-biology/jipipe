@@ -55,7 +55,7 @@ public class UpdateSiteListUI extends JPanel {
         searchTextField.addActionListener(e -> refreshList());
         toolBar.add(searchTextField);
 
-        addButton = new JButton("Add", UIUtils.getIconFromResources("add.png"));
+        addButton = new JButton("Add", UIUtils.getIconFromResources("actions/list-add.png"));
         addButton.addActionListener(e -> addUpdateSite());
         toolBar.add(addButton);
 
@@ -71,7 +71,7 @@ public class UpdateSiteListUI extends JPanel {
         }
         FormPanel formPanel = new FormPanel(null, FormPanel.NONE);
         FancyTextField nameField = new FancyTextField(null, "");
-        FancyTextField urlField = new FancyTextField(new JLabel(UIUtils.getIconFromResources("filetype-html.png")), "");
+        FancyTextField urlField = new FancyTextField(new JLabel(UIUtils.getIconFromResources("actions/web-browser.png")), "");
         urlField.styleText(true, false, false);
         formPanel.addToForm(nameField, new JLabel("Name"), null);
         formPanel.addToForm(urlField, new JLabel("URL"), null);

@@ -29,8 +29,8 @@ import java.awt.*;
  * Renders the tree in {@link JIPipeResultAlgorithmTree}
  */
 public class JIPipeResultTreeCellRenderer extends JLabel implements TreeCellRenderer {
-    private Icon compartmentIcon = UIUtils.getIconFromResources("graph-compartment.png");
-    private Icon rootIcon = UIUtils.getIconFromResources("run.png");
+    private Icon compartmentIcon = UIUtils.getIconFromResources("data-types/graph-compartment.png");
+    private Icon rootIcon = UIUtils.getIconFromResources("actions/run-build.png");
 
     /**
      * Creates new renderer

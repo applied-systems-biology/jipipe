@@ -74,8 +74,8 @@ public class TableColumnGeneratorParameterEditorUI extends JIPipeParameterEditor
         add(comboBox);
 
         ButtonGroup buttonGroup = new ButtonGroup();
-        numericColumnToggle = addToggle(buttonGroup, UIUtils.getIconFromResources("number.png"), "Numeric column");
-        textColumnToggle = addToggle(buttonGroup, UIUtils.getIconFromResources("text.png"), "Text column");
+        numericColumnToggle = addToggle(buttonGroup, UIUtils.getIconFromResources("actions/edit-select-number.png"), "Numeric column");
+        textColumnToggle = addToggle(buttonGroup, UIUtils.getIconFromResources("actions/edit-select-text.png"), "Text column");
     }
 
     private void writeValueToParameter() {

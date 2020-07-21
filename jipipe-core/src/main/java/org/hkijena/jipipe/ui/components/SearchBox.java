@@ -108,7 +108,7 @@ public class SearchBox<T> extends JPanel {
             }
         }
 
-        JButton clearButton = new JButton(UIUtils.getIconFromResources("clear.png"));
+        JButton clearButton = new JButton(UIUtils.getIconFromResources("actions/edit-clear.png"));
         clearButton.setOpaque(false);
         clearButton.setToolTipText("Clear");
         clearButton.addActionListener(e -> clearSearch());

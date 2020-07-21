@@ -156,7 +156,7 @@ public class JIPipeProjectWindow extends JFrame {
 
                 // Create a new tab
                 window.getProjectUI().getDocumentTabPane().addTab("Run",
-                        UIUtils.getIconFromResources("run.png"),
+                        UIUtils.getIconFromResources("actions/run-build.png"),
                         new JIPipeResultUI(window.projectUI, run),
                         DocumentTabPane.CloseMode.withAskOnCloseButton,
                         true);

@@ -30,8 +30,8 @@ import java.awt.*;
  * Renders the tree in {@link JIPipeResultAlgorithmTree}
  */
 public class JIPipeCacheStateTreeCellRenderer extends JLabel implements TreeCellRenderer {
-    private Icon compartmentIcon = UIUtils.getIconFromResources("graph-compartment.png");
-    private Icon rootIcon = UIUtils.getIconFromResources("database.png");
+    private Icon compartmentIcon = UIUtils.getIconFromResources("data-types/graph-compartment.png");
+    private Icon rootIcon = UIUtils.getIconFromResources("actions/database.png");
 
     /**
      * Creates new renderer
@@ -59,7 +59,7 @@ public class JIPipeCacheStateTreeCellRenderer extends JLabel implements TreeCell
                 setText(slot.getName());
             } else if (userObject instanceof JIPipeProjectCache.State) {
                 JIPipeProjectCache.State state = (JIPipeProjectCache.State) userObject;
-                setIcon(UIUtils.getIconFromResources("camera.png"));
+                setIcon(UIUtils.getIconFromResources("actions/camera.png"));
                 setText(state.renderGenerationTime());
             } else {
                 setIcon(rootIcon);

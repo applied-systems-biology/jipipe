@@ -55,11 +55,11 @@ public class InheritanceConversionEditorUI extends JPanel {
 
         JToolBar toolBar = new JToolBar();
         toolBar.setFloatable(false);
-        JButton addButton = new JButton("Add", UIUtils.getIconFromResources("add.png"));
+        JButton addButton = new JButton("Add", UIUtils.getIconFromResources("actions/list-add.png"));
         addButton.addActionListener(e -> addEntry());
         toolBar.add(addButton);
 
-        JButton removeButton = new JButton(UIUtils.getIconFromResources("delete.png"));
+        JButton removeButton = new JButton(UIUtils.getIconFromResources("actions/delete.png"));
         removeButton.addActionListener(e -> removeSelectedEntries());
         toolBar.add(removeButton);
         add(toolBar, BorderLayout.NORTH);

@@ -43,7 +43,7 @@ public class InvertSelectionNodeUIContextAction implements NodeUIContextAction {
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("invert.png");
+        return UIUtils.getIconFromResources("actions/edit-select-invert.png");
     }
 
     @Override

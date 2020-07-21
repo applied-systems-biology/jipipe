@@ -62,7 +62,7 @@ public class DeleteNodeUIContextAction implements NodeUIContextAction {
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("delete.png");
+        return UIUtils.getIconFromResources("actions/delete.png");
     }
 
     @Override

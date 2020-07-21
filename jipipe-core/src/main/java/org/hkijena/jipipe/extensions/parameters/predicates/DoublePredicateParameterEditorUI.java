@@ -52,7 +52,7 @@ public class DoublePredicateParameterEditorUI extends JIPipeParameterEditorUI {
         removeAll();
         DoublePredicate filter = getParameter(DoublePredicate.class);
 
-        JToggleButton invertButton = new JToggleButton(UIUtils.getIconFromResources("not.png"));
+        JToggleButton invertButton = new JToggleButton(UIUtils.getIconFromResources("actions/negate.png"));
         UIUtils.makeFlat25x25(invertButton);
         invertButton.setToolTipText("Inverts the predicate");
         invertButton.setSelected(filter.isInvert());

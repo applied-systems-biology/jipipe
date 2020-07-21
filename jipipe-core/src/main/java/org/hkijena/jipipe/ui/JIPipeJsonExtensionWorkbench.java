@@ -83,23 +83,23 @@ public class JIPipeJsonExtensionWorkbench extends JPanel implements JIPipeWorkbe
         documentTabPane = new DocumentTabPane();
         documentTabPane.addSingletonTab("INTRODUCTION",
                 "Introduction",
-                UIUtils.getIconFromResources("info.png"),
+                UIUtils.getIconFromResources("actions/help-info.png"),
                 new JIPipeJsonExtensionInfoUI(this),
                 false);
         documentTabPane.addSingletonTab("PROJECT_SETTINGS",
                 "Extension settings",
-                UIUtils.getIconFromResources("wrench.png"),
+                UIUtils.getIconFromResources("actions/wrench.png"),
                 new JIPipeJsonExtensionSettingsUI(this),
                 false);
         documentTabPane.addSingletonTab("PROJECT_CONTENTS",
                 "Extension contents",
-                UIUtils.getIconFromResources("module.png"),
+                UIUtils.getIconFromResources("actions/plugins.png"),
                 new JIPipeJsonExtensionContentListUI(this),
                 false);
         validityCheckerPanel = new ReloadableValidityChecker(new JIPipeJsonExtensionProjectValidation(project));
         documentTabPane.addSingletonTab("VALIDITY_CHECK",
                 "Project validation",
-                UIUtils.getIconFromResources("checkmark.png"),
+                UIUtils.getIconFromResources("actions/checkmark.png"),
                 validityCheckerPanel,
                 true);
         initializeMenu();
@@ -140,7 +140,7 @@ public class JIPipeJsonExtensionWorkbench extends JPanel implements JIPipeWorkbe
         JMenu projectMenu = new JMenu("Extension");
 
         // Add "New project" toolbar entry
-        JMenuItem newProjectButton = new JMenuItem("New", UIUtils.getIconFromResources("new.png"));
+        JMenuItem newProjectButton = new JMenuItem("New", UIUtils.getIconFromResources("actions/document-new.png"));
         newProjectButton.setToolTipText("Creates a new extension");
         newProjectButton.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.CTRL_DOWN_MASK));
         newProjectButton.addActionListener(e -> window.newProject());
@@ -150,26 +150,26 @@ public class JIPipeJsonExtensionWorkbench extends JPanel implements JIPipeWorkbe
         projectMenu.addSeparator();
 
         // "Open project" entry
-        JMenuItem openProjectButton = new JMenuItem("Open ...", UIUtils.getIconFromResources("open.png"));
+        JMenuItem openProjectButton = new JMenuItem("Open ...", UIUtils.getIconFromResources("actions/document-open-folder.png"));
         openProjectButton.setToolTipText("Opens an extension");
         openProjectButton.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.CTRL_DOWN_MASK));
         openProjectButton.addActionListener(e -> window.openProject());
         projectMenu.add(openProjectButton);
 
         // Recent projects entry
-        projectMenu.add(new RecentJsonExtensionsMenu("Recent extensions", UIUtils.getIconFromResources("clock.png"), (JIPipeJsonExtensionWindow) getWindow()));
+        projectMenu.add(new RecentJsonExtensionsMenu("Recent extensions", UIUtils.getIconFromResources("actions/clock.png"), (JIPipeJsonExtensionWindow) getWindow()));
 
         projectMenu.addSeparator();
 
         // "Save project" entry
-        JMenuItem saveProjectButton = new JMenuItem("Save ...", UIUtils.getIconFromResources("save.png"));
+        JMenuItem saveProjectButton = new JMenuItem("Save ...", UIUtils.getIconFromResources("actions/save.png"));
         saveProjectButton.setToolTipText("Saves the extension. If the extension was opened from a file or previously saved, the file will be overwritten.");
         saveProjectButton.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK));
         saveProjectButton.addActionListener(e -> window.saveProjectAs(true));
         projectMenu.add(saveProjectButton);
 
         // "Save project" entry
-        JMenuItem saveProjectAsButton = new JMenuItem("Save as ...", UIUtils.getIconFromResources("save.png"));
+        JMenuItem saveProjectAsButton = new JMenuItem("Save as ...", UIUtils.getIconFromResources("actions/save.png"));
         saveProjectAsButton.setToolTipText("Saves the extension to a new file.");
         saveProjectAsButton.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK + KeyEvent.SHIFT_DOWN_MASK));
         saveProjectAsButton.addActionListener(e -> window.saveProjectAs(false));
@@ -179,11 +179,11 @@ public class JIPipeJsonExtensionWorkbench extends JPanel implements JIPipeWorkbe
 
         projectMenu.addSeparator();
 
-        JMenuItem projectSettingsButton = new JMenuItem("Extension settings", UIUtils.getIconFromResources("wrench.png"));
+        JMenuItem projectSettingsButton = new JMenuItem("Extension settings", UIUtils.getIconFromResources("actions/wrench.png"));
         projectSettingsButton.addActionListener(e -> openExtensionSettings());
         projectMenu.add(projectSettingsButton);
 
-        JMenuItem projectContentButton = new JMenuItem("Extension contents", UIUtils.getIconFromResources("module.png"));
+        JMenuItem projectContentButton = new JMenuItem("Extension contents", UIUtils.getIconFromResources("actions/plugins.png"));
         projectContentButton.addActionListener(e -> openExtensionContents());
         projectMenu.add(projectContentButton);
 
@@ -196,14 +196,14 @@ public class JIPipeJsonExtensionWorkbench extends JPanel implements JIPipeWorkbe
         menu.add(Box.createHorizontalGlue());
 
         // "Validate" entry
-        JButton validateProjectButton = new JButton("Validate", UIUtils.getIconFromResources("checkmark.png"));
+        JButton validateProjectButton = new JButton("Validate", UIUtils.getIconFromResources("actions/checkmark.png"));
         validateProjectButton.setToolTipText("Opens a new tab to check parameters and graph for validity.");
         validateProjectButton.addActionListener(e -> validateProject());
         UIUtils.makeFlat(validateProjectButton);
         menu.add(validateProjectButton);
 
         // "Run" entry
-        JButton installButton = new JButton("Install", UIUtils.getIconFromResources("download.png"));
+        JButton installButton = new JButton("Install", UIUtils.getIconFromResources("actions/run-install.png"));
         installButton.setToolTipText("Installs the current extension.");
         UIUtils.makeFlat(installButton);
         installButton.addActionListener(e -> installProject());
@@ -211,8 +211,8 @@ public class JIPipeJsonExtensionWorkbench extends JPanel implements JIPipeWorkbe
 
         // "Help" entry
         JMenu helpMenu = new JMenu();
-        helpMenu.setIcon(UIUtils.getIconFromResources("help.png"));
-        JMenuItem quickHelp = new JMenuItem("Quick introduction", UIUtils.getIconFromResources("quickload.png"));
+        helpMenu.setIcon(UIUtils.getIconFromResources("actions/help.png"));
+        JMenuItem quickHelp = new JMenuItem("Getting started", UIUtils.getIconFromResources("actions/help-info.png"));
         quickHelp.addActionListener(e -> documentTabPane.selectSingletonTab("INTRODUCTION"));
         helpMenu.add(quickHelp);
         menu.add(helpMenu);

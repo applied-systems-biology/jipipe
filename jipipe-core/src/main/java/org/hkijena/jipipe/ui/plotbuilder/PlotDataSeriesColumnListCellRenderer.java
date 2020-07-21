@@ -40,17 +40,17 @@ public class PlotDataSeriesColumnListCellRenderer extends JLabel implements List
         if (value instanceof DoubleArrayTableColumn) {
             DoubleArrayTableColumn data = (DoubleArrayTableColumn) value;
             setText(data.getLabel() + " (" + data.getData().length + " rows)");
-            setIcon(UIUtils.getIconFromResources("table.png"));
+            setIcon(UIUtils.getIconFromResources("data-types/results-table.png"));
         } else if (value instanceof StringArrayTableColumn) {
             StringArrayTableColumn data = (StringArrayTableColumn) value;
             setText(data.getLabel() + " (" + data.getData().length + " rows)");
-            setIcon(UIUtils.getIconFromResources("table.png"));
+            setIcon(UIUtils.getIconFromResources("data-types/results-table.png"));
         } else if (value != null) {
             setText(value.getLabel());
             setIcon(UIUtils.getIconFromResources("actions/configure.png"));
         } else {
             setText("None selected");
-            setIcon(UIUtils.getIconFromResources("error.png"));
+            setIcon(UIUtils.getIconFromResources("emblems/vcs-conflicting.png"));
         }
 
         if (isSelected) {

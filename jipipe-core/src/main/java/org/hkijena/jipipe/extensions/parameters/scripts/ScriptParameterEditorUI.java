@@ -50,7 +50,7 @@ public class ScriptParameterEditorUI extends JIPipeParameterEditorUI {
         setLayout(new BorderLayout());
         ScriptParameter code = getParameter(ScriptParameter.class);
         collapseInfoLabel = new JLabel("The code is hidden. Click the 'Collapse' button to show it",
-                UIUtils.getIconFromResources("eye-slash.png"),
+                UIUtils.getIconFromResources("actions/eye-slash.png"),
                 JLabel.LEFT);
         collapseInfoLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, 12));
         textArea = new EditorPane();
@@ -76,12 +76,12 @@ public class ScriptParameterEditorUI extends JIPipeParameterEditorUI {
 
         toolBar.add(Box.createHorizontalGlue());
 
-        JToggleButton collapseButton = new JToggleButton("Collapse", UIUtils.getIconFromResources("eye-slash.png"));
+        JToggleButton collapseButton = new JToggleButton("Collapse", UIUtils.getIconFromResources("actions/eye-slash.png"));
         collapseButton.setSelected(code.isCollapsed());
         collapseButton.addActionListener(e -> toggleCollapse());
         toolBar.add(collapseButton);
 
-        JButton openIdeButton = new JButton("IDE", UIUtils.getIconFromResources("window-new.png"));
+        JButton openIdeButton = new JButton("IDE", UIUtils.getIconFromResources("actions/window_new.png"));
         openIdeButton.addActionListener(e -> openIDE());
         toolBar.add(openIdeButton);
 
@@ -106,7 +106,7 @@ public class ScriptParameterEditorUI extends JIPipeParameterEditorUI {
         }
         ScriptParameter code = getParameter(ScriptParameter.class);
         getWorkbench().getDocumentTabPane().addTab(getParameterAccess().getName() + " (" + code.getLanguageName() + ")",
-                UIUtils.getIconFromResources("algorithms/dialog-xml-editor.png"),
+                UIUtils.getIconFromResources("actions/dialog-xml-editor.png"),
                 new LargeScriptParameterEditorUI(getWorkbench(), getParameterAccess()),
                 DocumentTabPane.CloseMode.withSilentCloseButton,
                 true);

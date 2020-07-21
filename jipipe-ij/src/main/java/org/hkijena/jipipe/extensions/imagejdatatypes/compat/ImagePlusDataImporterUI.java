@@ -57,7 +57,7 @@ public class ImagePlusDataImporterUI extends ImageJDatatypeImporterUI {
         imageSelection.setToolTipText("The name of the image that should be imported. If you leave this empty, the currently active image will be used.");
         add(imageSelection, BorderLayout.CENTER);
 
-        JButton reloadButton = new JButton(UIUtils.getIconFromResources("refresh.png"));
+        JButton reloadButton = new JButton(UIUtils.getIconFromResources("actions/view-refresh.png"));
         reloadButton.setToolTipText("Reload list of available images");
         reloadButton.addActionListener(e -> reloadList());
         UIUtils.makeFlat25x25(reloadButton);

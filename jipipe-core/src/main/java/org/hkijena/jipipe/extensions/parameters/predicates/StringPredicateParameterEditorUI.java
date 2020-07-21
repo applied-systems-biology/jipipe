@@ -48,7 +48,7 @@ public class StringPredicateParameterEditorUI extends JIPipeParameterEditorUI {
         removeAll();
         StringPredicate filter = getParameter(StringPredicate.class);
 
-        JToggleButton invertButton = new JToggleButton(UIUtils.getIconFromResources("not.png"));
+        JToggleButton invertButton = new JToggleButton(UIUtils.getIconFromResources("actions/negate.png"));
         UIUtils.makeFlat25x25(invertButton);
         invertButton.setToolTipText("Inverts the predicate");
         invertButton.setSelected(filter.isInvert());
@@ -72,17 +72,17 @@ public class StringPredicateParameterEditorUI extends JIPipeParameterEditorUI {
         ButtonGroup group = new ButtonGroup();
         addFilterModeSelection(filter,
                 group,
-                UIUtils.getIconFromResources("equals.png"),
+                UIUtils.getIconFromResources("actions/equals.png"),
                 StringPredicate.Mode.Equals,
                 "String equals filter text");
         addFilterModeSelection(filter,
                 group,
-                UIUtils.getIconFromResources("text2.png"),
+                UIUtils.getIconFromResources("actions/edit-select-text.png"),
                 StringPredicate.Mode.Contains,
                 "String contains filter text");
         addFilterModeSelection(filter,
                 group,
-                UIUtils.getIconFromResources("regex.png"),
+                UIUtils.getIconFromResources("actions/code-context.png"),
                 StringPredicate.Mode.Regex,
                 "String matches Regex pattern (e.g. .*\\.txt)");
         revalidate();

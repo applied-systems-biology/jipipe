@@ -82,7 +82,7 @@ public class JIPipeTestBenchUI extends JIPipeProjectWorkbenchPanel {
         toolBar.setFloatable(false);
 
         String compartmentName = getProject().getCompartments().get(testBench.getProjectAlgorithm().getCompartment()).getName();
-        JLabel compartmentInfo = new JLabel(compartmentName, UIUtils.getIconFromResources("graph-compartment.png"), JLabel.LEFT);
+        JLabel compartmentInfo = new JLabel(compartmentName, UIUtils.getIconFromResources("data-types/graph-compartment.png"), JLabel.LEFT);
         toolBar.add(compartmentInfo);
 
         toolBar.add(Box.createHorizontalStrut(8));
@@ -102,24 +102,24 @@ public class JIPipeTestBenchUI extends JIPipeProjectWorkbenchPanel {
         });
         toolBar.add(backupSelection);
 
-        JButton clearBackupsButton = new JButton(UIUtils.getIconFromResources("delete.png"));
+        JButton clearBackupsButton = new JButton(UIUtils.getIconFromResources("actions/delete.png"));
         clearBackupsButton.setToolTipText("Remove all other time points");
         clearBackupsButton.addActionListener(e -> clearBackups());
         toolBar.add(clearBackupsButton);
 
-        JButton renameButton = new JButton(UIUtils.getIconFromResources("label.png"));
+        JButton renameButton = new JButton(UIUtils.getIconFromResources("actions/tag.png"));
         renameButton.setToolTipText("Label test");
         renameButton.addActionListener(e -> renameCurrentBackup());
         toolBar.add(renameButton);
 
-        JButton copyParametersButton = new ConfirmingButton("Apply parameters", UIUtils.getIconFromResources("upload.png"));
+        JButton copyParametersButton = new ConfirmingButton("Apply parameters", UIUtils.getIconFromResources("actions/dialog-apply.png"));
         copyParametersButton.setToolTipText("Copies the current parameters to the algorithm that was used to create this testbench.");
         copyParametersButton.addActionListener(e -> copyParameters());
         toolBar.add(copyParametersButton);
 
         toolBar.add(Box.createHorizontalStrut(8));
 
-        newTestButton = new JButton("New test", UIUtils.getIconFromResources("run.png"));
+        newTestButton = new JButton("New test", UIUtils.getIconFromResources("actions/run-build.png"));
         newTestButton.addActionListener(e -> newTest());
         toolBar.add(newTestButton);
 

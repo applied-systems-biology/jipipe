@@ -178,14 +178,14 @@ public class JIPipeDataTypePicker extends JPanel {
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
         buttonPanel.add(Box.createHorizontalGlue());
 
-        JButton cancelButton = new JButton("Cancel", UIUtils.getIconFromResources("remove.png"));
+        JButton cancelButton = new JButton("Cancel", UIUtils.getIconFromResources("actions/cancel.png"));
         cancelButton.addActionListener(e -> {
             picker.setSelectedDataTypes(Collections.emptySet());
             dialog.setVisible(false);
         });
         buttonPanel.add(cancelButton);
 
-        JButton confirmButton = new JButton("Pick", UIUtils.getIconFromResources("checkmark.png"));
+        JButton confirmButton = new JButton("Pick", UIUtils.getIconFromResources("actions/checkmark.png"));
         confirmButton.addActionListener(e -> dialog.setVisible(false));
         buttonPanel.add(confirmButton);
 

@@ -48,7 +48,7 @@ public class CollapseIOInterfaceNodeUIContextAction implements NodeUIContextActi
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("delete.png");
+        return UIUtils.getIconFromResources("actions/delete.png");
     }
 
     @Override

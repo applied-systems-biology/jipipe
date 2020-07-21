@@ -65,7 +65,7 @@ public class JIPipeDataSlotCacheManagerUI extends JIPipeProjectWorkbenchPanel {
         UIUtils.addReloadablePopupMenuToComponent(annotationButton, contextMenu, this::reloadContextMenu);
         add(annotationButton);
 
-        cacheButton = new JButton(UIUtils.getIconFromResources("database.png"));
+        cacheButton = new JButton(UIUtils.getIconFromResources("actions/database.png"));
         UIUtils.makeFlat25x25(cacheButton);
         cacheButton.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
         UIUtils.addReloadablePopupMenuToComponent(cacheButton, contextMenu, this::reloadContextMenu);
@@ -83,7 +83,7 @@ public class JIPipeDataSlotCacheManagerUI extends JIPipeProjectWorkbenchPanel {
                 contextMenu.add(openCurrent);
             }
             JMenu previousMenu = new JMenu("All snapshots");
-            previousMenu.setIcon(UIUtils.getIconFromResources("clock.png"));
+            previousMenu.setIcon(UIUtils.getIconFromResources("actions/clock.png"));
             for (JIPipeProjectCache.State state : stateMap.keySet().stream().sorted(Comparator.reverseOrder()).collect(Collectors.toList())) {
                 JMenuItem item = createOpenStateButton(stateMap, state, "Open snapshot from " + state.getGenerationTime().format(DateTimeFormatter.ISO_LOCAL_DATE) + " " +
                         state.getGenerationTime().format(DateTimeFormatter.ofPattern("HH:mm:ss")));
@@ -97,13 +97,13 @@ public class JIPipeDataSlotCacheManagerUI extends JIPipeProjectWorkbenchPanel {
             }
         }
 
-        JMenuItem clearOutdated = new JMenuItem("Clear outdated", UIUtils.getIconFromResources("clock.png"));
+        JMenuItem clearOutdated = new JMenuItem("Clear outdated", UIUtils.getIconFromResources("actions/clock.png"));
         clearOutdated.setToolTipText("Removes all cached items that are have no representation in the project graph, anymore. " +
                 "This includes items where the algorithm parameters have been changed.");
         clearOutdated.addActionListener(e -> getProject().getCache().autoClean(false, true));
         contextMenu.add(clearOutdated);
 
-        JMenuItem clearAll = new JMenuItem("Clear all", UIUtils.getIconFromResources("delete.png"));
+        JMenuItem clearAll = new JMenuItem("Clear all", UIUtils.getIconFromResources("actions/delete.png"));
         clearAll.setToolTipText("Removes all cached items.");
         clearAll.addActionListener(e -> getProject().getCache().clear());
         contextMenu.add(clearAll);
@@ -118,7 +118,7 @@ public class JIPipeDataSlotCacheManagerUI extends JIPipeProjectWorkbenchPanel {
             return null;
 
         JMenuItem item = new JMenuItem(label);
-        item.setIcon(UIUtils.getIconFromResources("camera.png"));
+        item.setIcon(UIUtils.getIconFromResources("actions/camera.png"));
         item.setToolTipText("Opens the currently cached data as table");
         item.addActionListener(e -> openData(state));
         return item;
@@ -132,7 +132,7 @@ public class JIPipeDataSlotCacheManagerUI extends JIPipeProjectWorkbenchPanel {
         JIPipeCacheBrowserUI cacheTable = new JIPipeCacheBrowserUI(getProjectWorkbench());
         cacheTable.getTree().selectDataSlot(state, getDataSlot());
         getWorkbench().getDocumentTabPane().addTab("Cache browser",
-                UIUtils.getIconFromResources("database.png"),
+                UIUtils.getIconFromResources("actions/database.png"),
                 cacheTable,
                 DocumentTabPane.CloseMode.withSilentCloseButton,
                 true);
@@ -188,7 +188,7 @@ public class JIPipeDataSlotCacheManagerUI extends JIPipeProjectWorkbenchPanel {
         builder.append("This output data is annotated in at least one snapshot.<br/><br/>");
         builder.append("<table>");
         for (String info : traitTypes.stream().sorted().collect(Collectors.toList())) {
-            builder.append("<tr><td><img src=\"").append(UIUtils.getIconFromResources("annotation.png")).append("\"/><td><strong>");
+            builder.append("<tr><td><img src=\"").append(UIUtils.getIconFromResources("data-types/annotation.png")).append("\"/><td><strong>");
             builder.append(HtmlEscapers.htmlEscaper().escape(info)).append("</strong></td></tr>");
         }
         builder.append("<table>");

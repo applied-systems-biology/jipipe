@@ -72,13 +72,13 @@ public class JIPipeSingleAlgorithmSelectionPanelUI extends JIPipeProjectWorkbenc
                 false);
 
         JIPipeSlotEditorUI slotEditorUI = new JIPipeSlotEditorUI(graphEditorUI, algorithm);
-        tabbedPane.addTab("Slots", UIUtils.getIconFromResources("plug.png"),
+        tabbedPane.addTab("Slots", UIUtils.getIconFromResources("actions/plug.png"),
                 slotEditorUI,
                 DocumentTabPane.CloseMode.withoutCloseButton,
                 false);
 
         cacheBrowserTabContent = new JPanel(new BorderLayout());
-        tabbedPane.addTab("Cache browser", UIUtils.getIconFromResources("database.png"),
+        tabbedPane.addTab("Cache browser", UIUtils.getIconFromResources("actions/database.png"),
                 cacheBrowserTabContent,
                 DocumentTabPane.CloseMode.withoutCloseButton,
                 false);
@@ -92,7 +92,7 @@ public class JIPipeSingleAlgorithmSelectionPanelUI extends JIPipeProjectWorkbenc
         }
 
         testBenchTabContent = new JPanel(new BorderLayout());
-        tabbedPane.addTab("Quick run", UIUtils.getIconFromResources("play.png"),
+        tabbedPane.addTab("Quick run", UIUtils.getIconFromResources("actions/media-play.png"),
                 testBenchTabContent,
                 DocumentTabPane.CloseMode.withoutCloseButton,
                 false);
@@ -144,14 +144,14 @@ public class JIPipeSingleAlgorithmSelectionPanelUI extends JIPipeProjectWorkbenc
                 canvas);
 
         if (JIPipeNodeRegistry.getInstance().getRegisteredNodeInfos().containsValue(algorithm.getInfo())) {
-            JButton openCompendiumButton = new JButton(UIUtils.getIconFromResources("help.png"));
+            JButton openCompendiumButton = new JButton(UIUtils.getIconFromResources("actions/help.png"));
             UIUtils.makeFlat25x25(openCompendiumButton);
             openCompendiumButton.setToolTipText("Open in algorithm compendium");
             openCompendiumButton.addActionListener(e -> {
                 JIPipeAlgorithmCompendiumUI compendiumUI = new JIPipeAlgorithmCompendiumUI();
                 compendiumUI.selectItem(algorithm.getInfo());
                 getWorkbench().getDocumentTabPane().addTab("Algorithm compendium",
-                        UIUtils.getIconFromResources("help.png"),
+                        UIUtils.getIconFromResources("actions/help.png"),
                         compendiumUI,
                         DocumentTabPane.CloseMode.withSilentCloseButton,
                         true);

@@ -66,7 +66,7 @@ public class JIPipeSettingsRegistry implements JIPipeParameterCollection, JIPipe
             category = "General";
         }
         if (categoryIcon == null) {
-            categoryIcon = UIUtils.getIconFromResources("wrench.png");
+            categoryIcon = UIUtils.getIconFromResources("actions/wrench.png");
         }
         Sheet sheet = new Sheet(name, category, categoryIcon, parameterCollection);
         parameterCollection.getEventBus().register(this);

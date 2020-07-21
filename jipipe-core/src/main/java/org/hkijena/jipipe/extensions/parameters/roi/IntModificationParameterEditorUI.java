@@ -68,12 +68,12 @@ public class IntModificationParameterEditorUI extends JIPipeParameterEditorUI {
         ButtonGroup group = new ButtonGroup();
         addModeSelection(modification,
                 group,
-                UIUtils.getIconFromResources("equals.png"),
+                UIUtils.getIconFromResources("actions/equals.png"),
                 true,
                 "Set to exact value");
         addModeSelection(modification,
                 group,
-                UIUtils.getIconFromResources("percent.png"),
+                UIUtils.getIconFromResources("actions/format-number-relative.png"),
                 false,
                 "Set to relative value (1 equals identity)");
         revalidate();

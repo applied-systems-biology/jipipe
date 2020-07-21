@@ -49,7 +49,7 @@ public class RunAndShowResultsNodeUIContextAction implements NodeUIContextAction
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("play.png");
+        return UIUtils.getIconFromResources("actions/media-play.png");
     }
 
     @Override

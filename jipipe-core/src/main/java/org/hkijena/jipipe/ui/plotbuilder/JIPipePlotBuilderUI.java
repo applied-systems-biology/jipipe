@@ -93,10 +93,10 @@ public class JIPipePlotBuilderUI extends JIPipeWorkbenchPanel implements JIPipeP
                         ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.DOCUMENTATION_BELOW | ParameterPanel.WITH_SCROLLING),
                 DocumentTabPane.CloseMode.withoutCloseButton,
                 false);
-        tabbedPane.addTab("Series", UIUtils.getIconFromResources("select-column.png"),
+        tabbedPane.addTab("Series", UIUtils.getIconFromResources("actions/stock_select-column.png"),
                 new JIPipePlotSeriesListEditorUI(getWorkbench(), this),
                 DocumentTabPane.CloseMode.withoutCloseButton);
-        tabbedPane.addTab("Data", UIUtils.getIconFromResources("table.png"),
+        tabbedPane.addTab("Data", UIUtils.getIconFromResources("data-types/results-table.png"),
                 new JIPipePlotAvailableDataManagerUI(getWorkbench(), this),
                 DocumentTabPane.CloseMode.withoutCloseButton);
 

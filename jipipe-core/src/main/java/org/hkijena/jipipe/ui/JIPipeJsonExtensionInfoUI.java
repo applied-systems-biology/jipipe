@@ -151,7 +151,7 @@ public class JIPipeJsonExtensionInfoUI extends JIPipeJsonExtensionWorkbenchPanel
         toolBar.setLayout(new BoxLayout(toolBar, BoxLayout.X_AXIS));
         toolBar.setOpaque(false);
 
-        JButton openWebsiteButton = new JButton("Visit our website", UIUtils.getIconFromResources("filetype-html.png"));
+        JButton openWebsiteButton = new JButton("Visit our website", UIUtils.getIconFromResources("actions/web-browser.png"));
         openWebsiteButton.setToolTipText("https://applied-systems-biology.github.io/jipipe");
         openWebsiteButton.addActionListener(e -> UIUtils.openWebsite("https://applied-systems-biology.github.io/jipipe"));
         openWebsiteButton.setOpaque(false);
@@ -159,7 +159,7 @@ public class JIPipeJsonExtensionInfoUI extends JIPipeJsonExtensionWorkbenchPanel
         toolBar.add(openWebsiteButton);
         toolBar.add(Box.createHorizontalStrut(4));
 
-        JButton openTutorialsButton = new JButton("Tutorial (Online)", UIUtils.getIconFromResources("algorithms/graduation-cap.png"));
+        JButton openTutorialsButton = new JButton("Tutorial (Online)", UIUtils.getIconFromResources("actions/graduation-cap.png"));
         openTutorialsButton.setToolTipText("https://applied-systems-biology.github.io/jipipe/tutorials/extension");
         openTutorialsButton.addActionListener(e -> UIUtils.openWebsite("https://applied-systems-biology.github.io/jipipe/tutorial/extension"));
         openTutorialsButton.setOpaque(false);
@@ -167,7 +167,7 @@ public class JIPipeJsonExtensionInfoUI extends JIPipeJsonExtensionWorkbenchPanel
         toolBar.add(openTutorialsButton);
         toolBar.add(Box.createHorizontalStrut(4));
 
-        JButton openDocumentationButton = new JButton("Documentation (Online)", UIUtils.getIconFromResources("info.png"));
+        JButton openDocumentationButton = new JButton("Documentation (Online)", UIUtils.getIconFromResources("actions/help-info.png"));
         openDocumentationButton.setToolTipText("https://applied-systems-biology.github.io/jipipe/documentation/create-json-extensions");
         openDocumentationButton.addActionListener(e -> UIUtils.openWebsite("https://applied-systems-biology.github.io/jipipe/documentation/create-json-extensions"));
         openDocumentationButton.setOpaque(false);
@@ -175,7 +175,7 @@ public class JIPipeJsonExtensionInfoUI extends JIPipeJsonExtensionWorkbenchPanel
         toolBar.add(openDocumentationButton);
         toolBar.add(Box.createHorizontalStrut(4));
 
-        JButton openSourceCodeButton = new JButton("Source code (Online)", UIUtils.getIconFromResources("algorithms/dialog-xml-editor.png"));
+        JButton openSourceCodeButton = new JButton("Source code (Online)", UIUtils.getIconFromResources("actions/dialog-xml-editor.png"));
         openSourceCodeButton.setToolTipText("https://github.com/applied-systems-biology/jipipe/");
         openSourceCodeButton.addActionListener(e -> UIUtils.openWebsite("https://github.com/applied-systems-biology/jipipe/"));
         openSourceCodeButton.setOpaque(false);

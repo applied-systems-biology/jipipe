@@ -116,13 +116,13 @@ public class ManagerUI extends JIPipeWorkbenchPanel {
         toolBar.add(searchTextField);
 
         ButtonGroup viewOptionGroup = new ButtonGroup();
-        addViewOptionButton(toolBar, viewOptionGroup, ViewOptions.Option.ALL, UIUtils.getIconFromResources("glob.png"));
+        addViewOptionButton(toolBar, viewOptionGroup, ViewOptions.Option.ALL, UIUtils.getIconFromResources("actions/glob.png"));
         addViewOptionButton(toolBar, viewOptionGroup, ViewOptions.Option.MANAGED, UIUtils.getIconFromResources("cloud.png"));
         addViewOptionButton(toolBar, viewOptionGroup, ViewOptions.Option.OTHERS, UIUtils.getIconFromResources("cloud-crossed.png"));
-        addViewOptionButton(toolBar, viewOptionGroup, ViewOptions.Option.LOCALLY_MODIFIED, UIUtils.getIconFromResources("edit.png"));
-        addViewOptionButton(toolBar, viewOptionGroup, ViewOptions.Option.INSTALLED, UIUtils.getIconFromResources("checkmark.png"));
-        addViewOptionButton(toolBar, viewOptionGroup, ViewOptions.Option.UNINSTALLED, UIUtils.getIconFromResources("remove.png"));
-        addViewOptionButton(toolBar, viewOptionGroup, ViewOptions.Option.CHANGES, UIUtils.getIconFromResources("wrench.png"));
+        addViewOptionButton(toolBar, viewOptionGroup, ViewOptions.Option.LOCALLY_MODIFIED, UIUtils.getIconFromResources("actions/edit.png"));
+        addViewOptionButton(toolBar, viewOptionGroup, ViewOptions.Option.INSTALLED, UIUtils.getIconFromResources("actions/checkmark.png"));
+        addViewOptionButton(toolBar, viewOptionGroup, ViewOptions.Option.UNINSTALLED, UIUtils.getIconFromResources("actions/cancel.png"));
+        addViewOptionButton(toolBar, viewOptionGroup, ViewOptions.Option.CHANGES, UIUtils.getIconFromResources("actions/wrench.png"));
         addViewOptionButton(toolBar, viewOptionGroup, ViewOptions.Option.UPTODATE, UIUtils.getIconFromResources("checkbox-green.png"));
         addViewOptionButton(toolBar, viewOptionGroup, ViewOptions.Option.UPDATEABLE, UIUtils.getIconFromResources("checkbox-orange.png"));
     }

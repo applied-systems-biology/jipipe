@@ -47,7 +47,7 @@ public class GraphNodeParameterReferenceUI extends JPanel {
         setLayout(new BorderLayout(4, 0));
         JIPipeParameterTree tree = referenceGroupUI.getParametersUI().getTree();
 
-        JLabel infoLabel = new JLabel(UIUtils.getIconFromResources("parameters.png"));
+        JLabel infoLabel = new JLabel(UIUtils.getIconFromResources("data-types/parameters.png"));
 
         JIPipeParameterAccess referencedParameter = reference.resolve(tree);
         if (referencedParameter != null) {
@@ -69,13 +69,13 @@ public class GraphNodeParameterReferenceUI extends JPanel {
             });
             add(nameEditor, BorderLayout.CENTER);
 
-            JButton changeDescriptionButton = new JButton(UIUtils.getIconFromResources("text2.png"));
+            JButton changeDescriptionButton = new JButton(UIUtils.getIconFromResources("actions/edit-select-text.png"));
             UIUtils.makeFlat(changeDescriptionButton);
             changeDescriptionButton.setToolTipText("Change description");
             changeDescriptionButton.addActionListener(e -> changeDescription());
             add(changeDescriptionButton, BorderLayout.EAST);
         } else {
-            infoLabel.setIcon(UIUtils.getIconFromResources("error.png"));
+            infoLabel.setIcon(UIUtils.getIconFromResources("emblems/vcs-conflicting.png"));
             infoLabel.setText("Not found");
             infoLabel.setToolTipText("The parameter '" + reference.getPath() + "' was not found. Please remove this item.");
         }

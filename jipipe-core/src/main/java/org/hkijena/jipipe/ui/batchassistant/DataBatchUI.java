@@ -71,7 +71,7 @@ public class DataBatchUI extends JIPipeProjectWorkbenchPanel {
 
         FormPanel metaDataList = new FormPanel(null, FormPanel.NONE);
         for (JIPipeAnnotation annotation : batch.getAnnotations().values()) {
-            JLabel title = new JLabel(annotation.getName(), UIUtils.getIconFromResources("annotation.png"), JLabel.LEFT);
+            JLabel title = new JLabel(annotation.getName(), UIUtils.getIconFromResources("data-types/annotation.png"), JLabel.LEFT);
             JTextField content = UIUtils.makeReadonlyBorderlessTextField(annotation.getValue());
             metaDataList.addToForm(content, title, null);
         }
@@ -97,9 +97,9 @@ public class DataBatchUI extends JIPipeProjectWorkbenchPanel {
 
             JLabel statusLabel;
             if (rows.isEmpty()) {
-                statusLabel = new JLabel("Missing!", UIUtils.getIconFromResources("error.png"), JLabel.LEFT);
+                statusLabel = new JLabel("Missing!", UIUtils.getIconFromResources("emblems/vcs-conflicting.png"), JLabel.LEFT);
             } else {
-                statusLabel = new JLabel(rows.size() == 1 ? "1 item" : rows.size() + " items", UIUtils.getIconFromResources("check-circle-green.png"), JLabel.LEFT);
+                statusLabel = new JLabel(rows.size() == 1 ? "1 item" : rows.size() + " items", UIUtils.getIconFromResources("emblems/vcs-normal.png"), JLabel.LEFT);
             }
 
             dataList.addToForm(toggleButton, statusLabel, null);

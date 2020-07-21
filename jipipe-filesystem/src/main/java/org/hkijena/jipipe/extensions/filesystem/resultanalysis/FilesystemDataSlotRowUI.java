@@ -69,9 +69,9 @@ public class FilesystemDataSlotRowUI extends JIPipeDefaultResultDataSlotRowUI {
             }
 
             if (fileOrFolderPath != null) {
-                registerAction("Copy to clipboard", "Copies the path '" + fileOrFolderPath + "' to the clipboard", UIUtils.getIconFromResources("copy.png"),
+                registerAction("Copy to clipboard", "Copies the path '" + fileOrFolderPath + "' to the clipboard", UIUtils.getIconFromResources("actions/edit-copy.png"),
                         e -> copyPathToClipboard(fileOrFolderPath));
-                registerAction("Open", "Opens '" + fileOrFolderPath + "' in the default application", UIUtils.getIconFromResources("open.png"),
+                registerAction("Open", "Opens '" + fileOrFolderPath + "' in the default application", UIUtils.getIconFromResources("actions/document-open-folder.png"),
                         e -> open(fileOrFolderPath));
                 if (Files.isRegularFile(fileOrFolderPath)) {
                     String fileType = Opener.getFileFormat(fileOrFolderPath.toString());
@@ -86,7 +86,7 @@ public class FilesystemDataSlotRowUI extends JIPipeDefaultResultDataSlotRowUI {
                         case "bmp":
                         case "roi": {
                             registerAction("Import", "Imports the data into ImageJ",
-                                    UIUtils.getIconFromResources("imagej.png"), e -> IJ.open(fileOrFolderPath.toString()));
+                                    UIUtils.getIconFromResources("apps/imagej.png"), e -> IJ.open(fileOrFolderPath.toString()));
                         }
                     }
                 }

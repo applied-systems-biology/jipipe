@@ -48,7 +48,7 @@ public class PathPredicateParameterEditorUI extends JIPipeParameterEditorUI {
         removeAll();
         PathPredicate filter = getParameter(PathPredicate.class);
 
-        JToggleButton invertButton = new JToggleButton(UIUtils.getIconFromResources("not.png"));
+        JToggleButton invertButton = new JToggleButton(UIUtils.getIconFromResources("actions/negate.png"));
         UIUtils.makeFlat25x25(invertButton);
         invertButton.setToolTipText("Inverts the predicate");
         invertButton.setSelected(filter.isInvert());
@@ -72,17 +72,17 @@ public class PathPredicateParameterEditorUI extends JIPipeParameterEditorUI {
         ButtonGroup group = new ButtonGroup();
         addFilterModeSelection(filter,
                 group,
-                UIUtils.getIconFromResources("text2.png"),
+                UIUtils.getIconFromResources("actions/edit-select-text.png"),
                 PathPredicate.Mode.Contains,
                 "Filename contains filter text");
         addFilterModeSelection(filter,
                 group,
-                UIUtils.getIconFromResources("glob.png"),
+                UIUtils.getIconFromResources("actions/glob.png"),
                 PathPredicate.Mode.Glob,
                 "Filename matches Glob-pattern (e.g. *.txt)");
         addFilterModeSelection(filter,
                 group,
-                UIUtils.getIconFromResources("regex.png"),
+                UIUtils.getIconFromResources("actions/code-context.png"),
                 PathPredicate.Mode.Regex,
                 "Filename matches Regex pattern (e.g. .*\\.txt)");
         revalidate();

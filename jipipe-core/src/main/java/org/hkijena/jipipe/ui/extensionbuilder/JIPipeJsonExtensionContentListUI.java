@@ -94,11 +94,11 @@ public class JIPipeJsonExtensionContentListUI extends JIPipeJsonExtensionWorkben
     }
 
     private void initializeToolbar(JToolBar toolBar) {
-        JButton addAlgorithmButton = new JButton("Add algorithm", UIUtils.getIconFromResources("add.png"));
+        JButton addAlgorithmButton = new JButton("Add algorithm", UIUtils.getIconFromResources("actions/list-add.png"));
         addAlgorithmButton.addActionListener(e -> addAlgorithm());
         toolBar.add(addAlgorithmButton);
         toolBar.add(Box.createHorizontalGlue());
-        JButton removeButton = new JButton(UIUtils.getIconFromResources("delete.png"));
+        JButton removeButton = new JButton(UIUtils.getIconFromResources("actions/delete.png"));
         removeButton.addActionListener(e -> removeSelection());
         toolBar.add(removeButton);
     }

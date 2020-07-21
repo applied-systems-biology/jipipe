@@ -39,7 +39,7 @@ public class ScreenshotWholeGraphToolPNG extends MenuExtension {
         super(workbench);
         setText("As *.png");
         setToolTipText("Creates a screenshot of the whole pipeline graph. Nodes are automatically aligned.");
-        setIcon(UIUtils.getIconFromResources("filetype-image.png"));
+        setIcon(UIUtils.getIconFromResources("actions/viewimage.png"));
         addActionListener(e -> createScreenshot());
     }
 

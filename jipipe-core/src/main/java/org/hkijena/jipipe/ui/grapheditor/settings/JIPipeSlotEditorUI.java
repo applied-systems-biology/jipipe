@@ -89,7 +89,7 @@ public class JIPipeSlotEditorUI extends JPanel {
         add(toolBar, BorderLayout.NORTH);
 
         if (canModifyInputSlots()) {
-            JButton addInputButton = new JButton("Add input", UIUtils.getIconFromResources("database.png"));
+            JButton addInputButton = new JButton("Add input", UIUtils.getIconFromResources("actions/database.png"));
             addInputButton.addActionListener(e -> {
                 AddAlgorithmSlotPanel.showDialog(this, editorUI.getCanvasUI().getGraphHistory(), algorithm, JIPipeSlotType.Input);
             });
@@ -97,7 +97,7 @@ public class JIPipeSlotEditorUI extends JPanel {
         }
 
         if (canModifyOutputSlots()) {
-            JButton addOutputButton = new JButton("Add output", UIUtils.getIconFromResources("database.png"));
+            JButton addOutputButton = new JButton("Add output", UIUtils.getIconFromResources("actions/database.png"));
             addOutputButton.addActionListener(e -> {
                 AddAlgorithmSlotPanel.showDialog(this, editorUI.getCanvasUI().getGraphHistory(), algorithm, JIPipeSlotType.Output);
             });
@@ -106,7 +106,7 @@ public class JIPipeSlotEditorUI extends JPanel {
 
         toolBar.add(Box.createHorizontalGlue());
 
-        JButton relabelButton = new JButton("Label", UIUtils.getIconFromResources("label.png"));
+        JButton relabelButton = new JButton("Label", UIUtils.getIconFromResources("actions/tag.png"));
         relabelButton.setToolTipText("Sets a custom name for this slot without deleting it");
         relabelButton.addActionListener(e -> relabelSlot());
         toolBar.add(relabelButton);
@@ -114,25 +114,25 @@ public class JIPipeSlotEditorUI extends JPanel {
         if (algorithm.getSlotConfiguration() instanceof JIPipeMutableSlotConfiguration) {
 
             if (canModifyInputSlots() || canModifyOutputSlots()) {
-                JButton editButton = new JButton("Edit", UIUtils.getIconFromResources("edit.png"));
+                JButton editButton = new JButton("Edit", UIUtils.getIconFromResources("actions/edit.png"));
                 editButton.setToolTipText("Edit selected slot");
                 editButton.addActionListener(e -> editSlot());
                 toolBar.add(editButton);
             }
 
-            JButton moveUpButton = new JButton(UIUtils.getIconFromResources("arrow-up.png"));
+            JButton moveUpButton = new JButton(UIUtils.getIconFromResources("actions/arrow-up.png"));
             moveUpButton.setToolTipText("Move up");
             moveUpButton.addActionListener(e -> moveSlotUp());
             toolBar.add(moveUpButton);
 
-            JButton moveDownButton = new JButton(UIUtils.getIconFromResources("arrow-down.png"));
+            JButton moveDownButton = new JButton(UIUtils.getIconFromResources("actions/arrow-down.png"));
             moveDownButton.setToolTipText("Move down");
             moveDownButton.addActionListener(e -> moveSlotDown());
             toolBar.add(moveDownButton);
         }
 
         if (canModifyInputSlots() || canModifyOutputSlots()) {
-            JButton removeButton = new JButton(UIUtils.getIconFromResources("delete.png"));
+            JButton removeButton = new JButton(UIUtils.getIconFromResources("actions/delete.png"));
             removeButton.setToolTipText("Remove selected slots");
             removeButton.addActionListener(e -> removeSelectedSlots());
             toolBar.add(removeButton);

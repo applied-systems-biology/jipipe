@@ -31,7 +31,7 @@ public class JIPipeRowLocationTableCellRenderer extends JLabel implements TableC
     public JIPipeRowLocationTableCellRenderer() {
         setOpaque(true);
         setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
-        setIcon(UIUtils.getIconFromResources("database.png"));
+        setIcon(UIUtils.getIconFromResources("actions/database.png"));
     }
 
     @Override

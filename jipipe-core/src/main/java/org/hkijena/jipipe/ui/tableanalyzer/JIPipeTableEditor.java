@@ -82,37 +82,37 @@ public class JIPipeTableEditor extends JIPipeWorkbenchPanel {
         JToolBar toolBar = new JToolBar();
         toolBar.setFloatable(false);
 
-        JButton openButton = new JButton("Open", UIUtils.getIconFromResources("open.png"));
+        JButton openButton = new JButton("Open", UIUtils.getIconFromResources("actions/document-open-folder.png"));
         {
             JPopupMenu exportPopup = UIUtils.addPopupMenuToComponent(openButton);
 
-            JMenuItem importFromCSV = new JMenuItem("from CSV table (*.csv)", UIUtils.getIconFromResources("filetype-csv.png"));
+            JMenuItem importFromCSV = new JMenuItem("from CSV table (*.csv)", UIUtils.getIconFromResources("data-types/results-table.png"));
             importFromCSV.addActionListener(e -> importFromCSV());
             exportPopup.add(importFromCSV);
 
-            JMenuItem importFromImageJ = new JMenuItem("from ImageJ", UIUtils.getIconFromResources("imagej.png"));
+            JMenuItem importFromImageJ = new JMenuItem("from ImageJ", UIUtils.getIconFromResources("apps/imagej.png"));
             importFromImageJ.addActionListener(e -> importFromImageJ());
             exportPopup.add(importFromImageJ);
         }
         toolBar.add(openButton);
 
-        JButton exportButton = new JButton("Save", UIUtils.getIconFromResources("save.png"));
+        JButton exportButton = new JButton("Save", UIUtils.getIconFromResources("actions/save.png"));
         {
             JPopupMenu exportPopup = UIUtils.addPopupMenuToComponent(exportButton);
 
-            JMenuItem exportAsCSV = new JMenuItem("as CSV table (*.csv)", UIUtils.getIconFromResources("filetype-csv.png"));
+            JMenuItem exportAsCSV = new JMenuItem("as CSV table (*.csv)", UIUtils.getIconFromResources("data-types/results-table.png"));
             exportAsCSV.addActionListener(e -> exportTableAsCSV());
             exportPopup.add(exportAsCSV);
         }
         toolBar.add(exportButton);
 
-        JButton cloneDataButton = new JButton("Clone", UIUtils.getIconFromResources("table.png"));
+        JButton cloneDataButton = new JButton("Clone", UIUtils.getIconFromResources("data-types/results-table.png"));
         cloneDataButton.addActionListener(e -> cloneDataToNewTab());
         toolBar.add(cloneDataButton);
 
         toolBar.addSeparator();
 
-        JButton undoButton = new JButton("Undo", UIUtils.getIconFromResources("undo.png"));
+        JButton undoButton = new JButton("Undo", UIUtils.getIconFromResources("actions/undo.png"));
         undoButton.addActionListener(e -> undo());
         toolBar.add(undoButton);
 
@@ -128,98 +128,98 @@ public class JIPipeTableEditor extends JIPipeWorkbenchPanel {
         palettePanel = new FormPanel(MarkdownDocument.fromPluginResource("documentation/table-analyzer.md"),
                 FormPanel.WITH_SCROLLING);
 
-        addPaletteGroup("Rows", UIUtils.getIconFromResources("select-row.png"));
+        addPaletteGroup("Rows", UIUtils.getIconFromResources("actions/stock_select-row.png"));
         addActionToPalette("Add",
                 "Adds an empty row at the end of the table.",
-                UIUtils.getIconFromResources("add-row.png"),
+                UIUtils.getIconFromResources("actions/edit-table-insert-row-below.png"),
                 this::addRow);
         addSeparatorToPalette();
         addActionToPalette("Remove",
                 "Remove selected rows",
-                UIUtils.getIconFromResources("remove-row.png"),
+                UIUtils.getIconFromResources("actions/edit-table-delete-row.png"),
                 this::removeSelectedRows);
 
-        addPaletteGroup("Columns", UIUtils.getIconFromResources("select-column.png"));
+        addPaletteGroup("Columns", UIUtils.getIconFromResources("actions/stock_select-column.png"));
         addActionToPalette("Add numeric",
                 "Adds an empty numeric column with a custom name to the table.",
-                UIUtils.getIconFromResources("add-column.png"),
+                UIUtils.getIconFromResources("actions/edit-table-insert-column-right.png"),
                 () -> addColumn(false));
         addActionToPalette("Add string",
                 "Adds an empty string column with a custom name to the table.",
-                UIUtils.getIconFromResources("add-column.png"),
+                UIUtils.getIconFromResources("actions/edit-table-insert-column-right.png"),
                 () -> addColumn(true));
         addActionToPalette("Duplicate",
                 "Copies the selected column into a new one.",
-                UIUtils.getIconFromResources("copy.png"),
+                UIUtils.getIconFromResources("actions/edit-copy.png"),
                 this::copyColumn);
         addActionToPalette("Combine",
                 "Creates a new column that contains the values of the selected columns assigned by the pattern colum0=row0, column1=row0, ... for each row.",
-                UIUtils.getIconFromResources("statistics.png"),
+                UIUtils.getIconFromResources("actions/statistics.png"),
                 this::addNewCombinedColumn);
         addSeparatorToPalette();
         addActionToPalette("Rename",
                 "Renames the selected column",
-                UIUtils.getIconFromResources("label.png"),
+                UIUtils.getIconFromResources("actions/tag.png"),
                 this::renameColumn);
         addSeparatorToPalette();
         addActionToPalette("Remove",
                 "Remove selected columns",
-                UIUtils.getIconFromResources("remove-column.png"),
+                UIUtils.getIconFromResources("actions/edit-table-delete-column.png"),
                 this::removeSelectedColumns);
         addActionToPalette("To numeric",
                 "Converts to numeric column. If a string value could not be converted, it is replaced by zero",
-                UIUtils.getIconFromResources("number.png"),
+                UIUtils.getIconFromResources("actions/edit-select-number.png"),
                 this::selectedColumnsToNumeric);
         addActionToPalette("To string",
                 "Converts to string column.",
-                UIUtils.getIconFromResources("text2.png"),
+                UIUtils.getIconFromResources("actions/edit-select-text.png"),
                 this::selectedColumnsToString);
 
-        addPaletteGroup("Selection", UIUtils.getIconFromResources("select.png"));
+        addPaletteGroup("Selection", UIUtils.getIconFromResources("actions/edit-select-all.png"));
         addActionToPalette("Whole row",
                 "Expands the selection to the whole row",
-                UIUtils.getIconFromResources("select-row.png"),
+                UIUtils.getIconFromResources("actions/stock_select-row.png"),
                 this::selectWholeRow);
         addActionToPalette("Whole column",
                 "Expands the selection to the whole column",
-                UIUtils.getIconFromResources("select-column.png"),
+                UIUtils.getIconFromResources("actions/stock_select-column.png"),
                 this::selectWholeColumn);
         addSeparatorToPalette();
         addActionToPalette("Invert",
                 "Inverts the selection",
-                UIUtils.getIconFromResources("invert.png"),
+                UIUtils.getIconFromResources("actions/edit-select-invert.png"),
                 this::invertSelection);
         addActionToPalette("Select equivalent",
                 "Select all rows that contain the selection of values",
-                UIUtils.getIconFromResources("filter.png"),
+                UIUtils.getIconFromResources("actions/filter.png"),
                 this::selectEquivalent);
 
-        addPaletteGroup("View", UIUtils.getIconFromResources("search.png"));
+        addPaletteGroup("View", UIUtils.getIconFromResources("actions/find.png"));
 
         addActionToPalette("Autosize columns",
                 "Resizes the selected columns, so they fit their contents.",
-                UIUtils.getIconFromResources("column-autosize.png"),
+                UIUtils.getIconFromResources("actions/itmages-resize.png"),
                 this::autoSizeColumns);
 
-        addPaletteGroup("Data", UIUtils.getIconFromResources("table.png"));
+        addPaletteGroup("Data", UIUtils.getIconFromResources("data-types/results-table.png"));
         addActionToPalette("Import",
                 "Merges another JIPipe table into the current one",
-                UIUtils.getIconFromResources("table.png"),
+                UIUtils.getIconFromResources("data-types/results-table.png"),
                 this::mergeTables);
         addActionToPalette("Integrate",
                 "Collapses the table into a one-row table by applying an integration operation on each column..",
-                UIUtils.getIconFromResources("statistics.png"),
+                UIUtils.getIconFromResources("actions/statistics.png"),
                 this::integrateColumns);
         addSeparatorToPalette();
         convertSelectedCellsButton = addActionToPalette("Convert cells",
                 "Converts the values in the selected cells",
-                UIUtils.getIconFromResources("inplace-function.png"),
+                UIUtils.getIconFromResources("actions/formula.png"),
                 () -> {
                 });
         convertSelectedCellsMenu = UIUtils.addPopupMenuToComponent(convertSelectedCellsButton);
         addActionToPalette("To ImageJ",
                 "Exports the table to ImageJ",
-                UIUtils.getIconFromResources("imagej.png"),
+                UIUtils.getIconFromResources("apps/imagej.png"),
                 this::exportToImageJ);
         palettePanel.addVerticalGlue();
 
@@ -462,7 +462,7 @@ public class JIPipeTableEditor extends JIPipeWorkbenchPanel {
 
     private void cloneDataToNewTab() {
         getWorkbench().getDocumentTabPane().addTab("Table",
-                UIUtils.getIconFromResources("table.png"),
+                UIUtils.getIconFromResources("data-types/results-table.png"),
                 new JIPipeTableEditor(getWorkbench(), new ResultsTableData(tableModel)),
                 DocumentTabPane.CloseMode.withAskOnCloseButton, true);
         getWorkbench().getDocumentTabPane().switchToLastTab();
@@ -686,7 +686,7 @@ public class JIPipeTableEditor extends JIPipeWorkbenchPanel {
         try {
             ResultsTableData tableData = ResultsTableData.fromCSV(fileName);
             // Create table analyzer
-            workbenchUI.getDocumentTabPane().addTab(fileName.getFileName().toString(), UIUtils.getIconFromResources("table.png"),
+            workbenchUI.getDocumentTabPane().addTab(fileName.getFileName().toString(), UIUtils.getIconFromResources("data-types/results-table.png"),
                     new JIPipeTableEditor(workbenchUI, tableData), DocumentTabPane.CloseMode.withAskOnCloseButton, true);
         } catch (IOException e) {
             throw new RuntimeException(e);

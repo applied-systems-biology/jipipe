@@ -196,7 +196,7 @@ public class UserFriendlyErrorUI extends FormPanel {
             addWideToForm(mainMessageReader, null);
 
             if (!StringUtils.isNullOrEmpty(entry.getDetails())) {
-                GroupHeaderPanel groupHeaderPanel = addGroupHeader("Please provide these technical details on contacting a developer", UIUtils.getIconFromResources("info.png"));
+                GroupHeaderPanel groupHeaderPanel = addGroupHeader("Please provide these technical details on contacting a developer", UIUtils.getIconFromResources("actions/help-info.png"));
                 JToggleButton showDetailsButton = new JToggleButton("Show details");
                 groupHeaderPanel.addColumn(showDetailsButton);
                 JTextArea details = UIUtils.makeReadonlyTextArea(entry.getDetails());

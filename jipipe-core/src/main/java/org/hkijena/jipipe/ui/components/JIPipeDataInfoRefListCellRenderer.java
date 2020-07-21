@@ -43,7 +43,7 @@ public class JIPipeDataInfoRefListCellRenderer extends JLabel implements ListCel
             setIcon(JIPipeUIDatatypeRegistry.getInstance().getIconFor(value.getInfo().getDataClass()));
         } else {
             setText("Nothing selected");
-            setIcon(UIUtils.getIconFromResources("error.png"));
+            setIcon(UIUtils.getIconFromResources("emblems/vcs-conflicting.png"));
         }
 
         if (isSelected) {

@@ -53,7 +53,7 @@ public class ImageDataSlotRowUI extends JIPipeDefaultResultDataSlotRowUI {
         Path imageFile = findImageFile();
         if (imageFile != null) {
             registerAction("Import", "Imports the image '" + imageFile + "' into ImageJ",
-                    UIUtils.getIconFromResources("imagej.png"), e -> {
+                    UIUtils.getIconFromResources("apps/imagej.png"), e -> {
                         ImagePlus img = IJ.openImage(imageFile.toString());
                         if (img != null) {
                             img.show();

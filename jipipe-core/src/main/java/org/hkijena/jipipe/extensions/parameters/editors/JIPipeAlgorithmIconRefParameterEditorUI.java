@@ -55,7 +55,7 @@ public class JIPipeAlgorithmIconRefParameterEditorUI extends JIPipeParameterEdit
         UIUtils.makeFlat(currentlyDisplayed);
         add(currentlyDisplayed, BorderLayout.CENTER);
 
-        JButton selectButton = new JButton(UIUtils.getIconFromResources("edit.png"));
+        JButton selectButton = new JButton(UIUtils.getIconFromResources("actions/edit.png"));
         UIUtils.makeFlat(selectButton);
         selectButton.setToolTipText("Select icon");
         selectButton.addActionListener(e -> pickIcon());

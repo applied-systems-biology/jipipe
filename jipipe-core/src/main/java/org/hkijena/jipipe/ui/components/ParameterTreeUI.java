@@ -127,14 +127,14 @@ public class ParameterTreeUI extends JPanel {
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
         buttonPanel.add(Box.createHorizontalGlue());
 
-        JButton cancelButton = new JButton("Cancel", UIUtils.getIconFromResources("remove.png"));
+        JButton cancelButton = new JButton("Cancel", UIUtils.getIconFromResources("actions/cancel.png"));
         cancelButton.addActionListener(e -> {
             ui.treeComponent.clearSelection();
             dialog.setVisible(false);
         });
         buttonPanel.add(cancelButton);
 
-        JButton pickButton = new JButton("Select", UIUtils.getIconFromResources("pick.png"));
+        JButton pickButton = new JButton("Select", UIUtils.getIconFromResources("actions/color-select.png"));
         pickButton.addActionListener(e -> dialog.setVisible(false));
         buttonPanel.add(pickButton);
 
@@ -187,7 +187,7 @@ public class ParameterTreeUI extends JPanel {
                         icon = JIPipeUIAlgorithmRegistry.getInstance().getIconFor(info);
                     }
                     if (icon == null) {
-                        UIUtils.getIconFromResources("object.png");
+                        UIUtils.getIconFromResources("actions/object-group.png");
                     }
                     setIcon(icon);
                     String name = node.getName();
@@ -196,7 +196,7 @@ public class ParameterTreeUI extends JPanel {
                     setText(name);
                 } else if (userObject instanceof JIPipeParameterAccess) {
                     JIPipeParameterAccess access = (JIPipeParameterAccess) userObject;
-                    setIcon(UIUtils.getIconFromResources("parameters.png"));
+                    setIcon(UIUtils.getIconFromResources("data-types/parameters.png"));
                     String name = access.getName();
                     if (name == null)
                         name = access.getKey();

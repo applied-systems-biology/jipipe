@@ -38,14 +38,14 @@ public class ParameterTesterMenuExtension extends MenuExtension implements Actio
         super(workbench);
         setText("Show all parameter editors");
         setToolTipText("Opens a UI that shows all parameter types and their editors. This is useful for development.");
-        setIcon(UIUtils.getIconFromResources("bug.png"));
+        setIcon(UIUtils.getIconFromResources("actions/bug.png"));
         addActionListener(this);
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
         ParameterUITester tester = new ParameterUITester(getWorkbench());
-        getWorkbench().getDocumentTabPane().addTab("Registered JIPipe parameters", UIUtils.getIconFromResources("bug.png"),
+        getWorkbench().getDocumentTabPane().addTab("Registered JIPipe parameters", UIUtils.getIconFromResources("actions/bug.png"),
                 tester, DocumentTabPane.CloseMode.withSilentCloseButton, true);
         getWorkbench().getDocumentTabPane().switchToLastTab();
     }

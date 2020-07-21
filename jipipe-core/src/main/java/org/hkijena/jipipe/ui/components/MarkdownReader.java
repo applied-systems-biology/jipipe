@@ -106,10 +106,10 @@ public class MarkdownReader extends JPanel {
             JToolBar toolBar = new JToolBar();
             toolBar.setFloatable(false);
 
-            JButton exportButton = new JButton("Export", UIUtils.getIconFromResources("save.png"));
+            JButton exportButton = new JButton("Export", UIUtils.getIconFromResources("actions/save.png"));
             JPopupMenu exportMenu = UIUtils.addPopupMenuToComponent(exportButton);
 
-            JMenuItem saveMarkdown = new JMenuItem("as Markdown (*.md)", UIUtils.getIconFromResources("filetype-markdown.png"));
+            JMenuItem saveMarkdown = new JMenuItem("as Markdown (*.md)", UIUtils.getIconFromResources("minetypes/text-markdown.png"));
             saveMarkdown.addActionListener(e -> {
                 Path selectedPath = FileChooserSettings.saveFile(this, FileChooserSettings.KEY_PROJECT, "Save as Markdown (*.md)", ".md");
                 if (selectedPath != null) {
@@ -122,7 +122,7 @@ public class MarkdownReader extends JPanel {
             });
             exportMenu.add(saveMarkdown);
 
-            JMenuItem saveHTML = new JMenuItem("as HTML (*.html)", UIUtils.getIconFromResources("filetype-html.png"));
+            JMenuItem saveHTML = new JMenuItem("as HTML (*.html)", UIUtils.getIconFromResources("actions/web-browser.png"));
             saveHTML.addActionListener(e -> {
                 Path selectedPath = FileChooserSettings.saveFile(this, FileChooserSettings.KEY_PROJECT, "Save as HTML (*.html)", ".html");
                 if (selectedPath != null) {
@@ -135,7 +135,7 @@ public class MarkdownReader extends JPanel {
             });
             exportMenu.add(saveHTML);
 
-            JMenuItem savePDF = new JMenuItem("as PDF (*.pdf)", UIUtils.getIconFromResources("filetype-pdf.png"));
+            JMenuItem savePDF = new JMenuItem("as PDF (*.pdf)", UIUtils.getIconFromResources("minetypes/application-pdf.png"));
             savePDF.addActionListener(e -> {
                 Path selectedPath = FileChooserSettings.saveFile(this, FileChooserSettings.KEY_PROJECT, "Save as Portable Document Format (*.pdf)", ".pdf");
                 if (selectedPath != null) {

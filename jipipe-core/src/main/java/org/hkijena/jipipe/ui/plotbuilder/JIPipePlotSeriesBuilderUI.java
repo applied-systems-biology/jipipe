@@ -58,13 +58,13 @@ public class JIPipePlotSeriesBuilderUI extends JIPipeWorkbenchPanel {
         titlePanel.setBackground(Color.LIGHT_GRAY);
         titlePanel.setOpaque(true);
 
-        moveDownButton = new JButton(UIUtils.getIconFromResources("arrow-down.png"));
+        moveDownButton = new JButton(UIUtils.getIconFromResources("actions/arrow-down.png"));
         UIUtils.makeBorderlessWithoutMargin(moveDownButton);
         moveDownButton.setToolTipText("Move down");
         moveDownButton.addActionListener(e -> seriesBuilder.getPlotBuilderUI().moveSeriesDown(seriesBuilder));
         titlePanel.add(moveDownButton);
 
-        moveUpButton = new JButton(UIUtils.getIconFromResources("arrow-up.png"));
+        moveUpButton = new JButton(UIUtils.getIconFromResources("actions/arrow-up.png"));
         UIUtils.makeBorderlessWithoutMargin(moveUpButton);
         moveUpButton.setToolTipText("Move up");
         moveUpButton.addActionListener(e -> seriesBuilder.getPlotBuilderUI().moveSeriesUp(seriesBuilder));
@@ -73,7 +73,7 @@ public class JIPipePlotSeriesBuilderUI extends JIPipeWorkbenchPanel {
         titlePanel.add(Box.createHorizontalGlue());
         titlePanel.add(Box.createHorizontalStrut(8));
 
-        removeButton = new JButton(UIUtils.getIconFromResources("delete.png"));
+        removeButton = new JButton(UIUtils.getIconFromResources("actions/delete.png"));
         removeButton.setToolTipText("Remove series");
         removeButton.addActionListener(e -> removeSeries());
         UIUtils.makeBorderlessWithoutMargin(removeButton);
@@ -101,10 +101,10 @@ public class JIPipePlotSeriesBuilderUI extends JIPipeWorkbenchPanel {
 
     private void updateEnableDisableToggleButton() {
         if (seriesBuilder.isEnabled()) {
-            enableToggleButton.setIcon(UIUtils.getIconFromResources("eye.png"));
+            enableToggleButton.setIcon(UIUtils.getIconFromResources("actions/eye.png"));
             enableToggleButton.setToolTipText("Disable series");
         } else {
-            enableToggleButton.setIcon(UIUtils.getIconFromResources("eye-slash.png"));
+            enableToggleButton.setIcon(UIUtils.getIconFromResources("actions/eye-slash.png"));
             enableToggleButton.setToolTipText("Enable series");
         }
     }

@@ -149,7 +149,7 @@ public class EditAlgorithmSlotPanel extends JPanel {
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
         buttonPanel.add(Box.createHorizontalGlue());
 
-        JButton cancelButton = new JButton("Cancel", UIUtils.getIconFromResources("remove.png"));
+        JButton cancelButton = new JButton("Cancel", UIUtils.getIconFromResources("actions/cancel.png"));
         cancelButton.addActionListener(e -> {
             if (dialog != null) {
                 dialog.setVisible(false);
@@ -157,7 +157,7 @@ public class EditAlgorithmSlotPanel extends JPanel {
         });
         buttonPanel.add(cancelButton);
 
-        confirmButton = new JButton("Edit", UIUtils.getIconFromResources("edit.png"));
+        confirmButton = new JButton("Edit", UIUtils.getIconFromResources("actions/edit.png"));
         confirmButton.addActionListener(e -> editSlot());
         confirmButton.addKeyListener(new KeyAdapter() {
             @Override

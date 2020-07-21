@@ -59,7 +59,7 @@ public class JIPipeProjectSettingsUI extends JIPipeProjectWorkbenchPanel {
         parameterUI.addWideToForm(graphNodeParametersUI, null);
         parameterUI.addVerticalGlue();
         tabPane.addTab("Parameters",
-                UIUtils.getIconFromResources("data-types/data-type-parameters.png"),
+                UIUtils.getIconFromResources("data-types/parameters.png"),
                 parameterUI,
                 DocumentTabPane.CloseMode.withoutCloseButton,
                 false);

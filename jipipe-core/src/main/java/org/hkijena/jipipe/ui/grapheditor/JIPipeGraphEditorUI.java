@@ -203,13 +203,13 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         menuBar.add(navigator);
         menuBar.add(Box.createHorizontalStrut(8));
 
-        JButton undoButton = new JButton(UIUtils.getIconFromResources("undo.png"));
+        JButton undoButton = new JButton(UIUtils.getIconFromResources("actions/undo.png"));
         undoButton.setToolTipText("<html>Undo<br><i>Ctrl-Z</i></html>");
         UIUtils.makeFlat25x25(undoButton);
         undoButton.addActionListener(e -> undo());
         menuBar.add(undoButton);
 
-        JButton redoButton = new JButton(UIUtils.getIconFromResources("redo.png"));
+        JButton redoButton = new JButton(UIUtils.getIconFromResources("actions/edit-redo.png"));
         redoButton.setToolTipText("<html>Redo<br><i>Ctrl-Shift-Z</i></html>");
         UIUtils.makeFlat25x25(redoButton);
         redoButton.addActionListener(e -> redo());
@@ -219,7 +219,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
 
         ButtonGroup viewModeGroup = new ButtonGroup();
 
-        JToggleButton viewModeHorizontalButton = new JToggleButton(UIUtils.getIconFromResources("view-horizontal.png"));
+        JToggleButton viewModeHorizontalButton = new JToggleButton(UIUtils.getIconFromResources("actions/align-horizontal-left.png"));
         viewModeHorizontalButton.setToolTipText("Display nodes horizontally");
         UIUtils.makeFlat25x25(viewModeHorizontalButton);
         viewModeHorizontalButton.setSelected(canvasUI.getViewMode() == JIPipeGraphViewMode.Horizontal);
@@ -227,7 +227,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         viewModeGroup.add(viewModeHorizontalButton);
         menuBar.add(viewModeHorizontalButton);
 
-        JToggleButton viewModeVerticalButton = new JToggleButton(UIUtils.getIconFromResources("view-vertical.png"));
+        JToggleButton viewModeVerticalButton = new JToggleButton(UIUtils.getIconFromResources("actions/align-vertical-top.png"));
         viewModeVerticalButton.setToolTipText("Display nodes vertically");
         UIUtils.makeFlat25x25(viewModeVerticalButton);
         viewModeVerticalButton.setSelected(canvasUI.getViewMode() == JIPipeGraphViewMode.Vertical);
@@ -237,7 +237,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
 
         menuBar.add(new JSeparator(JSeparator.VERTICAL));
 
-        JButton autoLayoutButton = new JButton(UIUtils.getIconFromResources("auto-layout-all.png"));
+        JButton autoLayoutButton = new JButton(UIUtils.getIconFromResources("actions/distribute-unclump.png"));
         autoLayoutButton.setToolTipText("<html>Auto-layout all nodes<br><i>Ctrl-Shift-L</i></html>");
         UIUtils.makeFlat25x25(autoLayoutButton);
         autoLayoutButton.addActionListener(e -> {
@@ -246,7 +246,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         });
         menuBar.add(autoLayoutButton);
 
-        JButton centerViewButton = new JButton(UIUtils.getIconFromResources("algorithms/view-restore.png"));
+        JButton centerViewButton = new JButton(UIUtils.getIconFromResources("actions/view-restore.png"));
         centerViewButton.setToolTipText("Center view to nodes");
         UIUtils.makeFlat25x25(centerViewButton);
         centerViewButton.addActionListener(e -> {
@@ -257,7 +257,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
 
         menuBar.add(new JSeparator(JSeparator.VERTICAL));
 
-        switchPanningDirectionButton = new JToggleButton(UIUtils.getIconFromResources("cursor-arrow.png"),
+        switchPanningDirectionButton = new JToggleButton(UIUtils.getIconFromResources("devices/input-mouse.png"),
                 GraphEditorUISettings.getInstance().isSwitchPanningDirection());
         switchPanningDirectionButton.setToolTipText("Reverse panning direction");
         UIUtils.makeFlat25x25(switchPanningDirectionButton);
@@ -266,7 +266,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         menuBar.add(switchPanningDirectionButton);
 
         JToggleButton layoutHelperButton;
-        layoutHelperButton = new JToggleButton(UIUtils.getIconFromResources("auto-layout-connections.png"),
+        layoutHelperButton = new JToggleButton(UIUtils.getIconFromResources("actions/connector-avoid.png"),
                 GraphEditorUISettings.getInstance().isEnableLayoutHelper());
         UIUtils.makeFlat25x25(layoutHelperButton);
         layoutHelperButton.setToolTipText("Auto-layout layout on making data slot connections");
@@ -279,16 +279,16 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
 
         menuBar.add(new JSeparator(JSeparator.VERTICAL));
 
-        JButton exportButton = new JButton(UIUtils.getIconFromResources("export.png"));
+        JButton exportButton = new JButton(UIUtils.getIconFromResources("actions/document-export.png"));
         exportButton.setToolTipText("Export graph");
         UIUtils.makeFlat25x25(exportButton);
 
         JPopupMenu exportAsImageMenu = UIUtils.addPopupMenuToComponent(exportButton);
 
-        JMenuItem exportAsPngItem = new JMenuItem("as *.png", UIUtils.getIconFromResources("filetype-image.png"));
+        JMenuItem exportAsPngItem = new JMenuItem("as *.png", UIUtils.getIconFromResources("actions/viewimage.png"));
         exportAsPngItem.addActionListener(e -> createScreenshotPNG());
         exportAsImageMenu.add(exportAsPngItem);
-        JMenuItem exportAsSvgItem = new JMenuItem("as *.svg", UIUtils.getIconFromResources("filetype-image.png"));
+        JMenuItem exportAsSvgItem = new JMenuItem("as *.svg", UIUtils.getIconFromResources("actions/viewimage.png"));
         exportAsSvgItem.addActionListener(e -> createScreenshotSVG());
         exportAsImageMenu.add(exportAsSvgItem);
 

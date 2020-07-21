@@ -141,14 +141,14 @@ public class JIPipeCompartmentGraphUI extends JIPipeGraphEditorUI {
     protected void initializeAddNodesMenus() {
         JIPipeNodeInfo info = JIPipeNodeRegistry.getInstance().getInfoById("jipipe:project-compartment");
 
-        JButton addItem = new JButton("Add new compartment", UIUtils.getIconFromResources("add.png"));
+        JButton addItem = new JButton("Add new compartment", UIUtils.getIconFromResources("actions/list-add.png"));
         UIUtils.makeFlatH25(addItem);
         addItem.setBorder(BorderFactory.createEmptyBorder(0, 2, 0, 2));
         addItem.setToolTipText(TooltipUtils.getAlgorithmTooltip(info));
         addItem.addActionListener(e -> addCompartment());
         menuBar.add(addItem);
 
-        JButton importItem = new JButton("Import compartment", UIUtils.getIconFromResources("open.png"));
+        JButton importItem = new JButton("Import compartment", UIUtils.getIconFromResources("actions/document-open-folder.png"));
         UIUtils.makeFlatH25(importItem);
         importItem.setBorder(BorderFactory.createEmptyBorder(0, 2, 0, 2));
         importItem.setToolTipText("Imports a compartment from a *.jipc file");

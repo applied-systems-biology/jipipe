@@ -41,7 +41,7 @@ public class JIPipeMergedDataSlotTableColumnHeaderRenderer implements TableCellR
         } else {
             String info = dataTable.getTraitColumns().get(column - 4);
             String html = String.format("<html><table><tr><td><img src=\"%s\"/></td><td>%s</tr>",
-                    UIUtils.getIconFromResources("annotation.png"),
+                    UIUtils.getIconFromResources("data-types/annotation.png"),
                     info);
             return defaultRenderer.getTableCellRendererComponent(table, html, isSelected, hasFocus, row, column);
         }

@@ -98,6 +98,6 @@ public class TableColumnIntegrationParameter extends DynamicEnumParameter {
 
     @Override
     public Icon renderIcon(Object value) {
-        return UIUtils.getIconFromResources("statistics.png");
+        return UIUtils.getIconFromResources("actions/statistics.png");
     }
 }

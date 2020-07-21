@@ -266,14 +266,14 @@ public class JIPipeProjectInfoUI extends JIPipeProjectWorkbenchPanel {
         toolBar.setLayout(new BoxLayout(toolBar, BoxLayout.X_AXIS));
         toolBar.setOpaque(false);
 
-        openWebsiteButton = new JButton("Visit website", UIUtils.getIconFromResources("filetype-html.png"));
+        openWebsiteButton = new JButton("Visit website", UIUtils.getIconFromResources("actions/web-browser.png"));
         openWebsiteButton.addActionListener(e -> UIUtils.openWebsite(getProject().getMetadata().getWebsite()));
         openWebsiteButton.setOpaque(false);
         openWebsiteButton.setBackground(new Color(0, 0, 0, 0));
         toolBar.add(openWebsiteButton);
         toolBar.add(Box.createHorizontalStrut(4));
 
-        copyCitationButton = new JButton("Copy citation", UIUtils.getIconFromResources("copy.png"));
+        copyCitationButton = new JButton("Copy citation", UIUtils.getIconFromResources("actions/edit-copy.png"));
         copyCitationButton.addActionListener(e -> {
             StringSelection selection = new StringSelection(getProject().getMetadata().getCitation());
             Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
@@ -284,7 +284,7 @@ public class JIPipeProjectInfoUI extends JIPipeProjectWorkbenchPanel {
         toolBar.add(copyCitationButton);
         toolBar.add(Box.createHorizontalStrut(4));
 
-        copyDependencyCitationsButton = new JButton("Copy cited sources", UIUtils.getIconFromResources("copy.png"));
+        copyDependencyCitationsButton = new JButton("Copy cited sources", UIUtils.getIconFromResources("actions/edit-copy.png"));
         copyDependencyCitationsButton.addActionListener(e -> {
             StringBuilder stringBuilder = new StringBuilder();
             for (String dependencyCitation : getProject().getMetadata().getDependencyCitations()) {
@@ -301,14 +301,14 @@ public class JIPipeProjectInfoUI extends JIPipeProjectWorkbenchPanel {
 
         toolBar.add(Box.createHorizontalGlue());
 
-        JButton refreshButton = new JButton("Refresh", UIUtils.getIconFromResources("refresh.png"));
+        JButton refreshButton = new JButton("Refresh", UIUtils.getIconFromResources("actions/view-refresh.png"));
         refreshButton.setOpaque(false);
         refreshButton.setBackground(new Color(0, 0, 0, 0));
         refreshButton.setToolTipText("Updates the contents of this page.");
         refreshButton.addActionListener(e -> refreshAll());
         toolBar.add(refreshButton);
 
-        JButton openSettingsButton = new JButton("Edit metadata", UIUtils.getIconFromResources("edit.png"));
+        JButton openSettingsButton = new JButton("Edit metadata", UIUtils.getIconFromResources("actions/edit.png"));
         openSettingsButton.setOpaque(false);
         openSettingsButton.setBackground(new Color(0, 0, 0, 0));
         openSettingsButton.setToolTipText("Opens the project settings that allow you to change this page.");

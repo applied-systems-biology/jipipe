@@ -80,7 +80,7 @@ public class JIPipeDefaultResultDataSlotRowUI extends JIPipeResultDataSlotRowUI 
      */
     protected void registerActions() {
         if (getSlot().getStoragePath() != null) {
-            registerAction("Open folder", "Opens the folder that contains the data files.", UIUtils.getIconFromResources("open.png"), s -> openFolder());
+            registerAction("Open folder", "Opens the folder that contains the data files.", UIUtils.getIconFromResources("actions/document-open-folder.png"), s -> openFolder());
         }
     }
 

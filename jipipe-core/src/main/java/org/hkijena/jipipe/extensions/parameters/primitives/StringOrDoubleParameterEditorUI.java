@@ -57,8 +57,8 @@ public class StringOrDoubleParameterEditorUI extends JIPipeParameterEditorUI {
         JIPipeParameterTree traversedParameterCollection = new JIPipeParameterTree(parameter);
 
         ButtonGroup buttonGroup = new ButtonGroup();
-        doubleToggle = addToggle(buttonGroup, UIUtils.getIconFromResources("number.png"), "Define a number");
-        stringToggle = addToggle(buttonGroup, UIUtils.getIconFromResources("text2.png"), "Define a string");
+        doubleToggle = addToggle(buttonGroup, UIUtils.getIconFromResources("actions/edit-select-number.png"), "Define a number");
+        stringToggle = addToggle(buttonGroup, UIUtils.getIconFromResources("actions/edit-select-text.png"), "Define a string");
         add(Box.createHorizontalStrut(8));
 
         if (parameter.getMode() == StringOrDouble.Mode.Double) {

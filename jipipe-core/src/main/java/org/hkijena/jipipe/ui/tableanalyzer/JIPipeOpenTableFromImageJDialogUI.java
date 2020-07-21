@@ -90,13 +90,13 @@ public class JIPipeOpenTableFromImageJDialogUI extends JDialog {
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.LINE_AXIS));
 
-        JButton refreshButton = new JButton("Refresh", UIUtils.getIconFromResources("refresh.png"));
+        JButton refreshButton = new JButton("Refresh", UIUtils.getIconFromResources("actions/view-refresh.png"));
         refreshButton.addActionListener(e -> refreshList());
         buttonPanel.add(refreshButton);
 
         buttonPanel.add(Box.createHorizontalGlue());
 
-        JButton calculateButton = new JButton("Open in JIPipe", UIUtils.getIconFromResources("jipipe.png"));
+        JButton calculateButton = new JButton("Open in JIPipe", UIUtils.getIconFromResources("apps/jipipe.png"));
         calculateButton.addActionListener(e -> open());
         buttonPanel.add(calculateButton);
 

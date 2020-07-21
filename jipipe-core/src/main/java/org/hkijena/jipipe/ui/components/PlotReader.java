@@ -41,7 +41,7 @@ public class PlotReader extends JPanel {
         toolBar = new JToolBar();
         toolBar.setFloatable(false);
 
-        JButton exportButton = new JButton("Export", UIUtils.getIconFromResources("save.png"));
+        JButton exportButton = new JButton("Export", UIUtils.getIconFromResources("actions/save.png"));
         exportButton.addActionListener(e -> exportPlot());
         toolBar.add(exportButton);
 

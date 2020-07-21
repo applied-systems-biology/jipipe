@@ -94,7 +94,7 @@ public class UpdateSiteUI extends JPanel {
         urlField.setFont(new Font(Font.DIALOG, Font.ITALIC, 12));
         bottomPanel.add(urlField, BorderLayout.CENTER);
 
-        JButton removeButton = new JButton(UIUtils.getIconFromResources("delete.png"));
+        JButton removeButton = new JButton(UIUtils.getIconFromResources("actions/delete.png"));
         removeButton.addActionListener(e -> removeUpdateSite());
         UIUtils.makeFlat25x25(removeButton);
         bottomPanel.add(removeButton, BorderLayout.WEST);

@@ -32,7 +32,7 @@ public class JIPipeDataSlotBackupListCellRenderer extends JLabel implements List
     public JIPipeDataSlotBackupListCellRenderer() {
         setOpaque(true);
         setBorder(BorderFactory.createEmptyBorder(0, 4, 0, 4));
-        setIcon(UIUtils.getIconFromResources("database.png"));
+        setIcon(UIUtils.getIconFromResources("actions/database.png"));
     }
 
     @Override

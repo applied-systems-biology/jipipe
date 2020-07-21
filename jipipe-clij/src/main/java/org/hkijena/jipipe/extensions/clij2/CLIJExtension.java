@@ -80,7 +80,7 @@ public class CLIJExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerSettingsSheet(CLIJSettings.ID,
                 "CLIJ2",
                 "Extensions",
-                UIUtils.getIconFromResources("module.png"),
+                UIUtils.getIconFromResources("actions/plugins.png"),
                 new CLIJSettings());
         registerMenuExtension(CLIJControlPanelMenuExtension.class);
     }

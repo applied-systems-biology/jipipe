@@ -28,7 +28,7 @@ public class ResultsTableDataParameterEditorUI extends JIPipeParameterEditorUI {
 
     private void initialize() {
         setLayout(new BorderLayout());
-        JButton editButton = new JButton("Edit table", UIUtils.getIconFromResources("edit.png"));
+        JButton editButton = new JButton("Edit table", UIUtils.getIconFromResources("actions/edit.png"));
         editButton.addActionListener(e -> editParameters());
         add(editButton, BorderLayout.CENTER);
     }
@@ -44,7 +44,7 @@ public class ResultsTableDataParameterEditorUI extends JIPipeParameterEditorUI {
             }
         }
         getWorkbench().getDocumentTabPane().addTab(getParameterAccess().getName(),
-                UIUtils.getIconFromResources("table.png"),
+                UIUtils.getIconFromResources("data-types/results-table.png"),
                 new JIPipeTableEditor(getWorkbench(), parameters),
                 DocumentTabPane.CloseMode.withAskOnCloseButton, true);
         getWorkbench().getDocumentTabPane().switchToLastTab();

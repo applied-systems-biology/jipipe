@@ -72,7 +72,7 @@ public class GraphNodeParametersUI extends JIPipeWorkbenchPanel {
         autoAddAlgorithmButton.addActionListener(e -> autoAddAlgorithm());
         toolBar.add(autoAddAlgorithmButton);
 
-        JButton addEmptyGroupButton = new JButton("Add group", UIUtils.getIconFromResources("add.png"));
+        JButton addEmptyGroupButton = new JButton("Add group", UIUtils.getIconFromResources("actions/list-add.png"));
         addEmptyGroupButton.setToolTipText("Adds a new group");
         addEmptyGroupButton.addActionListener(e -> addEmptyGroup());
         toolBar.add(addEmptyGroupButton);
@@ -126,7 +126,7 @@ public class GraphNodeParametersUI extends JIPipeWorkbenchPanel {
         content.clear();
         for (GraphNodeParameterReferenceGroup referenceGroup : parameters.getParameterReferenceGroups()) {
             GraphNodeParameterReferenceGroupUI groupUI = new GraphNodeParameterReferenceGroupUI(this, referenceGroup);
-            JButton removeButton = new JButton(UIUtils.getIconFromResources("close-tab.png"));
+            JButton removeButton = new JButton(UIUtils.getIconFromResources("actions/close-tab.png"));
             UIUtils.makeBorderlessWithoutMargin(removeButton);
             removeButton.addActionListener(e -> parameters.removeGroup(referenceGroup));
             content.addToForm(groupUI, removeButton, null);

@@ -39,7 +39,7 @@ public class GraphNodeParameterEditorUI extends JIPipeParameterEditorUI {
 
     private void initialize() {
         setLayout(new BorderLayout());
-        JButton editGraphButton = new JButton("Edit parameters", UIUtils.getIconFromResources("edit.png"));
+        JButton editGraphButton = new JButton("Edit parameters", UIUtils.getIconFromResources("actions/edit.png"));
         editGraphButton.addActionListener(e -> editParameters());
         add(editGraphButton, BorderLayout.CENTER);
     }

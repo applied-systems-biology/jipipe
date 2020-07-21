@@ -58,7 +58,7 @@ public class EnableSaveOutputsNodeUIContextAction implements NodeUIContextAction
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("save.png");
+        return UIUtils.getIconFromResources("actions/save.png");
     }
 
     @Override

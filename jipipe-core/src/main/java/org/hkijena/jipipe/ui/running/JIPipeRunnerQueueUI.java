@@ -52,7 +52,7 @@ public class JIPipeRunnerQueueUI extends JPanel {
         // UI for empty queue
         emptyQueuePanel = new JPanel(new BorderLayout());
         emptyQueuePanel.setOpaque(false);
-        emptyQueuePanel.add(new JLabel("No processes are running", UIUtils.getIconFromResources("pause.png"), JLabel.LEFT),
+        emptyQueuePanel.add(new JLabel("No processes are running", UIUtils.getIconFromResources("actions/media-pause.png"), JLabel.LEFT),
                 BorderLayout.EAST);
         emptyQueuePanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1),
                 BorderFactory.createCompoundBorder(new RoundedLineBorder(ModernMetalTheme.MEDIUM_GRAY, 1, 2),
@@ -67,7 +67,7 @@ public class JIPipeRunnerQueueUI extends JPanel {
                         BorderFactory.createEmptyBorder(5, 15, 5, 15))));
         runningQueueProgress = new JProgressBar();
         runningQueuePanel.add(runningQueueProgress);
-        JButton cancelButton = new JButton(UIUtils.getIconFromResources("remove.png"));
+        JButton cancelButton = new JButton(UIUtils.getIconFromResources("actions/cancel.png"));
         UIUtils.makeBorderlessWithoutMargin(cancelButton);
         cancelButton.setToolTipText("Cancel");
         cancelButton.addActionListener(e -> cancelRun());

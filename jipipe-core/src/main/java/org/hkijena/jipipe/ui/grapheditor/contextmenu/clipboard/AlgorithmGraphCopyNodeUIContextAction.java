@@ -62,7 +62,7 @@ public class AlgorithmGraphCopyNodeUIContextAction implements NodeUIContextActio
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("copy.png");
+        return UIUtils.getIconFromResources("actions/edit-copy.png");
     }
 
     @Override

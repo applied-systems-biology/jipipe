@@ -135,11 +135,11 @@ public class PlotExporterDialog extends JDialog {
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.LINE_AXIS));
         buttonPanel.add(Box.createHorizontalGlue());
 
-        JButton cancelButton = new JButton("Cancel", UIUtils.getIconFromResources("remove.png"));
+        JButton cancelButton = new JButton("Cancel", UIUtils.getIconFromResources("actions/cancel.png"));
         cancelButton.addActionListener(e -> setVisible(false));
         buttonPanel.add(cancelButton);
 
-        JButton exportButton = new JButton("Export", UIUtils.getIconFromResources("save.png"));
+        JButton exportButton = new JButton("Export", UIUtils.getIconFromResources("actions/save.png"));
         exportButton.setDefaultCapable(true);
         exportButton.addActionListener(e -> exportPlot());
         buttonPanel.add(exportButton);
@@ -231,7 +231,7 @@ public class PlotExporterDialog extends JDialog {
         }
 
         public Icon toIcon() {
-            return UIUtils.getIconFromResources("filetype-image.png");
+            return UIUtils.getIconFromResources("actions/viewimage.png");
         }
     }
 }

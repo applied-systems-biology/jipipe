@@ -74,7 +74,7 @@ public class JIPipeIntegrateTableColumnsDialogUI extends JDialog {
             });
 
             JLabel label = new JLabel(inputTableModel.getColumnName(columnIndex),
-                    UIUtils.getIconFromResources("select-column.png"), JLabel.LEFT);
+                    UIUtils.getIconFromResources("actions/stock_select-column.png"), JLabel.LEFT);
             columnPanel.add(label, new GridBagConstraints() {
                 {
                     gridx = 1;
@@ -95,7 +95,7 @@ public class JIPipeIntegrateTableColumnsDialogUI extends JDialog {
 
         buttonPanel.add(Box.createHorizontalGlue());
 
-        JButton calculateButton = new JButton("Calculate", UIUtils.getIconFromResources("statistics.png"));
+        JButton calculateButton = new JButton("Calculate", UIUtils.getIconFromResources("actions/statistics.png"));
         calculateButton.addActionListener(e -> calculate());
         buttonPanel.add(calculateButton);
 
@@ -153,13 +153,13 @@ public class JIPipeIntegrateTableColumnsDialogUI extends JDialog {
 
             if (value instanceof JIPipeTableRegistry.ColumnOperationEntry) {
                 setText(((JIPipeTableRegistry.ColumnOperationEntry) value).getName());
-                setIcon(UIUtils.getIconFromResources("statistics.png"));
+                setIcon(UIUtils.getIconFromResources("actions/statistics.png"));
             } else if (value instanceof CategorizeColumnRole) {
                 setText("Use as category");
-                setIcon(UIUtils.getIconFromResources("filter.png"));
+                setIcon(UIUtils.getIconFromResources("actions/filter.png"));
             } else {
                 setText("Ignore column");
-                setIcon(UIUtils.getIconFromResources("remove.png"));
+                setIcon(UIUtils.getIconFromResources("actions/cancel.png"));
             }
 
             if (isSelected) {

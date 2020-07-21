@@ -88,11 +88,11 @@ public class JIPipeTableImporterDialog extends JDialog {
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.LINE_AXIS));
         buttonPanel.add(Box.createHorizontalGlue());
 
-        JButton cancelButton = new JButton("Cancel", UIUtils.getIconFromResources("remove.png"));
+        JButton cancelButton = new JButton("Cancel", UIUtils.getIconFromResources("actions/cancel.png"));
         cancelButton.addActionListener(e -> setVisible(false));
         buttonPanel.add(cancelButton);
 
-        JButton exportButton = new JButton("Import", UIUtils.getIconFromResources("import.png"));
+        JButton exportButton = new JButton("Import", UIUtils.getIconFromResources("actions/document-import.png"));
         exportButton.setDefaultCapable(true);
         exportButton.addActionListener(e -> {
             if (importFormat.getSelectedItem() == FileFormat.CSV) {
@@ -156,7 +156,7 @@ public class JIPipeTableImporterDialog extends JDialog {
 //                }
 //
 //                // Create table analyzer
-//                workbench.addTab(sheet.getSheetName(), UIUtils.getIconFromResources("table.png"),
+//                workbench.addTab(sheet.getSheetName(), UIUtils.getIconFromResources("data-types/results-table.png"),
 //                        new JIPipeTableAnalyzerUI(workbench, tableModel), DocumentTabPane.CloseMode.withAskOnCloseButton, true);
 //            }
 //
@@ -186,7 +186,7 @@ public class JIPipeTableImporterDialog extends JDialog {
         public Icon toIcon() {
             switch (this) {
                 case CSV:
-                    return UIUtils.getIconFromResources("filetype-csv.png");
+                    return UIUtils.getIconFromResources("data-types/results-table.png");
 //                case XLSX:
 //                    return UIUtils.getIconFromResources("filetype-excel.png");
                 default:

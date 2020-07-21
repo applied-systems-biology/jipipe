@@ -53,24 +53,24 @@ public class Matrix2DParameterEditorUI extends JIPipeParameterEditorUI {
 
         toolBar.add(Box.createHorizontalGlue());
 
-        JButton addRowButton = new JButton(UIUtils.getIconFromResources("add-row.png"));
+        JButton addRowButton = new JButton(UIUtils.getIconFromResources("actions/edit-table-insert-row-below.png"));
         addRowButton.setToolTipText("Add row");
         addRowButton.addActionListener(e -> getParameter(Matrix2D.class).addRow());
         toolBar.add(addRowButton);
 
-        JButton addColumnButton = new JButton(UIUtils.getIconFromResources("add-column.png"));
+        JButton addColumnButton = new JButton(UIUtils.getIconFromResources("actions/edit-table-insert-column-right.png"));
         addColumnButton.setToolTipText("Add column");
         addColumnButton.addActionListener(e -> getParameter(Matrix2D.class).addColumn());
         toolBar.add(addColumnButton);
 
         toolBar.addSeparator();
 
-        JButton removeRowButton = new JButton(UIUtils.getIconFromResources("remove-row.png"));
+        JButton removeRowButton = new JButton(UIUtils.getIconFromResources("actions/edit-table-delete-row.png"));
         removeRowButton.setToolTipText("Remove selected row");
         removeRowButton.addActionListener(e -> removeRow());
         toolBar.add(removeRowButton);
 
-        JButton removeColumnButton = new JButton(UIUtils.getIconFromResources("remove-column.png"));
+        JButton removeColumnButton = new JButton(UIUtils.getIconFromResources("actions/edit-table-delete-column.png"));
         removeColumnButton.setToolTipText("Remove selected column");
         removeColumnButton.addActionListener(e -> removeColumn());
         toolBar.add(removeColumnButton);
