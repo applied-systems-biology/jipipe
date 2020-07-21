@@ -65,6 +65,9 @@ public class JIPipeCompartmentGraphUI extends JIPipeGraphEditorUI {
 
         // Copy & paste behavior
         getCanvasUI().setContextActions(Arrays.asList(
+                new SelectAllNodeUIContextAction(),
+                new InvertSelectionNodeUIContextAction(),
+                NodeUIContextAction.SEPARATOR,
                 new GraphCompartmentCutNodeUIContextAction(),
                 new GraphCompartmentCopyNodeUIContextAction(),
                 new GraphCompartmentPasteNodeUIContextAction(),

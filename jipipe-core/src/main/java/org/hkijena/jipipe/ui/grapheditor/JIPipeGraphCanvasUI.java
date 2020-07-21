@@ -1334,4 +1334,19 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
     public void setGraphEditCursor(Point graphEditCursor) {
         this.graphEditCursor = graphEditCursor;
     }
+
+    public void selectAll() {
+        selection.addAll(nodeUIs.values());
+        updateSelection();
+    }
+
+    public void invertSelection() {
+        ImmutableSet<JIPipeNodeUI> originalSelection = ImmutableSet.copyOf(selection);
+        selection.clear();
+        for (JIPipeNodeUI ui : nodeUIs.values()) {
+            if(!originalSelection.contains(ui))
+                selection.add(ui);
+        }
+        updateSelection();
+    }
 }

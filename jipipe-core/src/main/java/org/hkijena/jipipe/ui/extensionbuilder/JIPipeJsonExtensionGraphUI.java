@@ -19,6 +19,7 @@ import org.hkijena.jipipe.ui.JIPipeJsonExtensionWorkbench;
 import org.hkijena.jipipe.ui.components.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.MarkdownReader;
 import org.hkijena.jipipe.ui.grapheditor.*;
+import org.hkijena.jipipe.ui.grapheditor.contextmenu.*;
 import org.hkijena.jipipe.ui.grapheditor.contextmenu.clipboard.AlgorithmGraphCopyNodeUIContextAction;
 import org.hkijena.jipipe.ui.grapheditor.contextmenu.clipboard.AlgorithmGraphCutNodeUIContextAction;
 import org.hkijena.jipipe.ui.grapheditor.contextmenu.clipboard.AlgorithmGraphPasteNodeUIContextAction;
@@ -52,9 +53,27 @@ public class JIPipeJsonExtensionGraphUI extends JIPipeGraphEditorUI {
         // Set D&D and Copy&Paste behavior
         getCanvasUI().setDragAndDropBehavior(new JIPipeStandardDragAndDropBehavior());
         getCanvasUI().setContextActions(Arrays.asList(
+                new SelectAllNodeUIContextAction(),
+                new InvertSelectionNodeUIContextAction(),
+                NodeUIContextAction.SEPARATOR,
                 new AlgorithmGraphCutNodeUIContextAction(),
                 new AlgorithmGraphCopyNodeUIContextAction(),
-                new AlgorithmGraphPasteNodeUIContextAction()
+                new AlgorithmGraphPasteNodeUIContextAction(),
+                NodeUIContextAction.SEPARATOR,
+                new IsolateNodesUIContextAction(),
+                new JsonAlgorithmToGroupNodeUIContextAction(),
+                new GroupNodeUIContextAction(),
+                new CollapseIOInterfaceNodeUIContextAction(),
+                NodeUIContextAction.SEPARATOR,
+                new EnableNodeUIContextAction(),
+                new DisableNodeUIContextAction(),
+                new EnablePassThroughNodeUIContextAction(),
+                new DisablePassThroughNodeUIContextAction(),
+                new EnableSaveOutputsNodeUIContextAction(),
+                new DisableSaveOutputsNodeUIContextAction(),
+                new DeleteNodeUIContextAction(),
+                NodeUIContextAction.SEPARATOR,
+                new SelectAndMoveNodeHereNodeUIContextAction()
         ));
     }
 

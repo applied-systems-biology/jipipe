@@ -70,6 +70,9 @@ public class JIPipeGraphCompartmentUI extends JIPipeGraphEditorUI {
         // Set D&D and Copy&Paste behavior
         getCanvasUI().setDragAndDropBehavior(new JIPipeStandardDragAndDropBehavior());
         getCanvasUI().setContextActions(Arrays.asList(
+                new SelectAllNodeUIContextAction(),
+                new InvertSelectionNodeUIContextAction(),
+                NodeUIContextAction.SEPARATOR,
                 new AlgorithmGraphCutNodeUIContextAction(),
                 new AlgorithmGraphCopyNodeUIContextAction(),
                 new AlgorithmGraphPasteNodeUIContextAction(),
