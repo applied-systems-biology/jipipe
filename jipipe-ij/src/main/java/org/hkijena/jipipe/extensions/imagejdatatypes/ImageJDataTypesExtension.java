@@ -177,6 +177,16 @@ public class ImageJDataTypesExtension extends JIPipePrepackagedDefaultJavaExtens
 
     @Override
     public void register() {
+        registerSettingsSheet(ImageJDataTypesSettings.ID,
+                "ImageJ data types",
+                "Extensions",
+                UIUtils.getIconFromResources("module.png"),
+                new ImageJDataTypesSettings());
+        registerEnumParameterType("ome-tiff-compression",
+                OMETIFFCompression.class,
+                "OME TIFF Compression",
+                "Available compression algorithms");
+
         // Register data types
         registerImageDataType("imagej-imgplus", ImagePlusData.class, "icons/data-types/imgplus.png");
         registerImageDataType("imagej-imgplus-greyscale", ImagePlusGreyscaleData.class, "icons/data-types/imgplus-greyscale.png");
