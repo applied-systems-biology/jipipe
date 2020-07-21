@@ -37,7 +37,7 @@ public class JsonExtensionContentListCellRenderer extends JLabel implements List
         if (value instanceof JsonNodeInfo) {
             String name = StringUtils.orElse(((JsonNodeInfo) value).getName(), "&lt;No name&gt;");
             setText("<html><strong>" + name + "</strong><br/>" + "<i>Algorithm</i>" + "</html>");
-            setIcon(UIUtils.getIconFromResources("cogs-32.png"));
+            setIcon(UIUtils.getIcon32FromResources("cogs.png"));
         } else {
             setText("<Unknown entry>");
             setIcon(UIUtils.getIconFromResources("remove.png"));

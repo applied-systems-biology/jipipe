@@ -42,9 +42,9 @@ public class JIPipeDependencyListCellRenderer extends JLabel implements ListCell
         } else {
             setText("<html><strong>" + value.getMetadata().getName() + "</strong><br/>Version " + value.getDependencyVersion() + "</html>");
             if (value instanceof JIPipeJsonExtension)
-                setIcon(UIUtils.getIconFromResources("module-json-32.png"));
+                setIcon(UIUtils.getIcon32FromResources("module-json.png"));
             else
-                setIcon(UIUtils.getIconFromResources("module-java-32.png"));
+                setIcon(UIUtils.getIcon32FromResources("module-java.png"));
         }
 
         if (isSelected) {

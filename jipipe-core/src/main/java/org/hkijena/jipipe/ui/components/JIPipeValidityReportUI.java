@@ -85,7 +85,7 @@ public class JIPipeValidityReportUI extends JPanel {
         // Create alternative panel
         everythingValidPanel = new JPanel(new BorderLayout());
         {
-            JLabel label = new JLabel("No issues found", UIUtils.getIconFromResources("check-circle-green-64.png"), JLabel.LEFT);
+            JLabel label = new JLabel("No issues found", UIUtils.getIcon64FromResources("check-circle-green.png"), JLabel.LEFT);
             label.setFont(label.getFont().deriveFont(26.0f));
             everythingValidPanel.add(label, BorderLayout.CENTER);
         }

@@ -76,7 +76,7 @@ public class JIPipeJsonExtensionWindow extends JFrame {
     private void initialize() {
         getContentPane().setLayout(new BorderLayout(8, 8));
         super.setTitle("JIPipe extension builder");
-        setIconImage(UIUtils.getIconFromResources("jipipe-128.png").getImage());
+        setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
         UIUtils.setToAskOnClose(this, "Do you really want to close this JIPipe extension builder?", "Close window");
     }
 

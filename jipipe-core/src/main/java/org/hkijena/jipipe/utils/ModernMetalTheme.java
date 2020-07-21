@@ -212,13 +212,13 @@ public class ModernMetalTheme extends DefaultMetalTheme {
                 "MenuBarUI", "javax.swing.plaf.metal.MetalMenuBarUI",
 
                 "OptionPane.errorIcon",
-                UIUtils.getIconFromResources("dialog-error-32.png"),
+                UIUtils.getIcon32FromResources("dialog-error.png"),
                 "OptionPane.informationIcon",
-                UIUtils.getIconFromResources("dialog-info-32.png"),
+                UIUtils.getIcon32FromResources("dialog-info.png"),
                 "OptionPane.questionIcon",
-                UIUtils.getIconFromResources("dialog-question-32.png"),
+                UIUtils.getIcon32FromResources("dialog-question.png"),
                 "OptionPane.warningIcon",
-                UIUtils.getIconFromResources("dialog-warning-32.png"),
+                UIUtils.getIcon32FromResources("dialog-warning.png"),
 
                 "RadioButton.background", LIGHT_GRAY,
                 "RadioButton.rollover", Boolean.TRUE,
@@ -275,8 +275,8 @@ public class ModernMetalTheme extends DefaultMetalTheme {
 
                 "Tree.closedIcon", directoryIcon,
 
-                "Tree.collapsedIcon", UIUtils.getIconFromResources("tree-expand-8.png"),
-                "Tree.expandedIcon", UIUtils.getIconFromResources("tree-shrink-8.png"),
+                "Tree.collapsedIcon", UIUtils.getIcon8FromResources("tree-expand.png"),
+                "Tree.expandedIcon", UIUtils.getIcon8FromResources("tree-shrink.png"),
                 "Tree.leafIcon", fileIcon,
                 "Tree.openIcon", directoryIcon,
                 "Tree.selectionBorderColor", getPrimary1(),

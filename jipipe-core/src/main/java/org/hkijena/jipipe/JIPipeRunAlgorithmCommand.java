@@ -85,7 +85,7 @@ public class JIPipeRunAlgorithmCommand extends DynamicCommand implements Initial
             UIUtils.loadLookAndFeelFromSettings();
             RunSingleAlgorithmDialog dialog = new RunSingleAlgorithmDialog(getContext());
             dialog.setTitle("Run JIPipe algorithm");
-            dialog.setIconImage(UIUtils.getIconFromResources("jipipe-128.png").getImage());
+            dialog.setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
             dialog.setModal(true);
             dialog.pack();
             dialog.setSize(new Dimension(800, 600));

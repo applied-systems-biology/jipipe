@@ -46,7 +46,7 @@ public class MissingUpdateSiteResolver extends JDialog implements JIPipeWorkbenc
     private void showInitialMessage() {
         JPanel content = new JPanel(new BorderLayout());
 
-        JLabel titleLabel = new JLabel("Missing dependencies detected", UIUtils.getIconFromResources("dialog-warning-32.png"), JLabel.LEFT);
+        JLabel titleLabel = new JLabel("Missing dependencies detected", UIUtils.getIcon32FromResources("dialog-warning.png"), JLabel.LEFT);
         titleLabel.setFont(new Font(Font.DIALOG, Font.BOLD, 16));
         content.add(titleLabel, BorderLayout.NORTH);
 

@@ -24,7 +24,7 @@ public class RecentProjectListCellRenderer extends JPanel implements ListCellRen
 
     private void initialize() {
         setLayout(new GridBagLayout());
-        iconLabel = new JLabel(UIUtils.getIconFromResources("jipipe-file-32.png"));
+        iconLabel = new JLabel(UIUtils.getIcon32FromResources("jipipe-file.png"));
         nameLabel = new JLabel();
         nameLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, 12));
         pathLabel = new JLabel();

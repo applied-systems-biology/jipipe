@@ -63,7 +63,7 @@ public class JIPipeProjectWindow extends JFrame {
     private void initialize() {
         getContentPane().setLayout(new BorderLayout(8, 8));
         super.setTitle("JIPipe");
-        setIconImage(UIUtils.getIconFromResources("jipipe-128.png").getImage());
+        setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
         UIUtils.setToAskOnClose(this, "Do you really want to close JIPipe?", "Close window");
     }
 

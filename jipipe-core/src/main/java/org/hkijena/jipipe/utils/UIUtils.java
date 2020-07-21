@@ -230,10 +230,75 @@ public class UIUtils {
      * @return the icon instance
      */
     public static ImageIcon getIconFromResources(String iconName) {
-        ImageIcon icon = ICON_FROM_RESOURCES_CACHE.getOrDefault(iconName, null);
+        String path = "icons/" + iconName;
+        ImageIcon icon = ICON_FROM_RESOURCES_CACHE.getOrDefault(path, null);
         if (icon == null) {
-            icon = new ImageIcon(ResourceUtils.getPluginResource("icons/" + iconName));
-            ICON_FROM_RESOURCES_CACHE.put(iconName, icon);
+            icon = new ImageIcon(ResourceUtils.getPluginResource(path));
+            ICON_FROM_RESOURCES_CACHE.put(path, icon);
+        }
+        return icon;
+    }
+
+    /**
+     * Returns an icon from JIPipe resources
+     *
+     * @param iconName relative to the icons/ plugin resource
+     * @return the icon instance
+     */
+    public static ImageIcon getIcon32FromResources(String iconName) {
+        String path = "icons-32/" + iconName;
+        ImageIcon icon = ICON_FROM_RESOURCES_CACHE.getOrDefault(path, null);
+        if (icon == null) {
+            icon = new ImageIcon(ResourceUtils.getPluginResource(path));
+            ICON_FROM_RESOURCES_CACHE.put(path, icon);
+        }
+        return icon;
+    }
+
+    /**
+     * Returns an icon from JIPipe resources
+     *
+     * @param iconName relative to the icons/ plugin resource
+     * @return the icon instance
+     */
+    public static ImageIcon getIcon64FromResources(String iconName) {
+        String path = "icons-64/" + iconName;
+        ImageIcon icon = ICON_FROM_RESOURCES_CACHE.getOrDefault(path, null);
+        if (icon == null) {
+            icon = new ImageIcon(ResourceUtils.getPluginResource(path));
+            ICON_FROM_RESOURCES_CACHE.put(path, icon);
+        }
+        return icon;
+    }
+
+    /**
+     * Returns an icon from JIPipe resources
+     *
+     * @param iconName relative to the icons/ plugin resource
+     * @return the icon instance
+     */
+    public static ImageIcon getIcon128FromResources(String iconName) {
+        String path = "icons-128/" + iconName;
+        ImageIcon icon = ICON_FROM_RESOURCES_CACHE.getOrDefault(path, null);
+        if (icon == null) {
+            icon = new ImageIcon(ResourceUtils.getPluginResource(path));
+            ICON_FROM_RESOURCES_CACHE.put(path, icon);
+        }
+        return icon;
+    }
+
+    /**
+     * Returns an icon from JIPipe resources
+     *
+     * @param iconName relative to the icons/ plugin resource
+     * @return the icon instance
+     */
+    public static ImageIcon getIcon8FromResources(String iconName) {
+        String path = "icons-8/" + iconName;
+        ImageIcon icon = ICON_FROM_RESOURCES_CACHE.getOrDefault(path, null);
+        if (icon == null) {
+            icon = new ImageIcon(ResourceUtils.getPluginResource(path));
+            ICON_FROM_RESOURCES_CACHE.put(path, icon);
         }
         return icon;
     }

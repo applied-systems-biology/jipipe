@@ -193,7 +193,7 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
         errorUI.add(toolBar, BorderLayout.NORTH);
 
         JPanel errorContent = new JPanel(new BorderLayout());
-        errorLabel = new JLabel("No cached data available", UIUtils.getIconFromResources("no-data-64.png"), JLabel.LEFT);
+        errorLabel = new JLabel("No cached data available", UIUtils.getIcon64FromResources("no-data.png"), JLabel.LEFT);
         errorLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
         errorLabel.setFont(errorLabel.getFont().deriveFont(20.0f));
         errorContent.add(errorLabel, BorderLayout.NORTH);
