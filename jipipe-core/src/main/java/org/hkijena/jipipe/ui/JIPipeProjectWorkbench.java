@@ -429,7 +429,7 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
         projectInfo2.addActionListener(e -> documentTabPane.selectSingletonTab(TAB_PROJECT_OVERVIEW));
         helpMenu.add(projectInfo2);
 
-        JMenuItem algorithmCompendiumButton = new JMenuItem("Open algorithm compendium", UIUtils.getIconFromResources("cog.png"));
+        JMenuItem algorithmCompendiumButton = new JMenuItem("Open algorithm compendium", UIUtils.getIconFromResources("actions/configure.png"));
         algorithmCompendiumButton.addActionListener(e -> {
             getDocumentTabPane().addTab("Algorithm compendium",
                     UIUtils.getIconFromResources("help.png"),

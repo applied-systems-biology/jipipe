@@ -47,7 +47,7 @@ public class JIPipeProjectSettingsUI extends JIPipeProjectWorkbenchPanel {
                 MarkdownDocument.fromPluginResource("documentation/project-settings.md"),
                 ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.WITH_SCROLLING);
         tabPane.addTab("General",
-                UIUtils.getIconFromResources("cog.png"),
+                UIUtils.getIconFromResources("actions/configure.png"),
                 metadataUI,
                 DocumentTabPane.CloseMode.withoutCloseButton,
                 false);

@@ -53,7 +53,7 @@ public class JIPipeUIAlgorithmRegistry {
      * @return icon url
      */
     public URL getIconURLFor(JIPipeNodeInfo klass) {
-        return icons.getOrDefault(klass, ResourceUtils.getPluginResource("icons/cog.png"));
+        return icons.getOrDefault(klass, ResourceUtils.getPluginResource("icons/actions/configure.png"));
     }
 
     /**
@@ -70,10 +70,10 @@ public class JIPipeUIAlgorithmRegistry {
                 if (!info.getOutputSlots().isEmpty()) {
                     defaultIcon = JIPipeUIDatatypeRegistry.getInstance().getIconURLFor(info.getOutputSlots().get(0).value());
                 } else {
-                    defaultIcon = ResourceUtils.getPluginResource("icons/cog.png");
+                    defaultIcon = ResourceUtils.getPluginResource("icons/actions/configure.png");
                 }
             } else {
-                defaultIcon = ResourceUtils.getPluginResource("icons/cog.png");
+                defaultIcon = ResourceUtils.getPluginResource("icons/actions/configure.png");
             }
             icons.put(info, defaultIcon);
             uri = defaultIcon;

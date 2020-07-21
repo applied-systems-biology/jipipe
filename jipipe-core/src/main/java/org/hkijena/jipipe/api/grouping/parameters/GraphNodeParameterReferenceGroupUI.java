@@ -109,7 +109,7 @@ public class GraphNodeParameterReferenceGroupUI extends JPanel {
         private void initialize() {
             setLayout(new BorderLayout());
 
-            FancyTextField nameEditor = new FancyTextField(new JLabel(UIUtils.getIconFromResources("cog.png")),
+            FancyTextField nameEditor = new FancyTextField(new JLabel(UIUtils.getIconFromResources("actions/configure.png")),
                     "Group name");
             nameEditor.setText(group.getName());
             nameEditor.getTextField().getDocument().addDocumentListener(new DocumentChangeListener() {

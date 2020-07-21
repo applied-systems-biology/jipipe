@@ -61,7 +61,7 @@ public class MultiFileSelectionPanel extends JIPipeWorkbenchPanel {
         setLayout(new BorderLayout());
         FormPanel formPanel = new FormPanel(null, FormPanel.WITH_SCROLLING);
 
-        formPanel.addGroupHeader("Change actions", UIUtils.getIconFromResources("cog.png"));
+        formPanel.addGroupHeader("Change actions", UIUtils.getIconFromResources("actions/configure.png"));
         formPanel.addWideToForm(actionButtons, null);
 
         formPanel.addVerticalGlue();

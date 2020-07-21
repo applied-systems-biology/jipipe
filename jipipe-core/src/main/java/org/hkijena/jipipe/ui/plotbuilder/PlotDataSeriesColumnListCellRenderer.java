@@ -47,7 +47,7 @@ public class PlotDataSeriesColumnListCellRenderer extends JLabel implements List
             setIcon(UIUtils.getIconFromResources("table.png"));
         } else if (value != null) {
             setText(value.getLabel());
-            setIcon(UIUtils.getIconFromResources("cog.png"));
+            setIcon(UIUtils.getIconFromResources("actions/configure.png"));
         } else {
             setText("None selected");
             setIcon(UIUtils.getIconFromResources("error.png"));

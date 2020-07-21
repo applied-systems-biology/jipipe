@@ -63,7 +63,7 @@ public class JIPipeAlgorithmIconRefParameterEditorUI extends JIPipeParameterEdit
     }
 
     private void pickIcon() {
-        String picked = JIPipeIconPickerDialog.showDialog(this, ResourceUtils.getResourcePath("icons/algorithms"), getAvailableAlgorithmIcons());
+        String picked = JIPipeIconPickerDialog.showDialog(this, ResourceUtils.getResourcePath("icons"), getAvailableAlgorithmIcons());
         JIPipeAlgorithmIconRef ref = getParameter(JIPipeAlgorithmIconRef.class);
         ref.setIconName(picked);
         setParameter(ref, true);
@@ -78,25 +78,25 @@ public class JIPipeAlgorithmIconRefParameterEditorUI extends JIPipeParameterEdit
     public void reload() {
         JIPipeAlgorithmIconRef ref = getParameter(JIPipeAlgorithmIconRef.class);
         if (!StringUtils.isNullOrEmpty(ref.getIconName())) {
-            URL resource = ResourceUtils.getPluginResource("icons/algorithms/" + ref.getIconName());
+            URL resource = ResourceUtils.getPluginResource("icons/" + ref.getIconName());
             if (resource != null) {
                 currentlyDisplayed.setText(ref.getIconName());
                 currentlyDisplayed.setIcon(new ImageIcon(resource));
             } else {
                 currentlyDisplayed.setText("<Invalid: " + ref.getIconName() + ">");
-                currentlyDisplayed.setIcon(UIUtils.getIconFromResources("cog.png"));
+                currentlyDisplayed.setIcon(UIUtils.getIconFromResources("actions/configure.png"));
             }
         } else {
             currentlyDisplayed.setText("<None selected>");
-            currentlyDisplayed.setIcon(UIUtils.getIconFromResources("cog.png"));
+            currentlyDisplayed.setIcon(UIUtils.getIconFromResources("actions/configure.png"));
         }
     }
 
     public static Set<String> getAvailableAlgorithmIcons() {
         if (availableAlgorithmIcons == null) {
             availableAlgorithmIcons = new HashSet<>();
-            Set<String> rawIcons = ResourceUtils.walkInternalResourceFolder("icons/algorithms");
-            String basePath = ResourceUtils.getResourcePath("icons/algorithms/");
+            Set<String> rawIcons = ResourceUtils.walkInternalResourceFolder("icons/");
+            String basePath = ResourceUtils.getResourcePath("icons/");
             for (String rawIcon : rawIcons) {
                 if (rawIcon.endsWith(".png"))
                     availableAlgorithmIcons.add(rawIcon.substring(basePath.length()));

@@ -59,7 +59,7 @@ public class JIPipeSingleCompartmentSelectionPanelUI extends JIPipeProjectWorkbe
                 compartment,
                 MarkdownDocument.fromPluginResource("documentation/compartment-graph.md"),
                 ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.DOCUMENTATION_BELOW | ParameterPanel.WITH_SCROLLING);
-        tabbedPane.addTab("Parameters", UIUtils.getIconFromResources("cog.png"),
+        tabbedPane.addTab("Parameters", UIUtils.getIconFromResources("actions/configure.png"),
                 parametersUI,
                 DocumentTabPane.CloseMode.withoutCloseButton,
                 false);

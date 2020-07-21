@@ -475,7 +475,7 @@ public class JIPipeTableEditor extends JIPipeWorkbenchPanel {
         for (JIPipeTableRegistry.ColumnOperationEntry entry :
                 JIPipeTableRegistry.getInstance().getOperationsOfType(ConvertingColumnOperation.class)
                         .values().stream().sorted(Comparator.comparing(JIPipeTableRegistry.ColumnOperationEntry::getName)).collect(Collectors.toList())) {
-            JMenuItem item = new JMenuItem(entry.getName(), UIUtils.getIconFromResources("cog.png"));
+            JMenuItem item = new JMenuItem(entry.getName(), UIUtils.getIconFromResources("actions/configure.png"));
             item.setToolTipText(entry.getDescription());
             item.addActionListener(e -> {
                 createUndoSnapshot();

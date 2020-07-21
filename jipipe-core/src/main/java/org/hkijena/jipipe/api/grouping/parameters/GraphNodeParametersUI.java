@@ -67,7 +67,7 @@ public class GraphNodeParametersUI extends JIPipeWorkbenchPanel {
         toolBar.setFloatable(false);
         toolBar.add(Box.createHorizontalGlue());
 
-        JButton autoAddAlgorithmButton = new JButton("Auto add algorithm", UIUtils.getIconFromResources("cog.png"));
+        JButton autoAddAlgorithmButton = new JButton("Auto add algorithm", UIUtils.getIconFromResources("actions/configure.png"));
         autoAddAlgorithmButton.setToolTipText("Adds a group based on an algorithm");
         autoAddAlgorithmButton.addActionListener(e -> autoAddAlgorithm());
         toolBar.add(autoAddAlgorithmButton);

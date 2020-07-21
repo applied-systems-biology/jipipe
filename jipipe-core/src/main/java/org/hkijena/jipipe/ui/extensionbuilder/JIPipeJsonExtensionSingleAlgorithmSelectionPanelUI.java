@@ -57,7 +57,7 @@ public class JIPipeJsonExtensionSingleAlgorithmSelectionPanelUI extends JIPipeJs
                 algorithm,
                 TooltipUtils.getAlgorithmDocumentation(algorithm.getInfo()),
                 ParameterPanel.WITH_SCROLLING | ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.DOCUMENTATION_BELOW | ParameterPanel.WITH_SEARCH_BAR);
-        tabbedPane.addTab("Parameters", UIUtils.getIconFromResources("cog.png"),
+        tabbedPane.addTab("Parameters", UIUtils.getIconFromResources("actions/configure.png"),
                 parametersUI,
                 DocumentTabPane.CloseMode.withoutCloseButton,
                 false);

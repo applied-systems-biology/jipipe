@@ -86,7 +86,7 @@ public class JIPipePlotBuilderUI extends JIPipeWorkbenchPanel implements JIPipeP
 
         // Create settings panel
         DocumentTabPane tabbedPane = new DocumentTabPane();
-        tabbedPane.addTab("Settings", UIUtils.getIconFromResources("cog.png"),
+        tabbedPane.addTab("Settings", UIUtils.getIconFromResources("actions/configure.png"),
                 new ParameterPanel(getWorkbench(),
                         this,
                         null,

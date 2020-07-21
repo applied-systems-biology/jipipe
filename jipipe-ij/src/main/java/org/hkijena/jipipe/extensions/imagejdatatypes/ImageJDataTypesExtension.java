@@ -255,8 +255,8 @@ public class ImageJDataTypesExtension extends JIPipePrepackagedDefaultJavaExtens
         registerAlgorithm("import-imagej-bioformats", BioFormatsImporter.class);
 
         // Register algorithms
-        registerAlgorithm("convert-imagej-image", ImageTypeConverter.class, UIUtils.getAlgorithmIconURL("image.png"));
-        registerAlgorithm("image-properties-to-annotation", ImagePropertiesToAnnotationAlgorithm.class, UIUtils.getAlgorithmIconURL("annotation-table.png"));
+        registerAlgorithm("convert-imagej-image", ImageTypeConverter.class, UIUtils.getIconURLFromResources("actions/viewimage.png"));
+        registerAlgorithm("image-properties-to-annotation", ImagePropertiesToAnnotationAlgorithm.class, UIUtils.getIconURLFromResources("data-types/annotation-table.png"));
 
         // Register parameter editors
         registerEnumParameterType("import-imagej-bioformats:color-mode", BioFormatsImporter.ColorMode.class,

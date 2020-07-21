@@ -109,7 +109,7 @@ public class EditAlgorithmSlotPanel extends JPanel {
         formPanel.addToForm(nameEditor, new JLabel("Slot name"), null);
 
         if (existingSlot.getSlotType() == JIPipeSlotType.Output && slotConfiguration.isAllowInheritedOutputSlots()) {
-            formPanel.addGroupHeader("Inheritance", UIUtils.getIconFromResources("cog.png"));
+            formPanel.addGroupHeader("Inheritance", UIUtils.getIconFromResources("actions/configure.png"));
             inheritedSlotList = new JComboBox<>();
             inheritedSlotList.setRenderer(new InheritedSlotListCellRenderer(existingSlot.getNode()));
             DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();

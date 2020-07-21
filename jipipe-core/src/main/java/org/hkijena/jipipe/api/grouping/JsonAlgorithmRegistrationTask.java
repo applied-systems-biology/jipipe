@@ -64,7 +64,7 @@ public class JsonAlgorithmRegistrationTask extends JIPipeDefaultAlgorithmRegistr
             JIPipeNodeRegistry.getInstance().register(info, source);
             if (info.getIcon().getIconName() != null) {
                 JIPipeUIAlgorithmRegistry.getInstance().registerIcon(info,
-                        ResourceUtils.getPluginResource("icons/algorithms/" + info.getIcon().getIconName()));
+                        ResourceUtils.getPluginResource("icons/" + info.getIcon().getIconName()));
             }
         } catch (IOException e) {
             throw new RuntimeException(e);

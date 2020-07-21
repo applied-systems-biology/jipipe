@@ -136,7 +136,7 @@ public class AddAlgorithmSlotPanel extends JPanel {
         formPanel.addToForm(nameEditor, new JLabel("Slot name"), null);
 
         if (slotType == JIPipeSlotType.Output && slotConfiguration.isAllowInheritedOutputSlots()) {
-            formPanel.addGroupHeader("Inheritance", UIUtils.getIconFromResources("cog.png"));
+            formPanel.addGroupHeader("Inheritance", UIUtils.getIconFromResources("actions/configure.png"));
             inheritedSlotList = new JComboBox<>();
             inheritedSlotList.setRenderer(new InheritedSlotListCellRenderer(algorithm));
             DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();

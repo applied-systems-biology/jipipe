@@ -58,7 +58,7 @@ public class GraphNodeParameterReferenceUI extends JPanel {
                     JIPipeParameterTypeRegistry.getInstance().getInfoByFieldClass(referencedParameter.getFieldClass()).getName(),
                     reference.getPath(),
                     referencedParameter.getDescription()));
-            FancyTextField nameEditor = new FancyTextField(new JLabel(UIUtils.getIconFromResources("cog.png")),
+            FancyTextField nameEditor = new FancyTextField(new JLabel(UIUtils.getIconFromResources("actions/configure.png")),
                     reference.getOriginalName(tree));
             nameEditor.setText(reference.getName(tree));
             nameEditor.getTextField().getDocument().addDocumentListener(new DocumentChangeListener() {

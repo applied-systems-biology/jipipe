@@ -114,7 +114,7 @@ public class JsonNodeInfoUI extends JIPipeJsonExtensionWorkbenchPanel {
         }
         JIPipeJsonExtensionGraphUI ui = new JIPipeJsonExtensionGraphUI(getExtensionWorkbenchUI(), info.getGraph(), "");
         String name = StringUtils.orElse(info.getName(), "<Unnamed algorithm>");
-        getExtensionWorkbenchUI().getDocumentTabPane().addTab(name, UIUtils.getIconFromResources("cog.png"),
+        getExtensionWorkbenchUI().getDocumentTabPane().addTab(name, UIUtils.getIconFromResources("actions/configure.png"),
                 ui, DocumentTabPane.CloseMode.withSilentCloseButton, true);
         getExtensionWorkbenchUI().getDocumentTabPane().switchToLastTab();
     }

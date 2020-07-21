@@ -184,7 +184,7 @@ public class ParameterPanel extends FormPanel implements Contextual {
 
             if (!noEmptyGroupHeaders || !groupHeaderIsEmpty) {
                 GroupHeaderPanel groupHeaderPanel = addGroupHeader(traversed.getSourceDocumentationName(parameterHolder),
-                        UIUtils.getIconFromResources("cog.png"));
+                        UIUtils.getIconFromResources("actions/configure.png"));
 
                 if (documentation != null && !StringUtils.isNullOrEmpty(documentation.description())) {
                     groupHeaderPanel.getDescriptionArea().setVisible(true);

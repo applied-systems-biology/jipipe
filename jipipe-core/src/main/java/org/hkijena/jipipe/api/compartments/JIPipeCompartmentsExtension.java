@@ -57,9 +57,9 @@ public class JIPipeCompartmentsExtension extends JIPipePrepackagedDefaultJavaExt
 
     @Override
     public void register() {
-        registerAlgorithm("io-interface", IOInterfaceAlgorithm.class, UIUtils.getAlgorithmIconURL("arrows-alt-h.png"));
-        registerAlgorithm("jipipe:compartment-output", JIPipeCompartmentOutput.class, UIUtils.getAlgorithmIconURL("graph-compartment.png"));
-        registerAlgorithm("jipipe:project-compartment", JIPipeProjectCompartment.class, UIUtils.getAlgorithmIconURL("graph-compartment.png"));
+        registerAlgorithm("io-interface", IOInterfaceAlgorithm.class, UIUtils.getIconURLFromResources("devices/knemo-wireless-transmit-receive.png"));
+        registerAlgorithm("jipipe:compartment-output", JIPipeCompartmentOutput.class, UIUtils.getIconURLFromResources("data-types/graph-compartment.png"));
+        registerAlgorithm("jipipe:project-compartment", JIPipeProjectCompartment.class, UIUtils.getIconURLFromResources("data-types/graph-compartment.png"));
 
         registerDatatype("jipipe:compartment-output", JIPipeCompartmentOutputData.class,
                 ResourceUtils.getPluginResource("icons/data-types/graph-compartment.png"),

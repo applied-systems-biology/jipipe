@@ -46,9 +46,9 @@ public class GroupingExtension extends JIPipePrepackagedDefaultJavaExtension {
 
     @Override
     public void register() {
-        registerAlgorithm("graph-wrapper:input", GraphWrapperAlgorithmInput.class, UIUtils.getAlgorithmIconURL("plug.png"));
-        registerAlgorithm("graph-wrapper:output", GraphWrapperAlgorithmOutput.class, UIUtils.getAlgorithmIconURL("plug.png"));
-        registerAlgorithm("node-group", NodeGroup.class, UIUtils.getAlgorithmIconURL("cubes.png"));
+        registerAlgorithm("graph-wrapper:input", GraphWrapperAlgorithmInput.class, UIUtils.getIconURLFromResources("actions/plug.png"));
+        registerAlgorithm("graph-wrapper:output", GraphWrapperAlgorithmOutput.class, UIUtils.getIconURLFromResources("actions/plug.png"));
+        registerAlgorithm("node-group", NodeGroup.class, UIUtils.getIconURLFromResources("actions/object-group.png"));
 
         registerParameterType("node-group:content",
                 NodeGroupContents.class,

@@ -56,7 +56,7 @@ public class TableColumnSourceParameterEditorUI extends JIPipeParameterEditorUI 
 
         ButtonGroup buttonGroup = new ButtonGroup();
         pickColumnToggle = addToggle(buttonGroup, UIUtils.getIconFromResources("select-column.png"), "Pick an existing column");
-        generateColumnToggle = addToggle(buttonGroup, UIUtils.getIconFromResources("cog.png"), "Generate data");
+        generateColumnToggle = addToggle(buttonGroup, UIUtils.getIconFromResources("actions/configure.png"), "Generate data");
         add(Box.createHorizontalStrut(8));
 
         if (parameter.getMode() == TableColumnSourceParameter.Mode.PickColumn) {

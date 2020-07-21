@@ -74,13 +74,13 @@ public class SingleFileSelectionPanel extends JIPipeWorkbenchPanel {
         statusLabel = new JLabel();
         actionLabel = new JLabel();
 
-        formPanel.addGroupHeader("Current status", UIUtils.getIconFromResources("cog.png"));
+        formPanel.addGroupHeader("Current status", UIUtils.getIconFromResources("actions/configure.png"));
         formPanel.addToForm(statusLabel, new JLabel("Status"), null);
         formPanel.addToForm(actionLabel, new JLabel("Action"), null);
 
         formPanel.addWideToForm(actionButtons, null);
 
-        formPanel.addGroupHeader("General information", UIUtils.getIconFromResources("cog.png"));
+        formPanel.addGroupHeader("General information", UIUtils.getIconFromResources("actions/configure.png"));
         formPanel.addToForm(UIUtils.makeReadonlyBorderlessTextField(fileObject.getFilename()), new JLabel("File name"), null);
         formPanel.addToForm(UIUtils.makeReadonlyBorderlessTextField(fileObject.getLocalFilename(true)), new JLabel("Local file name"), null);
         formPanel.addToForm(UIUtils.makeReadonlyBorderlessTextField(prettyPrintTimestamp(fileObject.getTimestamp())), new JLabel("Release data"), null);
@@ -108,7 +108,7 @@ public class SingleFileSelectionPanel extends JIPipeWorkbenchPanel {
             }
         }
 
-        formPanel.addGroupHeader("Dependencies", UIUtils.getIconFromResources("cog.png"));
+        formPanel.addGroupHeader("Dependencies", UIUtils.getIconFromResources("actions/configure.png"));
         formPanel.addWideToForm(UIUtils.makeReadonlyBorderlessTextArea(ImmutableList.copyOf(fileObject.getFileDependencies(
                 managerUI.getFilesCollection(), true
         )).stream().map(FileObject::getFilename).collect(Collectors.joining("\n"))), null);
