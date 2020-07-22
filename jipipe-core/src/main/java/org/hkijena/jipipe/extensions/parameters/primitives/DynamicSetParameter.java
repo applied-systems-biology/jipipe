@@ -15,41 +15,37 @@ package org.hkijena.jipipe.extensions.parameters.primitives;
 
 import javax.swing.*;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
- * Parameter that acts as dynamic enum.
+ * Parameter that acts as dynamic enum where a set of items can be selected
  * Use {@link DynamicEnumParameterSettings} to define a supplier for the
  * items. Alternatively, use allowedValues to supply items.
  * allowedValues is preferred. If allowedValues is null, you have to use {@link DynamicEnumParameterSettings}.
  * The JSON serialization must be done manually.
  */
-public abstract class DynamicEnumParameter {
-    private Object value;
+public abstract class DynamicSetParameter {
+    private Set<Object> values = new HashSet<>();
     private List<Object> allowedValues = new ArrayList<>();
 
     /**
      * Creates a new instance with null value
      */
-    public DynamicEnumParameter() {
-
+    public DynamicSetParameter() {
     }
 
-    /**
-     * Creates a new instance
-     *
-     * @param value initial value
-     */
-    public DynamicEnumParameter(Object value) {
-        this.value = value;
+    public DynamicSetParameter(Set<Object> values) {
+        this.values = values;
     }
 
-    public Object getValue() {
-        return value;
+    public Set<Object> getValues() {
+        return values;
     }
 
-    public void setValue(Object value) {
-        this.value = value;
+    public void setValues(Set<Object> values) {
+        this.values = values;
     }
 
     public List<Object> getAllowedValues() {

@@ -316,6 +316,7 @@ public class StandardParametersExtension extends JIPipePrepackagedDefaultJavaExt
     private void registerEnumParameters() {
         // Enum-like parameters
         registerParameterEditor(DynamicEnumParameter.class, DynamicEnumParameterEditorUI.class);
+        registerParameterEditor(DynamicSetParameter.class, DynamicSetParameterEditorUI.class);
         registerParameterType("string-enum",
                 DynamicStringEnumParameter.class,
                 DynamicStringEnumParameter::new,
