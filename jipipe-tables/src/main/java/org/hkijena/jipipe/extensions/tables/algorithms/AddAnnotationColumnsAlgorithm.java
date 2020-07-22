@@ -32,7 +32,7 @@ import java.util.function.Supplier;
  * Algorithm that integrates columns
  */
 @JIPipeDocumentation(name = "Add annotations as columns", description = "Adds column annotations to the table as new columns.")
-@JIPipeOrganization(nodeTypeCategory = TableNodeTypeCategory.class)
+@JIPipeOrganization(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Append")
 @JIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
 public class AddAnnotationColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm {

@@ -51,7 +51,7 @@ import static org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.ImageRoiPro
  */
 @JIPipeDocumentation(name = "Filter ROI by statistics (Script)", description = "Filters the ROI list elements via statistics. The Python script contains a variable 'roi_list' " +
         "that contains dictionaries. Each one has an item 'data' containing the ImageJ ROI, and a dictionary 'stats' containing the statistics." + "\n\n" + ROI_PROCESSOR_DESCRIPTION)
-@JIPipeOrganization(nodeTypeCategory = RoiNodeTypeCategory.class)
+@JIPipeOrganization(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Filter")
 @JIPipeInputSlot(value = ROIListData.class, slotName = "ROI")
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Image")
 @JIPipeOutputSlot(value = ROIListData.class, slotName = "Output")

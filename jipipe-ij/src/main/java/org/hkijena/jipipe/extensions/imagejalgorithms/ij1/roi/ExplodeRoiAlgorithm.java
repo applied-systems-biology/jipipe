@@ -37,7 +37,7 @@ import java.util.function.Supplier;
  * Wrapper around {@link ij.plugin.frame.RoiManager}
  */
 @JIPipeDocumentation(name = "Split into individual ROI lists", description = "Splits the ROI in a ROI list into individual ROI lists.")
-@JIPipeOrganization(nodeTypeCategory = RoiNodeTypeCategory.class)
+@JIPipeOrganization(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Split")
 @JIPipeInputSlot(value = ROIListData.class, slotName = "Input")
 @JIPipeOutputSlot(value = ROIListData.class, slotName = "Output")
 public class ExplodeRoiAlgorithm extends JIPipeSimpleIteratingAlgorithm {

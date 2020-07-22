@@ -37,7 +37,7 @@ import static org.hkijena.jipipe.api.nodes.JIPipeIteratingAlgorithm.ITERATING_AL
  */
 @JIPipeDocumentation(name = "Append rectangular ROI (referenced)", description = "Appends manually defines rectangular ROI to all input ROI lists. " +
         "Ths algorithm allows to add rectangles as margins to the reference image bounds." + "\n\n" + ITERATING_ALGORITHM_DESCRIPTION)
-@JIPipeOrganization(nodeTypeCategory = RoiNodeTypeCategory.class)
+@JIPipeOrganization(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Merge")
 @JIPipeInputSlot(value = ROIListData.class, slotName = "ROI")
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference")
 @JIPipeOutputSlot(value = ROIListData.class, slotName = "Output")

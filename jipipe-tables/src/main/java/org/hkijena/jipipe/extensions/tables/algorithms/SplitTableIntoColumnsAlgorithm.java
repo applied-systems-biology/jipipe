@@ -37,7 +37,7 @@ import java.util.function.Supplier;
  * Algorithm that integrates columns
  */
 @JIPipeDocumentation(name = "Split table into columns", description = "Splits a table into individual columns")
-@JIPipeOrganization(nodeTypeCategory = TableNodeTypeCategory.class)
+@JIPipeOrganization(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Split")
 @JIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = TableColumn.class, slotName = "Output", autoCreate = true)
 public class SplitTableIntoColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm {

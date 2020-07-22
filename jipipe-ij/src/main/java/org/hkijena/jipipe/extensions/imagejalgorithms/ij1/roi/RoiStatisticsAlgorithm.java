@@ -43,7 +43,7 @@ import static org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.ImageRoiPro
  * Wrapper around {@link ij.plugin.frame.RoiManager}
  */
 @JIPipeDocumentation(name = "Extract ROI statistics", description = "Generates a results table containing ROI statistics." + "\n\n" + ROI_PROCESSOR_DESCRIPTION)
-@JIPipeOrganization(nodeTypeCategory = RoiNodeTypeCategory.class)
+@JIPipeOrganization(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Convert")
 @JIPipeInputSlot(value = ROIListData.class, slotName = "ROI")
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference")
 @JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Measurements")

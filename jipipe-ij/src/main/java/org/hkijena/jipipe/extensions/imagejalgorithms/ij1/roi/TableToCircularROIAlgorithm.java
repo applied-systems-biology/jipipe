@@ -36,7 +36,7 @@ import java.util.function.Supplier;
  * Wrapper around {@link ij.plugin.frame.RoiManager}
  */
 @JIPipeDocumentation(name = "Table to circular ROIs", description = "Converts data from a table to circular ROIs")
-@JIPipeOrganization(nodeTypeCategory = RoiNodeTypeCategory.class)
+@JIPipeOrganization(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Convert")
 @JIPipeInputSlot(value = ResultsTableData.class, slotName = "Input")
 @JIPipeOutputSlot(value = ROIListData.class, slotName = "Output")
 public class TableToCircularROIAlgorithm extends JIPipeSimpleIteratingAlgorithm {
