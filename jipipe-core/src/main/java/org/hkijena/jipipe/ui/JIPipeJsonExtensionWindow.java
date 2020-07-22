@@ -52,15 +52,15 @@ public class JIPipeJsonExtensionWindow extends JFrame {
 
     /**
      * Creates a new instance
-     *
-     * @param context The command that issued the UI
+     *  @param context The command that issued the UI
      * @param project The project
+     * @param showIntroduction show intro
      */
-    public JIPipeJsonExtensionWindow(Context context, JIPipeJsonExtension project) {
+    public JIPipeJsonExtensionWindow(Context context, JIPipeJsonExtension project, boolean showIntroduction) {
         OPEN_WINDOWS.add(this);
         this.context = context;
         initialize();
-        loadProject(project);
+        loadProject(project, showIntroduction);
         if (project.getJsonFilePath() != null)
             setTitle(project.getJsonFilePath().toString());
         else
@@ -89,19 +89,21 @@ public class JIPipeJsonExtensionWindow extends JFrame {
      * Loads a project into the window and replaces the current project
      *
      * @param project The project
+     * @param showIntroduction show intro
      */
-    public void loadProject(JIPipeJsonExtension project) {
+    public void loadProject(JIPipeJsonExtension project, boolean showIntroduction) {
         this.project = project;
-        this.projectUI = new JIPipeJsonExtensionWorkbench(this, context, project);
+        this.projectUI = new JIPipeJsonExtensionWorkbench(this, context, project, showIntroduction);
         setContentPane(projectUI);
     }
 
     /**
      * Creates a new project and asks the user if it should be opened in this or a new window
+     * @param showIntroduction show intro
      */
-    public void newProject() {
+    public void newProject(boolean showIntroduction) {
         JIPipeJsonExtension project = new JIPipeJsonExtension();
-        JIPipeJsonExtensionWindow window = openProjectInThisOrNewWindow("New extension", project);
+        JIPipeJsonExtensionWindow window = openProjectInThisOrNewWindow("New extension", project, showIntroduction);
         if (window == null)
             return;
         window.projectSavePath = null;
@@ -126,7 +128,7 @@ public class JIPipeJsonExtensionWindow extends JFrame {
             }
 
             JIPipeJsonExtension project = JIPipeJsonExtension.loadProject(jsonData);
-            JIPipeJsonExtensionWindow window = openProjectInThisOrNewWindow("Open project", project);
+            JIPipeJsonExtensionWindow window = openProjectInThisOrNewWindow("Open project", project, false);
             if (window == null)
                 return;
             window.projectSavePath = path;
@@ -170,7 +172,7 @@ public class JIPipeJsonExtensionWindow extends JFrame {
             getProject().saveProject(tempFile);
 
             // Check if the saved project can be loaded
-            JIPipeProject.loadProject(tempFile);
+            JIPipeJsonExtension.loadProject(tempFile);
 
             // Overwrite the target file
             if (Files.exists(savePath))
@@ -202,15 +204,16 @@ public class JIPipeJsonExtensionWindow extends JFrame {
      *
      * @param messageTitle How the project was loaded
      * @param project      The project
+     * @param showIntroduction show intro
      * @return The window that hosts the porject UI
      */
-    private JIPipeJsonExtensionWindow openProjectInThisOrNewWindow(String messageTitle, JIPipeJsonExtension project) {
+    private JIPipeJsonExtensionWindow openProjectInThisOrNewWindow(String messageTitle, JIPipeJsonExtension project, boolean showIntroduction) {
         switch (UIUtils.askOpenInCurrentWindow(this, messageTitle)) {
             case JOptionPane.YES_OPTION:
-                loadProject(project);
+                loadProject(project, showIntroduction);
                 return this;
             case JOptionPane.NO_OPTION:
-                return newWindow(context, project);
+                return newWindow(context, project, showIntroduction);
         }
         return null;
     }
@@ -248,10 +251,11 @@ public class JIPipeJsonExtensionWindow extends JFrame {
      *
      * @param context The context
      * @param project The project
+     * @param showIntroduction
      * @return The window
      */
-    public static JIPipeJsonExtensionWindow newWindow(Context context, JIPipeJsonExtension project) {
-        JIPipeJsonExtensionWindow frame = new JIPipeJsonExtensionWindow(context, project);
+    public static JIPipeJsonExtensionWindow newWindow(Context context, JIPipeJsonExtension project, boolean showIntroduction) {
+        JIPipeJsonExtensionWindow frame = new JIPipeJsonExtensionWindow(context, project, showIntroduction);
         frame.pack();
         frame.setSize(1024, 768);
         frame.setVisible(true);

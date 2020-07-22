@@ -88,7 +88,7 @@ public class JIPipePluginManagerUIPanel extends JIPipeProjectWorkbenchPanel {
 
         JButton newExtensionButton = new JButton("New extension ...", UIUtils.getIconFromResources("actions/document-new.png"));
         newExtensionButton.addActionListener(e -> {
-            JIPipeJsonExtensionWindow window = JIPipeJsonExtensionWindow.newWindow(getWorkbench().getContext(), new JIPipeJsonExtension());
+            JIPipeJsonExtensionWindow window = JIPipeJsonExtensionWindow.newWindow(getWorkbench().getContext(), new JIPipeJsonExtension(), true);
             window.setTitle("New project");
         });
         toolBar.add(newExtensionButton);

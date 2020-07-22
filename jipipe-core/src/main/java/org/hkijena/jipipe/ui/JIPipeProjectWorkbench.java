@@ -19,7 +19,6 @@ import org.hkijena.jipipe.JIPipeJsonExtension;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.categories.*;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.events.CompartmentRemovedEvent;
 import org.hkijena.jipipe.api.events.ExtensionRegisteredEvent;
@@ -361,7 +360,7 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
         JMenuItem newPluginButton = new JMenuItem("New JSON extension ...", UIUtils.getIconFromResources("actions/document-new.png"));
         newPluginButton.setToolTipText("Opens the extension builder");
         newPluginButton.addActionListener(e -> {
-            JIPipeJsonExtensionWindow window = JIPipeJsonExtensionWindow.newWindow(context, new JIPipeJsonExtension());
+            JIPipeJsonExtensionWindow window = JIPipeJsonExtensionWindow.newWindow(context, new JIPipeJsonExtension(), true);
             window.setTitle("New extension");
         });
         pluginsMenu.add(newPluginButton);

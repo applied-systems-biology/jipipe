@@ -89,13 +89,13 @@ public class JIPipeJsonExtensionInfoUI extends JIPipeJsonExtensionWorkbenchPanel
                 if (e.getClickCount() == 2) {
                     Path value = recentProjectsList.getSelectedValue();
                     if (value != null) {
-                        ((JIPipeProjectWindow) getExtensionWorkbenchUI().getWindow()).openProject(value);
+                        ((JIPipeJsonExtensionWindow) getExtensionWorkbenchUI().getWindow()).openProject(value);
                     }
                 } else {
                     if (recentProjectsList.getMousePosition().x > recentProjectsList.getWidth() - 50) {
                         Path value = recentProjectsList.getSelectedValue();
                         if (value != null) {
-                            ((JIPipeProjectWindow) getExtensionWorkbenchUI().getWindow()).openProject(value);
+                            ((JIPipeJsonExtensionWindow) getExtensionWorkbenchUI().getWindow()).openProject(value);
                         }
                     }
                 }

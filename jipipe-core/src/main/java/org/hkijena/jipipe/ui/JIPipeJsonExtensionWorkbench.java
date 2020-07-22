@@ -55,12 +55,13 @@ public class JIPipeJsonExtensionWorkbench extends JPanel implements JIPipeWorkbe
      * @param window  The parent window
      * @param context The SciJava context
      * @param project The project
+     * @param showIntroduction if show intro
      */
-    public JIPipeJsonExtensionWorkbench(JIPipeJsonExtensionWindow window, Context context, JIPipeJsonExtension project) {
+    public JIPipeJsonExtensionWorkbench(JIPipeJsonExtensionWindow window, Context context, JIPipeJsonExtension project, boolean showIntroduction) {
         this.window = window;
         this.context = context;
         this.project = project;
-        initialize();
+        initialize(showIntroduction);
 
         this.project.getEventBus().register(this);
         JIPipeDefaultRegistry.getInstance().getEventBus().register(this);
@@ -77,7 +78,7 @@ public class JIPipeJsonExtensionWorkbench extends JPanel implements JIPipeWorkbe
         sendStatusBarText("Registered extension: '" + event.getExtension().getMetadata().getName() + "' with id '" + event.getExtension().getDependencyId() + "'. We recommend to restart ImageJ.");
     }
 
-    private void initialize() {
+    private void initialize(boolean showIntroduction) {
         setLayout(new BorderLayout());
 
         documentTabPane = new DocumentTabPane();
@@ -85,7 +86,7 @@ public class JIPipeJsonExtensionWorkbench extends JPanel implements JIPipeWorkbe
                 "Introduction",
                 UIUtils.getIconFromResources("actions/help-info.png"),
                 new JIPipeJsonExtensionInfoUI(this),
-                false);
+                !showIntroduction);
         documentTabPane.addSingletonTab("PROJECT_SETTINGS",
                 "Extension settings",
                 UIUtils.getIconFromResources("actions/wrench.png"),
@@ -108,7 +109,10 @@ public class JIPipeJsonExtensionWorkbench extends JPanel implements JIPipeWorkbe
 
         add(documentTabPane, BorderLayout.CENTER);
 
-        getDocumentTabPane().selectSingletonTab("INTRODUCTION");
+        if(showIntroduction)
+            getDocumentTabPane().selectSingletonTab("INTRODUCTION");
+        else
+            getDocumentTabPane().selectSingletonTab("PROJECT_CONTENTS");
     }
 
     private void validateProject() {
@@ -143,7 +147,7 @@ public class JIPipeJsonExtensionWorkbench extends JPanel implements JIPipeWorkbe
         JMenuItem newProjectButton = new JMenuItem("New", UIUtils.getIconFromResources("actions/document-new.png"));
         newProjectButton.setToolTipText("Creates a new extension");
         newProjectButton.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.CTRL_DOWN_MASK));
-        newProjectButton.addActionListener(e -> window.newProject());
+        newProjectButton.addActionListener(e -> window.newProject(false));
         projectMenu.add(newProjectButton);
 
         UIUtils.installMenuExtension(this, projectMenu, MenuTarget.ExtensionBuilderMainMenu, true);

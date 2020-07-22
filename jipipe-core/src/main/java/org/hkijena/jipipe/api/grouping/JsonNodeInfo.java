@@ -182,6 +182,8 @@ public class JsonNodeInfo implements JIPipeNodeInfo, JIPipeValidatable, JIPipePa
     public DynamicCategoryEnumParameter getCategoryParameter() {
         if(category != null) {
             if (JIPipeDefaultRegistry.getInstance() != null && JIPipeDefaultRegistry.getInstance().getNodeRegistry() != null) {
+                if(category.getAllowedValues() == null)
+                    category.setAllowedValues(new ArrayList<>());
                 category.getAllowedValues().clear();
                 category.getAllowedValues().addAll(JIPipeNodeRegistry.getInstance().getRegisteredCategories().keySet());
             }

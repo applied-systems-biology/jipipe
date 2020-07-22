@@ -15,7 +15,6 @@ package org.hkijena.jipipe.ui.extensionbuilder;
 
 import org.hkijena.jipipe.JIPipeJsonExtension;
 import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.categories.*;
 import org.hkijena.jipipe.api.grouping.JsonNodeInfo;
 import org.hkijena.jipipe.api.grouping.NodeGroup;
 import org.hkijena.jipipe.api.registries.JIPipeNodeRegistry;
@@ -121,7 +120,7 @@ public class JIPipeJsonExporter extends JIPipeGraphEditorUI {
         JIPipeJsonExtension extension = new JIPipeJsonExtension();
         extension.addAlgorithm(nodeInfo);
         getWorkbench().getDocumentTabPane().remove(this);
-        JIPipeJsonExtensionWindow.newWindow(getWorkbench().getContext(), extension);
+        JIPipeJsonExtensionWindow.newWindow(getWorkbench().getContext(), extension, false);
     }
 
     private void createRandomId() {

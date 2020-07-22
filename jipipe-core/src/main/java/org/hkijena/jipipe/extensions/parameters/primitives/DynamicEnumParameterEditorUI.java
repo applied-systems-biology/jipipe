@@ -74,6 +74,7 @@ public class DynamicEnumParameterEditorUI extends JIPipeParameterEditorUI {
         comboBox = new JComboBox<>(values);
         comboBox.setSelectedItem(parameter.getValue());
         comboBox.addActionListener(e -> {
+            parameter.setValue(comboBox.getSelectedItem());
             setParameter(parameter, false);
         });
         comboBox.setRenderer(new Renderer(parameter));
