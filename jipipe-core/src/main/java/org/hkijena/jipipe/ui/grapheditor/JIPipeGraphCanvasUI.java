@@ -61,7 +61,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
     public final Stroke STROKE_DEFAULT = new BasicStroke(2);
     public final Stroke STROKE_HIGHLIGHT = new BasicStroke(8);
     public final Stroke STROKE_SELECTION = new BasicStroke(3, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL, 0, new float[]{9}, 0);
-    public final Stroke STROKE_PREDECESSOR = new BasicStroke(2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL, 0, new float[]{2}, 0);
+    public final Stroke STROKE_MARQUEE = new BasicStroke(1, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL, 0, new float[]{2}, 0);
 
     private final ImageIcon cursorImage = UIUtils.getIconFromResources("actions/target.png");
     private final JIPipeGraph graph;
@@ -74,6 +74,8 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
     private JIPipeGraphViewMode viewMode = GraphEditorUISettings.getInstance().getDefaultViewMode();
     private JIPipeGraphDragAndDropBehavior dragAndDropBehavior;
     private Point graphEditCursor;
+    private Point selectionFirst;
+    private Point selectionSecond;
     private long lastTimeExpandedNegative = 0;
     private List<NodeUIContextAction> contextActions = new ArrayList<>();
     private MoveNodesGraphHistorySnapshot currentlyDraggedSnapshot;
@@ -478,6 +480,12 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
                 getParent().revalidate();
             getEventBus().post(new GraphCanvasUpdatedEvent(this));
         }
+        else {
+            if(selectionFirst != null) {
+                selectionSecond = mouseEvent.getPoint();
+                repaint();
+            }
+        }
     }
 
     /**
@@ -520,6 +528,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
 
     @Override
     public void mouseMoved(MouseEvent mouseEvent) {
+
     }
 
     @Override
@@ -601,7 +610,9 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
                         currentlyDraggedOffsets.put(nodeUI, offset);
                         currentlyDraggedSnapshot = new MoveNodesGraphHistorySnapshot(graph, "Move node");
                     }
-
+                }
+                else {
+                    selectionFirst = mouseEvent.getPoint();
                 }
             }
         }
@@ -624,9 +635,42 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
         currentlyDraggedOffsets.clear();
         if (mouseEvent.getButton() == MouseEvent.BUTTON2)
             return;
-        JIPipeNodeUI ui = pickComponent(mouseEvent);
-        if (ui == null) {
-            selectOnly(null);
+
+        if(selectionFirst != null && selectionSecond != null) {
+            int x0 = selectionFirst.x;
+            int y0 = selectionFirst.y;
+            int x1 = selectionSecond.x;
+            int y1 = selectionSecond.y;
+            int x = Math.min(x0, x1);
+            int y = Math.min(y0, y1);
+            int w = Math.abs(x0 - x1);
+            int h = Math.abs(y0 - y1);
+            Rectangle selectionRectangle = new Rectangle(x,y,w,h);
+            Set<JIPipeNodeUI> newSelection = new HashSet<>();
+            for (JIPipeNodeUI ui : nodeUIs.values()) {
+                if(selectionRectangle.contains(ui.getBounds())) {
+                    newSelection.add(ui);
+                }
+            }
+            if(!newSelection.isEmpty()) {
+                if(!mouseEvent.isShiftDown()) {
+                    this.selection.clear();
+                }
+                this.selection.addAll(newSelection);
+                updateSelection();
+            }
+
+            selectionFirst = null;
+            selectionSecond = null;
+            repaint();
+        }
+        else {
+            JIPipeNodeUI ui = pickComponent(mouseEvent);
+            if (ui == null) {
+                selectOnly(null);
+            }
+            selectionFirst = null;
+            selectionSecond = null;
         }
     }
 
@@ -847,12 +891,32 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
         }
 
         g.setStroke(STROKE_UNIT);
+    }
 
+    @Override
+    public void paint(Graphics g) {
+        super.paint(g);
+
+        // Draw cursor over the components
         if (graphEditCursor != null) {
             g.drawImage(cursorImage.getImage(),
                     graphEditCursor.x - cursorImage.getIconWidth() / 2,
                     graphEditCursor.y - cursorImage.getIconHeight() / 2,
                     null);
+        }
+        if(selectionFirst != null && selectionSecond != null) {
+            Graphics2D graphics2D = (Graphics2D) g;
+            graphics2D.setStroke(STROKE_MARQUEE);
+            graphics2D.setColor(Color.GRAY);
+            int x0 = selectionFirst.x;
+            int y0 = selectionFirst.y;
+            int x1 = selectionSecond.x;
+            int y1 = selectionSecond.y;
+            int x = Math.min(x0, x1);
+            int y = Math.min(y0, y1);
+            int w = Math.abs(x0 - x1);
+            int h = Math.abs(y0 - y1);
+            graphics2D.drawRect(x,y,w,h);
         }
     }
 
