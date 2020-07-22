@@ -2,6 +2,14 @@ package org.hkijena.jipipe.extensions.core;
 
 import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.nodes.InternalNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.categories.AnalysisNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.categories.AnnotationNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.categories.ConverterNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.categories.FileSystemNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.categories.ProcessorNodeTypeCategory;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
 import org.hkijena.jipipe.utils.ResourceUtils;
@@ -35,6 +43,14 @@ public class CoreExtension extends JIPipePrepackagedDefaultJavaExtension {
                 ResourceUtils.getPluginResource("icons/data-types/data-type.png"),
                 null,
                 null);
+        registerNodeTypeCategory(new InternalNodeTypeCategory());
+        registerNodeTypeCategory(new ConverterNodeTypeCategory());
+        registerNodeTypeCategory(new DataSourceNodeTypeCategory());
+        registerNodeTypeCategory(new FileSystemNodeTypeCategory());
+        registerNodeTypeCategory(new MiscellaneousNodeTypeCategory());
+        registerNodeTypeCategory(new ProcessorNodeTypeCategory());
+        registerNodeTypeCategory(new AnalysisNodeTypeCategory());
+        registerNodeTypeCategory(new AnnotationNodeTypeCategory());
     }
 
     @Override

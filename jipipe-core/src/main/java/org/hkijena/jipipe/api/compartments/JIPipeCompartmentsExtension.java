@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.api.compartments;
 
 import org.hkijena.jipipe.JIPipeJavaExtension;
+import org.hkijena.jipipe.api.compartments.algorithms.CompartmentNodeTypeCategory;
 import org.hkijena.jipipe.api.compartments.algorithms.IOInterfaceAlgorithm;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeCompartmentOutput;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
@@ -57,6 +58,7 @@ public class JIPipeCompartmentsExtension extends JIPipePrepackagedDefaultJavaExt
 
     @Override
     public void register() {
+        registerNodeTypeCategory(new CompartmentNodeTypeCategory());
         registerNodeType("io-interface", IOInterfaceAlgorithm.class, UIUtils.getIconURLFromResources("devices/knemo-wireless-transmit-receive.png"));
         registerNodeType("jipipe:compartment-output", JIPipeCompartmentOutput.class, UIUtils.getIconURLFromResources("data-types/graph-compartment.png"));
         registerNodeType("jipipe:project-compartment", JIPipeProjectCompartment.class, UIUtils.getIconURLFromResources("data-types/graph-compartment.png"));
