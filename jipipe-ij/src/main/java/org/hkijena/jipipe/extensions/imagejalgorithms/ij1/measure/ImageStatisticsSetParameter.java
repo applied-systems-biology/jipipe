@@ -76,4 +76,16 @@ public class ImageStatisticsSetParameter extends DynamicSetParameter<Measurement
         Analyzer.setMeasurements(getNativeValue());
     }
 
+    /**
+     * Sets the values from native values
+     * @param nativeValue multiple native values
+     */
+    public void setNativeValue(int nativeValue) {
+        getValues().clear();
+        for (Measurement value : getAllowedValues()) {
+            if((value.getNativeValue() & nativeValue) == value.getNativeValue()) {
+                getAllowedValues().add(value);
+            }
+        }
+    }
 }

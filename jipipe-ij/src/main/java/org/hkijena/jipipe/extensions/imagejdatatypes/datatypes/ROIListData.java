@@ -32,7 +32,7 @@ import ij.process.FloatPolygon;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.measure.ImageStatisticsParameters;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.measure.ImageStatisticsSetParameter;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.RoiOutline;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.SliceIndex;
 import org.hkijena.jipipe.extensions.parameters.roi.Margin;
@@ -569,7 +569,7 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
      * @param measurements which measurements to extract
      * @return the measurements
      */
-    public ResultsTableData measure(ImagePlus imp, ImageStatisticsParameters measurements) {
+    public ResultsTableData measure(ImagePlus imp, ImageStatisticsSetParameter measurements) {
         measurements.updateAnalyzer();
         Analyzer aSys = new Analyzer(imp); // System Analyzer
         ResultsTable rtSys = Analyzer.getResultsTable();

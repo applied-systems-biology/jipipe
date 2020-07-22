@@ -25,7 +25,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.measure.ImageStatisticsParameters;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.measure.ImageStatisticsSetParameter;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.SliceIndex;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
@@ -52,7 +52,7 @@ import static org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.ImageRoiPro
 @JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Measurements")
 public class RoiStatisticsAlgorithm extends ImageRoiProcessorAlgorithm {
 
-    private ImageStatisticsParameters measurements = new ImageStatisticsParameters();
+    private ImageStatisticsSetParameter measurements = new ImageStatisticsSetParameter();
     private boolean applyPerSlice = false;
     private boolean applyPerChannel = false;
     private boolean applyPerFrame = false;
@@ -74,7 +74,7 @@ public class RoiStatisticsAlgorithm extends ImageRoiProcessorAlgorithm {
      */
     public RoiStatisticsAlgorithm(RoiStatisticsAlgorithm other) {
         super(other);
-        this.measurements = new ImageStatisticsParameters(other.measurements);
+        this.measurements = new ImageStatisticsSetParameter(other.measurements);
         this.applyPerChannel = other.applyPerChannel;
         this.applyPerFrame = other.applyPerFrame;
         this.applyPerSlice = other.applyPerSlice;
@@ -107,11 +107,15 @@ public class RoiStatisticsAlgorithm extends ImageRoiProcessorAlgorithm {
     }
 
     @JIPipeDocumentation(name = "Extracted measurements", description = "Please select which measurements should be extracted. " +
-            "Each measurement will be assigned to one or multiple output table columns. Please refer to the " +
-            "individual measurement documentations for the column names.")
+            "Each measurement will be assigned to one or multiple output table columns.<br/><br/>" + ImageStatisticsSetParameter.ALL_DESCRIPTIONS)
     @JIPipeParameter("measurements")
-    public ImageStatisticsParameters getMeasurements() {
+    public ImageStatisticsSetParameter getMeasurements() {
         return measurements;
+    }
+
+    @JIPipeParameter("measurements")
+    public void setMeasurements(ImageStatisticsSetParameter measurements) {
+        this.measurements = measurements;
     }
 
     @JIPipeDocumentation(name = "Generated annotation", description = "Optional. The annotation will contain the image slice position that was " +
