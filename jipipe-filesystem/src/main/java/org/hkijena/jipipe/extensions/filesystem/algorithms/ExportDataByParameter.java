@@ -17,6 +17,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.*;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;

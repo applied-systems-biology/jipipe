@@ -20,8 +20,8 @@ import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.*;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
-import org.hkijena.jipipe.api.nodes.categories.ConverterNodeTypeCategory;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.ImagePlus2DData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.fft.ImagePlusFFT2DData;
 
@@ -32,7 +32,7 @@ import java.util.function.Supplier;
  * Applies a FFT forward transformation
  */
 @JIPipeDocumentation(name = "2D FFT inverse transformation", description = "Converts a frequency space image into an image in real space.")
-@JIPipeOrganization(menuPath = "FFT", nodeTypeCategory = ConverterNodeTypeCategory.class)
+@JIPipeOrganization(menuPath = "FFT", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @JIPipeInputSlot(ImagePlusFFT2DData.class)
 @JIPipeOutputSlot(ImagePlus2DData.class)
 public class FFT2DInverseTransform extends JIPipeSimpleIteratingAlgorithm {

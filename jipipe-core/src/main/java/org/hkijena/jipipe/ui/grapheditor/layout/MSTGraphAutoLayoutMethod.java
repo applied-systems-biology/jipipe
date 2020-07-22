@@ -15,6 +15,7 @@ package org.hkijena.jipipe.ui.grapheditor.layout;
 
 import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.*;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphCanvasUI;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphViewMode;

@@ -8,7 +8,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.categories.ProcessorNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.categories.*;
 import org.hkijena.jipipe.extensions.clij2.datatypes.CLIJImageData;
 
 import java.util.function.Consumer;
@@ -18,7 +18,7 @@ import java.util.function.Supplier;
  * CLIJ2 algorithm ported from {@link net.haesleinhuepf.clij2.plugins.ReplacePixelsIfZero}
  */
 @JIPipeDocumentation(name = "CLIJ2 Replace Pixels If Zero", description = "Replaces pixel values x with y in case x is zero." + "This functionality is comparable to ImageJs image calculator operator 'transparent zero'. Works for following image dimensions: 2D, 3D.")
-@JIPipeOrganization(nodeTypeCategory = ProcessorNodeTypeCategory.class, menuPath = "Math\nReplace")
+@JIPipeOrganization(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Math\nReplace")
 @JIPipeInputSlot(value = CLIJImageData.class, slotName = "src1", autoCreate = true)
 @JIPipeInputSlot(value = CLIJImageData.class, slotName = "src2", autoCreate = true)
 @JIPipeOutputSlot(value = CLIJImageData.class, slotName = "dst", autoCreate = true)

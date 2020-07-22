@@ -17,6 +17,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import ij.IJ;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.*;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.registries.JIPipeNodeRegistry;
 import org.hkijena.jipipe.api.registries.JIPipeSettingsRegistry;

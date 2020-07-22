@@ -24,6 +24,7 @@ import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.JIPipeValidatable;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.*;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.events.DatatypeRegisteredEvent;
 import org.hkijena.jipipe.api.events.NodeInfoRegisteredEvent;
@@ -164,7 +165,7 @@ public class JIPipeNodeRegistry implements JIPipeValidatable {
      * @return Algorithms within the specified category
      */
     public Set<JIPipeNodeInfo> getNodesOfCategory(JIPipeNodeTypeCategory category) {
-        return registeredNodeInfos.values().stream().filter(d -> d.getCategory().getClass() == category.getClass()).collect(Collectors.toSet());
+        return registeredNodeInfos.values().stream().filter(d -> Objects.equals(d.getCategory().getId(), category.getId())).collect(Collectors.toSet());
     }
 
     /**

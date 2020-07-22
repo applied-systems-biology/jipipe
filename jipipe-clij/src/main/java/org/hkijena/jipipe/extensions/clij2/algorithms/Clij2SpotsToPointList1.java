@@ -8,7 +8,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.categories.ConverterNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.extensions.clij2.datatypes.CLIJImageData;
 
 import java.util.function.Consumer;
@@ -18,7 +18,7 @@ import java.util.function.Supplier;
  * CLIJ2 algorithm ported from {@link net.haesleinhuepf.clij2.plugins.SpotsToPointList}
  */
 @JIPipeDocumentation(name = "CLIJ2 Spots To Point List", description = "Transforms a spots image as resulting from maximum/minimum detection in an image where every column contains d " + "pixels (with d = dimensionality of the original image) with the coordinates of the maxima/minima. Works for following image dimensions: 2D, 3D.")
-@JIPipeOrganization(nodeTypeCategory = ConverterNodeTypeCategory.class)
+@JIPipeOrganization(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Convert")
 @JIPipeInputSlot(value = CLIJImageData.class, slotName = "input", autoCreate = true)
 @JIPipeOutputSlot(value = CLIJImageData.class, slotName = "output", autoCreate = true)
 

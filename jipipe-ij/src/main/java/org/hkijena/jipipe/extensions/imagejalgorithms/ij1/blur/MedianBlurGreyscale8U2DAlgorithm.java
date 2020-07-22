@@ -20,8 +20,8 @@ import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.*;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
-import org.hkijena.jipipe.api.nodes.categories.ProcessorNodeTypeCategory;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale8UData;
@@ -36,7 +36,7 @@ import static org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExt
  */
 @JIPipeDocumentation(name = "Median blur 3x3 2D (8-bit greyscale)", description = "Applies a 3x3 median filter to 8-bit greyscale images. " +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
-@JIPipeOrganization(menuPath = "Blur", nodeTypeCategory = ProcessorNodeTypeCategory.class)
+@JIPipeOrganization(menuPath = "Blur", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @JIPipeInputSlot(value = ImagePlusGreyscale8UData.class, slotName = "Input")
 @JIPipeOutputSlot(value = ImagePlusGreyscale8UData.class, slotName = "Output")
 public class MedianBlurGreyscale8U2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {

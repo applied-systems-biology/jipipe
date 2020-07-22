@@ -20,7 +20,7 @@ import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
-import org.hkijena.jipipe.api.nodes.categories.AnnotationNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.categories.AnnotationsNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FolderData;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.PathData;
@@ -36,7 +36,7 @@ import java.util.function.Supplier;
  * Algorithm that generates annotations from folder names
  */
 @JIPipeDocumentation(name = "Path to annotation", description = "Creates an annotation for each path based on its name or its full path.")
-@JIPipeOrganization(nodeTypeCategory = AnnotationNodeTypeCategory.class, menuPath = "Generate")
+@JIPipeOrganization(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "Generate")
 @JIPipeInputSlot(value = PathData.class, slotName = "Paths", autoCreate = true)
 @JIPipeOutputSlot(value = PathData.class, slotName = "Annotated paths", autoCreate = true, inheritedSlot = "Paths")
 public class SimplePathAnnotationGenerator extends JIPipeSimpleIteratingAlgorithm {

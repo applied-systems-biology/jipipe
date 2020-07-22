@@ -8,7 +8,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.categories.ProcessorNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.categories.*;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.clij2.datatypes.CLIJImageData;
 
@@ -19,7 +19,7 @@ import java.util.function.Supplier;
  * CLIJ2 algorithm ported from {@link net.haesleinhuepf.clij2.plugins.MinimumImageAndScalar}
  */
 @JIPipeDocumentation(name = "CLIJ2 Minimum Image And Scalar", description = "Computes the minimum of a constant scalar s and each pixel value x in a given image X." + "<pre>f(x, s) = min(x, s)</pre> Works for following image dimensions: 2D, 3D.")
-@JIPipeOrganization(nodeTypeCategory = ProcessorNodeTypeCategory.class, menuPath = "Math\nCalculate")
+@JIPipeOrganization(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Math\nCalculate")
 @JIPipeInputSlot(value = CLIJImageData.class, slotName = "src", autoCreate = true)
 @JIPipeOutputSlot(value = CLIJImageData.class, slotName = "dst", autoCreate = true)
 

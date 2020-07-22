@@ -17,6 +17,7 @@ import com.google.common.eventbus.Subscribe;
 import gnu.trove.set.TIntSet;
 import org.hkijena.jipipe.api.JIPipeProjectCache;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.*;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.events.NodeDisconnectedEvent;
 import org.hkijena.jipipe.api.events.NodeSlotsChangedEvent;

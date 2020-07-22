@@ -8,7 +8,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.categories.ProcessorNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.categories.*;
 import org.hkijena.jipipe.extensions.clij2.datatypes.CLIJImageData;
 
 import java.util.function.Consumer;
@@ -18,7 +18,7 @@ import java.util.function.Supplier;
  * CLIJ2 algorithm ported from {@link net.haesleinhuepf.clij2.plugins.SetNonZeroPixelsToPixelIndex}
  */
 @JIPipeDocumentation(name = "CLIJ2 Set Non Zero Pixels To Pixel Index", description = "Sets all pixels in an image which are not zero to the index of the pixel. " + "This can be used for Connected Components Analysis. Works for following image dimensions: 2D, 3D.")
-@JIPipeOrganization(nodeTypeCategory = ProcessorNodeTypeCategory.class, menuPath = "Math\nReplace")
+@JIPipeOrganization(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Math\nReplace")
 @JIPipeInputSlot(value = CLIJImageData.class, slotName = "src", autoCreate = true)
 @JIPipeOutputSlot(value = CLIJImageData.class, slotName = "dst", autoCreate = true)
 

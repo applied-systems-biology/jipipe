@@ -8,7 +8,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.categories.ProcessorNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.categories.*;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.clij2.datatypes.CLIJImageData;
 
@@ -19,7 +19,7 @@ import java.util.function.Supplier;
  * CLIJ2 algorithm ported from {@link net.haesleinhuepf.clij2.plugins.Threshold}
  */
 @JIPipeDocumentation(name = "CLIJ2 Threshold", description = "Computes a binary image with pixel values 0 and 1. " + "All pixel values x of a given input image with " + "value larger or equal to a given threshold t will be set to 1." + "f(x,t) = (1 if (x >= t); (0 otherwise))" + "This plugin is comparable to setting a raw threshold in ImageJ and using the 'Convert to Mask' menu. Works for following image dimensions: 2D, 3D.")
-@JIPipeOrganization(nodeTypeCategory = ProcessorNodeTypeCategory.class, menuPath = "Threshold")
+@JIPipeOrganization(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Threshold")
 @JIPipeInputSlot(value = CLIJImageData.class, slotName = "input", autoCreate = true)
 @JIPipeOutputSlot(value = CLIJImageData.class, slotName = "output", autoCreate = true)
 

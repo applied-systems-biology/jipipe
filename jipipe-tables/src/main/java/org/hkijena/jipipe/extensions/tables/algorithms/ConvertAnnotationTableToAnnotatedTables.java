@@ -18,7 +18,8 @@ import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.categories.ProcessorNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.categories.*;
+import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.tables.datatypes.AnnotationTableData;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
@@ -33,7 +34,7 @@ import java.util.function.Supplier;
  */
 @JIPipeDocumentation(name = "Annotation table to annotated table", description = "Extracts annotation columns from an annotation table and " +
         "converts them into data annotations. All non-annotation items are stored in the resulting tables.")
-@JIPipeOrganization(nodeTypeCategory = ProcessorNodeTypeCategory.class, menuPath = "Tables")
+@JIPipeOrganization(nodeTypeCategory = TableNodeTypeCategory.class)
 @JIPipeInputSlot(value = AnnotationTableData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
 public class ConvertAnnotationTableToAnnotatedTables extends JIPipeSimpleIteratingAlgorithm {

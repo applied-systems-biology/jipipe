@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.ui.resultanalysis;
 
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.*;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.ui.registries.JIPipeUINodeRegistry;

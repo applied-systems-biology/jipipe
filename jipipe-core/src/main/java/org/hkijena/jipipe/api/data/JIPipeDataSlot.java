@@ -15,7 +15,9 @@ package org.hkijena.jipipe.api.data;
 
 import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.*;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.*;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
 import org.hkijena.jipipe.utils.StringUtils;

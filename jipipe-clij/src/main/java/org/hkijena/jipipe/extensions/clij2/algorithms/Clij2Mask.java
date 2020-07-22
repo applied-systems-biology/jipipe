@@ -8,7 +8,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.categories.ProcessorNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.categories.*;
 import org.hkijena.jipipe.extensions.clij2.datatypes.CLIJImageData;
 
 import java.util.function.Consumer;
@@ -18,7 +18,7 @@ import java.util.function.Supplier;
  * CLIJ2 algorithm ported from {@link net.haesleinhuepf.clij2.plugins.Mask}
  */
 @JIPipeDocumentation(name = "CLIJ2 Mask", description = "Computes a masked image by applying a binary mask to an image. " + "All pixel values x of image X will be copied" + "to the destination image in case pixel value m at the same position in the mask image is not equal to " + "zero." + "<pre>f(x,m) = (x if (m != 0); (0 otherwise))</pre> Works for following image dimensions: 2D, 3D.")
-@JIPipeOrganization(nodeTypeCategory = ProcessorNodeTypeCategory.class, menuPath = "Mask")
+@JIPipeOrganization(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Mask")
 @JIPipeInputSlot(value = CLIJImageData.class, slotName = "src", autoCreate = true)
 @JIPipeInputSlot(value = CLIJImageData.class, slotName = "mask", autoCreate = true)
 @JIPipeOutputSlot(value = CLIJImageData.class, slotName = "dst", autoCreate = true)

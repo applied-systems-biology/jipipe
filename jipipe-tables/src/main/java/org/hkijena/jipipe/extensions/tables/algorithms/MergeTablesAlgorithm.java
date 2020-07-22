@@ -18,7 +18,7 @@ import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.categories.ProcessorNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.categories.*;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 
 import java.util.function.Consumer;
@@ -31,7 +31,7 @@ import static org.hkijena.jipipe.api.nodes.JIPipeMergingAlgorithm.MERGING_ALGORI
  */
 @JIPipeDocumentation(name = "Merge tables", description = "Merges multiple tables into one table. Columns are automatically created if they do not exist."
         + "\n\n" + MERGING_ALGORITHM_DESCRIPTION)
-@JIPipeOrganization(nodeTypeCategory = ProcessorNodeTypeCategory.class, menuPath = "Tables")
+@JIPipeOrganization(nodeTypeCategory = TableNodeTypeCategory.class)
 @JIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
 public class MergeTablesAlgorithm extends JIPipeMergingAlgorithm {

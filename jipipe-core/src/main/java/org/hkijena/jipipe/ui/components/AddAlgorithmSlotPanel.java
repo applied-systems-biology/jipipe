@@ -14,7 +14,9 @@
 package org.hkijena.jipipe.ui.components;
 
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.*;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.*;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;

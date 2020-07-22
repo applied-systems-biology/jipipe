@@ -20,7 +20,7 @@ import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.categories.ProcessorNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.categories.*;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.measure.MeasurementColumn;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.measure.MeasurementFilter;
@@ -41,7 +41,7 @@ import static org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.ImageRoiPro
  * Wrapper around {@link ij.plugin.frame.RoiManager}
  */
 @JIPipeDocumentation(name = "Filter ROI by statistics", description = "Filters the ROI list elements via statistics." + "\n\n" + ROI_PROCESSOR_DESCRIPTION)
-@JIPipeOrganization(menuPath = "ROI", nodeTypeCategory = ProcessorNodeTypeCategory.class)
+@JIPipeOrganization(nodeTypeCategory = RoiNodeTypeCategory.class)
 @JIPipeInputSlot(value = ROIListData.class, slotName = "ROI")
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Image")
 @JIPipeOutputSlot(value = ROIListData.class, slotName = "Output")

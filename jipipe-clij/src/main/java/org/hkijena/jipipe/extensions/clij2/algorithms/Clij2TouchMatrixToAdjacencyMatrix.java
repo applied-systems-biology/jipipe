@@ -8,7 +8,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.categories.ConverterNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.extensions.clij2.datatypes.CLIJImageData;
 
 import java.util.function.Consumer;
@@ -18,7 +18,7 @@ import java.util.function.Supplier;
  * CLIJ2 algorithm ported from {@link net.haesleinhuepf.clij2.plugins.TouchMatrixToAdjacencyMatrix}
  */
 @JIPipeDocumentation(name = "CLIJ2 Touch Matrix To Adjacency Matrix", description = "Converts a touch matrix in an adjacency matrix Works for following image dimensions: 2D, 3D.")
-@JIPipeOrganization(nodeTypeCategory = ConverterNodeTypeCategory.class)
+@JIPipeOrganization(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Convert")
 @JIPipeInputSlot(value = CLIJImageData.class, slotName = "touch_matrix", autoCreate = true)
 @JIPipeOutputSlot(value = CLIJImageData.class, slotName = "adjacency_matrix", autoCreate = true)
 

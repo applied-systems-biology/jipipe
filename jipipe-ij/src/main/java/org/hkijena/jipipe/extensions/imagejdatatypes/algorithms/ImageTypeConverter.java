@@ -21,7 +21,7 @@ import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
-import org.hkijena.jipipe.api.nodes.categories.ConverterNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.extensions.imagejdatatypes.ImageJDataTypesExtension;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 
@@ -34,7 +34,7 @@ import java.util.function.Supplier;
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input")
 @JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output")
 @JIPipeDocumentation(name = "Convert ImageJ image", description = "Converts an ImageJ image into another ImageJ image data type")
-@JIPipeOrganization(nodeTypeCategory = ConverterNodeTypeCategory.class)
+@JIPipeOrganization(nodeTypeCategory = ImagesNodeTypeCategory.class)
 public class ImageTypeConverter extends JIPipeAlgorithm {
 
     /**

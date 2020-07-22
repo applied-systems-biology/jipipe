@@ -19,8 +19,8 @@ import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.*;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
-import org.hkijena.jipipe.api.nodes.categories.ProcessorNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.parameters.colors.OptionalColorParameter;
@@ -35,7 +35,7 @@ import java.util.function.Supplier;
  * Wrapper around {@link ij.plugin.frame.RoiManager}
  */
 @JIPipeDocumentation(name = "Change ROI properties", description = "Changes properties of all Roi to a user-defined value.")
-@JIPipeOrganization(menuPath = "ROI", nodeTypeCategory = ProcessorNodeTypeCategory.class)
+@JIPipeOrganization(nodeTypeCategory = RoiNodeTypeCategory.class)
 @JIPipeInputSlot(value = ROIListData.class, slotName = "Input")
 @JIPipeOutputSlot(value = ROIListData.class, slotName = "Output")
 public class ChangeRoiPropertiesAlgorithm extends JIPipeSimpleIteratingAlgorithm {

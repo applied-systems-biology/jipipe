@@ -21,8 +21,8 @@ import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.*;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
-import org.hkijena.jipipe.api.nodes.categories.ProcessorNodeTypeCategory;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.fft.ImagePlusFFT2DData;
 
@@ -33,7 +33,7 @@ import java.util.function.Supplier;
  * Applies a FFT forward transformation
  */
 @JIPipeDocumentation(name = "2D FFT swap quadrants", description = "Swaps the quadrants of a frequency space image.")
-@JIPipeOrganization(menuPath = "FFT", nodeTypeCategory = ProcessorNodeTypeCategory.class)
+@JIPipeOrganization(menuPath = "FFT", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @JIPipeInputSlot(ImagePlusFFT2DData.class)
 @JIPipeOutputSlot(ImagePlusFFT2DData.class)
 public class FFT2DSwapQuadrants extends JIPipeSimpleIteratingAlgorithm {

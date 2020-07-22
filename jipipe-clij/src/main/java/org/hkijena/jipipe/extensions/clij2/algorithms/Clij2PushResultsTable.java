@@ -10,7 +10,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.categories.ConverterNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.extensions.clij2.datatypes.CLIJImageData;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 
@@ -21,7 +21,7 @@ import java.util.function.Supplier;
  * CLIJ2 algorithm ported from {@link net.haesleinhuepf.clij2.plugins.PushResultsTable}
  */
 @JIPipeDocumentation(name = "CLIJ2 Push Results Table", description = "")
-@JIPipeOrganization(nodeTypeCategory = ConverterNodeTypeCategory.class)
+@JIPipeOrganization(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Convert")
 @JIPipeOutputSlot(value = CLIJImageData.class, slotName = "buffer", autoCreate = true)
 @JIPipeInputSlot(value = ResultsTableData.class, slotName = "table", autoCreate = true)
 

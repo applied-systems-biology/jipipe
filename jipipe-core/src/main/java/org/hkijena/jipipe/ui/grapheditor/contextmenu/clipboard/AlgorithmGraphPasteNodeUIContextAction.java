@@ -14,7 +14,9 @@
 package org.hkijena.jipipe.ui.grapheditor.contextmenu.clipboard;
 
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.*;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.*;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeCompartmentOutput;
 import org.hkijena.jipipe.api.history.PasteNodeGraphHistorySnapshot;
 import org.hkijena.jipipe.api.registries.JIPipeNodeRegistry;

@@ -18,6 +18,7 @@ import com.google.common.eventbus.Subscribe;
 import ij.IJ;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.*;
 import org.hkijena.jipipe.api.compartments.JIPipeExportedCompartment;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.history.AddCompartmentGraphHistorySnapshot;

@@ -8,7 +8,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.categories.ProcessorNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.categories.*;
 import org.hkijena.jipipe.extensions.clij2.datatypes.CLIJImageData;
 
 import java.util.function.Consumer;
@@ -18,7 +18,7 @@ import java.util.function.Supplier;
  * CLIJ2 algorithm ported from {@link net.haesleinhuepf.clij2.plugins.ApplyVectorField3D}
  */
 @JIPipeDocumentation(name = "CLIJ2 Apply Vector Field 3D", description = "Deforms an image stack according to distances provided in the given vector image stacks." + "It is recommended to use 32-bit image stacks for input, output and vector image stacks.  Works for following image dimensions: 3D.")
-@JIPipeOrganization(nodeTypeCategory = ProcessorNodeTypeCategory.class, menuPath = "Deform")
+@JIPipeOrganization(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Deform")
 @JIPipeInputSlot(value = CLIJImageData.class, slotName = "src", autoCreate = true)
 @JIPipeInputSlot(value = CLIJImageData.class, slotName = "vectorX", autoCreate = true)
 @JIPipeInputSlot(value = CLIJImageData.class, slotName = "vectorY", autoCreate = true)

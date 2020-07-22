@@ -18,8 +18,8 @@ import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.*;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
-import org.hkijena.jipipe.api.nodes.categories.ProcessorNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.parameters.pairs.StringFilterAndSortOrderPair;
 import org.hkijena.jipipe.extensions.parameters.predicates.StringPredicate;
@@ -35,7 +35,7 @@ import java.util.function.Supplier;
  * Algorithm that integrates columns
  */
 @JIPipeDocumentation(name = "Sort table", description = "Sorts the table by columns")
-@JIPipeOrganization(nodeTypeCategory = ProcessorNodeTypeCategory.class, menuPath = "Tables")
+@JIPipeOrganization(nodeTypeCategory = TableNodeTypeCategory.class)
 @JIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
 public class SortTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {

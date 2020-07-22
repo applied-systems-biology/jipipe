@@ -8,7 +8,7 @@ import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.data.*;
-import org.hkijena.jipipe.api.nodes.categories.AnnotationNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.categories.AnnotationsNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.tables.datatypes.AnnotationTableData;
 
@@ -20,7 +20,7 @@ import java.util.function.Supplier;
  * Algorithm that merges the annotations of all inputs and outputs the data with the shared annotations
  */
 @JIPipeDocumentation(name = "Annotate by annotation table", description = "Merges matching annotations from an annotation table into the data set.")
-@JIPipeOrganization(nodeTypeCategory = AnnotationNodeTypeCategory.class, menuPath = "Generate")
+@JIPipeOrganization(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "Generate")
 @JIPipeInputSlot(value = JIPipeData.class, slotName = "Data", autoCreate = true)
 @JIPipeInputSlot(value = AnnotationTableData.class, slotName = "Annotations", autoCreate = true)
 @JIPipeOutputSlot(value = JIPipeData.class, slotName = "Annotated data", autoCreate = true, inheritedSlot = "Data")

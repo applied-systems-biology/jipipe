@@ -24,7 +24,7 @@ import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
-import org.hkijena.jipipe.api.nodes.categories.AnalysisNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
@@ -41,7 +41,7 @@ import java.util.function.Supplier;
  */
 @JIPipeDocumentation(name = "Get pixel values (Greyscale)", description = "Extracts the greyscale values of an image and puts them into a table. " +
         "It generates following output columns: <pre>value</pre>")
-@JIPipeOrganization(nodeTypeCategory = AnalysisNodeTypeCategory.class, menuPath = "Statistics")
+@JIPipeOrganization(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Statistics")
 @JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
 public class GreyscalePixelsGenerator extends JIPipeSimpleIteratingAlgorithm {

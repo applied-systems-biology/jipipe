@@ -20,8 +20,8 @@ import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.*;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
-import org.hkijena.jipipe.api.nodes.categories.ProcessorNodeTypeCategory;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 
@@ -32,7 +32,7 @@ import java.util.function.Supplier;
  * Wrapper around {@link ij.process.ImageProcessor}
  */
 @JIPipeDocumentation(name = "Invert colors", description = "Inverts the colors of an image")
-@JIPipeOrganization(menuPath = "Colors", nodeTypeCategory = ProcessorNodeTypeCategory.class)
+@JIPipeOrganization(menuPath = "Colors", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input")
 @JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output")
 public class InvertColorsAlgorithm extends JIPipeSimpleIteratingAlgorithm {

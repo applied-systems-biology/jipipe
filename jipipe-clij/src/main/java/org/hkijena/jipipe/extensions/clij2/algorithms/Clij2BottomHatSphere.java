@@ -8,7 +8,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.categories.ProcessorNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.categories.*;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.clij2.datatypes.CLIJImageData;
 
@@ -19,7 +19,7 @@ import java.util.function.Supplier;
  * CLIJ2 algorithm ported from {@link net.haesleinhuepf.clij2.plugins.BottomHatSphere}
  */
 @JIPipeDocumentation(name = "CLIJ2 Bottom Hat Sphere", description = "Applies a bottom-hat filter for background subtraction to the input image. Works for following image dimensions: 2D, 3D.")
-@JIPipeOrganization(nodeTypeCategory = ProcessorNodeTypeCategory.class, menuPath = "Morphology\nBottom Hat")
+@JIPipeOrganization(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Morphology\nBottom Hat")
 @JIPipeInputSlot(value = CLIJImageData.class, slotName = "input", autoCreate = true)
 @JIPipeOutputSlot(value = CLIJImageData.class, slotName = "output", autoCreate = true)
 

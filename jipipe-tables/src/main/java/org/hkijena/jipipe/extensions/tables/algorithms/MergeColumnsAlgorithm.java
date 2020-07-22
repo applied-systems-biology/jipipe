@@ -18,7 +18,7 @@ import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.categories.ProcessorNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.categories.*;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.extensions.tables.datatypes.TableColumn;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -34,7 +34,7 @@ import static org.hkijena.jipipe.api.nodes.JIPipeMergingAlgorithm.MERGING_ALGORI
  * Algorithm that integrates columns
  */
 @JIPipeDocumentation(name = "Merge columns", description = "Merges multiple table columns into a table." + "\n\n" + MERGING_ALGORITHM_DESCRIPTION)
-@JIPipeOrganization(nodeTypeCategory = ProcessorNodeTypeCategory.class, menuPath = "Tables")
+@JIPipeOrganization(nodeTypeCategory = TableNodeTypeCategory.class)
 @JIPipeInputSlot(value = TableColumn.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
 public class MergeColumnsAlgorithm extends JIPipeMergingAlgorithm {

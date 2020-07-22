@@ -8,7 +8,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.categories.ProcessorNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.categories.*;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.clij2.datatypes.CLIJImageData;
 
@@ -19,7 +19,7 @@ import java.util.function.Supplier;
  * CLIJ2 algorithm ported from {@link net.haesleinhuepf.clij2.plugins.AddImagesWeighted}
  */
 @JIPipeDocumentation(name = "CLIJ2 Add Images Weighted", description = "Calculates the sum of pairs of pixels x and y from images X and Y weighted with factors a and b." + "<pre>f(x, y, a, b) = x * a + y * b</pre> Works for following image dimensions: 2D, 3D.")
-@JIPipeOrganization(nodeTypeCategory = ProcessorNodeTypeCategory.class, menuPath = "Math\nCalculate")
+@JIPipeOrganization(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Math\nCalculate")
 @JIPipeInputSlot(value = CLIJImageData.class, slotName = "src", autoCreate = true)
 @JIPipeInputSlot(value = CLIJImageData.class, slotName = "src1", autoCreate = true)
 @JIPipeOutputSlot(value = CLIJImageData.class, slotName = "dst", autoCreate = true)

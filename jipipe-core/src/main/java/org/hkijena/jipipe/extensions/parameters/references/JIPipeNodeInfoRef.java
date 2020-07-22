@@ -22,6 +22,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.hkijena.jipipe.api.JIPipeValidatable;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.*;
 import org.hkijena.jipipe.api.registries.JIPipeNodeRegistry;
 
 import java.io.IOException;

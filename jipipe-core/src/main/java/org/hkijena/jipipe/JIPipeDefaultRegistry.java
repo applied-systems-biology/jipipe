@@ -22,6 +22,7 @@ import net.imagej.updater.util.AvailableSites;
 import net.imagej.updater.util.UpdaterUtil;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.*;
 import org.hkijena.jipipe.api.events.ExtensionRegisteredEvent;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;

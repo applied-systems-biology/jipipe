@@ -20,8 +20,8 @@ import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.*;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
-import org.hkijena.jipipe.api.nodes.categories.ProcessorNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterVisibility;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.blur.GaussianBlur2DAlgorithm;
@@ -38,7 +38,7 @@ import java.util.function.Supplier;
 @JIPipeDocumentation(name = "Illumination correction 2D",
         description = "Applies a Gaussian filter to the image and extracts the maximum value. Pixel values are then divided by this value." +
                 "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
-@JIPipeOrganization(nodeTypeCategory = ProcessorNodeTypeCategory.class, menuPath = "Contrast")
+@JIPipeOrganization(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Contrast")
 
 // Algorithm flow
 @JIPipeInputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Input")

@@ -19,9 +19,9 @@ import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.*;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.events.ParameterChangedEvent;
-import org.hkijena.jipipe.api.nodes.categories.ProcessorNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -51,7 +51,7 @@ import static org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.ImageRoiPro
  */
 @JIPipeDocumentation(name = "Filter ROI by statistics (Script)", description = "Filters the ROI list elements via statistics. The Python script contains a variable 'roi_list' " +
         "that contains dictionaries. Each one has an item 'data' containing the ImageJ ROI, and a dictionary 'stats' containing the statistics." + "\n\n" + ROI_PROCESSOR_DESCRIPTION)
-@JIPipeOrganization(menuPath = "ROI", nodeTypeCategory = ProcessorNodeTypeCategory.class)
+@JIPipeOrganization(nodeTypeCategory = RoiNodeTypeCategory.class)
 @JIPipeInputSlot(value = ROIListData.class, slotName = "ROI")
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Image")
 @JIPipeOutputSlot(value = ROIListData.class, slotName = "Output")

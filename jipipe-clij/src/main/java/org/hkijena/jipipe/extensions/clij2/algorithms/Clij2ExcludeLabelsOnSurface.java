@@ -8,7 +8,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.categories.ProcessorNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.categories.*;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.clij2.datatypes.CLIJImageData;
 
@@ -19,7 +19,7 @@ import java.util.function.Supplier;
  * CLIJ2 algorithm ported from {@link net.haesleinhuepf.clij2.plugins.ExcludeLabelsOnSurface}
  */
 @JIPipeDocumentation(name = "CLIJ2 Exclude Labels On Surface", description = "This operation follows a ray from a given position towards a label (or opposite direction) and checks if  there is another label between the label an the image border. " + "If yes, this label is eliminated from the label map. Works for following image dimensions: 2D, 3D.")
-@JIPipeOrganization(nodeTypeCategory = ProcessorNodeTypeCategory.class, menuPath = "Labels")
+@JIPipeOrganization(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Labels")
 @JIPipeInputSlot(value = CLIJImageData.class, slotName = "pointlist", autoCreate = true)
 @JIPipeInputSlot(value = CLIJImageData.class, slotName = "label_map_in", autoCreate = true)
 @JIPipeOutputSlot(value = CLIJImageData.class, slotName = "label_map_out", autoCreate = true)

@@ -15,6 +15,7 @@ package org.hkijena.jipipe.ui.grapheditor.contextmenu.clipboard;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.*;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphCanvasUI;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeNodeUI;
 import org.hkijena.jipipe.ui.grapheditor.contextmenu.NodeUIContextAction;

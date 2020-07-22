@@ -20,6 +20,7 @@ import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.JIPipeValidatable;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.*;
 import org.hkijena.jipipe.api.grouping.events.ParameterReferencesChangedEvent;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 

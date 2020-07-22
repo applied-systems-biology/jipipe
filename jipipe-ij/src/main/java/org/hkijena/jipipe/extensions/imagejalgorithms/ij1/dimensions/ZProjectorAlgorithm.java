@@ -20,9 +20,9 @@ import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.*;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
-import org.hkijena.jipipe.api.nodes.categories.ProcessorNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 
@@ -36,7 +36,7 @@ import static org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExt
  * Wrapper around {@link ij.plugin.ZProjector}
  */
 @JIPipeDocumentation(name = "Z-Project", description = "Performs a Z-Projection.")
-@JIPipeOrganization(menuPath = "Dimensions", nodeTypeCategory = ProcessorNodeTypeCategory.class)
+@JIPipeOrganization(menuPath = "Dimensions", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input")
 @JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output")
 public class ZProjectorAlgorithm extends JIPipeSimpleIteratingAlgorithm {

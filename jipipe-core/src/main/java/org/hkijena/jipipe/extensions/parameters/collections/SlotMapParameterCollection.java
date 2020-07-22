@@ -15,6 +15,7 @@ package org.hkijena.jipipe.extensions.parameters.collections;
 
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.*;
 import org.hkijena.jipipe.api.events.NodeSlotsChangedEvent;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 

@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.api;
 
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.*;
 import org.hkijena.jipipe.api.nodes.categories.InternalNodeTypeCategory;
 import org.hkijena.jipipe.ui.extension.MenuExtension;
 import org.hkijena.jipipe.ui.extension.MenuTarget;

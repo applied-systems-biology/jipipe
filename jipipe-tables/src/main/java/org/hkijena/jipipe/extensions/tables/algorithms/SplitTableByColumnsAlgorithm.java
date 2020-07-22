@@ -18,8 +18,8 @@ import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.*;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
-import org.hkijena.jipipe.api.nodes.categories.ProcessorNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.parameters.predicates.StringPredicate;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
@@ -40,7 +40,7 @@ import java.util.stream.Collectors;
  */
 @JIPipeDocumentation(name = "Split table by columns", description = "Splits a table into multiple tables according to list of selected columns. " +
         "Sub-tables that have the same values in the selected columns are put into the same output table.")
-@JIPipeOrganization(nodeTypeCategory = ProcessorNodeTypeCategory.class, menuPath = "Tables")
+@JIPipeOrganization(nodeTypeCategory = TableNodeTypeCategory.class)
 @JIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = TableColumn.class, slotName = "Output", autoCreate = true)
 public class SplitTableByColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm {

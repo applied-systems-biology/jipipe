@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.ui.grapheditor.contextmenu;
 
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.*;
 import org.hkijena.jipipe.api.events.ParameterChangedEvent;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphCanvasUI;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeNodeUI;

@@ -20,8 +20,8 @@ import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.*;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
-import org.hkijena.jipipe.api.nodes.categories.ProcessorNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
@@ -36,7 +36,7 @@ import java.util.function.Supplier;
 @JIPipeDocumentation(name = "Morphological operation (greyscale) 2D", description = "Applies a morphological operation to greyscale images. " +
         "If a multi-channel image is provided, the operation is applied to each channel. " +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
-@JIPipeOrganization(menuPath = "Morphology", nodeTypeCategory = ProcessorNodeTypeCategory.class)
+@JIPipeOrganization(menuPath = "Morphology", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input")
 @JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output")
 public class MorphologyGreyscale2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {

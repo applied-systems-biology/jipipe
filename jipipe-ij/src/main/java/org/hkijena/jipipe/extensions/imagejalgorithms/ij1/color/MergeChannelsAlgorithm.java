@@ -21,8 +21,8 @@ import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.*;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
-import org.hkijena.jipipe.api.nodes.categories.ProcessorNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColorRGBData;
@@ -43,7 +43,7 @@ import static org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExt
  * Wrapper around {@link ImageProcessor}
  */
 @JIPipeDocumentation(name = "Merge channels", description = "Merges each greyscale image plane into a multi-channel image. " + "\n\n" + ITERATING_ALGORITHM_DESCRIPTION)
-@JIPipeOrganization(menuPath = "Colors", nodeTypeCategory = ProcessorNodeTypeCategory.class)
+@JIPipeOrganization(menuPath = "Colors", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input")
 @JIPipeOutputSlot(value = ImagePlusColorRGBData.class, slotName = "Output")
 public class MergeChannelsAlgorithm extends JIPipeIteratingAlgorithm {

@@ -21,10 +21,10 @@ import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.*;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
-import org.hkijena.jipipe.api.nodes.categories.ProcessorNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.extensions.imagejdatatypes.ImageJDataTypesExtension;
@@ -48,7 +48,7 @@ import java.util.stream.Collectors;
  */
 @JIPipeDocumentation(name = "Reduce & split stacks", description = "Splits incoming stacks into a customizable amount of stacks based on stack indices. Add more output slots " +
         "to create more groups.")
-@JIPipeOrganization(menuPath = "Dimensions", nodeTypeCategory = ProcessorNodeTypeCategory.class)
+@JIPipeOrganization(menuPath = "Dimensions", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input")
 @JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output")
 public class StackSplitterAlgorithm extends JIPipeSimpleIteratingAlgorithm {

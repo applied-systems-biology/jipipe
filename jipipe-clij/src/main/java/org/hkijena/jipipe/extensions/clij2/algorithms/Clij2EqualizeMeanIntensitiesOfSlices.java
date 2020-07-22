@@ -8,7 +8,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.categories.ProcessorNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.categories.*;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.clij2.datatypes.CLIJImageData;
 
@@ -19,7 +19,7 @@ import java.util.function.Supplier;
  * CLIJ2 algorithm ported from {@link net.haesleinhuepf.clij2.plugins.EqualizeMeanIntensitiesOfSlices}
  */
 @JIPipeDocumentation(name = "CLIJ2 Equalize Mean Intensities Of Slices", description = "Determines correction factors for each z-slice so that the average intensity in all slices can be made the same and multiplies these factors with the slices. " + "This functionality is similar to the 'Simple Ratio Bleaching Correction' in Fiji. Works for following image dimensions: 3D.")
-@JIPipeOrganization(nodeTypeCategory = ProcessorNodeTypeCategory.class, menuPath = "Dimensions")
+@JIPipeOrganization(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Dimensions")
 @JIPipeInputSlot(value = CLIJImageData.class, slotName = "input", autoCreate = true)
 @JIPipeOutputSlot(value = CLIJImageData.class, slotName = "output", autoCreate = true)
 

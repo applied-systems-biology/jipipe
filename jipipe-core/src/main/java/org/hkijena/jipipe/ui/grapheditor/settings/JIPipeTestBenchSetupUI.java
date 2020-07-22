@@ -16,6 +16,7 @@ package org.hkijena.jipipe.ui.grapheditor.settings;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.*;
 import org.hkijena.jipipe.api.testbench.JIPipeTestBench;
 import org.hkijena.jipipe.api.testbench.JIPipeTestBenchSettings;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;

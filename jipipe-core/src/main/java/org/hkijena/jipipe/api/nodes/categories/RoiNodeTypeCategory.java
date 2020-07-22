@@ -13,46 +13,51 @@
 
 package org.hkijena.jipipe.api.nodes.categories;
 
-import org.hkijena.jipipe.api.nodes.*;
+import org.checkerframework.checker.units.qual.C;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeTypeCategory;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.Color;
 
-public class ProcessorNodeTypeCategory implements JIPipeNodeTypeCategory {
+public class RoiNodeTypeCategory implements JIPipeNodeTypeCategory {
+
+    public static final Color FILL_COLOR = Color.getHSBColor(0, 0.1f, 0.9f);
+    public static final Color BORDER_COLOR = Color.getHSBColor(0, 0.1f, 0.5f);
+
     @Override
     public String getId() {
-        return "org.hkijena.jipipe:processor";
+        return "org.hkijena.jipipe:roi";
     }
 
     @Override
     public String getName() {
-        return "Process";
+        return "ROI";
     }
 
     @Override
     public String getDescription() {
-        return "Nodes that produce the same output type as their input";
+        return "Operations on ROIs";
     }
 
     @Override
     public int getUIOrder() {
-        return 30;
+        return 40;
     }
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("actions/image-auto-adjust.png");
+        return UIUtils.getIconFromResources("actions/roi.png");
     }
 
     @Override
     public Color getFillColor() {
-        return Color.WHITE;
+        return FILL_COLOR;
     }
 
     @Override
     public Color getBorderColor() {
-        return Color.DARK_GRAY;
+        return BORDER_COLOR;
     }
 
     @Override
@@ -63,15 +68,5 @@ public class ProcessorNodeTypeCategory implements JIPipeNodeTypeCategory {
     @Override
     public boolean isVisibleInCompartmentGraph() {
         return false;
-    }
-
-    @Override
-    public boolean userCanCreate() {
-        return true;
-    }
-
-    @Override
-    public boolean userCanDelete() {
-        return true;
     }
 }

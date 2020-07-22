@@ -20,6 +20,7 @@ import javax.swing.*;
 import java.awt.Color;
 
 public class InternalNodeTypeCategory implements JIPipeNodeTypeCategory {
+
     @Override
     public String getId() {
         return "org.hkijena.jipipe:internal";
@@ -47,12 +48,12 @@ public class InternalNodeTypeCategory implements JIPipeNodeTypeCategory {
 
     @Override
     public Color getFillColor() {
-        return new Color(0xFFBFB7);
+        return Color.WHITE;
     }
 
     @Override
     public Color getBorderColor() {
-        return new Color(0xEE9084);
+        return Color.DARK_GRAY;
     }
 
     @Override

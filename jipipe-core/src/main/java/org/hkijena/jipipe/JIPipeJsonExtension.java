@@ -29,6 +29,7 @@ import org.hkijena.jipipe.api.JIPipeMetadata;
 import org.hkijena.jipipe.api.JIPipeValidatable;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.*;
 import org.hkijena.jipipe.api.events.ExtensionContentAddedEvent;
 import org.hkijena.jipipe.api.events.ExtensionContentRemovedEvent;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;

@@ -18,8 +18,8 @@ import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.*;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
-import org.hkijena.jipipe.api.nodes.categories.ProcessorNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.registries.JIPipeTableRegistry;
 import org.hkijena.jipipe.extensions.tables.ColumnOperation;
@@ -35,12 +35,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
 
 /**
  * Algorithm that integrates columns
  */
 @JIPipeDocumentation(name = "Apply function to each cell", description = "Applies a function to each individual cell")
-@JIPipeOrganization(nodeTypeCategory = ProcessorNodeTypeCategory.class, menuPath = "Tables")
+@JIPipeOrganization(nodeTypeCategory = TableNodeTypeCategory.class)
 @JIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
 public class ConvertColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm {

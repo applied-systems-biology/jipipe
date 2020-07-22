@@ -9,7 +9,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.categories.AnalysisNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.extensions.clij2.datatypes.CLIJImageData;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 
@@ -20,7 +20,7 @@ import java.util.function.Supplier;
  * CLIJ2 algorithm ported from {@link net.haesleinhuepf.clij2.plugins.StatisticsOfBackgroundAndLabelledPixels}
  */
 @JIPipeDocumentation(name = "CLIJ2 Statistics Of Background And Labelled Pixels", description = "")
-@JIPipeOrganization(nodeTypeCategory = AnalysisNodeTypeCategory.class, menuPath = "Statistics")
+@JIPipeOrganization(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Statistics")
 @JIPipeInputSlot(value = CLIJImageData.class, slotName = "inputImage", autoCreate = true)
 @JIPipeInputSlot(value = CLIJImageData.class, slotName = "inputLabelMap", autoCreate = true)
 @JIPipeOutputSlot(value = ResultsTableData.class, slotName = "resultsTable", autoCreate = true)

@@ -23,8 +23,8 @@ import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.*;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
-import org.hkijena.jipipe.api.nodes.categories.ConverterNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.measure.Measurement;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
@@ -47,7 +47,7 @@ import java.util.function.Supplier;
  */
 @JIPipeDocumentation(name = "Convert only ROI to RGB", description = "Converts ROI lists to color images. The line and fill color is stored within the ROI themselves. " +
         "This algorithm does not need a reference image that determines the output size.")
-@JIPipeOrganization(menuPath = "ROI", nodeTypeCategory = ConverterNodeTypeCategory.class)
+@JIPipeOrganization(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Convert")
 @JIPipeInputSlot(value = ROIListData.class, slotName = "Input")
 @JIPipeOutputSlot(value = ImagePlusColorRGBData.class, slotName = "Output")
 public class UnreferencedRoiToRGBAlgorithm extends JIPipeSimpleIteratingAlgorithm {

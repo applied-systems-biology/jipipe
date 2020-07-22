@@ -15,7 +15,9 @@ package org.hkijena.jipipe.ui.cache;
 
 import org.hkijena.jipipe.api.JIPipeProjectCache;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.*;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.*;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;

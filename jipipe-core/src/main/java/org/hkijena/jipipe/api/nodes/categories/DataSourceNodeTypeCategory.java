@@ -14,12 +14,17 @@
 package org.hkijena.jipipe.api.nodes.categories;
 
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.*;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.Color;
 
 public class DataSourceNodeTypeCategory implements JIPipeNodeTypeCategory {
+
+    public static final Color FILL_COLOR = Color.getHSBColor(136.0f / 360.0f, 0.1f, 0.9f);
+    public static final Color BORDER_COLOR = Color.getHSBColor(136.0f / 360.0f, 0.1f, 0.5f);
+
     @Override
     public String getId() {
         return "org.hkijena.jipipe:data-source";
@@ -47,12 +52,12 @@ public class DataSourceNodeTypeCategory implements JIPipeNodeTypeCategory {
 
     @Override
     public Color getFillColor() {
-        return Color.WHITE;
+        return FILL_COLOR;
     }
 
     @Override
     public Color getBorderColor() {
-        return Color.DARK_GRAY;
+        return BORDER_COLOR;
     }
 
     @Override

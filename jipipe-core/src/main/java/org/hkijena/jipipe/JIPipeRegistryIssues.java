@@ -16,6 +16,7 @@ package org.hkijena.jipipe;
 import org.hkijena.jipipe.api.JIPipeValidatable;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.*;
 import org.scijava.plugin.PluginInfo;
 
 import java.util.HashSet;

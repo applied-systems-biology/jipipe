@@ -23,10 +23,10 @@ import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.*;
 import org.hkijena.jipipe.api.compat.ImageJDatatypeAdapter;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.events.ParameterChangedEvent;
-import org.hkijena.jipipe.api.nodes.categories.ProcessorNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.*;
 import org.hkijena.jipipe.api.registries.JIPipeImageJAdapterRegistry;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.PathData;
@@ -58,7 +58,7 @@ import static org.hkijena.jipipe.api.nodes.JIPipeIteratingAlgorithm.ITERATING_AL
         "the select() function or comparable functions. You have have one results table input which " +
         "can be adressed via the global functions. Input ROI are merged into one ROI manager.\n\n" +
         "You can define variables that are passed from JIPipe to ImageJ. Variables are also created for incoming path-like data." + "\n\n" + ITERATING_ALGORITHM_DESCRIPTION)
-@JIPipeOrganization(nodeTypeCategory = ProcessorNodeTypeCategory.class)
+@JIPipeOrganization(nodeTypeCategory = ImagesNodeTypeCategory.class)
 @JIPipeInputSlot(ImagePlusData.class)
 @JIPipeInputSlot(ROIListData.class)
 @JIPipeInputSlot(ResultsTableData.class)

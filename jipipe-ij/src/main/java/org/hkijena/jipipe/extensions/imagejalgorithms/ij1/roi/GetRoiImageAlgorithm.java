@@ -19,7 +19,7 @@ import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.categories.ProcessorNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.categories.*;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 
@@ -32,7 +32,7 @@ import java.util.function.Supplier;
  * Wrapper around {@link ij.plugin.frame.RoiManager}
  */
 @JIPipeDocumentation(name = "Get ROI image", description = "Gets the associated image from a ROI. No output is generated if the ROI have no associated images.")
-@JIPipeOrganization(menuPath = "ROI", nodeTypeCategory = ProcessorNodeTypeCategory.class)
+@JIPipeOrganization(nodeTypeCategory = RoiNodeTypeCategory.class)
 @JIPipeInputSlot(value = ROIListData.class, slotName = "ROI", autoCreate = true)
 @JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Image", autoCreate = true)
 public class GetRoiImageAlgorithm extends JIPipeIteratingAlgorithm {

@@ -20,8 +20,8 @@ import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.*;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
-import org.hkijena.jipipe.api.nodes.categories.ProcessorNodeTypeCategory;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale8UData;
@@ -35,7 +35,7 @@ import java.util.function.Supplier;
  */
 @JIPipeDocumentation(name = "Voronoi 2D", description = "Splits the image by lines of points having equal distance to the borders of the two nearest particles." +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
-@JIPipeOrganization(menuPath = "Binary", nodeTypeCategory = ProcessorNodeTypeCategory.class)
+@JIPipeOrganization(menuPath = "Binary", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @JIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Input")
 @JIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output")
 public class Voronoi2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {

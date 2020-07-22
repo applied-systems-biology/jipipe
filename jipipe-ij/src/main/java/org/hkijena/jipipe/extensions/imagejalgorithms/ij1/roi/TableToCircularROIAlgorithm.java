@@ -19,9 +19,9 @@ import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.*;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
-import org.hkijena.jipipe.api.nodes.categories.ConverterNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.parameters.predicates.StringPredicate;
@@ -36,7 +36,7 @@ import java.util.function.Supplier;
  * Wrapper around {@link ij.plugin.frame.RoiManager}
  */
 @JIPipeDocumentation(name = "Table to circular ROIs", description = "Converts data from a table to circular ROIs")
-@JIPipeOrganization(menuPath = "ROI", nodeTypeCategory = ConverterNodeTypeCategory.class)
+@JIPipeOrganization(nodeTypeCategory = RoiNodeTypeCategory.class)
 @JIPipeInputSlot(value = ResultsTableData.class, slotName = "Input")
 @JIPipeOutputSlot(value = ROIListData.class, slotName = "Output")
 public class TableToCircularROIAlgorithm extends JIPipeSimpleIteratingAlgorithm {

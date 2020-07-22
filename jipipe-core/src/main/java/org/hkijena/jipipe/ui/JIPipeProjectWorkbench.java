@@ -19,6 +19,7 @@ import org.hkijena.jipipe.JIPipeJsonExtension;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.*;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.events.CompartmentRemovedEvent;
 import org.hkijena.jipipe.api.events.ExtensionRegisteredEvent;

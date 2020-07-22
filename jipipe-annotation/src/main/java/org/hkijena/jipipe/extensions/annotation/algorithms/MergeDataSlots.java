@@ -18,10 +18,10 @@ import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.*;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
-import org.hkijena.jipipe.api.nodes.categories.ProcessorNodeTypeCategory;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -30,7 +30,7 @@ import java.util.function.Supplier;
  * Merges the input slot tables into one data slot
  */
 @JIPipeDocumentation(name = "Merge data slots", description = "Merges the data rows from all input slots into one output slot")
-@JIPipeOrganization(nodeTypeCategory = ProcessorNodeTypeCategory.class)
+@JIPipeOrganization(nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
 @JIPipeInputSlot(JIPipeData.class)
 public class MergeDataSlots extends JIPipeAlgorithm {
 

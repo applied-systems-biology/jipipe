@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.api.events;
 
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.*;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 
 /**

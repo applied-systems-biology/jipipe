@@ -19,7 +19,7 @@ import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.nodes.categories.ConverterNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FolderData;
 
 import java.util.function.Consumer;
@@ -29,7 +29,7 @@ import java.util.function.Supplier;
  * Applies subfolder navigation to each input folder
  */
 @JIPipeDocumentation(name = "Get output path", description = "Obtains the output path of the current run where the receiving data is stored.")
-@JIPipeOrganization(nodeTypeCategory = ConverterNodeTypeCategory.class)
+@JIPipeOrganization(nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
 
 // Algorithm flow
 @JIPipeInputSlot(value = JIPipeData.class, slotName = "Data", autoCreate = true)

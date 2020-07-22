@@ -24,8 +24,8 @@ import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.*;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
-import org.hkijena.jipipe.api.nodes.categories.ProcessorNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
@@ -40,7 +40,7 @@ import static org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExt
  * Applies CLAHE image enhancing
  */
 @JIPipeDocumentation(name = "Frangi vesselness", description = "Applies the vesselness filter developed by Frangi et al.")
-@JIPipeOrganization(nodeTypeCategory = ProcessorNodeTypeCategory.class, menuPath = "Features")
+@JIPipeOrganization(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Features")
 
 // Algorithm flow
 @JIPipeInputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Input")

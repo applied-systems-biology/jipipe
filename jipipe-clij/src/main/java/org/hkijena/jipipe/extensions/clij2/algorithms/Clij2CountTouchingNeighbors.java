@@ -8,7 +8,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.categories.ProcessorNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.categories.*;
 import org.hkijena.jipipe.extensions.clij2.datatypes.CLIJImageData;
 
 import java.util.function.Consumer;
@@ -18,7 +18,7 @@ import java.util.function.Supplier;
  * CLIJ2 algorithm ported from {@link net.haesleinhuepf.clij2.plugins.CountTouchingNeighbors}
  */
 @JIPipeDocumentation(name = "CLIJ2 Count Touching Neighbors", description = "Takes a touch matrix as input and delivers a vector with number of touching neighbors per label as a vector. Works for following image dimensions: 2D -> 1D.")
-@JIPipeOrganization(nodeTypeCategory = ProcessorNodeTypeCategory.class, menuPath = "Math\nCount")
+@JIPipeOrganization(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Math\nCount")
 @JIPipeInputSlot(value = CLIJImageData.class, slotName = "src_touch_matrix", autoCreate = true)
 @JIPipeOutputSlot(value = CLIJImageData.class, slotName = "dst_count_list", autoCreate = true)
 

@@ -8,7 +8,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.categories.ProcessorNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.categories.*;
 import org.hkijena.jipipe.extensions.clij2.datatypes.CLIJImageData;
 
 import java.util.function.Consumer;
@@ -18,7 +18,7 @@ import java.util.function.Supplier;
  * CLIJ2 algorithm ported from {@link net.haesleinhuepf.clij2.plugins.ExcludeLabelsOnEdges}
  */
 @JIPipeDocumentation(name = "CLIJ2 Exclude Labels On Edges", description = "Removes all labels from a label map which touch the edges of the image (in X, Y and Z if the image is 3D). " + "Remaining label elements are renumbered afterwards. Works for following image dimensions: 2D, 3D.")
-@JIPipeOrganization(nodeTypeCategory = ProcessorNodeTypeCategory.class, menuPath = "Labels")
+@JIPipeOrganization(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Labels")
 @JIPipeInputSlot(value = CLIJImageData.class, slotName = "label_map_in", autoCreate = true)
 @JIPipeOutputSlot(value = CLIJImageData.class, slotName = "label_map_out", autoCreate = true)
 

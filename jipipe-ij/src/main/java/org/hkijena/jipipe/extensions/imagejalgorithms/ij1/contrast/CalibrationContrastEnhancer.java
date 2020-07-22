@@ -19,7 +19,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.categories.ProcessorNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.categories.*;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 
@@ -28,7 +28,7 @@ import java.util.function.Supplier;
 
 @JIPipeDocumentation(name = "Adjust displayed contrast", description = "Re-calibrates the incoming image, so its color range is displayed differently by ImageJ. " +
         "This does not change the pixel data.")
-@JIPipeOrganization(nodeTypeCategory = ProcessorNodeTypeCategory.class, menuPath = "Contrast")
+@JIPipeOrganization(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Contrast")
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true)
 public class CalibrationContrastEnhancer extends JIPipeSimpleIteratingAlgorithm {

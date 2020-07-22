@@ -13,46 +13,50 @@
 
 package org.hkijena.jipipe.api.nodes.categories;
 
-import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeTypeCategory;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.Color;
 
-public class AnalysisNodeTypeCategory implements JIPipeNodeTypeCategory {
+public class ImagesNodeTypeCategory implements JIPipeNodeTypeCategory {
+
+    public static final Color FILL_COLOR = Color.getHSBColor(186.0f / 360.0f, 0.1f, 0.9f);
+    public static final Color BORDER_COLOR = Color.getHSBColor(186.0f / 360.0f, 0.1f, 0.5f);
+
     @Override
     public String getId() {
-        return "org.hkijena.jipipe:analysis";
+        return "org.hkijena.jipipe:images";
     }
 
     @Override
     public String getName() {
-        return "Analyze";
+        return "Images";
     }
 
     @Override
     public String getDescription() {
-        return "Nodes that produce statistics or summaries";
+        return "Operations on images";
     }
 
     @Override
     public int getUIOrder() {
-        return 50;
+        return 30;
     }
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("actions/statistics.png");
+        return UIUtils.getIconFromResources("actions/imgplus.png");
     }
 
     @Override
     public Color getFillColor() {
-        return Color.WHITE;
+        return FILL_COLOR;
     }
 
     @Override
     public Color getBorderColor() {
-        return Color.DARK_GRAY;
+        return BORDER_COLOR;
     }
 
     @Override
@@ -63,15 +67,5 @@ public class AnalysisNodeTypeCategory implements JIPipeNodeTypeCategory {
     @Override
     public boolean isVisibleInCompartmentGraph() {
         return false;
-    }
-
-    @Override
-    public boolean userCanCreate() {
-        return true;
-    }
-
-    @Override
-    public boolean userCanDelete() {
-        return true;
     }
 }

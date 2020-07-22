@@ -15,6 +15,7 @@ package org.hkijena.jipipe.ui.registries;
 
 import org.hkijena.jipipe.JIPipeDefaultRegistry;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.*;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.utils.ResourceUtils;
 

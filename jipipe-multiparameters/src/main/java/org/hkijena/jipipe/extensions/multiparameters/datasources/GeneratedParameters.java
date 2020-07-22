@@ -15,6 +15,7 @@ package org.hkijena.jipipe.extensions.multiparameters.datasources;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.*;
 import org.hkijena.jipipe.api.events.ParameterStructureChangedEvent;
 import org.hkijena.jipipe.api.parameters.*;
 import org.hkijena.jipipe.api.registries.JIPipeParameterTypeRegistry;

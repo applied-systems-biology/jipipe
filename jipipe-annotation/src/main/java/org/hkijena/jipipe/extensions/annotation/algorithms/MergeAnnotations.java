@@ -6,7 +6,7 @@ import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.nodes.categories.AnnotationNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.categories.AnnotationsNodeTypeCategory;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -15,7 +15,7 @@ import java.util.function.Supplier;
  * Algorithm that merges the annotations of all inputs and outputs the data with the shared annotations
  */
 @JIPipeDocumentation(name = "Merge annotations", description = "Merges the annotations of all incoming data and outputs the same data with those merged annotations.")
-@JIPipeOrganization(nodeTypeCategory = AnnotationNodeTypeCategory.class)
+@JIPipeOrganization(nodeTypeCategory = AnnotationsNodeTypeCategory.class)
 public class MergeAnnotations extends JIPipeIteratingAlgorithm {
     /**
      * Creates a new instance

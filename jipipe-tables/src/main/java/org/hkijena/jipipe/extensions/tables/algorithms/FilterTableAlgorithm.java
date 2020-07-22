@@ -20,7 +20,7 @@ import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.categories.ProcessorNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.categories.*;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.parameters.pairs.StringFilterAndStringOrDoubleFilterPair;
 import org.hkijena.jipipe.extensions.parameters.predicates.StringOrDoublePredicate;
@@ -32,12 +32,13 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
 
 /**
  * Algorithm that integrates columns
  */
 @JIPipeDocumentation(name = "Filter table", description = "Filters the table by values")
-@JIPipeOrganization(nodeTypeCategory = ProcessorNodeTypeCategory.class, menuPath = "Tables")
+@JIPipeOrganization(nodeTypeCategory = TableNodeTypeCategory.class)
 @JIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
 public class FilterTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {

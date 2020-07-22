@@ -15,6 +15,7 @@ package org.hkijena.jipipe.api.registries;
 
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.*;
 import org.hkijena.jipipe.ui.registries.JIPipeUINodeRegistry;
 
 import java.net.URL;

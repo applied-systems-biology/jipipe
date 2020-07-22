@@ -22,7 +22,7 @@ import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
-import org.hkijena.jipipe.api.nodes.categories.AnnotationNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.categories.AnnotationsNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.parameters.collections.OutputSlotMapParameterCollection;
 import org.hkijena.jipipe.extensions.parameters.predicates.StringPredicate;
@@ -41,7 +41,7 @@ import java.util.stream.Collectors;
  */
 // Algorithm metadata
 @JIPipeDocumentation(name = "Split & filter by annotation", description = "Splits the input data by a specified annotation or filters data based on the annotation value.")
-@JIPipeOrganization(nodeTypeCategory = AnnotationNodeTypeCategory.class)
+@JIPipeOrganization(nodeTypeCategory = AnnotationsNodeTypeCategory.class)
 @JIPipeInputSlot(value = JIPipeData.class, slotName = "Input")
 public class SplitByAnnotation extends JIPipeAlgorithm {
 

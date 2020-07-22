@@ -17,7 +17,7 @@ import org.hkijena.jipipe.api.*;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
-import org.hkijena.jipipe.api.nodes.categories.AnnotationNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.categories.AnnotationsNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FileData;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
@@ -31,7 +31,7 @@ import java.util.function.Supplier;
  * Generates annotations from filenames
  */
 @JIPipeDocumentation(name = "Files to annotations", description = "Creates an annotation for each file based on its file name")
-@JIPipeOrganization(nodeTypeCategory = AnnotationNodeTypeCategory.class, menuPath = "Generate")
+@JIPipeOrganization(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "Generate")
 @JIPipeInputSlot(value = FileData.class, slotName = "Files", autoCreate = true)
 @JIPipeOutputSlot(value = FileData.class, slotName = "Annotated files", autoCreate = true)
 @JIPipeHidden

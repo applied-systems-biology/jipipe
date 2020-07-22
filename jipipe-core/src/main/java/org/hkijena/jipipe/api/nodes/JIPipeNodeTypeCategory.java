@@ -104,4 +104,5 @@ public interface JIPipeNodeTypeCategory {
    default boolean isRunnable() {
        return true;
    }
+
 }

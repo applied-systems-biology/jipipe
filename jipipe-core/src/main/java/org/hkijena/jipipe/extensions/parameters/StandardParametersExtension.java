@@ -19,6 +19,7 @@ import org.fife.ui.rsyntaxtextarea.TokenMakerFactory;
 import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.*;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollectionVisibilities;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
