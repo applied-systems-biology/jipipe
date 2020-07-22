@@ -13,20 +13,18 @@
 
 package org.hkijena.jipipe.extensions.parameters.primitives;
 
-import com.google.common.collect.Comparators;
 import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.components.MultiSelectionModel;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
 import org.hkijena.jipipe.utils.ModernMetalTheme;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 import java.util.function.Supplier;
 
 /**
@@ -54,21 +52,21 @@ public class DynamicSetParameterEditorUI extends JIPipeParameterEditorUI {
     @Override
     public void reload() {
         DynamicSetParameter<Object> parameter = getParameter(DynamicSetParameter.class);
-       Set<Object> currentlySelected = new HashSet<>(jList.getSelectedValuesList());
-       if(!currentlySelected.equals(parameter.getValues())) {
-           TIntList indices = new TIntArrayList();
-           List<Object> inModel = new ArrayList<>();
-           for (int i = 0; i < jList.getModel().getSize(); i++) {
-               inModel.add(jList.getModel().getElementAt(i));
-           }
-           for (Object value : parameter.getValues()) {
-               int i = inModel.indexOf(value);
-               if(i >= 0) {
-                   indices.add(i);
-               }
-           }
+        Set<Object> currentlySelected = new HashSet<>(jList.getSelectedValuesList());
+        if (!currentlySelected.equals(parameter.getValues())) {
+            TIntList indices = new TIntArrayList();
+            List<Object> inModel = new ArrayList<>();
+            for (int i = 0; i < jList.getModel().getSize(); i++) {
+                inModel.add(jList.getModel().getElementAt(i));
+            }
+            for (Object value : parameter.getValues()) {
+                int i = inModel.indexOf(value);
+                if (i >= 0) {
+                    indices.add(i);
+                }
+            }
             jList.setSelectedIndices(indices.toArray());
-       }
+        }
     }
 
 

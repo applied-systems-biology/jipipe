@@ -116,7 +116,7 @@ public class GraphNodeParameterReferenceAccess implements JIPipeParameterAccess 
 
     @Subscribe
     public void onSourceParameterChanged(ParameterChangedEvent event) {
-        if(Objects.equals(target.getKey(), event.getKey())) {
+        if (Objects.equals(target.getKey(), event.getKey())) {
             alternativeSource.getEventBus().post(new ParameterChangedEvent(alternativeSource, getKey()));
         }
     }

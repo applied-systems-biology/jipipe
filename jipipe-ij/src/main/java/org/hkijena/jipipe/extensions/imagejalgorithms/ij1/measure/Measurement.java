@@ -128,7 +128,7 @@ public enum Measurement {
                 return "The center point of the selection. This is the average of the x and y coordinates of all of the pixels in the image or selection. " +
                         "Values are stored in 'X' and 'Y' respectively.";
             case Perimeter:
-                return    "The length of the outside boundary of the selection. " +
+                return "The length of the outside boundary of the selection. " +
                         "Values are stored in 'Perim.'";
             case FitEllipse:
                 return "Fit an ellipse to the selection. Uses the headings Major, Minor and Angle. Major and Minor are the primary" +

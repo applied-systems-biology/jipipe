@@ -1,9 +1,6 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.measure;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import ij.plugin.filter.Analyzer;
-import org.hkijena.jipipe.extensions.parameters.enums.DynamicCategoryEnumParameter;
 import org.hkijena.jipipe.extensions.parameters.primitives.DynamicSetParameter;
 
 import java.util.Arrays;
@@ -64,6 +61,20 @@ public class ImageStatisticsSetParameter extends DynamicSetParameter<Measurement
         return result;
     }
 
+    /**
+     * Sets the values from native values
+     *
+     * @param nativeValue multiple native values
+     */
+    public void setNativeValue(int nativeValue) {
+        getValues().clear();
+        for (Measurement value : getAllowedValues()) {
+            if ((value.getNativeValue() & nativeValue) == value.getNativeValue()) {
+                getAllowedValues().add(value);
+            }
+        }
+    }
+
     @Override
     public String renderLabel(Measurement value) {
         return value != null ? value.getLabel() : "<null>";
@@ -74,18 +85,5 @@ public class ImageStatisticsSetParameter extends DynamicSetParameter<Measurement
      */
     public void updateAnalyzer() {
         Analyzer.setMeasurements(getNativeValue());
-    }
-
-    /**
-     * Sets the values from native values
-     * @param nativeValue multiple native values
-     */
-    public void setNativeValue(int nativeValue) {
-        getValues().clear();
-        for (Measurement value : getAllowedValues()) {
-            if((value.getNativeValue() & nativeValue) == value.getNativeValue()) {
-                getAllowedValues().add(value);
-            }
-        }
     }
 }
