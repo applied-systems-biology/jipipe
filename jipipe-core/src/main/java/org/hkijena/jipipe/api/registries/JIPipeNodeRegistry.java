@@ -24,13 +24,11 @@ import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.JIPipeValidatable;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.categories.*;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.events.DatatypeRegisteredEvent;
 import org.hkijena.jipipe.api.events.NodeInfoRegisteredEvent;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
-import org.hkijena.jipipe.utils.ReflectionUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -42,7 +40,7 @@ public class JIPipeNodeRegistry implements JIPipeValidatable {
     private Map<String, JIPipeNodeInfo> registeredNodeInfos = new HashMap<>();
     private Set<JIPipeNodeRegistrationTask> registrationTasks = new HashSet<>();
     private Map<String, JIPipeDependency> registeredNodeInfoSources = new HashMap<>();
-    private BiMap<Class<? extends JIPipeNodeTypeCategory>, JIPipeNodeTypeCategory> registeredCategories = HashBiMap.create();
+    private BiMap<String, JIPipeNodeTypeCategory> registeredCategories = HashBiMap.create();
     private boolean stateChanged;
     private boolean isRunning;
     private EventBus eventBus = new EventBus();
@@ -112,14 +110,8 @@ public class JIPipeNodeRegistry implements JIPipeValidatable {
         runRegistrationTasks();
     }
 
-    public JIPipeNodeTypeCategory getCategory(Class<? extends JIPipeNodeTypeCategory> klass) {
-        JIPipeNodeTypeCategory instance = registeredCategories.getOrDefault(klass, null);
-        if(instance == null) {
-            instance = (JIPipeNodeTypeCategory) ReflectionUtils.newInstance(klass);
-            // Auto-register
-            registerCategory(instance);
-        }
-        return instance;
+    public JIPipeNodeTypeCategory getCategory(String id) {
+        return registeredCategories.getOrDefault(id, null);
     }
 
     /**
@@ -127,7 +119,7 @@ public class JIPipeNodeRegistry implements JIPipeValidatable {
      * @param category the category instance
      */
     public void registerCategory(JIPipeNodeTypeCategory category) {
-        registeredCategories.put(category.getClass(), category);
+        registeredCategories.put(category.getId(), category);
     }
 
     /**
@@ -259,7 +251,7 @@ public class JIPipeNodeRegistry implements JIPipeValidatable {
         }
     }
 
-    public BiMap<Class<? extends JIPipeNodeTypeCategory>, JIPipeNodeTypeCategory> getRegisteredCategories() {
+    public ImmutableBiMap<String, JIPipeNodeTypeCategory> getRegisteredCategories() {
         return ImmutableBiMap.copyOf(registeredCategories);
     }
 

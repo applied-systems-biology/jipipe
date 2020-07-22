@@ -18,6 +18,7 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 import com.google.common.collect.Sets;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+import org.hkijena.jipipe.JIPipeDefaultRegistry;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeValidatable;
@@ -36,6 +37,10 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
+import org.hkijena.jipipe.api.registries.JIPipeNodeRegistry;
+import org.hkijena.jipipe.extensions.parameters.enums.DynamicCategoryEnumParameter;
+import org.hkijena.jipipe.extensions.parameters.primitives.DynamicEnumParameter;
+import org.hkijena.jipipe.extensions.parameters.primitives.DynamicStringEnumParameter;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.references.JIPipeAlgorithmIconRef;
@@ -52,7 +57,6 @@ public class JsonNodeInfo implements JIPipeNodeInfo, JIPipeValidatable, JIPipePa
     private String id;
     private String name;
     private String description;
-    private JIPipeNodeTypeCategory category = new MiscellaneousNodeTypeCategory();
     private List<JIPipeInputSlot> inputSlots = new ArrayList<>();
     private List<JIPipeOutputSlot> outputSlots = new ArrayList<>();
     private JIPipeGraph graph = new JIPipeGraph();
@@ -63,12 +67,14 @@ public class JsonNodeInfo implements JIPipeNodeInfo, JIPipeValidatable, JIPipePa
     private GraphWrapperAlgorithmInput algorithmInput;
     private GraphWrapperAlgorithmOutput algorithmOutput;
     private GraphNodeParameters exportedParameters;
+    private DynamicCategoryEnumParameter category = new DynamicCategoryEnumParameter();
 
 
     /**
      * Creates a new info
      */
     public JsonNodeInfo() {
+        category.setValue((new MiscellaneousNodeTypeCategory()).getId());
         exportedParameters = new GraphNodeParameters();
         exportedParameters.setGraph(getGraph());
         graph.getEventBus().register(this);
@@ -84,6 +90,7 @@ public class JsonNodeInfo implements JIPipeNodeInfo, JIPipeValidatable, JIPipePa
         exportedParameters = new GraphNodeParameters();
         exportedParameters.setGraph(getGraph());
         graph.getEventBus().register(this);
+        category.setValue((new MiscellaneousNodeTypeCategory()).getId());
         setName(group.getName());
         setDescription(group.getCustomDescription());
         updateSlots();
@@ -156,22 +163,37 @@ public class JsonNodeInfo implements JIPipeNodeInfo, JIPipeValidatable, JIPipePa
         this.description = description;
     }
 
-    // TODO: Implement for new category system
-//    @JIPipeDocumentation(name = "Category", description = "A general category for the algorithm. " +
-//            "This will influence in which menu the algorithm is put.")
-//    @JIPipeParameter(value = "category", uiOrder = 20)
-//    @JsonGetter("category")
-//    @Override
-//    public Class<? extends JIPipeNodeTypeCategory> getCategory() {
-//        return category;
-//    }
-//
-//    @JIPipeParameter("category")
-//    @JsonSetter("category")
-//    public void setCategory(JIPipeNodeCategory category) {
-//        this.category = category;
-//
-//    }
+    @Override
+    public JIPipeNodeTypeCategory getCategory() {
+        if(category != null && category.getValue() != null && !StringUtils.isNullOrEmpty("" + category.getValue())) {
+            if(JIPipeDefaultRegistry.getInstance() != null && JIPipeDefaultRegistry.getInstance().getNodeRegistry() != null) {
+                JIPipeNodeTypeCategory result = JIPipeNodeRegistry.getInstance().getRegisteredCategories().getOrDefault("" + category.getValue(), null);
+                if(result != null)
+                    return result;
+            }
+        }
+        return new MiscellaneousNodeTypeCategory();
+    }
+
+    @JIPipeDocumentation(name = "Category", description = "A general category for the algorithm. " +
+            "This will influence in which menu the algorithm is put.")
+    @JIPipeParameter(value = "category", uiOrder = 20)
+    @JsonGetter("category")
+    public DynamicCategoryEnumParameter getCategoryParameter() {
+        if(category != null) {
+            if (JIPipeDefaultRegistry.getInstance() != null && JIPipeDefaultRegistry.getInstance().getNodeRegistry() != null) {
+                category.getAllowedValues().clear();
+                category.getAllowedValues().addAll(JIPipeNodeRegistry.getInstance().getRegisteredCategories().keySet());
+            }
+        }
+        return category;
+    }
+
+    @JIPipeParameter("category")
+    @JsonSetter("category")
+    public void setCategoryParameter(DynamicCategoryEnumParameter parameter) {
+        this.category = parameter;
+    }
 
     @Override
     public List<JIPipeInputSlot> getInputSlots() {
@@ -338,7 +360,7 @@ public class JsonNodeInfo implements JIPipeNodeInfo, JIPipeValidatable, JIPipePa
                     "Please provide a valid algorithm ID.",
                     this);
         }
-        if (!category.userCanCreate() || !category.userCanDelete()) {
+        if (!getCategory().userCanCreate() || !getCategory().userCanDelete()) {
             report.reportIsInvalid("The selected category is reserved for internal usage!",
                     "This is reserved for algorithm nodes used by JIPipe to control program flow.",
                     "Please choose another algorithm category.",
@@ -360,11 +382,6 @@ public class JsonNodeInfo implements JIPipeNodeInfo, JIPipeValidatable, JIPipePa
     @JsonGetter("menu-path")
     public String getMenuPath() {
         return String.join("\n", menuPath);
-    }
-
-    @Override
-    public JIPipeNodeTypeCategory getCategory() {
-        return category;
     }
 
     @JsonSetter("menu-path")

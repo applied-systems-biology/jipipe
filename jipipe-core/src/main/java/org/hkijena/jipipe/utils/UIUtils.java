@@ -582,16 +582,6 @@ public class UIUtils {
     }
 
     /**
-     * Returns a fill color for {@link JIPipeNodeTypeCategory} class
-     *
-     * @param category the category
-     * @return the fill color
-     */
-    public static Color getFillColorFor(Class<? extends JIPipeNodeTypeCategory> category) {
-        return JIPipeNodeRegistry.getInstance().getCategory(category).getFillColor();
-    }
-
-    /**
      * Returns a border color for {@link JIPipeNodeInfo}
      *
      * @param info the algorithm type
