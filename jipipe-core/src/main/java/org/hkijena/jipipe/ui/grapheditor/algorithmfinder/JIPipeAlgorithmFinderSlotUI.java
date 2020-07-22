@@ -72,7 +72,7 @@ public class JIPipeAlgorithmFinderSlotUI extends JPanel {
         if (inputSlot.getNode().getGraph() == null || inputSlot.getNode().getGraph().getSourceSlot(inputSlot) == null)
             icon = UIUtils.getIconFromResources("emblems/slot-free-horizontal.png");
         else
-            icon = UIUtils.getIconFromResources("emblems/slot-connected-input-horizontal.png");
+            icon = UIUtils.getIconFromResources("emblems/slot-connected-horizontal.png");
         assignButton = new JButton(icon);
         assignButton.setEnabled(JIPipeDatatypeRegistry.getInstance().isConvertible(outputSlot.getAcceptedDataType(), inputSlot.getAcceptedDataType()));
         assignButton.setPreferredSize(new Dimension(25, 50));
