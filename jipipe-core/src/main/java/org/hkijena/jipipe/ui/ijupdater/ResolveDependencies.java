@@ -12,14 +12,12 @@ public class ResolveDependencies extends ConflictDialog {
     protected boolean forUpload;
 
     public ResolveDependencies(final Window owner,
-                               final FilesCollection files)
-    {
+                               final FilesCollection files) {
         this(owner, files, false);
     }
 
     public ResolveDependencies(final Window owner,
-                               final FilesCollection files, final boolean forUpload)
-    {
+                               final FilesCollection files, final boolean forUpload) {
         super(owner, "Resolve dependencies");
 
         this.forUpload = forUpload;

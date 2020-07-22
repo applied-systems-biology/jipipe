@@ -47,12 +47,17 @@ public class RankedData<T> implements Comparable<RankedData<T>> {
         return 0;
     }
 
+    public T getData() {
+        return data;
+    }
+
     /**
      * Creates a list of sorted ranked data
-     * @param data the data
+     *
+     * @param data            the data
      * @param rankingFunction the ranking function
-     * @param searchStrings the search terms. If null or empty, all data gets an empty rank
-     * @param <T> the data type
+     * @param searchStrings   the search terms. If null or empty, all data gets an empty rank
+     * @param <T>             the data type
      * @return ranked data, sorted according to the rank
      */
     public static <T> List<T> getSortedAndFilteredData(Collection<T> data, RankingFunction<T> rankingFunction, String[] searchStrings) {
@@ -75,9 +80,5 @@ public class RankedData<T> implements Comparable<RankedData<T>> {
             }
             return rankedData.stream().map(RankedData::getData).collect(Collectors.toList());
         }
-    }
-
-    public T getData() {
-        return data;
     }
 }

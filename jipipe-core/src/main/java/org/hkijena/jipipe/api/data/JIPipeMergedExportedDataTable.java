@@ -14,9 +14,8 @@
 package org.hkijena.jipipe.api.data;
 
 import org.hkijena.jipipe.api.JIPipeProject;
-import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.categories.*;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;

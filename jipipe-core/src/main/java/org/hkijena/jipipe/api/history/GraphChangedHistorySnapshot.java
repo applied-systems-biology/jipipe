@@ -13,8 +13,7 @@
 
 package org.hkijena.jipipe.api.history;
 
-import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.categories.*;
+import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 
 public class GraphChangedHistorySnapshot implements JIPipeAlgorithmGraphHistorySnapshot {
 

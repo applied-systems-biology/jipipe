@@ -15,14 +15,12 @@ package org.hkijena.jipipe.ui.grapheditor.algorithmfinder;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.categories.*;
-import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.categories.*;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeMutableSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.events.NodeSlotsChangedEvent;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.ui.components.AddAlgorithmSlotPanel;
 import org.hkijena.jipipe.ui.events.AlgorithmFinderSuccessEvent;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphCanvasUI;

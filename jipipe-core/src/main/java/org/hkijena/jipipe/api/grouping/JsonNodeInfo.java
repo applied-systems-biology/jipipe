@@ -23,8 +23,6 @@ import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeValidatable;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
-import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.categories.*;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeMutableSlotConfiguration;
@@ -32,6 +30,7 @@ import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.events.GraphChangedEvent;
 import org.hkijena.jipipe.api.events.ParameterStructureChangedEvent;
 import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameters;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
@@ -39,8 +38,6 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.registries.JIPipeNodeRegistry;
 import org.hkijena.jipipe.extensions.parameters.enums.DynamicCategoryEnumParameter;
-import org.hkijena.jipipe.extensions.parameters.primitives.DynamicEnumParameter;
-import org.hkijena.jipipe.extensions.parameters.primitives.DynamicStringEnumParameter;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.references.JIPipeAlgorithmIconRef;
@@ -165,10 +162,10 @@ public class JsonNodeInfo implements JIPipeNodeInfo, JIPipeValidatable, JIPipePa
 
     @Override
     public JIPipeNodeTypeCategory getCategory() {
-        if(category != null && category.getValue() != null && !StringUtils.isNullOrEmpty("" + category.getValue())) {
-            if(JIPipeDefaultRegistry.getInstance() != null && JIPipeDefaultRegistry.getInstance().getNodeRegistry() != null) {
+        if (category != null && category.getValue() != null && !StringUtils.isNullOrEmpty("" + category.getValue())) {
+            if (JIPipeDefaultRegistry.getInstance() != null && JIPipeDefaultRegistry.getInstance().getNodeRegistry() != null) {
                 JIPipeNodeTypeCategory result = JIPipeNodeRegistry.getInstance().getRegisteredCategories().getOrDefault("" + category.getValue(), null);
-                if(result != null)
+                if (result != null)
                     return result;
             }
         }
@@ -180,9 +177,9 @@ public class JsonNodeInfo implements JIPipeNodeInfo, JIPipeValidatable, JIPipePa
     @JIPipeParameter(value = "category", uiOrder = 20)
     @JsonGetter("category")
     public DynamicCategoryEnumParameter getCategoryParameter() {
-        if(category != null) {
+        if (category != null) {
             if (JIPipeDefaultRegistry.getInstance() != null && JIPipeDefaultRegistry.getInstance().getNodeRegistry() != null) {
-                if(category.getAllowedValues() == null)
+                if (category.getAllowedValues() == null)
                     category.setAllowedValues(new ArrayList<>());
                 category.getAllowedValues().clear();
                 category.getAllowedValues().addAll(JIPipeNodeRegistry.getInstance().getRegisteredCategories().keySet());

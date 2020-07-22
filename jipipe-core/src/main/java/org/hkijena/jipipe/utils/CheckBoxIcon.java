@@ -1,7 +1,5 @@
 package org.hkijena.jipipe.utils;
 
-import org.checkerframework.checker.units.qual.C;
-
 import javax.swing.*;
 import javax.swing.plaf.UIResource;
 import javax.swing.plaf.metal.MetalLookAndFeel;
@@ -13,33 +11,34 @@ import java.io.Serializable;
  */
 public class CheckBoxIcon implements Icon, UIResource, Serializable {
 
-    protected int getControlSize() { return 16; }
+    protected int getControlSize() {
+        return 16;
+    }
 
     public void paintIcon(Component c, Graphics g, int x, int y) {
-        ButtonModel model = ((JCheckBox)c).getModel();
+        ButtonModel model = ((JCheckBox) c).getModel();
         int controlSize = getControlSize();
-        ((Graphics2D)g).setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        ((Graphics2D) g).setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        if ( model.isEnabled() ) {
+        if (model.isEnabled()) {
             if (model.isSelected()) {
                 g.setColor(ModernMetalTheme.PRIMARY5);
-                g.fillRoundRect( x, y, controlSize-1, controlSize-1,2,2);
-            }
-            else {
-                g.setColor( Color.WHITE );
-                g.fillRoundRect( x, y, controlSize-1, controlSize-1,2,2);
+                g.fillRoundRect(x, y, controlSize - 1, controlSize - 1, 2, 2);
+            } else {
+                g.setColor(Color.WHITE);
+                g.fillRoundRect(x, y, controlSize - 1, controlSize - 1, 2, 2);
                 g.setColor(ModernMetalTheme.DARK_GRAY);
-                g.drawRoundRect(x,y,controlSize-2, controlSize-2,2,2);
+                g.drawRoundRect(x, y, controlSize - 2, controlSize - 2, 2, 2);
                 g.setColor(c.getForeground());
             }
         } else {
-            g.setColor( MetalLookAndFeel.getControlShadow() );
-            g.drawRect( x, y, controlSize-2, controlSize-2);
+            g.setColor(MetalLookAndFeel.getControlShadow());
+            g.drawRect(x, y, controlSize - 2, controlSize - 2);
         }
 
         if (model.isSelected()) {
             g.setColor(Color.WHITE);
-            drawCheck(c,g,x,y);
+            drawCheck(c, g, x, y);
         }
 
     }

@@ -9,7 +9,7 @@ import java.awt.*;
 public class ArrowLessScrollBarUI extends BasicScrollBarUI {
     @Override
     protected JButton createDecreaseButton(int orientation) {
-        if(GeneralUISettings.getInstance().isModernizeCrossPlatformLookAndFeel())
+        if (GeneralUISettings.getInstance().isModernizeCrossPlatformLookAndFeel())
             return createZeroButton();
         else
             return super.createDecreaseButton(orientation);
@@ -17,7 +17,7 @@ public class ArrowLessScrollBarUI extends BasicScrollBarUI {
 
     @Override
     protected JButton createIncreaseButton(int orientation) {
-        if(GeneralUISettings.getInstance().isModernizeCrossPlatformLookAndFeel())
+        if (GeneralUISettings.getInstance().isModernizeCrossPlatformLookAndFeel())
             return createZeroButton();
         else
             return super.createIncreaseButton(orientation);

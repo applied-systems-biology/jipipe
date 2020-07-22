@@ -255,7 +255,7 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         registerNodeType("ij1-roi-outline", OutlineRoiAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-connector.png"));
         registerNodeType("ij1-roi-remove-bordering", RemoveBorderRoisAlgorithm.class, UIUtils.getIconURLFromResources("actions/bordertool.png"));
         registerNodeType("ij1-roi-statistics", RoiStatisticsAlgorithm.class, UIUtils.getIconURLFromResources("actions/statistics.png"));
-        registerNodeType("ij1-roi-filter-statistics", FilterRoiByStatisticsAlgorithm.class,UIUtils.getIconURLFromResources("actions/filter.png"));
+        registerNodeType("ij1-roi-filter-statistics", FilterRoiByStatisticsAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
         registerNodeType("ij1-roi-color-statistics", ColorRoiByStatisticsAlgorithm.class, UIUtils.getIconURLFromResources("actions/fill-color.png"));
         registerNodeType("ij1-roi-sort-and-extract-statistics", SortAndExtractRoiByStatisticsAlgorithm.class, UIUtils.getIconURLFromResources("actions/view-sort.png"));
         registerNodeType("ij1-roi-set-properties", ChangeRoiPropertiesAlgorithm.class, UIUtils.getIconURLFromResources("actions/document-edit.png"));
@@ -286,8 +286,8 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
     private void registerTransformationAlgorithms() {
         registerNodeType("ij1-transform-flip2d", TransformFlip2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/object-flip-horizontal.png"));
         registerNodeType("ij1-transform-rotate2d", TransformRotate2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/transform-rotate.png"));
-        registerNodeType("ij1-transform-scale2d", TransformScale2DAlgorithm.class,UIUtils.getIconURLFromResources("actions/transform-scale.png"));
-        registerNodeType("ij1-transform-scale3d", TransformScale3DAlgorithm.class,UIUtils.getIconURLFromResources("actions/transform-scale.png"));
+        registerNodeType("ij1-transform-scale2d", TransformScale2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/transform-scale.png"));
+        registerNodeType("ij1-transform-scale3d", TransformScale3DAlgorithm.class, UIUtils.getIconURLFromResources("actions/transform-scale.png"));
         registerNodeType("ij1-transform-crop2d", TransformCrop2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/image-crop.png"));
 
         registerEnumParameterType("ij1-transform-flip2d:flip-mode", TransformFlip2DAlgorithm.FlipMode.class,

@@ -54,15 +54,14 @@ public class JIPipeGUICommand implements Command {
         JIPipeRegistryIssues issues = new JIPipeRegistryIssues();
         try {
             JIPipeDefaultRegistry.instantiate(context, extensionSettings, issues);
-        }
-        catch (Exception e) {
-            if(!extensionSettings.isSilent())
+        } catch (Exception e) {
+            if (!extensionSettings.isSilent())
                 UIUtils.openErrorDialog(null, e);
             return;
         }
 
         // Resolve missing ImageJ dependencies
-        if(!extensionSettings.isSilent()) {
+        if (!extensionSettings.isSilent()) {
             resolveMissingImageJDependencies(issues);
 
             {
@@ -84,7 +83,7 @@ public class JIPipeGUICommand implements Command {
     }
 
     private void resolveMissingImageJDependencies(JIPipeRegistryIssues issues) {
-        if(issues.getMissingImageJSites().isEmpty())
+        if (issues.getMissingImageJSites().isEmpty())
             return;
         MissingUpdateSiteResolver resolver = new MissingUpdateSiteResolver(getContext(), issues);
         resolver.revalidate();

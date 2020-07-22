@@ -78,7 +78,7 @@ public class DocumentTabPane extends JPanel {
                 }
             }
         });
-        if(GeneralUISettings.getInstance().isModernizeCrossPlatformLookAndFeel()) {
+        if (GeneralUISettings.getInstance().isModernizeCrossPlatformLookAndFeel()) {
             tabbedPane.setUI(new CustomTabbedPaneUI());
         }
         add(tabbedPane, BorderLayout.CENTER);

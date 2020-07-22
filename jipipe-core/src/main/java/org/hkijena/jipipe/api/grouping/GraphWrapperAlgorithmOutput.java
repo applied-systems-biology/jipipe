@@ -15,9 +15,8 @@ package org.hkijena.jipipe.api.grouping;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
-import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.categories.*;
 import org.hkijena.jipipe.api.compartments.algorithms.IOInterfaceAlgorithm;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 
 @JIPipeDocumentation(name = "Group output", description = "Acts as output of a node group.")
 @JIPipeOrganization()

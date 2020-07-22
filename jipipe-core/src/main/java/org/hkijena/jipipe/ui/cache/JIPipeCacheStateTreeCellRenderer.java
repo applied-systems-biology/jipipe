@@ -14,11 +14,10 @@
 package org.hkijena.jipipe.ui.cache;
 
 import org.hkijena.jipipe.api.JIPipeProjectCache;
-import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.categories.*;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.ui.registries.JIPipeUINodeRegistry;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.ui.registries.JIPipeUIDatatypeRegistry;
+import org.hkijena.jipipe.ui.registries.JIPipeUINodeRegistry;
 import org.hkijena.jipipe.ui.resultanalysis.JIPipeResultAlgorithmTree;
 import org.hkijena.jipipe.utils.UIUtils;
 

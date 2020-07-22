@@ -15,10 +15,6 @@ package org.hkijena.jipipe.ui.ijupdater;
 
 import ij.IJ;
 import net.imagej.updater.util.Progress;
-import org.hkijena.jipipe.api.JIPipeRunnerStatus;
-import org.python.core.StdoutWrapper;
-
-import java.util.function.Consumer;
 
 /**
  * Adapter between JIPipe and ImageJ progress implementations

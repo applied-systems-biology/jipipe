@@ -13,9 +13,8 @@
 
 package org.hkijena.jipipe.api.history;
 
-import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.categories.*;
 import org.hkijena.jipipe.api.data.JIPipeSlotConfiguration;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 
 public class SlotConfigurationHistorySnapshot implements JIPipeAlgorithmGraphHistorySnapshot {
     private final JIPipeGraphNode node;

@@ -14,8 +14,10 @@
 package org.hkijena.jipipe.api.registries;
 
 import org.hkijena.jipipe.JIPipeDependency;
-import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.categories.*;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeJavaNodeInfo;
+import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.ui.registries.JIPipeUINodeRegistry;
 
 import java.net.URL;
@@ -34,9 +36,9 @@ public class JIPipeJavaNodeRegistrationTask extends JIPipeDefaultNodeRegistratio
     /**
      * Creates a new registration task
      *
-     * @param id             The id
+     * @param id        The id
      * @param nodeClass The algorithm class
-     * @param source         The dependency the registers the algorithm
+     * @param source    The dependency the registers the algorithm
      * @param icon
      */
     public JIPipeJavaNodeRegistrationTask(String id, Class<? extends JIPipeGraphNode> nodeClass, JIPipeDependency source, URL icon) {

@@ -131,7 +131,7 @@ public class TablesExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerNodeType("table-merge-from-columns", MergeColumnsAlgorithm.class, UIUtils.getIconURLFromResources("actions/merge.png"));
         registerNodeType("table-merge-tables", MergeTablesAlgorithm.class, UIUtils.getIconURLFromResources("actions/merge.png"));
         registerNodeType("table-split-by-columns", SplitTableByColumnsAlgorithm.class, UIUtils.getIconURLFromResources("actions/split.png"));
-        registerNodeType("table-filter", FilterTableAlgorithm.class,UIUtils.getIconURLFromResources("actions/filter.png"));
+        registerNodeType("table-filter", FilterTableAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
         registerNodeType("table-sort", SortTableAlgorithm.class, UIUtils.getIconURLFromResources("actions/view-sort.png"));
         registerNodeType("table-add-annotation-columns", AddAnnotationColumnsAlgorithm.class, UIUtils.getIconURLFromResources("actions/edit-table-insert-column-right.png"));
         registerNodeType("convert-annotation-table-to-annotated-tables", ConvertAnnotationTableToAnnotatedTables.class, UIUtils.getIconURLFromResources("data-types/annotation-table.png"));

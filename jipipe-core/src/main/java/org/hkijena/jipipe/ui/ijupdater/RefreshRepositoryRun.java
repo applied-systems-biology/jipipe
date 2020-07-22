@@ -14,21 +14,15 @@
 package org.hkijena.jipipe.ui.ijupdater;
 
 import net.imagej.ui.swing.updater.SwingAuthenticator;
-import net.imagej.updater.Conflicts;
 import net.imagej.updater.FilesCollection;
 import net.imagej.updater.util.AvailableSites;
 import net.imagej.updater.util.UpdaterUtil;
 import org.hkijena.jipipe.api.JIPipeRunnable;
 import org.hkijena.jipipe.api.JIPipeRunnerStatus;
-import org.scijava.log.LogService;
-import org.scijava.util.AppUtils;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;
-import java.io.File;
 import java.net.Authenticator;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 

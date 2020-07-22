@@ -52,8 +52,9 @@ public class JIPipeJsonExtensionWindow extends JFrame {
 
     /**
      * Creates a new instance
-     *  @param context The command that issued the UI
-     * @param project The project
+     *
+     * @param context          The command that issued the UI
+     * @param project          The project
      * @param showIntroduction show intro
      */
     public JIPipeJsonExtensionWindow(Context context, JIPipeJsonExtension project, boolean showIntroduction) {
@@ -88,7 +89,7 @@ public class JIPipeJsonExtensionWindow extends JFrame {
     /**
      * Loads a project into the window and replaces the current project
      *
-     * @param project The project
+     * @param project          The project
      * @param showIntroduction show intro
      */
     public void loadProject(JIPipeJsonExtension project, boolean showIntroduction) {
@@ -99,6 +100,7 @@ public class JIPipeJsonExtensionWindow extends JFrame {
 
     /**
      * Creates a new project and asks the user if it should be opened in this or a new window
+     *
      * @param showIntroduction show intro
      */
     public void newProject(boolean showIntroduction) {
@@ -202,8 +204,8 @@ public class JIPipeJsonExtensionWindow extends JFrame {
     /**
      * Asks the user if a project should be opened in this or a new window
      *
-     * @param messageTitle How the project was loaded
-     * @param project      The project
+     * @param messageTitle     How the project was loaded
+     * @param project          The project
      * @param showIntroduction show intro
      * @return The window that hosts the porject UI
      */
@@ -249,8 +251,8 @@ public class JIPipeJsonExtensionWindow extends JFrame {
     /**
      * Opens a new window
      *
-     * @param context The context
-     * @param project The project
+     * @param context          The context
+     * @param project          The project
      * @param showIntroduction
      * @return The window
      */

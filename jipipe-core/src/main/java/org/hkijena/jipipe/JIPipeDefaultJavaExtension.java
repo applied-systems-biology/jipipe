@@ -17,22 +17,18 @@ import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.JIPipeMetadata;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
-import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.categories.*;
-import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.categories.*;
-import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.categories.*;
 import org.hkijena.jipipe.api.compat.ImageJDatatypeAdapter;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataConverter;
-import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.categories.*;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.api.nodes.JIPipeJavaNodeInfo;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeDefaultParameterTypeInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
-import org.hkijena.jipipe.api.registries.JIPipeNodeRegistrationTask;
 import org.hkijena.jipipe.api.registries.JIPipeJavaNodeRegistrationTask;
+import org.hkijena.jipipe.api.registries.JIPipeNodeRegistrationTask;
 import org.hkijena.jipipe.extensions.parameters.collections.ListParameter;
 import org.hkijena.jipipe.extensions.parameters.primitives.EnumParameterTypeInfo;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
@@ -189,6 +185,7 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
 
     /**
      * Registers a node type category
+     *
      * @param category the category
      */
     public void registerNodeTypeCategory(JIPipeNodeTypeCategory category) {
@@ -198,7 +195,7 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
     /**
      * Registers a new node type. The {@link JIPipeNodeInfo} is generated as {@link JIPipeJavaNodeInfo}.
      *
-     * @param id             Algorithm ID
+     * @param id        Algorithm ID
      * @param nodeClass Algorithm class
      */
     public void registerNodeType(String id, Class<? extends JIPipeGraphNode> nodeClass) {
@@ -208,9 +205,9 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
     /**
      * Registers a new node type. The {@link JIPipeNodeInfo} is generated as {@link JIPipeJavaNodeInfo}.
      *
-     * @param id             Algorithm ID
+     * @param id        Algorithm ID
      * @param nodeClass Algorithm class
-     * @param icon           custom icon
+     * @param icon      custom icon
      */
     public void registerNodeType(String id, Class<? extends JIPipeGraphNode> nodeClass, URL icon) {
         registerNodeType(new JIPipeJavaNodeRegistrationTask(id, nodeClass, this, icon));

@@ -32,10 +32,9 @@ public class FileTableModel extends AbstractTableModel {
     final static int NAME_COLUMN = 0;
     final static int ACTION_COLUMN = 1;
     final static int SITE_COLUMN = 2;
-
-    private FilesCollection files;
     protected Map<FileObject, Integer> fileToRow;
     protected List<FileObject> rowToFile;
+    private FilesCollection files;
 
     public FileTableModel(final FilesCollection files) {
         this.files = files;
@@ -117,8 +116,7 @@ public class FileTableModel extends AbstractTableModel {
     }
 
     @Override
-    public void setValueAt(final Object value, final int row, final int column)
-    {
+    public void setValueAt(final Object value, final int row, final int column) {
         if (column == ACTION_COLUMN) {
             final GroupAction action = (GroupAction) value;
             final FileObject file = getFileFromModel(row);

@@ -13,8 +13,9 @@
 
 package org.hkijena.jipipe.api;
 
-import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.categories.*;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.InternalNodeTypeCategory;
 import org.hkijena.jipipe.ui.extension.MenuExtension;
 import org.hkijena.jipipe.ui.extension.MenuTarget;
@@ -41,6 +42,7 @@ public @interface JIPipeOrganization {
      * Determines in which menus the nodes are placed and how the user can interact with it.
      * Defaults to {@link InternalNodeTypeCategory}, which prevents users from creating such nodes and deleting them,
      * so change this categorization
+     *
      * @return the category
      */
     Class<? extends JIPipeNodeTypeCategory> nodeTypeCategory() default InternalNodeTypeCategory.class;

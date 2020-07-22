@@ -14,10 +14,9 @@
 package org.hkijena.jipipe.api.testbench;
 
 import org.hkijena.jipipe.api.JIPipeRunSettings;
-import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.categories.*;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.events.ParameterStructureChangedEvent;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 

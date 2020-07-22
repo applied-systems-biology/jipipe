@@ -18,11 +18,11 @@ import org.hkijena.jipipe.JIPipeDefaultRegistry;
 import org.hkijena.jipipe.JIPipeJsonExtension;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
-import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.events.CompartmentRemovedEvent;
 import org.hkijena.jipipe.api.events.ExtensionRegisteredEvent;
 import org.hkijena.jipipe.api.grouping.NodeGroup;
+import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
 import org.hkijena.jipipe.extensions.settings.ProjectsSettings;
 import org.hkijena.jipipe.ui.cache.JIPipeCacheBrowserUI;
@@ -447,10 +447,9 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
 
     private void manageImageJPlugins() {
         List<DocumentTabPane.DocumentTab> tabs = getDocumentTabPane().getTabsContaining(JIPipeImageJPluginManager.class);
-        if(!tabs.isEmpty()) {
+        if (!tabs.isEmpty()) {
             getDocumentTabPane().switchToContent(tabs.get(0).getContent());
-        }
-        else {
+        } else {
             JIPipeImageJPluginManager pluginManager = new JIPipeImageJPluginManager(this);
             getDocumentTabPane().addTab("Manage ImageJ plugins",
                     UIUtils.getIconFromResources("apps/imagej.png"),

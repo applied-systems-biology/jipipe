@@ -52,9 +52,9 @@ public class JIPipeJsonExtensionWorkbench extends JPanel implements JIPipeWorkbe
     private ReloadableValidityChecker validityCheckerPanel;
 
     /**
-     * @param window  The parent window
-     * @param context The SciJava context
-     * @param project The project
+     * @param window           The parent window
+     * @param context          The SciJava context
+     * @param project          The project
      * @param showIntroduction if show intro
      */
     public JIPipeJsonExtensionWorkbench(JIPipeJsonExtensionWindow window, Context context, JIPipeJsonExtension project, boolean showIntroduction) {
@@ -109,7 +109,7 @@ public class JIPipeJsonExtensionWorkbench extends JPanel implements JIPipeWorkbe
 
         add(documentTabPane, BorderLayout.CENTER);
 
-        if(showIntroduction)
+        if (showIntroduction)
             getDocumentTabPane().selectSingletonTab("INTRODUCTION");
         else
             getDocumentTabPane().selectSingletonTab("PROJECT_CONTENTS");

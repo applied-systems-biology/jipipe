@@ -17,10 +17,7 @@ import org.hkijena.jipipe.utils.RoundedLineBorder;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
+import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.HashSet;
@@ -38,7 +35,7 @@ public class MessagePanel extends FormPanel {
     }
 
     public void addMessage(MessageType type, String message, JButton actionButton) {
-        if(!existingMessages.contains(message)) {
+        if (!existingMessages.contains(message)) {
             addWideToForm(new Message(this, type, message, actionButton), null);
             revalidate();
             repaint();
@@ -50,6 +47,21 @@ public class MessagePanel extends FormPanel {
     public void clear() {
         super.clear();
         existingMessages.clear();
+    }
+
+    public enum MessageType {
+        Info(new Color(0x65a4e3), Color.WHITE),
+        Warning(new Color(0xffc155), Color.DARK_GRAY),
+        Error(new Color(0xd7263b), Color.WHITE);
+
+        private final Color background;
+        private final Color foreground;
+
+
+        MessageType(Color background, Color foreground) {
+            this.background = background;
+            this.foreground = foreground;
+        }
     }
 
     public static class Message extends JPanel implements MouseListener {
@@ -75,7 +87,7 @@ public class MessagePanel extends FormPanel {
 
             add(messageTextArea);
             add(Box.createHorizontalGlue());
-            if(actionButton != null) {
+            if (actionButton != null) {
                 add(actionButton);
                 add(Box.createHorizontalStrut(8));
                 actionButton.addActionListener(e -> closeMessage());
@@ -98,7 +110,7 @@ public class MessagePanel extends FormPanel {
 
         @Override
         public void paint(Graphics g) {
-            Graphics2D g2d = (Graphics2D)g;
+            Graphics2D g2d = (Graphics2D) g;
             g2d.setPaint(type.background);
             g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 4, 4);
@@ -108,7 +120,7 @@ public class MessagePanel extends FormPanel {
 
         @Override
         public void mouseClicked(MouseEvent e) {
-            if(e.getButton() == MouseEvent.BUTTON2) {
+            if (e.getButton() == MouseEvent.BUTTON2) {
                 closeMessage();
             }
         }
@@ -131,21 +143,6 @@ public class MessagePanel extends FormPanel {
         @Override
         public void mouseExited(MouseEvent e) {
 
-        }
-    }
-
-    public enum MessageType {
-        Info(new Color(0x65a4e3), Color.WHITE),
-        Warning(new Color(0xffc155), Color.DARK_GRAY),
-        Error(new Color(0xd7263b), Color.WHITE);
-
-        private final Color background;
-        private final Color foreground;
-
-
-        MessageType(Color background, Color foreground) {
-            this.background = background;
-            this.foreground = foreground;
         }
     }
 }

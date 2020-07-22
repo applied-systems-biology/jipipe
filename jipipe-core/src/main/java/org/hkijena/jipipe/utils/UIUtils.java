@@ -16,10 +16,7 @@ package org.hkijena.jipipe.utils;
 import com.fasterxml.jackson.databind.JsonNode;
 import ij.IJ;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
-import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.categories.*;
-import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
-import org.hkijena.jipipe.api.registries.JIPipeNodeRegistry;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.registries.JIPipeSettingsRegistry;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.ColorIcon;
@@ -78,7 +75,7 @@ public class UIUtils {
                     forceMetal = forceMetalNode.booleanValue();
                 else
                     forceMetal = true;
-                if(!modernizeMetalNode.isMissingNode())
+                if (!modernizeMetalNode.isMissingNode())
                     modernizeMetal = modernizeMetalNode.booleanValue();
             } catch (Exception e) {
                 forceMetal = true;
@@ -87,7 +84,7 @@ public class UIUtils {
         if (forceMetal) {
             try {
                 // Set cross-platform Java L&F (also called "Metal")
-                if(modernizeMetal)
+                if (modernizeMetal)
                     MetalLookAndFeel.setCurrentTheme(new ModernMetalTheme());
                 UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
 
@@ -335,7 +332,7 @@ public class UIUtils {
         Border margin = new EmptyBorder(5, 15, 5, 15);
 //        Border compound = new CompoundBorder(BorderFactory.createEtchedBorder(), margin);
         //        Border margin = new EmptyBorder(2, 2, 2, 2);
-        Border compound = new CompoundBorder(BorderFactory.createEmptyBorder(1,1,1,1),
+        Border compound = new CompoundBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1),
                 new CompoundBorder(new RoundedLineBorder(ModernMetalTheme.MEDIUM_GRAY, 1, 2), margin));
         component.setBorder(compound);
     }
@@ -372,7 +369,7 @@ public class UIUtils {
 //        Border margin = new EmptyBorder(2, 2, 2, 2);
 //        Border compound = new CompoundBorder(new RoundedLineBorder(ModernMetalTheme.GRAY2, 1, 2), margin);
 //        component.setBorder(compound);
-        component.setBorder(BorderFactory.createEmptyBorder(3,3,3,3));
+        component.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
     }
 
     /**
@@ -578,7 +575,7 @@ public class UIUtils {
      * @return the fill color
      */
     public static Color getFillColorFor(JIPipeNodeInfo info) {
-      return info.getCategory().getFillColor();
+        return info.getCategory().getFillColor();
     }
 
     /**

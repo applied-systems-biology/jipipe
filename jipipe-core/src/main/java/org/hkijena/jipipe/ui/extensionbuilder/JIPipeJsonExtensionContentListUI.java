@@ -15,14 +15,12 @@ package org.hkijena.jipipe.ui.extensionbuilder;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.Subscribe;
-import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.categories.*;
-import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.categories.*;
 import org.hkijena.jipipe.api.events.ExtensionContentAddedEvent;
 import org.hkijena.jipipe.api.events.ExtensionContentRemovedEvent;
 import org.hkijena.jipipe.api.events.ParameterChangedEvent;
 import org.hkijena.jipipe.api.grouping.JsonNodeInfo;
+import org.hkijena.jipipe.api.nodes.JIPipeGraph;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.ui.JIPipeJsonExtensionWorkbench;
 import org.hkijena.jipipe.ui.JIPipeJsonExtensionWorkbenchPanel;
 import org.hkijena.jipipe.utils.UIUtils;

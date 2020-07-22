@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.api.nodes;
 
 import javax.swing.*;
-import java.awt.Color;
+import java.awt.*;
 
 /**
  * Describes a node category
@@ -22,67 +22,79 @@ import java.awt.Color;
 public interface JIPipeNodeTypeCategory {
     /**
      * Unique identifier of this category
+     *
      * @return the id
      */
     String getId();
+
     /**
      * The name displayed in menus and other UI
+     *
      * @return the name
      */
     String getName();
 
     /**
      * A description
+     *
      * @return the description
      */
     String getDescription();
 
     /**
      * Categories are sorted by this value (lower value = first)
+     *
      * @return UI order
      */
     int getUIOrder();
 
     /**
      * Icon shown in the UI
+     *
      * @return the icon
      */
     Icon getIcon();
 
     /**
      * The fill color for algorithm nodes
+     *
      * @return fill color
      */
     Color getFillColor();
 
     /**
      * The border color for algorithm nodes
+     *
      * @return border color
      */
     Color getBorderColor();
 
     /**
      * If the category should be available in the graph compartment editor
+     *
      * @return if the category should be visible
      */
     boolean isVisibleInGraphCompartment();
 
     /**
      * If the category should be available in the compartment graph editor
+     *
      * @return if the category should be visible
      */
     boolean isVisibleInCompartmentGraph();
 
     /**
      * Returns if the node can be extracted (copied) from the graph
+     *
      * @return if the node can be extracted (copied) from the graph
      */
-    default  boolean canExtract() {
+    default boolean canExtract() {
         return true;
     }
 
     /**
      * Returns if nodes of this category can be created by users
+     *
      * @return if nodes of this category can be created by users
      */
     default boolean userCanCreate() {
@@ -91,18 +103,20 @@ public interface JIPipeNodeTypeCategory {
 
     /**
      * Returns if nodes of this category can be deleted by users
+     *
      * @return if nodes of this category can be deleted by users
      */
-   default boolean userCanDelete() {
-       return true;
-   }
+    default boolean userCanDelete() {
+        return true;
+    }
 
     /**
      * Returns true if nodes of this category can be run in a single run
+     *
      * @return if nodes of this category can be run in a single run
      */
-   default boolean isRunnable() {
-       return true;
-   }
+    default boolean isRunnable() {
+        return true;
+    }
 
 }

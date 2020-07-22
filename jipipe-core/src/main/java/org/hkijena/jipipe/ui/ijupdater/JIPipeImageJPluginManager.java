@@ -30,7 +30,7 @@ import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.util.AppUtils;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
+import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.io.DataInputStream;
@@ -62,7 +62,7 @@ public class JIPipeImageJPluginManager extends JIPipeWorkbenchPanel {
     private List<UpdateSite> updateSitesToAddAndActivate = new ArrayList<>();
 
     public JIPipeImageJPluginManager(JIPipeWorkbench workbench) {
-         this(workbench,true);
+        this(workbench, true);
     }
 
     /**
@@ -72,7 +72,7 @@ public class JIPipeImageJPluginManager extends JIPipeWorkbenchPanel {
         super(workbench);
         initialize();
         JIPipeRunnerQueue.getInstance().getEventBus().register(this);
-        if(refresh)
+        if (refresh)
             refreshUpdater();
     }
 
@@ -90,7 +90,7 @@ public class JIPipeImageJPluginManager extends JIPipeWorkbenchPanel {
 
         JButton refreshButton = new JButton("Reset", UIUtils.getIconFromResources("actions/clear-brush.png"));
         refreshButton.addActionListener(e -> {
-            if(isCurrentlyRunning()) {
+            if (isCurrentlyRunning()) {
                 JOptionPane.showMessageDialog(this,
                         "There is already an operation running. Please wait until it is finished.",
                         "Reset", JOptionPane.ERROR_MESSAGE);
@@ -134,7 +134,7 @@ public class JIPipeImageJPluginManager extends JIPipeWorkbenchPanel {
     }
 
     private void applyChanges() {
-        if(isCurrentlyRunning()) {
+        if (isCurrentlyRunning()) {
             JOptionPane.showMessageDialog(this,
                     "There is already an operation running. Please wait until it is finished.",
                     "Apply changes", JOptionPane.ERROR_MESSAGE);
@@ -163,17 +163,17 @@ public class JIPipeImageJPluginManager extends JIPipeWorkbenchPanel {
     public void refreshUpdater() {
         updateSitesToActivate.clear();
         messagePanel.clear();
-        if(ImageJUpdater.isDebian()) {
+        if (ImageJUpdater.isDebian()) {
             messagePanel.addMessage(MessagePanel.MessageType.Error, "You are using the Debian packaged version of ImageJ. " +
                     "You should update ImageJ with your system's usual package manager instead.", null);
             return;
         }
-        if(!hasInternetConnection()) {
+        if (!hasInternetConnection()) {
             messagePanel.addMessage(MessagePanel.MessageType.Error, "Cannot connect to the Internet. Do you have a network connection? " +
                     "Are your proxy settings correct? See also http://forum.imagej.net/t/5070", null);
             return;
         }
-        if(Files.exists(getImageJRoot().resolve("update"))) {
+        if (Files.exists(getImageJRoot().resolve("update"))) {
             messagePanel.addMessage(MessagePanel.MessageType.Warning, "We recommend to restart ImageJ, as some updates were applied.", null);
         }
 
@@ -193,7 +193,7 @@ public class JIPipeImageJPluginManager extends JIPipeWorkbenchPanel {
                     conflictList = conflicts;
                 }
             };
-            if(!dialog.resolve()) {
+            if (!dialog.resolve()) {
                 updateConflictsMessage();
             }
         }
@@ -207,28 +207,19 @@ public class JIPipeImageJPluginManager extends JIPipeWorkbenchPanel {
         this.updateSitesToAddAndActivate = updateSitesToAddAndActivate;
     }
 
-    public static Path getImageJRoot() {
-        String imagejDirProperty = System.getProperty("imagej.dir");
-        final File imagejRoot = imagejDirProperty != null ? new File(imagejDirProperty) :
-                AppUtils.getBaseDirectory("ij.dir", FilesCollection.class, "updater");
-        return imagejRoot.toPath();
-    }
-
     public boolean isCurrentlyRunning() {
         return !JIPipeRunnerQueue.getInstance().isEmpty();
     }
 
     @Subscribe
     public void onOperationInterrupted(RunUIWorkerInterruptedEvent event) {
-        if(event.getRun() == refreshRepositoryRun) {
+        if (event.getRun() == refreshRepositoryRun) {
             messagePanel.addMessage(MessagePanel.MessageType.Error, "There was an error during the update.", null);
             getWorkbench().sendStatusBarText("Could not refresh ImageJ plugin information from online resources");
-        }
-        else if(event.getRun() == activateUpdateSiteRun) {
+        } else if (event.getRun() == activateUpdateSiteRun) {
             messagePanel.addMessage(MessagePanel.MessageType.Error, "There was an error during activation of update sites.", null);
             getWorkbench().sendStatusBarText("Could not activate update sites");
-        }
-        else if(event.getRun() == applyRun) {
+        } else if (event.getRun() == applyRun) {
             messagePanel.addMessage(MessagePanel.MessageType.Error, "There was an error during installation.", null);
             getWorkbench().sendStatusBarText("Could not apply changes");
         }
@@ -236,28 +227,26 @@ public class JIPipeImageJPluginManager extends JIPipeWorkbenchPanel {
 
     @Subscribe
     public void onOperationFinished(RunUIWorkerFinishedEvent event) {
-        if(event.getRun() == refreshRepositoryRun) {
+        if (event.getRun() == refreshRepositoryRun) {
             getWorkbench().sendStatusBarText("Refreshed ImageJ plugin information from online resources");
-            if(refreshRepositoryRun.getFilesCollection() != null) {
+            if (refreshRepositoryRun.getFilesCollection() != null) {
                 this.currentFilesCollection = refreshRepositoryRun.getFilesCollection();
                 showCurrentFilesCollection();
-            }
-            else {
+            } else {
                 updateSiteListUI.setFilesCollection(null);
             }
-            if(!updateSitesToAddAndActivate.isEmpty()) {
-                if(currentFilesCollection != null) {
+            if (!updateSitesToAddAndActivate.isEmpty()) {
+                if (currentFilesCollection != null) {
                     int activated = 0;
                     for (UpdateSite updateSite : updateSitesToAddAndActivate) {
                         // Find equivalent
                         UpdateSite existing = currentFilesCollection.getUpdateSite(updateSite.getName(), true);
-                        if(existing != null) {
-                            if(!existing.isActive()) {
+                        if (existing != null) {
+                            if (!existing.isActive()) {
                                 updateSitesToActivate.add(existing.getName());
                                 ++activated;
                             }
-                        }
-                        else {
+                        } else {
                             currentFilesCollection.addUpdateSite(updateSite);
                             updateSitesToActivate.add(updateSite.getName());
                             ++activated;
@@ -269,24 +258,20 @@ public class JIPipeImageJPluginManager extends JIPipeWorkbenchPanel {
                     }
                     updateSitesToAddAndActivate.clear();
                     messagePanel.addMessage(MessagePanel.MessageType.Info, "Activated " + activated + " update sites. Click 'Apply changes' to install the files.", null);
-                }
-                else {
+                } else {
                     messagePanel.addMessage(MessagePanel.MessageType.Error, "Could not activate update sites.", null);
                 }
             }
-        }
-        else if(event.getRun() == activateUpdateSiteRun) {
+        } else if (event.getRun() == activateUpdateSiteRun) {
             getWorkbench().sendStatusBarText("Activated update sites");
             showCurrentFilesCollection();
-        }
-        else if(event.getRun() == applyRun) {
+        } else if (event.getRun() == applyRun) {
             JButton exitButton = new JButton("Close ImageJ");
             exitButton.addActionListener(e -> System.exit(0));
             messagePanel.addMessage(MessagePanel.MessageType.Info, "Changes were successfully applied. Please restart ImageJ.", exitButton);
             showCurrentFilesCollection();
         }
     }
-
 
     public void showCurrentFilesCollection() {
         updateSiteListUI.setFilesCollection(currentFilesCollection);
@@ -298,7 +283,7 @@ public class JIPipeImageJPluginManager extends JIPipeWorkbenchPanel {
 
     public void updateConflictsMessage() {
         List<Conflicts.Conflict> conflicts = currentFilesCollection.getConflicts();
-        if(currentFilesCollection != null && conflicts != null &&  !conflicts.isEmpty()) {
+        if (currentFilesCollection != null && conflicts != null && !conflicts.isEmpty()) {
             JButton resolveConflictsButton = new JButton("Resolve conflicts ...");
             resolveConflictsButton.addActionListener(e -> resolveConflicts());
             messagePanel.addMessage(MessagePanel.MessageType.Warning,
@@ -311,8 +296,7 @@ public class JIPipeImageJPluginManager extends JIPipeWorkbenchPanel {
         try {
             testNetworkConnection();
             return true;
-        }
-        catch (final SecurityException | IOException exc) {
+        } catch (final SecurityException | IOException exc) {
             return false;
         }
     }
@@ -323,7 +307,7 @@ public class JIPipeImageJPluginManager extends JIPipeWorkbenchPanel {
     }
 
     private void updateActivateUpdateSitesMessage() {
-        if(!updateSitesToActivate.isEmpty()) {
+        if (!updateSitesToActivate.isEmpty()) {
             JButton refreshButton = new JButton("Refresh", UIUtils.getIconFromResources("actions/view-refresh.png"));
             refreshButton.addActionListener(e -> activateStagedUpdateSites());
             messagePanel.addMessage(MessagePanel.MessageType.Info, "You changed the configuration of update sites. Click the following button to " +
@@ -334,7 +318,7 @@ public class JIPipeImageJPluginManager extends JIPipeWorkbenchPanel {
     private void activateStagedUpdateSites() {
         List<UpdateSite> toActivate = new ArrayList<>();
         for (UpdateSite updateSite : currentFilesCollection.getUpdateSites(true)) {
-            if(!updateSite.isActive() && updateSitesToActivate.contains(updateSite.getName())) {
+            if (!updateSite.isActive() && updateSitesToActivate.contains(updateSite.getName())) {
                 toActivate.add(updateSite);
             }
         }
@@ -347,8 +331,7 @@ public class JIPipeImageJPluginManager extends JIPipeWorkbenchPanel {
         try {
             currentFilesCollection.removeUpdateSite(updateSite.getName());
             showCurrentFilesCollection();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             UIUtils.openErrorDialog(this, e);
         }
     }
@@ -359,8 +342,7 @@ public class JIPipeImageJPluginManager extends JIPipeWorkbenchPanel {
         try {
             currentFilesCollection.deactivateUpdateSite(updateSite);
             showCurrentFilesCollection();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             UIUtils.openErrorDialog(this, e);
         }
     }
@@ -368,10 +350,16 @@ public class JIPipeImageJPluginManager extends JIPipeWorkbenchPanel {
     public void addUpdateSite(UpdateSite updateSite) {
         try {
             currentFilesCollection.addUpdateSite(updateSite);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             UIUtils.openErrorDialog(this, e);
         }
+    }
+
+    public static Path getImageJRoot() {
+        String imagejDirProperty = System.getProperty("imagej.dir");
+        final File imagejRoot = imagejDirProperty != null ? new File(imagejDirProperty) :
+                AppUtils.getBaseDirectory("ij.dir", FilesCollection.class, "updater");
+        return imagejRoot.toPath();
     }
 
     /**
@@ -412,8 +400,7 @@ public class JIPipeImageJPluginManager extends JIPipeWorkbenchPanel {
             // Header looks reasonable; now let's check the content to be sure.
             final byte[] content = new byte[(int) length];
             try (final DataInputStream din = //
-                         new DataInputStream(httpConn.getInputStream()))
-            {
+                         new DataInputStream(httpConn.getInputStream())) {
                 din.readFully(content);
             }
             final String s = new String(content, "UTF-8");
@@ -421,12 +408,10 @@ public class JIPipeImageJPluginManager extends JIPipeWorkbenchPanel {
                     "<head>.*<title>301 Moved Permanently</title>.*</head>.*" + //
                     "<body>.*<h1>Moved Permanently</h1>.*" + //
                     "<a href=\"http://imagej.net/Welcome\">" + //
-                    ".*</body></html>.*"))
-            {
+                    ".*</body></html>.*")) {
                 throw new IOException("Unexpected response:\n" + s);
             }
-        }
-        finally {
+        } finally {
             // NB: Reset static state back to previous.
             if (followRedirects != HttpURLConnection.getFollowRedirects()) {
                 HttpURLConnection.setFollowRedirects(followRedirects);

@@ -23,9 +23,7 @@ import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Context;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
-import java.awt.Font;
-import java.awt.Window;
+import java.awt.*;
 import java.util.stream.Collectors;
 
 public class MissingUpdateSiteResolver extends JDialog implements JIPipeWorkbench {
@@ -36,7 +34,7 @@ public class MissingUpdateSiteResolver extends JDialog implements JIPipeWorkbenc
     public MissingUpdateSiteResolver(Context context, JIPipeRegistryIssues issues) {
         this.context = context;
         this.issues = issues;
-        setSize(1024,768);
+        setSize(1024, 768);
         setTitle("Missing ImageJ dependencies");
         setModal(true);
         getContentPane().setLayout(new BorderLayout());
@@ -53,7 +51,7 @@ public class MissingUpdateSiteResolver extends JDialog implements JIPipeWorkbenc
         StringBuilder builder = new StringBuilder();
         builder.append("There are some extensions that requested the presence of ImageJ plugins (via the Update Manager). " +
                 "Those dependencies could not be found, which could cause some problems while loading the extensions. ");
-        if(!issues.getErroneousNodes().isEmpty() || issues.getErroneousPlugins().isEmpty()) {
+        if (!issues.getErroneousNodes().isEmpty() || issues.getErroneousPlugins().isEmpty()) {
             builder.append("There are ").append(issues.getErroneousPlugins().size())
                     .append(" plugins that reported errors and ")
                     .append(issues.getErroneousNodes().size())

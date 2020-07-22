@@ -13,12 +13,10 @@
 
 package org.hkijena.jipipe.ui.grapheditor.contextmenu;
 
-import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.categories.*;
-import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.categories.*;
 import org.hkijena.jipipe.api.grouping.NodeGroup;
 import org.hkijena.jipipe.api.history.GraphChangedHistorySnapshot;
+import org.hkijena.jipipe.api.nodes.JIPipeGraph;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphCanvasUI;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeNodeUI;
 import org.hkijena.jipipe.utils.UIUtils;

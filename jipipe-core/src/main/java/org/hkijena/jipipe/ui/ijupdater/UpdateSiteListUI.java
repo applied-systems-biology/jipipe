@@ -24,19 +24,19 @@ import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
 public class UpdateSiteListUI extends JPanel {
+    private static final RankingFunction<UpdateSite> rankingFunction = new Ranking();
     private final JIPipeImageJPluginManager pluginManager;
     private FilesCollection filesCollection;
     private List<UpdateSite> filteredUpdateSites = new ArrayList<UpdateSite>();
     private FormPanel contentPanel;
     private SearchTextField searchTextField;
-    private static final RankingFunction<UpdateSite> rankingFunction = new Ranking();
     private JButton addButton;
 
     public UpdateSiteListUI(JIPipeImageJPluginManager pluginManager) {
@@ -63,7 +63,7 @@ public class UpdateSiteListUI extends JPanel {
     }
 
     private void addUpdateSite() {
-        if(pluginManager.isCurrentlyRunning()) {
+        if (pluginManager.isCurrentlyRunning()) {
             JOptionPane.showMessageDialog(this,
                     "There is already an operation running. Please wait until it is finished.",
                     "Add new update site", JOptionPane.ERROR_MESSAGE);
@@ -75,20 +75,20 @@ public class UpdateSiteListUI extends JPanel {
         urlField.styleText(true, false, false);
         formPanel.addToForm(nameField, new JLabel("Name"), null);
         formPanel.addToForm(urlField, new JLabel("URL"), null);
-        if(JOptionPane.showConfirmDialog(this,
+        if (JOptionPane.showConfirmDialog(this,
                 formPanel,
                 "Add new update site",
                 JOptionPane.OK_CANCEL_OPTION,
                 JOptionPane.PLAIN_MESSAGE) == JOptionPane.OK_OPTION) {
-            if(StringUtils.isNullOrEmpty(nameField.getText())) {
+            if (StringUtils.isNullOrEmpty(nameField.getText())) {
                 JOptionPane.showMessageDialog(this, "The name is empty!", "Add new update site", JOptionPane.ERROR_MESSAGE);
                 return;
             }
-            if(StringUtils.isNullOrEmpty(urlField.getText())) {
+            if (StringUtils.isNullOrEmpty(urlField.getText())) {
                 JOptionPane.showMessageDialog(this, "The URL is empty!", "Add new update site", JOptionPane.ERROR_MESSAGE);
                 return;
             }
-            if(filesCollection != null) {
+            if (filesCollection != null) {
                 UpdateSite updateSite = new UpdateSite(nameField.getText(), urlField.getText(), "", "", "", "", 0);
                 pluginManager.addUpdateSite(updateSite);
                 refreshList();
@@ -100,7 +100,7 @@ public class UpdateSiteListUI extends JPanel {
     public void refreshList() {
         int scrollPosition = contentPanel.getScrollPane().getVerticalScrollBar().getValue();
         Collection<UpdateSite> updateSites = Collections.emptySet();
-        if(filesCollection != null)
+        if (filesCollection != null)
             updateSites = filesCollection.getUpdateSites(true);
         filteredUpdateSites = RankedData.getSortedAndFilteredData(updateSites, rankingFunction, searchTextField.getSearchStrings());
         contentPanel.clear();
@@ -132,20 +132,19 @@ public class UpdateSiteListUI extends JPanel {
         public int[] rank(UpdateSite value, String[] filterStrings) {
             int[] result = new int[2];
 
-            if(filterStrings.length == 0)
+            if (filterStrings.length == 0)
                 return result;
 
             for (String string : filterStrings) {
-                if(value.getName().toLowerCase().contains(string.toLowerCase()))
+                if (value.getName().toLowerCase().contains(string.toLowerCase()))
                     --result[0];
-                if(StringUtils.orElse(value.getDescription(), "").toLowerCase().contains(string.toLowerCase()))
+                if (StringUtils.orElse(value.getDescription(), "").toLowerCase().contains(string.toLowerCase()))
                     --result[1];
             }
 
-            if(result[0] == 0 && result[1] == 0) {
+            if (result[0] == 0 && result[1] == 0) {
                 return null;
-            }
-            else {
+            } else {
                 return result;
             }
         }

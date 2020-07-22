@@ -17,20 +17,13 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.JIPipeDefaultRegistry;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.events.ParameterChangedEvent;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.registries.JIPipeSettingsRegistry;
-import org.hkijena.jipipe.extensions.parameters.primitives.FilePathParameterSettings;
-import org.hkijena.jipipe.extensions.parameters.primitives.OptionalPathParameter;
-import org.hkijena.jipipe.ui.components.PathEditor;
 import org.hkijena.jipipe.utils.JsonUtils;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Map;
 
 /**
@@ -53,12 +46,6 @@ public class ExtensionSettings implements JIPipeParameterCollection {
     @Override
     public EventBus getEventBus() {
         return eventBus;
-    }
-
-
-
-    public static ExtensionSettings getInstance() {
-        return JIPipeDefaultRegistry.getInstance().getSettingsRegistry().getSettings(ID, ExtensionSettings.class);
     }
 
     @JIPipeDocumentation(name = "Validate ImageJ dependencies", description = "If enabled, JIPipe will check if ImageJ dependencies are installed.")
@@ -94,9 +81,14 @@ public class ExtensionSettings implements JIPipeParameterCollection {
         this.silent = silent;
     }
 
+    public static ExtensionSettings getInstance() {
+        return JIPipeDefaultRegistry.getInstance().getSettingsRegistry().getSettings(ID, ExtensionSettings.class);
+    }
+
     /**
      * Gets an instance from the raw properties file.
      * It works before settings sheets are registered
+     *
      * @return the instance
      */
     public static ExtensionSettings getInstanceFromRaw() {
@@ -109,8 +101,7 @@ public class ExtensionSettings implements JIPipeParameterCollection {
                 Object value = JsonUtils.getObjectMapper().readerFor(entry.getValue().getFieldClass()).readValue(entryNode);
                 entry.getValue().set(value);
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return result;

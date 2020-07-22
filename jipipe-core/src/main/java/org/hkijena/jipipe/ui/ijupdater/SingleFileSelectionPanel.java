@@ -23,23 +23,17 @@ import java.util.stream.Collectors;
  */
 public class SingleFileSelectionPanel extends JIPipeWorkbenchPanel {
 
+    public static final String[] months = {"Zero", "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+            "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
     private final FileObject fileObject;
     private final ManagerUI managerUI;
     private JLabel statusLabel;
     private JLabel actionLabel;
-    public static final String[] months = { "Zero", "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-            "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
     private FormPanel actionButtons = new FormPanel(null, FormPanel.NONE);
 
-    private String prettyPrintTimestamp(final long timestamp) {
-        final String t = "" + timestamp + "00000000";
-        return t.substring(6, 8) + " " +
-                months[Integer.parseInt(t.substring(4, 6))] + " " + t.substring(0, 4);
-    }
-
     /**
-     * @param workbench the workbench
-     * @param managerUI the manager
+     * @param workbench  the workbench
+     * @param managerUI  the manager
      * @param fileObject the object to be displayed
      */
     public SingleFileSelectionPanel(JIPipeWorkbench workbench, ManagerUI managerUI, FileObject fileObject) {
@@ -50,8 +44,14 @@ public class SingleFileSelectionPanel extends JIPipeWorkbenchPanel {
         refreshContents();
     }
 
+    private String prettyPrintTimestamp(final long timestamp) {
+        final String t = "" + timestamp + "00000000";
+        return t.substring(6, 8) + " " +
+                months[Integer.parseInt(t.substring(4, 6))] + " " + t.substring(0, 4);
+    }
+
     private void refreshContents() {
-        statusLabel.setText(WordUtils.capitalizeFully(fileObject.getStatus().toString().replace("_", " " )));
+        statusLabel.setText(WordUtils.capitalizeFully(fileObject.getStatus().toString().replace("_", " ")));
         actionLabel.setText(fileObject.getAction().toString());
 
         actionButtons.clear();
@@ -59,9 +59,9 @@ public class SingleFileSelectionPanel extends JIPipeWorkbenchPanel {
         for (GroupAction action : managerUI.getFilesCollection().getValidActions(selected)) {
             JButton button = new JButton(action.getLabel(managerUI.getFilesCollection(), selected));
             button.addActionListener(e -> {
-               action.setAction(managerUI.getFilesCollection(), fileObject);
-               managerUI.fireFileChanged(fileObject);
-               refreshContents();
+                action.setAction(managerUI.getFilesCollection(), fileObject);
+                managerUI.fireFileChanged(fileObject);
+                refreshContents();
             });
             actionButtons.addWideToForm(button, null);
         }
@@ -88,10 +88,10 @@ public class SingleFileSelectionPanel extends JIPipeWorkbenchPanel {
         formPanel.addToForm(UIUtils.makeReadonlyBorderlessTextArea(String.join("\n", fileObject.getCategories())), new JLabel("Categories"), null);
         formPanel.addToForm(UIUtils.makeReadonlyBorderlessTextArea(String.join("\n", fileObject.getAuthors())), new JLabel("Authors"), null);
         ImmutableList<String> urls = ImmutableList.copyOf(fileObject.getLinks());
-        if(!urls.isEmpty()) {
+        if (!urls.isEmpty()) {
             Map<TextAttribute, Integer> fontAttributes = new HashMap<>();
             fontAttributes.put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_ON);
-            Font font = new Font(Font.DIALOG,Font.PLAIN, 12).deriveFont(fontAttributes);
+            Font font = new Font(Font.DIALOG, Font.PLAIN, 12).deriveFont(fontAttributes);
             for (int i = 0; i < urls.size(); i++) {
                 JButton linkButton = new JButton(urls.get(i));
                 linkButton.setBorder(null);
@@ -99,10 +99,9 @@ public class SingleFileSelectionPanel extends JIPipeWorkbenchPanel {
                 linkButton.setForeground(Color.BLUE);
                 int finalI = i;
                 linkButton.addActionListener(e -> UIUtils.openWebsite(urls.get(finalI)));
-                if(i == 0) {
+                if (i == 0) {
                     formPanel.addToForm(linkButton, new JLabel("Website"), null);
-                }
-                else {
+                } else {
                     formPanel.addToForm(linkButton, null, null);
                 }
             }

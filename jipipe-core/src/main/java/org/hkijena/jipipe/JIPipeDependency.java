@@ -63,6 +63,7 @@ public interface JIPipeDependency extends JIPipeParameterCollection, JIPipeValid
 
     /**
      * List of ImageJ update sites that are dependencies
+     *
      * @return the list of update sites
      */
     @JsonSetter("ij:update-sites")

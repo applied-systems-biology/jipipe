@@ -13,13 +13,11 @@
 
 package org.hkijena.jipipe.api.grouping;
 
-import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.categories.*;
-import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.categories.*;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameterReferenceAccessGroupList;
 import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameters;
+import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
+import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.parameters.JIPipeCustomParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;

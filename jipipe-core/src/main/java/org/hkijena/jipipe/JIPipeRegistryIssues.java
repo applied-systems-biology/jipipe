@@ -15,8 +15,7 @@ package org.hkijena.jipipe;
 
 import org.hkijena.jipipe.api.JIPipeValidatable;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
-import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.categories.*;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.scijava.plugin.PluginInfo;
 
 import java.util.HashSet;
@@ -48,8 +47,8 @@ public class JIPipeRegistryIssues implements JIPipeValidatable {
             report.forCategory("Node types").forCategory(info.getId())
                     .reportIsInvalid("Invalid node type '" + info.getName() + "'",
                             "There was an error while loading a node type.",
-                    "Please install necessary dependencies via ImageJ. Then restart  ImageJ.",
-                    info);
+                            "Please install necessary dependencies via ImageJ. Then restart  ImageJ.",
+                            info);
         }
     }
 

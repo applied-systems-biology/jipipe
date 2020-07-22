@@ -26,8 +26,7 @@ import org.jdesktop.swingx.JXTable;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import java.awt.BorderLayout;
-import java.awt.Component;
+import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.util.HashSet;
@@ -43,7 +42,7 @@ public class ManagerUI extends JIPipeWorkbenchPanel {
     private JPanel optionPanel;
 
     /**
-     * @param workbench the workbench
+     * @param workbench     the workbench
      * @param pluginManager the plugin manager
      */
     public ManagerUI(JIPipeWorkbench workbench, JIPipeImageJPluginManager pluginManager) {
@@ -86,9 +85,9 @@ public class ManagerUI extends JIPipeWorkbenchPanel {
     }
 
     private void showSelectedRows(int[] viewRows) {
-        if(pluginManager.isCurrentlyRunning())
+        if (pluginManager.isCurrentlyRunning())
             return;
-        if(table.getModel() instanceof FileTableModel) {
+        if (table.getModel() instanceof FileTableModel) {
             int[] modelRows = new int[viewRows.length];
             for (int i = 0; i < viewRows.length; i++) {
                 modelRows[i] = table.convertRowIndexToModel(viewRows[i]);
@@ -98,11 +97,10 @@ public class ManagerUI extends JIPipeWorkbenchPanel {
                 FileObject selected = ((FileTableModel) table.getModel()).rowToFile.get(modelRows[0]);
                 SingleFileSelectionPanel panel = new SingleFileSelectionPanel(getWorkbench(), this, selected);
                 setOptionPanelContent(panel);
-            }
-            else if(modelRows.length > 1) {
+            } else if (modelRows.length > 1) {
                 Set<FileObject> selected = new HashSet<>();
                 for (int row : modelRows) {
-                    selected.add( ((FileTableModel) table.getModel()).rowToFile.get(row));
+                    selected.add(((FileTableModel) table.getModel()).rowToFile.get(row));
                 }
                 MultiFileSelectionPanel panel = new MultiFileSelectionPanel(getWorkbench(), this, selected);
                 setOptionPanelContent(panel);
@@ -128,7 +126,7 @@ public class ManagerUI extends JIPipeWorkbenchPanel {
     }
 
     public void fireFileChanged(final FileObject file) {
-        if(table.getModel() instanceof FileTableModel) {
+        if (table.getModel() instanceof FileTableModel) {
             ((FileTableModel) table.getModel()).fireFileChanged(file);
         }
     }
@@ -137,7 +135,7 @@ public class ManagerUI extends JIPipeWorkbenchPanel {
         JToggleButton button = new JToggleButton(icon, option == currentViewOption);
         button.addActionListener(e -> {
             System.out.println(button);
-            if(button.isSelected()) {
+            if (button.isSelected()) {
                 currentViewOption = option;
                 refreshTable();
             }
@@ -158,11 +156,10 @@ public class ManagerUI extends JIPipeWorkbenchPanel {
     }
 
     public void refreshTable() {
-        if(filesCollection != null) {
+        if (filesCollection != null) {
             table.setModel(new FileTableModel(filesCollection));
             table.setRowFilter(new FileTableModelFilter(searchTextField, currentViewOption));
-        }
-        else {
+        } else {
             table.setModel(new DefaultTableModel());
         }
     }

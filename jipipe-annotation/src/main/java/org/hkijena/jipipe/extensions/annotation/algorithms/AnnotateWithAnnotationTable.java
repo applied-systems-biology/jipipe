@@ -6,8 +6,8 @@ import gnu.trove.set.hash.TIntHashSet;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
-import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.data.*;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.AnnotationsNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.tables.datatypes.AnnotationTableData;
@@ -75,7 +75,7 @@ public class AnnotateWithAnnotationTable extends JIPipeIteratingAlgorithm {
         Set<Map.Entry<JIPipeDataBatchKey, Map<String, TIntSet>>> byDataBatch = groupDataByMetadata(slotMap).entrySet();
         for (Map.Entry<JIPipeDataBatchKey, Map<String, TIntSet>> entry : byDataBatch) {
             TIntSet dataRows = entry.getValue().getOrDefault("Data", null);
-            if(dataRows == null)
+            if (dataRows == null)
                 continue;
             TIntSet metadataRows = entry.getValue().getOrDefault("dummy", new TIntHashSet());
 
@@ -84,11 +84,10 @@ public class AnnotateWithAnnotationTable extends JIPipeIteratingAlgorithm {
                 int row = it.next();
                 for (JIPipeAnnotation annotation : dummy.getAnnotations(row)) {
                     JIPipeAnnotation existing = newAnnotations.getOrDefault(annotation.getName(), null);
-                    if(existing != null) {
+                    if (existing != null) {
                         String value = getDataBatchGenerationSettings().getAnnotationMergeStrategy().merge(existing.getValue(), annotation.getValue());
                         existing = new JIPipeAnnotation(existing.getName(), value);
-                    }
-                    else {
+                    } else {
                         existing = annotation;
                     }
                     newAnnotations.put(annotation.getName(), existing);
@@ -100,7 +99,7 @@ public class AnnotateWithAnnotationTable extends JIPipeIteratingAlgorithm {
                 Map<String, JIPipeAnnotation> annotationMap = new HashMap<>();
 
                 // Fetch existing annotations
-                if(!discardExistingAnnotations) {
+                if (!discardExistingAnnotations) {
                     for (JIPipeAnnotation annotation : dataInputSlot.getAnnotations(row)) {
                         annotationMap.put(annotation.getName(), annotation);
                     }
@@ -109,11 +108,10 @@ public class AnnotateWithAnnotationTable extends JIPipeIteratingAlgorithm {
                 // Merge new annotations
                 for (JIPipeAnnotation annotation : newAnnotations.values()) {
                     JIPipeAnnotation existing = annotationMap.getOrDefault(annotation.getName(), null);
-                    if(existing != null) {
+                    if (existing != null) {
                         String value = getDataBatchGenerationSettings().getAnnotationMergeStrategy().merge(existing.getValue(), annotation.getValue());
                         existing = new JIPipeAnnotation(existing.getName(), value);
-                    }
-                    else {
+                    } else {
                         existing = annotation;
                     }
                     annotationMap.put(annotation.getName(), existing);

@@ -42,7 +42,7 @@ public class JIPipeJavaNodeInfo extends JIPipeMutableNodeInfo {
     /**
      * Creates a new node type info
      *
-     * @param id             Algorithm ID
+     * @param id        Algorithm ID
      * @param nodeClass Algorithm class
      */
     public JIPipeJavaNodeInfo(String id, Class<? extends JIPipeGraphNode> nodeClass) {

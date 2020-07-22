@@ -19,14 +19,11 @@ import net.imagej.ImageJ;
 import org.hkijena.jipipe.api.JIPipeFixedThreadPool;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
-import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.categories.*;
-import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.categories.*;
-import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.categories.*;
 import org.hkijena.jipipe.api.compat.SingleImageJAlgorithmRun;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
+import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.registries.JIPipeNodeRegistry;
 import org.hkijena.jipipe.extensions.settings.ExtensionSettings;
 import org.hkijena.jipipe.ui.compat.RunSingleAlgorithmDialog;
@@ -70,8 +67,7 @@ public class JIPipeRunAlgorithmCommand extends DynamicCommand implements Initial
         JIPipeRegistryIssues issues = new JIPipeRegistryIssues();
         ExtensionSettings extensionSettings = ExtensionSettings.getInstanceFromRaw();
         JIPipeDefaultRegistry.instantiate(getContext(), extensionSettings, issues);
-        if(!extensionSettings.isSilent())
-        {
+        if (!extensionSettings.isSilent()) {
             JIPipeValidityReport report = new JIPipeValidityReport();
             issues.reportValidity(report);
             if (!report.isValid()) {

@@ -15,12 +15,13 @@ package org.hkijena.jipipe.ui.grapheditor;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.eventbus.Subscribe;
-import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.categories.*;
 import org.hkijena.jipipe.api.events.GraphChangedEvent;
 import org.hkijena.jipipe.api.events.NodeInfoRegisteredEvent;
 import org.hkijena.jipipe.api.history.AddNodeGraphHistorySnapshot;
 import org.hkijena.jipipe.api.history.MoveNodesGraphHistorySnapshot;
+import org.hkijena.jipipe.api.nodes.JIPipeGraph;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.registries.JIPipeNodeRegistry;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.settings.GraphEditorUISettings;

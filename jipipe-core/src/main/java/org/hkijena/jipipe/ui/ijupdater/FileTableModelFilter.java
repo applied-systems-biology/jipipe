@@ -26,7 +26,7 @@ public class FileTableModelFilter extends SearchTextFieldTableRowFilter {
 
     /**
      * @param searchTextField the search field
-     * @param option the view option to filter
+     * @param option          the view option to filter
      */
     public FileTableModelFilter(SearchTextField searchTextField, ViewOptions.Option option) {
         super(searchTextField);
@@ -37,14 +37,14 @@ public class FileTableModelFilter extends SearchTextFieldTableRowFilter {
     public boolean include(Entry<? extends TableModel, ? extends Integer> entry) {
 
         FileTableModel model = (FileTableModel) entry.getModel();
-        if(model == null)
+        if (model == null)
             return false;
-        if(model.rowToFile == null)
+        if (model.rowToFile == null)
             return false;
         int row = entry.getIdentifier();
         FileObject fileObject = model.rowToFile.get(row);
 
-        if(option != ViewOptions.Option.ALL) {
+        if (option != ViewOptions.Option.ALL) {
             boolean success = false;
             FileObject.Status status = fileObject.getStatus();
             FileObject.Action action = fileObject.getAction();
@@ -60,7 +60,7 @@ public class FileTableModelFilter extends SearchTextFieldTableRowFilter {
                     break;
                 case UPDATEABLE:
                     success = (status == FileObject.Status.UPDATEABLE || status == FileObject.Status.NEW
-                    || status == FileObject.Status.OBSOLETE || status == FileObject.Status.OBSOLETE_MODIFIED) ||
+                            || status == FileObject.Status.OBSOLETE || status == FileObject.Status.OBSOLETE_MODIFIED) ||
                             (action == FileObject.Action.INSTALL || action == FileObject.Action.UPDATE || action == FileObject.Action.UNINSTALL);
                     break;
                 case LOCALLY_MODIFIED:
@@ -76,7 +76,7 @@ public class FileTableModelFilter extends SearchTextFieldTableRowFilter {
                     success = action != fileObject.getStatus().getNoAction();
                     break;
             }
-            if(!success)
+            if (!success)
                 return false;
         }
 

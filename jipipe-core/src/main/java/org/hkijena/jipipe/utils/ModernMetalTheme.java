@@ -14,7 +14,6 @@ import java.util.List;
 
 public class ModernMetalTheme extends DefaultMetalTheme {
     public static final Color TRANSPARENT = new Color(0, 0, 0, 0);
-    static ColorUIResource WHITE = new ColorUIResource( 255, 255, 255 );
     public static final ColorUIResource PRIMARY1 =
             new ColorUIResource(0x8EBFEF); // Progress bar text, focus
     public static final ColorUIResource PRIMARY2 =
@@ -37,11 +36,6 @@ public class ModernMetalTheme extends DefaultMetalTheme {
     public static final Color MEDIUM_GRAY = new ColorUIResource(0xb8babf);
     public static final Color GRAY = new ColorUIResource(0xe6e6e6);
     public static final Color LIGHT_GRAY = new ColorUIResource(0xf2f2f2);
-    private static final Border NO_BORDER = BorderFactory.createEmptyBorder();
-    private static final Border BUTTON_BORDER = BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(1,1,1,1),
-            BorderFactory.createCompoundBorder(new RoundedLineBorder(MEDIUM_GRAY, 1, 2),
-            BorderFactory.createEmptyBorder(3,3,3,3)));
-
     public static final ColorUIResource CONTROL_TEXT_COLOR =
             new PrintColorUIResource(0x333333, Color.BLACK);
     public static final ColorUIResource INACTIVE_CONTROL_TEXT_COLOR =
@@ -50,48 +44,13 @@ public class ModernMetalTheme extends DefaultMetalTheme {
             new ColorUIResource(0x999999);
     public static final ColorUIResource OCEAN_BLACK =
             new PrintColorUIResource(0x333333, Color.BLACK);
-
     public static final ColorUIResource OCEAN_DROP =
             new ColorUIResource(0xD2E9FF);
-
-    // ComponentOrientation Icon
-    // Delegates to different icons based on component orientation
-    private static class COIcon extends IconUIResource {
-        private Icon rtl;
-
-        public COIcon(Icon ltr, Icon rtl) {
-            super(ltr);
-            this.rtl = rtl;
-        }
-
-        public void paintIcon(Component c, Graphics g, int x, int y) {
-            if (MetalUtils.isLeftToRight(c)) {
-                super.paintIcon(c, g, x, y);
-            } else {
-                rtl.paintIcon(c, g, x, y);
-            }
-        }
-    }
-
-    // InternalFrame Icon
-    // Delegates to different icons based on button state
-    private static class IFIcon extends IconUIResource {
-        private Icon pressed;
-
-        public IFIcon(Icon normal, Icon pressed) {
-            super(normal);
-            this.pressed = pressed;
-        }
-
-        public void paintIcon(Component c, Graphics g, int x, int y) {
-            ButtonModel model = ((AbstractButton)c).getModel();
-            if (model.isPressed() && model.isArmed()) {
-                pressed.paintIcon(c, g, x, y);
-            } else {
-                super.paintIcon(c, g, x, y);
-            }
-        }
-    }
+    private static final Border NO_BORDER = BorderFactory.createEmptyBorder();
+    private static final Border BUTTON_BORDER = BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1),
+            BorderFactory.createCompoundBorder(new RoundedLineBorder(MEDIUM_GRAY, 1, 2),
+                    BorderFactory.createEmptyBorder(3, 3, 3, 3)));
+    static ColorUIResource WHITE = new ColorUIResource(255, 255, 255);
 
     /**
      * Creates an instance of <code>OceanTheme</code>
@@ -108,7 +67,7 @@ public class ModernMetalTheme extends DefaultMetalTheme {
     public void addCustomEntriesToTable(UIDefaults table) {
         Object focusBorder = new SwingLazyValue(
                 "javax.swing.plaf.BorderUIResource$LineBorderUIResource",
-                new Object[] {getPrimary1()});
+                new Object[]{getPrimary1()});
         // .30 0 DDE8F3 white secondary2
 //        List<Object> buttonGradient = Arrays.asList(
 //                new Object[] {.3f, 0f,
@@ -126,17 +85,17 @@ public class ModernMetalTheme extends DefaultMetalTheme {
         //   internal frame is inactive.
         Object directoryIcon = UIUtils.getIconFromResources("actions/folder-open.png");
         Object fileIcon = UIUtils.getIconFromResources("actions/snap-page.png");
-        List<Object> sliderGradient = Arrays.asList(new Object[] {
+        List<Object> sliderGradient = Arrays.asList(new Object[]{
                 .3f, .2f,
-                PRIMARY4, getWhite(), new ColorUIResource(SECONDARY2) });
+                PRIMARY4, getWhite(), new ColorUIResource(SECONDARY2)});
 
-        Object[] defaults = new Object[] {
+        Object[] defaults = new Object[]{
                 "Button.background", LIGHT_GRAY,
                 "Button.rollover", Boolean.TRUE,
                 "Button.toolBarBorderBackground", INACTIVE_CONTROL_TEXT_COLOR,
                 "Button.disabledToolBarBorderBackground", GRAY,
                 "Button.rolloverIconType", "ocean",
-                "Button.border", BUTTON_BORDER ,
+                "Button.border", BUTTON_BORDER,
                 "Button.focus", PRIMARY1,
                 "ScrollPane.border", NO_BORDER,
 
@@ -223,9 +182,9 @@ public class ModernMetalTheme extends DefaultMetalTheme {
                 "RadioButton.background", LIGHT_GRAY,
                 "RadioButton.rollover", Boolean.TRUE,
 
-                "Spinner.arrowButtonBorder", BorderFactory.createMatteBorder(0,1,0,0, GRAY),
-                "Spinner.arrowButtonInsets", new Insets(2,2,2,2),
-                "Spinner.arrowButtonSize", new Dimension(16,16),
+                "Spinner.arrowButtonBorder", BorderFactory.createMatteBorder(0, 1, 0, 0, GRAY),
+                "Spinner.arrowButtonInsets", new Insets(2, 2, 2, 2),
+                "Spinner.arrowButtonSize", new Dimension(16, 16),
 
                 "RadioButtonMenuItem.background", LIGHT_GRAY,
 
@@ -263,7 +222,7 @@ public class ModernMetalTheme extends DefaultMetalTheme {
                 "TextField.inactiveForeground", PRIMARY1,
 
 //                "ToolBar.borderColor", GRAY2,
-                "ToolBar.border", BorderFactory.createMatteBorder(0,0,1, 0, GRAY),
+                "ToolBar.border", BorderFactory.createMatteBorder(0, 0, 1, 0, GRAY),
                 "ToolBar.isRollover", Boolean.TRUE,
 
                 "ToolTip.background", WHITE,
@@ -428,5 +387,44 @@ public class ModernMetalTheme extends DefaultMetalTheme {
      */
     public ColorUIResource getMenuDisabledForeground() {
         return MENU_DISABLED_FOREGROUND;
+    }
+
+    // ComponentOrientation Icon
+    // Delegates to different icons based on component orientation
+    private static class COIcon extends IconUIResource {
+        private Icon rtl;
+
+        public COIcon(Icon ltr, Icon rtl) {
+            super(ltr);
+            this.rtl = rtl;
+        }
+
+        public void paintIcon(Component c, Graphics g, int x, int y) {
+            if (MetalUtils.isLeftToRight(c)) {
+                super.paintIcon(c, g, x, y);
+            } else {
+                rtl.paintIcon(c, g, x, y);
+            }
+        }
+    }
+
+    // InternalFrame Icon
+    // Delegates to different icons based on button state
+    private static class IFIcon extends IconUIResource {
+        private Icon pressed;
+
+        public IFIcon(Icon normal, Icon pressed) {
+            super(normal);
+            this.pressed = pressed;
+        }
+
+        public void paintIcon(Component c, Graphics g, int x, int y) {
+            ButtonModel model = ((AbstractButton) c).getModel();
+            if (model.isPressed() && model.isArmed()) {
+                pressed.paintIcon(c, g, x, y);
+            } else {
+                super.paintIcon(c, g, x, y);
+            }
+        }
     }
 }

@@ -16,11 +16,7 @@ package org.hkijena.jipipe.extensions.parameters.enums;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeTypeCategory;
@@ -61,10 +57,9 @@ public class DynamicCategoryEnumParameter extends DynamicStringEnumParameter {
     @Override
     public String renderLabel(Object value) {
         JIPipeNodeTypeCategory category = JIPipeNodeRegistry.getInstance().getRegisteredCategories().getOrDefault("" + value, null);
-        if(category != null) {
+        if (category != null) {
             return category.getName();
-        }
-        else {
+        } else {
             return super.renderLabel(value);
         }
     }
@@ -72,10 +67,9 @@ public class DynamicCategoryEnumParameter extends DynamicStringEnumParameter {
     @Override
     public Icon renderIcon(Object value) {
         JIPipeNodeTypeCategory category = JIPipeNodeRegistry.getInstance().getRegisteredCategories().getOrDefault("" + value, null);
-        if(category != null) {
+        if (category != null) {
             return category.getIcon();
-        }
-        else {
+        } else {
             return super.renderIcon(value);
         }
     }

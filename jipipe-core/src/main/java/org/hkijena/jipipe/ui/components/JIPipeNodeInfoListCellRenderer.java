@@ -13,8 +13,7 @@
 
 package org.hkijena.jipipe.ui.components;
 
-import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.categories.*;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.ui.registries.JIPipeUINodeRegistry;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -60,7 +59,7 @@ public class JIPipeNodeInfoListCellRenderer extends JPanel implements ListCellRe
             {
                 gridx = 1;
                 gridy = 0;
-                insets = new Insets(0,4,0, 4);
+                insets = new Insets(0, 4, 0, 4);
             }
         });
         add(nameLabel, new GridBagConstraints() {

@@ -21,15 +21,8 @@ import javax.swing.*;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Toolkit;
-import java.awt.Window;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.*;
+import java.awt.event.*;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
@@ -38,8 +31,8 @@ import java.util.List;
  */
 public abstract class ConflictDialog extends JDialog implements ActionListener {
 
-    protected JPanel rootPanel;
     public JTextPane panel; // this is public for debugging purposes
+    protected JPanel rootPanel;
     protected SimpleAttributeSet bold, indented, italic, normal, red;
     protected JButton ok, cancel;
 
@@ -99,8 +92,7 @@ public abstract class ConflictDialog extends JDialog implements ActionListener {
         if (e.getSource() == cancel) {
             wasCanceled = true;
             dispose();
-        }
-        else if (e.getSource() == ok) {
+        } else if (e.getSource() == ok) {
             if (!ok.isEnabled()) return;
             dispose();
         }
@@ -117,8 +109,7 @@ public abstract class ConflictDialog extends JDialog implements ActionListener {
                     setVisible(visible);
                 }
             });
-        }
-        catch (final InterruptedException | InvocationTargetException e) {
+        } catch (final InterruptedException | InvocationTargetException e) {
             e.printStackTrace();
         }
     }
@@ -196,8 +187,7 @@ public abstract class ConflictDialog extends JDialog implements ActionListener {
         final int end = panel.getStyledDocument().getLength();
         try {
             panel.getStyledDocument().insertString(end, message, style);
-        }
-        catch (final BadLocationException e) {
+        } catch (final BadLocationException e) {
             e.printStackTrace();
         }
     }

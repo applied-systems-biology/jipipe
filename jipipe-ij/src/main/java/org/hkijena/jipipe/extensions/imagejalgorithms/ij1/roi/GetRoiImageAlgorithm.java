@@ -19,7 +19,7 @@ import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.categories.*;
+import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 
@@ -59,7 +59,7 @@ public class GetRoiImageAlgorithm extends JIPipeIteratingAlgorithm {
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         ROIListData data = dataBatch.getInputData("ROI", ROIListData.class);
         for (Map.Entry<Optional<ImagePlus>, ROIListData> entry : data.groupByReferenceImage().entrySet()) {
-            if(entry.getKey().isPresent()) {
+            if (entry.getKey().isPresent()) {
                 dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(entry.getKey().get()).duplicate());
             }
         }

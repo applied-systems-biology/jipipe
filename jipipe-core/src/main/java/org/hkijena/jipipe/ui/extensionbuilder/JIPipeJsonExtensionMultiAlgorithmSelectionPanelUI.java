@@ -13,10 +13,8 @@
 
 package org.hkijena.jipipe.ui.extensionbuilder;
 
-import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.categories.*;
-import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.categories.*;
+import org.hkijena.jipipe.api.nodes.JIPipeGraph;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.ui.JIPipeJsonExtensionWorkbench;
 import org.hkijena.jipipe.ui.JIPipeJsonExtensionWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.MarkdownDocument;

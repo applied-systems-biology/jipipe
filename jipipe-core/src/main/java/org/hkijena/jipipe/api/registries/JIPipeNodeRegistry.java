@@ -23,11 +23,12 @@ import org.hkijena.jipipe.JIPipeDefaultRegistry;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.JIPipeValidatable;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
-import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.events.DatatypeRegisteredEvent;
 import org.hkijena.jipipe.api.events.NodeInfoRegisteredEvent;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 
 import java.util.*;
@@ -116,6 +117,7 @@ public class JIPipeNodeRegistry implements JIPipeValidatable {
 
     /**
      * Registers a category
+     *
      * @param category the category instance
      */
     public void registerCategory(JIPipeNodeTypeCategory category) {

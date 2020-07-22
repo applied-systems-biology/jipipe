@@ -21,10 +21,10 @@ import net.imagej.updater.UpdateSite;
 import net.imagej.updater.util.AvailableSites;
 import net.imagej.updater.util.UpdaterUtil;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
-import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.categories.*;
 import org.hkijena.jipipe.api.events.ExtensionRegisteredEvent;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.registries.*;
@@ -98,8 +98,9 @@ public class JIPipeDefaultRegistry extends AbstractService implements JIPipeRegi
 
     /**
      * Discovers extension services that provide new JIPipe modules
+     *
      * @param extensionSettings extension settings
-     * @param issues if no windows should be opened
+     * @param issues            if no windows should be opened
      */
     private void discover(ExtensionSettings extensionSettings, JIPipeRegistryIssues issues) {
         IJ.showStatus("Initializing JIPipe ...");
@@ -127,7 +128,7 @@ public class JIPipeDefaultRegistry extends AbstractService implements JIPipeRegi
         }
 
         // Check for update sites
-        if(extensionSettings.isValidateImageJDependencies())
+        if (extensionSettings.isValidateImageJDependencies())
             checkUpdateSites(javaExtensions, issues);
 
         System.out.println("[2/3] Registration-phase ...");
@@ -155,7 +156,7 @@ public class JIPipeDefaultRegistry extends AbstractService implements JIPipeRegi
 
         // Check for errors
         System.out.println("[3/3] Error-checking-phase ...");
-        if(extensionSettings.isValidateNodeTypes()) {
+        if (extensionSettings.isValidateNodeTypes()) {
             for (JIPipeNodeInfo info : nodeRegistry.getRegisteredNodeInfos().values()) {
                 try {
                     JIPipeGraphNode algorithm = info.newInstance();
@@ -191,7 +192,7 @@ public class JIPipeDefaultRegistry extends AbstractService implements JIPipeRegi
             dependencies.addAll(extension.getImageJUpdateSiteDependencies());
             missingSites.addAll(extension.getImageJUpdateSiteDependencies());
         }
-        if(!dependencies.isEmpty()) {
+        if (!dependencies.isEmpty()) {
             System.out.println("Following ImageJ update site dependencies were requested: ");
             for (JIPipeImageJUpdateSiteDependency dependency : dependencies) {
                 System.out.println("  - " + dependency.getMetadata().getName() + " @ " + dependency.getMetadata().getWebsite());
@@ -204,29 +205,27 @@ public class JIPipeDefaultRegistry extends AbstractService implements JIPipeRegi
                 filesCollection = new FilesCollection(JIPipeImageJPluginManager.getImageJRoot().toFile());
                 AvailableSites.initializeAndAddSites(filesCollection);
                 filesCollection.downloadIndexAndChecksum(new IJProgressAdapter());
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 System.err.println("Unable to check update sites!");
                 e.printStackTrace();
                 missingSites.clear();
                 System.out.println("No ImageJ update site check is applied.");
             }
-            if(filesCollection != null) {
+            if (filesCollection != null) {
                 System.out.println("Following ImageJ update sites are currently active: ");
                 for (UpdateSite updateSite : filesCollection.getUpdateSites(true)) {
-                    if(updateSite.isActive()) {
+                    if (updateSite.isActive()) {
                         System.out.println("  - " + updateSite.getName() + " @ " + updateSite.getURL());
-                        missingSites.removeIf( site -> Objects.equals(site.getName(), updateSite.getName()));
+                        missingSites.removeIf(site -> Objects.equals(site.getName(), updateSite.getName()));
                     }
                 }
-            }
-            else {
+            } else {
                 System.err.println("No update sites available! Skipping.");
                 missingSites.clear();
             }
         }
 
-        if(!missingSites.isEmpty()) {
+        if (!missingSites.isEmpty()) {
             System.out.println("Following ImageJ update site dependencies are missing: ");
             for (JIPipeImageJUpdateSiteDependency dependency : missingSites) {
                 System.out.println("  - " + dependency.getMetadata().getName() + " @ " + dependency.getMetadata().getWebsite());
@@ -354,9 +353,10 @@ public class JIPipeDefaultRegistry extends AbstractService implements JIPipeRegi
 
     /**
      * Instantiates the plugin service. This is done within {@link JIPipeGUICommand}
-     * @param context the SciJava context
+     *
+     * @param context           the SciJava context
      * @param extensionSettings
-     * @param issues registration issues
+     * @param issues            registration issues
      */
     public static void instantiate(Context context, ExtensionSettings extensionSettings, JIPipeRegistryIssues issues) {
         if (instance == null) {

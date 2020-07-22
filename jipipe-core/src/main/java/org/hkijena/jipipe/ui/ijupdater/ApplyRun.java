@@ -2,7 +2,6 @@ package org.hkijena.jipipe.ui.ijupdater;
 
 import net.imagej.updater.FilesCollection;
 import net.imagej.updater.Installer;
-import net.imagej.updater.util.UpdateCanceledException;
 import org.hkijena.jipipe.api.JIPipeRunnable;
 import org.hkijena.jipipe.api.JIPipeRunnerStatus;
 
@@ -24,9 +23,9 @@ public class ApplyRun implements JIPipeRunnable {
         try {
             installer.start();
             filesCollection.write();
-            onProgress.accept(new JIPipeRunnerStatus(0,0, "Updated successfully.  Please restart ImageJ!"));
+            onProgress.accept(new JIPipeRunnerStatus(0, 0, "Updated successfully.  Please restart ImageJ!"));
         } catch (final Exception e) {
-          throw new RuntimeException(e);
+            throw new RuntimeException(e);
         } finally {
             installer.done();
         }

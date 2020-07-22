@@ -28,7 +28,7 @@ import java.util.function.Supplier;
 public class ActivateUpdateSiteRun implements JIPipeRunnable {
 
     private final FilesCollection filesCollection;
-    private final  List<UpdateSite> updateSites;
+    private final List<UpdateSite> updateSites;
 
     public ActivateUpdateSiteRun(FilesCollection filesCollection, List<UpdateSite> updateSites) {
         this.filesCollection = filesCollection;

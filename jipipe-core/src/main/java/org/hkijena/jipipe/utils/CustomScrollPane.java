@@ -12,7 +12,7 @@ public class CustomScrollPane extends JScrollPane {
 
     public CustomScrollPane(Component view) {
         super(view);
-        if(GeneralUISettings.getInstance().isModernizeCrossPlatformLookAndFeel()) {
+        if (GeneralUISettings.getInstance().isModernizeCrossPlatformLookAndFeel()) {
             getVerticalScrollBar().setUI(new ArrowLessScrollBarUI());
             getHorizontalScrollBar().setUI(new ArrowLessScrollBarUI());
         }

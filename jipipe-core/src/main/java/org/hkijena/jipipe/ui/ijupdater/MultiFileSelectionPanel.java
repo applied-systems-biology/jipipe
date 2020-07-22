@@ -1,9 +1,7 @@
 package org.hkijena.jipipe.ui.ijupdater;
 
-import com.google.common.collect.ImmutableList;
 import net.imagej.updater.FileObject;
 import net.imagej.updater.GroupAction;
-import org.apache.commons.lang.WordUtils;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.FormPanel;
@@ -11,12 +9,7 @@ import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.font.TextAttribute;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * Opened when selecting one file
@@ -28,8 +21,8 @@ public class MultiFileSelectionPanel extends JIPipeWorkbenchPanel {
     private FormPanel actionButtons = new FormPanel(null, FormPanel.NONE);
 
     /**
-     * @param workbench the workbench
-     * @param managerUI the manager
+     * @param workbench   the workbench
+     * @param managerUI   the manager
      * @param fileObjects the object to be displayed
      */
     public MultiFileSelectionPanel(JIPipeWorkbench workbench, ManagerUI managerUI, Set<FileObject> fileObjects) {
@@ -50,7 +43,7 @@ public class MultiFileSelectionPanel extends JIPipeWorkbenchPanel {
                     action.setAction(managerUI.getFilesCollection(), fileObject);
                     managerUI.fireFileChanged(fileObject);
                 }
-               refreshContents();
+                refreshContents();
             });
             actionButtons.addWideToForm(button, null);
         }

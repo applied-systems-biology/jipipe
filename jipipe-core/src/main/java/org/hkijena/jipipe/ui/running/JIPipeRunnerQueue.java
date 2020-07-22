@@ -44,14 +44,15 @@ public class JIPipeRunnerQueue {
 
     /**
      * Determines if a runnable is enqueued or running
+     *
      * @param runnable the runnable
      * @return if a runnable is enqueued or running
      */
     public boolean isRunningOrEnqueued(JIPipeRunnable runnable) {
-        if(currentlyRunningWorker != null && currentlyRunningWorker.getRun() == runnable)
+        if (currentlyRunningWorker != null && currentlyRunningWorker.getRun() == runnable)
             return true;
         for (JIPipeRunWorker worker : queue) {
-            if(worker.getRun() == runnable)
+            if (worker.getRun() == runnable)
                 return true;
         }
 
@@ -59,7 +60,7 @@ public class JIPipeRunnerQueue {
     }
 
     public boolean isEmpty() {
-        return  currentlyRunningWorker == null && queue.isEmpty();
+        return currentlyRunningWorker == null && queue.isEmpty();
     }
 
     /**

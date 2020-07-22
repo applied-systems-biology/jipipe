@@ -15,12 +15,12 @@ package org.hkijena.jipipe.ui.grapheditor;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.categories.*;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeCompartmentOutput;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeMutableSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
+import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.events.AlgorithmUIActionRequestedEvent;
 import org.hkijena.jipipe.ui.registries.JIPipeUINodeRegistry;

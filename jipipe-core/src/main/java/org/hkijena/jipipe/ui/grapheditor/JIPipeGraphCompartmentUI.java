@@ -15,11 +15,13 @@ package org.hkijena.jipipe.ui.grapheditor;
 
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipeDefaultRegistry;
-import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.categories.*;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.grouping.NodeGroup;
 import org.hkijena.jipipe.api.history.AddNodeGraphHistorySnapshot;
+import org.hkijena.jipipe.api.nodes.JIPipeGraph;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
 import org.hkijena.jipipe.api.registries.JIPipeNodeRegistry;
@@ -209,13 +211,12 @@ public class JIPipeGraphCompartmentUI extends JIPipeGraphEditorUI {
 
         for (JIPipeNodeTypeCategory category : JIPipeNodeRegistry.getInstance().getRegisteredCategories().values().stream()
                 .sorted(Comparator.comparing(JIPipeNodeTypeCategory::getUIOrder)).collect(Collectors.toList())) {
-            if(category instanceof DataSourceNodeTypeCategory) {
+            if (category instanceof DataSourceNodeTypeCategory) {
                 JMenu addDataSourceMenu = new JMenu(category.getName());
                 addDataSourceMenu.setIcon(category.getIcon());
                 initializeAddDataSourceMenu(graphEditorUI, addDataSourceMenu, addedAlgorithms);
                 menuBar.add(addDataSourceMenu);
-            }
-            else if(category.isVisibleInGraphCompartment()) {
+            } else if (category.isVisibleInGraphCompartment()) {
                 JMenu menu = new JMenu(category.getName());
                 menu.setIcon(category.getIcon());
                 initializeMenuForCategory(graphEditorUI, menu, category, addedAlgorithms);
@@ -226,7 +227,8 @@ public class JIPipeGraphCompartmentUI extends JIPipeGraphEditorUI {
 
     /**
      * Initializes a menu for one algorithm category
-     *  @param graphEditorUI   the graph editor
+     *
+     * @param graphEditorUI   the graph editor
      * @param menu            The menu
      * @param category        The algorithm category
      * @param addedAlgorithms added algorithm types are added to this list
@@ -314,11 +316,11 @@ public class JIPipeGraphCompartmentUI extends JIPipeGraphEditorUI {
         do {
             changed = false;
             for (JMenu item : menuTree.values()) {
-                if(invisible.contains(item))
+                if (invisible.contains(item))
                     continue;
                 boolean hasVisible = false;
                 for (int i = 0; i < item.getItemCount(); i++) {
-                    if(item.getItem(i).isVisible()) {
+                    if (item.getItem(i).isVisible()) {
                         hasVisible = true;
                         break;
                     }
@@ -330,7 +332,7 @@ public class JIPipeGraphCompartmentUI extends JIPipeGraphEditorUI {
                 }
             }
         }
-        while(changed);
+        while (changed);
 
     }
 }

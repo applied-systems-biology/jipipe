@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.api.registries;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.MissingNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -181,11 +180,12 @@ public class JIPipeSettingsRegistry implements JIPipeParameterCollection, JIPipe
 
     /**
      * Gets the raw property files Json node
+     *
      * @return the node. Never null.
      */
     public static JsonNode getRawNode() {
         Path propertyFile = getPropertyFile();
-        if(Files.exists(propertyFile)) {
+        if (Files.exists(propertyFile)) {
             try {
                 return JsonUtils.getObjectMapper().readTree(propertyFile.toFile());
             } catch (IOException e) {

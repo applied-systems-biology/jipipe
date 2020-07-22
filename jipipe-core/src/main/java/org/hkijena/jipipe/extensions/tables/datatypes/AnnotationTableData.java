@@ -115,6 +115,7 @@ public class AnnotationTableData extends ResultsTableData {
 
     /**
      * Gets all annotations at the specified row
+     *
      * @param row the row
      * @return annotations
      */
@@ -122,7 +123,7 @@ public class AnnotationTableData extends ResultsTableData {
         List<JIPipeAnnotation> result = new ArrayList<>();
         for (int col = 0; col < getColumnCount(); col++) {
             String columnName = getColumnName(col);
-            if(columnName.startsWith(ANNOTATION_COLUMN_IDENTIFIER)) {
+            if (columnName.startsWith(ANNOTATION_COLUMN_IDENTIFIER)) {
                 String annotationName = getAnnotationTypeFromColumnName(columnName);
                 result.add(new JIPipeAnnotation(annotationName, StringUtils.orElse(getValueAsString(row, col), "")));
             }

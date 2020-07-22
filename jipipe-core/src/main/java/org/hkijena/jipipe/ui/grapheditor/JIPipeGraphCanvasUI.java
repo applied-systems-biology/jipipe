@@ -16,17 +16,14 @@ package org.hkijena.jipipe.ui.grapheditor;
 import com.google.common.collect.*;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.categories.*;
-import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.categories.*;
-import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.categories.*;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.events.GraphChangedEvent;
 import org.hkijena.jipipe.api.events.NodeConnectedEvent;
 import org.hkijena.jipipe.api.history.JIPipeGraphHistory;
 import org.hkijena.jipipe.api.history.MoveNodesGraphHistorySnapshot;
+import org.hkijena.jipipe.api.nodes.JIPipeGraph;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphEdge;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
 import org.hkijena.jipipe.extensions.settings.GraphEditorUISettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
@@ -479,9 +476,8 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
             if (getParent() != null)
                 getParent().revalidate();
             getEventBus().post(new GraphCanvasUpdatedEvent(this));
-        }
-        else {
-            if(selectionFirst != null) {
+        } else {
+            if (selectionFirst != null) {
                 selectionSecond = mouseEvent.getPoint();
                 repaint();
             }
@@ -610,8 +606,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
                         currentlyDraggedOffsets.put(nodeUI, offset);
                         currentlyDraggedSnapshot = new MoveNodesGraphHistorySnapshot(graph, "Move node");
                     }
-                }
-                else {
+                } else {
                     selectionFirst = mouseEvent.getPoint();
                 }
             }
@@ -636,7 +631,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
         if (mouseEvent.getButton() == MouseEvent.BUTTON2)
             return;
 
-        if(selectionFirst != null && selectionSecond != null) {
+        if (selectionFirst != null && selectionSecond != null) {
             int x0 = selectionFirst.x;
             int y0 = selectionFirst.y;
             int x1 = selectionSecond.x;
@@ -645,15 +640,15 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
             int y = Math.min(y0, y1);
             int w = Math.abs(x0 - x1);
             int h = Math.abs(y0 - y1);
-            Rectangle selectionRectangle = new Rectangle(x,y,w,h);
+            Rectangle selectionRectangle = new Rectangle(x, y, w, h);
             Set<JIPipeNodeUI> newSelection = new HashSet<>();
             for (JIPipeNodeUI ui : nodeUIs.values()) {
-                if(selectionRectangle.contains(ui.getBounds())) {
+                if (selectionRectangle.contains(ui.getBounds())) {
                     newSelection.add(ui);
                 }
             }
-            if(!newSelection.isEmpty()) {
-                if(!mouseEvent.isShiftDown()) {
+            if (!newSelection.isEmpty()) {
+                if (!mouseEvent.isShiftDown()) {
                     this.selection.clear();
                 }
                 this.selection.addAll(newSelection);
@@ -663,8 +658,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
             selectionFirst = null;
             selectionSecond = null;
             repaint();
-        }
-        else {
+        } else {
             JIPipeNodeUI ui = pickComponent(mouseEvent);
             if (ui == null) {
                 selectOnly(null);
@@ -904,7 +898,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
                     graphEditCursor.y - cursorImage.getIconHeight() / 2,
                     null);
         }
-        if(selectionFirst != null && selectionSecond != null) {
+        if (selectionFirst != null && selectionSecond != null) {
             Graphics2D graphics2D = (Graphics2D) g;
             graphics2D.setStroke(STROKE_MARQUEE);
             graphics2D.setColor(Color.GRAY);
@@ -916,7 +910,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
             int y = Math.min(y0, y1);
             int w = Math.abs(x0 - x1);
             int h = Math.abs(y0 - y1);
-            graphics2D.drawRect(x,y,w,h);
+            graphics2D.drawRect(x, y, w, h);
         }
     }
 
@@ -1411,7 +1405,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
         ImmutableSet<JIPipeNodeUI> originalSelection = ImmutableSet.copyOf(selection);
         selection.clear();
         for (JIPipeNodeUI ui : nodeUIs.values()) {
-            if(!originalSelection.contains(ui))
+            if (!originalSelection.contains(ui))
                 selection.add(ui);
         }
         updateSelection();

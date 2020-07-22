@@ -19,11 +19,7 @@ import org.hkijena.jipipe.utils.RoundedLineBorder;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
+import java.awt.*;
 
 public class UpdateSiteUI extends JPanel {
     private final UpdateSiteListUI listUI;
@@ -41,13 +37,12 @@ public class UpdateSiteUI extends JPanel {
 
         JCheckBox enabledCheckBox = new JCheckBox(updateSite.getName(), updateSite.isActive());
         enabledCheckBox.addActionListener(e -> {
-            if(listUI.getPluginManager().isCurrentlyRunning()) {
+            if (listUI.getPluginManager().isCurrentlyRunning()) {
                 JOptionPane.showMessageDialog(this,
                         "There is already an operation running. Please wait until it is finished.",
                         "Activate/deactivate update site", JOptionPane.ERROR_MESSAGE);
                 enabledCheckBox.setSelected(!enabledCheckBox.isSelected());
-            }
-            else {
+            } else {
                 if (enabledCheckBox.isSelected()) {
                     activateUpdateSite();
                 } else {
@@ -64,9 +59,9 @@ public class UpdateSiteUI extends JPanel {
                 fill = HORIZONTAL;
             }
         });
-        if(updateSite.isOfficial()) {
+        if (updateSite.isOfficial()) {
             JLabel officialLabel = new JLabel("Official");
-            officialLabel.setForeground(new Color(0,128,0));
+            officialLabel.setForeground(new Color(0, 128, 0));
             add(officialLabel, new GridBagConstraints() {
                 {
                     gridx = 1;
@@ -118,7 +113,7 @@ public class UpdateSiteUI extends JPanel {
     }
 
     private void removeUpdateSite() {
-        if(JOptionPane.showConfirmDialog(this, "Do you really want to remove the update site '" + updateSite.getName() + "'?",
+        if (JOptionPane.showConfirmDialog(this, "Do you really want to remove the update site '" + updateSite.getName() + "'?",
                 "Remove update site",
                 JOptionPane.YES_NO_OPTION,
                 JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {

@@ -15,8 +15,7 @@ package org.hkijena.jipipe.ui.components;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.primitives.Ints;
-import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.categories.*;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.ui.registries.JIPipeUINodeRegistry;
 import org.hkijena.jipipe.utils.CustomScrollPane;
 import org.hkijena.jipipe.utils.ResourceUtils;
