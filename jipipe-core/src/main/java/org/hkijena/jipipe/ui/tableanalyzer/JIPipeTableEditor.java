@@ -120,7 +120,7 @@ public class JIPipeTableEditor extends JIPipeWorkbenchPanel {
 
         toolBar.add(Box.createHorizontalGlue());
 
-        JButton createPlotButton = new JButton("Create plot", UIUtils.getIconFromResources("graph.png"));
+        JButton createPlotButton = new JButton("Create plot", UIUtils.getIconFromResources("actions/office-chart-line.png"));
         createPlotButton.addActionListener(e -> createNewPlot());
         toolBar.add(createPlotButton);
 

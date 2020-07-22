@@ -252,7 +252,7 @@ public class ImageJDataTypesExtension extends JIPipePrepackagedDefaultJavaExtens
         // Register data sources
         registerAlgorithm("import-imagej-roi-from-file", ROIDataFromFile.class);
         registerAlgorithm("import-imagej-results-table-from-file", ResultsTableFromFile.class);
-        registerAlgorithm("import-imagej-bioformats", BioFormatsImporter.class);
+        registerAlgorithm("import-imagej-bioformats", BioFormatsImporter.class, UIUtils.getIconURLFromResources("apps/bioformats.png"));
 
         // Register algorithms
         registerAlgorithm("convert-imagej-image", ImageTypeConverter.class, UIUtils.getIconURLFromResources("actions/viewimage.png"));
