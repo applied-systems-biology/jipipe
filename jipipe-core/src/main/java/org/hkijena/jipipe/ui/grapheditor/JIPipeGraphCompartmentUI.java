@@ -307,5 +307,30 @@ public class JIPipeGraphCompartmentUI extends JIPipeGraphEditorUI {
                     dataMenu.setVisible(false);
             }
         }
+
+        // Remove empty menus
+        boolean changed;
+        Set<JMenuItem> invisible = new HashSet<>();
+        do {
+            changed = false;
+            for (JMenu item : menuTree.values()) {
+                if(invisible.contains(item))
+                    continue;
+                boolean hasVisible = false;
+                for (int i = 0; i < item.getItemCount(); i++) {
+                    if(item.getItem(i).isVisible()) {
+                        hasVisible = true;
+                        break;
+                    }
+                }
+                if (!hasVisible) {
+                    item.setVisible(false);
+                    invisible.add(item);
+                    changed = true;
+                }
+            }
+        }
+        while(changed);
+
     }
 }

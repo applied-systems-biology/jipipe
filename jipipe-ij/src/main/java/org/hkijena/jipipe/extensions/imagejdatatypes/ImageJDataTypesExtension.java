@@ -22,7 +22,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.algorithms.ImageTypeConvert
 import org.hkijena.jipipe.extensions.imagejdatatypes.algorithms.ImplicitImageTypeConverter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.compat.*;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datasources.BioFormatsImporter;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datasources.ImagePlusFromFileNodeInfo;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datasources.ImagePlusFromFile;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datasources.ROIDataFromFile;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datasources.ResultsTableFromFile;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
@@ -252,6 +252,7 @@ public class ImageJDataTypesExtension extends JIPipePrepackagedDefaultJavaExtens
         // Register data sources
         registerNodeType("import-imagej-roi-from-file", ROIDataFromFile.class);
         registerNodeType("import-imagej-results-table-from-file", ResultsTableFromFile.class);
+        registerNodeType("import-imagej-imgplus-from-file", ImagePlusFromFile.class);
         registerNodeType("import-imagej-bioformats", BioFormatsImporter.class, UIUtils.getIconURLFromResources("apps/bioformats.png"));
 
         // Register algorithms
@@ -299,8 +300,6 @@ public class ImageJDataTypesExtension extends JIPipePrepackagedDefaultJavaExtens
     private void registerImageDataType(String id, Class<? extends ImagePlusData> dataClass, String iconResource) {
         registerDatatype(id, dataClass, ResourceUtils.getPluginResource(iconResource), ImageDataSlotRowUI.class, null);
         registerImageJDataAdapter(new ImgPlusDataImageJAdapter(dataClass), ImagePlusDataImporterUI.class);
-        ImagePlusFromFileNodeInfo info = new ImagePlusFromFileNodeInfo(id, dataClass);
-        registerNodeType(info);
     }
 }
 

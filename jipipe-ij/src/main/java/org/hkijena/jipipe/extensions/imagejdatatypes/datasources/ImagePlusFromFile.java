@@ -19,6 +19,8 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.events.NodeSlotsChangedEvent;
+import org.hkijena.jipipe.api.events.SlotsChangedEvent;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.*;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
@@ -30,6 +32,7 @@ import org.hkijena.jipipe.extensions.filesystem.dataypes.FileData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.parameters.primitives.OptionalStringParameter;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
+import org.hkijena.jipipe.extensions.parameters.references.JIPipeDataInfoRef;
 import org.hkijena.jipipe.utils.ResourceUtils;
 
 import java.lang.reflect.InvocationTargetException;
@@ -45,23 +48,23 @@ import java.util.function.Supplier;
 @JIPipeDocumentation(name = "Import image", description = "Loads an image via the native ImageJ functions. Please note that you might run into issues " +
         "if you open a file that is imported via Bio-Formats (for example .czi files). In such cases, please use the Bio-Formats importer algorithm.")
 @JIPipeOrganization(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@JIPipeInputSlot(FileData.class)
+@JIPipeOutputSlot(ImagePlusData.class)
 public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
 
-    private Class<? extends JIPipeData> dataClass;
+    private JIPipeDataInfoRef generatedImageType = new JIPipeDataInfoRef("imagej-imgplus");
     private OptionalStringParameter titleAnnotation = new OptionalStringParameter();
 
     /**
      * @param info      algorithm info
-     * @param dataClass loaded data class
      */
-    public ImagePlusFromFile(JIPipeNodeInfo info, Class<? extends JIPipeData> dataClass) {
+    public ImagePlusFromFile(JIPipeNodeInfo info) {
         super(info,
                 JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Files", FileData.class)
-                        .addOutputSlot("Image", dataClass, "")
+                        .addOutputSlot("Image", ImagePlusData.class, null)
                         .sealOutput()
                         .sealInput()
                         .build());
-        this.dataClass = dataClass;
         titleAnnotation.setContent("Image title");
     }
 
@@ -72,7 +75,7 @@ public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
      */
     public ImagePlusFromFile(ImagePlusFromFile other) {
         super(other);
-        this.dataClass = other.dataClass;
+        this.generatedImageType = new JIPipeDataInfoRef(other.generatedImageType);
         this.titleAnnotation = new OptionalStringParameter(other.titleAnnotation);
     }
 
@@ -109,7 +112,7 @@ public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
         try {
             ImagePlus imagePlus = IJ.openImage(fileName.toString());
             imagePlus.getProcessor().setLut(null);
-            return dataClass.getConstructor(ImagePlus.class).newInstance(imagePlus);
+            return generatedImageType.getInfo().getDataClass().getConstructor(ImagePlus.class).newInstance(imagePlus);
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
             throw new RuntimeException(e);
         }
@@ -120,5 +123,18 @@ public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
         if (titleAnnotation.isEnabled()) {
             report.forCategory("Title annotation").checkNonEmpty(titleAnnotation.getContent(), this);
         }
+    }
+
+    @JIPipeDocumentation(name = "Generated image type", description = "The image type that is generated.")
+    @JIPipeParameter("generated-image-type")
+    public JIPipeDataInfoRef getGeneratedImageType() {
+        return generatedImageType;
+    }
+
+    @JIPipeParameter("generated-image-type")
+    public void setGeneratedImageType(JIPipeDataInfoRef generatedImageType) {
+        this.generatedImageType = generatedImageType;
+        getFirstOutputSlot().setAcceptedDataType(generatedImageType.getInfo().getDataClass());
+        getEventBus().post(new NodeSlotsChangedEvent(this));
     }
 }

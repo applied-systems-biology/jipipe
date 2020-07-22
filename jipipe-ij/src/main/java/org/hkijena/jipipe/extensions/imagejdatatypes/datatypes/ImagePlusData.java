@@ -74,7 +74,6 @@ import java.util.List;
  * ImageJ image
  */
 @JIPipeDocumentation(name = "Image")
-@JIPipeOrganization(menuPath = "Images")
 public class ImagePlusData implements JIPipeData {
 
     /**
