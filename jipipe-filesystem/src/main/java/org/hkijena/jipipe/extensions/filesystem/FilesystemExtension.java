@@ -85,36 +85,36 @@ public class FilesystemExtension extends JIPipePrepackagedDefaultJavaExtension {
     }
 
     private void registerAlgorithms() {
-        registerAlgorithm("import-file", FileDataSource.class);
-        registerAlgorithm("import-file-list", FileListDataSource.class);
-        registerAlgorithm("import-folder", FolderDataSource.class);
-        registerAlgorithm("import-folder-list", FolderListDataSource.class);
-        registerAlgorithm("file-temporary", TemporaryFileDataSource.class);
-        registerAlgorithm("folder-temporary", TemporaryFolderDataSource.class);
-        registerAlgorithm("folder-run-output", OutputFolderDataSource.class);
+        registerNodeType("import-file", FileDataSource.class);
+        registerNodeType("import-file-list", FileListDataSource.class);
+        registerNodeType("import-folder", FolderDataSource.class);
+        registerNodeType("import-folder-list", FolderListDataSource.class);
+        registerNodeType("file-temporary", TemporaryFileDataSource.class);
+        registerNodeType("folder-temporary", TemporaryFolderDataSource.class);
+        registerNodeType("folder-run-output", OutputFolderDataSource.class);
 
-        registerAlgorithm("path-extract-filename", ExtractFileName.class, UIUtils.getIconURLFromResources("data-types/files.png"));
-        registerAlgorithm("path-extract-parent", ExtractParent.class, UIUtils.getIconURLFromResources("actions/go-parent-folder.png"));
-        registerAlgorithm("path-relativize", RelativizePaths.class, UIUtils.getIconURLFromResources("data-types/path.png"));
-        registerAlgorithm("path-relativize-by-parameter", RelativizeByParameter.class, UIUtils.getIconURLFromResources("data-types/path.png"));
-        registerAlgorithm("path-concatenate", ConcatenatePaths.class, UIUtils.getIconURLFromResources("actions/list-add.png"));
-        registerAlgorithm("path-concatenate-by-parameter", ConcatenateByParameter.class, UIUtils.getIconURLFromResources("actions/list-add.png"));
-        registerAlgorithm("folder-mkdir", CreateDirectory.class, UIUtils.getIconURLFromResources("actions/folder-new.png"));
-        registerAlgorithm("path-rename-string", RenameByString.class, UIUtils.getIconURLFromResources("actions/tag.png"));
-        registerAlgorithm("path-copy", CopyPath.class, UIUtils.getIconURLFromResources("actions/edit-copy.png"));
-        registerAlgorithm("path-filter", FilterPaths.class,UIUtils.getIconURLFromResources("actions/filter.png"));
-        registerAlgorithm("folder-list-files", ListFiles.class, UIUtils.getIconURLFromResources("actions/view-list-details.png"));
-        registerAlgorithm("folder-list-subfolders", ListSubfolders.class, UIUtils.getIconURLFromResources("actions/view-list-details.png"));
-        registerAlgorithm("data-to-output-path", ConvertDataToOutputPath.class, UIUtils.getIconURLFromResources("actions/folder-new.png"));
-        registerAlgorithm("export-data-by-parameter", ExportDataByParameter.class, UIUtils.getIconURLFromResources("actions/document-export.png"));
-        registerAlgorithm("export-data", ExportData.class, UIUtils.getIconURLFromResources("actions/document-export.png"));
-        registerAlgorithm("annotation-to-path", AnnotationToPath.class, UIUtils.getIconURLFromResources("data-types/path.png"));
+        registerNodeType("path-extract-filename", ExtractFileName.class, UIUtils.getIconURLFromResources("data-types/files.png"));
+        registerNodeType("path-extract-parent", ExtractParent.class, UIUtils.getIconURLFromResources("actions/go-parent-folder.png"));
+        registerNodeType("path-relativize", RelativizePaths.class, UIUtils.getIconURLFromResources("data-types/path.png"));
+        registerNodeType("path-relativize-by-parameter", RelativizeByParameter.class, UIUtils.getIconURLFromResources("data-types/path.png"));
+        registerNodeType("path-concatenate", ConcatenatePaths.class, UIUtils.getIconURLFromResources("actions/list-add.png"));
+        registerNodeType("path-concatenate-by-parameter", ConcatenateByParameter.class, UIUtils.getIconURLFromResources("actions/list-add.png"));
+        registerNodeType("folder-mkdir", CreateDirectory.class, UIUtils.getIconURLFromResources("actions/folder-new.png"));
+        registerNodeType("path-rename-string", RenameByString.class, UIUtils.getIconURLFromResources("actions/tag.png"));
+        registerNodeType("path-copy", CopyPath.class, UIUtils.getIconURLFromResources("actions/edit-copy.png"));
+        registerNodeType("path-filter", FilterPaths.class,UIUtils.getIconURLFromResources("actions/filter.png"));
+        registerNodeType("folder-list-files", ListFiles.class, UIUtils.getIconURLFromResources("actions/view-list-details.png"));
+        registerNodeType("folder-list-subfolders", ListSubfolders.class, UIUtils.getIconURLFromResources("actions/view-list-details.png"));
+        registerNodeType("data-to-output-path", ConvertDataToOutputPath.class, UIUtils.getIconURLFromResources("actions/folder-new.png"));
+        registerNodeType("export-data-by-parameter", ExportDataByParameter.class, UIUtils.getIconURLFromResources("actions/document-export.png"));
+        registerNodeType("export-data", ExportData.class, UIUtils.getIconURLFromResources("actions/document-export.png"));
+        registerNodeType("annotation-to-path", AnnotationToPath.class, UIUtils.getIconURLFromResources("data-types/path.png"));
 
-        registerAlgorithm("folder-annotate-by-name", SimpleFolderAnnotationGenerator.class, UIUtils.getIconURLFromResources("actions/image-auto-adjust.png"));
-        registerAlgorithm("file-annotate-by-name", SimpleFileAnnotationGenerator.class, UIUtils.getIconURLFromResources("actions/image-auto-adjust.png"));
-        registerAlgorithm("path-to-annotation-simple", SimplePathAnnotationGenerator.class, UIUtils.getIconURLFromResources("actions/image-auto-adjust.png"));
+        registerNodeType("folder-annotate-by-name", SimpleFolderAnnotationGenerator.class, UIUtils.getIconURLFromResources("actions/image-auto-adjust.png"));
+        registerNodeType("file-annotate-by-name", SimpleFileAnnotationGenerator.class, UIUtils.getIconURLFromResources("actions/image-auto-adjust.png"));
+        registerNodeType("path-to-annotation-simple", SimplePathAnnotationGenerator.class, UIUtils.getIconURLFromResources("actions/image-auto-adjust.png"));
 
-        registerAlgorithm("annotation-table-to-paths", AnnotationTableToPaths.class, UIUtils.getIconURLFromResources("data-types/path.png"));
+        registerNodeType("annotation-table-to-paths", AnnotationTableToPaths.class, UIUtils.getIconURLFromResources("data-types/path.png"));
     }
 
 }

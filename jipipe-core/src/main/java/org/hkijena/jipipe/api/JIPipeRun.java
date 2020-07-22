@@ -15,9 +15,9 @@ package org.hkijena.jipipe.api;
 
 import com.google.common.base.Charsets;
 import ij.IJ;
-import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithm;
-import org.hkijena.jipipe.api.algorithm.JIPipeGraph;
-import org.hkijena.jipipe.api.algorithm.JIPipeGraphNode;
+import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
+import org.hkijena.jipipe.api.nodes.JIPipeGraph;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.utils.StringUtils;

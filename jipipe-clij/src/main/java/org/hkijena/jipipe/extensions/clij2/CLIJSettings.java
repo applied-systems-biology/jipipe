@@ -5,7 +5,7 @@ import net.haesleinhuepf.clij.CLIJ;
 import net.haesleinhuepf.clij.converters.CLIJConverterService;
 import net.haesleinhuepf.clij.macro.CLIJHandler;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.algorithm.JIPipeJavaNodeInfo;
+import org.hkijena.jipipe.api.nodes.JIPipeJavaNodeInfo;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;

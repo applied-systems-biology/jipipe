@@ -250,13 +250,13 @@ public class ImageJDataTypesExtension extends JIPipePrepackagedDefaultJavaExtens
         registerImageDataType("imagej-imgplus-fft-5d", ImagePlusFFT5DData.class, "icons/data-types/imgplus-fft-5d.png");
 
         // Register data sources
-        registerAlgorithm("import-imagej-roi-from-file", ROIDataFromFile.class);
-        registerAlgorithm("import-imagej-results-table-from-file", ResultsTableFromFile.class);
-        registerAlgorithm("import-imagej-bioformats", BioFormatsImporter.class, UIUtils.getIconURLFromResources("apps/bioformats.png"));
+        registerNodeType("import-imagej-roi-from-file", ROIDataFromFile.class);
+        registerNodeType("import-imagej-results-table-from-file", ResultsTableFromFile.class);
+        registerNodeType("import-imagej-bioformats", BioFormatsImporter.class, UIUtils.getIconURLFromResources("apps/bioformats.png"));
 
         // Register algorithms
-        registerAlgorithm("convert-imagej-image", ImageTypeConverter.class, UIUtils.getIconURLFromResources("actions/viewimage.png"));
-        registerAlgorithm("image-properties-to-annotation", ImagePropertiesToAnnotationAlgorithm.class, UIUtils.getIconURLFromResources("data-types/annotation-table.png"));
+        registerNodeType("convert-imagej-image", ImageTypeConverter.class, UIUtils.getIconURLFromResources("actions/viewimage.png"));
+        registerNodeType("image-properties-to-annotation", ImagePropertiesToAnnotationAlgorithm.class, UIUtils.getIconURLFromResources("data-types/annotation-table.png"));
 
         // Register parameter editors
         registerEnumParameterType("import-imagej-bioformats:color-mode", BioFormatsImporter.ColorMode.class,
@@ -300,7 +300,7 @@ public class ImageJDataTypesExtension extends JIPipePrepackagedDefaultJavaExtens
         registerDatatype(id, dataClass, ResourceUtils.getPluginResource(iconResource), ImageDataSlotRowUI.class, null);
         registerImageJDataAdapter(new ImgPlusDataImageJAdapter(dataClass), ImagePlusDataImporterUI.class);
         ImagePlusFromFileNodeInfo info = new ImagePlusFromFileNodeInfo(id, dataClass);
-        registerAlgorithm(info);
+        registerNodeType(info);
     }
 }
 

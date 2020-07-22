@@ -48,9 +48,9 @@ public class MultiParameterAlgorithmsExtension extends JIPipePrepackagedDefaultJ
         JIPipeNodeRegistry.getInstance().getEventBus().register(this);
 
         // Register algorithms
-        registerAlgorithm("parameters-define", ParametersDataDefinition.class);
-        registerAlgorithm("parameters-define-table", ParametersDataTableDefinition.class);
-        registerAlgorithm(new MultiParameterNodeInfo());
+        registerNodeType("parameters-define", ParametersDataDefinition.class);
+        registerNodeType("parameters-define-table", ParametersDataTableDefinition.class);
+        registerNodeType(new MultiParameterNodeInfo());
     }
 
     @Override

@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.extensions.multiparameters.algorithms;
 
-import org.hkijena.jipipe.api.algorithm.JIPipeGraphNode;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;

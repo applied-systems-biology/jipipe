@@ -15,7 +15,7 @@ package org.hkijena.jipipe.ui.grapheditor;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import org.hkijena.jipipe.api.algorithm.JIPipeGraphNode;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.events.NodeSlotsChangedEvent;

@@ -1,0 +1,82 @@
+/*
+ * Copyright by Zoltán Cseresnyés, Ruman Gerst
+ *
+ * Research Group Applied Systems Biology - Head: Prof. Dr. Marc Thilo Figge
+ * https://www.leibniz-hki.de/en/applied-systems-biology.html
+ * HKI-Center for Systems Biology of Infection
+ * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)
+ * Adolf-Reichwein-Straße 23, 07745 Jena, Germany
+ *
+ * The project code is licensed under BSD 2-Clause.
+ * See the LICENSE file provided with the code for the full license.
+ */
+
+package org.hkijena.jipipe.api.nodes;
+
+import javax.swing.*;
+import java.awt.Color;
+
+/**
+ * Describes a node category
+ */
+public interface JIPipeNodeTypeCategory {
+    /**
+     * The name displayed in menus and other UI
+     * @return the name
+     */
+    String getName();
+
+    /**
+     * A description
+     * @return the description
+     */
+    String getDescription();
+
+    /**
+     * Categories are sorted by this value (lower value = first)
+     * @return UI order
+     */
+    int getUIOrder();
+
+    /**
+     * Icon shown in the UI
+     * @return the icon
+     */
+    Icon getIcon();
+
+    /**
+     * The fill color for algorithm nodes
+     * @return fill color
+     */
+    Color getFillColor();
+
+    /**
+     * The border color for algorithm nodes
+     * @return border color
+     */
+    Color getBorderColor();
+
+    /**
+     * If the category should be available in the graph compartment editor
+     * @return if the category should be visible
+     */
+    boolean isVisibleInGraphCompartment();
+
+    /**
+     * If the category should be available in the compartment graph editor
+     * @return if the category should be visible
+     */
+    boolean isVisibleInCompartmentGraph();
+
+    /**
+     * Returns if nodes of this category can be created by users
+     * @return if nodes of this category can be created by users
+     */
+    boolean userCanCreate();
+
+    /**
+     * Returns if nodes of this category can be deleted by users
+     * @return if nodes of this category can be deleted by users
+     */
+    boolean userCanDelete();
+}

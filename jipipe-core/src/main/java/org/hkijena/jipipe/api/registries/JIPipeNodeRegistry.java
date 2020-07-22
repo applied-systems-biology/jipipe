@@ -13,6 +13,9 @@
 
 package org.hkijena.jipipe.api.registries;
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
+import com.google.common.collect.ImmutableBiMap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
@@ -20,12 +23,13 @@ import org.hkijena.jipipe.JIPipeDefaultRegistry;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.JIPipeValidatable;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
-import org.hkijena.jipipe.api.algorithm.JIPipeNodeCategory;
-import org.hkijena.jipipe.api.algorithm.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeCategory;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.events.DatatypeRegisteredEvent;
 import org.hkijena.jipipe.api.events.NodeInfoRegisteredEvent;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeTypeCategory;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -35,8 +39,9 @@ import java.util.stream.Collectors;
  */
 public class JIPipeNodeRegistry implements JIPipeValidatable {
     private Map<String, JIPipeNodeInfo> registeredNodeInfos = new HashMap<>();
-    private Set<JIPipeAlgorithmRegistrationTask> registrationTasks = new HashSet<>();
+    private Set<JIPipeNodeRegistrationTask> registrationTasks = new HashSet<>();
     private Map<String, JIPipeDependency> registeredNodeInfoSources = new HashMap<>();
+    private BiMap<Class<? extends JIPipeNodeTypeCategory>, JIPipeNodeTypeCategory> registeredCategories = HashBiMap.create();
     private boolean stateChanged;
     private boolean isRunning;
     private EventBus eventBus = new EventBus();
@@ -53,7 +58,7 @@ public class JIPipeNodeRegistry implements JIPipeValidatable {
      *
      * @param task A registration task
      */
-    public void scheduleRegister(JIPipeAlgorithmRegistrationTask task) {
+    public void scheduleRegister(JIPipeNodeRegistrationTask task) {
         registrationTasks.add(task);
         runRegistrationTasks();
     }
@@ -74,7 +79,7 @@ public class JIPipeNodeRegistry implements JIPipeValidatable {
         isRunning = true;
         while (stateChanged) {
             stateChanged = false;
-            for (JIPipeAlgorithmRegistrationTask task : ImmutableList.copyOf(registrationTasks)) {
+            for (JIPipeNodeRegistrationTask task : ImmutableList.copyOf(registrationTasks)) {
                 if (task.canRegister()) {
                     registrationTasks.remove(task);
                     task.register();
@@ -88,7 +93,7 @@ public class JIPipeNodeRegistry implements JIPipeValidatable {
     /**
      * @return The list of current registration tasks
      */
-    public Set<JIPipeAlgorithmRegistrationTask> getScheduledRegistrationTasks() {
+    public Set<JIPipeNodeRegistrationTask> getScheduledRegistrationTasks() {
         return Collections.unmodifiableSet(registrationTasks);
     }
 
@@ -104,6 +109,14 @@ public class JIPipeNodeRegistry implements JIPipeValidatable {
         eventBus.post(new NodeInfoRegisteredEvent(info));
         System.out.println("Registered algorithm '" + info.getName() + "' [" + info.getId() + "]");
         runRegistrationTasks();
+    }
+
+    /**
+     * Registers a category
+     * @param category the category instance
+     */
+    public void registerCategory(JIPipeNodeTypeCategory category) {
+        registeredCategories.put(category.getClass(), category);
     }
 
     /**
@@ -230,16 +243,20 @@ public class JIPipeNodeRegistry implements JIPipeValidatable {
 
     @Override
     public void reportValidity(JIPipeValidityReport report) {
-        for (JIPipeAlgorithmRegistrationTask task : registrationTasks) {
+        for (JIPipeNodeRegistrationTask task : registrationTasks) {
             report.forCategory("Unregistered algorithms").forCategory(task.toString()).report(task);
         }
+    }
+
+    public BiMap<Class<? extends JIPipeNodeTypeCategory>, JIPipeNodeTypeCategory> getRegisteredCategories() {
+        return ImmutableBiMap.copyOf(registeredCategories);
     }
 
     /**
      * @return Singleton instance
      */
     public static JIPipeNodeRegistry getInstance() {
-        return JIPipeDefaultRegistry.getInstance().getAlgorithmRegistry();
+        return JIPipeDefaultRegistry.getInstance().getNodeRegistry();
     }
 
 }

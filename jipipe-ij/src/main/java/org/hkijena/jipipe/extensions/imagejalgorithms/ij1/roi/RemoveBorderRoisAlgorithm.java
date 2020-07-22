@@ -19,7 +19,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
-import org.hkijena.jipipe.api.algorithm.*;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
@@ -31,7 +31,7 @@ import java.awt.*;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import static org.hkijena.jipipe.api.algorithm.JIPipeIteratingAlgorithm.ITERATING_ALGORITHM_DESCRIPTION;
+import static org.hkijena.jipipe.api.nodes.JIPipeIteratingAlgorithm.ITERATING_ALGORITHM_DESCRIPTION;
 
 /**
  * Wrapper around {@link ij.plugin.frame.RoiManager}
@@ -48,7 +48,7 @@ public class RemoveBorderRoisAlgorithm extends JIPipeIteratingAlgorithm {
     private RoiOutline outline = RoiOutline.ClosedPolygon;
 
     /**
-     * Instantiates a new algorithm.
+     * Instantiates a new node type.
      *
      * @param info the info
      */
@@ -62,7 +62,7 @@ public class RemoveBorderRoisAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     /**
-     * Instantiates a new algorithm.
+     * Instantiates a new node type.
      *
      * @param other the other
      */

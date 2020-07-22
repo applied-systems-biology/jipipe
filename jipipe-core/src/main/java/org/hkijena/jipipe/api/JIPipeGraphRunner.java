@@ -13,8 +13,8 @@
 
 package org.hkijena.jipipe.api;
 
-import org.hkijena.jipipe.api.algorithm.JIPipeGraph;
-import org.hkijena.jipipe.api.algorithm.JIPipeGraphNode;
+import org.hkijena.jipipe.api.nodes.JIPipeGraph;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 

@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.ui.extensionbuilder;
 
 import org.hkijena.jipipe.JIPipeJsonExtension;
-import org.hkijena.jipipe.api.algorithm.JIPipeGraph;
+import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.grouping.JsonNodeInfo;
 import org.hkijena.jipipe.api.grouping.NodeGroup;
 import org.hkijena.jipipe.api.registries.JIPipeNodeRegistry;

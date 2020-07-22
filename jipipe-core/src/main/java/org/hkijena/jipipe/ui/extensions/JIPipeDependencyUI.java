@@ -16,7 +16,7 @@ package org.hkijena.jipipe.ui.extensions;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeJsonExtension;
 import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
-import org.hkijena.jipipe.api.algorithm.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;

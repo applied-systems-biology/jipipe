@@ -16,7 +16,7 @@ package org.hkijena.jipipe.utils;
 import com.google.common.html.HtmlEscapers;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
-import org.hkijena.jipipe.api.algorithm.*;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;

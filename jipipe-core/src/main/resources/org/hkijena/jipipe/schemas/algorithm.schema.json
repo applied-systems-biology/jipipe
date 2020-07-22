@@ -3,7 +3,7 @@
     "$id": "https://applied-systems-biology.github.io/jipipe/schemas/algorithm.schema.json",
     "type": "object",
     "title": "Algorithm type",
-    "description": "Defines a new algorithm",
+    "description": "Defines a new node type",
     "required": [
         "id",
         "metadata",

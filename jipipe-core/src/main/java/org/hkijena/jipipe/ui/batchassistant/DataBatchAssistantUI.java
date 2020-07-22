@@ -16,7 +16,7 @@ package org.hkijena.jipipe.ui.batchassistant;
 import com.google.common.eventbus.Subscribe;
 import gnu.trove.set.TIntSet;
 import org.hkijena.jipipe.api.JIPipeProjectCache;
-import org.hkijena.jipipe.api.algorithm.*;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.events.NodeDisconnectedEvent;
 import org.hkijena.jipipe.api.events.NodeSlotsChangedEvent;
@@ -36,8 +36,8 @@ import java.util.Map;
 
 /**
  * A tool that assists the user in configuring batch generation for
- * {@link org.hkijena.jipipe.api.algorithm.JIPipeIteratingAlgorithm} and
- * {@link org.hkijena.jipipe.api.algorithm.JIPipeMergingAlgorithm}
+ * {@link org.hkijena.jipipe.api.nodes.JIPipeIteratingAlgorithm} and
+ * {@link org.hkijena.jipipe.api.nodes.JIPipeMergingAlgorithm}
  */
 public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
     private final JIPipeAlgorithm algorithm;

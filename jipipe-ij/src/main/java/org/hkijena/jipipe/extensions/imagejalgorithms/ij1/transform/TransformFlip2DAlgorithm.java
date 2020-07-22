@@ -20,7 +20,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
-import org.hkijena.jipipe.api.algorithm.*;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageJUtils;
@@ -43,7 +43,7 @@ public class TransformFlip2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     private FlipMode flipMode = FlipMode.Horizontal;
 
     /**
-     * Instantiates a new algorithm.
+     * Instantiates a new node type.
      *
      * @param info the info
      */
@@ -56,7 +56,7 @@ public class TransformFlip2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     /**
-     * Instantiates a new algorithm.
+     * Instantiates a new node type.
      *
      * @param other the other
      */

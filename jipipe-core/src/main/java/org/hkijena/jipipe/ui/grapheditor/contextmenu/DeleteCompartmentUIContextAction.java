@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.ui.grapheditor.contextmenu;
 
 import org.hkijena.jipipe.api.JIPipeProject;
-import org.hkijena.jipipe.api.algorithm.JIPipeGraphNode;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.history.DeleteCompartmentGraphHistorySnapshot;
 import org.hkijena.jipipe.extensions.settings.GraphEditorUISettings;

@@ -14,8 +14,8 @@
 package org.hkijena.jipipe.ui.registries;
 
 import org.hkijena.jipipe.JIPipeDefaultRegistry;
-import org.hkijena.jipipe.api.algorithm.JIPipeNodeCategory;
-import org.hkijena.jipipe.api.algorithm.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeCategory;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.utils.ResourceUtils;
 
 import javax.swing.*;

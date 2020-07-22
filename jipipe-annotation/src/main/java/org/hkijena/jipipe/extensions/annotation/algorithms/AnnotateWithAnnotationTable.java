@@ -1,13 +1,12 @@
 package org.hkijena.jipipe.extensions.annotation.algorithms;
 
-import gnu.trove.impl.unmodifiable.TUnmodifiableIntSet;
 import gnu.trove.iterator.TIntIterator;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
-import org.hkijena.jipipe.api.algorithm.*;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.tables.datatypes.AnnotationTableData;

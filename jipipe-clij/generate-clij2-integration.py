@@ -210,7 +210,7 @@ def generate_jipipe_class(method, class_name):
     import org.hkijena.jipipe.extensions.clij2.datatypes.CLIJImageData;
     import org.hkijena.jipipe.api.JIPipeDocumentation;
     import org.hkijena.jipipe.api.JIPipeOrganization;
-    import org.hkijena.jipipe.api.algorithm.*;
+    import org.hkijena.jipipe.api.nodes.*;
     import net.haesleinhuepf.clij.clearcl.interfaces.ClearCLImageInterface;
     import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
     import org.hkijena.jipipe.api.JIPipeValidityReport;

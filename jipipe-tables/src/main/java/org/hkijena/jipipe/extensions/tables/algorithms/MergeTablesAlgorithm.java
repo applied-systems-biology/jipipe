@@ -17,13 +17,13 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
-import org.hkijena.jipipe.api.algorithm.*;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import static org.hkijena.jipipe.api.algorithm.JIPipeMergingAlgorithm.MERGING_ALGORITHM_DESCRIPTION;
+import static org.hkijena.jipipe.api.nodes.JIPipeMergingAlgorithm.MERGING_ALGORITHM_DESCRIPTION;
 
 /**
  * Algorithm that integrates columns

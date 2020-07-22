@@ -20,7 +20,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
-import org.hkijena.jipipe.api.algorithm.*;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -36,7 +36,7 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import static org.hkijena.jipipe.api.algorithm.JIPipeMergingAlgorithm.MERGING_ALGORITHM_DESCRIPTION;
+import static org.hkijena.jipipe.api.nodes.JIPipeMergingAlgorithm.MERGING_ALGORITHM_DESCRIPTION;
 import static org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExtension.TO_3D_CONVERSION;
 
 /**
@@ -53,7 +53,7 @@ public class StackMergerAlgorithm extends JIPipeMergingAlgorithm {
     private String counterAnnotation = "Slice";
 
     /**
-     * Instantiates a new algorithm.
+     * Instantiates a new node type.
      *
      * @param info the info
      */
@@ -66,7 +66,7 @@ public class StackMergerAlgorithm extends JIPipeMergingAlgorithm {
     }
 
     /**
-     * Instantiates a new algorithm.
+     * Instantiates a new node type.
      *
      * @param other the other
      */

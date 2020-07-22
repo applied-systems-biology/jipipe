@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.api.events;
 
-import org.hkijena.jipipe.api.algorithm.JIPipeGraph;
+import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 
 /**
  * Event is triggered when algorithm graph is changed

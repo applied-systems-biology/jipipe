@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.api.events;
 
-import org.hkijena.jipipe.api.algorithm.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 
 /**
  * Triggered when an algorithm is registered

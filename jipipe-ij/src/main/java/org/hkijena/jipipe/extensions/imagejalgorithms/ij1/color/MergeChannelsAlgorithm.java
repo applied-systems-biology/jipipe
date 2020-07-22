@@ -20,7 +20,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
-import org.hkijena.jipipe.api.algorithm.*;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
@@ -35,7 +35,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import static org.hkijena.jipipe.api.algorithm.JIPipeIteratingAlgorithm.ITERATING_ALGORITHM_DESCRIPTION;
+import static org.hkijena.jipipe.api.nodes.JIPipeIteratingAlgorithm.ITERATING_ALGORITHM_DESCRIPTION;
 import static org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExtension.TO_COLOR_CONVERSION;
 
 /**
@@ -50,7 +50,7 @@ public class MergeChannelsAlgorithm extends JIPipeIteratingAlgorithm {
     private InputSlotMapParameterCollection channelColorAssignment;
 
     /**
-     * Instantiates a new algorithm.
+     * Instantiates a new node type.
      *
      * @param info the info
      */
@@ -67,7 +67,7 @@ public class MergeChannelsAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     /**
-     * Instantiates a new algorithm.
+     * Instantiates a new node type.
      *
      * @param other the other
      */

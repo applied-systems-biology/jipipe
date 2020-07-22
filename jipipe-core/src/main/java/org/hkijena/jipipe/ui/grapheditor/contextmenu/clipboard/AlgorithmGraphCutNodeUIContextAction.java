@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.ui.grapheditor.contextmenu.clipboard;
 
-import org.hkijena.jipipe.api.algorithm.JIPipeGraphNode;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.history.CutNodeGraphHistorySnapshot;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphCanvasUI;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeNodeUI;

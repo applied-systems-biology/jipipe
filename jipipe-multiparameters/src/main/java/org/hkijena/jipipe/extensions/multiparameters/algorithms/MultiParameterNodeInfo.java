@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.extensions.multiparameters.algorithms;
 
 import org.hkijena.jipipe.JIPipeDependency;
-import org.hkijena.jipipe.api.algorithm.*;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.extensions.multiparameters.datatypes.ParametersData;
 
 import java.util.ArrayList;

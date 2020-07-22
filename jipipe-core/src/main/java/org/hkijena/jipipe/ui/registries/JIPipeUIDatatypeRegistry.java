@@ -15,7 +15,7 @@ package org.hkijena.jipipe.ui.registries;
 
 import org.apache.commons.lang3.reflect.ConstructorUtils;
 import org.hkijena.jipipe.JIPipeDefaultRegistry;
-import org.hkijena.jipipe.api.algorithm.JIPipeNodeCategory;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeCategory;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;

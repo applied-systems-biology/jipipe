@@ -17,10 +17,10 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
-import org.hkijena.jipipe.api.algorithm.JIPipeAlgorithm;
-import org.hkijena.jipipe.api.algorithm.JIPipeNodeCategory;
-import org.hkijena.jipipe.api.algorithm.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.algorithm.JIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeCategory;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
@@ -43,7 +43,7 @@ public class DefineRectangularRoiAlgorithm extends JIPipeAlgorithm {
     private boolean close = true;
 
     /**
-     * Instantiates a new algorithm.
+     * Instantiates a new node type.
      *
      * @param info the info
      */
@@ -56,7 +56,7 @@ public class DefineRectangularRoiAlgorithm extends JIPipeAlgorithm {
     }
 
     /**
-     * Instantiates a new algorithm.
+     * Instantiates a new node type.
      *
      * @param other the other
      */

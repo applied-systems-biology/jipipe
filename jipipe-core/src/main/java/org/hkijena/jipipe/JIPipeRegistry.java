@@ -45,7 +45,7 @@ public interface JIPipeRegistry extends Service, JIPipeValidatable {
     /**
      * @return Registered algorithms
      */
-    JIPipeNodeRegistry getAlgorithmRegistry();
+    JIPipeNodeRegistry getNodeRegistry();
 
     /**
      * @return Registered data types

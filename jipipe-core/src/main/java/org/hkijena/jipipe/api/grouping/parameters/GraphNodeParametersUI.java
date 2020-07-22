@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.api.grouping.parameters;
 
 import com.google.common.eventbus.Subscribe;
-import org.hkijena.jipipe.api.algorithm.JIPipeGraphNode;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.events.GraphChangedEvent;
 import org.hkijena.jipipe.api.events.ParameterStructureChangedEvent;
 import org.hkijena.jipipe.api.grouping.events.ParameterReferencesChangedEvent;

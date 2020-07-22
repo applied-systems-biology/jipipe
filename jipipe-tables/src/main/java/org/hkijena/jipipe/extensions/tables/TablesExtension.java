@@ -121,25 +121,25 @@ public class TablesExtension extends JIPipePrepackagedDefaultJavaExtension {
     }
 
     private void registerAlgorithms() {
-        registerAlgorithm("table-add-columns-generate", GenerateColumnAlgorithm.class, UIUtils.getIconURLFromResources("actions/edit-table-insert-column-right.png"));
-        registerAlgorithm("table-remove-columns", RemoveColumnAlgorithm.class, UIUtils.getIconURLFromResources("actions/edit-table-delete-column.png"));
-        registerAlgorithm("table-rename-columns", RenameTableColumnsAlgorithm.class, UIUtils.getIconURLFromResources("actions/document-edit.png"));
-        registerAlgorithm("table-rename-single-columns", RenameColumnsAlgorithm.class, UIUtils.getIconURLFromResources("actions/document-edit.png"));
-        registerAlgorithm("table-integrate-columns", IntegrateColumnsAlgorithm.class, UIUtils.getIconURLFromResources("actions/statistics.png"));
-        registerAlgorithm("table-convert-columns", ConvertColumnsAlgorithm.class, UIUtils.getIconURLFromResources("actions/formula.png"));
-        registerAlgorithm("table-split-into-columns", SplitTableIntoColumnsAlgorithm.class, UIUtils.getIconURLFromResources("actions/split.png"));
-        registerAlgorithm("table-merge-from-columns", MergeColumnsAlgorithm.class, UIUtils.getIconURLFromResources("actions/merge.png"));
-        registerAlgorithm("table-merge-tables", MergeTablesAlgorithm.class, UIUtils.getIconURLFromResources("actions/merge.png"));
-        registerAlgorithm("table-split-by-columns", SplitTableByColumnsAlgorithm.class, UIUtils.getIconURLFromResources("actions/split.png"));
-        registerAlgorithm("table-filter", FilterTableAlgorithm.class,UIUtils.getIconURLFromResources("actions/filter.png"));
-        registerAlgorithm("table-sort", SortTableAlgorithm.class, UIUtils.getIconURLFromResources("actions/view-sort.png"));
-        registerAlgorithm("table-add-annotation-columns", AddAnnotationColumnsAlgorithm.class, UIUtils.getIconURLFromResources("actions/edit-table-insert-column-right.png"));
-        registerAlgorithm("convert-annotation-table-to-annotated-tables", ConvertAnnotationTableToAnnotatedTables.class, UIUtils.getIconURLFromResources("data-types/annotation-table.png"));
-        registerAlgorithm("modify-tables", ModifyTablesScript.class, UIUtils.getIconURLFromResources("apps/python.png"));
-        registerAlgorithm("modify-and-merge-tables", ModifyAndMergeTablesScript.class, UIUtils.getIconURLFromResources("apps/python.png"));
-        registerAlgorithm("tables-from-script", TablesFromScript.class, UIUtils.getIconURLFromResources("apps/python.png"));
-        registerAlgorithm("tables-set-column", SetColumnAlgorithm.class, UIUtils.getIconURLFromResources("actions/edit-table-insert-column-right.png"));
-        registerAlgorithm("define-tables", DefineTablesAlgorithm.class, UIUtils.getIconURLFromResources("data-types/results-table.png"));
+        registerNodeType("table-add-columns-generate", GenerateColumnAlgorithm.class, UIUtils.getIconURLFromResources("actions/edit-table-insert-column-right.png"));
+        registerNodeType("table-remove-columns", RemoveColumnAlgorithm.class, UIUtils.getIconURLFromResources("actions/edit-table-delete-column.png"));
+        registerNodeType("table-rename-columns", RenameTableColumnsAlgorithm.class, UIUtils.getIconURLFromResources("actions/document-edit.png"));
+        registerNodeType("table-rename-single-columns", RenameColumnsAlgorithm.class, UIUtils.getIconURLFromResources("actions/document-edit.png"));
+        registerNodeType("table-integrate-columns", IntegrateColumnsAlgorithm.class, UIUtils.getIconURLFromResources("actions/statistics.png"));
+        registerNodeType("table-convert-columns", ConvertColumnsAlgorithm.class, UIUtils.getIconURLFromResources("actions/formula.png"));
+        registerNodeType("table-split-into-columns", SplitTableIntoColumnsAlgorithm.class, UIUtils.getIconURLFromResources("actions/split.png"));
+        registerNodeType("table-merge-from-columns", MergeColumnsAlgorithm.class, UIUtils.getIconURLFromResources("actions/merge.png"));
+        registerNodeType("table-merge-tables", MergeTablesAlgorithm.class, UIUtils.getIconURLFromResources("actions/merge.png"));
+        registerNodeType("table-split-by-columns", SplitTableByColumnsAlgorithm.class, UIUtils.getIconURLFromResources("actions/split.png"));
+        registerNodeType("table-filter", FilterTableAlgorithm.class,UIUtils.getIconURLFromResources("actions/filter.png"));
+        registerNodeType("table-sort", SortTableAlgorithm.class, UIUtils.getIconURLFromResources("actions/view-sort.png"));
+        registerNodeType("table-add-annotation-columns", AddAnnotationColumnsAlgorithm.class, UIUtils.getIconURLFromResources("actions/edit-table-insert-column-right.png"));
+        registerNodeType("convert-annotation-table-to-annotated-tables", ConvertAnnotationTableToAnnotatedTables.class, UIUtils.getIconURLFromResources("data-types/annotation-table.png"));
+        registerNodeType("modify-tables", ModifyTablesScript.class, UIUtils.getIconURLFromResources("apps/python.png"));
+        registerNodeType("modify-and-merge-tables", ModifyAndMergeTablesScript.class, UIUtils.getIconURLFromResources("apps/python.png"));
+        registerNodeType("tables-from-script", TablesFromScript.class, UIUtils.getIconURLFromResources("apps/python.png"));
+        registerNodeType("tables-set-column", SetColumnAlgorithm.class, UIUtils.getIconURLFromResources("actions/edit-table-insert-column-right.png"));
+        registerNodeType("define-tables", DefineTablesAlgorithm.class, UIUtils.getIconURLFromResources("data-types/results-table.png"));
     }
 
     private void registerParameters() {

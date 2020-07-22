@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.ui.cache;
 
 import org.hkijena.jipipe.api.JIPipeProjectCache;
-import org.hkijena.jipipe.api.algorithm.JIPipeGraphNode;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.ui.registries.JIPipeUIAlgorithmRegistry;
 import org.hkijena.jipipe.ui.registries.JIPipeUIDatatypeRegistry;

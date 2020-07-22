@@ -15,17 +15,14 @@ package org.hkijena.jipipe;
 
 import com.google.common.eventbus.EventBus;
 import ij.IJ;
-import net.imagej.ui.swing.updater.ProgressDialog;
 import net.imagej.ui.swing.updater.SwingAuthenticator;
-import net.imagej.updater.Checksummer;
 import net.imagej.updater.FilesCollection;
 import net.imagej.updater.UpdateSite;
 import net.imagej.updater.util.AvailableSites;
-import net.imagej.updater.util.StderrProgress;
 import net.imagej.updater.util.UpdaterUtil;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
-import org.hkijena.jipipe.api.algorithm.JIPipeGraphNode;
-import org.hkijena.jipipe.api.algorithm.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.events.ExtensionRegisteredEvent;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
@@ -56,7 +53,7 @@ public class JIPipeDefaultRegistry extends AbstractService implements JIPipeRegi
     private EventBus eventBus = new EventBus();
     private Set<String> registeredExtensionIds = new HashSet<>();
     private List<JIPipeDependency> registeredExtensions = new ArrayList<>();
-    private JIPipeNodeRegistry algorithmRegistry = new JIPipeNodeRegistry();
+    private JIPipeNodeRegistry nodeRegistry = new JIPipeNodeRegistry();
     private JIPipeDatatypeRegistry datatypeRegistry = new JIPipeDatatypeRegistry();
     private JIPipeUIDatatypeRegistry uiDatatypeRegistry = new JIPipeUIDatatypeRegistry();
     private JIPipeUIParameterTypeRegistry uiParametertypeRegistry = new JIPipeUIParameterTypeRegistry();
@@ -86,7 +83,7 @@ public class JIPipeDefaultRegistry extends AbstractService implements JIPipeRegi
         registeredExtensions = new ArrayList<>();
         registeredExtensionIds = new HashSet<>();
         datatypeRegistry = new JIPipeDatatypeRegistry();
-        algorithmRegistry = new JIPipeNodeRegistry();
+        nodeRegistry = new JIPipeNodeRegistry();
         uiDatatypeRegistry = new JIPipeUIDatatypeRegistry();
         uiParametertypeRegistry = new JIPipeUIParameterTypeRegistry();
         imageJDataAdapterRegistry = new JIPipeImageJAdapterRegistry();
@@ -152,14 +149,14 @@ public class JIPipeDefaultRegistry extends AbstractService implements JIPipeRegi
             }
         }
 
-        for (JIPipeAlgorithmRegistrationTask task : algorithmRegistry.getScheduledRegistrationTasks()) {
+        for (JIPipeNodeRegistrationTask task : nodeRegistry.getScheduledRegistrationTasks()) {
             System.err.println("Could not register: " + task.toString());
         }
 
         // Check for errors
         System.out.println("[3/3] Error-checking-phase ...");
         if(extensionSettings.isValidateNodeTypes()) {
-            for (JIPipeNodeInfo info : algorithmRegistry.getRegisteredNodeInfos().values()) {
+            for (JIPipeNodeInfo info : nodeRegistry.getRegisteredNodeInfos().values()) {
                 try {
                     JIPipeGraphNode algorithm = info.newInstance();
                     JIPipeParameterTree collection = new JIPipeParameterTree(algorithm);
@@ -254,8 +251,8 @@ public class JIPipeDefaultRegistry extends AbstractService implements JIPipeRegi
     }
 
     @Override
-    public JIPipeNodeRegistry getAlgorithmRegistry() {
-        return algorithmRegistry;
+    public JIPipeNodeRegistry getNodeRegistry() {
+        return nodeRegistry;
     }
 
     @Override
@@ -294,7 +291,7 @@ public class JIPipeDefaultRegistry extends AbstractService implements JIPipeRegi
     }
 
     private void installEvents() {
-        algorithmRegistry.installEvents();
+        nodeRegistry.installEvents();
     }
 
     @Override
@@ -309,7 +306,7 @@ public class JIPipeDefaultRegistry extends AbstractService implements JIPipeRegi
 
     @Override
     public void reportValidity(JIPipeValidityReport report) {
-        report.forCategory("Algorithms").report(algorithmRegistry);
+        report.forCategory("Algorithms").report(nodeRegistry);
         for (JIPipeDependency extension : registeredExtensions) {
             report.forCategory("Extensions").forCategory(extension.getDependencyId()).report(extension);
         }

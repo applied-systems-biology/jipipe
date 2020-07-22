@@ -17,14 +17,14 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
-import org.hkijena.jipipe.api.algorithm.*;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import static org.hkijena.jipipe.api.algorithm.JIPipeMergingAlgorithm.MERGING_ALGORITHM_DESCRIPTION;
+import static org.hkijena.jipipe.api.nodes.JIPipeMergingAlgorithm.MERGING_ALGORITHM_DESCRIPTION;
 
 /**
  * Wrapper around {@link ij.plugin.frame.RoiManager}
@@ -39,7 +39,7 @@ import static org.hkijena.jipipe.api.algorithm.JIPipeMergingAlgorithm.MERGING_AL
 public class MergeRoiListsAlgorithm extends JIPipeMergingAlgorithm {
 
     /**
-     * Instantiates a new algorithm.
+     * Instantiates a new node type.
      *
      * @param info the info
      */
@@ -51,7 +51,7 @@ public class MergeRoiListsAlgorithm extends JIPipeMergingAlgorithm {
     }
 
     /**
-     * Instantiates a new algorithm.
+     * Instantiates a new node type.
      *
      * @param other the other
      */

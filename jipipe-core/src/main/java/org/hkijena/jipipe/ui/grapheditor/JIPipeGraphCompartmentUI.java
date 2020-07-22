@@ -15,10 +15,10 @@ package org.hkijena.jipipe.ui.grapheditor;
 
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipeDefaultRegistry;
-import org.hkijena.jipipe.api.algorithm.JIPipeGraph;
-import org.hkijena.jipipe.api.algorithm.JIPipeGraphNode;
-import org.hkijena.jipipe.api.algorithm.JIPipeNodeCategory;
-import org.hkijena.jipipe.api.algorithm.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.JIPipeGraph;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeCategory;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.grouping.NodeGroup;
 import org.hkijena.jipipe.api.history.AddNodeGraphHistorySnapshot;
@@ -254,7 +254,7 @@ public class JIPipeGraphCompartmentUI extends JIPipeGraphEditorUI {
         JIPipeGraph algorithmGraph = graphEditorUI.getAlgorithmGraph();
         String compartment = graphEditorUI.getCompartment();
         JIPipeDefaultRegistry registryService = JIPipeDefaultRegistry.getInstance();
-        Set<JIPipeNodeInfo> algorithmsOfCategory = registryService.getAlgorithmRegistry().getNodesOfCategory(category);
+        Set<JIPipeNodeInfo> algorithmsOfCategory = registryService.getNodeRegistry().getNodesOfCategory(category);
         if (algorithmsOfCategory.isEmpty()) {
             menu.setVisible(false);
             return;
@@ -300,7 +300,7 @@ public class JIPipeGraphCompartmentUI extends JIPipeGraphEditorUI {
             for (Class<? extends JIPipeData> dataClass : JIPipeData.getSortedList(entry.getValue())) {
                 if (JIPipeData.isHidden(dataClass))
                     continue;
-                Set<JIPipeNodeInfo> dataSources = registryService.getAlgorithmRegistry().getDataSourcesFor(dataClass);
+                Set<JIPipeNodeInfo> dataSources = registryService.getNodeRegistry().getDataSourcesFor(dataClass);
                 boolean isEmpty = true;
                 Icon icon = registryService.getUIDatatypeRegistry().getIconFor(dataClass);
                 JMenu dataMenu = new JMenu(JIPipeData.getNameOf(dataClass));

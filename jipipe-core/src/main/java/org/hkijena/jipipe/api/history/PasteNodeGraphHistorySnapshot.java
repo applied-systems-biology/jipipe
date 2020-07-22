@@ -13,8 +13,8 @@
 
 package org.hkijena.jipipe.api.history;
 
-import org.hkijena.jipipe.api.algorithm.JIPipeGraph;
-import org.hkijena.jipipe.api.algorithm.JIPipeGraphNode;
+import org.hkijena.jipipe.api.nodes.JIPipeGraph;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 
 import java.util.Set;
 

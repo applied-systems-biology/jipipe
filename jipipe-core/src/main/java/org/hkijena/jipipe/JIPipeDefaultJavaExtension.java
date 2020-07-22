@@ -17,17 +17,18 @@ import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.JIPipeMetadata;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
-import org.hkijena.jipipe.api.algorithm.JIPipeGraphNode;
-import org.hkijena.jipipe.api.algorithm.JIPipeJavaNodeInfo;
-import org.hkijena.jipipe.api.algorithm.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.api.nodes.JIPipeJavaNodeInfo;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.compat.ImageJDatatypeAdapter;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataConverter;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeDefaultParameterTypeInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
-import org.hkijena.jipipe.api.registries.JIPipeAlgorithmRegistrationTask;
-import org.hkijena.jipipe.api.registries.JIPipeJavaAlgorithmRegistrationTask;
+import org.hkijena.jipipe.api.registries.JIPipeNodeRegistrationTask;
+import org.hkijena.jipipe.api.registries.JIPipeJavaNodeRegistrationTask;
 import org.hkijena.jipipe.extensions.parameters.collections.ListParameter;
 import org.hkijena.jipipe.extensions.parameters.primitives.EnumParameterTypeInfo;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
@@ -183,56 +184,64 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
     }
 
     /**
-     * Registers a new algorithm. The {@link JIPipeNodeInfo} is generated as {@link JIPipeJavaNodeInfo}.
-     *
-     * @param id             Algorithm ID
-     * @param algorithmClass Algorithm class
+     * Registers a node type category
+     * @param category the category
      */
-    public void registerAlgorithm(String id, Class<? extends JIPipeGraphNode> algorithmClass) {
-        registerAlgorithm(new JIPipeJavaAlgorithmRegistrationTask(id, algorithmClass, this, null));
+    public void registerNodeTypeCategory(JIPipeNodeTypeCategory category) {
+        registry.getNodeRegistry().registerCategory(category);
     }
 
     /**
-     * Registers a new algorithm. The {@link JIPipeNodeInfo} is generated as {@link JIPipeJavaNodeInfo}.
+     * Registers a new node type. The {@link JIPipeNodeInfo} is generated as {@link JIPipeJavaNodeInfo}.
      *
      * @param id             Algorithm ID
-     * @param algorithmClass Algorithm class
+     * @param nodeClass Algorithm class
+     */
+    public void registerNodeType(String id, Class<? extends JIPipeGraphNode> nodeClass) {
+        registerNodeType(new JIPipeJavaNodeRegistrationTask(id, nodeClass, this, null));
+    }
+
+    /**
+     * Registers a new node type. The {@link JIPipeNodeInfo} is generated as {@link JIPipeJavaNodeInfo}.
+     *
+     * @param id             Algorithm ID
+     * @param nodeClass Algorithm class
      * @param icon           custom icon
      */
-    public void registerAlgorithm(String id, Class<? extends JIPipeGraphNode> algorithmClass, URL icon) {
-        registerAlgorithm(new JIPipeJavaAlgorithmRegistrationTask(id, algorithmClass, this, icon));
+    public void registerNodeType(String id, Class<? extends JIPipeGraphNode> nodeClass, URL icon) {
+        registerNodeType(new JIPipeJavaNodeRegistrationTask(id, nodeClass, this, icon));
     }
 
     /**
-     * Registers a new algorithm. It is assumed that all dependencies are met.
-     * If the dependency situation is unclear, register an {@link JIPipeAlgorithmRegistrationTask} instead
+     * Registers a new node type. It is assumed that all dependencies are met.
+     * If the dependency situation is unclear, register an {@link JIPipeNodeRegistrationTask} instead
      *
      * @param info Algorithm info
      */
-    public void registerAlgorithm(JIPipeNodeInfo info) {
-        registry.getAlgorithmRegistry().register(info, this);
+    public void registerNodeType(JIPipeNodeInfo info) {
+        registry.getNodeRegistry().register(info, this);
     }
 
     /**
-     * Registers a new algorithm. It is assumed that all dependencies are met.
-     * If the dependency situation is unclear, register an {@link JIPipeAlgorithmRegistrationTask} instead
+     * Registers a new node type. It is assumed that all dependencies are met.
+     * If the dependency situation is unclear, register an {@link JIPipeNodeRegistrationTask} instead
      *
      * @param info Algorithm info
      * @param icon custom algorithm icon
      */
-    public void registerAlgorithm(JIPipeNodeInfo info, URL icon) {
-        registry.getAlgorithmRegistry().register(info, this);
+    public void registerNodeType(JIPipeNodeInfo info, URL icon) {
+        registry.getNodeRegistry().register(info, this);
         registry.getUIAlgorithmRegistry().registerIcon(info, icon);
     }
 
     /**
-     * Registers a new algorithm with additional dependencies.
+     * Registers a new node type with additional dependencies.
      * Actual registration happens when all dependencies are met.-
      *
      * @param task Algorithm registration task
      */
-    public void registerAlgorithm(JIPipeAlgorithmRegistrationTask task) {
-        registry.getAlgorithmRegistry().scheduleRegister(task);
+    public void registerNodeType(JIPipeNodeRegistrationTask task) {
+        registry.getNodeRegistry().scheduleRegister(task);
     }
 
     /**

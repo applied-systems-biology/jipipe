@@ -17,7 +17,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.eventbus.Subscribe;
 import ij.IJ;
 import org.hkijena.jipipe.api.JIPipeProject;
-import org.hkijena.jipipe.api.algorithm.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.compartments.JIPipeExportedCompartment;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.history.AddCompartmentGraphHistorySnapshot;
@@ -47,7 +47,7 @@ import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
-import static org.hkijena.jipipe.api.algorithm.JIPipeGraph.COMPARTMENT_DEFAULT;
+import static org.hkijena.jipipe.api.nodes.JIPipeGraph.COMPARTMENT_DEFAULT;
 
 /**
  * Graph editor UI for a project compartment graph

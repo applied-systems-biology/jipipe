@@ -28,11 +28,11 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeMetadata;
 import org.hkijena.jipipe.api.JIPipeValidatable;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
-import org.hkijena.jipipe.api.algorithm.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.events.ExtensionContentAddedEvent;
 import org.hkijena.jipipe.api.events.ExtensionContentRemovedEvent;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
-import org.hkijena.jipipe.api.grouping.JsonAlgorithmRegistrationTask;
+import org.hkijena.jipipe.api.grouping.JsonNodeRegistrationTask;
 import org.hkijena.jipipe.api.grouping.JsonNodeInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.registries.JIPipeNodeRegistry;
@@ -186,7 +186,7 @@ public class JIPipeJsonExtension implements JIPipeDependency, JIPipeValidatable 
      */
     public void register() {
         for (JsonNode entry : ImmutableList.copyOf(serializedJson.get("algorithms").elements())) {
-            JIPipeNodeRegistry.getInstance().scheduleRegister(new JsonAlgorithmRegistrationTask(entry, this));
+            JIPipeNodeRegistry.getInstance().scheduleRegister(new JsonNodeRegistrationTask(entry, this));
         }
     }
 
@@ -202,7 +202,7 @@ public class JIPipeJsonExtension implements JIPipeDependency, JIPipeValidatable 
     }
 
     /**
-     * Adds a new algorithm of specified type
+     * Adds a new node type of specified type
      *
      * @param nodeInfo The algorithm type
      */

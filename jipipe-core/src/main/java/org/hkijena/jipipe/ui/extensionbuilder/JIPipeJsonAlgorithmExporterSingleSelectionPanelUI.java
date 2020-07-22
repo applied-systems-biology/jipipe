@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.ui.extensionbuilder;
 
-import org.hkijena.jipipe.api.algorithm.JIPipeGraphNode;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.ColorIcon;
 import org.hkijena.jipipe.ui.components.DocumentTabPane;

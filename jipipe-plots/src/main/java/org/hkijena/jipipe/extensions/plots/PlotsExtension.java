@@ -126,7 +126,7 @@ public class PlotsExtension extends JIPipePrepackagedDefaultJavaExtension {
                 null);
 
         // Register algorithms to create plots
-        registerAlgorithm("plot-from-table", PlotGeneratorAlgorithm.class, UIUtils.getIconURLFromResources("actions/office-chart-area.png"));
+        registerNodeType("plot-from-table", PlotGeneratorAlgorithm.class, UIUtils.getIconURLFromResources("actions/office-chart-area.png"));
 
         // Register parameters
         registerEnumParameterType("plot-histogram:type",

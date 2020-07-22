@@ -13,8 +13,7 @@
 
 package org.hkijena.jipipe.ui.components;
 
-import com.google.common.html.HtmlEscapers;
-import org.hkijena.jipipe.api.algorithm.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.ui.registries.JIPipeUIAlgorithmRegistry;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
