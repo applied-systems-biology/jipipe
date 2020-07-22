@@ -8,6 +8,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.ProcessorNodeTypeCategory;
 import org.hkijena.jipipe.extensions.clij2.datatypes.CLIJImageData;
 
 import java.util.function.Consumer;
@@ -17,7 +18,7 @@ import java.util.function.Supplier;
  * CLIJ2 algorithm ported from {@link net.haesleinhuepf.clij2.plugins.LocalThreshold}
  */
 @JIPipeDocumentation(name = "CLIJ2 Local Threshold", description = "Computes a binary image with pixel values 0 and 1 depending on if a pixel value x in image X " + "was above of equal to the pixel value m in mask image M." + "<pre>f(x) = (1 if (x >=  m)); (0 otherwise)</pre> Works for following image dimensions: 2D, 3D.")
-@JIPipeOrganization(algorithmCategory = JIPipeNodeCategory.Processor, menuPath = "Threshold")
+@JIPipeOrganization(nodeTypeCategory = ProcessorNodeTypeCategory.class, menuPath = "Threshold")
 @JIPipeInputSlot(value = CLIJImageData.class, slotName = "src", autoCreate = true)
 @JIPipeInputSlot(value = CLIJImageData.class, slotName = "threshold", autoCreate = true)
 @JIPipeOutputSlot(value = CLIJImageData.class, slotName = "dst", autoCreate = true)

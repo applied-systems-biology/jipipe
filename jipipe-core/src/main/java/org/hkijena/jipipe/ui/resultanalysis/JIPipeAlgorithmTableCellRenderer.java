@@ -13,8 +13,8 @@
 
 package org.hkijena.jipipe.ui.resultanalysis;
 
-import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
-import org.hkijena.jipipe.ui.registries.JIPipeUIAlgorithmRegistry;
+import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.ui.registries.JIPipeUINodeRegistry;
 
 import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
@@ -38,7 +38,7 @@ public class JIPipeAlgorithmTableCellRenderer extends JLabel implements TableCel
 
         if (value instanceof JIPipeGraphNode) {
             JIPipeGraphNode algorithm = (JIPipeGraphNode) value;
-            setIcon(JIPipeUIAlgorithmRegistry.getInstance().getIconFor(algorithm.getInfo()));
+            setIcon(JIPipeUINodeRegistry.getInstance().getIconFor(algorithm.getInfo()));
             setText(algorithm.getName());
         }
 

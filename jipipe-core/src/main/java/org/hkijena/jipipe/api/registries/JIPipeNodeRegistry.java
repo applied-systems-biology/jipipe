@@ -23,13 +23,13 @@ import org.hkijena.jipipe.JIPipeDefaultRegistry;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.JIPipeValidatable;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeCategory;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.events.DatatypeRegisteredEvent;
 import org.hkijena.jipipe.api.events.NodeInfoRegisteredEvent;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
+import org.hkijena.jipipe.utils.ReflectionUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -111,6 +111,16 @@ public class JIPipeNodeRegistry implements JIPipeValidatable {
         runRegistrationTasks();
     }
 
+    public JIPipeNodeTypeCategory getCategory(Class<? extends JIPipeNodeTypeCategory> klass) {
+        JIPipeNodeTypeCategory instance = registeredCategories.getOrDefault(klass, null);
+        if(instance == null) {
+            instance = (JIPipeNodeTypeCategory) ReflectionUtils.newInstance(klass);
+            // Auto-register
+            registerCategory(instance);
+        }
+        return instance;
+    }
+
     /**
      * Registers a category
      * @param category the category instance
@@ -138,7 +148,7 @@ public class JIPipeNodeRegistry implements JIPipeValidatable {
     public <T extends JIPipeData> Set<JIPipeNodeInfo> getDataSourcesFor(Class<? extends T> dataClass) {
         Set<JIPipeNodeInfo> result = new HashSet<>();
         for (JIPipeNodeInfo info : registeredNodeInfos.values()) {
-            if (info.getCategory() == JIPipeNodeCategory.DataSource) {
+            if (info.getCategory() instanceof DataSourceNodeTypeCategory) {
                 if (info.getOutputSlots().stream().anyMatch(slot -> slot.value() == dataClass)) {
                     result.add(info);
                 }
@@ -153,8 +163,8 @@ public class JIPipeNodeRegistry implements JIPipeValidatable {
      * @param category The category
      * @return Algorithms within the specified category
      */
-    public Set<JIPipeNodeInfo> getNodesOfCategory(JIPipeNodeCategory category) {
-        return registeredNodeInfos.values().stream().filter(d -> d.getCategory() == category).collect(Collectors.toSet());
+    public Set<JIPipeNodeInfo> getNodesOfCategory(JIPipeNodeTypeCategory category) {
+        return registeredNodeInfos.values().stream().filter(d -> d.getCategory().getClass() == category.getClass()).collect(Collectors.toSet());
     }
 
     /**

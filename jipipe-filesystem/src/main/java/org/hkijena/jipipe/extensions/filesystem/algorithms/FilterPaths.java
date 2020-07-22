@@ -19,6 +19,7 @@ import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
+import org.hkijena.jipipe.api.nodes.categories.FileSystemNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.PathData;
 import org.hkijena.jipipe.extensions.parameters.predicates.PathPredicate;
@@ -32,7 +33,7 @@ import java.util.function.Supplier;
  * Filters input files
  */
 @JIPipeDocumentation(name = "Filter paths", description = "Filters the paths (files/folders) by their name or absolute path")
-@JIPipeOrganization(menuPath = "Filter", algorithmCategory = JIPipeNodeCategory.FileSystem)
+@JIPipeOrganization(menuPath = "Filter", nodeTypeCategory = FileSystemNodeTypeCategory.class)
 
 // Algorithm flow
 @JIPipeInputSlot(value = PathData.class, slotName = "Input", autoCreate = true)

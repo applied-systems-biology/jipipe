@@ -24,6 +24,8 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeHidden;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
+import org.hkijena.jipipe.api.nodes.categories.InternalNodeTypeCategory;
+import org.hkijena.jipipe.utils.ReflectionUtils;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -128,12 +130,13 @@ public class JIPipeJavaNodeInfo extends JIPipeMutableNodeInfo {
      * @param klass The algorithm class
      * @return The category
      */
-    public static JIPipeNodeCategory getCategoryOf(Class<? extends JIPipeGraphNode> klass) {
+    public static JIPipeNodeTypeCategory getCategoryOf(Class<? extends JIPipeGraphNode> klass) {
         JIPipeOrganization[] annotations = klass.getAnnotationsByType(JIPipeOrganization.class);
         if (annotations.length > 0) {
-            return annotations[0].algorithmCategory();
+            Class<? extends JIPipeNodeTypeCategory> categoryClass = annotations[0].nodeTypeCategory();
+            return (JIPipeNodeTypeCategory) ReflectionUtils.newInstance(categoryClass);
         } else {
-            return JIPipeNodeCategory.Internal;
+            return new InternalNodeTypeCategory();
         }
     }
 

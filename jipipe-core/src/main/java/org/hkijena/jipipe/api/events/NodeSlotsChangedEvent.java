@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.api.events;
 
-import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.api.nodes.*;
 
 /**
  * Triggered when an algorithm's slots change

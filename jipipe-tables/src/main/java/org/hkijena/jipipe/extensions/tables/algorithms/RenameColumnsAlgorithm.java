@@ -18,6 +18,7 @@ import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.ProcessorNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.parameters.pairs.StringFilterAndStringPair;
 import org.hkijena.jipipe.extensions.tables.datatypes.DoubleArrayTableColumn;
@@ -32,7 +33,7 @@ import java.util.function.Supplier;
  * Algorithm that removes columns
  */
 @JIPipeDocumentation(name = "Rename single columns", description = "Renames columns")
-@JIPipeOrganization(algorithmCategory = JIPipeNodeCategory.Processor, menuPath = "Tables")
+@JIPipeOrganization(nodeTypeCategory = ProcessorNodeTypeCategory.class, menuPath = "Tables")
 @JIPipeInputSlot(value = TableColumn.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = TableColumn.class, slotName = "Output", autoCreate = true)
 public class RenameColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm {

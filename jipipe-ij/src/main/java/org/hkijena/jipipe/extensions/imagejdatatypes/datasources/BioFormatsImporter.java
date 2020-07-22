@@ -25,6 +25,7 @@ import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
+import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FileData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
@@ -46,7 +47,7 @@ import java.util.function.Supplier;
 @JIPipeDocumentation(name = "Bio-Formats importer", description = "Imports images via the Bio-Formats plugin")
 @JIPipeInputSlot(value = FileData.class, slotName = "Files")
 @JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Image")
-@JIPipeOrganization(algorithmCategory = JIPipeNodeCategory.DataSource)
+@JIPipeOrganization(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 public class BioFormatsImporter extends JIPipeSimpleIteratingAlgorithm {
 
     private ColorMode colorMode = ColorMode.Default;

@@ -13,12 +13,8 @@
 
 package org.hkijena.jipipe.api;
 
-import org.hkijena.jipipe.api.nodes.InternalNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
-import org.hkijena.jipipe.api.nodes.JIPipeJavaNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeCategory;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.InternalNodeTypeCategory;
 import org.hkijena.jipipe.ui.extension.MenuExtension;
 import org.hkijena.jipipe.ui.extension.MenuTarget;
 
@@ -38,15 +34,6 @@ public @interface JIPipeOrganization {
      * @return The menu path
      */
     String menuPath() default "";
-
-    /**
-     * Assigns a category to an algorithm.
-     * This is only valid for algorithm classes that use {@link JIPipeJavaNodeInfo} or any
-     * other {@link JIPipeNodeInfo} that listens for algorithm categories.
-     *
-     * @return the algorithm category
-     */
-    JIPipeNodeCategory algorithmCategory() default JIPipeNodeCategory.Internal;
 
     /**
      * Assigns a category to any {@link JIPipeNodeInfo} that listens to this annotation.

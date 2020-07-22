@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.ui.resultanalysis;
 
-import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;

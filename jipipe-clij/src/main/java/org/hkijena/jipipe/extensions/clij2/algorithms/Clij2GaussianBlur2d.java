@@ -8,6 +8,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.ProcessorNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.clij2.datatypes.CLIJImageData;
 
@@ -18,7 +19,7 @@ import java.util.function.Supplier;
  * CLIJ2 algorithm ported from {@link net.haesleinhuepf.clij2.plugins.GaussianBlur2D}
  */
 @JIPipeDocumentation(name = "CLIJ2 Gaussian Blur 2D", description = "Computes the Gaussian blurred image of an image given two sigma values in X and Y. " + "Thus, the filterkernel can have non-isotropic shape." + "The implementation is done separable. In case a sigma equals zero, the direction is not blurred. Works for following image dimensions: 2D.")
-@JIPipeOrganization(algorithmCategory = JIPipeNodeCategory.Processor, menuPath = "Blur")
+@JIPipeOrganization(nodeTypeCategory = ProcessorNodeTypeCategory.class, menuPath = "Blur")
 @JIPipeInputSlot(value = CLIJImageData.class, slotName = "src", autoCreate = true)
 @JIPipeOutputSlot(value = CLIJImageData.class, slotName = "dst", autoCreate = true)
 

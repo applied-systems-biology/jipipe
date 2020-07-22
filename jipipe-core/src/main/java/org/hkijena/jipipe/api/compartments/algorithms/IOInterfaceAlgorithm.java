@@ -19,6 +19,7 @@ import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
+import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -31,7 +32,7 @@ import java.util.function.Supplier;
  * Algorithm that passes the input to the output
  */
 @JIPipeDocumentation(name = "IO Interface", description = "Passes its input to its output without changes.")
-@JIPipeOrganization(algorithmCategory = JIPipeNodeCategory.Miscellaneous)
+@JIPipeOrganization(nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
 public class IOInterfaceAlgorithm extends JIPipeAlgorithm {
 
     /**

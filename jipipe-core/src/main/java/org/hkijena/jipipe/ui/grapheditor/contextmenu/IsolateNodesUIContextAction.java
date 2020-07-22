@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.ui.grapheditor.contextmenu;
 
-import org.hkijena.jipipe.api.nodes.JIPipeNodeCategory;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.history.GraphChangedHistorySnapshot;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphCanvasUI;
@@ -30,10 +29,6 @@ public class IsolateNodesUIContextAction implements NodeUIContextAction {
     public boolean matches(Set<JIPipeNodeUI> selection) {
         if (selection.isEmpty())
             return false;
-        for (JIPipeNodeUI ui : selection) {
-            if (ui.getNode().getCategory() == JIPipeNodeCategory.Internal)
-                return false;
-        }
         return true;
     }
 

@@ -13,8 +13,8 @@
 
 package org.hkijena.jipipe.ui.grapheditor;
 
-import org.hkijena.jipipe.api.nodes.JIPipeGraph;
-import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.extensions.filesystem.datasources.FileDataSource;
 import org.hkijena.jipipe.extensions.filesystem.datasources.FileListDataSource;
 import org.hkijena.jipipe.extensions.filesystem.datasources.FolderDataSource;

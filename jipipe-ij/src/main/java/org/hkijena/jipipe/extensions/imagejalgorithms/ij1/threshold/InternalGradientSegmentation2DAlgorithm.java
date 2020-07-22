@@ -25,6 +25,7 @@ import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
+import org.hkijena.jipipe.api.nodes.categories.ProcessorNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.registries.JIPipeNodeRegistry;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.contrast.CLAHEContrastEnhancer;
@@ -44,7 +45,7 @@ import static org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExt
  */
 @JIPipeDocumentation(name = "Internal gradient segmentation 2D", description = "Segments objects by finding the internal gradients. " +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
-@JIPipeOrganization(menuPath = "Threshold", algorithmCategory = JIPipeNodeCategory.Processor)
+@JIPipeOrganization(menuPath = "Threshold", nodeTypeCategory = ProcessorNodeTypeCategory.class)
 
 // Algorithm flow
 @JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input")

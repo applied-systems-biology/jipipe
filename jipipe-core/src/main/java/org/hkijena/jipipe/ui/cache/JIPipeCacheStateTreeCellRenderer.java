@@ -14,9 +14,9 @@
 package org.hkijena.jipipe.ui.cache;
 
 import org.hkijena.jipipe.api.JIPipeProjectCache;
-import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.ui.registries.JIPipeUIAlgorithmRegistry;
+import org.hkijena.jipipe.ui.registries.JIPipeUINodeRegistry;
 import org.hkijena.jipipe.ui.registries.JIPipeUIDatatypeRegistry;
 import org.hkijena.jipipe.ui.resultanalysis.JIPipeResultAlgorithmTree;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -51,7 +51,7 @@ public class JIPipeCacheStateTreeCellRenderer extends JLabel implements TreeCell
                 setText("" + userObject);
             } else if (userObject instanceof JIPipeGraphNode) {
                 JIPipeGraphNode algorithm = (JIPipeGraphNode) userObject;
-                setIcon(JIPipeUIAlgorithmRegistry.getInstance().getIconFor(algorithm.getInfo()));
+                setIcon(JIPipeUINodeRegistry.getInstance().getIconFor(algorithm.getInfo()));
                 setText(algorithm.getName());
             } else if (userObject instanceof JIPipeDataSlot) {
                 JIPipeDataSlot slot = (JIPipeDataSlot) userObject;

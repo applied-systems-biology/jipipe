@@ -15,14 +15,13 @@ package org.hkijena.jipipe.ui.grapheditor;
 
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipeDefaultRegistry;
-import org.hkijena.jipipe.api.nodes.JIPipeGraph;
-import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeCategory;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.grouping.NodeGroup;
 import org.hkijena.jipipe.api.history.AddNodeGraphHistorySnapshot;
+import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
+import org.hkijena.jipipe.api.registries.JIPipeNodeRegistry;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.MarkdownDocument;
@@ -36,7 +35,7 @@ import org.hkijena.jipipe.ui.grapheditor.contextmenu.clipboard.AlgorithmGraphPas
 import org.hkijena.jipipe.ui.grapheditor.settings.JIPipeMultiAlgorithmSelectionPanelUI;
 import org.hkijena.jipipe.ui.grapheditor.settings.JIPipeSingleAlgorithmSelectionPanelUI;
 import org.hkijena.jipipe.ui.grouping.JIPipeNodeGroupUI;
-import org.hkijena.jipipe.ui.registries.JIPipeUIAlgorithmRegistry;
+import org.hkijena.jipipe.ui.registries.JIPipeUINodeRegistry;
 import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -206,51 +205,32 @@ public class JIPipeGraphCompartmentUI extends JIPipeGraphEditorUI {
      * @param addedAlgorithms added algorithm types are added to this list
      */
     public static void initializeAddNodesMenus(JIPipeGraphEditorUI graphEditorUI, JMenuBar menuBar, Set<JIPipeNodeInfo> addedAlgorithms) {
-        JMenu addDataSourceMenu = new JMenu("Add data");
-        addDataSourceMenu.setIcon(UIUtils.getIconFromResources("actions/database.png"));
-        initializeAddDataSourceMenu(graphEditorUI, addDataSourceMenu, addedAlgorithms);
-        menuBar.add(addDataSourceMenu);
 
-        JMenu addFilesystemMenu = new JMenu("Filesystem");
-        addFilesystemMenu.setIcon(UIUtils.getIconFromResources("actions/tree.png"));
-        initializeMenuForCategory(graphEditorUI, addFilesystemMenu, JIPipeNodeCategory.FileSystem, addedAlgorithms);
-        menuBar.add(addFilesystemMenu);
-
-        JMenu addAnnotationMenu = new JMenu("Annotation");
-        addAnnotationMenu.setIcon(UIUtils.getIconFromResources("actions/tag.png"));
-        initializeMenuForCategory(graphEditorUI, addAnnotationMenu, JIPipeNodeCategory.Annotation, addedAlgorithms);
-        menuBar.add(addAnnotationMenu);
-
-        JMenu addEnhancerMenu = new JMenu("Process");
-        addEnhancerMenu.setIcon(UIUtils.getIconFromResources("actions/image-auto-adjust.png"));
-        initializeMenuForCategory(graphEditorUI, addEnhancerMenu, JIPipeNodeCategory.Processor, addedAlgorithms);
-        menuBar.add(addEnhancerMenu);
-
-        JMenu addConverterMenu = new JMenu("Convert");
-        addConverterMenu.setIcon(UIUtils.getIconFromResources("actions/view-refresh.png"));
-        initializeMenuForCategory(graphEditorUI, addConverterMenu, JIPipeNodeCategory.Converter, addedAlgorithms);
-        menuBar.add(addConverterMenu);
-
-        JMenu addQuantifierMenu = new JMenu("Analyze");
-        addQuantifierMenu.setIcon(UIUtils.getIconFromResources("actions/statistics.png"));
-        initializeMenuForCategory(graphEditorUI, addQuantifierMenu, JIPipeNodeCategory.Analysis, addedAlgorithms);
-        menuBar.add(addQuantifierMenu);
-
-        JMenu addMiscMenu = new JMenu("Miscellaneous");
-        addMiscMenu.setIcon(UIUtils.getIconFromResources("actions/plugins.png"));
-        initializeMenuForCategory(graphEditorUI, addMiscMenu, JIPipeNodeCategory.Miscellaneous, addedAlgorithms);
-        menuBar.add(addMiscMenu);
+        for (JIPipeNodeTypeCategory category : JIPipeNodeRegistry.getInstance().getRegisteredCategories().values().stream()
+                .sorted(Comparator.comparing(JIPipeNodeTypeCategory::getUIOrder)).collect(Collectors.toList())) {
+            if(category instanceof DataSourceNodeTypeCategory) {
+                JMenu addDataSourceMenu = new JMenu(category.getName());
+                addDataSourceMenu.setIcon(category.getIcon());
+                initializeAddDataSourceMenu(graphEditorUI, addDataSourceMenu, addedAlgorithms);
+                menuBar.add(addDataSourceMenu);
+            }
+            else if(category.isVisibleInGraphCompartment()) {
+                JMenu menu = new JMenu(category.getName());
+                menu.setIcon(category.getIcon());
+                initializeMenuForCategory(graphEditorUI, menu, category, addedAlgorithms);
+                menuBar.add(menu);
+            }
+        }
     }
 
     /**
      * Initializes a menu for one algorithm category
-     *
-     * @param graphEditorUI   the graph editor
+     *  @param graphEditorUI   the graph editor
      * @param menu            The menu
      * @param category        The algorithm category
      * @param addedAlgorithms added algorithm types are added to this list
      */
-    public static void initializeMenuForCategory(JIPipeGraphEditorUI graphEditorUI, JMenu menu, JIPipeNodeCategory category, Set<JIPipeNodeInfo> addedAlgorithms) {
+    public static void initializeMenuForCategory(JIPipeGraphEditorUI graphEditorUI, JMenu menu, JIPipeNodeTypeCategory category, Set<JIPipeNodeInfo> addedAlgorithms) {
         JIPipeGraph algorithmGraph = graphEditorUI.getAlgorithmGraph();
         String compartment = graphEditorUI.getCompartment();
         JIPipeDefaultRegistry registryService = JIPipeDefaultRegistry.getInstance();
@@ -268,7 +248,7 @@ public class JIPipeGraphCompartmentUI extends JIPipeGraphEditorUI {
             for (JIPipeNodeInfo info : JIPipeNodeInfo.getSortedList(entry.getValue())) {
                 if (info.isHidden())
                     continue;
-                JMenuItem addItem = new JMenuItem(info.getName(), JIPipeUIAlgorithmRegistry.getInstance().getIconFor(info));
+                JMenuItem addItem = new JMenuItem(info.getName(), JIPipeUINodeRegistry.getInstance().getIconFor(info));
                 addItem.setToolTipText(TooltipUtils.getAlgorithmTooltip(info));
                 addItem.addActionListener(e -> {
                     JIPipeGraphNode node = info.newInstance();
@@ -309,7 +289,7 @@ public class JIPipeGraphCompartmentUI extends JIPipeGraphEditorUI {
                 for (JIPipeNodeInfo info : dataSources) {
                     if (info.isHidden())
                         continue;
-                    JMenuItem addItem = new JMenuItem(info.getName(), JIPipeUIAlgorithmRegistry.getInstance().getIconFor(info));
+                    JMenuItem addItem = new JMenuItem(info.getName(), JIPipeUINodeRegistry.getInstance().getIconFor(info));
                     addItem.setToolTipText(TooltipUtils.getAlgorithmTooltip(info));
                     addItem.addActionListener(e -> {
                         JIPipeGraphNode node = info.newInstance();

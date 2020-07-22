@@ -21,6 +21,7 @@ import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.events.ParameterChangedEvent;
+import org.hkijena.jipipe.api.nodes.categories.AnnotationNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -44,7 +45,7 @@ import java.util.function.Supplier;
 @JIPipeDocumentation(name = "Modify annotation rows (Script)", description = "Executes a Python-script for each annotation row. " +
         "All annotations are passed as dictionary 'annotations' that can be modified using Python functions. The values are then extracted and " +
         "converted into their respective JIPipe types.")
-@JIPipeOrganization(algorithmCategory = JIPipeNodeCategory.Annotation, menuPath = "Modify")
+@JIPipeOrganization(nodeTypeCategory = AnnotationNodeTypeCategory.class, menuPath = "Modify")
 @JIPipeInputSlot(value = JIPipeData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = JIPipeData.class, slotName = "Output", inheritedSlot = "Input", autoCreate = true)
 public class ModifyAnnotationScript extends JIPipeSimpleIteratingAlgorithm {

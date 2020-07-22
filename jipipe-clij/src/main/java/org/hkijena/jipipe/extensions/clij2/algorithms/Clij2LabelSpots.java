@@ -8,6 +8,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.AnalysisNodeTypeCategory;
 import org.hkijena.jipipe.extensions.clij2.datatypes.CLIJImageData;
 
 import java.util.function.Consumer;
@@ -17,7 +18,7 @@ import java.util.function.Supplier;
  * CLIJ2 algorithm ported from {@link net.haesleinhuepf.clij2.plugins.LabelSpots}
  */
 @JIPipeDocumentation(name = "CLIJ2 Label Spots", description = "Transforms a binary image with single pixles set to 1 to a labelled spots image. " + "Transforms a spots image as resulting from maximum/minimum detection in an image of the same size where every spot has a number 1, 2, ... n. Works for following image dimensions: 2D, 3D.")
-@JIPipeOrganization(algorithmCategory = JIPipeNodeCategory.Analysis)
+@JIPipeOrganization(nodeTypeCategory = AnalysisNodeTypeCategory.class)
 @JIPipeInputSlot(value = CLIJImageData.class, slotName = "input", autoCreate = true)
 @JIPipeOutputSlot(value = CLIJImageData.class, slotName = "output", autoCreate = true)
 

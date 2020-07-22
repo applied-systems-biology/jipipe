@@ -20,6 +20,7 @@ import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
+import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
@@ -36,7 +37,7 @@ import static org.hkijena.jipipe.api.nodes.JIPipeIteratingAlgorithm.ITERATING_AL
  */
 @JIPipeDocumentation(name = "Define rectangular ROI (referenced)", description = "Manually defines a rectangular ROI. This algorithm requires a reference " +
         "image, but also allows more flexibility in defining the rectangles." + "\n\n" + ITERATING_ALGORITHM_DESCRIPTION)
-@JIPipeOrganization(algorithmCategory = JIPipeNodeCategory.DataSource)
+@JIPipeOrganization(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference")
 @JIPipeOutputSlot(value = ROIListData.class, slotName = "Output")
 public class ReferencedDefineRectangularRoiAlgorithm extends JIPipeIteratingAlgorithm {

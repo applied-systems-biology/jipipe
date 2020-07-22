@@ -21,6 +21,7 @@ import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
+import org.hkijena.jipipe.api.nodes.categories.ProcessorNodeTypeCategory;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColorRGBData;
@@ -35,7 +36,7 @@ import static org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExt
  */
 @JIPipeDocumentation(name = "Median blur 2D (RGB color)", description = "Applies a 3x3 median filter to RGB color images. " +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
-@JIPipeOrganization(menuPath = "Blur", algorithmCategory = JIPipeNodeCategory.Processor)
+@JIPipeOrganization(menuPath = "Blur", nodeTypeCategory = ProcessorNodeTypeCategory.class)
 @JIPipeInputSlot(value = ImagePlusColorRGBData.class, slotName = "Input")
 @JIPipeOutputSlot(value = ImagePlusColorRGBData.class, slotName = "Output")
 public class MedianBlurRGB2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {

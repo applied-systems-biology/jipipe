@@ -20,6 +20,7 @@ import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.nodes.categories.ConverterNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
 import org.hkijena.jipipe.extensions.tables.datatypes.AnnotationTableData;
@@ -37,7 +38,7 @@ import static org.hkijena.jipipe.api.nodes.JIPipeMergingAlgorithm.MERGING_ALGORI
         "all annotations of the data row. The table contains a column 'data' that contains a string representation of the input data. " +
         "All other columns are generated based on the annotations. They have following structure: 'annotation:[annotation-id]' where the annotation id " +
         "is the unique identifier of this annotation type. You can find annotation types in the help menu." + "\n\n" + MERGING_ALGORITHM_DESCRIPTION)
-@JIPipeOrganization(algorithmCategory = JIPipeNodeCategory.Converter)
+@JIPipeOrganization(nodeTypeCategory = ConverterNodeTypeCategory.class)
 @JIPipeInputSlot(value = JIPipeData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = AnnotationTableData.class, slotName = "Output", autoCreate = true)
 public class ConvertToAnnotationTable extends JIPipeMergingAlgorithm {

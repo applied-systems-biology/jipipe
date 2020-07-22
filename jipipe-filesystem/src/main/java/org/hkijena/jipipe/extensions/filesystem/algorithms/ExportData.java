@@ -19,6 +19,7 @@ import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
+import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.PathData;
 
 import java.io.IOException;
@@ -34,7 +35,7 @@ import java.util.function.Supplier;
         "Please note that you do not need to explicitly export data, as JIPipe automatically saves all output data.")
 @JIPipeInputSlot(JIPipeData.class)
 @JIPipeOutputSlot(PathData.class)
-@JIPipeOrganization(algorithmCategory = JIPipeNodeCategory.Miscellaneous)
+@JIPipeOrganization(nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
 public class ExportData extends JIPipeIteratingAlgorithm {
 
     public ExportData(JIPipeNodeInfo info) {

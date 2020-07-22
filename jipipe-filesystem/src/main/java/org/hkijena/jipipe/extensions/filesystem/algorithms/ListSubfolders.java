@@ -18,6 +18,7 @@ import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.FileSystemNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FileData;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FolderData;
@@ -39,7 +40,7 @@ import java.util.stream.Stream;
  * Algorithms that lists the sub folders for each input folder
  */
 @JIPipeDocumentation(name = "List subfolders", description = "Lists all subfolders")
-@JIPipeOrganization(menuPath = "List", algorithmCategory = JIPipeNodeCategory.FileSystem)
+@JIPipeOrganization(menuPath = "List", nodeTypeCategory = FileSystemNodeTypeCategory.class)
 
 // Algorithm flow
 @JIPipeInputSlot(value = FolderData.class, slotName = "Folders", autoCreate = true)

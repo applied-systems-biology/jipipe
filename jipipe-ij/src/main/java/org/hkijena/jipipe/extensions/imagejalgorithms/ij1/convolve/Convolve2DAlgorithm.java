@@ -21,6 +21,7 @@ import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
+import org.hkijena.jipipe.api.nodes.categories.ProcessorNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
@@ -35,7 +36,7 @@ import java.util.function.Supplier;
  */
 @JIPipeDocumentation(name = "Convolve 2D", description = "Applies a convolution with a user-defined filter kernel. " +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
-@JIPipeOrganization(menuPath = "Convolve", algorithmCategory = JIPipeNodeCategory.Processor)
+@JIPipeOrganization(menuPath = "Convolve", nodeTypeCategory = ProcessorNodeTypeCategory.class)
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input")
 @JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output")
 public class Convolve2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {

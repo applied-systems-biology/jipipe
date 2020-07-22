@@ -24,6 +24,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.registries.JIPipeNodeRegistry;
 import org.hkijena.jipipe.ui.components.MarkdownDocument;
+import org.hkijena.jipipe.ui.registries.JIPipeUINodeRegistry;
 import org.hkijena.jipipe.ui.registries.JIPipeUIDatatypeRegistry;
 
 import java.util.Collection;
@@ -53,7 +54,7 @@ public class TooltipUtils {
         for (JIPipeGraphNode algorithm : projectGraph.getAlgorithmsWithCompartment(compartment.getProjectCompartmentId())) {
             builder.append("<tr>");
             builder.append("<td>").append("<img src=\"")
-                    .append(JIPipeUIDatatypeRegistry.getInstance().getIconURLFor(algorithm.getCategory()))
+                    .append(JIPipeUINodeRegistry.getInstance().getIconURLFor(algorithm.getInfo()))
                     .append("\"/>").append("</td>");
             builder.append("<td>").append(algorithm.getName()).append("</td>");
             builder.append("</tr>");

@@ -13,13 +13,18 @@
 
 package org.hkijena.jipipe.api.nodes.categories;
 
-import org.hkijena.jipipe.api.nodes.JIPipeNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.Color;
 
 public class DataSourceNodeTypeCategory implements JIPipeNodeTypeCategory {
+    @Override
+    public String getId() {
+        return "org.hkijena.jipipe:data-source";
+    }
+
     @Override
     public String getName() {
         return "Add data";

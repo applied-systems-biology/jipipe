@@ -79,7 +79,7 @@ public interface JIPipeNodeInfo {
      *
      * @return The category
      */
-    JIPipeNodeCategory getCategory();
+    JIPipeNodeTypeCategory getCategory();
 
     /**
      * Returns general input data.

@@ -20,6 +20,7 @@ import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
+import org.hkijena.jipipe.api.nodes.categories.ProcessorNodeTypeCategory;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
@@ -31,7 +32,7 @@ import java.util.function.Supplier;
  * Wrapper around {@link ij.process.ImageProcessor}
  */
 @JIPipeDocumentation(name = "Divide by maximum", description = "Divides greyscale pixel values by the global maximum across all slices.")
-@JIPipeOrganization(menuPath = "Math", algorithmCategory = JIPipeNodeCategory.Processor)
+@JIPipeOrganization(menuPath = "Math", nodeTypeCategory = ProcessorNodeTypeCategory.class)
 @JIPipeInputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Input")
 @JIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Output")
 public class DivideByMaximumAlgorithm extends JIPipeSimpleIteratingAlgorithm {

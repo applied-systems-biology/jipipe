@@ -19,6 +19,7 @@ import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.hkijena.jipipe.JIPipeDependency;
+import org.hkijena.jipipe.api.nodes.categories.InternalNodeTypeCategory;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -68,8 +69,8 @@ public class JIPipeEmptyNodeInfo implements JIPipeNodeInfo {
     }
 
     @Override
-    public JIPipeNodeCategory getCategory() {
-        return JIPipeNodeCategory.Internal;
+    public JIPipeNodeTypeCategory getCategory() {
+        return new InternalNodeTypeCategory();
     }
 
     @Override

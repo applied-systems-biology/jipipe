@@ -15,16 +15,16 @@ package org.hkijena.jipipe.api.compartments.algorithms;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
-import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeCategory;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.*;
 
 /**
  * A graph compartment output
  * Transfers data 1:1 from input to output
  */
 @JIPipeDocumentation(name = "Compartment output", description = "Output of a compartment")
-@JIPipeOrganization(algorithmCategory = JIPipeNodeCategory.Internal)
+@JIPipeOrganization()
 public class JIPipeCompartmentOutput extends IOInterfaceAlgorithm {
 
     /**

@@ -18,6 +18,7 @@ import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.data.*;
+import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FolderData;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
@@ -41,7 +42,7 @@ import java.util.function.Supplier;
         "Please note that you do not need to explicitly export data, as JIPipe automatically saves all output data.")
 @JIPipeInputSlot(JIPipeData.class)
 @JIPipeOutputSlot(FolderData.class)
-@JIPipeOrganization(algorithmCategory = JIPipeNodeCategory.Miscellaneous)
+@JIPipeOrganization(nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
 public class ExportDataByParameter extends JIPipeAlgorithm {
 
     private boolean splitByInputSlots = true;

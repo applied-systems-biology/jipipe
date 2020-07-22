@@ -18,7 +18,7 @@ import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.JIPipeJsonExtension;
 import org.hkijena.jipipe.api.registries.JIPipeDefaultNodeRegistrationTask;
 import org.hkijena.jipipe.api.registries.JIPipeNodeRegistry;
-import org.hkijena.jipipe.ui.registries.JIPipeUIAlgorithmRegistry;
+import org.hkijena.jipipe.ui.registries.JIPipeUINodeRegistry;
 import org.hkijena.jipipe.utils.JsonUtils;
 import org.hkijena.jipipe.utils.ResourceUtils;
 
@@ -63,7 +63,7 @@ public class JsonNodeRegistrationTask extends JIPipeDefaultNodeRegistrationTask 
                 throw new NullPointerException("Algorithm is null!");
             JIPipeNodeRegistry.getInstance().register(info, source);
             if (info.getIcon().getIconName() != null) {
-                JIPipeUIAlgorithmRegistry.getInstance().registerIcon(info,
+                JIPipeUINodeRegistry.getInstance().registerIcon(info,
                         ResourceUtils.getPluginResource("icons/" + info.getIcon().getIconName()));
             }
         } catch (IOException e) {

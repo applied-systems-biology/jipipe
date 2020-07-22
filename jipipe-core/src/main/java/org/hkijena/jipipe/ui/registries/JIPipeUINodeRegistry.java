@@ -14,8 +14,8 @@
 package org.hkijena.jipipe.ui.registries;
 
 import org.hkijena.jipipe.JIPipeDefaultRegistry;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeCategory;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.utils.ResourceUtils;
 
 import javax.swing.*;
@@ -26,13 +26,13 @@ import java.util.Map;
 /**
  * Registry for algorithms
  */
-public class JIPipeUIAlgorithmRegistry {
+public class JIPipeUINodeRegistry {
     private Map<JIPipeNodeInfo, URL> icons = new HashMap<>();
 
     /**
      * Creates new instance
      */
-    public JIPipeUIAlgorithmRegistry() {
+    public JIPipeUINodeRegistry() {
 
     }
 
@@ -66,7 +66,7 @@ public class JIPipeUIAlgorithmRegistry {
         URL uri = icons.getOrDefault(info, null);
         if (uri == null) {
             URL defaultIcon;
-            if (info.getCategory() == JIPipeNodeCategory.DataSource) {
+            if (info.getCategory() instanceof DataSourceNodeTypeCategory) {
                 if (!info.getOutputSlots().isEmpty()) {
                     defaultIcon = JIPipeUIDatatypeRegistry.getInstance().getIconURLFor(info.getOutputSlots().get(0).value());
                 } else {
@@ -81,7 +81,7 @@ public class JIPipeUIAlgorithmRegistry {
         return new ImageIcon(uri);
     }
 
-    public static JIPipeUIAlgorithmRegistry getInstance() {
+    public static JIPipeUINodeRegistry getInstance() {
         return JIPipeDefaultRegistry.getInstance().getUIAlgorithmRegistry();
     }
 }

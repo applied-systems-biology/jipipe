@@ -19,6 +19,7 @@ import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
+import org.hkijena.jipipe.api.nodes.categories.ProcessorNodeTypeCategory;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 
 import java.util.function.Consumer;
@@ -33,7 +34,7 @@ import static org.hkijena.jipipe.api.nodes.JIPipeMergingAlgorithm.MERGING_ALGORI
         "By default, ROIs with equivalent annotations are put into the same group and merged into one ROI list for each group. " +
         "Use the parameters to control how groups are created. To merge all incoming ROI lists into just one list, set the matching strategy to 'Custom' and leave the list of " +
         "annotation columns empty." + "\n\n" + MERGING_ALGORITHM_DESCRIPTION)
-@JIPipeOrganization(menuPath = "ROI", algorithmCategory = JIPipeNodeCategory.Processor)
+@JIPipeOrganization(menuPath = "ROI", nodeTypeCategory = ProcessorNodeTypeCategory.class)
 @JIPipeInputSlot(value = ROIListData.class, slotName = "Input")
 @JIPipeOutputSlot(value = ROIListData.class, slotName = "Output")
 public class MergeRoiListsAlgorithm extends JIPipeMergingAlgorithm {

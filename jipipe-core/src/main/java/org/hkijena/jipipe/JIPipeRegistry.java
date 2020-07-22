@@ -82,7 +82,7 @@ public interface JIPipeRegistry extends Service, JIPipeValidatable {
 
     JIPipeTableRegistry getTableRegistry();
 
-    JIPipeUIAlgorithmRegistry getUIAlgorithmRegistry();
+    JIPipeUINodeRegistry getUIAlgorithmRegistry();
 
     /**
      * @return Registered extension IDs

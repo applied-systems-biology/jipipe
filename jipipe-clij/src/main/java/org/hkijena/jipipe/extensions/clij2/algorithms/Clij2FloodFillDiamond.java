@@ -8,6 +8,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.ProcessorNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.clij2.datatypes.CLIJImageData;
 
@@ -18,7 +19,7 @@ import java.util.function.Supplier;
  * CLIJ2 algorithm ported from {@link net.haesleinhuepf.clij2.plugins.FloodFillDiamond}
  */
 @JIPipeDocumentation(name = "CLIJ2 Flood Fill Diamond", description = "Replaces recursively all pixels of value a with value b if the pixels have a neighbor with value b. Works for following image dimensions: 2D, 3D. Developed by Robert Haase translated original work by Ignacio Arganda-Carreras. " + "Code was translated from  " + " Skeletonize3D plugin for ImageJ(C)." + " Copyright (C) 2008 Ignacio Arganda-Carreras " + " " + " This program is free software; you can redistribute it and/or" + " modify it under the terms of the GNU General Public License" + " as published by the Free Software Foundation (http://www.gnu.org/licenses/gpl.txt )" + " This program is distributed in the hope that it will be useful," + " but WITHOUT ANY WARRANTY; without even the implied warranty of" + " MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the" + " GNU General Public License for more details." + " " + " You should have received a copy of the GNU General Public License" + " along with this program; if not, write to the Free Software" + " Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA." + " " + "")
-@JIPipeOrganization(algorithmCategory = JIPipeNodeCategory.Processor, menuPath = "Morphology")
+@JIPipeOrganization(nodeTypeCategory = ProcessorNodeTypeCategory.class, menuPath = "Morphology")
 @JIPipeInputSlot(value = CLIJImageData.class, slotName = "src", autoCreate = true)
 @JIPipeOutputSlot(value = CLIJImageData.class, slotName = "dst", autoCreate = true)
 

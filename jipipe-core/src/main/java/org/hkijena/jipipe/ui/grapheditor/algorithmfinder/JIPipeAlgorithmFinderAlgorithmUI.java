@@ -15,8 +15,8 @@ package org.hkijena.jipipe.ui.grapheditor.algorithmfinder;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeMutableSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
@@ -136,7 +136,7 @@ public class JIPipeAlgorithmFinderAlgorithmUI extends JPanel {
         });
 
         JIPipeNodeInfo info = algorithm.getInfo();
-        String menuPath = info.getCategory().toString();
+        String menuPath = info.getCategory().getName();
         if (!StringUtils.isNullOrEmpty(info.getMenuPath())) {
             menuPath += " > " + String.join(" > ", info.getMenuPath().split("\n"));
         }

@@ -9,6 +9,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.ProcessorNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.clij2.datatypes.CLIJImageData;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
@@ -20,7 +21,7 @@ import java.util.function.Supplier;
  * CLIJ2 algorithm ported from {@link net.haesleinhuepf.clij2.plugins.GenerateParametricImageFromResultsTableColumn}
  */
 @JIPipeDocumentation(name = "CLIJ2 Generate Parametric Image From Results Table Column", description = "Take a labelmap and a column from the results table to replace label 1 with the 1st value in the vector. " + "Note that indexing in the table column starts at zero. The results table should contain a line at the beginningrepresenting the background." + " Works for following image dimensions: 2D, 3D.")
-@JIPipeOrganization(algorithmCategory = JIPipeNodeCategory.Processor, menuPath = "Generate")
+@JIPipeOrganization(nodeTypeCategory = ProcessorNodeTypeCategory.class, menuPath = "Generate")
 @JIPipeInputSlot(value = CLIJImageData.class, slotName = "label_map", autoCreate = true)
 @JIPipeInputSlot(value = ResultsTableData.class, slotName = "table", autoCreate = true)
 @JIPipeOutputSlot(value = CLIJImageData.class, slotName = "parametric_image_destination", autoCreate = true)

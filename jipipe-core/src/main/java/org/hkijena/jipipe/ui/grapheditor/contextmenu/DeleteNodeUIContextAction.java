@@ -13,8 +13,7 @@
 
 package org.hkijena.jipipe.ui.grapheditor.contextmenu;
 
-import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeCategory;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.history.RemoveNodeGraphHistorySnapshot;
 import org.hkijena.jipipe.extensions.settings.GraphEditorUISettings;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphCanvasUI;
@@ -32,7 +31,7 @@ public class DeleteNodeUIContextAction implements NodeUIContextAction {
         if (selection.isEmpty())
             return false;
         for (JIPipeNodeUI ui : selection) {
-            if (ui.getNode().getCategory() == JIPipeNodeCategory.Internal)
+            if (!ui.getNode().getCategory().userCanDelete())
                 return false;
         }
         return true;

@@ -227,7 +227,7 @@ def generate_jipipe_class(method, class_name):
     * CLIJ2 algorithm ported from {{@link {imported}}}
     */
     @JIPipeDocumentation(name = "{name}", description={description})
-    @JIPipeOrganization(algorithmCategory = JIPipeAlgorithmCategory.Processor, menuPath = "CLIJ2")
+    @JIPipeOrganization(nodeTypeCategory = JIPipeAlgorithmCategory.Processor, menuPath = "CLIJ2")
     {slots}   
     public class {class_name} extends {base_class} {{
     """.format(name=documentation_name,

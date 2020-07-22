@@ -8,6 +8,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.ConverterNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.clij2.datatypes.CLIJImageData;
 
@@ -18,7 +19,7 @@ import java.util.function.Supplier;
  * CLIJ2 algorithm ported from {@link net.haesleinhuepf.clij2.plugins.LabelToMask}
  */
 @JIPipeDocumentation(name = "CLIJ2 Label To Mask", description = "Masks a single label in a label map. " + "Sets all pixels in the target image to 1, where the given label index was present in the label map. Other pixels are set to 0. Works for following image dimensions: 2D, 3D.")
-@JIPipeOrganization(algorithmCategory = JIPipeNodeCategory.Converter)
+@JIPipeOrganization(nodeTypeCategory = ConverterNodeTypeCategory.class)
 @JIPipeInputSlot(value = CLIJImageData.class, slotName = "labelMap", autoCreate = true)
 @JIPipeOutputSlot(value = CLIJImageData.class, slotName = "maskOutput", autoCreate = true)
 

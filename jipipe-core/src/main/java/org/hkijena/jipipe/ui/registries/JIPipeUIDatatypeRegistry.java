@@ -15,7 +15,6 @@ package org.hkijena.jipipe.ui.registries;
 
 import org.apache.commons.lang3.reflect.ConstructorUtils;
 import org.hkijena.jipipe.JIPipeDefaultRegistry;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeCategory;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
@@ -120,31 +119,6 @@ public class JIPipeUIDatatypeRegistry {
      */
     public JIPipeResultDataSlotCellUI getCellRendererFor(Class<? extends JIPipeData> klass) {
         return resultTableCellUIs.getOrDefault(klass, defaultResultTableRowUI);
-    }
-
-    /**
-     * Gets an icon for each algorithm category
-     *
-     * @param category algorithm category
-     * @return icon for the category
-     */
-    public URL getIconURLFor(JIPipeNodeCategory category) {
-        switch (category) {
-            case DataSource:
-                return ResourceUtils.getPluginResource("icons/database.png");
-            case FileSystem:
-                return ResourceUtils.getPluginResource("icons/tree.png");
-            case Annotation:
-                return ResourceUtils.getPluginResource("icons/label.png");
-            case Processor:
-                return ResourceUtils.getPluginResource("icons/magic.png");
-            case Converter:
-                return ResourceUtils.getPluginResource("icons/convert.png");
-            case Analysis:
-                return ResourceUtils.getPluginResource("icons/statistics.png");
-            default:
-                return ResourceUtils.getPluginResource("icons/module.png");
-        }
     }
 
     /**

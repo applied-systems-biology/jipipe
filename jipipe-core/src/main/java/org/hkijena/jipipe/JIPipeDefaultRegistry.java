@@ -21,8 +21,7 @@ import net.imagej.updater.UpdateSite;
 import net.imagej.updater.util.AvailableSites;
 import net.imagej.updater.util.UpdaterUtil;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
-import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.events.ExtensionRegisteredEvent;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
@@ -63,7 +62,7 @@ public class JIPipeDefaultRegistry extends AbstractService implements JIPipeRegi
     private JIPipeParameterTypeRegistry parameterTypeRegistry = new JIPipeParameterTypeRegistry();
     private JIPipeSettingsRegistry settingsRegistry = new JIPipeSettingsRegistry();
     private JIPipeTableRegistry tableRegistry = new JIPipeTableRegistry();
-    private JIPipeUIAlgorithmRegistry jipipeuiAlgorithmRegistry = new JIPipeUIAlgorithmRegistry();
+    private JIPipeUINodeRegistry jipipeuiNodeRegistry = new JIPipeUINodeRegistry();
 
     @Parameter
     private PluginService pluginService;
@@ -92,7 +91,7 @@ public class JIPipeDefaultRegistry extends AbstractService implements JIPipeRegi
         parameterTypeRegistry = new JIPipeParameterTypeRegistry();
         settingsRegistry = new JIPipeSettingsRegistry();
         tableRegistry = new JIPipeTableRegistry();
-        jipipeuiAlgorithmRegistry = new JIPipeUIAlgorithmRegistry();
+        jipipeuiNodeRegistry = new JIPipeUINodeRegistry();
         discover(ExtensionSettings.getInstanceFromRaw(), new JIPipeRegistryIssues());
     }
 
@@ -337,8 +336,8 @@ public class JIPipeDefaultRegistry extends AbstractService implements JIPipeRegi
     }
 
     @Override
-    public JIPipeUIAlgorithmRegistry getUIAlgorithmRegistry() {
-        return jipipeuiAlgorithmRegistry;
+    public JIPipeUINodeRegistry getUIAlgorithmRegistry() {
+        return jipipeuiNodeRegistry;
     }
 
     /**

@@ -20,6 +20,7 @@ import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.nodes.categories.ConverterNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.PathData;
 import org.hkijena.jipipe.extensions.parameters.predicates.StringPredicate;
@@ -36,7 +37,7 @@ import java.util.function.Supplier;
  */
 @JIPipeDocumentation(name = "Annotation to path", description = "Converts an annotation column of arbitrary data to a path. " +
         "If the specified annotation is not present, an empty path is generated.")
-@JIPipeOrganization(menuPath = "Filesystem", algorithmCategory = JIPipeNodeCategory.Converter)
+@JIPipeOrganization(menuPath = "Filesystem", nodeTypeCategory = ConverterNodeTypeCategory.class)
 @JIPipeInputSlot(value = JIPipeData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = PathData.class, slotName = "Output", autoCreate = true)
 public class AnnotationToPath extends JIPipeSimpleIteratingAlgorithm {

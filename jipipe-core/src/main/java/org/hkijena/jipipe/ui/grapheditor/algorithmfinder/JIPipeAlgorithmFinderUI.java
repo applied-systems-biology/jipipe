@@ -285,7 +285,7 @@ public class JIPipeAlgorithmFinderUI extends JPanel {
                 }
             } else {
                 JIPipeNodeInfo info = (JIPipeNodeInfo) value;
-                if (info.isHidden() || info.getCategory() == JIPipeNodeCategory.Internal)
+                if (info.isHidden() || !info.getCategory().userCanCreate())
                     return null;
                 for (JIPipeInputSlot inputSlot : info.getInputSlots()) {
                     int compatibilityRanking = 0;

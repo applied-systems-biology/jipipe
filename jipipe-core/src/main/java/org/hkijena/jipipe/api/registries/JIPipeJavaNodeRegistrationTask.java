@@ -14,11 +14,8 @@
 package org.hkijena.jipipe.api.registries;
 
 import org.hkijena.jipipe.JIPipeDependency;
-import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
-import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeJavaNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
-import org.hkijena.jipipe.ui.registries.JIPipeUIAlgorithmRegistry;
+import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.ui.registries.JIPipeUINodeRegistry;
 
 import java.net.URL;
 
@@ -63,7 +60,7 @@ public class JIPipeJavaNodeRegistrationTask extends JIPipeDefaultNodeRegistratio
         JIPipeJavaNodeInfo info = new JIPipeJavaNodeInfo(id, nodeClass);
         JIPipeNodeRegistry.getInstance().register(info, source);
         if (icon != null)
-            JIPipeUIAlgorithmRegistry.getInstance().registerIcon(info, icon);
+            JIPipeUINodeRegistry.getInstance().registerIcon(info, icon);
     }
 
     @Override

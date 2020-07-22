@@ -16,10 +16,8 @@ package org.hkijena.jipipe.extensions.tables.algorithms;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
-import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeCategory;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.extensions.tables.parameters.collections.ResultsTableDataList;
@@ -31,7 +29,7 @@ import java.util.function.Supplier;
  * Algorithm that annotates all data with the same annotation
  */
 @JIPipeDocumentation(name = "Define tables", description = "Defines one or multiple tables.")
-@JIPipeOrganization(algorithmCategory = JIPipeNodeCategory.DataSource)
+@JIPipeOrganization(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 @JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
 public class DefineTablesAlgorithm extends JIPipeAlgorithm {
 

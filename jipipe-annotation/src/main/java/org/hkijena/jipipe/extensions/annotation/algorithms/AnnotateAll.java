@@ -21,6 +21,7 @@ import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.nodes.categories.AnnotationNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.parameters.pairs.PairParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.pairs.StringAndStringPair;
@@ -33,7 +34,7 @@ import java.util.function.Supplier;
  * Algorithm that annotates all data with the same annotation
  */
 @JIPipeDocumentation(name = "Set annotations", description = "Sets the specified annotations to the specified values")
-@JIPipeOrganization(algorithmCategory = JIPipeNodeCategory.Annotation, menuPath = "Modify")
+@JIPipeOrganization(nodeTypeCategory = AnnotationNodeTypeCategory.class, menuPath = "Modify")
 @JIPipeInputSlot(value = JIPipeData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = JIPipeData.class, slotName = "Output", inheritedSlot = "Input", autoCreate = true)
 public class AnnotateAll extends JIPipeSimpleIteratingAlgorithm {

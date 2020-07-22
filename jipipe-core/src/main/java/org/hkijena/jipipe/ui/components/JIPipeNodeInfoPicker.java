@@ -15,8 +15,8 @@ package org.hkijena.jipipe.ui.components;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.primitives.Ints;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.ui.registries.JIPipeUIAlgorithmRegistry;
+import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.ui.registries.JIPipeUINodeRegistry;
 import org.hkijena.jipipe.utils.CustomScrollPane;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -281,7 +281,7 @@ public class JIPipeNodeInfoPicker extends JPanel {
         @Override
         public Component getListCellRendererComponent(JList<? extends JIPipeNodeInfo> list, JIPipeNodeInfo value, int index, boolean isSelected, boolean cellHasFocus) {
             if (value != null) {
-                setText(StringUtils.createIconTextHTMLTable(value.getName(), JIPipeUIAlgorithmRegistry.getInstance().getIconURLFor(value)));
+                setText(StringUtils.createIconTextHTMLTable(value.getName(), JIPipeUINodeRegistry.getInstance().getIconURLFor(value)));
             } else {
                 setText(StringUtils.createIconTextHTMLTable("Select none", ResourceUtils.getPluginResource("icons/remove.png")));
             }

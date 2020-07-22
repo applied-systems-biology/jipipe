@@ -27,6 +27,7 @@ import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
+import org.hkijena.jipipe.api.nodes.categories.ProcessorNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageJUtils;
@@ -48,7 +49,7 @@ import java.util.function.Supplier;
  */
 @JIPipeDocumentation(name = "Split channels", description = "Splits multichannel images into multiple greyscale images. " +
         "This operation is applied for each 2D image slice.")
-@JIPipeOrganization(menuPath = "Colors", algorithmCategory = JIPipeNodeCategory.Processor)
+@JIPipeOrganization(menuPath = "Colors", nodeTypeCategory = ProcessorNodeTypeCategory.class)
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input")
 @JIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Output")
 public class SplitChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {

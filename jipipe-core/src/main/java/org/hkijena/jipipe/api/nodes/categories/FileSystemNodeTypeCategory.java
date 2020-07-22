@@ -13,13 +13,18 @@
 
 package org.hkijena.jipipe.api.nodes.categories;
 
-import org.hkijena.jipipe.api.nodes.JIPipeNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.Color;
 
 public class FileSystemNodeTypeCategory implements JIPipeNodeTypeCategory {
+    @Override
+    public String getId() {
+        return "org.hkijena.jipipe:file-system";
+    }
+
     @Override
     public String getName() {
         return "File system";
@@ -32,7 +37,7 @@ public class FileSystemNodeTypeCategory implements JIPipeNodeTypeCategory {
 
     @Override
     public int getUIOrder() {
-        return 0;
+        return 10;
     }
 
     @Override

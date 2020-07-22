@@ -30,6 +30,7 @@ import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.events.GraphChangedEvent;
 import org.hkijena.jipipe.api.events.ParameterStructureChangedEvent;
 import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameters;
+import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
@@ -50,7 +51,7 @@ public class JsonNodeInfo implements JIPipeNodeInfo, JIPipeValidatable, JIPipePa
     private String id;
     private String name;
     private String description;
-    private JIPipeNodeCategory category = JIPipeNodeCategory.Miscellaneous;
+    private JIPipeNodeTypeCategory category = new MiscellaneousNodeTypeCategory();
     private List<JIPipeInputSlot> inputSlots = new ArrayList<>();
     private List<JIPipeOutputSlot> outputSlots = new ArrayList<>();
     private JIPipeGraph graph = new JIPipeGraph();
@@ -154,21 +155,22 @@ public class JsonNodeInfo implements JIPipeNodeInfo, JIPipeValidatable, JIPipePa
         this.description = description;
     }
 
-    @JIPipeDocumentation(name = "Category", description = "A general category for the algorithm. " +
-            "This will influence in which menu the algorithm is put.")
-    @JIPipeParameter(value = "category", uiOrder = 20)
-    @JsonGetter("category")
-    @Override
-    public JIPipeNodeCategory getCategory() {
-        return category;
-    }
-
-    @JIPipeParameter("category")
-    @JsonSetter("category")
-    public void setCategory(JIPipeNodeCategory category) {
-        this.category = category;
-
-    }
+    // TODO: Implement for new category system
+//    @JIPipeDocumentation(name = "Category", description = "A general category for the algorithm. " +
+//            "This will influence in which menu the algorithm is put.")
+//    @JIPipeParameter(value = "category", uiOrder = 20)
+//    @JsonGetter("category")
+//    @Override
+//    public Class<? extends JIPipeNodeTypeCategory> getCategory() {
+//        return category;
+//    }
+//
+//    @JIPipeParameter("category")
+//    @JsonSetter("category")
+//    public void setCategory(JIPipeNodeCategory category) {
+//        this.category = category;
+//
+//    }
 
     @Override
     public List<JIPipeInputSlot> getInputSlots() {
@@ -335,8 +337,8 @@ public class JsonNodeInfo implements JIPipeNodeInfo, JIPipeValidatable, JIPipePa
                     "Please provide a valid algorithm ID.",
                     this);
         }
-        if (category == JIPipeNodeCategory.Internal) {
-            report.reportIsInvalid("The category cannot be 'Internal'!",
+        if (!category.userCanCreate() || !category.userCanDelete()) {
+            report.reportIsInvalid("The selected category is reserved for internal usage!",
                     "This is reserved for algorithm nodes used by JIPipe to control program flow.",
                     "Please choose another algorithm category.",
                     this);
@@ -357,6 +359,11 @@ public class JsonNodeInfo implements JIPipeNodeInfo, JIPipeValidatable, JIPipePa
     @JsonGetter("menu-path")
     public String getMenuPath() {
         return String.join("\n", menuPath);
+    }
+
+    @Override
+    public JIPipeNodeTypeCategory getCategory() {
+        return category;
     }
 
     @JsonSetter("menu-path")

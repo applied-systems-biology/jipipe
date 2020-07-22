@@ -20,6 +20,7 @@ import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.nodes.categories.AnnotationNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.parameters.pairs.PairParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.pairs.StringAndStringPredicatePair;
@@ -32,7 +33,7 @@ import java.util.function.Supplier;
  * Removes a specified annotation
  */
 @JIPipeDocumentation(name = "Remove annotation by value", description = "Removes annotations that match a filter value")
-@JIPipeOrganization(menuPath = "Remove", algorithmCategory = JIPipeNodeCategory.Annotation)
+@JIPipeOrganization(menuPath = "Remove", nodeTypeCategory = AnnotationNodeTypeCategory.class)
 @JIPipeInputSlot(value = JIPipeData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = JIPipeData.class, slotName = "Output", inheritedSlot = "Input", autoCreate = true)
 public class RemoveAnnotationByValue extends JIPipeSimpleIteratingAlgorithm {

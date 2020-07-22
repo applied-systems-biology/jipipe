@@ -13,13 +13,19 @@
 
 package org.hkijena.jipipe.api.compartments.algorithms;
 
-import org.hkijena.jipipe.api.nodes.InternalNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.Color;
 
-public class CompartmentNodeTypeCategory extends InternalNodeTypeCategory {
+public class CompartmentNodeTypeCategory implements JIPipeNodeTypeCategory {
+    @Override
+    public String getId() {
+        return "org.hkijena.jipipe:compartment-node";
+    }
+
     @Override
     public String getName() {
         return "Compartment management";
@@ -31,6 +37,16 @@ public class CompartmentNodeTypeCategory extends InternalNodeTypeCategory {
     }
 
     @Override
+    public int getUIOrder() {
+        return 0;
+    }
+
+    @Override
+    public Icon getIcon() {
+        return UIUtils.getIconFromResources("data-types/graph-compartment.png");
+    }
+
+    @Override
     public Color getFillColor() {
         return Color.WHITE;
     }
@@ -38,5 +54,25 @@ public class CompartmentNodeTypeCategory extends InternalNodeTypeCategory {
     @Override
     public Color getBorderColor() {
         return Color.DARK_GRAY;
+    }
+
+    @Override
+    public boolean isVisibleInGraphCompartment() {
+        return false;
+    }
+
+    @Override
+    public boolean isVisibleInCompartmentGraph() {
+        return true;
+    }
+
+    @Override
+    public boolean userCanCreate() {
+        return true;
+    }
+
+    @Override
+    public boolean userCanDelete() {
+        return true;
     }
 }

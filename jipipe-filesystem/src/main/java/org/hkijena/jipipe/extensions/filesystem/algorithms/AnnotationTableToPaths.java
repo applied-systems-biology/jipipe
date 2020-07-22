@@ -20,6 +20,7 @@ import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
+import org.hkijena.jipipe.api.nodes.categories.ConverterNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.PathData;
 import org.hkijena.jipipe.extensions.parameters.predicates.StringPredicate;
@@ -36,7 +37,7 @@ import java.util.function.Supplier;
  * Filters input files
  */
 @JIPipeDocumentation(name = "Annotation table to paths", description = "Converts an annotation table to path data. If available, annotation are added to the output.")
-@JIPipeOrganization(menuPath = "Filesystem", algorithmCategory = JIPipeNodeCategory.Converter)
+@JIPipeOrganization(menuPath = "Filesystem", nodeTypeCategory = ConverterNodeTypeCategory.class)
 
 // Algorithm flow
 @JIPipeInputSlot(value = AnnotationTableData.class, slotName = "Input", autoCreate = true)

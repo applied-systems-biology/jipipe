@@ -8,6 +8,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.ProcessorNodeTypeCategory;
 import org.hkijena.jipipe.extensions.clij2.datatypes.CLIJImageData;
 
 import java.util.function.Consumer;
@@ -17,7 +18,7 @@ import java.util.function.Supplier;
  * CLIJ2 algorithm ported from {@link net.haesleinhuepf.clij2.plugins.AverageDistanceOfTouchingNeighbors}
  */
 @JIPipeDocumentation(name = "CLIJ2 Average Distance Of Touching Neighbors", description = "Takes a touch matrix and a distance matrix to determine the average distance of touching neighbors " + " for every object. Works for following image dimensions: 2D.")
-@JIPipeOrganization(algorithmCategory = JIPipeNodeCategory.Processor, menuPath = "Distance matrix")
+@JIPipeOrganization(nodeTypeCategory = ProcessorNodeTypeCategory.class, menuPath = "Distance matrix")
 @JIPipeInputSlot(value = CLIJImageData.class, slotName = "distance_matrix", autoCreate = true)
 @JIPipeInputSlot(value = CLIJImageData.class, slotName = "touch_matrix", autoCreate = true)
 @JIPipeOutputSlot(value = CLIJImageData.class, slotName = "average_distancelist_destination", autoCreate = true)

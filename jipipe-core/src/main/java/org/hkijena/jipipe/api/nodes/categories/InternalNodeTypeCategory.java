@@ -11,14 +11,20 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.api.nodes;
+package org.hkijena.jipipe.api.nodes.categories;
 
+import org.hkijena.jipipe.api.nodes.JIPipeNodeTypeCategory;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.Color;
 
 public class InternalNodeTypeCategory implements JIPipeNodeTypeCategory {
+    @Override
+    public String getId() {
+        return "org.hkijena.jipipe:internal";
+    }
+
     @Override
     public String getName() {
         return "Internal";
@@ -66,6 +72,16 @@ public class InternalNodeTypeCategory implements JIPipeNodeTypeCategory {
 
     @Override
     public boolean userCanDelete() {
+        return false;
+    }
+
+    @Override
+    public boolean isRunnable() {
+        return false;
+    }
+
+    @Override
+    public boolean canExtract() {
         return false;
     }
 }

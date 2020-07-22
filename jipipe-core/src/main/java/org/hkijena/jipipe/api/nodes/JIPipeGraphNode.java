@@ -277,7 +277,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
      *
      * @return The category
      */
-    public JIPipeNodeCategory getCategory() {
+    public JIPipeNodeTypeCategory getCategory() {
         return getInfo().getCategory();
     }
 

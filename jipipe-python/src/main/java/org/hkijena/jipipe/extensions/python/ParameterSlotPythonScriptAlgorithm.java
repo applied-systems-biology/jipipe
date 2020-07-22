@@ -17,11 +17,10 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeCategory;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeParameterSlotAlgorithm;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.events.ParameterChangedEvent;
+import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -50,7 +49,7 @@ import java.util.function.Supplier;
         "Slots are of their respective JIPipe types (JIPipeDataSlot) and are fully accessible from within Python. " +
         "This algorithm is capable of running over multiple parameter sets via an additional slot. Automatically generated annotations generated based on " +
         "the parameters are available as variable 'parameter_annotations'. Please do not forget to pass the annotations to the output if you want to want this.")
-@JIPipeOrganization(algorithmCategory = JIPipeNodeCategory.Miscellaneous, menuPath = "Python script")
+@JIPipeOrganization(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Python script")
 public class ParameterSlotPythonScriptAlgorithm extends JIPipeParameterSlotAlgorithm {
 
     private PythonScript code = new PythonScript();

@@ -25,6 +25,7 @@ import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
+import org.hkijena.jipipe.api.nodes.categories.AnalysisNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.measure.ImageStatisticsParameters;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageJUtils;
@@ -46,7 +47,7 @@ import java.util.function.Supplier;
 // Algorithm metadata
 @JIPipeDocumentation(name = "Find particles 2D", description = "Converts mask images into ROI and generates measurements. " +
         "If higher-dimensional data is provided, the results are generated for each 2D slice.")
-@JIPipeOrganization(algorithmCategory = JIPipeNodeCategory.Analysis)
+@JIPipeOrganization(nodeTypeCategory = AnalysisNodeTypeCategory.class)
 
 // Algorithm data flow
 @JIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Mask")

@@ -13,13 +13,18 @@
 
 package org.hkijena.jipipe.api.nodes.categories;
 
-import org.hkijena.jipipe.api.nodes.JIPipeNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.Color;
 
 public class AnnotationNodeTypeCategory implements JIPipeNodeTypeCategory {
+    @Override
+    public String getId() {
+        return "org.hkijena.jipipe:annotation";
+    }
+
     @Override
     public String getName() {
         return "Annotate";
@@ -32,7 +37,7 @@ public class AnnotationNodeTypeCategory implements JIPipeNodeTypeCategory {
 
     @Override
     public int getUIOrder() {
-        return 0;
+        return 20;
     }
 
     @Override

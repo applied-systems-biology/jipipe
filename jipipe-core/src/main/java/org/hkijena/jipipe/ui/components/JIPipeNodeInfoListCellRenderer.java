@@ -13,8 +13,8 @@
 
 package org.hkijena.jipipe.ui.components;
 
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.ui.registries.JIPipeUIAlgorithmRegistry;
+import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.ui.registries.JIPipeUINodeRegistry;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -87,13 +87,13 @@ public class JIPipeNodeInfoListCellRenderer extends JPanel implements ListCellRe
 
         if (info != null) {
             nodeColor.setFillColor(UIUtils.getFillColorFor(info));
-            String menuPath = info.getCategory().toString();
+            String menuPath = info.getCategory().getName();
             menuPath += "\n" + info.getMenuPath();
             menuPath = StringUtils.getCleanedMenuPath(menuPath).replace("\n", " > ");
 
             pathLabel.setText(menuPath);
             nameLabel.setText(info.getName());
-            nodeIcon.setIcon(JIPipeUIAlgorithmRegistry.getInstance().getIconFor(info));
+            nodeIcon.setIcon(JIPipeUINodeRegistry.getInstance().getIconFor(info));
         } else {
             nameLabel.setText("<Null>");
         }

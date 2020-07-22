@@ -8,6 +8,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.ProcessorNodeTypeCategory;
 import org.hkijena.jipipe.extensions.clij2.datatypes.CLIJImageData;
 
 import java.util.function.Consumer;
@@ -17,7 +18,7 @@ import java.util.function.Supplier;
  * CLIJ2 algorithm ported from {@link net.haesleinhuepf.clij2.plugins.StandardDeviationOfMaskedPixels}
  */
 @JIPipeDocumentation(name = "CLIJ2 Standard Deviation Of Masked Pixels", description = "Determines the standard deviation of all pixels in an image which have non-zero value in a corresponding mask image. " + "The value will be stored in a new row of ImageJs" + "Results table in the column 'Masked_standard_deviation'. Works for following image dimensions: 2D, 3D.")
-@JIPipeOrganization(algorithmCategory = JIPipeNodeCategory.Processor, menuPath = "Math\nCalculate")
+@JIPipeOrganization(nodeTypeCategory = ProcessorNodeTypeCategory.class, menuPath = "Math\nCalculate")
 @JIPipeInputSlot(value = CLIJImageData.class, slotName = "buffer1", autoCreate = true)
 @JIPipeOutputSlot(value = CLIJImageData.class, slotName = "mask", autoCreate = true)
 

@@ -8,6 +8,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.ProcessorNodeTypeCategory;
 import org.hkijena.jipipe.extensions.clij2.datatypes.CLIJImageData;
 
 import java.util.function.Consumer;
@@ -17,7 +18,7 @@ import java.util.function.Supplier;
  * CLIJ2 algorithm ported from {@link net.haesleinhuepf.clij2.plugins.PointIndexListToMesh}
  */
 @JIPipeDocumentation(name = "CLIJ2 Point Index List To Mesh", description = "Meshes all points in a given point list which are indiced in a corresponding index list. Works for following image dimensions: 2D, 3D.")
-@JIPipeOrganization(algorithmCategory = JIPipeNodeCategory.Processor, menuPath = "Point list")
+@JIPipeOrganization(nodeTypeCategory = ProcessorNodeTypeCategory.class, menuPath = "Point list")
 @JIPipeInputSlot(value = CLIJImageData.class, slotName = "pointlist", autoCreate = true)
 @JIPipeInputSlot(value = CLIJImageData.class, slotName = "indexlist", autoCreate = true)
 @JIPipeOutputSlot(value = CLIJImageData.class, slotName = "mesh", autoCreate = true)

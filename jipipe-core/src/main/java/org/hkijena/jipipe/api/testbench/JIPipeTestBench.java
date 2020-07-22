@@ -14,8 +14,8 @@
 package org.hkijena.jipipe.api.testbench;
 
 import org.hkijena.jipipe.api.*;
-import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
-import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 
 import java.nio.file.Files;

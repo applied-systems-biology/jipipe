@@ -25,6 +25,7 @@ import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
+import org.hkijena.jipipe.api.nodes.categories.AnalysisNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
@@ -41,7 +42,7 @@ import java.util.function.Supplier;
  */
 @JIPipeDocumentation(name = "Histogram", description = "Generates a histogram of the input image. " +
         "It generates following output columns: <pre>value</pre>, <pre>count</pre>.")
-@JIPipeOrganization(algorithmCategory = JIPipeNodeCategory.Analysis, menuPath = "Statistics")
+@JIPipeOrganization(nodeTypeCategory = AnalysisNodeTypeCategory.class, menuPath = "Statistics")
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
 public class HistogramGenerator extends JIPipeSimpleIteratingAlgorithm {

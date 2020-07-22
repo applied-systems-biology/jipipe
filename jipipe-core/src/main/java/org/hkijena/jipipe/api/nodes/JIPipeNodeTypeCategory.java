@@ -21,6 +21,11 @@ import java.awt.Color;
  */
 public interface JIPipeNodeTypeCategory {
     /**
+     * Unique identifier of this category
+     * @return the id
+     */
+    String getId();
+    /**
      * The name displayed in menus and other UI
      * @return the name
      */
@@ -69,14 +74,34 @@ public interface JIPipeNodeTypeCategory {
     boolean isVisibleInCompartmentGraph();
 
     /**
+     * Returns if the node can be extracted (copied) from the graph
+     * @return if the node can be extracted (copied) from the graph
+     */
+    default  boolean canExtract() {
+        return true;
+    }
+
+    /**
      * Returns if nodes of this category can be created by users
      * @return if nodes of this category can be created by users
      */
-    boolean userCanCreate();
+    default boolean userCanCreate() {
+        return true;
+    }
 
     /**
      * Returns if nodes of this category can be deleted by users
      * @return if nodes of this category can be deleted by users
      */
-    boolean userCanDelete();
+   default boolean userCanDelete() {
+       return true;
+   }
+
+    /**
+     * Returns true if nodes of this category can be run in a single run
+     * @return if nodes of this category can be run in a single run
+     */
+   default boolean isRunnable() {
+       return true;
+   }
 }

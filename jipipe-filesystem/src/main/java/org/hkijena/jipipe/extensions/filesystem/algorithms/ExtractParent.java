@@ -18,6 +18,7 @@ import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.FileSystemNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FolderData;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.PathData;
@@ -30,7 +31,7 @@ import java.util.function.Supplier;
  * Applies subfolder navigation to each input folder
  */
 @JIPipeDocumentation(name = "Parent", description = "Extracts the parent folder of each path")
-@JIPipeOrganization(menuPath = "Extract", algorithmCategory = JIPipeNodeCategory.FileSystem)
+@JIPipeOrganization(menuPath = "Extract", nodeTypeCategory = FileSystemNodeTypeCategory.class)
 
 // Algorithm flow
 @JIPipeInputSlot(value = PathData.class, slotName = "Input", autoCreate = true)

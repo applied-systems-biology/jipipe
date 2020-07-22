@@ -22,6 +22,7 @@ import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
+import org.hkijena.jipipe.api.nodes.categories.ProcessorNodeTypeCategory;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.ImagePlus3DData;
 
 import java.util.function.Consumer;
@@ -31,7 +32,7 @@ import java.util.function.Supplier;
  * Wrapper around {@link ImageProcessor}
  */
 @JIPipeDocumentation(name = "Invert 3D stack Z-order", description = "Inverts the order of a Z-stack.")
-@JIPipeOrganization(menuPath = "Dimensions", algorithmCategory = JIPipeNodeCategory.Processor)
+@JIPipeOrganization(menuPath = "Dimensions", nodeTypeCategory = ProcessorNodeTypeCategory.class)
 @JIPipeInputSlot(value = ImagePlus3DData.class, slotName = "Input")
 @JIPipeOutputSlot(value = ImagePlus3DData.class, slotName = "Output")
 public class StackInverterAlgorithm extends JIPipeSimpleIteratingAlgorithm {

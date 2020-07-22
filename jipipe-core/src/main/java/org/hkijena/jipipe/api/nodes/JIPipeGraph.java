@@ -196,7 +196,7 @@ public class JIPipeGraph implements JIPipeValidatable {
      * @return True if the user can delete the algorithm
      */
     public boolean canUserDelete(JIPipeGraphNode algorithm) {
-        return algorithm.getCategory() != JIPipeNodeCategory.Internal || algorithm instanceof JIPipeProjectCompartment;
+        return algorithm.getCategory().userCanDelete();
     }
 
     /**
@@ -250,7 +250,7 @@ public class JIPipeGraph implements JIPipeValidatable {
      * @param user      if a user triggered the operation. If true, will not remove internal nodes
      */
     public void removeNode(JIPipeGraphNode algorithm, boolean user) {
-        if (user && algorithm.getCategory() == JIPipeNodeCategory.Internal)
+        if (user && !algorithm.getCategory().userCanDelete())
             return;
         ++preventTriggerEvents;
         // Do regular disconnect
@@ -739,7 +739,7 @@ public class JIPipeGraph implements JIPipeValidatable {
     public JIPipeGraph extract(Collection<JIPipeGraphNode> nodes, boolean withInternal) {
         JIPipeGraph graph = new JIPipeGraph();
         for (JIPipeGraphNode algorithm : nodes) {
-            if (!withInternal && algorithm.getCategory() == JIPipeNodeCategory.Internal)
+            if (!withInternal && !algorithm.getCategory().canExtract())
                 continue;
             JIPipeGraphNode copy = algorithm.getInfo().clone(algorithm);
             if (copy.getCompartment() != null) {

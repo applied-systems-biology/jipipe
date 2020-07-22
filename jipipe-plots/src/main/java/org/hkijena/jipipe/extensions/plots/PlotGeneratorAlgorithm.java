@@ -24,6 +24,7 @@ import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.events.NodeSlotsChangedEvent;
 import org.hkijena.jipipe.api.events.ParameterStructureChangedEvent;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
+import org.hkijena.jipipe.api.nodes.categories.AnalysisNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.*;
 import org.hkijena.jipipe.extensions.parameters.editors.JIPipeDataParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.predicates.StringPredicate;
@@ -47,7 +48,7 @@ import java.util.function.Supplier;
  * Algorithm that creates {@link PlotData} from {@link ResultsTableData}
  */
 @JIPipeDocumentation(name = "Plot tables", description = "Converts input data tables into plots.")
-@JIPipeOrganization(algorithmCategory = JIPipeNodeCategory.Analysis, menuPath = "Plot")
+@JIPipeOrganization(nodeTypeCategory = AnalysisNodeTypeCategory.class, menuPath = "Plot")
 @JIPipeInputSlot(ResultsTableData.class)
 @JIPipeOutputSlot(PlotData.class)
 public class PlotGeneratorAlgorithm extends JIPipeAlgorithm {

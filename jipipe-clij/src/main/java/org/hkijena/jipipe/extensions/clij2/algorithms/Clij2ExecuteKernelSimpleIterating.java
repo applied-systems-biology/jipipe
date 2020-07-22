@@ -19,13 +19,11 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
-import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeCategory;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.events.ParameterChangedEvent;
 import org.hkijena.jipipe.api.events.ParameterStructureChangedEvent;
+import org.hkijena.jipipe.api.nodes.categories.ProcessorNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.*;
 import org.hkijena.jipipe.api.registries.JIPipeParameterTypeRegistry;
 import org.hkijena.jipipe.extensions.clij2.CLIJExtension;
@@ -46,7 +44,7 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 @JIPipeDocumentation(name = "CLIJ2 Execute OpenCL kernel (simple iterating)", description = "Executes an OpenCL kernel via CLIJ2 to process images. This node can have only one input.")
-@JIPipeOrganization(algorithmCategory = JIPipeNodeCategory.Processor)
+@JIPipeOrganization(nodeTypeCategory = ProcessorNodeTypeCategory.class)
 public class Clij2ExecuteKernelSimpleIterating extends JIPipeSimpleIteratingAlgorithm {
 
     private OpenCLKernelScript kernelScript = new OpenCLKernelScript();
