@@ -13,9 +13,12 @@
 
 package org.hkijena.jipipe.api.grouping.parameters;
 
+import com.google.common.eventbus.Subscribe;
+import org.hkijena.jipipe.api.events.ParameterChangedEvent;
 import org.hkijena.jipipe.api.parameters.*;
 
 import java.lang.annotation.Annotation;
+import java.util.Objects;
 
 /**
  * A parameter access that references to another one, but hides the source
@@ -43,6 +46,7 @@ public class GraphNodeParameterReferenceAccess implements JIPipeParameterAccess 
         this.persistence = persistent ? JIPipeParameterPersistence.Collection : JIPipeParameterPersistence.None;
         this.target = reference.resolve(tree);
         this.alternativeSource = alternativeSource;
+        this.target.getSource().getEventBus().register(this);
     }
 
     @Override
@@ -108,5 +112,12 @@ public class GraphNodeParameterReferenceAccess implements JIPipeParameterAccess 
     @Override
     public JIPipeParameterPersistence getPersistence() {
         return persistence;
+    }
+
+    @Subscribe
+    public void onSourceParameterChanged(ParameterChangedEvent event) {
+        if(Objects.equals(target.getKey(), event.getKey())) {
+            alternativeSource.getEventBus().post(new ParameterChangedEvent(alternativeSource, getKey()));
+        }
     }
 }
