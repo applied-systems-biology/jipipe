@@ -29,7 +29,7 @@ import java.io.IOException;
  */
 @JsonSerialize(using = DynamicStringEnumParameter.Serializer.class)
 @JsonDeserialize(using = DynamicStringEnumParameter.Deserializer.class)
-public class DynamicStringEnumParameter extends DynamicEnumParameter {
+public class DynamicStringEnumParameter extends DynamicEnumParameter<String> {
     /**
      * Creates a new instance with null value
      */

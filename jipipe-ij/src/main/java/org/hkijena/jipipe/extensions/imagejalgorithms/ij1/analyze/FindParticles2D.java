@@ -27,7 +27,8 @@ import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.measure.ImageStatisticsParameters;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.measure.ImageStatisticsSetParameter;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.measure.Measurement;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
@@ -63,7 +64,7 @@ public class FindParticles2D extends JIPipeSimpleIteratingAlgorithm {
     private boolean excludeEdges = false;
     private boolean splitSlices = true;
     private OptionalStringParameter annotationType = new OptionalStringParameter();
-    private ImageStatisticsParameters statisticsParameters = new ImageStatisticsParameters();
+    private ImageStatisticsSetParameter statisticsParameters = new ImageStatisticsSetParameter();
 
     /**
      * @param info algorithm info
@@ -92,15 +93,19 @@ public class FindParticles2D extends JIPipeSimpleIteratingAlgorithm {
         this.excludeEdges = other.excludeEdges;
         this.splitSlices = other.splitSlices;
         this.annotationType = other.annotationType;
-        this.statisticsParameters = new ImageStatisticsParameters(other.statisticsParameters);
+        this.statisticsParameters = new ImageStatisticsSetParameter(other.statisticsParameters);
     }
 
     @JIPipeDocumentation(name = "Extracted measurements", description = "Please select which measurements should be extracted. " +
-            "Each measurement will be assigned to one or multiple output table columns. Please refer to the " +
-            "individual measurement documentations for the column names.")
+            "Each measurement will be assigned to one or multiple output table columns. <br/><br/>" + ImageStatisticsSetParameter.ALL_DESCRIPTIONS)
     @JIPipeParameter("measurements")
-    public ImageStatisticsParameters getStatisticsParameters() {
+    public ImageStatisticsSetParameter getStatisticsParameters() {
         return statisticsParameters;
+    }
+
+    @JIPipeParameter("measurements")
+    public void setStatisticsParameters(ImageStatisticsSetParameter statisticsParameters) {
+        this.statisticsParameters = statisticsParameters;
     }
 
     @Override
@@ -126,7 +131,7 @@ public class FindParticles2D extends JIPipeSimpleIteratingAlgorithm {
                 analyzer.analyze(inputData.getImage(), ip);
 
                 // Override for "Slice"
-                if (statisticsParameters.isOutputStackPosition()) {
+                if (statisticsParameters.getValues().contains(Measurement.StackPosition)) {
                     for (int i = 0; i < table.getCounter(); i++) {
                         table.setValue("Slice", i, index + 1);
                     }
@@ -166,7 +171,7 @@ public class FindParticles2D extends JIPipeSimpleIteratingAlgorithm {
                 analyzer.analyze(inputData.getImage(), ip);
 
                 // Override for "Slice"
-                if (statisticsParameters.isOutputStackPosition()) {
+                if (statisticsParameters.getValues().contains(Measurement.StackPosition)) {
                     for (int i = 0; i < table.getCounter(); i++) {
                         table.setValue("Slice", i, index + 1);
                     }

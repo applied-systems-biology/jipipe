@@ -50,7 +50,7 @@ public class UIPlotDataSeriesColumnEnumParameterEditorUI extends JIPipeParameter
 
     @Override
     public void reload() {
-        DynamicEnumParameter parameter = getParameter(DynamicEnumParameter.class);
+        DynamicEnumParameter<TableColumn> parameter = getParameter(DynamicEnumParameter.class);
         if (!Objects.equals(parameter.getValue(), comboBox.getSelectedItem()))
             comboBox.setSelectedItem(parameter.getValue());
     }
@@ -58,13 +58,13 @@ public class UIPlotDataSeriesColumnEnumParameterEditorUI extends JIPipeParameter
     private void initialize() {
         setLayout(new BorderLayout());
 
-        DynamicEnumParameter parameter = getParameter(DynamicEnumParameter.class);
+        DynamicEnumParameter<TableColumn> parameter = getParameter(DynamicEnumParameter.class);
         TableColumn[] values = parameter.getAllowedValues().toArray(new TableColumn[0]);
         comboBox = new JComboBox<>(new DefaultComboBoxModel<>(values));
         comboBox.setRenderer(new PlotDataSeriesColumnListCellRenderer());
         comboBox.setSelectedItem(parameter.getValue());
         comboBox.addActionListener(e -> {
-            parameter.setValue(comboBox.getSelectedItem());
+            parameter.setValue((TableColumn) comboBox.getSelectedItem());
             setParameter(parameter, false);
         });
         add(comboBox, BorderLayout.CENTER);

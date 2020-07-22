@@ -13,20 +13,20 @@
 
 package org.hkijena.jipipe.extensions.parameters.primitives;
 
+import com.google.common.collect.Comparators;
 import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.MultiSelectionModel;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
+import org.hkijena.jipipe.utils.ModernMetalTheme;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.HashSet;
+import java.util.*;
 import java.util.List;
-import java.util.Objects;
-import java.util.Set;
 import java.util.function.Supplier;
 
 /**
@@ -53,12 +53,16 @@ public class DynamicSetParameterEditorUI extends JIPipeParameterEditorUI {
 
     @Override
     public void reload() {
-        DynamicSetParameter parameter = getParameter(DynamicSetParameter.class);
+        DynamicSetParameter<Object> parameter = getParameter(DynamicSetParameter.class);
        Set<Object> currentlySelected = new HashSet<>(jList.getSelectedValuesList());
        if(!currentlySelected.equals(parameter.getValues())) {
            TIntList indices = new TIntArrayList();
+           List<Object> inModel = new ArrayList<>();
+           for (int i = 0; i < jList.getModel().getSize(); i++) {
+               inModel.add(jList.getModel().getElementAt(i));
+           }
            for (Object value : parameter.getValues()) {
-               int i = jList.getSelectedValuesList().indexOf(value);
+               int i = inModel.indexOf(value);
                if(i >= 0) {
                    indices.add(i);
                }
@@ -70,8 +74,9 @@ public class DynamicSetParameterEditorUI extends JIPipeParameterEditorUI {
 
     private void initialize() {
         setLayout(new BorderLayout());
+        setBorder(BorderFactory.createLineBorder(ModernMetalTheme.MEDIUM_GRAY));
 
-        DynamicSetParameter parameter = getParameter(DynamicSetParameter.class);
+        DynamicSetParameter<Object> parameter = getParameter(DynamicSetParameter.class);
         Object[] values;
         if (parameter.getAllowedValues() != null) {
             values = parameter.getAllowedValues().toArray();
@@ -85,8 +90,9 @@ public class DynamicSetParameterEditorUI extends JIPipeParameterEditorUI {
                 System.err.println("In " + this + ": " + getParameterAccess().getFieldClass() + " not provided with a generator supplier!");
             }
         }
+        Arrays.sort(values, Comparator.comparing(parameter::renderLabel));
         jList = new JList<>(values);
-        jList.setSelectionModel(new MultiSelectionModel());
+//        jList.setSelectionModel(new MultiSelectionModel());
         jList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         reload();
         jList.addListSelectionListener(e -> {
@@ -103,9 +109,9 @@ public class DynamicSetParameterEditorUI extends JIPipeParameterEditorUI {
      */
     private static class Renderer extends JLabel implements ListCellRenderer<Object> {
 
-        private final DynamicSetParameter parameter;
+        private final DynamicSetParameter<Object> parameter;
 
-        public Renderer(DynamicSetParameter parameter) {
+        public Renderer(DynamicSetParameter<Object> parameter) {
             this.parameter = parameter;
             setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
             setFont(new Font(Font.DIALOG, Font.PLAIN, 12));

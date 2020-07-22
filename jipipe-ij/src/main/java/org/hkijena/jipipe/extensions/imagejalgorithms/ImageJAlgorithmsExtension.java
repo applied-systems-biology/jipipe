@@ -45,10 +45,7 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.fft.FFT2DForwardTransf
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.fft.FFT2DInverseTransform;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.fft.FFT2DSwapQuadrants;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.math.*;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.measure.Measurement;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.measure.MeasurementColumn;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.measure.MeasurementColumnSortOrder;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.measure.MeasurementFilter;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.measure.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.morphology.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.noise.AddNoise2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.noise.DespeckleFilter2DAlgorithm;
@@ -239,6 +236,12 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
                 "Measurement column", "Available measurement columns");
         registerEnumParameterType("ij1-calibration-mode", CalibrationMode.class,
                 "Contrast calibration", "Methods to apply display range calibration");
+        registerParameterType("ij1-measurement-set", ImageStatisticsSetParameter.class,
+                null,
+                null,
+                "Measurements",
+                "Selectable measurements",
+                null);
     }
 
     private void registerROIAlgorithms() {

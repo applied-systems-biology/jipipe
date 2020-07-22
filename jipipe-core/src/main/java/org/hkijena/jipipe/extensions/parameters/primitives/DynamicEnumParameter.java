@@ -13,6 +13,9 @@
 
 package org.hkijena.jipipe.extensions.parameters.primitives;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonSetter;
+
 import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,11 +25,10 @@ import java.util.List;
  * Use {@link DynamicEnumParameterSettings} to define a supplier for the
  * items. Alternatively, use allowedValues to supply items.
  * allowedValues is preferred. If allowedValues is null, you have to use {@link DynamicEnumParameterSettings}.
- * The JSON serialization must be done manually.
  */
-public abstract class DynamicEnumParameter {
-    private Object value;
-    private List<Object> allowedValues = new ArrayList<>();
+public abstract class DynamicEnumParameter<T> {
+    private T value;
+    private List<T> allowedValues = new ArrayList<>();
 
     /**
      * Creates a new instance with null value
@@ -40,23 +42,25 @@ public abstract class DynamicEnumParameter {
      *
      * @param value initial value
      */
-    public DynamicEnumParameter(Object value) {
+    public DynamicEnumParameter(T value) {
         this.value = value;
     }
 
-    public Object getValue() {
+    @JsonGetter("value")
+    public T getValue() {
         return value;
     }
 
-    public void setValue(Object value) {
+    @JsonSetter("value")
+    public void setValue(T value) {
         this.value = value;
     }
 
-    public List<Object> getAllowedValues() {
+    public List<T> getAllowedValues() {
         return allowedValues;
     }
 
-    public void setAllowedValues(List<Object> allowedValues) {
+    public void setAllowedValues(List<T> allowedValues) {
         this.allowedValues = allowedValues;
     }
 
@@ -66,7 +70,7 @@ public abstract class DynamicEnumParameter {
      * @param value the value
      * @return the rendered text
      */
-    public String renderLabel(Object value) {
+    public String renderLabel(T value) {
         return "" + value;
     }
 
@@ -76,7 +80,7 @@ public abstract class DynamicEnumParameter {
      * @param value the tooltip
      * @return the rendered tooltip
      */
-    public String renderTooltip(Object value) {
+    public String renderTooltip(T value) {
         return null;
     }
 
@@ -86,7 +90,7 @@ public abstract class DynamicEnumParameter {
      * @param value the value
      * @return the rendered icon
      */
-    public Icon renderIcon(Object value) {
+    public Icon renderIcon(T value) {
         return null;
     }
 }

@@ -13,6 +13,9 @@
 
 package org.hkijena.jipipe.extensions.parameters.primitives;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonSetter;
+
 import javax.swing.*;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -24,11 +27,10 @@ import java.util.Set;
  * Use {@link DynamicEnumParameterSettings} to define a supplier for the
  * items. Alternatively, use allowedValues to supply items.
  * allowedValues is preferred. If allowedValues is null, you have to use {@link DynamicEnumParameterSettings}.
- * The JSON serialization must be done manually.
  */
-public abstract class DynamicSetParameter {
-    private Set<Object> values = new HashSet<>();
-    private List<Object> allowedValues = new ArrayList<>();
+public abstract class DynamicSetParameter<T> {
+    private Set<T> values = new HashSet<>();
+    private List<T> allowedValues = new ArrayList<>();
 
     /**
      * Creates a new instance with null value
@@ -36,23 +38,30 @@ public abstract class DynamicSetParameter {
     public DynamicSetParameter() {
     }
 
-    public DynamicSetParameter(Set<Object> values) {
+    public DynamicSetParameter(DynamicSetParameter<T> other) {
+        this.values = new HashSet<>(other.values);
+        this.allowedValues = other.allowedValues;
+    }
+
+    public DynamicSetParameter(Set<T> values) {
         this.values = values;
     }
 
-    public Set<Object> getValues() {
+    @JsonGetter("values")
+    public Set<T> getValues() {
         return values;
     }
 
-    public void setValues(Set<Object> values) {
+    @JsonSetter("values")
+    public void setValues(Set<T> values) {
         this.values = values;
     }
 
-    public List<Object> getAllowedValues() {
+    public List<T> getAllowedValues() {
         return allowedValues;
     }
 
-    public void setAllowedValues(List<Object> allowedValues) {
+    public void setAllowedValues(List<T> allowedValues) {
         this.allowedValues = allowedValues;
     }
 
@@ -62,7 +71,7 @@ public abstract class DynamicSetParameter {
      * @param value the value
      * @return the rendered text
      */
-    public String renderLabel(Object value) {
+    public String renderLabel(T value) {
         return "" + value;
     }
 
@@ -72,7 +81,7 @@ public abstract class DynamicSetParameter {
      * @param value the tooltip
      * @return the rendered tooltip
      */
-    public String renderTooltip(Object value) {
+    public String renderTooltip(T value) {
         return null;
     }
 
@@ -82,7 +91,7 @@ public abstract class DynamicSetParameter {
      * @param value the value
      * @return the rendered icon
      */
-    public Icon renderIcon(Object value) {
+    public Icon renderIcon(T value) {
         return null;
     }
 }

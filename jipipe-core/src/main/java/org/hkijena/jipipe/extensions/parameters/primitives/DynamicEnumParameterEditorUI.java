@@ -48,7 +48,7 @@ public class DynamicEnumParameterEditorUI extends JIPipeParameterEditorUI {
 
     @Override
     public void reload() {
-        DynamicEnumParameter parameter = getParameter(DynamicEnumParameter.class);
+        DynamicEnumParameter<Object> parameter = getParameter(DynamicEnumParameter.class);
         if (!Objects.equals(parameter.getValue(), comboBox.getSelectedItem())) {
             comboBox.setSelectedItem(parameter.getValue());
         }
@@ -57,7 +57,7 @@ public class DynamicEnumParameterEditorUI extends JIPipeParameterEditorUI {
     private void initialize() {
         setLayout(new BorderLayout());
 
-        DynamicEnumParameter parameter = getParameter(DynamicEnumParameter.class);
+        DynamicEnumParameter<Object> parameter = getParameter(DynamicEnumParameter.class);
         Object[] values;
         if (parameter.getAllowedValues() != null) {
             values = parameter.getAllowedValues().toArray();
@@ -86,9 +86,9 @@ public class DynamicEnumParameterEditorUI extends JIPipeParameterEditorUI {
      */
     private static class Renderer extends JLabel implements ListCellRenderer<Object> {
 
-        private final DynamicEnumParameter parameter;
+        private final DynamicEnumParameter<Object> parameter;
 
-        public Renderer(DynamicEnumParameter parameter) {
+        public Renderer(DynamicEnumParameter<Object> parameter) {
             this.parameter = parameter;
             setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
             setFont(new Font(Font.DIALOG, Font.PLAIN, 12));
