@@ -17,6 +17,7 @@ import org.hkijena.jipipe.api.JIPipeProjectTemplate;
 import org.hkijena.jipipe.ui.components.TemplateProjectListCellRenderer;
 import org.hkijena.jipipe.ui.tableanalyzer.JIPipeTableEditor;
 import org.hkijena.jipipe.ui.tableanalyzer.JIPipeTableImporterDialog;
+import org.hkijena.jipipe.utils.CustomScrollPane;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -41,7 +42,6 @@ public class JIPipeTemplateSelectionDialog extends JDialog {
     }
 
     private void initialize() {
-        setSize(800,600);
         setTitle("Select project template");
         setModal(true);
         UIUtils.addEscapeListener(this);
@@ -61,7 +61,7 @@ public class JIPipeTemplateSelectionDialog extends JDialog {
                 }
             }
         });
-        getContentPane().add(templateJList, BorderLayout.CENTER);
+        getContentPane().add(new CustomScrollPane(templateJList), BorderLayout.CENTER);
 
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
@@ -82,6 +82,8 @@ public class JIPipeTemplateSelectionDialog extends JDialog {
 
         getContentPane().add(buttonPanel, BorderLayout.SOUTH);
 
+        pack();
+        setSize(800,600);
         revalidate();
         repaint();
     }
