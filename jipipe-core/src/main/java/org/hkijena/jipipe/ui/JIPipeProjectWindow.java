@@ -23,6 +23,7 @@ import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.settings.ProjectsSettings;
 import org.hkijena.jipipe.ui.components.DocumentTabPane;
 import org.hkijena.jipipe.ui.project.JIPipeProjectTabMetadata;
+import org.hkijena.jipipe.ui.project.JIPipeTemplateSelectionDialog;
 import org.hkijena.jipipe.ui.project.UnsatisfiedDependenciesDialog;
 import org.hkijena.jipipe.ui.resultanalysis.JIPipeResultUI;
 import org.hkijena.jipipe.utils.JsonUtils;
@@ -105,6 +106,28 @@ public class JIPipeProjectWindow extends JFrame {
         window.projectSavePath = null;
         window.setTitle("New project");
         window.getProjectUI().sendStatusBarText("Created new project");
+    }
+
+    /**
+     * Creates a new project from template
+     */
+    public void newProjectFromTemplate() {
+        JIPipeTemplateSelectionDialog dialog = new JIPipeTemplateSelectionDialog(this);
+        dialog.setLocationRelativeTo(this);
+        dialog.setVisible(true);
+        if(dialog.getSelectedTemplate() != null) {
+            try {
+                JIPipeProject project = dialog.getSelectedTemplate().load();
+                JIPipeProjectWindow window = openProjectInThisOrNewWindow("New project", project, true, true);
+                if (window == null)
+                    return;
+                window.projectSavePath = null;
+                window.setTitle("New project");
+                window.getProjectUI().sendStatusBarText("Created new project");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     /**
