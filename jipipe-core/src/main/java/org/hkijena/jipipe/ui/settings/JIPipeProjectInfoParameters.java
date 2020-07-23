@@ -30,7 +30,7 @@ import java.util.Map;
  */
 public class JIPipeProjectInfoParameters implements JIPipeParameterCollection, JIPipeCustomParameterCollection {
 
-    public static final String METADATA_KEY = "pipeline-parameters";
+    public static final String METADATA_KEY = "org.hkijena.jipipe:pipeline-parameters";
 
     private final EventBus eventBus = new EventBus();
     private JIPipeProject project;

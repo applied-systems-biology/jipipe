@@ -58,10 +58,13 @@ public class StandardSettingsExtension extends JIPipePrepackagedDefaultJavaExten
         registerSettingsSheet(FileChooserSettings.ID, "File chooser", "UI", null, new FileChooserSettings());
         registerSettingsSheet(ExtensionSettings.ID, "Extensions", "General", null, new ExtensionSettings());
 
-        registerEnumParameterType("jipipe:settings:projects:starter-project",
-                ProjectsSettings.StarterProject.class,
-                "Empty project configuration",
-                "Available ways how an empty project is initialized");
+        registerParameterType("jipipe:settings:projects:new-project-template",
+                ProjectsSettings.ProjectTemplateEnum.class,
+                null,
+                null,
+                "New project template",
+                "Template for new projects",
+                null);
     }
 
 }

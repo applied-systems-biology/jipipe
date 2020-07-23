@@ -1,0 +1,224 @@
+{
+  "jipipe:project-type" : "project",
+  "metadata" : {
+    "name" : "Empty (3 compartments)",
+    "description" : "# JIPipe pipeline projects\n\nJIPipe organizes pipelines in projects that can be saved and loaded from disk. Each pipeline is organized into \n**Compartments** that separate the whole graph into functional units. You can find an overview of all compartments\nin the `Compartments` tab. You can re-open the tab by selecting `Compartment > Edit compartments` if you closed the tab.\n\nBy double-clicking a compartment in the overview, JIPipe will open an editor where you can modify the sub-pipeline\nthat is associated to the compartment. If you just want to run a project, you can find the `Run` button at the top-right\ncorner.\n\nPipeline developers might have organized a set of most common pipeline parameters. You can find them in `Project > Project overview`\nalongside additional information like the authors, citations, and website.\n\n",
+    "authors" : [ ],
+    "website" : "",
+    "license" : "",
+    "citation" : ""
+  },
+  "dependencies" : [ {
+    "metadata" : {
+      "name" : "Compartment management",
+      "description" : "Data types required for graph compartment management",
+      "authors" : [ {
+        "first-name" : "Zoltán",
+        "last-name" : "Cseresnyés",
+        "affiliations" : "Applied Systems Biology, Leibniz Institute for Natural Product Research and Infection Biology – Hans-Knöll-Institute, Jena, Germany"
+      }, {
+        "first-name" : "Ruman",
+        "last-name" : "Gerst",
+        "affiliations" : "Applied Systems Biology, Leibniz Institute for Natural Product Research and Infection Biology – Hans-Knöll-Institute, Jena, Germany\nFaculty of Biological Sciences, Friedrich-Schiller-University Jena, Germany"
+      } ],
+      "website" : "https://applied-systems-biology.github.io/jipipe/",
+      "license" : "BSD 2-Clause",
+      "citation" : ""
+    },
+    "id" : "org.hkijena.jipipe:compartments",
+    "version" : "1.0.0"
+  } ],
+  "additional-metadata" : {
+    "pipeline-parameters" : {
+      "jipipe:type" : "org.hkijena.jipipe.ui.settings.JIPipeProjectInfoParameters",
+      "exported-parameters" : {
+        "parameter-reference-groups" : [ ]
+      }
+    },
+    "org.hkijena.jipipe:pipeline-parameters" : {
+      "jipipe:type" : "org.hkijena.jipipe.ui.settings.JIPipeProjectInfoParameters",
+      "exported-parameters" : {
+        "parameter-reference-groups" : [ ]
+      }
+    },
+    "org.hkijena.jipipe.ui:project-tabs" : {
+      "jipipe:type" : "org.hkijena.jipipe.ui.project.JIPipeProjectTabMetadata",
+      "data" : {
+        "open-tabs" : [ "singleton:COMPARTMENT_EDITOR", "graph-compartment:preprocessing", "graph-compartment:analysis", "graph-compartment:postprocessing" ],
+        "selected-tab" : "singleton:COMPARTMENT_EDITOR"
+      }
+    }
+  },
+  "graph" : {
+    "nodes" : {
+      "preprocessing-preprocessing-output" : {
+        "jipipe:slot-configuration" : {
+          "input" : { },
+          "output" : { }
+        },
+        "jipipe:algorithm-ui-location" : {
+          "preprocessing" : {
+            "Vertical" : {
+              "x" : 25,
+              "y" : 0
+            }
+          },
+          "analysis" : {
+            "Vertical" : {
+              "x" : 100,
+              "y" : 50
+            }
+          }
+        },
+        "jipipe:node-info-id" : "jipipe:compartment-output",
+        "jipipe:algorithm-compartment" : "preprocessing",
+        "jipipe:algorithm:save-outputs" : true,
+        "jipipe:algorithm:enabled" : true,
+        "jipipe:algorithm:pass-through" : false,
+        "jipipe:node:name" : "Preprocessing output",
+        "jipipe:node:description" : null
+      },
+      "analysis-analysis-output" : {
+        "jipipe:slot-configuration" : {
+          "input" : { },
+          "output" : { }
+        },
+        "jipipe:algorithm-ui-location" : {
+          "postprocessing" : {
+            "Vertical" : {
+              "x" : 100,
+              "y" : 50
+            }
+          },
+          "analysis" : {
+            "Vertical" : {
+              "x" : 425,
+              "y" : 50
+            }
+          }
+        },
+        "jipipe:node-info-id" : "jipipe:compartment-output",
+        "jipipe:algorithm-compartment" : "analysis",
+        "jipipe:algorithm:save-outputs" : true,
+        "jipipe:algorithm:enabled" : true,
+        "jipipe:algorithm:pass-through" : false,
+        "jipipe:node:name" : "Analysis output",
+        "jipipe:node:description" : null
+      },
+      "postprocessing-postprocessing-output" : {
+        "jipipe:slot-configuration" : {
+          "input" : { },
+          "output" : { }
+        },
+        "jipipe:algorithm-ui-location" : {
+          "postprocessing" : {
+            "Vertical" : {
+              "x" : 400,
+              "y" : 50
+            }
+          }
+        },
+        "jipipe:node-info-id" : "jipipe:compartment-output",
+        "jipipe:algorithm-compartment" : "postprocessing",
+        "jipipe:algorithm:save-outputs" : true,
+        "jipipe:algorithm:enabled" : true,
+        "jipipe:algorithm:pass-through" : false,
+        "jipipe:node:name" : "Postprocessing output",
+        "jipipe:node:description" : null
+      }
+    },
+    "edges" : [ ]
+  },
+  "compartments" : {
+    "compartment-graph" : {
+      "nodes" : {
+        "preprocessing" : {
+          "jipipe:slot-configuration" : {
+            "input" : { }
+          },
+          "jipipe:algorithm-ui-location" : {
+            "DEFAULT" : {
+              "Vertical" : {
+                "x" : 25,
+                "y" : 0
+              }
+            }
+          },
+          "jipipe:node-info-id" : "jipipe:project-compartment",
+          "jipipe:algorithm-compartment" : "DEFAULT",
+          "jipipe:node:name" : "Preprocessing",
+          "jipipe:node:description" : null
+        },
+        "analysis" : {
+          "jipipe:slot-configuration" : {
+            "input" : {
+              "Preprocessing" : {
+                "slot-data-type" : "jipipe:compartment-output",
+                "slot-type" : "Input",
+                "inherited-slot" : null,
+                "name" : "Preprocessing",
+                "custom-name" : null,
+                "inheritance-conversions" : { }
+              }
+            }
+          },
+          "jipipe:algorithm-ui-location" : {
+            "DEFAULT" : {
+              "Vertical" : {
+                "x" : 25,
+                "y" : 200
+              }
+            }
+          },
+          "jipipe:node-info-id" : "jipipe:project-compartment",
+          "jipipe:algorithm-compartment" : "DEFAULT",
+          "jipipe:node:name" : "Analysis",
+          "jipipe:node:description" : null
+        },
+        "postprocessing" : {
+          "jipipe:slot-configuration" : {
+            "input" : {
+              "Analysis" : {
+                "slot-data-type" : "jipipe:compartment-output",
+                "slot-type" : "Input",
+                "inherited-slot" : null,
+                "name" : "Analysis",
+                "custom-name" : null,
+                "inheritance-conversions" : { }
+              }
+            }
+          },
+          "jipipe:algorithm-ui-location" : {
+            "DEFAULT" : {
+              "Vertical" : {
+                "x" : 163,
+                "y" : 400
+              }
+            }
+          },
+          "jipipe:node-info-id" : "jipipe:project-compartment",
+          "jipipe:algorithm-compartment" : "DEFAULT",
+          "jipipe:node:name" : "Postprocessing",
+          "jipipe:node:description" : null
+        }
+      },
+      "edges" : [ {
+        "source-algorithm" : "analysis",
+        "target-algorithm" : "postprocessing",
+        "source-slot" : "Output",
+        "target-slot" : "Analysis",
+        "metadata" : {
+          "ui-hidden" : false
+        }
+      }, {
+        "source-algorithm" : "preprocessing",
+        "target-algorithm" : "analysis",
+        "source-slot" : "Output",
+        "target-slot" : "Preprocessing",
+        "metadata" : {
+          "ui-hidden" : false
+        }
+      } ]
+    }
+  }
+}

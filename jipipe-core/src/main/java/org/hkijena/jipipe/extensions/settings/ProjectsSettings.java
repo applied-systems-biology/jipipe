@@ -16,12 +16,21 @@ package org.hkijena.jipipe.extensions.settings;
 import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.JIPipeDefaultRegistry;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.JIPipeProjectTemplate;
 import org.hkijena.jipipe.api.events.ParameterChangedEvent;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
+import org.hkijena.jipipe.extensions.parameters.primitives.DynamicEnumParameter;
+import org.hkijena.jipipe.extensions.parameters.primitives.DynamicStringEnumParameter;
 import org.hkijena.jipipe.extensions.parameters.primitives.PathList;
+import org.hkijena.jipipe.utils.ResourceUtils;
+import org.hkijena.jipipe.utils.UIUtils;
 
+import javax.swing.*;
+import java.io.IOException;
+import java.net.URL;
 import java.nio.file.Path;
+import java.util.ArrayList;
 
 /**
  * Remembers the last projects
@@ -33,7 +42,11 @@ public class ProjectsSettings implements JIPipeParameterCollection {
     private EventBus eventBus = new EventBus();
     private PathList recentProjects = new PathList();
     private PathList recentJsonExtensionProjects = new PathList();
-    private StarterProject starterProject = StarterProject.PreprocessingAnalysisPostprocessing;
+    private ProjectTemplateEnum projectTemplate = new ProjectTemplateEnum();
+    private boolean restoreTabs = true;
+
+    public ProjectsSettings() {
+    }
 
     @Override
     public EventBus getEventBus() {
@@ -98,16 +111,33 @@ public class ProjectsSettings implements JIPipeParameterCollection {
         }
     }
 
-    @JIPipeDocumentation(name = "Empty project configuration", description = "Determines how empty projects are created")
-    @JIPipeParameter("starter-project")
-    public StarterProject getStarterProject() {
-        return starterProject;
+    @JIPipeDocumentation(name = "New project template", description = "Template used for creating new projects")
+    @JIPipeParameter("new-project-template")
+    public ProjectTemplateEnum getProjectTemplate() {
+        if(projectTemplate != null && projectTemplate.getValue() == null && !projectTemplate.getAllowedValues().isEmpty()) {
+            try {
+                projectTemplate.setValue(new JIPipeProjectTemplate(ResourceUtils.getPluginResource("templates/Empty (3 compartments).jip")));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return projectTemplate;
     }
 
-    @JIPipeParameter("starter-project")
-    public void setStarterProject(StarterProject starterProject) {
-        this.starterProject = starterProject;
-        eventBus.post(new ParameterChangedEvent(this, "starter-project"));
+    @JIPipeParameter("new-project-template")
+    public void setProjectTemplate(ProjectTemplateEnum projectTemplate) {
+        this.projectTemplate = projectTemplate;
+    }
+
+    @JIPipeDocumentation(name = "Restore tabs on opening projects", description = "If enabled, JIPipe attempts to restore the tabs when opening a project.")
+    @JIPipeParameter("restore-tabs")
+    public boolean isRestoreTabs() {
+        return restoreTabs;
+    }
+
+    @JIPipeParameter("restore-tabs")
+    public void setRestoreTabs(boolean restoreTabs) {
+        this.restoreTabs = restoreTabs;
     }
 
     public static ProjectsSettings getInstance() {
@@ -115,10 +145,35 @@ public class ProjectsSettings implements JIPipeParameterCollection {
     }
 
     /**
-     * Defines available starter projects
+     * An enum of {@link JIPipeProjectTemplate}
      */
-    public enum StarterProject {
-        SingleCompartment,
-        PreprocessingAnalysisPostprocessing
+    public static class ProjectTemplateEnum extends DynamicEnumParameter<JIPipeProjectTemplate> {
+        public ProjectTemplateEnum() {
+            initialize();
+        }
+
+        public ProjectTemplateEnum(ProjectTemplateEnum other) {
+            this.setAllowedValues(other.getAllowedValues());
+            this.setValue(other.getValue());
+        }
+
+        private void initialize() {
+            setAllowedValues(JIPipeProjectTemplate.listTemplates());
+        }
+
+        @Override
+        public String renderLabel(JIPipeProjectTemplate value) {
+            if(value != null && value.getMetadata() != null) {
+                return value.getMetadata().getName();
+            }
+            else {
+                return  "Empty";
+            }
+        }
+
+        @Override
+        public Icon renderIcon(JIPipeProjectTemplate value) {
+            return UIUtils.getIconFromResources("mimetypes/application-jipipe.png");
+        }
     }
 }

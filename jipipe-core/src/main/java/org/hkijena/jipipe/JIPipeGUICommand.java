@@ -55,6 +55,7 @@ public class JIPipeGUICommand implements Command {
         try {
             JIPipeDefaultRegistry.instantiate(context, extensionSettings, issues);
         } catch (Exception e) {
+            e.printStackTrace();
             if (!extensionSettings.isSilent())
                 UIUtils.openErrorDialog(null, e);
             return;
@@ -77,7 +78,10 @@ public class JIPipeGUICommand implements Command {
         SwingUtilities.invokeLater(() -> {
             ToolTipManager.sharedInstance().setDismissDelay(Integer.MAX_VALUE);
             ToolTipManager.sharedInstance().setInitialDelay(1000);
-            JIPipeProjectWindow window = JIPipeProjectWindow.newWindow(getContext(), new JIPipeProject(), true, true);
+            JIPipeProjectWindow window = JIPipeProjectWindow.newWindow(getContext(),
+                    JIPipeProjectWindow.getDefaultTemplateProject(),
+                    true,
+                    true);
             window.setTitle("New project");
         });
     }

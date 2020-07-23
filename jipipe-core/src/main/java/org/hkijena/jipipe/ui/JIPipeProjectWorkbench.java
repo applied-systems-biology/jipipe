@@ -37,6 +37,7 @@ import org.hkijena.jipipe.ui.extensionbuilder.JIPipeJsonExporter;
 import org.hkijena.jipipe.ui.extensions.JIPipePluginManagerUIPanel;
 import org.hkijena.jipipe.ui.extensions.JIPipePluginValidityCheckerPanel;
 import org.hkijena.jipipe.ui.ijupdater.JIPipeImageJPluginManager;
+import org.hkijena.jipipe.ui.project.JIPipeProjectTabMetadata;
 import org.hkijena.jipipe.ui.running.JIPipeRunSettingsUI;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueueUI;
 import org.hkijena.jipipe.ui.settings.JIPipeApplicationSettingsUI;
@@ -88,12 +89,41 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
         this.project = project;
         this.context = context;
         initialize(showIntroduction, isNewProject);
-        initializeDefaultProject();
         project.getEventBus().register(this);
         JIPipeDefaultRegistry.getInstance().getEventBus().register(this);
 
         validatePlugins(true);
         SplashScreen.getInstance().hideSplash();
+
+        restoreStandardTabs(showIntroduction, isNewProject);
+        if(ProjectsSettings.getInstance().isRestoreTabs())
+            restoreTabs();
+        if (GeneralUISettings.getInstance().isShowIntroduction() && showIntroduction)
+            documentTabPane.selectSingletonTab(TAB_INTRODUCTION);
+    }
+
+    public void restoreStandardTabs(boolean showIntroduction, boolean isNewProject) {
+        if (GeneralUISettings.getInstance().isShowIntroduction() && showIntroduction)
+            documentTabPane.selectSingletonTab(TAB_INTRODUCTION);
+        else {
+            if (GeneralUISettings.getInstance().isShowProjectInfo() && !isNewProject) {
+                documentTabPane.selectSingletonTab(TAB_PROJECT_OVERVIEW);
+            } else {
+                documentTabPane.selectSingletonTab(TAB_COMPARTMENT_EDITOR);
+            }
+        }
+    }
+
+    private void restoreTabs() {
+        try {
+            Object metadata = project.getAdditionalMetadata().getOrDefault(JIPipeProjectTabMetadata.METADATA_KEY, null);
+            if(metadata instanceof JIPipeProjectTabMetadata) {
+                ((JIPipeProjectTabMetadata) metadata).restore(this);
+            }
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -104,24 +134,6 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
     @Subscribe
     public void onExtensionRegistered(ExtensionRegisteredEvent event) {
         sendStatusBarText("Registered extension: '" + event.getExtension().getMetadata().getName() + "' with id '" + event.getExtension().getDependencyId() + "'. We recommend to restart ImageJ.");
-    }
-
-    private void initializeDefaultProject() {
-        if (project.getCompartments().isEmpty()) {
-            if (ProjectsSettings.getInstance().getStarterProject() == ProjectsSettings.StarterProject.PreprocessingAnalysisPostprocessing) {
-                JIPipeProjectCompartment preprocessing = project.addCompartment("Preprocessing");
-                JIPipeProjectCompartment analysis = project.addCompartment("Analysis");
-                JIPipeProjectCompartment postprocessing = project.addCompartment("Postprocessing");
-                project.connectCompartments(preprocessing, analysis);
-                project.connectCompartments(analysis, postprocessing);
-                openCompartmentGraph(preprocessing, false);
-                openCompartmentGraph(analysis, false);
-                openCompartmentGraph(postprocessing, false);
-            } else {
-                JIPipeProjectCompartment analysis = project.addCompartment("Analysis");
-                openCompartmentGraph(analysis, false);
-            }
-        }
     }
 
     private void initialize(boolean showIntroduction, boolean isNewProject) {
@@ -170,15 +182,6 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
                 UIUtils.getIconFromResources("actions/plugins.png"),
                 pluginValidityCheckerPanel,
                 true);
-        if (GeneralUISettings.getInstance().isShowIntroduction() && showIntroduction)
-            documentTabPane.selectSingletonTab(TAB_INTRODUCTION);
-        else {
-            if (GeneralUISettings.getInstance().isShowProjectInfo() && !isNewProject) {
-                documentTabPane.selectSingletonTab(TAB_PROJECT_OVERVIEW);
-            } else {
-                documentTabPane.selectSingletonTab(TAB_COMPARTMENT_EDITOR);
-            }
-        }
         add(documentTabPane, BorderLayout.CENTER);
 
         initializeMenu();
@@ -209,7 +212,7 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
      * @param compartment The compartment
      * @param switchToTab If true, switch to the tab
      */
-    public void openCompartmentGraph(JIPipeProjectCompartment compartment, boolean switchToTab) {
+    public DocumentTabPane.DocumentTab openCompartmentGraph(JIPipeProjectCompartment compartment, boolean switchToTab) {
         List<JIPipeCompartmentUI> compartmentUIs = findCompartmentUIs(compartment);
         if (compartmentUIs.isEmpty()) {
             JIPipeCompartmentUI compartmentUI = new JIPipeCompartmentUI(this, compartment);
@@ -220,9 +223,13 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
                     false);
             if (switchToTab)
                 documentTabPane.switchToLastTab();
+            return documentTab;
         } else if (switchToTab) {
+            DocumentTabPane.DocumentTab tab = documentTabPane.getTabContaining(compartmentUIs.get(0));
             documentTabPane.switchToContent(compartmentUIs.get(0));
+            return tab;
         }
+        return null;
     }
 
     private void initializeStatusBar() {

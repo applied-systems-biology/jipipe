@@ -22,6 +22,7 @@ import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.settings.ProjectsSettings;
 import org.hkijena.jipipe.ui.components.DocumentTabPane;
+import org.hkijena.jipipe.ui.project.JIPipeProjectTabMetadata;
 import org.hkijena.jipipe.ui.project.UnsatisfiedDependenciesDialog;
 import org.hkijena.jipipe.ui.resultanalysis.JIPipeResultUI;
 import org.hkijena.jipipe.utils.JsonUtils;
@@ -97,13 +98,33 @@ public class JIPipeProjectWindow extends JFrame {
      * Asks the user if it should replace the currently displayed project
      */
     public void newProject() {
-        JIPipeProject project = new JIPipeProject();
+        JIPipeProject project = getDefaultTemplateProject();
         JIPipeProjectWindow window = openProjectInThisOrNewWindow("New project", project, true, true);
         if (window == null)
             return;
         window.projectSavePath = null;
         window.setTitle("New project");
         window.getProjectUI().sendStatusBarText("Created new project");
+    }
+
+    /**
+     * Creates a new project instance based on the current template selection
+     * @return the project
+     */
+    public static JIPipeProject getDefaultTemplateProject() {
+        JIPipeProject project = null;
+        if(ProjectsSettings.getInstance().getProjectTemplate().getValue() != null) {
+            try {
+                project = ProjectsSettings.getInstance().getProjectTemplate().getValue().load();
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        if(project == null) {
+            project = new JIPipeProject();
+        }
+        return project;
     }
 
     /**
@@ -215,6 +236,7 @@ public class JIPipeProjectWindow extends JFrame {
         try {
             Path tempFile = Files.createTempFile(savePath.getParent(), savePath.getFileName().toString(), ".part");
             getProject().setWorkDirectory(savePath.getParent());
+            getProject().getAdditionalMetadata().put(JIPipeProjectTabMetadata.METADATA_KEY, new JIPipeProjectTabMetadata(getProjectUI()));
             getProject().saveProject(tempFile);
 
             // Check if the saved project can be loaded

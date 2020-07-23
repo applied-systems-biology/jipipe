@@ -13,6 +13,10 @@
 
 package org.hkijena.jipipe.ui.components;
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
+import com.google.common.collect.ImmutableBiMap;
+import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
 import org.hkijena.jipipe.utils.CustomTabbedPaneUI;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -46,7 +50,7 @@ public class DocumentTabPane extends JPanel {
     /**
      * Contains tabs that can be closed, but opened again
      */
-    private Map<String, DocumentTab> singletonTabs = new HashMap<>();
+    private BiMap<String, DocumentTab> singletonTabs =  HashBiMap.create();
 
     /**
      * Creates a new instance
@@ -82,6 +86,10 @@ public class DocumentTabPane extends JPanel {
             tabbedPane.setUI(new CustomTabbedPaneUI());
         }
         add(tabbedPane, BorderLayout.CENTER);
+    }
+
+    public BiMap<String, DocumentTab> getSingletonTabs() {
+        return ImmutableBiMap.copyOf(singletonTabs);
     }
 
     /**
@@ -269,12 +277,13 @@ public class DocumentTabPane extends JPanel {
      * @param component Tab content
      * @param hidden    If the tab is hidden by default
      */
-    public void addSingletonTab(String id, String title, Icon icon, Component component, boolean hidden) {
+    public DocumentTab addSingletonTab(String id, String title, Icon icon, Component component, boolean hidden) {
         DocumentTab tab = addTab(title, icon, component, CloseMode.withSilentCloseButton);
         singletonTabs.put(id, tab);
         if (hidden) {
             forceCloseTab(tab);
         }
+        return tab;
     }
 
     /**
@@ -282,18 +291,19 @@ public class DocumentTabPane extends JPanel {
      *
      * @param id the singleton tab ID
      */
-    public void selectSingletonTab(String id) {
+    public DocumentTab selectSingletonTab(String id) {
         DocumentTab tab = singletonTabs.get(id);
         for (int i = 0; i < getTabCount(); ++i) {
             if (tabbedPane.getTabComponentAt(i) == tab.getTabComponent()) {
                 tabbedPane.setSelectedComponent(tab.getContent());
-                return;
+                return tab;
             }
         }
 
         // Was closed; reinstantiate the component
         addTab(tab);
         tabbedPane.setSelectedIndex(getTabCount() - 1);
+        return tab;
     }
 
     private void addTab(DocumentTab tab) {
@@ -331,6 +341,15 @@ public class DocumentTabPane extends JPanel {
      */
     public Component getCurrentContent() {
         return tabbedPane.getSelectedComponent();
+    }
+
+    /**
+     * Closes all tabs
+     */
+    public void closeAllTabs() {
+        for (DocumentTab tab : ImmutableList.copyOf(tabs)) {
+            forceCloseTab(tab);
+        }
     }
 
     /**
