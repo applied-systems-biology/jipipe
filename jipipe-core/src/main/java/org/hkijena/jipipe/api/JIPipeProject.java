@@ -370,22 +370,15 @@ public class JIPipeProject implements JIPipeValidatable {
      * Loads a project from a file
      *
      * @param fileName JSON file
+     * @param report issue report
      * @return Loaded project
      * @throws IOException Triggered by {@link ObjectMapper}
      */
-    public static JIPipeProject loadProject(Path fileName) throws IOException {
-        return JsonUtils.getObjectMapper().readerFor(JIPipeProject.class).readValue(fileName.toFile());
-    }
-
-    /**
-     * Loads a project from JSON data
-     *
-     * @param node JSON data
-     * @return Loaded project
-     * @throws IOException Triggered by {@link ObjectMapper}
-     */
-    public static JIPipeProject loadProject(JsonNode node) throws IOException {
-        return JsonUtils.getObjectMapper().readerFor(JIPipeProject.class).readValue(node);
+    public static JIPipeProject loadProject(Path fileName, JIPipeValidityReport report) throws IOException {
+        JsonNode jsonData = JsonUtils.getObjectMapper().readValue(fileName.toFile(), JsonNode.class);
+        JIPipeProject project = new JIPipeProject();
+        project.fromJson(jsonData, report);
+        return project;
     }
 
     /**
@@ -413,39 +406,99 @@ public class JIPipeProject implements JIPipeValidatable {
     }
 
     /**
+     * Writes the project to JSON
+     * @param generator the JSON generator
+     * @throws IOException thrown by {@link JsonGenerator}
+     */
+    public void toJson(JsonGenerator generator) throws IOException {
+        cleanupGraph();
+        generator.writeStartObject();
+        generator.writeStringField("jipipe:project-type", "project");
+        generator.writeObjectField("metadata", metadata);
+        generator.writeObjectField("dependencies", getDependencies().stream().map(JIPipeMutableDependency::new).collect(Collectors.toList()));
+        if (!getAdditionalMetadata().isEmpty()) {
+            generator.writeObjectFieldStart("additional-metadata");
+            for (Map.Entry<String, Object> entry : getAdditionalMetadata().entrySet()) {
+                if (entry.getValue() instanceof JIPipeParameterCollection) {
+                    generator.writeObjectFieldStart(entry.getKey());
+                    generator.writeObjectField("jipipe:type", entry.getValue().getClass());
+                    JIPipeParameterCollection.serializeParametersToJson((JIPipeParameterCollection) entry.getValue(), generator);
+                    generator.writeEndObject();
+                } else {
+                    generator.writeObjectFieldStart(entry.getKey());
+                    generator.writeObjectField("jipipe:type", entry.getValue().getClass());
+                    generator.writeObjectField("data", entry.getValue());
+                    generator.writeEndObject();
+                }
+            }
+            generator.writeEndObject();
+        }
+        generator.writeObjectField("graph", graph);
+        generator.writeFieldName("compartments");
+        generator.writeStartObject();
+        generator.writeObjectField("compartment-graph", compartmentGraph);
+        generator.writeEndObject();
+        generator.writeEndObject();
+    }
+
+    /**
+     * Loads the project from JSON
+     * @param node the node
+     */
+    public void fromJson(JsonNode node, JIPipeValidityReport report) throws IOException {
+        if (node.has("metadata")) {
+            metadata = JsonUtils.getObjectMapper().readerFor(JIPipeMetadata.class).readValue(node.get("metadata"));
+        }
+
+        // Deserialize additional metadata
+        JsonNode additionalMetadataNode = node.path("additional-metadata");
+        for (Map.Entry<String, JsonNode> metadataEntry : ImmutableList.copyOf(additionalMetadataNode.fields())) {
+            try {
+                Class<?> metadataClass = JsonUtils.getObjectMapper().readerFor(Class.class).readValue(metadataEntry.getValue().get("jipipe:type"));
+                if (JIPipeParameterCollection.class.isAssignableFrom(metadataClass)) {
+                    JIPipeParameterCollection metadata = (JIPipeParameterCollection) ReflectionUtils.newInstance(metadataClass);
+                    JIPipeParameterCollection.deserializeParametersFromJson(metadata, metadataEntry.getValue());
+                    additionalMetadata.put(metadataEntry.getKey(), metadata);
+                } else {
+                    Object data = JsonUtils.getObjectMapper().readerFor(metadataClass).readValue(metadataEntry.getValue().get("data"));
+                    if (data != null) {
+                        additionalMetadata.put(metadataEntry.getKey(), data);
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        // We must first load the graph, as we can infer compartments later
+        graph.fromJson(node.get("graph"), new JIPipeValidityReport());
+
+        // read compartments
+        compartmentGraph.fromJson(node.get("compartments").get("compartment-graph"), new JIPipeValidityReport());
+        for (JIPipeGraphNode algorithm : compartmentGraph.getNodes().values()) {
+            JIPipeProjectCompartment compartment = (JIPipeProjectCompartment) algorithm;
+            compartment.setProject(this);
+            compartments.put(compartment.getProjectCompartmentId(), compartment);
+            initializeCompartment(compartment);
+        }
+
+        // Reading compartments might break some connections. This will restore them
+        graph.fromJson(node.get("graph"), report);
+
+        // Update node visibilities
+        updateCompartmentVisibility();
+
+        // Apply some clean-up
+        cleanupGraph();
+    }
+
+    /**
      * Serializes a project
      */
     public static class Serializer extends JsonSerializer<JIPipeProject> {
         @Override
         public void serialize(JIPipeProject project, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
-            project.cleanupGraph();
-            jsonGenerator.writeStartObject();
-            jsonGenerator.writeStringField("jipipe:project-type", "project");
-            jsonGenerator.writeObjectField("metadata", project.metadata);
-            jsonGenerator.writeObjectField("dependencies", project.getDependencies().stream().map(JIPipeMutableDependency::new).collect(Collectors.toList()));
-            if (!project.getAdditionalMetadata().isEmpty()) {
-                jsonGenerator.writeObjectFieldStart("additional-metadata");
-                for (Map.Entry<String, Object> entry : project.getAdditionalMetadata().entrySet()) {
-                    if (entry.getValue() instanceof JIPipeParameterCollection) {
-                        jsonGenerator.writeObjectFieldStart(entry.getKey());
-                        jsonGenerator.writeObjectField("jipipe:type", entry.getValue().getClass());
-                        JIPipeParameterCollection.serializeParametersToJson((JIPipeParameterCollection) entry.getValue(), jsonGenerator);
-                        jsonGenerator.writeEndObject();
-                    } else {
-                        jsonGenerator.writeObjectFieldStart(entry.getKey());
-                        jsonGenerator.writeObjectField("jipipe:type", entry.getValue().getClass());
-                        jsonGenerator.writeObjectField("data", entry.getValue());
-                        jsonGenerator.writeEndObject();
-                    }
-                }
-                jsonGenerator.writeEndObject();
-            }
-            jsonGenerator.writeObjectField("algorithm-graph", project.graph);
-            jsonGenerator.writeFieldName("compartments");
-            jsonGenerator.writeStartObject();
-            jsonGenerator.writeObjectField("compartment-graph", project.compartmentGraph);
-            jsonGenerator.writeEndObject();
-            jsonGenerator.writeEndObject();
+            project.toJson(jsonGenerator);
         }
     }
 
@@ -457,54 +510,8 @@ public class JIPipeProject implements JIPipeValidatable {
         @Override
         public JIPipeProject deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
             JIPipeProject project = new JIPipeProject();
-
             JsonNode node = jsonParser.getCodec().readTree(jsonParser);
-
-            if (node.has("metadata")) {
-                project.metadata = JsonUtils.getObjectMapper().readerFor(JIPipeMetadata.class).readValue(node.get("metadata"));
-            }
-
-            // Deserialize additional metadata
-            JsonNode additionalMetadataNode = node.path("additional-metadata");
-            for (Map.Entry<String, JsonNode> metadataEntry : ImmutableList.copyOf(additionalMetadataNode.fields())) {
-                try {
-                    Class<?> metadataClass = JsonUtils.getObjectMapper().readerFor(Class.class).readValue(metadataEntry.getValue().get("jipipe:type"));
-                    if (JIPipeParameterCollection.class.isAssignableFrom(metadataClass)) {
-                        JIPipeParameterCollection metadata = (JIPipeParameterCollection) ReflectionUtils.newInstance(metadataClass);
-                        JIPipeParameterCollection.deserializeParametersFromJson(metadata, metadataEntry.getValue());
-                        project.additionalMetadata.put(metadataEntry.getKey(), metadata);
-                    } else {
-                        Object data = JsonUtils.getObjectMapper().readerFor(metadataClass).readValue(metadataEntry.getValue().get("data"));
-                        if (data != null) {
-                            project.additionalMetadata.put(metadataEntry.getKey(), data);
-                        }
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-
-            // We must first load the graph, as we can infer compartments later
-            project.graph.fromJson(node.get("algorithm-graph"), new JIPipeValidityReport());
-
-            // read compartments
-            project.compartmentGraph.fromJson(node.get("compartments").get("compartment-graph"), new JIPipeValidityReport());
-            for (JIPipeGraphNode algorithm : project.compartmentGraph.getNodes().values()) {
-                JIPipeProjectCompartment compartment = (JIPipeProjectCompartment) algorithm;
-                compartment.setProject(project);
-                project.compartments.put(compartment.getProjectCompartmentId(), compartment);
-                project.initializeCompartment(compartment);
-            }
-
-            // Reading compartments might break some connections. This will restore them
-            project.graph.fromJson(node.get("algorithm-graph"), new JIPipeValidityReport());
-
-            // Update node visibilities
-            project.updateCompartmentVisibility();
-
-            // Apply some clean-up
-            project.cleanupGraph();
-
+            project.fromJson(node, new JIPipeValidityReport());
             return project;
         }
     }

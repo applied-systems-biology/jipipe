@@ -118,9 +118,9 @@ public class JIPipeDependencyUI extends JPanel {
             boolean supportsImageJ = JIPipeImageJAdapterRegistry.getInstance().supportsJIPipeData(info.getDataClass());
             String supportsImageJEntry;
             if (supportsImageJ)
-                supportsImageJEntry = StringUtils.createIconTextHTMLTable("Yes", ResourceUtils.getPluginResource("icons/check-circle-green.png"));
+                supportsImageJEntry = StringUtils.createIconTextHTMLTable("Yes", ResourceUtils.getPluginResource("icons/emblems/vs-normal.png"));
             else
-                supportsImageJEntry = StringUtils.createIconTextHTMLTable("No", ResourceUtils.getPluginResource("icons/close-tab.png"));
+                supportsImageJEntry = StringUtils.createIconTextHTMLTable("No", ResourceUtils.getPluginResource("icons/emblems/vcs-conflicting.png"));
             model.addRow(new Object[]{
                     StringUtils.createIconTextHTMLTable(info.getName(), JIPipeUIDatatypeRegistry.getInstance().getIconURLFor(info)),
                     info.getId(),

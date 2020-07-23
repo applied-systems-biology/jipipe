@@ -71,7 +71,7 @@ public class JIPipeRunCommand implements Command {
         }
         JIPipeProject project;
         try {
-            project = JIPipeProject.loadProject(projectFile.toPath());
+            project = JIPipeProject.loadProject(projectFile.toPath(), new JIPipeValidityReport());
             project.setWorkDirectory(projectFile.toPath().getParent());
 
         } catch (IOException e) {

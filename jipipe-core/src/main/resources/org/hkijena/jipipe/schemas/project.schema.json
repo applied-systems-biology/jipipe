@@ -8,7 +8,7 @@
     "jipipe:project-type",
     "metadata",
     "dependencies",
-    "algorithm-graph",
+    "graph",
     "compartments"
   ],
   "properties": {
@@ -40,11 +40,11 @@
         "$ref": "https://applied-systems-biology.github.io/jipipe/schemas/dependency.schema.json"
       }
     },
-    "algorithm-graph": {
-      "$id": "#/properties/algorithm-graph",
+    "graph": {
+      "$id": "#/properties/graph",
       "type": "object",
-      "title": "Algorithm graph",
-      "description": "Contains the algorithms",
+      "title": "Graph",
+      "description": "Contains the pipeline nodes",
       "default": {
         "nodes": {},
         "edges": []

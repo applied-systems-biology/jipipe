@@ -143,7 +143,7 @@ public class JIPipeRunSettingsUI extends JIPipeProjectWorkbenchPanel {
             for (JIPipeGraphNode algorithm : algorithmsWithMissingInput.stream().sorted(Comparator.comparing(JIPipeGraphNode::getCompartment)).collect(Collectors.toList())) {
                 model.addRow(new Object[]{
                         StringUtils.createIconTextHTMLTable(getProjectWorkbench().getProject().getCompartments().get(algorithm.getCompartment()).getName(),
-                                ResourceUtils.getPluginResource("icons/graph-compartment.png")),
+                                ResourceUtils.getPluginResource("icons/data-types/graph-compartment.png")),
                         algorithm.getName()
                 });
             }

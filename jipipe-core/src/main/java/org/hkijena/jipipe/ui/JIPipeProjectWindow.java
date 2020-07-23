@@ -17,6 +17,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.JIPipeRun;
+import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.settings.ProjectsSettings;
@@ -113,6 +114,7 @@ public class JIPipeProjectWindow extends JFrame {
      */
     public void openProject(Path path) {
         if (Files.isRegularFile(path)) {
+            JIPipeValidityReport report = new JIPipeValidityReport();
             try {
                 JsonNode jsonData = JsonUtils.getObjectMapper().readValue(path.toFile(), JsonNode.class);
                 Set<JIPipeDependency> dependencySet = JIPipeProject.loadDependenciesFromJson(jsonData);
@@ -122,7 +124,8 @@ public class JIPipeProjectWindow extends JFrame {
                         return;
                 }
 
-                JIPipeProject project = JIPipeProject.loadProject(jsonData);
+                JIPipeProject project = new JIPipeProject();
+                project.fromJson(jsonData, report);
                 project.setWorkDirectory(path.getParent());
                 JIPipeProjectWindow window = openProjectInThisOrNewWindow("Open project", project, false, false);
                 if (window == null)
@@ -134,7 +137,11 @@ public class JIPipeProjectWindow extends JFrame {
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
+            if(!report.isValid()) {
+                UIUtils.openValidityReportDialog(this, report, false);
+            }
         } else if (Files.isDirectory(path)) {
+            JIPipeValidityReport report = new JIPipeValidityReport();
             try {
                 Path parameterFilePath = path.resolve("project.jip");
                 JsonNode jsonData = JsonUtils.getObjectMapper().readValue(parameterFilePath.toFile(), JsonNode.class);
@@ -145,7 +152,7 @@ public class JIPipeProjectWindow extends JFrame {
                         return;
                 }
 
-                JIPipeRun run = JIPipeRun.loadFromFolder(path);
+                JIPipeRun run = JIPipeRun.loadFromFolder(path, report);
                 run.getProject().setWorkDirectory(path);
                 JIPipeProjectWindow window = openProjectInThisOrNewWindow("Open JIPipe output", run.getProject(), false, false);
                 if (window == null)
@@ -163,6 +170,9 @@ public class JIPipeProjectWindow extends JFrame {
                 ProjectsSettings.getInstance().addRecentProject(path);
             } catch (IOException e) {
                 throw new RuntimeException(e);
+            }
+            if(!report.isValid()) {
+                UIUtils.openValidityReportDialog(this, report, false);
             }
         }
     }
@@ -208,7 +218,7 @@ public class JIPipeProjectWindow extends JFrame {
             getProject().saveProject(tempFile);
 
             // Check if the saved project can be loaded
-            JIPipeProject.loadProject(tempFile);
+            JIPipeProject.loadProject(tempFile, new JIPipeValidityReport());
 
             // Overwrite the target file
             if (Files.exists(savePath))

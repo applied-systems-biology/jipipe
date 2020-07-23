@@ -283,7 +283,7 @@ public class JIPipeNodeInfoPicker extends JPanel {
             if (value != null) {
                 setText(StringUtils.createIconTextHTMLTable(value.getName(), JIPipeUINodeRegistry.getInstance().getIconURLFor(value)));
             } else {
-                setText(StringUtils.createIconTextHTMLTable("Select none", ResourceUtils.getPluginResource("icons/remove.png")));
+                setText(StringUtils.createIconTextHTMLTable("Select none", ResourceUtils.getPluginResource("icons/actions/stock_calc-cancel.png")));
             }
             setSelected(isSelected);
             if (isSelected) {
