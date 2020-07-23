@@ -94,7 +94,7 @@ public class JIPipePluginManagerUIPanel extends JIPipeProjectWorkbenchPanel {
         toolBar.add(newExtensionButton);
 
         JButton installButton = new JButton("Install ...", UIUtils.getIconFromResources("actions/document-open-folder.png"));
-        installButton.addActionListener(e -> JIPipeJsonExtensionWindow.installExtensions(this));
+        installButton.addActionListener(e -> JIPipeJsonExtensionWindow.installExtensions(getWorkbench()));
         toolBar.add(installButton);
 
         toolBar.add(Box.createHorizontalGlue());

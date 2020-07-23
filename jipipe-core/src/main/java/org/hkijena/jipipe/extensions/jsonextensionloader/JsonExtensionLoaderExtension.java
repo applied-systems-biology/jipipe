@@ -17,6 +17,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.eventbus.Subscribe;
 import ij.Menus;
 import org.hkijena.jipipe.JIPipeDefaultRegistry;
+import org.hkijena.jipipe.JIPipeImageJUpdateSiteDependency;
 import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.JIPipeJsonExtension;
 import org.hkijena.jipipe.api.JIPipeValidityReport;

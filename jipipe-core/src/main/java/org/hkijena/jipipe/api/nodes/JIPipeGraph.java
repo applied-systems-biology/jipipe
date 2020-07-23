@@ -641,8 +641,9 @@ public class JIPipeGraph implements JIPipeValidatable {
      * Loads this graph from JSON
      *
      * @param node JSON data
+     * @param issues
      */
-    public void fromJson(JsonNode node) {
+    public void fromJson(JsonNode node, JIPipeValidityReport issues) {
         if (!node.has("nodes"))
             return;
 
@@ -651,6 +652,10 @@ public class JIPipeGraph implements JIPipeValidatable {
                 String id = kv.getValue().get("jipipe:node-info-id").asText();
                 if (!JIPipeNodeRegistry.getInstance().hasNodeInfoWithId(id)) {
                     System.err.println("Unable to find node with ID '" + id + "'. Skipping.");
+                    issues.forCategory("Nodes").forCategory(id).reportIsInvalid("Unable to find node type '" + id + "'!",
+                            "The JSON data requested to load a node of type '" + id + "', but it is not known to JIPipe.",
+                            "Please check if all extensions are are correctly loaded.",
+                            node);
                     continue;
                 }
                 JIPipeNodeInfo info = JIPipeNodeRegistry.getInstance().getInfoById(id);
@@ -667,10 +672,20 @@ public class JIPipeGraph implements JIPipeValidatable {
             JIPipeGraphNode sourceAlgorithm = algorithms.get(sourceAlgorithmName);
             JIPipeGraphNode targetAlgorithm = algorithms.get(targetAlgorithmName);
             if (sourceAlgorithm == null) {
+                issues.forCategory("Edges").forCategory("Source").forCategory(sourceAlgorithmName).reportIsInvalid("Unable to find node '" + sourceAlgorithmName + "'!",
+                        "The JSON data requested to create an edge between the nodes '" + sourceAlgorithmName + "' and '" + targetAlgorithmName + "', but the source does not exist. " +
+                                "This might have been caused by a previous error.",
+                        "Please check if all extensions are are correctly loaded.",
+                        node);
                 System.err.println("Unable to find node with ID '" + sourceAlgorithmName + "'. Skipping this instruction.");
                 continue;
             }
             if (targetAlgorithm == null) {
+                issues.forCategory("Edges").forCategory("Target").forCategory(sourceAlgorithmName).reportIsInvalid("Unable to find node '" + targetAlgorithmName + "'!",
+                        "The JSON data requested to create an edge between the nodes '" + sourceAlgorithmName + "' and '" + targetAlgorithmName + "', but the source does not exist. " +
+                                "This might have been caused by a previous error.",
+                        "Please check if all extensions are are correctly loaded.",
+                        node);
                 System.err.println("Unable to find node with ID '" + targetAlgorithmName + "'. Skipping this instruction.");
                 continue;
             }
@@ -679,14 +694,28 @@ public class JIPipeGraph implements JIPipeValidatable {
             JIPipeDataSlot source = sourceAlgorithm.getOutputSlotMap().get(sourceSlotName);
             JIPipeDataSlot target = targetAlgorithm.getInputSlotMap().get(targetSlotName);
             if (source == null) {
+                issues.forCategory("Edges").forCategory("Output slots").forCategory(sourceAlgorithmName).reportIsInvalid("Unable to find output slot '" + sourceSlotName + "' in node '" + sourceAlgorithmName + "'!",
+                        "The JSON data requested to create an edge between the nodes '" + sourceAlgorithmName + "' and '" + targetAlgorithmName + "', but the source slot does not exist. " +
+                                "This might have been caused by a previous error.",
+                        "Please check if all extensions are are correctly loaded.",
+                        node);
                 System.err.println("Unable to find data slot '" + sourceSlotName + "' in algorithm '" + sourceAlgorithmName + "'. Skipping this instruction.");
                 continue;
             }
             if (target == null) {
+                issues.forCategory("Edges").forCategory("Input slots").forCategory(sourceAlgorithmName).reportIsInvalid("Unable to find input slot '" + targetSlotName + "' in node '" + targetAlgorithmName + "'!",
+                        "The JSON data requested to create an edge between the nodes '" + sourceAlgorithmName + "' and '" + targetAlgorithmName + "', but the target slot does not exist. " +
+                                "This might have been caused by a previous error.",
+                        "Please check if all extensions are are correctly loaded.",
+                        node);
                 System.err.println("Unable to find data slot '" + targetSlotName + "' in algorithm '" + targetAlgorithmName + "'. Skipping this instruction.");
                 continue;
             }
             if (!graph.containsEdge(source, target) && graph.inDegreeOf(target) > 0) {
+                issues.forCategory("Edges").forCategory("Validation").forCategory(sourceAlgorithmName).reportIsInvalid("Invalid edge found!",
+                        "The JSON data requested to create an edge between the nodes '" + sourceAlgorithmName + "' and '" + targetAlgorithmName + "', but the edge is invalid.",
+                        "Please check the JSON data manually or ignore this error.",
+                        node);
                 System.err.println("Detected invalid edge from " + source.getNode().getIdInGraph() + "/" + source.getName() + " -> "
                         + target.getNode().getIdInGraph() + "/" + target.getName() + "! Input slot already has a source. Skipping this instruction.");
                 continue;
@@ -699,6 +728,10 @@ public class JIPipeGraph implements JIPipeValidatable {
                 try {
                     JsonUtils.getObjectMapper().readerForUpdating(edgeInstance).readValue(metadataNode);
                 } catch (IOException e) {
+                    issues.forCategory("Metadata").reportIsInvalid("Unable to deserialize graph metadata!",
+                            "The JSON data contains some metadata, but it could not be recovered.",
+                            "Metadata does not contain critical information. You can ignore this message.",
+                            node);
                     System.err.println("Cannot deserialize edge metadata!");
                     e.printStackTrace();
                 }
@@ -1205,7 +1238,7 @@ public class JIPipeGraph implements JIPipeValidatable {
         @Override
         public JIPipeGraph deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
             JIPipeGraph graph = new JIPipeGraph();
-            graph.fromJson(jsonParser.readValueAsTree());
+            graph.fromJson(jsonParser.readValueAsTree(), new JIPipeValidityReport());
             return graph;
         }
     }

@@ -19,6 +19,7 @@ import net.imagej.ui.swing.updater.SwingAuthenticator;
 import net.imagej.updater.FilesCollection;
 import net.imagej.updater.UpdateSite;
 import net.imagej.updater.util.AvailableSites;
+import net.imagej.updater.util.Progress;
 import net.imagej.updater.util.UpdaterUtil;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.events.ExtensionRegisteredEvent;
@@ -127,10 +128,6 @@ public class JIPipeDefaultRegistry extends AbstractService implements JIPipeRegi
             }
         }
 
-        // Check for update sites
-        if (extensionSettings.isValidateImageJDependencies())
-            checkUpdateSites(javaExtensions, issues);
-
         System.out.println("[2/3] Registration-phase ...");
         for (int i = 0; i < pluginList.size(); ++i) {
             PluginInfo<JIPipeJavaExtension> info = pluginList.get(i);
@@ -179,23 +176,33 @@ public class JIPipeDefaultRegistry extends AbstractService implements JIPipeRegi
             }
         }
 
+        // Check for update sites
+
+        if (extensionSettings.isValidateImageJDependencies())
+            checkUpdateSites(issues, new IJProgressAdapter());
+
         // Reload settings
         System.out.println("Loading settings ...");
         settingsRegistry.reload();
         System.out.println("JIPipe loading finished");
     }
 
-    private void checkUpdateSites(List<JIPipeJavaExtension> extensions, JIPipeRegistryIssues issues) {
+    /**
+     * Checks the update sites of all extensions and stores the results in the issues
+     * @param issues the results
+     * @param progressAdapter the adapter that takes the progress
+     */
+    public void checkUpdateSites(JIPipeRegistryIssues issues, Progress progressAdapter) {
         Set<JIPipeImageJUpdateSiteDependency> dependencies = new HashSet<>();
         Set<JIPipeImageJUpdateSiteDependency> missingSites = new HashSet<>();
-        for (JIPipeJavaExtension extension : extensions) {
+        for (JIPipeDependency extension : registeredExtensions) {
             dependencies.addAll(extension.getImageJUpdateSiteDependencies());
             missingSites.addAll(extension.getImageJUpdateSiteDependencies());
         }
         if (!dependencies.isEmpty()) {
             System.out.println("Following ImageJ update site dependencies were requested: ");
             for (JIPipeImageJUpdateSiteDependency dependency : dependencies) {
-                System.out.println("  - " + dependency.getMetadata().getName() + " @ " + dependency.getMetadata().getWebsite());
+                System.out.println("  - " + dependency.getName() + " @ " + dependency.getUrl());
             }
             FilesCollection filesCollection = null;
             try {
@@ -204,7 +211,7 @@ public class JIPipeDefaultRegistry extends AbstractService implements JIPipeRegi
 
                 filesCollection = new FilesCollection(JIPipeImageJPluginManager.getImageJRoot().toFile());
                 AvailableSites.initializeAndAddSites(filesCollection);
-                filesCollection.downloadIndexAndChecksum(new IJProgressAdapter());
+                filesCollection.downloadIndexAndChecksum(progressAdapter);
             } catch (Exception e) {
                 System.err.println("Unable to check update sites!");
                 e.printStackTrace();
@@ -228,7 +235,7 @@ public class JIPipeDefaultRegistry extends AbstractService implements JIPipeRegi
         if (!missingSites.isEmpty()) {
             System.out.println("Following ImageJ update site dependencies are missing: ");
             for (JIPipeImageJUpdateSiteDependency dependency : missingSites) {
-                System.out.println("  - " + dependency.getMetadata().getName() + " @ " + dependency.getMetadata().getWebsite());
+                System.out.println("  - " + dependency.getName() + " @ " + dependency.getUrl());
             }
         }
 
@@ -355,7 +362,7 @@ public class JIPipeDefaultRegistry extends AbstractService implements JIPipeRegi
      * Instantiates the plugin service. This is done within {@link JIPipeGUICommand}
      *
      * @param context           the SciJava context
-     * @param extensionSettings
+     * @param extensionSettings extension settings
      * @param issues            registration issues
      */
     public static void instantiate(Context context, ExtensionSettings extensionSettings, JIPipeRegistryIssues issues) {

@@ -16,10 +16,12 @@ package org.hkijena.jipipe.extensions.parameters;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import org.fife.ui.rsyntaxtextarea.AbstractTokenMakerFactory;
 import org.fife.ui.rsyntaxtextarea.TokenMakerFactory;
+import org.hkijena.jipipe.JIPipeImageJUpdateSiteDependency;
 import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.nodes.JIPipeColumnGrouping;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollectionVisibilities;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.parameters.collections.ListParameter;
@@ -54,6 +56,7 @@ import org.hkijena.jipipe.extensions.parameters.scripts.ScriptParameterEditorUI;
 import org.hkijena.jipipe.extensions.parameters.table.ParameterTable;
 import org.hkijena.jipipe.extensions.parameters.table.ParameterTableEditorUI;
 import org.hkijena.jipipe.extensions.parameters.util.JIPipeAuthorMetadataParameterEditorUI;
+import org.hkijena.jipipe.extensions.parameters.util.JIPipeParameterCollectionParameterEditorUI;
 import org.hkijena.jipipe.extensions.parameters.util.LogicalOperation;
 import org.hkijena.jipipe.extensions.parameters.util.SortOrder;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphViewMode;
@@ -100,6 +103,18 @@ public class StandardParametersExtension extends JIPipePrepackagedDefaultJavaExt
 
     @Override
     public void register() {
+        // Fallback editor for any parameter collection
+        registerParameterEditor(JIPipeParameterCollection.class, JIPipeParameterCollectionParameterEditorUI.class);
+        registerParameterType("jipipe:imagej-update-site",
+                JIPipeImageJUpdateSiteDependency.class,
+                JIPipeImageJUpdateSiteDependency.List.class,
+                null,
+                null,
+                "ImageJ update site",
+                "An ImageJ update site",
+                null);
+
+
         registerPrimitives();
         registerCommonJavaTypes();
         registerJIPipeTypes();

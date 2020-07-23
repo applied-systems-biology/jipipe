@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.hkijena.jipipe.api.JIPipeMetadata;
 import org.hkijena.jipipe.api.JIPipeProject;
+import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeCompartmentOutput;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
@@ -183,7 +184,7 @@ public class JIPipeExportedCompartment {
             JIPipeExportedCompartment exportedCompartment = new JIPipeExportedCompartment();
 
             JsonNode node = jsonParser.readValueAsTree();
-            exportedCompartment.graph.fromJson(node.get("graph"));
+            exportedCompartment.graph.fromJson(node.get("graph"), new JIPipeValidityReport());
             if (node.has("metadata"))
                 exportedCompartment.metadata = JsonUtils.getObjectMapper().readerFor(JIPipeMetadata.class).readValue(node.get("metadata"));
 

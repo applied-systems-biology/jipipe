@@ -61,7 +61,7 @@ public class MissingUpdateSiteResolver extends JDialog implements JIPipeWorkbenc
         builder.append("Following ImageJ update sites " +
                 "were requested, but are not activated:\n\n");
         for (JIPipeImageJUpdateSiteDependency site : issues.getMissingImageJSites()) {
-            builder.append("* `").append(site.getName()).append("` (").append(site.getURL()).append(")\n");
+            builder.append("* `").append(site.getName()).append("` (").append(site.getUrl()).append(")\n");
         }
         builder.append("\n\nYou can ignore this or install the missing dependencies by clicking 'Resolve'. " +
                 "Please note that the 'Resolve' tool will add the listed URLs to your list of update sites if the name is not present.");

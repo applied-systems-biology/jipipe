@@ -244,7 +244,7 @@ public class JIPipeJsonExtensionWorkbench extends JPanel implements JIPipeWorkbe
                 return;
         }
 
-        JIPipeJsonExtensionWindow.installExtension(this, getProject(), true);
+        JIPipeJsonExtensionWindow.installExtension(this, getProject(), true, true);
     }
 
     /**

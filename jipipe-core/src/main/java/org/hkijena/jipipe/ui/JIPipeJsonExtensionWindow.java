@@ -15,14 +15,18 @@ package org.hkijena.jipipe.ui;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import ij.IJ;
+import net.imagej.ui.swing.updater.ProgressDialog;
 import org.hkijena.jipipe.JIPipeDefaultRegistry;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeJsonExtension;
+import org.hkijena.jipipe.JIPipeRegistryIssues;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.extensions.jsonextensionloader.JsonExtensionLoaderExtension;
+import org.hkijena.jipipe.extensions.settings.ExtensionSettings;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.settings.ProjectsSettings;
+import org.hkijena.jipipe.ui.ijupdater.MissingUpdateSiteResolver;
 import org.hkijena.jipipe.ui.project.UnsatisfiedDependenciesDialog;
 import org.hkijena.jipipe.utils.JsonUtils;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -253,7 +257,7 @@ public class JIPipeJsonExtensionWindow extends JFrame {
      *
      * @param context          The context
      * @param project          The project
-     * @param showIntroduction
+     * @param showIntroduction whether to show introduction
      * @return The window
      */
     public static JIPipeJsonExtensionWindow newWindow(Context context, JIPipeJsonExtension project, boolean showIntroduction) {
@@ -268,15 +272,18 @@ public class JIPipeJsonExtensionWindow extends JFrame {
     /**
      * Allows the user to select files to install
      *
-     * @param parent The parent component
+     * @param workbench The parent component
      */
-    public static void installExtensions(Component parent) {
-        List<Path> files = FileChooserSettings.openFiles(parent, FileChooserSettings.KEY_PROJECT, "Open JIPipe JSON extension (*.jipe)");
+    public static void installExtensions(JIPipeWorkbench workbench) {
+        List<Path> files = FileChooserSettings.openFiles(workbench.getWindow(), FileChooserSettings.KEY_PROJECT, "Open JIPipe JSON extension (*.jipe)");
         for (Path selectedFile : files) {
-            installExtensionFromFile(parent, selectedFile, true);
+            installExtensionFromFile(workbench, selectedFile, true, false);
+        }
+        if(ExtensionSettings.getInstance().isValidateImageJDependencies()) {
+            checkExtensionDependencies(workbench);
         }
         if (!files.isEmpty()) {
-            JOptionPane.showMessageDialog(parent, "The extensions were copied into the plugin directory. Please check if any errors occurred. " +
+            JOptionPane.showMessageDialog(workbench.getWindow(), "The extensions were copied into the plugin directory. Please check if any errors occurred. " +
                     "We recommend to restart ImageJ, " +
                     "especially if you updated an existing extension.", "Extensions copied", JOptionPane.INFORMATION_MESSAGE);
         }
@@ -284,26 +291,26 @@ public class JIPipeJsonExtensionWindow extends JFrame {
 
     /**
      * Loads a project and installs it
-     *
-     * @param parent   The parent component
+     *  @param workbench   The parent component
      * @param filePath The file path
-     * @param silent
+     * @param silent if not dialogs should be  shown
+     * @param checkDependencies whether to check dependencies
      */
-    public static void installExtensionFromFile(Component parent, Path filePath, boolean silent) {
+    public static void installExtensionFromFile(JIPipeWorkbench workbench, Path filePath, boolean silent, boolean checkDependencies) {
         try {
             JsonNode jsonData = JsonUtils.getObjectMapper().readValue(filePath.toFile(), JsonNode.class);
             Set<JIPipeDependency> dependencySet = JIPipeProject.loadDependenciesFromJson(jsonData);
             Set<JIPipeDependency> missingDependencies = JIPipeDependency.findUnsatisfiedDependencies(dependencySet);
             if (!missingDependencies.isEmpty()) {
-                if (!UnsatisfiedDependenciesDialog.showDialog(parent, filePath, missingDependencies))
+                if (!UnsatisfiedDependenciesDialog.showDialog(workbench.getWindow(), filePath, missingDependencies))
                     return;
             }
 
             JIPipeJsonExtension project = JIPipeJsonExtension.loadProject(jsonData);
-            installExtension(parent, project, true);
+            installExtension(workbench, project, true, checkDependencies);
 
             if (!silent) {
-                JOptionPane.showMessageDialog(parent, "The extension was installed. We recommend to restart ImageJ, " +
+                JOptionPane.showMessageDialog(workbench.getWindow(), "The extension was installed. We recommend to restart ImageJ, " +
                         "especially if you updated an existing extension.", "Extension installed", JOptionPane.INFORMATION_MESSAGE);
             }
         } catch (IOException e) {
@@ -313,15 +320,15 @@ public class JIPipeJsonExtensionWindow extends JFrame {
 
     /**
      * Installs a loaded project
-     *
-     * @param parent    The parent component
+     *  @param workbench    The parent component
      * @param extension The extension
      * @param silent    whether to show a dialog confirming the installation
+     * @param checkDependencies whether to check dependencies
      */
-    public static void installExtension(Component parent, JIPipeJsonExtension extension, boolean silent) {
+    public static void installExtension(JIPipeWorkbench workbench, JIPipeJsonExtension extension, boolean silent, boolean checkDependencies) {
         boolean alreadyExists = JIPipeDefaultRegistry.getInstance().getRegisteredExtensionIds().contains(extension.getDependencyId());
         if (alreadyExists) {
-            if (JOptionPane.showConfirmDialog(parent, "There already exists an extension with ID '"
+            if (JOptionPane.showConfirmDialog(workbench.getWindow(), "There already exists an extension with ID '"
                     + extension.getDependencyId() + "'. Do you want to install this extension anyways?", "Install", JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION) {
                 return;
             }
@@ -352,7 +359,7 @@ public class JIPipeJsonExtensionWindow extends JFrame {
         fileChooser.setDialogTitle("Install extension '" + extension.getMetadata().getName() + "'");
         fileChooser.setCurrentDirectory(pluginFolder.toFile());
         fileChooser.setSelectedFile(suggestedPath.toFile());
-        if (fileChooser.showSaveDialog(parent) != JFileChooser.APPROVE_OPTION)
+        if (fileChooser.showSaveDialog(workbench.getWindow()) != JFileChooser.APPROVE_OPTION)
             return;
 
         Path selectedPath = fileChooser.getSelectedFile().toPath();
@@ -367,11 +374,27 @@ public class JIPipeJsonExtensionWindow extends JFrame {
             JIPipeJsonExtension loadedExtension = JsonUtils.getObjectMapper().readValue(selectedPath.toFile(), JIPipeJsonExtension.class);
             JIPipeDefaultRegistry.getInstance().register(loadedExtension);
             if (!silent) {
-                JOptionPane.showMessageDialog(parent, "The extension was installed. We recommend to restart ImageJ, " +
+                JOptionPane.showMessageDialog(workbench.getWindow(), "The extension was installed. We recommend to restart ImageJ, " +
                         "especially if you updated an existing extension.", "Extension installed", JOptionPane.INFORMATION_MESSAGE);
+            }
+            if(checkDependencies && ExtensionSettings.getInstance().isValidateImageJDependencies()) {
+                checkExtensionDependencies(workbench);
             }
         } catch (Exception e) {
             IJ.handleException(e);
+        }
+    }
+
+    public static void checkExtensionDependencies(JIPipeWorkbench workbench) {
+        JIPipeRegistryIssues issues = new JIPipeRegistryIssues();
+        JIPipeDefaultRegistry.getInstance().checkUpdateSites(issues,
+                new ProgressDialog((Frame) workbench.getWindow(), "Checking dependencies ..."));
+        if(!issues.getMissingImageJSites().isEmpty()) {
+            MissingUpdateSiteResolver resolver = new MissingUpdateSiteResolver(workbench.getContext(), issues);
+            resolver.revalidate();
+            resolver.repaint();
+            resolver.setLocationRelativeTo(null);
+            resolver.setVisible(true);
         }
     }
 

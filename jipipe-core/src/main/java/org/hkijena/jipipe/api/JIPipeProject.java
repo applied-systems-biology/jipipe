@@ -485,10 +485,10 @@ public class JIPipeProject implements JIPipeValidatable {
             }
 
             // We must first load the graph, as we can infer compartments later
-            project.graph.fromJson(node.get("algorithm-graph"));
+            project.graph.fromJson(node.get("algorithm-graph"), new JIPipeValidityReport());
 
             // read compartments
-            project.compartmentGraph.fromJson(node.get("compartments").get("compartment-graph"));
+            project.compartmentGraph.fromJson(node.get("compartments").get("compartment-graph"), new JIPipeValidityReport());
             for (JIPipeGraphNode algorithm : project.compartmentGraph.getNodes().values()) {
                 JIPipeProjectCompartment compartment = (JIPipeProjectCompartment) algorithm;
                 compartment.setProject(project);
@@ -497,7 +497,7 @@ public class JIPipeProject implements JIPipeValidatable {
             }
 
             // Reading compartments might break some connections. This will restore them
-            project.graph.fromJson(node.get("algorithm-graph"));
+            project.graph.fromJson(node.get("algorithm-graph"), new JIPipeValidityReport());
 
             // Update node visibilities
             project.updateCompartmentVisibility();

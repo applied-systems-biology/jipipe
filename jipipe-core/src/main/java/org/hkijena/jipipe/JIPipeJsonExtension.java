@@ -44,6 +44,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -58,6 +59,7 @@ public class JIPipeJsonExtension implements JIPipeDependency, JIPipeValidatable 
     private JIPipeMetadata metadata = new JIPipeMetadata();
     private Path jsonFilePath;
     private JIPipeDefaultRegistry registry;
+    private JIPipeImageJUpdateSiteDependency.List updateSiteDependenciesParameter = new JIPipeImageJUpdateSiteDependency.List();
 
     private Set<JsonNodeInfo> nodeInfos = new HashSet<>();
     private JsonNode serializedJson;
@@ -155,6 +157,26 @@ public class JIPipeJsonExtension implements JIPipeDependency, JIPipeValidatable 
             result.addAll(info.getDependencies());
         }
         return result.stream().map(JIPipeMutableDependency::new).collect(Collectors.toSet());
+    }
+
+    @Override
+    public List<JIPipeImageJUpdateSiteDependency> getImageJUpdateSiteDependencies() {
+        return updateSiteDependenciesParameter;
+    }
+
+    @JIPipeDocumentation(name = "ImageJ update site dependencies", description = "ImageJ update sites that should be enabled for the extension to work. " +
+            "Users will get a notification if a site is not activated or found. Both name and URL should be set. The URL is only used if a site with the same name " +
+            "does not already exist in the user's repository.")
+    @JIPipeParameter(value = "update-site-dependencies", uiOrder = 10)
+    @JsonGetter("update-site-dependencies")
+    public JIPipeImageJUpdateSiteDependency.List getUpdateSiteDependenciesParameter() {
+        return updateSiteDependenciesParameter;
+    }
+
+    @JIPipeParameter("update-site-dependencies")
+    @JsonSetter("update-site-dependencies")
+    public void setUpdateSiteDependenciesParameter(JIPipeImageJUpdateSiteDependency.List updateSiteDependenciesParameter) {
+        this.updateSiteDependenciesParameter = updateSiteDependenciesParameter;
     }
 
     /**

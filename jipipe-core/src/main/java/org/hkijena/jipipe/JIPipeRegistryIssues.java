@@ -33,7 +33,7 @@ public class JIPipeRegistryIssues implements JIPipeValidatable {
     public void reportValidity(JIPipeValidityReport report) {
         for (JIPipeImageJUpdateSiteDependency site : missingImageJSites) {
             report.forCategory("ImageJ dependencies").forCategory("Sites").forCategory(site.getName()).reportIsInvalid("Missing ImageJ site: " + site.getName(),
-                    String.format("An extension requests following ImageJ site to be activated: '%s' (%s)", site.getName(), site.getURL()),
+                    String.format("An extension requests following ImageJ site to be activated: '%s' (%s)", site.getName(), site.getUrl()),
                     "Please activate the site in the update manager.",
                     this);
         }
