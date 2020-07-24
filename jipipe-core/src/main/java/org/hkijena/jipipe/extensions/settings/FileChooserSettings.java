@@ -21,6 +21,7 @@ import org.hkijena.jipipe.api.registries.JIPipeSettingsRegistry;
 import org.hkijena.jipipe.ui.components.PathEditor;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.io.File;
 import java.nio.file.Files;
@@ -156,9 +157,10 @@ public class FileChooserSettings implements JIPipeParameterCollection {
      * @param parent parent component
      * @param key    location where the dialog is opened
      * @param title  dialog title
+     * @param extensionFilters optional extension filters. the first one is chosen automatically
      * @return selected file or null if dialog was cancelled
      */
-    public static Path openFile(Component parent, String key, String title) {
+    public static Path openFile(Component parent, String key, String title, FileNameExtensionFilter... extensionFilters) {
         FileChooserSettings instance = getInstance();
         Path currentPath = instance.getLastDirectoryBy(key);
         if (instance.useNativeChooser) {
@@ -179,6 +181,12 @@ public class FileChooserSettings implements JIPipeParameterCollection {
             JFileChooser fileChooser = new JFileChooser(currentPath.toFile());
             fileChooser.setDialogTitle(title);
             fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+            if(extensionFilters.length > 0) {
+                for (FileNameExtensionFilter extensionFilter : extensionFilters) {
+                    fileChooser.addChoosableFileFilter(extensionFilter);
+                }
+                fileChooser.setFileFilter(extensionFilters[0]);
+            }
             if (fileChooser.showOpenDialog(parent) == JFileChooser.APPROVE_OPTION) {
                 Path path = fileChooser.getSelectedFile().toPath();
                 instance.setLastDirectoryBy(key, path.getParent());
@@ -195,10 +203,10 @@ public class FileChooserSettings implements JIPipeParameterCollection {
      * @param parent    parent component
      * @param key       location where the dialog is opened
      * @param title     dialog title
-     * @param extension The extension to add. Includes a period. Example: ".json"
+     * @param extensionFilters extension filters. the first one is chosen automatically
      * @return selected file or null if dialog was cancelled
      */
-    public static Path saveFile(Component parent, String key, String title, String extension) {
+    public static Path saveFile(Component parent, String key, String title, FileNameExtensionFilter... extensionFilters) {
         FileChooserSettings instance = getInstance();
         Path currentPath = instance.getLastDirectoryBy(key);
         if (instance.useNativeChooser) {
@@ -212,9 +220,20 @@ public class FileChooserSettings implements JIPipeParameterCollection {
                 Path path = Paths.get(fileName);
                 instance.setLastDirectoryBy(key, path.getParent());
                 if (getInstance().isAddFileExtension() &&
-                        extension != null &&
-                        !path.toString().toLowerCase().endsWith(extension.toLowerCase())) {
-                    path = path.getParent().resolve(path.getFileName() + extension);
+                        extensionFilters.length > 0) {
+                    boolean found = false;
+                    outer: for (FileNameExtensionFilter extensionFilter : extensionFilters) {
+                        for (String extension : extensionFilter.getExtensions()) {
+                            if(path.toString().toLowerCase().endsWith(extension)) {
+                               found = true;
+                               break outer;
+                            }
+                        }
+                    }
+                    if(!found) {
+                        String extension = extensionFilters[0].getExtensions()[0];
+                        path = path.getParent().resolve(path.getFileName() + extension);
+                    }
                 }
                 return path;
             } else {
@@ -224,13 +243,27 @@ public class FileChooserSettings implements JIPipeParameterCollection {
             JFileChooser fileChooser = new JFileChooser(currentPath.toFile());
             fileChooser.setDialogTitle(title);
             fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+            if(extensionFilters.length > 0) {
+                for (FileNameExtensionFilter extensionFilter : extensionFilters) {
+                    fileChooser.addChoosableFileFilter(extensionFilter);
+                }
+                fileChooser.setFileFilter(extensionFilters[0]);
+            }
             if (fileChooser.showSaveDialog(parent) == JFileChooser.APPROVE_OPTION) {
                 Path path = fileChooser.getSelectedFile().toPath();
                 instance.setLastDirectoryBy(key, path.getParent());
-                if (getInstance().isAddFileExtension() &&
-                        extension != null &&
-                        !path.toString().toLowerCase().endsWith(extension.toLowerCase())) {
-                    path = path.getParent().resolve(path.getFileName() + extension);
+                if (getInstance().isAddFileExtension() && extensionFilters.length > 0 && fileChooser.getFileFilter() instanceof FileNameExtensionFilter) {
+                    FileNameExtensionFilter fileNameExtensionFilter = (FileNameExtensionFilter) fileChooser.getFileFilter();
+                    boolean found = false;
+                    for (String extension : fileNameExtensionFilter.getExtensions()) {
+                        if(path.toString().toLowerCase().endsWith(extension)) {
+                            found = true;
+                            break;
+                        }
+                    }
+                    if(!found) {
+                        path = path.getParent().resolve(path.getFileName() + fileNameExtensionFilter.getExtensions()[0]);
+                    }
                 }
                 return path;
             } else {
@@ -447,7 +480,7 @@ public class FileChooserSettings implements JIPipeParameterCollection {
         } else {
             switch (pathMode) {
                 case FilesOnly:
-                    selected = FileChooserSettings.saveFile(parent, key, title, null);
+                    selected = FileChooserSettings.saveFile(parent, key, title);
                     break;
                 case DirectoriesOnly:
                     selected = FileChooserSettings.saveDirectory(parent, key, title);
@@ -494,7 +527,7 @@ public class FileChooserSettings implements JIPipeParameterCollection {
             Path saveSelection;
             switch (pathMode) {
                 case FilesOnly:
-                    saveSelection = FileChooserSettings.saveFile(parent, key, title, null);
+                    saveSelection = FileChooserSettings.saveFile(parent, key, title);
                     break;
                 case DirectoriesOnly:
                     saveSelection = FileChooserSettings.saveDirectory(parent, key, title);

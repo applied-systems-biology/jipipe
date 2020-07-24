@@ -48,6 +48,7 @@ import java.util.Set;
  */
 public class JIPipeJsonExtensionWindow extends JFrame {
 
+
     private static Set<JIPipeJsonExtensionWindow> OPEN_WINDOWS = new HashSet<>();
     private Context context;
     private JIPipeJsonExtension project;
@@ -151,7 +152,7 @@ public class JIPipeJsonExtensionWindow extends JFrame {
      * Asks the user if it should be opened in this or a new window.
      */
     public void openProject() {
-        Path file = FileChooserSettings.openFile(this, FileChooserSettings.KEY_PROJECT, "Open JIPipe JSON extension (*.jipe)");
+        Path file = FileChooserSettings.openFile(this, FileChooserSettings.KEY_PROJECT, "Open JIPipe JSON extension (*.jipe)", UIUtils.EXTENSION_FILTER_JIPE);
         if (file != null) {
             openProject(file);
         }
@@ -167,7 +168,7 @@ public class JIPipeJsonExtensionWindow extends JFrame {
         if (avoidDialog && projectSavePath != null)
             savePath = projectSavePath;
         if (savePath == null) {
-            savePath = FileChooserSettings.saveFile(this, FileChooserSettings.KEY_PROJECT, "Save JIPipe JSON extension (*.jipe)", ".jipe");
+            savePath = FileChooserSettings.saveFile(this, FileChooserSettings.KEY_PROJECT, "Save JIPipe JSON extension (*.jipe)", UIUtils.EXTENSION_FILTER_JIPE);
             if (savePath == null)
                 return;
         }

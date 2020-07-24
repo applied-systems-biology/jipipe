@@ -94,7 +94,7 @@ public abstract class JIPipeCompendiumUI<T> extends JPanel {
         JPopupMenu exportMenu = UIUtils.addPopupMenuToComponent(exportButton);
         JMenuItem saveMarkdown = new JMenuItem("as Markdown (*.md)", UIUtils.getIconFromResources("mimetypes/text-markdown.png"));
         saveMarkdown.addActionListener(e -> {
-            Path selectedPath = FileChooserSettings.saveFile(this, FileChooserSettings.KEY_PROJECT, "Save as Markdown (*.md)", null);
+            Path selectedPath = FileChooserSettings.saveFile(this, FileChooserSettings.KEY_PROJECT, "Save as Markdown (*.md)", UIUtils.EXTENSION_FILTER_MD);
             if (selectedPath != null) {
                 try (BusyCursor cursor = new BusyCursor(this)) {
                     MarkdownDocument wholeCompendium = generateWholeCompendium();
@@ -110,7 +110,7 @@ public abstract class JIPipeCompendiumUI<T> extends JPanel {
 
         JMenuItem saveHTML = new JMenuItem("as HTML (*.html)", UIUtils.getIconFromResources("mimetypes/text-html.png"));
         saveHTML.addActionListener(e -> {
-            Path selectedPath = FileChooserSettings.saveFile(this, FileChooserSettings.KEY_PROJECT, "Save as HTML (*.html)", null);
+            Path selectedPath = FileChooserSettings.saveFile(this, FileChooserSettings.KEY_PROJECT, "Save as HTML (*.html)", UIUtils.EXTENSION_FILTER_HTML);
             if (selectedPath != null) {
                 try (BusyCursor cursor = new BusyCursor(this)) {
                     try {
@@ -126,7 +126,7 @@ public abstract class JIPipeCompendiumUI<T> extends JPanel {
 
         JMenuItem savePDF = new JMenuItem("as PDF (*.pdf)", UIUtils.getIconFromResources("mimetypes/application-pdf.png"));
         savePDF.addActionListener(e -> {
-            Path selectedPath = FileChooserSettings.saveFile(this, FileChooserSettings.KEY_PROJECT, "Save as Portable Document Format (*.pdf)", null);
+            Path selectedPath = FileChooserSettings.saveFile(this, FileChooserSettings.KEY_PROJECT, "Save as Portable Document Format (*.pdf)", UIUtils.EXTENSION_FILTER_PDF);
             if (selectedPath != null) {
                 try (BusyCursor cursor = new BusyCursor(this)) {
                     MarkdownDocument wholeCompendium = generateWholeCompendium();

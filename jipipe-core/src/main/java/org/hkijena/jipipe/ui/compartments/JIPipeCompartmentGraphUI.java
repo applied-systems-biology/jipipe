@@ -157,7 +157,10 @@ public class JIPipeCompartmentGraphUI extends JIPipeGraphEditorUI {
     }
 
     private void importCompartment() {
-        Path selectedPath = FileChooserSettings.openFile(this, FileChooserSettings.KEY_PROJECT, "Open JIPipe graph compartment (*.jipc)");
+        Path selectedPath = FileChooserSettings.openFile(this,
+                FileChooserSettings.KEY_PROJECT,
+                "Open JIPipe graph compartment (*.jipc)",
+                UIUtils.EXTENSION_FILTER_JIPC);
         if (selectedPath != null) {
             try {
                 ObjectMapper objectMapper = JsonUtils.getObjectMapper();

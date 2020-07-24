@@ -124,7 +124,7 @@ public class JIPipePlotAvailableDataManagerUI extends JIPipeWorkbenchPanel {
     }
 
     private void importFromCSV() {
-        Path selectedPath = FileChooserSettings.openFile(this, FileChooserSettings.KEY_PROJECT, "Import CSV table (*.csv)");
+        Path selectedPath = FileChooserSettings.openFile(this, FileChooserSettings.KEY_PROJECT, "Import CSV table (*.csv)", UIUtils.EXTENSION_FILTER_CSV);
         if (selectedPath != null) {
             String fileName = selectedPath.getFileName().toString();
             try {

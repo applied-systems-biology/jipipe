@@ -48,7 +48,7 @@ public class ScreenshotWholeGraphToolPNG extends MenuExtension {
         JIPipeGraphCanvasUI canvasUI = new JIPipeGraphCanvasUI(workbench, workbench.getProject().getGraph(), null);
         canvasUI.autoLayoutAll();
         BufferedImage screenshot = canvasUI.createScreenshotPNG();
-        Path file = FileChooserSettings.saveFile(this, FileChooserSettings.KEY_PARAMETER, "Export full graph as *.png", ".png");
+        Path file = FileChooserSettings.saveFile(this, FileChooserSettings.KEY_PARAMETER, "Export full graph as *.png", UIUtils.EXTENSION_FILTER_PNG);
         if (file != null) {
             try {
                 ImageIO.write(screenshot, "PNG", file.toFile());

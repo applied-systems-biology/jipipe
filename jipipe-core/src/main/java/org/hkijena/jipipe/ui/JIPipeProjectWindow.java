@@ -225,7 +225,7 @@ public class JIPipeProjectWindow extends JFrame {
      * Opens a file chooser where the user can select a project file
      */
     public void openProject() {
-        Path file = FileChooserSettings.openFile(this, FileChooserSettings.KEY_PROJECT, "Open JIPipe project (*.jip)");
+        Path file = FileChooserSettings.openFile(this, FileChooserSettings.KEY_PROJECT, "Open JIPipe project (*.jip)", UIUtils.EXTENSION_FILTER_JIP);
         if (file != null) {
             openProject(file);
         }
@@ -251,7 +251,7 @@ public class JIPipeProjectWindow extends JFrame {
         if (avoidDialog && projectSavePath != null)
             savePath = projectSavePath;
         if (savePath == null) {
-            savePath = FileChooserSettings.saveFile(this, FileChooserSettings.KEY_PROJECT, "Save JIPipe project (*.jip)", ".jip");
+            savePath = FileChooserSettings.saveFile(this, FileChooserSettings.KEY_PROJECT, "Save JIPipe project (*.jip)", UIUtils.EXTENSION_FILTER_JIP);
             if (savePath == null)
                 return;
         }
