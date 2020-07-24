@@ -421,6 +421,8 @@ public class JsonNodeInfo implements JIPipeNodeInfo, JIPipeValidatable, JIPipePa
     @JIPipeParameter(value = "icon", uiOrder = 25)
     @JsonGetter("icon")
     public JIPipeAlgorithmIconRef getIcon() {
+        if(icon == null)
+            icon = new JIPipeAlgorithmIconRef();
         return icon;
     }
 
