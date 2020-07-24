@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.extensions.imagejdatatypes;
+package org.hkijena.jipipe.extensions.imagejdatatypes.parameters;
 
 import loci.formats.out.TiffWriter;
 

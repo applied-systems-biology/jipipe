@@ -59,7 +59,6 @@ public class JIPipeCompartmentsExtension extends JIPipePrepackagedDefaultJavaExt
     @Override
     public void register() {
         registerNodeTypeCategory(new CompartmentNodeTypeCategory());
-        registerNodeType("io-interface", IOInterfaceAlgorithm.class, UIUtils.getIconURLFromResources("devices/knemo-wireless-transmit-receive.png"));
         registerNodeType("jipipe:compartment-output", JIPipeCompartmentOutput.class, UIUtils.getIconURLFromResources("data-types/graph-compartment.png"));
         registerNodeType("jipipe:project-compartment", JIPipeProjectCompartment.class, UIUtils.getIconURLFromResources("data-types/graph-compartment.png"));
 

@@ -13,19 +13,26 @@
 
 package org.hkijena.jipipe.extensions.imagejdatatypes;
 
+import ome.xml.model.enums.DimensionOrder;
 import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
+import org.hkijena.jipipe.extensions.imagejdatatypes.algorithms.BioFormatsExporter;
+import org.hkijena.jipipe.extensions.imagejdatatypes.algorithms.ImagePlusToOMEImageTypeConverter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.algorithms.ImagePropertiesToAnnotationAlgorithm;
 import org.hkijena.jipipe.extensions.imagejdatatypes.algorithms.ImageTypeConverter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.algorithms.ImplicitImageTypeConverter;
+import org.hkijena.jipipe.extensions.imagejdatatypes.algorithms.OMEImageToImagePlusTypeConverter;
+import org.hkijena.jipipe.extensions.imagejdatatypes.algorithms.OMEImageToROITypeConverter;
+import org.hkijena.jipipe.extensions.imagejdatatypes.algorithms.OmeImageToOMEXMLTypeConverter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.compat.*;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datasources.BioFormatsImporter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datasources.ImagePlusFromFile;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datasources.ROIDataFromFile;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datasources.ResultsTableFromFile;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.OMEImageData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColor8UData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColorData;
@@ -52,7 +59,10 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d5.color.ImagePlu
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d5.greyscale.*;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.fft.*;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.*;
+import org.hkijena.jipipe.extensions.imagejdatatypes.parameters.OMEColorMode;
+import org.hkijena.jipipe.extensions.imagejdatatypes.parameters.OMETIFFCompression;
 import org.hkijena.jipipe.extensions.imagejdatatypes.resultanalysis.ImageDataSlotRowUI;
+import org.hkijena.jipipe.extensions.imagejdatatypes.resultanalysis.OMEImageDataSlotRowUI;
 import org.hkijena.jipipe.extensions.imagejdatatypes.resultanalysis.ROIDataSlotRowUI;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
 import org.hkijena.jipipe.extensions.tables.ResultsTableDataSlotRowUI;
@@ -188,6 +198,7 @@ public class ImageJDataTypesExtension extends JIPipePrepackagedDefaultJavaExtens
                 "Available compression algorithms");
 
         // Register data types
+        registerDatatype("imagej-ome", OMEImageData.class, UIUtils.getIconURLFromResources("data-types/bioformats.png"), OMEImageDataSlotRowUI.class, null);
         registerImageDataType("imagej-imgplus", ImagePlusData.class, "icons/data-types/imgplus.png");
         registerImageDataType("imagej-imgplus-greyscale", ImagePlusGreyscaleData.class, "icons/data-types/imgplus-greyscale.png");
         registerImageDataType("imagej-imgplus-greyscale-8u", ImagePlusGreyscale8UData.class, "icons/data-types/imgplus-greyscale-8u.png");
@@ -257,12 +268,13 @@ public class ImageJDataTypesExtension extends JIPipePrepackagedDefaultJavaExtens
 
         // Register algorithms
         registerNodeType("convert-imagej-image", ImageTypeConverter.class, UIUtils.getIconURLFromResources("actions/viewimage.png"));
+        registerNodeType("export-imagej-bioformats", BioFormatsExporter.class, UIUtils.getIconURLFromResources("apps/bioformats.png"));
         registerNodeType("image-properties-to-annotation", ImagePropertiesToAnnotationAlgorithm.class, UIUtils.getIconURLFromResources("data-types/annotation-table.png"));
 
         // Register parameter editors
-        registerEnumParameterType("import-imagej-bioformats:color-mode", BioFormatsImporter.ColorMode.class,
+        registerEnumParameterType("import-imagej-bioformats:color-mode", OMEColorMode.class,
                 "Color mode", "Available modes");
-        registerEnumParameterType("import-imagej-bioformats:order", BioFormatsImporter.Order.class,
+        registerEnumParameterType("import-imagej-bioformats:order", DimensionOrder.class,
                 "Order", "Available orders");
 
     }
@@ -273,6 +285,11 @@ public class ImageJDataTypesExtension extends JIPipePrepackagedDefaultJavaExtens
      * Between same dimensionality
      */
     private void registerConverters() {
+        registerDatatypeConversion(new ImagePlusToOMEImageTypeConverter());
+        registerDatatypeConversion(new OMEImageToImagePlusTypeConverter());
+        registerDatatypeConversion(new OMEImageToROITypeConverter());
+        registerDatatypeConversion(new OmeImageToOMEXMLTypeConverter());
+
         Set<Class<? extends JIPipeData>> dataTypes = getRegistry().getDatatypeRegistry().getRegisteredDataTypes().values()
                 .stream().filter(ImagePlusData.class::isAssignableFrom).collect(Collectors.toSet());
         Map<Integer, List<Class<? extends JIPipeData>>> groupedByDimensionality =

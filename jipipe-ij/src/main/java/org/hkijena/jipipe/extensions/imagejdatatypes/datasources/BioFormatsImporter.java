@@ -16,8 +16,11 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.datasources;
 import ij.ImagePlus;
 import loci.common.Region;
 import loci.formats.FormatException;
-import loci.plugins.BF;
+import loci.plugins.in.ImagePlusReader;
+import loci.plugins.in.ImportProcess;
 import loci.plugins.in.ImporterOptions;
+import ome.xml.meta.OMEXMLMetadata;
+import ome.xml.model.enums.DimensionOrder;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
@@ -29,6 +32,10 @@ import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FileData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.OMEImageData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.parameters.OMEColorMode;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ROIHandler;
 import org.hkijena.jipipe.extensions.parameters.primitives.OptionalStringParameter;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.roi.RectangleList;
@@ -46,12 +53,12 @@ import java.util.function.Supplier;
  */
 @JIPipeDocumentation(name = "Bio-Formats importer", description = "Imports images via the Bio-Formats plugin")
 @JIPipeInputSlot(value = FileData.class, slotName = "Files")
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Image")
+@JIPipeOutputSlot(value = OMEImageData.class, slotName = "Image")
 @JIPipeOrganization(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 public class BioFormatsImporter extends JIPipeSimpleIteratingAlgorithm {
 
-    private ColorMode colorMode = ColorMode.Default;
-    private Order stackOrder = Order.XYCZT;
+    private OMEColorMode colorMode = OMEColorMode.Default;
+    private DimensionOrder stackOrder = DimensionOrder.XYCZT;
     private boolean splitChannels;
     private boolean splitFocalPlanes;
     private boolean splitTimePoints;
@@ -60,6 +67,7 @@ public class BioFormatsImporter extends JIPipeSimpleIteratingAlgorithm {
     private boolean crop;
     private boolean stitchTiles;
     private boolean autoScale = true;
+    private boolean extractRois = true;
     private OptionalStringParameter titleAnnotation = new OptionalStringParameter();
     private RectangleList cropRegions = new RectangleList();
 
@@ -68,7 +76,7 @@ public class BioFormatsImporter extends JIPipeSimpleIteratingAlgorithm {
      */
     public BioFormatsImporter(JIPipeNodeInfo info) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", FileData.class)
-                .addOutputSlot("Output", ImagePlusData.class, null)
+                .addOutputSlot("Output", OMEImageData.class, null)
                 .allowOutputSlotInheritance(true)
                 .seal()
                 .build());
@@ -94,6 +102,7 @@ public class BioFormatsImporter extends JIPipeSimpleIteratingAlgorithm {
         this.autoScale = other.autoScale;
         this.cropRegions = new RectangleList(other.cropRegions);
         this.titleAnnotation = new OptionalStringParameter(other.titleAnnotation);
+        this.extractRois = other.extractRois;
     }
 
     @Override
@@ -129,12 +138,33 @@ public class BioFormatsImporter extends JIPipeSimpleIteratingAlgorithm {
         }
 
         try {
-            for (ImagePlus image : BF.openImagePlus(options)) {
+            ImportProcess process = new ImportProcess(options);
+            if (!process.execute()) {
+                throw new NullPointerException();
+            }
+            ImagePlusReader reader = new ImagePlusReader(process);
+            ImagePlus[] images = reader.openImagePlus();
+            if (!options.isVirtual()) {
+                process.getReader().close();
+            }
+
+            OMEXMLMetadata omexmlMetadata = null;
+            if(process.getOMEMetadata() instanceof OMEXMLMetadata) {
+                omexmlMetadata = (OMEXMLMetadata) process.getOMEMetadata();
+            }
+
+            for (ImagePlus image : images) {
                 List<JIPipeAnnotation> traits = new ArrayList<>();
                 if (titleAnnotation.isEnabled()) {
                     traits.add(new JIPipeAnnotation(titleAnnotation.getContent(), image.getTitle()));
                 }
-                dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(image), traits);
+
+                ROIListData rois = new ROIListData();
+                if(extractRois) {
+                    rois = ROIHandler.openROIs(process.getOMEMetadata(), new ImagePlus[] { image });
+                }
+
+                dataBatch.addOutputData(getFirstOutputSlot(), new OMEImageData(image, rois, omexmlMetadata), traits);
             }
         } catch (FormatException | IOException e) {
             throw new RuntimeException(e);
@@ -174,12 +204,12 @@ public class BioFormatsImporter extends JIPipeSimpleIteratingAlgorithm {
             "Custom - Same as Colorized, except that you can explicitly choose how to colorize each channel.\n" +
             "Note that ImageJ can only composite together 7 or fewer channels. With more than 7 channels, some of the modes above may not work.")
     @JIPipeParameter("color-mode")
-    public ColorMode getColorMode() {
+    public OMEColorMode getColorMode() {
         return colorMode;
     }
 
     @JIPipeParameter("color-mode")
-    public void setColorMode(ColorMode colorMode) {
+    public void setColorMode(OMEColorMode colorMode) {
         this.colorMode = colorMode;
     }
 
@@ -196,12 +226,12 @@ public class BioFormatsImporter extends JIPipeSimpleIteratingAlgorithm {
 
     @JIPipeDocumentation(name = "Stack order")
     @JIPipeParameter("stack-order")
-    public Order getStackOrder() {
+    public DimensionOrder getStackOrder() {
         return stackOrder;
     }
 
     @JIPipeParameter("stack-order")
-    public void setStackOrder(Order stackOrder) {
+    public void setStackOrder(DimensionOrder stackOrder) {
         this.stackOrder = stackOrder;
 
     }
@@ -313,27 +343,14 @@ public class BioFormatsImporter extends JIPipeSimpleIteratingAlgorithm {
         this.titleAnnotation = titleAnnotation;
     }
 
-    /**
-     * Wrapper around Bioformats color modes
-     */
-    public enum ColorMode {
-        Default,
-        Composite,
-        Colorized,
-        Grayscale,
-        Custom
+    @JIPipeDocumentation(name = "Extract ROIs", description = "If enabled, ROIs are extracted from OME data.")
+    @JIPipeParameter("extract-rois")
+    public boolean isExtractRois() {
+        return extractRois;
     }
 
-    /**
-     * Wrapper around Bioformats plane orders
-     */
-    public enum Order {
-        Default,
-        XYZCT,
-        XYZTC,
-        XYCZT,
-        XYTCZ,
-        XYCTZ,
-        XYTZC
+    @JIPipeParameter("extract-rois")
+    public void setExtractRois(boolean extractRois) {
+        this.extractRois = extractRois;
     }
 }

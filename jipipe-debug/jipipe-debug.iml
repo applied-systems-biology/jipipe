@@ -18,6 +18,8 @@
     <orderEntry type="module" module-name="jipipe-tables" />
     <orderEntry type="module" module-name="jipipe-ij" />
     <orderEntry type="module" module-name="jipipe-clij" />
+    <orderEntry type="module" module-name="jipipe-strings" />
+    <orderEntry type="module" module-name="jipipe-utils" />
     <orderEntry type="library" name="Maven: net.haesleinhuepf:clij2_:2.0.0.14" level="project" />
     <orderEntry type="library" name="Maven: net.haesleinhuepf:clij_:1.7.0.14" level="project" />
     <orderEntry type="library" name="Maven: net.haesleinhuepf:clij-coremem:2.0.0.10" level="project" />

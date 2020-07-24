@@ -27,7 +27,8 @@ import java.util.Objects;
 import java.util.function.Consumer;
 
 /**
- * Provides a standard result slot UI that can be also further extended
+ * Provides a standard result slot UI that can be also further extended.
+ * Override registerActions() for this
  */
 public class JIPipeDefaultResultDataSlotRowUI extends JIPipeResultDataSlotRowUI {
 

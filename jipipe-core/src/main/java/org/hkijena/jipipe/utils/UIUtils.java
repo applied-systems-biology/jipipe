@@ -870,4 +870,17 @@ public class UIUtils {
             IJ.handleException(e);
         }
     }
+
+    /**
+     * Opens a website with given URL
+     *
+     * @param path the file
+     */
+    public static void openFileInNative(Path path) {
+        try {
+            Desktop.getDesktop().open(path.toFile());
+        } catch (IOException e) {
+            IJ.handleException(e);
+        }
+    }
 }

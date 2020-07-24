@@ -81,7 +81,7 @@ public class ScriptParameterEditorUI extends JIPipeParameterEditorUI {
         collapseButton.addActionListener(e -> toggleCollapse());
         toolBar.add(collapseButton);
 
-        JButton openIdeButton = new JButton("IDE", UIUtils.getIconFromResources("actions/window_new.png"));
+        JButton openIdeButton = new JButton("Large editor", UIUtils.getIconFromResources("actions/window_new.png"));
         openIdeButton.addActionListener(e -> openIDE());
         toolBar.add(openIdeButton);
 
