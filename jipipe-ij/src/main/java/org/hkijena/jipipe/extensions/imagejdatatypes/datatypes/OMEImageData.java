@@ -210,6 +210,17 @@ public class OMEImageData implements JIPipeData {
     }
 
     /**
+     * Returns a duplicate of the contained image
+     *
+     * @return the duplicate
+     */
+    public ImagePlus getDuplicateImage() {
+        ImagePlus imp = image.duplicate();
+        imp.setTitle(getImage().getTitle());
+        return imp;
+    }
+
+    /**
      * Copy of the run method in {@link loci.plugins.out.Exporter} that allows configuration via a parameter object
      * @param outputPath the output path
      * @param settings the parameters
