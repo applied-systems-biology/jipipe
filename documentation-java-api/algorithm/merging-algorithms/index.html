@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2020-07-10T16:08:13 CEST">
+<meta name="revised" content="2020-07-27T16:35:08 CEST">
 <title>Merging input data :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../../images/favicon.png" type="image/x-icon" />
 <link href="../../../css/font-awesome.min.css" rel="stylesheet">
@@ -202,6 +202,13 @@
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
+      <li data-nav-id="https://applied-systems-biology.github.io/jipipe/documentation/standard-library/python/" class="dd-item">
+        <div>
+          <a href="../../../documentation/standard-library/python/">
+            Python integration
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
         </ul>
     </li>
     <li data-nav-id="https://applied-systems-biology.github.io/jipipe/documentation/create-json-extensions/" class="dd-item
@@ -320,9 +327,9 @@
       <a href="../../../documentation-json-api/">JSON API documentation</a><i class="fa fa-angle-right fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
       </div>
         <ul>
-      <li data-nav-id="https://applied-systems-biology.github.io/jipipe/documentation-json-api/algorithm-node/" class="dd-item">
+      <li data-nav-id="https://applied-systems-biology.github.io/jipipe/documentation-json-api/graph-node/" class="dd-item">
         <div>
-          <a href="../../../documentation-json-api/algorithm-node/">
+          <a href="../../../documentation-json-api/graph-node/">
             Algorithm node
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
@@ -351,7 +358,7 @@
       <li data-nav-id="https://applied-systems-biology.github.io/jipipe/documentation-json-api/graph/" class="dd-item">
         <div>
           <a href="../../../documentation-json-api/graph/">
-            Algorithm graph
+            Graph
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
@@ -488,7 +495,7 @@
     
     <p>You might need to develop an algorithm that does not simply iterate through its input(s),
 but organize it into groups to be merged.
-JIPipe comes with <a href="../../../apidocs/org/hkijena/jipipe/api/algorithm/JIPipeMergingAlgorithm.html">JIPipeMergingAlgorithm</a> that uses the annotation attached during processing to find data rows that belong to the same data set. The implementation creates <a href="../../../apidocs/org/hkijena/jipipe/api/algorithm/JIPipeMultiDataInterface.html">JIPipeMultiDataInterface</a> instances that represent multiple data rows merged into one group.</p>
+JIPipe comes with <a href="../../../apidocs/org/hkijena/jipipe/api/algorithm/JIPipeMergingAlgorithm.html">JIPipeMergingAlgorithm</a> that uses the annotation attached during processing to find data rows that belong to the same data set. The implementation creates <a href="../../../apidocs/org/hkijena/jipipe/api/algorithm/JIPipeMergingDataBatch.html">JIPipeMergingDataBatch</a> instances that represent multiple data rows merged into one group.</p>
 
 <div class="notices warning" ><p><p>Please access data via the data interface.</p>
 </p></div>
@@ -503,7 +510,7 @@ JIPipe comes with <a href="../../../apidocs/org/hkijena/jipipe/api/algorithm/JIP
 <span style="color:#75715e">// Input and output slots
 </span><span style="color:#75715e"></span><span style="color:#75af00">@AlgorithmInputSlot</span><span style="color:#f92672">(</span><span style="color:#111">value</span> <span style="color:#f92672">=</span> <span style="color:#111">ImagePlusData</span><span style="color:#f92672">.</span><span style="color:#75af00">class</span><span style="color:#f92672">,</span> <span style="color:#111">slotName</span> <span style="color:#f92672">=</span> <span style="color:#d88200">&#34;Input&#34;</span><span style="color:#f92672">,</span> <span style="color:#111">autoCreate</span> <span style="color:#f92672">=</span> <span style="color:#00a8c8">true</span><span style="color:#f92672">)</span>
 <span style="color:#75af00">@AlgorithmOutputSlot</span><span style="color:#f92672">(</span><span style="color:#111">value</span> <span style="color:#f92672">=</span> <span style="color:#111">ImagePlusData</span><span style="color:#f92672">.</span><span style="color:#75af00">class</span><span style="color:#f92672">,</span> <span style="color:#111">slotName</span> <span style="color:#f92672">=</span> <span style="color:#d88200">&#34;Output&#34;</span><span style="color:#f92672">,</span> <span style="color:#111">autoCreate</span> <span style="color:#f92672">=</span> <span style="color:#00a8c8">true</span><span style="color:#f92672">)</span>
-<span style="color:#00a8c8">public</span> <span style="color:#00a8c8">class</span> <span style="color:#75af00">MyAlgorithm</span> <span style="color:#00a8c8">extends</span> <span style="color:#111">JIPipeIteratingAlgorithm</span> <span style="color:#f92672">{</span>
+<span style="color:#00a8c8">public</span> <span style="color:#00a8c8">class</span> <span style="color:#75af00">MyAlgorithm</span> <span style="color:#00a8c8">extends</span> <span style="color:#111">JIPipeMergingAlgorithm</span> <span style="color:#f92672">{</span>
 
     <span style="color:#75715e">/*
 </span><span style="color:#75715e">    This is the main constructor of the algorithm.
@@ -532,7 +539,7 @@ JIPipe comes with <a href="../../../apidocs/org/hkijena/jipipe/api/algorithm/JIP
 </span><span style="color:#75715e">    Please read and write only via the data interface.
 </span><span style="color:#75715e">    */</span>
     <span style="color:#75af00">@Override</span>
-    <span style="color:#00a8c8">public</span> <span style="color:#75af00">runIteration</span><span style="color:#f92672">(</span><span style="color:#111">JIPipeMultiDataInterface</span> <span style="color:#111">dataInterface</span><span style="color:#f92672">,</span> <span style="color:#111">JIPipeRunnerSubStatus</span> <span style="color:#111">subProgress</span><span style="color:#f92672">,</span> <span style="color:#111">Consumer</span><span style="color:#f92672">&lt;</span><span style="color:#111">JIPipeRunnerSubStatus</span><span style="color:#f92672">&gt;</span> <span style="color:#111">algorithmProgress</span><span style="color:#f92672">,</span> <span style="color:#111">Supplier</span><span style="color:#f92672">&lt;</span><span style="color:#111">Boolean</span><span style="color:#f92672">&gt;</span> <span style="color:#111">isCancelled</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    <span style="color:#00a8c8">public</span> <span style="color:#75af00">runIteration</span><span style="color:#f92672">(</span><span style="color:#111">JIPipeMergingDataBatch</span> <span style="color:#111">dataInterface</span><span style="color:#f92672">,</span> <span style="color:#111">JIPipeRunnerSubStatus</span> <span style="color:#111">subProgress</span><span style="color:#f92672">,</span> <span style="color:#111">Consumer</span><span style="color:#f92672">&lt;</span><span style="color:#111">JIPipeRunnerSubStatus</span><span style="color:#f92672">&gt;</span> <span style="color:#111">algorithmProgress</span><span style="color:#f92672">,</span> <span style="color:#111">Supplier</span><span style="color:#f92672">&lt;</span><span style="color:#111">Boolean</span><span style="color:#f92672">&gt;</span> <span style="color:#111">isCancelled</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
         <span style="color:#75715e">// Run your workload here
 </span><span style="color:#75715e"></span>    <span style="color:#f92672">}</span>
 <span style="color:#f92672">}</span>

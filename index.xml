@@ -21,10 +21,10 @@
     
     <item>
       <title>Algorithm node</title>
-      <link>https://applied-systems-biology.github.io/jipipe/documentation-json-api/algorithm-node/</link>
+      <link>https://applied-systems-biology.github.io/jipipe/documentation-json-api/graph-node/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://applied-systems-biology.github.io/jipipe/documentation-json-api/algorithm-node/</guid>
+      <guid>https://applied-systems-biology.github.io/jipipe/documentation-json-api/graph-node/</guid>
       <description>This document describes the properties of the JSON API object. You also can access the document in JSON Schema format: algorithm-node.schema.json
  Node in a graph   jipipe:slot-configuration:  object   [object Object]      User-defined slots. Might be ignored depending on the algorithm. The keys are the slot names. See slot-definition        jipipe:algorithm-ui-location:  object   [object Object]     Locations of this node within the UI.</description>
     </item>
@@ -95,7 +95,7 @@ An user interface is shown when a user select a row in the results table. This U
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://applied-systems-biology.github.io/jipipe/documentation-java-api/algorithm/merging-algorithms/</guid>
-      <description>You might need to develop an algorithm that does not simply iterate through its input(s), but organize it into groups to be merged. JIPipe comes with JIPipeMergingAlgorithm that uses the annotation attached during processing to find data rows that belong to the same data set. The implementation creates JIPipeMultiDataInterface instances that represent multiple data rows merged into one group.
+      <description>You might need to develop an algorithm that does not simply iterate through its input(s), but organize it into groups to be merged. JIPipe comes with JIPipeMergingAlgorithm that uses the annotation attached during processing to find data rows that belong to the same data set. The implementation creates JIPipeMergingDataBatch instances that represent multiple data rows merged into one group.
 Please access data via the data interface.
  The only difference to JIPipeAlgorithm is that you need to override a different function called runIteration.</description>
     </item>
@@ -107,7 +107,7 @@ Please access data via the data interface.
       
       <guid>https://applied-systems-biology.github.io/jipipe/documentation-json-api/algorithm/</guid>
       <description>This document describes the properties of the JSON API object. You also can access the document in JSON Schema format: algorithm.schema.json
- Defines a new algorithm   id:  string       Unique algorithm ID   metadata:  See metadata        General algorithm metadata   category:  string  , x ∈ { Converter  , Processor  , Analysis  , DataSource  , FileSystem  , Annotation  , Miscellaneous  }       An algorithm category   parameter-visibilities:  object   [object Object]      Determines which parameters are visible to the user  visible-keys:  string[]       Determines the parameter keys that are visible string    Consists of [Algorithm instance ID]/[Parameter key in algorithm]          graph:  See graph        This graph is executed when the algorithm is run   menu-path:  string       Optional menu path within the category menu   jipipe:project-type:  string  , x ∈ { graph-wrapper-algorithm  (default)  } &amp;lt;/span&amp;gt; &amp;lt;span class=&amp;quot;json-property-range&amp;quot; title=&amp;quot;Value limits&amp;quot;&amp;gt; &amp;lt;/span&amp;gt; &amp;lt;span class=&amp;quot;json-property-required&amp;quot;&amp;gt; &amp;lt;/span&amp;gt;     Identifies the JSON as algorithm      Example { &amp;#34;id&amp;#34; : &amp;#34;folder-list-tif&amp;#34;, &amp;#34;metadata&amp;#34; : { &amp;#34;name&amp;#34; : &amp;#34;List TIFF files&amp;#34;, &amp;#34;description&amp;#34; : &amp;#34;Lists all TIFF files in a folder&amp;#34;, &amp;#34;authors&amp;#34; : &amp;#34;Ruman Gerst&amp;#34;, &amp;#34;website&amp;#34; : &amp;#34;&amp;#34;, &amp;#34;license&amp;#34; : &amp;#34;BSD-2&amp;#34;, &amp;#34;citation&amp;#34; : &amp;#34;&amp;#34; }, &amp;#34;category&amp;#34; : &amp;#34;Converter&amp;#34;, &amp;#34;parameter-visibilities&amp;#34; : { &amp;#34;visible-keys&amp;#34; : [ ] }, &amp;#34;graph&amp;#34; : { &amp;#34;nodes&amp;#34; : { &amp;#34;default-preprocessing-filter-files&amp;#34; : { &amp;#34;jipipe:slot-configuration&amp;#34; : { &amp;#34;Files&amp;#34; : { &amp;#34;slot-data-type&amp;#34; : &amp;#34;file&amp;#34;, &amp;#34;slot-type&amp;#34; : &amp;#34;Input&amp;#34;, &amp;#34;inherited-slot&amp;#34; : null, &amp;#34;name&amp;#34; : &amp;#34;Files&amp;#34;, &amp;#34;custom-name&amp;#34; : null, &amp;#34;inheritance-conversions&amp;#34; : { } }, &amp;#34;Filtered files&amp;#34; : { &amp;#34;slot-data-type&amp;#34; : &amp;#34;file&amp;#34;, &amp;#34;slot-type&amp;#34; : &amp;#34;Output&amp;#34;, &amp;#34;inherited-slot&amp;#34; : null, &amp;#34;name&amp;#34; : &amp;#34;Filtered files&amp;#34;, &amp;#34;custom-name&amp;#34; : null, &amp;#34;inheritance-conversions&amp;#34; : { } } }, &amp;#34;jipipe:algorithm-ui-location&amp;#34; : { &amp;#34;{Vertical}&amp;#34; : { &amp;#34;x&amp;#34; : 25, &amp;#34;y&amp;#34; : 250 } }, &amp;#34;jipipe:algorithm-type&amp;#34; : &amp;#34;file-filter&amp;#34;, &amp;#34;jipipe:algorithm-compartment&amp;#34; : &amp;#34;DEFAULT&amp;#34;, &amp;#34;name&amp;#34; : &amp;#34;Filter *.</description>
+ Defines a new node type   id:  string       Unique algorithm ID   metadata:  See metadata        General algorithm metadata   category:  string   org.hkijena.jipipe:miscellaneous      The category   exported-parameters:  object   [object Object]     List of parameters that will be exported to users of the node   graph:  See graph        This graph is executed when the algorithm is run   menu-path:  string       Optional menu path within the category menu   jipipe:project-type:  string  , x ∈ { graph-wrapper-algorithm  (default) }       Identifies the JSON as algorithm      Example { &amp;#34;id&amp;#34; : &amp;#34;folder-list-tif&amp;#34;, &amp;#34;metadata&amp;#34; : { &amp;#34;name&amp;#34; : &amp;#34;List TIFF files&amp;#34;, &amp;#34;description&amp;#34; : &amp;#34;Lists all TIFF files in a folder&amp;#34;, &amp;#34;authors&amp;#34; : &amp;#34;Ruman Gerst&amp;#34;, &amp;#34;website&amp;#34; : &amp;#34;&amp;#34;, &amp;#34;license&amp;#34; : &amp;#34;BSD-2&amp;#34;, &amp;#34;citation&amp;#34; : &amp;#34;&amp;#34; }, &amp;#34;category&amp;#34; : &amp;#34;Converter&amp;#34;, &amp;#34;parameter-visibilities&amp;#34; : { &amp;#34;visible-keys&amp;#34; : [ ] }, &amp;#34;graph&amp;#34; : { &amp;#34;nodes&amp;#34; : { &amp;#34;default-preprocessing-filter-files&amp;#34; : { &amp;#34;jipipe:slot-configuration&amp;#34; : { &amp;#34;Files&amp;#34; : { &amp;#34;slot-data-type&amp;#34; : &amp;#34;file&amp;#34;, &amp;#34;slot-type&amp;#34; : &amp;#34;Input&amp;#34;, &amp;#34;inherited-slot&amp;#34; : null, &amp;#34;name&amp;#34; : &amp;#34;Files&amp;#34;, &amp;#34;custom-name&amp;#34; : null, &amp;#34;inheritance-conversions&amp;#34; : { } }, &amp;#34;Filtered files&amp;#34; : { &amp;#34;slot-data-type&amp;#34; : &amp;#34;file&amp;#34;, &amp;#34;slot-type&amp;#34; : &amp;#34;Output&amp;#34;, &amp;#34;inherited-slot&amp;#34; : null, &amp;#34;name&amp;#34; : &amp;#34;Filtered files&amp;#34;, &amp;#34;custom-name&amp;#34; : null, &amp;#34;inheritance-conversions&amp;#34; : { } } }, &amp;#34;jipipe:algorithm-ui-location&amp;#34; : { &amp;#34;{Vertical}&amp;#34; : { &amp;#34;x&amp;#34; : 25, &amp;#34;y&amp;#34; : 250 } }, &amp;#34;jipipe:algorithm-type&amp;#34; : &amp;#34;file-filter&amp;#34;, &amp;#34;jipipe:algorithm-compartment&amp;#34; : &amp;#34;DEFAULT&amp;#34;, &amp;#34;name&amp;#34; : &amp;#34;Filter *.</description>
     </item>
     
     <item>
@@ -116,7 +116,7 @@ Please access data via the data interface.
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://applied-systems-biology.github.io/jipipe/tutorials/extension/</guid>
-      <description>1. Existing pipeline In this tutorial, we will create a custom algorithm extension based on parts of the pipeline created in the other tutorial. Please open the project file for the pipeline and navigate to the Preprocessing tab.    2. Selecting the algorithms Please select the following algorithms (you can either do this by holding the Shift keyboard button and clicking the nodes or right-clicking them and selecting Add to selection):  Folder list Path to annotation List files Import 2D image (greyscale)  After selecting the algorithms, click the Export button on the top-right corner.</description>
+      <description>1. Existing pipeline In this tutorial, we will create a custom algorithm extension based on parts of the pipeline created in the other tutorial. Please open the project file for the pipeline and navigate to the Preprocessing tab.    2. Selecting the algorithms Please select the following algorithms (you can either do this by holding the Shift keyboard button and clicking the nodes or dragging a selection around the nodes):  Folder list Path to annotation List files Import image  After selecting the algorithms, right-click a selected node and click Export.</description>
     </item>
     
     <item>
@@ -191,7 +191,7 @@ public class MyDataSlotCellUI extends JIPipeResultDataSlotCellUI { public MyData
       
       <guid>https://applied-systems-biology.github.io/jipipe/documentation-json-api/dependency/</guid>
       <description>This document describes the properties of the JSON API object. You also can access the document in JSON Schema format: dependency.schema.json
- Project or extension dependency. Refers to an JIPipe extension.   metadata:  See metadata         id:  string       Unique ID of this dependency should have format  .  :       version:  string       Version of this dependency      Example { &amp;#34;metadata&amp;#34; : { &amp;#34;name&amp;#34; : &amp;#34;Filesystem types and algorithms&amp;#34;, &amp;#34;description&amp;#34; : &amp;#34;Data types and algorithms for interacting with files and folders&amp;#34;, &amp;#34;authors&amp;#34; : &amp;#34;Zoltán Cseresnyés, Ruman Gerst&amp;#34;, &amp;#34;website&amp;#34; : &amp;#34;https://applied-systems-biology.</description>
+ Project or extension dependency. Refers to a JIPipe extension.   metadata:  See metadata         id:  string       Unique ID of this dependency should have format  .  :       version:  string       Version of this dependency      Example { &amp;#34;metadata&amp;#34; : { &amp;#34;name&amp;#34; : &amp;#34;Filesystem types and algorithms&amp;#34;, &amp;#34;description&amp;#34; : &amp;#34;Data types and algorithms for interacting with files and folders&amp;#34;, &amp;#34;authors&amp;#34; : &amp;#34;Zoltán Cseresnyés, Ruman Gerst&amp;#34;, &amp;#34;website&amp;#34; : &amp;#34;https://applied-systems-biology.</description>
     </item>
     
     <item>
@@ -255,7 +255,7 @@ How algorithms are registered Algorithm instances are created by an JIPipeAlgori
       
       <guid>https://applied-systems-biology.github.io/jipipe/documentation-json-api/graph-edge/</guid>
       <description>This document describes the properties of the JSON API object. You also can access the document in JSON Schema format: graph-edge.schema.json
- Edge in a graph   source-algorithm:  string       Algorithm ID of the edge source   target-algorithm:  string       Algorithm ID of the edge target   source-slot:  string       Slot name within the edge source algorithm   target-slot:  string       Slot name within the edge target algorithm      Example { &amp;#34;source-algorithm&amp;#34; : &amp;#34;default-preprocessing-list-files&amp;#34;, &amp;#34;target-algorithm&amp;#34; : &amp;#34;default-preprocessing-filter-files&amp;#34;, &amp;#34;source-slot&amp;#34; : &amp;#34;Files&amp;#34;, &amp;#34;target-slot&amp;#34; : &amp;#34;Files&amp;#34; } </description>
+ Edge in a graph   source-node:  string       Algorithm ID of the edge source   target-node:  string       Algorithm ID of the edge target   source-slot:  string       Slot name within the edge source algorithm   target-slot:  string       Slot name within the edge target algorithm      Example { &amp;#34;source-node&amp;#34; : &amp;#34;default-preprocessing-list-files&amp;#34;, &amp;#34;target-node&amp;#34; : &amp;#34;default-preprocessing-filter-files&amp;#34;, &amp;#34;source-slot&amp;#34; : &amp;#34;Files&amp;#34;, &amp;#34;target-slot&amp;#34; : &amp;#34;Files&amp;#34; } </description>
     </item>
     
     <item>
@@ -270,16 +270,6 @@ You can have as many runs as you want.</description>
     </item>
     
     <item>
-      <title>Algorithm graph</title>
-      <link>https://applied-systems-biology.github.io/jipipe/documentation-json-api/graph/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>https://applied-systems-biology.github.io/jipipe/documentation-json-api/graph/</guid>
-      <description>This document describes the properties of the JSON API object. You also can access the document in JSON Schema format: graph.schema.json
- A graph   nodes:  object   [object Object]      The nodes. Keys are the unique algorithm instance IDs. See algorithm-node        edges:  object[]       The edges. IDs in the edge definition must be consistent to the IDs in the &#39;nodes&#39; entry See graph-edge           Example { &amp;#34;nodes&amp;#34; : { &amp;#34;default-preprocessing-filter-files&amp;#34; : { &amp;#34;jipipe:slot-configuration&amp;#34; : { &amp;#34;Files&amp;#34; : { &amp;#34;slot-data-type&amp;#34; : &amp;#34;file&amp;#34;, &amp;#34;slot-type&amp;#34; : &amp;#34;Input&amp;#34;, &amp;#34;inherited-slot&amp;#34; : null, &amp;#34;name&amp;#34; : &amp;#34;Files&amp;#34;, &amp;#34;custom-name&amp;#34; : null, &amp;#34;inheritance-conversions&amp;#34; : { } }, &amp;#34;Filtered files&amp;#34; : { &amp;#34;slot-data-type&amp;#34; : &amp;#34;file&amp;#34;, &amp;#34;slot-type&amp;#34; : &amp;#34;Output&amp;#34;, &amp;#34;inherited-slot&amp;#34; : null, &amp;#34;name&amp;#34; : &amp;#34;Filtered files&amp;#34;, &amp;#34;custom-name&amp;#34; : null, &amp;#34;inheritance-conversions&amp;#34; : { } } }, &amp;#34;jipipe:algorithm-ui-location&amp;#34; : { &amp;#34;{Vertical}&amp;#34; : { &amp;#34;x&amp;#34; : 25, &amp;#34;y&amp;#34; : 250 } }, &amp;#34;jipipe:algorithm-type&amp;#34; : &amp;#34;file-filter&amp;#34;, &amp;#34;jipipe:algorithm-compartment&amp;#34; : &amp;#34;DEFAULT&amp;#34;, &amp;#34;name&amp;#34; : &amp;#34;Filter *.</description>
-    </item>
-    
-    <item>
       <title>Data annotation algorithms</title>
       <link>https://applied-systems-biology.github.io/jipipe/documentation/standard-library/annotations/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -287,6 +277,16 @@ You can have as many runs as you want.</description>
       <guid>https://applied-systems-biology.github.io/jipipe/documentation/standard-library/annotations/</guid>
       <description>Data annotations allow JIPipe algorithms and users to assign an unique data set to the data located in a data slot. The standard library contains various algorithms that allow to generate, manipulate, and utilize those annotations.
 We recommend to use the algorithms in Annotation &amp;gt; Generate while setting up filesystem operations or any other import step to prevent issues in following algorithm steps.</description>
+    </item>
+    
+    <item>
+      <title>Graph</title>
+      <link>https://applied-systems-biology.github.io/jipipe/documentation-json-api/graph/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://applied-systems-biology.github.io/jipipe/documentation-json-api/graph/</guid>
+      <description>This document describes the properties of the JSON API object. You also can access the document in JSON Schema format: graph.schema.json
+ A graph   nodes:  object   [object Object]      The nodes. Keys are the unique algorithm instance IDs. See graph-node        edges:  object[]       The edges. IDs in the edge definition must be consistent to the IDs in the &#39;nodes&#39; entry See graph-edge           Example { &amp;#34;nodes&amp;#34; : { &amp;#34;default-preprocessing-filter-files&amp;#34; : { &amp;#34;jipipe:slot-configuration&amp;#34; : { &amp;#34;Files&amp;#34; : { &amp;#34;slot-data-type&amp;#34; : &amp;#34;file&amp;#34;, &amp;#34;slot-type&amp;#34; : &amp;#34;Input&amp;#34;, &amp;#34;inherited-slot&amp;#34; : null, &amp;#34;name&amp;#34; : &amp;#34;Files&amp;#34;, &amp;#34;custom-name&amp;#34; : null, &amp;#34;inheritance-conversions&amp;#34; : { } }, &amp;#34;Filtered files&amp;#34; : { &amp;#34;slot-data-type&amp;#34; : &amp;#34;file&amp;#34;, &amp;#34;slot-type&amp;#34; : &amp;#34;Output&amp;#34;, &amp;#34;inherited-slot&amp;#34; : null, &amp;#34;name&amp;#34; : &amp;#34;Filtered files&amp;#34;, &amp;#34;custom-name&amp;#34; : null, &amp;#34;inheritance-conversions&amp;#34; : { } } }, &amp;#34;jipipe:algorithm-ui-location&amp;#34; : { &amp;#34;{Vertical}&amp;#34; : { &amp;#34;x&amp;#34; : 25, &amp;#34;y&amp;#34; : 250 } }, &amp;#34;jipipe:algorithm-type&amp;#34; : &amp;#34;file-filter&amp;#34;, &amp;#34;jipipe:algorithm-compartment&amp;#34; : &amp;#34;DEFAULT&amp;#34;, &amp;#34;name&amp;#34; : &amp;#34;Filter *.</description>
     </item>
     
     <item>
@@ -362,6 +362,17 @@ Creating plots Plots can be created via the Analyze &amp;gt; Plot &amp;gt; Plot 
     </item>
     
     <item>
+      <title>Python integration</title>
+      <link>https://applied-systems-biology.github.io/jipipe/documentation/standard-library/python/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://applied-systems-biology.github.io/jipipe/documentation/standard-library/python/</guid>
+      <description>The standard library contains nodes that allow to run Python scripts using the Jython library. Python scripts have access to all JIPipe and ImageJ APIs that are available at runtime.
+You can find the nodes in the Miscellaneous menu. You can find algorithms equivalent to each of the Java standard algorithms:
+   Algorithm type Purpose     JIPipeAlgorithm The base class of all algorithms. It provides no included functionality outside of absolutely necessary ones.</description>
+    </item>
+    
+    <item>
       <title>Point</title>
       <link>https://applied-systems-biology.github.io/jipipe/documentation-json-api/point/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -378,7 +389,7 @@ Creating plots Plots can be created via the Analyze &amp;gt; Plot &amp;gt; Plot 
       
       <guid>https://applied-systems-biology.github.io/jipipe/documentation-json-api/project/</guid>
       <description>This document describes the properties of the JSON API object. You also can access the document in JSON Schema format: project.schema.json
- An analysis project   jipipe:project-type:  string  , x ∈ { project  (default)  } &amp;lt;/span&amp;gt; &amp;lt;span class=&amp;quot;json-property-range&amp;quot; title=&amp;quot;Value limits&amp;quot;&amp;gt; &amp;lt;/span&amp;gt; &amp;lt;span class=&amp;quot;json-property-required&amp;quot;&amp;gt; &amp;lt;/span&amp;gt;     Used to identify this JSON as JIPipe project   metadata:  See metadata    [object Object]      General information about the project   dependencies:  object[]       Dependencies of this project See dependency        algorithm-graph:  See graph    [object Object]      Contains the algorithms   compartments:  object   [object Object]      For organization of compartments  compartment-graph:  See graph    [object Object]      Structural graph of compartments          Example { &amp;#34;jipipe:project-type&amp;#34; : &amp;#34;project&amp;#34;, &amp;#34;metadata&amp;#34; : { &amp;#34;name&amp;#34; : &amp;#34;New project&amp;#34;, &amp;#34;description&amp;#34; : &amp;#34;An JIPipe project&amp;#34;, &amp;#34;authors&amp;#34; : &amp;#34;&amp;#34;, &amp;#34;website&amp;#34; : &amp;#34;&amp;#34;, &amp;#34;license&amp;#34; : &amp;#34;&amp;#34;, &amp;#34;citation&amp;#34; : &amp;#34;&amp;#34; }, &amp;#34;dependencies&amp;#34; : [ { &amp;#34;metadata&amp;#34; : { &amp;#34;name&amp;#34; : &amp;#34;Image property annotations&amp;#34;, &amp;#34;description&amp;#34; : &amp;#34;Commonly used annotations for describing image properties&amp;#34;, &amp;#34;authors&amp;#34; : &amp;#34;Zoltán Cseresnyés, Ruman Gerst&amp;#34;, &amp;#34;website&amp;#34; : &amp;#34;https://applied-systems-biology.</description>
+ An analysis project   jipipe:project-type:  string  , x ∈ { project  (default) }       Used to identify this JSON as JIPipe project   metadata:  See metadata    [object Object]      General information about the project   dependencies:  object[]       Dependencies of this project See dependency        graph:  See graph    [object Object]      Contains the pipeline nodes   compartments:  object   [object Object]      For organization of compartments  compartment-graph:  See graph    [object Object]      Structural graph of compartments          Example { &amp;#34;jipipe:project-type&amp;#34; : &amp;#34;project&amp;#34;, &amp;#34;metadata&amp;#34; : { &amp;#34;name&amp;#34; : &amp;#34;Empty (3 compartments)&amp;#34;, &amp;#34;description&amp;#34; : &amp;#34;This template contains three compartments &amp;#39;Preprocessing&amp;#39;, &amp;#39;Analysis&amp;#39;, and &amp;#39;Postprocessing&amp;#39; that are connected to each other.</description>
     </item>
     
     <item>

@@ -34,7 +34,7 @@
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://applied-systems-biology.github.io/jipipe/tutorials/extension/</guid>
-      <description>1. Existing pipeline In this tutorial, we will create a custom algorithm extension based on parts of the pipeline created in the other tutorial. Please open the project file for the pipeline and navigate to the Preprocessing tab.    2. Selecting the algorithms Please select the following algorithms (you can either do this by holding the Shift keyboard button and clicking the nodes or right-clicking them and selecting Add to selection):  Folder list Path to annotation List files Import 2D image (greyscale)  After selecting the algorithms, click the Export button on the top-right corner.</description>
+      <description>1. Existing pipeline In this tutorial, we will create a custom algorithm extension based on parts of the pipeline created in the other tutorial. Please open the project file for the pipeline and navigate to the Preprocessing tab.    2. Selecting the algorithms Please select the following algorithms (you can either do this by holding the Shift keyboard button and clicking the nodes or dragging a selection around the nodes):  Folder list Path to annotation List files Import image  After selecting the algorithms, right-click a selected node and click Export.</description>
     </item>
     
   </channel>

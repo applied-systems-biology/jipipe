@@ -7,7 +7,7 @@
   </url>
   
   <url>
-    <loc>https://applied-systems-biology.github.io/jipipe/documentation-json-api/algorithm-node/</loc>
+    <loc>https://applied-systems-biology.github.io/jipipe/documentation-json-api/graph-node/</loc>
   </url>
   
   <url>
@@ -127,15 +127,15 @@
   </url>
   
   <url>
-    <loc>https://applied-systems-biology.github.io/jipipe/documentation-json-api/graph/</loc>
-  </url>
-  
-  <url>
     <loc>https://applied-systems-biology.github.io/jipipe/documentation-java-api/data-type/</loc>
   </url>
   
   <url>
     <loc>https://applied-systems-biology.github.io/jipipe/documentation/standard-library/annotations/</loc>
+  </url>
+  
+  <url>
+    <loc>https://applied-systems-biology.github.io/jipipe/documentation-json-api/graph/</loc>
   </url>
   
   <url>
@@ -176,6 +176,10 @@
   
   <url>
     <loc>https://applied-systems-biology.github.io/jipipe/documentation-json-api/metadata/</loc>
+  </url>
+  
+  <url>
+    <loc>https://applied-systems-biology.github.io/jipipe/documentation/standard-library/python/</loc>
   </url>
   
   <url>

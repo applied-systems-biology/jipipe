@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2020-07-10T16:08:13 CEST">
+<meta name="revised" content="2020-07-27T16:35:08 CEST">
 <title>Image analysis pipeline :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../images/favicon.png" type="image/x-icon" />
 <link href="../../css/font-awesome.min.css" rel="stylesheet">
@@ -202,6 +202,13 @@
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
+      <li data-nav-id="https://applied-systems-biology.github.io/jipipe/documentation/standard-library/python/" class="dd-item">
+        <div>
+          <a href="../../documentation/standard-library/python/">
+            Python integration
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
         </ul>
     </li>
     <li data-nav-id="https://applied-systems-biology.github.io/jipipe/documentation/create-json-extensions/" class="dd-item
@@ -318,9 +325,9 @@
       <a href="../../documentation-json-api/">JSON API documentation</a><i class="fa fa-angle-right fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
       </div>
         <ul>
-      <li data-nav-id="https://applied-systems-biology.github.io/jipipe/documentation-json-api/algorithm-node/" class="dd-item">
+      <li data-nav-id="https://applied-systems-biology.github.io/jipipe/documentation-json-api/graph-node/" class="dd-item">
         <div>
-          <a href="../../documentation-json-api/algorithm-node/">
+          <a href="../../documentation-json-api/graph-node/">
             Algorithm node
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
@@ -349,7 +356,7 @@
       <li data-nav-id="https://applied-systems-biology.github.io/jipipe/documentation-json-api/graph/" class="dd-item">
         <div>
           <a href="../../documentation-json-api/graph/">
-            Algorithm graph
+            Graph
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
@@ -540,7 +547,7 @@
       It can be helpful for you and some algorithms to know which data belongs together. JIPipe introduces the concept of <i>data annotations</i> that
       assign data to an unique data set and are passed through the pipeline. You can find more about this in the <a href="../../documentation/batch-pipelines">documentation about how JIPipe processes data</a>.
       <br/>In this step we add the data annotation directly at the beginning by attaching the input folder name to each folder that was passed into the pipeline.
-      This is done via the <code>Annotation &gt; Generate &gt; Path to annotation</code> algorithm. Just add this algorithm into the graph.<br/>
+      This is done via the <code>Annotations &gt; Generate &gt; Path to annotation</code> algorithm. Just add this algorithm into the graph.<br/>
       For more advanced projects there are plenty of other sources for annotations, like importing them from tables, or extracting and modifying annotations.
   </div>
   <div class="tutorial-item">
@@ -552,6 +559,11 @@
       To make a connection click the <i class="fa fa-chevron-up"></i> or <i class="fa fa-chevron-down"></i> button and select the available data slot.
       You can see that a connection between the two data slots was created.<br/>
       This list is always sorted from the closest to the farthest away slot.
+      <div class="notices tip">
+        <p>
+          You can also use your mouse to drag a connection between slots.
+        </p>
+      </div>
   </div>
   <div class="tutorial-item">
     <div class="tutorial-item-img"><img src="../../img/tutorials/analysis/step8.png" /></div>
@@ -566,10 +578,10 @@
     <div class="tutorial-item-content">
       <h2>9. Extracting the image file</h2>
       We have now the folders and can extract the input image file from each one of them.<br/>
-      You can find an algorithm designed for such purposed in <code>Filesystem &gt; List &gt; List files</code>. Add it to the graph and connect it to the <code>Subfolder name</code> output.
+      You can find an algorithm designed for such purposed in <code>File system &gt; List &gt; List files</code>. Add it to the graph and connect it to the <code>Subfolder name</code> output.
       This algorithm is not only able to list files, but also filter them directly.<br/>
       In this case, we exactly know that our files are located within a sub-folder <code>in</code>. Please update the <strong>Subfolder</strong> parameter by setting it to <code>in</code>.
-      To filter the correct input files, click <i class="fa fa-plus"></i> <strong>Add</strong>. Then select <i class="fa fa-asterisk"></i> to switch to a <a href="https://en.wikipedia.org/wiki/Glob_(programming)" target="_blank">glob</a> filter and set the filter string to <code>*.tif</code>.
+      To filter the correct input files, click <i class="fa fa-plus"></i> <strong>Add</strong>. Then select <i class="fa fa-asterisk"></i> to switch to a <a href="https://en.wikipedia.org/wiki/Glob_(programming)" target="_blank">glob</a>/wildcard filter and set the filter string to <code>*.tif</code>.
       <div class="notices tip">
         <p>
           If you have more complicate folder structures, you can apply the "Navigate to sub-folder" operation with a distinct algorithm. You can find it in the Filesytem category.
@@ -610,24 +622,30 @@
     <div class="tutorial-item-img"><img src="../../img/tutorials/analysis/step13.png" /></div>
     <div class="tutorial-item-content">
       <h2>12. Importing the images</h2>
-      After correctly setting up the files, you can import them as images. You can find importers for
-      various image types in <code>Add data &gt; Images</code>.
-      As we know that our images are greyscale and do not need BioFormats, we choose <code>Add data &gt; Images &gt; 2D &gt; Greyscale &gt; 2D image (greyscale) &gt; Import 2D image (greyscale)</code>. Connect it to the output of <code>List files</code>.
+      After correctly setting up the files, you can import them as images. You can find various importers for
+      image types in <code>Add data</code>.
+      Our images do not require Bio-Formats, so we choose <code>Add data &gt; Image &gt;Import image</code>. Connect it to the output of <code>List files</code>.
+      <div class="notices tip">
+        <p>
+          The <code>Import image</code> node does not ensure the exact bit depth and dimensionality of the output image. You can change this via a parameter that allows you
+          to choose the exact image type.
+        </p>
+      </div>
   </div>
   <div class="tutorial-item">
     <div class="tutorial-item-img"><img src="../../img/tutorials/analysis/step14.png" /></div>
     <div class="tutorial-item-content">
       <h2>13. Preprocessing output</h2>
-      You could continue with the analysis directly from the <code>Import 2D image (greyscale)</code> node. But to showcase the graph compartments feature, we decide to
+      You could continue with the analysis directly from the <code>Import image</code> node. But to showcase the graph compartments feature, we decide to
       have the imported greyscale image as output for of the <code>Preprocessing</code> compartment. The output of a graph compartment is <i>only</i> interfaced through a special node,
-      in this case <code>Preprocessing output</code>.<br/>We first have to define an output slot by clicking the <i class="fa fa-add"></i> button. Select <code>2D image (greyscale)</code>,
+      in this case <code>Preprocessing output</code>.<br/>We first have to define an output slot by clicking the <i class="fa fa-add"></i> button. Select <code>Import image</code>,
       set a name, and click <i class="fa fa-plus"></i> <strong>Add</strong>.
   </div>
   <div class="tutorial-item">
     <div class="tutorial-item-img"><img src="../../img/tutorials/analysis/step15.png" /></div>
     <div class="tutorial-item-content">
       <h2>14. Connecting the output</h2>
-      Finally, connect the output of <code>Import 2D image (greyscale)</code> to the new input slot of <code>Preprocessing output</code>.
+      Finally, connect the output of <code>Import image</code> to the new input slot of <code>Preprocessing output</code>.
   </div>
   <div class="tutorial-item">
     <div class="tutorial-item-img"><img src="../../img/tutorials/analysis/step16.png" /></div>
@@ -636,7 +654,7 @@
       Now we are finished with the preprocessing. Switch to the <code>Analysis</code> graph compartment by selecting the tab in the tab bar.
       You see that it also contains a node called <code>Preprocessing output</code>. This is the same node as in the preprocessing compartment, but
       it only contains output data this time.<br/>
-      We continue the analysis with a Gaussian filter that can be found in <code>Process &gt; Blur &gt; Gaussian blur 2D</code>.
+      We continue the analysis with a Gaussian filter that can be found in <code>Images &gt; Blur &gt; Gaussian blur 2D</code>.
       Add it to the graph and connect it to the output of <code>Preprocessing output</code>.
   </div>
   <div class="tutorial-item">
@@ -645,9 +663,9 @@
       <h2>16. Finding the particles</h2>
       Add following algorithms to the graph and connect them the the previous output:
       <ul>
-        <li><code>Process &gt; Threshold &gt; Auto Threshold 2D</code></li>
-        <li><code>Process &gt; Binary &gt; Distance transform watershed 2D</code></li>
-        <li><code>Analyze &gt; Find particles 2D</code></li>
+        <li><code>Images &gt; Threshold &gt; Auto Threshold 2D</code></li>
+        <li><code>Images &gt; Binary &gt; Distance transform watershed 2D</code></li>
+        <li><code>Images &gt; Particles &gt; Find particles 2D</code></li>
       </ul>
       <br/>
       This will create a more or less accurate segmentation of the objects (spores) that are visible in the data.
@@ -659,13 +677,18 @@
       <h2>17. Analysis output</h2>
       Create multiple analysis output slots via the <i class="fa fa-add"></i> button. Export at least the measurements table.
       In our example, we exported the mask, ROI, and the measurements.
+      <div class="notices tip">
+        <p>
+          You can hide edges if you want. Just click the  <i class="fa fa-chevron-up"></i> or  <i class="fa fa-chevron-down"></i> and select <strong>Hide edge</strong>.
+        </p>
+      </div>
   </div>
   <div class="tutorial-item">
     <div class="tutorial-item-img"><img src="../../img/tutorials/analysis/step19.png" /></div>
     <div class="tutorial-item-content">
       <h2>18. Postprocessing</h2>
       The postprocessing consists of generating a histogram plot of the spore particle areas.
-      You can find a node that generates plots in <code>Analyze &gt; Plot &gt; Plot tables</code>.
+      You can find a node that generates plots in <code>Tables &gt; Plot &gt; Plot tables</code>.
       Connect the measurements to the plotting node and set its plot type to <i class="fa fa-bar-chart"></i> <strong>Histogram plot</strong>.
       <br/>You see that the node parameters change. They adapt to the the currently selected plot and expect from you to input from which table column(s)
       to extract the data from. Either you know the name of the columns, or you can use the testbench to generate output and check it yourself. Some algorithms

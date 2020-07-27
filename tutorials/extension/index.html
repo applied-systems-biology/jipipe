@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2020-07-10T16:08:13 CEST">
+<meta name="revised" content="2020-07-27T16:35:08 CEST">
 <title>Creating an extension :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../images/favicon.png" type="image/x-icon" />
 <link href="../../css/font-awesome.min.css" rel="stylesheet">
@@ -202,6 +202,13 @@
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
+      <li data-nav-id="https://applied-systems-biology.github.io/jipipe/documentation/standard-library/python/" class="dd-item">
+        <div>
+          <a href="../../documentation/standard-library/python/">
+            Python integration
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
         </ul>
     </li>
     <li data-nav-id="https://applied-systems-biology.github.io/jipipe/documentation/create-json-extensions/" class="dd-item
@@ -318,9 +325,9 @@
       <a href="../../documentation-json-api/">JSON API documentation</a><i class="fa fa-angle-right fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
       </div>
         <ul>
-      <li data-nav-id="https://applied-systems-biology.github.io/jipipe/documentation-json-api/algorithm-node/" class="dd-item">
+      <li data-nav-id="https://applied-systems-biology.github.io/jipipe/documentation-json-api/graph-node/" class="dd-item">
         <div>
-          <a href="../../documentation-json-api/algorithm-node/">
+          <a href="../../documentation-json-api/graph-node/">
             Algorithm node
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
@@ -349,7 +356,7 @@
       <li data-nav-id="https://applied-systems-biology.github.io/jipipe/documentation-json-api/graph/" class="dd-item">
         <div>
           <a href="../../documentation-json-api/graph/">
-            Algorithm graph
+            Graph
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
@@ -467,15 +474,14 @@
     <div class="tutorial-item-img"><img src="../../img/tutorials/extension/step1.png" /></div>
     <div class="tutorial-item-content">
     <h2>2. Selecting the algorithms</h2>
-    Please select the following algorithms (you can either do this by holding the <code>Shift</code> keyboard button and clicking the nodes or right-clicking them
-    and selecting <code>Add to selection</code>):
+    Please select the following algorithms (you can either do this by holding the <code>Shift</code> keyboard button and clicking the nodes or dragging a selection around the nodes):
     <ul>
       <li>Folder list</li>
       <li>Path to annotation</li>
       <li>List files</li>
-      <li>Import 2D image (greyscale)</li>
+      <li>Import image</li>
     </ul>
-    After selecting the algorithms, click the <strong>Export</strong> button on the top-right corner.
+    After selecting the algorithms, right-click a selected node and click <strong>Export</strong>.
     <div class="notices info">
       <p>
         Selecting one or multiple algorithms is only <strong>one</strong> way to create a custom algorithm. You can also export a whole project compartment (via the <code>Compartments</code> tab) or

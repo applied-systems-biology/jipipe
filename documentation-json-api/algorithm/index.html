@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2020-07-10T16:08:13 CEST">
+<meta name="revised" content="2020-07-27T16:35:08 CEST">
 <title>Algorithm type :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../images/favicon.png" type="image/x-icon" />
 <link href="../../css/font-awesome.min.css" rel="stylesheet">
@@ -202,6 +202,13 @@
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
+      <li data-nav-id="https://applied-systems-biology.github.io/jipipe/documentation/standard-library/python/" class="dd-item">
+        <div>
+          <a href="../../documentation/standard-library/python/">
+            Python integration
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
         </ul>
     </li>
     <li data-nav-id="https://applied-systems-biology.github.io/jipipe/documentation/create-json-extensions/" class="dd-item
@@ -319,9 +326,9 @@
             <i class="fa fa-angle-down fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
       </div>
         <ul>
-      <li data-nav-id="https://applied-systems-biology.github.io/jipipe/documentation-json-api/algorithm-node/" class="dd-item">
+      <li data-nav-id="https://applied-systems-biology.github.io/jipipe/documentation-json-api/graph-node/" class="dd-item">
         <div>
-          <a href="../../documentation-json-api/algorithm-node/">
+          <a href="../../documentation-json-api/graph-node/">
             Algorithm node
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
@@ -350,7 +357,7 @@
       <li data-nav-id="https://applied-systems-biology.github.io/jipipe/documentation-json-api/graph/" class="dd-item">
         <div>
           <a href="../../documentation-json-api/graph/">
-            Algorithm graph
+            Graph
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
@@ -438,11 +445,11 @@
    Java API documentation</option>
     <option value="/documentation-json-api/" >
    JSON API documentation</option> 
-      <option value="/documentation-json-api/algorithm-node/" >- Algorithm node</option>
+      <option value="/documentation-json-api/graph-node/" >- Algorithm node</option>
       <option value="/documentation-json-api/algorithm/"  selected>- Algorithm type</option>
       <option value="/documentation-json-api/dependency/" >- Dependency</option>
       <option value="/documentation-json-api/graph-edge/" >- Graph Edge</option>
-      <option value="/documentation-json-api/graph/" >- Algorithm graph</option>
+      <option value="/documentation-json-api/graph/" >- Graph</option>
       <option value="/documentation-json-api/json-extension/" >- Extension</option>
       <option value="/documentation-json-api/metadata/" >- Metadata</option>
       <option value="/documentation-json-api/point/" >- Point</option>
@@ -482,7 +489,7 @@ the document in <a href="https://json-schema.org/">JSON Schema</a> format: <a hr
 <div class="panel-body">
  <section class="json-schema-description">
   <p>
-   Defines a new algorithm
+   Defines a new node type
   </p>
  </section>
  <section class="json-schema-properties">
@@ -511,7 +518,7 @@ the document in <a href="https://json-schema.org/">JSON Schema</a> format: <a hr
      metadata:
     </span>
     <span class="json-property-type">
-     <a class="json-schema-ref" href="../../documentation-json-api/metadata">
+     <a class="json-schema-ref" href="https://applied-systems-biology.github.io/jipipe/documentation-json-api/metadata">
       See metadata
      </a>
     </span>
@@ -534,52 +541,24 @@ the document in <a href="https://json-schema.org/">JSON Schema</a> format: <a hr
     <span class="json-property-type">
      string
     </span>
-    <span class="json-property-enum" title="Possible values">
-     , x ∈ {
-     <span class="json-property-enum-item">
-      Converter
-     </span>
-     ,
-     <span class="json-property-enum-item">
-      Processor
-     </span>
-     ,
-     <span class="json-property-enum-item">
-      Analysis
-     </span>
-     ,
-     <span class="json-property-enum-item">
-      DataSource
-     </span>
-     ,
-     <span class="json-property-enum-item">
-      FileSystem
-     </span>
-     ,
-     <span class="json-property-enum-item">
-      Annotation
-     </span>
-     ,
-     <span class="json-property-enum-item">
-      Miscellaneous
-     </span>
-     }
-    </span>
     <span class="json-property-range" title="Value limits">
+    </span>
+    <span class="json-property-default-value">
+     org.hkijena.jipipe:miscellaneous
     </span>
     <span class="json-property-required">
     </span>
    </dt>
    <dd>
     <p>
-     An algorithm category
+     The category
     </p>
     <div class="json-inner-schema">
     </div>
    </dd>
-   <dt data-property-name="parameter-visibilities">
+   <dt data-property-name="exported-parameters">
     <span class="json-property-name">
-     parameter-visibilities:
+     exported-parameters:
     </span>
     <span class="json-property-type">
      object
@@ -589,51 +568,12 @@ the document in <a href="https://json-schema.org/">JSON Schema</a> format: <a hr
     <span class="json-property-default-value">
      [object Object]
     </span>
-    <span class="json-property-required">
-    </span>
    </dt>
    <dd>
     <p>
-     Determines which parameters are visible to the user
+     List of parameters that will be exported to users of the node
     </p>
     <div class="json-inner-schema">
-     <section class="json-schema-properties">
-      <dl>
-       <dt data-property-name="visible-keys">
-        <span class="json-property-name">
-         visible-keys:
-        </span>
-        <span class="json-property-type">
-         string[]
-        </span>
-        <span class="json-property-range" title="Value limits">
-        </span>
-        <span class="json-property-required">
-        </span>
-       </dt>
-       <dd>
-        <p>
-         Determines the parameter keys that are visible
-        </p>
-        <div class="json-inner-schema">
-         <section class="json-schema-array-items">
-          <span class="json-property-type">
-           string
-          </span>
-          <span class="json-property-range" title="Value limits">
-          </span>
-          <div class="json-inner-schema">
-           <section class="json-schema-description">
-            <p>
-             Consists of [Algorithm instance ID]/[Parameter key in algorithm]
-            </p>
-           </section>
-          </div>
-         </section>
-        </div>
-       </dd>
-      </dl>
-     </section>
     </div>
    </dd>
    <dt data-property-name="graph">
@@ -641,7 +581,7 @@ the document in <a href="https://json-schema.org/">JSON Schema</a> format: <a hr
      graph:
     </span>
     <span class="json-property-type">
-     <a class="json-schema-ref" href="../../documentation-json-api/graph">
+     <a class="json-schema-ref" href="https://applied-systems-biology.github.io/jipipe/documentation-json-api/graph">
       See graph
      </a>
     </span>
@@ -689,13 +629,12 @@ the document in <a href="https://json-schema.org/">JSON Schema</a> format: <a hr
       graph-wrapper-algorithm
      </span>
      (default)
-<pre><code>                                            }
-&lt;/span&gt;
-&lt;span class=&quot;json-property-range&quot; title=&quot;Value limits&quot;&gt;
-&lt;/span&gt;
-&lt;span class=&quot;json-property-required&quot;&gt;
-&lt;/span&gt;
-</code></pre>
+                                                }
+    </span>
+    <span class="json-property-range" title="Value limits">
+    </span>
+    <span class="json-property-required">
+    </span>
    </dt>
    <dd>
     <p>
@@ -831,7 +770,7 @@ the document in <a href="https://json-schema.org/">JSON Schema</a> format: <a hr
     
         <div class="chevrons">
     <div id="navigation">
-<a class="nav nav-prev" href="../../documentation-json-api/algorithm-node/" title="Algorithm node"> <i class="fa fa-chevron-left"></i><label>Algorithm node</label></a>
+<a class="nav nav-prev" href="../../documentation-json-api/graph-node/" title="Algorithm node"> <i class="fa fa-chevron-left"></i><label>Algorithm node</label></a>
     <a class="nav nav-next" href="../../documentation-json-api/dependency/" title="Dependency" style="margin-right: 0px;"><label>Dependency</label><i class="fa fa-chevron-right"></i></a></div>
   </div>
 
