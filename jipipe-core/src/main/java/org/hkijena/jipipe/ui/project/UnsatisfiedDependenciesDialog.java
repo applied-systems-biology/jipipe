@@ -93,7 +93,7 @@ public class UnsatisfiedDependenciesDialog extends JDialog {
         buttonPanel.add(cancelButton);
 
         if(!missingUpdateSites.isEmpty()) {
-            JButton resolveButton = new JButton("Resolve", UIUtils.getIconFromResources("actions/vcs-normal.png"));
+            JButton resolveButton = new JButton("Resolve", UIUtils.getIconFromResources("emblems/vcs-normal.png"));
             resolveButton.addActionListener(e -> {
                 continueLoading = true;
                 showResolver();
