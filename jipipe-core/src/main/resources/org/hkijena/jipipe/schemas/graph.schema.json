@@ -19,7 +19,7 @@
         {}
       ],
       "additionalProperties": {
-        "$ref": "https://applied-systems-biology.github.io/jipipe/schemas/algorithm-node.schema.json"
+        "$ref": "https://applied-systems-biology.github.io/jipipe/schemas/graph-node.schema.json"
       }
     },
     "edges": {
