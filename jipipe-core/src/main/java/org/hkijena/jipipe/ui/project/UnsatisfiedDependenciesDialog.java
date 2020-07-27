@@ -142,7 +142,7 @@ public class UnsatisfiedDependenciesDialog extends JDialog {
         UnsatisfiedDependenciesDialog dialog = new UnsatisfiedDependenciesDialog(workbench, fileName, dependencySet, missingUpdateSites);
         dialog.setModal(true);
         dialog.pack();
-        dialog.setSize(640, 480);
+        dialog.setSize(1024, 768);
         dialog.setLocationRelativeTo(workbench.getWindow());
         dialog.setVisible(true);
         return dialog.continueLoading;
