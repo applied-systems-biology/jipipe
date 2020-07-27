@@ -69,7 +69,7 @@ public class JIPipeProject implements JIPipeValidatable {
     private JIPipeGraph graph = new JIPipeGraph();
     private JIPipeGraph compartmentGraph = new JIPipeGraph();
     private BiMap<String, JIPipeProjectCompartment> compartments = HashBiMap.create();
-    private JIPipeMetadata metadata = new JIPipeMetadata();
+    private JIPipeProjectMetadata metadata = new JIPipeProjectMetadata();
     private Map<String, Object> additionalMetadata = new HashMap<String, Object>();
     private Path workDirectory;
     private JIPipeProjectCache cache;
@@ -288,7 +288,7 @@ public class JIPipeProject implements JIPipeValidatable {
     /**
      * @return Project metadata
      */
-    public JIPipeMetadata getMetadata() {
+    public JIPipeProjectMetadata getMetadata() {
         return metadata;
     }
 
@@ -406,6 +406,25 @@ public class JIPipeProject implements JIPipeValidatable {
     }
 
     /**
+     * Deserializes the project metadata from JSON
+     *
+     * @param node JSON node
+     * @return the metadata
+     */
+    public static JIPipeProjectMetadata loadMetadataFromJson(JsonNode node) {
+        node = node.path("metadata");
+        if (node.isMissingNode())
+            return new JIPipeProjectMetadata();
+        try {
+            return JsonUtils.getObjectMapper().readerFor(JIPipeProjectMetadata.class).readValue(node);
+        } catch (IOException e) {
+            throw new UserFriendlyRuntimeException(e, "Could not load metadata from JIPipe project",
+                    "Project", "The JSON data that describes the project metadata is missing essential information",
+                    "Open the file in a text editor and compare the metadata with a valid project.");
+        }
+    }
+
+    /**
      * Writes the project to JSON
      * @param generator the JSON generator
      * @throws IOException thrown by {@link JsonGenerator}
@@ -447,7 +466,7 @@ public class JIPipeProject implements JIPipeValidatable {
      */
     public void fromJson(JsonNode node, JIPipeValidityReport report) throws IOException {
         if (node.has("metadata")) {
-            metadata = JsonUtils.getObjectMapper().readerFor(JIPipeMetadata.class).readValue(node.get("metadata"));
+            metadata = JsonUtils.getObjectMapper().readerFor(JIPipeProjectMetadata.class).readValue(node.get("metadata"));
         }
 
         // Deserialize additional metadata

@@ -65,6 +65,7 @@ public class JIPipeDefaultRegistry extends AbstractService implements JIPipeRegi
     private JIPipeSettingsRegistry settingsRegistry = new JIPipeSettingsRegistry();
     private JIPipeTableRegistry tableRegistry = new JIPipeTableRegistry();
     private JIPipeUINodeRegistry jipipeuiNodeRegistry = new JIPipeUINodeRegistry();
+    private FilesCollection imageJPlugins = null;
 
     @Parameter
     private PluginService pluginService;
@@ -204,23 +205,22 @@ public class JIPipeDefaultRegistry extends AbstractService implements JIPipeRegi
             for (JIPipeImageJUpdateSiteDependency dependency : dependencies) {
                 System.out.println("  - " + dependency.getName() + " @ " + dependency.getUrl());
             }
-            FilesCollection filesCollection = null;
             try {
                 UpdaterUtil.useSystemProxies();
                 Authenticator.setDefault(new SwingAuthenticator());
 
-                filesCollection = new FilesCollection(JIPipeImageJPluginManager.getImageJRoot().toFile());
-                AvailableSites.initializeAndAddSites(filesCollection);
-                filesCollection.downloadIndexAndChecksum(progressAdapter);
+                imageJPlugins = new FilesCollection(JIPipeImageJPluginManager.getImageJRoot().toFile());
+                AvailableSites.initializeAndAddSites(imageJPlugins);
+                imageJPlugins.downloadIndexAndChecksum(progressAdapter);
             } catch (Exception e) {
                 System.err.println("Unable to check update sites!");
                 e.printStackTrace();
                 missingSites.clear();
                 System.out.println("No ImageJ update site check is applied.");
             }
-            if (filesCollection != null) {
+            if (imageJPlugins != null) {
                 System.out.println("Following ImageJ update sites are currently active: ");
-                for (UpdateSite updateSite : filesCollection.getUpdateSites(true)) {
+                for (UpdateSite updateSite : imageJPlugins.getUpdateSites(true)) {
                     if (updateSite.isActive()) {
                         System.out.println("  - " + updateSite.getName() + " @ " + updateSite.getURL());
                         missingSites.removeIf(site -> Objects.equals(site.getName(), updateSite.getName()));
@@ -345,6 +345,10 @@ public class JIPipeDefaultRegistry extends AbstractService implements JIPipeRegi
     @Override
     public JIPipeUINodeRegistry getUIAlgorithmRegistry() {
         return jipipeuiNodeRegistry;
+    }
+
+    public FilesCollection getImageJPlugins() {
+        return imageJPlugins;
     }
 
     /**

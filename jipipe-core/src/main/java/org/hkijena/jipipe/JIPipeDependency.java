@@ -32,15 +32,12 @@ import java.util.Set;
  * Encapsulates a dependency such as an extension or JSON extension
  */
 @JsonDeserialize(as = JIPipeMutableDependency.class)
-public interface JIPipeDependency extends JIPipeParameterCollection, JIPipeValidatable {
+public interface JIPipeDependency extends JIPipeValidatable {
     /**
      * @return The dependency metadata
      */
     @JsonGetter("metadata")
     JIPipeMetadata getMetadata();
-
-    @Override
-    EventBus getEventBus();
 
     /**
      * @return The unique dependency ID
@@ -66,10 +63,17 @@ public interface JIPipeDependency extends JIPipeParameterCollection, JIPipeValid
      *
      * @return the list of update sites
      */
-    @JsonSetter("ij:update-sites")
+    @JsonGetter("ij:update-site-dependencies")
     default List<JIPipeImageJUpdateSiteDependency> getImageJUpdateSiteDependencies() {
         return Collections.emptyList();
     }
+
+    /**
+     * List of ImageJ update sites that provide the dependency
+     * @return the list of update sites
+     */
+    @JsonGetter("ij:update-site-providers")
+    default List<JIPipeImageJUpdateSiteDependency> getImageJUpdateSites() { return Collections.emptyList(); }
 
     @Override
     void reportValidity(JIPipeValidityReport report);

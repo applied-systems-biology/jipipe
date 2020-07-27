@@ -14,8 +14,11 @@
 package org.hkijena.jipipe.ui;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import org.hkijena.jipipe.JIPipeDefaultRegistry;
 import org.hkijena.jipipe.JIPipeDependency;
+import org.hkijena.jipipe.JIPipeImageJUpdateSiteDependency;
 import org.hkijena.jipipe.api.JIPipeProject;
+import org.hkijena.jipipe.api.JIPipeProjectMetadata;
 import org.hkijena.jipipe.api.JIPipeRun;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
@@ -162,6 +165,17 @@ public class JIPipeProjectWindow extends JFrame {
             try {
                 JsonNode jsonData = JsonUtils.getObjectMapper().readValue(path.toFile(), JsonNode.class);
                 Set<JIPipeDependency> dependencySet = JIPipeProject.loadDependenciesFromJson(jsonData);
+
+                JIPipeProjectMetadata metadata = JIPipeProject.loadMetadataFromJson(jsonData);
+
+                Set<JIPipeImageJUpdateSiteDependency> missingUpdateSites = new HashSet<>();
+                if(JIPipeDefaultRegistry.getInstance().getImageJPlugins() != null) {
+                    // Populate
+                    for (JIPipeDependency dependency : dependencySet) {
+                        missingUpdateSites.addAll(dependency.getImageJUpdateSiteDependencies());
+                    }
+
+                }
                 Set<JIPipeDependency> missingDependencies = JIPipeDependency.findUnsatisfiedDependencies(dependencySet);
                 if (!missingDependencies.isEmpty()) {
                     if (!UnsatisfiedDependenciesDialog.showDialog(this, path, missingDependencies))

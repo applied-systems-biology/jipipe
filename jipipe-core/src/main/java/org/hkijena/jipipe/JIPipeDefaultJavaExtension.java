@@ -57,7 +57,6 @@ import java.util.function.Supplier;
  */
 public abstract class JIPipeDefaultJavaExtension extends AbstractService implements JIPipeJavaExtension {
 
-    private EventBus eventBus = new EventBus();
     private JIPipeMetadata metadata;
     private JIPipeDefaultRegistry registry;
 
@@ -90,11 +89,6 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
     @Override
     public JIPipeMetadata getMetadata() {
         return metadata;
-    }
-
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
     }
 
     /**

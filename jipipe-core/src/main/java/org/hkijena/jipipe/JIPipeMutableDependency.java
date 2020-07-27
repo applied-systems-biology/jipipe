@@ -22,6 +22,8 @@ import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A JSON-serializable {@link JIPipeDependency}.
@@ -31,7 +33,9 @@ public class JIPipeMutableDependency implements JIPipeDependency {
     private JIPipeMetadata metadata = new JIPipeMetadata();
     private String dependencyId;
     private String dependencyVersion = "1.0.0";
-    private EventBus eventBus = new EventBus();
+    private final EventBus eventBus = new EventBus();
+    private List<JIPipeImageJUpdateSiteDependency> imageJUpdateSiteDependencies = new ArrayList<>();
+    private List<JIPipeImageJUpdateSiteDependency> imageJUpdateSites = new ArrayList<>();
 
     /**
      * Creates a new instance
@@ -66,11 +70,6 @@ public class JIPipeMutableDependency implements JIPipeDependency {
     @JsonSetter("metadata")
     public void setMetadata(JIPipeMetadata metadata) {
         this.metadata = metadata;
-    }
-
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
     }
 
     @Override
@@ -119,5 +118,27 @@ public class JIPipeMutableDependency implements JIPipeDependency {
     @Override
     public void reportValidity(JIPipeValidityReport report) {
 
+    }
+
+    @Override
+    @JsonGetter("ij:update-site-dependencies")
+    public List<JIPipeImageJUpdateSiteDependency> getImageJUpdateSiteDependencies() {
+        return imageJUpdateSiteDependencies;
+    }
+
+    @JsonSetter("ij:update-site-dependencies")
+    public void setImageJUpdateSiteDependencies(List<JIPipeImageJUpdateSiteDependency> imageJUpdateSiteDependencies) {
+        this.imageJUpdateSiteDependencies = imageJUpdateSiteDependencies;
+    }
+
+    @Override
+    @JsonGetter("ij:update-site-providers")
+    public List<JIPipeImageJUpdateSiteDependency> getImageJUpdateSites() {
+        return imageJUpdateSites;
+    }
+
+    @JsonSetter("ij:update-site-providers")
+    public void setImageJUpdateSites(List<JIPipeImageJUpdateSiteDependency> imageJUpdateSites) {
+        this.imageJUpdateSites = imageJUpdateSites;
     }
 }

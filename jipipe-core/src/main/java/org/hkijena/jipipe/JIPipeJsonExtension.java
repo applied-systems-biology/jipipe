@@ -35,6 +35,7 @@ import org.hkijena.jipipe.api.grouping.JsonNodeInfo;
 import org.hkijena.jipipe.api.grouping.JsonNodeRegistrationTask;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.registries.JIPipeNodeRegistry;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
 import org.hkijena.jipipe.utils.JsonUtils;
@@ -52,7 +53,7 @@ import java.util.stream.Collectors;
  * A JSON-serializable extension
  */
 @JsonDeserialize(as = JIPipeJsonExtension.class, using = JIPipeJsonExtension.Deserializer.class)
-public class JIPipeJsonExtension implements JIPipeDependency, JIPipeValidatable {
+public class JIPipeJsonExtension implements JIPipeParameterCollection, JIPipeDependency, JIPipeValidatable {
     private EventBus eventBus = new EventBus();
     private String id;
     private String version = "1.0.0";
