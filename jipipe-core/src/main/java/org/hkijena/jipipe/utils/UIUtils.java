@@ -55,16 +55,16 @@ import java.util.stream.Collectors;
  */
 public class UIUtils {
 
-    public static final FileNameExtensionFilter EXTENSION_FILTER_CSV = new FileNameExtensionFilter("CSV table (*.csv)", ".csv");
-    public static final FileNameExtensionFilter EXTENSION_FILTER_PNG = new FileNameExtensionFilter("PNG image (*.png)", ".png");
-    public static final FileNameExtensionFilter EXTENSION_FILTER_SVG = new FileNameExtensionFilter("SVG image (*.svg)", ".svg");
-    public static final FileNameExtensionFilter EXTENSION_FILTER_MD = new FileNameExtensionFilter("Markdown text (*.md)", ".md");
-    public static final FileNameExtensionFilter EXTENSION_FILTER_PDF = new FileNameExtensionFilter("Portable document format (*.pdf)", ".pdf");
-    public static final FileNameExtensionFilter EXTENSION_FILTER_HTML = new FileNameExtensionFilter("HTML document (*.html, *.htm)", ".html", ".htm");
-    public static final FileNameExtensionFilter EXTENSION_FILTER_JPEG = new FileNameExtensionFilter("JPEG image (*.jpg, *.jpeg)", ".jpg", ".jpeg");
-    public static final FileNameExtensionFilter EXTENSION_FILTER_JIP = new FileNameExtensionFilter("JIPipe project (*.jip)", ".jip");
-    public static final FileNameExtensionFilter EXTENSION_FILTER_JIPE = new FileNameExtensionFilter("JIPipe extension (*.jipe)", ".jipe");
-    public static final FileNameExtensionFilter EXTENSION_FILTER_JIPC = new FileNameExtensionFilter("JIPipe compartment (*.jipc)", ".jipc");
+    public static final FileNameExtensionFilter EXTENSION_FILTER_CSV = new FileNameExtensionFilter("CSV table (*.csv)", "csv");
+    public static final FileNameExtensionFilter EXTENSION_FILTER_PNG = new FileNameExtensionFilter("PNG image (*.png)", "png");
+    public static final FileNameExtensionFilter EXTENSION_FILTER_SVG = new FileNameExtensionFilter("SVG image (*.svg)", "svg");
+    public static final FileNameExtensionFilter EXTENSION_FILTER_MD = new FileNameExtensionFilter("Markdown text (*.md)", "md");
+    public static final FileNameExtensionFilter EXTENSION_FILTER_PDF = new FileNameExtensionFilter("Portable document format (*.pdf)", "pdf");
+    public static final FileNameExtensionFilter EXTENSION_FILTER_HTML = new FileNameExtensionFilter("HTML document (*.html, *.htm)", "html", "htm");
+    public static final FileNameExtensionFilter EXTENSION_FILTER_JPEG = new FileNameExtensionFilter("JPEG image (*.jpg, *.jpeg)", "jpg", "jpeg");
+    public static final FileNameExtensionFilter EXTENSION_FILTER_JIP = new FileNameExtensionFilter("JIPipe project (*.jip)", "jip");
+    public static final FileNameExtensionFilter EXTENSION_FILTER_JIPE = new FileNameExtensionFilter("JIPipe extension (*.jipe)", "jipe");
+    public static final FileNameExtensionFilter EXTENSION_FILTER_JIPC = new FileNameExtensionFilter("JIPipe compartment (*.jipc)", "jipc");
 
     public static final Insets UI_PADDING = new Insets(4, 4, 4, 4);
     public static final Map<String, ImageIcon> ICON_FROM_RESOURCES_CACHE = new HashMap<>();

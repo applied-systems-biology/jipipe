@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.ui;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import net.imagej.updater.UpdateSite;
 import org.hkijena.jipipe.JIPipeDefaultRegistry;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeImageJUpdateSiteDependency;
@@ -40,6 +41,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -174,11 +176,17 @@ public class JIPipeProjectWindow extends JFrame {
                     for (JIPipeDependency dependency : dependencySet) {
                         missingUpdateSites.addAll(dependency.getImageJUpdateSiteDependencies());
                     }
-
+                    missingUpdateSites.addAll(metadata.getUpdateSiteDependencies());
+                    // Remove existing
+                    for (UpdateSite updateSite : JIPipeDefaultRegistry.getInstance().getImageJPlugins().getUpdateSites(true)) {
+                        if(updateSite.isActive()) {
+                            missingUpdateSites.removeIf(site -> Objects.equals(site.getName(), updateSite.getName()));
+                        }
+                    }
                 }
                 Set<JIPipeDependency> missingDependencies = JIPipeDependency.findUnsatisfiedDependencies(dependencySet);
-                if (!missingDependencies.isEmpty()) {
-                    if (!UnsatisfiedDependenciesDialog.showDialog(this, path, missingDependencies))
+                if (!missingDependencies.isEmpty() || !missingUpdateSites.isEmpty()) {
+                    if (!UnsatisfiedDependenciesDialog.showDialog(getProjectUI(), path, missingDependencies, missingUpdateSites))
                         return;
                 }
 
@@ -206,7 +214,7 @@ public class JIPipeProjectWindow extends JFrame {
                 Set<JIPipeDependency> dependencySet = JIPipeProject.loadDependenciesFromJson(jsonData);
                 Set<JIPipeDependency> missingDependencies = JIPipeDependency.findUnsatisfiedDependencies(dependencySet);
                 if (!missingDependencies.isEmpty()) {
-                    if (!UnsatisfiedDependenciesDialog.showDialog(this, path, missingDependencies))
+                    if (!UnsatisfiedDependenciesDialog.showDialog(getProjectUI(), path, missingDependencies, Collections.emptySet()))
                         return;
                 }
 

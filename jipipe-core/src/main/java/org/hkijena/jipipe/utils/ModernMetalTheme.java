@@ -83,8 +83,8 @@ public class ModernMetalTheme extends DefaultMetalTheme {
         // Button.disabledGrayRange -> Object[] of Integers giving min/max
         // InternalFrame.inactiveTitleGradient -> Gradient when the
         //   internal frame is inactive.
-        Object directoryIcon = UIUtils.getIconFromResources("actions/folder-open.png");
-        Object fileIcon = UIUtils.getIconFromResources("actions/snap-page.png");
+        Object directoryIcon = UIUtils.getIconFromResources("places/folder-blue.png");
+        Object fileIcon = UIUtils.getIconFromResources("mimetypes/application-x-kgeo.png");
         List<Object> sliderGradient = Arrays.asList(new Object[]{
                 .3f, .2f,
                 PRIMARY4, getWhite(), new ColorUIResource(SECONDARY2)});
