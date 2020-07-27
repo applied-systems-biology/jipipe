@@ -56,7 +56,7 @@
           "input" : { },
           "output" : { }
         },
-        "jipipe:algorithm-ui-location" : {
+        "jipipe:node-ui-location" : {
           "preprocessing" : {
             "Vertical" : {
               "x" : 25,
@@ -71,7 +71,7 @@
           }
         },
         "jipipe:node-info-id" : "jipipe:compartment-output",
-        "jipipe:algorithm-compartment" : "preprocessing",
+        "jipipe:graph-compartment" : "preprocessing",
         "jipipe:algorithm:save-outputs" : true,
         "jipipe:algorithm:enabled" : true,
         "jipipe:algorithm:pass-through" : false,
@@ -83,7 +83,7 @@
           "input" : { },
           "output" : { }
         },
-        "jipipe:algorithm-ui-location" : {
+        "jipipe:node-ui-location" : {
           "postprocessing" : {
             "Vertical" : {
               "x" : 100,
@@ -98,7 +98,7 @@
           }
         },
         "jipipe:node-info-id" : "jipipe:compartment-output",
-        "jipipe:algorithm-compartment" : "analysis",
+        "jipipe:graph-compartment" : "analysis",
         "jipipe:algorithm:save-outputs" : true,
         "jipipe:algorithm:enabled" : true,
         "jipipe:algorithm:pass-through" : false,
@@ -110,7 +110,7 @@
           "input" : { },
           "output" : { }
         },
-        "jipipe:algorithm-ui-location" : {
+        "jipipe:node-ui-location" : {
           "postprocessing" : {
             "Vertical" : {
               "x" : 400,
@@ -119,7 +119,7 @@
           }
         },
         "jipipe:node-info-id" : "jipipe:compartment-output",
-        "jipipe:algorithm-compartment" : "postprocessing",
+        "jipipe:graph-compartment" : "postprocessing",
         "jipipe:algorithm:save-outputs" : true,
         "jipipe:algorithm:enabled" : true,
         "jipipe:algorithm:pass-through" : false,
@@ -136,7 +136,7 @@
           "jipipe:slot-configuration" : {
             "input" : { }
           },
-          "jipipe:algorithm-ui-location" : {
+          "jipipe:node-ui-location" : {
             "DEFAULT" : {
               "Vertical" : {
                 "x" : 25,
@@ -145,7 +145,7 @@
             }
           },
           "jipipe:node-info-id" : "jipipe:project-compartment",
-          "jipipe:algorithm-compartment" : "DEFAULT",
+          "jipipe:graph-compartment" : "DEFAULT",
           "jipipe:node:name" : "Preprocessing",
           "jipipe:node:description" : null
         },
@@ -162,7 +162,7 @@
               }
             }
           },
-          "jipipe:algorithm-ui-location" : {
+          "jipipe:node-ui-location" : {
             "DEFAULT" : {
               "Vertical" : {
                 "x" : 25,
@@ -171,7 +171,7 @@
             }
           },
           "jipipe:node-info-id" : "jipipe:project-compartment",
-          "jipipe:algorithm-compartment" : "DEFAULT",
+          "jipipe:graph-compartment" : "DEFAULT",
           "jipipe:node:name" : "Analysis",
           "jipipe:node:description" : null
         },
@@ -188,7 +188,7 @@
               }
             }
           },
-          "jipipe:algorithm-ui-location" : {
+          "jipipe:node-ui-location" : {
             "DEFAULT" : {
               "Vertical" : {
                 "x" : 163,
@@ -197,22 +197,22 @@
             }
           },
           "jipipe:node-info-id" : "jipipe:project-compartment",
-          "jipipe:algorithm-compartment" : "DEFAULT",
+          "jipipe:graph-compartment" : "DEFAULT",
           "jipipe:node:name" : "Postprocessing",
           "jipipe:node:description" : null
         }
       },
       "edges" : [ {
-        "source-algorithm" : "analysis",
-        "target-algorithm" : "postprocessing",
+        "source-node" : "analysis",
+        "target-node" : "postprocessing",
         "source-slot" : "Output",
         "target-slot" : "Analysis",
         "metadata" : {
           "ui-hidden" : false
         }
       }, {
-        "source-algorithm" : "preprocessing",
-        "target-algorithm" : "analysis",
+        "source-node" : "preprocessing",
+        "target-node" : "analysis",
         "source-slot" : "Output",
         "target-slot" : "Preprocessing",
         "metadata" : {

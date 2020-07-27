@@ -667,8 +667,8 @@ public class JIPipeGraph implements JIPipeValidatable {
 
         // Load edges
         for (JsonNode edgeNode : ImmutableList.copyOf(node.get("edges").elements())) {
-            String sourceAlgorithmName = edgeNode.get("source-algorithm").asText();
-            String targetAlgorithmName = edgeNode.get("target-algorithm").asText();
+            String sourceAlgorithmName = edgeNode.get("source-node").asText();
+            String targetAlgorithmName = edgeNode.get("target-node").asText();
             JIPipeGraphNode sourceAlgorithm = algorithms.get(sourceAlgorithmName);
             JIPipeGraphNode targetAlgorithm = algorithms.get(targetAlgorithmName);
             if (sourceAlgorithm == null) {
@@ -1221,8 +1221,8 @@ public class JIPipeGraph implements JIPipeValidatable {
         private void serializeEdges(JIPipeGraph graph, JsonGenerator jsonGenerator) throws IOException {
             for (Map.Entry<JIPipeDataSlot, JIPipeDataSlot> edge : graph.getSlotEdges()) {
                 jsonGenerator.writeStartObject();
-                jsonGenerator.writeStringField("source-algorithm", StringUtils.jsonify(graph.getIdOf(edge.getKey().getNode())));
-                jsonGenerator.writeStringField("target-algorithm", StringUtils.jsonify(graph.getIdOf(edge.getValue().getNode())));
+                jsonGenerator.writeStringField("source-node", StringUtils.jsonify(graph.getIdOf(edge.getKey().getNode())));
+                jsonGenerator.writeStringField("target-node", StringUtils.jsonify(graph.getIdOf(edge.getValue().getNode())));
                 jsonGenerator.writeStringField("source-slot", StringUtils.makeFilesystemCompatible(edge.getKey().getName()));
                 jsonGenerator.writeStringField("target-slot", StringUtils.makeFilesystemCompatible(edge.getValue().getName()));
                 jsonGenerator.writeObjectField("metadata", graph.getGraph().getEdge(edge.getKey(), edge.getValue()));

@@ -56,7 +56,7 @@
           "input" : { },
           "output" : { }
         },
-        "jipipe:algorithm-ui-location" : {
+        "jipipe:node-ui-location" : {
           "analysis" : {
             "Vertical" : {
               "x" : 425,
@@ -65,7 +65,7 @@
           }
         },
         "jipipe:node-info-id" : "jipipe:compartment-output",
-        "jipipe:algorithm-compartment" : "analysis",
+        "jipipe:graph-compartment" : "analysis",
         "jipipe:algorithm:save-outputs" : true,
         "jipipe:algorithm:enabled" : true,
         "jipipe:algorithm:pass-through" : false,
@@ -82,7 +82,7 @@
           "jipipe:slot-configuration" : {
             "input" : { }
           },
-          "jipipe:algorithm-ui-location" : {
+          "jipipe:node-ui-location" : {
             "DEFAULT" : {
               "Vertical" : {
                 "x" : 25,
@@ -91,7 +91,7 @@
             }
           },
           "jipipe:node-info-id" : "jipipe:project-compartment",
-          "jipipe:algorithm-compartment" : "DEFAULT",
+          "jipipe:graph-compartment" : "DEFAULT",
           "jipipe:node:name" : "Analysis",
           "jipipe:node:description" : null
         }

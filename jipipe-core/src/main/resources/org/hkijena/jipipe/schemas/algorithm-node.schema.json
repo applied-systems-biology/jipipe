@@ -7,7 +7,7 @@
   "required": [
     "jipipe:slot-configuration",
     "jipipe:node-info-id",
-    "jipipe:algorithm-compartment",
+    "jipipe:graph-compartment",
     "name",
     "description"
   ],
@@ -25,8 +25,8 @@
         "$ref": "https://applied-systems-biology.github.io/jipipe/schemas/slot-definition.schema.json"
       }
     },
-    "jipipe:algorithm-ui-location": {
-      "$id": "#/properties/jipipe:algorithm-ui-location",
+    "jipipe:node-ui-location": {
+      "$id": "#/properties/jipipe:node-ui-location",
       "type": "object",
       "title": "UI locations",
       "description": "Locations of this node within the UI. Optional. The keys depend on the UI implementation.",
@@ -48,8 +48,8 @@
         "imagej-imgplus-2d-greyscale-from-file"
       ]
     },
-    "jipipe:algorithm-compartment": {
-      "$id": "#/properties/jipipe:algorithm-compartment",
+    "jipipe:graph-compartment": {
+      "$id": "#/properties/jipipe:graph-compartment",
       "type": "string",
       "title": "Graph compartment",
       "description": "Compartment ID. Only important for the UI.",

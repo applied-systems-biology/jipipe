@@ -5,14 +5,14 @@
   "title": "Graph Edge",
   "description": "Edge in a graph",
   "required": [
-    "source-algorithm",
-    "target-algorithm",
+    "source-node",
+    "target-node",
     "source-slot",
     "target-slot"
   ],
   "properties": {
-    "source-algorithm": {
-      "$id": "#/properties/source-algorithm",
+    "source-node": {
+      "$id": "#/properties/source-node",
       "type": "string",
       "title": "Source algorithm",
       "description": "Algorithm ID of the edge source",
@@ -21,8 +21,8 @@
         "default-preprocessing-folder-list"
       ]
     },
-    "target-algorithm": {
-      "$id": "#/properties/target-algorithm",
+    "target-node": {
+      "$id": "#/properties/target-node",
       "type": "string",
       "title": "Target algorithm",
       "description": "Algorithm ID of the edge target",
