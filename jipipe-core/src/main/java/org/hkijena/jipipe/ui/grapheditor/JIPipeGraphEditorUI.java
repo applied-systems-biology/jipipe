@@ -624,8 +624,8 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
             JIPipeNodeInfo info = (JIPipeNodeInfo) value;
             if (info.isHidden())
                 return null;
-            nameHayStack = info.getName().toLowerCase();
-            descriptionHayStack = info.getDescription().toLowerCase();
+            nameHayStack = StringUtils.orElse(info.getName(), "").toLowerCase();
+            descriptionHayStack = StringUtils.orElse(info.getDescription(), "").toLowerCase();
         } else {
             return null;
         }
