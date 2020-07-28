@@ -48,6 +48,8 @@ public class RefreshRepositoryRun implements JIPipeRunnable {
         } catch (ParserConfigurationException | SAXException e) {
             throw new RuntimeException(e);
         }
+
+        filesCollection.markForUpdate(false);
     }
 
     public FilesCollection getFilesCollection() {
