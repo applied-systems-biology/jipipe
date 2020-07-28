@@ -16,6 +16,7 @@ package org.hkijena.jipipe.api.registries;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.eventbus.EventBus;
+import jdk.nashorn.internal.runtime.regexp.joni.constants.EncloseType;
 import org.hkijena.jipipe.JIPipeDefaultRegistry;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.JIPipeHidden;
@@ -86,6 +87,13 @@ public class JIPipeDatatypeRegistry {
                     if (converter != null) {
                         return converter.convert(inputData.duplicate());
                     }
+
+                    // Try to find a fuzzy converter
+                    for (Map.Entry<Class<? extends JIPipeData>, JIPipeDataConverter> targetEntry : entry.getValue().entrySet()) {
+                        if(isTriviallyConvertible(targetEntry.getKey(), outputDataType)) {
+                            return targetEntry.getValue().convert(inputData.duplicate());
+                        }
+                    }
                 }
             }
         }
@@ -121,6 +129,13 @@ public class JIPipeDatatypeRegistry {
                     targetMap = entry.getValue();
                     if (targetMap.containsKey(outputDataType))
                         return true;
+
+                    // Try to find a fuzzy converter
+                    for (Map.Entry<Class<? extends JIPipeData>, JIPipeDataConverter> targetEntry : entry.getValue().entrySet()) {
+                        if(isTriviallyConvertible(targetEntry.getKey(), outputDataType)) {
+                            return true;
+                        }
+                    }
                 }
             }
             return false;

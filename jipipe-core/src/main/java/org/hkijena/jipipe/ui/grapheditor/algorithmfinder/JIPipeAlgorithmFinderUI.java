@@ -247,11 +247,16 @@ public class JIPipeAlgorithmFinderUI extends JPanel {
                 JIPipeNodeInfo info = (JIPipeNodeInfo) value;
                 if (info.isHidden())
                     return null;
-                nameHayStack = info.getName().toLowerCase();
-                descriptionHayStack = info.getDescription().toLowerCase();
+                nameHayStack = StringUtils.orElse(info.getName(), "").toLowerCase();
+                descriptionHayStack = StringUtils.orElse(info.getDescription(), "").toLowerCase();
             } else {
                 return null;
             }
+
+            if(nameHayStack == null)
+                nameHayStack = "";
+            if(descriptionHayStack == null)
+                descriptionHayStack = "";
 
             if (filterStrings != null && filterStrings.length > 0) {
                 nameHayStack = nameHayStack.toLowerCase();

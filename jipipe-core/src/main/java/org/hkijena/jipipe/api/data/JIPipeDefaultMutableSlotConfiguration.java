@@ -157,7 +157,7 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
     public void toJson(JsonGenerator jsonGenerator) throws IOException, JsonProcessingException {
         jsonGenerator.writeStartObject();
 
-        if (!inputSlotsSealed) {
+        {
             jsonGenerator.writeFieldName("input");
             jsonGenerator.writeStartObject();
             for (String key : getInputSlotOrder()) {
@@ -165,7 +165,7 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
             }
             jsonGenerator.writeEndObject();
         }
-        if (!outputSlotsSealed) {
+        {
             jsonGenerator.writeFieldName("output");
             jsonGenerator.writeStartObject();
             for (String key : getOutputSlotOrder()) {
@@ -283,7 +283,9 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
         JsonNode outputsNode = node.path("output");
         if (!inputsNode.isMissingNode()) {
             Set<String> definedSlots = new HashSet<>();
+            List<String> order = new ArrayList<>();
             for (Map.Entry<String, JsonNode> entry : ImmutableList.copyOf(inputsNode.fields())) {
+                order.add(entry.getKey());
                 try {
                     definedSlots.add(entry.getKey());
                     JIPipeDataSlotInfo slotDefinition = objectReader.readValue(entry.getValue());
@@ -304,10 +306,13 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
                     removeInputSlot(s, false);
                 }
             }
+            trySetInputSlotOrder(order);
         }
         if (!outputsNode.isMissingNode()) {
             Set<String> definedSlots = new HashSet<>();
+            List<String> order = new ArrayList<>();
             for (Map.Entry<String, JsonNode> entry : ImmutableList.copyOf(outputsNode.fields())) {
+                order.add(entry.getKey());
                 try {
                     definedSlots.add(entry.getKey());
                     JIPipeDataSlotInfo slotDefinition = objectReader.readValue(entry.getValue());
@@ -328,6 +333,7 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
                     removeOutputSlot(s, false);
                 }
             }
+            trySetOutputSlotOrder(order);
         }
         if (inputsNode.isMissingNode() && outputsNode.isMissingNode()) {
             ImmutableList<Map.Entry<String, JsonNode>> entries = ImmutableList.copyOf(node.fields());

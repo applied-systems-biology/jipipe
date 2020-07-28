@@ -18,14 +18,7 @@ import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
-import org.hkijena.jipipe.extensions.imagejdatatypes.algorithms.BioFormatsExporter;
-import org.hkijena.jipipe.extensions.imagejdatatypes.algorithms.ImagePlusToOMEImageTypeConverter;
-import org.hkijena.jipipe.extensions.imagejdatatypes.algorithms.ImagePropertiesToAnnotationAlgorithm;
-import org.hkijena.jipipe.extensions.imagejdatatypes.algorithms.ImageTypeConverter;
-import org.hkijena.jipipe.extensions.imagejdatatypes.algorithms.ImplicitImageTypeConverter;
-import org.hkijena.jipipe.extensions.imagejdatatypes.algorithms.OMEImageToImagePlusTypeConverter;
-import org.hkijena.jipipe.extensions.imagejdatatypes.algorithms.OMEImageToROITypeConverter;
-import org.hkijena.jipipe.extensions.imagejdatatypes.algorithms.OmeImageToOMEXMLTypeConverter;
+import org.hkijena.jipipe.extensions.imagejdatatypes.algorithms.*;
 import org.hkijena.jipipe.extensions.imagejdatatypes.compat.*;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datasources.BioFormatsImporter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datasources.ImagePlusFromFile;
@@ -290,6 +283,7 @@ public class ImageJDataTypesExtension extends JIPipePrepackagedDefaultJavaExtens
         registerDatatypeConversion(new OMEImageToImagePlusTypeConverter());
         registerDatatypeConversion(new OMEImageToROITypeConverter());
         registerDatatypeConversion(new OmeImageToOMEXMLTypeConverter());
+        registerDatatypeConversion(new PlotToImageTypeConverter());
 
         Set<Class<? extends JIPipeData>> dataTypes = getRegistry().getDatatypeRegistry().getRegisteredDataTypes().values()
                 .stream().filter(ImagePlusData.class::isAssignableFrom).collect(Collectors.toSet());
