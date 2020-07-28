@@ -244,6 +244,13 @@ public class StandardParametersExtension extends JIPipePrepackagedDefaultJavaExt
                 "Margin",
                 "Defines a rectangular area within a region",
                 MarginParameterEditorUI.class);
+        registerParameterType("anchor",
+                Anchor.class,
+                null,
+                null,
+                "Anchor",
+                "An anchor to a position within a rectangle",
+                AnchorParameterEditorUI.class);
     }
 
     private void registerOptionalParameters() {
@@ -326,6 +333,13 @@ public class StandardParametersExtension extends JIPipePrepackagedDefaultJavaExt
                 "Optional path",
                 "An optional path",
                 null);
+        registerParameterType("optional-int-modification",
+                OptionalIntModificationParameter.class,
+                OptionalIntModificationParameter::new,
+                o -> new OptionalIntModificationParameter((OptionalIntModificationParameter) o),
+                "Optional integer modification",
+                "An optional integer modification",
+                null);
     }
 
     private void registerEnumParameters() {
@@ -345,10 +359,6 @@ public class StandardParametersExtension extends JIPipePrepackagedDefaultJavaExt
                 ColorMap.class,
                 "Color map",
                 "Available color maps that convert a scalar to a color");
-        registerEnumParameterType("rectangle-roi:anchor",
-                Anchor.class,
-                "Anchor",
-                "Available rectangle anchors");
         registerEnumParameterType("path-predicate:mode",
                 PathPredicate.Mode.class,
                 "Mode",

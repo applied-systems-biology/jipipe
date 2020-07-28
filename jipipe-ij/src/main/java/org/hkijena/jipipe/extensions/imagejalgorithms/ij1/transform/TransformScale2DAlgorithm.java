@@ -28,6 +28,7 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.InterpolationMethod;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.parameters.roi.IntModificationParameter;
+import org.hkijena.jipipe.extensions.parameters.roi.OptionalIntModificationParameter;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -43,8 +44,8 @@ import java.util.function.Supplier;
 public class TransformScale2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private InterpolationMethod interpolationMethod = InterpolationMethod.Bilinear;
-    private IntModificationParameter xAxis = new IntModificationParameter();
-    private IntModificationParameter yAxis = new IntModificationParameter();
+    private OptionalIntModificationParameter xAxis = new OptionalIntModificationParameter();
+    private OptionalIntModificationParameter yAxis = new OptionalIntModificationParameter();
     private boolean useAveraging = true;
 
     /**
@@ -58,6 +59,8 @@ public class TransformScale2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                 .allowOutputSlotInheritance(true)
                 .seal()
                 .build());
+        xAxis.setEnabled(true);
+        yAxis.setEnabled(true);
     }
 
     /**
@@ -68,8 +71,8 @@ public class TransformScale2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     public TransformScale2DAlgorithm(TransformScale2DAlgorithm other) {
         super(other);
         this.interpolationMethod = other.interpolationMethod;
-        this.xAxis = new IntModificationParameter(other.xAxis);
-        this.yAxis = new IntModificationParameter(other.yAxis);
+        this.xAxis = new OptionalIntModificationParameter(other.xAxis);
+        this.yAxis = new OptionalIntModificationParameter(other.yAxis);
         this.useAveraging = other.useAveraging;
     }
 
@@ -83,14 +86,30 @@ public class TransformScale2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class);
         ImagePlus img = inputData.getImage();
 
-        final int sx = xAxis.apply(img.getWidth());
-        final int sy = yAxis.apply(img.getHeight());
+        int sx = img.getWidth();
+        int sy = img.getHeight();
+        if(xAxis.isEnabled() && yAxis.isEnabled()) {
+            sx = xAxis.getContent().apply(sx);
+            sy = yAxis.getContent().apply(sy);
+        }
+        else if(xAxis.isEnabled()) {
+            sx = xAxis.getContent().apply(sx);
+            double fac = (double)sx / img.getWidth();
+            sy = (int)(sy * fac);
+        }
+        else if(yAxis.isEnabled()) {
+            sy = yAxis.getContent().apply(sy);
+            double fac = (double)sy / img.getHeight();
+            sx = (int)(sx * fac);
+        }
 
         if (img.isStack()) {
             ImageStack result = new ImageStack(sx, sy, img.getProcessor().getColorModel());
+            int finalSx = sx;
+            int finalSy = sy;
             ImageJUtils.forEachIndexedSlice(img, (imp, index) -> {
                 imp.setInterpolationMethod(interpolationMethod.getNativeValue());
-                ImageProcessor resized = img.getProcessor().resize(sx, sy, useAveraging);
+                ImageProcessor resized = img.getProcessor().resize(finalSx, finalSy, useAveraging);
                 result.addSlice("" + index, resized);
             });
             dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(new ImagePlus("Resized", result)));
@@ -106,15 +125,15 @@ public class TransformScale2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @Override
     public void reportValidity(JIPipeValidityReport report) {
-        if (xAxis.isUseExactValue()) {
-            report.forCategory("X axis").checkIfWithin(this, xAxis.getExactValue(), 0, Double.POSITIVE_INFINITY, false, false);
+        if (xAxis.isEnabled() && xAxis.getContent().isUseExactValue()) {
+            report.forCategory("X axis").checkIfWithin(this, xAxis.getContent().getExactValue(), 0, Double.POSITIVE_INFINITY, false, false);
         } else {
-            report.forCategory("X axis").checkIfWithin(this, xAxis.getFactor(), 0, Double.POSITIVE_INFINITY, false, false);
+            report.forCategory("X axis").checkIfWithin(this, xAxis.getContent().getFactor(), 0, Double.POSITIVE_INFINITY, false, false);
         }
-        if (yAxis.isUseExactValue()) {
-            report.forCategory("Y axis").checkIfWithin(this, yAxis.getExactValue(), 0, Double.POSITIVE_INFINITY, false, false);
+        if (yAxis.isEnabled() && yAxis.getContent().isUseExactValue()) {
+            report.forCategory("Y axis").checkIfWithin(this, yAxis.getContent().getExactValue(), 0, Double.POSITIVE_INFINITY, false, false);
         } else {
-            report.forCategory("Y axis").checkIfWithin(this, yAxis.getFactor(), 0, Double.POSITIVE_INFINITY, false, false);
+            report.forCategory("Y axis").checkIfWithin(this, yAxis.getContent().getFactor(), 0, Double.POSITIVE_INFINITY, false, false);
         }
     }
 
@@ -129,25 +148,25 @@ public class TransformScale2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.interpolationMethod = interpolationMethod;
     }
 
-    @JIPipeDocumentation(name = "X axis", description = "How the X axis should be scaled")
+    @JIPipeDocumentation(name = "X axis", description = "How the X axis should be scaled. If disabled, the aspect ratio is kept.")
     @JIPipeParameter("x-axis")
-    public IntModificationParameter getxAxis() {
+    public OptionalIntModificationParameter getxAxis() {
         return xAxis;
     }
 
     @JIPipeParameter("x-axis")
-    public void setxAxis(IntModificationParameter xAxis) {
+    public void setxAxis(OptionalIntModificationParameter xAxis) {
         this.xAxis = xAxis;
     }
 
-    @JIPipeDocumentation(name = "Y axis", description = "How the Y axis should be scaled")
+    @JIPipeDocumentation(name = "Y axis", description = "How the Y axis should be scaled. If disabled, the aspect ratio is kept.")
     @JIPipeParameter("y-axis")
-    public IntModificationParameter getyAxis() {
+    public OptionalIntModificationParameter getyAxis() {
         return yAxis;
     }
 
     @JIPipeParameter("y-axis")
-    public void setyAxis(IntModificationParameter yAxis) {
+    public void setyAxis(OptionalIntModificationParameter yAxis) {
         this.yAxis = yAxis;
     }
 
