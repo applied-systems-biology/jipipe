@@ -379,8 +379,8 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
     }
 
     private void registerMorphologyAlgorithms() {
-        registerNodeType("ij1-morph-binary-operation2d", MorphologyBinary2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/morphology.png"));
-        registerNodeType("ij1-morph-greyscale-operation2d", Morphology2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/morphology.png"));
+//        registerNodeType("ij1-morph-binary-operation2d", MorphologyBinary2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/morphology.png"));
+        registerNodeType("ij1-morph-operation2d", Morphology2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/morphology.png"));
         registerNodeType("ij1-morph-binary-fillholes2d", MorphologyFillHoles2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/object-fill.png"));
         registerNodeType("ij1-morph-binary-outline2d", MorphologyOutline2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-connector.png"));
         registerNodeType("ij1-morph-binary-skeletonize2d", MorphologySkeletonize2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/object-to-path.png"));
