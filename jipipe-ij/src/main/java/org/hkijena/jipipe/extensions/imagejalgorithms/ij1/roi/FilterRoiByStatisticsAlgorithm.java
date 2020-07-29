@@ -91,6 +91,8 @@ public class FilterRoiByStatisticsAlgorithm extends ImageRoiProcessorAlgorithm {
         ROIListData allROIs = new ROIListData();
         ResultsTableData allStatistics = new ResultsTableData();
 
+        roiStatisticsAlgorithm.setOverrideReferenceImage(true);
+
         for (Map.Entry<ImagePlusData, ROIListData> entry : getReferenceImage(dataBatch, subProgress.resolve("Generate reference image"), algorithmProgress, isCancelled).entrySet()) {
             // Obtain statistics
             roiStatisticsAlgorithm.clearSlotData();

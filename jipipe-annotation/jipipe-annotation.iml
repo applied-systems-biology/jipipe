@@ -9,6 +9,7 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="Maven: com.vladsch.flexmark:flexmark:0.18.5" level="project" />
     <orderEntry type="module" module-name="jipipe-core" />
     <orderEntry type="library" name="Maven: net.imagej:imagej:2.0.0-rc-72" level="project" />
     <orderEntry type="library" name="Maven: net.imagej:imagej-common:0.31.0" level="project" />

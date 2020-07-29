@@ -1,5 +1,6 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.measure;
 
+import com.google.common.collect.ImmutableList;
 import ij.plugin.filter.Analyzer;
 import org.hkijena.jipipe.extensions.parameters.primitives.DynamicSetParameter;
 
@@ -70,7 +71,7 @@ public class ImageStatisticsSetParameter extends DynamicSetParameter<Measurement
         getValues().clear();
         for (Measurement value : getAllowedValues()) {
             if ((value.getNativeValue() & nativeValue) == value.getNativeValue()) {
-                getAllowedValues().add(value);
+                getValues().add(value);
             }
         }
     }

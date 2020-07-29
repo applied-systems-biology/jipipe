@@ -97,6 +97,8 @@ public class SortAndExtractRoiByStatisticsAlgorithm extends ImageRoiProcessorAlg
 
         ROIListData outputData = new ROIListData();
 
+        roiStatisticsAlgorithm.setOverrideReferenceImage(true);
+
         for (Map.Entry<ImagePlusData, ROIListData> entry : getReferenceImage(dataBatch, subProgress.resolve("Generate reference image"), algorithmProgress, isCancelled).entrySet()) {
             ROIListData data = entry.getValue();
             // Obtain statistics

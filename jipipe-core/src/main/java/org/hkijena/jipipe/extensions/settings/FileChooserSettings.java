@@ -232,7 +232,7 @@ public class FileChooserSettings implements JIPipeParameterCollection {
                     }
                     if(!found) {
                         String extension = extensionFilters[0].getExtensions()[0];
-                        path = path.getParent().resolve(path.getFileName() + extension);
+                        path = path.getParent().resolve(path.getFileName() + "." + extension);
                     }
                 }
                 return path;
@@ -262,7 +262,7 @@ public class FileChooserSettings implements JIPipeParameterCollection {
                         }
                     }
                     if(!found) {
-                        path = path.getParent().resolve(path.getFileName() + fileNameExtensionFilter.getExtensions()[0]);
+                        path = path.getParent().resolve(path.getFileName() + "." + fileNameExtensionFilter.getExtensions()[0]);
                     }
                 }
                 return path;
