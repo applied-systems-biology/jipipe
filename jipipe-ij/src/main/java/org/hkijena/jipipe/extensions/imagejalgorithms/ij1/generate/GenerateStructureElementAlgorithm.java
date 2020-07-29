@@ -22,12 +22,14 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.greyscale.ImagePlus2DGreyscaleMaskData;
 
 import java.util.function.Consumer;
@@ -38,7 +40,7 @@ import java.util.function.Supplier;
  */
 @JIPipeDocumentation(name = "Generate structure element", description = "Generates a structure element that is consistent with the ones used by the 2D morphological operation.")
 @JIPipeOrganization(nodeTypeCategory = DataSourceNodeTypeCategory.class)
-@JIPipeOutputSlot(value = ImagePlus2DGreyscaleMaskData.class, slotName = "Kernel")
+@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Kernel")
 public class GenerateStructureElementAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private Strel.Shape element = Strel.Shape.DISK;
@@ -50,7 +52,8 @@ public class GenerateStructureElementAlgorithm extends JIPipeSimpleIteratingAlgo
      * @param info the info
      */
     public GenerateStructureElementAlgorithm(JIPipeNodeInfo info) {
-        super(info);
+        super(info, JIPipeDefaultMutableSlotConfiguration.builder()
+                .addOutputSlot("Kernel", ImagePlus2DGreyscaleMaskData.class, null).build());
     }
 
     /**
