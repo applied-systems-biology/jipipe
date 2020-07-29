@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.contrast;
+package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.misc;
 
 import ij.ImagePlus;
 import ij.process.ImageStatistics;
@@ -21,6 +21,7 @@ import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.contrast.CalibrationMode;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 
 import java.util.function.Consumer;
@@ -30,7 +31,7 @@ import java.util.function.Supplier;
         "This does not change the pixel data.")
 @JIPipeOrganization(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Contrast")
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true)
+@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", inheritedSlot = "Input", autoCreate = true)
 public class CalibrationContrastEnhancer extends JIPipeSimpleIteratingAlgorithm {
     private CalibrationMode calibrationMode = CalibrationMode.AutomaticImageJ;
     private double customMin = 0;

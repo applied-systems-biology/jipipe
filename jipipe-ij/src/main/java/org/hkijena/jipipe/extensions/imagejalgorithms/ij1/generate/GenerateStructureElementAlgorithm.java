@@ -85,10 +85,6 @@ public class GenerateStructureElementAlgorithm extends JIPipeSimpleIteratingAlgo
         strelImage.set(width / 2, height / 2, 255);
         strelImage = Morphology.dilation(strelImage, strel);
 
-        // Forces the display to inverted LUT (display a black over white)
-        if (!strelImage.isInvertedLut())
-            strelImage.invertLut();
-
         // Display strel image
         ImagePlus strelDisplay = new ImagePlus("Structuring Element", strelImage);
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlus2DGreyscaleMaskData(strelDisplay));
