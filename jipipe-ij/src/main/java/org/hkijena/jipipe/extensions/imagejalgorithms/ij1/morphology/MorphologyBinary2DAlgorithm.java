@@ -17,6 +17,7 @@ import ij.ImagePlus;
 import ij.Prefs;
 import ij.process.ByteProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.JIPipeHidden;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
@@ -39,6 +40,7 @@ import java.util.function.Supplier;
 @JIPipeOrganization(menuPath = "Morphology", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @JIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Input")
 @JIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output")
+@JIPipeHidden
 public class MorphologyBinary2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private Operation operation = Operation.Dilate;

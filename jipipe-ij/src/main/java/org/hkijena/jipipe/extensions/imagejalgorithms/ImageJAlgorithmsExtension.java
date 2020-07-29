@@ -15,6 +15,8 @@ package org.hkijena.jipipe.extensions.imagejalgorithms;
 
 import com.google.common.collect.ImmutableMap;
 import ij.process.AutoThresholder;
+import inra.ijpb.morphology.Morphology;
+import inra.ijpb.morphology.Strel;
 import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
@@ -44,6 +46,7 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.features.MeijeringVess
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.fft.FFT2DForwardTransform;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.fft.FFT2DInverseTransform;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.fft.FFT2DSwapQuadrants;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.generate.GenerateStructureElementAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.math.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.measure.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.morphology.*;
@@ -185,6 +188,7 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         registerConvolutionAlgorithms();
         registerROIAlgorithms();
 
+        registerNodeType("ij1-generate-filter-kernel", GenerateStructureElementAlgorithm.class, UIUtils.getIconURLFromResources("actions/morphology.png"));
         registerNodeType("external-imagej-macro", MacroWrapperAlgorithm.class, UIUtils.getIconURLFromResources("apps/imagej.png"));
 
         // Register enum parameters
@@ -376,7 +380,7 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
 
     private void registerMorphologyAlgorithms() {
         registerNodeType("ij1-morph-binary-operation2d", MorphologyBinary2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/morphology.png"));
-        registerNodeType("ij1-morph-greyscale-operation2d", MorphologyGreyscale2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/morphology.png"));
+        registerNodeType("ij1-morph-greyscale-operation2d", Morphology2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/morphology.png"));
         registerNodeType("ij1-morph-binary-fillholes2d", MorphologyFillHoles2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/object-fill.png"));
         registerNodeType("ij1-morph-binary-outline2d", MorphologyOutline2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-connector.png"));
         registerNodeType("ij1-morph-binary-skeletonize2d", MorphologySkeletonize2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/object-to-path.png"));
@@ -384,8 +388,10 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
 
         registerEnumParameterType("ij1-morph-binary-operation2d:operation", MorphologyBinary2DAlgorithm.Operation.class,
                 "Operation", "Available operations");
-        registerEnumParameterType("ij1-morph-greyscale-operation2d:operation", MorphologyGreyscale2DAlgorithm.Operation.class,
+        registerEnumParameterType("ij1-morph:operation", Morphology.Operation.class,
                 "Operation", "Available operations");
+        registerEnumParameterType("ij1-morph:strel", Strel.Shape.class,
+                "Structure element", "Available operations");
     }
 
     private void registerMathAlgorithms() {

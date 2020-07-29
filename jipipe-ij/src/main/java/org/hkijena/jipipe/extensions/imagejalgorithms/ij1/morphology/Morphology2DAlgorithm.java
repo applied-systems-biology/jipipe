@@ -14,7 +14,11 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.morphology;
 
 import ij.ImagePlus;
+import ij.ImageStack;
 import ij.plugin.filter.RankFilters;
+import ij.process.ImageProcessor;
+import inra.ijpb.morphology.Morphology;
+import inra.ijpb.morphology.Strel;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
@@ -33,15 +37,17 @@ import java.util.function.Supplier;
 /**
  * Wrapper around {@link ij.process.ImageProcessor}
  */
-@JIPipeDocumentation(name = "Morphological operation (greyscale) 2D", description = "Applies a morphological operation to greyscale images. " +
+@JIPipeDocumentation(name = "Morphological operation 2D", description = "Applies a morphological operation to greyscale images. " +
+        "Following operations are included: Erosion, Dilation, Opening, Closing, White Top Hat, Black Top Hat, Gradient, Laplacian, Internal Gradient, and External Gradient. " +
         "If a multi-channel image is provided, the operation is applied to each channel. " +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
 @JIPipeOrganization(menuPath = "Morphology", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input")
 @JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output")
-public class MorphologyGreyscale2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
+public class Morphology2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
-    private Operation operation = Operation.Dilate;
+    private Morphology.Operation operation = Morphology.Operation.DILATION;
+    private Strel.Shape element = Strel.Shape.DISK;
     private int radius = 1;
 
     /**
@@ -49,7 +55,7 @@ public class MorphologyGreyscale2DAlgorithm extends JIPipeSimpleIteratingAlgorit
      *
      * @param info the info
      */
-    public MorphologyGreyscale2DAlgorithm(JIPipeNodeInfo info) {
+    public Morphology2DAlgorithm(JIPipeNodeInfo info) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", ImagePlusData.class)
                 .addOutputSlot("Output", ImagePlusData.class, "Input")
                 .allowOutputSlotInheritance(true)
@@ -62,10 +68,11 @@ public class MorphologyGreyscale2DAlgorithm extends JIPipeSimpleIteratingAlgorit
      *
      * @param other the other
      */
-    public MorphologyGreyscale2DAlgorithm(MorphologyGreyscale2DAlgorithm other) {
+    public Morphology2DAlgorithm(Morphology2DAlgorithm other) {
         super(other);
         this.operation = other.operation;
         this.radius = other.radius;
+        this.element = other.element;
     }
 
     @Override
@@ -77,24 +84,20 @@ public class MorphologyGreyscale2DAlgorithm extends JIPipeSimpleIteratingAlgorit
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscaleMaskData.class);
         ImagePlus img = inputData.getDuplicateImage();
-        RankFilters rankFilters = new RankFilters();
+        Strel strel = element.fromRadius(radius);
+        ImageStack outputStack = new ImageStack(img.getWidth(), img.getHeight(), img.getProcessor().getColorModel());
         ImageJUtils.forEachSlice(img, ip -> {
-            switch (operation) {
-                case Dilate:
-                    rankFilters.rank(ip, radius, RankFilters.MAX);
-                    break;
-                case Erode:
-                    rankFilters.rank(ip, radius, RankFilters.MIN);
-                    break;
-                case Open:
-                    rankFilters.rank(ip, radius, RankFilters.OPEN);
-                    break;
-                case Close:
-                    rankFilters.rank(ip, radius, RankFilters.CLOSE);
-                    break;
-            }
+            // apply morphological operation
+            ImageProcessor resultProcessor = operation.apply(ip, strel);
+
+            // Keep same color model
+            resultProcessor.setColorModel(ip.getColorModel());
+
+            outputStack.addSlice(resultProcessor);
         });
-        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleMaskData(img));
+        ImagePlus result = new ImagePlus(operation.toString(), outputStack);
+        result.setDimensions(img.getNChannels(), img.getNSlices(), img.getNFrames());
+        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(result));
     }
 
 
@@ -105,17 +108,17 @@ public class MorphologyGreyscale2DAlgorithm extends JIPipeSimpleIteratingAlgorit
 
     @JIPipeDocumentation(name = "Operation", description = "The morphological operation")
     @JIPipeParameter("operation")
-    public Operation getOperation() {
+    public Morphology.Operation getOperation() {
         return operation;
     }
 
     @JIPipeParameter("operation")
-    public void setOperation(Operation operation) {
+    public void setOperation(Morphology.Operation operation) {
         this.operation = operation;
 
     }
 
-    @JIPipeDocumentation(name = "Radius", description = "Radius of the filter kernel. See ImageJ>Process>Filters>Show Circular Masks for a reference.")
+    @JIPipeDocumentation(name = "Radius", description = "Radius of the filter kernel in pixels.")
     @JIPipeParameter("radius")
     public int getRadius() {
         return radius;
@@ -124,13 +127,16 @@ public class MorphologyGreyscale2DAlgorithm extends JIPipeSimpleIteratingAlgorit
     @JIPipeParameter("radius")
     public void setRadius(int radius) {
         this.radius = radius;
-
     }
 
-    /**
-     * Available transformation functions
-     */
-    public enum Operation {
-        Erode, Dilate, Open, Close
+    @JIPipeDocumentation(name = "Structure element", description = "The structure element.")
+    @JIPipeParameter("element")
+    public Strel.Shape getElement() {
+        return element;
+    }
+
+    @JIPipeParameter("element")
+    public void setElement(Strel.Shape element) {
+        this.element = element;
     }
 }
