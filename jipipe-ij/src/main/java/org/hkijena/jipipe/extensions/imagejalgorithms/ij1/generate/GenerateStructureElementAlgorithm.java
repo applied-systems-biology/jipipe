@@ -53,7 +53,7 @@ public class GenerateStructureElementAlgorithm extends JIPipeSimpleIteratingAlgo
      */
     public GenerateStructureElementAlgorithm(JIPipeNodeInfo info) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder()
-                .addOutputSlot("Kernel", ImagePlus2DGreyscaleMaskData.class, null).build());
+                .addOutputSlot("Kernel", ImagePlus2DGreyscaleMaskData.class, null).seal().build());
     }
 
     /**
