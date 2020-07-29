@@ -177,6 +177,7 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
                     JMenuItem deleteButton = new JMenuItem("Delete this slot", UIUtils.getIconFromResources("actions/delete.png"));
                     deleteButton.addActionListener(e -> deleteSlot());
                     installHighlightForDisconnect(deleteButton);
+                    assignButtonMenu.add(deleteButton);
 
                     JMenuItem editButton = new JMenuItem("Edit this slot", UIUtils.getIconFromResources("actions/edit.png"));
                     editButton.addActionListener(e -> editSlot());
