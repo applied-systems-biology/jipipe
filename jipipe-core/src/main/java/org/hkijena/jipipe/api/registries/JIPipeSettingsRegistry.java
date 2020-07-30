@@ -81,7 +81,13 @@ public class JIPipeSettingsRegistry implements JIPipeParameterCollection, JIPipe
      * @return the settings instance.
      */
     public <T extends JIPipeParameterCollection> T getSettings(String id, Class<T> settingsClass) {
-        return (T) registeredSheets.get(id).getParameterCollection();
+        Sheet sheet = registeredSheets.getOrDefault(id, null);
+        if(sheet != null) {
+            return (T) sheet.getParameterCollection();
+        }
+        else {
+            return null;
+        }
     }
 
     public BiMap<String, Sheet> getRegisteredSheets() {
