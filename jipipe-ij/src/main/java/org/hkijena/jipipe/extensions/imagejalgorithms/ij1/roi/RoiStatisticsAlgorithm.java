@@ -29,6 +29,7 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.measure.ImageStatistic
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.SliceIndex;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.jipipe.extensions.parameters.primitives.OptionalStringParameter;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.ResourceUtils;
@@ -56,7 +57,7 @@ public class RoiStatisticsAlgorithm extends ImageRoiProcessorAlgorithm {
     private boolean applyPerSlice = false;
     private boolean applyPerChannel = false;
     private boolean applyPerFrame = false;
-    private String indexAnnotation = "Image index";
+    private OptionalStringParameter indexAnnotation = new OptionalStringParameter();
 
     /**
      * Instantiates a new node type.
@@ -65,6 +66,7 @@ public class RoiStatisticsAlgorithm extends ImageRoiProcessorAlgorithm {
      */
     public RoiStatisticsAlgorithm(JIPipeNodeInfo info) {
         super(info, ResultsTableData.class, "Measurements");
+        indexAnnotation.setContent("Image index");
     }
 
     /**
@@ -92,8 +94,8 @@ public class RoiStatisticsAlgorithm extends ImageRoiProcessorAlgorithm {
 
                 ResultsTableData result = data.measure(referenceEntry.getKey().getImage(), measurements);
                 List<JIPipeAnnotation> annotations = new ArrayList<>();
-                if (!StringUtils.isNullOrEmpty(indexAnnotation)) {
-                    annotations.add(new JIPipeAnnotation(indexAnnotation, entry.getKey().toString()));
+                if (indexAnnotation.isEnabled() && !StringUtils.isNullOrEmpty(indexAnnotation.getContent())) {
+                    annotations.add(new JIPipeAnnotation(indexAnnotation.getContent(), entry.getKey().toString()));
                 }
 
                 dataBatch.addOutputData(getFirstOutputSlot(), result, annotations);
@@ -122,12 +124,12 @@ public class RoiStatisticsAlgorithm extends ImageRoiProcessorAlgorithm {
             "used to generate the statistics.")
     @JIPipeParameter("index-annotation")
     @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/annotation.png")
-    public String getIndexAnnotation() {
+    public OptionalStringParameter getIndexAnnotation() {
         return indexAnnotation;
     }
 
     @JIPipeParameter("index-annotation")
-    public void setIndexAnnotation(String indexAnnotation) {
+    public void setIndexAnnotation(OptionalStringParameter indexAnnotation) {
         this.indexAnnotation = indexAnnotation;
     }
 
