@@ -17,9 +17,11 @@ import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
+import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
 import org.hkijena.jipipe.utils.ModernMetalTheme;
 import org.hkijena.jipipe.utils.ReflectionUtils;
+import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -32,7 +34,7 @@ import java.util.function.Supplier;
  */
 public class DynamicSetParameterEditorUI extends JIPipeParameterEditorUI {
 
-    private JList<Object> jList;
+    private Map<Object, JCheckBox> checkBoxMap = new HashMap<>();
 
     /**
      * @param workbench       workbench
@@ -46,26 +48,28 @@ public class DynamicSetParameterEditorUI extends JIPipeParameterEditorUI {
 
     @Override
     public boolean isUILabelEnabled() {
-        return true;
+        return false;
+    }
+
+    private Set<Object> getCurrentlySelected() {
+        Set<Object> result = new HashSet<>();
+        for (Map.Entry<Object, JCheckBox> entry : checkBoxMap.entrySet()) {
+            if(entry.getValue().isSelected()) {
+                result.add(entry.getKey());
+            }
+        }
+
+        return result;
     }
 
     @Override
     public void reload() {
         DynamicSetParameter<Object> parameter = getParameter(DynamicSetParameter.class);
-        Set<Object> currentlySelected = new HashSet<>(jList.getSelectedValuesList());
+        Set<Object> currentlySelected = getCurrentlySelected();
         if (!currentlySelected.equals(parameter.getValues())) {
-            TIntList indices = new TIntArrayList();
-            List<Object> inModel = new ArrayList<>();
-            for (int i = 0; i < jList.getModel().getSize(); i++) {
-                inModel.add(jList.getModel().getElementAt(i));
+            for (Map.Entry<Object, JCheckBox> entry : checkBoxMap.entrySet()) {
+                entry.getValue().setSelected(!parameter.getValues().contains(entry.getKey()));
             }
-            for (Object value : parameter.getValues()) {
-                int i = inModel.indexOf(value);
-                if (i >= 0) {
-                    indices.add(i);
-                }
-            }
-            jList.setSelectedIndices(indices.toArray());
         }
     }
 
@@ -89,44 +93,58 @@ public class DynamicSetParameterEditorUI extends JIPipeParameterEditorUI {
             }
         }
         Arrays.sort(values, Comparator.comparing(parameter::renderLabel));
-        jList = new JList<>(values);
-//        jList.setSelectionModel(new MultiSelectionModel());
-        jList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-        reload();
-        jList.addListSelectionListener(e -> {
-            parameter.getValues().clear();
-            parameter.getValues().addAll(jList.getSelectedValuesList());
-            setParameter(parameter, false);
-        });
-        jList.setCellRenderer(new Renderer(parameter));
-        add(jList, BorderLayout.CENTER);
+        checkBoxMap.clear();
+        JPanel contentPanel = new JPanel();
+        contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
+        for(Object value : values){
+            JCheckBox checkBox = new JCheckBox(parameter.renderLabel(value),
+                    parameter.getValues().contains(value));
+            checkBox.setToolTipText(parameter.renderTooltip(value));
+            checkBox.addActionListener(e -> {
+                if(checkBox.isSelected()) {
+                    parameter.getValues().add(value);
+                    setParameter(parameter, false);
+                }
+                else {
+                    parameter.getValues().remove(value);
+                    setParameter(parameter, false);
+                }
+            });
+            checkBoxMap.put(value, checkBox);
+            contentPanel.add(checkBox);
+        }
+
+        JToolBar toolBar = new JToolBar();
+        toolBar.add(new JLabel(getParameterAccess().getName()));
+        toolBar.add(Box.createHorizontalGlue());
+
+        JButton selectAllButton = new JButton("Select all", UIUtils.getIconFromResources("actions/stock_select-all.png"));
+        selectAllButton.addActionListener(e -> selectAll());
+        toolBar.add(selectAllButton);
+
+        JButton selectNoneButton = new JButton("Select none", UIUtils.getIconFromResources("actions/cancel.png"));
+        selectNoneButton.addActionListener(e -> selectNone());
+        toolBar.add(selectNoneButton);
+
+        add(toolBar, BorderLayout.NORTH);
+        add(contentPanel, BorderLayout.CENTER);
     }
 
-    /**
-     * Renders items in enum parameters
-     */
-    private static class Renderer extends JLabel implements ListCellRenderer<Object> {
-
-        private final DynamicSetParameter<Object> parameter;
-
-        public Renderer(DynamicSetParameter<Object> parameter) {
-            this.parameter = parameter;
-            setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
-            setFont(new Font(Font.DIALOG, Font.PLAIN, 12));
-            setOpaque(true);
+    private void selectNone() {
+        for (JCheckBox checkBox : checkBoxMap.values()) {
+            checkBox.setSelected(false);
         }
+        DynamicSetParameter<Object> parameter = getParameter(DynamicSetParameter.class);
+        parameter.getValues().clear();
+        setParameter(parameter, false);
+    }
 
-        @Override
-        public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-            setIcon(parameter.renderIcon(value));
-            setText(parameter.renderLabel(value));
-            setToolTipText(parameter.renderTooltip(value));
-            if (isSelected || cellHasFocus) {
-                setBackground(new Color(184, 207, 229));
-            } else {
-                setBackground(new Color(255, 255, 255));
-            }
-            return this;
+    private void selectAll() {
+        for (JCheckBox checkBox : checkBoxMap.values()) {
+            checkBox.setSelected(true);
         }
+        DynamicSetParameter<Object> parameter = getParameter(DynamicSetParameter.class);
+        parameter.getValues().addAll(checkBoxMap.keySet());
+        setParameter(parameter, false);
     }
 }
