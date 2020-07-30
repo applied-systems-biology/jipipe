@@ -55,7 +55,7 @@ public abstract class JIPipeAsyncResultDataPlotPreviewUI extends JIPipeResultDat
             add(new JLabel("N/A"), BorderLayout.CENTER);
         }
         else {
-            add(component, BorderLayout.CENTER);
+            add(component, BorderLayout.WEST);
         }
         revalidate();
         repaint();
