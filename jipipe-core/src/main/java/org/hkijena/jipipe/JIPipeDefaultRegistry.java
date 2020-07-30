@@ -174,7 +174,7 @@ public class JIPipeDefaultRegistry extends AbstractService implements JIPipeRegi
         // Check for update sites
 
         if (extensionSettings.isValidateImageJDependencies())
-            checkUpdateSites(issues, new IJProgressAdapter());
+            checkUpdateSites(issues, javaExtensions, new IJProgressAdapter());
 
         // Reload settings
         System.out.println("Loading settings ...");
@@ -185,12 +185,13 @@ public class JIPipeDefaultRegistry extends AbstractService implements JIPipeRegi
     /**
      * Checks the update sites of all extensions and stores the results in the issues
      * @param issues the results
+     * @param extensions list of known extensions
      * @param progressAdapter the adapter that takes the progress
      */
-    public void checkUpdateSites(JIPipeRegistryIssues issues, Progress progressAdapter) {
+    public void checkUpdateSites(JIPipeRegistryIssues issues, List<JIPipeJavaExtension> extensions, Progress progressAdapter) {
         Set<JIPipeImageJUpdateSiteDependency> dependencies = new HashSet<>();
         Set<JIPipeImageJUpdateSiteDependency> missingSites = new HashSet<>();
-        for (JIPipeDependency extension : registeredExtensions) {
+        for (JIPipeDependency extension : extensions) {
             dependencies.addAll(extension.getImageJUpdateSiteDependencies());
             missingSites.addAll(extension.getImageJUpdateSiteDependencies());
         }
