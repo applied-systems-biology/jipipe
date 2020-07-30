@@ -22,6 +22,8 @@ import org.hkijena.jipipe.ui.registries.JIPipeUIDatatypeRegistry;
 import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Renders data in {@link JIPipeMergedExportedDataTable}
@@ -29,12 +31,17 @@ import java.awt.*;
 public class JIPipeRowDataMergedTableCellRenderer implements TableCellRenderer {
 
     private JIPipeProjectWorkbench workbenchUI;
+    private List<JIPipeResultDataSlotPreviewUI> previewCache = new ArrayList<>();
 
     /**
      * @param workbenchUI The workbench
+     * @param mergedDataTable the table to be displayed
      */
-    public JIPipeRowDataMergedTableCellRenderer(JIPipeProjectWorkbench workbenchUI) {
+    public JIPipeRowDataMergedTableCellRenderer(JIPipeProjectWorkbench workbenchUI, JIPipeMergedExportedDataTable mergedDataTable) {
         this.workbenchUI = workbenchUI;
+        for (int i = 0; i < mergedDataTable.getRowCount(); i++) {
+            previewCache.add(null);
+        }
     }
 
     @Override
@@ -42,14 +49,18 @@ public class JIPipeRowDataMergedTableCellRenderer implements TableCellRenderer {
         if (value instanceof JIPipeExportedDataTable.Row) {
             JIPipeMergedExportedDataTable model = (JIPipeMergedExportedDataTable) table.getModel();
             JIPipeDataSlot slot = model.getSlot(table.convertRowIndexToModel(row));
-            JIPipeResultDataSlotCellUI renderer = JIPipeUIDatatypeRegistry.getInstance().getCellRendererFor(slot.getAcceptedDataType());
-            renderer.render(workbenchUI, slot, (JIPipeExportedDataTable.Row) value);
-            if (isSelected) {
-                renderer.setBackground(new Color(184, 207, 229));
-            } else {
-                renderer.setBackground(new Color(255, 255, 255));
+            JIPipeResultDataSlotPreviewUI preview = previewCache.get(row);
+            if(preview == null) {
+                preview = JIPipeUIDatatypeRegistry.getInstance().getCellRendererFor(slot.getAcceptedDataType(), table);
+                preview.render(workbenchUI, slot, (JIPipeExportedDataTable.Row) value);
+                previewCache.set(row, preview);
             }
-            return renderer;
+            if (isSelected) {
+                preview.setBackground(new Color(184, 207, 229));
+            } else {
+                preview.setBackground(new Color(255, 255, 255));
+            }
+            return preview;
         }
         return null;
     }

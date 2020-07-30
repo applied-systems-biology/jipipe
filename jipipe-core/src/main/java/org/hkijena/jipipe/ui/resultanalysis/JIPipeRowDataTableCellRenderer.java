@@ -21,6 +21,8 @@ import org.hkijena.jipipe.ui.registries.JIPipeUIDatatypeRegistry;
 import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Renders row data of an {@link JIPipeExportedDataTable}
@@ -29,6 +31,7 @@ public class JIPipeRowDataTableCellRenderer implements TableCellRenderer {
 
     private JIPipeProjectWorkbench workbenchUI;
     private JIPipeDataSlot slot;
+    private List<JIPipeResultDataSlotPreviewUI> previewCache = new ArrayList<>();
 
     /**
      * @param workbenchUI the workbench
@@ -37,19 +40,26 @@ public class JIPipeRowDataTableCellRenderer implements TableCellRenderer {
     public JIPipeRowDataTableCellRenderer(JIPipeProjectWorkbench workbenchUI, JIPipeDataSlot slot) {
         this.workbenchUI = workbenchUI;
         this.slot = slot;
+        for (int i = 0; i < slot.getRowCount(); i++) {
+            previewCache.add(null);
+        }
     }
 
     @Override
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
         if (value instanceof JIPipeExportedDataTable.Row) {
-            JIPipeResultDataSlotCellUI renderer = JIPipeUIDatatypeRegistry.getInstance().getCellRendererFor(slot.getAcceptedDataType());
-            renderer.render(workbenchUI, slot, (JIPipeExportedDataTable.Row) value);
-            if (isSelected) {
-                renderer.setBackground(new Color(184, 207, 229));
-            } else {
-                renderer.setBackground(new Color(255, 255, 255));
+            JIPipeResultDataSlotPreviewUI preview = previewCache.get(row);
+            if(preview == null) {
+                preview = JIPipeUIDatatypeRegistry.getInstance().getCellRendererFor(slot.getAcceptedDataType(), table);
+                preview.render(workbenchUI, slot, (JIPipeExportedDataTable.Row) value);
+                previewCache.set(row, preview);
             }
-            return renderer;
+            if (isSelected) {
+                preview.setBackground(new Color(184, 207, 229));
+            } else {
+                preview.setBackground(new Color(255, 255, 255));
+            }
+            return preview;
         }
         return null;
     }

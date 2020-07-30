@@ -32,7 +32,7 @@ import org.hkijena.jipipe.ui.components.SearchTextField;
 import org.hkijena.jipipe.ui.components.SearchTextFieldTableRowFilter;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.ui.registries.JIPipeUIDatatypeRegistry;
-import org.hkijena.jipipe.ui.resultanalysis.JIPipeAlgorithmTableCellRenderer;
+import org.hkijena.jipipe.ui.resultanalysis.JIPipeNodeTableCellRenderer;
 import org.hkijena.jipipe.ui.resultanalysis.JIPipeProjectCompartmentTableCellRenderer;
 import org.hkijena.jipipe.ui.resultanalysis.JIPipeTraitTableCellRenderer;
 import org.hkijena.jipipe.utils.CustomScrollPane;
@@ -102,7 +102,7 @@ public class JIPipeCacheMultiDataSlotTableUI extends JIPipeProjectWorkbenchPanel
             table.setRowHeight(25);
         table.setDefaultRenderer(JIPipeData.class, new JIPipeDataCellRenderer());
         table.setDefaultRenderer(Component.class, new JIPipeComponentCellRenderer());
-        table.setDefaultRenderer(JIPipeGraphNode.class, new JIPipeAlgorithmTableCellRenderer());
+        table.setDefaultRenderer(JIPipeGraphNode.class, new JIPipeNodeTableCellRenderer());
         table.setDefaultRenderer(JIPipeProjectCompartment.class, new JIPipeProjectCompartmentTableCellRenderer());
         table.setDefaultRenderer(JIPipeAnnotation.class, new JIPipeTraitTableCellRenderer());
         table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);

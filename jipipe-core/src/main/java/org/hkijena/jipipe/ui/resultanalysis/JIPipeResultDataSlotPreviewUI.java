@@ -18,16 +18,24 @@ import org.hkijena.jipipe.api.data.JIPipeExportedDataTable;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 
 import javax.swing.*;
+import java.awt.BorderLayout;
 import java.nio.file.Path;
 
 /**
  * Renders a {@link JIPipeDataSlot} row as table cell
  */
-public abstract class JIPipeResultDataSlotCellUI extends JLabel {
+public abstract class JIPipeResultDataSlotPreviewUI extends JPanel {
+
+    private final JTable table;
+
     /**
      * Creates a new renderer
+     * @param table the table where the data is rendered in
      */
-    public JIPipeResultDataSlotCellUI() {
+    public JIPipeResultDataSlotPreviewUI(JTable table) {
+        setLayout(new BorderLayout());
+        setOpaque(false);
+        this.table = table;
     }
 
     /**
@@ -38,6 +46,13 @@ public abstract class JIPipeResultDataSlotCellUI extends JLabel {
      * @param row         The data slot row
      */
     public abstract void render(JIPipeProjectWorkbench workbenchUI, JIPipeDataSlot slot, JIPipeExportedDataTable.Row row);
+
+    /**
+     * @return the table where the data is rendered in
+     */
+    public JTable getTable() {
+        return table;
+    }
 
     /**
      * Returns the compartment name of the algorithm that generated the data

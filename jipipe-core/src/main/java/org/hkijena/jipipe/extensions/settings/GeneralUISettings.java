@@ -37,6 +37,7 @@ public class GeneralUISettings implements JIPipeParameterCollection {
     private boolean forceCrossPlatformLookAndFeel = true;
     private boolean modernizeCrossPlatformLookAndFeel = true;
     private boolean generateCachePreviews = true;
+    private boolean generateResultPreviews = true;
     private int previewWidth = 64;
     private int previewHeight = 64;
 
@@ -171,6 +172,17 @@ public class GeneralUISettings implements JIPipeParameterCollection {
     @JIPipeParameter("preview-height")
     public void setPreviewHeight(int previewHeight) {
         this.previewHeight = previewHeight;
+    }
+
+    @JIPipeDocumentation(name = "Generate previews in results", description = "If enabled, result items are previewed in JIPipe")
+    @JIPipeParameter("generate-result-previews")
+    public boolean isGenerateResultPreviews() {
+        return generateResultPreviews;
+    }
+
+    @JIPipeParameter("generate-result-previews")
+    public void setGenerateResultPreviews(boolean generateResultPreviews) {
+        this.generateResultPreviews = generateResultPreviews;
     }
 
     public static GeneralUISettings getInstance() {

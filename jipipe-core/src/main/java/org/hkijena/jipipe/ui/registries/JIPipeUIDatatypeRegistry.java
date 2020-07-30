@@ -19,11 +19,13 @@ import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeExportedDataTable;
+import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
-import org.hkijena.jipipe.ui.resultanalysis.JIPipeDefaultResultDataSlotCellUI;
+import org.hkijena.jipipe.ui.resultanalysis.JIPipeDefaultResultDataSlotPreviewUI;
 import org.hkijena.jipipe.ui.resultanalysis.JIPipeDefaultResultDataSlotRowUI;
-import org.hkijena.jipipe.ui.resultanalysis.JIPipeResultDataSlotCellUI;
+import org.hkijena.jipipe.ui.resultanalysis.JIPipeResultDataSlotPreviewUI;
 import org.hkijena.jipipe.ui.resultanalysis.JIPipeResultDataSlotRowUI;
+import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.ResourceUtils;
 
 import javax.swing.*;
@@ -36,10 +38,9 @@ import java.util.Map;
  * Registry for data types
  */
 public class JIPipeUIDatatypeRegistry {
-    private JIPipeResultDataSlotCellUI defaultResultTableRowUI = new JIPipeDefaultResultDataSlotCellUI();
     private Map<Class<? extends JIPipeData>, URL> icons = new HashMap<>();
     private Map<Class<? extends JIPipeData>, Class<? extends JIPipeResultDataSlotRowUI>> resultUIs = new HashMap<>();
-    private Map<Class<? extends JIPipeData>, JIPipeResultDataSlotCellUI> resultTableCellUIs = new HashMap<>();
+    private Map<Class<? extends JIPipeData>, Class<? extends JIPipeResultDataSlotPreviewUI>> resultTableCellUIs = new HashMap<>();
 
     /**
      * New registry
@@ -74,7 +75,7 @@ public class JIPipeUIDatatypeRegistry {
      * @param klass    data class
      * @param renderer cell renderer
      */
-    public void registerResultTableCellUI(Class<? extends JIPipeData> klass, JIPipeResultDataSlotCellUI renderer) {
+    public void registerResultTableCellUI(Class<? extends JIPipeData> klass, Class<? extends JIPipeResultDataSlotPreviewUI> renderer) {
         resultTableCellUIs.put(klass, renderer);
     }
 
@@ -115,10 +116,22 @@ public class JIPipeUIDatatypeRegistry {
      * Returns a cell renderer for dataslot result table
      *
      * @param klass data class
+     * @param table the table that owns the renderer
      * @return cell renderer
      */
-    public JIPipeResultDataSlotCellUI getCellRendererFor(Class<? extends JIPipeData> klass) {
-        return resultTableCellUIs.getOrDefault(klass, defaultResultTableRowUI);
+    public JIPipeResultDataSlotPreviewUI getCellRendererFor(Class<? extends JIPipeData> klass, JTable table) {
+        if(GeneralUISettings.getInstance().isGenerateResultPreviews()) {
+            Class<? extends JIPipeResultDataSlotPreviewUI> rendererClass = resultTableCellUIs.getOrDefault(klass, null);
+            if(rendererClass != null) {
+                return (JIPipeResultDataSlotPreviewUI) ReflectionUtils.newInstance(rendererClass, table);
+            }
+            else {
+                return new JIPipeDefaultResultDataSlotPreviewUI(table);
+            }
+        }
+        else {
+            return new JIPipeDefaultResultDataSlotPreviewUI(table);
+        }
     }
 
     /**

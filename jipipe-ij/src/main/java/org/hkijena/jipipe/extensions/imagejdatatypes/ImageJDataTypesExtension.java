@@ -54,8 +54,11 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.fft.*;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.*;
 import org.hkijena.jipipe.extensions.imagejdatatypes.parameters.OMEColorMode;
 import org.hkijena.jipipe.extensions.imagejdatatypes.parameters.OMETIFFCompression;
+import org.hkijena.jipipe.extensions.imagejdatatypes.resultanalysis.ImageDataPreviewUI;
 import org.hkijena.jipipe.extensions.imagejdatatypes.resultanalysis.ImageDataSlotRowUI;
+import org.hkijena.jipipe.extensions.imagejdatatypes.resultanalysis.OMEImageDataPreviewUI;
 import org.hkijena.jipipe.extensions.imagejdatatypes.resultanalysis.OMEImageDataSlotRowUI;
+import org.hkijena.jipipe.extensions.imagejdatatypes.resultanalysis.ROIDataPreviewUI;
 import org.hkijena.jipipe.extensions.imagejdatatypes.resultanalysis.ROIDataSlotRowUI;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
 import org.hkijena.jipipe.extensions.tables.ResultsTableDataSlotRowUI;
@@ -191,7 +194,7 @@ public class ImageJDataTypesExtension extends JIPipePrepackagedDefaultJavaExtens
                 "Available compression algorithms");
 
         // Register data types
-        registerDatatype("imagej-ome", OMEImageData.class, UIUtils.getIconURLFromResources("data-types/bioformats.png"), OMEImageDataSlotRowUI.class, null);
+        registerDatatype("imagej-ome", OMEImageData.class, UIUtils.getIconURLFromResources("data-types/bioformats.png"), OMEImageDataSlotRowUI.class, OMEImageDataPreviewUI.class);
         registerImageJDataAdapter(new OMEImageDataImageJAdapter(), ImagePlusDataImporterUI.class);
         registerImageDataType("imagej-imgplus", ImagePlusData.class, "icons/data-types/imgplus.png");
         registerImageDataType("imagej-imgplus-greyscale", ImagePlusGreyscaleData.class, "icons/data-types/imgplus-greyscale.png");
@@ -241,7 +244,7 @@ public class ImageJDataTypesExtension extends JIPipePrepackagedDefaultJavaExtens
         registerConverters();
 
         registerDatatype("imagej-roi", ROIListData.class, ResourceUtils.getPluginResource("icons/data-types/roi.png"),
-                ROIDataSlotRowUI.class, null);
+                ROIDataSlotRowUI.class, ROIDataPreviewUI.class);
         registerImageJDataAdapter(new ROIDataImageJAdapter(), ROIDataImporterUI.class);
         registerDatatype("imagej-results-table", ResultsTableData.class, ResourceUtils.getPluginResource("icons/data-types/results-table.png"),
                 ResultsTableDataSlotRowUI.class, null);
@@ -310,7 +313,7 @@ public class ImageJDataTypesExtension extends JIPipePrepackagedDefaultJavaExtens
     }
 
     private void registerImageDataType(String id, Class<? extends ImagePlusData> dataClass, String iconResource) {
-        registerDatatype(id, dataClass, ResourceUtils.getPluginResource(iconResource), ImageDataSlotRowUI.class, null);
+        registerDatatype(id, dataClass, ResourceUtils.getPluginResource(iconResource), ImageDataSlotRowUI.class, ImageDataPreviewUI.class);
         registerImageJDataAdapter(new ImgPlusDataImageJAdapter(dataClass), ImagePlusDataImporterUI.class);
     }
 }

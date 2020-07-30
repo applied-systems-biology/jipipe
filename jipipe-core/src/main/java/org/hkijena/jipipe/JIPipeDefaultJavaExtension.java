@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe;
 
-import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.JIPipeMetadata;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
@@ -38,7 +37,7 @@ import org.hkijena.jipipe.ui.extension.MenuExtension;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterGeneratorUI;
 import org.hkijena.jipipe.ui.registries.JIPipeUIParameterTypeRegistry;
-import org.hkijena.jipipe.ui.resultanalysis.JIPipeResultDataSlotCellUI;
+import org.hkijena.jipipe.ui.resultanalysis.JIPipeResultDataSlotPreviewUI;
 import org.hkijena.jipipe.ui.resultanalysis.JIPipeResultDataSlotRowUI;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.scijava.service.AbstractService;
@@ -157,14 +156,13 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
 
     /**
      * Registers a new data type
-     *
-     * @param id        Data type id
+     *  @param id        Data type id
      * @param dataClass Data class
      * @param icon      Icon for the data type. Can be null.
      * @param rowUI     Results analyzer row UI for the data type. Can be null.
      * @param cellUI    Results table cell UI. Can be null.
      */
-    public void registerDatatype(String id, Class<? extends JIPipeData> dataClass, URL icon, Class<? extends JIPipeResultDataSlotRowUI> rowUI, JIPipeResultDataSlotCellUI cellUI) {
+    public void registerDatatype(String id, Class<? extends JIPipeData> dataClass, URL icon, Class<? extends JIPipeResultDataSlotRowUI> rowUI, Class<? extends JIPipeResultDataSlotPreviewUI> cellUI) {
         registry.getDatatypeRegistry().register(id, dataClass, this);
         if (icon != null) {
             registry.getUIDatatypeRegistry().registerIcon(dataClass, icon);

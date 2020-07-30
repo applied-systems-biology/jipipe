@@ -74,6 +74,7 @@ import org.hkijena.jipipe.utils.PathUtils;
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
 import java.awt.Checkbox;
+import java.awt.Component;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -149,6 +150,11 @@ public class OMEImageData implements JIPipeData {
         this.image = image;
         this.rois = rois;
         this.metadata = metadata;
+    }
+
+    @Override
+    public Component preview(int width, int height) {
+        return new ImagePlusData(image).preview(width, height);
     }
 
     public ImagePlus getImage() {

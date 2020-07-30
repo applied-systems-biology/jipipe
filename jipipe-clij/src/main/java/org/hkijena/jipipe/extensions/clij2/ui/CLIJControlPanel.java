@@ -25,9 +25,9 @@ import java.io.IOException;
  */
 public class CLIJControlPanel extends JIPipeWorkbenchPanel {
 
-    private final JTextField openCLInfo = UIUtils.makeReadonlyBorderlessTextField("NA");
-    private final JTextField gpuModel = UIUtils.makeReadonlyBorderlessTextField("NA");
-    private final JTextField gpuMemory = UIUtils.makeReadonlyBorderlessTextField("NA");
+    private final JTextField openCLInfo = UIUtils.makeReadonlyBorderlessTextField("N/A");
+    private final JTextField gpuModel = UIUtils.makeReadonlyBorderlessTextField("N/A");
+    private final JTextField gpuMemory = UIUtils.makeReadonlyBorderlessTextField("N/A");
     private final JLabel readyLabel = new JLabel();
     private JButton clearMemoryButton;
 
@@ -117,9 +117,9 @@ public class CLIJControlPanel extends JIPipeWorkbenchPanel {
     }
 
     private void switchToUnsuccessfulLoad() {
-        openCLInfo.setText("NA");
-        gpuModel.setText("NA");
-        gpuMemory.setText("NA");
+        openCLInfo.setText("N/A");
+        gpuModel.setText("N/A");
+        gpuMemory.setText("N/A");
         clearMemoryButton.setEnabled(false);
         readyLabel.setText("Not ready");
         readyLabel.setIcon(UIUtils.getIconFromResources("emblems/vcs-conflicting.png"));

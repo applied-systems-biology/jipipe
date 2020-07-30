@@ -11,43 +11,42 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.ui.resultanalysis;
+package org.hkijena.jipipe.ui.cache;
 
-import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
-import org.hkijena.jipipe.ui.registries.JIPipeUINodeRegistry;
+import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.data.JIPipeDataInfo;
+import org.hkijena.jipipe.ui.registries.JIPipeUIDatatypeRegistry;
 
 import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Component;
 
 /**
- * Renders {@link JIPipeGraphNode} instances in a table cell
+ * Renders {@link JIPipeData}
  */
-public class JIPipeAlgorithmTableCellRenderer extends JLabel implements TableCellRenderer {
+public class JIPipeDataInfoCellRenderer extends JLabel implements TableCellRenderer {
 
     /**
-     * Creates a new renderer
+     * Create new instance
      */
-    public JIPipeAlgorithmTableCellRenderer() {
+    public JIPipeDataInfoCellRenderer() {
         setOpaque(true);
         setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
     }
 
     @Override
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-
-        if (value instanceof JIPipeGraphNode) {
-            JIPipeGraphNode algorithm = (JIPipeGraphNode) value;
-            setIcon(JIPipeUINodeRegistry.getInstance().getIconFor(algorithm.getInfo()));
-            setText(algorithm.getName());
+        if (value instanceof JIPipeDataInfo) {
+            JIPipeDataInfo data = (JIPipeDataInfo) value;
+            setIcon(JIPipeUIDatatypeRegistry.getInstance().getIconFor(data.getDataClass()));
+            setText(data.getName());
         }
-
         if (isSelected) {
             setBackground(new Color(184, 207, 229));
         } else {
             setBackground(new Color(255, 255, 255));
         }
-
         return this;
     }
 }

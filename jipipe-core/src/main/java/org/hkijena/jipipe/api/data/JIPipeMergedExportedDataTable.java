@@ -65,7 +65,7 @@ public class JIPipeMergedExportedDataTable implements TableModel {
 
     @Override
     public int getColumnCount() {
-        return traitColumns.size() + 4;
+        return traitColumns.size() + 5;
     }
 
     @Override
@@ -77,9 +77,11 @@ public class JIPipeMergedExportedDataTable implements TableModel {
         if (columnIndex == 2)
             return "Location";
         else if (columnIndex == 3)
-            return "Data";
+            return "Data type";
+        else if (columnIndex == 4)
+            return "Preview";
         else
-            return traitColumns.get(columnIndex - 4);
+            return traitColumns.get(columnIndex - 5);
     }
 
     @Override
@@ -91,6 +93,8 @@ public class JIPipeMergedExportedDataTable implements TableModel {
         if (columnIndex == 2)
             return Path.class;
         else if (columnIndex == 3)
+            return JIPipeDataInfo.class;
+        else if (columnIndex == 4)
             return JIPipeExportedDataTable.Row.class;
         else
             return JIPipeAnnotation.class;
@@ -110,9 +114,11 @@ public class JIPipeMergedExportedDataTable implements TableModel {
         else if (columnIndex == 2)
             return rowList.get(rowIndex).getLocation();
         else if (columnIndex == 3)
+            return JIPipeDataInfo.getInstance(slotList.get(rowIndex).getAcceptedDataType());
+        else if (columnIndex == 4)
             return rowList.get(rowIndex);
         else {
-            String traitColumn = traitColumns.get(columnIndex - 4);
+            String traitColumn = traitColumns.get(columnIndex - 5);
             return rowList.get(rowIndex).getTraits().stream().filter(t -> t.nameEquals(traitColumn)).findFirst().orElse(null);
         }
     }

@@ -15,12 +15,15 @@ package org.hkijena.jipipe.ui.resultanalysis;
 
 import org.hkijena.jipipe.api.JIPipeRun;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
+import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeExportedDataTable;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
+import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
+import org.hkijena.jipipe.ui.cache.JIPipeDataInfoCellRenderer;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.SearchTextField;
 import org.hkijena.jipipe.ui.components.SearchTextFieldTableRowFilter;
@@ -69,8 +72,12 @@ public class JIPipeResultDataSlotTableUI extends JIPipeProjectWorkbenchPanel {
     private void initialize() {
         setLayout(new BorderLayout());
         table = new JXTable();
-        table.setRowHeight(25);
+        if(GeneralUISettings.getInstance().isGenerateResultPreviews())
+            table.setRowHeight(GeneralUISettings.getInstance().getPreviewHeight());
+        else
+            table.setRowHeight(25);
         table.setDefaultRenderer(Path.class, new JIPipeRowLocationTableCellRenderer());
+        table.setDefaultRenderer(JIPipeDataInfo.class, new JIPipeDataInfoCellRenderer());
         table.setDefaultRenderer(JIPipeExportedDataTable.Row.class, new JIPipeRowDataTableCellRenderer(getProjectWorkbench(), slot));
         table.setDefaultRenderer(JIPipeAnnotation.class, new JIPipeTraitTableCellRenderer());
         table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);

@@ -56,7 +56,7 @@ public class ExportDataByParameter extends JIPipeAlgorithm {
     private String appendDataTypeMetadataKey = "DataType";
     private String separatorString = "_";
     private String equalsString = "=";
-    private String missingString = "NA";
+    private String missingString = "N/A";
     private Path outputDirectory = Paths.get("exported-data");
 
     public ExportDataByParameter(JIPipeNodeInfo info) {

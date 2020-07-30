@@ -215,7 +215,7 @@ public class JIPipeExportedDataTable implements TableModel {
 
     @Override
     public int getColumnCount() {
-        return getTraitColumns().size() + 2;
+        return getTraitColumns().size() + 3;
     }
 
     @Override
@@ -223,9 +223,12 @@ public class JIPipeExportedDataTable implements TableModel {
         if (columnIndex == 0)
             return "Location";
         else if (columnIndex == 1)
-            return "Data";
+            return "Data type";
+        else if(columnIndex == 2) {
+            return "Preview";
+        }
         else
-            return traitColumns.get(columnIndex - 2);
+            return traitColumns.get(columnIndex - 3);
     }
 
     @Override
@@ -233,6 +236,8 @@ public class JIPipeExportedDataTable implements TableModel {
         if (columnIndex == 0)
             return Path.class;
         else if (columnIndex == 1)
+            return JIPipeDataInfo.class;
+        else if (columnIndex == 2)
             return Row.class;
         else
             return JIPipeAnnotation.class;
@@ -248,9 +253,11 @@ public class JIPipeExportedDataTable implements TableModel {
         if (columnIndex == 0)
             return rowList.get(rowIndex).getLocation();
         else if (columnIndex == 1)
+            return JIPipeDataInfo.getInstance(acceptedDataType);
+        else if (columnIndex == 2)
             return rowList.get(rowIndex);
         else {
-            String traitColumn = traitColumns.get(columnIndex - 2);
+            String traitColumn = traitColumns.get(columnIndex - 3);
             return rowList.get(rowIndex).traits.stream().filter(t -> t.nameEquals(traitColumn)).findFirst().orElse(null);
         }
     }

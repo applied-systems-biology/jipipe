@@ -134,10 +134,10 @@ public class JIPipeInfoUI extends JIPipeProjectWorkbenchPanel {
         Attributes manifestAttributes = ReflectionUtils.getManifestAttributes();
         if (manifestAttributes != null) {
             String implementationDateString = manifestAttributes.getValue("Implementation-Date");
-            technicalInfo.addToForm(UIUtils.makeReadonlyBorderlessTextField(StringUtils.orElse(implementationDateString, "NA")), new JLabel("Build time"), null);
+            technicalInfo.addToForm(UIUtils.makeReadonlyBorderlessTextField(StringUtils.orElse(implementationDateString, "N/A")), new JLabel("Build time"), null);
         }
-        technicalInfo.addToForm(UIUtils.makeReadonlyBorderlessTextField(StringUtils.orElse(IJ.getVersion(), "NA")), new JLabel("ImageJ"), null);
-        technicalInfo.addToForm(UIUtils.makeReadonlyBorderlessTextField(StringUtils.orElse(System.getProperty("java.version"), "NA")), new JLabel("Java"), null);
+        technicalInfo.addToForm(UIUtils.makeReadonlyBorderlessTextField(StringUtils.orElse(IJ.getVersion(), "N/A")), new JLabel("ImageJ"), null);
+        technicalInfo.addToForm(UIUtils.makeReadonlyBorderlessTextField(StringUtils.orElse(System.getProperty("java.version"), "N/A")), new JLabel("Java"), null);
         technicalInfo.addToForm(UIUtils.makeReadonlyBorderlessTextField(JIPipeNodeRegistry.getInstance().getRegisteredNodeInfos().size() + " algorithms"), new JLabel("Registered algorithms"), null);
         technicalInfo.addToForm(UIUtils.makeReadonlyBorderlessTextField(JIPipeDatatypeRegistry.getInstance().getRegisteredDataTypes().size() + " types"), new JLabel("Registered data types"), null);
         technicalInfo.addVerticalGlue();

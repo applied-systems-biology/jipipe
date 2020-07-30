@@ -18,11 +18,12 @@ import org.hkijena.jipipe.api.data.JIPipeExportedDataTable;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.PathData;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.registries.JIPipeUIDatatypeRegistry;
-import org.hkijena.jipipe.ui.resultanalysis.JIPipeResultDataSlotCellUI;
+import org.hkijena.jipipe.ui.resultanalysis.JIPipeResultDataSlotPreviewUI;
 import org.hkijena.jipipe.utils.JsonUtils;
 import org.hkijena.jipipe.utils.PathUtils;
 
 import javax.swing.*;
+import java.awt.BorderLayout;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -30,14 +31,19 @@ import java.nio.file.Path;
 /**
  * Renders filesystem data as table cell
  */
-public class FilesystemDataSlotCellUI extends JIPipeResultDataSlotCellUI {
+public class FilesystemDataSlotPreviewUI extends JIPipeResultDataSlotPreviewUI {
+
+    private final JLabel label = new JLabel();
 
     /**
      * Creates a new renderer
+     * @param table the table that renders the preview
      */
-    public FilesystemDataSlotCellUI() {
+    public FilesystemDataSlotPreviewUI(JTable table) {
+        super(table);
         setOpaque(true);
         setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+        add(label, BorderLayout.CENTER);
     }
 
     private Path findListFile(JIPipeDataSlot slot, JIPipeExportedDataTable.Row row) {
@@ -50,7 +56,8 @@ public class FilesystemDataSlotCellUI extends JIPipeResultDataSlotCellUI {
 
     @Override
     public void render(JIPipeProjectWorkbench workbenchUI, JIPipeDataSlot slot, JIPipeExportedDataTable.Row row) {
-        setIcon(JIPipeUIDatatypeRegistry.getInstance().getIconFor(slot.getAcceptedDataType()));
+
+        label.setIcon(JIPipeUIDatatypeRegistry.getInstance().getIconFor(slot.getAcceptedDataType()));
         Path listFile = findListFile(slot, row);
         if (listFile != null) {
             Path fileOrFolderPath = null;
@@ -59,14 +66,13 @@ public class FilesystemDataSlotCellUI extends JIPipeResultDataSlotCellUI {
                 fileOrFolderPath = pathData.getPath();
             } catch (IOException ignored) {
             }
-
             if (fileOrFolderPath != null) {
-                setText(fileOrFolderPath.toString());
+                label.setText(fileOrFolderPath.toString());
             } else {
-                setText("<Not found>");
+                label.setText("<Not found>");
             }
         } else {
-            setText("<Not found>");
+            label.setText("<Not found>");
         }
     }
 }
