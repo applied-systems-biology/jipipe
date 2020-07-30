@@ -123,9 +123,6 @@ public class JIPipeDefaultRegistry extends AbstractService implements JIPipeRegi
                 javaExtensions.add(extension);
             } catch (NoClassDefFoundError | InstantiableException e) {
                 issues.getErroneousPlugins().add(info);
-                throw new UserFriendlyRuntimeException(e, "A plugin could be be loaded.",
-                        "JIPipe plugin registry", "There is an error in the plugin's code that prevents it from being loaded.",
-                        "Please contact the plugin author for further help.");
             }
         }
 
@@ -142,9 +139,6 @@ public class JIPipeDefaultRegistry extends AbstractService implements JIPipeRegi
                 eventBus.post(new ExtensionRegisteredEvent(this, extension));
             } catch (NoClassDefFoundError | Exception e) {
                 issues.getErroneousPlugins().add(info);
-                throw new UserFriendlyRuntimeException(e, "A plugin could be be registered.",
-                        "JIPipe plugin registry", "There is an error in the plugin's code that prevents it from being loaded.",
-                        "Please contact the plugin author for further help.");
             }
         }
 

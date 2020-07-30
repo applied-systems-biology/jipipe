@@ -29,6 +29,11 @@ public class JIPipeImageJUpdateSiteDependency implements JIPipeParameterCollecti
     public JIPipeImageJUpdateSiteDependency() {
     }
 
+    public JIPipeImageJUpdateSiteDependency(String name, String url) {
+        this.name = name;
+        this.url = url;
+    }
+
     /**
      * Initializes the dependency from an update site
      *
