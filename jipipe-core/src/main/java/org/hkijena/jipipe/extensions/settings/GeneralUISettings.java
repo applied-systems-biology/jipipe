@@ -36,6 +36,9 @@ public class GeneralUISettings implements JIPipeParameterCollection {
     private boolean projectInfoGeneratesPreview = true;
     private boolean forceCrossPlatformLookAndFeel = true;
     private boolean modernizeCrossPlatformLookAndFeel = true;
+    private boolean generateCachePreviews = true;
+    private int previewWidth = 64;
+    private int previewHeight = 64;
 
     @Override
     public EventBus getEventBus() {
@@ -135,6 +138,39 @@ public class GeneralUISettings implements JIPipeParameterCollection {
     @JIPipeParameter("modernize-cross-platform-look-and-feel")
     public void setModernizeCrossPlatformLookAndFeel(boolean modernizeCrossPlatformLookAndFeel) {
         this.modernizeCrossPlatformLookAndFeel = modernizeCrossPlatformLookAndFeel;
+    }
+
+    @JIPipeDocumentation(name = "Generate previews in cache browser", description = "If enabled, cached items are previewed in JIPipe")
+    @JIPipeParameter("generate-cache-previews")
+    public boolean isGenerateCachePreviews() {
+        return generateCachePreviews;
+    }
+
+    @JIPipeParameter("generate-cache-previews")
+    public void setGenerateCachePreviews(boolean generateCachePreviews) {
+        this.generateCachePreviews = generateCachePreviews;
+    }
+
+    @JIPipeDocumentation(name = "Preview width", description = "The width for data previews")
+    @JIPipeParameter("preview-widths")
+    public int getPreviewWidth() {
+        return previewWidth;
+    }
+
+    @JIPipeParameter("preview-widths")
+    public void setPreviewWidth(int previewWidth) {
+        this.previewWidth = previewWidth;
+    }
+
+    @JIPipeDocumentation(name = "Preview height", description = "The height for data previews")
+    @JIPipeParameter("preview-height")
+    public int getPreviewHeight() {
+        return previewHeight;
+    }
+
+    @JIPipeParameter("preview-height")
+    public void setPreviewHeight(int previewHeight) {
+        this.previewHeight = previewHeight;
     }
 
     public static GeneralUISettings getInstance() {

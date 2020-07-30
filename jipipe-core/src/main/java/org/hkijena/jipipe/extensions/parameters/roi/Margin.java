@@ -54,8 +54,9 @@ public class Margin implements Function<Rectangle, Rectangle>, JIPipeParameterCo
         this.top.setUseExactValue(true);
         this.right.setUseExactValue(true);
         this.bottom.setUseExactValue(true);
-        this.width.setUseExactValue(true);
-        this.height.setUseExactValue(true);
+        this.anchor = Anchor.CenterCenter;
+        this.width.setUseExactValue(false);
+        this.height.setUseExactValue(false);
     }
 
     /**

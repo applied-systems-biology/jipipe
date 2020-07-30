@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.extensions.imagejdatatypes.datatypes;
 
 import ij.*;
+import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
@@ -22,6 +23,11 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.ImageJDataTypesSettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.PathUtils;
 
+import javax.swing.*;
+import java.awt.Component;
+import java.awt.Image;
+import java.awt.RenderingHints;
+import java.awt.image.BufferedImage;
 import java.nio.file.Path;
 
 /**
@@ -118,6 +124,19 @@ public class ImagePlusData implements JIPipeData {
     @Override
     public void display(String displayName, JIPipeWorkbench workbench) {
         getDuplicateImage().show();
+    }
+
+    @Override
+    public Component preview(int width, int height) {
+        double factorX = 1.0 * width / image.getWidth();
+        double factorY = 1.0 * height / image.getHeight();
+        double factor = Math.max(factorX, factorY);
+        boolean smooth = factor < 0;
+        int imageWidth = (int)(image.getWidth() * factor);
+        int imageHeight = (int)(image.getHeight() * factor);
+        ImageProcessor resized = image.getProcessor().resize(imageWidth, imageHeight, smooth);
+        BufferedImage bufferedImage = resized.getBufferedImage();
+        return new JLabel(new ImageIcon(bufferedImage));
     }
 
     @Override

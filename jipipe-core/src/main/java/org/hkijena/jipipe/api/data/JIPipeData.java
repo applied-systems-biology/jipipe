@@ -21,6 +21,7 @@ import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.StringUtils;
 
+import java.awt.Component;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Path;
 import java.util.*;
@@ -58,6 +59,17 @@ public interface JIPipeData {
      * @param workbench   the workbench
      */
     void display(String displayName, JIPipeWorkbench workbench);
+
+    /**
+     * This function generates a preview component for usage within the GUI
+     * Can return null
+     * @param width the target width
+     * @param height the target height
+     * @return the component or null if none should be available
+     */
+    default Component preview(int width, int height) {
+        return null;
+    }
 
     /**
      * Called when the data is flushed

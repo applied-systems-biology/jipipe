@@ -30,6 +30,7 @@ import ij.plugin.filter.Analyzer;
 import ij.plugin.frame.RoiManager;
 import ij.process.FloatPolygon;
 import ij.process.ImageProcessor;
+import ij.process.LUT;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.measure.ImageStatisticsSetParameter;
@@ -166,6 +167,13 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
     @Override
     public JIPipeData duplicate() {
         return new ROIListData(this);
+    }
+
+    @Override
+    public Component preview(int width, int height) {
+        ImagePlus mask = toMask(new Margin(), false, true, 1);
+        mask.setLut(LUT.createLutFromColor(Color.RED));
+        return new ImagePlusData(mask).preview(width, height);
     }
 
     @Override

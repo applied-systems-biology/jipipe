@@ -10,6 +10,7 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.misc.CalibrationContra
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 
+import java.awt.Component;
 import java.nio.file.Path;
 
 /**
@@ -71,6 +72,12 @@ public class CLIJImageData implements JIPipeData {
     public void display(String displayName, JIPipeWorkbench workbench) {
         ImagePlusData data = pull();
         data.display(displayName, workbench);
+    }
+
+    @Override
+    public Component preview(int width, int height) {
+        ImagePlusData data = pull();
+        return data.preview(width, height);
     }
 
     /**

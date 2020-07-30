@@ -17,9 +17,13 @@ import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.nodes.JIPipeEmptyNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
+import org.hkijena.jipipe.ui.components.JIPipeCachedDataPreview;
 
+import javax.swing.*;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
+import java.awt.Component;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,11 +32,17 @@ import java.util.List;
  */
 public class JIPipeMergedDataSlotTable implements TableModel {
 
+    private final JTable table;
     private ArrayList<JIPipeProjectCompartment> compartmentList = new ArrayList<>();
     private ArrayList<JIPipeGraphNode> algorithmList = new ArrayList<>();
     private List<String> traitColumns = new ArrayList<>();
     private ArrayList<JIPipeDataSlot> slotList = new ArrayList<>();
     private ArrayList<Integer> rowList = new ArrayList<>();
+    private List<Component> previewCache = new ArrayList<>();
+
+    public JIPipeMergedDataSlotTable(JTable table) {
+        this.table = table;
+    }
 
     /**
      * Adds an {@link JIPipeExportedDataTable}
@@ -57,6 +67,7 @@ public class JIPipeMergedDataSlotTable implements TableModel {
             compartmentList.add(compartment);
             algorithmList.add(algorithm);
             rowList.add(i);
+            previewCache.add(null);
         }
     }
 
@@ -67,7 +78,7 @@ public class JIPipeMergedDataSlotTable implements TableModel {
 
     @Override
     public int getColumnCount() {
-        return traitColumns.size() + 5;
+        return traitColumns.size() + 6;
     }
 
     @Override
@@ -81,9 +92,11 @@ public class JIPipeMergedDataSlotTable implements TableModel {
         else if (columnIndex == 3)
             return "Data type";
         else if (columnIndex == 4)
+            return "Preview";
+        else if (columnIndex == 5)
             return "String representation";
         else
-            return traitColumns.get(columnIndex - 5);
+            return traitColumns.get(columnIndex - 6);
     }
 
     @Override
@@ -92,11 +105,13 @@ public class JIPipeMergedDataSlotTable implements TableModel {
             return JIPipeProjectCompartment.class;
         else if (columnIndex == 1)
             return JIPipeGraphNode.class;
-        if (columnIndex == 2)
+        else if (columnIndex == 2)
             return Integer.class;
         else if (columnIndex == 3)
             return JIPipeData.class;
         else if (columnIndex == 4)
+            return Component.class;
+        else if (columnIndex == 5)
             return String.class;
         else
             return JIPipeAnnotation.class;
@@ -117,10 +132,25 @@ public class JIPipeMergedDataSlotTable implements TableModel {
             return rowList.get(rowIndex);
         else if (columnIndex == 3)
             return slotList.get(rowIndex).getData(rowList.get(rowIndex), JIPipeData.class);
-        else if (columnIndex == 4)
+        else if (columnIndex == 4) {
+            Component preview = previewCache.get(rowIndex);
+            if(preview == null) {
+                if(GeneralUISettings.getInstance().isGenerateCachePreviews()) {
+                    JIPipeData data = slotList.get(rowIndex).getData(rowList.get(rowIndex), JIPipeData.class);
+                    preview = new JIPipeCachedDataPreview(table, data);
+                    previewCache.set(rowIndex, preview);
+                }
+                else {
+                    preview = new JLabel("N/A");
+                    previewCache.set(rowIndex, preview);
+                }
+            }
+            return preview;
+        }
+        else if (columnIndex == 5)
             return "" + slotList.get(rowIndex).getData(rowList.get(rowIndex), JIPipeData.class);
         else {
-            String traitColumn = traitColumns.get(columnIndex - 5);
+            String traitColumn = traitColumns.get(columnIndex - 6);
             JIPipeDataSlot slot = slotList.get(rowIndex);
             return slot.getAnnotationOr(rowList.get(rowIndex), traitColumn, null);
         }

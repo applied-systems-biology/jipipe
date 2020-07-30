@@ -22,10 +22,12 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeMergedDataSlotTable;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
+import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.FormPanel;
+import org.hkijena.jipipe.ui.components.JIPipeComponentCellRenderer;
 import org.hkijena.jipipe.ui.components.SearchTextField;
 import org.hkijena.jipipe.ui.components.SearchTextFieldTableRowFilter;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
@@ -67,7 +69,8 @@ public class JIPipeCacheMultiDataSlotTableUI extends JIPipeProjectWorkbenchPanel
     public JIPipeCacheMultiDataSlotTableUI(JIPipeProjectWorkbench workbenchUI, List<JIPipeDataSlot> slots) {
         super(workbenchUI);
         this.slots = slots;
-        this.multiSlotTable = new JIPipeMergedDataSlotTable();
+        table = new JXTable();
+        this.multiSlotTable = new JIPipeMergedDataSlotTable(table);
         for (JIPipeDataSlot slot : slots) {
             multiSlotTable.add(getProject(), slot);
         }
@@ -93,9 +96,12 @@ public class JIPipeCacheMultiDataSlotTableUI extends JIPipeProjectWorkbenchPanel
 
     private void initialize() {
         setLayout(new BorderLayout());
-        table = new JXTable();
-        table.setRowHeight(25);
+        if(GeneralUISettings.getInstance().isGenerateCachePreviews())
+            table.setRowHeight(GeneralUISettings.getInstance().getPreviewHeight());
+        else
+            table.setRowHeight(25);
         table.setDefaultRenderer(JIPipeData.class, new JIPipeDataCellRenderer());
+        table.setDefaultRenderer(Component.class, new JIPipeComponentCellRenderer());
         table.setDefaultRenderer(JIPipeGraphNode.class, new JIPipeAlgorithmTableCellRenderer());
         table.setDefaultRenderer(JIPipeProjectCompartment.class, new JIPipeProjectCompartmentTableCellRenderer());
         table.setDefaultRenderer(JIPipeAnnotation.class, new JIPipeTraitTableCellRenderer());
@@ -216,10 +222,10 @@ public class JIPipeCacheMultiDataSlotTableUI extends JIPipeProjectWorkbenchPanel
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
             TableCellRenderer defaultRenderer = table.getTableHeader().getDefaultRenderer();
             int modelColumn = table.convertColumnIndexToModel(column);
-            if (modelColumn < 5) {
+            if (modelColumn < 6) {
                 return defaultRenderer.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
             } else {
-                String info = dataTable.getTraitColumns().get(modelColumn - 5);
+                String info = dataTable.getTraitColumns().get(modelColumn - 6);
                 String html = String.format("<html><table><tr><td><img src=\"%s\"/></td><td>%s</tr>",
                         UIUtils.getIconFromResources("data-types/annotation.png"),
                         info);
