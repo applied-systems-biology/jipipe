@@ -44,7 +44,9 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.graphics2d.svg.SVGGraphics2D;
 import org.jfree.graphics2d.svg.SVGUtils;
 
+import javax.swing.*;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -93,6 +95,17 @@ public abstract class PlotData implements JIPipeData, JIPipeParameterCollection,
         workbench.getDocumentTabPane().addTab(displayName, UIUtils.getIconFromResources("data-types/data-type-plot.png"),
                 plotBuilderUI, DocumentTabPane.CloseMode.withAskOnCloseButton, true);
         workbench.getDocumentTabPane().switchToLastTab();
+    }
+
+    @Override
+    public Component preview(int width, int height) {
+        BufferedImage image = getChart().createBufferedImage(exportWidth, exportHeight);
+        double factorX = 1.0 * width / image.getWidth();
+        double factorY = 1.0 * height / image.getHeight();
+        double factor = Math.max(factorX, factorY);
+        int imageWidth = (int)(image.getWidth() * factor);
+        int imageHeight = (int)(image.getHeight() * factor);
+        return new JLabel(new ImageIcon(image.getScaledInstance(imageWidth, imageHeight, Image.SCALE_SMOOTH)));
     }
 
     @Override
