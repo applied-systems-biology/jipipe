@@ -24,6 +24,7 @@ import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.jipipe.extensions.parameters.primitives.OptionalStringParameter;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -42,7 +43,7 @@ import java.util.function.Supplier;
 @JIPipeOutputSlot(value = ROIListData.class, slotName = "Output")
 public class ExplodeRoiAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
-    private String generatedAnnotation = "ROI index";
+    private OptionalStringParameter generatedAnnotation = new OptionalStringParameter();
 
     /**
      * Instantiates a new node type.
@@ -54,6 +55,7 @@ public class ExplodeRoiAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                 .addOutputSlot("Output", ROIListData.class, null)
                 .seal()
                 .build());
+        generatedAnnotation.setContent("ROI index");
     }
 
     /**
@@ -72,8 +74,8 @@ public class ExplodeRoiAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         for (int i = 0; i < data.size(); i++) {
             Roi roi = data.get(i);
             List<JIPipeAnnotation> traits = new ArrayList<>();
-            if (!StringUtils.isNullOrEmpty(generatedAnnotation)) {
-                traits.add(new JIPipeAnnotation(generatedAnnotation, "index=" + i + ";name=" + roi.getName()));
+            if (generatedAnnotation.isEnabled() && !StringUtils.isNullOrEmpty(generatedAnnotation.getContent())) {
+                traits.add(new JIPipeAnnotation(generatedAnnotation.getContent(), "index=" + i + ";name=" + roi.getName()));
             }
             ROIListData output = new ROIListData();
             output.add(roi);
@@ -89,12 +91,12 @@ public class ExplodeRoiAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeDocumentation(name = "ROI index annotation", description = "Optional. Annotation that is added to each individual ROI list. Contains the value index=[index];name=[name].")
     @JIPipeParameter("generated-annotation")
     @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/annotation.png")
-    public String getGeneratedAnnotation() {
+    public OptionalStringParameter getGeneratedAnnotation() {
         return generatedAnnotation;
     }
 
     @JIPipeParameter("generated-annotation")
-    public void setGeneratedAnnotation(String generatedAnnotation) {
+    public void setGeneratedAnnotation(OptionalStringParameter generatedAnnotation) {
         this.generatedAnnotation = generatedAnnotation;
     }
 }
