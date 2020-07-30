@@ -108,7 +108,7 @@ public class JIPipeDefaultRegistry extends AbstractService implements JIPipeRegi
         IJ.showStatus("Initializing JIPipe ...");
         List<PluginInfo<JIPipeJavaExtension>> pluginList = pluginService.getPluginsOfType(JIPipeJavaExtension.class).stream()
                 .sorted(JIPipeDefaultRegistry::comparePlugins).collect(Collectors.toList());
-        List<JIPipeJavaExtension> javaExtensions = new ArrayList<>();
+        List<JIPipeDependency> javaExtensions = new ArrayList<>();
         System.out.println("[1/3] Pre-initialization phase ...");
         for (int i = 0; i < pluginList.size(); ++i) {
             PluginInfo<JIPipeJavaExtension> info = pluginList.get(i);
@@ -132,7 +132,7 @@ public class JIPipeDefaultRegistry extends AbstractService implements JIPipeRegi
             IJ.showProgress(i + 1, pluginList.size());
             System.out.println("JIPipe: Registering plugin " + info);
             try {
-                JIPipeJavaExtension extension = javaExtensions.get(i);
+                JIPipeJavaExtension extension = (JIPipeJavaExtension) javaExtensions.get(i);
                 extension.register();
                 registeredExtensions.add(extension);
                 registeredExtensionIds.add(extension.getDependencyId());
