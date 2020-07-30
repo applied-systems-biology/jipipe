@@ -389,7 +389,8 @@ public class JIPipeJsonExtensionWindow extends JFrame {
     public static void checkExtensionDependencies(JIPipeWorkbench workbench) {
         JIPipeRegistryIssues issues = new JIPipeRegistryIssues();
         JIPipeDefaultRegistry.getInstance().checkUpdateSites(issues,
-                javaExtensions, new ProgressDialog((Frame) workbench.getWindow(), "Checking dependencies ..."));
+                JIPipeDefaultRegistry.getInstance().getRegisteredExtensions(),
+                new ProgressDialog((Frame) workbench.getWindow(), "Checking dependencies ..."));
         if(!issues.getMissingImageJSites().isEmpty()) {
             MissingUpdateSiteResolver resolver = new MissingUpdateSiteResolver(workbench.getContext(), issues);
             resolver.revalidate();

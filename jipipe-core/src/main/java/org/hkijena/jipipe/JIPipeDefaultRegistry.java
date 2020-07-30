@@ -188,7 +188,7 @@ public class JIPipeDefaultRegistry extends AbstractService implements JIPipeRegi
      * @param extensions list of known extensions
      * @param progressAdapter the adapter that takes the progress
      */
-    public void checkUpdateSites(JIPipeRegistryIssues issues, List<JIPipeJavaExtension> extensions, Progress progressAdapter) {
+    public void checkUpdateSites(JIPipeRegistryIssues issues, List<JIPipeDependency> extensions, Progress progressAdapter) {
         Set<JIPipeImageJUpdateSiteDependency> dependencies = new HashSet<>();
         Set<JIPipeImageJUpdateSiteDependency> missingSites = new HashSet<>();
         for (JIPipeDependency extension : extensions) {
