@@ -22,6 +22,7 @@ import net.imagej.updater.util.AvailableSites;
 import net.imagej.updater.util.Progress;
 import net.imagej.updater.util.UpdaterUtil;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.events.ExtensionDiscoveredEvent;
 import org.hkijena.jipipe.api.events.ExtensionRegisteredEvent;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
@@ -110,7 +111,7 @@ public class JIPipeDefaultRegistry extends AbstractService implements JIPipeRegi
      * @param extensionSettings extension settings
      * @param issues            if no windows should be opened
      */
-    private void discover(ExtensionSettings extensionSettings, JIPipeRegistryIssues issues) {
+    public void discover(ExtensionSettings extensionSettings, JIPipeRegistryIssues issues) {
         IJ.showStatus("Initializing JIPipe ...");
         List<PluginInfo<JIPipeJavaExtension>> pluginList = pluginService.getPluginsOfType(JIPipeJavaExtension.class).stream()
                 .sorted(JIPipeDefaultRegistry::comparePlugins).collect(Collectors.toList());
@@ -127,6 +128,7 @@ public class JIPipeDefaultRegistry extends AbstractService implements JIPipeRegi
                     ((AbstractService) extension).setContext(getContext());
                 }
                 javaExtensions.add(extension);
+                eventBus.post(new ExtensionDiscoveredEvent(this, extension));
             } catch (NoClassDefFoundError | InstantiableException e) {
                 issues.getErroneousPlugins().add(info);
             }
@@ -376,10 +378,8 @@ public class JIPipeDefaultRegistry extends AbstractService implements JIPipeRegi
      * Instantiates the plugin service. This is done within {@link JIPipeGUICommand}
      *
      * @param context           the SciJava context
-     * @param extensionSettings extension settings
-     * @param issues            registration issues
      */
-    public static void instantiate(Context context, ExtensionSettings extensionSettings, JIPipeRegistryIssues issues) {
+    public static void createInstance(Context context) {
         if (instance == null) {
             try {
                 PluginService pluginService = context.getService(PluginService.class);
@@ -387,7 +387,6 @@ public class JIPipeDefaultRegistry extends AbstractService implements JIPipeRegi
                 context.inject(instance);
                 instance.setContext(context);
                 instance.installEvents();
-                instance.discover(extensionSettings, issues);
             } catch (InstantiableException e) {
                 throw new UserFriendlyRuntimeException(e, "Could not create essential JIPipe data structures.",
                         "JIPipe plugin registry", "There seems to be an issue either with JIPipe or your ImageJ installation.",

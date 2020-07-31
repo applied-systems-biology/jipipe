@@ -643,7 +643,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
             Rectangle selectionRectangle = new Rectangle(x, y, w, h);
             Set<JIPipeNodeUI> newSelection = new HashSet<>();
             for (JIPipeNodeUI ui : nodeUIs.values()) {
-                if (selectionRectangle.contains(ui.getBounds())) {
+                if (selectionRectangle.intersects(ui.getBounds())) {
                     newSelection.add(ui);
                 }
             }

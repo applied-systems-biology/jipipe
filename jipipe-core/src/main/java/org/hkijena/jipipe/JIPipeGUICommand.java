@@ -14,7 +14,6 @@
 package org.hkijena.jipipe;
 
 import net.imagej.ImageJ;
-import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.extensions.settings.ExtensionSettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWindow;
@@ -53,7 +52,9 @@ public class JIPipeGUICommand implements Command {
         ExtensionSettings extensionSettings = ExtensionSettings.getInstanceFromRaw();
         JIPipeRegistryIssues issues = new JIPipeRegistryIssues();
         try {
-            JIPipeDefaultRegistry.instantiate(context, extensionSettings, issues);
+            JIPipeDefaultRegistry.createInstance(context);
+            SplashScreen.getInstance().setRegistry(JIPipeDefaultRegistry.getInstance());
+            JIPipeDefaultRegistry.getInstance().discover(extensionSettings, issues);
         } catch (Exception e) {
             e.printStackTrace();
             if (!extensionSettings.isSilent())

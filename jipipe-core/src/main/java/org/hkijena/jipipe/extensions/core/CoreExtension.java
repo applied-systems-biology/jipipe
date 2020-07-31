@@ -6,7 +6,12 @@ import org.hkijena.jipipe.api.nodes.categories.*;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
 import org.hkijena.jipipe.utils.ResourceUtils;
+import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.plugin.Plugin;
+
+import javax.swing.*;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * The core extension
@@ -44,6 +49,11 @@ public class CoreExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerNodeTypeCategory(new TableNodeTypeCategory());
         registerNodeTypeCategory(new RoiNodeTypeCategory());
         registerNodeTypeCategory(new AnnotationsNodeTypeCategory());
+    }
+
+    @Override
+    public List<ImageIcon> getSplashIcons() {
+        return Arrays.asList(UIUtils.getIcon32FromResources("apps/imagej.png"));
     }
 
     @Override

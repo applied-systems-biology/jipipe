@@ -19,6 +19,7 @@ import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.plugin.Plugin;
 
+import javax.swing.*;
 import java.util.Arrays;
 import java.util.List;
 
@@ -54,6 +55,11 @@ public class CLIJExtension extends JIPipePrepackagedDefaultJavaExtension {
                 new JIPipeImageJUpdateSiteDependency(new UpdateSite("clij", "https://sites.imagej.net/clij/", "", "", "", "", 0)),
                 new JIPipeImageJUpdateSiteDependency(new UpdateSite("clij2", "https://sites.imagej.net/clij2/", "", "", "", "", 0))
         );
+    }
+
+    @Override
+    public List<ImageIcon> getSplashIcons() {
+        return Arrays.asList(UIUtils.getIcon32FromResources("apps/clij.png"));
     }
 
     @Override

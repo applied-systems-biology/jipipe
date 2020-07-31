@@ -57,7 +57,8 @@ public class JIPipeRunCommand implements Command {
     public void run() {
         JIPipeRegistryIssues issues = new JIPipeRegistryIssues();
         ExtensionSettings extensionSettings = ExtensionSettings.getInstanceFromRaw();
-        JIPipeDefaultRegistry.instantiate(context, extensionSettings, issues);
+        JIPipeDefaultRegistry.createInstance(context);
+        JIPipeDefaultRegistry.getInstance().discover(extensionSettings, issues);
         if (!extensionSettings.isSilent()) {
             JIPipeValidityReport report = new JIPipeValidityReport();
             issues.reportValidity(report);

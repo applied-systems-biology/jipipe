@@ -66,7 +66,8 @@ public class JIPipeRunAlgorithmCommand extends DynamicCommand implements Initial
     public void run() {
         JIPipeRegistryIssues issues = new JIPipeRegistryIssues();
         ExtensionSettings extensionSettings = ExtensionSettings.getInstanceFromRaw();
-        JIPipeDefaultRegistry.instantiate(getContext(), extensionSettings, issues);
+        JIPipeDefaultRegistry.createInstance(getContext());
+        JIPipeDefaultRegistry.getInstance().discover(extensionSettings, issues);
         if (!extensionSettings.isSilent()) {
             JIPipeValidityReport report = new JIPipeValidityReport();
             issues.reportValidity(report);

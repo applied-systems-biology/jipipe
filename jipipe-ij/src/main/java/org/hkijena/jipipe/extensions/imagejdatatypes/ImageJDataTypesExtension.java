@@ -67,6 +67,7 @@ import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.plugin.Plugin;
 
+import javax.swing.*;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -179,6 +180,11 @@ public class ImageJDataTypesExtension extends JIPipePrepackagedDefaultJavaExtens
     @Override
     public String getDependencyVersion() {
         return "1.0.0";
+    }
+
+    @Override
+    public List<ImageIcon> getSplashIcons() {
+        return Arrays.asList(UIUtils.getIcon32FromResources("apps/bio-formats.png"));
     }
 
     @Override

@@ -19,6 +19,10 @@ import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.plugin.Plugin;
 
+import javax.swing.*;
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * Python nodes
  */
@@ -41,6 +45,11 @@ public class PythonExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerNodeType("python-script-iterating-simple", SimpleIteratingPythonScriptAlgorithm.class, UIUtils.getIconURLFromResources("apps/python.png"));
         registerNodeType("python-script-iterating", IteratingPythonScriptAlgorithm.class, UIUtils.getIconURLFromResources("apps/python.png"));
         registerNodeType("python-script-merging", MergingPythonScriptAlgorithm.class, UIUtils.getIconURLFromResources("apps/python.png"));
+    }
+
+    @Override
+    public List<ImageIcon> getSplashIcons() {
+        return Arrays.asList(UIUtils.getIcon32FromResources("apps/python.png"));
     }
 
     @Override
