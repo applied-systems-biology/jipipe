@@ -20,11 +20,6 @@ import java.util.List;
 public class CoreExtension extends JIPipePrepackagedDefaultJavaExtension {
 
     @Override
-    public StringList getDependencyCitations() {
-        return new StringList();
-    }
-
-    @Override
     public String getName() {
         return "Core";
     }
@@ -53,7 +48,22 @@ public class CoreExtension extends JIPipePrepackagedDefaultJavaExtension {
 
     @Override
     public List<ImageIcon> getSplashIcons() {
-        return Arrays.asList(UIUtils.getIcon32FromResources("apps/imagej.png"));
+        return Arrays.asList(UIUtils.getIcon32FromResources("apps/imagej.png"),
+                UIUtils.getIcon32FromResources("apps/fiji.png"),
+                UIUtils.getIcon32FromResources("apps/scijava.png"));
+    }
+
+    @Override
+    public StringList getDependencyCitations() {
+        StringList result = new StringList();
+        result.add("Rueden, C. T.; Schindelin, J. & Hiner, M. C. et al. (2017), \"ImageJ2: ImageJ for the next generation of scientific image data\", " +
+                "BMC Bioinformatics 18:529");
+        result.add("Schindelin, J.; Arganda-Carreras, I. & Frise, E. et al. (2012), \"Fiji: an open-source platform for biological-image analysis\", " +
+                "Nature methods 9(7): 676-682, PMID 22743772, doi:10.1038/nmeth.2019");
+        result.add("Schneider, C. A.; Rasband, W. S. & Eliceiri, K. W. (2012), \"NIH Image to ImageJ: 25 years of image analysis\", " +
+                "Nature methods 9(7): 671-675");
+        result.add("Rueden, C., Schindelin, J., Hiner, M. & Eliceiri, K. (2016). SciJava Common [Software]. https://scijava.org/. ");
+        return result;
     }
 
     @Override
