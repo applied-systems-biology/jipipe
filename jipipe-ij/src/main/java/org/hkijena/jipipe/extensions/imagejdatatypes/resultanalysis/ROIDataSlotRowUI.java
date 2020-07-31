@@ -23,6 +23,7 @@ import ij.plugin.frame.RoiManager;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeExportedDataTable;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.jipipe.extensions.parameters.roi.Margin;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.resultanalysis.JIPipeDefaultResultDataSlotRowUI;
 import org.hkijena.jipipe.utils.PathUtils;
@@ -32,6 +33,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 
 /**
  * Result UI for {@link ROIListData}
@@ -66,13 +68,7 @@ public class ROIDataSlotRowUI extends JIPipeDefaultResultDataSlotRowUI {
         Path roiFile = findROIFile();
         if (roiFile != null) {
             registerAction("Import into current image", "Annotates the currently open image with the ROI annotations.",
-                    UIUtils.getIconFromResources("data-types/roi.png"), e -> {
-                        if (IJ.getImage() == null) {
-                            JOptionPane.showMessageDialog(this, "There is no current image open in ImageJ!", "Import ROI", JOptionPane.ERROR_MESSAGE);
-                            return;
-                        }
-                        importROI(roiFile);
-                    });
+                    UIUtils.getIconFromResources("data-types/roi.png"), e -> importROI(roiFile));
         }
     }
 
@@ -82,7 +78,12 @@ public class ROIDataSlotRowUI extends JIPipeDefaultResultDataSlotRowUI {
      * @param roiFile the file
      */
     public static void importROI(Path roiFile) {
-        ImagePlus imp = IJ.getImage();
+        ROIListData rois = new ROIListData(ROIListData.loadRoiListFromFile(roiFile));
+        ImagePlus imp =  WindowManager.getCurrentImage();
+        if(imp == null) {
+            imp = rois.toMask(new Margin(), false, true, 1);
+            imp.show();
+        }
         RoiManager roiManager = null;
         if (roiManager == null) {
             if (Macro.getOptions() != null && Interpreter.isBatchMode())
@@ -98,7 +99,7 @@ public class ROIDataSlotRowUI extends JIPipeDefaultResultDataSlotRowUI {
                 roiManager = (RoiManager) frame;
             }
         }
-        for (Roi roi : ROIListData.loadRoiListFromFile(roiFile)) {
+        for (Roi roi : rois) {
             roiManager.add(imp, roi, -1);
         }
         roiManager.runCommand("show all with labels");
