@@ -42,6 +42,7 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.concurrent.ExecutionException;
 
 /**
  * UI that gives an overview of a pipeline (shows parameters, etc.)
@@ -149,36 +150,17 @@ public class JIPipeProjectInfoUI extends JIPipeProjectWorkbenchPanel {
     }
 
     private void renderBackgroundPanel() {
-        JIPipeGraphCanvasUI canvasUI = new JIPipeGraphCanvasUI(getWorkbench(), getProject().getGraph(), null);
-        canvasUI.setViewMode(JIPipeGraphViewMode.Horizontal);
-        canvasUI.autoLayoutAll();
-        canvasUI.crop();
-        BufferedImage headerBackground = null;
+        BufferedImage headerBackground;
         try {
-            if (GeneralUISettings.getInstance().isProjectInfoGeneratesPreview()) {
-                BufferedImage screenshot = canvasUI.createScreenshotPNG();
-                ImagePlus img = new ImagePlus("screenshot", screenshot);
-                final double maxSize = 2000;
-                if (img.getWidth() > maxSize || img.getHeight() > maxSize) {
-                    double factor = Math.min(maxSize / img.getWidth(), maxSize / img.getHeight());
-                    ImageProcessor resized = img.getProcessor().resize((int) (img.getWidth() * factor), (int) (img.getHeight() * factor), true);
-                    img = new ImagePlus("screenshot", resized);
-                }
-                GaussianBlur blur = new GaussianBlur();
-                blur.blurGaussian(img.getProcessor(), 2);
-                headerBackground = img.getBufferedImage();
-            }
-        } catch (Exception e) {
-        }
-        if (headerBackground == null) {
-            try {
-                headerBackground = ImageIO.read(ResourceUtils.getPluginResource("infoui-background.png"));
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            headerBackground = ImageIO.read(ResourceUtils.getPluginResource("infoui-background.png"));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
 
         headerPanel.setBackgroundImage(headerBackground);
+        if (GeneralUISettings.getInstance().isProjectInfoGeneratesPreview()) {
+            new BackgroundImageGenerator(getProjectWorkbench(), headerPanel).execute();
+        }
     }
 
     private void refreshDescription() {
@@ -329,6 +311,57 @@ public class JIPipeProjectInfoUI extends JIPipeProjectWorkbenchPanel {
         }
         result.setProject(getProject());
         return result;
+    }
+
+    private static class BackgroundImageGenerator extends SwingWorker<BufferedImage, Object> {
+
+        private final JIPipeProjectWorkbench workbench;
+        private final BackgroundPanel target;
+
+        private BackgroundImageGenerator(JIPipeProjectWorkbench workbench, BackgroundPanel target) {
+            this.workbench = workbench;
+            this.target = target;
+        }
+
+        @Override
+        protected BufferedImage doInBackground() throws Exception {
+            JIPipeGraphCanvasUI canvasUI = new JIPipeGraphCanvasUI(workbench, workbench.getProject().getGraph(), null);
+            canvasUI.setViewMode(JIPipeGraphViewMode.Horizontal);
+            canvasUI.autoLayoutAll();
+            canvasUI.crop();
+            BufferedImage headerBackground = null;
+            try {
+                BufferedImage screenshot = canvasUI.createScreenshotPNG();
+                ImagePlus img = new ImagePlus("screenshot", screenshot);
+                final double maxSize = 2000;
+                if (img.getWidth() > maxSize || img.getHeight() > maxSize) {
+                    double factor = Math.min(maxSize / img.getWidth(), maxSize / img.getHeight());
+                    ImageProcessor resized = img.getProcessor().resize((int) (img.getWidth() * factor), (int) (img.getHeight() * factor), true);
+                    img = new ImagePlus("screenshot", resized);
+                }
+                GaussianBlur blur = new GaussianBlur();
+                blur.blurGaussian(img.getProcessor(), 2);
+                headerBackground = img.getBufferedImage();
+            } catch (Exception e) {
+            }
+            if (headerBackground == null) {
+                try {
+                    headerBackground = ImageIO.read(ResourceUtils.getPluginResource("infoui-background.png"));
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            return headerBackground;
+        }
+
+        @Override
+        protected void done() {
+            try {
+                target.setBackgroundImage(get());
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
 }

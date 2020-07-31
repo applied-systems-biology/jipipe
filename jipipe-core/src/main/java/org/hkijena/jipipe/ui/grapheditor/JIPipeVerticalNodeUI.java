@@ -225,13 +225,15 @@ public class JIPipeVerticalNodeUI extends JIPipeNodeUI {
                 createInputSlots = false;
             }
         }
-        if (!getNode().renderInputSlots()) {
-            createAddInputSlotButton = false;
-            createInputSlots = false;
-        }
-        if (!getNode().renderOutputSlots()) {
-            createAddOutputSlotButton = false;
-            createOutputSlots = false;
+        if(getGraphUI().getCompartment() != null) {
+            if (!getNode().renderInputSlots()) {
+                createAddInputSlotButton = false;
+                createInputSlots = false;
+            }
+            if (!getNode().renderOutputSlots()) {
+                createAddOutputSlotButton = false;
+                createOutputSlots = false;
+            }
         }
 
         final int displayedInputColumns = getDisplayedInputColumns();
