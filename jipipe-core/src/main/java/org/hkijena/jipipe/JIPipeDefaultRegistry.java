@@ -54,6 +54,7 @@ public class JIPipeDefaultRegistry extends AbstractService implements JIPipeRegi
     private EventBus eventBus = new EventBus();
     private Set<String> registeredExtensionIds = new HashSet<>();
     private List<JIPipeDependency> registeredExtensions = new ArrayList<>();
+    private List<JIPipeDependency> failedExtensions = new ArrayList<>();
     private JIPipeNodeRegistry nodeRegistry = new JIPipeNodeRegistry();
     private JIPipeDatatypeRegistry datatypeRegistry = new JIPipeDatatypeRegistry();
     private JIPipeUIDatatypeRegistry uiDatatypeRegistry = new JIPipeUIDatatypeRegistry();
@@ -83,6 +84,7 @@ public class JIPipeDefaultRegistry extends AbstractService implements JIPipeRegi
     public void reload() {
         System.out.println("JIPipe: Reloading registry service");
         registeredExtensions = new ArrayList<>();
+        failedExtensions = new ArrayList<>();
         registeredExtensionIds = new HashSet<>();
         datatypeRegistry = new JIPipeDatatypeRegistry();
         nodeRegistry = new JIPipeNodeRegistry();
@@ -96,6 +98,10 @@ public class JIPipeDefaultRegistry extends AbstractService implements JIPipeRegi
         tableRegistry = new JIPipeTableRegistry();
         jipipeuiNodeRegistry = new JIPipeUINodeRegistry();
         discover(ExtensionSettings.getInstanceFromRaw(), new JIPipeRegistryIssues());
+    }
+
+    public List<JIPipeDependency> getFailedExtensions() {
+        return Collections.unmodifiableList(failedExtensions);
     }
 
     /**
@@ -139,6 +145,7 @@ public class JIPipeDefaultRegistry extends AbstractService implements JIPipeRegi
                 eventBus.post(new ExtensionRegisteredEvent(this, extension));
             } catch (NoClassDefFoundError | Exception e) {
                 issues.getErroneousPlugins().add(info);
+                failedExtensions.add(javaExtensions.get(i));
             }
         }
 
@@ -308,6 +315,14 @@ public class JIPipeDefaultRegistry extends AbstractService implements JIPipeRegi
     @Override
     public void reportValidity(JIPipeValidityReport report) {
         report.forCategory("Algorithms").report(nodeRegistry);
+        for (JIPipeDependency extension : failedExtensions) {
+            if(extension != null) {
+                report.forCategory("Extensions").forCategory(extension.getDependencyId()).reportIsInvalid("Error during loading the extension!",
+                        "There was an error while loading the extension. Please refer to the message that you get on restarting JIPipe.",
+                        "Please refer to the message that you get on restarting JIPipe.",
+                        failedExtensions);
+            }
+        }
         for (JIPipeDependency extension : registeredExtensions) {
             report.forCategory("Extensions").forCategory(extension.getDependencyId()).report(extension);
         }

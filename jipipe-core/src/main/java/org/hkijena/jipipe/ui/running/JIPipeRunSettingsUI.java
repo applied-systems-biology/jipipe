@@ -18,6 +18,7 @@ import org.hkijena.jipipe.api.JIPipeRun;
 import org.hkijena.jipipe.api.JIPipeRunSettings;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
@@ -117,7 +118,9 @@ public class JIPipeRunSettingsUI extends JIPipeProjectWorkbenchPanel {
     private void initializeSetupGUI() {
 
         try {
-            run = new JIPipeRun(getProjectWorkbench().getProject(), new JIPipeRunSettings());
+            JIPipeRunSettings settings = new JIPipeRunSettings();
+            settings.setOutputPath(RuntimeSettings.generateTempDirectory(""));
+            run = new JIPipeRun(getProjectWorkbench().getProject(), settings);
         } catch (Exception e) {
             openError(e);
             return;

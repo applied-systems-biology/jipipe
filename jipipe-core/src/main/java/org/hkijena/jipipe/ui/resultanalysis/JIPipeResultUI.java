@@ -23,12 +23,13 @@ import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.List;
 
 /**
@@ -47,7 +48,7 @@ public class JIPipeResultUI extends JIPipeProjectWorkbenchPanel {
         super(workbenchUI);
         this.run = run;
         initialize();
-        showAllDataSlots();
+        showDataSlots(listAllDataSlots());
     }
 
     private void initialize() {
@@ -67,26 +68,39 @@ public class JIPipeResultUI extends JIPipeProjectWorkbenchPanel {
         });
         add(splitPane, BorderLayout.CENTER);
 
-        algorithmTree.getTree().addTreeSelectionListener(e -> {
-            Object lastPathComponent = e.getPath().getLastPathComponent();
-            if (lastPathComponent instanceof DefaultMutableTreeNode) {
-                Object userObject = ((DefaultMutableTreeNode) lastPathComponent).getUserObject();
-                if (userObject instanceof JIPipeDataSlot) {
-                    showDataSlot((JIPipeDataSlot) userObject);
-                } else if (userObject instanceof JIPipeProjectCompartment) {
-                    showDataSlotsOfCompartment((JIPipeProjectCompartment) userObject);
-                } else if (userObject instanceof JIPipeGraphNode) {
-                    showDataSlotsOfAlgorithm((JIPipeGraphNode) userObject);
-                } else {
-                    showAllDataSlots();
-                }
-            }
-        });
+        algorithmTree.getTree().addTreeSelectionListener(e -> updateSelection());
 
         initializeToolbar();
     }
 
-    private void showAllDataSlots() {
+    private void updateSelection() {
+        Set<JIPipeDataSlot> result = new LinkedHashSet<>();
+        if(algorithmTree.getTree().getSelectionPaths() != null) {
+            for (TreePath path : algorithmTree.getTree().getSelectionPaths()) {
+                Object lastPathComponent = path.getLastPathComponent();
+                if (lastPathComponent instanceof DefaultMutableTreeNode) {
+                    Object userObject = ((DefaultMutableTreeNode) lastPathComponent).getUserObject();
+                    if (userObject instanceof JIPipeDataSlot) {
+                        result.add((JIPipeDataSlot) userObject);
+                    } else if (userObject instanceof JIPipeProjectCompartment) {
+                        result.addAll(listDataSlotsOfCompartment((JIPipeProjectCompartment) userObject));
+                    } else if (userObject instanceof JIPipeGraphNode) {
+                        result.addAll(listDataSlotsOfAlgorithm((JIPipeGraphNode) userObject));
+                    } else {
+                        result.addAll(listAllDataSlots());
+                    }
+                }
+            }
+        }
+        if(result.size() == 1) {
+            showDataSlot(result.iterator().next());
+        }
+        else {
+            showDataSlots(new ArrayList<>(result));
+        }
+    }
+
+    private List<JIPipeDataSlot> listAllDataSlots() {
         List<JIPipeDataSlot> result = new ArrayList<>();
         for (JIPipeGraphNode algorithm : run.getGraph().getNodes().values()) {
             for (JIPipeDataSlot outputSlot : algorithm.getOutputSlots()) {
@@ -95,20 +109,20 @@ public class JIPipeResultUI extends JIPipeProjectWorkbenchPanel {
                 }
             }
         }
-        showDataSlots(result);
+       return result;
     }
 
-    private void showDataSlotsOfAlgorithm(JIPipeGraphNode algorithm) {
+    private List<JIPipeDataSlot> listDataSlotsOfAlgorithm(JIPipeGraphNode algorithm) {
         List<JIPipeDataSlot> result = new ArrayList<>();
         for (JIPipeDataSlot outputSlot : algorithm.getOutputSlots()) {
             if (Files.exists(outputSlot.getStoragePath().resolve("data-table.json"))) {
                 result.add(outputSlot);
             }
         }
-        showDataSlots(result);
+        return result;
     }
 
-    private void showDataSlotsOfCompartment(JIPipeProjectCompartment compartment) {
+    private List<JIPipeDataSlot> listDataSlotsOfCompartment(JIPipeProjectCompartment compartment) {
         List<JIPipeDataSlot> result = new ArrayList<>();
         for (JIPipeGraphNode algorithm : run.getGraph().getNodes().values()) {
             if (algorithm.getCompartment().equals(compartment.getProjectCompartmentId())) {
@@ -119,7 +133,7 @@ public class JIPipeResultUI extends JIPipeProjectWorkbenchPanel {
                 }
             }
         }
-        showDataSlots(result);
+        return result;
     }
 
     private void showDataSlots(List<JIPipeDataSlot> slots) {
