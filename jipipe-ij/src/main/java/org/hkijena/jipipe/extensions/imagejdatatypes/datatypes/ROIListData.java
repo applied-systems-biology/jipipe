@@ -171,7 +171,10 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
 
     @Override
     public Component preview(int width, int height) {
-        ImagePlus mask = toMask(new Margin(), false, true, 1);
+        ROIListData copy = new ROIListData(this);
+        copy.flatten();
+        copy.crop(true,false,false,false);
+        ImagePlus mask = copy.toMask(new Margin(), false, true, 1);
         mask.setLut(LUT.createLutFromColor(Color.RED));
         return new ImagePlusData(mask).preview(width, height);
     }
@@ -241,6 +244,56 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
             rois.add(roi);
         }
         return byImage;
+    }
+
+    /**
+     * Moves the ROI, so the bounding rectangle is at 0,0
+     */
+    public void crop(boolean cropXY, boolean cropZ, boolean cropC, boolean cropT) {
+        Rectangle bounds = getBounds();
+        int sz = Integer.MAX_VALUE;
+        int sc = Integer.MAX_VALUE;
+        int st = Integer.MAX_VALUE;
+        for (Roi roi : this) {
+            int z = roi.getZPosition();
+            int c = roi.getCPosition();
+            int t = roi.getTPosition();
+            if(roi.getZPosition() > 0)
+                sz = Math.min(sz, z);
+            if(roi.getZPosition() > 0)
+                sc = Math.min(sc, c);
+            if(roi.getZPosition() > 0)
+                st = Math.min(st, t);
+        }
+        if(!cropZ)
+            sz = Integer.MAX_VALUE;
+        if(!cropC)
+            sc = Integer.MAX_VALUE;
+        if(!cropT)
+            st = Integer.MAX_VALUE;
+        for (Roi roi : this) {
+            if(cropXY)
+                roi.setLocation(roi.getXBase() - bounds.x, roi.getYBase() - bounds.y);
+            int z = roi.getZPosition();
+            int c = roi.getCPosition();
+            int t = roi.getTPosition();
+            if(z > 0 && sz != Integer.MAX_VALUE)
+                z = z - sz;
+            if(c > 0 && sc != Integer.MAX_VALUE)
+                c = c - sc;
+            if(t > 0 && st != Integer.MAX_VALUE)
+                t = t - st;
+            roi.setPosition(z,c,t);
+        }
+    }
+
+    /**
+     * Makes all ROI visible on all stacks
+     */
+    public void flatten() {
+        for (Roi roi : this) {
+            roi.setPosition(0,0,0);
+        }
     }
 
     /**
