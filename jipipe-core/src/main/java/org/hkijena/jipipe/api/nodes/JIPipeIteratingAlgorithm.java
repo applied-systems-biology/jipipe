@@ -162,29 +162,18 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
                     continue;
                 TIntSet rows = dataSetEntry.getValue().get(inputSlot.getName());
 
-                List<JIPipeMergingDataBatch> backup = ImmutableList.copyOf(dataBatchesForDataSet);
+                List<JIPipeMergingDataBatch> backup = dataBatchesForDataSet;
+                dataBatchesForDataSet = new ArrayList<>();
 
-                int rowIndex = 0;
                 for (TIntIterator it = rows.iterator(); it.hasNext(); ) {
                     int row = it.next();
-
-                    if (rowIndex == 0) {
-                        // For the first row just add the row to the existing batches
-                        for (JIPipeMergingDataBatch dataBatch : dataBatchesForDataSet) {
-                            dataBatch.setData(inputSlot, row);
-                            dataBatch.addGlobalAnnotations(inputSlot.getAnnotations(row), dataBatchGenerationSettings.annotationMergeStrategy);
-                        }
-                    } else {
-                        // We have to copy each input entry and adapt it to the row
-                        for (JIPipeMergingDataBatch dataBatch : backup) {
-                            JIPipeMergingDataBatch copy = new JIPipeMergingDataBatch(dataBatch);
-                            copy.setData(inputSlot, row);
-                            copy.addGlobalAnnotations(inputSlot.getAnnotations(row), dataBatchGenerationSettings.annotationMergeStrategy);
-                            dataBatchesForDataSet.add(copy);
-                        }
+                    // We have to copy each input entry and adapt it to the row
+                    for (JIPipeMergingDataBatch dataBatch : backup) {
+                        JIPipeMergingDataBatch copy = new JIPipeMergingDataBatch(dataBatch);
+                        copy.setData(inputSlot, row);
+                        copy.addGlobalAnnotations(inputSlot.getAnnotations(row), dataBatchGenerationSettings.annotationMergeStrategy);
+                        dataBatchesForDataSet.add(copy);
                     }
-
-                    ++rowIndex;
                 }
             }
             dataBatches.addAll(dataBatchesForDataSet);
@@ -291,29 +280,18 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
                     continue;
                 TIntSet rows = dataSetEntry.getValue().get(inputSlot.getName());
 
-                List<JIPipeDataBatch> backup = ImmutableList.copyOf(dataBatchesForDataSet);
+                List<JIPipeDataBatch> backup = dataBatchesForDataSet;
+                dataBatchesForDataSet = new ArrayList<>();
 
-                int rowIndex = 0;
                 for (TIntIterator it = rows.iterator(); it.hasNext(); ) {
                     int row = it.next();
-
-                    if (rowIndex == 0) {
-                        // For the first row just add the row to the existing batches
-                        for (JIPipeDataBatch dataBatch : dataBatchesForDataSet) {
-                            dataBatch.setData(inputSlot, row);
-                            dataBatch.addGlobalAnnotations(inputSlot.getAnnotations(row), dataBatchGenerationSettings.annotationMergeStrategy);
-                        }
-                    } else {
-                        // We have to copy each input entry and adapt it to the row
-                        for (JIPipeDataBatch dataBatch : backup) {
-                            JIPipeDataBatch copy = new JIPipeDataBatch(dataBatch);
-                            copy.setData(inputSlot, row);
-                            copy.addGlobalAnnotations(inputSlot.getAnnotations(row), dataBatchGenerationSettings.annotationMergeStrategy);
-                            dataBatchesForDataSet.add(copy);
-                        }
+                    // We have to copy each input entry and adapt it to the row
+                    for (JIPipeDataBatch dataBatch : backup) {
+                        JIPipeDataBatch copy = new JIPipeDataBatch(dataBatch);
+                        copy.setData(inputSlot, row);
+                        copy.addGlobalAnnotations(inputSlot.getAnnotations(row), dataBatchGenerationSettings.annotationMergeStrategy);
+                        dataBatchesForDataSet.add(copy);
                     }
-
-                    ++rowIndex;
                 }
             }
 
