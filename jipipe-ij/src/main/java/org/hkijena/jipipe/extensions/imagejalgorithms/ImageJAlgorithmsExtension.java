@@ -50,6 +50,7 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.fft.FFT2DSwapQuadrants
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.generate.GenerateStructureElementAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.math.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.measure.*;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.misc.DataToPreviewAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.misc.RemoveLUTAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.morphology.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.noise.AddNoise2DAlgorithm;
@@ -200,6 +201,7 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         registerROIAlgorithms();
 
         registerNodeType("ij1-generate-filter-kernel", GenerateStructureElementAlgorithm.class, UIUtils.getIconURLFromResources("actions/morphology.png"));
+        registerNodeType("ij1-data-to-preview", DataToPreviewAlgorithm.class, UIUtils.getIconURLFromResources("actions/viewimage.png"));
         registerNodeType("ij1-remove-lut", RemoveLUTAlgorithm.class, UIUtils.getIconURLFromResources("actions/fill-color.png"));
         registerNodeType("external-imagej-macro", MacroWrapperAlgorithm.class, UIUtils.getIconURLFromResources("apps/imagej.png"));
 

@@ -104,8 +104,8 @@ public class JIPipeDataSlotCacheManagerUI extends JIPipeProjectWorkbenchPanel {
         contextMenu.add(clearOutdated);
 
         JMenuItem clearAll = new JMenuItem("Clear all", UIUtils.getIconFromResources("actions/delete.png"));
-        clearAll.setToolTipText("Removes all cached items.");
-        clearAll.addActionListener(e -> getProject().getCache().clear());
+        clearAll.setToolTipText("Removes all cached items for this node.");
+        clearAll.addActionListener(e -> getProject().getCache().clear((JIPipeAlgorithm) dataSlot.getNode()));
         contextMenu.add(clearAll);
     }
 
