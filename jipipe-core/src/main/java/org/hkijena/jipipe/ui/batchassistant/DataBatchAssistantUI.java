@@ -16,6 +16,7 @@ package org.hkijena.jipipe.ui.batchassistant;
 import com.google.common.eventbus.Subscribe;
 import gnu.trove.set.TIntSet;
 import org.hkijena.jipipe.api.JIPipeProjectCache;
+import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.events.NodeDisconnectedEvent;
 import org.hkijena.jipipe.api.events.NodeSlotsChangedEvent;
@@ -46,6 +47,9 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
     private Map<String, JIPipeDataSlot> currentCache = new HashMap<>();
     private JLabel errorLabel;
     private FormPanel batchPreviewPanel = new FormPanel(null, FormPanel.WITH_SCROLLING);
+    private JLabel batchPreviewNumberLabel;
+    private JLabel batchPreviewMissingLabel;
+    private JLabel batchPreviewDuplicateLabel;
 
     /**
      * @param workbenchUI  The workbench UI
@@ -148,7 +152,26 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
                 null,
                 ParameterPanel.WITH_SCROLLING);
         splitPane.setTopComponent(parameterPanel);
-        splitPane.setBottomComponent(batchPreviewPanel);
+
+        JPanel bottomPanel = new JPanel(new BorderLayout());
+        bottomPanel.add(batchPreviewPanel, BorderLayout.CENTER);
+
+        JToolBar batchPreviewOverview = new JToolBar();
+
+        batchPreviewNumberLabel = new JLabel();
+        batchPreviewOverview.add(batchPreviewNumberLabel);
+        batchPreviewOverview.add(Box.createHorizontalGlue());
+
+        batchPreviewMissingLabel = new JLabel("Missing items found!", UIUtils.getIconFromResources("emblems/warning.png"), JLabel.LEFT);
+        batchPreviewOverview.add(batchPreviewMissingLabel);
+
+        batchPreviewDuplicateLabel = new JLabel("Multiple items per group", UIUtils.getIconFromResources("emblems/emblem-information.png"), JLabel.LEFT);
+        batchPreviewOverview.add(batchPreviewDuplicateLabel);
+
+        batchPreviewOverview.setFloatable(false);
+        bottomPanel.add(batchPreviewOverview, BorderLayout.NORTH);
+
+        splitPane.setBottomComponent(bottomPanel);
 
         refreshBatchPreview();
     }
@@ -167,6 +190,19 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
         JIPipeDataBatchAlgorithm batchAlgorithm = (JIPipeDataBatchAlgorithm) copy;
         Map<JIPipeDataBatchKey, Map<String, TIntSet>> groups = batchAlgorithm.groupDataByMetadata(copy.getInputSlotMap());
         List<JIPipeMergingDataBatch> batches = batchAlgorithm.generateDataBatchesDryRun(groups);
+
+        batchPreviewNumberLabel.setText(batches.size() + " batches");
+        batchPreviewMissingLabel.setVisible(false);
+        batchPreviewDuplicateLabel.setVisible(false);
+        for (JIPipeMergingDataBatch batch : batches) {
+            for (JIPipeDataSlot inputSlot : copy.getInputSlots()) {
+                List<JIPipeData> data = batch.getInputData(inputSlot, JIPipeData.class);
+                if(data.isEmpty())
+                    batchPreviewMissingLabel.setVisible(true);
+                if(data.size() > 1)
+                    batchPreviewDuplicateLabel.setVisible(true);
+            }
+        }
 
         for (JIPipeMergingDataBatch batch : batches) {
             DataBatchUI ui = new DataBatchUI(getProjectWorkbench(), copy, batch);
