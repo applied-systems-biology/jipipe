@@ -24,8 +24,8 @@ import java.util.function.Supplier;
 @JIPipeOutputSlot(value = CLIJImageData.class, slotName = "dst", autoCreate = true)
 
 public class Clij2FloodFillDiamond extends JIPipeSimpleIteratingAlgorithm {
-    Float valueToReplace;
-    Float valueReplacement;
+    float valueToReplace;
+    float valueReplacement;
 
 
     /**
@@ -60,22 +60,22 @@ public class Clij2FloodFillDiamond extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @JIPipeParameter("value-to-replace")
-    public Float getValueToReplace() {
+    public float getValueToReplace() {
         return valueToReplace;
     }
 
     @JIPipeParameter("value-to-replace")
-    public void setValueToReplace(Float value) {
+    public void setValueToReplace(float value) {
         this.valueToReplace = value;
     }
 
     @JIPipeParameter("value-replacement")
-    public Float getValueReplacement() {
+    public float getValueReplacement() {
         return valueReplacement;
     }
 
     @JIPipeParameter("value-replacement")
-    public void setValueReplacement(Float value) {
+    public void setValueReplacement(float value) {
         this.valueReplacement = value;
     }
 

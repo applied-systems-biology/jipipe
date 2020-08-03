@@ -24,7 +24,7 @@ import java.util.function.Supplier;
 @JIPipeOutputSlot(value = CLIJImageData.class, slotName = "dst", autoCreate = true)
 
 public class Clij2MultiplyImageAndCoordinate extends JIPipeSimpleIteratingAlgorithm {
-    Integer dimension;
+    int dimension;
 
 
     /**
@@ -58,12 +58,12 @@ public class Clij2MultiplyImageAndCoordinate extends JIPipeSimpleIteratingAlgori
     }
 
     @JIPipeParameter("dimension")
-    public Integer getDimension() {
+    public int getDimension() {
         return dimension;
     }
 
     @JIPipeParameter("dimension")
-    public void setDimension(Integer value) {
+    public void setDimension(int value) {
         this.dimension = value;
     }
 

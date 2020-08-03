@@ -24,9 +24,9 @@ import java.util.function.Supplier;
 @JIPipeOutputSlot(value = CLIJImageData.class, slotName = "dst", autoCreate = true)
 
 public class Clij2Crop3d extends JIPipeSimpleIteratingAlgorithm {
-    Integer startX;
-    Integer startY;
-    Integer startZ;
+    int startX;
+    int startY;
+    int startZ;
 
 
     /**
@@ -62,32 +62,32 @@ public class Clij2Crop3d extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @JIPipeParameter("start-x")
-    public Integer getStartX() {
+    public int getStartX() {
         return startX;
     }
 
     @JIPipeParameter("start-x")
-    public void setStartX(Integer value) {
+    public void setStartX(int value) {
         this.startX = value;
     }
 
     @JIPipeParameter("start-y")
-    public Integer getStartY() {
+    public int getStartY() {
         return startY;
     }
 
     @JIPipeParameter("start-y")
-    public void setStartY(Integer value) {
+    public void setStartY(int value) {
         this.startY = value;
     }
 
     @JIPipeParameter("start-z")
-    public Integer getStartZ() {
+    public int getStartZ() {
         return startZ;
     }
 
     @JIPipeParameter("start-z")
-    public void setStartZ(Integer value) {
+    public void setStartZ(int value) {
         this.startZ = value;
     }
 

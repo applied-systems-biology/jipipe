@@ -24,7 +24,7 @@ import java.util.function.Supplier;
 @JIPipeOutputSlot(value = CLIJImageData.class, slotName = "indexlist_destination", autoCreate = true)
 
 public class Clij2AverageDistanceOfNClosestPoints extends JIPipeSimpleIteratingAlgorithm {
-    Integer nPoints;
+    int nPoints;
 
 
     /**
@@ -58,12 +58,12 @@ public class Clij2AverageDistanceOfNClosestPoints extends JIPipeSimpleIteratingA
     }
 
     @JIPipeParameter("n-points")
-    public Integer getNPoints() {
+    public int getNPoints() {
         return nPoints;
     }
 
     @JIPipeParameter("n-points")
-    public void setNPoints(Integer value) {
+    public void setNPoints(int value) {
         this.nPoints = value;
     }
 

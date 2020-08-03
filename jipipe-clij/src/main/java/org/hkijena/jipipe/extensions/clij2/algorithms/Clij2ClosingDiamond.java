@@ -24,7 +24,7 @@ import java.util.function.Supplier;
 @JIPipeOutputSlot(value = CLIJImageData.class, slotName = "output", autoCreate = true)
 
 public class Clij2ClosingDiamond extends JIPipeSimpleIteratingAlgorithm {
-    Integer radius;
+    int radius;
 
 
     /**
@@ -58,12 +58,12 @@ public class Clij2ClosingDiamond extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @JIPipeParameter("radius")
-    public Integer getRadius() {
+    public int getRadius() {
         return radius;
     }
 
     @JIPipeParameter("radius")
-    public void setRadius(Integer value) {
+    public void setRadius(int value) {
         this.radius = value;
     }
 

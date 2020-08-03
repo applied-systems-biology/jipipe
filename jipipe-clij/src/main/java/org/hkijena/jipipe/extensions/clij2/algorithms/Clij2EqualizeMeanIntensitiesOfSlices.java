@@ -24,7 +24,7 @@ import java.util.function.Supplier;
 @JIPipeOutputSlot(value = CLIJImageData.class, slotName = "output", autoCreate = true)
 
 public class Clij2EqualizeMeanIntensitiesOfSlices extends JIPipeSimpleIteratingAlgorithm {
-    Integer referenceSlice;
+    int referenceSlice;
 
 
     /**
@@ -58,12 +58,12 @@ public class Clij2EqualizeMeanIntensitiesOfSlices extends JIPipeSimpleIteratingA
     }
 
     @JIPipeParameter("reference-slice")
-    public Integer getReferenceSlice() {
+    public int getReferenceSlice() {
         return referenceSlice;
     }
 
     @JIPipeParameter("reference-slice")
-    public void setReferenceSlice(Integer value) {
+    public void setReferenceSlice(int value) {
         this.referenceSlice = value;
     }
 

@@ -24,12 +24,12 @@ import java.util.function.Supplier;
 @JIPipeOutputSlot(value = CLIJImageData.class, slotName = "dst", autoCreate = true)
 
 public class Clij2ResliceRadial extends JIPipeSimpleIteratingAlgorithm {
-    Float deltaAngle;
-    Float startAngleDegrees;
-    Float centerX;
-    Float centerY;
-    Float scaleFactorX;
-    Float scaleFactorY;
+    float deltaAngle;
+    float startAngleDegrees;
+    float centerX;
+    float centerY;
+    float scaleFactorX;
+    float scaleFactorY;
 
 
     /**
@@ -68,62 +68,62 @@ public class Clij2ResliceRadial extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @JIPipeParameter("delta-angle")
-    public Float getDeltaAngle() {
+    public float getDeltaAngle() {
         return deltaAngle;
     }
 
     @JIPipeParameter("delta-angle")
-    public void setDeltaAngle(Float value) {
+    public void setDeltaAngle(float value) {
         this.deltaAngle = value;
     }
 
     @JIPipeParameter("start-angle-degrees")
-    public Float getStartAngleDegrees() {
+    public float getStartAngleDegrees() {
         return startAngleDegrees;
     }
 
     @JIPipeParameter("start-angle-degrees")
-    public void setStartAngleDegrees(Float value) {
+    public void setStartAngleDegrees(float value) {
         this.startAngleDegrees = value;
     }
 
     @JIPipeParameter("center-x")
-    public Float getCenterX() {
+    public float getCenterX() {
         return centerX;
     }
 
     @JIPipeParameter("center-x")
-    public void setCenterX(Float value) {
+    public void setCenterX(float value) {
         this.centerX = value;
     }
 
     @JIPipeParameter("center-y")
-    public Float getCenterY() {
+    public float getCenterY() {
         return centerY;
     }
 
     @JIPipeParameter("center-y")
-    public void setCenterY(Float value) {
+    public void setCenterY(float value) {
         this.centerY = value;
     }
 
     @JIPipeParameter("scale-factor-x")
-    public Float getScaleFactorX() {
+    public float getScaleFactorX() {
         return scaleFactorX;
     }
 
     @JIPipeParameter("scale-factor-x")
-    public void setScaleFactorX(Float value) {
+    public void setScaleFactorX(float value) {
         this.scaleFactorX = value;
     }
 
     @JIPipeParameter("scale-factor-y")
-    public Float getScaleFactorY() {
+    public float getScaleFactorY() {
         return scaleFactorY;
     }
 
     @JIPipeParameter("scale-factor-y")
-    public void setScaleFactorY(Float value) {
+    public void setScaleFactorY(float value) {
         this.scaleFactorY = value;
     }
 

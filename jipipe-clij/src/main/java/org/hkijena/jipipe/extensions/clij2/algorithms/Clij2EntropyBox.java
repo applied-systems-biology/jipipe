@@ -24,11 +24,11 @@ import java.util.function.Supplier;
 @JIPipeOutputSlot(value = CLIJImageData.class, slotName = "dst", autoCreate = true)
 
 public class Clij2EntropyBox extends JIPipeSimpleIteratingAlgorithm {
-    Integer radiusX;
-    Integer radiusY;
-    Integer radiusZ;
-    Float minIntensity;
-    Float maxIntensity;
+    int radiusX;
+    int radiusY;
+    int radiusZ;
+    float minIntensity;
+    float maxIntensity;
 
 
     /**
@@ -66,52 +66,52 @@ public class Clij2EntropyBox extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @JIPipeParameter("radius-x")
-    public Integer getRadiusX() {
+    public int getRadiusX() {
         return radiusX;
     }
 
     @JIPipeParameter("radius-x")
-    public void setRadiusX(Integer value) {
+    public void setRadiusX(int value) {
         this.radiusX = value;
     }
 
     @JIPipeParameter("radius-y")
-    public Integer getRadiusY() {
+    public int getRadiusY() {
         return radiusY;
     }
 
     @JIPipeParameter("radius-y")
-    public void setRadiusY(Integer value) {
+    public void setRadiusY(int value) {
         this.radiusY = value;
     }
 
     @JIPipeParameter("radius-z")
-    public Integer getRadiusZ() {
+    public int getRadiusZ() {
         return radiusZ;
     }
 
     @JIPipeParameter("radius-z")
-    public void setRadiusZ(Integer value) {
+    public void setRadiusZ(int value) {
         this.radiusZ = value;
     }
 
     @JIPipeParameter("min-intensity")
-    public Float getMinIntensity() {
+    public float getMinIntensity() {
         return minIntensity;
     }
 
     @JIPipeParameter("min-intensity")
-    public void setMinIntensity(Float value) {
+    public void setMinIntensity(float value) {
         this.minIntensity = value;
     }
 
     @JIPipeParameter("max-intensity")
-    public Float getMaxIntensity() {
+    public float getMaxIntensity() {
         return maxIntensity;
     }
 
     @JIPipeParameter("max-intensity")
-    public void setMaxIntensity(Float value) {
+    public void setMaxIntensity(float value) {
         this.maxIntensity = value;
     }
 

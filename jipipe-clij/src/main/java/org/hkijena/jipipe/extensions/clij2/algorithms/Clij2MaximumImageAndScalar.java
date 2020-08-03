@@ -24,7 +24,7 @@ import java.util.function.Supplier;
 @JIPipeOutputSlot(value = CLIJImageData.class, slotName = "dst", autoCreate = true)
 
 public class Clij2MaximumImageAndScalar extends JIPipeSimpleIteratingAlgorithm {
-    Float valueB;
+    float valueB;
 
 
     /**
@@ -58,12 +58,12 @@ public class Clij2MaximumImageAndScalar extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @JIPipeParameter("value-b")
-    public Float getValueB() {
+    public float getValueB() {
         return valueB;
     }
 
     @JIPipeParameter("value-b")
-    public void setValueB(Float value) {
+    public void setValueB(float value) {
         this.valueB = value;
     }
 

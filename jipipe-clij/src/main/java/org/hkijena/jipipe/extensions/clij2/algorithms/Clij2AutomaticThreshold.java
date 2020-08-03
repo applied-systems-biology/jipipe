@@ -25,9 +25,9 @@ import java.util.function.Supplier;
 
 public class Clij2AutomaticThreshold extends JIPipeSimpleIteratingAlgorithm {
     String userSelectedMethod;
-    Float minimumGreyValue;
-    Float maximumGreyValue;
-    Integer numberOfBins;
+    float minimumGreyValue;
+    float maximumGreyValue;
+    int numberOfBins;
 
 
     /**
@@ -74,32 +74,32 @@ public class Clij2AutomaticThreshold extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @JIPipeParameter("minimum-grey-value")
-    public Float getMinimumGreyValue() {
+    public float getMinimumGreyValue() {
         return minimumGreyValue;
     }
 
     @JIPipeParameter("minimum-grey-value")
-    public void setMinimumGreyValue(Float value) {
+    public void setMinimumGreyValue(float value) {
         this.minimumGreyValue = value;
     }
 
     @JIPipeParameter("maximum-grey-value")
-    public Float getMaximumGreyValue() {
+    public float getMaximumGreyValue() {
         return maximumGreyValue;
     }
 
     @JIPipeParameter("maximum-grey-value")
-    public void setMaximumGreyValue(Float value) {
+    public void setMaximumGreyValue(float value) {
         this.maximumGreyValue = value;
     }
 
     @JIPipeParameter("number-of-bins")
-    public Integer getNumberOfBins() {
+    public int getNumberOfBins() {
         return numberOfBins;
     }
 
     @JIPipeParameter("number-of-bins")
-    public void setNumberOfBins(Integer value) {
+    public void setNumberOfBins(int value) {
         this.numberOfBins = value;
     }
 

@@ -24,7 +24,7 @@ import java.util.function.Supplier;
 @JIPipeOutputSlot(value = CLIJImageData.class, slotName = "dst", autoCreate = true)
 
 public class Clij2MaximumOctagon extends JIPipeSimpleIteratingAlgorithm {
-    Integer iterations;
+    int iterations;
 
 
     /**
@@ -58,12 +58,12 @@ public class Clij2MaximumOctagon extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @JIPipeParameter("iterations")
-    public Integer getIterations() {
+    public int getIterations() {
         return iterations;
     }
 
     @JIPipeParameter("iterations")
-    public void setIterations(Integer value) {
+    public void setIterations(int value) {
         this.iterations = value;
     }
 

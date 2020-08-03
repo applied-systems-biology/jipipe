@@ -18,18 +18,18 @@ import java.util.function.Supplier;
 /**
  * CLIJ2 algorithm ported from {@link net.haesleinhuepf.clij2.plugins.DifferenceOfGaussian3D}
  */
-@JIPipeDocumentation(name = "CLIJ2 Difference Of Gaussian 3D", description = "Applies Gaussian blur to the input image twice with different sigma values resulting in two images which are then subtracted from each other." + "It is recommended to apply this operation to images of type Float (32 bit) as results might be negative. Works for following image dimensions: 3D.")
+@JIPipeDocumentation(name = "CLIJ2 Difference Of Gaussian 3D", description = "Applies Gaussian blur to the input image twice with different sigma values resulting in two images which are then subtracted from each other." + "It is recommended to apply this operation to images of type float (32 bit) as results might be negative. Works for following image dimensions: 3D.")
 @JIPipeOrganization(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Features")
 @JIPipeInputSlot(value = CLIJImageData.class, slotName = "input", autoCreate = true)
 @JIPipeOutputSlot(value = CLIJImageData.class, slotName = "output", autoCreate = true)
 
 public class Clij2DifferenceOfGaussian3d extends JIPipeSimpleIteratingAlgorithm {
-    Float sigma1x;
-    Float sigma1y;
-    Float sigma1z;
-    Float sigma2x;
-    Float sigma2y;
-    Float sigma2z;
+    float sigma1x;
+    float sigma1y;
+    float sigma1z;
+    float sigma2x;
+    float sigma2y;
+    float sigma2z;
 
 
     /**
@@ -68,62 +68,62 @@ public class Clij2DifferenceOfGaussian3d extends JIPipeSimpleIteratingAlgorithm 
     }
 
     @JIPipeParameter("sigma1x")
-    public Float getSigma1x() {
+    public float getSigma1x() {
         return sigma1x;
     }
 
     @JIPipeParameter("sigma1x")
-    public void setSigma1x(Float value) {
+    public void setSigma1x(float value) {
         this.sigma1x = value;
     }
 
     @JIPipeParameter("sigma1y")
-    public Float getSigma1y() {
+    public float getSigma1y() {
         return sigma1y;
     }
 
     @JIPipeParameter("sigma1y")
-    public void setSigma1y(Float value) {
+    public void setSigma1y(float value) {
         this.sigma1y = value;
     }
 
     @JIPipeParameter("sigma1z")
-    public Float getSigma1z() {
+    public float getSigma1z() {
         return sigma1z;
     }
 
     @JIPipeParameter("sigma1z")
-    public void setSigma1z(Float value) {
+    public void setSigma1z(float value) {
         this.sigma1z = value;
     }
 
     @JIPipeParameter("sigma2x")
-    public Float getSigma2x() {
+    public float getSigma2x() {
         return sigma2x;
     }
 
     @JIPipeParameter("sigma2x")
-    public void setSigma2x(Float value) {
+    public void setSigma2x(float value) {
         this.sigma2x = value;
     }
 
     @JIPipeParameter("sigma2y")
-    public Float getSigma2y() {
+    public float getSigma2y() {
         return sigma2y;
     }
 
     @JIPipeParameter("sigma2y")
-    public void setSigma2y(Float value) {
+    public void setSigma2y(float value) {
         this.sigma2y = value;
     }
 
     @JIPipeParameter("sigma2z")
-    public Float getSigma2z() {
+    public float getSigma2z() {
         return sigma2z;
     }
 
     @JIPipeParameter("sigma2z")
-    public void setSigma2z(Float value) {
+    public void setSigma2z(float value) {
         this.sigma2z = value;
     }
 

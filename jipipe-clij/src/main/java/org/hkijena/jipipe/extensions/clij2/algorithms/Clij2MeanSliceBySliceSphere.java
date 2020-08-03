@@ -24,8 +24,8 @@ import java.util.function.Supplier;
 @JIPipeOutputSlot(value = CLIJImageData.class, slotName = "dst", autoCreate = true)
 
 public class Clij2MeanSliceBySliceSphere extends JIPipeSimpleIteratingAlgorithm {
-    Integer radiusX;
-    Integer radiusY;
+    int radiusX;
+    int radiusY;
 
 
     /**
@@ -60,22 +60,22 @@ public class Clij2MeanSliceBySliceSphere extends JIPipeSimpleIteratingAlgorithm 
     }
 
     @JIPipeParameter("radius-x")
-    public Integer getRadiusX() {
+    public int getRadiusX() {
         return radiusX;
     }
 
     @JIPipeParameter("radius-x")
-    public void setRadiusX(Integer value) {
+    public void setRadiusX(int value) {
         this.radiusX = value;
     }
 
     @JIPipeParameter("radius-y")
-    public Integer getRadiusY() {
+    public int getRadiusY() {
         return radiusY;
     }
 
     @JIPipeParameter("radius-y")
-    public void setRadiusY(Integer value) {
+    public void setRadiusY(int value) {
         this.radiusY = value;
     }
 

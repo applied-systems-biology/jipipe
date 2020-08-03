@@ -25,8 +25,8 @@ import java.util.function.Supplier;
 @JIPipeOutputSlot(value = CLIJImageData.class, slotName = "label_map_out", autoCreate = true)
 
 public class Clij2ExcludeLabelsWithValuesOutOfRange extends JIPipeIteratingAlgorithm {
-    Float min;
-    Float max;
+    float min;
+    float max;
 
 
     /**
@@ -62,22 +62,22 @@ public class Clij2ExcludeLabelsWithValuesOutOfRange extends JIPipeIteratingAlgor
     }
 
     @JIPipeParameter("min")
-    public Float getMin() {
+    public float getMin() {
         return min;
     }
 
     @JIPipeParameter("min")
-    public void setMin(Float value) {
+    public void setMin(float value) {
         this.min = value;
     }
 
     @JIPipeParameter("max")
-    public Float getMax() {
+    public float getMax() {
         return max;
     }
 
     @JIPipeParameter("max")
-    public void setMax(Float value) {
+    public void setMax(float value) {
         this.max = value;
     }
 

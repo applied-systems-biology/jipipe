@@ -24,9 +24,9 @@ import java.util.function.Supplier;
 @JIPipeOutputSlot(value = CLIJImageData.class, slotName = "output", autoCreate = true)
 
 public class Clij2Translate3d extends JIPipeSimpleIteratingAlgorithm {
-    Float translateX;
-    Float translateY;
-    Float translateZ;
+    float translateX;
+    float translateY;
+    float translateZ;
 
 
     /**
@@ -62,32 +62,32 @@ public class Clij2Translate3d extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @JIPipeParameter("translate-x")
-    public Float getTranslateX() {
+    public float getTranslateX() {
         return translateX;
     }
 
     @JIPipeParameter("translate-x")
-    public void setTranslateX(Float value) {
+    public void setTranslateX(float value) {
         this.translateX = value;
     }
 
     @JIPipeParameter("translate-y")
-    public Float getTranslateY() {
+    public float getTranslateY() {
         return translateY;
     }
 
     @JIPipeParameter("translate-y")
-    public void setTranslateY(Float value) {
+    public void setTranslateY(float value) {
         this.translateY = value;
     }
 
     @JIPipeParameter("translate-z")
-    public Float getTranslateZ() {
+    public float getTranslateZ() {
         return translateZ;
     }
 
     @JIPipeParameter("translate-z")
-    public void setTranslateZ(Float value) {
+    public void setTranslateZ(float value) {
         this.translateZ = value;
     }
 

@@ -24,7 +24,7 @@ import java.util.function.Supplier;
 @JIPipeOutputSlot(value = CLIJImageData.class, slotName = "dst", autoCreate = true)
 
 public class Clij2Power extends JIPipeSimpleIteratingAlgorithm {
-    Float exponent;
+    float exponent;
 
 
     /**
@@ -58,12 +58,12 @@ public class Clij2Power extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @JIPipeParameter("exponent")
-    public Float getExponent() {
+    public float getExponent() {
         return exponent;
     }
 
     @JIPipeParameter("exponent")
-    public void setExponent(Float value) {
+    public void setExponent(float value) {
         this.exponent = value;
     }
 

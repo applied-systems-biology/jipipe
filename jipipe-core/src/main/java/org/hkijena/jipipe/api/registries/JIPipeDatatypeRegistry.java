@@ -26,6 +26,13 @@ import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.events.DatatypeRegisteredEvent;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
+import org.jgrapht.Graph;
+import org.jgrapht.GraphPath;
+import org.jgrapht.alg.connectivity.ConnectivityInspector;
+import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
+import org.jgrapht.graph.DefaultDirectedGraph;
+import org.jgrapht.graph.DefaultEdge;
+import org.jgrapht.graph.DefaultWeightedEdge;
 
 import java.util.*;
 
@@ -36,7 +43,8 @@ public class JIPipeDatatypeRegistry {
     private BiMap<String, Class<? extends JIPipeData>> registeredDataTypes = HashBiMap.create();
     private Set<String> hiddenDataTypeIds = new HashSet<>();
     private Map<String, JIPipeDependency> registeredDatatypeSources = new HashMap<>();
-    private Map<Class<? extends JIPipeData>, Map<Class<? extends JIPipeData>, JIPipeDataConverter>> registeredConverters = new HashMap<>();
+    private Graph<JIPipeDataInfo, DataConverterEdge> conversionGraph = new DefaultDirectedGraph<>(DataConverterEdge.class);
+    private DijkstraShortestPath<JIPipeDataInfo, DataConverterEdge> shortestPath = new DijkstraShortestPath<>(conversionGraph);
     private EventBus eventBus = new EventBus();
 
     /**
@@ -52,12 +60,20 @@ public class JIPipeDatatypeRegistry {
      * @param converter the converter
      */
     public void registerConversion(JIPipeDataConverter converter) {
-        Map<Class<? extends JIPipeData>, JIPipeDataConverter> targetMap = registeredConverters.getOrDefault(converter.getInputType(), null);
-        if (targetMap == null) {
-            targetMap = new HashMap<>();
-            registeredConverters.put(converter.getInputType(), targetMap);
+        if(!isRegistered(converter.getInputType())) {
+            conversionGraph.addVertex(JIPipeDataInfo.getInstance(converter.getInputType()));
         }
-        targetMap.put(converter.getOutputType(), converter);
+        if(!isRegistered(converter.getOutputType())) {
+            conversionGraph.addVertex(JIPipeDataInfo.getInstance(converter.getOutputType()));
+        }
+        conversionGraph.addEdge(JIPipeDataInfo.getInstance(converter.getInputType()),
+                JIPipeDataInfo.getInstance(converter.getOutputType()));
+        conversionGraph.getEdge(JIPipeDataInfo.getInstance(converter.getInputType()),
+                JIPipeDataInfo.getInstance(converter.getOutputType())).setConverter(converter);
+    }
+
+    public boolean isRegistered(Class<? extends JIPipeData> klass) {
+        return registeredDataTypes.containsValue(klass);
     }
 
     /**
@@ -71,38 +87,24 @@ public class JIPipeDatatypeRegistry {
         if (isTriviallyConvertible(inputData.getClass(), outputDataType))
             return inputData;
         else {
-            Map<Class<? extends JIPipeData>, JIPipeDataConverter> targetMap = registeredConverters.getOrDefault(inputData.getClass(), null);
-            if (targetMap != null) {
-                JIPipeDataConverter converter = targetMap.getOrDefault(outputDataType, null);
-                if (converter != null) {
-                    return converter.convert(inputData.duplicate());
+            GraphPath<JIPipeDataInfo, DataConverterEdge> path = shortestPath.getPath(JIPipeDataInfo.getInstance(inputData.getClass()), JIPipeDataInfo.getInstance(outputDataType));
+            if(path == null) {
+                throw new UserFriendlyRuntimeException("Could not convert " + inputData.getClass() + " to " + outputDataType,
+                        "Unable to convert data type!",
+                        "JIPipe plugin manager",
+                        "An algorithm requested that the data of type '" + JIPipeData.getNameOf(inputData.getClass()) + "' should be converted to type '" + JIPipeData.getNameOf(outputDataType) + "'." +
+                                " There no available conversion function.",
+                        "Please check if the input data has the correct format by using the quick run. If you cannot resolve the issue, please contact the plugin or JIPipe authors.");
+            }
+            JIPipeData data = inputData;
+            for (DataConverterEdge edge : path.getEdgeList()) {
+                if(edge.getConverter() != null) {
+                    data = edge.getConverter().convert(data);
                 }
             }
-
-            // Find a converter fuzzy
-            for (Map.Entry<Class<? extends JIPipeData>, Map<Class<? extends JIPipeData>, JIPipeDataConverter>> entry : registeredConverters.entrySet()) {
-                if (entry.getKey().isAssignableFrom(inputData.getClass())) {
-                    targetMap = entry.getValue();
-                    JIPipeDataConverter converter = targetMap.getOrDefault(outputDataType, null);
-                    if (converter != null) {
-                        return converter.convert(inputData.duplicate());
-                    }
-
-                    // Try to find a fuzzy converter
-                    for (Map.Entry<Class<? extends JIPipeData>, JIPipeDataConverter> targetEntry : entry.getValue().entrySet()) {
-                        if(isTriviallyConvertible(targetEntry.getKey(), outputDataType)) {
-                            return targetEntry.getValue().convert(inputData.duplicate());
-                        }
-                    }
-                }
-            }
+            assert outputDataType.isAssignableFrom(data.getClass());
+            return data;
         }
-        throw new UserFriendlyRuntimeException("Could not convert " + inputData.getClass() + " to " + outputDataType,
-                "Unable to convert data type!",
-                "JIPipe plugin manager",
-                "An algorithm requested that the data of type '" + JIPipeData.getNameOf(inputData.getClass()) + "' should be converted to type '" + JIPipeData.getNameOf(outputDataType) + "'." +
-                        " There no available conversion function.",
-                "Please check if the input data has the correct format by using the quick run. If you cannot resolve the issue, please contact the plugin or JIPipe authors.");
     }
 
     /**
@@ -117,28 +119,7 @@ public class JIPipeDatatypeRegistry {
         if (isTriviallyConvertible(inputDataType, outputDataType)) {
             return true;
         } else {
-            Map<Class<? extends JIPipeData>, JIPipeDataConverter> targetMap = registeredConverters.getOrDefault(inputDataType, null);
-            if (targetMap != null) {
-                if (targetMap.containsKey(outputDataType))
-                    return true;
-            }
-
-            // Search fuzzy
-            for (Map.Entry<Class<? extends JIPipeData>, Map<Class<? extends JIPipeData>, JIPipeDataConverter>> entry : registeredConverters.entrySet()) {
-                if (entry.getKey().isAssignableFrom(inputDataType)) {
-                    targetMap = entry.getValue();
-                    if (targetMap.containsKey(outputDataType))
-                        return true;
-
-                    // Try to find a fuzzy converter
-                    for (Map.Entry<Class<? extends JIPipeData>, JIPipeDataConverter> targetEntry : entry.getValue().entrySet()) {
-                        if(isTriviallyConvertible(targetEntry.getKey(), outputDataType)) {
-                            return true;
-                        }
-                    }
-                }
-            }
-            return false;
+            return shortestPath.getPath(JIPipeDataInfo.getInstance(inputDataType), JIPipeDataInfo.getInstance(outputDataType)) != null;
         }
     }
 
@@ -154,6 +135,21 @@ public class JIPipeDatatypeRegistry {
         registeredDatatypeSources.put(id, source);
         if (klass.getAnnotationsByType(JIPipeHidden.class).length > 0)
             hiddenDataTypeIds.add(id);
+
+        JIPipeDataInfo info = JIPipeDataInfo.getInstance(klass);
+        if(!conversionGraph.containsVertex(info))
+            conversionGraph.addVertex(info);
+        conversionGraph.addEdge(info, info);
+        for (Class<? extends JIPipeData> otherClass : registeredDataTypes.values()) {
+            JIPipeDataInfo otherInfo = JIPipeDataInfo.getInstance(otherClass);
+            if(isTriviallyConvertible(info.getDataClass(), otherClass)) {
+                conversionGraph.addEdge(info, otherInfo);
+            }
+            if(isTriviallyConvertible(otherClass, info.getDataClass())) {
+                conversionGraph.addEdge(otherInfo, info);
+            }
+        }
+
         eventBus.post(new DatatypeRegisteredEvent(id));
     }
 
@@ -312,5 +308,24 @@ public class JIPipeDatatypeRegistry {
      */
     public static JIPipeDatatypeRegistry getInstance() {
         return JIPipeDefaultRegistry.getInstance().getDatatypeRegistry();
+    }
+
+    /**
+     * Edge between {@link JIPipeDataInfo} instances that indicate a conversion
+     */
+    public static class DataConverterEdge extends DefaultWeightedEdge {
+        private JIPipeDataConverter converter;
+
+        /**
+         * The converter if the data types cannot be trivially converted
+         * @return converter or null
+         */
+        public JIPipeDataConverter getConverter() {
+            return converter;
+        }
+
+        public void setConverter(JIPipeDataConverter converter) {
+            this.converter = converter;
+        }
     }
 }

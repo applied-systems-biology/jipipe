@@ -24,8 +24,8 @@ import java.util.function.Supplier;
 @JIPipeOutputSlot(value = CLIJImageData.class, slotName = "dst", autoCreate = true)
 
 public class Clij2ReduceStack extends JIPipeSimpleIteratingAlgorithm {
-    Integer factor;
-    Integer offset;
+    int factor;
+    int offset;
 
 
     /**
@@ -60,22 +60,22 @@ public class Clij2ReduceStack extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @JIPipeParameter("factor")
-    public Integer getFactor() {
+    public int getFactor() {
         return factor;
     }
 
     @JIPipeParameter("factor")
-    public void setFactor(Integer value) {
+    public void setFactor(int value) {
         this.factor = value;
     }
 
     @JIPipeParameter("offset")
-    public Integer getOffset() {
+    public int getOffset() {
         return offset;
     }
 
     @JIPipeParameter("offset")
-    public void setOffset(Integer value) {
+    public void setOffset(int value) {
         this.offset = value;
     }
 

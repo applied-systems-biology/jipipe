@@ -24,9 +24,9 @@ import java.util.function.Supplier;
 @JIPipeOutputSlot(value = CLIJImageData.class, slotName = "output", autoCreate = true)
 
 public class Clij2Scale3d extends JIPipeSimpleIteratingAlgorithm {
-    Float factorX;
-    Float factorY;
-    Float factorZ;
+    float factorX;
+    float factorY;
+    float factorZ;
 
 
     /**
@@ -62,32 +62,32 @@ public class Clij2Scale3d extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @JIPipeParameter("factor-x")
-    public Float getFactorX() {
+    public float getFactorX() {
         return factorX;
     }
 
     @JIPipeParameter("factor-x")
-    public void setFactorX(Float value) {
+    public void setFactorX(float value) {
         this.factorX = value;
     }
 
     @JIPipeParameter("factor-y")
-    public Float getFactorY() {
+    public float getFactorY() {
         return factorY;
     }
 
     @JIPipeParameter("factor-y")
-    public void setFactorY(Float value) {
+    public void setFactorY(float value) {
         this.factorY = value;
     }
 
     @JIPipeParameter("factor-z")
-    public Float getFactorZ() {
+    public float getFactorZ() {
         return factorZ;
     }
 
     @JIPipeParameter("factor-z")
-    public void setFactorZ(Float value) {
+    public void setFactorZ(float value) {
         this.factorZ = value;
     }
 

@@ -24,7 +24,7 @@ import java.util.function.Supplier;
 @JIPipeOutputSlot(value = CLIJImageData.class, slotName = "maskOutput", autoCreate = true)
 
 public class Clij2LabelToMask extends JIPipeSimpleIteratingAlgorithm {
-    Float index;
+    float index;
 
 
     /**
@@ -58,12 +58,12 @@ public class Clij2LabelToMask extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @JIPipeParameter("index")
-    public Float getIndex() {
+    public float getIndex() {
         return index;
     }
 
     @JIPipeParameter("index")
-    public void setIndex(Float value) {
+    public void setIndex(float value) {
         this.index = value;
     }
 

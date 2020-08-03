@@ -24,8 +24,8 @@ import java.util.function.Supplier;
 @JIPipeOutputSlot(value = CLIJImageData.class, slotName = "dst_min", autoCreate = true)
 
 public class Clij2MinimumZProjectionBounded extends JIPipeSimpleIteratingAlgorithm {
-    Integer min_z;
-    Integer max_z;
+    int min_z;
+    int max_z;
 
 
     /**
@@ -60,22 +60,22 @@ public class Clij2MinimumZProjectionBounded extends JIPipeSimpleIteratingAlgorit
     }
 
     @JIPipeParameter("min-z")
-    public Integer getMin_z() {
+    public int getMin_z() {
         return min_z;
     }
 
     @JIPipeParameter("min-z")
-    public void setMin_z(Integer value) {
+    public void setMin_z(int value) {
         this.min_z = value;
     }
 
     @JIPipeParameter("max-z")
-    public Integer getMax_z() {
+    public int getMax_z() {
         return max_z;
     }
 
     @JIPipeParameter("max-z")
-    public void setMax_z(Integer value) {
+    public void setMax_z(int value) {
         this.max_z = value;
     }
 

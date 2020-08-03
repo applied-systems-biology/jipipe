@@ -25,8 +25,8 @@ import java.util.function.Supplier;
 @JIPipeOutputSlot(value = CLIJImageData.class, slotName = "dst_depth", autoCreate = true)
 
 public class Clij2DepthColorProjection extends JIPipeIteratingAlgorithm {
-    Float min_display_intensity;
-    Float max_display_intensity;
+    float min_display_intensity;
+    float max_display_intensity;
 
 
     /**
@@ -62,22 +62,22 @@ public class Clij2DepthColorProjection extends JIPipeIteratingAlgorithm {
     }
 
     @JIPipeParameter("min-display-intensity")
-    public Float getMin_display_intensity() {
+    public float getMin_display_intensity() {
         return min_display_intensity;
     }
 
     @JIPipeParameter("min-display-intensity")
-    public void setMin_display_intensity(Float value) {
+    public void setMin_display_intensity(float value) {
         this.min_display_intensity = value;
     }
 
     @JIPipeParameter("max-display-intensity")
-    public Float getMax_display_intensity() {
+    public float getMax_display_intensity() {
         return max_display_intensity;
     }
 
     @JIPipeParameter("max-display-intensity")
-    public void setMax_display_intensity(Float value) {
+    public void setMax_display_intensity(float value) {
         this.max_display_intensity = value;
     }
 

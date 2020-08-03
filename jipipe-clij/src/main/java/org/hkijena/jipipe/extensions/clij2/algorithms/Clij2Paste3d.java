@@ -24,9 +24,9 @@ import java.util.function.Supplier;
 @JIPipeOutputSlot(value = CLIJImageData.class, slotName = "dst", autoCreate = true)
 
 public class Clij2Paste3d extends JIPipeSimpleIteratingAlgorithm {
-    Integer destination_x;
-    Integer destination_y;
-    Integer destination_z;
+    int destination_x;
+    int destination_y;
+    int destination_z;
 
 
     /**
@@ -62,32 +62,32 @@ public class Clij2Paste3d extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @JIPipeParameter("destination-x")
-    public Integer getDestination_x() {
+    public int getDestination_x() {
         return destination_x;
     }
 
     @JIPipeParameter("destination-x")
-    public void setDestination_x(Integer value) {
+    public void setDestination_x(int value) {
         this.destination_x = value;
     }
 
     @JIPipeParameter("destination-y")
-    public Integer getDestination_y() {
+    public int getDestination_y() {
         return destination_y;
     }
 
     @JIPipeParameter("destination-y")
-    public void setDestination_y(Integer value) {
+    public void setDestination_y(int value) {
         this.destination_y = value;
     }
 
     @JIPipeParameter("destination-z")
-    public Integer getDestination_z() {
+    public int getDestination_z() {
         return destination_z;
     }
 
     @JIPipeParameter("destination-z")
-    public void setDestination_z(Integer value) {
+    public void setDestination_z(int value) {
         this.destination_z = value;
     }
 

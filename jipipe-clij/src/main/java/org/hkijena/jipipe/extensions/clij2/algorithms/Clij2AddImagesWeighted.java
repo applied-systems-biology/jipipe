@@ -25,8 +25,8 @@ import java.util.function.Supplier;
 @JIPipeOutputSlot(value = CLIJImageData.class, slotName = "dst", autoCreate = true)
 
 public class Clij2AddImagesWeighted extends JIPipeIteratingAlgorithm {
-    Float factor;
-    Float factor1;
+    float factor;
+    float factor1;
 
 
     /**
@@ -62,22 +62,22 @@ public class Clij2AddImagesWeighted extends JIPipeIteratingAlgorithm {
     }
 
     @JIPipeParameter("factor")
-    public Float getFactor() {
+    public float getFactor() {
         return factor;
     }
 
     @JIPipeParameter("factor")
-    public void setFactor(Float value) {
+    public void setFactor(float value) {
         this.factor = value;
     }
 
     @JIPipeParameter("factor1")
-    public Float getFactor1() {
+    public float getFactor1() {
         return factor1;
     }
 
     @JIPipeParameter("factor1")
-    public void setFactor1(Float value) {
+    public void setFactor1(float value) {
         this.factor1 = value;
     }
 

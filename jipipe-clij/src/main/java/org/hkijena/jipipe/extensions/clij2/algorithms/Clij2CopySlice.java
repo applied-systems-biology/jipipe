@@ -24,7 +24,7 @@ import java.util.function.Supplier;
 @JIPipeOutputSlot(value = CLIJImageData.class, slotName = "dst", autoCreate = true)
 
 public class Clij2CopySlice extends JIPipeSimpleIteratingAlgorithm {
-    Integer planeIndex;
+    int planeIndex;
 
 
     /**
@@ -58,12 +58,12 @@ public class Clij2CopySlice extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @JIPipeParameter("plane-index")
-    public Integer getPlaneIndex() {
+    public int getPlaneIndex() {
         return planeIndex;
     }
 
     @JIPipeParameter("plane-index")
-    public void setPlaneIndex(Integer value) {
+    public void setPlaneIndex(int value) {
         this.planeIndex = value;
     }
 

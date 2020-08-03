@@ -24,7 +24,7 @@ import java.util.function.Supplier;
 @JIPipeOutputSlot(value = CLIJImageData.class, slotName = "dst", autoCreate = true)
 
 public class Clij2ImageToStack extends JIPipeSimpleIteratingAlgorithm {
-    Integer numSlices;
+    int numSlices;
 
 
     /**
@@ -58,12 +58,12 @@ public class Clij2ImageToStack extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @JIPipeParameter("num-slices")
-    public Integer getNumSlices() {
+    public int getNumSlices() {
         return numSlices;
     }
 
     @JIPipeParameter("num-slices")
-    public void setNumSlices(Integer value) {
+    public void setNumSlices(int value) {
         this.numSlices = value;
     }
 

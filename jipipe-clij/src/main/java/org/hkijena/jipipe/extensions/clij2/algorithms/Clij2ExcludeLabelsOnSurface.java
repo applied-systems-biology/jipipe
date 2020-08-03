@@ -25,9 +25,9 @@ import java.util.function.Supplier;
 @JIPipeOutputSlot(value = CLIJImageData.class, slotName = "label_map_out", autoCreate = true)
 
 public class Clij2ExcludeLabelsOnSurface extends JIPipeIteratingAlgorithm {
-    Float centerX;
-    Float centerY;
-    Float centerZ;
+    float centerX;
+    float centerY;
+    float centerZ;
 
 
     /**
@@ -64,32 +64,32 @@ public class Clij2ExcludeLabelsOnSurface extends JIPipeIteratingAlgorithm {
     }
 
     @JIPipeParameter("center-x")
-    public Float getCenterX() {
+    public float getCenterX() {
         return centerX;
     }
 
     @JIPipeParameter("center-x")
-    public void setCenterX(Float value) {
+    public void setCenterX(float value) {
         this.centerX = value;
     }
 
     @JIPipeParameter("center-y")
-    public Float getCenterY() {
+    public float getCenterY() {
         return centerY;
     }
 
     @JIPipeParameter("center-y")
-    public void setCenterY(Float value) {
+    public void setCenterY(float value) {
         this.centerY = value;
     }
 
     @JIPipeParameter("center-z")
-    public Float getCenterZ() {
+    public float getCenterZ() {
         return centerZ;
     }
 
     @JIPipeParameter("center-z")
-    public void setCenterZ(Float value) {
+    public void setCenterZ(float value) {
         this.centerZ = value;
     }
 

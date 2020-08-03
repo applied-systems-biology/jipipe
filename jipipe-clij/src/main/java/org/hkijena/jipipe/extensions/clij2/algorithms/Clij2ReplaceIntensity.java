@@ -24,8 +24,8 @@ import java.util.function.Supplier;
 @JIPipeOutputSlot(value = CLIJImageData.class, slotName = "dst", autoCreate = true)
 
 public class Clij2ReplaceIntensity extends JIPipeSimpleIteratingAlgorithm {
-    Float in;
-    Float out;
+    float in;
+    float out;
 
 
     /**
@@ -60,22 +60,22 @@ public class Clij2ReplaceIntensity extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @JIPipeParameter("in")
-    public Float getIn() {
+    public float getIn() {
         return in;
     }
 
     @JIPipeParameter("in")
-    public void setIn(Float value) {
+    public void setIn(float value) {
         this.in = value;
     }
 
     @JIPipeParameter("out")
-    public Float getOut() {
+    public float getOut() {
         return out;
     }
 
     @JIPipeParameter("out")
-    public void setOut(Float value) {
+    public void setOut(float value) {
         this.out = value;
     }
 

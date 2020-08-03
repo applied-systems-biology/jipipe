@@ -24,7 +24,7 @@ import java.util.function.Supplier;
 @JIPipeOutputSlot(value = CLIJImageData.class, slotName = "output", autoCreate = true)
 
 public class Clij2Threshold extends JIPipeSimpleIteratingAlgorithm {
-    Float threshold;
+    float threshold;
 
 
     /**
@@ -58,12 +58,12 @@ public class Clij2Threshold extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @JIPipeParameter("threshold")
-    public Float getThreshold() {
+    public float getThreshold() {
         return threshold;
     }
 
     @JIPipeParameter("threshold")
-    public void setThreshold(Float value) {
+    public void setThreshold(float value) {
         this.threshold = value;
     }
 

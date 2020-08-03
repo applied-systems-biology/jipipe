@@ -24,8 +24,8 @@ import java.util.function.Supplier;
 @JIPipeOutputSlot(value = CLIJImageData.class, slotName = "dst", autoCreate = true)
 
 public class Clij2Paste2d extends JIPipeSimpleIteratingAlgorithm {
-    Integer destination_x;
-    Integer destination_y;
+    int destination_x;
+    int destination_y;
 
 
     /**
@@ -60,22 +60,22 @@ public class Clij2Paste2d extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @JIPipeParameter("destination-x")
-    public Integer getDestination_x() {
+    public int getDestination_x() {
         return destination_x;
     }
 
     @JIPipeParameter("destination-x")
-    public void setDestination_x(Integer value) {
+    public void setDestination_x(int value) {
         this.destination_x = value;
     }
 
     @JIPipeParameter("destination-y")
-    public Integer getDestination_y() {
+    public int getDestination_y() {
         return destination_y;
     }
 
     @JIPipeParameter("destination-y")
-    public void setDestination_y(Integer value) {
+    public void setDestination_y(int value) {
         this.destination_y = value;
     }
 

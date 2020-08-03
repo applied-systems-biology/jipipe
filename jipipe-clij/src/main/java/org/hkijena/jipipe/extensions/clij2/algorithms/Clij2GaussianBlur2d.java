@@ -24,8 +24,8 @@ import java.util.function.Supplier;
 @JIPipeOutputSlot(value = CLIJImageData.class, slotName = "dst", autoCreate = true)
 
 public class Clij2GaussianBlur2d extends JIPipeSimpleIteratingAlgorithm {
-    Float blurSigmaX;
-    Float blurSigmaY;
+    float blurSigmaX;
+    float blurSigmaY;
 
 
     /**
@@ -60,22 +60,22 @@ public class Clij2GaussianBlur2d extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @JIPipeParameter("blur-sigma-x")
-    public Float getBlurSigmaX() {
+    public float getBlurSigmaX() {
         return blurSigmaX;
     }
 
     @JIPipeParameter("blur-sigma-x")
-    public void setBlurSigmaX(Float value) {
+    public void setBlurSigmaX(float value) {
         this.blurSigmaX = value;
     }
 
     @JIPipeParameter("blur-sigma-y")
-    public Float getBlurSigmaY() {
+    public float getBlurSigmaY() {
         return blurSigmaY;
     }
 
     @JIPipeParameter("blur-sigma-y")
-    public void setBlurSigmaY(Float value) {
+    public void setBlurSigmaY(float value) {
         this.blurSigmaY = value;
     }
 
