@@ -33,11 +33,14 @@ import org.hkijena.jipipe.utils.UIUtils;
 import javax.swing.*;
 import java.awt.*;
 import java.util.Collections;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * UI for a single {@link JIPipeGraphNode}
  */
 public class JIPipeSingleAlgorithmSelectionPanelUI extends JIPipeProjectWorkbenchPanel {
+    private static String SAVED_TAB = null;
     private final JIPipeGraphEditorUI graphEditorUI;
     private final JIPipeGraphCanvasUI canvas;
     private final JIPipeGraphNode algorithm;
@@ -66,43 +69,59 @@ public class JIPipeSingleAlgorithmSelectionPanelUI extends JIPipeProjectWorkbenc
                 algorithm,
                 TooltipUtils.getAlgorithmDocumentation(algorithm.getInfo()),
                 ParameterPanel.WITH_SCROLLING | ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.DOCUMENTATION_BELOW | ParameterPanel.WITH_SEARCH_BAR);
-        tabbedPane.addTab("Parameters", UIUtils.getIconFromResources("actions/configure.png"),
-                parametersUI,
-                DocumentTabPane.CloseMode.withoutCloseButton,
-                false);
+        tabbedPane.addSingletonTab("PARAMETERS", "Parameters", UIUtils.getIconFromResources("actions/configure.png"),
+                parametersUI, DocumentTabPane.CloseMode.withoutCloseButton, false);
 
         JIPipeSlotEditorUI slotEditorUI = new JIPipeSlotEditorUI(graphEditorUI, algorithm);
-        tabbedPane.addTab("Slots", UIUtils.getIconFromResources("actions/plug.png"),
+        tabbedPane.addSingletonTab("SLOTS", "Slots", UIUtils.getIconFromResources("actions/plug.png"),
                 slotEditorUI,
-                DocumentTabPane.CloseMode.withoutCloseButton,
-                false);
+                DocumentTabPane.CloseMode.withoutCloseButton,false);
 
         cacheBrowserTabContent = new JPanel(new BorderLayout());
-        tabbedPane.addTab("Cache browser", UIUtils.getIconFromResources("actions/database.png"),
+        tabbedPane.addSingletonTab("CACHE_BROWSER", "Cache browser", UIUtils.getIconFromResources("actions/database.png"),
                 cacheBrowserTabContent,
-                DocumentTabPane.CloseMode.withoutCloseButton,
-                false);
+                DocumentTabPane.CloseMode.withoutCloseButton,false);
 
         if (algorithm instanceof JIPipeDataBatchAlgorithm) {
             batchAssistantTabContent = new JPanel(new BorderLayout());
-            tabbedPane.addTab("Data batches", UIUtils.getIconFromResources("actions/package.png"),
+            tabbedPane.addSingletonTab("DATA_BATCHES", "Data batches", UIUtils.getIconFromResources("actions/package.png"),
                     batchAssistantTabContent,
-                    DocumentTabPane.CloseMode.withoutCloseButton,
-                    false);
+                    DocumentTabPane.CloseMode.withoutCloseButton,false);
         }
 
         testBenchTabContent = new JPanel(new BorderLayout());
-        tabbedPane.addTab("Quick run", UIUtils.getIconFromResources("actions/media-play.png"),
+        tabbedPane.addSingletonTab("QUICK_RUN", "Quick run", UIUtils.getIconFromResources("actions/media-play.png"),
                 testBenchTabContent,
-                DocumentTabPane.CloseMode.withoutCloseButton,
-                false);
+                DocumentTabPane.CloseMode.withoutCloseButton,false);
 
 
         add(tabbedPane, BorderLayout.CENTER);
 
         tabbedPane.getTabbedPane().addChangeListener(e -> activateLazyContent(tabbedPane));
+        restoreTabState();
+        tabbedPane.getTabbedPane().addChangeListener(e -> saveTabState(tabbedPane));
 
         initializeToolbar();
+    }
+
+    private void restoreTabState() {
+        if(SAVED_TAB == null)
+            return;
+        for (Map.Entry<String, DocumentTabPane.DocumentTab> entry : tabbedPane.getSingletonTabs().entrySet()) {
+            if(Objects.equals(entry.getKey(), SAVED_TAB)) {
+                tabbedPane.switchToContent(entry.getValue().getContent());
+                return;
+            }
+        }
+    }
+
+    private void saveTabState(DocumentTabPane tabbedPane) {
+        for (Map.Entry<String, DocumentTabPane.DocumentTab> entry : tabbedPane.getSingletonTabs().entrySet()) {
+            if(entry.getValue().getContent() == tabbedPane.getCurrentContent()) {
+                SAVED_TAB = entry.getKey();
+                return;
+            }
+        }
     }
 
     private void activateLazyContent(DocumentTabPane tabbedPane) {

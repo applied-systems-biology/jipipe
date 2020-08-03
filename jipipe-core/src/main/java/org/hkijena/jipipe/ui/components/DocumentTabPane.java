@@ -287,6 +287,24 @@ public class DocumentTabPane extends JPanel {
     }
 
     /**
+     * Adds a tab that can be silently closed and brought up again
+     *
+     * @param id        Unique tab identifier
+     * @param title     Tab title
+     * @param icon      Tab icon
+     * @param component Tab content
+     * @param hidden    If the tab is hidden by default
+     */
+    public DocumentTab addSingletonTab(String id, String title, Icon icon, Component component, CloseMode closeMode, boolean hidden) {
+        DocumentTab tab = addTab(title, icon, component, closeMode);
+        singletonTabs.put(id, tab);
+        if (hidden) {
+            forceCloseTab(tab);
+        }
+        return tab;
+    }
+
+    /**
      * Re-opens or selects a singleton tab
      *
      * @param id the singleton tab ID
