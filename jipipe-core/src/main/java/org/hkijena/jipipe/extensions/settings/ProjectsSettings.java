@@ -115,11 +115,10 @@ public class ProjectsSettings implements JIPipeParameterCollection {
     @JIPipeParameter("new-project-template")
     public ProjectTemplateEnum getProjectTemplate() {
         if(projectTemplate != null && projectTemplate.getValue() == null && !projectTemplate.getAllowedValues().isEmpty()) {
-            try {
-                projectTemplate.setValue(new JIPipeProjectTemplate(ResourceUtils.getPluginResource("templates/Empty (3 compartments).jip")));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            JIPipeProjectTemplate template = new JIPipeProjectTemplate();
+            template.setStoredAsResource(true);
+            template.setResourcePath(ResourceUtils.getResourcePath("templates/Empty (3 compartments).jip"));
+            projectTemplate.setValue(template);
         }
         return projectTemplate;
     }

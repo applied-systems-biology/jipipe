@@ -20,8 +20,10 @@ import ij.IJ;
 import ij.Prefs;
 import org.hkijena.jipipe.utils.JsonUtils;
 import org.hkijena.jipipe.utils.ResourceUtils;
+import org.hkijena.jipipe.utils.StringUtils;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -36,20 +38,12 @@ import java.util.stream.Collectors;
  */
 public class JIPipeProjectTemplate {
 
-    private URL location;
+    private String resourcePath;
+    private Path relativeLocation;
+    private boolean storedAsResource;
     private JIPipeMetadata metadata;
 
     public JIPipeProjectTemplate() {
-    }
-
-    public JIPipeProjectTemplate(URL location) throws IOException {
-        this.location = location;
-        initialize();
-    }
-
-    private void initialize() throws IOException {
-        JsonNode node = JsonUtils.getObjectMapper().readValue(location, JsonNode.class);
-        metadata = JsonUtils.getObjectMapper().convertValue(node.get("metadata"), JIPipeMetadata.class);
     }
 
     private static List<JIPipeProjectTemplate> availableTemplatesFromResources;
@@ -60,10 +54,40 @@ public class JIPipeProjectTemplate {
      * @throws IOException thrown by project loading
      */
     public JIPipeProject load() throws IOException {
-        JsonNode node = JsonUtils.getObjectMapper().readValue(location, JsonNode.class);
+        JsonNode node = JsonUtils.getObjectMapper().readValue(getLocation(), JsonNode.class);
         JIPipeProject project = new JIPipeProject();
         project.fromJson(node, new JIPipeValidityReport());
         return project;
+    }
+
+    @JsonGetter("resource-path")
+    public String getResourcePath() {
+        return resourcePath;
+    }
+
+    @JsonSetter("resource-path")
+    public void setResourcePath(String resourcePath) {
+        this.resourcePath = resourcePath;
+    }
+
+    @JsonGetter("stored-as-resource")
+    public boolean isStoredAsResource() {
+        return storedAsResource;
+    }
+
+    @JsonSetter("stored-as-resource")
+    public void setStoredAsResource(boolean storedAsResource) {
+        this.storedAsResource = storedAsResource;
+    }
+
+    @JsonGetter("relative-location")
+    public Path getRelativeLocation() {
+        return relativeLocation;
+    }
+
+    @JsonSetter("relative-location")
+    public void setRelativeLocation(Path relativeLocation) {
+        this.relativeLocation = relativeLocation;
     }
 
     /**
@@ -75,7 +99,9 @@ public class JIPipeProjectTemplate {
             availableTemplatesFromResources = new ArrayList<>();
             for (String resource : ResourceUtils.walkInternalResourceFolder("templates/")) {
                 try {
-                    JIPipeProjectTemplate template = new JIPipeProjectTemplate(ResourceUtils.class.getResource(resource));
+                    JIPipeProjectTemplate template = new JIPipeProjectTemplate();
+                    template.setResourcePath(resource);
+                    template.setStoredAsResource(true);
                     availableTemplatesFromResources.add(template);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -98,7 +124,9 @@ public class JIPipeProjectTemplate {
             try {
                 for (Path file : Files.list(templatesDir).collect(Collectors.toList())) {
                     try {
-                        JIPipeProjectTemplate template = new JIPipeProjectTemplate(file.toUri().toURL());
+                        JIPipeProjectTemplate template = new JIPipeProjectTemplate();
+                        template.setStoredAsResource(false);
+                        template.setRelativeLocation(Paths.get("jipipe-templates").resolve(file));
                         result.add(template);
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -112,13 +140,51 @@ public class JIPipeProjectTemplate {
         return result;
     }
 
-    @JsonGetter("location")
     public URL getLocation() {
-        return location;
+        if(isStoredAsResource()) {
+            if(StringUtils.isNullOrEmpty(resourcePath)) {
+                return ResourceUtils.getPluginResource("templates/Empty (3 compartments).jip");
+            }
+            return ResourceUtils.class.getResource(resourcePath);
+        }
+        else {
+            if(relativeLocation == null) {
+                return ResourceUtils.getPluginResource("templates/Empty (3 compartments).jip");
+            }
+            Path imageJDir = Paths.get(Prefs.getImageJDir());
+            if (!Files.isDirectory(imageJDir)) {
+                try {
+                    Files.createDirectories(imageJDir);
+                } catch (IOException e) {
+                    IJ.handleException(e);
+                }
+            }
+            Path path = imageJDir.resolve(relativeLocation);
+            if(!Files.exists(path)) {
+                return ResourceUtils.getPluginResource("templates/Empty (3 compartments).jip");
+            }
+            try {
+                return path.toUri().toURL();
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+                return ResourceUtils.getPluginResource("templates/Empty (3 compartments).jip");
+            }
+        }
     }
 
     @JsonGetter("metadata")
     public JIPipeMetadata getMetadata() {
+        if(metadata == null) {
+            JsonNode node = null;
+            try {
+                node = JsonUtils.getObjectMapper().readValue(getLocation(), JsonNode.class);
+                metadata = JsonUtils.getObjectMapper().convertValue(node.get("metadata"), JIPipeMetadata.class);
+            } catch (IOException e) {
+                e.printStackTrace();
+                metadata = new JIPipeMetadata();
+                metadata.setName("Could not load!");
+            }
+        }
         return metadata;
     }
 
@@ -127,21 +193,18 @@ public class JIPipeProjectTemplate {
         this.metadata = metadata;
     }
 
-    @JsonSetter("location")
-    public void setLocation(URL location) {
-        this.location = location;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        JIPipeProjectTemplate template = (JIPipeProjectTemplate) o;
-        return Objects.equals(location, template.location);
+        JIPipeProjectTemplate that = (JIPipeProjectTemplate) o;
+        return storedAsResource == that.storedAsResource &&
+                Objects.equals(resourcePath, that.resourcePath) &&
+                Objects.equals(relativeLocation, that.relativeLocation);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(location);
+        return Objects.hash(resourcePath, relativeLocation, storedAsResource);
     }
 }
