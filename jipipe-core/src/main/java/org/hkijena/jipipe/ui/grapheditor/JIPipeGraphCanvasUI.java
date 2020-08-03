@@ -484,6 +484,34 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
         }
     }
 
+    public void autoExpandLeftTop() {
+        int minX = 0;
+        int minY = 0;
+        for (JIPipeNodeUI ui : nodeUIs.values()) {
+            minX = Math.min(ui.getX(), minX);
+            minY = Math.min(ui.getY(), minY);
+        }
+        minX = -minX;
+        minY = -minY;
+        minX = Math.max(0, minX);
+        minY = Math.max(0, minY);
+        Point nextGridPoint = viewMode.getNextGridPoint(new Point(minX, minY));
+        int ex = nextGridPoint.x;
+        int ey = nextGridPoint.y;
+        for (JIPipeNodeUI value : nodeUIs.values()) {
+            if (!currentlyDraggedOffsets.containsKey(value)) {
+                value.setLocation(value.getX() + ex, value.getY() + ey);
+            }
+        }
+        if (graphEditCursor != null) {
+            graphEditCursor.x += ex;
+            graphEditCursor.y += ey;
+        }
+        if (getParent() != null)
+            getParent().revalidate();
+        repaint();
+    }
+
     /**
      * Expands the canvas by moving all algorithms
      *
@@ -747,6 +775,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
                 else
                     this.graphEditCursor = new Point(targetNode.getX(), targetNode.getBottomY() + 4 * viewMode.getGridHeight());
                 autoPlaceTargetAdjacent(sourceNode, event.getSource(), targetNode, event.getTarget());
+                autoExpandLeftTop();
             } finally {
                 this.graphEditCursor = cursorBackup;
             }
