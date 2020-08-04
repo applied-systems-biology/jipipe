@@ -52,6 +52,7 @@ public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
 
     private JIPipeDataInfoRef generatedImageType = new JIPipeDataInfoRef("imagej-imgplus");
     private OptionalStringParameter titleAnnotation = new OptionalStringParameter();
+    private boolean removeLut = false;
 
     /**
      * @param info algorithm info
@@ -75,6 +76,18 @@ public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
         super(other);
         this.generatedImageType = new JIPipeDataInfoRef(other.generatedImageType);
         this.titleAnnotation = new OptionalStringParameter(other.titleAnnotation);
+        this.removeLut = other.removeLut;
+    }
+
+    @JIPipeDocumentation(name = "Remove LUT", description = "If enabled, remove the LUT information if present")
+    @JIPipeParameter("remove-lut")
+    public boolean isRemoveLut() {
+        return removeLut;
+    }
+
+    @JIPipeParameter("remove-lut")
+    public void setRemoveLut(boolean removeLut) {
+        this.removeLut = removeLut;
     }
 
     @Override
@@ -109,7 +122,9 @@ public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
     protected JIPipeData readImageFrom(Path fileName) {
         try {
             ImagePlus imagePlus = IJ.openImage(fileName.toString());
-            imagePlus.getProcessor().setLut(null);
+            if(removeLut) {
+                imagePlus.getProcessor().setLut(null);
+            }
             return generatedImageType.getInfo().getDataClass().getConstructor(ImagePlus.class).newInstance(imagePlus);
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
             throw new RuntimeException(e);

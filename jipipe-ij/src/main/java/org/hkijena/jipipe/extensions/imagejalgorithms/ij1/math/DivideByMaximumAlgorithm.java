@@ -23,7 +23,7 @@ import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.contrast.CalibrationMode;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.misc.CalibrationContrastEnhancer;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.lut.DisplayRangeCalibrationAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
@@ -78,7 +78,7 @@ public class DivideByMaximumAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         ImageJUtils.forEachSlice(img, ip -> max[0] = Math.max(ip.getStatistics().max, max[0]));
         ImageJUtils.forEachSlice(img, ip -> ip.multiply(1.0 / max[0]));
         if(recalibrate) {
-            CalibrationContrastEnhancer.calibrate(img, CalibrationMode.AutomaticImageJ, 0,1);
+            DisplayRangeCalibrationAlgorithm.calibrate(img, CalibrationMode.AutomaticImageJ, 0,1);
         }
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(img));
     }

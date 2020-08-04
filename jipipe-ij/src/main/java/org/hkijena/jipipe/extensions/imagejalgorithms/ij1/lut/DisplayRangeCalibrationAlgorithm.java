@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.misc;
+package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.lut;
 
 import ij.ImagePlus;
 import ij.process.ImageStatistics;
@@ -32,17 +32,17 @@ import java.util.function.Supplier;
 @JIPipeOrganization(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Contrast")
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", inheritedSlot = "Input", autoCreate = true)
-public class CalibrationContrastEnhancer extends JIPipeSimpleIteratingAlgorithm {
+public class DisplayRangeCalibrationAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     private CalibrationMode calibrationMode = CalibrationMode.AutomaticImageJ;
     private double customMin = 0;
     private double customMax = 1;
     private boolean duplicateImage = true;
 
-    public CalibrationContrastEnhancer(JIPipeNodeInfo info) {
+    public DisplayRangeCalibrationAlgorithm(JIPipeNodeInfo info) {
         super(info);
     }
 
-    public CalibrationContrastEnhancer(CalibrationContrastEnhancer other) {
+    public DisplayRangeCalibrationAlgorithm(DisplayRangeCalibrationAlgorithm other) {
         super(other);
         this.calibrationMode = other.calibrationMode;
         this.customMin = other.customMin;

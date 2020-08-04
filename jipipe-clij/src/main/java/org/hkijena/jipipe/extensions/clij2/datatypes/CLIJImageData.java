@@ -6,7 +6,7 @@ import net.haesleinhuepf.clij2.CLIJ2;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.extensions.clij2.CLIJSettings;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.misc.CalibrationContrastEnhancer;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.lut.DisplayRangeCalibrationAlgorithm;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 
@@ -89,8 +89,8 @@ public class CLIJImageData implements JIPipeData {
         CLIJ2 clij = CLIJ2.getInstance();
         ImagePlus imagePlus = clij.pull(image);
         if (CLIJSettings.getInstance().isAutoCalibrateAfterPulling()) {
-            CalibrationContrastEnhancer contrastEnhancer = CLIJSettings.getInstance().getContrastEnhancer();
-            CalibrationContrastEnhancer.calibrate(imagePlus,
+            DisplayRangeCalibrationAlgorithm contrastEnhancer = CLIJSettings.getInstance().getContrastEnhancer();
+            DisplayRangeCalibrationAlgorithm.calibrate(imagePlus,
                     contrastEnhancer.getCalibrationMode(),
                     contrastEnhancer.getCustomMin(),
                     contrastEnhancer.getCustomMax());

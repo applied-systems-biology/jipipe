@@ -10,7 +10,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeJavaNodeInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.registries.JIPipeSettingsRegistry;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.misc.CalibrationContrastEnhancer;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.lut.DisplayRangeCalibrationAlgorithm;
 import org.scijava.Context;
 
 import java.util.ArrayList;
@@ -26,10 +26,10 @@ public class CLIJSettings implements JIPipeParameterCollection {
     private int device = 0;
     private boolean initialized = false;
     private boolean autoCalibrateAfterPulling = true;
-    private CalibrationContrastEnhancer contrastEnhancer;
+    private DisplayRangeCalibrationAlgorithm contrastEnhancer;
 
     public CLIJSettings() {
-        contrastEnhancer = new CalibrationContrastEnhancer(new JIPipeJavaNodeInfo("", CalibrationContrastEnhancer.class));
+        contrastEnhancer = new DisplayRangeCalibrationAlgorithm(new JIPipeJavaNodeInfo("", DisplayRangeCalibrationAlgorithm.class));
     }
 
     @Override
@@ -65,7 +65,7 @@ public class CLIJSettings implements JIPipeParameterCollection {
 
     @JIPipeDocumentation(name = "Calibration settings", description = "Following settings will be used if you enable auto-calibration:")
     @JIPipeParameter(value = "contrast-enhancer", uiExcludeSubParameters = {"jipipe:data-batch-generation", "jipipe:parameter-slot-algorithm", "duplicate-image"})
-    public CalibrationContrastEnhancer getContrastEnhancer() {
+    public DisplayRangeCalibrationAlgorithm getContrastEnhancer() {
         return contrastEnhancer;
     }
 

@@ -11,17 +11,14 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.misc;
+package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.lut;
 
-import ij.ImagePlus;
-import ij.process.ImageStatistics;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.contrast.CalibrationMode;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 
 import java.util.function.Consumer;

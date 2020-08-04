@@ -35,7 +35,7 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.color.InvertColorsAlgo
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.color.MergeChannelsAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.color.SplitChannelsAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.contrast.CLAHEContrastEnhancer;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.misc.CalibrationContrastEnhancer;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.lut.DisplayRangeCalibrationAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.contrast.CalibrationMode;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.contrast.IlluminationCorrection2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.convolve.Convolve2DAlgorithm;
@@ -48,10 +48,12 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.fft.FFT2DForwardTransf
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.fft.FFT2DInverseTransform;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.fft.FFT2DSwapQuadrants;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.generate.GenerateStructureElementAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.lut.LUTInverterAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.lut.SetLUTFromColorAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.math.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.measure.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.misc.DataToPreviewAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.misc.RemoveLUTAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.lut.RemoveLUTAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.morphology.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.noise.AddNoise2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.noise.DespeckleFilter2DAlgorithm;
@@ -199,10 +201,10 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         registerTransformationAlgorithms();
         registerConvolutionAlgorithms();
         registerROIAlgorithms();
+        registerLUTAlgorithms();
 
         registerNodeType("ij1-generate-filter-kernel", GenerateStructureElementAlgorithm.class, UIUtils.getIconURLFromResources("actions/morphology.png"));
         registerNodeType("ij1-data-to-preview", DataToPreviewAlgorithm.class, UIUtils.getIconURLFromResources("actions/viewimage.png"));
-        registerNodeType("ij1-remove-lut", RemoveLUTAlgorithm.class, UIUtils.getIconURLFromResources("actions/fill-color.png"));
         registerNodeType("external-imagej-macro", MacroWrapperAlgorithm.class, UIUtils.getIconURLFromResources("apps/imagej.png"));
 
         // Register enum parameters
@@ -212,6 +214,12 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         registerGlobalParameters();
 
 //        registerIJ2Algorithms();
+    }
+
+    private void registerLUTAlgorithms() {
+        registerNodeType("ij1-remove-lut", RemoveLUTAlgorithm.class, UIUtils.getIconURLFromResources("actions/paint-gradient-linear.png"));
+        registerNodeType("ij1-set-lut-from-colors", SetLUTFromColorAlgorithm.class, UIUtils.getIconURLFromResources("actions/paint-gradient-linear.png"));
+        registerNodeType("ij1-invert-lut", LUTInverterAlgorithm.class, UIUtils.getIconURLFromResources("actions/object-inverse.png"));
     }
 
     private void registerGlobalParameters() {
@@ -449,7 +457,7 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
     private void registerContrastAlgorithms() {
         registerNodeType("ij1-contrast-clahe", CLAHEContrastEnhancer.class, UIUtils.getIconURLFromResources("actions/contrast.png"));
         registerNodeType("ij1-contrast-illumination-correction2d", IlluminationCorrection2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/contrast.png"));
-        registerNodeType("ij1-contrast-calibrate", CalibrationContrastEnhancer.class, UIUtils.getIconURLFromResources("actions/contrast.png"));
+        registerNodeType("ij1-contrast-calibrate", DisplayRangeCalibrationAlgorithm.class, UIUtils.getIconURLFromResources("actions/contrast.png"));
     }
 
     private void registerEdgeAlgorithms() {
