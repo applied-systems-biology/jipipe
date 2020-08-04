@@ -34,13 +34,15 @@ import java.util.function.Supplier;
 /**
  * Wrapper around {@link ij.plugin.frame.RoiManager}
  */
-@JIPipeDocumentation(name = "Change ROI properties", description = "Changes properties of all Roi to a user-defined value.")
+@JIPipeDocumentation(name = "Change ROI properties", description = "Sets properties of all Roi to a user-defined value.")
 @JIPipeOrganization(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Modify")
 @JIPipeInputSlot(value = ROIListData.class, slotName = "Input")
 @JIPipeOutputSlot(value = ROIListData.class, slotName = "Output")
 public class ChangeRoiPropertiesAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private OptionalStringParameter roiName = new OptionalStringParameter();
+    private OptionalDoubleParameter positionX = new OptionalDoubleParameter();
+    private OptionalDoubleParameter positionY = new OptionalDoubleParameter();
     private OptionalIntegerParameter positionZ = new OptionalIntegerParameter();
     private OptionalIntegerParameter positionC = new OptionalIntegerParameter();
     private OptionalIntegerParameter positionT = new OptionalIntegerParameter();
@@ -68,6 +70,8 @@ public class ChangeRoiPropertiesAlgorithm extends JIPipeSimpleIteratingAlgorithm
      */
     public ChangeRoiPropertiesAlgorithm(ChangeRoiPropertiesAlgorithm other) {
         super(other);
+        this.positionX = new OptionalDoubleParameter(other.positionX);
+        this.positionY = new OptionalDoubleParameter(other.positionY);
         this.positionZ = new OptionalIntegerParameter(other.positionZ);
         this.positionC = new OptionalIntegerParameter(other.positionC);
         this.positionT = new OptionalIntegerParameter(other.positionT);
@@ -81,10 +85,20 @@ public class ChangeRoiPropertiesAlgorithm extends JIPipeSimpleIteratingAlgorithm
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         ROIListData data = (ROIListData) dataBatch.getInputData(getFirstInputSlot(), ROIListData.class).duplicate();
         for (Roi roi : data) {
-            int z, c, t;
+            double x;
+            double y;
+            int z;
+            int c;
+            int t;
+            x = roi.getXBase();
+            y = roi.getYBase();
             z = roi.getZPosition();
             c = roi.getCPosition();
             t = roi.getTPosition();
+            if(positionX.isEnabled())
+                x = positionX.getContent();
+            if(positionY.isEnabled())
+                y = positionY.getContent();
             if (positionZ.isEnabled())
                 z = positionZ.getContent();
             if (positionC.isEnabled())
@@ -92,6 +106,7 @@ public class ChangeRoiPropertiesAlgorithm extends JIPipeSimpleIteratingAlgorithm
             if (positionT.isEnabled())
                 t = positionT.getContent();
             roi.setPosition(c, z, t);
+            roi.setLocation(x, y);
 
             if (fillColor.isEnabled())
                 roi.setFillColor(fillColor.getContent());
@@ -109,6 +124,28 @@ public class ChangeRoiPropertiesAlgorithm extends JIPipeSimpleIteratingAlgorithm
 
     @Override
     public void reportValidity(JIPipeValidityReport report) {
+    }
+
+    @JIPipeDocumentation(name = "Location (X)", description = "The X location")
+    @JIPipeParameter("position-x")
+    public OptionalDoubleParameter getPositionX() {
+        return positionX;
+    }
+
+    @JIPipeParameter("position-x")
+    public void setPositionX(OptionalDoubleParameter positionX) {
+        this.positionX = positionX;
+    }
+
+    @JIPipeDocumentation(name = "Location (Y)", description = "The Y location")
+    @JIPipeParameter("position-y")
+    public OptionalDoubleParameter getPositionY() {
+        return positionY;
+    }
+
+    @JIPipeParameter("position-y")
+    public void setPositionY(OptionalDoubleParameter positionY) {
+        this.positionY = positionY;
     }
 
     @JIPipeDocumentation(name = "Slice position (Z)", description = "Allows to relocate the ROI to a different Z-position. " +
