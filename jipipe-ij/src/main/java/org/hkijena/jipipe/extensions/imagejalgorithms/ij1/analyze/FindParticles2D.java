@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.analyze;
 
 import ij.ImagePlus;
+import ij.Prefs;
 import ij.gui.Roi;
 import ij.measure.ResultsTable;
 import ij.plugin.filter.ParticleAnalyzer;
@@ -63,6 +64,7 @@ public class FindParticles2D extends JIPipeSimpleIteratingAlgorithm {
     private double maxParticleCircularity = 1;
     private boolean excludeEdges = false;
     private boolean splitSlices = true;
+    private boolean blackBackground = true;
     private OptionalStringParameter annotationType = new OptionalStringParameter();
     private ImageStatisticsSetParameter statisticsParameters = new ImageStatisticsSetParameter();
 
@@ -93,6 +95,7 @@ public class FindParticles2D extends JIPipeSimpleIteratingAlgorithm {
         this.excludeEdges = other.excludeEdges;
         this.splitSlices = other.splitSlices;
         this.annotationType = other.annotationType;
+        this.blackBackground = other.blackBackground;
         this.statisticsParameters = new ImageStatisticsSetParameter(other.statisticsParameters);
     }
 
@@ -114,6 +117,9 @@ public class FindParticles2D extends JIPipeSimpleIteratingAlgorithm {
 
         // Update the analyzer to extract the measurements we want
         statisticsParameters.updateAnalyzer();
+
+        // Otherwise we might get issues
+        Prefs.blackBackground = this.blackBackground;
 
         if (splitSlices) {
             ImageJUtils.forEachIndexedSlice(inputData.getImage(), (ip, index) -> {
@@ -293,5 +299,16 @@ public class FindParticles2D extends JIPipeSimpleIteratingAlgorithm {
     public void setAnnotationType(OptionalStringParameter annotationType) {
         this.annotationType = annotationType;
 
+    }
+
+    @JIPipeDocumentation(name = "Black background", description = "If enabled, the background is assumed to be black. If disabled, black pixels are extracted as ROI.")
+    @JIPipeParameter("black-background")
+    public boolean isBlackBackground() {
+        return blackBackground;
+    }
+
+    @JIPipeParameter("black-background")
+    public void setBlackBackground(boolean blackBackground) {
+        this.blackBackground = blackBackground;
     }
 }
