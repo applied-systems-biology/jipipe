@@ -11,20 +11,19 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.debug;
+package org.hkijena.jipipe;
 
 import net.imagej.ImageJ;
 import org.hkijena.jipipe.JIPipeGUICommand;
 
 import javax.swing.*;
 
-public class JIPipeDebug {
+public class JIPipeLauncher {
     /**
      * @param args ignored
      */
     public static void main(final String... args) {
         final ImageJ ij = new ImageJ();
-//        ij.ui().showUI();
         SwingUtilities.invokeLater(() -> ij.command().run(JIPipeGUICommand.class, true));
     }
 }

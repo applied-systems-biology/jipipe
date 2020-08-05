@@ -29,6 +29,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeRun;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidatable;
+import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.events.*;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -444,8 +445,9 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
      * Loads this algorithm from JSON
      *
      * @param node The JSON data to load from
+     * @param issues issues during deserializing
      */
-    public void fromJson(JsonNode node) {
+    public void fromJson(JsonNode node, JIPipeValidityReport issues) {
 
         // Load compartment
         compartment = node.get("jipipe:graph-compartment").asText();
@@ -466,7 +468,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
         }
 
         // Deserialize algorithm-specific parameters
-        JIPipeParameterCollection.deserializeParametersFromJson(this, node);
+        JIPipeParameterCollection.deserializeParametersFromJson(this, node, issues);
     }
 
     /**

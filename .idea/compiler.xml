@@ -12,9 +12,8 @@
         <module name="jipipe-strings" />
         <module name="jipipe-utils" />
         <module name="jipipe-filesystem" />
-        <module name="jipipe-standalone" />
+        <module name="jipipe-launcher" />
         <module name="jipipe-ij" />
-        <module name="jipipe-debug" />
         <module name="jipipe-clij" />
         <module name="jipipe-python" />
         <module name="jipipe-multiparameters" />
@@ -29,6 +28,7 @@
       <module name="jipipe-debug" target="1.8" />
       <module name="jipipe-filesystem" target="1.8" />
       <module name="jipipe-ij" target="1.8" />
+      <module name="jipipe-launcher" target="1.8" />
       <module name="jipipe-multiparameters" target="1.8" />
       <module name="jipipe-plots" target="1.8" />
       <module name="jipipe-python" target="1.8" />

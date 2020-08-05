@@ -641,7 +641,7 @@ public class JIPipeGraph implements JIPipeValidatable {
      * Loads this graph from JSON
      *
      * @param node JSON data
-     * @param issues
+     * @param issues issues reported during deserializing
      */
     public void fromJson(JsonNode node, JIPipeValidityReport issues) {
         if (!node.has("nodes"))
@@ -660,7 +660,7 @@ public class JIPipeGraph implements JIPipeValidatable {
                 }
                 JIPipeNodeInfo info = JIPipeNodeRegistry.getInstance().getInfoById(id);
                 JIPipeGraphNode algorithm = info.newInstance();
-                algorithm.fromJson(kv.getValue());
+                algorithm.fromJson(kv.getValue(), issues.forCategory("Nodes").forCategory(id));
                 insertNode(StringUtils.jsonify(kv.getKey()), algorithm, algorithm.getCompartment());
             }
         }

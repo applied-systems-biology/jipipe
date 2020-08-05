@@ -26,6 +26,7 @@ import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.settings.ProjectsSettings;
 import org.hkijena.jipipe.ui.components.DocumentTabPane;
+import org.hkijena.jipipe.ui.components.SplashScreen;
 import org.hkijena.jipipe.ui.project.JIPipeProjectTabMetadata;
 import org.hkijena.jipipe.ui.project.JIPipeTemplateSelectionDialog;
 import org.hkijena.jipipe.ui.project.UnsatisfiedDependenciesDialog;
@@ -62,6 +63,7 @@ public class JIPipeProjectWindow extends JFrame {
      * @param isNewProject     if the project is an empty project
      */
     public JIPipeProjectWindow(Context context, JIPipeProject project, boolean showIntroduction, boolean isNewProject) {
+        SplashScreen.getInstance().hideSplash();
         this.context = context;
         OPEN_WINDOWS.add(this);
         initialize();

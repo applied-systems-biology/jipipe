@@ -8,11 +8,11 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>jipipe-debug</artifactId>
+    <artifactId>jipipe-launcher</artifactId>
     <version>1.0-SNAPSHOT</version>
 
-    <name>jipipe-debug</name>
-    <description>JIPipe Debugging Application</description>
+    <name>jipipe-launcher</name>
+    <description>JIPipe launcher Application</description>
     <inceptionYear>2020</inceptionYear>
     <url>https://applied-systems-biology.github.io/jipipe/</url>
 
@@ -71,6 +71,7 @@
         <license.licenseName>BSD-2-Clause</license.licenseName>
         <license.copyrightOwners>N/A</license.copyrightOwners>
         <license.projectName>JIPipe-Debug</license.projectName>
+
     </properties>
 
     <dependencies>
@@ -142,5 +143,21 @@
             <url>http://dl.bintray.com/haesleinhuepf/clij</url>
         </repository>
     </repositories>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>org.hkijena.jipipe.launcher.JIPipelauncher</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>

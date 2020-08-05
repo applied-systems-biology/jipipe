@@ -476,7 +476,7 @@ public class JIPipeProject implements JIPipeValidatable {
                 Class<?> metadataClass = JsonUtils.getObjectMapper().readerFor(Class.class).readValue(metadataEntry.getValue().get("jipipe:type"));
                 if (JIPipeParameterCollection.class.isAssignableFrom(metadataClass)) {
                     JIPipeParameterCollection metadata = (JIPipeParameterCollection) ReflectionUtils.newInstance(metadataClass);
-                    JIPipeParameterCollection.deserializeParametersFromJson(metadata, metadataEntry.getValue());
+                    JIPipeParameterCollection.deserializeParametersFromJson(metadata, metadataEntry.getValue(), report.forCategory("Metadata"));
                     additionalMetadata.put(metadataEntry.getKey(), metadata);
                 } else {
                     Object data = JsonUtils.getObjectMapper().readerFor(metadataClass).readValue(metadataEntry.getValue().get("data"));

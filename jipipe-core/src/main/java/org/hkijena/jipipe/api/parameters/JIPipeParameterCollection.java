@@ -17,6 +17,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.events.ParameterStructureChangedEvent;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.utils.JsonDeserializable;
@@ -41,11 +42,11 @@ public interface JIPipeParameterCollection {
 
     /**
      * Deserializes parameters from JSON
-     *
-     * @param target the target object that contains the parameters
+     *  @param target the target object that contains the parameters
      * @param node   the JSON node
+     * @param issues issues during deserialization
      */
-    static void deserializeParametersFromJson(JIPipeParameterCollection target, JsonNode node) {
+    static void deserializeParametersFromJson(JIPipeParameterCollection target, JsonNode node, JIPipeValidityReport issues) {
         AtomicBoolean changedStructure = new AtomicBoolean();
         changedStructure.set(true);
         target.getEventBus().register(new Object() {
@@ -85,14 +86,14 @@ public interface JIPipeParameterCollection {
                                 Object v;
                                 try {
                                     v = JsonUtils.getObjectMapper().readerFor(parameterAccess.getFieldClass()).readValue(node.get(key));
-                                } catch (IOException e) {
-                                    throw new UserFriendlyRuntimeException(e, "Could not load parameter '" + key + "'!",
-                                            "Load parameters from JSON", "Either the data was corrupted, or your JIPipe or plugin version is too new or too old.",
-                                            "Check the 'dependencies' section of the project file and compare the plugin versions. Try " +
-                                                    "to update JIPipe. Compare the project file with a valid one. Contact the JIPipe or plugin " +
-                                                    "authors if you cannot resolve the issue by yourself.");
+                                    parameterAccess.set(v);
+                                } catch (Exception | Error e) {
+                                    issues.forCategory(key).reportIsInvalid( "Could not load parameter '" + key + "'!",
+                                            "The data might be not compatible with your operating system or from an older or newer JIPipe version.",
+                                            "Please check the value of the parameter.",
+                                            node.get(key));
                                 }
-                                parameterAccess.set(v);
+
 
                                 // Stop loading here to prevent already traversed parameters from being not loaded
                                 if (changedStructure.get())

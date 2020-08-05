@@ -264,7 +264,7 @@ public abstract class PlotData implements JIPipeData, JIPipeParameterCollection,
      * @param node JSON node
      */
     public void fromJson(JsonNode node) {
-        JIPipeParameterCollection.deserializeParametersFromJson(this, node);
+        JIPipeParameterCollection.deserializeParametersFromJson(this, node, new JIPipeValidityReport());
     }
 
     /**
