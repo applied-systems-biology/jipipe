@@ -16,6 +16,7 @@ package org.hkijena.jipipe.extensions.tools;
 import com.google.common.base.Charsets;
 import ij.IJ;
 import ij.Prefs;
+import mslinks.ShellLink;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.SystemUtils;
@@ -27,14 +28,14 @@ import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintWriter;
+import javax.swing.filechooser.FileSystemView;
+import java.io.*;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 @JIPipeOrganization(menuExtensionTarget = MenuTarget.ProjectToolsMenu)
 public class CreateLaunchersTool extends MenuExtension {
@@ -71,17 +72,62 @@ public class CreateLaunchersTool extends MenuExtension {
     }
 
     private void createOSXLauncher(Path imageJDir) {
-        try(PrintWriter writer = new PrintWriter(imageJDir.resolve("start-jipipe-linux.sh").toFile())) {
+        try(PrintWriter writer = new PrintWriter(imageJDir.resolve("start-jipipe-osx.sh").toFile())) {
             writer.println("#!/bin/bash");
             writer.println("IMAGEJ_EXECUTABLE=$(find . -name \"ImageJ-*\" -print -quit)");
             writer.println("eval $IMAGEJ_EXECUTABLE --pass-classpath --full-classpath --main-class org.hkijena.jipipe.JIPipeLauncher");
         } catch (FileNotFoundException e) {
             IJ.handleException(e);
         }
+        getWorkbench().sendStatusBarText("Created start-jipipe-osx.sh in the application directory.");
     }
 
     private void createWindowsLauncher(Path imageJDir) {
-        JOptionPane.showMessageDialog(getWorkbench().getWindow(), "Your operating system is not supported!", "Create launcher", JOptionPane.ERROR_MESSAGE);
+        Path imageJExecutable;
+        try {
+            imageJExecutable = Files.list(imageJDir).filter(p -> Files.isRegularFile(p) && p.getFileName().toString().startsWith("ImageJ") && p.getFileName().toString().endsWith(".exe")).findFirst().get();
+        } catch (IOException | NoSuchElementException e) {
+            JOptionPane.showMessageDialog(getWorkbench().getWindow(), "Could not find ImageJ executable!", "Create launcher", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Export icon
+        Path iconPath = imageJDir.resolve("jipipe-icon.ico");
+        if(!Files.exists(iconPath)) {
+            try {
+                InputStream reader = ResourceUtils.getPluginResourceAsStream("icon.ico");
+                Files.copy(reader, iconPath);
+            } catch (IOException e) {
+                IJ.handleException(e);
+            }
+        }
+
+        ShellLink link = ShellLink.createLink(imageJExecutable.toAbsolutePath().toString());
+        link.setCMDArgs("--pass-classpath --full-classpath --main-class org.hkijena.jipipe.JIPipeLauncher");
+        link.setWorkingDir(imageJDir.toAbsolutePath().toString());
+        link.setIconLocation(iconPath.toAbsolutePath().toString());
+        link.getHeader().setIconIndex(0);
+        try {
+            link.saveTo(imageJDir.resolve("JIPipe.lnk").toString());
+            getWorkbench().sendStatusBarText("Created JIPipe shortcut in the application directory.");
+        } catch (IOException e) {
+            IJ.handleException(e);
+            return;
+        }
+        if(JOptionPane.showConfirmDialog(getWorkbench().getWindow(),
+                "The launcher was created. Do you want to copy it to the desktop?",
+                "Create launchers",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
+            // This is apparently very Windows-specific
+            Path desktopDirectory = FileSystemView.getFileSystemView().getHomeDirectory().toPath();
+            try {
+                link.saveTo(desktopDirectory.resolve("JIPipe.lnk").toString());
+                getWorkbench().sendStatusBarText("Created JIPipe shortcut on the desktop.");
+            } catch (IOException e) {
+                IJ.handleException(e);
+            }
+        }
     }
 
     private void createLinuxLauncher(Path imageJDir) {
@@ -91,7 +137,9 @@ public class CreateLaunchersTool extends MenuExtension {
             writer.println("eval $IMAGEJ_EXECUTABLE --pass-classpath --full-classpath --main-class org.hkijena.jipipe.JIPipeLauncher");
         } catch (FileNotFoundException e) {
             IJ.handleException(e);
+            return;
         }
+        getWorkbench().sendStatusBarText("Created start-jipipe-linux.sh in the application directory.");
         if(JOptionPane.showConfirmDialog(getWorkbench().getWindow(),
                 "The launcher was created. Do you want to add a entry into the application menu?",
                 "Create launchers",
@@ -129,6 +177,7 @@ public class CreateLaunchersTool extends MenuExtension {
                 writer.println("StartupNotify=true");
                 writer.println("Type=Application");
                 writer.println("Categories=Science;");
+                getWorkbench().sendStatusBarText("Created jipipe.desktop in " + applicationsDirectory);
             } catch (FileNotFoundException e) {
                 IJ.handleException(e);
             }

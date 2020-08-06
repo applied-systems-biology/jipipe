@@ -45,7 +45,7 @@ public class JIPipeGUICommand implements Command {
         // Update look & feel
         UIUtils.loadLookAndFeelFromSettings();
         if (!JIPipeDefaultRegistry.isInstantiated()) {
-            SwingUtilities.invokeLater(() -> SplashScreen.getInstance().showSplash());
+            SwingUtilities.invokeLater(() -> SplashScreen.getInstance().showSplash(context));
         }
 
         // Run registration

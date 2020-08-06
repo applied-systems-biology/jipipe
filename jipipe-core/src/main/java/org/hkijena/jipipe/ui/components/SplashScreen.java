@@ -19,6 +19,11 @@ import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.api.events.ExtensionDiscoveredEvent;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.scijava.Context;
+import org.scijava.Contextual;
+import org.scijava.log.LogListener;
+import org.scijava.log.LogMessage;
+import org.scijava.log.LogService;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -26,12 +31,14 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
-public class SplashScreen extends JWindow {
+public class SplashScreen extends JWindow implements LogListener, Contextual {
 
     private static SplashScreen instance;
+    private Context context;
     private JPanel poweredByContainer;
     private JPanel poweredByIconContainer;
     private JIPipeDefaultRegistry registry;
+    private JLabel statusLabel = new JLabel("Please wait ...", UIUtils.getIconFromResources("actions/hourglass-half.png"), JLabel.LEFT);
 
     public SplashScreen() {
         initialize();
@@ -47,6 +54,10 @@ public class SplashScreen extends JWindow {
         poweredByContainer.setLocation(20,203);
         poweredByContainer.setSize(574,138);
 
+        statusLabel.setSize(574, 25);
+        statusLabel.setLocation(20, 450);
+        getContentPane().add(statusLabel);
+
         JPanel poweredByContent = new JPanel(new BorderLayout());
         poweredByContent.setOpaque(false);
         poweredByContainer.add(poweredByContent, BorderLayout.EAST);
@@ -57,27 +68,29 @@ public class SplashScreen extends JWindow {
 
         poweredByIconContainer = new JPanel(new FlowLayout(FlowLayout.LEFT));
         poweredByIconContainer.setOpaque(false);
-//        for (int i = 0; i < 5; i++) {
-//            ImageIcon icon = UIUtils.getIcon32FromResources("apps/clij.png");
-//            if(icon.getIconWidth() != 32 && icon.getIconHeight() != 32) {
-//                Image scaledInstance = icon.getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);
-//                icon = new ImageIcon(scaledInstance);
-//            }
-//            JLabel label = new JLabel(icon);
-//            poweredByIconContainer.add(label);
-//        }
         poweredByContent.add(poweredByIconContainer, BorderLayout.CENTER);
 
         getContentPane().add(poweredByContainer);
     }
 
-    public void showSplash() {
+    public void showSplash(Context context) {
+        if(context != null)
+            context.inject(this);
         setLocationRelativeTo(null);
         setVisible(true);
+
+        if(context!= null) {
+            LogService logService = context.getService(LogService.class);
+            logService.addLogListener(this);
+        }
     }
 
     public void hideSplash() {
         setVisible(false);
+        if(context != null) {
+            LogService logService = context.getService(LogService.class);
+            logService.removeLogListener(this);
+        }
     }
 
     public JIPipeDefaultRegistry getRegistry() {
@@ -109,7 +122,7 @@ public class SplashScreen extends JWindow {
     }
 
     public static void main(String[] args) {
-        getInstance().showSplash();
+        getInstance().showSplash(null);
     }
 
     public static SplashScreen getInstance() {
@@ -117,6 +130,26 @@ public class SplashScreen extends JWindow {
             instance = new SplashScreen();
         }
         return instance;
+    }
+
+    @Override
+    public void messageLogged(LogMessage message) {
+        statusLabel.setText(message.text());
+    }
+
+    @Override
+    public Context context() {
+        return context;
+    }
+
+    @Override
+    public Context getContext() {
+        return context;
+    }
+
+    @Override
+    public void setContext(Context context) {
+        this.context = context;
     }
 
     private static class ContentPanel extends JPanel {
