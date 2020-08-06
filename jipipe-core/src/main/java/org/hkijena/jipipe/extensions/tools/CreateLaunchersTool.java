@@ -122,8 +122,9 @@ public class CreateLaunchersTool extends MenuExtension {
             try(PrintWriter writer = new PrintWriter(applicationsDirectory.resolve("jipipe.desktop").toFile())) {
                 writer.println("[Desktop Entry]");
                 writer.println("Exec=" + "cd \"" + imageJDir + "\" && \"" + imageJDir.resolve("start-jipipe-linux.sh") + "\"");
-                writer.println("Icon=\"" + imageJDir.resolve("jipipe-icon.svg") + "\"");
+                writer.println("Icon=" + imageJDir.resolve("jipipe-icon.svg"));
                 writer.println("Name=JIPipe");
+                writer.println("Comment=Graphical batch-programming language for ImageJ/Fiji");
                 writer.println("NoDisplay=false");
                 writer.println("StartupNotify=true");
                 writer.println("Type=Application");

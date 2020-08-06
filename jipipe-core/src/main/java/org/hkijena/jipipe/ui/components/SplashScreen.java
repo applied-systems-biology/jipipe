@@ -26,7 +26,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
-public class SplashScreen extends JFrame {
+public class SplashScreen extends JWindow {
 
     private static SplashScreen instance;
     private JPanel poweredByContainer;
@@ -72,8 +72,6 @@ public class SplashScreen extends JFrame {
     }
 
     public void showSplash() {
-        setUndecorated(true);
-        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
         setVisible(true);
     }
