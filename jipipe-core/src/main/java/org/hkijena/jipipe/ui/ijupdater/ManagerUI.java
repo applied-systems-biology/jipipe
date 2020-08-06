@@ -134,7 +134,6 @@ public class ManagerUI extends JIPipeWorkbenchPanel {
     private void addViewOptionButton(JToolBar toolBar, ButtonGroup viewOptionGroup, ViewOptions.Option option, Icon icon) {
         JToggleButton button = new JToggleButton(icon, option == currentViewOption);
         button.addActionListener(e -> {
-            System.out.println(button);
             if (button.isSelected()) {
                 currentViewOption = option;
                 refreshTable();

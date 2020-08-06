@@ -103,7 +103,7 @@ public class JsonExtensionLoaderExtension extends JIPipePrepackagedDefaultJavaEx
     public void updateRegistrationTasks() {
         if (registrationTasks.isEmpty())
             return;
-        System.out.println("[JIPipe Json Extension] There are still " + registrationTasks.size() + " unregistered extensions left");
+       JIPipeDefaultRegistry.getInstance().getLogService().debug("[JIPipe Json Extension] There are still " + registrationTasks.size() + " unregistered extensions left");
         Set<JsonExtensionRegistrationTask> runnable = new HashSet<>();
         for (JsonExtensionRegistrationTask task : registrationTasks) {
             if (task.canRegister()) {

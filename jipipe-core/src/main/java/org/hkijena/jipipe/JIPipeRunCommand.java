@@ -21,6 +21,7 @@ import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Context;
 import org.scijava.app.StatusService;
 import org.scijava.command.Command;
+import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.plugin.PluginService;
@@ -43,6 +44,9 @@ public class JIPipeRunCommand implements Command {
 
     @Parameter
     private PluginService pluginService;
+
+    @Parameter
+    private LogService logService;
 
     @Parameter(label = "Project file (*.jip)")
     private File projectFile;
@@ -89,13 +93,13 @@ public class JIPipeRunCommand implements Command {
         RuntimeSettings.getInstance().setDefaultRunThreads(threads);
         JIPipeRun run = new JIPipeRun(project, configuration);
         run.run(this::onProgress, () -> false);
-        System.out.println("JIPipe run finished. Outputs are stored in: " + outputDirectory);
+        logService.info("JIPipe run finished. Outputs are stored in: " + outputDirectory);
         status.showProgress(0, 0);
     }
 
     private void onProgress(JIPipeRunnerStatus runStatus) {
         status.showProgress(runStatus.getProgress(), runStatus.getMaxProgress());
         status.showStatus("JIPipe: " + runStatus.getMessage());
-        System.out.println("[" + runStatus.getProgress() + "/" + runStatus.getMaxProgress() + "] " + runStatus.getMessage());
+        logService.info("[" + runStatus.getProgress() + "/" + runStatus.getMaxProgress() + "] " + runStatus.getMessage());
     }
 }

@@ -107,7 +107,7 @@ public class JIPipeNodeRegistry implements JIPipeValidatable {
         registeredNodeInfos.put(info.getId(), info);
         registeredNodeInfoSources.put(info.getId(), source);
         eventBus.post(new NodeInfoRegisteredEvent(info));
-        System.out.println("Registered algorithm '" + info.getName() + "' [" + info.getId() + "]");
+       JIPipeDefaultRegistry.getInstance().getLogService().info("Registered algorithm '" + info.getName() + "' [" + info.getId() + "]");
         runRegistrationTasks();
     }
 

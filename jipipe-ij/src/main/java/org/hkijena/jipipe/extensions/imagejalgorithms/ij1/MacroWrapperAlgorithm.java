@@ -199,10 +199,8 @@ public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm {
         for (int i = 0; i < WindowManager.getImageCount(); ++i) {
             int id = WindowManager.getNthImageID(i + 1);
             ImagePlus image = WindowManager.getImage(id);
-            System.out.println("Encounter: " + image);
             if (!initiallyOpenedImages.contains(image)) {
                 image.changes = false;
-                System.out.println("Close: " + image);
                 image.close();
             }
         }

@@ -12,6 +12,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.registries.JIPipeSettingsRegistry;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.lut.DisplayRangeCalibrationAlgorithm;
 import org.scijava.Context;
+import org.scijava.log.LogService;
 
 import java.util.ArrayList;
 
@@ -80,6 +81,7 @@ public class CLIJSettings implements JIPipeParameterCollection {
      * @param force   if a re-initialization should be applied
      */
     public static void initializeCLIJ(Context context, boolean force) {
+        LogService logService = context.getService(LogService.class);
         if (!force && getInstance().initialized)
             return;
         getInstance().initialized = false;
@@ -106,7 +108,7 @@ public class CLIJSettings implements JIPipeParameterCollection {
 
         int deviceId = Math.max(0, Math.min(deviceList.size() - 1, getInstance().device));
         String device = deviceList.get(deviceId);
-        System.out.println("CLIJ2 will be initialized with device '" + device + "'");
+        logService.info("CLIJ2 will be initialized with device '" + device + "'");
 
         CLIJ clij = CLIJ.getInstance(device);
         CLIJHandler.automaticOutputVariableNaming = true;
@@ -116,7 +118,7 @@ public class CLIJSettings implements JIPipeParameterCollection {
         clij.setConverterService(clijConverterService);
 
         if (clij.getOpenCLVersion() < 1.2) {
-            System.err.println("Warning: Your GPU does not support OpenCL 1.2. Some operations may not work precisely. " +
+            logService.warn("Warning: Your GPU does not support OpenCL 1.2. Some operations may not work precisely. " +
                     "For example: CLIJ does not support linear interpolation; it uses nearest-neighbor interpolation instead. " +
                     "Consider upgrading GPU Driver version or GPU hardware.");
         }

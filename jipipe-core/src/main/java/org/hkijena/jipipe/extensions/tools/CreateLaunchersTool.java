@@ -128,7 +128,7 @@ public class CreateLaunchersTool extends MenuExtension {
                 writer.println("NoDisplay=false");
                 writer.println("StartupNotify=true");
                 writer.println("Type=Application");
-                writer.println("Categories=Education;Science;");
+                writer.println("Categories=Science;");
             } catch (FileNotFoundException e) {
                 IJ.handleException(e);
             }

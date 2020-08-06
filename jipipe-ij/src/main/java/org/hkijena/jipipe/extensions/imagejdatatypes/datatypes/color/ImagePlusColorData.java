@@ -15,6 +15,7 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color;
 
 import ij.ImagePlus;
 import ij.process.ImageConverter;
+import org.hkijena.jipipe.JIPipeDefaultRegistry;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
@@ -50,7 +51,8 @@ public class ImagePlusColorData extends ImagePlusData {
      */
     public static ImagePlus convertIfNeeded(ImagePlus image) {
         if (image.getType() != ImagePlus.COLOR_256 && image.getType() != ImagePlus.COLOR_RGB) {
-            System.out.println("[WARNING] Attempt to store non-color data into a color image. Converting to RGB.");
+            if(JIPipeDefaultRegistry.getInstance() != null)
+                JIPipeDefaultRegistry.getInstance().getLogService().warn("Attempt to store non-color data into a color image. Converting to RGB.");
             ImageConverter ic = new ImageConverter(image);
             ic.convertToRGB();
         }

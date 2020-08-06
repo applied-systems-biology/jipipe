@@ -61,6 +61,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.resultanalysis.OMEImageData
 import org.hkijena.jipipe.extensions.imagejdatatypes.resultanalysis.ROIDataPreviewUI;
 import org.hkijena.jipipe.extensions.imagejdatatypes.resultanalysis.ROIDataSlotRowUI;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
+import org.hkijena.jipipe.extensions.tables.ResultsTableDataPreviewUI;
 import org.hkijena.jipipe.extensions.tables.ResultsTableDataSlotRowUI;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.ResourceUtils;
@@ -253,7 +254,7 @@ public class ImageJDataTypesExtension extends JIPipePrepackagedDefaultJavaExtens
                 ROIDataSlotRowUI.class, ROIDataPreviewUI.class);
         registerImageJDataAdapter(new ROIDataImageJAdapter(), ROIDataImporterUI.class);
         registerDatatype("imagej-results-table", ResultsTableData.class, ResourceUtils.getPluginResource("icons/data-types/results-table.png"),
-                ResultsTableDataSlotRowUI.class, null);
+                ResultsTableDataSlotRowUI.class, ResultsTableDataPreviewUI.class);
         registerImageJDataAdapter(new ResultsTableDataImageJAdapter(), ResultsTableDataImporterUI.class);
 
         // Register FFT data types

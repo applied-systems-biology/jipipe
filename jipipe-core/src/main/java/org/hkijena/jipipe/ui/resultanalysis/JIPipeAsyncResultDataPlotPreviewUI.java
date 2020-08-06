@@ -19,6 +19,7 @@ import org.hkijena.jipipe.api.data.JIPipeExportedDataTable;
 import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.jdesktop.swingx.JXTable;
 
 import javax.swing.*;
 import java.awt.BorderLayout;
@@ -60,6 +61,8 @@ public abstract class JIPipeAsyncResultDataPlotPreviewUI extends JIPipeResultDat
         revalidate();
         repaint();
         if(getTable() != null) {
+            if(getTable() instanceof JXTable)
+                ((JXTable) getTable()).packAll();
             getTable().repaint();
         }
     }

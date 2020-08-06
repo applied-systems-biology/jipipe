@@ -36,6 +36,7 @@ import org.hkijena.jipipe.ui.ijupdater.JIPipeImageJPluginManager;
 import org.hkijena.jipipe.ui.registries.*;
 import org.scijava.Context;
 import org.scijava.InstantiableException;
+import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.plugin.PluginInfo;
@@ -70,6 +71,9 @@ public class JIPipeDefaultRegistry extends AbstractService implements JIPipeRegi
     private FilesCollection imageJPlugins = null;
 
     @Parameter
+    private LogService logService;
+
+    @Parameter
     private PluginService pluginService;
 
 
@@ -83,7 +87,7 @@ public class JIPipeDefaultRegistry extends AbstractService implements JIPipeRegi
      * Clears all registries and reloads them
      */
     public void reload() {
-        System.out.println("JIPipe: Reloading registry service");
+        logService.info("JIPipe: Reloading registry service");
         registeredExtensions = new ArrayList<>();
         failedExtensions = new ArrayList<>();
         registeredExtensionIds = new HashSet<>();
@@ -116,7 +120,7 @@ public class JIPipeDefaultRegistry extends AbstractService implements JIPipeRegi
         List<PluginInfo<JIPipeJavaExtension>> pluginList = pluginService.getPluginsOfType(JIPipeJavaExtension.class).stream()
                 .sorted(JIPipeDefaultRegistry::comparePlugins).collect(Collectors.toList());
         List<JIPipeDependency> javaExtensions = new ArrayList<>();
-        System.out.println("[1/3] Pre-initialization phase ...");
+        logService.info("[1/3] Pre-initialization phase ...");
         for (int i = 0; i < pluginList.size(); ++i) {
             PluginInfo<JIPipeJavaExtension> info = pluginList.get(i);
             IJ.showProgress(i + 1, pluginList.size());
@@ -134,11 +138,11 @@ public class JIPipeDefaultRegistry extends AbstractService implements JIPipeRegi
             }
         }
 
-        System.out.println("[2/3] Registration-phase ...");
+        logService.info("[2/3] Registration-phase ...");
         for (int i = 0; i < pluginList.size(); ++i) {
             PluginInfo<JIPipeJavaExtension> info = pluginList.get(i);
             IJ.showProgress(i + 1, pluginList.size());
-            System.out.println("JIPipe: Registering plugin " + info);
+            logService.info("JIPipe: Registering plugin " + info);
             try {
                 JIPipeJavaExtension extension = (JIPipeJavaExtension) javaExtensions.get(i);
                 extension.register();
@@ -152,11 +156,11 @@ public class JIPipeDefaultRegistry extends AbstractService implements JIPipeRegi
         }
 
         for (JIPipeNodeRegistrationTask task : nodeRegistry.getScheduledRegistrationTasks()) {
-            System.err.println("Could not register: " + task.toString());
+            logService.error("Could not register: " + task.toString());
         }
 
         // Check for errors
-        System.out.println("[3/3] Error-checking-phase ...");
+       logService.info("[3/3] Error-checking-phase ...");
         if (extensionSettings.isValidateNodeTypes()) {
             for (JIPipeNodeInfo info : nodeRegistry.getRegisteredNodeInfos().values()) {
                 try {
@@ -172,7 +176,7 @@ public class JIPipeDefaultRegistry extends AbstractService implements JIPipeRegi
                                     "Please contact the plugin author for further help.");
                         }
                     }
-                    System.out.println("OK: Algorithm '" + info.getId() + "'");
+                    logService.debug("OK: Algorithm '" + info.getId() + "'");
                 } catch (NoClassDefFoundError | Exception e) {
                     issues.getErroneousNodes().add(info);
                     e.printStackTrace();
@@ -186,9 +190,9 @@ public class JIPipeDefaultRegistry extends AbstractService implements JIPipeRegi
             checkUpdateSites(issues, javaExtensions, new IJProgressAdapter());
 
         // Reload settings
-        System.out.println("Loading settings ...");
+        logService.debug("Loading settings ...");
         settingsRegistry.reload();
-        System.out.println("JIPipe loading finished");
+        logService.info("JIPipe loading finished");
     }
 
     /**
@@ -205,9 +209,9 @@ public class JIPipeDefaultRegistry extends AbstractService implements JIPipeRegi
             missingSites.addAll(extension.getImageJUpdateSiteDependencies());
         }
         if (!dependencies.isEmpty()) {
-            System.out.println("Following ImageJ update site dependencies were requested: ");
+            logService.info("Following ImageJ update site dependencies were requested: ");
             for (JIPipeImageJUpdateSiteDependency dependency : dependencies) {
-                System.out.println("  - " + dependency.getName() + " @ " + dependency.getUrl());
+                logService.info("  - " + dependency.getName() + " @ " + dependency.getUrl());
             }
             try {
                 UpdaterUtil.useSystemProxies();
@@ -217,16 +221,16 @@ public class JIPipeDefaultRegistry extends AbstractService implements JIPipeRegi
                 AvailableSites.initializeAndAddSites(imageJPlugins);
                 imageJPlugins.downloadIndexAndChecksum(progressAdapter);
             } catch (Exception e) {
-                System.err.println("Unable to check update sites!");
+                logService.error("Unable to check update sites!");
                 e.printStackTrace();
                 missingSites.clear();
-                System.out.println("No ImageJ update site check is applied.");
+                logService.info("No ImageJ update site check is applied.");
             }
             if (imageJPlugins != null) {
-                System.out.println("Following ImageJ update sites are currently active: ");
+                logService.info("Following ImageJ update sites are currently active: ");
                 for (UpdateSite updateSite : imageJPlugins.getUpdateSites(true)) {
                     if (updateSite.isActive()) {
-                        System.out.println("  - " + updateSite.getName() + " @ " + updateSite.getURL());
+                        logService.info("  - " + updateSite.getName() + " @ " + updateSite.getURL());
                         missingSites.removeIf(site -> Objects.equals(site.getName(), updateSite.getName()));
                     }
                 }
@@ -237,9 +241,9 @@ public class JIPipeDefaultRegistry extends AbstractService implements JIPipeRegi
         }
 
         if (!missingSites.isEmpty()) {
-            System.out.println("Following ImageJ update site dependencies are missing: ");
+            logService.warn("Following ImageJ update site dependencies are missing: ");
             for (JIPipeImageJUpdateSiteDependency dependency : missingSites) {
-                System.out.println("  - " + dependency.getName() + " @ " + dependency.getUrl());
+                logService.warn("  - " + dependency.getName() + " @ " + dependency.getUrl());
             }
         }
 
@@ -252,7 +256,7 @@ public class JIPipeDefaultRegistry extends AbstractService implements JIPipeRegi
      * @param extension The extension
      */
     public void register(JIPipeJsonExtension extension) {
-        System.out.println("JIPipe: Registering Json Extension " + extension.getDependencyId());
+        logService.info("JIPipe: Registering Json Extension " + extension.getDependencyId());
         extension.setRegistry(this);
         extension.register();
         registeredExtensions.add(extension);
@@ -361,6 +365,10 @@ public class JIPipeDefaultRegistry extends AbstractService implements JIPipeRegi
 
     public FilesCollection getImageJPlugins() {
         return imageJPlugins;
+    }
+
+    public LogService getLogService() {
+        return logService;
     }
 
     /**

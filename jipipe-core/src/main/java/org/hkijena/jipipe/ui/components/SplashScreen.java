@@ -95,7 +95,6 @@ public class SplashScreen extends JWindow {
     public void onExtensionDiscovered(ExtensionDiscoveredEvent event) {
         if(event.getExtension() instanceof JIPipeJavaExtension) {
             for (ImageIcon icon : ((JIPipeJavaExtension) event.getExtension()).getSplashIcons()) {
-                System.out.println("Icon of " + event.getExtension());
                 if (icon.getIconWidth() != 32 && icon.getIconHeight() != 32) {
                     Image scaledInstance = icon.getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);
                     icon = new ImageIcon(scaledInstance);

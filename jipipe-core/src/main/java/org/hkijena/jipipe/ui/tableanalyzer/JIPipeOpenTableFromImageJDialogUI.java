@@ -105,7 +105,6 @@ public class JIPipeOpenTableFromImageJDialogUI extends JDialog {
 
     private void refreshPreview() {
         if (tableSelection.getSelectedItem() instanceof ResultsTableData) {
-            System.out.println("" + tableSelection.getSelectedItem());
             jxTable.setModel((TableModel) tableSelection.getSelectedItem());
             jxTable.packAll();
         }
