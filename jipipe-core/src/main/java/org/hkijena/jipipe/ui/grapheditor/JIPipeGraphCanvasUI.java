@@ -470,7 +470,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
                     }
                 }
 
-                currentlyDragged.trySetLocationAtNextGridPoint(x, y);
+                currentlyDragged.setLocationAtNextGridPoint(x, y);
             }
             repaint();
             if (getParent() != null)
