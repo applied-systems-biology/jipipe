@@ -24,13 +24,11 @@ public enum JIPipeGraphViewMode {
         return gridHeight;
     }
 
-    public Point getGridPoint(Point point) {
-        return new Point(point.x * gridWidth, point.y * gridHeight);
+    public Point realLocationToGrid(Point location, double zoom) {
+        return new Point((int)(location.x / zoom / gridWidth), (int)(location.y / zoom / gridHeight));
     }
 
-    public Point getNextGridPoint(Point point) {
-        int y = (int) Math.rint(point.y * 1.0 / gridHeight) * gridHeight;
-        int x = (int) Math.rint(point.x * 1.0 / gridWidth) * gridWidth;
-        return new Point(x, y);
+    public Point gridToRealLocation(Point gridLocation, double zoom) {
+        return new Point((int)(gridLocation.x * zoom * gridWidth), (int)(gridLocation.y * zoom * gridHeight));
     }
 }

@@ -23,7 +23,9 @@ import org.jgrapht.alg.spanning.KruskalMinimumSpanningTree;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultWeightedEdge;
 
+import java.awt.*;
 import java.util.*;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -173,7 +175,7 @@ public class MSTGraphAutoLayoutMethod implements GraphAutoLayoutMethod {
             int finalTrack = track;
             for (Node node : graph.vertexSet().stream().filter(node -> node.track == finalTrack).collect(Collectors.toList())) {
                 int x = maxCumulativeDepthWidth - cumulativeDepthWidths.get(node.depth);
-                node.getUi().setLocation(x, y);
+                node.getUi().moveToNextGridPoint(new Point(x, y), true, true);
             }
             y += trackHeights.get(track) + viewMode.getGridHeight();
         }
@@ -196,7 +198,7 @@ public class MSTGraphAutoLayoutMethod implements GraphAutoLayoutMethod {
             int finalTrack = track;
             for (Node node : graph.vertexSet().stream().filter(node -> node.track == finalTrack).collect(Collectors.toList())) {
                 int y = (maxDepth - node.depth) * 4 * viewMode.getGridHeight() + viewMode.getGridHeight();
-                node.getUi().setLocation(x, y);
+                node.getUi().moveToNextGridPoint(new Point(x, y), true, true);
             }
             x += trackWidths.get(track) + viewMode.getGridWidth() * 4;
         }

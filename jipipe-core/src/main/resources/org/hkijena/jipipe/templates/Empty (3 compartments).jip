@@ -56,20 +56,7 @@
           "input" : { },
           "output" : { }
         },
-        "jipipe:node-ui-location" : {
-          "preprocessing" : {
-            "Vertical" : {
-              "x" : 25,
-              "y" : 0
-            }
-          },
-          "analysis" : {
-            "Vertical" : {
-              "x" : 100,
-              "y" : 50
-            }
-          }
-        },
+        "jipipe:node-ui-location" : { },
         "jipipe:node-info-id" : "jipipe:compartment-output",
         "jipipe:graph-compartment" : "preprocessing",
         "jipipe:algorithm:save-outputs" : true,
@@ -83,20 +70,7 @@
           "input" : { },
           "output" : { }
         },
-        "jipipe:node-ui-location" : {
-          "postprocessing" : {
-            "Vertical" : {
-              "x" : 100,
-              "y" : 50
-            }
-          },
-          "analysis" : {
-            "Vertical" : {
-              "x" : 425,
-              "y" : 50
-            }
-          }
-        },
+        "jipipe:node-ui-location" : { },
         "jipipe:node-info-id" : "jipipe:compartment-output",
         "jipipe:graph-compartment" : "analysis",
         "jipipe:algorithm:save-outputs" : true,
@@ -110,14 +84,7 @@
           "input" : { },
           "output" : { }
         },
-        "jipipe:node-ui-location" : {
-          "postprocessing" : {
-            "Vertical" : {
-              "x" : 400,
-              "y" : 50
-            }
-          }
-        },
+        "jipipe:node-ui-location" : { },
         "jipipe:node-info-id" : "jipipe:compartment-output",
         "jipipe:graph-compartment" : "postprocessing",
         "jipipe:algorithm:save-outputs" : true,
@@ -136,14 +103,7 @@
           "jipipe:slot-configuration" : {
             "input" : { }
           },
-          "jipipe:node-ui-location" : {
-            "DEFAULT" : {
-              "Vertical" : {
-                "x" : 25,
-                "y" : 0
-              }
-            }
-          },
+          "jipipe:node-ui-location" : { },
           "jipipe:node-info-id" : "jipipe:project-compartment",
           "jipipe:graph-compartment" : "DEFAULT",
           "jipipe:node:name" : "Preprocessing",
@@ -162,14 +122,7 @@
               }
             }
           },
-          "jipipe:node-ui-location" : {
-            "DEFAULT" : {
-              "Vertical" : {
-                "x" : 25,
-                "y" : 200
-              }
-            }
-          },
+          "jipipe:node-ui-location" : { },
           "jipipe:node-info-id" : "jipipe:project-compartment",
           "jipipe:graph-compartment" : "DEFAULT",
           "jipipe:node:name" : "Analysis",
@@ -188,14 +141,7 @@
               }
             }
           },
-          "jipipe:node-ui-location" : {
-            "DEFAULT" : {
-              "Vertical" : {
-                "x" : 163,
-                "y" : 400
-              }
-            }
-          },
+          "jipipe:node-ui-location" : { },
           "jipipe:node-info-id" : "jipipe:project-compartment",
           "jipipe:graph-compartment" : "DEFAULT",
           "jipipe:node:name" : "Postprocessing",

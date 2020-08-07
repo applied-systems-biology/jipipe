@@ -80,6 +80,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
     private JIPipeDataSlotUI currentConnectionDragSource;
     private JIPipeDataSlotUI currentConnectionDragTarget;
     private JIPipeDataSlotUI currentHighlightedForDisconnect;
+    private double zoom = 1.0;
 
     /**
      * Used to store the minimum dimensions of the canvas to reduce user disruption
@@ -205,8 +206,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
             ui.getEventBus().register(this);
             add(ui);
             nodeUIs.put(algorithm, ui);
-            Point location = algorithm.getLocationWithin(compartment, viewMode.toString());
-            if (location == null || !ui.trySetLocationNoGrid(location.x, location.y)) {
+            if (!ui.moveToStoredGridLocation(true)) {
                 autoPlaceCloseToCursor(ui);
                 ++newlyPlacedAlgorithms;
             }
@@ -342,7 +342,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
         }
         while (!found);
 
-        ui.trySetLocationAtNextGridPoint(currentShape.x, currentShape.y);
+        ui.moveToNextGridPoint(new Point(currentShape.x, currentShape.y), true, true);
 
     }
 
@@ -378,9 +378,8 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
             int minX = sourceAlgorithmUI.getWidth() + sourceAlgorithmUI.getX() + viewMode.getGridWidth() * 2;
             int targetY = sourceAlgorithmUI.getY() + sourceSlotInternalY - targetSlotInternalY;
 
-            int x = (int) (minX * 1.0 / viewMode.getGridWidth()) * viewMode.getGridWidth();
-            int y = (int) (targetY * 1.0 / viewMode.getGridHeight()) * viewMode.getGridHeight();
-            if (!targetAlgorithmUI.trySetLocationNoGrid(x, y)) {
+            Point targetPoint = new Point(minX, targetY);
+            if (!targetAlgorithmUI.moveToNextGridPoint(targetPoint, false, true)) {
                 // Move all other algorithms
                 int minDistance = Integer.MAX_VALUE;
                 for (JIPipeNodeUI ui : nodesAfter) {
@@ -394,10 +393,10 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
                     for (JIPipeNodeUI ui : nodesAfter) {
                         if (ui == targetAlgorithmUI || ui == sourceAlgorithmUI)
                             continue;
-                        success &= ui.trySetLocationAtNextGridPoint(ui.getX() + translateX, ui.getY());
+                        success &= ui.moveToNextGridPoint(new Point(ui.getX() + translateX, ui.getY()), false, true);
                     }
                     if (success) {
-                        if (!targetAlgorithmUI.trySetLocationNoGrid(x, y)) {
+                        if (!targetAlgorithmUI.moveToNextGridPoint(targetPoint, false, true)) {
                             autoPlaceCloseToCursor(targetAlgorithmUI);
                         }
                     } else {
@@ -411,7 +410,8 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
             int x = sourceAlgorithmUI.getSlotLocation(source).center.x + sourceAlgorithmUI.getX();
             x -= targetAlgorithmUI.getSlotLocation(target).center.x;
             int y = sourceAlgorithmUI.getBottomY() + viewMode.getGridHeight();
-            if (!targetAlgorithmUI.trySetLocationNoGrid(x, y)) {
+            Point targetPoint = new Point(x, y);
+            if (!targetAlgorithmUI.moveToNextGridPoint(targetPoint, false, true)) {
                 // Move all other algorithms
                 int minDistance = Integer.MAX_VALUE;
                 for (JIPipeNodeUI ui : nodesAfter) {
@@ -424,9 +424,9 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
                     for (JIPipeNodeUI ui : nodesAfter) {
                         if (ui == targetAlgorithmUI || ui == sourceAlgorithmUI)
                             continue;
-                        ui.setLocationAtNextGridPoint(ui.getX(), ui.getY() + translateY);
+                        ui.moveToNextGridPoint(new Point(ui.getX(), ui.getY() + translateY), false, true);
                     }
-                    if (!targetAlgorithmUI.trySetLocationNoGrid(x, y)) {
+                    if (!targetAlgorithmUI.moveToNextGridPoint(targetPoint, false, true)) {
                         autoPlaceCloseToCursor(targetAlgorithmUI);
                     }
                 } else {
@@ -452,7 +452,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
                     if (currentTimeMillis - lastTimeExpandedNegative > 100) {
                         for (JIPipeNodeUI value : nodeUIs.values()) {
                             if (value != currentlyDragged) {
-                                value.setLocation(value.getX() + ex, value.getY() + ey);
+                                value.moveToNextGridPoint(new Point(value.getX() + ex, value.getY() + ey), false, true);
                             }
                         }
                         lastTimeExpandedNegative = currentTimeMillis;
@@ -464,13 +464,13 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
 
                 if (currentlyDraggedSnapshot != null) {
                     // Check if something would change
-                    if (!Objects.equals(currentlyDragged.getLocation(), viewMode.getNextGridPoint(new Point(x, y)))) {
+                    if (!Objects.equals(currentlyDragged.getLocation(), viewMode.realLocationToGrid(new Point(x, y), zoom))) {
                         graphHistory.addSnapshotBefore(currentlyDraggedSnapshot);
                         currentlyDraggedSnapshot = null;
                     }
                 }
 
-                currentlyDragged.trySetLocationAtNextGridPoint(x, y);
+                currentlyDragged.moveToNextGridPoint(new Point(x, y), false, true);
             }
             repaint();
             if (getParent() != null)
@@ -495,12 +495,12 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
         minY = -minY;
         minX = Math.max(0, minX);
         minY = Math.max(0, minY);
-        Point nextGridPoint = viewMode.getNextGridPoint(new Point(minX, minY));
+        Point nextGridPoint = viewMode.realLocationToGrid(new Point(minX, minY), zoom);
         int ex = nextGridPoint.x;
         int ey = nextGridPoint.y;
         for (JIPipeNodeUI value : nodeUIs.values()) {
             if (!currentlyDraggedOffsets.containsKey(value)) {
-                value.setLocation(value.getX() + ex, value.getY() + ey);
+                value.moveToNextGridPoint(new Point(value.getX() + ex, value.getY() + ey), false, true);
             }
         }
         if (graphEditCursor != null) {
@@ -523,7 +523,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
         int ey = top ? viewMode.getGridHeight() : 0;
         for (JIPipeNodeUI value : nodeUIs.values()) {
             if (!currentlyDraggedOffsets.containsKey(value)) {
-                value.setLocation(value.getX() + ex, value.getY() + ey);
+                value.moveToNextGridPoint(new Point(value.getX() + ex, value.getY() + ey), false, true);
             }
         }
         if (graphEditCursor != null) {
@@ -736,10 +736,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
     public void onAlgorithmGraphChanged(GraphChangedEvent event) {
         // Update the location of existing nodes
         for (JIPipeNodeUI ui : nodeUIs.values()) {
-            Point point = ui.getNode().getLocationWithin(compartment, viewMode.name());
-            if (point != null) {
-                ui.setLocation(point);
-            }
+            ui.moveToStoredGridLocation(true);
         }
         removeOldNodes();
         addNewNodes();
@@ -1353,10 +1350,10 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
             minY = Math.min(ui.getY(), minY);
         }
         for (JIPipeNodeUI ui : nodeUIs.values()) {
-            ui.setLocation(ui.getX() - minX + viewMode.getGridWidth(),
-                    ui.getY() - minY + viewMode.getGridHeight());
+            ui.moveToNextGridPoint(new Point(ui.getX() - minX + viewMode.getGridWidth(),
+                    ui.getY() - minY + viewMode.getGridHeight()), true, true);
         }
-        setGraphEditCursor(viewMode.getGridPoint(new Point(1, 1)));
+        setGraphEditCursor(viewMode.gridToRealLocation(new Point(1, 1), zoom));
         minDimensions = null;
         if (getParent() != null)
             getParent().revalidate();
@@ -1438,5 +1435,13 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
                 selection.add(ui);
         }
         updateSelection();
+    }
+
+    public double getZoom() {
+        return zoom;
+    }
+
+    public void setZoom(double zoom) {
+        this.zoom = zoom;
     }
 }

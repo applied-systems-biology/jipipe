@@ -24,6 +24,7 @@ import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.traverse.TopologicalOrderIterator;
 
+import java.awt.*;
 import java.util.*;
 
 /**
@@ -155,7 +156,7 @@ public class SugiyamaGraphAutoLayoutMethod implements GraphAutoLayoutMethod {
                 }
                 int x = canvasUI.getViewMode().getGridWidth() * 4;
                 for (JIPipeNodeUI ui : freeFloating) {
-                    ui.setLocation(x, minY);
+                    ui.moveToNextGridPoint(new Point(x, minY), true, true);
                     x += ui.getWidth() + canvasUI.getViewMode().getGridWidth() * 2;
                 }
             } else {
@@ -167,7 +168,7 @@ public class SugiyamaGraphAutoLayoutMethod implements GraphAutoLayoutMethod {
                 }
                 int y = canvasUI.getViewMode().getGridHeight();
                 for (JIPipeNodeUI ui : freeFloating) {
-                    ui.setLocation(minX, y);
+                    ui.moveToNextGridPoint(new Point(minX, y), true, true);
                     y += ui.getHeight() + canvasUI.getViewMode().getGridHeight();
                 }
             }
@@ -223,7 +224,7 @@ public class SugiyamaGraphAutoLayoutMethod implements GraphAutoLayoutMethod {
                 SugiyamaVertex vertex = columnMap.getOrDefault(row, null);
                 if (vertex != null && !vertex.virtual) {
                     JIPipeNodeUI ui = vertex.algorithmUI;
-                    ui.setLocation(x, y);
+                    ui.moveToNextGridPoint(new Point(x, y), true, true);
                 }
                 y += rowHeights.getOrDefault(row, 0);
             }
@@ -280,7 +281,7 @@ public class SugiyamaGraphAutoLayoutMethod implements GraphAutoLayoutMethod {
                 SugiyamaVertex vertex = columnMap.getOrDefault(row, null);
                 if (vertex != null && !vertex.virtual) {
                     JIPipeNodeUI ui = vertex.algorithmUI;
-                    ui.setLocation(x, y);
+                    ui.moveToNextGridPoint(new Point(x, y), true, true);
                 }
                 y += rowHeights.getOrDefault(row, 0);
             }
