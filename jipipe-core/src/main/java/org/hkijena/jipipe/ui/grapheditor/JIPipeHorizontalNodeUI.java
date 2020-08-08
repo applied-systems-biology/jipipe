@@ -31,10 +31,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.font.FontRenderContext;
 import java.awt.font.TextLayout;
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 
 /**
  * An algorithm UI for horizontal display
@@ -65,7 +63,6 @@ public class JIPipeHorizontalNodeUI extends JIPipeNodeUI {
     private void initialize() {
         setBackground(getFillColor());
         setBorder(BorderFactory.createLineBorder(getBorderColor()));
-        setSize(new Dimension(calculateWidth(), calculateHeight()));
         setLayout(new GridBagLayout());
         setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
@@ -133,12 +130,8 @@ public class JIPipeHorizontalNodeUI extends JIPipeNodeUI {
         return Math.max(inputRows, outputRows);
     }
 
-    private int calculateHeight() {
-        return Math.max(JIPipeGraphViewMode.Horizontal.getGridHeight(),
-                JIPipeGraphViewMode.Horizontal.getGridHeight() * getDisplayedRows());
-    }
-
-    private int calculateWidth() {
+    @Override
+    public Dimension calculateGridSize() {
         FontRenderContext frc = new FontRenderContext(null, false, false);
         double width = 0;
 
@@ -153,18 +146,21 @@ public class JIPipeHorizontalNodeUI extends JIPipeNodeUI {
             double maxInputSlotWidth = 0;
             double maxOutputSlotWidth = 0;
             for (JIPipeDataSlotUI ui : slotUIList) {
+                Dimension realSize = JIPipeGraphViewMode.Horizontal.gridToRealSize(ui.calculateGridSize(), getGraphUI().getZoom());
                 if (ui.getSlot().isInput()) {
-                    maxInputSlotWidth = Math.max(maxInputSlotWidth, ui.calculateWidth());
+                    maxInputSlotWidth = Math.max(maxInputSlotWidth, realSize.width);
                 } else if (ui.getSlot().isOutput()) {
-                    maxOutputSlotWidth = Math.max(maxOutputSlotWidth, ui.calculateWidth());
+                    maxOutputSlotWidth = Math.max(maxOutputSlotWidth, realSize.height);
                 }
             }
 
             width += maxInputSlotWidth + maxOutputSlotWidth;
         }
-
-        return (int) Math.ceil(width * 1.0 / JIPipeGraphViewMode.Horizontal.getGridWidth())
-                * JIPipeGraphViewMode.Horizontal.getGridWidth() + 150;
+        width += 150;
+        int height = Math.max(JIPipeGraphViewMode.Horizontal.getGridHeight(),
+                JIPipeGraphViewMode.Horizontal.getGridHeight() * getDisplayedRows());
+        Point inGrid = JIPipeGraphViewMode.Horizontal.realLocationToGrid(new Point((int) width, height), 1.0);
+        return new Dimension(inGrid.x, inGrid.y);
     }
 
     private void addHorizontalGlue(int column) {
@@ -284,7 +280,7 @@ public class JIPipeHorizontalNodeUI extends JIPipeNodeUI {
             outputSlotPanel.add(panel);
         }
 
-        setSize(new Dimension(calculateWidth(), calculateHeight()));
+        updateSize();
         revalidate();
         repaint();
     }
@@ -335,11 +331,13 @@ public class JIPipeHorizontalNodeUI extends JIPipeNodeUI {
 
     @Override
     public void updateSize() {
-        int oldWidth = getWidth();
-        int oldHeight = getHeight();
-        setSize(calculateWidth(), calculateHeight());
-        if (getWidth() != oldWidth || oldHeight != getHeight())
+        Dimension gridSize = calculateGridSize();
+        Dimension realSize = new Dimension((int)Math.round(gridSize.width * JIPipeGraphViewMode.Horizontal.getGridWidth() * getGraphUI().getZoom()),
+                (int)Math.round(gridSize.height * JIPipeGraphViewMode.Horizontal.getGridHeight() * getGraphUI().getZoom()));
+        if(!Objects.equals(getSize(), realSize)) {
+            setSize(realSize);
             getGraphUI().repaint();
+        }
     }
 
     @Override

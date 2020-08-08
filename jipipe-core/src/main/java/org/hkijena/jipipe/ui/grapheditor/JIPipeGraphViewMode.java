@@ -25,10 +25,14 @@ public enum JIPipeGraphViewMode {
     }
 
     public Point realLocationToGrid(Point location, double zoom) {
-        return new Point((int)(location.x / zoom / gridWidth), (int)(location.y / zoom / gridHeight));
+        return new Point((int)Math.round(location.x / zoom / gridWidth), (int)Math.round(location.y / zoom / gridHeight));
     }
 
     public Point gridToRealLocation(Point gridLocation, double zoom) {
         return new Point((int)(gridLocation.x * zoom * gridWidth), (int)(gridLocation.y * zoom * gridHeight));
+    }
+
+    public Dimension gridToRealSize(Dimension gridSize, double zoom) {
+        return new Dimension((int)Math.round(gridSize.width * gridWidth * zoom), (int)Math.round(gridSize.height * gridHeight * zoom));
     }
 }

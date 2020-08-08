@@ -155,7 +155,7 @@ public class JIPipeHorizontalDataSlotUI extends JIPipeDataSlotUI {
     }
 
     @Override
-    public int calculateWidth() {
+    public Dimension calculateGridSize() {
         // First calculate the width caused by the label width
         FontRenderContext frc = new FontRenderContext(null, false, false);
         TextLayout layout = new TextLayout(getDisplayedName(), getFont(), frc);
@@ -163,8 +163,8 @@ public class JIPipeHorizontalDataSlotUI extends JIPipeDataSlotUI {
         int labelWidth = (int) Math.ceil(w * 1.0 / JIPipeGraphViewMode.Horizontal.getGridWidth())
                 * JIPipeGraphViewMode.Horizontal.getGridWidth();
         int width = labelWidth + 75;
-
-        return width;
+        Point inGrid = JIPipeGraphViewMode.Vertical.realLocationToGrid(new Point(width, JIPipeGraphViewMode.Vertical.getGridHeight()), 1.0);
+        return new Dimension(inGrid.x, inGrid.y);
     }
 
     @Subscribe

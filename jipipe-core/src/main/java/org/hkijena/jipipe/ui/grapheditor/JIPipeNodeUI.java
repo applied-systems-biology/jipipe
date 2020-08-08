@@ -152,6 +152,12 @@ public abstract class JIPipeNodeUI extends JIPipeWorkbenchPanel {
     }
 
     /**
+     * Calculates the size in grid coordinates
+     * @return the size
+     */
+    public abstract Dimension calculateGridSize();
+
+    /**
      * Called when the algorithm name was updated
      */
     protected abstract void updateName();

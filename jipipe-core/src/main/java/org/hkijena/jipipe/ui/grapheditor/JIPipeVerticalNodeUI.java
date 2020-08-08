@@ -31,10 +31,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.font.FontRenderContext;
 import java.awt.font.TextLayout;
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 
 /**
  * An algorithm UI for vertical display
@@ -65,7 +63,6 @@ public class JIPipeVerticalNodeUI extends JIPipeNodeUI {
     private void initialize() {
         setBackground(getFillColor());
         setBorder(BorderFactory.createLineBorder(getBorderColor()));
-        setSize(new Dimension(calculateWidth(), calculateHeight()));
         setLayout(new GridBagLayout());
         setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
@@ -120,11 +117,8 @@ public class JIPipeVerticalNodeUI extends JIPipeNodeUI {
         });
     }
 
-    private int calculateHeight() {
-        return 3 * JIPipeGraphViewMode.Vertical.getGridHeight();
-    }
-
-    private int calculateWidth() {
+    @Override
+    public Dimension calculateGridSize() {
         FontRenderContext frc = new FontRenderContext(null, false, false);
         double width = 0;
 
@@ -138,13 +132,15 @@ public class JIPipeVerticalNodeUI extends JIPipeNodeUI {
         {
             double maxWidth = 0;
             for (JIPipeDataSlotUI ui : slotUIList) {
-                maxWidth = Math.max(maxWidth, ui.calculateWidth());
+                Dimension realSize = JIPipeGraphViewMode.Vertical.gridToRealSize(ui.calculateGridSize(), getGraphUI().getZoom());
+                maxWidth = Math.max(maxWidth, realSize.width);
             }
 
             width = Math.max(width, maxWidth * Math.max(getDisplayedInputColumns(), getDisplayedOutputColumns()));
         }
-
-        return (int) Math.ceil(width * 1.0 / JIPipeGraphViewMode.Vertical.getGridWidth()) * JIPipeGraphViewMode.Vertical.getGridWidth() + 100;
+        width += 100;
+        Point inGrid = JIPipeGraphViewMode.Vertical.realLocationToGrid(new Point((int) width, getGraphUI().getViewMode().getGridHeight() * 3), 1.0);
+        return new Dimension(inGrid.x, inGrid.y);
     }
 
     private void addVerticalGlue(int row) {
@@ -295,7 +291,7 @@ public class JIPipeVerticalNodeUI extends JIPipeNodeUI {
             outputSlotPanel.add(panel);
         }
 
-        setSize(new Dimension(calculateWidth(), calculateHeight()));
+        updateSize();
         revalidate();
         repaint();
     }
@@ -333,11 +329,13 @@ public class JIPipeVerticalNodeUI extends JIPipeNodeUI {
 
     @Override
     public void updateSize() {
-        int oldWidth = getWidth();
-        int oldHeight = getHeight();
-        setSize(calculateWidth(), calculateHeight());
-        if (getWidth() != oldWidth || oldHeight != getHeight())
+        Dimension gridSize = calculateGridSize();
+        Dimension realSize = new Dimension((int)Math.round(gridSize.width * JIPipeGraphViewMode.Vertical.getGridWidth() * getGraphUI().getZoom()),
+                (int)Math.round(gridSize.height * JIPipeGraphViewMode.Vertical.getGridHeight() * getGraphUI().getZoom()));
+        if(!Objects.equals(getSize(), realSize)) {
+            setSize(realSize);
             getGraphUI().repaint();
+        }
     }
 
     @Override

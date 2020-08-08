@@ -404,6 +404,12 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
     protected abstract void reloadButtonStatus();
 
     /**
+     * Calculates the size in grid coordinates
+     * @return the size
+     */
+    public abstract Dimension calculateGridSize();
+
+    /**
      * Connects the two slots
      *
      * @param source source slot
@@ -470,11 +476,6 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
         }
         return slot.getName();
     }
-
-    /**
-     * @return The width needed to display the slot
-     */
-    public abstract int calculateWidth();
 
     /**
      * @return The slot
