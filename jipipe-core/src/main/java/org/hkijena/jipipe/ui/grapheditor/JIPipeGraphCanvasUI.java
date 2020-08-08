@@ -28,6 +28,7 @@ import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
 import org.hkijena.jipipe.extensions.settings.GraphEditorUISettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
+import org.hkijena.jipipe.ui.components.ZoomViewPort;
 import org.hkijena.jipipe.ui.events.*;
 import org.hkijena.jipipe.ui.grapheditor.connections.RectangularLineDrawer;
 import org.hkijena.jipipe.ui.grapheditor.contextmenu.NodeUIContextAction;
@@ -52,13 +53,13 @@ import java.util.stream.Collectors;
 /**
  * UI that displays an {@link JIPipeGraph}
  */
-public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMotionListener, MouseListener {
+public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMotionListener, MouseListener, MouseWheelListener, ZoomViewPort {
 
-    public final Stroke STROKE_UNIT = new BasicStroke(1);
-    public final Stroke STROKE_DEFAULT = new BasicStroke(2);
-    public final Stroke STROKE_HIGHLIGHT = new BasicStroke(8);
-    public final Stroke STROKE_SELECTION = new BasicStroke(3, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL, 0, new float[]{9}, 0);
-    public final Stroke STROKE_MARQUEE = new BasicStroke(1, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL, 0, new float[]{2}, 0);
+    public static final Stroke STROKE_UNIT = new BasicStroke(1);
+    public static final Stroke STROKE_DEFAULT = new BasicStroke(2);
+    public static final Stroke STROKE_HIGHLIGHT = new BasicStroke(8);
+    public static final Stroke STROKE_SELECTION = new BasicStroke(3, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL, 0, new float[]{9}, 0);
+    public static final Stroke STROKE_MARQUEE = new BasicStroke(1, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL, 0, new float[]{2}, 0);
 
     private final ImageIcon cursorImage = UIUtils.getIconFromResources("actions/target.png");
     private final JIPipeGraph graph;
@@ -134,6 +135,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
         setBackground(Color.WHITE);
         addMouseListener(this);
         addMouseMotionListener(this);
+        addMouseWheelListener(this);
     }
 
     /**
@@ -795,6 +797,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
     /**
      * @return The event bus instance
      */
+    @Override
     public EventBus getEventBus() {
         return eventBus;
     }
@@ -1437,11 +1440,33 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
         updateSelection();
     }
 
+    @Override
     public double getZoom() {
         return zoom;
     }
 
     public void setZoom(double zoom) {
         this.zoom = zoom;
+        eventBus.post(new ZoomChangedEvent(this));
+        for (JIPipeNodeUI ui : nodeUIs.values()) {
+            ui.moveToStoredGridLocation(true);
+            ui.updateSize();
+        }
+    }
+
+    @Override
+    public void mouseWheelMoved(MouseWheelEvent e) {
+        if (e.isControlDown()) {
+            if (e.getWheelRotation() < 0) {
+                setZoom(Math.min(2, zoom + 0.05));
+            }
+            else {
+                setZoom(Math.max(0.5, zoom - 0.05));
+            }
+        }
+        else
+        {
+            getParent().dispatchEvent(e);
+        }
     }
 }

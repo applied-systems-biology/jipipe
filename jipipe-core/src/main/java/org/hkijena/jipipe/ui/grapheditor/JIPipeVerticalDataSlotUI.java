@@ -21,6 +21,9 @@ import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.cache.JIPipeDataSlotCacheManagerUI;
+import org.hkijena.jipipe.ui.components.ZoomFlatIconButton;
+import org.hkijena.jipipe.ui.components.ZoomIcon;
+import org.hkijena.jipipe.ui.components.ZoomLabel;
 import org.hkijena.jipipe.ui.registries.JIPipeUIDatatypeRegistry;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.TooltipUtils;
@@ -59,15 +62,15 @@ public class JIPipeVerticalDataSlotUI extends JIPipeDataSlotUI {
     protected void reloadButtonStatus() {
         if (getSlot().isInput()) {
             if (getGraph().getSourceSlot(getSlot()) == null) {
-                assignButton.setIcon(UIUtils.getIconFromResources("emblems/slot-unconnected-input-vertical.png"));
+                assignButton.setIcon(new ZoomIcon(UIUtils.getIconFromResources("emblems/slot-unconnected-input-vertical.png"), getGraphUI()));
             } else {
-                assignButton.setIcon(UIUtils.getIconFromResources("emblems/slot-connected-vertical.png"));
+                assignButton.setIcon(new ZoomIcon(UIUtils.getIconFromResources("emblems/slot-connected-vertical.png"), getGraphUI()));
             }
         } else if (getSlot().isOutput()) {
             if (getGraph().getTargetSlots(getSlot()).isEmpty()) {
-                assignButton.setIcon(UIUtils.getIconFromResources("emblems/slot-unconnected-output-vertical.png"));
+                assignButton.setIcon(new ZoomIcon(UIUtils.getIconFromResources("emblems/slot-unconnected-output-vertical.png"), getGraphUI()));
             } else {
-                assignButton.setIcon(UIUtils.getIconFromResources("emblems/slot-connected-vertical.png"));
+                assignButton.setIcon(new ZoomIcon(UIUtils.getIconFromResources("emblems/slot-connected-vertical.png"), getGraphUI()));
             }
             if (noSaveLabel != null) {
                 if (getSlot().getNode() instanceof JIPipeAlgorithm) {
@@ -82,11 +85,10 @@ public class JIPipeVerticalDataSlotUI extends JIPipeDataSlotUI {
     private void initialize() {
         setLayout(new BorderLayout());
 
-        this.assignButton = new JButton(UIUtils.getIconFromResources("emblems/slot-connected-vertical.png"));
-        new JIPipeConnectionDragAndDropBehavior(this, assignButton);
-        assignButton.setPreferredSize(new Dimension(25, 25));
-        this.assignButtonMenu = UIUtils.addReloadablePopupMenuToComponent(assignButton, new JPopupMenu(), this::reloadPopupMenu);
+        this.assignButton = new JButton();
         UIUtils.makeFlat(assignButton, UIUtils.getBorderColorFor(getSlot().getNode().getInfo()), 0, 0, 0, 0);
+        new JIPipeConnectionDragAndDropBehavior(this, assignButton);
+        this.assignButtonMenu = UIUtils.addReloadablePopupMenuToComponent(assignButton, new JPopupMenu(), this::reloadPopupMenu);
 
         if (getSlot().getNode() instanceof JIPipeCompartmentOutput) {
             if (getSlot().getNode().getCompartment().equals(getCompartment())) {
@@ -104,25 +106,23 @@ public class JIPipeVerticalDataSlotUI extends JIPipeDataSlotUI {
         centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.X_AXIS));
         centerPanel.setOpaque(false);
 
-        nameLabel = new JLabel();
+        nameLabel = new ZoomLabel("", null, getGraphUI());
         reloadName();
         nameLabel.setToolTipText(TooltipUtils.getSlotInstanceTooltip(getSlot()));
         nameLabel.setBorder(BorderFactory.createEmptyBorder(2, 5, 2, 5));
-        nameLabel.setIcon(JIPipeUIDatatypeRegistry.getInstance().getIconFor(getSlotDataType()));
+        nameLabel.setIcon(new ZoomIcon(JIPipeUIDatatypeRegistry.getInstance().getIconFor(getSlotDataType()), getGraphUI()));
         centerPanel.add(nameLabel);
         centerPanel.add(Box.createHorizontalGlue());
 
         if (getSlot().isOutput() && getSlot().getNode() instanceof JIPipeAlgorithm) {
-            noSaveLabel = new JLabel(UIUtils.getIconFromResources("actions/no-save.png"));
+            noSaveLabel = new ZoomLabel("", new ZoomIcon(UIUtils.getIconFromResources("actions/no-save.png"), getGraphUI()), getGraphUI());
             noSaveLabel.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
             centerPanel.add(noSaveLabel);
         }
 
         if (getSlot().isOutput() && getSlot().getNode() instanceof JIPipeAlgorithm && getWorkbench() instanceof JIPipeProjectWorkbench) {
-
-
             JIPipeProjectWorkbench projectWorkbench = (JIPipeProjectWorkbench) getWorkbench();
-            cacheManagerUI = new JIPipeDataSlotCacheManagerUI(projectWorkbench, getSlot());
+            cacheManagerUI = new JIPipeDataSlotCacheManagerUI(projectWorkbench, getSlot(), getGraphUI());
             centerPanel.add(cacheManagerUI);
         }
 

@@ -33,6 +33,12 @@ public class PointRange {
         this.max = new Point();
     }
 
+    public PointRange(PointRange other) {
+        this.center = new Point(other.center);
+        this.min = new Point(other.min);
+        this.max = new Point(other.max);
+    }
+
     /**
      * Creates a new point range without margins around it
      *
@@ -56,6 +62,23 @@ public class PointRange {
         this.center = center;
         this.min = min;
         this.max = max;
+    }
+
+    /**
+     * Apply scaling to all components and return the result.
+     * Returns a copy
+     * @param zoom the zoom
+     * @return scaled copy
+     */
+    public PointRange zoom(double zoom) {
+        PointRange result = new PointRange(this);
+        result.center.x = (int)(result.center.x * zoom);
+        result.center.y = (int)(result.center.y * zoom);
+        result.min.x = (int)(result.min.x * zoom);
+        result.min.y = (int)(result.min.y * zoom);
+        result.max.x = (int)(result.max.x * zoom);
+        result.max.y = (int)(result.max.y * zoom);
+        return result;
     }
 
     /**

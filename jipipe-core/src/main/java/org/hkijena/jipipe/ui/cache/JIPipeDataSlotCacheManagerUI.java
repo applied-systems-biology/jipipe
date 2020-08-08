@@ -21,6 +21,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.DocumentTabPane;
+import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphCanvasUI;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -37,6 +38,7 @@ import java.util.stream.Collectors;
 public class JIPipeDataSlotCacheManagerUI extends JIPipeProjectWorkbenchPanel {
 
     private final JIPipeDataSlot dataSlot;
+    private final JIPipeGraphCanvasUI graphUI;
     private JButton annotationButton;
     private JButton cacheButton;
     private JPopupMenu contextMenu;
@@ -44,10 +46,12 @@ public class JIPipeDataSlotCacheManagerUI extends JIPipeProjectWorkbenchPanel {
     /**
      * @param workbenchUI The workbench UI
      * @param dataSlot    the data slot
+     * @param graphUI the canvas
      */
-    public JIPipeDataSlotCacheManagerUI(JIPipeProjectWorkbench workbenchUI, JIPipeDataSlot dataSlot) {
+    public JIPipeDataSlotCacheManagerUI(JIPipeProjectWorkbench workbenchUI, JIPipeDataSlot dataSlot, JIPipeGraphCanvasUI graphUI) {
         super(workbenchUI);
         this.dataSlot = dataSlot;
+        this.graphUI = graphUI;
         initialize();
         updateStatus();
 

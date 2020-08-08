@@ -23,6 +23,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.AddAlgorithmSlotPanel;
+import org.hkijena.jipipe.ui.components.ZoomIcon;
 import org.hkijena.jipipe.utils.PointRange;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -79,12 +80,11 @@ public abstract class JIPipeNodeUI extends JIPipeWorkbenchPanel {
      * @return the button
      */
     protected JButton createAddSlotButton(JIPipeSlotType slotType) {
-        JButton button = new JButton(UIUtils.getIconFromResources("actions/list-add.png"));
-        button.setPreferredSize(new Dimension(25, viewMode.getGridHeight()));
-        UIUtils.makeFlat(button, Color.GRAY, 0, 0, 0, 0);
-        button.addActionListener(e -> AddAlgorithmSlotPanel.showDialog(this, graphUI.getGraphHistory(), node, slotType));
+        JButton addSlotButton = new JButton(new ZoomIcon(UIUtils.getIconFromResources("actions/list-add.png"), graphUI));
+        UIUtils.makeFlat(addSlotButton, Color.GRAY, 0, 0, 0, 0);
+        addSlotButton.addActionListener(e -> AddAlgorithmSlotPanel.showDialog(this, graphUI.getGraphHistory(), node, slotType));
 
-        return button;
+        return addSlotButton;
     }
 
     /**
@@ -110,6 +110,19 @@ public abstract class JIPipeNodeUI extends JIPipeWorkbenchPanel {
             }
         }
         return false;
+    }
+
+    @Override
+    public void paint(Graphics g) {
+        super.paint(g);
+
+        // Draw additional border if zoom < 1
+        if(graphUI.getZoom() < 1) {
+            Graphics2D graphics2D = (Graphics2D) g;
+            graphics2D.setStroke(JIPipeGraphCanvasUI.STROKE_UNIT);
+            graphics2D.setColor(borderColor);
+            graphics2D.drawRect(0,0,getWidth() - 1, getHeight() - 1);
+        }
     }
 
     /**
