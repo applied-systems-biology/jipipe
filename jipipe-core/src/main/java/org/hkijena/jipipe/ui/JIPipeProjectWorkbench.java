@@ -358,7 +358,7 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
 
         JMenuItem newCompartmentButton = new JMenuItem("New compartment after current", UIUtils.getIconFromResources("actions/document-new.png"));
         newCompartmentButton.setToolTipText("Adds a new compartment after the currently selected output into the project");
-        newCompartmentButton.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_ADD, KeyEvent.CTRL_DOWN_MASK));
+        newCompartmentButton.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_ADD, KeyEvent.CTRL_DOWN_MASK | KeyEvent.SHIFT_DOWN_MASK));
         newCompartmentButton.addActionListener(e -> newCompartmentAfterCurrent());
         compartmentMenu.add(newCompartmentButton);
 

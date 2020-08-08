@@ -32,6 +32,7 @@ import org.hkijena.jipipe.ui.components.SearchBox;
 import org.hkijena.jipipe.ui.events.AlgorithmEvent;
 import org.hkijena.jipipe.ui.events.AlgorithmSelectedEvent;
 import org.hkijena.jipipe.ui.events.AlgorithmSelectionChangedEvent;
+import org.hkijena.jipipe.ui.events.ZoomChangedEvent;
 import org.hkijena.jipipe.ui.grapheditor.contextmenu.NodeUIContextAction;
 import org.hkijena.jipipe.ui.registries.JIPipeUINodeRegistry;
 import org.hkijena.jipipe.utils.CustomScrollPane;
@@ -62,6 +63,9 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
     public static final KeyStroke KEY_STROKE_REDO = KeyStroke.getKeyStroke(KeyEvent.VK_Z, InputEvent.CTRL_MASK | InputEvent.SHIFT_MASK, true);
     public static final KeyStroke KEY_STROKE_AUTO_LAYOUT = KeyStroke.getKeyStroke(KeyEvent.VK_L, InputEvent.CTRL_MASK | InputEvent.SHIFT_MASK, true);
     public static final KeyStroke KEY_STROKE_NAVIGATE = KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0, true);
+    public static final KeyStroke KEY_STROKE_ZOOM_IN = KeyStroke.getKeyStroke(KeyEvent.VK_ADD, InputEvent.CTRL_MASK, false);
+    public static final KeyStroke KEY_STROKE_ZOOM_OUT = KeyStroke.getKeyStroke(KeyEvent.VK_SUBTRACT, InputEvent.CTRL_MASK, false);
+    public static final KeyStroke KEY_STROKE_ZOOM_RESET = KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD0, InputEvent.CTRL_MASK, false);
 
     protected JMenuBar menuBar = new JMenuBar();
     private JIPipeGraphCanvasUI canvasUI;
@@ -113,6 +117,15 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
                 } else if (Objects.equals(keyStroke, KEY_STROKE_NAVIGATE)) {
                     navigator.requestFocusInWindow();
                     return true;
+                }
+                else if(Objects.equals(keyStroke, KEY_STROKE_ZOOM_IN)) {
+                    canvasUI.zoomIn();
+                }
+                else if(Objects.equals(keyStroke, KEY_STROKE_ZOOM_OUT)) {
+                    canvasUI.zoomOut();
+                }
+                else if(Objects.equals(keyStroke, KEY_STROKE_ZOOM_RESET)) {
+                    canvasUI.resetZoom();
                 }
             }
             return false;
@@ -293,6 +306,54 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         exportAsImageMenu.add(exportAsSvgItem);
 
         menuBar.add(exportButton);
+
+        menuBar.add(new JSeparator(JSeparator.VERTICAL));
+
+        JButton zoomOutButton = new JButton(UIUtils.getIconFromResources("actions/zoom-out.png"));
+        UIUtils.makeFlat25x25(zoomOutButton);
+        zoomOutButton.setToolTipText("<html>Zoom out<br><i>Ctrl-NumPad -</i></html>");
+        zoomOutButton.addActionListener(e -> canvasUI.zoomOut());
+        menuBar.add(zoomOutButton);
+
+        JButton zoomButton = new JButton((int)(canvasUI.getZoom() * 100) + "%");
+        zoomButton.setToolTipText("<html>Change zoom<br>Reset zoom: <i>Ctrl-NumPad 0</i></html>");
+        canvasUI.getEventBus().register(new Object() {
+            @Subscribe
+            public void onZoomChanged(ZoomChangedEvent event) {
+                zoomButton.setText((int)(canvasUI.getZoom() * 100) + "%");
+            }
+        });
+        zoomButton.setBorder(null);
+        JPopupMenu zoomMenu = UIUtils.addPopupMenuToComponent(zoomButton);
+        for (double zoom = 0.5; zoom <= 2; zoom += 0.25) {
+            JMenuItem changeZoomItem = new JMenuItem((int)(zoom * 100) + "%", UIUtils.getIconFromResources("actions/zoom.png"));
+            double finalZoom = zoom;
+            changeZoomItem.addActionListener(e -> canvasUI.setZoom(finalZoom));
+            zoomMenu.add(changeZoomItem);
+        }
+        zoomMenu.addSeparator();
+        JMenuItem changeZoomToItem = new JMenuItem("Set zoom value ...");
+        changeZoomToItem.addActionListener(e -> {
+            String zoomInput = JOptionPane.showInputDialog(this, "Please enter a new zoom value (in %)", (int) (canvasUI.getZoom() * 100) + "%");
+            if(!StringUtils.isNullOrEmpty(zoomInput)) {
+                zoomInput = zoomInput.replace("%", "");
+                try {
+                    int percentage = Integer.parseInt(zoomInput);
+                    canvasUI.setZoom(percentage / 100.0);
+                }
+                catch (NumberFormatException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        });
+        zoomMenu.add(changeZoomToItem);
+        menuBar.add(zoomButton);
+
+        JButton zoomInButton = new JButton(UIUtils.getIconFromResources("actions/zoom-in.png"));
+        UIUtils.makeFlat25x25(zoomInButton);
+        zoomInButton.setToolTipText("<html>Zoom in<br><i>Ctrl-NumPad +</i></html>");
+        zoomInButton.addActionListener(e -> canvasUI.zoomIn());
+        menuBar.add(zoomInButton);
     }
 
     private void redo() {

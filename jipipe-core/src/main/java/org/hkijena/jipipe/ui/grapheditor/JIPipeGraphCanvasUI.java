@@ -1458,15 +1458,27 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
     public void mouseWheelMoved(MouseWheelEvent e) {
         if (e.isControlDown()) {
             if (e.getWheelRotation() < 0) {
-                setZoom(Math.min(2, zoom + 0.05));
+                zoomIn();
             }
             else {
-                setZoom(Math.max(0.5, zoom - 0.05));
+                zoomOut();
             }
         }
         else
         {
             getParent().dispatchEvent(e);
         }
+    }
+
+    public void resetZoom() {
+        setZoom(1.0);
+    }
+
+    public void zoomOut() {
+        setZoom(Math.max(0.5, zoom - 0.05));
+    }
+
+    public void zoomIn() {
+        setZoom(Math.min(2, zoom + 0.05));
     }
 }

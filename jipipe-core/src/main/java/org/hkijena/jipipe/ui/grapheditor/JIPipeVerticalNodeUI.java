@@ -340,12 +340,26 @@ public class JIPipeVerticalNodeUI extends JIPipeNodeUI {
                 (int)Math.round(gridSize.height * JIPipeGraphViewMode.Vertical.getGridHeight() * getGraphUI().getZoom()));
         Dimension slotSize = JIPipeGraphViewMode.Vertical.gridToRealSize(new Dimension(1, 1), getGraphUI().getZoom());
         slotSize.width = realSize.width;
-        inputSlotPanel.setMinimumSize(slotSize);
-        inputSlotPanel.setMaximumSize(slotSize);
-        inputSlotPanel.setPreferredSize(slotSize);
-        outputSlotPanel.setMinimumSize(slotSize);
-        outputSlotPanel.setMaximumSize(slotSize);
-        outputSlotPanel.setPreferredSize(slotSize);
+        if(inputSlotPanel.getComponentCount() > 0) {
+            inputSlotPanel.setMinimumSize(slotSize);
+            inputSlotPanel.setMaximumSize(slotSize);
+            inputSlotPanel.setPreferredSize(slotSize);
+        }
+        else {
+            inputSlotPanel.setMinimumSize(new Dimension());
+            inputSlotPanel.setMaximumSize(new Dimension());
+            inputSlotPanel.setMaximumSize(new Dimension());
+        }
+        if(outputSlotPanel.getComponentCount() > 0) {
+            outputSlotPanel.setMinimumSize(slotSize);
+            outputSlotPanel.setMaximumSize(slotSize);
+            outputSlotPanel.setPreferredSize(slotSize);
+        }
+        else {
+            outputSlotPanel.setMinimumSize(new Dimension());
+            outputSlotPanel.setMaximumSize(new Dimension());
+            outputSlotPanel.setMaximumSize(new Dimension());
+        }
         if(!Objects.equals(getSize(), realSize)) {
             setSize(realSize);
             revalidate();
