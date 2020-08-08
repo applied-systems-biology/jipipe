@@ -57,9 +57,9 @@ public class MSTGraphAutoLayoutMethod implements GraphAutoLayoutMethod {
 //        }
 
         if (canvasUI.getViewMode() == JIPipeGraphViewMode.Vertical) {
-            autoLayoutVertical(graph);
+            autoLayoutVertical(graph, canvasUI.getZoom());
         } else {
-            autoLayoutHorizontal(graph);
+            autoLayoutHorizontal(graph, canvasUI.getZoom());
         }
     }
 
@@ -145,7 +145,7 @@ public class MSTGraphAutoLayoutMethod implements GraphAutoLayoutMethod {
         }
     }
 
-    private void autoLayoutHorizontal(DefaultDirectedGraph<Node, Edge> graph) {
+    private void autoLayoutHorizontal(DefaultDirectedGraph<Node, Edge> graph, double zoom) {
         Map<Integer, Integer> trackHeights = new HashMap<>();
         Map<Integer, Integer> depthWidths = new HashMap<>();
         Map<Integer, Integer> cumulativeDepthWidths = new HashMap<>();
@@ -161,8 +161,10 @@ public class MSTGraphAutoLayoutMethod implements GraphAutoLayoutMethod {
             depthWidths.put(node.depth, Math.max(depthWidths.getOrDefault(node.depth, 0), node.ui.getWidth()));
         }
         cumulativeDepthWidths.put(0, depthWidths.getOrDefault(0, 0));
+        int spacer = viewMode.getGridWidth() * 4;
+        spacer = (int)Math.round(spacer * zoom);
         for (int depth = 1; depth <= maxDepth; depth++) {
-            cumulativeDepthWidths.put(depth, cumulativeDepthWidths.get(depth - 1) + depthWidths.get(depth) + viewMode.getGridWidth() * 4);
+            cumulativeDepthWidths.put(depth, cumulativeDepthWidths.get(depth - 1) + depthWidths.get(depth) + spacer);
         }
         int maxCumulativeDepthWidth = 0;
         for (Integer value : cumulativeDepthWidths.values()) {
@@ -181,7 +183,7 @@ public class MSTGraphAutoLayoutMethod implements GraphAutoLayoutMethod {
         }
     }
 
-    private void autoLayoutVertical(DefaultDirectedGraph<Node, Edge> graph) {
+    private void autoLayoutVertical(DefaultDirectedGraph<Node, Edge> graph, double zoom) {
         Map<Integer, Integer> trackWidths = new HashMap<>();
         int minTrack = Integer.MAX_VALUE;
         int maxTrack = Integer.MIN_VALUE;
@@ -198,6 +200,7 @@ public class MSTGraphAutoLayoutMethod implements GraphAutoLayoutMethod {
             int finalTrack = track;
             for (Node node : graph.vertexSet().stream().filter(node -> node.track == finalTrack).collect(Collectors.toList())) {
                 int y = (maxDepth - node.depth) * 4 * viewMode.getGridHeight() + viewMode.getGridHeight();
+                y = (int)(Math.round(y * zoom));
                 node.getUi().moveToNextGridPoint(new Point(x, y), true, true);
             }
             x += trackWidths.get(track) + viewMode.getGridWidth() * 4;

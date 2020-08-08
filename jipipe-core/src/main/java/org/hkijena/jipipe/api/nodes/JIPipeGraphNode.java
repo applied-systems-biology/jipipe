@@ -414,7 +414,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
     public void toJson(JsonGenerator jsonGenerator) throws IOException, JsonProcessingException {
         jsonGenerator.writeStartObject();
         jsonGenerator.writeObjectField("jipipe:slot-configuration", slotConfiguration);
-        jsonGenerator.writeFieldName("jipipe:node-ui-location");
+        jsonGenerator.writeFieldName("jipipe:ui-grid-location");
         jsonGenerator.writeStartObject();
         for (Map.Entry<String, Map<String, Point>> visualModeEntry : locations.entrySet()) {
             if (visualModeEntry.getKey() == null)
@@ -454,8 +454,8 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
 
         if (node.has("jipipe:slot-configuration"))
             slotConfiguration.fromJson(node.get("jipipe:slot-configuration"));
-        if (node.has("jipipe:node-ui-location")) {
-            for (Map.Entry<String, JsonNode> visualModeEntry : ImmutableList.copyOf(node.get("jipipe:node-ui-location").fields())) {
+        if (node.has("jipipe:ui-grid-location")) {
+            for (Map.Entry<String, JsonNode> visualModeEntry : ImmutableList.copyOf(node.get("jipipe:ui-grid-location").fields())) {
                 String compartment = visualModeEntry.getKey();
                 for (Map.Entry<String, JsonNode> entry : ImmutableList.copyOf(visualModeEntry.getValue().fields())) {
                     JsonNode xValue = entry.getValue().path("x");

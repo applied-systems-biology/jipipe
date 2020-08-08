@@ -209,10 +209,10 @@ public class SugiyamaGraphAutoLayoutMethod implements GraphAutoLayoutMethod {
             }
         }
         for (int column : columnWidths.keySet()) {
-            columnWidths.put(column, columnWidths.get(column) + 2 * canvasUI.getViewMode().getGridWidth());
+            columnWidths.put(column, (int)Math.round(columnWidths.get(column) + 2 * canvasUI.getViewMode().getGridWidth() * canvasUI.getZoom()));
         }
         for (int row : rowHeights.keySet()) {
-            rowHeights.put(row, rowHeights.get(row) + canvasUI.getViewMode().getGridHeight());
+            rowHeights.put(row, (int)Math.round(rowHeights.get(row) + canvasUI.getViewMode().getGridHeight() * canvasUI.getZoom()));
         }
 
         // Rearrange algorithms
@@ -266,10 +266,10 @@ public class SugiyamaGraphAutoLayoutMethod implements GraphAutoLayoutMethod {
             }
         }
         for (int column : columnWidths.keySet()) {
-            columnWidths.put(column, columnWidths.get(column) + 2 * canvasUI.getViewMode().getGridWidth());
+            columnWidths.put(column, (int)Math.round(columnWidths.get(column) + 2 * canvasUI.getViewMode().getGridWidth() * canvasUI.getZoom()));
         }
         for (int row : rowHeights.keySet()) {
-            rowHeights.put(row, rowHeights.get(row) + canvasUI.getViewMode().getGridHeight());
+            rowHeights.put(row, (int)Math.round(rowHeights.get(row) + canvasUI.getViewMode().getGridHeight() * canvasUI.getZoom()));
         }
 
         // Rearrange algorithms

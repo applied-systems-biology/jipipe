@@ -377,11 +377,13 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
             int sourceSlotInternalY = sourceSlotIndex * viewMode.getGridHeight();
             int targetSlotInternalY = targetSlotIndex * viewMode.getGridHeight();
 
-            int minX = sourceAlgorithmUI.getWidth() + sourceAlgorithmUI.getX() + viewMode.getGridWidth() * 2;
+            int minX = (int) Math.round(sourceAlgorithmUI.getWidth() + sourceAlgorithmUI.getX() + viewMode.getGridWidth() * zoom * 2);
             int targetY = sourceAlgorithmUI.getY() + sourceSlotInternalY - targetSlotInternalY;
 
             Point targetPoint = new Point(minX, targetY);
             if (!targetAlgorithmUI.moveToNextGridPoint(targetPoint, false, true)) {
+                if(nodesAfter.isEmpty())
+                    return;
                 // Move all other algorithms
                 int minDistance = Integer.MAX_VALUE;
                 for (JIPipeNodeUI ui : nodesAfter) {
@@ -389,31 +391,24 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
                         continue;
                     minDistance = Math.min(minDistance, ui.getX() - sourceAlgorithmUI.getRightX());
                 }
-                if (minDistance > 0 && minDistance != Integer.MAX_VALUE) {
-                    int translateX = targetAlgorithmUI.getWidth() + viewMode.getGridWidth() * 4 - minDistance;
-                    boolean success = true;
-                    for (JIPipeNodeUI ui : nodesAfter) {
-                        if (ui == targetAlgorithmUI || ui == sourceAlgorithmUI)
-                            continue;
-                        success &= ui.moveToNextGridPoint(new Point(ui.getX() + translateX, ui.getY()), false, true);
-                    }
-                    if (success) {
-                        if (!targetAlgorithmUI.moveToNextGridPoint(targetPoint, false, true)) {
-                            autoPlaceCloseToCursor(targetAlgorithmUI);
-                        }
-                    } else {
-                        autoPlaceCloseToCursor(targetAlgorithmUI);
-                    }
-                } else {
+                int translateX = (int)Math.round(targetAlgorithmUI.getWidth() + viewMode.getGridWidth() * zoom * 4 - minDistance);
+                for (JIPipeNodeUI ui : nodesAfter) {
+                    if (ui == targetAlgorithmUI || ui == sourceAlgorithmUI)
+                        continue;
+                    ui.moveToNextGridPoint(new Point(ui.getX() + translateX, ui.getY()), true, true);
+                }
+                if (!targetAlgorithmUI.moveToNextGridPoint(targetPoint, false, true)) {
                     autoPlaceCloseToCursor(targetAlgorithmUI);
                 }
             }
         } else {
             int x = sourceAlgorithmUI.getSlotLocation(source).center.x + sourceAlgorithmUI.getX();
             x -= targetAlgorithmUI.getSlotLocation(target).center.x;
-            int y = sourceAlgorithmUI.getBottomY() + viewMode.getGridHeight();
+            int y = (int)Math.round(sourceAlgorithmUI.getBottomY() + viewMode.getGridHeight() * zoom);
             Point targetPoint = new Point(x, y);
             if (!targetAlgorithmUI.moveToNextGridPoint(targetPoint, false, true)) {
+                if(nodesAfter.isEmpty())
+                    return;
                 // Move all other algorithms
                 int minDistance = Integer.MAX_VALUE;
                 for (JIPipeNodeUI ui : nodesAfter) {
@@ -421,17 +416,13 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
                         continue;
                     minDistance = Math.min(minDistance, ui.getY() - sourceAlgorithmUI.getBottomY());
                 }
-                if (minDistance > 0 && minDistance != Integer.MAX_VALUE) {
-                    int translateY = targetAlgorithmUI.getHeight() + viewMode.getGridHeight() * 2 - minDistance;
-                    for (JIPipeNodeUI ui : nodesAfter) {
-                        if (ui == targetAlgorithmUI || ui == sourceAlgorithmUI)
-                            continue;
-                        ui.moveToNextGridPoint(new Point(ui.getX(), ui.getY() + translateY), false, true);
-                    }
-                    if (!targetAlgorithmUI.moveToNextGridPoint(targetPoint, false, true)) {
-                        autoPlaceCloseToCursor(targetAlgorithmUI);
-                    }
-                } else {
+                int translateY = (int)Math.round(targetAlgorithmUI.getHeight() + viewMode.getGridHeight() * zoom * 2 - minDistance);
+                for (JIPipeNodeUI ui : nodesAfter) {
+                    if (ui == targetAlgorithmUI || ui == sourceAlgorithmUI)
+                        continue;
+                    ui.moveToNextGridPoint(new Point(ui.getX(), ui.getY() + translateY), true, true);
+                }
+                if (!targetAlgorithmUI.moveToNextGridPoint(targetPoint, false, true)) {
                     autoPlaceCloseToCursor(targetAlgorithmUI);
                 }
             }
@@ -472,7 +463,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
                     }
                 }
 
-                currentlyDragged.moveToNextGridPoint(new Point(x, y), false, true);
+                currentlyDragged.moveToNextGridPoint(new Point(x, y), true, true);
             }
             repaint();
             if (getParent() != null)
@@ -1452,6 +1443,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
             ui.moveToStoredGridLocation(true);
             ui.updateSize();
         }
+        eventBus.post(new GraphCanvasUpdatedEvent(this));
     }
 
     @Override
