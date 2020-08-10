@@ -28,19 +28,21 @@ import org.scijava.log.LogService;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 public class SplashScreen extends JWindow implements LogListener, Contextual {
 
-    private static SplashScreen instance;
+    private static volatile SplashScreen instance;
+    private static final Object instanceLock = new Object();
     private Context context;
     private JPanel poweredByContainer;
     private JPanel poweredByIconContainer;
     private JIPipeDefaultRegistry registry;
-    private JLabel statusLabel = new JLabel("Please wait ...", UIUtils.getIconFromResources("actions/hourglass-half.png"), JLabel.LEFT);
+    private JLabel statusLabel = new JLabel("Please wait ...",
+            UIUtils.getIconFromResources("actions/hourglass-half.png"), JLabel.LEFT);
 
     public SplashScreen() {
         initialize();
@@ -93,11 +95,14 @@ public class SplashScreen extends JWindow implements LogListener, Contextual {
     }
 
     public void hideSplash() {
-        setVisible(false);
+        instance = null;
         if(context != null) {
             LogService logService = context.getService(LogService.class);
             logService.removeLogListener(this);
         }
+        setVisible(false);
+        dispose();
+        SwingUtilities.invokeLater(() -> this.dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING)));
     }
 
     public JIPipeDefaultRegistry getRegistry() {
@@ -114,17 +119,19 @@ public class SplashScreen extends JWindow implements LogListener, Contextual {
     @Subscribe
     public void onExtensionDiscovered(ExtensionDiscoveredEvent event) {
         if(event.getExtension() instanceof JIPipeJavaExtension) {
-            for (ImageIcon icon : ((JIPipeJavaExtension) event.getExtension()).getSplashIcons()) {
-                if (icon.getIconWidth() != 32 && icon.getIconHeight() != 32) {
-                    Image scaledInstance = icon.getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);
-                    icon = new ImageIcon(scaledInstance);
+            SwingUtilities.invokeLater(() -> {
+                for (ImageIcon icon : ((JIPipeJavaExtension) event.getExtension()).getSplashIcons()) {
+                    if (icon.getIconWidth() != 32 && icon.getIconHeight() != 32) {
+                        Image scaledInstance = icon.getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);
+                        icon = new ImageIcon(scaledInstance);
+                    }
+                    JLabel label = new JLabel(icon);
+                    poweredByIconContainer.add(label);
+                    revalidate();
+                    repaint();
                 }
-                JLabel label = new JLabel(icon);
-                poweredByIconContainer.add(label);
-                revalidate();
-                repaint();
-            }
-            poweredByContainer.setVisible(poweredByIconContainer.getComponentCount() > 0);
+                poweredByContainer.setVisible(poweredByIconContainer.getComponentCount() > 0);
+            });
         }
     }
 
@@ -133,8 +140,10 @@ public class SplashScreen extends JWindow implements LogListener, Contextual {
     }
 
     public static SplashScreen getInstance() {
-        if (instance == null) {
-            instance = new SplashScreen();
+        synchronized (instanceLock) {
+            if (instance == null) {
+                instance = new SplashScreen();
+            }
         }
         return instance;
     }

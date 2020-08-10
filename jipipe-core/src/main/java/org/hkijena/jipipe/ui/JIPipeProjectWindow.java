@@ -63,7 +63,7 @@ public class JIPipeProjectWindow extends JFrame {
      * @param isNewProject     if the project is an empty project
      */
     public JIPipeProjectWindow(Context context, JIPipeProject project, boolean showIntroduction, boolean isNewProject) {
-        SwingUtilities.invokeLater(() -> SplashScreen.getInstance().hideSplash());
+        SplashScreen.getInstance().hideSplash();
         this.context = context;
         OPEN_WINDOWS.add(this);
         initialize();
