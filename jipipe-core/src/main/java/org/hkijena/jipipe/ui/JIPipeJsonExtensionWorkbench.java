@@ -65,7 +65,7 @@ public class JIPipeJsonExtensionWorkbench extends JPanel implements JIPipeWorkbe
 
         this.project.getEventBus().register(this);
         JIPipeDefaultRegistry.getInstance().getEventBus().register(this);
-        SplashScreen.getInstance().hideSplash();
+        SwingUtilities.invokeLater(() -> SplashScreen.getInstance().hideSplash());
     }
 
     /**

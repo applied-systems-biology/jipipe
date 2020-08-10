@@ -28,6 +28,8 @@ import org.scijava.log.LogService;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
@@ -71,6 +73,11 @@ public class SplashScreen extends JWindow implements LogListener, Contextual {
         poweredByContent.add(poweredByIconContainer, BorderLayout.CENTER);
 
         getContentPane().add(poweredByContainer);
+
+        // Listen to Esc
+        getRootPane().registerKeyboardAction(e -> setVisible(false),
+                KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
+                JComponent.WHEN_IN_FOCUSED_WINDOW);
     }
 
     public void showSplash(Context context) {

@@ -93,7 +93,7 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
         JIPipeDefaultRegistry.getInstance().getEventBus().register(this);
 
         validatePlugins(true);
-        SplashScreen.getInstance().hideSplash();
+        SwingUtilities.invokeLater(() -> SplashScreen.getInstance().hideSplash());
 
         restoreStandardTabs(showIntroduction, isNewProject);
         if(ProjectsSettings.getInstance().isRestoreTabs())
