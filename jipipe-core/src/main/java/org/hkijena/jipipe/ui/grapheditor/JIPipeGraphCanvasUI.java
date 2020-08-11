@@ -310,7 +310,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
         getEventBus().post(event);
     }
 
-    private void autoPlaceCloseToCursor(JIPipeNodeUI ui) {
+    public void autoPlaceCloseToCursor(JIPipeNodeUI ui) {
         int minX = 0;
         int minY = 0;
         if (graphEditCursor != null) {

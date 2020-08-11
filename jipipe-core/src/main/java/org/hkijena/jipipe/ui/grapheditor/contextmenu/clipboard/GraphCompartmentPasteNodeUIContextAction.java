@@ -13,7 +13,9 @@
 
 package org.hkijena.jipipe.ui.grapheditor.contextmenu.clipboard;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import org.hkijena.jipipe.api.JIPipeProject;
+import org.hkijena.jipipe.api.compartments.JIPipeExportedCompartment;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeCompartmentOutput;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
@@ -31,10 +33,7 @@ import org.hkijena.jipipe.utils.UIUtils;
 import javax.swing.*;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static org.hkijena.jipipe.utils.UIUtils.getStringFromClipboard;
 
@@ -50,49 +49,17 @@ public class GraphCompartmentPasteNodeUIContextAction implements NodeUIContextAc
             String json = getStringFromClipboard();
             if (json != null) {
                 JIPipeProject project = ((JIPipeProjectWorkbench) canvasUI.getWorkbench()).getProject();
-                JIPipeGraph sourceGraph = JsonUtils.getObjectMapper().readValue(json, JIPipeGraph.class);
-
-                // Collect all compartments
-                Set<String> compartments = new HashSet<>();
-                for (JIPipeGraphNode algorithm : sourceGraph.getNodes().values()) {
-                    compartments.add(algorithm.getCompartment());
-                }
-
-                // Create compartments and assign their compartments
-                Map<String, JIPipeProjectCompartment> compartmentNodeMap = new HashMap<>();
-                for (String compartment : compartments) {
-                    JIPipeProjectCompartment compartmentNode = project.addCompartment(compartment);
-                    canvasUI.getGraphHistory().addSnapshotBefore(new PasteCompartmentGraphHistorySnapshot(project, compartmentNode));
-                    compartmentNodeMap.put(compartment, compartmentNode);
-                }
-
-                // Add nodes
-                JIPipeGraph targetGraph = project.getGraph();
-                for (JIPipeGraphNode algorithm : sourceGraph.getNodes().values()) {
-                    String sourceCompartment = algorithm.getCompartment();
-                    String targetCompartment = compartmentNodeMap.get(sourceCompartment).getProjectCompartmentId();
-
-                    if (algorithm instanceof JIPipeCompartmentOutput) {
-                        // Copy slot configuration
-                        JIPipeCompartmentOutput outputNode = compartmentNodeMap.get(sourceCompartment).getOutputNode();
-                        outputNode.getSlotConfiguration().setTo(algorithm.getSlotConfiguration());
-                    } else {
-                        targetGraph.insertNode(algorithm, targetCompartment);
+                TypeReference<List<JIPipeExportedCompartment>> typeReference = new TypeReference<List<JIPipeExportedCompartment>>() {
+                };
+                List<JIPipeExportedCompartment> compartments = JsonUtils.getObjectMapper().readValue(json, typeReference);
+                for (JIPipeExportedCompartment compartment : compartments) {
+                    String newId = StringUtils.makeUniqueString(compartment.getSuggestedName(), " ", project.getCompartments().keySet());
+                    JIPipeProjectCompartment compartmentNode = compartment.addTo(project, newId);
+                    JIPipeNodeUI ui = canvasUI.getNodeUIs().getOrDefault(compartmentNode, null);
+                    if(ui != null) {
+                        canvasUI.autoPlaceCloseToCursor(ui);
                     }
-                }
 
-                // Add edges
-                for (Map.Entry<JIPipeDataSlot, JIPipeDataSlot> edge : sourceGraph.getSlotEdges()) {
-                    if (edge.getValue().getNode() instanceof JIPipeCompartmentOutput) {
-                        String sourceCompartment = edge.getValue().getNode().getCompartment();
-                        JIPipeCompartmentOutput outputNode = compartmentNodeMap.get(sourceCompartment).getOutputNode();
-                        JIPipeDataSlot outputNodeSlot = outputNode.getInputSlotMap().get(edge.getValue().getName());
-
-                        targetGraph.connect(edge.getKey(), outputNodeSlot);
-                    } else {
-                        // We can directly connect it
-                        targetGraph.connect(edge.getKey(), edge.getValue());
-                    }
                 }
             }
         } catch (Exception e) {
