@@ -37,6 +37,8 @@ public class PathListParameterEditorUI extends JIPipeParameterEditorUI {
     private JList<Path> listPanel;
     private PathEditor.IOMode ioMode = PathEditor.IOMode.Open;
     private PathEditor.PathMode pathMode = PathEditor.PathMode.FilesOnly;
+    private final JLabel emptyLabel = new JLabel("<html><strong>This list is empty</strong><br/>Click 'Add' to add items.</html>",
+            UIUtils.getIcon32FromResources("info.png"), JLabel.LEFT);
 
     /**
      * @param workbench       workbench
@@ -64,13 +66,15 @@ public class PathListParameterEditorUI extends JIPipeParameterEditorUI {
         listPanel.setCellRenderer(new PathListCellRenderer());
         listPanel.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         add(listPanel, BorderLayout.CENTER);
+        emptyLabel.setBorder(BorderFactory.createEmptyBorder(8,8,8,8));
+        add(emptyLabel, BorderLayout.SOUTH);
 
         JToolBar toolBar = new JToolBar();
         toolBar.setFloatable(false);
         add(toolBar, BorderLayout.NORTH);
 
+        toolBar.add(Box.createHorizontalStrut(4));
         toolBar.add(new JLabel(getParameterAccess().getName()));
-
         toolBar.add(Box.createHorizontalGlue());
 
         JButton addButton = new JButton("Add", UIUtils.getIconFromResources("actions/list-add.png"));
@@ -116,5 +120,6 @@ public class PathListParameterEditorUI extends JIPipeParameterEditorUI {
             listModel.addElement(path);
         }
         listPanel.setModel(listModel);
+        emptyLabel.setVisible(parameter.isEmpty());
     }
 }

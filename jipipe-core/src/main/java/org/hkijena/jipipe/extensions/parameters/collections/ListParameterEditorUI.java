@@ -30,6 +30,8 @@ import java.awt.*;
  */
 public class ListParameterEditorUI extends JIPipeParameterEditorUI {
     private FormPanel formPanel;
+    private final JLabel emptyLabel = new JLabel("<html><strong>This list is empty</strong><br/>Click 'Add' to add items.</html>",
+            UIUtils.getIcon32FromResources("info.png"), JLabel.LEFT);
 
     /**
      * Creates new instance
@@ -49,6 +51,7 @@ public class ListParameterEditorUI extends JIPipeParameterEditorUI {
         JToolBar toolBar = new JToolBar();
         toolBar.setFloatable(false);
 
+        toolBar.add(Box.createHorizontalStrut(4));
         toolBar.add(new JLabel(getParameterAccess().getName()));
 
         toolBar.add(Box.createHorizontalGlue());
@@ -60,6 +63,8 @@ public class ListParameterEditorUI extends JIPipeParameterEditorUI {
 
         formPanel = new FormPanel(null, FormPanel.NONE);
         add(formPanel, BorderLayout.CENTER);
+        add(emptyLabel, BorderLayout.SOUTH);
+        emptyLabel.setBorder(BorderFactory.createEmptyBorder(8,8,8,8));
     }
 
     private void addNewEntry() {
@@ -90,6 +95,7 @@ public class ListParameterEditorUI extends JIPipeParameterEditorUI {
             JIPipeParameterEditorUI ui = JIPipeUIParameterTypeRegistry.getInstance().createEditorFor(getWorkbench(), access);
             formPanel.addToForm(ui, removeButton, null);
         }
+        emptyLabel.setVisible(parameter.isEmpty());
     }
 
     private void removeEntry(Object entry) {
