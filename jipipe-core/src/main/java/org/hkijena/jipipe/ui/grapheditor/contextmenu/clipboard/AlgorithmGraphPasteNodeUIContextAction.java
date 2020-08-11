@@ -65,6 +65,10 @@ public class AlgorithmGraphPasteNodeUIContextAction implements NodeUIContextActi
                         minY = Math.min(minY, point.y);
                     }
                 }
+                if(minX == Integer.MAX_VALUE)
+                    minX = 0;
+                if(minY == Integer.MAX_VALUE)
+                    minY = 0;
 
                 // Change the compartment
                 String compartment = canvasUI.getCompartment();
