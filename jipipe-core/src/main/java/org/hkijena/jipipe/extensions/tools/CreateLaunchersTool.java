@@ -34,6 +34,7 @@ import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.attribute.PosixFilePermissions;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
@@ -131,13 +132,19 @@ public class CreateLaunchersTool extends MenuExtension {
     }
 
     private void createLinuxLauncher(Path imageJDir) {
-        try(PrintWriter writer = new PrintWriter(imageJDir.resolve("start-jipipe-linux.sh").toFile())) {
+        Path scriptFile = imageJDir.resolve("start-jipipe-linux.sh");
+        try(PrintWriter writer = new PrintWriter(scriptFile.toFile())) {
             writer.println("#!/bin/bash");
             writer.println("IMAGEJ_EXECUTABLE=$(find . -name \"ImageJ-*\" -print -quit)");
             writer.println("eval $IMAGEJ_EXECUTABLE --pass-classpath --full-classpath --main-class org.hkijena.jipipe.JIPipeLauncher");
         } catch (FileNotFoundException e) {
             IJ.handleException(e);
             return;
+        }
+        try {
+            Files.setPosixFilePermissions(scriptFile, PosixFilePermissions.fromString("rwxrwxr-x"));
+        } catch (IOException e) {
+            IJ.handleException(e);
         }
         getWorkbench().sendStatusBarText("Created start-jipipe-linux.sh in the application directory.");
         if(JOptionPane.showConfirmDialog(getWorkbench().getWindow(),
@@ -169,7 +176,7 @@ public class CreateLaunchersTool extends MenuExtension {
             // Write desktop file
             try(PrintWriter writer = new PrintWriter(applicationsDirectory.resolve("jipipe.desktop").toFile())) {
                 writer.println("[Desktop Entry]");
-                writer.println("Exec=" + "cd \"" + imageJDir + "\" && \"" + imageJDir.resolve("start-jipipe-linux.sh") + "\"");
+                writer.println("Exec=" + "bash -c \"cd '" + imageJDir + "' && '" + scriptFile + "'\"");
                 writer.println("Icon=" + imageJDir.resolve("jipipe-icon.svg"));
                 writer.println("Name=JIPipe");
                 writer.println("Comment=Graphical batch-programming language for ImageJ/Fiji");
