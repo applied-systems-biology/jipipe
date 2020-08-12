@@ -80,7 +80,7 @@ public class JIPipeMergedResultDataSlotTableUI extends JIPipeProjectWorkbenchPan
             table.setRowHeight(GeneralUISettings.getInstance().getPreviewHeight());
         else
             table.setRowHeight(25);
-        table.setDefaultRenderer(Path.class, new JIPipeRowLocationTableCellRenderer());
+        table.setDefaultRenderer(Path.class, new JIPipeRowIndexTableCellRenderer());
         table.setDefaultRenderer(JIPipeDataInfo.class, new JIPipeDataInfoCellRenderer());
         table.setDefaultRenderer(JIPipeGraphNode.class, new JIPipeNodeTableCellRenderer());
         table.setDefaultRenderer(JIPipeProjectCompartment.class, new JIPipeProjectCompartmentTableCellRenderer());
@@ -150,7 +150,7 @@ public class JIPipeMergedResultDataSlotTableUI extends JIPipeProjectWorkbenchPan
             int row = table.getRowSorter().convertRowIndexToModel(viewRow);
             JIPipeExportedDataTable.Row rowInstance = mergedDataTable.getRowList().get(row);
             JIPipeDataSlot slot = mergedDataTable.getSlot(row);
-            JLabel nameLabel = new JLabel(rowInstance.getLocation().toString(), JIPipeUIDatatypeRegistry.getInstance().getIconFor(slot.getAcceptedDataType()), JLabel.LEFT);
+            JLabel nameLabel = new JLabel("" + rowInstance.getIndex(), JIPipeUIDatatypeRegistry.getInstance().getIconFor(slot.getAcceptedDataType()), JLabel.LEFT);
             nameLabel.setToolTipText(TooltipUtils.getSlotInstanceTooltip(slot));
             JIPipeResultDataSlotRowUI rowUI = JIPipeUIDatatypeRegistry.getInstance().getUIForResultSlot(getProjectWorkbench(), slot, rowInstance);
             rowUIList.addToForm(rowUI, nameLabel, null);

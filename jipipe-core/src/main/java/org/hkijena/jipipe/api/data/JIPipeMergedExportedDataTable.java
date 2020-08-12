@@ -75,7 +75,7 @@ public class JIPipeMergedExportedDataTable implements TableModel {
         else if (columnIndex == 1)
             return "Algorithm";
         if (columnIndex == 2)
-            return "Location";
+            return "Index";
         else if (columnIndex == 3)
             return "Data type";
         else if (columnIndex == 4)
@@ -112,7 +112,7 @@ public class JIPipeMergedExportedDataTable implements TableModel {
         else if (columnIndex == 1)
             return algorithmList.get(rowIndex);
         else if (columnIndex == 2)
-            return rowList.get(rowIndex).getLocation();
+            return rowList.get(rowIndex).getIndex();
         else if (columnIndex == 3)
             return JIPipeDataInfo.getInstance(slotList.get(rowIndex).getAcceptedDataType());
         else if (columnIndex == 4)

@@ -87,7 +87,7 @@ public abstract class JIPipeResultDataSlotRowUI extends JIPipeProjectWorkbenchPa
      * @return a name that identifies this row
      */
     public String getDisplayName() {
-        return getAlgorithmCompartment() + "/" + getAlgorithmName() + "/" + getSlot().getName() + "/" + getRow().getLocation();
+        return getAlgorithmCompartment() + "/" + getAlgorithmName() + "/" + getSlot().getName() + "/" + getRow().getIndex();
     }
 
     /**
@@ -96,6 +96,6 @@ public abstract class JIPipeResultDataSlotRowUI extends JIPipeProjectWorkbenchPa
      * @return the folder where the data is stored
      */
     public Path getRowStorageFolder() {
-        return slot.getStoragePath().resolve(getRow().getLocation());
+        return slot.getStoragePath().resolve("" + getRow().getIndex());
     }
 }

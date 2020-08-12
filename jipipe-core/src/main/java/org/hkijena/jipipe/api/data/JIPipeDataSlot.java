@@ -391,10 +391,9 @@ public class JIPipeDataSlot implements TableModel {
         if (isOutput() && storagePath != null && data != null) {
 
             // Save data
-            List<Path> dataOutputPaths = new ArrayList<>();
+            List<Integer> indices = new ArrayList<>();
             for (int row = 0; row < getRowCount(); ++row) {
-                Path pathName = Paths.get(getName() + " " + row);
-                Path path = storagePath.resolve(pathName);
+                Path path = storagePath.resolve("" + row);
                 if (!Files.isDirectory(path)) {
                     try {
                         Files.createDirectories(path);
@@ -405,11 +404,11 @@ public class JIPipeDataSlot implements TableModel {
                     }
                 }
 
-                dataOutputPaths.add(pathName);
+                indices.add(row);
                 data.get(row).saveTo(path, getName(), false);
             }
 
-            JIPipeExportedDataTable dataTable = new JIPipeExportedDataTable(this, basePath, dataOutputPaths);
+            JIPipeExportedDataTable dataTable = new JIPipeExportedDataTable(this, basePath, indices);
             try {
                 dataTable.saveAsJson(storagePath.resolve("data-table.json"));
                 dataTable.saveAsCSV(storagePath.resolve("data-table.csv"));

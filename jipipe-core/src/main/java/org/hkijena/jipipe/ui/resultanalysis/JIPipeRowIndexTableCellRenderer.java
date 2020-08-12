@@ -23,23 +23,21 @@ import java.nio.file.Path;
 /**
  * Renders the location of of {@link org.hkijena.jipipe.api.data.JIPipeExportedDataTable} and {@link org.hkijena.jipipe.api.data.JIPipeMergedExportedDataTable}
  */
-public class JIPipeRowLocationTableCellRenderer extends JLabel implements TableCellRenderer {
+public class JIPipeRowIndexTableCellRenderer extends JLabel implements TableCellRenderer {
 
     /**
      * Creates new renderer
      */
-    public JIPipeRowLocationTableCellRenderer() {
+    public JIPipeRowIndexTableCellRenderer() {
         setOpaque(true);
         setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
-        setIcon(UIUtils.getIconFromResources("actions/database.png"));
+//        setIcon(UIUtils.getIconFromResources("actions/database.png"));
     }
 
     @Override
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
 
-        if (value instanceof Path) {
-            setText(value.toString());
-        }
+        setText("" + value);
 
         if (isSelected) {
             setBackground(new Color(184, 207, 229));
