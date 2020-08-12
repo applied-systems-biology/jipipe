@@ -511,17 +511,18 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
      * @param left expand left
      * @param top  expand top
      */
-    public void expandLeftTop(boolean left, boolean top) {
-        int ex = left ? viewMode.getGridWidth() : 0;
-        int ey = top ? viewMode.getGridHeight() : 0;
+    public void expandLeftTop(int left, int top) {
         for (JIPipeNodeUI value : nodeUIs.values()) {
             if (!currentlyDraggedOffsets.containsKey(value)) {
-                value.moveToNextGridPoint(new Point(value.getX() + ex, value.getY() + ey), false, true);
+                Point gridLocation = viewMode.realLocationToGrid(value.getLocation(), zoom);
+                gridLocation.x += left;
+                gridLocation.y += top;
+                value.moveToGridLocation(gridLocation, false, true);
             }
         }
         if (graphEditCursor != null) {
-            graphEditCursor.x += ex;
-            graphEditCursor.y += ey;
+            graphEditCursor.x = (int)Math.round(graphEditCursor.x + left * viewMode.getGridWidth() * zoom);
+            graphEditCursor.y = (int)Math.round(graphEditCursor.y + top * viewMode.getGridHeight() * zoom);
         }
         if (getParent() != null)
             getParent().revalidate();

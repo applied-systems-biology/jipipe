@@ -600,15 +600,21 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
 
             // Infinite scroll (left, top)
             {
-                boolean ex = nx < 0;
-                boolean ey = ny < 0;
-                if (ex || ey) {
+                int ex = 0;
+                int ey = 0;
+                if(nx < 0) {
+                    ex = (int)Math.ceil(1.0 * -nx / (canvasUI.getViewMode().getGridWidth() * canvasUI.getZoom()));
+                }
+                if(ny < 0) {
+                    ey = (int)Math.ceil(1.0 * -ny / (canvasUI.getViewMode().getGridHeight() * canvasUI.getZoom()));
+                }
+                if (ex > 0 || ey > 0) {
                     canvasUI.expandLeftTop(ex, ey);
-                    if (ex) {
+                    if (ex > 0) {
                         nx = canvasUI.getViewMode().getGridWidth();
                         panningOffset.x += canvasUI.getViewMode().getGridWidth();
                     }
-                    if (ey) {
+                    if (ey > 0) {
                         ny = canvasUI.getViewMode().getGridHeight();
                         panningOffset.y += canvasUI.getViewMode().getGridHeight();
                     }
