@@ -146,7 +146,7 @@ public class JIPipeProjectInfoUI extends JIPipeProjectWorkbenchPanel {
 
     private void refreshTechnicalInfo() {
         licenseInfo.setText(StringUtils.orElse(getProject().getMetadata().getLicense(), "No license"));
-        projectStats.setText(getProject().getGraph().getAlgorithmCount() + " nodes in " + getProject().getCompartments().size() + " compartments");
+        projectStats.setText(getProject().getGraph().getNodeCount() + " nodes in " + getProject().getCompartments().size() + " compartments");
     }
 
     private void renderBackgroundPanel() {

@@ -71,8 +71,10 @@ public class JIPipeExportedCompartment {
             copies.put(algorithm.getIdInGraph(), copy);
         }
         for (Map.Entry<JIPipeDataSlot, JIPipeDataSlot> edge : sourceGraph.getSlotEdges()) {
-            JIPipeGraphNode copySource = copies.get(edge.getKey().getNode().getIdInGraph());
-            JIPipeGraphNode copyTarget = copies.get(edge.getValue().getNode().getIdInGraph());
+            JIPipeGraphNode copySource = copies.getOrDefault(edge.getKey().getNode().getIdInGraph(), null);
+            JIPipeGraphNode copyTarget = copies.getOrDefault(edge.getValue().getNode().getIdInGraph(), null);
+            if(copySource == null || copyTarget == null)
+                continue;
             if (!copySource.getCompartment().equals(compartmentId))
                 continue;
             if (!copyTarget.getCompartment().equals(compartmentId))
@@ -80,6 +82,7 @@ public class JIPipeExportedCompartment {
             graph.connect(copySource.getOutputSlotMap().get(edge.getKey().getName()),
                     copyTarget.getInputSlotMap().get(edge.getValue().getName()));
         }
+        metadata.setName(compartment.getName());
     }
 
     /**

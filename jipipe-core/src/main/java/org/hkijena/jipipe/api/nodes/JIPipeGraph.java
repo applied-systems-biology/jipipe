@@ -57,7 +57,7 @@ public class JIPipeGraph implements JIPipeValidatable {
     public static final String COMPARTMENT_DEFAULT = "DEFAULT";
 
     private DefaultDirectedGraph<JIPipeDataSlot, JIPipeGraphEdge> graph = new DefaultDirectedGraph<>(JIPipeGraphEdge.class);
-    private BiMap<String, JIPipeGraphNode> algorithms = HashBiMap.create();
+    private BiMap<String, JIPipeGraphNode> nodes = HashBiMap.create();
     private Map<JIPipeGraphNode, String> compartments = new HashMap<>();
     private List<JIPipeDataSlot> traversedSlots;
     private List<JIPipeGraphNode> traversedAlgorithms;
@@ -80,9 +80,9 @@ public class JIPipeGraph implements JIPipeValidatable {
      */
     public JIPipeGraph(JIPipeGraph other) {
         // Copy nodes
-        for (Map.Entry<String, JIPipeGraphNode> kv : other.algorithms.entrySet()) {
+        for (Map.Entry<String, JIPipeGraphNode> kv : other.nodes.entrySet()) {
             JIPipeGraphNode algorithm = kv.getValue().getInfo().clone(kv.getValue());
-            algorithms.put(kv.getKey(), algorithm);
+            nodes.put(kv.getKey(), algorithm);
             algorithm.setGraph(this);
             algorithm.getEventBus().register(this);
         }
@@ -90,10 +90,10 @@ public class JIPipeGraph implements JIPipeValidatable {
 
         // Copy edges
         for (Map.Entry<JIPipeDataSlot, JIPipeDataSlot> edge : other.getSlotEdges()) {
-            String sourceAlgorithmName = other.algorithms.inverse().get(edge.getKey().getNode());
-            String targetAlgorithmName = other.algorithms.inverse().get(edge.getValue().getNode());
-            JIPipeGraphNode sourceAlgorithm = algorithms.get(sourceAlgorithmName);
-            JIPipeGraphNode targetAlgorithm = algorithms.get(targetAlgorithmName);
+            String sourceAlgorithmName = other.nodes.inverse().get(edge.getKey().getNode());
+            String targetAlgorithmName = other.nodes.inverse().get(edge.getValue().getNode());
+            JIPipeGraphNode sourceAlgorithm = nodes.get(sourceAlgorithmName);
+            JIPipeGraphNode targetAlgorithm = nodes.get(targetAlgorithmName);
             JIPipeDataSlot source = sourceAlgorithm.getOutputSlotMap().get(edge.getKey().getName());
             JIPipeDataSlot target = targetAlgorithm.getInputSlotMap().get(edge.getValue().getName());
             connect(source, target);
@@ -114,7 +114,7 @@ public class JIPipeGraph implements JIPipeValidatable {
     public String insertNode(String key, JIPipeGraphNode algorithm, String compartment) {
         if (compartment == null)
             throw new NullPointerException("Compartment should not be null!");
-        if (algorithms.containsKey(key))
+        if (nodes.containsKey(key))
             throw new UserFriendlyRuntimeException("Already contains algorithm with name " + key,
                     "Could not add an algorithm node into the graph!",
                     "Algorithm graph", "There already exists an algorithm with the same identifier.",
@@ -122,7 +122,7 @@ public class JIPipeGraph implements JIPipeValidatable {
                             "the JIPipe or plugin developers for further assistance.");
         algorithm.setCompartment(compartment);
         algorithm.setGraph(this);
-        algorithms.put(key, algorithm);
+        nodes.put(key, algorithm);
         compartments.put(algorithm, compartment);
         algorithm.getEventBus().register(this);
         ++preventTriggerEvents;
@@ -158,7 +158,7 @@ public class JIPipeGraph implements JIPipeValidatable {
             name = algorithm.getName();
         else
             name = compartment + "-" + algorithm.getName();
-        String uniqueName = StringUtils.makeUniqueString(StringUtils.jsonify(name), " ", algorithms.keySet());
+        String uniqueName = StringUtils.makeUniqueString(StringUtils.jsonify(name), " ", nodes.keySet());
         return insertNode(uniqueName, algorithm, compartment);
     }
 
@@ -170,8 +170,8 @@ public class JIPipeGraph implements JIPipeValidatable {
     public Map<String, String> cleanupIds() {
         Map<String, String> renaming = new HashMap<>();
         List<JIPipeGraphNode> traversedAlgorithms = traverseAlgorithms();
-        ImmutableBiMap<String, JIPipeGraphNode> oldIds = ImmutableBiMap.copyOf(algorithms);
-        algorithms.clear();
+        ImmutableBiMap<String, JIPipeGraphNode> oldIds = ImmutableBiMap.copyOf(nodes);
+        nodes.clear();
         for (JIPipeGraphNode algorithm : traversedAlgorithms) {
             String compartment = algorithm.getCompartment();
             String name;
@@ -179,8 +179,8 @@ public class JIPipeGraph implements JIPipeValidatable {
                 name = algorithm.getName();
             else
                 name = compartment + "-" + algorithm.getName();
-            String newId = StringUtils.makeUniqueString(StringUtils.jsonify(name), " ", algorithms.keySet());
-            algorithms.put(newId, algorithm);
+            String newId = StringUtils.makeUniqueString(StringUtils.jsonify(name), " ", nodes.keySet());
+            nodes.put(newId, algorithm);
             String oldId = oldIds.inverse().get(algorithm);
             renaming.put(oldId, newId);
         }
@@ -222,9 +222,9 @@ public class JIPipeGraph implements JIPipeValidatable {
      * @param compartment The compartment ID
      */
     public void removeCompartment(String compartment) {
-        Set<String> ids = algorithms.keySet().stream().filter(id -> compartment.equals(compartments.get(algorithms.get(id)))).collect(Collectors.toSet());
+        Set<String> ids = nodes.keySet().stream().filter(id -> compartment.equals(compartments.get(nodes.get(id)))).collect(Collectors.toSet());
         for (String id : ids) {
-            removeNode(algorithms.get(id), false);
+            removeNode(nodes.get(id), false);
         }
     }
 
@@ -235,7 +235,7 @@ public class JIPipeGraph implements JIPipeValidatable {
      * @param newCompartment New compartment ID
      */
     public void renameCompartment(String compartment, String newCompartment) {
-        for (JIPipeGraphNode algorithm : algorithms.values().stream().filter(a -> compartment.equals(compartments.get(a))).collect(Collectors.toSet())) {
+        for (JIPipeGraphNode algorithm : nodes.values().stream().filter(a -> compartment.equals(compartments.get(a))).collect(Collectors.toSet())) {
             compartments.put(algorithm, newCompartment);
         }
         postChangedEvent();
@@ -261,7 +261,7 @@ public class JIPipeGraph implements JIPipeValidatable {
         }
 
         // Do internal remove operation
-        algorithms.remove(getIdOf(algorithm));
+        nodes.remove(getIdOf(algorithm));
         compartments.remove(algorithm);
         algorithm.getEventBus().unregister(this);
         for (JIPipeDataSlot slot : algorithm.getInputSlots()) {
@@ -365,7 +365,7 @@ public class JIPipeGraph implements JIPipeValidatable {
 
         // Remove deleted slots from the graph
         Set<JIPipeDataSlot> toRemove = new HashSet<>();
-        for (JIPipeGraphNode algorithm : algorithms.values()) {
+        for (JIPipeGraphNode algorithm : nodes.values()) {
             for (JIPipeDataSlot slot : graph.vertexSet()) {
                 if (slot.getNode() == algorithm && !algorithm.getInputSlots().contains(slot) &&
                         !algorithm.getOutputSlots().contains(slot)) {
@@ -378,7 +378,7 @@ public class JIPipeGraph implements JIPipeValidatable {
         toRemove.forEach(graph::removeVertex);
 
         // Add missing slots
-        for (JIPipeGraphNode algorithm : algorithms.values()) {
+        for (JIPipeGraphNode algorithm : nodes.values()) {
 
             // Add vertices
             for (JIPipeDataSlot inputSlot : algorithm.getInputSlots()) {
@@ -586,7 +586,7 @@ public class JIPipeGraph implements JIPipeValidatable {
      */
     public Set<JIPipeDependency> getDependencies() {
         Set<JIPipeDependency> result = new HashSet<>();
-        for (JIPipeGraphNode algorithm : algorithms.values()) {
+        for (JIPipeGraphNode algorithm : nodes.values()) {
             result.addAll(algorithm.getDependencies());
         }
         return result;
@@ -607,7 +607,7 @@ public class JIPipeGraph implements JIPipeValidatable {
      * @return Map from algorithm instance ID to algorithm instance
      */
     public BiMap<String, JIPipeGraphNode> getNodes() {
-        return ImmutableBiMap.copyOf(algorithms);
+        return ImmutableBiMap.copyOf(nodes);
     }
 
     /**
@@ -617,7 +617,7 @@ public class JIPipeGraph implements JIPipeValidatable {
      * @return True if the algorithm is part of this graph
      */
     public boolean containsNode(JIPipeGraphNode algorithm) {
-        return algorithms.containsValue(algorithm);
+        return nodes.containsValue(algorithm);
     }
 
     /**
@@ -648,7 +648,7 @@ public class JIPipeGraph implements JIPipeValidatable {
             return;
 
         for (Map.Entry<String, JsonNode> kv : ImmutableList.copyOf(node.get("nodes").fields())) {
-            if (!algorithms.containsKey(kv.getKey())) {
+            if (!nodes.containsKey(kv.getKey())) {
                 String id = kv.getValue().get("jipipe:node-info-id").asText();
                 if (!JIPipeNodeRegistry.getInstance().hasNodeInfoWithId(id)) {
                     System.err.println("Unable to find node with ID '" + id + "'. Skipping.");
@@ -669,8 +669,8 @@ public class JIPipeGraph implements JIPipeValidatable {
         for (JsonNode edgeNode : ImmutableList.copyOf(node.get("edges").elements())) {
             String sourceAlgorithmName = edgeNode.get("source-node").asText();
             String targetAlgorithmName = edgeNode.get("target-node").asText();
-            JIPipeGraphNode sourceAlgorithm = algorithms.get(sourceAlgorithmName);
-            JIPipeGraphNode targetAlgorithm = algorithms.get(targetAlgorithmName);
+            JIPipeGraphNode sourceAlgorithm = nodes.get(sourceAlgorithmName);
+            JIPipeGraphNode targetAlgorithm = nodes.get(targetAlgorithmName);
             if (sourceAlgorithm == null) {
                 issues.forCategory("Edges").forCategory("Source").forCategory(sourceAlgorithmName).reportIsInvalid("Unable to find node '" + sourceAlgorithmName + "'!",
                         "The JSON data requested to create an edge between the nodes '" + sourceAlgorithmName + "' and '" + targetAlgorithmName + "', but the source does not exist. " +
@@ -794,8 +794,8 @@ public class JIPipeGraph implements JIPipeValidatable {
     /**
      * @return The number of all algorithms
      */
-    public int getAlgorithmCount() {
-        return algorithms.size();
+    public int getNodeCount() {
+        return nodes.size();
     }
 
     /**
@@ -928,7 +928,7 @@ public class JIPipeGraph implements JIPipeValidatable {
                 }
             }
         }
-        for (JIPipeGraphNode missing : algorithms.values()) {
+        for (JIPipeGraphNode missing : nodes.values()) {
             if (!visited.contains(missing)) {
                 result.add(missing);
             }
@@ -956,7 +956,7 @@ public class JIPipeGraph implements JIPipeValidatable {
 
     @Override
     public void reportValidity(JIPipeValidityReport report) {
-        for (Map.Entry<String, JIPipeGraphNode> entry : algorithms.entrySet()) {
+        for (Map.Entry<String, JIPipeGraphNode> entry : nodes.entrySet()) {
             if (entry.getValue() instanceof JIPipeAlgorithm) {
                 JIPipeAlgorithm algorithm = (JIPipeAlgorithm) entry.getValue();
                 if (!algorithm.isEnabled() || (algorithm.canPassThrough() && algorithm.isPassThrough()))
@@ -1043,7 +1043,7 @@ public class JIPipeGraph implements JIPipeValidatable {
      * Clears this graph
      */
     public void clear() {
-        for (JIPipeGraphNode algorithm : ImmutableSet.copyOf(algorithms.values())) {
+        for (JIPipeGraphNode algorithm : ImmutableSet.copyOf(nodes.values())) {
             removeNode(algorithm, false);
         }
     }
@@ -1056,7 +1056,7 @@ public class JIPipeGraph implements JIPipeValidatable {
      * @return The ID of this algorithm within the graph.
      */
     public String getIdOf(JIPipeGraphNode algorithm) {
-        return algorithms.inverse().get(algorithm);
+        return nodes.inverse().get(algorithm);
     }
 
     /**
@@ -1130,7 +1130,7 @@ public class JIPipeGraph implements JIPipeValidatable {
      */
     public Set<JIPipeGraphNode> getAlgorithmsWithCompartment(String compartmentId) {
         Set<JIPipeGraphNode> result = new HashSet<>();
-        for (JIPipeGraphNode algorithm : algorithms.values()) {
+        for (JIPipeGraphNode algorithm : nodes.values()) {
             if (algorithm.getCompartment().equals(compartmentId))
                 result.add(algorithm);
         }
@@ -1160,11 +1160,11 @@ public class JIPipeGraph implements JIPipeValidatable {
      */
     public void replaceWith(JIPipeGraph other) {
         ++preventTriggerEvents;
-        this.algorithms.clear();
+        this.nodes.clear();
         this.compartments.clear();
-        this.algorithms.putAll(other.algorithms);
+        this.nodes.putAll(other.nodes);
         this.compartments.putAll(other.compartments);
-        for (JIPipeGraphNode node : this.algorithms.values()) {
+        for (JIPipeGraphNode node : this.nodes.values()) {
             node.getEventBus().register(this);
         }
         this.graph = other.graph;
@@ -1213,7 +1213,7 @@ public class JIPipeGraph implements JIPipeValidatable {
         }
 
         private void serializeNodes(JIPipeGraph algorithmGraph, JsonGenerator jsonGenerator) throws IOException {
-            for (Map.Entry<String, JIPipeGraphNode> kv : algorithmGraph.algorithms.entrySet()) {
+            for (Map.Entry<String, JIPipeGraphNode> kv : algorithmGraph.nodes.entrySet()) {
                 jsonGenerator.writeObjectField(StringUtils.jsonify(kv.getKey()), kv.getValue());
             }
         }

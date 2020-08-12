@@ -115,6 +115,7 @@ public class DynamicSetParameterEditorUI extends JIPipeParameterEditorUI {
         }
 
         JToolBar toolBar = new JToolBar();
+        toolBar.add(Box.createHorizontalStrut(4));
         toolBar.add(new JLabel(getParameterAccess().getName()));
         toolBar.add(Box.createHorizontalGlue());
 
