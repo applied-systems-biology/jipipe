@@ -318,15 +318,16 @@ public class JIPipeDataSlot implements TableModel {
      * Saves the stored data to the provided storage path and sets data to null
      * Warning: Ensure that depending input slots do not use this slot, anymore!
      *
+     * @param basePath the base path to where all results are stored relative to. If null, there is no base path
      * @param destroyData the the containing data should be destroyed
      */
-    public void flush(boolean destroyData) {
+    public void flush(Path basePath, boolean destroyData) {
         if (getNode() instanceof JIPipeAlgorithm) {
             if (((JIPipeAlgorithm) getNode()).isSaveOutputs()) {
-                save();
+                save(basePath);
             }
         } else {
-            save();
+            save(basePath);
         }
         for (int i = 0; i < data.size(); ++i) {
             if (destroyData)
@@ -384,8 +385,9 @@ public class JIPipeDataSlot implements TableModel {
 
     /**
      * Saves the data to the storage path
+     * @param basePath the base path to where all results are stored relative to. If null, there is no base path
      */
-    public void save() {
+    public void save(Path basePath) {
         if (isOutput() && storagePath != null && data != null) {
 
             // Save data
@@ -407,7 +409,7 @@ public class JIPipeDataSlot implements TableModel {
                 data.get(row).saveTo(path, getName(), false);
             }
 
-            JIPipeExportedDataTable dataTable = new JIPipeExportedDataTable(this, dataOutputPaths);
+            JIPipeExportedDataTable dataTable = new JIPipeExportedDataTable(this, basePath, dataOutputPaths);
             try {
                 dataTable.saveAsJson(storagePath.resolve("data-table.json"));
                 dataTable.saveAsCSV(storagePath.resolve("data-table.csv"));

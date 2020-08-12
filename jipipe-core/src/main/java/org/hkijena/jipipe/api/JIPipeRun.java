@@ -136,7 +136,7 @@ public class JIPipeRun implements JIPipeRunnable {
                 project.getCache().store((JIPipeAlgorithm) projectAlgorithm, stateId, outputSlot);
             }
             if (configuration.isSaveOutputs()) {
-                outputSlot.flush(!configuration.isStoreToCache());
+                outputSlot.flush(configuration.getOutputPath(), !configuration.isStoreToCache());
             } else {
                 outputSlot.clearData(false);
             }

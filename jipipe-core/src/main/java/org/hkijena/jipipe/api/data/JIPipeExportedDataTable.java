@@ -19,6 +19,7 @@ import ij.measure.ResultsTable;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
 import org.hkijena.jipipe.utils.JsonUtils;
+import org.python.antlr.ast.Str;
 
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
@@ -36,7 +37,7 @@ import java.util.stream.Collectors;
 public class JIPipeExportedDataTable implements TableModel {
     private String algorithmId;
     private String slotName;
-    private Path internalPath;
+    private String internalPath;
     private Class<? extends JIPipeData> acceptedDataType;
     private List<Row> rowList;
     private List<String> traitColumns;
@@ -47,25 +48,26 @@ public class JIPipeExportedDataTable implements TableModel {
      * @param slot            The slot
      * @param dataOutputPaths output path for each slot row
      */
-    public JIPipeExportedDataTable(JIPipeDataSlot slot, List<Path> dataOutputPaths) {
+    public JIPipeExportedDataTable(JIPipeDataSlot slot, Path basePath, List<Path> dataOutputPaths) {
         this.algorithmId = slot.getNode().getInfo().getId();
         this.slotName = slot.getName();
-        this.internalPath = slot.getStoragePath();
+        if(basePath != null) {
+            this.internalPath = basePath.relativize(slot.getStoragePath()).toString();
+        }
+        else {
+            this.internalPath = slot.getStoragePath().toString();
+        }
         this.acceptedDataType = slot.getAcceptedDataType();
         this.rowList = new ArrayList<>();
         for (int row = 0; row < slot.getRowCount(); ++row) {
             Row rowInstance = new Row();
-            rowInstance.location = dataOutputPaths.get(row);
+            rowInstance.location = dataOutputPaths.get(row).toString();
             rowInstance.traits = slot.getAnnotations(row);
             rowList.add(rowInstance);
         }
     }
 
-    /**
-     * Creates an empty instance
-     */
     public JIPipeExportedDataTable() {
-
     }
 
     /**
@@ -108,7 +110,7 @@ public class JIPipeExportedDataTable implements TableModel {
      * @return The internal path
      */
     @JsonGetter("internal-path")
-    public Path getInternalPath() {
+    public String getInternalPath() {
         return internalPath;
     }
 
@@ -118,7 +120,7 @@ public class JIPipeExportedDataTable implements TableModel {
      * @param internalPath The internal path
      */
     @JsonSetter("internal-path")
-    public void setInternalPath(Path internalPath) {
+    public void setInternalPath(String internalPath) {
         this.internalPath = internalPath;
     }
 
@@ -297,7 +299,7 @@ public class JIPipeExportedDataTable implements TableModel {
      * A row in the table
      */
     public static class Row {
-        private Path location;
+        private String location;
         private List<JIPipeAnnotation> traits;
 
         /**
@@ -310,7 +312,7 @@ public class JIPipeExportedDataTable implements TableModel {
          * @return Internal location relative to the output folder
          */
         @JsonGetter("location")
-        public Path getLocation() {
+        public String getLocation() {
             return location;
         }
 
@@ -320,7 +322,7 @@ public class JIPipeExportedDataTable implements TableModel {
          * @param location Internal location relative to the output folder
          */
         @JsonSetter("location")
-        public void setLocation(Path location) {
+        public void setLocation(String location) {
             this.location = location;
         }
 
