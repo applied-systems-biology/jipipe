@@ -8,11 +8,11 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>jipipe-ij</artifactId>
+    <artifactId>jipipe-ij-algorithms</artifactId>
     <version>1.0-SNAPSHOT</version>
 
-    <name>jipipe-ij</name>
-    <description>JIPipe ImageJ data types</description>
+    <name>jipipe-ij-algorithms</name>
+    <description>JIPipe ImageJ Algorithms</description>
     <inceptionYear>2020</inceptionYear>
     <url>https://applied-systems-biology.github.io/jipipe/</url>
 
@@ -87,6 +87,11 @@
         <dependency>
             <groupId>org.hkijena</groupId>
             <artifactId>jipipe-strings</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+         <dependency>
+            <groupId>org.hkijena</groupId>
+            <artifactId>jipipe-ij</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
