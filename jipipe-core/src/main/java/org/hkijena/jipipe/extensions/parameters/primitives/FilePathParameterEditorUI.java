@@ -59,9 +59,7 @@ public class FilePathParameterEditorUI extends JIPipeParameterEditorUI {
 
         pathEditor.setPath(getParameterAccess().get(Path.class));
         add(pathEditor, BorderLayout.CENTER);
-        pathEditor.addActionListener(e -> {
-            setParameter(pathEditor.getPath(), false);
-        });
+        pathEditor.addActionListener(e -> setParameter(pathEditor.getPath(), false));
     }
 
 //    @Subscribe

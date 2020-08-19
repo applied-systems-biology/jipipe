@@ -15,6 +15,7 @@ package org.hkijena.jipipe.ui.components;
 
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
+import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -25,6 +26,7 @@ import java.awt.event.ActionListener;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -139,8 +141,12 @@ public class PathEditor extends JPanel {
     }
 
     public void setPath(Path path) {
-        if (path != null)
-            pathEdit.setText(path.toString());
+        if (path != null) {
+            String current = StringUtils.orElse(pathEdit.getText(), "");
+            if(!Objects.equals(current, path.toString())) {
+                pathEdit.setText(path.toString());
+            }
+        }
         else
             pathEdit.setText("");
     }
