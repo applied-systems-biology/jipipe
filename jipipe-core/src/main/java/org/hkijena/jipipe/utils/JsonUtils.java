@@ -17,6 +17,10 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+
+import java.nio.file.Path;
 
 /**
  * Global utilities for JSON data
@@ -34,6 +38,11 @@ public class JsonUtils {
             objectMapper = new ObjectMapper();
             objectMapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.NONE);
             objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
+            // Override standard behavior to serialize paths as URI
+            SimpleModule m = new SimpleModule("PathToString");
+            m.addSerializer(Path.class,new ToStringSerializer());
+            objectMapper.registerModule(m);
         }
         return objectMapper;
     }
