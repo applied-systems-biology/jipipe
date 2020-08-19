@@ -134,6 +134,7 @@ public class JIPipeDefaultRegistry extends AbstractService implements JIPipeRegi
                 javaExtensions.add(extension);
                 eventBus.post(new ExtensionDiscoveredEvent(this, extension));
             } catch (NoClassDefFoundError | InstantiableException e) {
+                e.printStackTrace();
                 issues.getErroneousPlugins().add(info);
             }
         }
@@ -143,15 +144,18 @@ public class JIPipeDefaultRegistry extends AbstractService implements JIPipeRegi
             PluginInfo<JIPipeJavaExtension> info = pluginList.get(i);
             IJ.showProgress(i + 1, pluginList.size());
             logService.info("JIPipe: Registering plugin " + info);
+            JIPipeJavaExtension extension = null;
             try {
-                JIPipeJavaExtension extension = (JIPipeJavaExtension) javaExtensions.get(i);
+                extension = (JIPipeJavaExtension) javaExtensions.get(i);
                 extension.register();
                 registeredExtensions.add(extension);
                 registeredExtensionIds.add(extension.getDependencyId());
                 eventBus.post(new ExtensionRegisteredEvent(this, extension));
             } catch (NoClassDefFoundError | Exception e) {
+                e.printStackTrace();
                 issues.getErroneousPlugins().add(info);
-                failedExtensions.add(javaExtensions.get(i));
+                if(extension != null)
+                    failedExtensions.add(extension);
             }
         }
 
