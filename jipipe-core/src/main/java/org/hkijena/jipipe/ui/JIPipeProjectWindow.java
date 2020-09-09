@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.ui;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.google.common.eventbus.EventBus;
 import net.imagej.updater.UpdateSite;
 import org.hkijena.jipipe.JIPipeDefaultRegistry;
 import org.hkijena.jipipe.JIPipeDependency;
@@ -27,6 +28,8 @@ import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.settings.ProjectsSettings;
 import org.hkijena.jipipe.ui.components.DocumentTabPane;
 import org.hkijena.jipipe.ui.components.SplashScreen;
+import org.hkijena.jipipe.ui.events.WindowClosedEvent;
+import org.hkijena.jipipe.ui.events.WindowOpenedEvent;
 import org.hkijena.jipipe.ui.project.JIPipeProjectTabMetadata;
 import org.hkijena.jipipe.ui.project.JIPipeTemplateSelectionDialog;
 import org.hkijena.jipipe.ui.project.UnsatisfiedDependenciesDialog;
@@ -50,7 +53,8 @@ import java.util.Set;
  */
 public class JIPipeProjectWindow extends JFrame {
 
-    private static Set<JIPipeProjectWindow> OPEN_WINDOWS = new HashSet<>();
+    private static final Set<JIPipeProjectWindow> OPEN_WINDOWS = new HashSet<>();
+    public static final EventBus WINDOWS_EVENTS = new EventBus();
     private Context context;
     private JIPipeProject project;
     private JIPipeProjectWorkbench projectUI;
@@ -66,11 +70,13 @@ public class JIPipeProjectWindow extends JFrame {
         SplashScreen.getInstance().hideSplash();
         this.context = context;
         OPEN_WINDOWS.add(this);
+        WINDOWS_EVENTS.post(new WindowOpenedEvent(this));
         initialize();
         loadProject(project, showIntroduction, isNewProject);
     }
 
     private void initialize() {
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         getContentPane().setLayout(new BorderLayout(8, 8));
         super.setTitle("JIPipe");
         setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
@@ -80,6 +86,7 @@ public class JIPipeProjectWindow extends JFrame {
     @Override
     public void dispose() {
         OPEN_WINDOWS.remove(this);
+        WINDOWS_EVENTS.post(new WindowClosedEvent(this));
         super.dispose();
     }
 
@@ -381,5 +388,12 @@ public class JIPipeProjectWindow extends JFrame {
      */
     public static Set<JIPipeProjectWindow> getOpenWindows() {
         return Collections.unmodifiableSet(OPEN_WINDOWS);
+    }
+
+    /**
+     * @return EventBus that generate window open/close events
+     */
+    public static EventBus getWindowsEvents() {
+        return WINDOWS_EVENTS;
     }
 }

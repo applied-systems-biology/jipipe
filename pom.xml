@@ -16,7 +16,7 @@ See the LICENSE file provided with this code for the full license.
     <packaging>pom</packaging>
     <groupId>org.hkijena</groupId>
     <artifactId>jipipe</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>2020.9</version>
     <name>jipipe</name>
     <description>JIPipe</description>
     <url>https://applied-systems-biology.github.io/jipipe/</url>

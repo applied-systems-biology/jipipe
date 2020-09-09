@@ -5,11 +5,11 @@
     <parent>
         <artifactId>jipipe</artifactId>
         <groupId>org.hkijena</groupId>
-        <version>1.0-SNAPSHOT</version>
+        <version>2020.9</version>
     </parent>
 
     <artifactId>jipipe-tables</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>2020.9</version>
 
     <name>jipipe-tables</name>
     <description>JIPipe Table Processing</description>
@@ -77,12 +77,12 @@
         <dependency>
             <groupId>org.hkijena</groupId>
             <artifactId>jipipe-core</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>2020.9</version>
         </dependency>
         <dependency>
             <groupId>org.hkijena</groupId>
             <artifactId>jipipe-annotation</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>2020.9</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>

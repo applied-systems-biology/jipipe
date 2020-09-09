@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.ui;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.google.common.eventbus.EventBus;
 import ij.IJ;
 import net.imagej.ui.swing.updater.ProgressDialog;
 import org.hkijena.jipipe.JIPipeDefaultRegistry;
@@ -26,6 +27,8 @@ import org.hkijena.jipipe.extensions.jsonextensionloader.JsonExtensionLoaderExte
 import org.hkijena.jipipe.extensions.settings.ExtensionSettings;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.settings.ProjectsSettings;
+import org.hkijena.jipipe.ui.events.WindowClosedEvent;
+import org.hkijena.jipipe.ui.events.WindowOpenedEvent;
 import org.hkijena.jipipe.ui.ijupdater.MissingUpdateSiteResolver;
 import org.hkijena.jipipe.ui.project.UnsatisfiedDependenciesDialog;
 import org.hkijena.jipipe.utils.JsonUtils;
@@ -49,7 +52,8 @@ import java.util.Set;
 public class JIPipeJsonExtensionWindow extends JFrame {
 
 
-    private static Set<JIPipeJsonExtensionWindow> OPEN_WINDOWS = new HashSet<>();
+    private static final Set<JIPipeJsonExtensionWindow> OPEN_WINDOWS = new HashSet<>();
+    public static final EventBus WINDOWS_EVENTS = new EventBus();
     private Context context;
     private JIPipeJsonExtension project;
     private JIPipeJsonExtensionWorkbench projectUI;
@@ -64,6 +68,7 @@ public class JIPipeJsonExtensionWindow extends JFrame {
      */
     public JIPipeJsonExtensionWindow(Context context, JIPipeJsonExtension project, boolean showIntroduction) {
         OPEN_WINDOWS.add(this);
+        WINDOWS_EVENTS.post(new WindowOpenedEvent(this));
         this.context = context;
         initialize();
         loadProject(project, showIntroduction);
@@ -76,11 +81,13 @@ public class JIPipeJsonExtensionWindow extends JFrame {
     @Override
     public void dispose() {
         OPEN_WINDOWS.remove(this);
+        WINDOWS_EVENTS.post(new WindowClosedEvent(this));
         super.dispose();
     }
 
     private void initialize() {
         getContentPane().setLayout(new BorderLayout(8, 8));
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         super.setTitle("JIPipe extension builder");
         setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
         UIUtils.setToAskOnClose(this, "Do you really want to close this JIPipe extension builder?", "Close window");
@@ -405,5 +412,12 @@ public class JIPipeJsonExtensionWindow extends JFrame {
      */
     public static Set<JIPipeJsonExtensionWindow> getOpenWindows() {
         return Collections.unmodifiableSet(OPEN_WINDOWS);
+    }
+
+    /**
+     * @return EventBus that generate window open/close events
+     */
+    public static EventBus getWindowsEvents() {
+        return WINDOWS_EVENTS;
     }
 }

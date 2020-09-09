@@ -5,11 +5,11 @@
     <parent>
         <artifactId>jipipe</artifactId>
         <groupId>org.hkijena</groupId>
-        <version>1.0-SNAPSHOT</version>
+        <version>2020.9</version>
     </parent>
 
     <artifactId>jipipe-clij</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>2020.9</version>
 
     <name>jipipe-clij</name>
     <description>JIPipe CLIJ2 Integration</description>
@@ -84,12 +84,12 @@
         <dependency>
             <groupId>org.hkijena</groupId>
             <artifactId>jipipe-core</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>2020.9</version>
         </dependency>
         <dependency>
             <groupId>org.hkijena</groupId>
             <artifactId>jipipe-ij</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>2020.9</version>
         </dependency>
         <dependency>
             <groupId>net.haesleinhuepf</groupId>
