@@ -186,6 +186,7 @@ public class ResultsTableData implements JIPipeData, TableModel {
         double factorX = 1.0 * width / image.getWidth();
         double factorY = 1.0 * height / image.getHeight();
         double factor = Math.max(factorX, factorY);
+        factor = Math.min(1.0, factor);
         int imageWidth = (int)(image.getWidth() * factor);
         int imageHeight = (int)(image.getHeight() * factor);
         Image scaledInstance = image.getScaledInstance(imageWidth, imageHeight, Image.SCALE_SMOOTH);
