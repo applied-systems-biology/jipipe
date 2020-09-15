@@ -74,6 +74,7 @@ public class JIPipeRunAlgorithmCommand extends DynamicCommand implements Initial
             }
             JIPipeDefaultRegistry.createInstance(getContext());
             JIPipeDefaultRegistry.getInstance().discover(extensionSettings, issues);
+            SwingUtilities.invokeLater(() -> SplashScreen.getInstance().hideSplash());
         }
         if (!extensionSettings.isSilent()) {
             JIPipeValidityReport report = new JIPipeValidityReport();
