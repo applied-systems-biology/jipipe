@@ -53,21 +53,24 @@ public class JIPipeSettingsRegistry implements JIPipeParameterCollection, JIPipe
 
     /**
      * Registers a new settings sheet
-     *
-     * @param id                  unique ID of the sheet
+     *  @param id                  unique ID of the sheet
      * @param name                sheet name
+     * @param icon sheet icon
      * @param category            sheet category. If left null or empty, it will default to "General"
      * @param categoryIcon        optional icon. If null, a wrench icon is used.
      * @param parameterCollection the object that holds the parameters
      */
-    public void register(String id, String name, String category, Icon categoryIcon, JIPipeParameterCollection parameterCollection) {
+    public void register(String id, String name, Icon icon, String category, Icon categoryIcon, JIPipeParameterCollection parameterCollection) {
         if (StringUtils.isNullOrEmpty(category)) {
             category = "General";
+        }
+        if (icon == null) {
+            icon = UIUtils.getIconFromResources("actions/view-paged.png");
         }
         if (categoryIcon == null) {
             categoryIcon = UIUtils.getIconFromResources("actions/wrench.png");
         }
-        Sheet sheet = new Sheet(name, category, categoryIcon, parameterCollection);
+        Sheet sheet = new Sheet(name, icon, category, categoryIcon, parameterCollection);
         parameterCollection.getEventBus().register(this);
         registeredSheets.put(id, sheet);
     }
@@ -222,22 +225,28 @@ public class JIPipeSettingsRegistry implements JIPipeParameterCollection, JIPipe
     public static class Sheet {
         private String name;
         private String category;
+        private Icon icon;
         private Icon categoryIcon;
         private JIPipeParameterCollection parameterCollection;
 
         /**
          * Creates a new instance
-         *
-         * @param name                name shown in UI
+         *  @param name                name shown in UI
+         * @param icon icon for this sheet
          * @param category            category shown in UI
          * @param categoryIcon        category icon
          * @param parameterCollection object that holds the parameter
          */
-        public Sheet(String name, String category, Icon categoryIcon, JIPipeParameterCollection parameterCollection) {
+        public Sheet(String name, Icon icon, String category, Icon categoryIcon, JIPipeParameterCollection parameterCollection) {
             this.name = name;
+            this.icon = icon;
             this.category = category;
             this.categoryIcon = categoryIcon;
             this.parameterCollection = parameterCollection;
+        }
+
+        public Icon getIcon() {
+            return icon;
         }
 
         public String getName() {

@@ -18,12 +18,22 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.registries.JIPipeSettingsRegistry;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
-import org.hkijena.jipipe.ui.components.DocumentTabPane;
 import org.hkijena.jipipe.ui.components.MarkdownDocument;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
+import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeCellRenderer;
+import javax.swing.tree.TreePath;
 import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -45,8 +55,20 @@ public class JIPipeApplicationSettingsUI extends JIPipeWorkbenchPanel {
 
     private void initialize() {
         setLayout(new BorderLayout());
-        DocumentTabPane documentTabPane = new DocumentTabPane();
-        add(documentTabPane, BorderLayout.CENTER);
+        JTree tree = new JTree();
+        tree.setCellRenderer(new SettingsCategoryNodeRenderer());
+        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, tree, new JPanel());
+        splitPane.setDividerSize(3);
+        splitPane.setResizeWeight(0.33);
+        addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                super.componentResized(e);
+                splitPane.setDividerLocation(0.33);
+            }
+        });
+        add(splitPane, BorderLayout.CENTER);
+
         Map<String, List<JIPipeSettingsRegistry.Sheet>> byCategory =
                 JIPipeSettingsRegistry.getInstance().getRegisteredSheets().values().stream().collect(Collectors.groupingBy(JIPipeSettingsRegistry.Sheet::getCategory));
         List<String> categories = byCategory.keySet().stream().sorted().collect(Collectors.toList());
@@ -54,24 +76,93 @@ public class JIPipeApplicationSettingsUI extends JIPipeWorkbenchPanel {
             categories.remove("General");
             categories.add(0, "General");
         }
+        DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode();
+        List<SettingsCategoryNode> nodes = new ArrayList<>();
         for (String category : categories) {
             Icon categoryIcon = null;
-            JIPipeParameterTree traversedParameterCollection = new JIPipeParameterTree();
             for (JIPipeSettingsRegistry.Sheet sheet : byCategory.get(category)) {
-                categoryIcon = sheet.getCategoryIcon();
-                traversedParameterCollection.add(sheet.getParameterCollection(), sheet.getName(), null);
-                traversedParameterCollection.setSourceDocumentation(sheet.getParameterCollection(), new JIPipeDefaultDocumentation(sheet.getName(), null));
+                if(categoryIcon == null)
+                    categoryIcon = sheet.getCategoryIcon();
             }
+            SettingsCategoryNode node = new SettingsCategoryNode(byCategory.get(category), category, categoryIcon);
+            for (JIPipeSettingsRegistry.Sheet sheet : byCategory.get(category).stream().sorted(Comparator.comparing(JIPipeSettingsRegistry.Sheet::getName)).collect(Collectors.toList())) {
+                SettingsCategoryNode subCategoryNode = new SettingsCategoryNode(Collections.singletonList(sheet), sheet.getName(), sheet.getIcon());
+                node.add(subCategoryNode);
+            }
+            rootNode.add(node);
+            nodes.add(node);
+        }
+        tree.setModel(new DefaultTreeModel(rootNode));
+        tree.addTreeSelectionListener(e -> {
+            if(tree.getLastSelectedPathComponent() instanceof SettingsCategoryNode) {
+                SettingsCategoryNode node = (SettingsCategoryNode) tree.getLastSelectedPathComponent();
+                JIPipeParameterTree traversedParameterCollection = new JIPipeParameterTree();
+                for (JIPipeSettingsRegistry.Sheet sheet : node.sheets) {
+                    traversedParameterCollection.add(sheet.getParameterCollection(), sheet.getName(), null);
+                    traversedParameterCollection.setSourceDocumentation(sheet.getParameterCollection(), new JIPipeDefaultDocumentation(sheet.getName(), null));
+                }
 
-            ParameterPanel parameterPanel = new ParameterPanel(getWorkbench(),
-                    traversedParameterCollection,
-                    MarkdownDocument.fromPluginResource("documentation/application-settings.md"),
-                    ParameterPanel.WITH_SCROLLING | ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.WITH_SEARCH_BAR);
-            documentTabPane.addTab(category,
-                    categoryIcon,
-                    parameterPanel,
-                    DocumentTabPane.CloseMode.withoutCloseButton,
-                    false);
+                ParameterPanel parameterPanel = new ParameterPanel(getWorkbench(),
+                        traversedParameterCollection,
+                        MarkdownDocument.fromPluginResource("documentation/application-settings.md"),
+                        ParameterPanel.WITH_SCROLLING | ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.WITH_SEARCH_BAR);
+                splitPane.setRightComponent(parameterPanel);
+            }
+        });
+        if(!nodes.isEmpty()) {
+            SettingsCategoryNode node = nodes.get(0);
+            tree.getSelectionModel().setSelectionPath(new TreePath(((DefaultTreeModel) tree.getModel()).getPathToRoot(node)));
+        }
+        UIUtils.expandAllTree(tree);
+    }
+
+    private static class SettingsCategoryNode extends DefaultMutableTreeNode {
+        private final List<JIPipeSettingsRegistry.Sheet> sheets;
+        private final String label;
+        private final Icon icon;
+
+        private SettingsCategoryNode(List<JIPipeSettingsRegistry.Sheet> sheets, String label, Icon icon) {
+            this.sheets = sheets;
+            this.label = label;
+            this.icon = icon;
+        }
+
+        public List<JIPipeSettingsRegistry.Sheet> getSheets() {
+            return sheets;
+        }
+
+        public String getLabel() {
+            return label;
+        }
+
+        public Icon getIcon() {
+            return icon;
+        }
+    }
+
+    private static class SettingsCategoryNodeRenderer extends JLabel implements TreeCellRenderer {
+
+        public SettingsCategoryNodeRenderer() {
+            setOpaque(true);
+            setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+        }
+
+        @Override
+        public Component getTreeCellRendererComponent(JTree tree, Object value, boolean selected, boolean expanded, boolean leaf, int row, boolean hasFocus) {
+            if(value instanceof SettingsCategoryNode) {
+                setText(((SettingsCategoryNode) value).getLabel());
+                setIcon(((SettingsCategoryNode) value).getIcon());
+            }
+            else {
+                setText("");
+                setIcon(null);
+            }
+            if (selected) {
+                setBackground(new Color(184, 207, 229));
+            } else {
+                setBackground(new Color(255, 255, 255));
+            }
+            return this;
         }
     }
 }

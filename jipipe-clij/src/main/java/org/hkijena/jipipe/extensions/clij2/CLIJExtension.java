@@ -85,6 +85,7 @@ public class CLIJExtension extends JIPipePrepackagedDefaultJavaExtension {
 
         registerSettingsSheet(CLIJSettings.ID,
                 "CLIJ2",
+                UIUtils.getIconFromResources("apps/clij.png"),
                 "Extensions",
                 UIUtils.getIconFromResources("actions/plugins.png"),
                 new CLIJSettings());

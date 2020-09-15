@@ -385,15 +385,15 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
 
     /**
      * Registers a new settings sheet
-     *
-     * @param id                  unique ID
+     *  @param id                  unique ID
      * @param name                sheet name
+     * @param icon sheet icon
      * @param category            sheet category (if null defaults to "General")
      * @param categoryIcon        category icon (if null defaults to a predefined icon)
      * @param parameterCollection the settings
      */
-    public void registerSettingsSheet(String id, String name, String category, Icon categoryIcon, JIPipeParameterCollection parameterCollection) {
-        registry.getSettingsRegistry().register(id, name, category, categoryIcon, parameterCollection);
+    public void registerSettingsSheet(String id, String name, Icon icon, String category, Icon categoryIcon, JIPipeParameterCollection parameterCollection) {
+        registry.getSettingsRegistry().register(id, name, icon, category, categoryIcon, parameterCollection);
     }
 
     @Override

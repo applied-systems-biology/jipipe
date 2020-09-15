@@ -192,6 +192,7 @@ public class ImageJDataTypesExtension extends JIPipePrepackagedDefaultJavaExtens
     public void register() {
         registerSettingsSheet(ImageJDataTypesSettings.ID,
                 "ImageJ data types",
+                UIUtils.getIconFromResources("apps/imagej.png"),
                 "Extensions",
                 UIUtils.getIconFromResources("actions/plugins.png"),
                 new ImageJDataTypesSettings());
