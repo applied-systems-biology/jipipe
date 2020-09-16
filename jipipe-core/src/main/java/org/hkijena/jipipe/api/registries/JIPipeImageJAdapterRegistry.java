@@ -17,7 +17,11 @@ import org.hkijena.jipipe.JIPipeDefaultRegistry;
 import org.hkijena.jipipe.api.compat.ImageJDatatypeAdapter;
 import org.hkijena.jipipe.api.data.JIPipeData;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Registers all known adapters between ImageJ and JIPipe data types

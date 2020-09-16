@@ -19,14 +19,18 @@ import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
-import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
+import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.CalibrationMode;
-import org.hkijena.jipipe.extensions.imagejdatatypes.algorithms.DisplayRangeCalibrationAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageJUtils;
+import org.hkijena.jipipe.extensions.imagejdatatypes.algorithms.DisplayRangeCalibrationAlgorithm;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.CalibrationMode;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -77,8 +81,8 @@ public class DivideByMaximumAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         double[] max = new double[]{Double.NEGATIVE_INFINITY};
         ImageJUtils.forEachSlice(img, ip -> max[0] = Math.max(ip.getStatistics().max, max[0]));
         ImageJUtils.forEachSlice(img, ip -> ip.multiply(1.0 / max[0]));
-        if(recalibrate) {
-            DisplayRangeCalibrationAlgorithm.calibrate(img, CalibrationMode.AutomaticImageJ, 0,1);
+        if (recalibrate) {
+            DisplayRangeCalibrationAlgorithm.calibrate(img, CalibrationMode.AutomaticImageJ, 0, 1);
         }
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(img));
     }

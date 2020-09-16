@@ -120,16 +120,14 @@ public class JIPipeUIDatatypeRegistry {
      * @return cell renderer
      */
     public JIPipeResultDataSlotPreviewUI getCellRendererFor(Class<? extends JIPipeData> klass, JTable table) {
-        if(GeneralUISettings.getInstance().isGenerateResultPreviews()) {
+        if (GeneralUISettings.getInstance().isGenerateResultPreviews()) {
             Class<? extends JIPipeResultDataSlotPreviewUI> rendererClass = resultTableCellUIs.getOrDefault(klass, null);
-            if(rendererClass != null) {
+            if (rendererClass != null) {
                 return (JIPipeResultDataSlotPreviewUI) ReflectionUtils.newInstance(rendererClass, table);
-            }
-            else {
+            } else {
                 return new JIPipeDefaultResultDataSlotPreviewUI(table);
             }
-        }
-        else {
+        } else {
             return new JIPipeDefaultResultDataSlotPreviewUI(table);
         }
     }

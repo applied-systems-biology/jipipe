@@ -20,7 +20,8 @@ import org.hkijena.jipipe.ui.registries.JIPipeUIDatatypeRegistry;
 
 import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Component;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,7 +50,7 @@ public class JIPipeRowDataTableCellRenderer implements TableCellRenderer {
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
         if (value instanceof JIPipeExportedDataTable.Row) {
             JIPipeResultDataSlotPreviewUI preview = previewCache.get(row);
-            if(preview == null) {
+            if (preview == null) {
                 preview = JIPipeUIDatatypeRegistry.getInstance().getCellRendererFor(slot.getAcceptedDataType(), table);
                 preview.render(workbenchUI, slot, (JIPipeExportedDataTable.Row) value);
                 previewCache.set(row, preview);

@@ -16,7 +16,6 @@ package org.hkijena.jipipe.api.registries;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.eventbus.EventBus;
-import jdk.nashorn.internal.runtime.regexp.joni.constants.EncloseType;
 import org.hkijena.jipipe.JIPipeDefaultRegistry;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.JIPipeHidden;
@@ -28,13 +27,15 @@ import org.hkijena.jipipe.api.events.DatatypeRegisteredEvent;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.jgrapht.Graph;
 import org.jgrapht.GraphPath;
-import org.jgrapht.alg.connectivity.ConnectivityInspector;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultDirectedGraph;
-import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.DefaultWeightedEdge;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Contains known {@link JIPipeData} types, and associates them to their respective {@link JIPipeDataSlot}.
@@ -60,10 +61,10 @@ public class JIPipeDatatypeRegistry {
      * @param converter the converter
      */
     public void registerConversion(JIPipeDataConverter converter) {
-        if(!isRegistered(converter.getInputType())) {
+        if (!isRegistered(converter.getInputType())) {
             conversionGraph.addVertex(JIPipeDataInfo.getInstance(converter.getInputType()));
         }
-        if(!isRegistered(converter.getOutputType())) {
+        if (!isRegistered(converter.getOutputType())) {
             conversionGraph.addVertex(JIPipeDataInfo.getInstance(converter.getOutputType()));
         }
         conversionGraph.addEdge(JIPipeDataInfo.getInstance(converter.getInputType()),
@@ -88,7 +89,7 @@ public class JIPipeDatatypeRegistry {
             return inputData;
         else {
             GraphPath<JIPipeDataInfo, DataConverterEdge> path = shortestPath.getPath(JIPipeDataInfo.getInstance(inputData.getClass()), JIPipeDataInfo.getInstance(outputDataType));
-            if(path == null) {
+            if (path == null) {
                 throw new UserFriendlyRuntimeException("Could not convert " + inputData.getClass() + " to " + outputDataType,
                         "Unable to convert data type!",
                         "JIPipe plugin manager",
@@ -98,7 +99,7 @@ public class JIPipeDatatypeRegistry {
             }
             JIPipeData data = inputData;
             for (DataConverterEdge edge : path.getEdgeList()) {
-                if(edge.getConverter() != null) {
+                if (edge.getConverter() != null) {
                     data = edge.getConverter().convert(data);
                 }
             }
@@ -137,15 +138,15 @@ public class JIPipeDatatypeRegistry {
             hiddenDataTypeIds.add(id);
 
         JIPipeDataInfo info = JIPipeDataInfo.getInstance(klass);
-        if(!conversionGraph.containsVertex(info))
+        if (!conversionGraph.containsVertex(info))
             conversionGraph.addVertex(info);
         conversionGraph.addEdge(info, info);
         for (Class<? extends JIPipeData> otherClass : registeredDataTypes.values()) {
             JIPipeDataInfo otherInfo = JIPipeDataInfo.getInstance(otherClass);
-            if(isTriviallyConvertible(info.getDataClass(), otherClass)) {
+            if (isTriviallyConvertible(info.getDataClass(), otherClass)) {
                 conversionGraph.addEdge(info, otherInfo);
             }
-            if(isTriviallyConvertible(otherClass, info.getDataClass())) {
+            if (isTriviallyConvertible(otherClass, info.getDataClass())) {
                 conversionGraph.addEdge(otherInfo, info);
             }
         }
@@ -318,6 +319,7 @@ public class JIPipeDatatypeRegistry {
 
         /**
          * The converter if the data types cannot be trivially converted
+         *
          * @return converter or null
          */
         public JIPipeDataConverter getConverter() {

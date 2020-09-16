@@ -34,7 +34,7 @@ public class PlotToImageTypeConverter implements JIPipeDataConverter {
 
     @Override
     public JIPipeData convert(JIPipeData input) {
-        PlotData plotData = (PlotData)input;
+        PlotData plotData = (PlotData) input;
         BufferedImage bufferedImage = plotData.getChart().createBufferedImage(plotData.getExportWidth(), plotData.getExportHeight());
         return new ImagePlus2DColorRGBData(new ImagePlus("Plot", bufferedImage));
     }

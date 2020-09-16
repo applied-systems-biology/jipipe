@@ -13,12 +13,9 @@
 
 package org.hkijena.jipipe.extensions.parameters.roi;
 
-import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
-import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -27,7 +24,6 @@ import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Editor for {@link Margin}

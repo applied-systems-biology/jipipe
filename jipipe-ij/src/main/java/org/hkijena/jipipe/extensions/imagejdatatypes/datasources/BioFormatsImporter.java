@@ -27,11 +27,14 @@ import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
-import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
+import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FileData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.OMEImageData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.parameters.OMEColorMode;
@@ -41,7 +44,7 @@ import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettin
 import org.hkijena.jipipe.extensions.parameters.roi.RectangleList;
 import org.hkijena.jipipe.utils.ResourceUtils;
 
-import java.awt.*;
+import java.awt.Rectangle;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -149,7 +152,7 @@ public class BioFormatsImporter extends JIPipeSimpleIteratingAlgorithm {
             }
 
             OMEXMLMetadata omexmlMetadata = null;
-            if(process.getOMEMetadata() instanceof OMEXMLMetadata) {
+            if (process.getOMEMetadata() instanceof OMEXMLMetadata) {
                 omexmlMetadata = (OMEXMLMetadata) process.getOMEMetadata();
             }
 
@@ -160,8 +163,8 @@ public class BioFormatsImporter extends JIPipeSimpleIteratingAlgorithm {
                 }
 
                 ROIListData rois = new ROIListData();
-                if(extractRois) {
-                    rois = ROIHandler.openROIs(process.getOMEMetadata(), new ImagePlus[] { image });
+                if (extractRois) {
+                    rois = ROIHandler.openROIs(process.getOMEMetadata(), new ImagePlus[]{image});
                 }
 
                 dataBatch.addOutputData(getFirstOutputSlot(), new OMEImageData(image, rois, omexmlMetadata), traits);

@@ -38,6 +38,7 @@ import java.util.stream.Collectors;
  */
 public class JIPipeProjectTemplate {
 
+    private static List<JIPipeProjectTemplate> availableTemplatesFromResources;
     private String resourcePath;
     private Path relativeLocation;
     private boolean storedAsResource;
@@ -46,10 +47,9 @@ public class JIPipeProjectTemplate {
     public JIPipeProjectTemplate() {
     }
 
-    private static List<JIPipeProjectTemplate> availableTemplatesFromResources;
-
     /**
      * Loads the project
+     *
      * @return the project
      * @throws IOException thrown by project loading
      */
@@ -90,65 +90,14 @@ public class JIPipeProjectTemplate {
         this.relativeLocation = relativeLocation;
     }
 
-    /**
-     * Lists all available templates
-     * @return the templates
-     */
-    public static List<JIPipeProjectTemplate> listTemplates() {
-        if(availableTemplatesFromResources == null) {
-            availableTemplatesFromResources = new ArrayList<>();
-            for (String resource : ResourceUtils.walkInternalResourceFolder("templates/")) {
-                try {
-                    JIPipeProjectTemplate template = new JIPipeProjectTemplate();
-                    template.setResourcePath(resource);
-                    template.setStoredAsResource(true);
-                    availableTemplatesFromResources.add(template);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-
-        // Load templates from file name
-        Path imageJDir = Paths.get(Prefs.getImageJDir());
-        if (!Files.isDirectory(imageJDir)) {
-            try {
-                Files.createDirectories(imageJDir);
-            } catch (IOException e) {
-                IJ.handleException(e);
-            }
-        }
-        Path templatesDir = imageJDir.resolve("jipipe-templates");
-        List<JIPipeProjectTemplate> result = new ArrayList<>(availableTemplatesFromResources);
-        if(Files.exists(templatesDir)) {
-            try {
-                for (Path file : Files.list(templatesDir).collect(Collectors.toList())) {
-                    try {
-                        JIPipeProjectTemplate template = new JIPipeProjectTemplate();
-                        template.setStoredAsResource(false);
-                        template.setRelativeLocation(Paths.get("jipipe-templates").resolve(file));
-                        result.add(template);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-        return result;
-    }
-
     public URL getLocation() {
-        if(isStoredAsResource()) {
-            if(StringUtils.isNullOrEmpty(resourcePath)) {
+        if (isStoredAsResource()) {
+            if (StringUtils.isNullOrEmpty(resourcePath)) {
                 return ResourceUtils.getPluginResource("templates/Empty (3 compartments).jip");
             }
             return ResourceUtils.class.getResource(resourcePath);
-        }
-        else {
-            if(relativeLocation == null) {
+        } else {
+            if (relativeLocation == null) {
                 return ResourceUtils.getPluginResource("templates/Empty (3 compartments).jip");
             }
             Path imageJDir = Paths.get(Prefs.getImageJDir());
@@ -160,7 +109,7 @@ public class JIPipeProjectTemplate {
                 }
             }
             Path path = imageJDir.resolve(relativeLocation);
-            if(!Files.exists(path)) {
+            if (!Files.exists(path)) {
                 return ResourceUtils.getPluginResource("templates/Empty (3 compartments).jip");
             }
             try {
@@ -174,7 +123,7 @@ public class JIPipeProjectTemplate {
 
     @JsonGetter("metadata")
     public JIPipeMetadata getMetadata() {
-        if(metadata == null) {
+        if (metadata == null) {
             JsonNode node = null;
             try {
                 node = JsonUtils.getObjectMapper().readValue(getLocation(), JsonNode.class);
@@ -206,5 +155,56 @@ public class JIPipeProjectTemplate {
     @Override
     public int hashCode() {
         return Objects.hash(resourcePath, relativeLocation, storedAsResource);
+    }
+
+    /**
+     * Lists all available templates
+     *
+     * @return the templates
+     */
+    public static List<JIPipeProjectTemplate> listTemplates() {
+        if (availableTemplatesFromResources == null) {
+            availableTemplatesFromResources = new ArrayList<>();
+            for (String resource : ResourceUtils.walkInternalResourceFolder("templates/")) {
+                try {
+                    JIPipeProjectTemplate template = new JIPipeProjectTemplate();
+                    template.setResourcePath(resource);
+                    template.setStoredAsResource(true);
+                    availableTemplatesFromResources.add(template);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        // Load templates from file name
+        Path imageJDir = Paths.get(Prefs.getImageJDir());
+        if (!Files.isDirectory(imageJDir)) {
+            try {
+                Files.createDirectories(imageJDir);
+            } catch (IOException e) {
+                IJ.handleException(e);
+            }
+        }
+        Path templatesDir = imageJDir.resolve("jipipe-templates");
+        List<JIPipeProjectTemplate> result = new ArrayList<>(availableTemplatesFromResources);
+        if (Files.exists(templatesDir)) {
+            try {
+                for (Path file : Files.list(templatesDir).collect(Collectors.toList())) {
+                    try {
+                        JIPipeProjectTemplate template = new JIPipeProjectTemplate();
+                        template.setStoredAsResource(false);
+                        template.setRelativeLocation(Paths.get("jipipe-templates").resolve(file));
+                        result.add(template);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return result;
     }
 }

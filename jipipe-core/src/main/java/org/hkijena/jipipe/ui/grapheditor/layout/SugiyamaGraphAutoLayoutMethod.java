@@ -24,8 +24,12 @@ import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.traverse.TopologicalOrderIterator;
 
-import java.awt.*;
-import java.util.*;
+import java.awt.Point;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 
 /**
  * Applies auto-layout according to Sugiyama et al.
@@ -209,10 +213,10 @@ public class SugiyamaGraphAutoLayoutMethod implements GraphAutoLayoutMethod {
             }
         }
         for (int column : columnWidths.keySet()) {
-            columnWidths.put(column, (int)Math.round(columnWidths.get(column) + 2 * canvasUI.getViewMode().getGridWidth() * canvasUI.getZoom()));
+            columnWidths.put(column, (int) Math.round(columnWidths.get(column) + 2 * canvasUI.getViewMode().getGridWidth() * canvasUI.getZoom()));
         }
         for (int row : rowHeights.keySet()) {
-            rowHeights.put(row, (int)Math.round(rowHeights.get(row) + canvasUI.getViewMode().getGridHeight() * canvasUI.getZoom()));
+            rowHeights.put(row, (int) Math.round(rowHeights.get(row) + canvasUI.getViewMode().getGridHeight() * canvasUI.getZoom()));
         }
 
         // Rearrange algorithms
@@ -266,10 +270,10 @@ public class SugiyamaGraphAutoLayoutMethod implements GraphAutoLayoutMethod {
             }
         }
         for (int column : columnWidths.keySet()) {
-            columnWidths.put(column, (int)Math.round(columnWidths.get(column) + 2 * canvasUI.getViewMode().getGridWidth() * canvasUI.getZoom()));
+            columnWidths.put(column, (int) Math.round(columnWidths.get(column) + 2 * canvasUI.getViewMode().getGridWidth() * canvasUI.getZoom()));
         }
         for (int row : rowHeights.keySet()) {
-            rowHeights.put(row, (int)Math.round(rowHeights.get(row) + canvasUI.getViewMode().getGridHeight() * canvasUI.getZoom()));
+            rowHeights.put(row, (int) Math.round(rowHeights.get(row) + canvasUI.getViewMode().getGridHeight() * canvasUI.getZoom()));
         }
 
         // Rearrange algorithms

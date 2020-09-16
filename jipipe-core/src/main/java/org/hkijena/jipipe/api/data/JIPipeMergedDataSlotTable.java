@@ -134,20 +134,18 @@ public class JIPipeMergedDataSlotTable implements TableModel {
             return slotList.get(rowIndex).getData(rowList.get(rowIndex), JIPipeData.class);
         else if (columnIndex == 4) {
             Component preview = previewCache.get(rowIndex);
-            if(preview == null) {
-                if(GeneralUISettings.getInstance().isGenerateCachePreviews()) {
+            if (preview == null) {
+                if (GeneralUISettings.getInstance().isGenerateCachePreviews()) {
                     JIPipeData data = slotList.get(rowIndex).getData(rowList.get(rowIndex), JIPipeData.class);
                     preview = new JIPipeCachedDataPreview(table, data);
                     previewCache.set(rowIndex, preview);
-                }
-                else {
+                } else {
                     preview = new JLabel("N/A");
                     previewCache.set(rowIndex, preview);
                 }
             }
             return preview;
-        }
-        else if (columnIndex == 5)
+        } else if (columnIndex == 5)
             return "" + slotList.get(rowIndex).getData(rowList.get(rowIndex), JIPipeData.class);
         else {
             String traitColumn = traitColumns.get(columnIndex - 6);

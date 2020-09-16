@@ -4,7 +4,7 @@ import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
 
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicScrollBarUI;
-import java.awt.*;
+import java.awt.Dimension;
 
 public class ArrowLessScrollBarUI extends BasicScrollBarUI {
     @Override

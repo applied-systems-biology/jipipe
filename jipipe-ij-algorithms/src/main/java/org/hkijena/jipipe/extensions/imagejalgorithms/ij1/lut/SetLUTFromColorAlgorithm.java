@@ -101,9 +101,9 @@ public class SetLUTFromColorAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         double dg = (secondColor.getGreen() - firstColor.getGreen()) / 256.0;
         double db = (secondColor.getBlue() - firstColor.getBlue()) / 256.0;
         for (int i = 0; i < 256; i++) {
-            rLut[i] = (byte)(firstColor.getRed() + dr * i);
-            gLut[i] = (byte)(firstColor.getGreen() + dg * i);
-            bLut[i] = (byte)(firstColor.getBlue() + db * i);
+            rLut[i] = (byte) (firstColor.getRed() + dr * i);
+            gLut[i] = (byte) (firstColor.getGreen() + dg * i);
+            bLut[i] = (byte) (firstColor.getBlue() + db * i);
         }
         return new LUT(rLut, gLut, bLut);
     }

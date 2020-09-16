@@ -37,6 +37,7 @@ public class FilesystemDataSlotPreviewUI extends JIPipeResultDataSlotPreviewUI {
 
     /**
      * Creates a new renderer
+     *
      * @param table the table that renders the preview
      */
     public FilesystemDataSlotPreviewUI(JTable table) {

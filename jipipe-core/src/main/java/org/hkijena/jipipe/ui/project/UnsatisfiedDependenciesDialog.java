@@ -22,7 +22,7 @@ import org.hkijena.jipipe.ui.ijupdater.JIPipeImageJPluginManager;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
 import java.nio.file.Path;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -32,15 +32,15 @@ import java.util.stream.Collectors;
  */
 public class UnsatisfiedDependenciesDialog extends JDialog {
     private final JIPipeWorkbench workbench;
+    private final Set<JIPipeImageJUpdateSiteDependency> missingUpdateSites;
     private Path fileName;
     private Set<JIPipeDependency> dependencySet;
-    private final Set<JIPipeImageJUpdateSiteDependency> missingUpdateSites;
     private boolean continueLoading = false;
 
     /**
-     * @param workbench the workbench
-     * @param fileName      the project file or folder. Only for informational purposes
-     * @param dependencySet the unsatisfied dependencies
+     * @param workbench          the workbench
+     * @param fileName           the project file or folder. Only for informational purposes
+     * @param dependencySet      the unsatisfied dependencies
      * @param missingUpdateSites the missing update sites
      */
     public UnsatisfiedDependenciesDialog(JIPipeWorkbench workbench, Path fileName, Set<JIPipeDependency> dependencySet, Set<JIPipeImageJUpdateSiteDependency> missingUpdateSites) {
@@ -67,7 +67,7 @@ public class UnsatisfiedDependenciesDialog extends JDialog {
             stringBuilder.append("</div>\n");
         }
 
-        if(!missingUpdateSites.isEmpty()) {
+        if (!missingUpdateSites.isEmpty()) {
             stringBuilder.append("Following ImageJ update sites " +
                     "were requested, but are not activated:\n\n");
             for (JIPipeImageJUpdateSiteDependency site : missingUpdateSites) {
@@ -92,7 +92,7 @@ public class UnsatisfiedDependenciesDialog extends JDialog {
         });
         buttonPanel.add(cancelButton);
 
-        if(!missingUpdateSites.isEmpty()) {
+        if (!missingUpdateSites.isEmpty()) {
             JButton resolveButton = new JButton("Resolve", UIUtils.getIconFromResources("emblems/vcs-normal.png"));
             resolveButton.addActionListener(e -> {
                 continueLoading = true;
@@ -132,9 +132,9 @@ public class UnsatisfiedDependenciesDialog extends JDialog {
     /**
      * Shows the dialog
      *
-     * @param workbench        the parent
-     * @param fileName      the project file or folder. Only for informational purposes
-     * @param dependencySet the unsatisfied dependencies
+     * @param workbench          the parent
+     * @param fileName           the project file or folder. Only for informational purposes
+     * @param dependencySet      the unsatisfied dependencies
      * @param missingUpdateSites missing update sites
      * @return if loading should be continued anyways
      */

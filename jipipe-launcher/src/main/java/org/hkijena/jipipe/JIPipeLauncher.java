@@ -15,8 +15,6 @@ package org.hkijena.jipipe;
 
 import com.google.common.eventbus.Subscribe;
 import net.imagej.ImageJ;
-import org.apache.commons.lang.SystemUtils;
-import org.hkijena.jipipe.JIPipeGUICommand;
 import org.hkijena.jipipe.ui.JIPipeJsonExtensionWindow;
 import org.hkijena.jipipe.ui.JIPipeProjectWindow;
 import org.hkijena.jipipe.ui.events.WindowClosedEvent;
@@ -45,7 +43,7 @@ public class JIPipeLauncher {
             windowsOpen += JIPipeProjectWindow.getOpenWindows().size();
             windowsOpen += JIPipeJsonExtensionWindow.getOpenWindows().size();
 
-            if(windowsOpen == 0) {
+            if (windowsOpen == 0) {
                 System.exit(0);
             }
         }

@@ -22,7 +22,7 @@ import org.hkijena.jipipe.ui.parameters.JIPipeParameterGeneratorUI;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.ui.registries.JIPipeUIParameterTypeRegistry;
 
-import java.awt.*;
+import java.awt.BorderLayout;
 import java.util.ArrayList;
 import java.util.List;
 

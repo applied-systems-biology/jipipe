@@ -47,7 +47,7 @@ public class JIPipeDataSlotCacheManagerUI extends JIPipeProjectWorkbenchPanel {
     /**
      * @param workbenchUI The workbench UI
      * @param dataSlot    the data slot
-     * @param graphUI the canvas
+     * @param graphUI     the canvas
      */
     public JIPipeDataSlotCacheManagerUI(JIPipeProjectWorkbench workbenchUI, JIPipeDataSlot dataSlot, JIPipeGraphCanvasUI graphUI) {
         super(workbenchUI);

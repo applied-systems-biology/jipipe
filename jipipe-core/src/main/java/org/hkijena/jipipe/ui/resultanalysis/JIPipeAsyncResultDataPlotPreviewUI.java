@@ -52,16 +52,15 @@ public abstract class JIPipeAsyncResultDataPlotPreviewUI extends JIPipeResultDat
 
     private void setPreview(Component component) {
         removeAll();
-        if(component == null) {
+        if (component == null) {
             add(new JLabel("N/A"), BorderLayout.CENTER);
-        }
-        else {
+        } else {
             add(component, BorderLayout.WEST);
         }
         revalidate();
         repaint();
-        if(getTable() != null) {
-            if(getTable() instanceof JXTable)
+        if (getTable() != null) {
+            if (getTable() instanceof JXTable)
                 ((JXTable) getTable()).packAll();
             getTable().repaint();
         }
@@ -70,6 +69,7 @@ public abstract class JIPipeAsyncResultDataPlotPreviewUI extends JIPipeResultDat
     /**
      * Run in a different thread.
      * Should return the data
+     *
      * @param storageFolder the folder where the data is stored
      * @return the data. if null, the widget will display "error"
      */
@@ -93,7 +93,7 @@ public abstract class JIPipeAsyncResultDataPlotPreviewUI extends JIPipeResultDat
         @Override
         protected Component doInBackground() throws Exception {
             JIPipeData data = parent.loadData(storageFolder);
-            if(data != null)
+            if (data != null)
                 return data.preview(width, height);
             else
                 return null;

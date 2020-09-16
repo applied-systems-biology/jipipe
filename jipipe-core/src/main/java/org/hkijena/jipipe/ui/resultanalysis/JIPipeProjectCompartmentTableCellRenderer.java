@@ -18,7 +18,8 @@ import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Component;
 
 /**
  * Renders an {@link org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment} cell

@@ -17,7 +17,7 @@ import org.hkijena.jipipe.api.compat.ImageJDatatypeImporter;
 import org.hkijena.jipipe.ui.compat.ImageJDatatypeImporterUI;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
 
 /**
  * Importer around {@link org.hkijena.jipipe.extensions.imagejdatatypes.compat.ROIDataImageJAdapter}

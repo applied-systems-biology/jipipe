@@ -27,11 +27,12 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreePath;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -81,7 +82,7 @@ public class JIPipeApplicationSettingsUI extends JIPipeWorkbenchPanel {
         for (String category : categories) {
             Icon categoryIcon = null;
             for (JIPipeSettingsRegistry.Sheet sheet : byCategory.get(category)) {
-                if(categoryIcon == null)
+                if (categoryIcon == null)
                     categoryIcon = sheet.getCategoryIcon();
             }
             SettingsCategoryNode node = new SettingsCategoryNode(byCategory.get(category), category, categoryIcon);
@@ -94,7 +95,7 @@ public class JIPipeApplicationSettingsUI extends JIPipeWorkbenchPanel {
         }
         tree.setModel(new DefaultTreeModel(rootNode));
         tree.addTreeSelectionListener(e -> {
-            if(tree.getLastSelectedPathComponent() instanceof SettingsCategoryNode) {
+            if (tree.getLastSelectedPathComponent() instanceof SettingsCategoryNode) {
                 SettingsCategoryNode node = (SettingsCategoryNode) tree.getLastSelectedPathComponent();
                 JIPipeParameterTree traversedParameterCollection = new JIPipeParameterTree();
                 for (JIPipeSettingsRegistry.Sheet sheet : node.sheets) {
@@ -109,7 +110,7 @@ public class JIPipeApplicationSettingsUI extends JIPipeWorkbenchPanel {
                 splitPane.setRightComponent(parameterPanel);
             }
         });
-        if(!nodes.isEmpty()) {
+        if (!nodes.isEmpty()) {
             SettingsCategoryNode node = nodes.get(0);
             tree.getSelectionModel().setSelectionPath(new TreePath(((DefaultTreeModel) tree.getModel()).getPathToRoot(node)));
         }
@@ -149,11 +150,10 @@ public class JIPipeApplicationSettingsUI extends JIPipeWorkbenchPanel {
 
         @Override
         public Component getTreeCellRendererComponent(JTree tree, Object value, boolean selected, boolean expanded, boolean leaf, int row, boolean hasFocus) {
-            if(value instanceof SettingsCategoryNode) {
+            if (value instanceof SettingsCategoryNode) {
                 setText(((SettingsCategoryNode) value).getLabel());
                 setIcon(((SettingsCategoryNode) value).getIcon());
-            }
-            else {
+            } else {
                 setText("");
                 setIcon(null);
             }

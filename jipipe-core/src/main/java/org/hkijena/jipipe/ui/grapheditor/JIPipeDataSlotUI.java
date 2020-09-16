@@ -19,7 +19,14 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeMutableSlotConfiguration;
 import org.hkijena.jipipe.api.events.GraphChangedEvent;
 import org.hkijena.jipipe.api.events.ParameterChangedEvent;
-import org.hkijena.jipipe.api.history.*;
+import org.hkijena.jipipe.api.history.CompoundGraphHistorySnapshot;
+import org.hkijena.jipipe.api.history.EdgeConnectGraphHistorySnapshot;
+import org.hkijena.jipipe.api.history.EdgeDisconnectAllTargetsGraphHistorySnapshot;
+import org.hkijena.jipipe.api.history.EdgeDisconnectGraphHistorySnapshot;
+import org.hkijena.jipipe.api.history.GraphChangedHistorySnapshot;
+import org.hkijena.jipipe.api.history.JIPipeGraphHistory;
+import org.hkijena.jipipe.api.history.MoveNodesGraphHistorySnapshot;
+import org.hkijena.jipipe.api.history.SlotConfigurationHistorySnapshot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphEdge;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
@@ -35,11 +42,18 @@ import org.hkijena.jipipe.utils.UIUtils;
 import javax.swing.*;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
-import java.awt.*;
+import java.awt.Dimension;
+import java.awt.Point;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
-import java.util.*;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -405,6 +419,7 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
 
     /**
      * Calculates the size in grid coordinates
+     *
      * @return the size
      */
     public abstract Dimension calculateGridSize();

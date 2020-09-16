@@ -67,38 +67,57 @@ public class TransformExpandCanvas2DAlgorithm extends JIPipeIteratingAlgorithm {
         int hNew = yAxis.apply(hOld);
 
         int xOff, yOff;
-        int xC = (wNew - wOld)/2;	// offset for centered
-        int xR = (wNew - wOld);		// offset for right
-        int yC = (hNew - hOld)/2;	// offset for centered
-        int yB = (hNew - hOld);		// offset for bottom
+        int xC = (wNew - wOld) / 2;    // offset for centered
+        int xR = (wNew - wOld);        // offset for right
+        int yC = (hNew - hOld) / 2;    // offset for centered
+        int yB = (hNew - hOld);        // offset for bottom
 
-        switch(anchor) {
-            case TopLeft:	// TL
-                xOff=0;	yOff=0; break;
-            case TopCenter:	// TC
-                xOff=xC; yOff=0; break;
-            case TopRight:	// TR
-                xOff=xR; yOff=0; break;
+        switch (anchor) {
+            case TopLeft:    // TL
+                xOff = 0;
+                yOff = 0;
+                break;
+            case TopCenter:    // TC
+                xOff = xC;
+                yOff = 0;
+                break;
+            case TopRight:    // TR
+                xOff = xR;
+                yOff = 0;
+                break;
             case CenterLeft: // CL
-                xOff=0; yOff=yC; break;
+                xOff = 0;
+                yOff = yC;
+                break;
             case CenterCenter: // C
-                xOff=xC; yOff=yC; break;
-            case CenterRight:	// CR
-                xOff=xR; yOff=yC; break;
+                xOff = xC;
+                yOff = yC;
+                break;
+            case CenterRight:    // CR
+                xOff = xR;
+                yOff = yC;
+                break;
             case BottomLeft: // BL
-                xOff=0; yOff=yB; break;
+                xOff = 0;
+                yOff = yB;
+                break;
             case BottomCenter: // BC
-                xOff=xC; yOff=yB; break;
+                xOff = xC;
+                yOff = yB;
+                break;
             case BottomRight: // BR
-                xOff=xR; yOff=yB; break;
+                xOff = xR;
+                yOff = yB;
+                break;
             default: // center
-                xOff=xC; yOff=yC; break;
+                xOff = xC;
+                yOff = yC;
+                break;
         }
 
-        if(imp.isStack()) {
+        if (imp.isStack()) {
             dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(new ImagePlus("Expanded", expandStack(imp.getStack(), wNew, hNew, xOff, yOff))));
-        }
-        else {
+        } else {
             dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(new ImagePlus("Expanded", expandImage(imp.getProcessor(), wNew, hNew, xOff, yOff))));
         }
     }
@@ -110,8 +129,8 @@ public class TransformExpandCanvas2DAlgorithm extends JIPipeIteratingAlgorithm {
         ImageStack stackNew = new ImageStack(wNew, hNew, stackOld.getColorModel());
         ImageProcessor ipNew;
 
-        for (int i=1; i<=nFrames; i++) {
-            IJ.showProgress((double)i/nFrames);
+        for (int i = 1; i <= nFrames; i++) {
+            IJ.showProgress((double) i / nFrames);
             ipNew = ipOld.createProcessor(wNew, hNew);
             ipNew.setColor(backgroundColor);
             ipNew.fill();

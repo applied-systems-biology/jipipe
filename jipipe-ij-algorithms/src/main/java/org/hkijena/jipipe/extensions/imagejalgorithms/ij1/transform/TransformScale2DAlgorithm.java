@@ -21,13 +21,16 @@ import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
-import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
+import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.InterpolationMethod;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.extensions.parameters.roi.IntModificationParameter;
 import org.hkijena.jipipe.extensions.parameters.roi.OptionalIntModificationParameter;
 
 import java.util.function.Consumer;
@@ -88,19 +91,17 @@ public class TransformScale2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
         int sx = img.getWidth();
         int sy = img.getHeight();
-        if(xAxis.isEnabled() && yAxis.isEnabled()) {
+        if (xAxis.isEnabled() && yAxis.isEnabled()) {
             sx = xAxis.getContent().apply(sx);
             sy = yAxis.getContent().apply(sy);
-        }
-        else if(xAxis.isEnabled()) {
+        } else if (xAxis.isEnabled()) {
             sx = xAxis.getContent().apply(sx);
-            double fac = (double)sx / img.getWidth();
-            sy = (int)(sy * fac);
-        }
-        else if(yAxis.isEnabled()) {
+            double fac = (double) sx / img.getWidth();
+            sy = (int) (sy * fac);
+        } else if (yAxis.isEnabled()) {
             sy = yAxis.getContent().apply(sy);
-            double fac = (double)sy / img.getHeight();
-            sx = (int)(sx * fac);
+            double fac = (double) sy / img.getHeight();
+            sx = (int) (sx * fac);
         }
 
         if (img.isStack()) {

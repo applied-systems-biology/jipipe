@@ -28,7 +28,7 @@ import org.hkijena.jipipe.ui.tableanalyzer.JIPipeTableEditor;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;

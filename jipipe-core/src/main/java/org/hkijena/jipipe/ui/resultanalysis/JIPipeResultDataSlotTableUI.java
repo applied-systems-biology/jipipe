@@ -38,7 +38,8 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.nio.file.Path;
@@ -72,7 +73,7 @@ public class JIPipeResultDataSlotTableUI extends JIPipeProjectWorkbenchPanel {
     private void initialize() {
         setLayout(new BorderLayout());
         table = new JXTable();
-        if(GeneralUISettings.getInstance().isGenerateResultPreviews())
+        if (GeneralUISettings.getInstance().isGenerateResultPreviews())
             table.setRowHeight(GeneralUISettings.getInstance().getPreviewHeight());
         else
             table.setRowHeight(25);

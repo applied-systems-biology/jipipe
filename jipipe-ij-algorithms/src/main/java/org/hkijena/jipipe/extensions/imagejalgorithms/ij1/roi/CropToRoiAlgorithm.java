@@ -41,12 +41,12 @@ import java.util.function.Supplier;
 @JIPipeInputSlot(value = ROIListData.class, slotName = "ROI", autoCreate = true)
 @JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Cropped", inheritedSlot = "Image", autoCreate = true)
 public class CropToRoiAlgorithm extends JIPipeIteratingAlgorithm {
-    
+
     private boolean cropXY = true;
     private boolean cropZ = true;
     private boolean cropC = true;
     private boolean cropT = true;
-    
+
     public CropToRoiAlgorithm(JIPipeNodeInfo info) {
         super(info);
     }
@@ -65,20 +65,19 @@ public class CropToRoiAlgorithm extends JIPipeIteratingAlgorithm {
         ROIListData rois = dataBatch.getInputData("ROI", ROIListData.class);
         Rectangle bounds = rois.getBounds();
 
-        if(input.getStackSize() <= 1) {
-            if(cropXY) {
+        if (input.getStackSize() <= 1) {
+            if (cropXY) {
                 ImageProcessor ip = input.getProcessor();
                 ip.setRoi(bounds);
                 ImageProcessor cropped = ip.crop();
                 ip.resetRoi();
                 dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(new ImagePlus("Cropped " + bounds, cropped)));
-            }
-            else {
+            } else {
                 dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(input));
             }
             return;
         }
-        
+
         int minZ = Integer.MAX_VALUE;
         int maxZ = 0;
         int minC = Integer.MAX_VALUE;
@@ -87,36 +86,36 @@ public class CropToRoiAlgorithm extends JIPipeIteratingAlgorithm {
         int maxT = 0;
 
         for (Roi roi : rois) {
-            if(cropZ && roi.getZPosition() > 0) {
+            if (cropZ && roi.getZPosition() > 0) {
                 minZ = Math.min(minZ, roi.getZPosition());
                 maxZ = Math.max(maxZ, roi.getZPosition());
             }
-            if(cropC && roi.getCPosition() > 0) {
+            if (cropC && roi.getCPosition() > 0) {
                 minC = Math.min(minC, roi.getCPosition());
                 maxC = Math.max(maxC, roi.getCPosition());
             }
-            if(cropT && roi.getTPosition() > 0) {
+            if (cropT && roi.getTPosition() > 0) {
                 minT = Math.min(minT, roi.getTPosition());
                 maxT = Math.max(maxT, roi.getTPosition());
             }
         }
-        
-        if(!cropZ || minZ == Integer.MAX_VALUE)
+
+        if (!cropZ || minZ == Integer.MAX_VALUE)
             minZ = 1;
-        if(!cropZ || maxZ == 0)
+        if (!cropZ || maxZ == 0)
             maxZ = input.getNSlices();
-        if(!cropC || minC == Integer.MAX_VALUE)
+        if (!cropC || minC == Integer.MAX_VALUE)
             minC = 1;
-        if(!cropC || maxC == 0)
+        if (!cropC || maxC == 0)
             maxC = input.getNChannels();
-        if(!cropT || minT == Integer.MAX_VALUE)
+        if (!cropT || minT == Integer.MAX_VALUE)
             minT = 1;
-        if(!cropT || maxT == 0)
+        if (!cropT || maxT == 0)
             maxT = input.getNFrames();
 
         int targetWidth = input.getWidth();
         int targetHeight = input.getHeight();
-        if(cropXY){
+        if (cropXY) {
             input.getProcessor().setRoi(bounds);
             ImageProcessor cropped = input.getProcessor().crop();
             input.getProcessor().setRoi((Roi) null);
@@ -136,7 +135,7 @@ public class CropToRoiAlgorithm extends JIPipeIteratingAlgorithm {
             int z = pos[0];
             int c = pos[1];
             int t = pos[2];
-            if(z >= finalMinZ && z <= finalMaxZ && c >= finalMinC && c <= finalMaxC && t >= finalMinT && t <= finalMaxT) {
+            if (z >= finalMinZ && z <= finalMaxZ && c >= finalMinC && c <= finalMaxC && t >= finalMinT && t <= finalMaxT) {
                 imp.setRoi(bounds);
                 ImageProcessor cropped = imp.crop();
                 imp.setRoi((Roi) null);

@@ -16,12 +16,7 @@ package org.hkijena.jipipe.ui.grapheditor.contextmenu.clipboard;
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.compartments.JIPipeExportedCompartment;
-import org.hkijena.jipipe.api.compartments.algorithms.JIPipeCompartmentOutput;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
-import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.history.PasteCompartmentGraphHistorySnapshot;
-import org.hkijena.jipipe.api.nodes.JIPipeGraph;
-import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphCanvasUI;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeNodeUI;
@@ -33,7 +28,8 @@ import org.hkijena.jipipe.utils.UIUtils;
 import javax.swing.*;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
-import java.util.*;
+import java.util.List;
+import java.util.Set;
 
 import static org.hkijena.jipipe.utils.UIUtils.getStringFromClipboard;
 
@@ -56,7 +52,7 @@ public class GraphCompartmentPasteNodeUIContextAction implements NodeUIContextAc
                     String newId = StringUtils.makeUniqueString(compartment.getSuggestedName(), " ", project.getCompartments().keySet());
                     JIPipeProjectCompartment compartmentNode = compartment.addTo(project, newId);
                     JIPipeNodeUI ui = canvasUI.getNodeUIs().getOrDefault(compartmentNode, null);
-                    if(ui != null) {
+                    if (ui != null) {
                         canvasUI.autoPlaceCloseToCursor(ui);
                     }
 

@@ -3,7 +3,7 @@ package org.hkijena.jipipe.utils;
 import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.Component;
 
 /**
  * A custom scroll pane that can be modernized

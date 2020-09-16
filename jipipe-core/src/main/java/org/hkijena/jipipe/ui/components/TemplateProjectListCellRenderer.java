@@ -9,8 +9,6 @@ import java.awt.Component;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.nio.file.Path;
 
 /**
  * Renders a recent project

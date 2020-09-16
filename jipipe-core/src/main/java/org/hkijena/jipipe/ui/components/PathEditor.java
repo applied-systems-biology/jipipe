@@ -20,7 +20,10 @@ import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.nio.file.Path;
@@ -143,11 +146,10 @@ public class PathEditor extends JPanel {
     public void setPath(Path path) {
         if (path != null) {
             String current = StringUtils.orElse(pathEdit.getText(), "");
-            if(!Objects.equals(current, path.toString())) {
+            if (!Objects.equals(current, path.toString())) {
                 pathEdit.setText(path.toString());
             }
-        }
-        else
+        } else
             pathEdit.setText("");
     }
 

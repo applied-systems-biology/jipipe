@@ -47,6 +47,7 @@ public interface JIPipeJavaExtension extends SciJavaPlugin, JIPipeDependency {
      * Returns icons that will be displayed in the splash screen.
      * They must have a size of 32x32.
      * There can only be at most 45 icons
+     *
      * @return the icons
      */
     default List<ImageIcon> getSplashIcons() {

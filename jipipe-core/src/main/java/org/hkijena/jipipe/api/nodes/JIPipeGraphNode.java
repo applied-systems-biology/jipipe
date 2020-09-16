@@ -30,8 +30,19 @@ import org.hkijena.jipipe.api.JIPipeRun;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidatable;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
-import org.hkijena.jipipe.api.data.*;
-import org.hkijena.jipipe.api.events.*;
+import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.data.JIPipeDataSlot;
+import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
+import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
+import org.hkijena.jipipe.api.data.JIPipeSlotConfiguration;
+import org.hkijena.jipipe.api.data.JIPipeSlotType;
+import org.hkijena.jipipe.api.events.NodeConnectedEvent;
+import org.hkijena.jipipe.api.events.NodeDisconnectedEvent;
+import org.hkijena.jipipe.api.events.NodeSlotsChangedEvent;
+import org.hkijena.jipipe.api.events.ParameterChangedEvent;
+import org.hkijena.jipipe.api.events.ParameterStructureChangedEvent;
+import org.hkijena.jipipe.api.events.SlotsChangedEvent;
+import org.hkijena.jipipe.api.events.WorkDirectoryChangedEvent;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterVisibility;
@@ -40,11 +51,17 @@ import org.hkijena.jipipe.api.registries.JIPipeNodeRegistry;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
 import org.hkijena.jipipe.utils.StringUtils;
 
-import java.awt.*;
+import java.awt.Point;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
-import java.util.*;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -444,7 +461,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
     /**
      * Loads this algorithm from JSON
      *
-     * @param node The JSON data to load from
+     * @param node   The JSON data to load from
      * @param issues issues during deserializing
      */
     public void fromJson(JsonNode node, JIPipeValidityReport issues) {

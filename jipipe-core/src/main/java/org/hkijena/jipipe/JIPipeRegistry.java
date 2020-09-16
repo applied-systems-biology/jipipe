@@ -15,8 +15,17 @@ package org.hkijena.jipipe;
 
 import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.JIPipeValidatable;
-import org.hkijena.jipipe.api.registries.*;
-import org.hkijena.jipipe.ui.registries.*;
+import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
+import org.hkijena.jipipe.api.registries.JIPipeImageJAdapterRegistry;
+import org.hkijena.jipipe.api.registries.JIPipeNodeRegistry;
+import org.hkijena.jipipe.api.registries.JIPipeParameterTypeRegistry;
+import org.hkijena.jipipe.api.registries.JIPipeSettingsRegistry;
+import org.hkijena.jipipe.api.registries.JIPipeTableRegistry;
+import org.hkijena.jipipe.ui.registries.JIPipeUIDatatypeRegistry;
+import org.hkijena.jipipe.ui.registries.JIPipeUIImageJDatatypeAdapterRegistry;
+import org.hkijena.jipipe.ui.registries.JIPipeUIMenuServiceRegistry;
+import org.hkijena.jipipe.ui.registries.JIPipeUINodeRegistry;
+import org.hkijena.jipipe.ui.registries.JIPipeUIParameterTypeRegistry;
 import org.scijava.service.Service;
 
 import java.util.List;

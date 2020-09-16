@@ -25,7 +25,7 @@ import org.hkijena.jipipe.utils.JsonUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.Point;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.util.HashMap;
@@ -65,9 +65,9 @@ public class AlgorithmGraphPasteNodeUIContextAction implements NodeUIContextActi
                         minY = Math.min(minY, point.y);
                     }
                 }
-                if(minX == Integer.MAX_VALUE)
+                if (minX == Integer.MAX_VALUE)
                     minX = 0;
-                if(minY == Integer.MAX_VALUE)
+                if (minY == Integer.MAX_VALUE)
                     minY = 0;
 
                 // Change the compartment
@@ -81,8 +81,8 @@ public class AlgorithmGraphPasteNodeUIContextAction implements NodeUIContextActi
                 for (JIPipeGraphNode algorithm : graph.getNodes().values()) {
                     Point original = originalLocations.getOrDefault(algorithm, null);
                     if (original != null) {
-                        original.x = (int)(original.x - minX + cursor.x * canvasUI.getZoom() / canvasUI.getViewMode().getGridWidth());
-                        original.y = (int)(original.y - minY + cursor.y * canvasUI.getZoom() / canvasUI.getViewMode().getGridHeight());
+                        original.x = (int) (original.x - minX + cursor.x * canvasUI.getZoom() / canvasUI.getViewMode().getGridWidth());
+                        original.y = (int) (original.y - minY + cursor.y * canvasUI.getZoom() / canvasUI.getViewMode().getGridHeight());
                         algorithm.setLocationWithin(compartment, original, canvasUI.getViewMode().name());
                     }
                 }

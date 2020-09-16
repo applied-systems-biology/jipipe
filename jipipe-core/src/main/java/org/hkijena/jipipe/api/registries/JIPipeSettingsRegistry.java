@@ -53,9 +53,10 @@ public class JIPipeSettingsRegistry implements JIPipeParameterCollection, JIPipe
 
     /**
      * Registers a new settings sheet
-     *  @param id                  unique ID of the sheet
+     *
+     * @param id                  unique ID of the sheet
      * @param name                sheet name
-     * @param icon sheet icon
+     * @param icon                sheet icon
      * @param category            sheet category. If left null or empty, it will default to "General"
      * @param categoryIcon        optional icon. If null, a wrench icon is used.
      * @param parameterCollection the object that holds the parameters
@@ -85,10 +86,9 @@ public class JIPipeSettingsRegistry implements JIPipeParameterCollection, JIPipe
      */
     public <T extends JIPipeParameterCollection> T getSettings(String id, Class<T> settingsClass) {
         Sheet sheet = registeredSheets.getOrDefault(id, null);
-        if(sheet != null) {
+        if (sheet != null) {
             return (T) sheet.getParameterCollection();
-        }
-        else {
+        } else {
             return null;
         }
     }
@@ -231,8 +231,9 @@ public class JIPipeSettingsRegistry implements JIPipeParameterCollection, JIPipe
 
         /**
          * Creates a new instance
-         *  @param name                name shown in UI
-         * @param icon icon for this sheet
+         *
+         * @param name                name shown in UI
+         * @param icon                icon for this sheet
          * @param category            category shown in UI
          * @param categoryIcon        category icon
          * @param parameterCollection object that holds the parameter

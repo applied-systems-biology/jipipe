@@ -29,11 +29,9 @@ import org.hkijena.jipipe.ui.resultanalysis.JIPipeDefaultResultDataSlotRowUI;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
-import javax.swing.*;
-import java.awt.*;
+import java.awt.Frame;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
 
 /**
  * Result UI for {@link ROIListData}
@@ -79,8 +77,8 @@ public class ROIDataSlotRowUI extends JIPipeDefaultResultDataSlotRowUI {
      */
     public static void importROI(Path roiFile) {
         ROIListData rois = new ROIListData(ROIListData.loadRoiListFromFile(roiFile));
-        ImagePlus imp =  WindowManager.getCurrentImage();
-        if(imp == null) {
+        ImagePlus imp = WindowManager.getCurrentImage();
+        if (imp == null) {
             imp = rois.toMask(new Margin(), false, true, 1);
             imp.show();
         }

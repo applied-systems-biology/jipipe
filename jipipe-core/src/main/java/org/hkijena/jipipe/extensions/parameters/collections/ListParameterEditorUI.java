@@ -23,15 +23,15 @@ import org.hkijena.jipipe.utils.RoundedLineBorder;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
 
 /**
  * Generic parameter for {@link ListParameter}
  */
 public class ListParameterEditorUI extends JIPipeParameterEditorUI {
-    private FormPanel formPanel;
     private final JLabel emptyLabel = new JLabel("<html><strong>This list is empty</strong><br/>Click 'Add' to add items.</html>",
             UIUtils.getIcon32FromResources("info.png"), JLabel.LEFT);
+    private FormPanel formPanel;
 
     /**
      * Creates new instance
@@ -64,7 +64,7 @@ public class ListParameterEditorUI extends JIPipeParameterEditorUI {
         formPanel = new FormPanel(null, FormPanel.NONE);
         add(formPanel, BorderLayout.CENTER);
         add(emptyLabel, BorderLayout.SOUTH);
-        emptyLabel.setBorder(BorderFactory.createEmptyBorder(8,8,8,8));
+        emptyLabel.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
     }
 
     private void addNewEntry() {

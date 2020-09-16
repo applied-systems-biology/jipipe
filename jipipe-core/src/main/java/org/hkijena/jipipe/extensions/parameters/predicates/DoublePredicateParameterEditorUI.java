@@ -19,7 +19,7 @@ import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.Dimension;
 
 /**
  * Editor for {@link DoublePredicate}

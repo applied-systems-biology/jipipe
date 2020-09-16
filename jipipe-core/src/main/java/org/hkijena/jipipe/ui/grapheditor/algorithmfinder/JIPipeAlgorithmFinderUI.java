@@ -30,10 +30,14 @@ import org.hkijena.jipipe.ui.components.SearchTextField;
 import org.hkijena.jipipe.ui.events.AlgorithmFinderSuccessEvent;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphCanvasUI;
 import org.hkijena.jipipe.ui.registries.JIPipeUIDatatypeRegistry;
-import org.hkijena.jipipe.utils.*;
+import org.hkijena.jipipe.utils.RankedData;
+import org.hkijena.jipipe.utils.RankingFunction;
+import org.hkijena.jipipe.utils.StringUtils;
+import org.hkijena.jipipe.utils.TooltipUtils;
+import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -253,9 +257,9 @@ public class JIPipeAlgorithmFinderUI extends JPanel {
                 return null;
             }
 
-            if(nameHayStack == null)
+            if (nameHayStack == null)
                 nameHayStack = "";
-            if(descriptionHayStack == null)
+            if (descriptionHayStack == null)
                 descriptionHayStack = "";
 
             if (filterStrings != null && filterStrings.length > 0) {

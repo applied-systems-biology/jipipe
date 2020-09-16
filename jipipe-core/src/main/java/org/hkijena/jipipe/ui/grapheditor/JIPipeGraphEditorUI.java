@@ -45,12 +45,22 @@ import javax.imageio.ImageIO;
 import javax.swing.FocusManager;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
-import java.util.*;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -117,14 +127,11 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
                 } else if (Objects.equals(keyStroke, KEY_STROKE_NAVIGATE)) {
                     navigator.requestFocusInWindow();
                     return true;
-                }
-                else if(Objects.equals(keyStroke, KEY_STROKE_ZOOM_IN)) {
+                } else if (Objects.equals(keyStroke, KEY_STROKE_ZOOM_IN)) {
                     canvasUI.zoomIn();
-                }
-                else if(Objects.equals(keyStroke, KEY_STROKE_ZOOM_OUT)) {
+                } else if (Objects.equals(keyStroke, KEY_STROKE_ZOOM_OUT)) {
                     canvasUI.zoomOut();
-                }
-                else if(Objects.equals(keyStroke, KEY_STROKE_ZOOM_RESET)) {
+                } else if (Objects.equals(keyStroke, KEY_STROKE_ZOOM_RESET)) {
                     canvasUI.resetZoom();
                 }
             }
@@ -315,18 +322,18 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         zoomOutButton.addActionListener(e -> canvasUI.zoomOut());
         menuBar.add(zoomOutButton);
 
-        JButton zoomButton = new JButton((int)(canvasUI.getZoom() * 100) + "%");
+        JButton zoomButton = new JButton((int) (canvasUI.getZoom() * 100) + "%");
         zoomButton.setToolTipText("<html>Change zoom<br>Reset zoom: <i>Ctrl-NumPad 0</i></html>");
         canvasUI.getEventBus().register(new Object() {
             @Subscribe
             public void onZoomChanged(ZoomChangedEvent event) {
-                zoomButton.setText((int)(canvasUI.getZoom() * 100) + "%");
+                zoomButton.setText((int) (canvasUI.getZoom() * 100) + "%");
             }
         });
         zoomButton.setBorder(null);
         JPopupMenu zoomMenu = UIUtils.addPopupMenuToComponent(zoomButton);
         for (double zoom = 0.5; zoom <= 2; zoom += 0.25) {
-            JMenuItem changeZoomItem = new JMenuItem((int)(zoom * 100) + "%", UIUtils.getIconFromResources("actions/zoom.png"));
+            JMenuItem changeZoomItem = new JMenuItem((int) (zoom * 100) + "%", UIUtils.getIconFromResources("actions/zoom.png"));
             double finalZoom = zoom;
             changeZoomItem.addActionListener(e -> canvasUI.setZoom(finalZoom));
             zoomMenu.add(changeZoomItem);
@@ -335,13 +342,12 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         JMenuItem changeZoomToItem = new JMenuItem("Set zoom value ...");
         changeZoomToItem.addActionListener(e -> {
             String zoomInput = JOptionPane.showInputDialog(this, "Please enter a new zoom value (in %)", (int) (canvasUI.getZoom() * 100) + "%");
-            if(!StringUtils.isNullOrEmpty(zoomInput)) {
+            if (!StringUtils.isNullOrEmpty(zoomInput)) {
                 zoomInput = zoomInput.replace("%", "");
                 try {
                     int percentage = Integer.parseInt(zoomInput);
                     canvasUI.setZoom(percentage / 100.0);
-                }
-                catch (NumberFormatException ex) {
+                } catch (NumberFormatException ex) {
                     ex.printStackTrace();
                 }
             }
@@ -602,11 +608,11 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
             {
                 int ex = 0;
                 int ey = 0;
-                if(nx < 0) {
-                    ex = (int)Math.ceil(1.0 * -nx / (canvasUI.getViewMode().getGridWidth() * canvasUI.getZoom()));
+                if (nx < 0) {
+                    ex = (int) Math.ceil(1.0 * -nx / (canvasUI.getViewMode().getGridWidth() * canvasUI.getZoom()));
                 }
-                if(ny < 0) {
-                    ey = (int)Math.ceil(1.0 * -ny / (canvasUI.getViewMode().getGridHeight() * canvasUI.getZoom()));
+                if (ny < 0) {
+                    ey = (int) Math.ceil(1.0 * -ny / (canvasUI.getViewMode().getGridHeight() * canvasUI.getZoom()));
                 }
                 if (ex > 0 || ey > 0) {
                     canvasUI.expandLeftTop(ex, ey);

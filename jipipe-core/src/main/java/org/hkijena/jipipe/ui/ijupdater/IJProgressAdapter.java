@@ -67,7 +67,7 @@ public class IJProgressAdapter implements Progress {
     }
 
     private void postProgress() {
-        if(JIPipeDefaultRegistry.getInstance() != null)
+        if (JIPipeDefaultRegistry.getInstance() != null)
             JIPipeDefaultRegistry.getInstance().getLogService().info("[" + progress + " / " + maxProgress + "] " + title + " " + item);
         else
             System.out.println("[" + progress + " / " + maxProgress + "] " + title + " " + item);

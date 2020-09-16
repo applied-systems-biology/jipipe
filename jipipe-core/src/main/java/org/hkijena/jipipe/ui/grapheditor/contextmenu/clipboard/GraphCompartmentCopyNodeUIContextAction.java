@@ -16,8 +16,6 @@ package org.hkijena.jipipe.ui.grapheditor.contextmenu.clipboard;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.hkijena.jipipe.api.compartments.JIPipeExportedCompartment;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
-import org.hkijena.jipipe.api.nodes.JIPipeGraph;
-import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphCanvasUI;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeNodeUI;
 import org.hkijena.jipipe.ui.grapheditor.contextmenu.NodeUIContextAction;
@@ -25,16 +23,14 @@ import org.hkijena.jipipe.utils.JsonUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.List;
+import java.util.Set;
 
 public class GraphCompartmentCopyNodeUIContextAction implements NodeUIContextAction {
     @Override

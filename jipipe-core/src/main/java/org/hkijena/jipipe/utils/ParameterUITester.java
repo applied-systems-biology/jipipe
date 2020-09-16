@@ -21,7 +21,7 @@ import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 
-import java.awt.*;
+import java.awt.BorderLayout;
 
 /**
  * UI that shows all parameter types

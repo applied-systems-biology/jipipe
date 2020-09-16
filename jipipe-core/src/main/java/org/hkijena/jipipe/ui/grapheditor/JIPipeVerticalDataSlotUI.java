@@ -21,7 +21,6 @@ import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.cache.JIPipeDataSlotCacheManagerUI;
-import org.hkijena.jipipe.ui.components.ZoomFlatIconButton;
 import org.hkijena.jipipe.ui.components.ZoomIcon;
 import org.hkijena.jipipe.ui.components.ZoomLabel;
 import org.hkijena.jipipe.ui.registries.JIPipeUIDatatypeRegistry;
@@ -30,7 +29,10 @@ import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Point;
 import java.awt.font.FontRenderContext;
 import java.awt.font.TextLayout;
 

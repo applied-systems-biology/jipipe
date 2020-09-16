@@ -18,7 +18,8 @@ import org.hkijena.jipipe.ui.registries.JIPipeUIDatatypeRegistry;
 
 import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Component;
 
 /**
  * Renders {@link JIPipeData}

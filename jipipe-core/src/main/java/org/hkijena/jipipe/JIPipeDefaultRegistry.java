@@ -29,11 +29,21 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
-import org.hkijena.jipipe.api.registries.*;
+import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
+import org.hkijena.jipipe.api.registries.JIPipeImageJAdapterRegistry;
+import org.hkijena.jipipe.api.registries.JIPipeNodeRegistrationTask;
+import org.hkijena.jipipe.api.registries.JIPipeNodeRegistry;
+import org.hkijena.jipipe.api.registries.JIPipeParameterTypeRegistry;
+import org.hkijena.jipipe.api.registries.JIPipeSettingsRegistry;
+import org.hkijena.jipipe.api.registries.JIPipeTableRegistry;
 import org.hkijena.jipipe.extensions.settings.ExtensionSettings;
 import org.hkijena.jipipe.ui.ijupdater.IJProgressAdapter;
 import org.hkijena.jipipe.ui.ijupdater.JIPipeImageJPluginManager;
-import org.hkijena.jipipe.ui.registries.*;
+import org.hkijena.jipipe.ui.registries.JIPipeUIDatatypeRegistry;
+import org.hkijena.jipipe.ui.registries.JIPipeUIImageJDatatypeAdapterRegistry;
+import org.hkijena.jipipe.ui.registries.JIPipeUIMenuServiceRegistry;
+import org.hkijena.jipipe.ui.registries.JIPipeUINodeRegistry;
+import org.hkijena.jipipe.ui.registries.JIPipeUIParameterTypeRegistry;
 import org.scijava.Context;
 import org.scijava.InstantiableException;
 import org.scijava.log.LogService;
@@ -44,7 +54,13 @@ import org.scijava.plugin.PluginService;
 import org.scijava.service.AbstractService;
 
 import java.net.Authenticator;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -154,7 +170,7 @@ public class JIPipeDefaultRegistry extends AbstractService implements JIPipeRegi
             } catch (NoClassDefFoundError | Exception e) {
                 e.printStackTrace();
                 issues.getErroneousPlugins().add(info);
-                if(extension != null)
+                if (extension != null)
                     failedExtensions.add(extension);
             }
         }
@@ -164,7 +180,7 @@ public class JIPipeDefaultRegistry extends AbstractService implements JIPipeRegi
         }
 
         // Check for errors
-       logService.info("[3/3] Error-checking-phase ...");
+        logService.info("[3/3] Error-checking-phase ...");
         if (extensionSettings.isValidateNodeTypes()) {
             for (JIPipeNodeInfo info : nodeRegistry.getRegisteredNodeInfos().values()) {
                 try {
@@ -201,8 +217,9 @@ public class JIPipeDefaultRegistry extends AbstractService implements JIPipeRegi
 
     /**
      * Checks the update sites of all extensions and stores the results in the issues
-     * @param issues the results
-     * @param extensions list of known extensions
+     *
+     * @param issues          the results
+     * @param extensions      list of known extensions
      * @param progressAdapter the adapter that takes the progress
      */
     public void checkUpdateSites(JIPipeRegistryIssues issues, List<JIPipeDependency> extensions, Progress progressAdapter) {
@@ -326,7 +343,7 @@ public class JIPipeDefaultRegistry extends AbstractService implements JIPipeRegi
     public void reportValidity(JIPipeValidityReport report) {
         report.forCategory("Algorithms").report(nodeRegistry);
         for (JIPipeDependency extension : failedExtensions) {
-            if(extension != null) {
+            if (extension != null) {
                 report.forCategory("Extensions").forCategory(extension.getDependencyId()).reportIsInvalid("Error during loading the extension!",
                         "There was an error while loading the extension. Please refer to the message that you get on restarting JIPipe.",
                         "Please refer to the message that you get on restarting JIPipe.",
@@ -389,7 +406,7 @@ public class JIPipeDefaultRegistry extends AbstractService implements JIPipeRegi
     /**
      * Instantiates the plugin service. This is done within {@link JIPipeGUICommand}
      *
-     * @param context           the SciJava context
+     * @param context the SciJava context
      */
     public static void createInstance(Context context) {
         if (instance == null) {

@@ -31,6 +31,6 @@ public class OMEImageToROITypeConverter implements JIPipeDataConverter {
 
     @Override
     public JIPipeData convert(JIPipeData input) {
-        return ((OMEImageData)input).getRois();
+        return ((OMEImageData) input).getRois();
     }
 }

@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.utils;
 
-import java.awt.*;
+import java.awt.Point;
 
 /**
  * Stores three points, representing the center point, and an area around it
@@ -67,17 +67,18 @@ public class PointRange {
     /**
      * Apply scaling to all components and return the result.
      * Returns a copy
+     *
      * @param zoom the zoom
      * @return scaled copy
      */
     public PointRange zoom(double zoom) {
         PointRange result = new PointRange(this);
-        result.center.x = (int)(result.center.x * zoom);
-        result.center.y = (int)(result.center.y * zoom);
-        result.min.x = (int)(result.min.x * zoom);
-        result.min.y = (int)(result.min.y * zoom);
-        result.max.x = (int)(result.max.x * zoom);
-        result.max.y = (int)(result.max.y * zoom);
+        result.center.x = (int) (result.center.x * zoom);
+        result.center.y = (int) (result.center.y * zoom);
+        result.min.x = (int) (result.min.x * zoom);
+        result.min.y = (int) (result.min.y * zoom);
+        result.max.x = (int) (result.max.x * zoom);
+        result.max.y = (int) (result.max.y * zoom);
         return result;
     }
 

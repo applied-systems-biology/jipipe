@@ -13,16 +13,9 @@
 
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.dimensions;
 
-import ij.CompositeImage;
-import ij.IJ;
 import ij.ImagePlus;
 import ij.ImageStack;
-import ij.measure.Calibration;
-import ij.plugin.ChannelSplitter;
-import ij.plugin.RGBStackMerge;
 import ij.plugin.StackMaker;
-import ij.process.ColorProcessor;
-import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
@@ -37,11 +30,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.ImagePlus2DData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.ImagePlus3DData;
-import org.hkijena.jipipe.extensions.parameters.primitives.OptionalIntegerParameter;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Image;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 

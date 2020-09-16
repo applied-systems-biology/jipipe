@@ -20,7 +20,7 @@ import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
 import org.hkijena.jipipe.ui.registries.JIPipeUIParameterTypeRegistry;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
 
 /**
  * Editor for {@link FunctionParameter}

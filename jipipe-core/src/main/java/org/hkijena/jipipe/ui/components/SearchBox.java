@@ -20,8 +20,15 @@ import org.hkijena.jipipe.utils.UIUtils;
 import org.jdesktop.swingx.JXTextField;
 
 import javax.swing.*;
-import javax.swing.event.*;
-import java.awt.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.ListDataEvent;
+import javax.swing.event.ListDataListener;
+import javax.swing.event.PopupMenuEvent;
+import javax.swing.event.PopupMenuListener;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;

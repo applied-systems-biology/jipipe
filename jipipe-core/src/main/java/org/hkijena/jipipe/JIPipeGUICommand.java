@@ -52,7 +52,7 @@ public class JIPipeGUICommand implements Command {
         ExtensionSettings extensionSettings = ExtensionSettings.getInstanceFromRaw();
         JIPipeRegistryIssues issues = new JIPipeRegistryIssues();
         try {
-            if(JIPipeDefaultRegistry.getInstance() == null) {
+            if (JIPipeDefaultRegistry.getInstance() == null) {
                 JIPipeDefaultRegistry.createInstance(context);
                 SplashScreen.getInstance().setRegistry(JIPipeDefaultRegistry.getInstance());
                 JIPipeDefaultRegistry.getInstance().discover(extensionSettings, issues);

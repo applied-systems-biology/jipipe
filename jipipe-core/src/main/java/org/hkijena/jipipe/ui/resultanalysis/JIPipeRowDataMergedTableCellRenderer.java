@@ -21,7 +21,8 @@ import org.hkijena.jipipe.ui.registries.JIPipeUIDatatypeRegistry;
 
 import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Component;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,7 +35,7 @@ public class JIPipeRowDataMergedTableCellRenderer implements TableCellRenderer {
     private List<JIPipeResultDataSlotPreviewUI> previewCache = new ArrayList<>();
 
     /**
-     * @param workbenchUI The workbench
+     * @param workbenchUI     The workbench
      * @param mergedDataTable the table to be displayed
      */
     public JIPipeRowDataMergedTableCellRenderer(JIPipeProjectWorkbench workbenchUI, JIPipeMergedExportedDataTable mergedDataTable) {
@@ -50,7 +51,7 @@ public class JIPipeRowDataMergedTableCellRenderer implements TableCellRenderer {
             JIPipeMergedExportedDataTable model = (JIPipeMergedExportedDataTable) table.getModel();
             JIPipeDataSlot slot = model.getSlot(table.convertRowIndexToModel(row));
             JIPipeResultDataSlotPreviewUI preview = previewCache.get(row);
-            if(preview == null) {
+            if (preview == null) {
                 preview = JIPipeUIDatatypeRegistry.getInstance().getCellRendererFor(slot.getAcceptedDataType(), table);
                 preview.render(workbenchUI, slot, (JIPipeExportedDataTable.Row) value);
                 previewCache.set(row, preview);

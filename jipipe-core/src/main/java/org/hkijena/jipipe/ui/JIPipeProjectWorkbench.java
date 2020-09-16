@@ -30,8 +30,10 @@ import org.hkijena.jipipe.ui.cache.JIPipeCacheManagerUI;
 import org.hkijena.jipipe.ui.compartments.JIPipeCompartmentGraphUI;
 import org.hkijena.jipipe.ui.compartments.JIPipeCompartmentUI;
 import org.hkijena.jipipe.ui.compendium.JIPipeAlgorithmCompendiumUI;
-import org.hkijena.jipipe.ui.components.SplashScreen;
-import org.hkijena.jipipe.ui.components.*;
+import org.hkijena.jipipe.ui.components.DocumentTabPane;
+import org.hkijena.jipipe.ui.components.MemoryStatusUI;
+import org.hkijena.jipipe.ui.components.RecentProjectsMenu;
+import org.hkijena.jipipe.ui.components.ReloadableValidityChecker;
 import org.hkijena.jipipe.ui.extension.MenuTarget;
 import org.hkijena.jipipe.ui.extensionbuilder.JIPipeJsonExporter;
 import org.hkijena.jipipe.ui.extensions.JIPipePluginManagerUIPanel;
@@ -48,7 +50,8 @@ import org.jdesktop.swingx.plaf.basic.BasicStatusBarUI;
 import org.scijava.Context;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Window;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
 import java.time.LocalDateTime;
@@ -95,7 +98,7 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
         validatePlugins(true);
 
         restoreStandardTabs(showIntroduction, isNewProject);
-        if(ProjectsSettings.getInstance().isRestoreTabs())
+        if (ProjectsSettings.getInstance().isRestoreTabs())
             restoreTabs();
         if (GeneralUISettings.getInstance().isShowIntroduction() && showIntroduction)
             documentTabPane.selectSingletonTab(TAB_INTRODUCTION);
@@ -116,11 +119,10 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
     private void restoreTabs() {
         try {
             Object metadata = project.getAdditionalMetadata().getOrDefault(JIPipeProjectTabMetadata.METADATA_KEY, null);
-            if(metadata instanceof JIPipeProjectTabMetadata) {
+            if (metadata instanceof JIPipeProjectTabMetadata) {
                 ((JIPipeProjectTabMetadata) metadata).restore(this);
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

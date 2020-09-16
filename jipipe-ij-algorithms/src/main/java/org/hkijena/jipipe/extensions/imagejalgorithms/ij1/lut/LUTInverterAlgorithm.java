@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.lut;
 
-import ij.ImagePlus;
 import ij.process.LUT;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
@@ -54,15 +53,13 @@ public class LUTInverterAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         ImagePlusData data = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class);
         if (duplicateImage)
             data = (ImagePlusData) data.duplicate();
-        if(data.getImage().getLuts().length == 0) {
+        if (data.getImage().getLuts().length == 0) {
             data.getImage().setLut(LUT.createLutFromColor(Color.WHITE).createInvertedLut());
-        }
-        else {
+        } else {
             LUT lut = data.getImage().getLuts()[0];
-            if(lut != null) {
+            if (lut != null) {
                 data.getImage().setLut(lut.createInvertedLut());
-            }
-            else {
+            } else {
                 data.getImage().setLut(LUT.createLutFromColor(Color.WHITE).createInvertedLut());
             }
         }

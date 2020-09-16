@@ -15,10 +15,8 @@ package org.hkijena.jipipe.extensions.tables.datatypes;
 
 import gnu.trove.map.TIntIntMap;
 import gnu.trove.map.hash.TIntIntHashMap;
-import ij.ImagePlus;
 import ij.macro.Variable;
 import ij.measure.ResultsTable;
-import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.extensions.tables.ConvertingColumnOperation;
@@ -37,12 +35,9 @@ import javax.swing.*;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
-import java.awt.Color;
 import java.awt.Component;
-import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Image;
-import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -176,19 +171,19 @@ public class ResultsTableData implements JIPipeData, TableModel {
 
     @Override
     public Component preview(int width, int height) {
-        if(getRowCount() == 0 || getColumnCount() == 0)
+        if (getRowCount() == 0 || getColumnCount() == 0)
             return null;
         JTable table = new JTable(this);
         table.setSize(table.getPreferredSize());
         BufferedImage image = new BufferedImage(table.getPreferredSize().width, table.getPreferredSize().height, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g=(Graphics2D)image.getGraphics();
+        Graphics2D g = (Graphics2D) image.getGraphics();
         table.print(g);
         double factorX = 1.0 * width / image.getWidth();
         double factorY = 1.0 * height / image.getHeight();
         double factor = Math.max(factorX, factorY);
         factor = Math.min(1.0, factor);
-        int imageWidth = (int)(image.getWidth() * factor);
-        int imageHeight = (int)(image.getHeight() * factor);
+        int imageWidth = (int) (image.getWidth() * factor);
+        int imageHeight = (int) (image.getHeight() * factor);
         Image scaledInstance = image.getScaledInstance(imageWidth, imageHeight, Image.SCALE_SMOOTH);
         String text = String.format("<html><strong>%d rows, %d columns</strong><br/>%s</html>", getRowCount(), getColumnCount(), String.join(", ", getColumnNames()));
         JLabel label = new JLabel(text, new ImageIcon(scaledInstance), JLabel.LEFT);

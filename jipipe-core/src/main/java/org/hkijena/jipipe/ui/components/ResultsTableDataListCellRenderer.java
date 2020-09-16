@@ -17,7 +17,8 @@ import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Component;
 
 /**
  * Renders {@link ResultsTableData}

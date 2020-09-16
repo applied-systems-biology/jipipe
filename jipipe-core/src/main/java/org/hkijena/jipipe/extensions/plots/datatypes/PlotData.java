@@ -45,7 +45,9 @@ import org.jfree.graphics2d.svg.SVGGraphics2D;
 import org.jfree.graphics2d.svg.SVGUtils;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.Component;
+import java.awt.Image;
+import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -103,8 +105,8 @@ public abstract class PlotData implements JIPipeData, JIPipeParameterCollection,
         double factorX = 1.0 * width / image.getWidth();
         double factorY = 1.0 * height / image.getHeight();
         double factor = Math.max(factorX, factorY);
-        int imageWidth = (int)(image.getWidth() * factor);
-        int imageHeight = (int)(image.getHeight() * factor);
+        int imageWidth = (int) (image.getWidth() * factor);
+        int imageHeight = (int) (image.getHeight() * factor);
         return new JLabel(new ImageIcon(image.getScaledInstance(imageWidth, imageHeight, Image.SCALE_SMOOTH)));
     }
 

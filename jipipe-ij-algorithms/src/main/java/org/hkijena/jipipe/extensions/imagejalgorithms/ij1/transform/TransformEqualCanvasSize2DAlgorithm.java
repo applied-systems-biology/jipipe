@@ -20,9 +20,7 @@ import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
-import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeMergingAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -139,8 +137,8 @@ public class TransformEqualCanvasSize2DAlgorithm extends JIPipeMergingAlgorithm 
         ImageStack stackNew = new ImageStack(wNew, hNew, stackOld.getColorModel());
         ImageProcessor ipNew;
 
-        for (int i=1; i<=nFrames; i++) {
-            IJ.showProgress((double)i/nFrames);
+        for (int i = 1; i <= nFrames; i++) {
+            IJ.showProgress((double) i / nFrames);
             ipNew = ipOld.createProcessor(wNew, hNew);
             ipNew.setColor(backgroundColor);
             ipNew.fill();

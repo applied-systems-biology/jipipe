@@ -41,7 +41,7 @@ public class JsonUtils {
 
             // Override standard behavior to serialize paths as URI
             SimpleModule m = new SimpleModule("PathToString");
-            m.addSerializer(Path.class,new ToStringSerializer());
+            m.addSerializer(Path.class, new ToStringSerializer());
             objectMapper.registerModule(m);
         }
         return objectMapper;

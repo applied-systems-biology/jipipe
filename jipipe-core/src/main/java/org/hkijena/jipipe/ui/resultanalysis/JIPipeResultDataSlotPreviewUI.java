@@ -30,6 +30,7 @@ public abstract class JIPipeResultDataSlotPreviewUI extends JPanel {
 
     /**
      * Creates a new renderer
+     *
      * @param table the table where the data is rendered in
      */
     public JIPipeResultDataSlotPreviewUI(JTable table) {

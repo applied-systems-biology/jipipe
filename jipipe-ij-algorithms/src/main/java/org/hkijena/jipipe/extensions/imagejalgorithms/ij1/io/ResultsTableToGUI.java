@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.io;
 
-import ij.plugin.frame.RoiManager;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
@@ -26,7 +25,6 @@ import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 
-import java.rmi.server.RemoteServer;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -52,7 +50,7 @@ public class ResultsTableToGUI extends JIPipeSimpleIteratingAlgorithm {
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         ResultsTableData inputData = dataBatch.getInputData(getFirstInputSlot(), ResultsTableData.class);
         String title = dataBatch.getAnnotations().values().stream().map(a -> a.getName() + "=" + a.getValue()).collect(Collectors.joining(", "));
-        ((ResultsTableData)inputData.duplicate()).getTable().show(title);
+        ((ResultsTableData) inputData.duplicate()).getTable().show(title);
         dataBatch.addOutputData(getFirstOutputSlot(), inputData);
     }
 }

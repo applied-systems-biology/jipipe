@@ -45,7 +45,9 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.nio.file.Path;
@@ -96,7 +98,7 @@ public class JIPipeCacheMultiDataSlotTableUI extends JIPipeProjectWorkbenchPanel
 
     private void initialize() {
         setLayout(new BorderLayout());
-        if(GeneralUISettings.getInstance().isGenerateCachePreviews())
+        if (GeneralUISettings.getInstance().isGenerateCachePreviews())
             table.setRowHeight(GeneralUISettings.getInstance().getPreviewHeight());
         else
             table.setRowHeight(25);

@@ -21,7 +21,7 @@ import org.hkijena.jipipe.ui.registries.JIPipeUIParameterTypeRegistry;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
 
 /**
  * Generic parameter for {@link OptionalParameter}

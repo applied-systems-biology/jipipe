@@ -22,7 +22,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.utils.StringUtils;
 
-import java.awt.*;
+import java.awt.HeadlessException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;

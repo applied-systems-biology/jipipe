@@ -28,7 +28,13 @@ import org.hkijena.jipipe.utils.PointRange;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.util.Map;
 
 /**
@@ -117,11 +123,11 @@ public abstract class JIPipeNodeUI extends JIPipeWorkbenchPanel {
         super.paint(g);
 
         // Draw additional border if zoom < 1
-        if(graphUI.getZoom() < 1) {
+        if (graphUI.getZoom() < 1) {
             Graphics2D graphics2D = (Graphics2D) g;
             graphics2D.setStroke(JIPipeGraphCanvasUI.STROKE_UNIT);
             graphics2D.setColor(borderColor);
-            graphics2D.drawRect(0,0,getWidth() - 1, getHeight() - 1);
+            graphics2D.drawRect(0, 0, getWidth() - 1, getHeight() - 1);
         }
     }
 
@@ -166,6 +172,7 @@ public abstract class JIPipeNodeUI extends JIPipeWorkbenchPanel {
 
     /**
      * Calculates the size in grid coordinates
+     *
      * @return the size
      */
     public abstract Dimension calculateGridSize();
@@ -187,14 +194,15 @@ public abstract class JIPipeNodeUI extends JIPipeWorkbenchPanel {
 
     /**
      * Moves the node to a grid location
+     *
      * @param gridLocation the grid location
-     * @param force if false, no overlap check is applied
-     * @param save save the grid location to the node
+     * @param force        if false, no overlap check is applied
+     * @param save         save the grid location to the node
      * @return if setting the location was successful
      */
     public boolean moveToGridLocation(Point gridLocation, boolean force, boolean save) {
         Point location = graphUI.getViewMode().gridToRealLocation(gridLocation, graphUI.getZoom());
-        if(!force) {
+        if (!force) {
             Rectangle futureBounds = new Rectangle(location.x, location.y, getWidth(), getHeight());
             for (int i = 0; i < graphUI.getComponentCount(); ++i) {
                 Component component = graphUI.getComponent(i);
@@ -209,7 +217,7 @@ public abstract class JIPipeNodeUI extends JIPipeWorkbenchPanel {
             }
         }
         setLocation(location);
-        if(save) {
+        if (save) {
             node.setLocationWithin(graphUI.getCompartment(), gridLocation, graphUI.getViewMode().name());
         }
         return true;
@@ -217,15 +225,15 @@ public abstract class JIPipeNodeUI extends JIPipeWorkbenchPanel {
 
     /**
      * Moves the UI back to the stored grid location
+     *
      * @param force if false, no overlap check is applied
      * @return either the location was not set or no stored location is available
      */
     public boolean moveToStoredGridLocation(boolean force) {
         Point point = node.getLocationWithin(graphUI.getCompartment(), graphUI.getViewMode().name());
-        if(point != null) {
+        if (point != null) {
             return moveToGridLocation(point, force, false);
-        }
-        else {
+        } else {
             return false;
         }
     }
@@ -268,9 +276,10 @@ public abstract class JIPipeNodeUI extends JIPipeWorkbenchPanel {
 
     /**
      * Moves the node to the next grid location, given a real location
+     *
      * @param location a real location
-     * @param force whether to disable checking for overlaps
-     * @param save store the location in the node
+     * @param force    whether to disable checking for overlaps
+     * @param save     store the location in the node
      * @return if setting the location was successful
      */
     public boolean moveToNextGridPoint(Point location, boolean force, boolean save) {

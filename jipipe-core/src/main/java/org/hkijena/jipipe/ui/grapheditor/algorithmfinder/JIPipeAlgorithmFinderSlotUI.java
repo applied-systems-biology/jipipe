@@ -18,7 +18,11 @@ import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeMutableSlotConfiguration;
-import org.hkijena.jipipe.api.history.*;
+import org.hkijena.jipipe.api.history.AddNodeGraphHistorySnapshot;
+import org.hkijena.jipipe.api.history.CompoundGraphHistorySnapshot;
+import org.hkijena.jipipe.api.history.EdgeConnectGraphHistorySnapshot;
+import org.hkijena.jipipe.api.history.EdgeDisconnectGraphHistorySnapshot;
+import org.hkijena.jipipe.api.history.SlotConfigurationHistorySnapshot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
 import org.hkijena.jipipe.ui.events.AlgorithmFinderSuccessEvent;
@@ -27,7 +31,9 @@ import org.hkijena.jipipe.ui.registries.JIPipeUIDatatypeRegistry;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
 import java.util.Arrays;
 import java.util.Collections;
 

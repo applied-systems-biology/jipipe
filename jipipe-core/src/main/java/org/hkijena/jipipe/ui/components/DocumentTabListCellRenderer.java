@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.ui.components;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.Component;
 
 /**
  * Renders {@link DocumentTabPane} tabs

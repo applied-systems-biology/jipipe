@@ -36,6 +36,6 @@ public class StringDataConverter implements JIPipeDataConverter {
 
     @Override
     public JIPipeData convert(JIPipeData input) {
-        return (JIPipeData) ReflectionUtils.newInstance(outputType, ((StringData)input).getData());
+        return (JIPipeData) ReflectionUtils.newInstance(outputType, ((StringData) input).getData());
     }
 }

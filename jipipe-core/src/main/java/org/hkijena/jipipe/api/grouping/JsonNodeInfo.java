@@ -43,7 +43,13 @@ import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettin
 import org.hkijena.jipipe.extensions.parameters.references.JIPipeAlgorithmIconRef;
 import org.hkijena.jipipe.utils.StringUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Info of a {@link GraphWrapperAlgorithm}
@@ -421,7 +427,7 @@ public class JsonNodeInfo implements JIPipeNodeInfo, JIPipeValidatable, JIPipePa
     @JIPipeParameter(value = "icon", uiOrder = 25)
     @JsonGetter("icon")
     public JIPipeAlgorithmIconRef getIcon() {
-        if(icon == null)
+        if (icon == null)
             icon = new JIPipeAlgorithmIconRef();
         return icon;
     }

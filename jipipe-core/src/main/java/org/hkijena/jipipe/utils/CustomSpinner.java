@@ -4,7 +4,9 @@ import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
 
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicSpinnerUI;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
 
 public class CustomSpinner extends JSpinner {
     public CustomSpinner(SpinnerModel model) {

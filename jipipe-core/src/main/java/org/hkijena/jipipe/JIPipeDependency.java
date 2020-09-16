@@ -14,13 +14,10 @@
 package org.hkijena.jipipe;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
-import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.JIPipeMetadata;
 import org.hkijena.jipipe.api.JIPipeValidatable;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 
 import java.nio.file.Path;
 import java.util.Collections;
@@ -70,10 +67,13 @@ public interface JIPipeDependency extends JIPipeValidatable {
 
     /**
      * List of ImageJ update sites that provide the dependency
+     *
      * @return the list of update sites
      */
     @JsonGetter("ij:update-site-providers")
-    default List<JIPipeImageJUpdateSiteDependency> getImageJUpdateSites() { return Collections.emptyList(); }
+    default List<JIPipeImageJUpdateSiteDependency> getImageJUpdateSites() {
+        return Collections.emptyList();
+    }
 
     @Override
     void reportValidity(JIPipeValidityReport report);

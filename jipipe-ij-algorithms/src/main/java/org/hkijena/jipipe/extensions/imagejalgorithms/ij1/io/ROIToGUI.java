@@ -29,7 +29,6 @@ import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 /**
  * Imports {@link ImagePlusData} from the GUI

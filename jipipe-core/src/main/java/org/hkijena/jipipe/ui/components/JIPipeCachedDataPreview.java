@@ -44,15 +44,14 @@ public class JIPipeCachedDataPreview extends JPanel {
 
     private void setPreview(Component component) {
         removeAll();
-        if(component == null) {
+        if (component == null) {
             add(new JLabel("N/A"), BorderLayout.CENTER);
-        }
-        else {
+        } else {
             add(component, BorderLayout.CENTER);
         }
         revalidate();
         repaint();
-        if(parentComponent != null) {
+        if (parentComponent != null) {
             parentComponent.repaint();
         }
     }

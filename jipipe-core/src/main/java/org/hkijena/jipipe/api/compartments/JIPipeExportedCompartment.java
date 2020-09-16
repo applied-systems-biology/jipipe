@@ -16,7 +16,11 @@ package org.hkijena.jipipe.api.compartments;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.hkijena.jipipe.api.JIPipeMetadata;
@@ -73,7 +77,7 @@ public class JIPipeExportedCompartment {
         for (Map.Entry<JIPipeDataSlot, JIPipeDataSlot> edge : sourceGraph.getSlotEdges()) {
             JIPipeGraphNode copySource = copies.getOrDefault(edge.getKey().getNode().getIdInGraph(), null);
             JIPipeGraphNode copyTarget = copies.getOrDefault(edge.getValue().getNode().getIdInGraph(), null);
-            if(copySource == null || copyTarget == null)
+            if (copySource == null || copyTarget == null)
                 continue;
             if (!copySource.getCompartment().equals(compartmentId))
                 continue;

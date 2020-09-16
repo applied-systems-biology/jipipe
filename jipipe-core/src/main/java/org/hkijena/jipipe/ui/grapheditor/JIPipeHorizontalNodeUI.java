@@ -34,8 +34,11 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.font.FontRenderContext;
 import java.awt.font.TextLayout;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * An algorithm UI for horizontal display
@@ -154,11 +157,11 @@ public class JIPipeHorizontalNodeUI extends JIPipeNodeUI {
                     maxOutputSlotWidth = Math.max(maxOutputSlotWidth, realSize.height);
                 }
             }
-            if(addInputSlotButton != null) {
-                maxInputSlotWidth = Math.max(maxInputSlotWidth, JIPipeGraphViewMode.Horizontal.gridToRealSize(new Dimension(4,1), getGraphUI().getZoom()).width);
+            if (addInputSlotButton != null) {
+                maxInputSlotWidth = Math.max(maxInputSlotWidth, JIPipeGraphViewMode.Horizontal.gridToRealSize(new Dimension(4, 1), getGraphUI().getZoom()).width);
             }
-            if(addOutputSlotButton != null) {
-                maxOutputSlotWidth = Math.max(maxOutputSlotWidth, JIPipeGraphViewMode.Horizontal.gridToRealSize(new Dimension(4,1), getGraphUI().getZoom()).width);
+            if (addOutputSlotButton != null) {
+                maxOutputSlotWidth = Math.max(maxOutputSlotWidth, JIPipeGraphViewMode.Horizontal.gridToRealSize(new Dimension(4, 1), getGraphUI().getZoom()).width);
             }
 
             width += maxInputSlotWidth + maxOutputSlotWidth;
@@ -216,7 +219,7 @@ public class JIPipeHorizontalNodeUI extends JIPipeNodeUI {
                 createInputSlots = false;
             }
         }
-        if(getGraphUI().getCompartment() != null) {
+        if (getGraphUI().getCompartment() != null) {
             if (!getNode().renderInputSlots()) {
                 createAddInputSlotButton = false;
                 createInputSlots = false;
@@ -342,25 +345,24 @@ public class JIPipeHorizontalNodeUI extends JIPipeNodeUI {
     @Override
     public void updateSize() {
         Dimension gridSize = calculateGridSize();
-        Dimension realSize = new Dimension((int)Math.round(gridSize.width * JIPipeGraphViewMode.Horizontal.getGridWidth() * getGraphUI().getZoom()),
-                (int)Math.round(gridSize.height * JIPipeGraphViewMode.Horizontal.getGridHeight() * getGraphUI().getZoom()));
-        Dimension inputRealSize = JIPipeGraphViewMode.Horizontal.gridToRealSize(new Dimension(1,1), getGraphUI().getZoom());
-        Dimension outputRealSize = JIPipeGraphViewMode.Horizontal.gridToRealSize(new Dimension(1,1), getGraphUI().getZoom());
+        Dimension realSize = new Dimension((int) Math.round(gridSize.width * JIPipeGraphViewMode.Horizontal.getGridWidth() * getGraphUI().getZoom()),
+                (int) Math.round(gridSize.height * JIPipeGraphViewMode.Horizontal.getGridHeight() * getGraphUI().getZoom()));
+        Dimension inputRealSize = JIPipeGraphViewMode.Horizontal.gridToRealSize(new Dimension(1, 1), getGraphUI().getZoom());
+        Dimension outputRealSize = JIPipeGraphViewMode.Horizontal.gridToRealSize(new Dimension(1, 1), getGraphUI().getZoom());
         for (JIPipeDataSlotUI ui : slotUIList) {
             Dimension slotGridSize = ui.calculateGridSize();
-            Dimension slotRealSize = new Dimension((int)Math.round(slotGridSize.width * JIPipeGraphViewMode.Horizontal.getGridWidth() * getGraphUI().getZoom()),
-                    (int)Math.round(slotGridSize.height * JIPipeGraphViewMode.Horizontal.getGridHeight() * getGraphUI().getZoom()));
-            if(ui.getSlot().isInput()) {
+            Dimension slotRealSize = new Dimension((int) Math.round(slotGridSize.width * JIPipeGraphViewMode.Horizontal.getGridWidth() * getGraphUI().getZoom()),
+                    (int) Math.round(slotGridSize.height * JIPipeGraphViewMode.Horizontal.getGridHeight() * getGraphUI().getZoom()));
+            if (ui.getSlot().isInput()) {
                 inputRealSize.width = Math.max(inputRealSize.width, slotRealSize.width);
-            }
-            else {
+            } else {
                 outputRealSize.width = Math.max(inputRealSize.width, slotRealSize.width);
             }
         }
         inputSlotPanel.setSize(inputRealSize);
         outputSlotPanel.setSize(outputRealSize);
 
-        if(!Objects.equals(getSize(), realSize)) {
+        if (!Objects.equals(getSize(), realSize)) {
             setSize(realSize);
             getGraphUI().repaint();
         }

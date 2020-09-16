@@ -16,16 +16,12 @@ package org.hkijena.jipipe.extensions.strings;
 import com.google.common.base.Charsets;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeExportedDataTable;
-import org.hkijena.jipipe.extensions.tables.ResultsTableDataSlotRowUI;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.resultanalysis.JIPipeDefaultResultDataSlotRowUI;
 import org.hkijena.jipipe.ui.texteditor.JIPipeTextEditor;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -45,7 +41,7 @@ public class StringResultDataSlotRowUI extends JIPipeDefaultResultDataSlotRowUI 
     @Override
     protected void registerActions() {
         super.registerActions();
-        if(findTextFile() != null) {
+        if (findTextFile() != null) {
             registerAction("Open", "Opens the file in the native application", UIUtils.getIconFromResources("actions/folder-open.png"), this::openInNativeApplication);
             registerAction("Open in JIPipe", "Opens the file in JIPipe", UIUtils.getIconFromResources("apps/jipipe.png"), this::openInJIPipe);
         }
@@ -68,7 +64,7 @@ public class StringResultDataSlotRowUI extends JIPipeDefaultResultDataSlotRowUI 
 
     private void openInNativeApplication(JIPipeDataSlot dataSlot) {
         Path textFile = findTextFile();
-        if(textFile != null) {
+        if (textFile != null) {
             UIUtils.openFileInNative(textFile);
         }
     }

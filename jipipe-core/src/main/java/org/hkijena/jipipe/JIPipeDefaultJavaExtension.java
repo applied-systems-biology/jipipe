@@ -156,7 +156,8 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
 
     /**
      * Registers a new data type
-     *  @param id        Data type id
+     *
+     * @param id        Data type id
      * @param dataClass Data class
      * @param icon      Icon for the data type. Can be null.
      * @param rowUI     Results analyzer row UI for the data type. Can be null.
@@ -385,9 +386,10 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
 
     /**
      * Registers a new settings sheet
-     *  @param id                  unique ID
+     *
+     * @param id                  unique ID
      * @param name                sheet name
-     * @param icon sheet icon
+     * @param icon                sheet icon
      * @param category            sheet category (if null defaults to "General")
      * @param categoryIcon        category icon (if null defaults to a predefined icon)
      * @param parameterCollection the settings

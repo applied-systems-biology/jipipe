@@ -25,8 +25,12 @@ import javax.swing.table.TableModel;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * A data slot holds an {@link JIPipeData} instance.
@@ -318,7 +322,7 @@ public class JIPipeDataSlot implements TableModel {
      * Saves the stored data to the provided storage path and sets data to null
      * Warning: Ensure that depending input slots do not use this slot, anymore!
      *
-     * @param basePath the base path to where all results are stored relative to. If null, there is no base path
+     * @param basePath    the base path to where all results are stored relative to. If null, there is no base path
      * @param destroyData the the containing data should be destroyed
      */
     public void flush(Path basePath, boolean destroyData) {
@@ -385,6 +389,7 @@ public class JIPipeDataSlot implements TableModel {
 
     /**
      * Saves the data to the storage path
+     *
      * @param basePath the base path to where all results are stored relative to. If null, there is no base path
      */
     public void save(Path basePath) {

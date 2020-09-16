@@ -17,17 +17,11 @@ import ij.CompositeImage;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.ImageStack;
-import ij.Macro;
-import ij.gui.GenericDialog;
-import ij.gui.Toolbar;
 import ij.measure.Calibration;
-import ij.measure.Measurements;
 import ij.plugin.ChannelSplitter;
 import ij.plugin.RGBStackMerge;
-import ij.process.ByteProcessor;
 import ij.process.ColorProcessor;
 import ij.process.ImageProcessor;
-import ij.process.ImageStatistics;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
@@ -45,7 +39,6 @@ import org.hkijena.jipipe.extensions.parameters.primitives.OptionalIntegerParame
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Image;
-import java.util.OptionalInt;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -92,30 +85,30 @@ public class StackToMontageAlgorithm extends JIPipeIteratingAlgorithm {
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         ImagePlus imp = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class).getImage();
-        if(!imp.isStack() || imp.getStackSize() <= 1) {
+        if (!imp.isStack() || imp.getStackSize() <= 1) {
             dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(imp));
             return;
         }
         imp = imp.duplicate();
         boolean hyperstack = imp.isHyperStack();
-        if (hyperstack && imp.getNSlices()>1 && imp.getNFrames()>1) {
+        if (hyperstack && imp.getNSlices() > 1 && imp.getNFrames() > 1) {
             IJ.error("5D hyperstacks are not supported");
             return;
         }
         int channels = imp.getNChannels();
-        if (!hyperstack && imp.isComposite() && channels>1) {
+        if (!hyperstack && imp.isComposite() && channels > 1) {
             int channel = imp.getChannel();
-            CompositeImage ci = (CompositeImage)imp;
+            CompositeImage ci = (CompositeImage) imp;
             int mode = ci.getMode();
-            if (mode== IJ.COMPOSITE)
+            if (mode == IJ.COMPOSITE)
                 ci.setMode(IJ.COLOR);
             ImageStack stack = new ImageStack(imp.getWidth(), imp.getHeight());
-            for (int c=1; c<=channels; c++) {
+            for (int c = 1; c <= channels; c++) {
                 imp.setPosition(c, imp.getSlice(), imp.getFrame());
                 Image img = imp.getImage();
                 stack.addSlice(null, new ColorProcessor(img));
             }
-            if (ci.getMode()!=mode)
+            if (ci.getMode() != mode)
                 ci.setMode(mode);
             imp.setPosition(channel, imp.getSlice(), imp.getFrame());
             Calibration cal = imp.getCalibration();
@@ -131,53 +124,51 @@ public class StackToMontageAlgorithm extends JIPipeIteratingAlgorithm {
         boolean hyperstack = imp.isHyperStack();
         if (hyperstack) {
             nSlices = imp.getNSlices();
-            if (nSlices==1)
+            if (nSlices == 1)
                 nSlices = imp.getNFrames();
         }
         int columns;
         int rows;
-        if(!this.columns.isEnabled() && !this.rows.isEnabled()) {
-            columns = Math.max(1, (int)Math.sqrt(nSlices));
-            rows = (int)Math.ceil(1.0 * nSlices / columns);
-        }
-        else if(this.columns.isEnabled() && !this.rows.isEnabled()) {
+        if (!this.columns.isEnabled() && !this.rows.isEnabled()) {
+            columns = Math.max(1, (int) Math.sqrt(nSlices));
+            rows = (int) Math.ceil(1.0 * nSlices / columns);
+        } else if (this.columns.isEnabled() && !this.rows.isEnabled()) {
             columns = this.columns.getContent();
-            rows = (int)Math.ceil(1.0 * nSlices / columns);
-        }
-        else if(this.rows.isEnabled() && !this.columns.isEnabled()) {
+            rows = (int) Math.ceil(1.0 * nSlices / columns);
+        } else if (this.rows.isEnabled() && !this.columns.isEnabled()) {
             rows = this.rows.getContent();
-            columns = (int)Math.ceil(1.0 * nSlices / rows);
-        }
-        else {
-            columns = Math.max(1, (int)Math.sqrt(nSlices));
-            rows = Math.max(this.rows.getContent(), (int)Math.ceil(1.0 * nSlices / columns));
+            columns = (int) Math.ceil(1.0 * nSlices / rows);
+        } else {
+            columns = Math.max(1, (int) Math.sqrt(nSlices));
+            rows = Math.max(this.rows.getContent(), (int) Math.ceil(1.0 * nSlices / columns));
         }
 
-        if(hyperstack) {
+        if (hyperstack) {
             return makeHyperstackMontage(imp, columns, rows, scale, indexIncrement, borderWidth, labels);
-        }
-        else {
+        } else {
             int first = firstIndex.isEnabled() ? firstIndex.getContent() : 1;
             int last = lastIndex.isEnabled() ? lastIndex.getContent() : nSlices;
             return makeMontage2(imp, columns, rows, scale, first, last, indexIncrement, borderWidth, labels);
         }
     }
 
-    /** Creates a montage and returns it as an ImagePlus. */
+    /**
+     * Creates a montage and returns it as an ImagePlus.
+     */
     public ImagePlus makeMontage2(ImagePlus imp, int columns, int rows, double scale, int first, int last, int inc, int borderWidth, boolean labels) {
         int stackWidth = imp.getWidth();
         int stackHeight = imp.getHeight();
         int nSlices = imp.getStackSize();
-        int width = (int)(stackWidth*scale);
-        int height = (int)(stackHeight*scale);
-        int montageWidth = width*columns + borderWidth*(columns-1);
-        int montageHeight = height*rows + borderWidth*(rows-1);
+        int width = (int) (stackWidth * scale);
+        int height = (int) (stackHeight * scale);
+        int montageWidth = width * columns + borderWidth * (columns - 1);
+        int montageHeight = height * rows + borderWidth * (rows - 1);
         ImageProcessor ip = imp.getProcessor();
         ImageProcessor montage = ip.createProcessor(montageWidth, montageHeight);
         ImagePlus imp2 = new ImagePlus("Montage", montage);
         imp2.setCalibration(imp.getCalibration());
         montage = imp2.getProcessor();
-        Color fgColor=foregroundColor;
+        Color fgColor = foregroundColor;
         Color bgColor = backgroundColor;
         montage.setColor(bgColor);
         montage.fill();
@@ -189,11 +180,11 @@ public class StackToMontageAlgorithm extends JIPipeIteratingAlgorithm {
         int y = 0;
         ImageProcessor aSlice;
         int slice = first;
-        while (slice<=last) {
+        while (slice <= last) {
             aSlice = stack.getProcessor(slice);
-            if (scale!=1.0) {
+            if (scale != 1.0) {
                 aSlice.setInterpolationMethod(ImageProcessor.BILINEAR);
-                boolean averageWhenDownSizing = width<200;
+                boolean averageWhenDownSizing = width < 200;
                 aSlice = aSlice.resize(width, height, averageWhenDownSizing);
             }
             montage.insert(aSlice, x, y);
@@ -201,21 +192,22 @@ public class StackToMontageAlgorithm extends JIPipeIteratingAlgorithm {
             if (labels)
                 drawLabel(montage, slice, label, x, y, width, height, borderWidth);
             x += width + borderWidth;
-            if (x>=montageWidth) {
+            if (x >= montageWidth) {
                 x = 0;
-                y += height + borderWidth;;
-                if (y>=montageHeight)
+                y += height + borderWidth;
+                ;
+                if (y >= montageHeight)
                     break;
             }
-            IJ.showProgress((double)(slice-first)/(last-first));
+            IJ.showProgress((double) (slice - first) / (last - first));
             slice += inc;
         }
-        if (borderWidth>0) {
-            for (x=width; x<montageWidth; x+=width+borderWidth) {
+        if (borderWidth > 0) {
+            for (x = width; x < montageWidth; x += width + borderWidth) {
                 montage.setRoi(x, 0, borderWidth, montageHeight);
                 montage.fill();
             }
-            for (y=height; y<montageHeight; y+=height+borderWidth) {
+            for (y = height; y < montageHeight; y += height + borderWidth) {
                 montage.setRoi(0, y, montageWidth, borderWidth);
                 montage.fill();
             }
@@ -226,16 +218,18 @@ public class StackToMontageAlgorithm extends JIPipeIteratingAlgorithm {
             cal.pixelWidth /= scale;
             cal.pixelHeight /= scale;
         }
-        imp2.setProperty("Info", "xMontage="+columns+"\nyMontage="+rows+"\n");
+        imp2.setProperty("Info", "xMontage=" + columns + "\nyMontage=" + rows + "\n");
         return imp2;
     }
 
-    /** Creates a hyperstack montage and returns it as an ImagePlus. */
+    /**
+     * Creates a hyperstack montage and returns it as an ImagePlus.
+     */
     private ImagePlus makeHyperstackMontage(ImagePlus imp, int columns, int rows, double scale, int inc, int borderWidth, boolean labels) {
         ImagePlus[] channels = ChannelSplitter.split(imp);
         int n = channels.length;
         ImagePlus[] montages = new ImagePlus[n];
-        for (int i=0; i<n; i++) {
+        for (int i = 0; i < n; i++) {
             int last = channels[i].getStackSize();
             montages[i] = makeMontage2(channels[i], columns, rows, scale, 1, last, inc, borderWidth, labels);
         }
@@ -246,16 +240,16 @@ public class StackToMontageAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     void drawLabel(ImageProcessor montage, int slice, String label, int x, int y, int width, int height, int borderWidth) {
-        if (label!=null && !label.equals("") && montage.getStringWidth(label)>=width) {
+        if (label != null && !label.equals("") && montage.getStringWidth(label) >= width) {
             do {
-                label = label.substring(0, label.length()-1);
-            } while (label.length()>1 && montage.getStringWidth(label)>=width);
+                label = label.substring(0, label.length() - 1);
+            } while (label.length() > 1 && montage.getStringWidth(label) >= width);
         }
-        if (label==null || label.equals(""))
-            label = ""+slice;
+        if (label == null || label.equals(""))
+            label = "" + slice;
         int swidth = montage.getStringWidth(label);
-        x += width/2 - swidth/2;
-        y -= borderWidth/2;
+        x += width / 2 - swidth / 2;
+        y -= borderWidth / 2;
         y += height;
         montage.drawString(label, x, y);
     }

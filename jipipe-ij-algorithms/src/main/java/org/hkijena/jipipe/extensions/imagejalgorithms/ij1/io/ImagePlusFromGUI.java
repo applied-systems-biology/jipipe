@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.io;
 
-import ij.IJ;
 import ij.ImagePlus;
 import ij.WindowManager;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
@@ -60,29 +59,28 @@ public class ImagePlusFromGUI extends JIPipeSimpleIteratingAlgorithm {
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         List<ImagePlus> rawImages = new ArrayList<>();
-        if(onlyActiveImage) {
+        if (onlyActiveImage) {
             ImagePlus img = WindowManager.getCurrentImage();
-            if(img != null) {
+            if (img != null) {
                 rawImages.add(img);
             }
-        }
-        else {
+        } else {
             for (int i = 0; i < WindowManager.getImageCount(); i++) {
                 int id = WindowManager.getNthImageID(i + 1);
                 ImagePlus img = WindowManager.getImage(id);
-                if(img != null) {
+                if (img != null) {
                     rawImages.add(img);
                 }
             }
         }
         for (ImagePlus rawImage : rawImages) {
             String imageString = rawImage.toString();
-            if(!imageFilters.isEmpty()) {
+            if (!imageFilters.isEmpty()) {
                 List<Boolean> predicateResults = new ArrayList<>();
                 for (StringPredicate filter : imageFilters) {
                     predicateResults.add(filter.test(imageString));
                 }
-                if(!imageFiltersOperation.apply(predicateResults))
+                if (!imageFiltersOperation.apply(predicateResults))
                     continue;
             }
             dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(rawImage).duplicate());

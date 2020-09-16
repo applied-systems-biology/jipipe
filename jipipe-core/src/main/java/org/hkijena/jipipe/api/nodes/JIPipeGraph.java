@@ -16,17 +16,29 @@ package org.hkijena.jipipe.api.nodes;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.google.common.collect.*;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
+import com.google.common.collect.ImmutableBiMap;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.JIPipeValidatable;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.events.*;
+import org.hkijena.jipipe.api.events.GraphChangedEvent;
+import org.hkijena.jipipe.api.events.NodeConnectedEvent;
+import org.hkijena.jipipe.api.events.NodeDisconnectedEvent;
+import org.hkijena.jipipe.api.events.NodeSlotsChangedEvent;
+import org.hkijena.jipipe.api.events.ParameterStructureChangedEvent;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
@@ -41,9 +53,8 @@ import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.traverse.GraphIterator;
 import org.jgrapht.traverse.TopologicalOrderIterator;
 
-import java.awt.*;
+import java.awt.Point;
 import java.io.IOException;
-import java.util.List;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -640,7 +651,7 @@ public class JIPipeGraph implements JIPipeValidatable {
     /**
      * Loads this graph from JSON
      *
-     * @param node JSON data
+     * @param node   JSON data
      * @param issues issues reported during deserializing
      */
     public void fromJson(JsonNode node, JIPipeValidityReport issues) {

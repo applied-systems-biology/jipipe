@@ -13,9 +13,7 @@
 
 package org.hkijena.jipipe.extensions.imagejdatatypes.resultanalysis;
 
-import ij.IJ;
 import ij.ImagePlus;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeExportedDataTable;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;

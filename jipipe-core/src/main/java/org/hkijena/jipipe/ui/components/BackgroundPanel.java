@@ -14,7 +14,8 @@
 package org.hkijena.jipipe.ui.components;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 
 public class BackgroundPanel extends JPanel {

@@ -13,7 +13,11 @@
 
 package org.hkijena.jipipe.ui.grapheditor;
 
-import com.google.common.collect.*;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
+import com.google.common.collect.ImmutableBiMap;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
@@ -29,7 +33,13 @@ import org.hkijena.jipipe.extensions.settings.GraphEditorUISettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.ZoomViewPort;
-import org.hkijena.jipipe.ui.events.*;
+import org.hkijena.jipipe.ui.events.AlgorithmEvent;
+import org.hkijena.jipipe.ui.events.AlgorithmSelectedEvent;
+import org.hkijena.jipipe.ui.events.AlgorithmSelectionChangedEvent;
+import org.hkijena.jipipe.ui.events.AlgorithmUIActionRequestedEvent;
+import org.hkijena.jipipe.ui.events.DefaultAlgorithmUIActionRequestedEvent;
+import org.hkijena.jipipe.ui.events.GraphCanvasUpdatedEvent;
+import org.hkijena.jipipe.ui.events.ZoomChangedEvent;
 import org.hkijena.jipipe.ui.grapheditor.connections.RectangularLineDrawer;
 import org.hkijena.jipipe.ui.grapheditor.contextmenu.NodeUIContextAction;
 import org.hkijena.jipipe.ui.grapheditor.layout.MSTGraphAutoLayoutMethod;
@@ -44,7 +54,13 @@ import javax.swing.FocusManager;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.dnd.DropTarget;
-import java.awt.event.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 import java.awt.image.BufferedImage;
 import java.util.List;
 import java.util.*;
@@ -382,7 +398,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
 
             Point targetPoint = new Point(minX, targetY);
             if (!targetAlgorithmUI.moveToNextGridPoint(targetPoint, false, true)) {
-                if(nodesAfter.isEmpty())
+                if (nodesAfter.isEmpty())
                     return;
                 // Move all other algorithms
                 int minDistance = Integer.MAX_VALUE;
@@ -391,7 +407,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
                         continue;
                     minDistance = Math.min(minDistance, ui.getX() - sourceAlgorithmUI.getRightX());
                 }
-                int translateX = (int)Math.round(targetAlgorithmUI.getWidth() + viewMode.getGridWidth() * zoom * 4 - minDistance);
+                int translateX = (int) Math.round(targetAlgorithmUI.getWidth() + viewMode.getGridWidth() * zoom * 4 - minDistance);
                 for (JIPipeNodeUI ui : nodesAfter) {
                     if (ui == targetAlgorithmUI || ui == sourceAlgorithmUI)
                         continue;
@@ -404,10 +420,10 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
         } else {
             int x = sourceAlgorithmUI.getSlotLocation(source).center.x + sourceAlgorithmUI.getX();
             x -= targetAlgorithmUI.getSlotLocation(target).center.x;
-            int y = (int)Math.round(sourceAlgorithmUI.getBottomY() + viewMode.getGridHeight() * zoom);
+            int y = (int) Math.round(sourceAlgorithmUI.getBottomY() + viewMode.getGridHeight() * zoom);
             Point targetPoint = new Point(x, y);
             if (!targetAlgorithmUI.moveToNextGridPoint(targetPoint, false, true)) {
-                if(nodesAfter.isEmpty())
+                if (nodesAfter.isEmpty())
                     return;
                 // Move all other algorithms
                 int minDistance = Integer.MAX_VALUE;
@@ -416,7 +432,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
                         continue;
                     minDistance = Math.min(minDistance, ui.getY() - sourceAlgorithmUI.getBottomY());
                 }
-                int translateY = (int)Math.round(targetAlgorithmUI.getHeight() + viewMode.getGridHeight() * zoom * 2 - minDistance);
+                int translateY = (int) Math.round(targetAlgorithmUI.getHeight() + viewMode.getGridHeight() * zoom * 2 - minDistance);
                 for (JIPipeNodeUI ui : nodesAfter) {
                     if (ui == targetAlgorithmUI || ui == sourceAlgorithmUI)
                         continue;
@@ -521,8 +537,8 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
             }
         }
         if (graphEditCursor != null) {
-            graphEditCursor.x = (int)Math.round(graphEditCursor.x + left * viewMode.getGridWidth() * zoom);
-            graphEditCursor.y = (int)Math.round(graphEditCursor.y + top * viewMode.getGridHeight() * zoom);
+            graphEditCursor.x = (int) Math.round(graphEditCursor.x + left * viewMode.getGridWidth() * zoom);
+            graphEditCursor.y = (int) Math.round(graphEditCursor.y + top * viewMode.getGridHeight() * zoom);
         }
         if (getParent() != null)
             getParent().revalidate();
@@ -1452,13 +1468,10 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
         if (e.isControlDown()) {
             if (e.getWheelRotation() < 0) {
                 zoomIn();
-            }
-            else {
+            } else {
                 zoomOut();
             }
-        }
-        else
-        {
+        } else {
             getParent().dispatchEvent(e);
         }
     }

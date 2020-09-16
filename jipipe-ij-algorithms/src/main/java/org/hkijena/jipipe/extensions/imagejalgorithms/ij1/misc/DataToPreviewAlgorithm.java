@@ -6,14 +6,18 @@ import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
+import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.color.ImagePlus2DColorRGBData;
-import org.hkijena.jipipe.utils.ScreenImage;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.Component;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.lang.reflect.InvocationTargetException;
 import java.util.function.Consumer;
@@ -42,12 +46,12 @@ public class DataToPreviewAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         JIPipeData data = dataBatch.getInputData(getFirstInputSlot(), JIPipeData.class);
         Component preview = data.preview(previewWidth, previewHeight);
-        if(preview != null) {
+        if (preview != null) {
             try {
                 SwingUtilities.invokeAndWait(() -> {
                     preview.setSize(previewWidth, previewHeight);
                     BufferedImage image = new BufferedImage(previewWidth, previewHeight, BufferedImage.TYPE_INT_ARGB);
-                    Graphics2D g=(Graphics2D)image.getGraphics();
+                    Graphics2D g = (Graphics2D) image.getGraphics();
                     preview.print(g);
                     dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlus2DColorRGBData(new ImagePlus("Preview of " + data, image)));
                 });

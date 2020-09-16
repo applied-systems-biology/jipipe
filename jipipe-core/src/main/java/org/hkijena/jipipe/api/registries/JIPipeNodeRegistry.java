@@ -31,7 +31,12 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -107,7 +112,7 @@ public class JIPipeNodeRegistry implements JIPipeValidatable {
         registeredNodeInfos.put(info.getId(), info);
         registeredNodeInfoSources.put(info.getId(), source);
         eventBus.post(new NodeInfoRegisteredEvent(info));
-       JIPipeDefaultRegistry.getInstance().getLogService().info("Registered algorithm '" + info.getName() + "' [" + info.getId() + "]");
+        JIPipeDefaultRegistry.getInstance().getLogService().info("Registered algorithm '" + info.getName() + "' [" + info.getId() + "]");
         runRegistrationTasks();
     }
 

@@ -13,10 +13,8 @@
 
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.io;
 
-import ij.ImagePlus;
 import ij.WindowManager;
 import ij.measure.ResultsTable;
-import ij.plugin.filter.ParticleAnalyzer;
 import ij.text.TextWindow;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
@@ -66,12 +64,12 @@ public class ResultsTableFromGUI extends JIPipeSimpleIteratingAlgorithm {
             if (window instanceof TextWindow) {
                 ResultsTable resultsTable = ((TextWindow) window).getResultsTable();
                 if (resultsTable != null) {
-                    if(!titleFilters.isEmpty()) {
+                    if (!titleFilters.isEmpty()) {
                         List<Boolean> predicateResults = new ArrayList<>();
                         for (StringPredicate filter : titleFilters) {
                             predicateResults.add(filter.test(((TextWindow) window).getTitle()));
                         }
-                        if(!titleFiltersOperation.apply(predicateResults))
+                        if (!titleFiltersOperation.apply(predicateResults))
                             continue;
                     }
                     ResultsTableData tableData = new ResultsTableData(resultsTable);

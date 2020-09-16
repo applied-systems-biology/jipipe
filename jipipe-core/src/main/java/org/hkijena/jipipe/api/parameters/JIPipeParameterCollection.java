@@ -19,12 +19,15 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.events.ParameterStructureChangedEvent;
-import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.utils.JsonDeserializable;
 import org.hkijena.jipipe.utils.JsonUtils;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.Stack;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -42,7 +45,8 @@ public interface JIPipeParameterCollection {
 
     /**
      * Deserializes parameters from JSON
-     *  @param target the target object that contains the parameters
+     *
+     * @param target the target object that contains the parameters
      * @param node   the JSON node
      * @param issues issues during deserialization
      */
@@ -88,7 +92,7 @@ public interface JIPipeParameterCollection {
                                     v = JsonUtils.getObjectMapper().readerFor(parameterAccess.getFieldClass()).readValue(node.get(key));
                                     parameterAccess.set(v);
                                 } catch (Exception | Error e) {
-                                    issues.forCategory(key).reportIsInvalid( "Could not load parameter '" + key + "'!",
+                                    issues.forCategory(key).reportIsInvalid("Could not load parameter '" + key + "'!",
                                             "The data might be not compatible with your operating system or from an older or newer JIPipe version.",
                                             "Please check the value of the parameter.",
                                             node.get(key));

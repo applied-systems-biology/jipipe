@@ -13,11 +13,9 @@
 
 package org.hkijena.jipipe.ui.resultanalysis;
 
-import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeExportedDataTable;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
-import org.hkijena.jipipe.ui.registries.JIPipeUIDatatypeRegistry;
 
 import javax.swing.*;
 import java.awt.BorderLayout;
@@ -29,6 +27,7 @@ public class JIPipeDefaultResultDataSlotPreviewUI extends JIPipeResultDataSlotPr
 
     /**
      * Creates a new renderer
+     *
      * @param table the table that renders the preview
      */
     public JIPipeDefaultResultDataSlotPreviewUI(JTable table) {

@@ -38,7 +38,8 @@ import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.Dimension;
+import java.awt.GraphicsEnvironment;
 import java.io.IOException;
 import java.util.Map;
 
@@ -67,7 +68,7 @@ public class JIPipeRunAlgorithmCommand extends DynamicCommand implements Initial
     private void initializeRegistry(boolean withSplash) {
         JIPipeRegistryIssues issues = new JIPipeRegistryIssues();
         ExtensionSettings extensionSettings = ExtensionSettings.getInstanceFromRaw();
-        if(!JIPipeDefaultRegistry.isInstantiated()) {
+        if (!JIPipeDefaultRegistry.isInstantiated()) {
             UIUtils.loadLookAndFeelFromSettings();
             if (!JIPipeDefaultRegistry.isInstantiated() && withSplash) {
                 SwingUtilities.invokeLater(() -> SplashScreen.getInstance().showSplash(getContext()));

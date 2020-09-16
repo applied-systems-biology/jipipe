@@ -13,10 +13,7 @@
 
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.io;
 
-import ij.WindowManager;
-import ij.measure.ResultsTable;
 import ij.plugin.frame.RoiManager;
-import ij.text.TextWindow;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
@@ -25,16 +22,9 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
-import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
-import org.hkijena.jipipe.extensions.parameters.predicates.StringPredicate;
-import org.hkijena.jipipe.extensions.parameters.util.LogicalOperation;
-import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 
-import java.awt.Window;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 

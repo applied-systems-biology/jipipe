@@ -21,16 +21,12 @@ import org.hkijena.jipipe.api.events.ParameterChangedEvent;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.parameters.primitives.DynamicEnumParameter;
-import org.hkijena.jipipe.extensions.parameters.primitives.DynamicStringEnumParameter;
 import org.hkijena.jipipe.extensions.parameters.primitives.PathList;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.io.IOException;
-import java.net.URL;
 import java.nio.file.Path;
-import java.util.ArrayList;
 
 /**
  * Remembers the last projects
@@ -114,7 +110,7 @@ public class ProjectsSettings implements JIPipeParameterCollection {
     @JIPipeDocumentation(name = "New project template", description = "Template used for creating new projects")
     @JIPipeParameter("new-project-template")
     public ProjectTemplateEnum getProjectTemplate() {
-        if(projectTemplate != null && projectTemplate.getValue() == null && !projectTemplate.getAllowedValues().isEmpty()) {
+        if (projectTemplate != null && projectTemplate.getValue() == null && !projectTemplate.getAllowedValues().isEmpty()) {
             JIPipeProjectTemplate template = new JIPipeProjectTemplate();
             template.setStoredAsResource(true);
             template.setResourcePath(ResourceUtils.getResourcePath("templates/Empty (3 compartments).jip"));
@@ -162,11 +158,10 @@ public class ProjectsSettings implements JIPipeParameterCollection {
 
         @Override
         public String renderLabel(JIPipeProjectTemplate value) {
-            if(value != null && value.getMetadata() != null) {
+            if (value != null && value.getMetadata() != null) {
                 return value.getMetadata().getName();
-            }
-            else {
-                return  "Empty";
+            } else {
+                return "Empty";
             }
         }
 

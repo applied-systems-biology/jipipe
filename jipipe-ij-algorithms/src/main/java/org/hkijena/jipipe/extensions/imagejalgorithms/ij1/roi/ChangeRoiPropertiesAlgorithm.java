@@ -19,7 +19,11 @@ import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
-import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
+import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
@@ -95,9 +99,9 @@ public class ChangeRoiPropertiesAlgorithm extends JIPipeSimpleIteratingAlgorithm
             z = roi.getZPosition();
             c = roi.getCPosition();
             t = roi.getTPosition();
-            if(positionX.isEnabled())
+            if (positionX.isEnabled())
                 x = positionX.getContent();
-            if(positionY.isEnabled())
+            if (positionY.isEnabled())
                 y = positionY.getContent();
             if (positionZ.isEnabled())
                 z = positionZ.getContent();

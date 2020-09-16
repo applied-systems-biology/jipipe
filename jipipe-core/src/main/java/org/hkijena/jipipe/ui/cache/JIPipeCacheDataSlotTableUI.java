@@ -42,7 +42,9 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.nio.file.Path;
@@ -91,7 +93,7 @@ public class JIPipeCacheDataSlotTableUI extends JIPipeProjectWorkbenchPanel {
     private void initialize() {
         setLayout(new BorderLayout());
         table = new JXTable();
-        if(GeneralUISettings.getInstance().isGenerateCachePreviews())
+        if (GeneralUISettings.getInstance().isGenerateCachePreviews())
             table.setRowHeight(GeneralUISettings.getInstance().getPreviewHeight());
         else
             table.setRowHeight(25);
@@ -203,7 +205,7 @@ public class JIPipeCacheDataSlotTableUI extends JIPipeProjectWorkbenchPanel {
          * Creates a new instance
          *
          * @param table the table
-         * @param slot the wrapped slot
+         * @param slot  the wrapped slot
          */
         public WrapperTableModel(JTable table, JIPipeDataSlot slot) {
             this.table = table;
@@ -227,7 +229,7 @@ public class JIPipeCacheDataSlotTableUI extends JIPipeProjectWorkbenchPanel {
         public String getColumnName(int columnIndex) {
             if (columnIndex == 0)
                 return slot.getColumnName(0);
-            else if(columnIndex == 1)
+            else if (columnIndex == 1)
                 return "Preview";
             else if (columnIndex == 2)
                 return "String representation";
@@ -240,7 +242,7 @@ public class JIPipeCacheDataSlotTableUI extends JIPipeProjectWorkbenchPanel {
         public Class<?> getColumnClass(int columnIndex) {
             if (columnIndex == 0)
                 return slot.getColumnClass(0);
-            else if(columnIndex == 1)
+            else if (columnIndex == 1)
                 return Component.class;
             else if (columnIndex == 2)
                 return String.class;
@@ -258,22 +260,20 @@ public class JIPipeCacheDataSlotTableUI extends JIPipeProjectWorkbenchPanel {
         public Object getValueAt(int rowIndex, int columnIndex) {
             if (columnIndex == 0)
                 return slot.getValueAt(rowIndex, 0);
-            else if(columnIndex == 1) {
+            else if (columnIndex == 1) {
                 Component preview = previewCache.get(rowIndex);
-                if(preview == null) {
-                    if(GeneralUISettings.getInstance().isGenerateCachePreviews()) {
+                if (preview == null) {
+                    if (GeneralUISettings.getInstance().isGenerateCachePreviews()) {
                         JIPipeData data = slot.getData(rowIndex, JIPipeData.class);
                         preview = new JIPipeCachedDataPreview(table, data);
                         previewCache.set(rowIndex, preview);
-                    }
-                    else {
+                    } else {
                         preview = new JLabel("N/A");
                         previewCache.set(rowIndex, preview);
                     }
                 }
                 return preview;
-            }
-            else if (columnIndex == 2)
+            } else if (columnIndex == 2)
                 return "" + slot.getData(rowIndex, JIPipeData.class);
             else {
                 return slot.getValueAt(rowIndex, columnIndex - 2);

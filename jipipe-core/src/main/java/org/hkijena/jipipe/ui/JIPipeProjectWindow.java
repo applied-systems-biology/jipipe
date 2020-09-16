@@ -39,7 +39,7 @@ import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Context;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -53,8 +53,8 @@ import java.util.Set;
  */
 public class JIPipeProjectWindow extends JFrame {
 
-    private static final Set<JIPipeProjectWindow> OPEN_WINDOWS = new HashSet<>();
     public static final EventBus WINDOWS_EVENTS = new EventBus();
+    private static final Set<JIPipeProjectWindow> OPEN_WINDOWS = new HashSet<>();
     private Context context;
     private JIPipeProject project;
     private JIPipeProjectWorkbench projectUI;
@@ -129,7 +129,7 @@ public class JIPipeProjectWindow extends JFrame {
         JIPipeTemplateSelectionDialog dialog = new JIPipeTemplateSelectionDialog(this);
         dialog.setLocationRelativeTo(this);
         dialog.setVisible(true);
-        if(dialog.getSelectedTemplate() != null) {
+        if (dialog.getSelectedTemplate() != null) {
             try {
                 JIPipeProject project = dialog.getSelectedTemplate().load();
                 JIPipeProjectWindow window = openProjectInThisOrNewWindow("New project", project, true, true);
@@ -142,26 +142,6 @@ public class JIPipeProjectWindow extends JFrame {
                 e.printStackTrace();
             }
         }
-    }
-
-    /**
-     * Creates a new project instance based on the current template selection
-     * @return the project
-     */
-    public static JIPipeProject getDefaultTemplateProject() {
-        JIPipeProject project = null;
-        if(ProjectsSettings.getInstance().getProjectTemplate().getValue() != null) {
-            try {
-                project = ProjectsSettings.getInstance().getProjectTemplate().getValue().load();
-            }
-            catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        if(project == null) {
-            project = new JIPipeProject();
-        }
-        return project;
     }
 
     /**
@@ -180,7 +160,7 @@ public class JIPipeProjectWindow extends JFrame {
                 JIPipeProjectMetadata metadata = JIPipeProject.loadMetadataFromJson(jsonData);
 
                 Set<JIPipeImageJUpdateSiteDependency> missingUpdateSites = new HashSet<>();
-                if(JIPipeDefaultRegistry.getInstance().getImageJPlugins() != null) {
+                if (JIPipeDefaultRegistry.getInstance().getImageJPlugins() != null) {
                     // Populate
                     for (JIPipeDependency dependency : dependencySet) {
                         missingUpdateSites.addAll(dependency.getImageJUpdateSiteDependencies());
@@ -188,7 +168,7 @@ public class JIPipeProjectWindow extends JFrame {
                     missingUpdateSites.addAll(metadata.getUpdateSiteDependencies());
                     // Remove existing
                     for (UpdateSite updateSite : JIPipeDefaultRegistry.getInstance().getImageJPlugins().getUpdateSites(true)) {
-                        if(updateSite.isActive()) {
+                        if (updateSite.isActive()) {
                             missingUpdateSites.removeIf(site -> Objects.equals(site.getName(), updateSite.getName()));
                         }
                     }
@@ -212,7 +192,7 @@ public class JIPipeProjectWindow extends JFrame {
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-            if(!report.isValid()) {
+            if (!report.isValid()) {
                 UIUtils.openValidityReportDialog(this, report, false);
             }
         } else if (Files.isDirectory(path)) {
@@ -246,7 +226,7 @@ public class JIPipeProjectWindow extends JFrame {
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-            if(!report.isValid()) {
+            if (!report.isValid()) {
                 UIUtils.openValidityReportDialog(this, report, false);
             }
         }
@@ -363,6 +343,26 @@ public class JIPipeProjectWindow extends JFrame {
      */
     public Path getProjectSavePath() {
         return projectSavePath;
+    }
+
+    /**
+     * Creates a new project instance based on the current template selection
+     *
+     * @return the project
+     */
+    public static JIPipeProject getDefaultTemplateProject() {
+        JIPipeProject project = null;
+        if (ProjectsSettings.getInstance().getProjectTemplate().getValue() != null) {
+            try {
+                project = ProjectsSettings.getInstance().getProjectTemplate().getValue().load();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        if (project == null) {
+            project = new JIPipeProject();
+        }
+        return project;
     }
 
     /**

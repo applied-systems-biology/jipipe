@@ -44,16 +44,15 @@ public class JIPipeExportedDataTable implements TableModel {
     /**
      * Initializes a new table from a slot
      *
-     * @param slot            The slot
+     * @param slot    The slot
      * @param indices output path index for each slot row
      */
     public JIPipeExportedDataTable(JIPipeDataSlot slot, Path basePath, List<Integer> indices) {
         this.algorithmId = slot.getNode().getInfo().getId();
         this.slotName = slot.getName();
-        if(basePath != null) {
+        if (basePath != null) {
             this.internalPath = basePath.relativize(slot.getStoragePath()).toString();
-        }
-        else {
+        } else {
             this.internalPath = slot.getStoragePath().toString();
         }
         this.acceptedDataType = slot.getAcceptedDataType();
@@ -225,10 +224,9 @@ public class JIPipeExportedDataTable implements TableModel {
             return "Index";
         else if (columnIndex == 1)
             return "Data type";
-        else if(columnIndex == 2) {
+        else if (columnIndex == 2) {
             return "Preview";
-        }
-        else
+        } else
             return traitColumns.get(columnIndex - 3);
     }
 

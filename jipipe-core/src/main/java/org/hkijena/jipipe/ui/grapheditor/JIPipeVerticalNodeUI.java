@@ -34,8 +34,11 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.font.FontRenderContext;
 import java.awt.font.TextLayout;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * An algorithm UI for vertical display
@@ -227,7 +230,7 @@ public class JIPipeVerticalNodeUI extends JIPipeNodeUI {
                 createInputSlots = false;
             }
         }
-        if(getGraphUI().getCompartment() != null) {
+        if (getGraphUI().getCompartment() != null) {
             if (!getNode().renderInputSlots()) {
                 createAddInputSlotButton = false;
                 createInputSlots = false;
@@ -336,31 +339,29 @@ public class JIPipeVerticalNodeUI extends JIPipeNodeUI {
     @Override
     public void updateSize() {
         Dimension gridSize = calculateGridSize();
-        Dimension realSize = new Dimension((int)Math.round(gridSize.width * JIPipeGraphViewMode.Vertical.getGridWidth() * getGraphUI().getZoom()),
-                (int)Math.round(gridSize.height * JIPipeGraphViewMode.Vertical.getGridHeight() * getGraphUI().getZoom()));
+        Dimension realSize = new Dimension((int) Math.round(gridSize.width * JIPipeGraphViewMode.Vertical.getGridWidth() * getGraphUI().getZoom()),
+                (int) Math.round(gridSize.height * JIPipeGraphViewMode.Vertical.getGridHeight() * getGraphUI().getZoom()));
         Dimension slotSize = JIPipeGraphViewMode.Vertical.gridToRealSize(new Dimension(1, 1), getGraphUI().getZoom());
         slotSize.width = realSize.width;
-        if(inputSlotPanel.getComponentCount() > 0) {
+        if (inputSlotPanel.getComponentCount() > 0) {
             inputSlotPanel.setMinimumSize(slotSize);
             inputSlotPanel.setMaximumSize(slotSize);
             inputSlotPanel.setPreferredSize(slotSize);
-        }
-        else {
+        } else {
             inputSlotPanel.setMinimumSize(new Dimension());
             inputSlotPanel.setMaximumSize(new Dimension());
             inputSlotPanel.setMaximumSize(new Dimension());
         }
-        if(outputSlotPanel.getComponentCount() > 0) {
+        if (outputSlotPanel.getComponentCount() > 0) {
             outputSlotPanel.setMinimumSize(slotSize);
             outputSlotPanel.setMaximumSize(slotSize);
             outputSlotPanel.setPreferredSize(slotSize);
-        }
-        else {
+        } else {
             outputSlotPanel.setMinimumSize(new Dimension());
             outputSlotPanel.setMaximumSize(new Dimension());
             outputSlotPanel.setMaximumSize(new Dimension());
         }
-        if(!Objects.equals(getSize(), realSize)) {
+        if (!Objects.equals(getSize(), realSize)) {
             setSize(realSize);
             revalidate();
             getGraphUI().repaint();

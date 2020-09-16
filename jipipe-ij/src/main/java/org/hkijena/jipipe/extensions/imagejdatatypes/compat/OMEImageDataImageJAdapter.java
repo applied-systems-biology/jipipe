@@ -16,7 +16,6 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.compat;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.WindowManager;
-import org.apache.commons.lang.reflect.ConstructorUtils;
 import org.hkijena.jipipe.api.compat.ImageJDatatypeAdapter;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
@@ -24,7 +23,6 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.OMEImageData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.utils.StringUtils;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -75,7 +73,7 @@ public class OMEImageDataImageJAdapter implements ImageJDatatypeAdapter {
         }
         ImagePlus img = ((ImagePlus) imageJData).duplicate();
         ROIListData rois = new ROIListData();
-        if(img.getRoi() != null) {
+        if (img.getRoi() != null) {
             rois.add(img.getRoi());
         }
         return new OMEImageData(img, rois, null);

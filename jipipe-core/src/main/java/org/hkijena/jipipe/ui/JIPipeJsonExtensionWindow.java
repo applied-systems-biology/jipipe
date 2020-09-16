@@ -37,7 +37,8 @@ import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Context;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Frame;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -52,8 +53,8 @@ import java.util.Set;
 public class JIPipeJsonExtensionWindow extends JFrame {
 
 
-    private static final Set<JIPipeJsonExtensionWindow> OPEN_WINDOWS = new HashSet<>();
     public static final EventBus WINDOWS_EVENTS = new EventBus();
+    private static final Set<JIPipeJsonExtensionWindow> OPEN_WINDOWS = new HashSet<>();
     private Context context;
     private JIPipeJsonExtension project;
     private JIPipeJsonExtensionWorkbench projectUI;
@@ -287,7 +288,7 @@ public class JIPipeJsonExtensionWindow extends JFrame {
         for (Path selectedFile : files) {
             installExtensionFromFile(workbench, selectedFile, true, false);
         }
-        if(ExtensionSettings.getInstance().isValidateImageJDependencies()) {
+        if (ExtensionSettings.getInstance().isValidateImageJDependencies()) {
             checkExtensionDependencies(workbench);
         }
         if (!files.isEmpty()) {
@@ -299,9 +300,10 @@ public class JIPipeJsonExtensionWindow extends JFrame {
 
     /**
      * Loads a project and installs it
-     *  @param workbench   The parent component
-     * @param filePath The file path
-     * @param silent if not dialogs should be  shown
+     *
+     * @param workbench         The parent component
+     * @param filePath          The file path
+     * @param silent            if not dialogs should be  shown
      * @param checkDependencies whether to check dependencies
      */
     public static void installExtensionFromFile(JIPipeWorkbench workbench, Path filePath, boolean silent, boolean checkDependencies) {
@@ -328,9 +330,10 @@ public class JIPipeJsonExtensionWindow extends JFrame {
 
     /**
      * Installs a loaded project
-     *  @param workbench    The parent component
-     * @param extension The extension
-     * @param silent    whether to show a dialog confirming the installation
+     *
+     * @param workbench         The parent component
+     * @param extension         The extension
+     * @param silent            whether to show a dialog confirming the installation
      * @param checkDependencies whether to check dependencies
      */
     public static void installExtension(JIPipeWorkbench workbench, JIPipeJsonExtension extension, boolean silent, boolean checkDependencies) {
@@ -385,7 +388,7 @@ public class JIPipeJsonExtensionWindow extends JFrame {
                 JOptionPane.showMessageDialog(workbench.getWindow(), "The extension was installed. We recommend to restart ImageJ, " +
                         "especially if you updated an existing extension.", "Extension installed", JOptionPane.INFORMATION_MESSAGE);
             }
-            if(checkDependencies && ExtensionSettings.getInstance().isValidateImageJDependencies()) {
+            if (checkDependencies && ExtensionSettings.getInstance().isValidateImageJDependencies()) {
                 checkExtensionDependencies(workbench);
             }
         } catch (Exception e) {
@@ -398,7 +401,7 @@ public class JIPipeJsonExtensionWindow extends JFrame {
         JIPipeDefaultRegistry.getInstance().checkUpdateSites(issues,
                 JIPipeDefaultRegistry.getInstance().getRegisteredExtensions(),
                 new ProgressDialog((Frame) workbench.getWindow(), "Checking dependencies ..."));
-        if(!issues.getMissingImageJSites().isEmpty()) {
+        if (!issues.getMissingImageJSites().isEmpty()) {
             MissingUpdateSiteResolver resolver = new MissingUpdateSiteResolver(workbench.getContext(), issues);
             resolver.revalidate();
             resolver.repaint();

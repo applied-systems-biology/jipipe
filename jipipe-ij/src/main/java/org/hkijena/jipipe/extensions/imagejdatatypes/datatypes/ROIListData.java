@@ -41,11 +41,24 @@ import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.PathUtils;
 
-import java.awt.*;
-import java.io.*;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Frame;
+import java.awt.Rectangle;
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
-import java.util.*;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -173,7 +186,7 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
     public Component preview(int width, int height) {
         ROIListData copy = new ROIListData(this);
         copy.flatten();
-        copy.crop(true,false,false,false);
+        copy.crop(true, false, false, false);
         ImagePlus mask = copy.toMask(new Margin(), false, true, 1);
         mask.setLut(LUT.createLutFromColor(Color.RED));
         return new ImagePlusData(mask).preview(width, height);
@@ -258,32 +271,32 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
             int z = roi.getZPosition();
             int c = roi.getCPosition();
             int t = roi.getTPosition();
-            if(roi.getZPosition() > 0)
+            if (roi.getZPosition() > 0)
                 sz = Math.min(sz, z);
-            if(roi.getZPosition() > 0)
+            if (roi.getZPosition() > 0)
                 sc = Math.min(sc, c);
-            if(roi.getZPosition() > 0)
+            if (roi.getZPosition() > 0)
                 st = Math.min(st, t);
         }
-        if(!cropZ)
+        if (!cropZ)
             sz = Integer.MAX_VALUE;
-        if(!cropC)
+        if (!cropC)
             sc = Integer.MAX_VALUE;
-        if(!cropT)
+        if (!cropT)
             st = Integer.MAX_VALUE;
         for (Roi roi : this) {
-            if(cropXY)
+            if (cropXY)
                 roi.setLocation(roi.getXBase() - bounds.x, roi.getYBase() - bounds.y);
             int z = roi.getZPosition();
             int c = roi.getCPosition();
             int t = roi.getTPosition();
-            if(z > 0 && sz != Integer.MAX_VALUE)
+            if (z > 0 && sz != Integer.MAX_VALUE)
                 z = z - sz;
-            if(c > 0 && sc != Integer.MAX_VALUE)
+            if (c > 0 && sc != Integer.MAX_VALUE)
                 c = c - sc;
-            if(t > 0 && st != Integer.MAX_VALUE)
+            if (t > 0 && st != Integer.MAX_VALUE)
                 t = t - st;
-            roi.setPosition(z,c,t);
+            roi.setPosition(z, c, t);
         }
     }
 
@@ -292,7 +305,7 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
      */
     public void flatten() {
         for (Roi roi : this) {
-            roi.setPosition(0,0,0);
+            roi.setPosition(0, 0, 0);
         }
     }
 

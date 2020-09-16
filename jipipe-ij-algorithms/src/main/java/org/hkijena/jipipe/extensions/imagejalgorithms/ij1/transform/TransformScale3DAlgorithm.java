@@ -21,12 +21,16 @@ import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
-import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
+import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
+import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.InterpolationMethod;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.extensions.parameters.roi.IntModificationParameter;
 import org.hkijena.jipipe.extensions.parameters.roi.OptionalIntModificationParameter;
 
 import java.util.function.Consumer;
@@ -91,19 +95,17 @@ public class TransformScale3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         // Scale in 2D if needed
         int sx = img.getWidth();
         int sy = img.getHeight();
-        if(xAxis.isEnabled() && yAxis.isEnabled()) {
+        if (xAxis.isEnabled() && yAxis.isEnabled()) {
             sx = xAxis.getContent().apply(sx);
             sy = yAxis.getContent().apply(sy);
-        }
-        else if(xAxis.isEnabled()) {
+        } else if (xAxis.isEnabled()) {
             sx = xAxis.getContent().apply(sx);
-            double fac = (double)sx / img.getWidth();
-            sy = (int)(sy * fac);
-        }
-        else if(yAxis.isEnabled()) {
+            double fac = (double) sx / img.getWidth();
+            sy = (int) (sy * fac);
+        } else if (yAxis.isEnabled()) {
             sy = yAxis.getContent().apply(sy);
-            double fac = (double)sy / img.getHeight();
-            sx = (int)(sx * fac);
+            double fac = (double) sy / img.getHeight();
+            sx = (int) (sx * fac);
         }
 
         if (sx != img.getWidth() || sy != img.getHeight()) {
@@ -117,12 +119,11 @@ public class TransformScale3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
         // Scale in 3D
         int sz = img.getStackSize();
-        if(zAxis.isEnabled()) {
+        if (zAxis.isEnabled()) {
             sz = zAxis.getContent().apply(sz);
-        }
-        else {
-            double fac = Math.min((double)sx / img.getWidth(), (double)sy / img.getHeight());
-            sz = (int)(sz * fac);
+        } else {
+            double fac = Math.min((double) sx / img.getWidth(), (double) sy / img.getHeight());
+            sz = (int) (sz * fac);
         }
 
         if (sz != img.getStackSize()) {
@@ -141,12 +142,12 @@ public class TransformScale3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         } else {
             report.forCategory("X axis").checkIfWithin(this, xAxis.getContent().getFactor(), 0, Double.POSITIVE_INFINITY, false, false);
         }
-        if (xAxis.isEnabled() &&yAxis.getContent().isUseExactValue()) {
+        if (xAxis.isEnabled() && yAxis.getContent().isUseExactValue()) {
             report.forCategory("Y axis").checkIfWithin(this, yAxis.getContent().getExactValue(), 0, Double.POSITIVE_INFINITY, false, false);
         } else {
             report.forCategory("Y axis").checkIfWithin(this, yAxis.getContent().getFactor(), 0, Double.POSITIVE_INFINITY, false, false);
         }
-        if (xAxis.isEnabled() &&zAxis.getContent().isUseExactValue()) {
+        if (xAxis.isEnabled() && zAxis.getContent().isUseExactValue()) {
             report.forCategory("Z axis").checkIfWithin(this, zAxis.getContent().getExactValue(), 0, Double.POSITIVE_INFINITY, false, false);
         } else {
             report.forCategory("Z axis").checkIfWithin(this, zAxis.getContent().getFactor(), 0, Double.POSITIVE_INFINITY, false, false);
