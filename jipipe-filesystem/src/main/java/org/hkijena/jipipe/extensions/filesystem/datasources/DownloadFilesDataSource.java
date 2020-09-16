@@ -4,23 +4,18 @@ import org.apache.commons.lang.StringUtils;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeParameterSlotAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FileData;
-import org.hkijena.jipipe.extensions.parameters.primitives.PathList;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
-import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.utils.ResourceUtils;
-import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.WebUtils;
 
 import java.io.IOException;
@@ -29,7 +24,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.text.DecimalFormat;
-import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -53,7 +48,7 @@ public class DownloadFilesDataSource extends JIPipeSimpleIteratingAlgorithm {
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         for (String urlString : urls) {
             try {
-                if(urlString.isEmpty()) {
+                if (urlString.isEmpty()) {
                     throw new UserFriendlyRuntimeException(new NullPointerException(), "Invalid URL!", "Algoritmh '" + getName() + "'", "You provided a URL '" + urlString + "', but it is invalid.", "Please fix the URL.");
                 }
                 URL url = new URL(urlString);
@@ -64,7 +59,14 @@ public class DownloadFilesDataSource extends JIPipeSimpleIteratingAlgorithm {
                 DecimalFormat df = new DecimalFormat("#.##");
                 df.setRoundingMode(RoundingMode.CEILING);
                 try {
-                    WebUtils.download(url, targetFile, total -> algorithmProgress.accept(subProgress.resolve("Downloaded " + df.format(total / 1024.0) + "MB")));
+                    String[] lastMessage = new String[]{""};
+                    WebUtils.download(url, targetFile, total -> {
+                        String message = "Downloaded " + df.format(total / 1024.0 / 1024.0) + " MB";
+                        if (!Objects.equals(message, lastMessage[0])) {
+                            algorithmProgress.accept(subProgress.resolve(message));
+                            lastMessage[0] = message;
+                        }
+                    });
                 } catch (IOException e) {
                     throw new UserFriendlyRuntimeException(e, "Error while downloading!", "Algorithm '" + getName() + "'", "There was an error downloading URL '" + url + "' to " + targetFile, "Please check if the URL is valid, an internet connection is available, and the target device has enough space.");
                 }
