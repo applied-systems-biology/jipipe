@@ -35,6 +35,12 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.color.InvertColorsAlgo
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.color.MergeChannelsAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.color.SplitChannelsAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.contrast.CLAHEContrastEnhancer;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.io.ImagePlusFromGUI;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.io.ImagePlusToGUI;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.io.ROIFromGUI;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.io.ROIToGUI;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.io.ResultsTableFromGUI;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.io.ResultsTableToGUI;
 import org.hkijena.jipipe.extensions.imagejdatatypes.algorithms.DisplayRangeCalibrationAlgorithm;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.CalibrationMode;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.contrast.IlluminationCorrection2DAlgorithm;
@@ -191,6 +197,7 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
 
     @Override
     public void register() {
+        registerIOAlgorithms();
         registerBlurAlgorithms();
         registerColorAlgorithms();
         registerEdgeAlgorithms();
@@ -222,6 +229,15 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         registerGlobalParameters();
 
 //        registerIJ2Algorithms();
+    }
+
+    private void registerIOAlgorithms() {
+        registerNodeType("ij-imgplus-from-gui", ImagePlusFromGUI.class, UIUtils.getIconURLFromResources("apps/imagej.png"));
+        registerNodeType("ij-imgplus-to-gui", ImagePlusToGUI.class, UIUtils.getIconURLFromResources("apps/imagej.png"));
+        registerNodeType("ij-results-table-from-gui", ResultsTableFromGUI.class, UIUtils.getIconURLFromResources("apps/imagej.png"));
+        registerNodeType("ij-results-table-to-gui", ResultsTableToGUI.class, UIUtils.getIconURLFromResources("apps/imagej.png"));
+        registerNodeType("ij-roi-from-gui", ROIFromGUI.class, UIUtils.getIconURLFromResources("apps/imagej.png"));
+        registerNodeType("ij-roi-to-gui", ROIToGUI.class, UIUtils.getIconURLFromResources("apps/imagej.png"));
     }
 
     private void registerLUTAlgorithms() {
