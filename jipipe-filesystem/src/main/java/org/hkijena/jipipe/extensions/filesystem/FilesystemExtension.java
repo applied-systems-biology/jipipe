@@ -18,6 +18,7 @@ import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.filesystem.algorithms.*;
 import org.hkijena.jipipe.extensions.filesystem.compat.PathDataImageJAdapter;
 import org.hkijena.jipipe.extensions.filesystem.compat.PathDataImporterUI;
+import org.hkijena.jipipe.extensions.filesystem.datasources.DownloadFilesDataSource;
 import org.hkijena.jipipe.extensions.filesystem.datasources.FileDataSource;
 import org.hkijena.jipipe.extensions.filesystem.datasources.FileListDataSource;
 import org.hkijena.jipipe.extensions.filesystem.datasources.FolderDataSource;
@@ -95,6 +96,7 @@ public class FilesystemExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerNodeType("import-file-list", FileListDataSource.class);
         registerNodeType("import-folder", FolderDataSource.class);
         registerNodeType("import-folder-list", FolderListDataSource.class);
+        registerNodeType("download-files", DownloadFilesDataSource.class);
         registerNodeType("file-temporary", TemporaryFileDataSource.class);
         registerNodeType("folder-temporary", TemporaryFolderDataSource.class);
         registerNodeType("folder-run-output", OutputFolderDataSource.class);
