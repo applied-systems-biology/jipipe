@@ -2,6 +2,7 @@
   "jipipe:project-type" : "project",
   "metadata" : {
     "name" : "Empty (3 compartments)",
+    "template-description": "Project that contains three compartments (Preprocessing, Analysis, Postprocessing)",
     "description" : "# JIPipe pipeline projects\n\nJIPipe organizes pipelines in projects that can be saved and loaded from disk. Each pipeline is organized into \n**Compartments** that separate the whole graph into functional units. You can find an overview of all compartments\nin the `Compartments` tab. You can re-open the tab by selecting `Compartment > Edit compartments` if you closed the tab.\n\nBy double-clicking a compartment in the overview, JIPipe will open an editor where you can modify the sub-pipeline\nthat is associated to the compartment. If you just want to run a project, you can find the `Run` button at the top-right\ncorner.\n\nPipeline developers might have organized a set of most common pipeline parameters. You can find them in `Project > Project overview`\nalongside additional information like the authors, citations, and website.\n\nThis template contains three compartments 'Preprocessing', 'Analysis', and 'Postprocessing' that are connected to each other.",
     "authors" : [ ],
     "website" : "",

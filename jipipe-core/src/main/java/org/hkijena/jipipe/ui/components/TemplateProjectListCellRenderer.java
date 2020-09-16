@@ -64,7 +64,7 @@ public class TemplateProjectListCellRenderer extends JPanel implements ListCellR
 
         if (value != null) {
             nameLabel.setText(value.getMetadata().getName());
-            pathLabel.setText(value.getMetadata().getDescription());
+            pathLabel.setText(value.getMetadata().getTemplateDescription());
         }
 
         if (isSelected) {

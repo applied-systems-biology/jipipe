@@ -23,6 +23,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
  */
 public class JIPipeProjectMetadata extends JIPipeMetadata {
     private JIPipeImageJUpdateSiteDependency.List updateSiteDependencies = new JIPipeImageJUpdateSiteDependency.List();
+    private String templateDescription = "";
 
     @JIPipeDocumentation(name = "ImageJ update site dependencies", description = "ImageJ update sites that should be enabled for the project to work. Use this if you rely on " +
             "third-party methods that are not referenced in a JIPipe extension (e.g. within a script or macro node). " +
@@ -38,5 +39,18 @@ public class JIPipeProjectMetadata extends JIPipeMetadata {
     @JsonSetter("update-site-dependencies")
     public void setUpdateSiteDependencies(JIPipeImageJUpdateSiteDependency.List updateSiteDependencies) {
         this.updateSiteDependencies = updateSiteDependencies;
+    }
+
+    @JIPipeDocumentation(name = "Template description", description = "Description used in the 'New from template' list if this project is used as custom project template.")
+    @JIPipeParameter("template-description")
+    @JsonGetter("template-description")
+    public String getTemplateDescription() {
+        return templateDescription;
+    }
+
+    @JIPipeParameter("template-description")
+    @JsonSetter("template-description")
+    public void setTemplateDescription(String templateDescription) {
+        this.templateDescription = templateDescription;
     }
 }

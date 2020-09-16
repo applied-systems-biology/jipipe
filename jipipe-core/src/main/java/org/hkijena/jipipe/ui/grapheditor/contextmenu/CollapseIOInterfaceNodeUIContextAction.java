@@ -24,7 +24,7 @@ import java.util.Set;
 public class CollapseIOInterfaceNodeUIContextAction implements NodeUIContextAction {
     @Override
     public boolean matches(Set<JIPipeNodeUI> selection) {
-        return selection.stream().map(JIPipeNodeUI::getNode).anyMatch(a -> a instanceof IOInterfaceAlgorithm);
+        return selection.stream().map(JIPipeNodeUI::getNode).anyMatch(a -> a instanceof IOInterfaceAlgorithm && a.canUserDelete());
     }
 
     @Override

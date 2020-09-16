@@ -42,7 +42,7 @@ public class JIPipeProjectTemplate {
     private String resourcePath;
     private Path relativeLocation;
     private boolean storedAsResource;
-    private JIPipeMetadata metadata;
+    private JIPipeProjectMetadata metadata;
 
     public JIPipeProjectTemplate() {
     }
@@ -122,15 +122,15 @@ public class JIPipeProjectTemplate {
     }
 
     @JsonGetter("metadata")
-    public JIPipeMetadata getMetadata() {
+    public JIPipeProjectMetadata getMetadata() {
         if (metadata == null) {
             JsonNode node = null;
             try {
                 node = JsonUtils.getObjectMapper().readValue(getLocation(), JsonNode.class);
-                metadata = JsonUtils.getObjectMapper().convertValue(node.get("metadata"), JIPipeMetadata.class);
+                metadata = JsonUtils.getObjectMapper().convertValue(node.get("metadata"), JIPipeProjectMetadata.class);
             } catch (IOException e) {
                 e.printStackTrace();
-                metadata = new JIPipeMetadata();
+                metadata = new JIPipeProjectMetadata();
                 metadata.setName("Could not load!");
             }
         }
@@ -138,7 +138,7 @@ public class JIPipeProjectTemplate {
     }
 
     @JsonSetter("metadata")
-    public void setMetadata(JIPipeMetadata metadata) {
+    public void setMetadata(JIPipeProjectMetadata metadata) {
         this.metadata = metadata;
     }
 
