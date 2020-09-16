@@ -1,0 +1,369 @@
+/*
+ * Copyright by Zoltán Cseresnyés, Ruman Gerst
+ *
+ * Research Group Applied Systems Biology - Head: Prof. Dr. Marc Thilo Figge
+ * https://www.leibniz-hki.de/en/applied-systems-biology.html
+ * HKI-Center for Systems Biology of Infection
+ * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)
+ * Adolf-Reichwein-Straße 23, 07745 Jena, Germany
+ *
+ * The project code is licensed under BSD 2-Clause.
+ * See the LICENSE file provided with the code for the full license.
+ */
+
+package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.threshold;
+
+import ij.IJ;
+import ij.ImagePlus;
+import ij.ImageStack;
+import ij.WindowManager;
+import ij.gui.OvalRoi;
+import ij.gui.Overlay;
+import ij.gui.Roi;
+import ij.measure.ResultsTable;
+import ij.plugin.ZProjector;
+import ij.plugin.filter.Analyzer;
+import ij.process.ByteProcessor;
+import ij.process.ImageProcessor;
+import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.JIPipeOrganization;
+import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
+import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
+import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
+import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
+import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
+import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.extensions.imagejalgorithms.utils.Hough_Circle;
+import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageJUtils;
+import org.hkijena.jipipe.extensions.imagejdatatypes.algorithms.DisplayRangeCalibrationAlgorithm;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale8UData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.CalibrationMode;
+import org.hkijena.jipipe.extensions.parameters.roi.Anchor;
+import org.hkijena.jipipe.extensions.parameters.roi.IntModificationParameter;
+import org.hkijena.jipipe.extensions.parameters.roi.Margin;
+import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
+
+import java.awt.Color;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+
+import static org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExtension.ADD_MASK_QUALIFIER;
+
+/**
+ * Segments using a Hough circle transform
+ * This code is based on https://github.com/closms/detectcircles
+ */
+@JIPipeDocumentation(name = "Hough segmentation 2D (fast)", description = "Finds circular 2D objects via a Hough transform. This implementation is based on code by Michael Closson and is generally faster than the other Hough-based segmentation. " +
+        "It outputs the segmented mask, the maximum Hough accumulator image, and a table of all detected circles (x, y, Diameter, and Score)." +
+        "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
+@JIPipeOrganization(menuPath = "Threshold", nodeTypeCategory = ImagesNodeTypeCategory.class)
+
+// Algorithm flow
+@JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input")
+@JIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Mask")
+@JIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Accumulator")
+@JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Measurements")
+
+// Trait matching
+
+// Trait configuration
+public class FastHoughSegmentation2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
+
+    private int minRadius = 50;
+    private int maxRadius = 150;
+    private double minScore = 200;
+    private final int minEdgeVal = 1;
+
+    /**
+     * @param info algorithm info
+     */
+    public FastHoughSegmentation2DAlgorithm(JIPipeNodeInfo info) {
+        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", ImagePlusGreyscale8UData.class)
+                .addOutputSlot("Mask", ImagePlusGreyscaleMaskData.class, "Input", ADD_MASK_QUALIFIER)
+                .addOutputSlot("Accumulator", ImagePlusGreyscaleData.class, null)
+                .addOutputSlot("Measurements", ResultsTableData.class, null)
+                .allowOutputSlotInheritance(true)
+                .seal()
+                .build());
+    }
+
+    public FastHoughSegmentation2DAlgorithm(FastHoughSegmentation2DAlgorithm other) {
+        super(other);
+        this.minRadius = other.minRadius;
+        this.maxRadius = other.maxRadius;
+        this.minScore = other.minScore;
+    }
+
+    @Override
+    public boolean supportsParallelization() {
+        return true;
+    }
+
+    private void addHoughOutput(ImageStack imageStack, double[][] z, double maxval) {
+        int W = z.length;
+        int H = z[0].length;
+
+        byte[] Y = new byte[W*H];
+        for (int h = 0; h < H; h++) {
+            for (int w = 0; w < W; w++) {
+                Y[h*W+w] = (byte)((z[w][h]/maxval) * 255.0);
+            }
+        }
+        ImageProcessor IP = new ByteProcessor(W, H, Y);
+        imageStack.addSlice(IP);
+    }
+
+    private void drawCircle(double[][] img, int cx, int cy, int R, double val)
+    {
+        /* For a typical image, this method will be called 13 million times. */
+
+        int W = img.length;
+        int H = img[0].length;
+
+        int f = 1 - R;
+        int ddF_x = 1;
+        int ddF_y = -2 * R;
+        int x = 0;
+        int y = R;
+
+        if (cy+R < H)  { img[cx][cy+R] += val; }
+        if (cy-R >= 0) { img[cx][cy-R] += val; }
+        if (cx+R < W)  { img[cx+R][cy] += val; }
+        if (cx-R >= 0) { img[cx-R][cy] += val; }
+
+        while (x < y) {
+            if (f >= 0) {
+                y--;
+                ddF_y += 2;
+                f += ddF_y;
+            }
+            x++;
+            ddF_x += 2;
+            f += ddF_x;
+
+            if (cx+x <  W && cy+y <  H) { img[cx + x][cy + y] += val; }
+            if (cx-x >= 0 && cy+y <  H) { img[cx - x][cy + y] += val; }
+            if (cx+x <  W && cy-y >= 0) { img[cx + x][cy - y] += val; }
+            if (cx-x >= 0 && cy-y >= 0) { img[cx - x][cy - y] += val; }
+            if (cx+y <  W && cy+x <  H) { img[cx + y][cy + x] += val; }
+            if (cx-y >= 0 && cy+x <  H) { img[cx - y][cy + x] += val; }
+            if (cx+y <  W && cy-x >= 0) { img[cx + y][cy - x] += val; }
+            if (cx-y >= 0 && cy-x >= 0) { img[cx - y][cy - x] += val; }
+
+        }
+    }
+
+    @Override
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+        ImagePlus img = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class).getImage();
+        ImageStack maskStack = new ImageStack(img.getWidth(), img.getHeight(), img.getProcessor().getColorModel());
+        ImageStack houghStack = new ImageStack(img.getWidth(), img.getHeight(), img.getProcessor().getColorModel());
+        ResultsTableData measurements = new ResultsTableData();
+
+        ImageJUtils.forEachIndexedSlice(img, (imp, index) -> {
+            algorithmProgress.accept(subProgress.resolve("Slice " + index + "/" + img.getStackSize()));
+            applyHough(imp, maskStack, houghStack, measurements, subProgress.resolve("Slice " + index), algorithmProgress);
+        });
+
+        ImagePlus mask = new ImagePlus("Segmented Image", maskStack);
+        mask.setDimensions(img.getNChannels(), img.getNSlices(), img.getNFrames());
+
+        ImagePlus hough = new ImagePlus("Maximum accumulator", houghStack);
+        hough.setDimensions(img.getNChannels(), img.getNSlices(), img.getNFrames());
+
+//        DisplayRangeCalibrationAlgorithm.calibrate(mask, CalibrationMode.AutomaticImageJ, 0,0);
+//        DisplayRangeCalibrationAlgorithm.calibrate(hough, CalibrationMode.AutomaticImageJ, 0,0);
+
+        dataBatch.addOutputData("Mask", new ImagePlusGreyscaleMaskData(mask));
+        dataBatch.addOutputData("Accumulator", new ImagePlusGreyscaleData(hough));
+        dataBatch.addOutputData("Measurements", measurements);
+    }
+
+    private void applyHough(ImageProcessor imp, ImageStack maskStack, ImageStack houghStack, ResultsTableData measurements, JIPipeRunnerSubStatus subStatus, Consumer<JIPipeRunnerSubStatus> algorithmProgress) {
+        final int W = imp.getWidth();
+        final int H = imp.getHeight();
+        ResultsTable rt = new ResultsTable();
+        imp.setOverlay(null);
+
+        ImageProcessor nip = new ByteProcessor(imp, false);
+        nip.findEdges();
+
+        List<double[][]> allAccumulators = new ArrayList<>();
+        double[][] scores = new double[imp.getWidth()][imp.getHeight()];
+        int[][] radii = new int[imp.getWidth()][imp.getHeight()];
+        double maxHoughScore = 0;
+
+        double[][] Z;
+
+        for (int R = minRadius; R <= maxRadius; R++) {
+            algorithmProgress.accept(subStatus.resolve("R=" + R));
+            Z = new double[imp.getWidth()][imp.getHeight()];
+
+            /* traverse the image and update the accumulator. */
+            for (int y = 0; y < H; y++) {
+                for (int x = 0; x <W; x++) {
+                    double I = nip.getPixel(x, y);
+
+                    if (I > minEdgeVal) {
+                        /* This pixel is possibly on a circle.  Update the accumulator */
+                        /* Compute the score by dividing the value in the accumulator
+                         * by the circumference.  This way, the scores for circles of
+                         * different radiuses are comparable.
+                         */
+                        I /= (Math.PI * 2 * R);
+                        this.drawCircle(Z, x, y, R, I);
+                    }
+                }
+            }
+
+            /* go through the best score list and update it */
+            for (int y = 0; y < H; y++) {
+                for (int x = 0; x < W; x++) {
+                    double S = Z[x][y];
+                    if (S > minScore && S > scores[x][y]) {
+                        scores[x][y] = S;
+                        radii[x][y] = R;
+                    }
+                }
+            }
+            allAccumulators.add(Z);
+        }
+
+        /* Go through the scores, for each hit, delete the other hits
+         * that are within its radius, that scored less.
+         */
+        for (int y = 0; y < H; y++) {
+            for (int x = 0; x < W; x++) {
+
+                if (scores[x][y] > 0) {
+                    int R = radii[x][y];
+
+                    for (int j = Math.max(0,y-R+1); j < Math.min(H, y+R); j++) {
+                        for (int i = Math.max(0, x-R+1); i < Math.min(W, x+R); i++) {
+                            if (i==x && j==y) {
+                                /* don't compare scores with yourself. */
+                                continue;
+                            }
+                            if (scores[i][j] <= scores[x][y]) {
+                                /* this point's score is less, delete him. */
+                                scores[i][j] = 0;
+                                radii[i][j] = 0;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        /* draw the circles we found.  Using the best score list. */
+        ROIListData rois = new ROIListData();
+        for (int y = 0; y < H; y++) {
+            for (int x = 0; x < W; x++) {
+                if (scores[x][y] > 0) {
+                    int R = radii[x][y];
+                    double S = scores[x][y];
+                    if (IJ.debugMode) IJ.log("HIT. Z["+x+"]["+y+"] = "+scores[x][y]+" -> ("+x+", "+y+")@"+R);
+
+                    //The Roi unit is always pixels.
+                    Roi r = new OvalRoi(x-R, y-R, 2*R, 2*R);
+                    // Set a magic string in the name, so the circle toggle
+                    // tool can distinguish between ROIs that were detected
+                    // by this code from all other ROIs.
+                    r.setName("DetectCircles:"+x+":"+y+":"+R+":"+S);
+                    rois.add(r);
+
+                    //The unit of the result table is the image scale unit.
+                    rt.incrementCounter();
+                    rt.addValue("x", x);
+                    rt.addValue("y", y);
+                    rt.addValue("Diameter", ((double)2*R));
+                    rt.addValue("Score", scores[x][y]);
+                }
+            }
+        }
+
+        /*
+        Generate Hough output
+         */
+        maxHoughScore = 0;
+        for(double[][] a: allAccumulators) {
+            for (int h = 0; h < H; h++) {
+                for (int w = 0; w < W; w++) {
+                    if (a[w][h] > maxHoughScore) { maxHoughScore = a[w][h]; }
+                }
+            }
+        }
+        /* there is a different accumulator for each radius.
+         * add them all to an ImageStack */
+        ImageStack allAccumulatorsStack = new ImageStack(W, H, houghStack.getColorModel());
+        for(double[][] a: allAccumulators) {
+            addHoughOutput(allAccumulatorsStack, a, maxHoughScore);
+        }
+
+        // Create a maximum projection
+        ImagePlus allAccumulatorsImage = new ImagePlus("Accumulator", allAccumulatorsStack);
+        ImagePlus maxHough = ZProjector.run(allAccumulatorsImage, "MaxIntensity");
+
+        /*
+        Add to the results
+         */
+        Margin imageMargin = new Margin();
+        imageMargin.setAnchor(Anchor.TopLeft);
+        imageMargin.setLeft(new IntModificationParameter(0,0,true));
+        imageMargin.setTop(new IntModificationParameter(0,0,true));
+        imageMargin.setWidth(new IntModificationParameter(imp.getWidth(), 1, true));
+        imageMargin.setHeight(new IntModificationParameter(imp.getHeight(), 1, true));
+        ImagePlus mask = IJ.createImage("Mask", "8-bit black", W, H, 1);
+        rois.drawMask(false, true, 1, mask);
+//        mask.show();
+//        maxHough.show();
+
+        maskStack.addSlice(mask.getProcessor());
+        houghStack.addSlice(maxHough.getProcessor());
+        measurements.mergeWith(new ResultsTableData(rt));
+    }
+
+    @JIPipeDocumentation(name = "Min radius", description = "Minimum radius of circles in pixels")
+    @JIPipeParameter("min-radius")
+    public int getMinRadius() {
+        return minRadius;
+    }
+
+    @JIPipeParameter("min-radius")
+    public void setMinRadius(int minRadius) {
+        this.minRadius = minRadius;
+    }
+
+    @JIPipeDocumentation(name = "Max radius", description = "Maximum radius of circles in pixels")
+    @JIPipeParameter("max-radius")
+    public int getMaxRadius() {
+        return maxRadius;
+    }
+
+    @JIPipeParameter("max-radius")
+    public void setMaxRadius(int maxRadius) {
+        this.maxRadius = maxRadius;
+    }
+
+    @JIPipeDocumentation(name = "Min score", description = "Minimum score for a circle to be detected")
+    @JIPipeParameter("min-score")
+    public double getMinScore() {
+        return minScore;
+    }
+
+    @JIPipeParameter("min-score")
+    public void setMinScore(double minScore) {
+        this.minScore = minScore;
+    }
+}

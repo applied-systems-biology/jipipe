@@ -84,6 +84,7 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.statistics.GreyscalePi
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.statistics.HistogramGenerator;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.threshold.AutoThreshold2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.threshold.BrightSpotsSegmentation2DAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.threshold.FastHoughSegmentation2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.threshold.HessianSegmentation2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.threshold.HoughSegmentation2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.threshold.InternalGradientSegmentation2DAlgorithm;
@@ -440,6 +441,7 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         registerNodeType("threshold-brightspots2d", BrightSpotsSegmentation2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/segment.png"));
         registerNodeType("threshold-hessian2d", HessianSegmentation2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/segment.png"));
         registerNodeType("threshold-hough2d", HoughSegmentation2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/segment.png"));
+        registerNodeType("threshold-hough2d-fast", FastHoughSegmentation2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/segment.png"));
         registerNodeType("threshold-internalgradient2d", InternalGradientSegmentation2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/segment.png"));
 
         registerEnumParameterType(AutoThresholder.Method.class.getCanonicalName(), AutoThresholder.Method.class,

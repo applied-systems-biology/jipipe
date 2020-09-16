@@ -35,7 +35,8 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale8UData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
-import org.hkijena.jipipe.utils.Hough_Circle;
+import org.hkijena.jipipe.extensions.imagejalgorithms.utils.Hough_Circle;
+import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -51,7 +52,8 @@ import static org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExt
 
 // Algorithm flow
 @JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input")
-@JIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output")
+@JIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Mask")
+@JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Measurements")
 
 // Trait matching
 
@@ -75,7 +77,8 @@ public class HoughSegmentation2DAlgorithm extends JIPipeSimpleIteratingAlgorithm
      */
     public HoughSegmentation2DAlgorithm(JIPipeNodeInfo info) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", ImagePlusGreyscale8UData.class)
-                .addOutputSlot("Output", ImagePlusGreyscaleMaskData.class, "Input", ADD_MASK_QUALIFIER)
+                .addOutputSlot("Mask", ImagePlusGreyscaleMaskData.class, "Input", ADD_MASK_QUALIFIER)
+                .addOutputSlot("Measurements", ResultsTableData.class, null)
                 .allowOutputSlotInheritance(true)
                 .seal()
                 .build());
@@ -160,6 +163,7 @@ public class HoughSegmentation2DAlgorithm extends JIPipeSimpleIteratingAlgorithm
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         ImagePlus img = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class).getImage();
         ImageStack stack = new ImageStack(img.getWidth(), img.getHeight(), img.getProcessor().getColorModel());
+        ResultsTableData measurements = new ResultsTableData();
 
         ImageJUtils.forEachIndexedSlice(img, (imp, index) -> {
             algorithmProgress.accept(subProgress.resolve("Slice " + index + "/" + img.getStackSize()));
@@ -192,11 +196,13 @@ public class HoughSegmentation2DAlgorithm extends JIPipeSimpleIteratingAlgorithm
             ResultsTable resultsTable = Analyzer.getResultsTable();
             ImagePlus processedSlice = drawCircleMask(slice, resultsTable);
             stack.addSlice("slice" + index, processedSlice.getProcessor());
+            measurements.mergeWith(new ResultsTableData(resultsTable));
         });
         ImagePlus result = new ImagePlus("Segmented Image", stack);
         result.setDimensions(img.getNChannels(), img.getNSlices(), img.getNFrames());
 
-        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleMaskData(result));
+        dataBatch.addOutputData("Mask", new ImagePlusGreyscaleMaskData(result));
+        dataBatch.addOutputData("Measurements", measurements);
     }
 
     @JIPipeParameter("min-radius")
