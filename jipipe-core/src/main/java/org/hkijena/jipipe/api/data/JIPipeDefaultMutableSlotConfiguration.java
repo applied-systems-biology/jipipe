@@ -429,6 +429,8 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
         this.inputSlotOrder.clear();
         for (String s : newOrder) {
             JIPipeDataSlotInfo slot = inputSlots.getOrDefault(s, null);
+            if(slot == null)
+                continue;
             if (slot.getSlotType() != JIPipeSlotType.Input)
                 continue;
             if (inputSlotOrder.contains(s))
@@ -454,6 +456,8 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
         this.outputSlotOrder.clear();
         for (String s : newOrder) {
             JIPipeDataSlotInfo slot = outputSlots.getOrDefault(s, null);
+            if(slot == null)
+                continue;
             if (slot.getSlotType() != JIPipeSlotType.Output)
                 continue;
             if (outputSlotOrder.contains(s))

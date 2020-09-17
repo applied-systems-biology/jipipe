@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi;
 
 import ij.ImagePlus;
+import ij.gui.ShapeRoi;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
@@ -48,7 +49,6 @@ import static org.hkijena.jipipe.api.nodes.JIPipeIteratingAlgorithm.ITERATING_AL
 public class ReferencedAppendRectangularRoiAlgorithm extends JIPipeIteratingAlgorithm {
 
     private Margin.List rectangles = new Margin.List();
-    private boolean close = true;
 
     /**
      * Instantiates a new node type.
@@ -73,7 +73,6 @@ public class ReferencedAppendRectangularRoiAlgorithm extends JIPipeIteratingAlgo
     public ReferencedAppendRectangularRoiAlgorithm(ReferencedAppendRectangularRoiAlgorithm other) {
         super(other);
         this.rectangles = new Margin.List(other.rectangles);
-        this.close = other.close;
     }
 
     @Override
@@ -86,7 +85,7 @@ public class ReferencedAppendRectangularRoiAlgorithm extends JIPipeIteratingAlgo
         ImagePlus reference = dataBatch.getInputData("Reference", ImagePlusData.class).getImage();
         Rectangle bounds = new Rectangle(0, 0, reference.getWidth(), reference.getHeight());
         for (Margin margin : rectangles) {
-            currentData.addRectangle(margin.apply(bounds), close);
+            currentData.add(new ShapeRoi(margin.apply(bounds)));
         }
         dataBatch.addOutputData(getFirstOutputSlot(), currentData);
     }
@@ -100,16 +99,5 @@ public class ReferencedAppendRectangularRoiAlgorithm extends JIPipeIteratingAlgo
     @JIPipeParameter("rectangles")
     public void setRectangles(Margin.List rectangles) {
         this.rectangles = rectangles;
-    }
-
-    @JIPipeDocumentation(name = "Close polygon", description = "If true, the polygon shape is closed")
-    @JIPipeParameter("close")
-    public boolean isClose() {
-        return close;
-    }
-
-    @JIPipeParameter("close")
-    public void setClose(boolean close) {
-        this.close = close;
     }
 }

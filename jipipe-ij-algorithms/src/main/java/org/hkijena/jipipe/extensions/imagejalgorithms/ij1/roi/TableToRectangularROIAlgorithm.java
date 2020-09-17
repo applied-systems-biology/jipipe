@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi;
 
 import ij.gui.OvalRoi;
+import ij.gui.ShapeRoi;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
@@ -200,7 +201,7 @@ public class TableToRectangularROIAlgorithm extends JIPipeSimpleIteratingAlgorit
     private void createROI(ROIListData rois, int w, int h, int x, int y) {
         switch (mode) {
             case Rectangle:
-                rois.addRectangle(new Rectangle(x, y, w, h), true);
+                rois.add(new ShapeRoi(new Rectangle(x, y, w, h)));
                 break;
             case Oval:
                 rois.add(new OvalRoi(x, y, w, h));

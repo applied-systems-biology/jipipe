@@ -18,9 +18,24 @@ from utils 		import AddToTable
 # tolerance is set externally
 # rm is set externally and contains a RoiManager
 # Table is set externally and contains the ResultsTable
+# Bool_SearchRoi is set externally
+# searchRoi is set externally
+
+# Define offset
+if searchRoi:
+    Bool_SearchRoi = True
+    dX = int(searchRoi.getXBase())
+    dY = int(searchRoi.getYBase())
+else:
+    Bool_SearchRoi = False
+    dX = dY = 0
 
 ImName = ImpImage.getTitle()
-ImProc = ImpImage.getProcessor().duplicate()
+
+# Crop Image if searchRoi
+if Bool_SearchRoi:
+    ImpImage.setRoi(searchRoi)
+    ImpImage = ImpImage.crop()
 
 # We will not apply cropping. Users can do this via the cropping node.
 
@@ -29,7 +44,10 @@ Hits_BeforeNMS = []
 for ImpTemplate in List_Template:
 
     # Check that template is smaller than the searched image or ROI
-    if ImpTemplate.width>ImpImage.width or ImpTemplate.height>ImpImage.height:
+    if Bool_SearchRoi and (ImpTemplate.height>searchRoi.getFloatHeight() or ImpTemplate.width>searchRoi.getFloatWidth()):
+        IJ.log("The template "+ ImpTemplate.getTitle() +" is larger in width and/or height than the search region -> skipped")
+        continue # go directly to the next for iteration
+    elif ImpTemplate.width>ImpImage.width or ImpTemplate.height>ImpImage.height:
         IJ.log("The template "+ ImpTemplate.getTitle() + " is larger in width and/or height than the searched image-> skipped")
         continue # go directly to the next for iteration
 
@@ -57,7 +75,10 @@ for hit in Hits_AfterNMS:
 
     #print hit
 
-    # Create detected ROI
+    if Bool_SearchRoi: # Add offset of search ROI
+        hit['BBox'] = (hit['BBox'][0]+dX, hit['BBox'][1]+dY, hit['BBox'][2], hit['BBox'][3])
+
+        # Create detected ROI
     roi = Roi(*hit['BBox'])
     roi.setName(hit['TemplateName'])
 

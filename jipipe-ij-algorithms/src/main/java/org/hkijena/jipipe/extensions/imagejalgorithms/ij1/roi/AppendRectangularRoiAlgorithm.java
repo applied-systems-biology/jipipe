@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi;
 
+import ij.gui.ShapeRoi;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
@@ -44,7 +45,6 @@ import java.util.function.Supplier;
 public class AppendRectangularRoiAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private Margin.List rectangles = new Margin.List();
-    private boolean close = true;
 
     /**
      * Instantiates a new node type.
@@ -68,7 +68,6 @@ public class AppendRectangularRoiAlgorithm extends JIPipeSimpleIteratingAlgorith
     public AppendRectangularRoiAlgorithm(AppendRectangularRoiAlgorithm other) {
         super(other);
         this.rectangles = new Margin.List(other.rectangles);
-        this.close = other.close;
     }
 
     @Override
@@ -80,7 +79,7 @@ public class AppendRectangularRoiAlgorithm extends JIPipeSimpleIteratingAlgorith
         ROIListData currentData = (ROIListData) dataBatch.getInputData(getFirstInputSlot(), ROIListData.class).duplicate();
         Rectangle bounds = currentData.getBounds();
         for (Margin margin : rectangles) {
-            currentData.addRectangle(margin.apply(bounds), close);
+            currentData.add(new ShapeRoi(margin.apply(bounds)));
         }
         dataBatch.addOutputData(getFirstOutputSlot(), currentData);
     }
@@ -94,16 +93,5 @@ public class AppendRectangularRoiAlgorithm extends JIPipeSimpleIteratingAlgorith
     @JIPipeParameter("rectangles")
     public void setRectangles(Margin.List rectangles) {
         this.rectangles = rectangles;
-    }
-
-    @JIPipeDocumentation(name = "Close polygon", description = "If true, the polygon shape is closed")
-    @JIPipeParameter("close")
-    public boolean isClose() {
-        return close;
-    }
-
-    @JIPipeParameter("close")
-    public void setClose(boolean close) {
-        this.close = close;
     }
 }
