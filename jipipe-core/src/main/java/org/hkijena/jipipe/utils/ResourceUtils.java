@@ -13,11 +13,14 @@
 
 package org.hkijena.jipipe.utils;
 
+import com.google.common.base.Charsets;
+import com.google.common.io.Resources;
 import org.reflections.Reflections;
 import org.reflections.scanners.ResourcesScanner;
 import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Set;
@@ -56,6 +59,20 @@ public class ResourceUtils {
      */
     public static URL getPluginResource(String internalResourcePath) {
         return ResourceUtils.class.getResource(getResourcePath(internalResourcePath));
+    }
+
+    /**
+     * Gets a plugin resource as string
+     * @param internalResourcePath internal path
+     * @return string
+     */
+    public static String getPluginResourceAsString(String internalResourcePath) {
+        URL resourcePath = ResourceUtils.getPluginResource(internalResourcePath);
+        try {
+            return Resources.toString(resourcePath, Charsets.UTF_8);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**

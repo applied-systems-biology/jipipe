@@ -8,11 +8,11 @@
         <version>2020.9</version>
     </parent>
 
-    <artifactId>jipipe-launcher</artifactId>
+    <artifactId>jipipe-ij-multi-template-matching</artifactId>
     <version>2020.9</version>
 
-    <name>jipipe-launcher</name>
-    <description>JIPipe launcher Application</description>
+    <name>jipipe-ij-multi-template-matching</name>
+    <description>JIPipe integration for the Multi-Template-Matching ImageJ plugin</description>
     <inceptionYear>2020</inceptionYear>
     <url>https://applied-systems-biology.github.io/jipipe/</url>
 
@@ -70,8 +70,7 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         <license.licenseName>BSD-2-Clause</license.licenseName>
         <license.copyrightOwners>N/A</license.copyrightOwners>
-        <license.projectName>JIPipe-Debug</license.projectName>
-
+        <license.projectName>JIPipe-IJ</license.projectName>
     </properties>
 
     <dependencies>
@@ -82,52 +81,7 @@
         </dependency>
         <dependency>
             <groupId>org.hkijena</groupId>
-            <artifactId>jipipe-python</artifactId>
-            <version>2020.9</version>
-        </dependency>
-        <dependency>
-            <groupId>org.hkijena</groupId>
-            <artifactId>jipipe-annotation</artifactId>
-            <version>2020.9</version>
-        </dependency>
-        <dependency>
-            <groupId>org.hkijena</groupId>
-            <artifactId>jipipe-filesystem</artifactId>
-            <version>2020.9</version>
-        </dependency>
-        <dependency>
-            <groupId>org.hkijena</groupId>
-            <artifactId>jipipe-multiparameters</artifactId>
-            <version>2020.9</version>
-        </dependency>
-        <dependency>
-            <groupId>org.hkijena</groupId>
-            <artifactId>jipipe-plots</artifactId>
-            <version>2020.9</version>
-        </dependency>
-        <dependency>
-            <groupId>org.hkijena</groupId>
             <artifactId>jipipe-tables</artifactId>
-            <version>2020.9</version>
-        </dependency>
-        <dependency>
-            <groupId>org.hkijena</groupId>
-            <artifactId>jipipe-ij</artifactId>
-            <version>2020.9</version>
-        </dependency>
-         <dependency>
-            <groupId>org.hkijena</groupId>
-            <artifactId>jipipe-ij-algorithms</artifactId>
-            <version>2020.9</version>
-        </dependency>
-        <dependency>
-            <groupId>org.hkijena</groupId>
-            <artifactId>jipipe-ij-multi-template-matching</artifactId>
-            <version>2020.9</version>
-        </dependency>
-        <dependency>
-            <groupId>org.hkijena</groupId>
-            <artifactId>jipipe-clij</artifactId>
             <version>2020.9</version>
         </dependency>
         <dependency>
@@ -135,53 +89,20 @@
             <artifactId>jipipe-strings</artifactId>
             <version>2020.9</version>
         </dependency>
-        <dependency>
+         <dependency>
             <groupId>org.hkijena</groupId>
-            <artifactId>jipipe-utils</artifactId>
+            <artifactId>jipipe-ij</artifactId>
             <version>2020.9</version>
         </dependency>
-        <dependency>
-            <groupId>net.haesleinhuepf</groupId>
-            <artifactId>clij2_</artifactId>
-            <version>2.0.0.14</version>
-        </dependency>
     </dependencies>
-
-    <repositories>
-        <repository>
-            <id>clij</id>
-            <url>http://dl.bintray.com/haesleinhuepf/clij</url>
-        </repository>
-    </repositories>
 
     <build>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <configuration>
-                    <archive>
-                        <manifest>
-                            <mainClass>org.hkijena.jipipe.launcher.JIPipelauncher</mainClass>
-                        </manifest>
-                    </archive>
-                </configuration>
-            </plugin>
-            <plugin>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>copy-dependencies</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${project.build.directory}/dependencies</outputDirectory>
-                        </configuration>
-                    </execution>
-                </executions>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.2.0</version>
             </plugin>
         </plugins>
     </build>
-
 </project>
