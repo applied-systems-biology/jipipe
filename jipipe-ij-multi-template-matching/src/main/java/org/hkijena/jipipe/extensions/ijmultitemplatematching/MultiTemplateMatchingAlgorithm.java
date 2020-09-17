@@ -23,9 +23,7 @@ import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
-import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeMergingAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -81,6 +79,18 @@ public class MultiTemplateMatchingAlgorithm extends JIPipeMergingAlgorithm {
         rotateTemplate.add(270);
     }
 
+    public MultiTemplateMatchingAlgorithm(MultiTemplateMatchingAlgorithm other) {
+        super(other);
+        this.flipTemplateVertically = other.flipTemplateVertically;
+        this.flipTemplateHorizontally = other.flipTemplateHorizontally;
+        this.rotateTemplate = other.rotateTemplate;
+        this.templateMatchingMethod = other.templateMatchingMethod;
+        this.expectedNumberOfObjects = other.expectedNumberOfObjects;
+        this.multiObjectScoreThreshold = other.multiObjectScoreThreshold;
+        this.multiObjectMaximumBoundingBoxOverlap = other.multiObjectMaximumBoundingBoxOverlap;
+        this.setRestrictToROI(other.restrictToROI);
+    }
+
     @Override
     protected void runIteration(JIPipeMergingDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         List<ImagePlus> images = new ArrayList<>();
@@ -93,12 +103,12 @@ public class MultiTemplateMatchingAlgorithm extends JIPipeMergingAlgorithm {
         for (ImagePlusData template : dataBatch.getInputData("Template", ImagePlusData.class)) {
             templates.add(template.getImage());
         }
-        if(restrictToROI) {
+        if (restrictToROI) {
             for (ROIListData roi : dataBatch.getInputData("ROI", ROIListData.class)) {
                 mergedRois.addAll(roi);
             }
         }
-        Roi searchRoi =  mergedRois.isEmpty() ? null : new ShapeRoi(mergedRois.getBounds());
+        Roi searchRoi = mergedRois.isEmpty() ? null : new ShapeRoi(mergedRois.getBounds());
 
         PythonInterpreter pythonInterpreter = new PythonInterpreter();
         pythonInterpreter.set("Method", templateMatchingMethod.getIndex());
@@ -112,31 +122,22 @@ public class MultiTemplateMatchingAlgorithm extends JIPipeMergingAlgorithm {
         pythonInterpreter.set("List_Template", new PyList(templates));
         pythonInterpreter.set("Bool_SearchRoi", restrictToROI && searchRoi != null);
         pythonInterpreter.set("searchRoi", searchRoi);
+        pythonInterpreter.set("algorithmProgress", algorithmProgress);
 
-        for (ImagePlus image : images) {
+        for (int i = 0; i < images.size(); i++) {
+            ImagePlus image = images.get(i);
             RoiManager roiManager = new RoiManager(false);
             ResultsTableData measurements = new ResultsTableData();
             pythonInterpreter.set("ImpImage", image);
             pythonInterpreter.set("rm", roiManager);
             pythonInterpreter.set("Table", measurements.getTable());
+            pythonInterpreter.set("subProgress", subProgress.resolve("Image " + (i + 1) + " / " + images.size()));
             pythonInterpreter.exec(SCRIPT);
 
             dataBatch.addOutputData("ROI", new ROIListData(roiManager));
             dataBatch.addOutputData("Measurements", measurements);
         }
 
-    }
-
-    public MultiTemplateMatchingAlgorithm(MultiTemplateMatchingAlgorithm other) {
-        super(other);
-        this.flipTemplateVertically = other.flipTemplateVertically;
-        this.flipTemplateHorizontally = other.flipTemplateHorizontally;
-        this.rotateTemplate = other.rotateTemplate;
-        this.templateMatchingMethod = other.templateMatchingMethod;
-        this.expectedNumberOfObjects = other.expectedNumberOfObjects;
-        this.multiObjectScoreThreshold = other.multiObjectScoreThreshold;
-        this.multiObjectMaximumBoundingBoxOverlap = other.multiObjectMaximumBoundingBoxOverlap;
-        this.setRestrictToROI(other.restrictToROI);
     }
 
     @JIPipeDocumentation(name = "Flip template vertically", description = "Performing additional searches with the transformed template allows to maximize the probability to find the object, if the object is expected to have different orientations in the image.\n" +
@@ -211,7 +212,7 @@ public class MultiTemplateMatchingAlgorithm extends JIPipeMergingAlgorithm {
 
     @JIPipeParameter("expected-number-of-objects")
     public boolean setExpectedNumberOfObjects(int expectedNumberOfObjects) {
-        if(expectedNumberOfObjects <= 0)
+        if (expectedNumberOfObjects <= 0)
             return false;
         this.expectedNumberOfObjects = expectedNumberOfObjects;
         return true;
@@ -227,7 +228,7 @@ public class MultiTemplateMatchingAlgorithm extends JIPipeMergingAlgorithm {
 
     @JIPipeParameter("multi-object-score-threshold")
     public boolean setMultiObjectScoreThreshold(double multiObjectScoreThreshold) {
-        if(multiObjectScoreThreshold < 0 || multiObjectScoreThreshold > 1)
+        if (multiObjectScoreThreshold < 0 || multiObjectScoreThreshold > 1)
             return false;
         this.multiObjectScoreThreshold = multiObjectScoreThreshold;
         return true;
@@ -244,7 +245,7 @@ public class MultiTemplateMatchingAlgorithm extends JIPipeMergingAlgorithm {
 
     @JIPipeParameter("multi-object-max-bounding-box-overlap")
     public boolean setMultiObjectMaximumBoundingBoxOverlap(double multiObjectMaximumBoundingBoxOverlap) {
-        if(multiObjectMaximumBoundingBoxOverlap < 0 || multiObjectMaximumBoundingBoxOverlap > 1)
+        if (multiObjectMaximumBoundingBoxOverlap < 0 || multiObjectMaximumBoundingBoxOverlap > 1)
             return false;
         this.multiObjectMaximumBoundingBoxOverlap = multiObjectMaximumBoundingBoxOverlap;
         return true;
@@ -260,10 +261,9 @@ public class MultiTemplateMatchingAlgorithm extends JIPipeMergingAlgorithm {
     public void setRestrictToROI(boolean restrictToROI) {
         this.restrictToROI = restrictToROI;
         JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) getSlotConfiguration();
-        if(restrictToROI && !getInputSlotMap().containsKey("ROI")) {
+        if (restrictToROI && !getInputSlotMap().containsKey("ROI")) {
             slotConfiguration.addSlot("ROI", new JIPipeDataSlotInfo(ROIListData.class, JIPipeSlotType.Input, null), false);
-        }
-        else if(!restrictToROI && getInputSlotMap().containsKey("ROI")) {
+        } else if (!restrictToROI && getInputSlotMap().containsKey("ROI")) {
             slotConfiguration.removeInputSlot("ROI", false);
         }
     }

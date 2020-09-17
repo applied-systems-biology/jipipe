@@ -15,7 +15,7 @@ package org.hkijena.jipipe.extensions.ijmultitemplatematching;
 
 public enum TemplateMatchingMethod {
     SquareDifference("Square difference", 0),
-    NormalizedSquareDifference("Normalised Square Difference",1),
+    NormalizedSquareDifference("Normalised Square Difference", 1),
     CrossCorrelation("Cross-Correlation", 2),
     NormalizedCrossCorrelation("Normalised cross-correlation", 3),
     ZeroMeanCrossCorrelation("0-mean cross-correlation", 4),

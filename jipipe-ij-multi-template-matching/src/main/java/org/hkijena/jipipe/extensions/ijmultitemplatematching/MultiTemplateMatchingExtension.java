@@ -70,5 +70,4 @@ public class MultiTemplateMatchingExtension extends JIPipePrepackagedDefaultJava
     }
 
 
-
 }

@@ -89,7 +89,7 @@
             <artifactId>jipipe-strings</artifactId>
             <version>2020.9</version>
         </dependency>
-         <dependency>
+        <dependency>
             <groupId>org.hkijena</groupId>
             <artifactId>jipipe-ij</artifactId>
             <version>2020.9</version>
