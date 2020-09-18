@@ -28,7 +28,9 @@ import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FolderData;
+import org.hkijena.jipipe.extensions.parameters.primitives.FilePathParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
+import org.hkijena.jipipe.ui.components.PathEditor;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 
@@ -242,6 +244,7 @@ public class ExportDataByParameter extends JIPipeAlgorithm {
     @JIPipeDocumentation(name = "Output directory", description = "Can be a relative or absolute directory. All collected files will be put into this directory. " +
             "If relative, it is relative to the output slot's output directory that is generated based on the current run's output path.")
     @JIPipeParameter("output-directory")
+    @FilePathParameterSettings(ioMode = PathEditor.IOMode.Open, pathMode = PathEditor.PathMode.DirectoriesOnly)
     public Path getOutputDirectory() {
         return outputDirectory;
     }
