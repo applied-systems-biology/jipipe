@@ -21,9 +21,7 @@ import org.hkijena.jipipe.JIPipeImageJUpdateSiteDependency;
 import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.EigenvalueSelection2D;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.InterpolationMethod;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.MacroWrapperAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.analyze.FindParticles2D;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.background.RollingBallBackgroundEstimator2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.binary.DistanceTransformWatershed2DAlgorithm;
@@ -44,13 +42,7 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.color.SplitChannelsAlg
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.contrast.CLAHEContrastEnhancer;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.contrast.IlluminationCorrection2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.convolve.Convolve2DAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.dimensions.MontageToStackAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.dimensions.StackInverterAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.dimensions.StackMergerAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.dimensions.StackSplitterAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.dimensions.StackTo2DAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.dimensions.StackToMontageAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.dimensions.ZProjectorAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.dimensions.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.edge.SobelEdgeDetectorAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.features.FrangiVesselnessFeatures;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.features.LocalMaxima2DAlgorithm;
@@ -346,6 +338,18 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
                 "Measurements",
                 "Selectable measurements",
                 null);
+        registerEnumParameterType("ij1-hyperstack-dimension",
+                HyperstackDimension.class,
+                "Hyperstack dimension",
+                "Dimension assigned to a plane within a Hyperstack");
+        registerParameterType("ij1-hyperstack-dimension:pair",
+                HyperstackDimensionPair.class,
+                HyperstackDimensionPair.List.class,
+                null,
+                null,
+                "Hyperstack dimension",
+                "Dimension assigned to a plane within a Hyperstack",
+                null);
     }
 
     private void registerROIAlgorithms() {
@@ -429,6 +433,7 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         registerNodeType("ij1-dimensions-zproject", ZProjectorAlgorithm.class, UIUtils.getIconURLFromResources("actions/layer-bottom.png"));
         registerNodeType("ij1-dimensions-stack2montage", StackToMontageAlgorithm.class, UIUtils.getIconURLFromResources("actions/view-grid.png"));
         registerNodeType("ij1-dimensions-montage2stack", MontageToStackAlgorithm.class, UIUtils.getIconURLFromResources("actions/view-grid.png"));
+        registerNodeType("ij1-dimensions-reorder", ReorderDimensionsAlgorithm.class, UIUtils.getIconURLFromResources("actions/split.png"));
 
         registerEnumParameterType("ij1-dimensions-zproject:method", ZProjectorAlgorithm.Method.class,
                 "Method", "Available methods");
