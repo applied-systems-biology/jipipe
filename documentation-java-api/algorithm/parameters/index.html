@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2020-07-27T16:43:03 CEST">
+<meta name="revised" content="2020-09-21T10:43:58 CEST">
 <title>Parameters :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../../images/favicon.png" type="image/x-icon" />
 <link href="../../../css/font-awesome.min.css" rel="stylesheet">
@@ -282,10 +282,10 @@
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
-      <li data-nav-id="https://applied-systems-biology.github.io/jipipe/documentation-java-api/algorithm/custom-declaration/" class="dd-item">
+      <li data-nav-id="https://applied-systems-biology.github.io/jipipe/documentation-java-api/algorithm/custom-info/" class="dd-item">
         <div>
-          <a href="../../../documentation-java-api/algorithm/custom-declaration/">
-            Custom algorithm declaration
+          <a href="../../../documentation-java-api/algorithm/custom-info/">
+            Custom algorithm info
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
@@ -304,10 +304,10 @@
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
-      <li data-nav-id="https://applied-systems-biology.github.io/jipipe/documentation-java-api/data-type/cell-ui/" class="dd-item">
+      <li data-nav-id="https://applied-systems-biology.github.io/jipipe/documentation-java-api/data-type/result-preview/" class="dd-item">
         <div>
-          <a href="../../../documentation-java-api/data-type/cell-ui/">
-            Table cell view
+          <a href="../../../documentation-java-api/data-type/result-preview/">
+            Preview from results folder
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
@@ -454,7 +454,7 @@
       <option value="/documentation-java-api/algorithm/slot-configuration/" >-- Customizing slots</option>
       <option value="/documentation-java-api/algorithm/parameters/"  selected>-- Parameters</option>
       <option value="/documentation-java-api/algorithm/parallelization/" >-- Parallelization</option>
-      <option value="/documentation-java-api/algorithm/custom-declaration/" >-- Custom algorithm declaration</option>
+      <option value="/documentation-java-api/algorithm/custom-info/" >-- Custom algorithm info</option>
   
     <option value="/documentation-java-api/data-type/" >
   - 
@@ -500,7 +500,7 @@ Then you annotate the getter <strong>and</strong> setter with the same <a href="
 <div class="highlight"><pre style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75715e">// ... see previous tutorials
 </span><span style="color:#75715e"></span><span style="color:#00a8c8">public</span> <span style="color:#00a8c8">class</span> <span style="color:#75af00">MyAlgorithm</span> <span style="color:#00a8c8">extends</span> <span style="color:#111">JIPipeIteratingAlgorithm</span> <span style="color:#f92672">{</span>
 
-    <span style="color:#00a8c8">float</span> <span style="color:#111">roundness</span> <span style="color:#f92672">=</span> <span style="color:#111">0</span><span style="color:#f92672">.</span><span style="color:#75af00">5f</span><span style="color:#f92672">;</span>
+    <span style="color:#00a8c8">private</span> <span style="color:#00a8c8">float</span> <span style="color:#111">roundness</span> <span style="color:#f92672">=</span> <span style="color:#111">0</span><span style="color:#f92672">.</span><span style="color:#75af00">5f</span><span style="color:#f92672">;</span>
 
     <span style="color:#75715e">// ... see previous tutorials
 </span><span style="color:#75715e"></span>
@@ -535,7 +535,7 @@ Then you annotate the getter <strong>and</strong> setter with the same <a href="
 <h1 id="parameter-settings">Parameter settings</h1>
 <p>Some parameter types have different styles or other settings that can change the behavior of the parameter editor UI. An example is <a href="../../../apidocs/org/hkijena/jipipe/extensions/standardparametereditors/ui/parametereditors/StringParameterSettings.html">StringParameterSettings</a> that allows to change between single-line and multi-line editors.</p>
 <h1 id="sub-parameters">Sub-parameters</h1>
-<p><a href="../../../apidocs/org/hkijena/jipipe/api/algorithm/JIPipeAlgorithm.html">JIPipeAlgorithm</a>, like any <a href="../../../apidocs/org/hkijena/jipipe/api/parameters/JIPipeParameterHolder.html">JIPipeParameterHolder</a> allows sub-parameters.</p>
+<p><a href="../../../apidocs/org/hkijena/jipipe/api/nodes/JIPipeAlgorithm.html">JIPipeAlgorithm</a>, like any <a href="../../../apidocs/org/hkijena/jipipe/api/parameters/JIPipeParameterHolder.html">JIPipeParameterHolder</a> allows sub-parameters.</p>
 <p>To create a sub-parameter create a getter to an <a href="../../../apidocs/org/hkijena/jipipe/api/parameters/JIPipeParameterHolder.html">JIPipeParameterHolder</a> and annotate it with <a href="../../../apidocs/org/hkijena/jipipe/api/parameters/JIPipeSubParameters.html">@JIPipeParameter</a>. The key provided with the annotation should be an unique parameter key. The parameters in the sub-parameter instance are automatically displayed as new group in the parameter editor.</p>
 
 <div class="notices warning" ><p><p>Please do not forget to listen for the ParameterStructureChangedEvent and pass it to the algorithm&rsquo;s event bus. Otherwise there can be issues with the extension builder.

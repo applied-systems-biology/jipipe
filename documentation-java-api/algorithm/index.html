@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2020-07-27T16:43:03 CEST">
+<meta name="revised" content="2020-09-21T10:43:58 CEST">
 <title>Creating an algorithm :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../images/favicon.png" type="image/x-icon" />
 <link href="../../css/font-awesome.min.css" rel="stylesheet">
@@ -282,10 +282,10 @@
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
-      <li data-nav-id="https://applied-systems-biology.github.io/jipipe/documentation-java-api/algorithm/custom-declaration/" class="dd-item">
+      <li data-nav-id="https://applied-systems-biology.github.io/jipipe/documentation-java-api/algorithm/custom-info/" class="dd-item">
         <div>
-          <a href="../../documentation-java-api/algorithm/custom-declaration/">
-            Custom algorithm declaration
+          <a href="../../documentation-java-api/algorithm/custom-info/">
+            Custom algorithm info
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
@@ -304,10 +304,10 @@
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
-      <li data-nav-id="https://applied-systems-biology.github.io/jipipe/documentation-java-api/data-type/cell-ui/" class="dd-item">
+      <li data-nav-id="https://applied-systems-biology.github.io/jipipe/documentation-java-api/data-type/result-preview/" class="dd-item">
         <div>
-          <a href="../../documentation-java-api/data-type/cell-ui/">
-            Table cell view
+          <a href="../../documentation-java-api/data-type/result-preview/">
+            Preview from results folder
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
@@ -454,7 +454,7 @@
       <option value="/documentation-java-api/algorithm/slot-configuration/" >-- Customizing slots</option>
       <option value="/documentation-java-api/algorithm/parameters/" >-- Parameters</option>
       <option value="/documentation-java-api/algorithm/parallelization/" >-- Parallelization</option>
-      <option value="/documentation-java-api/algorithm/custom-declaration/" >-- Custom algorithm declaration</option>
+      <option value="/documentation-java-api/algorithm/custom-info/" >-- Custom algorithm info</option>
   
     <option value="/documentation-java-api/data-type/" >
   - 
@@ -494,10 +494,10 @@
     
     
 
-<p>All algorithms inherit from <a href="../../apidocs/org/hkijena/jipipe/api/algorithm/JIPipeAlgorithm.html">JIPipeAlgorithm</a>. An algorithm consists of following parts:</p>
+<p>All algorithms inherit from <a href="../../apidocs/org/hkijena/jipipe/api/nodes/JIPipeAlgorithm.html">JIPipeAlgorithm</a>. An algorithm consists of following parts:</p>
 <ul>
 <li>A <code>run()</code> function that runs the workload</li>
-<li>A reference to an <a href="../../apidocs/org/hkijena/jipipe/api/algorithm/JIPipeAlgorithmDeclaration.html">algorithm declaration</a> that describes the general properties of the algorithm</li>
+<li>A reference to an <a href="../../apidocs/org/hkijena/jipipe/api/nodes/JIPipeNodeInfo.html">algorithm info</a> that describes the general properties of the algorithm</li>
 <li>A <a href="../../apidocs/org/hkijena/jipipe/api/data/JIPipeSlotConfiguration.html">slot configuration</a> that describes which slots the algorithm should have</li>
 </ul>
 <p>JIPipe comes with different base algorithms that provide different feature sets:</p>
@@ -510,23 +510,23 @@
 </thead>
 <tbody>
 <tr>
-<td><a href="../../apidocs/org/hkijena/jipipe/api/algorithm/JIPipeAlgorithm.html">JIPipeAlgorithm</a></td>
+<td><a href="../../apidocs/org/hkijena/jipipe/api/nodes/JIPipeAlgorithm.html">JIPipeAlgorithm</a></td>
 <td>The base class of all algorithms. It provides no included functionality outside of absolutely necessary ones.</td>
 </tr>
 <tr>
-<td><a href="../../apidocs/org/hkijena/jipipe/api/algorithm/JIPipeParameterSlotAlgorithm.html">JIPipeParameterSlotAlgorithm</a></td>
+<td><a href="../../apidocs/org/hkijena/jipipe/api/nodes/JIPipeParameterSlotAlgorithm.html">JIPipeParameterSlotAlgorithm</a></td>
 <td>This algorithm allows users to run multiple parameter sets by optionally enabling an additional slot <code>Parameters</code>.</td>
 </tr>
 <tr>
-<td><a href="../../apidocs/org/hkijena/jipipe/api/algorithm/JIPipeAlgorithm.html">JIPipeSimpleIteratingAlgorithm</a></td>
+<td><a href="../../apidocs/org/hkijena/jipipe/api/nodes/JIPipeAlgorithm.html">JIPipeSimpleIteratingAlgorithm</a></td>
 <td>A JIPipeParameterSlotAlgorithm that has one input slot and iterates over the input rows.</td>
 </tr>
 <tr>
-<td><a href="../../apidocs/org/hkijena/jipipe/api/algorithm/JIPipeIteratingAlgorithm.html">JIPipeIteratingAlgorithm</a></td>
+<td><a href="../../apidocs/org/hkijena/jipipe/api/nodes/JIPipeIteratingAlgorithm.html">JIPipeIteratingAlgorithm</a></td>
 <td>A JIPipeParameterSlotAlgorithm that can have multiple input slots and match annotations of the input data to create data batches.</td>
 </tr>
 <tr>
-<td><a href="../../apidocs/org/hkijena/jipipe/api/algorithm/JIPipeMergingAlgorithm.html">JIPipeMergingAlgorithm</a></td>
+<td><a href="../../apidocs/org/hkijena/jipipe/api/nodes/JIPipeMergingAlgorithm.html">JIPipeMergingAlgorithm</a></td>
 <td>A JIPipeParameterSlotAlgorithm that can have multiple input slots and match annotations of the input data to create data batches. The difference to JIPipeIteratingAlgorithm is that a batch can have duplicate items per slot.</td>
 </tr>
 </tbody>
@@ -536,7 +536,7 @@
 </span><span style="color:#75715e"></span><span style="color:#75af00">@JIPipeDocumentation</span><span style="color:#f92672">(</span><span style="color:#111">name</span> <span style="color:#f92672">=</span> <span style="color:#d88200">&#34;My Algorithm&#34;</span><span style="color:#f92672">,</span> <span style="color:#111">description</span> <span style="color:#f92672">=</span> <span style="color:#d88200">&#34;Does something&#34;</span><span style="color:#f92672">)</span>
 
 <span style="color:#75715e">// Sets the algorithm category
-</span><span style="color:#75715e"></span><span style="color:#75af00">@JIPipeOrganization</span><span style="color:#f92672">(</span><span style="color:#111">algorithmCategory</span> <span style="color:#f92672">=</span> <span style="color:#111">JIPipeAlgorithmCategory</span><span style="color:#f92672">.</span><span style="color:#75af00">Processor</span><span style="color:#f92672">)</span>
+</span><span style="color:#75715e"></span><span style="color:#75af00">@JIPipeOrganization</span><span style="color:#f92672">(</span><span style="color:#111">nodeTypeCategory</span> <span style="color:#f92672">=</span> <span style="color:#111">MiscellaneousNodeTypeCategory</span><span style="color:#f92672">.</span><span style="color:#75af00">class</span><span style="color:#f92672">)</span>
 
 <span style="color:#75715e">// Input and output slots autoCreate automatically creates the slots if set to true and no slot configuration was provided
 </span><span style="color:#75715e"></span><span style="color:#75af00">@AlgorithmInputSlot</span><span style="color:#f92672">(</span><span style="color:#111">value</span> <span style="color:#f92672">=</span> <span style="color:#111">ImagePlusData</span><span style="color:#f92672">.</span><span style="color:#75af00">class</span><span style="color:#f92672">,</span> <span style="color:#111">slotName</span> <span style="color:#f92672">=</span> <span style="color:#d88200">&#34;Input&#34;</span><span style="color:#f92672">,</span> <span style="color:#111">autoCreate</span> <span style="color:#f92672">=</span> <span style="color:#00a8c8">true</span><span style="color:#f92672">)</span>
@@ -545,11 +545,11 @@
 
     <span style="color:#75715e">/*
 </span><span style="color:#75715e">    This is the main constructor of the algorithm.
-</span><span style="color:#75715e">    It contains a reference to the algorithm declaration that contains
+</span><span style="color:#75715e">    It contains a reference to the algorithm info that contains
 </span><span style="color:#75715e">    some important metadata
 </span><span style="color:#75715e">    */</span>
-    <span style="color:#00a8c8">public</span> <span style="color:#75af00">MyAlgorithm</span><span style="color:#f92672">(</span><span style="color:#111">JIPipeAlgorithmDeclaration</span> <span style="color:#111">declaration</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-        <span style="color:#00a8c8">super</span><span style="color:#f92672">(</span><span style="color:#111">declaration</span><span style="color:#f92672">);</span>
+    <span style="color:#00a8c8">public</span> <span style="color:#75af00">MyAlgorithm</span><span style="color:#f92672">(</span><span style="color:#111">JIPipeNodeInfo</span> <span style="color:#111">info</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#00a8c8">super</span><span style="color:#f92672">(</span><span style="color:#111">info</span><span style="color:#f92672">);</span>
     <span style="color:#f92672">}</span>
 
     <span style="color:#75715e">/*
@@ -579,7 +579,8 @@
     <span style="color:#75715e">// ... See previous tutorial for other methods
 </span><span style="color:#75715e"></span>    <span style="color:#75af00">@Override</span>
     <span style="color:#00a8c8">public</span> <span style="color:#00a8c8">void</span> <span style="color:#75af00">register</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
-        <span style="color:#111">registerAlgorithm</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;my-algorithm&#34;</span><span style="color:#f92672">,</span> <span style="color:#111">MyAlgorithm</span><span style="color:#f92672">.</span><span style="color:#75af00">class</span><span style="color:#f92672">);</span>
+        <span style="color:#75715e">// Registers our algorithm with a unique ID and an icon
+</span><span style="color:#75715e"></span>        <span style="color:#111">registerNodeType</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;my-algorithm&#34;</span><span style="color:#f92672">,</span> <span style="color:#111">MyAlgorithm</span><span style="color:#f92672">.</span><span style="color:#75af00">class</span><span style="color:#f92672">,</span> <span style="color:#111">UIUtils</span><span style="color:#f92672">.</span><span style="color:#75af00">getIconURLFromResources</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;actions/viewimage.png&#34;</span><span style="color:#f92672">));</span>
     <span style="color:#f92672">}</span>
 
 <span style="color:#f92672">}</span>

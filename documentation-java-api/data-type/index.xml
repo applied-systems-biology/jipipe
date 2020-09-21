@@ -21,14 +21,12 @@ An user interface is shown when a user select a row in the results table. This U
     </item>
     
     <item>
-      <title>Table cell view</title>
-      <link>https://applied-systems-biology.github.io/jipipe/documentation-java-api/data-type/cell-ui/</link>
+      <title>Preview from results folder</title>
+      <link>https://applied-systems-biology.github.io/jipipe/documentation-java-api/data-type/result-preview/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://applied-systems-biology.github.io/jipipe/documentation-java-api/data-type/cell-ui/</guid>
-      <description>For some data types, it is more convenient to display a short summary or the whole data directly within the corresponding cell in result data slot table.
-To create such a cell renderer, inherit from JIPipeResultDataSlotCellUI
-public class MyDataSlotCellUI extends JIPipeResultDataSlotCellUI { public MyDataSlotCellUI() { setOpaque(true); setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4)); } // This is very similar as in MyDataDataSlotRowUI  private Path findJsonFile(JIPipeDataSlot slot, JIPipeExportedDataTable.Row row) { if (JIPipeResultDataSlotCellUI.getRowStorageFolder(slot, row) !</description>
+      <guid>https://applied-systems-biology.github.io/jipipe/documentation-java-api/data-type/result-preview/</guid>
+      <description>While JIPipeData allows you to define a function for previewing, this only works for data already present in memory. To allow previewing of data stored in a results folder, you need to suppy a JIPipeResultDataSlotPreviewUI that loads the data from disk and generates a preview. We recommend to use JIPipeAsyncResultDataPlotPreviewUI, which only requires you to supply a method for loading the data from disk. This class will offload the loading and preview generation into a separate thread to prevent the UI from freezing.</description>
     </item>
     
   </channel>

@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2020-07-27T16:43:03 CEST">
+<meta name="revised" content="2020-09-21T10:43:58 CEST">
 <title>Parallelization :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../../images/favicon.png" type="image/x-icon" />
 <link href="../../../css/font-awesome.min.css" rel="stylesheet">
@@ -282,10 +282,10 @@
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
-      <li data-nav-id="https://applied-systems-biology.github.io/jipipe/documentation-java-api/algorithm/custom-declaration/" class="dd-item">
+      <li data-nav-id="https://applied-systems-biology.github.io/jipipe/documentation-java-api/algorithm/custom-info/" class="dd-item">
         <div>
-          <a href="../../../documentation-java-api/algorithm/custom-declaration/">
-            Custom algorithm declaration
+          <a href="../../../documentation-java-api/algorithm/custom-info/">
+            Custom algorithm info
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
@@ -304,10 +304,10 @@
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
-      <li data-nav-id="https://applied-systems-biology.github.io/jipipe/documentation-java-api/data-type/cell-ui/" class="dd-item">
+      <li data-nav-id="https://applied-systems-biology.github.io/jipipe/documentation-java-api/data-type/result-preview/" class="dd-item">
         <div>
-          <a href="../../../documentation-java-api/data-type/cell-ui/">
-            Table cell view
+          <a href="../../../documentation-java-api/data-type/result-preview/">
+            Preview from results folder
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
@@ -454,7 +454,7 @@
       <option value="/documentation-java-api/algorithm/slot-configuration/" >-- Customizing slots</option>
       <option value="/documentation-java-api/algorithm/parameters/" >-- Parameters</option>
       <option value="/documentation-java-api/algorithm/parallelization/"  selected>-- Parallelization</option>
-      <option value="/documentation-java-api/algorithm/custom-declaration/" >-- Custom algorithm declaration</option>
+      <option value="/documentation-java-api/algorithm/custom-info/" >-- Custom algorithm info</option>
   
     <option value="/documentation-java-api/data-type/" >
   - 
@@ -496,9 +496,9 @@
     <p>The current version of JIPipe supports parallelization via a fixed thread pool.
 Parallelization is done on an <strong>per-algorithm-level</strong>, meaning that
 the algorithms are responsible for providing parallelization capabilities.</p>
-<p>The included base algorithms <a href="../../../apidocs/org/hkijena/jipipe/api/algorithm/JIPipeIteratingAlgorithm.html">JIPipeIteratingAlgorithm</a>, <a href="../../../apidocs/org/hkijena/jipipe/api/algorithm/JIPipeSimpleIteratingAlgorithm.html">JIPipeSimpleIteratingAlgorithm</a>, and <a href="../../../apidocs/org/hkijena/jipipe/api/algorithm/JIPipeMergingAlgorithm.html">JIPipeMergingAlgorithm</a>
+<p>The included base algorithms <a href="../../../apidocs/org/hkijena/jipipe/api/nodes/JIPipeIteratingAlgorithm.html">JIPipeIteratingAlgorithm</a>, <a href="../../../apidocs/org/hkijena/jipipe/api/nodes/JIPipeSimpleIteratingAlgorithm.html">JIPipeSimpleIteratingAlgorithm</a>, and <a href="../../../apidocs/org/hkijena/jipipe/api/nodes/JIPipeMergingAlgorithm.html">JIPipeMergingAlgorithm</a>
 already come with support for parallelization that <strong>has to be manually enabled via code</strong>.
-The inherit from <a href="../../../apidocs/org/hkijena/jipipe/api/algorithm/JIPipeParallelizedAlgorithm.html">JIPipeParallelizedAlgorithm</a> and
+The inherit from <a href="../../../apidocs/org/hkijena/jipipe/api/nodes/JIPipeParallelizedAlgorithm.html">JIPipeParallelizedAlgorithm</a> and
 completely apply parallelization automatically.</p>
 <h1 id="automated-parallelization-jipipeparallelizedalgorithm">Automated parallelization (JIPipeParallelizedAlgorithm)</h1>
 <p>The automated parallelization is controlled by three factors:</p>
@@ -548,7 +548,7 @@ thread pool - just do not forget that the service can be null.</p>
         <div class="chevrons">
     <div id="navigation">
 <a class="nav nav-prev" href="../../../documentation-java-api/algorithm/parameters/" title="Parameters"> <i class="fa fa-chevron-left"></i><label>Parameters</label></a>
-    <a class="nav nav-next" href="../../../documentation-java-api/algorithm/custom-declaration/" title="Custom algorithm declaration" style="margin-right: 0px;"><label>Custom algorithm declaration</label><i class="fa fa-chevron-right"></i></a></div>
+    <a class="nav nav-next" href="../../../documentation-java-api/algorithm/custom-info/" title="Custom algorithm info" style="margin-right: 0px;"><label>Custom algorithm info</label><i class="fa fa-chevron-right"></i></a></div>
   </div>
 
   </section>

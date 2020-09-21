@@ -174,14 +174,12 @@ To define parameters, use the algorithms found in Add data &amp;gt; Parameters. 
     </item>
     
     <item>
-      <title>Table cell view</title>
-      <link>https://applied-systems-biology.github.io/jipipe/documentation-java-api/data-type/cell-ui/</link>
+      <title>Preview from results folder</title>
+      <link>https://applied-systems-biology.github.io/jipipe/documentation-java-api/data-type/result-preview/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://applied-systems-biology.github.io/jipipe/documentation-java-api/data-type/cell-ui/</guid>
-      <description>For some data types, it is more convenient to display a short summary or the whole data directly within the corresponding cell in result data slot table.
-To create such a cell renderer, inherit from JIPipeResultDataSlotCellUI
-public class MyDataSlotCellUI extends JIPipeResultDataSlotCellUI { public MyDataSlotCellUI() { setOpaque(true); setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4)); } // This is very similar as in MyDataDataSlotRowUI  private Path findJsonFile(JIPipeDataSlot slot, JIPipeExportedDataTable.Row row) { if (JIPipeResultDataSlotCellUI.getRowStorageFolder(slot, row) !</description>
+      <guid>https://applied-systems-biology.github.io/jipipe/documentation-java-api/data-type/result-preview/</guid>
+      <description>While JIPipeData allows you to define a function for previewing, this only works for data already present in memory. To allow previewing of data stored in a results folder, you need to suppy a JIPipeResultDataSlotPreviewUI that loads the data from disk and generates a preview. We recommend to use JIPipeAsyncResultDataPlotPreviewUI, which only requires you to supply a method for loading the data from disk. This class will offload the loading and preview generation into a separate thread to prevent the UI from freezing.</description>
     </item>
     
     <item>
@@ -224,7 +222,7 @@ The difference between compartments and simple node groups is that compartments 
       <description>You can add parameters to your algorithm by creating a property with a getter and setter. Then you annotate the getter and setter with the same @JIPipeParameter keys. Also add an @JIPipeDocumentation annotation to either the getter or setter.
 Parameters are automatically serialized and deserialized.
 Please make sure to send an event when the parameter is set, so the UI can update.
-// ... see previous tutorials public class MyAlgorithm extends JIPipeIteratingAlgorithm { float roundness = 0.</description>
+// ... see previous tutorials public class MyAlgorithm extends JIPipeIteratingAlgorithm { private float roundness = 0.</description>
     </item>
     
     <item>
@@ -239,13 +237,13 @@ Automated parallelization (JIPipeParallelizedAlgorithm) The automated paralleliz
     </item>
     
     <item>
-      <title>Custom algorithm declaration</title>
-      <link>https://applied-systems-biology.github.io/jipipe/documentation-java-api/algorithm/custom-declaration/</link>
+      <title>Custom algorithm info</title>
+      <link>https://applied-systems-biology.github.io/jipipe/documentation-java-api/algorithm/custom-info/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://applied-systems-biology.github.io/jipipe/documentation-java-api/algorithm/custom-declaration/</guid>
+      <guid>https://applied-systems-biology.github.io/jipipe/documentation-java-api/algorithm/custom-info/</guid>
       <description>In the previous tutorials we used the standard way of creating algorithms. This might not be sufficient if you want to generate algorithms, for example by importing ImageJ algorithms, loading algorithms from JSON or generate algorithms for an unknown list of data types.
-How algorithms are registered Algorithm instances are created by an JIPipeAlgorithmDeclaration. This declaration is the object that is actually registered into JIPipe. It is able to create new instances of the declared algorithm, or copy it.</description>
+How algorithms are registered Algorithm instances are created by an JIPipeNodeInfo. This info is the object that is actually registered into JIPipe. It is able to create new instances of the declared algorithm, or copy it.</description>
     </item>
     
     <item>

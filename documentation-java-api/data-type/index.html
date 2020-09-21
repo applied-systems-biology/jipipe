@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2020-07-27T16:43:03 CEST">
+<meta name="revised" content="2020-09-21T10:43:58 CEST">
 <title>Creating a data type :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../images/favicon.png" type="image/x-icon" />
 <link href="../../css/font-awesome.min.css" rel="stylesheet">
@@ -281,10 +281,10 @@
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
-      <li data-nav-id="https://applied-systems-biology.github.io/jipipe/documentation-java-api/algorithm/custom-declaration/" class="dd-item">
+      <li data-nav-id="https://applied-systems-biology.github.io/jipipe/documentation-java-api/algorithm/custom-info/" class="dd-item">
         <div>
-          <a href="../../documentation-java-api/algorithm/custom-declaration/">
-            Custom algorithm declaration
+          <a href="../../documentation-java-api/algorithm/custom-info/">
+            Custom algorithm info
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
@@ -304,10 +304,10 @@
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
-      <li data-nav-id="https://applied-systems-biology.github.io/jipipe/documentation-java-api/data-type/cell-ui/" class="dd-item">
+      <li data-nav-id="https://applied-systems-biology.github.io/jipipe/documentation-java-api/data-type/result-preview/" class="dd-item">
         <div>
-          <a href="../../documentation-java-api/data-type/cell-ui/">
-            Table cell view
+          <a href="../../documentation-java-api/data-type/result-preview/">
+            Preview from results folder
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
@@ -453,7 +453,7 @@
   - 
    Creating a data type</option> 
       <option value="/documentation-java-api/data-type/result-ui/" >-- Result view</option>
-      <option value="/documentation-java-api/data-type/cell-ui/" >-- Table cell view</option>
+      <option value="/documentation-java-api/data-type/result-preview/" >-- Preview from results folder</option>
   
     <option value="/documentation-java-api/parameter-type/" >
   - 
@@ -496,6 +496,11 @@ recommend that you include code that can load the data back into JIPipe or Image
 <p>There are no requirements on the constructor of the data type.</p>
 <p>The folder that is provided in <code>storageFilePath</code> is unique to the data and empty.
 The name parameter in <code>storageFilePath</code> is usually the data slot name and can be used as template for file names or ignored.</p>
+<p>There are two optional functions that you can override:</p>
+<ul>
+<li><code>display()</code> shows the data in ImageJ, JIPipe, or any other GUI</li>
+<li><code>preview()</code> generates a GUI component that acts as thumbnail/preview of the contained data</li>
+</ul>
 <div class="highlight"><pre style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#00a8c8">public</span> <span style="color:#00a8c8">class</span> <span style="color:#75af00">MyData</span> <span style="color:#00a8c8">implements</span> <span style="color:#111">JIPipeData</span> <span style="color:#f92672">{</span>
     <span style="color:#111">String</span> <span style="color:#111">value</span><span style="color:#f92672">;</span>
 
@@ -523,6 +528,28 @@ The name parameter in <code>storageFilePath</code> is usually the data slot name
         <span style="color:#00a8c8">return</span> <span style="color:#00a8c8">new</span> <span style="color:#111">MyData</span><span style="color:#f92672">(</span><span style="color:#111">value</span><span style="color:#f92672">);</span>
     <span style="color:#f92672">}</span>
 
+    <span style="color:#75715e">// The display method is optional, but recommended
+</span><span style="color:#75715e"></span>    <span style="color:#75af00">@Override</span>
+    <span style="color:#00a8c8">public</span> <span style="color:#00a8c8">void</span> <span style="color:#75af00">display</span><span style="color:#f92672">(</span><span style="color:#111">String</span> <span style="color:#111">displayName</span><span style="color:#f92672">,</span> <span style="color:#111">JIPipeWorkbench</span> <span style="color:#111">workbench</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#111">JIPipeTextEditor</span> <span style="color:#111">editor</span> <span style="color:#f92672">=</span> <span style="color:#111">JIPipeTextEditor</span><span style="color:#f92672">.</span><span style="color:#75af00">openInNewTab</span><span style="color:#f92672">(</span><span style="color:#111">workbench</span><span style="color:#f92672">,</span> <span style="color:#111">displayName</span><span style="color:#f92672">);</span>
+        <span style="color:#111">editor</span><span style="color:#f92672">.</span><span style="color:#75af00">setMimeType</span><span style="color:#f92672">(</span><span style="color:#111">getMimeType</span><span style="color:#f92672">());</span>
+        <span style="color:#111">editor</span><span style="color:#f92672">.</span><span style="color:#75af00">setText</span><span style="color:#f92672">(</span><span style="color:#111">data</span><span style="color:#f92672">);</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#75715e">// The preview method is optional, but recommended for many cases
+</span><span style="color:#75715e"></span>    <span style="color:#75715e">// The width and height are guidelines you should adhere to (especially the height)
+</span><span style="color:#75715e"></span>    <span style="color:#75af00">@Override</span>
+    <span style="color:#00a8c8">public</span> <span style="color:#111">Component</span> <span style="color:#75af00">preview</span><span style="color:#f92672">(</span><span style="color:#00a8c8">int</span> <span style="color:#111">width</span><span style="color:#f92672">,</span> <span style="color:#00a8c8">int</span> <span style="color:#111">height</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#75715e">// This example would overlap with toString()
+</span><span style="color:#75715e"></span>        <span style="color:#00a8c8">return</span> <span style="color:#00a8c8">new</span> <span style="color:#111">JLabel</span><span style="color:#f92672">(</span><span style="color:#111">value</span><span style="color:#f92672">);</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#75715e">// Do not forget to override this
+</span><span style="color:#75715e"></span>    <span style="color:#75af00">@Override</span>
+   <span style="color:#00a8c8">public</span> <span style="color:#111">String</span> <span style="color:#75af00">toString</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+       <span style="color:#00a8c8">return</span> <span style="color:#111">StringUtils</span><span style="color:#f92672">.</span><span style="color:#75af00">orElse</span><span style="color:#f92672">(</span><span style="color:#111">value</span><span style="color:#f92672">,</span> <span style="color:#d88200">&#34;&#34;</span><span style="color:#f92672">);</span>
+   <span style="color:#f92672">}</span>
+
     <span style="color:#75af00">@Override</span>
     <span style="color:#00a8c8">public</span> <span style="color:#00a8c8">void</span> <span style="color:#75af00">saveTo</span><span style="color:#f92672">(</span><span style="color:#111">Path</span> <span style="color:#111">storageFilePath</span><span style="color:#f92672">,</span> <span style="color:#111">String</span> <span style="color:#111">name</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
         <span style="color:#00a8c8">try</span> <span style="color:#f92672">{</span>
@@ -548,6 +575,10 @@ The name parameter in <code>storageFilePath</code> is usually the data slot name
 <div class="notices tip" ><p><p>You can use JIPipe&rsquo;s JsonUtils class to get access to a Jackson JSON ObjectMapper.</p>
 </p></div>
 
+
+<div class="notices info" ><p><p>Do not forget to override toString(), as the string representation will be displayed in the cache browser.</p>
+</p></div>
+
 <p>To register the data type and provide it with an id, and icon, use <a href="../../apidocs/org/hkijena/jipipe/JIPipeJavaExtension.html">JIPipeJavaExtension</a>:</p>
 <div class="highlight"><pre style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75af00">@Plugin</span><span style="color:#f92672">(</span><span style="color:#111">type</span> <span style="color:#f92672">=</span> <span style="color:#111">JIPipeJavaExtension</span><span style="color:#f92672">.</span><span style="color:#75af00">class</span><span style="color:#f92672">)</span>
 <span style="color:#00a8c8">public</span> <span style="color:#00a8c8">class</span> <span style="color:#75af00">MyExtension</span> <span style="color:#00a8c8">extends</span> <span style="color:#111">JIPipeDefaultJavaExtension</span> <span style="color:#f92672">{</span>
@@ -568,7 +599,7 @@ The name parameter in <code>storageFilePath</code> is usually the data slot name
     
         <div class="chevrons">
     <div id="navigation">
-<a class="nav nav-prev" href="../../documentation-java-api/algorithm/custom-declaration/" title="Custom algorithm declaration"> <i class="fa fa-chevron-left"></i><label>Custom algorithm declaration</label></a>
+<a class="nav nav-prev" href="../../documentation-java-api/algorithm/custom-info/" title="Custom algorithm info"> <i class="fa fa-chevron-left"></i><label>Custom algorithm info</label></a>
     <a class="nav nav-next" href="../../documentation-java-api/data-type/result-ui/" title="Result view" style="margin-right: 0px;"><label>Result view</label><i class="fa fa-chevron-right"></i></a></div>
   </div>
 

@@ -53,7 +53,7 @@ For many cases, the default implementation JIPipeMutableSlotConfiguration is suf
       <description>You can add parameters to your algorithm by creating a property with a getter and setter. Then you annotate the getter and setter with the same @JIPipeParameter keys. Also add an @JIPipeDocumentation annotation to either the getter or setter.
 Parameters are automatically serialized and deserialized.
 Please make sure to send an event when the parameter is set, so the UI can update.
-// ... see previous tutorials public class MyAlgorithm extends JIPipeIteratingAlgorithm { float roundness = 0.</description>
+// ... see previous tutorials public class MyAlgorithm extends JIPipeIteratingAlgorithm { private float roundness = 0.</description>
     </item>
     
     <item>
@@ -68,13 +68,13 @@ Automated parallelization (JIPipeParallelizedAlgorithm) The automated paralleliz
     </item>
     
     <item>
-      <title>Custom algorithm declaration</title>
-      <link>https://applied-systems-biology.github.io/jipipe/documentation-java-api/algorithm/custom-declaration/</link>
+      <title>Custom algorithm info</title>
+      <link>https://applied-systems-biology.github.io/jipipe/documentation-java-api/algorithm/custom-info/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://applied-systems-biology.github.io/jipipe/documentation-java-api/algorithm/custom-declaration/</guid>
+      <guid>https://applied-systems-biology.github.io/jipipe/documentation-java-api/algorithm/custom-info/</guid>
       <description>In the previous tutorials we used the standard way of creating algorithms. This might not be sufficient if you want to generate algorithms, for example by importing ImageJ algorithms, loading algorithms from JSON or generate algorithms for an unknown list of data types.
-How algorithms are registered Algorithm instances are created by an JIPipeAlgorithmDeclaration. This declaration is the object that is actually registered into JIPipe. It is able to create new instances of the declared algorithm, or copy it.</description>
+How algorithms are registered Algorithm instances are created by an JIPipeNodeInfo. This info is the object that is actually registered into JIPipe. It is able to create new instances of the declared algorithm, or copy it.</description>
     </item>
     
   </channel>

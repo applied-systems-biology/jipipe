@@ -16,7 +16,6 @@ org.hkijena.jipipe.api.nodes.categories
 org.hkijena.jipipe.api.parameters
 org.hkijena.jipipe.api.registries
 org.hkijena.jipipe.api.testbench
-org.hkijena.jipipe.debug
 org.hkijena.jipipe.extensions
 org.hkijena.jipipe.extensions.annotation
 org.hkijena.jipipe.extensions.annotation.algorithms
@@ -33,6 +32,7 @@ org.hkijena.jipipe.extensions.filesystem.compat
 org.hkijena.jipipe.extensions.filesystem.datasources
 org.hkijena.jipipe.extensions.filesystem.dataypes
 org.hkijena.jipipe.extensions.filesystem.resultanalysis
+org.hkijena.jipipe.extensions.ijmultitemplatematching
 org.hkijena.jipipe.extensions.imagejalgorithms
 org.hkijena.jipipe.extensions.imagejalgorithms.ij1
 org.hkijena.jipipe.extensions.imagejalgorithms.ij1.analyze
@@ -46,8 +46,11 @@ org.hkijena.jipipe.extensions.imagejalgorithms.ij1.dimensions
 org.hkijena.jipipe.extensions.imagejalgorithms.ij1.edge
 org.hkijena.jipipe.extensions.imagejalgorithms.ij1.features
 org.hkijena.jipipe.extensions.imagejalgorithms.ij1.fft
+org.hkijena.jipipe.extensions.imagejalgorithms.ij1.generate
+org.hkijena.jipipe.extensions.imagejalgorithms.ij1.io
+org.hkijena.jipipe.extensions.imagejalgorithms.ij1.lut
 org.hkijena.jipipe.extensions.imagejalgorithms.ij1.math
-org.hkijena.jipipe.extensions.imagejalgorithms.ij1.measure
+org.hkijena.jipipe.extensions.imagejalgorithms.ij1.misc
 org.hkijena.jipipe.extensions.imagejalgorithms.ij1.morphology
 org.hkijena.jipipe.extensions.imagejalgorithms.ij1.noise
 org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi
@@ -79,6 +82,7 @@ org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale
 org.hkijena.jipipe.extensions.imagejdatatypes.parameters
 org.hkijena.jipipe.extensions.imagejdatatypes.resultanalysis
 org.hkijena.jipipe.extensions.imagejdatatypes.util
+org.hkijena.jipipe.extensions.imagejdatatypes.util.measure
 org.hkijena.jipipe.extensions.jsonextensionloader
 org.hkijena.jipipe.extensions.multiparameters
 org.hkijena.jipipe.extensions.multiparameters.algorithms
