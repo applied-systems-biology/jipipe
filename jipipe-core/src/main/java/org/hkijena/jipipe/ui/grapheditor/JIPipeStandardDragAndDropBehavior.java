@@ -20,6 +20,7 @@ import org.hkijena.jipipe.extensions.filesystem.datasources.FileListDataSource;
 import org.hkijena.jipipe.extensions.filesystem.datasources.FolderDataSource;
 import org.hkijena.jipipe.extensions.filesystem.datasources.FolderListDataSource;
 
+import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.dnd.DropTargetDragEvent;
@@ -44,7 +45,11 @@ public class JIPipeStandardDragAndDropBehavior implements JIPipeGraphDragAndDrop
 
     @Override
     public void dragOver(DropTargetDragEvent dtde) {
-
+        Point mousePosition = canvas.getMousePosition();
+        Point gridLocation = canvas.getViewMode().realLocationToGrid(mousePosition, canvas.getZoom());
+        Point realLocation = canvas.getViewMode().gridToRealLocation(gridLocation, canvas.getZoom());
+        canvas.setGraphEditCursor(realLocation);
+        canvas.repaint();
     }
 
     @Override

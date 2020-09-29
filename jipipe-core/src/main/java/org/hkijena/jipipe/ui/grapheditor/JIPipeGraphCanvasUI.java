@@ -352,10 +352,12 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
                     break;
                 }
             }
-            if (viewMode == JIPipeGraphViewMode.Horizontal) {
-                currentShape.y += viewMode.getGridHeight();
-            } else {
-                currentShape.x += viewMode.getGridWidth();
+            if(!found) {
+                if (viewMode == JIPipeGraphViewMode.Horizontal) {
+                    currentShape.y += viewMode.getGridHeight();
+                } else {
+                    currentShape.x += viewMode.getGridWidth();
+                }
             }
         }
         while (!found);
