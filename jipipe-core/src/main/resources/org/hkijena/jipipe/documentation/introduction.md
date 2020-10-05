@@ -1,5 +1,6 @@
-JIPipe is a graphical batch processing programming language for *ImageJ*. It comes with an easy-to-use graphical macro editor that requires no programming knowledge. 
-Image processing steps can be added to the user interface and connected to form powerful and complex pipelines that can be easily scaled up and down.
+# Welcome to JIPipe!
+
+*JIPipe* is a graphical batch processing programming language for *ImageJ* that allows you to create macros without the need for programming.
 
 To create a pipeline, switch to one of the already open tabs at the top. If you create a new project, there is
 always one tab to manage <img src="image://icons/actions/straight-connector.png"/> <strong>Graph compartments</strong> and multiple 
