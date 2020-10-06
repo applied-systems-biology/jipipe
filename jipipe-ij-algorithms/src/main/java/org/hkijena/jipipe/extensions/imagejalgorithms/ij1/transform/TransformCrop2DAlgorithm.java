@@ -104,7 +104,7 @@ public class TransformCrop2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             ImageStack result = new ImageStack(cropped.width, cropped.height, img.getProcessor().getColorModel());
             ImageJUtils.forEachIndexedSlice(img, (imp, index) -> {
                 imp.setRoi(cropped);
-                ImageProcessor croppedImage = img.getProcessor().crop();
+                ImageProcessor croppedImage = imp.crop();
                 imp.resetRoi();
                 result.addSlice("" + index, croppedImage);
             });
