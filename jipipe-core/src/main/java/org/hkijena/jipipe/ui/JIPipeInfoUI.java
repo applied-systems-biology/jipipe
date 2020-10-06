@@ -197,6 +197,14 @@ public class JIPipeInfoUI extends JIPipeProjectWorkbenchPanel {
         toolBar.add(openDocumentationButton);
         toolBar.add(Box.createHorizontalStrut(4));
 
+        JButton openCommunityButton = new JButton("Community", UIUtils.getIconFromResources("actions/im-irc.png"));
+        openCommunityButton.setToolTipText("https://forum.image.sc/tag/jipipe");
+        openCommunityButton.addActionListener(e -> UIUtils.openWebsite("https://forum.image.sc/tag/jipipe"));
+        openCommunityButton.setOpaque(false);
+        openCommunityButton.setBackground(new Color(0, 0, 0, 0));
+        toolBar.add(openCommunityButton);
+        toolBar.add(Box.createHorizontalStrut(4));
+
         JButton openSourceCodeButton = new JButton("Source code", UIUtils.getIconFromResources("actions/dialog-xml-editor.png"));
         openSourceCodeButton.setToolTipText("https://github.com/applied-systems-biology/jipipe/");
         openSourceCodeButton.addActionListener(e -> UIUtils.openWebsite("https://github.com/applied-systems-biology/jipipe/"));
