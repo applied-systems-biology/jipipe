@@ -13,6 +13,8 @@
 
 package org.hkijena.jipipe.extensions.parameters.generators;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -60,10 +62,12 @@ public class IntegerRange {
         this.value = other.value;
     }
 
+    @JsonGetter("value")
     public String getValue() {
         return value;
     }
 
+    @JsonSetter("value")
     public void setValue(String value) {
         this.value = value;
     }

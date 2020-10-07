@@ -71,7 +71,7 @@ public class StackSplitterAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     public StackSplitterAlgorithm(JIPipeNodeInfo info) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder()
                 .addInputSlot("Input", ImagePlusData.class)
-                .restrictOutputTo(ImageJDataTypesExtension.IMAGE_TYPES)
+                .addOutputSlot("Output", ImagePlusData.class, "Input")
                 .allowOutputSlotInheritance(true)
                 .sealInput()
                 .build());
