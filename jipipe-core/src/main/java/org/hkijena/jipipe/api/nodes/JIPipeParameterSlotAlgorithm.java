@@ -42,6 +42,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 /**
  * An {@link JIPipeAlgorithm} that has an optional slot that allows to supply parameter data sets.
@@ -310,5 +311,31 @@ public abstract class JIPipeParameterSlotAlgorithm extends JIPipeAlgorithm {
         public EventBus getEventBus() {
             return eventBus;
         }
+    }
+
+    public Set<String> getInputAnnotationColumnIntersection(Map<String, JIPipeDataSlot> slotMap, String prefix) {
+        Set<String> result = new HashSet<>();
+        for (JIPipeDataSlot inputSlot : slotMap.values()) {
+            if (getParameterSlot() == inputSlot)
+                continue;
+            Set<String> filtered = inputSlot.getAnnotationColumns().stream().filter(s -> s.startsWith(prefix)).collect(Collectors.toSet());
+            if (result.isEmpty()) {
+                result.addAll(filtered);
+            } else {
+                result.retainAll(filtered);
+            }
+        }
+        return result;
+    }
+
+    public Set<String> getInputAnnotationColumnUnion(Map<String, JIPipeDataSlot> slotMap, String prefix) {
+        Set<String> result = new HashSet<>();
+        for (JIPipeDataSlot inputSlot : slotMap.values()) {
+            if (getParameterSlot() == inputSlot)
+                continue;
+            Set<String> filtered = inputSlot.getAnnotationColumns().stream().filter(s -> s.startsWith(prefix)).collect(Collectors.toSet());
+            result.addAll(filtered);
+        }
+        return result;
     }
 }

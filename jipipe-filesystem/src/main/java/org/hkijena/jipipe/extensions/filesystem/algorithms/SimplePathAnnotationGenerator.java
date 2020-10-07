@@ -45,7 +45,7 @@ import java.util.function.Supplier;
 @JIPipeOutputSlot(value = PathData.class, slotName = "Annotated paths", autoCreate = true, inheritedSlot = "Paths")
 public class SimplePathAnnotationGenerator extends JIPipeSimpleIteratingAlgorithm {
 
-    private String generatedAnnotation = "Dataset";
+    private String generatedAnnotation = "#Dataset";
     private boolean fullPath = false;
     private boolean removeExtensions = true;
     private JIPipeAnnotationMergeStrategy annotationMergeStrategy = JIPipeAnnotationMergeStrategy.OverwriteExisting;

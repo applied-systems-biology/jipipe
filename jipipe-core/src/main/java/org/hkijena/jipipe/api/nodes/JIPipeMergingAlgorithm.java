@@ -43,6 +43,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 /**
  * An {@link JIPipeAlgorithm} that applies a similar algorithm to {@link JIPipeIteratingAlgorithm}, but does create {@link JIPipeMergingDataBatch} instead.
@@ -106,10 +107,16 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
                 referenceTraitColumns = getInputAnnotationByFilter(slotMap, dataBatchGenerationSettings.customColumns);
                 break;
             case Union:
-                referenceTraitColumns = getInputAnnotationColumnUnion(slotMap);
+                referenceTraitColumns = getInputAnnotationColumnUnion(slotMap, "");
                 break;
             case Intersection:
-                referenceTraitColumns = getInputAnnotationColumnIntersection(slotMap);
+                referenceTraitColumns = getInputAnnotationColumnIntersection(slotMap, "");
+                break;
+            case PrefixHashUnion:
+                referenceTraitColumns = getInputAnnotationColumnUnion(slotMap, "#");
+                break;
+            case PrefixHashIntersection:
+                referenceTraitColumns = getInputAnnotationColumnIntersection(slotMap, "#");
                 break;
             default:
                 throw new UnsupportedOperationException("Unknown column matching strategy: " + dataBatchGenerationSettings.dataSetMatching);
@@ -298,32 +305,6 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
         }
     }
 
-    private Set<String> getInputAnnotationColumnIntersection(Map<String, JIPipeDataSlot> slotMap) {
-        Set<String> result = null;
-        for (JIPipeDataSlot inputSlot : slotMap.values()) {
-            if (getParameterSlot() == inputSlot)
-                continue;
-            if (result == null) {
-                result = new HashSet<>(inputSlot.getAnnotationColumns());
-            } else {
-                result.retainAll(inputSlot.getAnnotationColumns());
-            }
-        }
-        if (result == null)
-            result = new HashSet<>();
-        return result;
-    }
-
-    private Set<String> getInputAnnotationColumnUnion(Map<String, JIPipeDataSlot> slotMap) {
-        Set<String> result = new HashSet<>();
-        for (JIPipeDataSlot inputSlot : slotMap.values()) {
-            if (getParameterSlot() == inputSlot)
-                continue;
-            result.addAll(inputSlot.getAnnotationColumns());
-        }
-        return result;
-    }
-
     /**
      * Runs code on one data row
      *
@@ -368,7 +349,7 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
 
     public static class DataBatchGenerationSettings implements JIPipeParameterCollection {
         private final EventBus eventBus = new EventBus();
-        private JIPipeColumnGrouping dataSetMatching = JIPipeColumnGrouping.Intersection;
+        private JIPipeColumnGrouping dataSetMatching = JIPipeColumnGrouping.PrefixHashIntersection;
         private boolean skipIncompleteDataSets = false;
         private StringPredicate.List customColumns = new StringPredicate.List();
         private boolean invertCustomColumns = false;

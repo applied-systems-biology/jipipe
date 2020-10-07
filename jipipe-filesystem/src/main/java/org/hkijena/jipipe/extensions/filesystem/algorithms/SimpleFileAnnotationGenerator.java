@@ -45,7 +45,7 @@ import java.util.function.Supplier;
 @JIPipeHidden
 public class SimpleFileAnnotationGenerator extends JIPipeSimpleIteratingAlgorithm {
 
-    private String generatedAnnotation = "Dataset";
+    private String generatedAnnotation = "#Dataset";
 
     /**
      * New instance

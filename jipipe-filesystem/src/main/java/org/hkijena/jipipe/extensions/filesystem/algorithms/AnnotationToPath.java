@@ -46,7 +46,7 @@ import java.util.function.Supplier;
 @JIPipeOutputSlot(value = PathData.class, slotName = "Output", autoCreate = true)
 public class AnnotationToPath extends JIPipeSimpleIteratingAlgorithm {
 
-    private StringPredicate annotationColumn = new StringPredicate(StringPredicate.Mode.Equals, "Dataset", false);
+    private StringPredicate annotationColumn = new StringPredicate(StringPredicate.Mode.Equals, "#Dataset", false);
 
     /**
      * Instantiates the algorithm
