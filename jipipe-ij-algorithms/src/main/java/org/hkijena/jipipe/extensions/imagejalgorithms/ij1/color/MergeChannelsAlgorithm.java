@@ -13,8 +13,14 @@
 
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.color;
 
+import ij.CompositeImage;
+import ij.IJ;
 import ij.ImagePlus;
+import ij.ImageStack;
+import ij.WindowManager;
+import ij.plugin.CompositeConverter;
 import ij.plugin.RGBStackMerge;
+import ij.plugin.ZProjector;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
@@ -29,6 +35,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColorRGBData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale8UData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
@@ -49,10 +56,12 @@ import static org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExt
 @JIPipeDocumentation(name = "Merge channels", description = "Merges each greyscale image plane into a multi-channel image. " + "\n\n" + ITERATING_ALGORITHM_DESCRIPTION)
 @JIPipeOrganization(menuPath = "Colors", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input")
-@JIPipeOutputSlot(value = ImagePlusColorRGBData.class, slotName = "Output")
+@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output")
 public class MergeChannelsAlgorithm extends JIPipeIteratingAlgorithm {
 
+    private static final RGBStackMerge RGB_STACK_MERGE = new RGBStackMerge();
     private InputSlotMapParameterCollection channelColorAssignment;
+    private boolean createComposite = false;
 
     /**
      * Instantiates a new node type.
@@ -62,7 +71,7 @@ public class MergeChannelsAlgorithm extends JIPipeIteratingAlgorithm {
     public MergeChannelsAlgorithm(JIPipeNodeInfo info) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder().restrictInputTo(TO_COLOR_CONVERSION.keySet())
                 .restrictInputSlotCount(ChannelColor.values().length)
-                .addOutputSlot("Output", ImagePlusColorRGBData.class, "Input", TO_COLOR_CONVERSION)
+                .addOutputSlot("Output", ImagePlusData.class, "Input", TO_COLOR_CONVERSION)
                 .allowOutputSlotInheritance(true)
                 .sealOutput()
                 .build());
@@ -78,6 +87,7 @@ public class MergeChannelsAlgorithm extends JIPipeIteratingAlgorithm {
      */
     public MergeChannelsAlgorithm(MergeChannelsAlgorithm other) {
         super(other);
+        this.createComposite = other.createComposite;
         channelColorAssignment = new InputSlotMapParameterCollection(ChannelColor.class, this, this::getNewChannelColor, false);
         other.channelColorAssignment.copyTo(channelColorAssignment);
         registerSubParameter(channelColorAssignment);
@@ -100,18 +110,146 @@ public class MergeChannelsAlgorithm extends JIPipeIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
-        ImagePlus[] channels = new ImagePlus[ChannelColor.values().length];
+        ImagePlus[] images = new ImagePlus[ChannelColor.values().length];
+        ImagePlus firstImage = null;
         for (int i = 0; i < ChannelColor.values().length; ++i) {
             ChannelColor color = ChannelColor.values()[i];
             for (Map.Entry<String, JIPipeParameterAccess> entry : channelColorAssignment.getParameters().entrySet()) {
                 ChannelColor entryColor = entry.getValue().get(ChannelColor.class);
                 if (entryColor == color) {
-                    channels[i] = new ImagePlusGreyscale8UData(dataBatch.getInputData(entry.getKey(), ImagePlusGreyscaleData.class).getImage().duplicate()).getImage();
+                    images[i] = new ImagePlusGreyscale8UData(dataBatch.getInputData(entry.getKey(), ImagePlusGreyscaleData.class).getImage().duplicate()).getImage();
+                    if(firstImage == null)
+                        firstImage = images[i];
                 }
             }
         }
-        ImagePlus merged = RGBStackMerge.mergeChannels(channels, true);
-        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusColorRGBData(merged));
+
+        int stackSize = 0;
+        int width = 0;
+        int height = 0;
+        int bitDepth = 0;
+        int slices = 0;
+        int frames = 0;
+        for (int i=0; i<images.length; i++) {
+            if (images[i] != null && width==0) {
+                width = images[i].getWidth();
+                height = images[i].getHeight();
+                stackSize = images[i].getStackSize();
+                bitDepth = images[i].getBitDepth();
+                slices = images[i].getNSlices();
+                frames = images[i].getNFrames();
+            }
+        }
+        if (width==0) {
+            throw new RuntimeException("There must be at least one source image or stack.");
+        }
+
+        boolean mergeHyperstacks = false;
+        for (int i=0; i<images.length; i++) {
+            ImagePlus img = images[i];
+            if (img==null) continue;
+            if (img.getStackSize()!=stackSize) {
+                throw new RuntimeException("The source stacks must have the same number of images.");
+            }
+            if (img.isHyperStack()) {
+                if (img.isComposite()) {
+                    CompositeImage ci = (CompositeImage)img;
+                    if (ci.getMode()!= IJ.COMPOSITE) {
+                        ci.setMode(IJ.COMPOSITE);
+                        img.updateAndDraw();
+                        if (!IJ.isMacro()) IJ.run("Channels Tool...");
+                        return;
+                    }
+                }
+                if (bitDepth==24) {
+                    throw new RuntimeException("Source hyperstacks cannot be RGB.");
+                }
+                if (img.getNChannels()>1) {
+                    throw new RuntimeException("Source hyperstacks cannot have more than 1 channel.");
+                }
+                if (img.getNSlices()!=slices || img.getNFrames()!=frames) {
+                    throw new RuntimeException("Source hyperstacks must have the same dimensions.");
+                }
+                mergeHyperstacks = true;
+            } // isHyperStack
+            if (img.getWidth()!=width || images[i].getHeight()!=height) {
+                throw new RuntimeException("The source images or stacks must have the same width and height.");
+            }
+            if (createComposite && img.getBitDepth()!=bitDepth) {
+                throw new RuntimeException("The source images must have the same bit depth.");
+            }
+        }
+
+        ImageStack[] stacks = new ImageStack[images.length];
+        for (int i=0; i<images.length; i++)
+            stacks[i] = images[i]!=null?images[i].getStack():null;
+        ImagePlus imp2;
+        boolean fourOrMoreChannelRGB = false;
+        for (int i=3; i<images.length; i++) {
+            if (stacks[i]!=null) {
+                if (!createComposite)
+                    fourOrMoreChannelRGB=true;
+                createComposite = true;
+            }
+        }
+        if (fourOrMoreChannelRGB)
+            createComposite = true;
+        boolean isRGB = false;
+        int extraIChannels = 0;
+        for (int i=0; i<images.length; i++) {
+            if (images[i]!=null) {
+                if (i>2)
+                    extraIChannels++;
+                if (images[i].getBitDepth()==24)
+                    isRGB = true;
+            }
+        }
+        if (isRGB && extraIChannels>0) {
+            imp2 = mergeUsingRGBProjection(firstImage, images, createComposite);
+        } else if ((createComposite&&!isRGB) || mergeHyperstacks) {
+            imp2 = RGB_STACK_MERGE.mergeHyperstacks(images, true);
+            if (imp2==null) return;
+        } else {
+            ImageStack rgb = RGB_STACK_MERGE.mergeStacks(width, height, stackSize, stacks[0], stacks[1], stacks[2], true);
+            imp2 = new ImagePlus("RGB", rgb);
+            if (createComposite) {
+                imp2 = CompositeConverter.makeComposite(imp2);
+                imp2.setTitle("Composite");
+            }
+        }
+        for (int i=0; i<images.length; i++) {
+            if (images[i]!=null) {
+                imp2.setCalibration(images[i].getCalibration());
+                break;
+            }
+        }
+        if (fourOrMoreChannelRGB) {
+            if (imp2.getNSlices()==1&&imp2.getNFrames()==1) {
+                imp2 = imp2.flatten();
+                imp2.setTitle("RGB");
+            }
+        }
+
+        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(imp2));
+    }
+
+    private ImagePlus mergeUsingRGBProjection(ImagePlus imp, ImagePlus[] images, boolean createComposite) {
+        ImageStack stack = new ImageStack(imp.getWidth(),imp.getHeight());
+        for (int i=0; i<images.length; i++) {
+            if (images[i]!=null)
+                stack.addSlice(images[i].getProcessor());
+        }
+        ImagePlus imp2 = new ImagePlus("temp", stack);
+        ZProjector zp = new ZProjector(imp2);
+        zp.setMethod(ZProjector.MAX_METHOD);
+        zp.doRGBProjection();
+        imp2 = zp.getProjection();
+        if (createComposite) {
+            imp2 = CompositeConverter.makeComposite(imp2);
+            imp2.setTitle("Composite");
+        } else
+            imp2.setTitle("RGB");
+        return imp2;
     }
 
 
@@ -136,6 +274,18 @@ public class MergeChannelsAlgorithm extends JIPipeIteratingAlgorithm {
     @JIPipeParameter("channel-color-assignments")
     public InputSlotMapParameterCollection getChannelColorAssignment() {
         return channelColorAssignment;
+    }
+
+    @JIPipeDocumentation(name = "Create composite", description = "If true, the generated image is a composite where the color channels are stored as individual greyscale planes. " +
+            "If false, the result is an RGB image.")
+    @JIPipeParameter("create-composite")
+    public boolean isCreateComposite() {
+        return createComposite;
+    }
+
+    @JIPipeParameter("create-composite")
+    public void setCreateComposite(boolean createComposite) {
+        this.createComposite = createComposite;
     }
 
     /**
