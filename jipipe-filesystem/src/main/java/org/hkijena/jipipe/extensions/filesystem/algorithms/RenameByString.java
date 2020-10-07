@@ -38,7 +38,7 @@ import java.util.function.Supplier;
 @JIPipeDocumentation(name = "Rename path", description = "Sets the file or folder name of each path to the specified string.")
 @JIPipeOrganization(menuPath = "Modify", nodeTypeCategory = FileSystemNodeTypeCategory.class)
 
-// Algorithm flow
+
 @JIPipeInputSlot(value = PathData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = PathData.class, slotName = "Output", autoCreate = true)
 

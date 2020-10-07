@@ -46,7 +46,7 @@ import java.util.stream.Stream;
 @JIPipeDocumentation(name = "List subfolders", description = "Lists all subfolders")
 @JIPipeOrganization(menuPath = "List", nodeTypeCategory = FileSystemNodeTypeCategory.class)
 
-// Algorithm flow
+
 @JIPipeInputSlot(value = FolderData.class, slotName = "Folders", autoCreate = true)
 @JIPipeOutputSlot(value = FolderData.class, slotName = "Subfolders", autoCreate = true)
 

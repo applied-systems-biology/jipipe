@@ -37,7 +37,7 @@ import java.util.function.Supplier;
 @JIPipeDocumentation(name = "Concatenate paths by parameter", description = "Concatenates the input paths by a string.")
 @JIPipeOrganization(menuPath = "Modify", nodeTypeCategory = FileSystemNodeTypeCategory.class)
 
-// Algorithm flow
+
 @JIPipeInputSlot(value = PathData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = PathData.class, slotName = "Output", autoCreate = true)
 

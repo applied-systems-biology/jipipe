@@ -46,7 +46,7 @@ import static org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExt
 @JIPipeDocumentation(name = "Frangi vesselness", description = "Applies the vesselness filter developed by Frangi et al.")
 @JIPipeOrganization(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Features")
 
-// Algorithm flow
+
 @JIPipeInputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Input")
 @JIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Output")
 public class FrangiVesselnessFeatures extends JIPipeSimpleIteratingAlgorithm {

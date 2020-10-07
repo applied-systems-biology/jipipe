@@ -43,7 +43,7 @@ import java.util.function.Supplier;
 @JIPipeDocumentation(name = "Annotation table to paths", description = "Converts an annotation table to path data. If available, annotation are added to the output.")
 @JIPipeOrganization(menuPath = "Convert", nodeTypeCategory = AnnotationsNodeTypeCategory.class)
 
-// Algorithm flow
+
 @JIPipeInputSlot(value = AnnotationTableData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = PathData.class, slotName = "Output", autoCreate = true)
 

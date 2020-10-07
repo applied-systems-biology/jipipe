@@ -39,7 +39,7 @@ import java.util.function.Supplier;
         "If the path already exists, it will be silently skipped.")
 @JIPipeOrganization(nodeTypeCategory = FileSystemNodeTypeCategory.class)
 
-// Algorithm flow
+
 @JIPipeInputSlot(value = PathData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = FolderData.class, slotName = "Output", autoCreate = true)
 

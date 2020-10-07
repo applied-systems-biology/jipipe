@@ -52,7 +52,7 @@ import java.util.function.Supplier;
  * Converts a mask to ROI and ROI measurements
  */
 // Algorithm metadata
-@JIPipeDocumentation(name = "Find particles 2D", description = "Converts mask images into ROI by applying a connected components algorithm and generates measurements. " +
+@JIPipeDocumentation(name = "Find particles 2D", description = "Converts mask images into ROI by applying a connected components algorithm and generates measurements. Please note that this algorithm will always trace the external object boundaries and convert them into polygonal ROIs. This means that holes will be closed. " +
         "If higher-dimensional data is provided, the results are generated for each 2D slice.")
 @JIPipeOrganization(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Analyze")
 

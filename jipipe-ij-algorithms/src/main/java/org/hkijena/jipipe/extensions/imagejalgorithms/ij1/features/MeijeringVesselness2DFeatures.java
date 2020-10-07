@@ -54,7 +54,7 @@ import static org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExt
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
 @JIPipeOrganization(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Features")
 
-// Algorithm flow
+
 @JIPipeInputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Input")
 @JIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Output")
 public class MeijeringVesselness2DFeatures extends JIPipeSimpleIteratingAlgorithm {

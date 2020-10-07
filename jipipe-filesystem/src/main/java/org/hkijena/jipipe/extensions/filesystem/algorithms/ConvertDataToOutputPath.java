@@ -35,7 +35,7 @@ import java.util.function.Supplier;
 @JIPipeDocumentation(name = "Get output path", description = "Obtains the output path of the current run where the receiving data is stored.")
 @JIPipeOrganization(nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
 
-// Algorithm flow
+
 @JIPipeInputSlot(value = JIPipeData.class, slotName = "Data", autoCreate = true)
 @JIPipeOutputSlot(value = FolderData.class, slotName = "Output path", autoCreate = true)
 

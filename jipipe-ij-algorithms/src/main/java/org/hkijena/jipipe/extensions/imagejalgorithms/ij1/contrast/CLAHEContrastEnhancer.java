@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.contrast;
 
 import ij.ImagePlus;
+import ij.ImageStack;
 import mpicbg.ij.clahe.Flat;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
@@ -27,6 +28,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 
 import java.util.function.Consumer;
@@ -38,16 +40,16 @@ import static org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExt
  * Applies CLAHE image enhancing
  */
 @JIPipeDocumentation(name = "Enhance local contrast (CLAHE)", description = "Applies 'Contrast Limited Adaptive Histogram Equalization' (CLAHE) to enhance contrast. " +
-        "Composite color images are converted into their luminance.")
+        "Composite color images are converted into their luminance. If higher-dimensional data is provided, the results are generated for each 2D slice.")
 @JIPipeOrganization(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Contrast")
 
-// Algorithm flow
+
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input")
 @JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output")
 
-// Trait matching
 
-// Trait configuration
+
+
 public class CLAHEContrastEnhancer extends JIPipeSimpleIteratingAlgorithm {
 
     private int blockRadius = 127;
@@ -87,10 +89,24 @@ public class CLAHEContrastEnhancer extends JIPipeSimpleIteratingAlgorithm {
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class);
-        ImagePlus result = inputData.getDuplicateImage();
         Flat clahe = fastMode ? Flat.getFastInstance() : Flat.getInstance();
-        clahe.run(result, blockRadius, bins, maxSlope, null, true);
-        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(result));
+
+        if(inputData.getImage().isStack()) {
+            ImageStack stack = new ImageStack(inputData.getImage().getWidth(), inputData.getImage().getHeight(), inputData.getImage().getProcessor().getColorModel());
+            ImageJUtils.forEachIndexedSlice(inputData.getImage(), (imp, index) -> {
+                ImagePlus slice = new ImagePlus("slice", imp.duplicate());
+                clahe.run(slice, blockRadius, bins, maxSlope, null, true);
+                stack.addSlice(slice.getProcessor());
+            });
+            ImagePlus result = new ImagePlus("CLAHE", stack);
+            result.setDimensions(inputData.getImage().getNChannels(), inputData.getImage().getNSlices(), inputData.getImage().getNFrames());
+            dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(result));
+        }
+        else {
+            ImagePlus result = inputData.getDuplicateImage();
+            clahe.run(result, blockRadius, bins, maxSlope, null, true);
+            dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(result));
+        }
     }
 
     @JIPipeParameter("block-radius")

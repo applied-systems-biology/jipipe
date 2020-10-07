@@ -37,7 +37,7 @@ import java.util.function.Supplier;
 @JIPipeDocumentation(name = "Parent", description = "Extracts the parent folder of each path")
 @JIPipeOrganization(menuPath = "Extract", nodeTypeCategory = FileSystemNodeTypeCategory.class)
 
-// Algorithm flow
+
 @JIPipeInputSlot(value = PathData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = FolderData.class, slotName = "Parent", autoCreate = true)
 

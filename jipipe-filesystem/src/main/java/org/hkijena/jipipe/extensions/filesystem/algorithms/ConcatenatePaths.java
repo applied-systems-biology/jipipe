@@ -34,7 +34,7 @@ import java.util.function.Supplier;
 @JIPipeDocumentation(name = "Concatenate paths", description = "Concatenates two paths")
 @JIPipeOrganization(menuPath = "Modify", nodeTypeCategory = FileSystemNodeTypeCategory.class)
 
-// Algorithm flow
+
 @JIPipeInputSlot(value = PathData.class, slotName = "Left", autoCreate = true)
 @JIPipeInputSlot(value = PathData.class, slotName = "Right", autoCreate = true)
 @JIPipeOutputSlot(value = PathData.class, slotName = "Output", autoCreate = true)

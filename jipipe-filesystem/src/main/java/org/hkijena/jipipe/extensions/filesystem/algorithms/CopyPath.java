@@ -49,7 +49,7 @@ import java.util.stream.Collectors;
         "[Folder] to [Not existing]: The destination is automatically created. The [Folder] to [Folder] rule is applied.")
 @JIPipeOrganization(nodeTypeCategory = FileSystemNodeTypeCategory.class)
 
-// Algorithm flow
+
 @JIPipeInputSlot(value = PathData.class, slotName = "Source", autoCreate = true)
 @JIPipeInputSlot(value = PathData.class, slotName = "Destination", autoCreate = true)
 @JIPipeOutputSlot(value = PathData.class, slotName = "Copied path", autoCreate = true)

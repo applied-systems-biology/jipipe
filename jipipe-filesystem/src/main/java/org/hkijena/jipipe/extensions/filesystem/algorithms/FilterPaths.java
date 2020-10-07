@@ -39,7 +39,7 @@ import java.util.function.Supplier;
 @JIPipeDocumentation(name = "Filter paths", description = "Filters the paths (files/folders) by their name or absolute path")
 @JIPipeOrganization(menuPath = "Filter", nodeTypeCategory = FileSystemNodeTypeCategory.class)
 
-// Algorithm flow
+
 @JIPipeInputSlot(value = PathData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = PathData.class, slotName = "Output", autoCreate = true, inheritedSlot = "Input")
 

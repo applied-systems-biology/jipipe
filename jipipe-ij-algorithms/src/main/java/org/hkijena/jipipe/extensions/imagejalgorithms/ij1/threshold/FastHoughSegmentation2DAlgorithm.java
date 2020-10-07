@@ -69,15 +69,15 @@ import static org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExt
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
 @JIPipeOrganization(menuPath = "Threshold", nodeTypeCategory = ImagesNodeTypeCategory.class)
 
-// Algorithm flow
+
 @JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input")
 @JIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Mask")
 @JIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Accumulator")
 @JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Measurements")
 
-// Trait matching
 
-// Trait configuration
+
+
 public class FastHoughSegmentation2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private int minRadius = 50;

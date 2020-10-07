@@ -35,7 +35,7 @@ import java.util.function.Supplier;
         "are located in a parent folder.")
 @JIPipeOrganization(menuPath = "Modify", nodeTypeCategory = FileSystemNodeTypeCategory.class)
 
-// Algorithm flow
+
 @JIPipeInputSlot(value = PathData.class, slotName = "Parent", autoCreate = true)
 @JIPipeInputSlot(value = PathData.class, slotName = "Child", autoCreate = true)
 @JIPipeOutputSlot(value = PathData.class, slotName = "Output", autoCreate = true)

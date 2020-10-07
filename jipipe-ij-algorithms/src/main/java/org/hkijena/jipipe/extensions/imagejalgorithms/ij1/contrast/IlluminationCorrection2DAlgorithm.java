@@ -45,13 +45,13 @@ import java.util.function.Supplier;
                 "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
 @JIPipeOrganization(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Contrast")
 
-// Algorithm flow
+
 @JIPipeInputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Input")
 @JIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Output")
 
-// Trait matching
 
-// Trait configuration
+
+
 public class IlluminationCorrection2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private GaussianBlur2DAlgorithm gaussianAlgorithm = JIPipeGraphNode.newInstance("ij1-blur-gaussian2d");

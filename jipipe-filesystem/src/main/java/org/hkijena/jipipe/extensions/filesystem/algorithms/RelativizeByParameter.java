@@ -38,7 +38,7 @@ import java.util.function.Supplier;
         "path defined by the parameter. If you leave the parameter empty, the paths are un-changed.")
 @JIPipeOrganization(menuPath = "Modify", nodeTypeCategory = FileSystemNodeTypeCategory.class)
 
-// Algorithm flow
+
 @JIPipeInputSlot(value = PathData.class, slotName = "Child", autoCreate = true)
 @JIPipeOutputSlot(value = PathData.class, slotName = "Output", autoCreate = true)
 

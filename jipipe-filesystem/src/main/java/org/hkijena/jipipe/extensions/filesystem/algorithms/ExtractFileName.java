@@ -34,7 +34,7 @@ import java.util.function.Supplier;
 @JIPipeDocumentation(name = "File/folder name", description = "Extracts the file or folder name from incoming paths.")
 @JIPipeOrganization(menuPath = "Extract", nodeTypeCategory = FileSystemNodeTypeCategory.class)
 
-// Algorithm flow
+
 @JIPipeInputSlot(value = PathData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = PathData.class, slotName = "Output", autoCreate = true)
 

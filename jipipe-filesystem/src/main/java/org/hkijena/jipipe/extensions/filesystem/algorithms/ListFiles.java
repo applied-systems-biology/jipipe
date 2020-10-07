@@ -46,7 +46,7 @@ import java.util.stream.Stream;
 @JIPipeDocumentation(name = "List files", description = "Lists all files in the input folder")
 @JIPipeOrganization(menuPath = "List", nodeTypeCategory = FileSystemNodeTypeCategory.class)
 
-// Algorithm flow
+
 @JIPipeInputSlot(value = FolderData.class, slotName = "Folders", autoCreate = true)
 @JIPipeOutputSlot(value = FileData.class, slotName = "Files", autoCreate = true)
 
