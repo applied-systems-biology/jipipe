@@ -21,7 +21,9 @@ import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.JIPipeHidden;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataConverter;
+import org.hkijena.jipipe.api.data.JIPipeDataImportOperation;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
+import org.hkijena.jipipe.api.data.JIPipeDataDisplayOperation;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.events.DatatypeRegisteredEvent;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
@@ -31,9 +33,12 @@ import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultWeightedEdge;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -42,6 +47,8 @@ import java.util.Set;
  */
 public class JIPipeDatatypeRegistry {
     private BiMap<String, Class<? extends JIPipeData>> registeredDataTypes = HashBiMap.create();
+    private Map<String, List<JIPipeDataDisplayOperation>> registeredDisplayOperations = new HashMap<>();
+    private Map<String, List<JIPipeDataImportOperation>> registeredImportOperations = new HashMap<>();
     private Set<String> hiddenDataTypeIds = new HashSet<>();
     private Map<String, JIPipeDependency> registeredDatatypeSources = new HashMap<>();
     private Graph<JIPipeDataInfo, DataConverterEdge> conversionGraph = new DefaultDirectedGraph<>(DataConverterEdge.class);
@@ -152,6 +159,54 @@ public class JIPipeDatatypeRegistry {
         }
 
         eventBus.post(new DatatypeRegisteredEvent(id));
+    }
+
+    /**
+     * Registers an operation that will be available to users in the results view (after runs).
+     * @param dataTypeId data type id
+     * @param operation the operation
+     */
+    public void registerImportOperation(String dataTypeId, JIPipeDataImportOperation operation) {
+        List<JIPipeDataImportOperation> existing = registeredImportOperations.getOrDefault(dataTypeId, null);
+        if(existing == null) {
+            existing = new ArrayList<>();
+            registeredImportOperations.put(dataTypeId, existing);
+        }
+        existing.add(operation);
+        existing.sort(Comparator.naturalOrder());
+    }
+
+    /**
+     * Registers an operation that will be available to users in the cache view
+     * @param dataTypeId data type id
+     * @param operation the operation
+     */
+    public void registerDisplayOperation(String dataTypeId, JIPipeDataDisplayOperation operation) {
+        List<JIPipeDataDisplayOperation> existing = registeredDisplayOperations.getOrDefault(dataTypeId, null);
+        if(existing == null) {
+            existing = new ArrayList<>();
+            registeredDisplayOperations.put(dataTypeId, existing);
+        }
+        existing.add(operation);
+        existing.sort(Comparator.naturalOrder());
+    }
+
+    /**
+     * Gets all import operations for a data type ID
+     * @param id the id
+     * @return list of import operations
+     */
+    public List<JIPipeDataImportOperation> getImportOperationsFor(String id) {
+        return registeredImportOperations.getOrDefault(id, new ArrayList<>());
+    }
+
+    /**
+     * Gets all import operations for a data type ID
+     * @param id the id
+     * @return list of import operations
+     */
+    public List<JIPipeDataDisplayOperation> getDisplayOperationsFor(String id) {
+        return registeredDisplayOperations.getOrDefault(id, new ArrayList<>());
     }
 
     /**

@@ -59,7 +59,9 @@ public interface JIPipeData {
     JIPipeData duplicate();
 
     /**
-     * This function should display the data in the GUI
+     * This function should display the data in the GUI.
+     * The UI can handle multiple of such operations via {@link JIPipeDataDisplayOperation} that can be registered separately.
+     * This item will always be shown as "Default" in the list of operations.
      *
      * @param displayName a name that can be used
      * @param workbench   the workbench

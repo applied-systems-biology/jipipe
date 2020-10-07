@@ -19,6 +19,7 @@ import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.compat.ImageJDatatypeAdapter;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataConverter;
+import org.hkijena.jipipe.api.data.JIPipeDataImportOperation;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeJavaNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -160,7 +161,7 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
      * @param id        Data type id
      * @param dataClass Data class
      * @param icon      Icon for the data type. Can be null.
-     * @param rowUI     Results analyzer row UI for the data type. Can be null.
+     * @param rowUI     Results analyzer row UI for the data type. Can be null. If null, it will use the default row UI that manages {@link org.hkijena.jipipe.api.data.JIPipeDataImportOperation} instances.
      * @param cellUI    Results table cell UI. Can be null.
      */
     public void registerDatatype(String id, Class<? extends JIPipeData> dataClass, URL icon, Class<? extends JIPipeResultDataSlotRowUI> rowUI, Class<? extends JIPipeResultDataSlotPreviewUI> cellUI) {
@@ -174,6 +175,25 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
         if (cellUI != null) {
             registry.getUIDatatypeRegistry().registerResultTableCellUI(dataClass, cellUI);
         }
+    }
+
+    /**
+     * Registers an import operation for the data type.
+     * This is not used if the data type is assigned a non-default row UI
+     * @param dataTypeId the data type id. it is not required that the data type is registered, yet.
+     * @param operation the operation
+     */
+    public void registerDatatypeImportOperation(String dataTypeId, JIPipeDataImportOperation operation) {
+        registry.getDatatypeRegistry().registerImportOperation(dataTypeId, operation);
+    }
+
+    /**
+     * Registers an additional non-default display operation for the data type. Used in the cache browser.
+     * @param dataTypeId the data type id. it is not required that the data type is registered, yet.
+     * @param operation the operation
+     */
+    public void registerDatatypeDisplayOperation(String dataTypeId, JIPipeDataImportOperation operation) {
+        registry.getDatatypeRegistry().registerImportOperation(dataTypeId, operation);
     }
 
     /**
