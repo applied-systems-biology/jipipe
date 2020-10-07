@@ -13,16 +13,27 @@
 
 package org.hkijena.jipipe.ui.cache;
 
+import org.hkijena.jipipe.JIPipeDefaultRegistry;
 import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.data.JIPipeDataDisplayOperation;
+import org.hkijena.jipipe.api.data.JIPipeDataImportOperation;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
+import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
+import org.hkijena.jipipe.api.registries.JIPipeSettingsRegistry;
+import org.hkijena.jipipe.extensions.parameters.primitives.DynamicStringEnumParameter;
+import org.hkijena.jipipe.extensions.settings.DefaultCacheDisplaySettings;
+import org.hkijena.jipipe.extensions.settings.DefaultResultImporterSettings;
+import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.Toolkit;
+import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * UI for a row
@@ -30,6 +41,7 @@ import java.awt.datatransfer.StringSelection;
 public class JIPipeDataSlotRowUI extends JIPipeWorkbenchPanel {
     private final JIPipeDataSlot slot;
     private final int row;
+    private List<JIPipeDataDisplayOperation> displayOperations;
 
     /**
      * Creates a new instance
@@ -42,7 +54,8 @@ public class JIPipeDataSlotRowUI extends JIPipeWorkbenchPanel {
         super(workbench);
         this.slot = slot;
         this.row = row;
-
+        String datatypeId = JIPipeDefaultRegistry.getInstance().getDatatypeRegistry().getIdOf(slot.getAcceptedDataType());
+        displayOperations = JIPipeDefaultRegistry.getInstance().getDatatypeRegistry().getDisplayOperationsFor(datatypeId);
         this.initialize();
     }
 
@@ -55,11 +68,72 @@ public class JIPipeDataSlotRowUI extends JIPipeWorkbenchPanel {
         copyButton.addActionListener(e -> copyString());
         add(copyButton);
 
-        JButton displayButton = new JButton("Show", UIUtils.getIconFromResources("actions/find.png"));
-        displayButton.setToolTipText("Shows the item");
-        displayButton.addActionListener(e -> slot.getData(row, JIPipeData.class).display(slot.getNode().getName() + "/" + slot.getName() + "/" + row,
-                getWorkbench()));
-        add(displayButton);
+        if (!displayOperations.isEmpty()) {
+            JIPipeDataDisplayOperation mainOperation = getMainOperation();
+            if (mainOperation == null)
+                return;
+            JButton mainActionButton = new JButton(mainOperation.getName(), mainOperation.getIcon());
+            mainActionButton.setToolTipText(mainOperation.getDescription());
+            mainActionButton.addActionListener(e -> runDisplayOperation(mainOperation));
+            add(mainActionButton);
+
+            if (displayOperations.size() > 1) {
+                JButton menuButton = new JButton("...");
+                menuButton.setMaximumSize(new Dimension(1, (int) mainActionButton.getPreferredSize().getHeight()));
+                menuButton.setToolTipText("More actions ...");
+                JPopupMenu menu = UIUtils.addPopupMenuToComponent(menuButton);
+                for (JIPipeDataDisplayOperation otherSlotAction : displayOperations) {
+                    if (otherSlotAction == mainOperation)
+                        continue;
+                    JMenuItem item = new JMenuItem(otherSlotAction.getName(), otherSlotAction.getIcon());
+                    item.setToolTipText(otherSlotAction.getDescription());
+                    item.addActionListener(e -> runDisplayOperation(otherSlotAction));
+                    menu.add(item);
+                }
+                add(menuButton);
+            }
+        }
+    }
+
+    private void runDisplayOperation(JIPipeDataDisplayOperation operation) {
+        JIPipeData data = slot.getData(row, JIPipeData.class);
+        String displayName = slot.getNode().getName() + "/" + slot.getName() + "/" + row;
+        operation.display(data, displayName, getWorkbench());
+        if (GeneralDataSettings.getInstance().isAutoSaveLastDisplay()) {
+            String dataTypeId = JIPipeDatatypeRegistry.getInstance().getIdOf(slot.getAcceptedDataType());
+            DynamicStringEnumParameter parameter = DefaultCacheDisplaySettings.getInstance().getValue(dataTypeId, DynamicStringEnumParameter.class);
+            if (parameter != null && !Objects.equals(operation.getName(), parameter.getValue())) {
+                parameter.setValue(operation.getName());
+                DefaultResultImporterSettings.getInstance().setValue(dataTypeId, parameter);
+                JIPipeSettingsRegistry.getInstance().save();
+            }
+        }
+    }
+
+    private JIPipeDataDisplayOperation getMainOperation() {
+        if (!displayOperations.isEmpty()) {
+            JIPipeDataDisplayOperation result = displayOperations.get(0);
+            String dataTypeId = JIPipeDatatypeRegistry.getInstance().getIdOf(slot.getAcceptedDataType());
+            DynamicStringEnumParameter parameter = DefaultCacheDisplaySettings.getInstance().getValue(dataTypeId, DynamicStringEnumParameter.class);
+            if (parameter != null) {
+                String defaultName = parameter.getValue();
+                for (JIPipeDataDisplayOperation operation : displayOperations) {
+                    if (Objects.equals(operation.getName(), defaultName)) {
+                        result = operation;
+                        break;
+                    }
+                }
+            }
+            return result;
+        }
+        return null;
+    }
+
+    public void handleDefaultAction() {
+        JIPipeDataDisplayOperation mainOperation = getMainOperation();
+        if(mainOperation != null) {
+            runDisplayOperation(mainOperation);
+        }
     }
 
     private void copyString() {

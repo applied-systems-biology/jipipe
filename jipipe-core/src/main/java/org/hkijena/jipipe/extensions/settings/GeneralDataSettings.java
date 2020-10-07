@@ -11,6 +11,7 @@ public class GeneralDataSettings implements JIPipeParameterCollection {
     private final EventBus eventBus = new EventBus();
 
     private boolean autoSaveLastImporter = true;
+    private boolean autoSaveLastDisplay = true;
 
     @Override
     public EventBus getEventBus() {
@@ -27,6 +28,18 @@ public class GeneralDataSettings implements JIPipeParameterCollection {
     @JIPipeParameter("auto-save-last-importer")
     public void setAutoSaveLastImporter(boolean autoSaveLastImporter) {
         this.autoSaveLastImporter = autoSaveLastImporter;
+    }
+
+    @JIPipeDocumentation(name = "Remember last cache display for type",
+    description = "If enabled, JIPipe will remember the last used cache display method as default.")
+    @JIPipeParameter("auto-save-last-display")
+    public boolean isAutoSaveLastDisplay() {
+        return autoSaveLastDisplay;
+    }
+
+    @JIPipeParameter("auto-save-last-display")
+    public void setAutoSaveLastDisplay(boolean autoSaveLastDisplay) {
+        this.autoSaveLastDisplay = autoSaveLastDisplay;
     }
 
     public static GeneralDataSettings getInstance() {

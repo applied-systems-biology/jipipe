@@ -22,6 +22,7 @@ import net.imagej.updater.util.AvailableSites;
 import net.imagej.updater.util.Progress;
 import net.imagej.updater.util.UpdaterUtil;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.data.JIPipeDataDisplayOperation;
 import org.hkijena.jipipe.api.data.JIPipeDataImportOperation;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.events.ExtensionDiscoveredEvent;
@@ -40,6 +41,7 @@ import org.hkijena.jipipe.api.registries.JIPipeParameterTypeRegistry;
 import org.hkijena.jipipe.api.registries.JIPipeSettingsRegistry;
 import org.hkijena.jipipe.api.registries.JIPipeTableRegistry;
 import org.hkijena.jipipe.extensions.parameters.primitives.DynamicStringEnumParameter;
+import org.hkijena.jipipe.extensions.settings.DefaultCacheDisplaySettings;
 import org.hkijena.jipipe.extensions.settings.DefaultResultImporterSettings;
 import org.hkijena.jipipe.extensions.settings.ExtensionSettings;
 import org.hkijena.jipipe.ui.ijupdater.IJProgressAdapter;
@@ -215,6 +217,7 @@ public class JIPipeDefaultRegistry extends AbstractService implements JIPipeRegi
 
         // Create settings for default importers
         createDefaultImporterSettings();
+        createDefaultCacheDisplaySettings();
 
         // Reload settings
         logService.debug("Loading settings ...");
@@ -222,6 +225,7 @@ public class JIPipeDefaultRegistry extends AbstractService implements JIPipeRegi
 
         // Required as the reload deletes the allowed values
         updateDefaultImporterSettings();
+        updateDefaultCacheDisplaySettings();
         logService.info("JIPipe loading finished");
     }
 
@@ -238,6 +242,20 @@ public class JIPipeDefaultRegistry extends AbstractService implements JIPipeRegi
         }
     }
 
+    /**
+     * Creates settings for each known data type, so users can change how they will be imported
+     */
+    private void createDefaultCacheDisplaySettings() {
+        DefaultCacheDisplaySettings settings = settingsRegistry.getSettings(DefaultCacheDisplaySettings.ID, DefaultCacheDisplaySettings.class);
+        for (String id : datatypeRegistry.getRegisteredDataTypes().keySet()) {
+            JIPipeDataInfo info = JIPipeDataInfo.getInstance(id);
+            JIPipeMutableParameterAccess access = settings.addParameter(id, DynamicStringEnumParameter.class);
+            access.setName(info.getName());
+            access.setDescription("Defines which cache display method is used by default for the type.");
+        }
+    }
+
+
     private void updateDefaultImporterSettings() {
         DefaultResultImporterSettings settings = settingsRegistry.getSettings(DefaultResultImporterSettings.ID, DefaultResultImporterSettings.class);
         for (String id : datatypeRegistry.getRegisteredDataTypes().keySet()) {
@@ -253,6 +271,36 @@ public class JIPipeDefaultRegistry extends AbstractService implements JIPipeRegi
             for (JIPipeDataImportOperation operation : operations) {
                 parameter.getAllowedValues().add(operation.getName());
             }
+            if(parameter.getValue() == null) {
+                if (!operations.isEmpty()) {
+                    parameter.setValue(operations.get(0).getName());
+                }
+            }
+            access.set(parameter);
+        }
+    }
+
+    private void updateDefaultCacheDisplaySettings() {
+        DefaultCacheDisplaySettings settings = settingsRegistry.getSettings(DefaultCacheDisplaySettings.ID, DefaultCacheDisplaySettings.class);
+        for (String id : datatypeRegistry.getRegisteredDataTypes().keySet()) {
+            List<JIPipeDataDisplayOperation> operations = datatypeRegistry.getDisplayOperationsFor(id);
+            JIPipeMutableParameterAccess access = (JIPipeMutableParameterAccess) settings.get(id);
+            DynamicStringEnumParameter parameter = access.get(DynamicStringEnumParameter.class);
+            if (parameter == null) {
+                parameter = new DynamicStringEnumParameter();
+                if (!operations.isEmpty()) {
+                    parameter.setValue(operations.get(0).getName());
+                }
+            }
+            for (JIPipeDataDisplayOperation operation : operations) {
+                parameter.getAllowedValues().add(operation.getName());
+            }
+            if(parameter.getValue() == null) {
+                if (!operations.isEmpty()) {
+                    parameter.setValue(operations.get(0).getName());
+                }
+            }
+            access.set(parameter);
         }
     }
 

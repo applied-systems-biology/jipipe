@@ -154,7 +154,9 @@ public class JIPipeCacheDataSlotTableUI extends JIPipeProjectWorkbenchPanel {
 
     private void handleSlotRowDefaultAction(int selectedRow) {
         int row = table.getRowSorter().convertRowIndexToModel(selectedRow);
-        slot.getData(row, JIPipeData.class).display(slot.getNode().getName() + "/" + slot.getName() + "/" + row, getWorkbench());
+//        slot.getData(row, JIPipeData.class).display(slot.getNode().getName() + "/" + slot.getName() + "/" + row, getWorkbench());
+        JIPipeDataSlotRowUI rowUI = new JIPipeDataSlotRowUI(getWorkbench(), slot, row);
+        rowUI.handleDefaultAction();
     }
 
     private void showDataRows(int[] selectedRows) {

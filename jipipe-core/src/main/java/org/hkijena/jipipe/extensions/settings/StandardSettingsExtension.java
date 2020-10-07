@@ -94,6 +94,12 @@ public class StandardSettingsExtension extends JIPipePrepackagedDefaultJavaExten
                 "Data",
                 UIUtils.getIconFromResources("actions/database.png"),
                 new DefaultResultImporterSettings());
+        registerSettingsSheet(DefaultCacheDisplaySettings.ID,
+                "Default cache displays",
+                UIUtils.getIconFromResources("actions/zoom.png"),
+                "Data",
+                UIUtils.getIconFromResources("actions/database.png"),
+                new DefaultCacheDisplaySettings());
         registerSettingsSheet(GeneralDataSettings.ID,
                 "General",
                 UIUtils.getIconFromResources("actions/settings.png"),

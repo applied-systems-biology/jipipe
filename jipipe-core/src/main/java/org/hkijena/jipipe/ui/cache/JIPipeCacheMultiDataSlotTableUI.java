@@ -162,7 +162,9 @@ public class JIPipeCacheMultiDataSlotTableUI extends JIPipeProjectWorkbenchPanel
         int multiRow = table.getRowSorter().convertRowIndexToModel(selectedRow);
         JIPipeDataSlot slot = multiSlotTable.getSlot(multiRow);
         int row = multiSlotTable.getRow(multiRow);
-        slot.getData(row, JIPipeData.class).display(slot.getNode().getName() + "/" + slot.getName() + "/" + row, getWorkbench());
+        JIPipeDataSlotRowUI rowUI = new JIPipeDataSlotRowUI(getWorkbench(), slot, row);
+        rowUI.handleDefaultAction();
+//        slot.getData(row, JIPipeData.class).display(slot.getNode().getName() + "/" + slot.getName() + "/" + row, getWorkbench());
     }
 
     private void showDataRows(int[] selectedRows) {

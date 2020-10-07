@@ -12,6 +12,7 @@ import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.core.data.CopyContainingFolderDataImportOperation;
+import org.hkijena.jipipe.extensions.core.data.DefaultDataDisplayOperation;
 import org.hkijena.jipipe.extensions.core.data.OpenContainingFolderDataImportOperation;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
 import org.hkijena.jipipe.utils.ResourceUtils;
@@ -57,6 +58,7 @@ public class CoreExtension extends JIPipePrepackagedDefaultJavaExtension {
         // Global data importers
         registerDatatypeImportOperation("", new CopyContainingFolderDataImportOperation());
         registerDatatypeImportOperation("", new OpenContainingFolderDataImportOperation());
+        registerDatatypeDisplayOperation("", new DefaultDataDisplayOperation());
     }
 
     @Override
