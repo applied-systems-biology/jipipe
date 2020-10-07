@@ -32,11 +32,11 @@ import org.scijava.plugin.Plugin;
  */
 @Plugin(type = JIPipeJavaExtension.class)
 public class PlotsExtension extends JIPipePrepackagedDefaultJavaExtension {
-    
+
     public static JIPipeDataOperation[] STANDARD_DATA_OPERATIONS = {
             new OpenPlotInJIPipeDataOperation(),
-            new OpenInNativeApplicationDataImportOperation("Open PNG", "Opens the rendered PNG image", new String[] {".png" }),
-            new OpenInNativeApplicationDataImportOperation("Open SVG", "Opens the rendered SVG image", new String[] {".svg" })
+            new OpenInNativeApplicationDataImportOperation("Open *.png", "Opens the rendered PNG image", new String[]{".png"}),
+            new OpenInNativeApplicationDataImportOperation("Open *.svg", "Opens the rendered SVG image", new String[]{".svg"})
     };
 
     @Override
@@ -66,7 +66,7 @@ public class PlotsExtension extends JIPipePrepackagedDefaultJavaExtension {
 
     @Override
     public void register() {
-        
+
         // Register extension so users can create plots
         registerMenuExtension(NewPlotMenuExtension.class);
 

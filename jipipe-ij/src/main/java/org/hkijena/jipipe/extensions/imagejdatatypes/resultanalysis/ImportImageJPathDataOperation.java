@@ -17,7 +17,7 @@ import java.nio.file.Path;
 public class ImportImageJPathDataOperation implements JIPipeDataImportOperation, JIPipeDataDisplayOperation {
     @Override
     public void display(JIPipeData data, String displayName, JIPipeWorkbench workbench) {
-        UIUtils.openFileInNative(((PathData)data).getPath());
+        UIUtils.openFileInNative(((PathData) data).getPath());
     }
 
     @Override
@@ -40,7 +40,7 @@ public class ImportImageJPathDataOperation implements JIPipeDataImportOperation,
         return UIUtils.getIconFromResources("apps/imagej.png");
     }
 
-    private Path getTargetPath( Path rowStorageFolder) {
+    private Path getTargetPath(Path rowStorageFolder) {
         Path listFile = PathUtils.findFileByExtensionIn(rowStorageFolder, ".json");
         if (listFile != null) {
             Path fileOrFolderPath;
@@ -58,7 +58,7 @@ public class ImportImageJPathDataOperation implements JIPipeDataImportOperation,
     @Override
     public boolean canShow(JIPipeDataSlot slot, JIPipeExportedDataTable.Row row, Path rowStorageFolder) {
         Path targetPath = getTargetPath(rowStorageFolder);
-        if(targetPath == null)
+        if (targetPath == null)
             return false;
         if (Files.isRegularFile(targetPath)) {
             String fileType = Opener.getFileFormat(targetPath.toString());
@@ -82,7 +82,7 @@ public class ImportImageJPathDataOperation implements JIPipeDataImportOperation,
     @Override
     public JIPipeData show(JIPipeDataSlot slot, JIPipeExportedDataTable.Row row, Path rowStorageFolder, String compartmentName, String algorithmName, String displayName, JIPipeWorkbench workbench) {
         Path targetPath = getTargetPath(rowStorageFolder);
-        if(targetPath == null)
+        if (targetPath == null)
             return null;
         IJ.open(targetPath.toString());
         return null;

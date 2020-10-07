@@ -76,14 +76,12 @@ import static org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExt
 @JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Measurements")
 
 
-
-
 public class FastHoughSegmentation2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
+    private final int minEdgeVal = 1;
     private int minRadius = 50;
     private int maxRadius = 150;
     private double minScore = 200;
-    private final int minEdgeVal = 1;
 
     /**
      * @param info algorithm info
@@ -114,18 +112,17 @@ public class FastHoughSegmentation2DAlgorithm extends JIPipeSimpleIteratingAlgor
         int W = z.length;
         int H = z[0].length;
 
-        byte[] Y = new byte[W*H];
+        byte[] Y = new byte[W * H];
         for (int h = 0; h < H; h++) {
             for (int w = 0; w < W; w++) {
-                Y[h*W+w] = (byte)((z[w][h]/maxval) * 255.0);
+                Y[h * W + w] = (byte) ((z[w][h] / maxval) * 255.0);
             }
         }
         ImageProcessor IP = new ByteProcessor(W, H, Y);
         imageStack.addSlice(IP);
     }
 
-    private void drawCircle(double[][] img, int cx, int cy, int R, double val)
-    {
+    private void drawCircle(double[][] img, int cx, int cy, int R, double val) {
         /* For a typical image, this method will be called 13 million times. */
 
         int W = img.length;
@@ -137,10 +134,18 @@ public class FastHoughSegmentation2DAlgorithm extends JIPipeSimpleIteratingAlgor
         int x = 0;
         int y = R;
 
-        if (cy+R < H)  { img[cx][cy+R] += val; }
-        if (cy-R >= 0) { img[cx][cy-R] += val; }
-        if (cx+R < W)  { img[cx+R][cy] += val; }
-        if (cx-R >= 0) { img[cx-R][cy] += val; }
+        if (cy + R < H) {
+            img[cx][cy + R] += val;
+        }
+        if (cy - R >= 0) {
+            img[cx][cy - R] += val;
+        }
+        if (cx + R < W) {
+            img[cx + R][cy] += val;
+        }
+        if (cx - R >= 0) {
+            img[cx - R][cy] += val;
+        }
 
         while (x < y) {
             if (f >= 0) {
@@ -152,14 +157,30 @@ public class FastHoughSegmentation2DAlgorithm extends JIPipeSimpleIteratingAlgor
             ddF_x += 2;
             f += ddF_x;
 
-            if (cx+x <  W && cy+y <  H) { img[cx + x][cy + y] += val; }
-            if (cx-x >= 0 && cy+y <  H) { img[cx - x][cy + y] += val; }
-            if (cx+x <  W && cy-y >= 0) { img[cx + x][cy - y] += val; }
-            if (cx-x >= 0 && cy-y >= 0) { img[cx - x][cy - y] += val; }
-            if (cx+y <  W && cy+x <  H) { img[cx + y][cy + x] += val; }
-            if (cx-y >= 0 && cy+x <  H) { img[cx - y][cy + x] += val; }
-            if (cx+y <  W && cy-x >= 0) { img[cx + y][cy - x] += val; }
-            if (cx-y >= 0 && cy-x >= 0) { img[cx - y][cy - x] += val; }
+            if (cx + x < W && cy + y < H) {
+                img[cx + x][cy + y] += val;
+            }
+            if (cx - x >= 0 && cy + y < H) {
+                img[cx - x][cy + y] += val;
+            }
+            if (cx + x < W && cy - y >= 0) {
+                img[cx + x][cy - y] += val;
+            }
+            if (cx - x >= 0 && cy - y >= 0) {
+                img[cx - x][cy - y] += val;
+            }
+            if (cx + y < W && cy + x < H) {
+                img[cx + y][cy + x] += val;
+            }
+            if (cx - y >= 0 && cy + x < H) {
+                img[cx - y][cy + x] += val;
+            }
+            if (cx + y < W && cy - x >= 0) {
+                img[cx + y][cy - x] += val;
+            }
+            if (cx - y >= 0 && cy - x >= 0) {
+                img[cx - y][cy - x] += val;
+            }
 
         }
     }
@@ -212,7 +233,7 @@ public class FastHoughSegmentation2DAlgorithm extends JIPipeSimpleIteratingAlgor
 
             /* traverse the image and update the accumulator. */
             for (int y = 0; y < H; y++) {
-                for (int x = 0; x <W; x++) {
+                for (int x = 0; x < W; x++) {
                     double I = nip.getPixel(x, y);
 
                     if (I > minEdgeVal) {
@@ -249,9 +270,9 @@ public class FastHoughSegmentation2DAlgorithm extends JIPipeSimpleIteratingAlgor
                 if (scores[x][y] > 0) {
                     int R = radii[x][y];
 
-                    for (int j = Math.max(0,y-R+1); j < Math.min(H, y+R); j++) {
-                        for (int i = Math.max(0, x-R+1); i < Math.min(W, x+R); i++) {
-                            if (i==x && j==y) {
+                    for (int j = Math.max(0, y - R + 1); j < Math.min(H, y + R); j++) {
+                        for (int i = Math.max(0, x - R + 1); i < Math.min(W, x + R); i++) {
+                            if (i == x && j == y) {
                                 /* don't compare scores with yourself. */
                                 continue;
                             }
@@ -273,21 +294,22 @@ public class FastHoughSegmentation2DAlgorithm extends JIPipeSimpleIteratingAlgor
                 if (scores[x][y] > 0) {
                     int R = radii[x][y];
                     double S = scores[x][y];
-                    if (IJ.debugMode) IJ.log("HIT. Z["+x+"]["+y+"] = "+scores[x][y]+" -> ("+x+", "+y+")@"+R);
+                    if (IJ.debugMode)
+                        IJ.log("HIT. Z[" + x + "][" + y + "] = " + scores[x][y] + " -> (" + x + ", " + y + ")@" + R);
 
                     //The Roi unit is always pixels.
-                    Roi r = new OvalRoi(x-R, y-R, 2*R, 2*R);
+                    Roi r = new OvalRoi(x - R, y - R, 2 * R, 2 * R);
                     // Set a magic string in the name, so the circle toggle
                     // tool can distinguish between ROIs that were detected
                     // by this code from all other ROIs.
-                    r.setName("DetectCircles:"+x+":"+y+":"+R+":"+S);
+                    r.setName("DetectCircles:" + x + ":" + y + ":" + R + ":" + S);
                     rois.add(r);
 
                     //The unit of the result table is the image scale unit.
                     rt.incrementCounter();
                     rt.addValue("x", x);
                     rt.addValue("y", y);
-                    rt.addValue("Diameter", ((double)2*R));
+                    rt.addValue("Diameter", ((double) 2 * R));
                     rt.addValue("Score", scores[x][y]);
                 }
             }
@@ -297,17 +319,19 @@ public class FastHoughSegmentation2DAlgorithm extends JIPipeSimpleIteratingAlgor
         Generate Hough output
          */
         maxHoughScore = 0;
-        for(double[][] a: allAccumulators) {
+        for (double[][] a : allAccumulators) {
             for (int h = 0; h < H; h++) {
                 for (int w = 0; w < W; w++) {
-                    if (a[w][h] > maxHoughScore) { maxHoughScore = a[w][h]; }
+                    if (a[w][h] > maxHoughScore) {
+                        maxHoughScore = a[w][h];
+                    }
                 }
             }
         }
         /* there is a different accumulator for each radius.
          * add them all to an ImageStack */
         ImageStack allAccumulatorsStack = new ImageStack(W, H, houghStack.getColorModel());
-        for(double[][] a: allAccumulators) {
+        for (double[][] a : allAccumulators) {
             addHoughOutput(allAccumulatorsStack, a, maxHoughScore);
         }
 
@@ -320,8 +344,8 @@ public class FastHoughSegmentation2DAlgorithm extends JIPipeSimpleIteratingAlgor
          */
         Margin imageMargin = new Margin();
         imageMargin.setAnchor(Anchor.TopLeft);
-        imageMargin.setLeft(new IntModificationParameter(0,0,true));
-        imageMargin.setTop(new IntModificationParameter(0,0,true));
+        imageMargin.setLeft(new IntModificationParameter(0, 0, true));
+        imageMargin.setTop(new IntModificationParameter(0, 0, true));
         imageMargin.setWidth(new IntModificationParameter(imp.getWidth(), 1, true));
         imageMargin.setHeight(new IntModificationParameter(imp.getHeight(), 1, true));
         ImagePlus mask = IJ.createImage("Mask", "8-bit black", W, H, 1);

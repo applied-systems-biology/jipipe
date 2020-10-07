@@ -107,6 +107,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
 
     /**
      * Creates a new UI
+     *
      * @param workbench   the workbench
      * @param graph       The algorithm graph
      * @param compartment The compartment to show
@@ -352,7 +353,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
                     break;
                 }
             }
-            if(!found) {
+            if (!found) {
                 if (viewMode == JIPipeGraphViewMode.Horizontal) {
                     currentShape.y += viewMode.getGridHeight();
                 } else {
@@ -1487,9 +1488,9 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
             double dX = afterZoomX - beforeZoomX;
             double dY = afterZoomY - beforeZoomY;
 
-            if(scrollPane != null) {
-                scrollPane.getHorizontalScrollBar().setValue(scrollPane.getHorizontalScrollBar().getValue() + (int)dX);
-                scrollPane.getVerticalScrollBar().setValue(scrollPane.getVerticalScrollBar().getValue() + (int)dY);
+            if (scrollPane != null) {
+                scrollPane.getHorizontalScrollBar().setValue(scrollPane.getHorizontalScrollBar().getValue() + (int) dX);
+                scrollPane.getVerticalScrollBar().setValue(scrollPane.getVerticalScrollBar().getValue() + (int) dY);
             }
 
         } else {

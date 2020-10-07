@@ -131,13 +131,13 @@ public class FindParticles2D extends JIPipeSimpleIteratingAlgorithm {
         Prefs.blackBackground = this.blackBackground;
 
         int options = 0;
-        if(includeHoles) {
+        if (includeHoles) {
             options |= ParticleAnalyzer.INCLUDE_HOLES;
         }
-        if(excludeEdges) {
+        if (excludeEdges) {
             options |= ParticleAnalyzer.EXCLUDE_EDGE_PARTICLES;
         }
-        if(neighborhood == Neighborhood2D.FourConnected) {
+        if (neighborhood == Neighborhood2D.FourConnected) {
             options |= ParticleAnalyzer.FOUR_CONNECTED;
         }
 

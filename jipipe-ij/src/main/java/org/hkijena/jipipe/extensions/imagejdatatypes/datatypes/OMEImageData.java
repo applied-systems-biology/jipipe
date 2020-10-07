@@ -13,29 +13,16 @@
 
 package org.hkijena.jipipe.extensions.imagejdatatypes.datatypes;
 
-import ij.CompositeImage;
-import ij.IJ;
-import ij.ImagePlus;
-import ij.ImageStack;
-import ij.Prefs;
+import ij.*;
 import ij.gui.Roi;
 import ij.io.FileInfo;
 import ij.measure.Calibration;
-import ij.process.ByteProcessor;
-import ij.process.ColorProcessor;
-import ij.process.FloatProcessor;
-import ij.process.ImageProcessor;
-import ij.process.LUT;
-import ij.process.ShortProcessor;
+import ij.process.*;
 import loci.common.DataTools;
 import loci.common.services.DependencyException;
 import loci.common.services.ServiceException;
 import loci.common.services.ServiceFactory;
-import loci.formats.FormatException;
-import loci.formats.FormatTools;
-import loci.formats.IFormatWriter;
-import loci.formats.ImageWriter;
-import loci.formats.MetadataTools;
+import loci.formats.*;
 import loci.formats.gui.AWTImageTools;
 import loci.formats.gui.Index16ColorModel;
 import loci.formats.meta.IMetadata;
@@ -64,7 +51,7 @@ import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.PathUtils;
 
 import javax.swing.*;
-import java.awt.Component;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;

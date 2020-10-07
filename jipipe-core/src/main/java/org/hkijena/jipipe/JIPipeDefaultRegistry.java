@@ -22,11 +22,14 @@ import net.imagej.updater.util.AvailableSites;
 import net.imagej.updater.util.Progress;
 import net.imagej.updater.util.UpdaterUtil;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.data.JIPipeDataImportOperation;
+import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.events.ExtensionDiscoveredEvent;
 import org.hkijena.jipipe.api.events.ExtensionRegisteredEvent;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.parameters.JIPipeMutableParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
@@ -36,6 +39,8 @@ import org.hkijena.jipipe.api.registries.JIPipeNodeRegistry;
 import org.hkijena.jipipe.api.registries.JIPipeParameterTypeRegistry;
 import org.hkijena.jipipe.api.registries.JIPipeSettingsRegistry;
 import org.hkijena.jipipe.api.registries.JIPipeTableRegistry;
+import org.hkijena.jipipe.extensions.parameters.primitives.DynamicStringEnumParameter;
+import org.hkijena.jipipe.extensions.settings.DefaultResultImporterSettings;
 import org.hkijena.jipipe.extensions.settings.ExtensionSettings;
 import org.hkijena.jipipe.ui.ijupdater.IJProgressAdapter;
 import org.hkijena.jipipe.ui.ijupdater.JIPipeImageJPluginManager;
@@ -205,14 +210,50 @@ public class JIPipeDefaultRegistry extends AbstractService implements JIPipeRegi
         }
 
         // Check for update sites
-
         if (extensionSettings.isValidateImageJDependencies())
             checkUpdateSites(issues, javaExtensions, new IJProgressAdapter());
+
+        // Create settings for default importers
+        createDefaultImporterSettings();
 
         // Reload settings
         logService.debug("Loading settings ...");
         settingsRegistry.reload();
+
+        // Required as the reload deletes the allowed values
+        updateDefaultImporterSettings();
         logService.info("JIPipe loading finished");
+    }
+
+    /**
+     * Creates settings for each known data type, so users can change how they will be imported
+     */
+    private void createDefaultImporterSettings() {
+        DefaultResultImporterSettings settings = settingsRegistry.getSettings(DefaultResultImporterSettings.ID, DefaultResultImporterSettings.class);
+        for (String id : datatypeRegistry.getRegisteredDataTypes().keySet()) {
+            JIPipeDataInfo info = JIPipeDataInfo.getInstance(id);
+            JIPipeMutableParameterAccess access = settings.addParameter(id, DynamicStringEnumParameter.class);
+            access.setName(info.getName());
+            access.setDescription("Defines which importer is used by default when importing the selected data type.");
+        }
+    }
+
+    private void updateDefaultImporterSettings() {
+        DefaultResultImporterSettings settings = settingsRegistry.getSettings(DefaultResultImporterSettings.ID, DefaultResultImporterSettings.class);
+        for (String id : datatypeRegistry.getRegisteredDataTypes().keySet()) {
+            List<JIPipeDataImportOperation> operations = datatypeRegistry.getImportOperationsFor(id);
+            JIPipeMutableParameterAccess access = (JIPipeMutableParameterAccess) settings.get(id);
+            DynamicStringEnumParameter parameter = access.get(DynamicStringEnumParameter.class);
+            if (parameter == null) {
+                parameter = new DynamicStringEnumParameter();
+                if (!operations.isEmpty()) {
+                    parameter.setValue(operations.get(0).getName());
+                }
+            }
+            for (JIPipeDataImportOperation operation : operations) {
+                parameter.getAllowedValues().add(operation.getName());
+            }
+        }
     }
 
     /**

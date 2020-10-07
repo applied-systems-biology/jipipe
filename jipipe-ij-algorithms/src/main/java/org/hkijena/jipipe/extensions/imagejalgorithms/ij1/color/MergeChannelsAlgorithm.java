@@ -118,7 +118,7 @@ public class MergeChannelsAlgorithm extends JIPipeIteratingAlgorithm {
                 ChannelColor entryColor = entry.getValue().get(ChannelColor.class);
                 if (entryColor == color) {
                     images[i] = new ImagePlusGreyscale8UData(dataBatch.getInputData(entry.getKey(), ImagePlusGreyscaleData.class).getImage().duplicate()).getImage();
-                    if(firstImage == null)
+                    if (firstImage == null)
                         firstImage = images[i];
                 }
             }
@@ -130,8 +130,8 @@ public class MergeChannelsAlgorithm extends JIPipeIteratingAlgorithm {
         int bitDepth = 0;
         int slices = 0;
         int frames = 0;
-        for (int i=0; i<images.length; i++) {
-            if (images[i] != null && width==0) {
+        for (int i = 0; i < images.length; i++) {
+            if (images[i] != null && width == 0) {
                 width = images[i].getWidth();
                 height = images[i].getHeight();
                 stackSize = images[i].getStackSize();
@@ -140,55 +140,55 @@ public class MergeChannelsAlgorithm extends JIPipeIteratingAlgorithm {
                 frames = images[i].getNFrames();
             }
         }
-        if (width==0) {
+        if (width == 0) {
             throw new RuntimeException("There must be at least one source image or stack.");
         }
 
         boolean mergeHyperstacks = false;
-        for (int i=0; i<images.length; i++) {
+        for (int i = 0; i < images.length; i++) {
             ImagePlus img = images[i];
-            if (img==null) continue;
-            if (img.getStackSize()!=stackSize) {
+            if (img == null) continue;
+            if (img.getStackSize() != stackSize) {
                 throw new RuntimeException("The source stacks must have the same number of images.");
             }
             if (img.isHyperStack()) {
                 if (img.isComposite()) {
-                    CompositeImage ci = (CompositeImage)img;
-                    if (ci.getMode()!= IJ.COMPOSITE) {
+                    CompositeImage ci = (CompositeImage) img;
+                    if (ci.getMode() != IJ.COMPOSITE) {
                         ci.setMode(IJ.COMPOSITE);
                         img.updateAndDraw();
                         if (!IJ.isMacro()) IJ.run("Channels Tool...");
                         return;
                     }
                 }
-                if (bitDepth==24) {
+                if (bitDepth == 24) {
                     throw new RuntimeException("Source hyperstacks cannot be RGB.");
                 }
-                if (img.getNChannels()>1) {
+                if (img.getNChannels() > 1) {
                     throw new RuntimeException("Source hyperstacks cannot have more than 1 channel.");
                 }
-                if (img.getNSlices()!=slices || img.getNFrames()!=frames) {
+                if (img.getNSlices() != slices || img.getNFrames() != frames) {
                     throw new RuntimeException("Source hyperstacks must have the same dimensions.");
                 }
                 mergeHyperstacks = true;
             } // isHyperStack
-            if (img.getWidth()!=width || images[i].getHeight()!=height) {
+            if (img.getWidth() != width || images[i].getHeight() != height) {
                 throw new RuntimeException("The source images or stacks must have the same width and height.");
             }
-            if (createComposite && img.getBitDepth()!=bitDepth) {
+            if (createComposite && img.getBitDepth() != bitDepth) {
                 throw new RuntimeException("The source images must have the same bit depth.");
             }
         }
 
         ImageStack[] stacks = new ImageStack[images.length];
-        for (int i=0; i<images.length; i++)
-            stacks[i] = images[i]!=null?images[i].getStack():null;
+        for (int i = 0; i < images.length; i++)
+            stacks[i] = images[i] != null ? images[i].getStack() : null;
         ImagePlus imp2;
         boolean fourOrMoreChannelRGB = false;
-        for (int i=3; i<images.length; i++) {
-            if (stacks[i]!=null) {
+        for (int i = 3; i < images.length; i++) {
+            if (stacks[i] != null) {
                 if (!createComposite)
-                    fourOrMoreChannelRGB=true;
+                    fourOrMoreChannelRGB = true;
                 createComposite = true;
             }
         }
@@ -196,19 +196,19 @@ public class MergeChannelsAlgorithm extends JIPipeIteratingAlgorithm {
             createComposite = true;
         boolean isRGB = false;
         int extraIChannels = 0;
-        for (int i=0; i<images.length; i++) {
-            if (images[i]!=null) {
-                if (i>2)
+        for (int i = 0; i < images.length; i++) {
+            if (images[i] != null) {
+                if (i > 2)
                     extraIChannels++;
-                if (images[i].getBitDepth()==24)
+                if (images[i].getBitDepth() == 24)
                     isRGB = true;
             }
         }
-        if (isRGB && extraIChannels>0) {
+        if (isRGB && extraIChannels > 0) {
             imp2 = mergeUsingRGBProjection(firstImage, images, createComposite);
-        } else if ((createComposite&&!isRGB) || mergeHyperstacks) {
+        } else if ((createComposite && !isRGB) || mergeHyperstacks) {
             imp2 = RGB_STACK_MERGE.mergeHyperstacks(images, true);
-            if (imp2==null) return;
+            if (imp2 == null) return;
         } else {
             ImageStack rgb = RGB_STACK_MERGE.mergeStacks(width, height, stackSize, stacks[0], stacks[1], stacks[2], true);
             imp2 = new ImagePlus("RGB", rgb);
@@ -217,14 +217,14 @@ public class MergeChannelsAlgorithm extends JIPipeIteratingAlgorithm {
                 imp2.setTitle("Composite");
             }
         }
-        for (int i=0; i<images.length; i++) {
-            if (images[i]!=null) {
+        for (int i = 0; i < images.length; i++) {
+            if (images[i] != null) {
                 imp2.setCalibration(images[i].getCalibration());
                 break;
             }
         }
         if (fourOrMoreChannelRGB) {
-            if (imp2.getNSlices()==1&&imp2.getNFrames()==1) {
+            if (imp2.getNSlices() == 1 && imp2.getNFrames() == 1) {
                 imp2 = imp2.flatten();
                 imp2.setTitle("RGB");
             }
@@ -234,9 +234,9 @@ public class MergeChannelsAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     private ImagePlus mergeUsingRGBProjection(ImagePlus imp, ImagePlus[] images, boolean createComposite) {
-        ImageStack stack = new ImageStack(imp.getWidth(),imp.getHeight());
-        for (int i=0; i<images.length; i++) {
-            if (images[i]!=null)
+        ImageStack stack = new ImageStack(imp.getWidth(), imp.getHeight());
+        for (int i = 0; i < images.length; i++) {
+            if (images[i] != null)
                 stack.addSlice(images[i].getProcessor());
         }
         ImagePlus imp2 = new ImagePlus("temp", stack);

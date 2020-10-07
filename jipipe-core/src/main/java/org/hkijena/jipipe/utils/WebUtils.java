@@ -25,35 +25,36 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 public class WebUtils {
-    private static boolean isRedirected( Map<String, List<String>> header ) {
-        for( String hv : header.get( null )) {
-            if(   hv.contains( " 301 " )
-                    || hv.contains( " 302 " )) return true;
+    private static boolean isRedirected(Map<String, List<String>> header) {
+        for (String hv : header.get(null)) {
+            if (hv.contains(" 301 ")
+                    || hv.contains(" 302 ")) return true;
         }
         return false;
     }
 
     /**
      * Downloads the URL to the output file
-     * @param url the URL
-     * @param outputFile the output file
+     *
+     * @param url             the URL
+     * @param outputFile      the output file
      * @param bytesDownloaded progress on how many bytes were downloaded
      * @throws IOException thrown by streaming
      */
     public static void download(URL url, Path outputFile, Consumer<Integer> bytesDownloaded) throws IOException {
-        HttpURLConnection http = (HttpURLConnection)url.openConnection();
+        HttpURLConnection http = (HttpURLConnection) url.openConnection();
 
         // Handle redirection
-        Map< String, List< String >> header = http.getHeaderFields();
-        while( isRedirected( header )) {
-            String link = header.get( "Location" ).get( 0 );
-            url    = new URL( link );
-            http   = (HttpURLConnection)url.openConnection();
+        Map<String, List<String>> header = http.getHeaderFields();
+        while (isRedirected(header)) {
+            String link = header.get("Location").get(0);
+            url = new URL(link);
+            http = (HttpURLConnection) url.openConnection();
             header = http.getHeaderFields();
         }
 
         // Download the file
-        try(InputStream input  = http.getInputStream()) {
+        try (InputStream input = http.getInputStream()) {
             byte[] buffer = new byte[4096];
             int n;
             int total = 0;

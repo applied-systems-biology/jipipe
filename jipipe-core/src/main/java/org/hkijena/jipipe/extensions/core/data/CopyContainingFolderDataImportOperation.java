@@ -50,7 +50,7 @@ public class CopyContainingFolderDataImportOperation implements JIPipeDataImport
 
     @Override
     public Icon getIcon() {
-        return  UIUtils.getIconFromResources("actions/folder-copy.png");
+        return UIUtils.getIconFromResources("actions/folder-copy.png");
     }
 
     @Override

@@ -86,9 +86,8 @@ public class ImageJUtils {
                     }
                 }
             }
-        }
-        else {
-            function.accept(img.getProcessor(), new SliceIndex(0,0,0));
+        } else {
+            function.accept(img.getProcessor(), new SliceIndex(0, 0, 0));
         }
     }
 

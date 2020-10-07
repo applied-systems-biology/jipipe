@@ -52,12 +52,54 @@ public class StandardSettingsExtension extends JIPipePrepackagedDefaultJavaExten
 
     @Override
     public void register() {
-        registerSettingsSheet(RuntimeSettings.ID, "Runtime", UIUtils.getIconFromResources("actions/player_start.png"), null, null, new RuntimeSettings());
-        registerSettingsSheet(ProjectsSettings.ID, "Projects", UIUtils.getIconFromResources("actions/project-development.png"), null, null, new ProjectsSettings());
-        registerSettingsSheet(GeneralUISettings.ID, "General", UIUtils.getIconFromResources("actions/settings.png"), "UI", null, new GeneralUISettings());
-        registerSettingsSheet(GraphEditorUISettings.ID, "Graph editor", UIUtils.getIconFromResources("actions/distribute-graph.png"), "UI", null, new GraphEditorUISettings());
-        registerSettingsSheet(FileChooserSettings.ID, "File chooser", UIUtils.getIconFromResources("actions/quickopen-file.png"), "UI", null, new FileChooserSettings());
-        registerSettingsSheet(ExtensionSettings.ID, "Extensions", UIUtils.getIconFromResources("actions/plugins.png"), "General", null, new ExtensionSettings());
+        registerSettingsSheet(RuntimeSettings.ID,
+                "Runtime",
+                UIUtils.getIconFromResources("actions/player_start.png"),
+                null,
+                null,
+                new RuntimeSettings());
+        registerSettingsSheet(ProjectsSettings.ID,
+                "Projects",
+                UIUtils.getIconFromResources("actions/project-development.png"),
+                null,
+                null,
+                new ProjectsSettings());
+        registerSettingsSheet(GeneralUISettings.ID,
+                "General",
+                UIUtils.getIconFromResources("actions/settings.png"),
+                "UI",
+                null,
+                new GeneralUISettings());
+        registerSettingsSheet(GraphEditorUISettings.ID,
+                "Graph editor",
+                UIUtils.getIconFromResources("actions/distribute-graph.png"),
+                "UI",
+                null,
+                new GraphEditorUISettings());
+        registerSettingsSheet(FileChooserSettings.ID,
+                "File chooser",
+                UIUtils.getIconFromResources("actions/quickopen-file.png"),
+                "UI",
+                null,
+                new FileChooserSettings());
+        registerSettingsSheet(ExtensionSettings.ID,
+                "Extensions",
+                UIUtils.getIconFromResources("actions/plugins.png"),
+                "General",
+                null,
+                new ExtensionSettings());
+        registerSettingsSheet(DefaultResultImporterSettings.ID,
+                "Default result importers",
+                UIUtils.getIconFromResources("actions/rabbitvcs-import.png"),
+                "Data",
+                UIUtils.getIconFromResources("actions/database.png"),
+                new DefaultResultImporterSettings());
+        registerSettingsSheet(GeneralDataSettings.ID,
+                "General",
+                UIUtils.getIconFromResources("actions/settings.png"),
+                "Data",
+                null,
+                new GeneralDataSettings());
 
         registerParameterType("jipipe:settings:projects:new-project-template",
                 ProjectsSettings.ProjectTemplateEnum.class,

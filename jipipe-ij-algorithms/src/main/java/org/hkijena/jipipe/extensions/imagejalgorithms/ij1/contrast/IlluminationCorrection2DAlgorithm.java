@@ -50,8 +50,6 @@ import java.util.function.Supplier;
 @JIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Output")
 
 
-
-
 public class IlluminationCorrection2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private GaussianBlur2DAlgorithm gaussianAlgorithm = JIPipeGraphNode.newInstance("ij1-blur-gaussian2d");

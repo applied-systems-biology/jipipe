@@ -25,9 +25,10 @@ public interface JIPipeDataDisplayOperation extends JIPipeDataOperation {
 
     /**
      * Shows the data in the UI
-     * @param data the data
+     *
+     * @param data        the data
      * @param displayName the display name
-     * @param workbench the workbench that issued the command
+     * @param workbench   the workbench that issued the command
      */
     void display(JIPipeData data, String displayName, JIPipeWorkbench workbench);
 }

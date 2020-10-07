@@ -17,6 +17,11 @@ import org.hkijena.jipipe.JIPipeDefaultRegistry;
 import org.hkijena.jipipe.api.data.JIPipeDataImportOperation;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeExportedDataTable;
+import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
+import org.hkijena.jipipe.api.registries.JIPipeSettingsRegistry;
+import org.hkijena.jipipe.extensions.parameters.primitives.DynamicStringEnumParameter;
+import org.hkijena.jipipe.extensions.settings.DefaultResultImporterSettings;
+import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -56,7 +61,9 @@ public class JIPipeDefaultResultDataSlotRowUI extends JIPipeResultDataSlotRowUI 
         add(Box.createHorizontalGlue());
 
         if (!importOperations.isEmpty()) {
-            JIPipeDataImportOperation mainOperation = importOperations.get(0);
+            JIPipeDataImportOperation mainOperation = getMainOperation();
+            if (mainOperation == null)
+                return;
             JButton mainActionButton = new JButton(mainOperation.getName(), mainOperation.getIcon());
             mainActionButton.setToolTipText(mainOperation.getDescription());
             mainActionButton.addActionListener(e -> runImportOperation(mainOperation));
@@ -67,8 +74,9 @@ public class JIPipeDefaultResultDataSlotRowUI extends JIPipeResultDataSlotRowUI 
                 menuButton.setMaximumSize(new Dimension(1, (int) mainActionButton.getPreferredSize().getHeight()));
                 menuButton.setToolTipText("More actions ...");
                 JPopupMenu menu = UIUtils.addPopupMenuToComponent(menuButton);
-                for (int i = 1; i < importOperations.size(); ++i) {
-                    JIPipeDataImportOperation otherSlotAction = importOperations.get(i);
+                for (JIPipeDataImportOperation otherSlotAction : importOperations) {
+                    if (otherSlotAction == mainOperation)
+                        continue;
                     JMenuItem item = new JMenuItem(otherSlotAction.getName(), otherSlotAction.getIcon());
                     item.setToolTipText(otherSlotAction.getDescription());
                     item.addActionListener(e -> runImportOperation(otherSlotAction));
@@ -81,14 +89,41 @@ public class JIPipeDefaultResultDataSlotRowUI extends JIPipeResultDataSlotRowUI 
 
     private void runImportOperation(JIPipeDataImportOperation operation) {
         operation.show(getSlot(), getRow(), getRowStorageFolder(), getAlgorithmCompartment(), getAlgorithmName(), getDisplayName(), getWorkbench());
+        if (GeneralDataSettings.getInstance().isAutoSaveLastImporter()) {
+            String dataTypeId = JIPipeDatatypeRegistry.getInstance().getIdOf(getSlot().getAcceptedDataType());
+            DynamicStringEnumParameter parameter = DefaultResultImporterSettings.getInstance().getValue(dataTypeId, DynamicStringEnumParameter.class);
+            if (parameter != null && !Objects.equals(operation.getName(), parameter.getValue())) {
+                parameter.setValue(operation.getName());
+                DefaultResultImporterSettings.getInstance().setValue(dataTypeId, parameter);
+                JIPipeSettingsRegistry.getInstance().save();
+            }
+        }
+    }
+
+    private JIPipeDataImportOperation getMainOperation() {
+        if (!importOperations.isEmpty()) {
+            JIPipeDataImportOperation result = importOperations.get(0);
+            String dataTypeId = JIPipeDatatypeRegistry.getInstance().getIdOf(getSlot().getAcceptedDataType());
+            DynamicStringEnumParameter parameter = DefaultResultImporterSettings.getInstance().getValue(dataTypeId, DynamicStringEnumParameter.class);
+            if (parameter != null) {
+                String defaultName = parameter.getValue();
+                for (JIPipeDataImportOperation operation : importOperations) {
+                    if (Objects.equals(operation.getName(), defaultName)) {
+                        result = operation;
+                        break;
+                    }
+                }
+            }
+            return result;
+        }
+        return null;
     }
 
     @Override
     public void handleDefaultAction() {
-        if (!importOperations.isEmpty()) {
-            JIPipeDataImportOperation mainOperation = importOperations.get(0);
+        JIPipeDataImportOperation mainOperation = getMainOperation();
+        if (mainOperation != null)
             runImportOperation(mainOperation);
-        }
     }
 
 }

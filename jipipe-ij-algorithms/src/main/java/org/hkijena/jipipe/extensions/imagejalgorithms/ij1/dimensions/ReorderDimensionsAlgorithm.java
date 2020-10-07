@@ -115,26 +115,26 @@ public class ReorderDimensionsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @Override
     public void reportValidity(JIPipeValidityReport report) {
         super.reportValidity(report);
-        if(!hyperstackReassignments.isEmpty()) {
+        if (!hyperstackReassignments.isEmpty()) {
             Set<HyperstackDimension> sources = new HashSet<>();
             Set<HyperstackDimension> targets = new HashSet<>();
             for (HyperstackDimensionPair reassignment : hyperstackReassignments) {
                 sources.add(reassignment.getKey());
                 targets.add(reassignment.getValue());
             }
-            if(sources.size() != hyperstackReassignments.size()) {
+            if (sources.size() != hyperstackReassignments.size()) {
                 report.forCategory("Reassignments").reportIsInvalid("Invalid dimension reassignments!",
                         "You have duplicate assignment sources.",
                         "Please remove duplicate assignments",
                         this);
             }
-            if(targets.size() != hyperstackReassignments.size()) {
+            if (targets.size() != hyperstackReassignments.size()) {
                 report.forCategory("Reassignments").reportIsInvalid("Invalid dimension reassignments!",
                         "You have duplicate assignment targets.",
                         "Please remove duplicate assignments",
                         this);
             }
-            if(!sources.equals(targets)) {
+            if (!sources.equals(targets)) {
                 report.forCategory("Reassignments").reportIsInvalid("Invalid dimension reassignments!",
                         "You have incomplete assignments.",
                         "Please check that no dimensions are lost during reassignment.",

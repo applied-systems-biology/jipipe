@@ -14,9 +14,9 @@ import java.nio.file.Path;
 
 public class OpenInNativeApplicationDataImportOperation implements JIPipeDataImportOperation {
 
+    private final String[] extensions;
     private String name = "Open in native application";
     private String description = "Opens the file as you would open it from your file browser.";
-    private final String[] extensions;
 
     public OpenInNativeApplicationDataImportOperation(String name, String description, String[] extensions) {
         this.name = name;
@@ -50,11 +50,11 @@ public class OpenInNativeApplicationDataImportOperation implements JIPipeDataImp
 
     @Override
     public JIPipeData show(JIPipeDataSlot slot, JIPipeExportedDataTable.Row row, Path rowStorageFolder, String compartmentName, String algorithmName, String displayName, JIPipeWorkbench workbench) {
-        if(rowStorageFolder == null || !Files.isDirectory(rowStorageFolder))
+        if (rowStorageFolder == null || !Files.isDirectory(rowStorageFolder))
             return null;
         Path targetFile = PathUtils.findFileByExtensionIn(rowStorageFolder, extensions);
         if (targetFile != null) {
-           UIUtils.openFileInNative(targetFile);
+            UIUtils.openFileInNative(targetFile);
         }
         return null;
     }

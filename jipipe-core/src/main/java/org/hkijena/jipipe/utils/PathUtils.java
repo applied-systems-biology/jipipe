@@ -29,7 +29,7 @@ public class PathUtils {
     /**
      * Finds a file in the specified folder with given extension
      *
-     * @param folder    the path
+     * @param folder     the path
      * @param extensions Should contain the dot
      * @return null if no file was found
      */

@@ -56,8 +56,6 @@ import static org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExt
 @JIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output")
 
 
-
-
 public class InternalGradientSegmentation2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private double gaussSigma = 3;

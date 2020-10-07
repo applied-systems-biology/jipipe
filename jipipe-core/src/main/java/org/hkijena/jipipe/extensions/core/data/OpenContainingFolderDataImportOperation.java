@@ -47,7 +47,7 @@ public class OpenContainingFolderDataImportOperation implements JIPipeDataImport
 
     @Override
     public Icon getIcon() {
-        return  UIUtils.getIconFromResources("actions/document-open-folder.png");
+        return UIUtils.getIconFromResources("actions/document-open-folder.png");
     }
 
     @Override

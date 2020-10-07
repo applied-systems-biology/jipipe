@@ -33,7 +33,7 @@ import java.nio.file.Path;
 public class OpenResultsTableInImageJDataOperation implements JIPipeDataImportOperation, JIPipeDataDisplayOperation {
     @Override
     public void display(JIPipeData data, String displayName, JIPipeWorkbench workbench) {
-        ((ResultsTableData)data.duplicate()).getTable().show(displayName);
+        ((ResultsTableData) data.duplicate()).getTable().show(displayName);
     }
 
     @Override
@@ -58,7 +58,7 @@ public class OpenResultsTableInImageJDataOperation implements JIPipeDataImportOp
 
     @Override
     public JIPipeData show(JIPipeDataSlot slot, JIPipeExportedDataTable.Row row, Path rowStorageFolder, String compartmentName, String algorithmName, String displayName, JIPipeWorkbench workbench) {
-        if(rowStorageFolder == null || !Files.isDirectory(rowStorageFolder))
+        if (rowStorageFolder == null || !Files.isDirectory(rowStorageFolder))
             return null;
         Path csvFile = PathUtils.findFileByExtensionIn(rowStorageFolder, ".csv");
         if (csvFile != null) {

@@ -163,12 +163,13 @@ public class JIPipeDatatypeRegistry {
 
     /**
      * Registers an operation that will be available to users in the results view (after runs).
+     *
      * @param dataTypeId data type id. if empty, the operation applies to all data types.
-     * @param operation the operation
+     * @param operation  the operation
      */
     public void registerImportOperation(String dataTypeId, JIPipeDataImportOperation operation) {
         List<JIPipeDataImportOperation> existing = registeredImportOperations.getOrDefault(dataTypeId, null);
-        if(existing == null) {
+        if (existing == null) {
             existing = new ArrayList<>();
             registeredImportOperations.put(dataTypeId, existing);
         }
@@ -177,12 +178,13 @@ public class JIPipeDatatypeRegistry {
 
     /**
      * Registers an operation that will be available to users in the cache view
+     *
      * @param dataTypeId data type id. if empty, the operation applies to all data types.
-     * @param operation the operation
+     * @param operation  the operation
      */
     public void registerDisplayOperation(String dataTypeId, JIPipeDataDisplayOperation operation) {
         List<JIPipeDataDisplayOperation> existing = registeredDisplayOperations.getOrDefault(dataTypeId, null);
-        if(existing == null) {
+        if (existing == null) {
             existing = new ArrayList<>();
             registeredDisplayOperations.put(dataTypeId, existing);
         }
@@ -191,6 +193,7 @@ public class JIPipeDatatypeRegistry {
 
     /**
      * Gets all import operations for a data type ID
+     *
      * @param id the id
      * @return list of import operations
      */
@@ -203,6 +206,7 @@ public class JIPipeDatatypeRegistry {
 
     /**
      * Gets all import operations for a data type ID
+     *
      * @param id the id
      * @return list of import operations
      */

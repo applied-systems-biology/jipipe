@@ -55,8 +55,6 @@ import static org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExt
 @JIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output")
 
 
-
-
 public class BrightSpotsSegmentation2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private int rollingBallRadius = 20;

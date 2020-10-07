@@ -48,7 +48,7 @@ public class OpenTextInJIPipeDataOperation implements JIPipeDataImportOperation,
 
     @Override
     public JIPipeData show(JIPipeDataSlot slot, JIPipeExportedDataTable.Row row, Path rowStorageFolder, String compartmentName, String algorithmName, String displayName, JIPipeWorkbench workbench) {
-        if(rowStorageFolder == null || !Files.isDirectory(rowStorageFolder))
+        if (rowStorageFolder == null || !Files.isDirectory(rowStorageFolder))
             return null;
         Path textFile = PathUtils.findFileByExtensionIn(rowStorageFolder, extensions);
         try {

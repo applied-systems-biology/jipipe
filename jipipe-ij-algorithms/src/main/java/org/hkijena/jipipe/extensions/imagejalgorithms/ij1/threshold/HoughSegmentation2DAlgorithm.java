@@ -56,8 +56,6 @@ import static org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExt
 @JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Measurements")
 
 
-
-
 public class HoughSegmentation2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private int minRadius = 7;

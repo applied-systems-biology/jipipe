@@ -63,6 +63,7 @@ public class ResourceUtils {
 
     /**
      * Gets a plugin resource as string
+     *
      * @param internalResourcePath internal path
      * @return string
      */
