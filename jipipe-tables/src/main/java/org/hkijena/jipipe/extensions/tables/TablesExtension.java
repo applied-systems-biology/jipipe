@@ -112,23 +112,23 @@ public class TablesExtension extends JIPipePrepackagedDefaultJavaExtension {
                 TableColumn.class,
                 ResourceUtils.getPluginResource("icons/data-types/table-column.png"),
                 null,
-                null);
+                null,
+                new OpenResultsTableInImageJDataOperation(),
+                new OpenResultsTableInJIPipeDataOperation());
         registerDatatype("table-column-numeric",
                 DoubleArrayTableColumn.class,
                 ResourceUtils.getPluginResource("icons/data-types/table-column.png"),
                 null,
-                null);
+                null,
+                new OpenResultsTableInImageJDataOperation(),
+                new OpenResultsTableInJIPipeDataOperation());
         registerDatatype("table-column-string",
                 StringArrayTableColumn.class,
                 ResourceUtils.getPluginResource("icons/data-types/table-column.png"),
                 null,
-                null);
-        registerDatatypeImportOperation("table-column", new OpenResultsTableInImageJDataOperation());
-        registerDatatypeImportOperation("table-column", new OpenResultsTableInJIPipeDataOperation());
-        registerDatatypeImportOperation("table-column-numeric", new OpenResultsTableInImageJDataOperation());
-        registerDatatypeImportOperation("table-column-numeric", new OpenResultsTableInJIPipeDataOperation());
-        registerDatatypeImportOperation("table-column-string", new OpenResultsTableInImageJDataOperation());
-        registerDatatypeImportOperation("table-column-string", new OpenResultsTableInJIPipeDataOperation());
+                null,
+                new OpenResultsTableInImageJDataOperation(),
+                new OpenResultsTableInJIPipeDataOperation());
         registerDatatypeConversion(new DoubleArrayColumnToTableConverter());
         registerDatatypeConversion(new StringArrayColumnToTableConverter());
     }

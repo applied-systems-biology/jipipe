@@ -17,8 +17,11 @@ import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.annotation.algorithms.*;
 import org.hkijena.jipipe.extensions.annotation.datasources.AnnotationTableFromFile;
+import org.hkijena.jipipe.extensions.core.data.OpenInNativeApplicationDataImportOperation;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
 import org.hkijena.jipipe.extensions.tables.datatypes.AnnotationTableData;
+import org.hkijena.jipipe.extensions.tables.datatypes.OpenResultsTableInImageJDataOperation;
+import org.hkijena.jipipe.extensions.tables.datatypes.OpenResultsTableInJIPipeDataOperation;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.plugin.Plugin;
@@ -54,8 +57,11 @@ public class AnnotationsExtension extends JIPipePrepackagedDefaultJavaExtension 
         registerDatatype("annotation-table",
                 AnnotationTableData.class,
                 ResourceUtils.getPluginResource("icons/data-types/annotation-table.png"),
-                ResultsTableDataSlotRowUI.class,
-                null);
+                null,
+                null,
+                new OpenResultsTableInImageJDataOperation(),
+                new OpenResultsTableInJIPipeDataOperation(),
+                new OpenInNativeApplicationDataImportOperation(".csv"));
         registerDatatypeConversion(new ImplicitResultsTableDataConverter());
     }
 

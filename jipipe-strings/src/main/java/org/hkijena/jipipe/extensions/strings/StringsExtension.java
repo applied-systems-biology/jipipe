@@ -15,6 +15,8 @@ package org.hkijena.jipipe.extensions.strings;
 
 import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
+import org.hkijena.jipipe.extensions.core.data.OpenInNativeApplicationDataImportOperation;
+import org.hkijena.jipipe.extensions.core.data.OpenTextInJIPipeDataOperation;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.plugin.Plugin;
@@ -41,9 +43,12 @@ public class StringsExtension extends JIPipePrepackagedDefaultJavaExtension {
 
     @Override
     public void register() {
-        registerDatatype("string", StringData.class, UIUtils.getIconURLFromResources("data-types/string.png"), StringResultDataSlotRowUI.class, null);
-        registerDatatype("xml", XMLData.class, UIUtils.getIconURLFromResources("data-types/xml.png"), XMLDataSlotRowUI.class, null);
-        registerDatatype("json", JsonData.class, UIUtils.getIconURLFromResources("data-types/json.png"), JSONDataSlotRowUI.class, null);
+        registerDatatype("string", StringData.class, UIUtils.getIconURLFromResources("data-types/string.png"), null, null,
+                new OpenInNativeApplicationDataImportOperation(".txt"), new OpenTextInJIPipeDataOperation(".txt"));
+        registerDatatype("xml", XMLData.class, UIUtils.getIconURLFromResources("data-types/xml.png"), null, null,
+                new OpenInNativeApplicationDataImportOperation(".xml"), new OpenTextInJIPipeDataOperation(".xml"));
+        registerDatatype("json", JsonData.class, UIUtils.getIconURLFromResources("data-types/json.png"), null, null,
+                new OpenInNativeApplicationDataImportOperation(".json"), new OpenTextInJIPipeDataOperation(".json"));
         registerDatatypeConversion(new StringDataConverter(XMLData.class));
         registerDatatypeConversion(new StringDataConverter(JsonData.class));
     }

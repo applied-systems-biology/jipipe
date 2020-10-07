@@ -17,9 +17,7 @@ import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.JIPipeMetadata;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.compat.ImageJDatatypeAdapter;
-import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.JIPipeDataConverter;
-import org.hkijena.jipipe.api.data.JIPipeDataImportOperation;
+import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeJavaNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -163,8 +161,9 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
      * @param icon      Icon for the data type. Can be null.
      * @param rowUI     Results analyzer row UI for the data type. Can be null. If null, it will use the default row UI that manages {@link org.hkijena.jipipe.api.data.JIPipeDataImportOperation} instances.
      * @param cellUI    Results table cell UI. Can be null.
+     * @param operations list of operations to register. passed to registerDatatypeOperation.
      */
-    public void registerDatatype(String id, Class<? extends JIPipeData> dataClass, URL icon, Class<? extends JIPipeResultDataSlotRowUI> rowUI, Class<? extends JIPipeResultDataSlotPreviewUI> cellUI) {
+    public void registerDatatype(String id, Class<? extends JIPipeData> dataClass, URL icon, Class<? extends JIPipeResultDataSlotRowUI> rowUI, Class<? extends JIPipeResultDataSlotPreviewUI> cellUI, JIPipeDataOperation... operations) {
         registry.getDatatypeRegistry().register(id, dataClass, this);
         if (icon != null) {
             registry.getUIDatatypeRegistry().registerIcon(dataClass, icon);
@@ -175,12 +174,30 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
         if (cellUI != null) {
             registry.getUIDatatypeRegistry().registerResultTableCellUI(dataClass, cellUI);
         }
+        registerDatatypeOperation(id, operations);
+    }
+
+    /**
+     * Shortcut for registering import and display operations.
+     * If an instance is both, it is registered for both.
+     * @param dataTypeId the data type id. it is not required that the data type is registered, yet. If empty, the operations are applying to all data.
+     * @param operations operations
+     */
+    public void registerDatatypeOperation(String dataTypeId, JIPipeDataOperation... operations) {
+        for (JIPipeDataOperation operation : operations) {
+            if(operation instanceof JIPipeDataImportOperation) {
+                registerDatatypeImportOperation(dataTypeId, (JIPipeDataImportOperation) operation);
+            }
+            if(operation instanceof JIPipeDataDisplayOperation) {
+                registerDatatypeDisplayOperation(dataTypeId, (JIPipeDataDisplayOperation) operation);
+            }
+        }
     }
 
     /**
      * Registers an import operation for the data type.
      * This is not used if the data type is assigned a non-default row UI
-     * @param dataTypeId the data type id. it is not required that the data type is registered, yet.
+     * @param dataTypeId the data type id. it is not required that the data type is registered, yet. If empty, the operations are applying to all data.
      * @param operation the operation
      */
     public void registerDatatypeImportOperation(String dataTypeId, JIPipeDataImportOperation operation) {
@@ -189,11 +206,11 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
 
     /**
      * Registers an additional non-default display operation for the data type. Used in the cache browser.
-     * @param dataTypeId the data type id. it is not required that the data type is registered, yet.
+     * @param dataTypeId the data type id. it is not required that the data type is registered, yet. If empty, the operations are applying to all data.
      * @param operation the operation
      */
-    public void registerDatatypeDisplayOperation(String dataTypeId, JIPipeDataImportOperation operation) {
-        registry.getDatatypeRegistry().registerImportOperation(dataTypeId, operation);
+    public void registerDatatypeDisplayOperation(String dataTypeId, JIPipeDataDisplayOperation operation) {
+        registry.getDatatypeRegistry().registerDisplayOperation(dataTypeId, operation);
     }
 
     /**

@@ -18,6 +18,7 @@ import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
+import org.hkijena.jipipe.extensions.core.data.OpenInNativeApplicationDataImportOperation;
 import org.hkijena.jipipe.extensions.imagejdatatypes.algorithms.*;
 import org.hkijena.jipipe.extensions.imagejdatatypes.compat.ImagePlusDataImporterUI;
 import org.hkijena.jipipe.extensions.imagejdatatypes.compat.ImgPlusDataImageJAdapter;
@@ -84,12 +85,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePl
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.parameters.OMEColorMode;
 import org.hkijena.jipipe.extensions.imagejdatatypes.parameters.OMETIFFCompression;
-import org.hkijena.jipipe.extensions.imagejdatatypes.resultanalysis.ImageDataPreviewUI;
-import org.hkijena.jipipe.extensions.imagejdatatypes.resultanalysis.ImageDataSlotRowUI;
-import org.hkijena.jipipe.extensions.imagejdatatypes.resultanalysis.OMEImageDataPreviewUI;
-import org.hkijena.jipipe.extensions.imagejdatatypes.resultanalysis.OMEImageDataSlotRowUI;
-import org.hkijena.jipipe.extensions.imagejdatatypes.resultanalysis.ROIDataPreviewUI;
-import org.hkijena.jipipe.extensions.imagejdatatypes.resultanalysis.ROIDataSlotRowUI;
+import org.hkijena.jipipe.extensions.imagejdatatypes.resultanalysis.*;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
 import org.hkijena.jipipe.extensions.tables.ResultsTableDataPreviewUI;
 import org.hkijena.jipipe.extensions.tables.datatypes.OpenResultsTableInImageJDataOperation;
@@ -233,7 +229,12 @@ public class ImageJDataTypesExtension extends JIPipePrepackagedDefaultJavaExtens
                 "Available compression algorithms");
 
         // Register data types
-        registerDatatype("imagej-ome", OMEImageData.class, UIUtils.getIconURLFromResources("data-types/bioformats.png"), OMEImageDataSlotRowUI.class, OMEImageDataPreviewUI.class);
+        registerDatatype("imagej-ome",
+                OMEImageData.class,
+                UIUtils.getIconURLFromResources("data-types/bioformats.png"),
+                null,
+                OMEImageDataPreviewUI.class,
+                new OMEImageDataImportOperation());
         registerImageJDataAdapter(new OMEImageDataImageJAdapter(), ImagePlusDataImporterUI.class);
         registerImageDataType("imagej-imgplus", ImagePlusData.class, "icons/data-types/imgplus.png");
         registerImageDataType("imagej-imgplus-greyscale", ImagePlusGreyscaleData.class, "icons/data-types/imgplus-greyscale.png");
@@ -283,12 +284,16 @@ public class ImageJDataTypesExtension extends JIPipePrepackagedDefaultJavaExtens
         registerConverters();
 
         registerDatatype("imagej-roi", ROIListData.class, ResourceUtils.getPluginResource("icons/data-types/roi.png"),
-                ROIDataSlotRowUI.class, ROIDataPreviewUI.class);
+                null, ROIDataPreviewUI.class, new ROIDataImportIntoImageOperation());
         registerImageJDataAdapter(new ROIDataImageJAdapter(), ROIDataImporterUI.class);
-        registerDatatype("imagej-results-table", ResultsTableData.class, ResourceUtils.getPluginResource("icons/data-types/results-table.png"),
-                null, ResultsTableDataPreviewUI.class);
-        registerDatatypeImportOperation("imagej-results-table", new OpenResultsTableInImageJDataOperation());
-        registerDatatypeImportOperation("imagej-results-table", new OpenResultsTableInJIPipeDataOperation());
+        registerDatatype("imagej-results-table",
+                ResultsTableData.class,
+                ResourceUtils.getPluginResource("icons/data-types/results-table.png"),
+                null,
+                ResultsTableDataPreviewUI.class,
+                new OpenResultsTableInImageJDataOperation(),
+                new OpenResultsTableInJIPipeDataOperation(),
+                new OpenInNativeApplicationDataImportOperation(".csv"));
         registerImageJDataAdapter(new ResultsTableDataImageJAdapter(), ResultsTableDataImporterUI.class);
 
         // Register FFT data types
@@ -314,6 +319,10 @@ public class ImageJDataTypesExtension extends JIPipePrepackagedDefaultJavaExtens
                 "Color mode", "Available modes");
         registerEnumParameterType("import-imagej-bioformats:order", DimensionOrder.class,
                 "Order", "Available orders");
+
+        // Register additional file importers
+        registerDatatypeOperation("path", new ImportImageJPathDataOperation());
+        registerDatatypeOperation("file", new ImportImageJPathDataOperation());
 
     }
 
@@ -354,7 +363,7 @@ public class ImageJDataTypesExtension extends JIPipePrepackagedDefaultJavaExtens
     }
 
     private void registerImageDataType(String id, Class<? extends ImagePlusData> dataClass, String iconResource) {
-        registerDatatype(id, dataClass, ResourceUtils.getPluginResource(iconResource), ImageDataSlotRowUI.class, ImageDataPreviewUI.class);
+        registerDatatype(id, dataClass, ResourceUtils.getPluginResource(iconResource), null, ImageDataPreviewUI.class, new ImagePlusDataImportOperation());
         registerImageJDataAdapter(new ImgPlusDataImageJAdapter(dataClass), ImagePlusDataImporterUI.class);
     }
 }

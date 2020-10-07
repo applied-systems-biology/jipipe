@@ -14,7 +14,7 @@ import org.hkijena.jipipe.extensions.clij2.parameters.OpenCLKernelScript;
 import org.hkijena.jipipe.extensions.clij2.ui.CLIJControlPanelMenuExtension;
 import org.hkijena.jipipe.extensions.imagejdatatypes.ImageJDataTypesExtension;
 import org.hkijena.jipipe.extensions.imagejdatatypes.compat.ImagePlusDataImporterUI;
-import org.hkijena.jipipe.extensions.imagejdatatypes.resultanalysis.ImageDataSlotRowUI;
+import org.hkijena.jipipe.extensions.imagejdatatypes.resultanalysis.ImagePlusDataImportOperation;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.plugin.Plugin;
@@ -74,8 +74,9 @@ public class CLIJExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerDatatype("clij2-image",
                 CLIJImageData.class,
                 UIUtils.getIconURLFromResources("data-types/clij.png"),
-                ImageDataSlotRowUI.class,
-                null);
+                null,
+                null,
+                new ImagePlusDataImportOperation());
         for (Class<? extends JIPipeData> imageType : ImageJDataTypesExtension.IMAGE_TYPES) {
             registerDatatypeConversion(new CLIJImageToImagePlusDataConverter(imageType));
         }
