@@ -15,6 +15,7 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.util;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
+import ij.ImagePlus;
 
 import java.util.Objects;
 
@@ -105,5 +106,9 @@ public class SliceIndex {
     @Override
     public String toString() {
         return "z=" + z + ",c=" + c + ",t=" + t;
+    }
+
+    public int getStackIndex(ImagePlus imagePlus) {
+        return imagePlus.getStackIndex(c + 1, z + 1, t + 1);
     }
 }

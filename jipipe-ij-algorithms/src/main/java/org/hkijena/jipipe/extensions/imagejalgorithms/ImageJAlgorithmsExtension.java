@@ -350,6 +350,10 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
                 "Hyperstack dimension",
                 "Dimension assigned to a plane within a Hyperstack",
                 null);
+        registerEnumParameterType("ij1-neighborhood-2d",
+                Neighborhood2D.class,
+                "2D neighborhood",
+                "A 2D neighborhood");
     }
 
     private void registerROIAlgorithms() {

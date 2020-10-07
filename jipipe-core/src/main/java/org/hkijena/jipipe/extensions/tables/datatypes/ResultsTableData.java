@@ -173,20 +173,8 @@ public class ResultsTableData implements JIPipeData, TableModel {
     public Component preview(int width, int height) {
         if (getRowCount() == 0 || getColumnCount() == 0)
             return null;
-        JTable table = new JTable(this);
-        table.setSize(table.getPreferredSize());
-        BufferedImage image = new BufferedImage(table.getPreferredSize().width, table.getPreferredSize().height, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g = (Graphics2D) image.getGraphics();
-        table.print(g);
-        double factorX = 1.0 * width / image.getWidth();
-        double factorY = 1.0 * height / image.getHeight();
-        double factor = Math.max(factorX, factorY);
-        factor = Math.min(1.0, factor);
-        int imageWidth = (int) (image.getWidth() * factor);
-        int imageHeight = (int) (image.getHeight() * factor);
-        Image scaledInstance = image.getScaledInstance(imageWidth, imageHeight, Image.SCALE_SMOOTH);
-        String text = String.format("<html><strong>%d rows, %d columns</strong><br/>%s</html>", getRowCount(), getColumnCount(), String.join(", ", getColumnNames()));
-        JLabel label = new JLabel(text, new ImageIcon(scaledInstance), JLabel.LEFT);
+        String text = String.format("<html><strong>%d rows<br/>%d columns</strong><br/>%s</html>", getRowCount(), getColumnCount(), String.join(", ", getColumnNames()));
+        JLabel label = new JLabel(text);
         label.setSize(label.getPreferredSize());
         return label;
     }

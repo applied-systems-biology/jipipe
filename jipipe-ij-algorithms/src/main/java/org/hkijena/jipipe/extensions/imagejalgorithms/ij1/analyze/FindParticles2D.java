@@ -32,6 +32,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.Neighborhood2D;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
@@ -67,10 +68,12 @@ public class FindParticles2D extends JIPipeSimpleIteratingAlgorithm {
     private double minParticleCircularity = 0;
     private double maxParticleCircularity = 1;
     private boolean excludeEdges = false;
-    private boolean splitSlices = true;
+    private boolean includeHoles = true;
+    private boolean splitSlices = false;
     private boolean blackBackground = true;
     private OptionalStringParameter annotationType = new OptionalStringParameter();
     private ImageStatisticsSetParameter statisticsParameters = new ImageStatisticsSetParameter();
+    private Neighborhood2D neighborhood = Neighborhood2D.EightConnected;
 
     /**
      * @param info algorithm info
@@ -100,6 +103,8 @@ public class FindParticles2D extends JIPipeSimpleIteratingAlgorithm {
         this.splitSlices = other.splitSlices;
         this.annotationType = other.annotationType;
         this.blackBackground = other.blackBackground;
+        this.includeHoles = other.includeHoles;
+        this.neighborhood = other.neighborhood;
         this.statisticsParameters = new ImageStatisticsSetParameter(other.statisticsParameters);
     }
 
@@ -125,13 +130,25 @@ public class FindParticles2D extends JIPipeSimpleIteratingAlgorithm {
         // Otherwise we might get issues
         Prefs.blackBackground = this.blackBackground;
 
+        int options = 0;
+        if(includeHoles) {
+            options |= ParticleAnalyzer.INCLUDE_HOLES;
+        }
+        if(excludeEdges) {
+            options |= ParticleAnalyzer.EXCLUDE_EDGE_PARTICLES;
+        }
+        if(neighborhood == Neighborhood2D.FourConnected) {
+            options |= ParticleAnalyzer.FOUR_CONNECTED;
+        }
+
         if (splitSlices) {
-            ImageJUtils.forEachIndexedSlice(inputData.getImage(), (ip, index) -> {
+            int finalOptions = options;
+            ImageJUtils.forEachIndexedZCTSlice(inputData.getImage(), (ip, index) -> {
                 RoiManager manager = new RoiManager(true);
                 ResultsTable table = new ResultsTable();
                 ParticleAnalyzer.setRoiManager(manager);
                 ParticleAnalyzer.setResultsTable(table);
-                ParticleAnalyzer analyzer = new ParticleAnalyzer(0,
+                ParticleAnalyzer analyzer = new ParticleAnalyzer(finalOptions,
                         0,
                         table,
                         minParticleSize,
@@ -143,18 +160,21 @@ public class FindParticles2D extends JIPipeSimpleIteratingAlgorithm {
                 // Override for "Slice"
                 if (statisticsParameters.getValues().contains(Measurement.StackPosition)) {
                     for (int i = 0; i < table.getCounter(); i++) {
-                        table.setValue("Slice", i, index + 1);
+                        table.setValue("Slice", i, index.getStackIndex(inputData.getImage()));
+                        table.setValue("SliceZ", i, index.getZ());
+                        table.setValue("SliceC", i, index.getC());
+                        table.setValue("SliceT", i, index.getT());
                     }
                 }
 
                 List<JIPipeAnnotation> traits = new ArrayList<>();
                 if (annotationType.isEnabled() && !StringUtils.isNullOrEmpty(annotationType.getContent())) {
-                    traits.add(new JIPipeAnnotation(annotationType.getContent(), "slice=" + index));
+                    traits.add(new JIPipeAnnotation(annotationType.getContent(), "" + index));
                 }
                 ROIListData rois = new ROIListData(Arrays.asList(manager.getRoisAsArray()));
                 ImagePlus roiReferenceImage = new ImagePlus(inputData.getImage().getTitle(), ip.duplicate());
                 for (Roi roi : rois) {
-                    roi.setPosition(index + 1);
+                    roi.setPosition(index.getC() + 1, index.getZ() + 1, index.getT() + 1);
                     roi.setImage(roiReferenceImage);
                 }
 
@@ -166,12 +186,13 @@ public class FindParticles2D extends JIPipeSimpleIteratingAlgorithm {
             ROIListData mergedROI = new ROIListData(new ArrayList<>());
             ImagePlus roiReferenceImage = inputData.getDuplicateImage();
 
-            ImageJUtils.forEachIndexedSlice(inputData.getImage(), (ip, index) -> {
+            int finalOptions = options;
+            ImageJUtils.forEachIndexedZCTSlice(inputData.getImage(), (ip, index) -> {
                 RoiManager manager = new RoiManager(true);
                 ResultsTable table = new ResultsTable();
                 ParticleAnalyzer.setRoiManager(manager);
                 ParticleAnalyzer.setResultsTable(table);
-                ParticleAnalyzer analyzer = new ParticleAnalyzer(0,
+                ParticleAnalyzer analyzer = new ParticleAnalyzer(finalOptions,
                         0,
                         table,
                         minParticleSize,
@@ -183,12 +204,15 @@ public class FindParticles2D extends JIPipeSimpleIteratingAlgorithm {
                 // Override for "Slice"
                 if (statisticsParameters.getValues().contains(Measurement.StackPosition)) {
                     for (int i = 0; i < table.getCounter(); i++) {
-                        table.setValue("Slice", i, index + 1);
+                        table.setValue("Slice", i, index.getStackIndex(inputData.getImage()));
+                        table.setValue("SliceZ", i, index.getZ());
+                        table.setValue("SliceC", i, index.getC());
+                        table.setValue("SliceT", i, index.getT());
                     }
                 }
                 ROIListData rois = new ROIListData(Arrays.asList(manager.getRoisAsArray()));
                 for (Roi roi : rois) {
-                    roi.setPosition(index + 1);
+                    roi.setPosition(index.getC() + 1, index.getZ() + 1, index.getT() + 1);
                     roi.setImage(roiReferenceImage);
                 }
 
@@ -276,11 +300,6 @@ public class FindParticles2D extends JIPipeSimpleIteratingAlgorithm {
 
     }
 
-    @Override
-    public void reportValidity(JIPipeValidityReport report) {
-
-    }
-
     @JIPipeDocumentation(name = "Split slices", description = "If enabled, results are generated for each 2D slice. Otherwise all results are merged into one table and ROI.")
     @JIPipeParameter("split-slices")
     public boolean isSplitSlices() {
@@ -314,5 +333,27 @@ public class FindParticles2D extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeParameter("black-background")
     public void setBlackBackground(boolean blackBackground) {
         this.blackBackground = blackBackground;
+    }
+
+    @JIPipeDocumentation(name = "Include holes", description = "If enabled, holes are not filled.")
+    @JIPipeParameter("include-holes")
+    public boolean isIncludeHoles() {
+        return includeHoles;
+    }
+
+    @JIPipeParameter("include-holes")
+    public void setIncludeHoles(boolean includeHoles) {
+        this.includeHoles = includeHoles;
+    }
+
+    @JIPipeDocumentation(name = "Neighborhood", description = "Determines which neighborhood is used to find connected components.")
+    @JIPipeParameter("neighborhood")
+    public Neighborhood2D getNeighborhood() {
+        return neighborhood;
+    }
+
+    @JIPipeParameter("neighborhood")
+    public void setNeighborhood(Neighborhood2D neighborhood) {
+        this.neighborhood = neighborhood;
     }
 }

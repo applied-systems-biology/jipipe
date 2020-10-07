@@ -70,6 +70,29 @@ public class ImageJUtils {
     }
 
     /**
+     * Runs the function for each Z, C, and T slice.
+     *
+     * @param img      the image
+     * @param function the function
+     */
+    public static void forEachIndexedZCTSlice(ImagePlus img, BiConsumer<ImageProcessor, SliceIndex> function) {
+        if (img.isStack()) {
+            for (int t = 0; t < img.getNFrames(); t++) {
+                for (int z = 0; z < img.getNSlices(); z++) {
+                    for (int c = 0; c < img.getNChannels(); c++) {
+                        int index = img.getStackIndex(c + 1, z + 1, t + 1);
+                        ImageProcessor processor = img.getImageStack().getProcessor(index);
+                        function.accept(processor, new SliceIndex(z, c, t));
+                    }
+                }
+            }
+        }
+        else {
+            function.accept(img.getProcessor(), new SliceIndex(0,0,0));
+        }
+    }
+
+    /**
      * Runs the function for each Z and T slice.
      * The function consumes a map from channel index to the channel slice.
      * The slice index channel is always set to -1
