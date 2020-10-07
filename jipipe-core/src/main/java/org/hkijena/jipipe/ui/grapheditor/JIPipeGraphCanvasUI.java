@@ -98,6 +98,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
     private JIPipeDataSlotUI currentConnectionDragTarget;
     private JIPipeDataSlotUI currentHighlightedForDisconnect;
     private double zoom = 1.0;
+    private JScrollPane scrollPane;
 
     /**
      * Used to store the minimum dimensions of the canvas to reduce user disruption
@@ -106,7 +107,6 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
 
     /**
      * Creates a new UI
-     *
      * @param workbench   the workbench
      * @param graph       The algorithm graph
      * @param compartment The compartment to show
@@ -1468,11 +1468,30 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
     @Override
     public void mouseWheelMoved(MouseWheelEvent e) {
         if (e.isControlDown()) {
+            // We move the graph cursor to the mouse
+            // The zoom will "focus" on this cursor and modify the scroll bars accordingly
+            int x = e.getX();
+            int y = e.getY();
+            double beforeZoomX = x * zoom;
+            double beforeZoomY = y * zoom;
+
             if (e.getWheelRotation() < 0) {
                 zoomIn();
             } else {
                 zoomOut();
             }
+
+            double afterZoomX = x * zoom;
+            double afterZoomY = y * zoom;
+
+            double dX = afterZoomX - beforeZoomX;
+            double dY = afterZoomY - beforeZoomY;
+
+            if(scrollPane != null) {
+                scrollPane.getHorizontalScrollBar().setValue(scrollPane.getHorizontalScrollBar().getValue() + (int)dX);
+                scrollPane.getVerticalScrollBar().setValue(scrollPane.getVerticalScrollBar().getValue() + (int)dY);
+            }
+
         } else {
             getParent().dispatchEvent(e);
         }
@@ -1488,5 +1507,13 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
 
     public void zoomIn() {
         setZoom(Math.min(2, zoom + 0.05));
+    }
+
+    public JScrollPane getScrollPane() {
+        return scrollPane;
+    }
+
+    public void setScrollPane(JScrollPane scrollPane) {
+        this.scrollPane = scrollPane;
     }
 }
