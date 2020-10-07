@@ -14,7 +14,6 @@
 package org.hkijena.jipipe.api.data;
 
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 
@@ -22,7 +21,7 @@ import javax.swing.*;
  * An operation that is executed on showing existing data located in memory/cache.
  * This acts as additional entry in the cache browser display menu. Must be registered.
  */
-public interface JIPipeDataDisplayOperation extends Comparable<JIPipeDataDisplayOperation> {
+public interface JIPipeDataDisplayOperation {
     /**
      * @return The name of this operation
      */
@@ -46,12 +45,8 @@ public interface JIPipeDataDisplayOperation extends Comparable<JIPipeDataDisplay
     /**
      * Shows the data in the UI
      * @param data the data
+     * @param displayName
      * @param workbench the workbench that issued the command
      */
-    void display(JIPipeData data, JIPipeWorkbench workbench);
-
-    @Override
-    default int compareTo(@NotNull JIPipeDataDisplayOperation o) {
-        return Integer.compare(getOrder(), o.getOrder());
-    }
+    void display(JIPipeData data, String displayName, JIPipeWorkbench workbench);
 }

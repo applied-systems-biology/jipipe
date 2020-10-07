@@ -18,6 +18,8 @@ import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
 import org.hkijena.jipipe.extensions.tables.algorithms.*;
 import org.hkijena.jipipe.extensions.tables.datatypes.DoubleArrayTableColumn;
+import org.hkijena.jipipe.extensions.tables.datatypes.OpenResultsTableInImageJDataOperation;
+import org.hkijena.jipipe.extensions.tables.datatypes.OpenResultsTableInJIPipeDataOperation;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.extensions.tables.datatypes.RowIndexTableColumn;
 import org.hkijena.jipipe.extensions.tables.datatypes.StringArrayTableColumn;
@@ -109,18 +111,24 @@ public class TablesExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerDatatype("table-column",
                 TableColumn.class,
                 ResourceUtils.getPluginResource("icons/data-types/table-column.png"),
-                ResultsTableDataSlotRowUI.class,
+                null,
                 null);
         registerDatatype("table-column-numeric",
                 DoubleArrayTableColumn.class,
                 ResourceUtils.getPluginResource("icons/data-types/table-column.png"),
-                ResultsTableDataSlotRowUI.class,
+                null,
                 null);
         registerDatatype("table-column-string",
                 StringArrayTableColumn.class,
                 ResourceUtils.getPluginResource("icons/data-types/table-column.png"),
-                ResultsTableDataSlotRowUI.class,
+                null,
                 null);
+        registerDatatypeImportOperation("table-column", new OpenResultsTableInImageJDataOperation());
+        registerDatatypeImportOperation("table-column", new OpenResultsTableInJIPipeDataOperation());
+        registerDatatypeImportOperation("table-column-numeric", new OpenResultsTableInImageJDataOperation());
+        registerDatatypeImportOperation("table-column-numeric", new OpenResultsTableInJIPipeDataOperation());
+        registerDatatypeImportOperation("table-column-string", new OpenResultsTableInImageJDataOperation());
+        registerDatatypeImportOperation("table-column-string", new OpenResultsTableInJIPipeDataOperation());
         registerDatatypeConversion(new DoubleArrayColumnToTableConverter());
         registerDatatypeConversion(new StringArrayColumnToTableConverter());
     }

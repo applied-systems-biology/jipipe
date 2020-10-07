@@ -11,8 +11,12 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.api.data;
+package org.hkijena.jipipe.extensions.core.data;
 
+import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.data.JIPipeDataImportOperation;
+import org.hkijena.jipipe.api.data.JIPipeDataSlot;
+import org.hkijena.jipipe.api.data.JIPipeExportedDataTable;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -23,17 +27,17 @@ import java.nio.file.Path;
 import java.util.Objects;
 
 /**
- * Import operation that copies the containing folder path into the clipboard. Is always added to the menu.
+ * Import operation that opens the containing folder. Is always added to the menu.
  */
-public class CopyContainingFolderDataImportOperation implements JIPipeDataImportOperation {
+public class OpenContainingFolderDataImportOperation implements JIPipeDataImportOperation {
     @Override
     public String getName() {
-        return "Copy folder path";
+        return "Open folder";
     }
 
     @Override
     public String getDescription() {
-        return "Copies the path to the folder that contains the data into the clipboard";
+        return "Opens the folder that contains the data";
     }
 
     @Override

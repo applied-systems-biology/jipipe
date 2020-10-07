@@ -11,48 +11,53 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.api.data;
+package org.hkijena.jipipe.extensions.core.data;
 
+import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.data.JIPipeDataImportOperation;
+import org.hkijena.jipipe.api.data.JIPipeDataSlot;
+import org.hkijena.jipipe.api.data.JIPipeExportedDataTable;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.Desktop;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Objects;
 
 /**
- * Import operation that opens the containing folder. Is always added to the menu.
+ * Import operation that copies the containing folder path into the clipboard. Is always added to the menu.
  */
-public class OpenContainingFolderDataImportOperation implements JIPipeDataImportOperation {
+public class CopyContainingFolderDataImportOperation implements JIPipeDataImportOperation {
     @Override
     public String getName() {
-        return "Open folder";
+        return "Copy folder path";
     }
 
     @Override
     public String getDescription() {
-        return "Opens the folder that contains the data";
+        return "Copies the path to the folder that contains the data into the clipboard";
     }
 
     @Override
     public int getOrder() {
-        return 9999;
+        return 9998;
     }
 
     @Override
     public Icon getIcon() {
-        return  UIUtils.getIconFromResources("actions/document-open-folder.png");
+        return  UIUtils.getIconFromResources("actions/folder-copy.png");
     }
 
     @Override
     public JIPipeData show(JIPipeDataSlot slot, JIPipeExportedDataTable.Row row, Path rowStorageFolder, String compartmentName, String algorithmName, String displayName, JIPipeWorkbench workbench) {
-        try {
-            Desktop.getDesktop().open(Objects.requireNonNull(rowStorageFolder.toFile()));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        StringSelection selection = new StringSelection(rowStorageFolder.toString());
+        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+        clipboard.setContents(selection, selection);
         return null;
     }
 }

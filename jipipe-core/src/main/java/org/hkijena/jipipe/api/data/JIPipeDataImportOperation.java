@@ -24,7 +24,7 @@ import java.util.function.Consumer;
  * An operation that is executed on showing existing data located in memory/cache
  * The operations must be registered and will appear if the developer does not override the default importer row UI.
  */
-public interface JIPipeDataImportOperation extends Comparable<JIPipeDataImportOperation> {
+public interface JIPipeDataImportOperation {
     /**
      * @return The name of this operation
      */
@@ -57,9 +57,4 @@ public interface JIPipeDataImportOperation extends Comparable<JIPipeDataImportOp
      * @return the imported data. null if not successful.
      */
     JIPipeData show(JIPipeDataSlot slot, JIPipeExportedDataTable.Row row, Path rowStorageFolder, String compartmentName, String algorithmName, String displayName, JIPipeWorkbench workbench);
-
-    @Override
-    default int compareTo(@NotNull JIPipeDataImportOperation o) {
-        return Integer.compare(getOrder(), o.getOrder());
-    }
 }

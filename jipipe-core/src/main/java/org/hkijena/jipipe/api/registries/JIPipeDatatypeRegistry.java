@@ -163,7 +163,7 @@ public class JIPipeDatatypeRegistry {
 
     /**
      * Registers an operation that will be available to users in the results view (after runs).
-     * @param dataTypeId data type id
+     * @param dataTypeId data type id. if empty, the operation applies to all data types.
      * @param operation the operation
      */
     public void registerImportOperation(String dataTypeId, JIPipeDataImportOperation operation) {
@@ -173,12 +173,11 @@ public class JIPipeDatatypeRegistry {
             registeredImportOperations.put(dataTypeId, existing);
         }
         existing.add(operation);
-        existing.sort(Comparator.naturalOrder());
     }
 
     /**
      * Registers an operation that will be available to users in the cache view
-     * @param dataTypeId data type id
+     * @param dataTypeId data type id. if empty, the operation applies to all data types.
      * @param operation the operation
      */
     public void registerDisplayOperation(String dataTypeId, JIPipeDataDisplayOperation operation) {
@@ -188,7 +187,6 @@ public class JIPipeDatatypeRegistry {
             registeredDisplayOperations.put(dataTypeId, existing);
         }
         existing.add(operation);
-        existing.sort(Comparator.naturalOrder());
     }
 
     /**
@@ -197,7 +195,10 @@ public class JIPipeDatatypeRegistry {
      * @return list of import operations
      */
     public List<JIPipeDataImportOperation> getImportOperationsFor(String id) {
-        return registeredImportOperations.getOrDefault(id, new ArrayList<>());
+        List<JIPipeDataImportOperation> result = new ArrayList<>(registeredImportOperations.getOrDefault(id, Collections.emptyList()));
+        result.addAll(registeredImportOperations.getOrDefault("", Collections.emptyList()));
+        result.sort(Comparator.comparing(JIPipeDataImportOperation::getOrder));
+        return result;
     }
 
     /**
@@ -206,7 +207,10 @@ public class JIPipeDatatypeRegistry {
      * @return list of import operations
      */
     public List<JIPipeDataDisplayOperation> getDisplayOperationsFor(String id) {
-        return registeredDisplayOperations.getOrDefault(id, new ArrayList<>());
+        List<JIPipeDataDisplayOperation> result = new ArrayList<>(registeredDisplayOperations.getOrDefault(id, Collections.emptyList()));
+        result.addAll(registeredDisplayOperations.getOrDefault("", Collections.emptyList()));
+        result.sort(Comparator.comparing(JIPipeDataDisplayOperation::getOrder));
+        return result;
     }
 
     /**
