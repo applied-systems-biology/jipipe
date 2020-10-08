@@ -26,6 +26,7 @@ org.hkijena.jipipe.extensions.clij2.datatypes
 org.hkijena.jipipe.extensions.clij2.parameters
 org.hkijena.jipipe.extensions.clij2.ui
 org.hkijena.jipipe.extensions.core
+org.hkijena.jipipe.extensions.core.data
 org.hkijena.jipipe.extensions.filesystem
 org.hkijena.jipipe.extensions.filesystem.algorithms
 org.hkijena.jipipe.extensions.filesystem.compat

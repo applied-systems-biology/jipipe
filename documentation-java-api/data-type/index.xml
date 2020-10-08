@@ -17,7 +17,8 @@
       
       <guid>https://applied-systems-biology.github.io/jipipe/documentation-java-api/data-type/result-ui/</guid>
       <description>After processing, users should be able to continue processing the data from within JIPipe. The data instances are cleared from memory after processing, meaning that the data needs to be loaded from its output folder after processing.
-An user interface is shown when a user select a row in the results table. This UI can be replaced with a custom one that is designed to handle this specific data type.</description>
+An user interface is shown when a user select a row in the results table. There are two ways to modify the user interface:
+ Registering additional operations that will be available to users (recommended) Replacing the interface with a custom one  Adding custom operations JIPipe already comes with some default operations, such as opening the containing folder.</description>
     </item>
     
     <item>

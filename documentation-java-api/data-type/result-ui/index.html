@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2020-10-06T13:21:06 CEST">
+<meta name="revised" content="2020-10-08T15:33:27 CEST">
 <title>Result view :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../../images/favicon.png" type="image/x-icon" />
 <link href="../../../css/font-awesome.min.css" rel="stylesheet">
@@ -498,7 +498,93 @@
 JIPipe. The data instances are cleared from memory after processing, meaning that
 the data needs to be loaded from its output folder after processing.</p>
 <p>An user interface is shown when a user select a row in the results table.
-This UI can be replaced with a custom one that is designed to handle this specific data type.</p>
+There are two ways to modify the user interface:</p>
+<ol>
+<li>Registering additional operations that will be available to users (recommended)</li>
+<li>Replacing the interface with a custom one</li>
+</ol>
+<h1 id="adding-custom-operations">Adding custom operations</h1>
+<p>JIPipe already comes with some default operations, such as opening the containing folder.
+Any other operation must be added manually to each data type.</p>
+<p>There are two types of operations: one for importing data written into a results folder, and one
+for displaying already loaded data from memory.
+The corresponding interfaces are <a href="../../../apidocs/org/hkijena/jipipe/api/data/JIPipeDataImportOperation.html">JIPipeDataImportOperation</a> and <a href="../../../apidocs/org/hkijena/jipipe/api/data/JIPipeDataDisplayOperation.html">JIPipeDataDisplayOperation</a>.</p>
+<p>You can implement one or both interfaces as shown here:</p>
+<div class="highlight"><pre style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#00a8c8">public</span> <span style="color:#00a8c8">class</span> <span style="color:#75af00">MyOperation</span> <span style="color:#00a8c8">implements</span> <span style="color:#111">JIPipeDataImportOperation</span><span style="color:#f92672">,</span> <span style="color:#111">JIPipeDataDisplayOperation</span> <span style="color:#f92672">{</span>
+    <span style="color:#75af00">@Override</span>
+    <span style="color:#00a8c8">public</span> <span style="color:#00a8c8">void</span> <span style="color:#75af00">display</span><span style="color:#f92672">(</span><span style="color:#111">JIPipeData</span> <span style="color:#111">data</span><span style="color:#f92672">,</span> <span style="color:#111">String</span> <span style="color:#111">displayName</span><span style="color:#f92672">,</span> <span style="color:#111">JIPipeWorkbench</span> <span style="color:#111">workbench</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#75715e">// Here you can pu a custom display function
+</span><span style="color:#75715e"></span>        <span style="color:#75715e">// Currently it just uses the default function
+</span><span style="color:#75715e"></span>        <span style="color:#111">data</span><span style="color:#f92672">.</span><span style="color:#75af00">display</span><span style="color:#f92672">(</span><span style="color:#111">displayName</span><span style="color:#f92672">,</span> <span style="color:#111">workbench</span><span style="color:#f92672">);</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#75af00">@Override</span>
+    <span style="color:#00a8c8">public</span> <span style="color:#111">String</span> <span style="color:#75af00">getName</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+        <span style="color:#75715e">// Name as shown in the menu
+</span><span style="color:#75715e"></span>        <span style="color:#75715e">// The name should be unique
+</span><span style="color:#75715e"></span>        <span style="color:#00a8c8">return</span> <span style="color:#d88200">&#34;Open in JIPipe&#34;</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#75af00">@Override</span>
+    <span style="color:#00a8c8">public</span> <span style="color:#111">String</span> <span style="color:#75af00">getDescription</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+        <span style="color:#00a8c8">return</span> <span style="color:#d88200">&#34;Opens the table in JIPipe&#34;</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#75af00">@Override</span>
+    <span style="color:#00a8c8">public</span> <span style="color:#00a8c8">int</span> <span style="color:#75af00">getOrder</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+        <span style="color:#75715e">// The lower the order the higher it is placed in the menu
+</span><span style="color:#75715e"></span>        <span style="color:#75715e">// The lowest ist used as default
+</span><span style="color:#75715e"></span>        <span style="color:#00a8c8">return</span> <span style="color:#111">100</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#75af00">@Override</span>
+    <span style="color:#00a8c8">public</span> <span style="color:#111">Icon</span> <span style="color:#75af00">getIcon</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+        <span style="color:#00a8c8">return</span> <span style="color:#111">UIUtils</span><span style="color:#f92672">.</span><span style="color:#75af00">getIconFromResources</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;apps/jipipe.png&#34;</span><span style="color:#f92672">);</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#75af00">@Override</span>
+    <span style="color:#00a8c8">public</span> <span style="color:#111">JIPipeData</span> <span style="color:#75af00">show</span><span style="color:#f92672">(</span><span style="color:#111">JIPipeDataSlot</span> <span style="color:#111">slot</span><span style="color:#f92672">,</span> <span style="color:#111">JIPipeExportedDataTable</span><span style="color:#f92672">.</span><span style="color:#75af00">Row</span> <span style="color:#111">row</span><span style="color:#f92672">,</span> <span style="color:#111">Path</span> <span style="color:#111">rowStorageFolder</span><span style="color:#f92672">,</span> <span style="color:#111">String</span> <span style="color:#111">compartmentName</span><span style="color:#f92672">,</span> <span style="color:#111">String</span> <span style="color:#111">algorithmName</span><span style="color:#f92672">,</span> <span style="color:#111">String</span> <span style="color:#111">displayName</span><span style="color:#f92672">,</span> <span style="color:#111">JIPipeWorkbench</span> <span style="color:#111">workbench</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#75715e">// This function should import the data contained in the rowStorageFolder and display it
+</span><span style="color:#75715e"></span>        <span style="color:#75715e">// You can return the data (which is currently not used) or return null
+</span><span style="color:#75715e"></span>        <span style="color:#00a8c8">if</span> <span style="color:#f92672">(</span><span style="color:#111">rowStorageFolder</span> <span style="color:#f92672">==</span> <span style="color:#00a8c8">null</span> <span style="color:#f92672">||</span> <span style="color:#f92672">!</span><span style="color:#111">Files</span><span style="color:#f92672">.</span><span style="color:#75af00">isDirectory</span><span style="color:#f92672">(</span><span style="color:#111">rowStorageFolder</span><span style="color:#f92672">))</span>
+            <span style="color:#00a8c8">return</span> <span style="color:#00a8c8">null</span><span style="color:#f92672">;</span>
+        <span style="color:#111">Path</span> <span style="color:#111">csvFile</span> <span style="color:#f92672">=</span> <span style="color:#111">PathUtils</span><span style="color:#f92672">.</span><span style="color:#75af00">findFileByExtensionIn</span><span style="color:#f92672">(</span><span style="color:#111">rowStorageFolder</span><span style="color:#f92672">,</span> <span style="color:#d88200">&#34;.csv&#34;</span><span style="color:#f92672">);</span>
+        <span style="color:#00a8c8">if</span> <span style="color:#f92672">(</span><span style="color:#111">csvFile</span> <span style="color:#f92672">!=</span> <span style="color:#00a8c8">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            <span style="color:#111">ResultsTableData</span> <span style="color:#111">result</span> <span style="color:#f92672">=</span> <span style="color:#111">JIPipeTableEditor</span><span style="color:#f92672">.</span><span style="color:#75af00">importTableFromCSV</span><span style="color:#f92672">(</span><span style="color:#111">csvFile</span><span style="color:#f92672">,</span> <span style="color:#f92672">(</span><span style="color:#111">JIPipeProjectWorkbench</span><span style="color:#f92672">)</span> <span style="color:#111">workbench</span><span style="color:#f92672">);</span>
+            <span style="color:#111">workbench</span><span style="color:#f92672">.</span><span style="color:#75af00">getDocumentTabPane</span><span style="color:#f92672">().</span><span style="color:#75af00">switchToLastTab</span><span style="color:#f92672">();</span>
+            <span style="color:#00a8c8">return</span> <span style="color:#111">result</span><span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span>
+        <span style="color:#00a8c8">return</span> <span style="color:#00a8c8">null</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>The operations must be registered in <a href="../../../apidocs/org/hkijena/jipipe/JIPipeJavaExtension.html">JIPipeJavaExtension</a> either via the data type ID or when registering a new data type.</p>
+
+<div class="notices warning" ><p><p>Currently you have to register all your operations per data type. It its not enough to register them for the base class only.</p>
+</p></div>
+
+<div class="highlight"><pre style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75af00">@Plugin</span><span style="color:#f92672">(</span><span style="color:#111">type</span> <span style="color:#f92672">=</span> <span style="color:#111">JIPipeJavaExtension</span><span style="color:#f92672">.</span><span style="color:#75af00">class</span><span style="color:#f92672">)</span>
+<span style="color:#00a8c8">public</span> <span style="color:#00a8c8">class</span> <span style="color:#75af00">MyExtension</span> <span style="color:#00a8c8">extends</span> <span style="color:#111">JIPipeDefaultJavaExtension</span> <span style="color:#f92672">{</span>
+
+    <span style="color:#75715e">// ... See previous tutorial for other methods
+</span><span style="color:#75715e"></span>    <span style="color:#75af00">@Override</span>
+    <span style="color:#00a8c8">public</span> <span style="color:#00a8c8">void</span> <span style="color:#75af00">register</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+
+        <span style="color:#75715e">// Registering the operation when registering the data type
+</span><span style="color:#75715e"></span>        <span style="color:#111">registerDataType</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;my-data&#34;</span><span style="color:#f92672">,</span> <span style="color:#111">MyData</span><span style="color:#f92672">.</span><span style="color:#75af00">class</span><span style="color:#f92672">,</span> <span style="color:#111">ResourceUtils</span><span style="color:#f92672">.</span><span style="color:#75af00">getPluginResource</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;/icons/data-types/data-type.png&#34;</span><span style="color:#f92672">),</span> <span style="color:#00a8c8">null</span><span style="color:#f92672">,</span> <span style="color:#00a8c8">null</span><span style="color:#f92672">,</span> <span style="color:#00a8c8">new</span> <span style="color:#111">MyOperation</span><span style="color:#f92672">());</span>
+
+        <span style="color:#75715e">// alternative ...
+</span><span style="color:#75715e"></span>
+        <span style="color:#75715e">// Registering the operation by itself
+</span><span style="color:#75715e"></span>        <span style="color:#111">registerDatatypeOperation</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;my-data&#34;</span><span style="color:#f92672">,</span> <span style="color:#00a8c8">new</span> <span style="color:#111">MyOperation</span><span style="color:#f92672">());</span>
+    <span style="color:#f92672">}</span>
+
+<span style="color:#f92672">}</span>
+</code></pre></div>
+<div class="notices tip" ><p><p>You can register an operation for all data types by leaving the data type ID empty.</p>
+</p></div>
+
+<h1 id="using-a-custom-interface">Using a custom interface</h1>
+<p>This UI can be replaced with a custom one that is designed to handle this specific data type.</p>
 <p>Such UIs inherit from <a href="../../../apidocs/org/hkijena/jipipe/ui/resultanalysis/JIPipeResultDataSlotRowUI.html">JIPipeResultDataSlotRowUI</a>, which is a panel that has access to</p>
 <ul>
 <li>the data location</li>
