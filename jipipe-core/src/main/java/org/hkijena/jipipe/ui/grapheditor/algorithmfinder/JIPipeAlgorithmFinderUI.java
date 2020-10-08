@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.ui.grapheditor.algorithmfinder;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.data.JIPipeData;
@@ -130,7 +131,17 @@ public class JIPipeAlgorithmFinderUI extends JPanel {
             int[] rank = ranking.rank(content, searchField.getSearchStrings());
             if (rank == null)
                 continue;
-            rankedData.add(new RankedData<>(content, rank));
+            String asString;
+            if(content instanceof JIPipeNodeInfo) {
+                asString = ((JIPipeNodeInfo) content).getName();
+            }
+            else if(content instanceof JIPipeGraphNode) {
+                asString = ((JIPipeGraphNode) content).getName();
+            }
+            else {
+                asString = "" + content;
+            }
+            rankedData.add(new RankedData<>(content, asString, rank));
         }
         rankedData.sort(Comparator.naturalOrder());
 

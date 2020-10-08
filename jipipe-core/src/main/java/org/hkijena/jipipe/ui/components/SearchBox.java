@@ -34,6 +34,8 @@ import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
+import java.util.function.Function;
 
 /**
  * A {@link JComboBox} that implements a search behavior
@@ -43,6 +45,7 @@ import java.util.List;
 public class SearchBox<T> extends JPanel {
 
     private final EventBus eventBus = new EventBus();
+    private Function<T, String> dataToString = Objects::toString;
     private RankingFunction<T> rankingFunction;
     private FilteringModel<T> filteringModel;
     private JComboBox<T> comboBox = new JComboBox<>();
@@ -181,6 +184,14 @@ public class SearchBox<T> extends JPanel {
         return eventBus;
     }
 
+    public Function<T, String> getDataToString() {
+        return dataToString;
+    }
+
+    public void setDataToString(Function<T, String> dataToString) {
+        this.dataToString = dataToString;
+    }
+
     /**
      * Model that implements filtering
      *
@@ -244,7 +255,7 @@ public class SearchBox<T> extends JPanel {
                     T element = unfilteredModel.getElementAt(i);
                     int[] rank = parent.rankingFunction.rank(element, searchStrings);
                     if (rank != null) {
-                        rankedData.add(new RankedData<>(element, rank));
+                        rankedData.add(new RankedData<>(element, parent.dataToString.apply(element), rank));
                         maxRankLength = Math.max(maxRankLength, rank.length);
                     }
                 }

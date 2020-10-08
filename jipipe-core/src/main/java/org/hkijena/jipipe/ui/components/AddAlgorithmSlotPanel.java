@@ -35,6 +35,7 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -299,8 +300,13 @@ public class AddAlgorithmSlotPanel extends JPanel {
     }
 
     private List<JIPipeDataInfo> getFilteredAndSortedInfos() {
-        Predicate<JIPipeDataInfo> filterFunction = info -> searchField.test(info.getName());
-        return availableTypes.stream().filter(filterFunction).sorted(JIPipeDataInfo::compareTo).collect(Collectors.toList());
+        if(searchField.getSearchStrings() == null || searchField.getSearchStrings().length == 0) {
+            return availableTypes.stream().sorted(Comparator.naturalOrder()).collect(Collectors.toList());
+        }
+        else {
+            Predicate<JIPipeDataInfo> filterFunction = info -> searchField.test(info.getName());
+            return availableTypes.stream().filter(filterFunction).sorted(Comparator.comparing((JIPipeDataInfo di) -> di.getName().length()).thenComparing(Comparator.naturalOrder())).collect(Collectors.toList());
+        }
     }
 
     private void reloadTypeList() {

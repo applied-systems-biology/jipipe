@@ -17,14 +17,17 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class RankedData<T> implements Comparable<RankedData<T>> {
     private final T data;
+    private final String dataString;
     private final int[] rank;
 
-    public RankedData(T data, int[] rank) {
+    public RankedData(T data, String dataString, int[] rank) {
         this.data = data;
+        this.dataString = dataString;
         this.rank = rank;
     }
 
@@ -44,7 +47,7 @@ public class RankedData<T> implements Comparable<RankedData<T>> {
             if (compare != 0)
                 return compare;
         }
-        return 0;
+        return Integer.compare(dataString.length(), o.dataString.length());
     }
 
     public T getData() {
@@ -54,13 +57,14 @@ public class RankedData<T> implements Comparable<RankedData<T>> {
     /**
      * Creates a list of sorted ranked data
      *
+     * @param <T>             the data type
      * @param data            the data
+     * @param dataToString converts the data to string
      * @param rankingFunction the ranking function
      * @param searchStrings   the search terms. If null or empty, all data gets an empty rank
-     * @param <T>             the data type
      * @return ranked data, sorted according to the rank
      */
-    public static <T> List<T> getSortedAndFilteredData(Collection<T> data, RankingFunction<T> rankingFunction, String[] searchStrings) {
+    public static <T> List<T> getSortedAndFilteredData(Collection<T> data, Function<T, String> dataToString, RankingFunction<T> rankingFunction, String[] searchStrings) {
         int maxRankLength = 0;
 
         if (searchStrings == null || searchStrings.length == 0) {
@@ -70,7 +74,7 @@ public class RankedData<T> implements Comparable<RankedData<T>> {
             for (T item : data) {
                 int[] rank = rankingFunction.rank(item, searchStrings);
                 if (rank != null) {
-                    rankedData.add(new RankedData<>(item, rank));
+                    rankedData.add(new RankedData<>(item, dataToString.apply(item), rank));
                     maxRankLength = Math.max(maxRankLength, rank.length);
                 }
             }

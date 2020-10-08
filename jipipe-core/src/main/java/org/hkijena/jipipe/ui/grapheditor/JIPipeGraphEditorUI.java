@@ -177,6 +177,17 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
 
         add(menuBar, BorderLayout.NORTH);
         navigator.setModel(new DefaultComboBoxModel<>());
+        navigator.setDataToString(o -> {
+            if(o instanceof JIPipeNodeInfo) {
+                return ((JIPipeNodeInfo) o).getName();
+            }
+            else if(o instanceof JIPipeNodeUI) {
+                return ((JIPipeNodeUI) o).getNode().getName();
+            }
+            else {
+                return "" + o;
+            }
+        });
         navigator.setRenderer(new NavigationRenderer());
         navigator.getEventBus().register(this);
         navigator.setRankingFunction(JIPipeGraphEditorUI::rankNavigationEntry);
