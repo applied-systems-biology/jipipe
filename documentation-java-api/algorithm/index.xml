@@ -77,5 +77,16 @@ Automated parallelization (JIPipeParallelizedAlgorithm) The automated paralleliz
 How algorithms are registered Algorithm instances are created by an JIPipeNodeInfo. This info is the object that is actually registered into JIPipe. It is able to create new instances of the declared algorithm, or copy it.</description>
     </item>
     
+    <item>
+      <title>Context actions</title>
+      <link>https://applied-systems-biology.github.io/jipipe/documentation-java-api/algorithm/context-actions/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://applied-systems-biology.github.io/jipipe/documentation-java-api/algorithm/context-actions/</guid>
+      <description>Context actions allow you to add custom buttons into an algorithm&amp;rsquo;s parameter group. They can be used for multiple purposes such as loading example data, applying an auto-configuration, opening websites, or displaying documentation or data in a new tab.
+To create one, annotate a public function with @JIPipeDocumentation and @JIPipeContextAction. The function should have one parameter: an instance of JIPipeWorkbench.
+@JIPipeDocumentation(name = &amp;#34;Load example&amp;#34;, description = &amp;#34;Loads example parameters that showcase how to use this algorithm.</description>
+    </item>
+    
   </channel>
 </rss>
