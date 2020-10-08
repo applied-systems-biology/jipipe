@@ -46,7 +46,7 @@ public class GeneratedParameters extends JIPipeDynamicParameterCollection {
     }
 
     @JIPipeDocumentation(name = "Import", description = "Imports a parameter from another graph node")
-    @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/graph-compartment.png")
+    @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/graph-compartment.png")
     public void uiImportParameterFromGraph(JIPipeWorkbench workbench) {
         if (parent == null)
             return;

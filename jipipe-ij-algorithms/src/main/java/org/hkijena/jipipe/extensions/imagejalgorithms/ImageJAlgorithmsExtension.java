@@ -74,14 +74,7 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.sharpen.LaplacianSharpen2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.statistics.GreyscalePixelsGenerator;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.statistics.HistogramGenerator;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.threshold.AutoThreshold2DAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.threshold.BrightSpotsSegmentation2DAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.threshold.FastHoughSegmentation2DAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.threshold.HessianSegmentation2DAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.threshold.HoughSegmentation2DAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.threshold.InternalGradientSegmentation2DAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.threshold.ManualThreshold16U2DAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.threshold.ManualThreshold8U2DAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.threshold.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.transform.TransformCrop2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.transform.TransformEqualCanvasSize2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.transform.TransformExpandCanvas2DAlgorithm;
@@ -446,6 +439,7 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
 
     private void registerThresholdAlgorithms() {
         registerNodeType("ij1-threshold-manual2d-8u", ManualThreshold8U2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/segment.png"));
+        registerNodeType("ij1-threshold-percentile2d-8u", PercentileThreshold8U2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/segment.png"));
         registerNodeType("ij1-threshold-manual2d-16u", ManualThreshold16U2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/segment.png"));
         registerNodeType("ij1-threshold-auto2d", AutoThreshold2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/segment.png"));
         registerNodeType("threshold-brightspots2d", BrightSpotsSegmentation2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/segment.png"));

@@ -24,6 +24,7 @@ import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.events.NodeSlotsChangedEvent;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
@@ -53,7 +54,7 @@ import static org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExt
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input 1")
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input 2")
 @JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output")
-public class ImageCalculator2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
+public class ImageCalculator2DAlgorithm extends JIPipeIteratingAlgorithm {
 
     private Operation operation = Operation.Difference;
     private boolean floatingPointOutput = false;
