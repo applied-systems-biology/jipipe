@@ -109,12 +109,12 @@ public class PercentileThreshold8U2DAlgorithm extends JIPipeSimpleIteratingAlgor
     }
 
     @JIPipeDocumentation(name = "Percentile", description = "Percentile from 0-100.")
-    @JIPipeParameter("threshold")
+    @JIPipeParameter("percentile")
     public double getPercentile() {
         return percentile;
     }
 
-    @JIPipeParameter("threshold")
+    @JIPipeParameter("percentile")
     public void setPercentile(double percentile) {
         this.percentile = percentile;
 

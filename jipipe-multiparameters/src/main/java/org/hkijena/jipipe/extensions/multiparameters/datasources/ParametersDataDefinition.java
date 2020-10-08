@@ -23,6 +23,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterVisibility;
 import org.hkijena.jipipe.extensions.multiparameters.datatypes.ParametersData;
 
@@ -80,7 +81,7 @@ public class ParametersDataDefinition extends JIPipeAlgorithm {
     }
 
     @JIPipeDocumentation(name = "Parameters", description = "Following parameters are generated:")
-    @JIPipeParameter("parameters")
+    @JIPipeParameter(value = "parameters", persistence = JIPipeParameterPersistence.Object)
     public GeneratedParameters getParameters() {
         return parameters;
     }

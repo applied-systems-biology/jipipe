@@ -40,6 +40,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Supplier;
 
 /**
@@ -95,7 +96,6 @@ public class ParameterTable implements TableModel {
         for (List<Object> row : rows) {
             row.add(info.duplicate(initialValue)); // Deep-copy!
         }
-
     }
 
     @Override
@@ -233,6 +233,10 @@ public class ParameterTable implements TableModel {
 
     public EventBus getEventBus() {
         return eventBus;
+    }
+
+    public boolean containsColumn(String column) {
+        return columns.stream().anyMatch(c -> Objects.equals(column, c.getKey()));
     }
 
     /**

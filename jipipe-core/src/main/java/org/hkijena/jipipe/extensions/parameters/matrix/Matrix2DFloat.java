@@ -13,9 +13,14 @@
 
 package org.hkijena.jipipe.extensions.parameters.matrix;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
 /**
  * Matrix containing {@link Float}
  */
+@JsonSerialize(using = Matrix2D.Serializer.class)
+@JsonDeserialize(using = Matrix2D.Deserializer.class)
 public class Matrix2DFloat extends Matrix2D<Float> {
 
     /**
