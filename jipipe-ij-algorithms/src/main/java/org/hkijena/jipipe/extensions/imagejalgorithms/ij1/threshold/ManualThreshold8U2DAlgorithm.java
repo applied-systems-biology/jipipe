@@ -14,7 +14,9 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.threshold;
 
 import ij.ImagePlus;
+import ij.process.ByteProcessor;
 import ij.process.ImageProcessor;
+import ij.process.ShortProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
@@ -47,7 +49,8 @@ import static org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExt
 @JIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output")
 public class ManualThreshold8U2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
-    private int threshold = 0;
+    private int minThreshold = 0;
+    private int maxThreshold = 255;
 
     /**
      * Instantiates a new node type.
@@ -69,7 +72,8 @@ public class ManualThreshold8U2DAlgorithm extends JIPipeSimpleIteratingAlgorithm
      */
     public ManualThreshold8U2DAlgorithm(ManualThreshold8U2DAlgorithm other) {
         super(other);
-        this.threshold = other.threshold;
+        this.minThreshold = other.minThreshold;
+        this.maxThreshold = other.maxThreshold;
     }
 
     @Override
@@ -81,25 +85,51 @@ public class ManualThreshold8U2DAlgorithm extends JIPipeSimpleIteratingAlgorithm
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscale8UData.class);
         ImagePlus img = inputData.getDuplicateImage();
-        ImageJUtils.forEachSlice(img, ip -> ip.threshold(threshold));
+        ImageJUtils.forEachSlice(img, ip -> {
+            for (int i = 0; i < ip.getPixelCount(); i++) {
+                int v = ip.get(i);
+                if(v > maxThreshold)
+                    ip.set(i, 0);
+                else if(v <= minThreshold)
+                    ip.set(i, 0);
+                else
+                    ip.set(i, 255);
+            }
+        });
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleMaskData(img));
     }
 
 
     @Override
     public void reportValidity(JIPipeValidityReport report) {
-        report.forCategory("Threshold").checkIfWithin(this, threshold, 0, 255, true, true);
+        report.forCategory("Min threshold").checkIfWithin(this, minThreshold, 0, 255, true, true);
+        report.forCategory("Max threshold").checkIfWithin(this, maxThreshold, 0, 255, true, true);
+        if(maxThreshold < minThreshold) {
+            report.forCategory("Thresholds").reportIsInvalid("Max threshold is smaller than min threshold!", "The maximum pixel value to keep is less than the minimum pixel value to keep.",
+                    "Please update the parameters", this);
+        }
     }
 
-    @JIPipeDocumentation(name = "Threshold", description = "All pixel values less or equal to this are set to zero. The value interval is [0, 255].")
-    @JIPipeParameter("threshold")
-    public int getThreshold() {
-        return threshold;
+    @JIPipeDocumentation(name = "Min Threshold", description = "All pixel values less or equal to this are set to zero. The value interval is [0, 255].")
+    @JIPipeParameter(value = "min-threshold", uiOrder = -50)
+    public int getMinThreshold() {
+        return minThreshold;
     }
 
-    @JIPipeParameter("threshold")
-    public void setThreshold(int threshold) {
-        this.threshold = threshold;
+    @JIPipeParameter("min-threshold")
+    public void setMinThreshold(int minThreshold) {
+        this.minThreshold = minThreshold;
 
+    }
+
+    @JIPipeDocumentation(name = "Max Threshold", description = "All pixel values greater than this are set to zero. The value interval is [0, 255].")
+    @JIPipeParameter(value = "max-threshold", uiOrder = -40)
+    public int getMaxThreshold() {
+        return maxThreshold;
+    }
+
+    @JIPipeParameter("max-threshold")
+    public void setMaxThreshold(int maxThreshold) {
+        this.maxThreshold = maxThreshold;
     }
 }
