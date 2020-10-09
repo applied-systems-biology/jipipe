@@ -40,6 +40,7 @@ public class GeneralUISettings implements JIPipeParameterCollection {
     private boolean generateResultPreviews = true;
     private int previewWidth = 64;
     private int previewHeight = 64;
+    private boolean addContextActionsToContextMenu = true;
 
     @Override
     public EventBus getEventBus() {
@@ -183,6 +184,17 @@ public class GeneralUISettings implements JIPipeParameterCollection {
     @JIPipeParameter("generate-result-previews")
     public void setGenerateResultPreviews(boolean generateResultPreviews) {
         this.generateResultPreviews = generateResultPreviews;
+    }
+
+    @JIPipeDocumentation(name = "Node context actions appear in the context menu", description = "If enabled, node-specific context actions (e.g. loading example data) are added into the node's context menu.")
+    @JIPipeParameter("add-context-actions-to-context-menu")
+    public boolean isAddContextActionsToContextMenu() {
+        return addContextActionsToContextMenu;
+    }
+
+    @JIPipeParameter("add-context-actions-to-context-menu")
+    public void setAddContextActionsToContextMenu(boolean addContextActionsToContextMenu) {
+        this.addContextActionsToContextMenu = addContextActionsToContextMenu;
     }
 
     public static GeneralUISettings getInstance() {

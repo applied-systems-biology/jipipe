@@ -210,6 +210,7 @@ public class SearchBox<T> extends JPanel {
             this.parent = parent;
 
             unfilteredModel.addListDataListener(this);
+            updateFilter();
         }
 
         @Override

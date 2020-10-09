@@ -15,6 +15,8 @@ package org.hkijena.jipipe.ui.grapheditor;
 
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipeDefaultRegistry;
+import org.hkijena.jipipe.api.JIPipeDefaultDocumentation;
+import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.grouping.NodeGroup;
 import org.hkijena.jipipe.api.history.AddNodeGraphHistorySnapshot;
@@ -23,8 +25,10 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
+import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
 import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
 import org.hkijena.jipipe.api.registries.JIPipeNodeRegistry;
+import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.MarkdownDocument;
@@ -39,6 +43,8 @@ import org.hkijena.jipipe.ui.grapheditor.settings.JIPipeMultiAlgorithmSelectionP
 import org.hkijena.jipipe.ui.grapheditor.settings.JIPipeSingleAlgorithmSelectionPanelUI;
 import org.hkijena.jipipe.ui.grouping.JIPipeNodeGroupUI;
 import org.hkijena.jipipe.ui.registries.JIPipeUINodeRegistry;
+import org.hkijena.jipipe.utils.ResourceUtils;
+import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -46,13 +52,9 @@ import javax.swing.*;
 import java.awt.BorderLayout;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.lang.reflect.Method;
+import java.net.URL;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -77,7 +79,33 @@ public class JIPipeGraphCompartmentUI extends JIPipeGraphEditorUI {
 
         // Set D&D and Copy&Paste behavior
         getCanvasUI().setDragAndDropBehavior(new JIPipeStandardDragAndDropBehavior());
-        getCanvasUI().setContextActions(Arrays.asList(
+        List<NodeUIContextAction> nodeSpecificContextActions = new ArrayList<>();
+        if(GeneralUISettings.getInstance().isAddContextActionsToContextMenu()) {
+            for (JIPipeNodeInfo info : JIPipeNodeRegistry.getInstance().getRegisteredNodeInfos().values()) {
+                for (Method method : info.getInstanceClass().getMethods()) {
+                    JIPipeContextAction actionAnnotation = method.getAnnotation(JIPipeContextAction.class);
+                    if (actionAnnotation == null)
+                        continue;
+                    JIPipeDocumentation documentationAnnotation = method.getAnnotation(JIPipeDocumentation.class);
+                    if (documentationAnnotation == null) {
+                        documentationAnnotation = new JIPipeDefaultDocumentation(method.getName(), "");
+                    }
+                    URL iconURL = null;
+                    if (!StringUtils.isNullOrEmpty(actionAnnotation.iconURL())) {
+                        iconURL = ResourceUtils.class.getResource(actionAnnotation.iconURL());
+                    }
+                    else {
+                        iconURL = UIUtils.getIconURLFromResources("actions/configure.png");
+                    }
+                    Icon icon = new ImageIcon(iconURL);
+
+                    NodeContextActionWrapperUIContextAction action = new NodeContextActionWrapperUIContextAction(info, documentationAnnotation.name(), documentationAnnotation.description(), icon, method);
+                    nodeSpecificContextActions.add(action);
+                }
+            }
+        }
+
+        List<NodeUIContextAction> actions = Arrays.asList(
                 new SelectAllNodeUIContextAction(),
                 new InvertSelectionNodeUIContextAction(),
                 NodeUIContextAction.SEPARATOR,
@@ -104,7 +132,16 @@ public class JIPipeGraphCompartmentUI extends JIPipeGraphEditorUI {
                 new DeleteNodeUIContextAction(),
                 NodeUIContextAction.SEPARATOR,
                 new SelectAndMoveNodeHereNodeUIContextAction()
-        ));
+        );
+
+        if(!nodeSpecificContextActions.isEmpty()) {
+            actions = new ArrayList<>(actions);
+            actions.add(NodeUIContextAction.SEPARATOR);
+            nodeSpecificContextActions.sort(Comparator.comparing(NodeUIContextAction::getName));
+            actions.addAll(nodeSpecificContextActions);
+        }
+
+        getCanvasUI().setContextActions(actions);
     }
 
     private void initializeDefaultPanel() {

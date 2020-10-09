@@ -685,7 +685,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
      * Updates the navigation list
      */
     public void updateNavigation() {
-        DefaultComboBoxModel<Object> model = (DefaultComboBoxModel<Object>) navigator.getModel();
+        DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<>();
         model.removeAllElements();
         for (JIPipeNodeUI ui : canvasUI.getNodeUIs().values().stream().sorted(Comparator.comparing(ui -> ui.getNode().getName())).collect(Collectors.toList())) {
             model.addElement(ui);
@@ -694,6 +694,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
                 .sorted(Comparator.comparing(JIPipeNodeInfo::getName)).collect(Collectors.toList())) {
             model.addElement(info);
         }
+        navigator.setModel(model);
     }
 
     private static int[] rankNavigationEntry(Object value, String[] searchStrings) {
