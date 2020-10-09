@@ -79,6 +79,7 @@ public class AnnotationsExtension extends JIPipePrepackagedDefaultJavaExtension 
         registerNodeType("annotate-split-by-annotation-script", SplitByAnnotationScript.class, UIUtils.getIconURLFromResources("apps/python.png"));
         registerNodeType("annotation-merge", MergeAnnotations.class, UIUtils.getIconURLFromResources("actions/merge.png"));
         registerNodeType("annotate-with-annotation-table", AnnotateWithAnnotationTable.class, UIUtils.getIconURLFromResources("data-types/annotation-table.png"));
+        registerNodeType("generate-unique-annotation", GenerateUniqueAnnotation.class, UIUtils.getIconURLFromResources("actions/tools-wizard.png"));
     }
 
     @Override

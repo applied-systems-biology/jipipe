@@ -8,6 +8,8 @@ public enum JIPipeColumnGrouping {
     Intersection,
     PrefixHashUnion,
     PrefixHashIntersection,
+    MergeAll,
+    SplitAll,
     Custom;
 
 
@@ -15,13 +17,19 @@ public enum JIPipeColumnGrouping {
     public String toString() {
         switch (this) {
             case Union:
-                return "Automated: Use column set union";
+                return "Use column set union";
             case Intersection:
-                return "Automated: Use column set intersection";
+                return "Use column set intersection";
             case PrefixHashUnion:
-                return "Automated: Use columns prefixed with '#' (union)";
+                return "Use columns prefixed with '#' (union)";
             case PrefixHashIntersection:
-                return "Automated: Use columns prefixed with '#' (intersection)";
+                return "Use columns prefixed with '#' (intersection)";
+            case MergeAll:
+                return "All into one batch";
+            case SplitAll:
+                return "Each into its own batch";
+            case Custom:
+                return "Custom (see 'Custom grouping columns')";
             default:
                 return this.name();
         }

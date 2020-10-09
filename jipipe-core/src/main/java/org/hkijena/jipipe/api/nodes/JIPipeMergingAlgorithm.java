@@ -118,6 +118,12 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
             case PrefixHashIntersection:
                 referenceTraitColumns = getInputAnnotationColumnIntersection(slotMap, "#");
                 break;
+            case MergeAll:
+                referenceTraitColumns = Collections.emptySet();
+                break;
+            case SplitAll:
+                referenceTraitColumns = null;
+                break;
             default:
                 throw new UnsupportedOperationException("Unknown column matching strategy: " + dataBatchGenerationSettings.dataSetMatching);
         }
@@ -128,13 +134,18 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
                 continue;
             for (int row = 0; row < inputSlot.getRowCount(); row++) {
                 JIPipeDataBatchKey key = new JIPipeDataBatchKey();
-                for (String referenceTraitColumn : referenceTraitColumns) {
-                    key.getEntries().put(referenceTraitColumn, null);
-                }
-                for (JIPipeAnnotation annotation : inputSlot.getAnnotations(row)) {
-                    if (annotation != null && referenceTraitColumns.contains(annotation.getName())) {
-                        key.getEntries().put(annotation.getName(), annotation);
+                if(referenceTraitColumns != null) {
+                    for (String referenceTraitColumn : referenceTraitColumns) {
+                        key.getEntries().put(referenceTraitColumn, null);
                     }
+                    for (JIPipeAnnotation annotation : inputSlot.getAnnotations(row)) {
+                        if (annotation != null && referenceTraitColumns.contains(annotation.getName())) {
+                            key.getEntries().put(annotation.getName(), annotation);
+                        }
+                    }
+                }
+                else {
+                    key.getEntries().put("#uid", new JIPipeAnnotation("#uid", inputSlot.getName() + "[" + row + "]"));
                 }
                 Map<String, TIntSet> dataSet = dataSets.getOrDefault(key, null);
                 if (dataSet == null) {

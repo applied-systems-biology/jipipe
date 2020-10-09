@@ -44,6 +44,7 @@ public class ToolsExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerMenuExtension(ScreenshotWholeGraphToolSVG.class);
         registerMenuExtension(OpenImageJTool.class);
         registerMenuExtension(CreateLaunchersTool.class);
+        registerMenuExtension(CloseAllImageJWindowsTool.class);
     }
 
     @Override

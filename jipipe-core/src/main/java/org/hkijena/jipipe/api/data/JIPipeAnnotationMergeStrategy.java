@@ -50,6 +50,20 @@ public enum JIPipeAnnotationMergeStrategy {
         }
     }
 
+    @Override
+    public String toString() {
+        switch (this) {
+            case Merge:
+                return "Merge";
+            case SkipExisting:
+                return "Skip existing";
+            case OverwriteExisting:
+                return "Overwrite existing";
+            default:
+                return super.toString();
+        }
+    }
+
     /**
      * Extracts merged annotations
      *
@@ -69,4 +83,6 @@ public enum JIPipeAnnotationMergeStrategy {
             return new String[]{merged};
         }
     }
+
+
 }
