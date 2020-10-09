@@ -40,15 +40,21 @@ public class NodeContextActionWrapperUIContextAction implements NodeUIContextAct
 
     @Override
     public boolean matches(Set<JIPipeNodeUI> selection) {
-        if(selection.size() != 1)
+        if(selection.isEmpty())
             return false;
-        return selection.iterator().next().getNode().getInfo() == nodeInfo;
+        for (JIPipeNodeUI ui : selection) {
+            if(ui.getNode().getInfo() != nodeInfo)
+                return false;
+        }
+        return true;
     }
 
     @Override
     public void run(JIPipeGraphCanvasUI canvasUI, Set<JIPipeNodeUI> selection) {
         try {
-            method.invoke(selection.iterator().next().getNode(), canvasUI.getWorkbench());
+            for (JIPipeNodeUI ui : selection) {
+                method.invoke(ui.getNode(), canvasUI.getWorkbench());
+            }
         } catch (IllegalAccessException | InvocationTargetException e) {
             throw new RuntimeException(e);
         }
