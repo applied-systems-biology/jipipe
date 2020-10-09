@@ -173,7 +173,7 @@ public class JIPipeRun implements JIPipeRunnable {
         // Postprocessing
         log.append("Postprocessing steps ...\n");
         try {
-            if (configuration.getOutputPath() != null)
+            if (configuration.getOutputPath() != null && configuration.isSaveOutputs())
                 project.saveProject(configuration.getOutputPath().resolve("project.jip"));
         } catch (IOException e) {
             throw new UserFriendlyRuntimeException(e, "Could not save project to '" + configuration.getOutputPath().resolve("project.jip") + "'!",
