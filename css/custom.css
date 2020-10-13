@@ -397,6 +397,7 @@ New landing page
 .landing-features .slick-slide .feature-description {
   flex-grow: 1;
   width: 94%;
+  max-width: 1306px;
 }
 
 .landing-features .slick-slide span {
