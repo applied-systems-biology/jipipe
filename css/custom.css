@@ -378,6 +378,10 @@ a.json-property-read-only:before:hover, a.json-property-read-only:before:focus {
 New landing page
 */
 
+.landing-features-container {
+  margin-top: 5rem;
+}
+
 .landing-features .slick-track {
     display: flex !important;
 }
@@ -412,4 +416,56 @@ New landing page
 
 .landing-features .slick-active span {
   opacity: 1;
+}
+
+.landing-page-credits {
+  margin-top: 30rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-content: center;
+  align-items: center;
+  justify-content: center;
+}
+
+.landing-page-credits-funding img {
+  height: 6rem;
+}
+
+.landing-page-try {
+  margin-top: 10rem;
+  display: flex;
+  flex-direction: column;
+  align-content: center;
+  align-items: center;
+  justify-content: center;
+}
+
+.landing-page-try ol {
+  font-size: 2rem;
+  list-style: none;
+}
+
+.landing-page-try ol li {
+  margin-top: 1rem;
+  counter-increment: landing-page-try;
+}
+
+.landing-page-try ol li::before {
+  content: counter(landing-page-try);
+  color: #5cb85c;
+  margin-top: 1.5rem;
+  margin-right: 1rem;
+}
+
+.landing-page-contact {
+  margin-top: 10rem;
+  display: flex;
+  flex-direction: column;
+  align-content: center;
+  align-items: center;
+  justify-content: center;
+}
+
+.landing-page-contact center {
+  margin-top: 4rem;
 }

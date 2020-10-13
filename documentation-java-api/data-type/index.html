@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2020-10-13T18:27:50 CEST">
+<meta name="revised" content="2020-10-14T00:02:15 CEST">
 <title>Creating a data type :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../images/favicon.png" type="image/x-icon" />
 <link href="../../css/font-awesome.min.css" rel="stylesheet">
@@ -585,14 +585,12 @@ The name parameter in <code>storageFilePath</code> is usually the data slot name
     <span style="color:#f92672">}</span>
 
 <span style="color:#f92672">}</span>
-</code></pre></div>
-<div class="notices tip" ><p><p>You can use JIPipe&rsquo;s JsonUtils class to get access to a Jackson JSON ObjectMapper.</p>
+</code></pre></div><div class="notices tip" ><p>
+You can use JIPipe's JsonUtils class to get access to a Jackson JSON ObjectMapper.
 </p></div>
-
-
-<div class="notices info" ><p><p>Do not forget to override toString(), as the string representation will be displayed in the cache browser.</p>
+<div class="notices info" ><p>
+Do not forget to override toString(), as the string representation will be displayed in the cache browser.
 </p></div>
-
 <p>To register the data type and provide it with an id, and icon, use <a href="../../apidocs/org/hkijena/jipipe/JIPipeJavaExtension.html">JIPipeJavaExtension</a>:</p>
 <div class="highlight"><pre style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75af00">@Plugin</span><span style="color:#f92672">(</span><span style="color:#111">type</span> <span style="color:#f92672">=</span> <span style="color:#111">JIPipeJavaExtension</span><span style="color:#f92672">.</span><span style="color:#75af00">class</span><span style="color:#f92672">)</span>
 <span style="color:#00a8c8">public</span> <span style="color:#00a8c8">class</span> <span style="color:#75af00">MyExtension</span> <span style="color:#00a8c8">extends</span> <span style="color:#111">JIPipeDefaultJavaExtension</span> <span style="color:#f92672">{</span>

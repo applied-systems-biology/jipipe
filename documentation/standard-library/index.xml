@@ -29,7 +29,7 @@ Image data types Various ImageJ algorithms only work on data with a specific col
       <guid>https://www.jipipe.org/documentation/standard-library/multi-parameter/</guid>
       <description>Most algorithms allow handling of multiple parameters via an additional slot that can be optionally enabled. You can find the setting in an algorithm&amp;rsquo;s settings as Multiple parameters. On selecting the item, a new slot will appear that consumes parameter data.
 To define parameters, use the algorithms found in Add data &amp;gt; Parameters. There are currently two data source algorithms available:
- Define parameter defines a single set of parameters Define multiple parameters lets you define a table of parameters  Use Process &amp;gt; Merge &amp;gt; Merge slots to merge multiple parameter sets.</description>
+ Define parameter defines a single set of parameters Define multiple parameters lets you define a table of parameters   Use Process  Merge  Merge slots to merge multiple parameter sets.</description>
     </item>
     
     <item>
