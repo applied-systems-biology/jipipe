@@ -46,6 +46,8 @@ public class JIPipeStandardDragAndDropBehavior implements JIPipeGraphDragAndDrop
     @Override
     public void dragOver(DropTargetDragEvent dtde) {
         Point mousePosition = canvas.getMousePosition();
+        if(mousePosition == null)
+            return;
         Point gridLocation = canvas.getViewMode().realLocationToGrid(mousePosition, canvas.getZoom());
         Point realLocation = canvas.getViewMode().gridToRealLocation(gridLocation, canvas.getZoom());
         canvas.setGraphEditCursor(realLocation);
