@@ -2,20 +2,20 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Documentation on JIPipe for ImageJ</title>
-    <link>https://applied-systems-biology.github.io/jipipe/documentation/</link>
+    <link>https://www.jipipe.org/documentation/</link>
     <description>Recent content in Documentation on JIPipe for ImageJ</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     
-	<atom:link href="https://applied-systems-biology.github.io/jipipe/documentation/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://www.jipipe.org/documentation/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Batch pipelines</title>
-      <link>https://applied-systems-biology.github.io/jipipe/documentation/batch-pipelines/</link>
+      <link>https://www.jipipe.org/documentation/batch-pipelines/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://applied-systems-biology.github.io/jipipe/documentation/batch-pipelines/</guid>
+      <guid>https://www.jipipe.org/documentation/batch-pipelines/</guid>
       <description>JIPipe was designed to always process data in batches, meaning that algorithms always work on multiple data sets at once. This greatly reduces the required work to upscale a processing pipeline from one or few to a large amount of data sets.
 We will use this pipeline as example:
 mermaid.initialize({startOnLoad:true}); graph LR; A[File] -- B[Load image] B -- C[Apply gaussian]  In the pipeline, a file is provided as input. Then the file is loaded as image.</description>
@@ -23,30 +23,30 @@ mermaid.initialize({startOnLoad:true}); graph LR; A[File] -- B[Load image] B -- 
     
     <item>
       <title>Pipeline editor</title>
-      <link>https://applied-systems-biology.github.io/jipipe/documentation/graph-editor/</link>
+      <link>https://www.jipipe.org/documentation/graph-editor/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://applied-systems-biology.github.io/jipipe/documentation/graph-editor/</guid>
+      <guid>https://www.jipipe.org/documentation/graph-editor/</guid>
       <description>The graph editor (pipeline editor) allows you to edit the processing steps of a graph compartment. Its user interface is separated into three sections:
  The analysis graph contains the processing steps (also referred as algorithms) The settings panel shows the properties of the currently selected algorithms The toolbar allows you to add more algorithms into the graph, navigate to existing algorithms, change some behavior settings of the graph editor, and create screenshots  Analysis graph The analysis graph contains algorithms that are represented by rectangles.</description>
     </item>
     
     <item>
       <title>Graph compartments</title>
-      <link>https://applied-systems-biology.github.io/jipipe/documentation/graph-compartment/</link>
+      <link>https://www.jipipe.org/documentation/graph-compartment/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://applied-systems-biology.github.io/jipipe/documentation/graph-compartment/</guid>
+      <guid>https://www.jipipe.org/documentation/graph-compartment/</guid>
       <description>A common issue with graphical programming languages is that large graphs are hard to navigate. JIPipe solves this issue by separating the pipeline graph into sub-graphs. Each sub-graph has a predetermined output node that is visible to other compartments. Other nodes on the other hand are not visible to other compartments.
 The difference between compartments and simple node groups is that compartments only communicate with each other via the compartment output node.</description>
     </item>
     
     <item>
       <title>Running a pipeline</title>
-      <link>https://applied-systems-biology.github.io/jipipe/documentation/result-analysis/</link>
+      <link>https://www.jipipe.org/documentation/result-analysis/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://applied-systems-biology.github.io/jipipe/documentation/result-analysis/</guid>
+      <guid>https://www.jipipe.org/documentation/result-analysis/</guid>
       <description>JIPipe stores its results in a user-defined output folder. After clicking  Run (located at the top right corner of a project window) JIPipe will query the output folder from you. You can also generate a random folder that will be located on your operating system&amp;rsquo;s temporary directory by clicking the button.
 After confirming the settings by clicking  Run now, JIPipe will start processing the pipeline.
 You can have as many runs as you want.</description>
@@ -54,40 +54,40 @@ You can have as many runs as you want.</description>
     
     <item>
       <title>Testing algorithm parameters</title>
-      <link>https://applied-systems-biology.github.io/jipipe/documentation/quick-run/</link>
+      <link>https://www.jipipe.org/documentation/quick-run/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://applied-systems-biology.github.io/jipipe/documentation/quick-run/</guid>
+      <guid>https://www.jipipe.org/documentation/quick-run/</guid>
       <description>Many algorithms require plenty of user-defined parameters to create the expected results. Finding those parameters on the other hand can be very time-consuming due to the requirement of repeating all previous and following processing steps.
 JIPipe comes with a feature termed Quick Run that makes it easier to only test a part of an analysis pipeline. You can find the testbench by selecting an algorithm in the algorithm graph and selecting the  Quick Run tab.</description>
     </item>
     
     <item>
       <title>Data caching</title>
-      <link>https://applied-systems-biology.github.io/jipipe/documentation/cache/</link>
+      <link>https://www.jipipe.org/documentation/cache/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://applied-systems-biology.github.io/jipipe/documentation/cache/</guid>
+      <guid>https://www.jipipe.org/documentation/cache/</guid>
       <description>JIPipe has a project-wide cache for generated results. This cache can be accessed by algorithms to prevent repeating previous calculation steps.
 Cache items are assigned a unique identifier ( Snapshot) that is based on relevant algorithm parameters and the processing pipeline behind the data generation. You have multiple ways to manage and access the cache. First, in the top tool bar, there is a summary on how many items are currently cached.</description>
     </item>
     
     <item>
       <title>ImageJ integration</title>
-      <link>https://applied-systems-biology.github.io/jipipe/documentation/imagej-integration/</link>
+      <link>https://www.jipipe.org/documentation/imagej-integration/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://applied-systems-biology.github.io/jipipe/documentation/imagej-integration/</guid>
+      <guid>https://www.jipipe.org/documentation/imagej-integration/</guid>
       <description>JIPipe algorithms and pipelines can be executed from within an ImageJ environment. There are two ways JIPipe integrates back into ImageJ:
  You can run a pipeline project from a macro/command You can run JIPipe algorithms from a macro/command if the slot data types are supported by ImageJ  Running a pipeline You can run an JIPipe pipeline via the command Plugins &amp;gt; JIPipe &amp;gt; Run JIPipe project. It will ask you the project file and the output directory.</description>
     </item>
     
     <item>
       <title>Managing plugins</title>
-      <link>https://applied-systems-biology.github.io/jipipe/documentation/plugins/</link>
+      <link>https://www.jipipe.org/documentation/plugins/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://applied-systems-biology.github.io/jipipe/documentation/plugins/</guid>
+      <guid>https://www.jipipe.org/documentation/plugins/</guid>
       <description>JIPipe has its own plugin (extension) system that is independent of the one provided by ImageJ/SciJava. You can find a list of plugins in Plugins &amp;gt; Manage plugins.
 JIPipe by default supports two types of extensions:
  Java extensions are similar to ImageJ plugins (*.jar) and are the most powerful plugin type. Just like ImageJ plugins, they are located in the plugins directory. JSON plugins are similar to ImageJ macros or scripts, as they are pure text files.</description>

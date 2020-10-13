@@ -2,30 +2,30 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Java API documentation on JIPipe for ImageJ</title>
-    <link>https://applied-systems-biology.github.io/jipipe/documentation-java-api/</link>
+    <link>https://www.jipipe.org/documentation-java-api/</link>
     <description>Recent content in Java API documentation on JIPipe for ImageJ</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     
-	<atom:link href="https://applied-systems-biology.github.io/jipipe/documentation-java-api/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://www.jipipe.org/documentation-java-api/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>JavaDocs</title>
-      <link>https://applied-systems-biology.github.io/jipipe/documentation-java-api/javadocs/</link>
+      <link>https://www.jipipe.org/documentation-java-api/javadocs/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://applied-systems-biology.github.io/jipipe/documentation-java-api/javadocs/</guid>
+      <guid>https://www.jipipe.org/documentation-java-api/javadocs/</guid>
       <description>The JavaDocs of the Java API can be found here:
  Open JavaDocs  </description>
     </item>
     
     <item>
       <title>Creating an extension project</title>
-      <link>https://applied-systems-biology.github.io/jipipe/documentation-java-api/create-extension/</link>
+      <link>https://www.jipipe.org/documentation-java-api/create-extension/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://applied-systems-biology.github.io/jipipe/documentation-java-api/create-extension/</guid>
+      <guid>https://www.jipipe.org/documentation-java-api/create-extension/</guid>
       <description>Prerequisities  Java 8 (Java 9+ are not working)  If you are using Windows or a Linux distribution without Java 8, we recommend AdoptOpenJDK (Please choose OpenJDK 8)   Maven  Creating the project The project should have following structure:
 Project root └── pom.xml └── src └── main ├── java └── resources Both the java and resources folder should contain a folder structure that is equivalent the groupId and artifactId of the project.</description>
     </item>
