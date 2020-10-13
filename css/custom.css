@@ -378,14 +378,29 @@ a.json-property-read-only:before:hover, a.json-property-read-only:before:focus {
 New landing page
 */
 
-.landing-features h2 {
+.landing-features .slick-track {
+    display: flex !important;
+}
+
+.landing-features .slick-slide {
+    display: flex!important;
+    flex-direction: column;
+    height: inherit !important;
+}
+
+.landing-features .slick-slide h2 {
   opacity: 0;
   transition: opacity 1s;
 }
 
-.landing-features span {
+.landing-features .slick-slide span {
   opacity: 0;
+  flex-grow: 1;
   transition: opacity 1s;
+}
+
+.landing-features .slick-slide a {
+  align-self: flex-end;
 }
 
 .landing-features .slick-active h2 {
