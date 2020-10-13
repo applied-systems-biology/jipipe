@@ -385,6 +385,7 @@ New landing page
 .landing-features .slick-slide {
     display: flex!important;
     flex-direction: column;
+    align-items: center;
     height: inherit !important;
 }
 
@@ -393,14 +394,15 @@ New landing page
   transition: opacity 1s;
 }
 
+.landing-features .slick-slide .feature-description {
+  flex-grow: 1;
+  width: 94%;
+}
+
 .landing-features .slick-slide span {
   opacity: 0;
   flex-grow: 1;
   transition: opacity 1s;
-}
-
-.landing-features .slick-slide a {
-  align-self: flex-end;
 }
 
 .landing-features .slick-active h2 {

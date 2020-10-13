@@ -3,9 +3,9 @@ $(document).ready(function(){
     infinite: true,
     dots: true,
     slidesToShow: 1,
-    autoplay: false,
-    autoplaySpeed: 8000,
+    autoplay: true,
+    autoplaySpeed: 10000,
     centerMode: true,
-    centerPadding: '60px'
+    centerPadding: '5rem'
   });
 });
