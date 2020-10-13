@@ -16,7 +16,7 @@
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://applied-systems-biology.github.io/jipipe/_header/</guid>
-      <description>by Applied Systems Biology, HKI Jena, Germany</description>
+      <description></description>
     </item>
     
     <item>
@@ -274,9 +274,8 @@ You can have as many runs as you want.</description>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://applied-systems-biology.github.io/jipipe/documentation-java-api/algorithm/context-actions/</guid>
-      <description>Context actions allow you to add custom buttons into an algorithm&amp;rsquo;s parameter group. They can be used for multiple purposes such as loading example data, applying an auto-configuration, opening websites, or displaying documentation or data in a new tab.
-To create one, annotate a public function with @JIPipeDocumentation and @JIPipeContextAction. The function should have one parameter: an instance of JIPipeWorkbench.
-@JIPipeDocumentation(name = &amp;#34;Load example&amp;#34;, description = &amp;#34;Loads example parameters that showcase how to use this algorithm.</description>
+      <description>Context actions allow you to add custom buttons into an algorithm&amp;rsquo;s parameter group that by default will also appear within a node&amp;rsquo;s context menu. They can be used for multiple purposes such as loading example data, applying an auto-configuration, opening websites, or displaying documentation or data in a new tab.
+To create one, annotate a public function with @JIPipeDocumentation and @JIPipeContextAction. The function should have one parameter: an instance of JIPipeWorkbench.</description>
     </item>
     
     <item>

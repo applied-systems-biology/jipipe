@@ -373,3 +373,25 @@ a.json-property-read-only:before:hover, a.json-property-read-only:before:focus {
     flex: 1 1 auto;
   }
 }
+
+/*
+New landing page
+*/
+
+.landing-features h2 {
+  opacity: 0;
+  transition: opacity 1s;
+}
+
+.landing-features span {
+  opacity: 0;
+  transition: opacity 1s;
+}
+
+.landing-features .slick-active h2 {
+  opacity: 1;
+}
+
+.landing-features .slick-active span {
+  opacity: 1;
+}
