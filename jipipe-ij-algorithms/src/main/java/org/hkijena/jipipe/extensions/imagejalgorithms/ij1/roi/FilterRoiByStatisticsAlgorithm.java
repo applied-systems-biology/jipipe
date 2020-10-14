@@ -55,7 +55,8 @@ public class FilterRoiByStatisticsAlgorithm extends ImageRoiProcessorAlgorithm {
     private boolean invert = false;
     private LogicalOperation betweenMeasurementOperation = LogicalOperation.LogicalAnd;
     private LogicalOperation sameMeasurementOperation = LogicalOperation.LogicalAnd;
-    private RoiStatisticsAlgorithm roiStatisticsAlgorithm = JIPipeAlgorithm.newInstance("ij1-roi-statistics");
+    private RoiStatisticsAlgorithm roiStatisticsAlgorithm =
+            JIPipeAlgorithm.newInstance("ij1-roi-statistics", RoiStatisticsAlgorithm.class);
 
     /**
      * Instantiates a new node type.

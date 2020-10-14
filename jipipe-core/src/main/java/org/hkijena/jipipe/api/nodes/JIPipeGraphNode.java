@@ -956,10 +956,11 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
      * Utility function to create an algorithm instance from its id
      *
      * @param id  Algorithm ID
+     * @param klass the node type
      * @param <T> Algorithm class
      * @return Algorithm instance
      */
-    public static <T extends JIPipeGraphNode> T newInstance(String id) {
+    public static <T extends JIPipeGraphNode> T newInstance(String id, Class<T> klass) {
         return (T) JIPipeNodeRegistry.getInstance().getInfoById(id).newInstance();
     }
 

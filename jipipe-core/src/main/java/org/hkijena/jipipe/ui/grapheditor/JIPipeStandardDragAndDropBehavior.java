@@ -92,11 +92,11 @@ public class JIPipeStandardDragAndDropBehavior implements JIPipeGraphDragAndDrop
         if (files.size() == 1) {
             File selected = files.get(0);
             if (selected.isDirectory()) {
-                FolderDataSource dataSource = JIPipeGraphNode.newInstance("import-folder");
+                FolderDataSource dataSource = JIPipeGraphNode.newInstance("import-folder", FolderDataSource.class);
                 dataSource.setFolderPath(selected.toPath());
                 graph.insertNode(dataSource, compartment);
             } else {
-                FileDataSource dataSource = JIPipeGraphNode.newInstance("import-file");
+                FileDataSource dataSource = JIPipeGraphNode.newInstance("import-file", FileDataSource.class);
                 dataSource.setFileName(selected.toPath());
                 graph.insertNode(dataSource, compartment);
             }
@@ -104,13 +104,13 @@ public class JIPipeStandardDragAndDropBehavior implements JIPipeGraphDragAndDrop
             Map<Boolean, List<File>> groupedByType = files.stream().collect(Collectors.groupingBy(File::isDirectory));
             for (Map.Entry<Boolean, List<File>> entry : groupedByType.entrySet()) {
                 if (entry.getKey()) {
-                    FolderListDataSource dataSource = JIPipeGraphNode.newInstance("import-folder-list");
+                    FolderListDataSource dataSource = JIPipeGraphNode.newInstance("import-folder-list", FolderListDataSource.class);
                     for (File file : entry.getValue()) {
                         dataSource.getFolderPaths().add(file.toPath());
                     }
                     graph.insertNode(dataSource, compartment);
                 } else {
-                    FileListDataSource dataSource = JIPipeGraphNode.newInstance("import-file-list");
+                    FileListDataSource dataSource = JIPipeGraphNode.newInstance("import-file-list", FileListDataSource.class);
                     for (File file : entry.getValue()) {
                         dataSource.getFileNames().add(file.toPath());
                     }

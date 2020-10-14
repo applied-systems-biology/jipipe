@@ -308,7 +308,7 @@ public class JsonNodeInfo implements JIPipeNodeInfo, JIPipeValidatable, JIPipePa
         }
         if (algorithmInput == null) {
             // Create if it doesn't exist
-            algorithmInput = JIPipeAlgorithm.newInstance("graph-wrapper:input");
+            algorithmInput = JIPipeAlgorithm.newInstance("graph-wrapper:input", GraphWrapperAlgorithmInput.class);
             graph.insertNode(algorithmInput, JIPipeGraph.COMPARTMENT_DEFAULT);
         }
         return algorithmInput;
@@ -330,7 +330,7 @@ public class JsonNodeInfo implements JIPipeNodeInfo, JIPipeValidatable, JIPipePa
         }
         if (algorithmOutput == null) {
             // Create if it doesn't exist
-            algorithmOutput = JIPipeAlgorithm.newInstance("graph-wrapper:output");
+            algorithmOutput = JIPipeAlgorithm.newInstance("graph-wrapper:output", GraphWrapperAlgorithmOutput.class);
             graph.insertNode(algorithmOutput, JIPipeGraph.COMPARTMENT_DEFAULT);
         }
         return algorithmOutput;

@@ -80,7 +80,7 @@ public class JsonAlgorithm extends GraphWrapperAlgorithm implements JIPipeCustom
      */
     public static void unpackToNodeGroup(JsonAlgorithm algorithm) {
         JIPipeGraph graph = algorithm.getGraph();
-        NodeGroup group = JIPipeAlgorithm.newInstance("node-group");
+        NodeGroup group = JIPipeAlgorithm.newInstance("node-group", NodeGroup.class);
         group.setCustomName(algorithm.getName());
         group.setCustomDescription(algorithm.getCustomDescription());
         group.setEnabled(algorithm.isEnabled());

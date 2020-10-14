@@ -53,7 +53,8 @@ public class ColorRoiByStatisticsAlgorithm extends ImageRoiProcessorAlgorithm {
 
     private MeasurementColumn fillMeasurement = MeasurementColumn.Area;
     private MeasurementColumn lineMeasurement = MeasurementColumn.Area;
-    private RoiStatisticsAlgorithm roiStatisticsAlgorithm = JIPipeAlgorithm.newInstance("ij1-roi-statistics");
+    private RoiStatisticsAlgorithm roiStatisticsAlgorithm =
+            JIPipeAlgorithm.newInstance("ij1-roi-statistics", RoiStatisticsAlgorithm.class);
     private OptionalColorMapParameter mapFillColor = new OptionalColorMapParameter();
     private OptionalColorMapParameter mapLineColor = new OptionalColorMapParameter();
 

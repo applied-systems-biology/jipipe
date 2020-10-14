@@ -117,7 +117,7 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm {
         }
         if (algorithmInput == null) {
             // Create if it doesn't exist
-            algorithmInput = JIPipeAlgorithm.newInstance("graph-wrapper:input");
+            algorithmInput = JIPipeAlgorithm.newInstance("graph-wrapper:input", GraphWrapperAlgorithmInput.class);
             wrappedGraph.insertNode(algorithmInput, JIPipeGraph.COMPARTMENT_DEFAULT);
         }
         return algorithmInput;
@@ -139,7 +139,7 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm {
         }
         if (algorithmOutput == null) {
             // Create if it doesn't exist
-            algorithmOutput = JIPipeAlgorithm.newInstance("graph-wrapper:output");
+            algorithmOutput = JIPipeAlgorithm.newInstance("graph-wrapper:output", GraphWrapperAlgorithmOutput.class);
             wrappedGraph.insertNode(algorithmOutput, JIPipeGraph.COMPARTMENT_DEFAULT);
         }
         return algorithmOutput;

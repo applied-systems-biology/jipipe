@@ -50,7 +50,8 @@ public class TransformScale3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     private OptionalIntModificationParameter yAxis = new OptionalIntModificationParameter();
     private OptionalIntModificationParameter zAxis = new OptionalIntModificationParameter();
     private boolean useAveraging = true;
-    private TransformScale2DAlgorithm scale2DAlgorithm = JIPipeAlgorithm.newInstance("ij1-transform-scale2d");
+    private TransformScale2DAlgorithm scale2DAlgorithm =
+            JIPipeAlgorithm.newInstance("ij1-transform-scale2d", TransformScale2DAlgorithm.class);
 
     /**
      * Instantiates a new node type.
