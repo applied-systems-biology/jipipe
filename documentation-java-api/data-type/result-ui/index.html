@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2020-10-14T00:02:15 CEST">
+<meta name="revised" content="2020-10-14T17:08:46 CEST">
 <title>Result view :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../../images/favicon.png" type="image/x-icon" />
 <link href="../../../css/font-awesome.min.css" rel="stylesheet">
@@ -567,9 +567,10 @@ The corresponding interfaces are <a href="../../../apidocs/org/hkijena/jipipe/ap
     <span style="color:#f92672">}</span>
 <span style="color:#f92672">}</span>
 </code></pre></div><p>The operations must be registered in <a href="../../../apidocs/org/hkijena/jipipe/JIPipeJavaExtension.html">JIPipeJavaExtension</a> either via the data type ID or when registering a new data type.</p>
-<div class="notices warning" ><p>
-Currently you have to register all your operations per data type. It its not enough to register them for the base class only.
+
+<div class="notices warning" ><p><p>Currently you have to register all your operations per data type. It its not enough to register them for the base class only.</p>
 </p></div>
+
 <div class="highlight"><pre style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75af00">@Plugin</span><span style="color:#f92672">(</span><span style="color:#111">type</span> <span style="color:#f92672">=</span> <span style="color:#111">JIPipeJavaExtension</span><span style="color:#f92672">.</span><span style="color:#75af00">class</span><span style="color:#f92672">)</span>
 <span style="color:#00a8c8">public</span> <span style="color:#00a8c8">class</span> <span style="color:#75af00">MyExtension</span> <span style="color:#00a8c8">extends</span> <span style="color:#111">JIPipeDefaultJavaExtension</span> <span style="color:#f92672">{</span>
 
@@ -587,9 +588,10 @@ Currently you have to register all your operations per data type. It its not eno
     <span style="color:#f92672">}</span>
 
 <span style="color:#f92672">}</span>
-</code></pre></div><div class="notices tip" ><p>
-You can register an operation for all data types by leaving the data type ID empty.
+</code></pre></div>
+<div class="notices tip" ><p><p>You can register an operation for all data types by leaving the data type ID empty.</p>
 </p></div>
+
 <h1 id="using-a-custom-interface">Using a custom interface</h1>
 <p>This UI can be replaced with a custom one that is designed to handle this specific data type.</p>
 <p>Such UIs inherit from <a href="../../../apidocs/org/hkijena/jipipe/ui/resultanalysis/JIPipeResultDataSlotRowUI.html">JIPipeResultDataSlotRowUI</a>, which is a panel that has access to</p>

@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2020-10-14T00:02:15 CEST">
+<meta name="revised" content="2020-10-14T17:08:46 CEST">
 <title>ImageJ integration :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../images/favicon.png" type="image/x-icon" />
 <link href="../../css/font-awesome.min.css" rel="stylesheet">
@@ -497,15 +497,17 @@ There are two ways JIPipe integrates back into ImageJ:</p>
 the project file and the output directory.</p>
 <p>To run the command via a macro, run:</p>
 <pre><code>run(&quot;Run JIPipe project&quot;, &quot;projectFile=&lt;Project&gt;, outputDirectory=&lt;Directory&gt;, threads=&lt;Threads&gt;&quot;)
-</code></pre><div class="notices info" ><p>
-There can be issues using the macro recorder depending on which ImageJ algorithms are used.
-This issue is especially prevalent in ImageJ macro algorithm nodes.
+</code></pre>
+<div class="notices info" ><p><p>There can be issues using the macro recorder depending on which ImageJ algorithms are used.
+This issue is especially prevalent in ImageJ macro algorithm nodes.</p>
 </p></div>
+
 <p>You can also run JIPipe in headless-mode just like any ImageJ2 algorithm:</p>
 <div class="highlight"><pre style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">./ImageJ-linux64 --headless --ij2 --run <span style="color:#d88200">&#34;Run JIPipe project&#34;</span> <span style="color:#d88200">&#39;projectFile=&#34;&lt;Project&gt;&#34;, outputDirectory=&#34;&lt;Directory&gt;&#34;, threads=&lt;Threads&gt;&#39;</span>
-</code></pre></div><div class="notices info" ><p>
-While JIPipe works in Headless-mode, some ImageJ algorithms don't. You will get an error message if an algorithm requires a graphical environment.
+</code></pre></div>
+<div class="notices info" ><p><p>While JIPipe works in Headless-mode, some ImageJ algorithms don&rsquo;t. You will get an error message if an algorithm requires a graphical environment.</p>
 </p></div>
+
 <h1 id="running-a-single-algorithm">Running a single algorithm</h1>
 <p>JIPipe algorithms can be run from ImageJ macros/commands if the slot data types are compatible with ImageJ.
 By default, this includes any image data type, result tables, and regions of interest (via ROIManager).
@@ -516,17 +518,20 @@ input image.</p>
 <p><img src="../../img/documentation/run-single-algorithm.png" alt="Single algorithm setup dialog"></p>
 <p>Output data is created according to the <em>slot name</em>. For example if the output slot name is <code>Output</code>,
 the created image window will also be named <code>Output</code>.</p>
-<div class="notices info" ><p>
-Just as in a graph, images are converted automatically to the data type specified by the algorithm.
+
+<div class="notices info" ><p><p>Just as in a graph, images are converted automatically to the data type specified by the algorithm.</p>
 </p></div>
-<div class="notices warning" ><p>
-There may be issues if multiple ROI or result table outputs are generated.
-JIPipe will merge multiple ROI List data items into one Results Table.
+
+
+<div class="notices warning" ><p><p>There may be issues if multiple ROI or result table outputs are generated.
+JIPipe will merge multiple ROI List data items into one Results Table.</p>
 </p></div>
-<div class="notices info" ><p>
-There can be issues using the macro recorder depending on which ImageJ algorithm is executed.
-This issue is especially prevalent in ImageJ macro algorithm nodes.
+
+
+<div class="notices info" ><p><p>There can be issues using the macro recorder depending on which ImageJ algorithm is executed.
+This issue is especially prevalent in ImageJ macro algorithm nodes.</p>
 </p></div>
+
 <p>To run the command via a macro, run:</p>
 <pre><code>run(&quot;Run JIPipe algorithm&quot;, &quot;algorithmId=&lt;Algorithm&gt;, algorithmParameters=&lt;Parameters&gt;&quot;)
 </code></pre><p>The algorithm ID can be looked up via the plugin manager.
@@ -538,9 +543,10 @@ The JSON data should have following structure:</p>
 <li>(Optional) An object <code>add-output</code> that contains additional output <a href="../../documentation-json-api/slot-definition/">slot definitions</a>. The entry keys are the slot names.</li>
 <li>(Optional) An object <code>input</code>. Entry keys correspond to the slot name. The entry value is a string that corresponds to the Window name that contains the data. Only required for image data types, as JIPipe accesses the global ROI manager and global result table.</li>
 </ul>
-<div class="notices tip" ><p>
-Use the "Copy command" button in the "Run JIPipe algorithm" GUI command to quickly create a valid macro for your parameters.
+
+<div class="notices tip" ><p><p>Use the &ldquo;Copy command&rdquo; button in the &ldquo;Run JIPipe algorithm&rdquo; GUI command to quickly create a valid macro for your parameters.</p>
 </p></div>
+
 
 
     

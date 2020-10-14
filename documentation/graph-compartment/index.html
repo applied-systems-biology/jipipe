@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2020-10-14T00:02:15 CEST">
+<meta name="revised" content="2020-10-14T17:08:46 CEST">
 <title>Graph compartments :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../images/favicon.png" type="image/x-icon" />
 <link href="../../css/font-awesome.min.css" rel="stylesheet">
@@ -495,18 +495,21 @@ to other compartments. Other nodes on the other hand are not visible to other co
 only communicate with each other via the <em>compartment output node</em>. JIPipe also only
 allows you to edit a specific compartment, instead of the whole graph.
 By default, JIPipe creates three compartments: Preprocessing, Analysis, and Postprocessing.</p>
-<div class="notices info" ><p>
-By default a compartment's output node is not visible in any other compartment.
+
+<div class="notices info" ><p><p>By default a compartment&rsquo;s output node is not visible in any other compartment.
 The have to be connected in a similar manner on how algorithms are connected.
-To do this, use the compartment editor that is described in the following section.
+To do this, use the compartment editor that is described in the following section.</p>
 </p></div>
-<div class="notices tip" ><p>
-You can ignore the compartment feature if you want. You can delete the default compartments without any
-issue. Just leave one graph compartment and edit the remaining one.
+
+
+<div class="notices tip" ><p><p>You can ignore the compartment feature if you want. You can delete the default compartments without any
+issue. Just leave one graph compartment and edit the remaining one.</p>
 </p></div>
-<div class="notices tip" ><p>
-Compartments behave similar to algorithms. This means you can create a directed acyclic graph of compartments.
+
+
+<div class="notices tip" ><p><p>Compartments behave similar to algorithms. This means you can create a directed acyclic graph of compartments.</p>
 </p></div>
+
 <h1 id="creating-and-connecting-compartments">Creating and connecting compartments</h1>
 <p>JIPipe comes with an editor that allows to control the graph compartments.
 This editor is similar to the <a href="../../documentation/graph-editor">pipeline editor</a> and allows
@@ -516,9 +519,10 @@ similar to how algorithms are connected.</p>
 <p><img src="../../img/documentation/graph-compartment-editor-ui.png" alt="Graph compartment editor"></p>
 <p>You can one or multiple compartments in the editor. Click the <span class="fa fa-pencil"  style="font-size:medium" aria-hidden="true"></span> <strong>Edit</strong> button to
 open the compartment in the <a href="../../documentation/graph-editor">pipeline editor</a>.</p>
-<div class="notices tip" ><p>
-You can also double-click a compartment node to open the editor.
+
+<div class="notices tip" ><p><p>You can also double-click a compartment node to open the editor.</p>
 </p></div>
+
 
 
     
