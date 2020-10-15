@@ -4,6 +4,8 @@ from pathlib import Path
 import urllib.request
 from zipfile import ZipFile
 import shutil
+from glob import glob
+import os
 
 fiji_download_url = "https://downloads.imagej.net/fiji/latest/fiji-win64.zip"
 fiji_zip_file = "fiji-win64.zip"
@@ -13,6 +15,17 @@ dependency_urls = [
     "https://maven.scijava.org/service/local/repositories/central/content/org/javassist/javassist/3.25.0-GA/javassist-3.25.0-GA.jar",
     "https://maven.scijava.org/service/local/repositories/central/content/org/jfree/jfreesvg/3.3/jfreesvg-3.3.jar",
     "https://maven.scijava.org/service/local/repositories/central/content/com/vladsch/flexmark/flexmark-util/0.62.2/flexmark-util-0.62.2.jar",
+    "https://maven.scijava.org/service/local/repositories/central/content/com/vladsch/flexmark/flexmark-util-data/0.62.2/flexmark-util-data-0.62.2.jar",
+    "https://maven.scijava.org/service/local/repositories/central/content/com/vladsch/flexmark/flexmark-util-ast/0.62.2/flexmark-util-ast-0.62.2.jar",
+    "https://maven.scijava.org/service/local/repositories/central/content/com/vladsch/flexmark/flexmark-util-misc/0.62.2/flexmark-util-misc-0.62.2.jar",
+    "https://maven.scijava.org/service/local/repositories/central/content/com/vladsch/flexmark/flexmark-util-dependency/0.62.2/flexmark-util-dependency-0.62.2.jar",
+    "https://maven.scijava.org/service/local/repositories/central/content/com/vladsch/flexmark/flexmark-util-format/0.62.2/flexmark-util-format-0.62.2.jar",
+    "https://maven.scijava.org/service/local/repositories/central/content/com/vladsch/flexmark/flexmark-util-sequence/0.62.2/flexmark-util-sequence-0.62.2.jar",
+    "https://maven.scijava.org/service/local/repositories/central/content/com/vladsch/flexmark/flexmark-util-builder/0.62.2/flexmark-util-builder-0.62.2.jar",
+    "https://maven.scijava.org/service/local/repositories/central/content/com/vladsch/flexmark/flexmark-util-visitor/0.62.2/flexmark-util-visitor-0.62.2.jar",
+    "https://maven.scijava.org/service/local/repositories/central/content/com/vladsch/flexmark/flexmark-util-options/0.62.2/flexmark-util-options-0.62.2.jar",
+    "https://maven.scijava.org/service/local/repositories/central/content/com/vladsch/flexmark/flexmark-util-html/0.62.2/flexmark-util-html-0.62.2.jar",
+    "https://maven.scijava.org/service/local/repositories/central/content/com/vladsch/flexmark/flexmark-util-collection/0.62.2/flexmark-util-collection-0.62.2.jar",
     "https://maven.scijava.org/service/local/repositories/central/content/com/vladsch/flexmark/flexmark-pdf-converter/0.62.2/flexmark-pdf-converter-0.62.2.jar",
     "https://maven.scijava.org/service/local/repositories/central/content/com/vladsch/flexmark/flexmark-ext-toc/0.62.2/flexmark-ext-toc-0.62.2.jar",
     "https://maven.scijava.org/service/local/repositories/central/content/com/vladsch/flexmark/flexmark-ext-autolink/0.62.2/flexmark-ext-autolink-0.62.2.jar",
@@ -36,38 +49,44 @@ jipipe_components = ["core", "clij", "multiparameters", "filesystem", "ij", "ij-
                      "ij-multi-template-matching", "python", "plots", "tables", "annotation", "utils", "strings", "launcher"]
 jipipe_version = "2020.10"
 
-if not Path(fiji_zip_file).exists():
-    print("Downloading Fiji distribution ...")
-    urllib.request.urlretrieve(fiji_download_url, fiji_zip_file)
+if not Path("Fiji.app").exists():
 
-if not Path("dependencies").exists():
-    Path("dependencies").mkdir()
+    if not Path(fiji_zip_file).exists():
+        print("Downloading Fiji distribution ...")
+        urllib.request.urlretrieve(fiji_download_url, fiji_zip_file)
 
-for dependency_url in dependency_urls:
-    file_name = dependency_url.split("/")[-1]
-    target_file = Path("dependencies") / file_name
-    if not target_file.exists():
-        print("Downloading " + file_name + " ...")
-        urllib.request.urlretrieve(dependency_url, target_file)
+    if not Path("dependencies").exists():
+        Path("dependencies").mkdir()
 
-if Path("Fiji.app").exists():
-    print("Deleting old package ...")
-    shutil.rmtree(Path("Fiji.app"))
+    for dependency_url in dependency_urls:
+        file_name = dependency_url.split("/")[-1]
+        target_file = Path("dependencies") / file_name
+        if not target_file.exists():
+            print("Downloading " + file_name + " ...")
+            urllib.request.urlretrieve(dependency_url, target_file)
 
-print("Extracting vanilla package ...")
-with ZipFile(fiji_zip_file, 'r') as zipObj:
-   zipObj.extractall()
+    print("Extracting vanilla package ...")
+    with ZipFile(fiji_zip_file, 'r') as zipObj:
+       zipObj.extractall()
 
-print("Merging dependencies ...")
+    print("Merging dependencies ...")
 
-for dependency_url in dependency_urls:
-    file_name = dependency_url.split("/")[-1]
-    source_file = Path("dependencies") / file_name
-    target_file = Path("Fiji.app") / "jars" / file_name
-    if target_file.exists():
-        continue
-    print("Copying " + file_name + " ...")
-    shutil.copyfile(source_file, target_file)
+    for dependency_url in dependency_urls:
+        file_name = dependency_url.split("/")[-1]
+        source_file = Path("dependencies") / file_name
+        target_file = Path("Fiji.app") / "jars" / file_name
+        if target_file.exists():
+            continue
+        print("Copying " + file_name + " ...")
+        shutil.copyfile(source_file, target_file)
+        
+    print("A vanilla Fiji is now ready. Please run JIPipe once later to install dependencies.")
+
+print("Removing old JIPipe ...")
+
+for file in glob("Fiji.app/plugins/jipipe*"):
+    print("Delete: " + file)
+    os.remove(file)
 
 print("Installing JIPipe ...")
 
@@ -80,6 +99,7 @@ for component in jipipe_components:
     shutil.copyfile(source_file, target_file)
 
 print("Copying JIPipe icon ...")
-shutil.copy(Path("../../jipipe-core/src/main/resources/org/hkijena/jipipe/icon.ico"), Path("Fiji.app") / "jipipe-icon.ico")
+if not (Path("Fiji.app") / "jipipe-icon.ico").exists():
+    shutil.copy(Path("../../jipipe-core/src/main/resources/org/hkijena/jipipe/icon.ico"), Path("Fiji.app") / "jipipe-icon.ico")
 
 print("Windows installation is ready.")
