@@ -16,6 +16,7 @@ RequestExecutionLevel user
 !define MUI_ABORTWARNING
 !define MUI_ICON "${NSISDIR}\Contrib\Graphics\Icons\modern-install.ico"
 !define MUI_UNICON "${NSISDIR}\Contrib\Graphics\Icons\modern-uninstall.ico"
+!define MUI_HEADERIMAGE
 !define MUI_HEADERIMAGE_BITMAP "header.bmp"
 !define MUI_WELCOMEFINISHPAGE_BITMAP "sidepanel.bmp"
 
@@ -49,7 +50,7 @@ ShowUnInstDetails show
 Section "Common files (Required)" SEC01
   SetOutPath "$INSTDIR"
   SetOverwrite ifnewer
-  File /r "Fiji.app/*"
+  File /r "Fiji.app\*"
   CreateDirectory "$SMPROGRAMS\JIPipe"
   CreateShortCut "$SMPROGRAMS\JIPipe\JIPipe.lnk" "$INSTDIR\ImageJ-win64.exe" "--pass-classpath --full-classpath --main-class org.hkijena.jipipe.JIPipeLauncher" "$INSTDIR\jipipe-icon.ico"
   CreateShortCut "$SMPROGRAMS\JIPipe\ImageJ+JIPipe.lnk" "$INSTDIR\ImageJ-win64.exe"
