@@ -10,31 +10,31 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="jipipe-core" />
-    <orderEntry type="module" module-name="jipipe-python" />
-    <orderEntry type="module" module-name="jipipe-annotation" />
-    <orderEntry type="module" module-name="jipipe-filesystem" />
-    <orderEntry type="module" module-name="jipipe-multiparameters" />
-    <orderEntry type="module" module-name="jipipe-plots" />
-    <orderEntry type="module" module-name="jipipe-tables" />
-    <orderEntry type="module" module-name="jipipe-ij" />
-    <orderEntry type="module" module-name="jipipe-ij-algorithms" />
-    <orderEntry type="module" module-name="jipipe-ij-multi-template-matching" />
-    <orderEntry type="module" module-name="jipipe-clij" />
-    <orderEntry type="module" module-name="jipipe-strings" />
-    <orderEntry type="module" module-name="jipipe-utils" />
-    <orderEntry type="library" name="Maven: net.haesleinhuepf:clij2_:2.0.0.14" level="project" />
-    <orderEntry type="library" name="Maven: net.haesleinhuepf:clij_:1.7.0.14" level="project" />
-    <orderEntry type="library" name="Maven: net.haesleinhuepf:clij-coremem:2.0.0.10" level="project" />
-    <orderEntry type="library" name="Maven: com.nativelibs4java:bridj:0.7.0" level="project" />
-    <orderEntry type="library" name="Maven: com.google.android.tools:dx:1.7" level="project" />
-    <orderEntry type="library" name="Maven: net.java.dev.jna:jna:4.5.2" level="project" />
-    <orderEntry type="library" name="Maven: net.java.dev.jna:jna-platform:4.5.1" level="project" />
-    <orderEntry type="library" name="Maven: net.haesleinhuepf:clij-core:1.7.0.14" level="project" />
-    <orderEntry type="library" name="Maven: sc.fiji:fiji-lib:2.1.2" level="project" />
+    <orderEntry type="module" module-name="jipipe-python" scope="RUNTIME" />
+    <orderEntry type="module" module-name="jipipe-annotation" scope="RUNTIME" />
+    <orderEntry type="module" module-name="jipipe-filesystem" scope="RUNTIME" />
+    <orderEntry type="module" module-name="jipipe-multiparameters" scope="RUNTIME" />
+    <orderEntry type="module" module-name="jipipe-plots" scope="RUNTIME" />
+    <orderEntry type="module" module-name="jipipe-tables" scope="RUNTIME" />
+    <orderEntry type="module" module-name="jipipe-ij" scope="RUNTIME" />
+    <orderEntry type="module" module-name="jipipe-ij-algorithms" scope="RUNTIME" />
+    <orderEntry type="module" module-name="jipipe-ij-multi-template-matching" scope="RUNTIME" />
+    <orderEntry type="module" module-name="jipipe-clij" scope="RUNTIME" />
+    <orderEntry type="module" module-name="jipipe-strings" scope="RUNTIME" />
+    <orderEntry type="module" module-name="jipipe-utils" scope="RUNTIME" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: net.haesleinhuepf:clij2_:2.0.0.14" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: net.haesleinhuepf:clij_:1.7.0.14" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: net.haesleinhuepf:clij-coremem:2.0.0.10" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: com.nativelibs4java:bridj:0.7.0" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: com.google.android.tools:dx:1.7" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: net.java.dev.jna:jna:4.5.2" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: net.java.dev.jna:jna-platform:4.5.1" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: net.haesleinhuepf:clij-core:1.7.0.14" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: sc.fiji:fiji-lib:2.1.2" level="project" />
     <orderEntry type="library" name="Maven: org.apache.commons:commons-math3:3.6.1" level="project" />
-    <orderEntry type="library" name="Maven: net.haesleinhuepf:clij-clearcl:2.0.0.10" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: net.haesleinhuepf:clij-clearcl:2.0.0.10" level="project" />
     <orderEntry type="library" name="Maven: org.apache.commons:commons-lang3:3.10" level="project" />
-    <orderEntry type="library" name="Maven: org.jocl:jocl:2.0.2" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: org.jocl:jocl:2.0.2" level="project" />
     <orderEntry type="library" name="Maven: org.scijava:vecmath:1.6.0-scijava-2" level="project" />
     <orderEntry type="library" name="Maven: net.imagej:imagej:2.1.0" level="project" />
     <orderEntry type="library" name="Maven: net.imagej:imagej-common:0.33.0" level="project" />
