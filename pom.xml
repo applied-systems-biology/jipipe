@@ -173,32 +173,32 @@ See the LICENSE file provided with this code for the full license.
         <dependency>
             <groupId>com.vladsch.flexmark</groupId>
             <artifactId>flexmark</artifactId>
-            <version>0.18.5</version>
+            <version>0.62.2</version>
         </dependency>
         <dependency>
             <groupId>com.vladsch.flexmark</groupId>
             <artifactId>flexmark-ext-tables</artifactId>
-            <version>0.18.5</version>
+            <version>0.62.2</version>
         </dependency>
         <dependency>
             <groupId>com.vladsch.flexmark</groupId>
             <artifactId>flexmark-ext-toc</artifactId>
-            <version>0.18.5</version>
+            <version>0.62.2</version>
         </dependency>
         <dependency>
             <groupId>com.vladsch.flexmark</groupId>
             <artifactId>flexmark-ext-autolink</artifactId>
-            <version>0.18.5</version>
+            <version>0.62.2</version>
         </dependency>
         <dependency>
             <groupId>com.vladsch.flexmark</groupId>
             <artifactId>flexmark-pdf-converter</artifactId>
-            <version>0.18.5</version>
+            <version>0.62.2</version>
         </dependency>
         <dependency>
             <groupId>com.vladsch.flexmark</groupId>
             <artifactId>flexmark-util</artifactId>
-            <version>0.18.5</version>
+            <version>0.62.2</version>
         </dependency>
         <dependency>
             <groupId>org.jgrapht</groupId>
