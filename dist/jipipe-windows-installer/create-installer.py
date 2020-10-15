@@ -12,8 +12,6 @@ fiji_zip_file = "fiji-win64.zip"
 dependency_urls = [
     "https://maven.scijava.org/service/local/repositories/central/content/com/github/vatbub/mslinks/1.0.5/mslinks-1.0.5.jar",
     "https://maven.scijava.org/service/local/repositories/central/content/org/reflections/reflections/0.9.12/reflections-0.9.12.jar",
-    "https://maven.scijava.org/service/local/repositories/central/content/org/javassist/javassist/3.25.0-GA/javassist-3.25.0-GA.jar",
-    "https://maven.scijava.org/service/local/repositories/central/content/org/jfree/jfreesvg/3.3/jfreesvg-3.3.jar",
     "https://maven.scijava.org/service/local/repositories/central/content/com/vladsch/flexmark/flexmark-util/0.62.2/flexmark-util-0.62.2.jar",
     "https://maven.scijava.org/service/local/repositories/central/content/com/vladsch/flexmark/flexmark-util-data/0.62.2/flexmark-util-data-0.62.2.jar",
     "https://maven.scijava.org/service/local/repositories/central/content/com/vladsch/flexmark/flexmark-util-ast/0.62.2/flexmark-util-ast-0.62.2.jar",
