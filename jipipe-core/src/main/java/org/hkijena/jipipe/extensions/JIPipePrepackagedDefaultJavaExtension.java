@@ -36,7 +36,7 @@ public abstract class JIPipePrepackagedDefaultJavaExtension extends JIPipeDefaul
 
     @Override
     public String getWebsite() {
-        return "https://applied-systems-biology.github.io/jipipe/";
+        return "https://www.jipipe.org/";
     }
 
     @Override

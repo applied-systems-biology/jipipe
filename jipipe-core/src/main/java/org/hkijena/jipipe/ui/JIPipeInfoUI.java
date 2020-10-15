@@ -166,32 +166,32 @@ public class JIPipeInfoUI extends JIPipeProjectWorkbenchPanel {
         toolBar.setOpaque(false);
 
         JButton openWebsiteButton = new JButton("Visit our website", UIUtils.getIconFromResources("actions/web-browser.png"));
-        openWebsiteButton.setToolTipText("https://applied-systems-biology.github.io/jipipe");
-        openWebsiteButton.addActionListener(e -> UIUtils.openWebsite("https://applied-systems-biology.github.io/jipipe"));
+        openWebsiteButton.setToolTipText("https://www.jipipe.org/");
+        openWebsiteButton.addActionListener(e -> UIUtils.openWebsite("https://www.jipipe.org/"));
         openWebsiteButton.setOpaque(false);
         openWebsiteButton.setBackground(new Color(0, 0, 0, 0));
         toolBar.add(openWebsiteButton);
         toolBar.add(Box.createHorizontalStrut(4));
 
         JButton openTutorialsButton = new JButton("Tutorials", UIUtils.getIconFromResources("actions/graduation-cap.png"));
-        openTutorialsButton.setToolTipText("https://applied-systems-biology.github.io/jipipe/tutorials");
-        openTutorialsButton.addActionListener(e -> UIUtils.openWebsite("https://applied-systems-biology.github.io/jipipe/tutorials"));
+        openTutorialsButton.setToolTipText("https://www.jipipe.org/tutorials");
+        openTutorialsButton.addActionListener(e -> UIUtils.openWebsite("https://www.jipipe.org/tutorials"));
         openTutorialsButton.setOpaque(false);
         openTutorialsButton.setBackground(new Color(0, 0, 0, 0));
         toolBar.add(openTutorialsButton);
         toolBar.add(Box.createHorizontalStrut(4));
 
         JButton openExamplesButton = new JButton("Examples", UIUtils.getIconFromResources("actions/flask.png"));
-        openExamplesButton.setToolTipText("https://applied-systems-biology.github.io/jipipe/examples");
-        openExamplesButton.addActionListener(e -> UIUtils.openWebsite("https://applied-systems-biology.github.io/jipipe/examples"));
+        openExamplesButton.setToolTipText("https://www.jipipe.org/examples");
+        openExamplesButton.addActionListener(e -> UIUtils.openWebsite("https://www.jipipe.org/examples"));
         openExamplesButton.setOpaque(false);
         openExamplesButton.setBackground(new Color(0, 0, 0, 0));
         toolBar.add(openExamplesButton);
         toolBar.add(Box.createHorizontalStrut(4));
 
         JButton openDocumentationButton = new JButton("Documentation", UIUtils.getIconFromResources("actions/help-info.png"));
-        openDocumentationButton.setToolTipText("https://applied-systems-biology.github.io/jipipe/documentation");
-        openDocumentationButton.addActionListener(e -> UIUtils.openWebsite("https://applied-systems-biology.github.io/jipipe/documentation"));
+        openDocumentationButton.setToolTipText("https://www.jipipe.org/documentation");
+        openDocumentationButton.addActionListener(e -> UIUtils.openWebsite("https://www.jipipe.org/documentation"));
         openDocumentationButton.setOpaque(false);
         openDocumentationButton.setBackground(new Color(0, 0, 0, 0));
         toolBar.add(openDocumentationButton);

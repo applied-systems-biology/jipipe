@@ -66,6 +66,7 @@ public class FormPanel extends JXPanel {
     private JXPanel contentPanel = new JXPanel();
     private MarkdownReader parameterHelp;
     private JScrollPane scrollPane;
+    private JLabel parameterHelpDrillDown = new JLabel();
 
     /**
      * Creates a new instance
@@ -81,6 +82,18 @@ public class FormPanel extends JXPanel {
         parameterHelp = new MarkdownReader(false);
         parameterHelp.setDocument(document);
         helpPanel.add(parameterHelp, BorderLayout.CENTER);
+
+        JToolBar helpToolbar = new JToolBar();
+        helpToolbar.setFloatable(false);
+
+        JButton switchToDefaultHelpButton = new JButton(UIUtils.getIconFromResources("actions/go-home.png"));
+        UIUtils.makeFlat25x25(switchToDefaultHelpButton);
+        switchToDefaultHelpButton.addActionListener(e -> switchToDefaultHelp());
+        helpToolbar.add(switchToDefaultHelpButton);
+
+        helpToolbar.add(parameterHelpDrillDown);
+
+        helpPanel.add(helpToolbar, BorderLayout.SOUTH);
 
         setScrollableWidthHint(ScrollableSizeHint.FIT);
         setScrollableHeightHint(ScrollableSizeHint.VERTICAL_STRETCH);
@@ -113,6 +126,12 @@ public class FormPanel extends JXPanel {
         }
     }
 
+    private void switchToDefaultHelp() {
+        parameterHelp.setDocument(parameterHelp.getDocument());
+        parameterHelpDrillDown.setIcon(null);
+        parameterHelpDrillDown.setText("");
+    }
+
     @Override
     public void setOpaque(boolean isOpaque) {
         super.setOpaque(isOpaque);
@@ -142,6 +161,7 @@ public class FormPanel extends JXPanel {
                     super.mouseEntered(e);
                     parameterHelp.setTemporaryDocument(componentDocument);
                     getEventBus().post(new HoverHelpEvent(componentDocument));
+                    updateParameterHelpDrillDown();
                 }
             });
             component.addFocusListener(new FocusAdapter() {
@@ -150,9 +170,30 @@ public class FormPanel extends JXPanel {
                     super.focusGained(e);
                     parameterHelp.setTemporaryDocument(componentDocument);
                     getEventBus().post(new HoverHelpEvent(componentDocument));
+                    updateParameterHelpDrillDown();
                 }
             });
         }
+    }
+
+    private void updateParameterHelpDrillDown() {
+        MarkdownDocument current = parameterHelp.getTemporaryDocument();
+        if(current == null) {
+            parameterHelpDrillDown.setIcon(null);
+            parameterHelpDrillDown.setText("");
+            return;
+        }
+        if(StringUtils.orElse(current.getMarkdown(), "").startsWith("#")) {
+            String s = current.getMarkdown().split("\n")[0];
+            s = s.substring(s.lastIndexOf('#') + 1);
+            parameterHelpDrillDown.setIcon(UIUtils.getIconFromResources("actions/arrow-right.png"));
+            parameterHelpDrillDown.setText(s);
+        }
+        else {
+            parameterHelpDrillDown.setIcon(UIUtils.getIconFromResources("actions/arrow-right.png"));
+            parameterHelpDrillDown.setText("...");
+        }
+
     }
 
     /**
@@ -202,19 +243,21 @@ public class FormPanel extends JXPanel {
                 weightx = 1;
             }
         });
-        contentPanel.add(description, new GridBagConstraints() {
-            {
-                anchor = GridBagConstraints.WEST;
-                gridx = 0;
-                gridwidth = 1;
-                gridy = numRows;
-                insets = UI_PADDING;
-            }
-        });
+        if(description != null) {
+            contentPanel.add(description, new GridBagConstraints() {
+                {
+                    anchor = GridBagConstraints.WEST;
+                    gridx = 0;
+                    gridwidth = 1;
+                    gridy = numRows;
+                    insets = UI_PADDING;
+                }
+            });
+        }
         ++numRows;
         if (documentation != null)
             documentComponent(component, documentation);
-        if (documentation != null)
+        if (documentation != null && description != null)
             documentComponent(description, documentation);
         return component;
     }
@@ -459,6 +502,7 @@ public class FormPanel extends JXPanel {
                         if (isInComponent && panel.parameterHelp.getTemporaryDocument() != componentDocument) {
                             panel.parameterHelp.setTemporaryDocument(componentDocument);
                             panel.getEventBus().post(new HoverHelpEvent(componentDocument));
+                            panel.updateParameterHelpDrillDown();
                         }
                     } catch (IllegalComponentStateException e) {
                         // Workaround for Java bug

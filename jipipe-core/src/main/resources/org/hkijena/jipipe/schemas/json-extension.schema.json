@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema",
-  "$id": "https://applied-systems-biology.github.io/jipipe/schemas/trait.schema.json",
+  "$id": "https://www.jipipe.org/schemas/trait.schema.json",
   "type": "object",
   "title": "Extension",
   "description": "An extension that can be put into the ImageJ plugin folder",
@@ -36,7 +36,7 @@
       "type": "object",
       "title": "Extension metadata",
       "description": "General metadata about the extension",
-      "$ref": "https://applied-systems-biology.github.io/jipipe/schemas/metadata.schema.json"
+      "$ref": "https://www.jipipe.org/schemas/metadata.schema.json"
     },
     "algorithms": {
       "$id": "#/properties/algorithms",
@@ -45,7 +45,7 @@
       "description": "List of added algorithms",
       "default": [],
       "items": {
-        "$ref": "https://applied-systems-biology.github.io/jipipe/schemas/algorithm.schema.json"
+        "$ref": "https://www.jipipe.org/schemas/algorithm.schema.json"
       }
     }
   }

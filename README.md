@@ -2,7 +2,7 @@
 
 A graphical batch processing language for image analysis.
 
-https://applied-systems-biology.github.io/jipipe
+https://www.jipipe.org/
 
 Zoltán Cseresnyés, Ruman Gerst
 
