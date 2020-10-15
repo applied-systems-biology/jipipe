@@ -20,9 +20,11 @@
         <module name="jipipe-ij-algorithms" />
         <module name="jipipe-multiparameters" />
         <module name="jipipe-plots" />
+        <module name="ij-updater-cli" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="ij-updater-cli" target="1.8" />
       <module name="jipipe" target="1.8" />
       <module name="jipipe-annotation" target="1.8" />
       <module name="jipipe-clij" target="1.8" />

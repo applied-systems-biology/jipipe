@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.scijava</groupId>
+        <artifactId>pom-scijava</artifactId>
+        <version>29.2.1</version>
+        <relativePath/>
+    </parent>
+
+    <artifactId>ij-updater-cli</artifactId>
+    <version>2020.10</version>
+
+    <name>ij-updater-cli</name>
+    <description>ImageJ Updater CLI</description>
+    <inceptionYear>2020</inceptionYear>
+    <url>https://www.jipipe.org/</url>
+
+    <organization>
+        <name>Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)</name>
+        <url>https://www.leibniz-hki.de/</url>
+    </organization>
+    <licenses>
+        <license>
+            <name>BSD-2-Clause</name>
+            <url>https://opensource.org/licenses/BSD-2-Clause</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+    <developers>
+        <developer>
+            <id>RGerst</id>
+            <name>Ruman Gerst</name>
+            <url>https://www.leibniz-hki.de/en/asb-staff-details.html?member=1027</url>
+        </developer>
+        <developer>
+            <id>Zseresnyes</id>
+            <name>Zoltán Cseresnyés</name>
+            <url>https://www.leibniz-hki.de/en/asb-staff-details.html?member=144</url>
+        </developer>
+    </developers>
+    <contributors>
+        <contributor>
+            <name>None</name>
+        </contributor>
+    </contributors>
+    <mailingLists>
+        <mailingList>
+            <name>HKI Jena</name>
+            <archive>https://www.leibniz-hki.de/de/angewandte-systembiologie.html</archive>
+        </mailingList>
+    </mailingLists>
+    <scm>
+        <connection>scm:git:https://github.com/applied-systems-biology/jipipe.git</connection>
+        <developerConnection>scm:git:https://github.com/applied-systems-biology/jipipe.git</developerConnection>
+        <tag>HEAD</tag>
+        <url>https://github.com/applied-systems-biology/jipipe</url>
+    </scm>
+    <issueManagement>
+        <system>GitHub Issues</system>
+        <url>https://github.com/applied-systems-biology/jipipe/issues</url>
+    </issueManagement>
+    <ciManagement>
+        <system>GitHub CI</system>
+        <url>https://github.com/applied-systems-biology/jipipe</url>
+    </ciManagement>
+
+    <properties>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <license.licenseName>BSD-2-Clause</license.licenseName>
+        <license.copyrightOwners>N/A</license.copyrightOwners>
+        <license.projectName>IJ Updater CLI</license.projectName>
+    </properties>
+	
+	<repositories>
+        <repository>
+            <id>imagej.public</id>
+            <url>http://maven.imagej.net/content/groups/public</url>
+        </repository>
+    </repositories>
+
+    <dependencies>
+         <dependency>
+            <groupId>net.imagej</groupId>
+            <artifactId>imagej-updater</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>net.imagej</groupId>
+            <artifactId>imagej-ui-swing</artifactId>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>org.hkijena.ijupdatercli.Main</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

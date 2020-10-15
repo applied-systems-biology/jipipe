@@ -279,6 +279,7 @@ See the LICENSE file provided with this code for the full license.
         <module>jipipe-strings</module>
         <module>jipipe-utils</module>
         <module>jipipe-launcher</module>
+        <module>ij-updater-cli</module>
     </modules>
 
     <build>

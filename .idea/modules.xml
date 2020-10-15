@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/ij-updater-cli/ij-updater-cli.iml" filepath="$PROJECT_DIR$/ij-updater-cli/ij-updater-cli.iml" />
       <module fileurl="file://$PROJECT_DIR$/jipipe.iml" filepath="$PROJECT_DIR$/jipipe.iml" />
       <module fileurl="file://$PROJECT_DIR$/jipipe-annotation/jipipe-annotation.iml" filepath="$PROJECT_DIR$/jipipe-annotation/jipipe-annotation.iml" />
       <module fileurl="file://$PROJECT_DIR$/jipipe-clij/jipipe-clij.iml" filepath="$PROJECT_DIR$/jipipe-clij/jipipe-clij.iml" />
