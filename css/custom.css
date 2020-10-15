@@ -469,3 +469,48 @@ New landing page
 .landing-page-contact center {
   margin-top: 4rem;
 }
+
+/*
+Download page
+*/
+
+.download-panel {
+  margin-top: 2rem;
+  padding: 1rem;
+  border: 1px solid gray;
+  border-radius: 4px;
+}
+
+.download-panel-selection {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.download-panel-selection input {
+  display: none;
+}
+
+.download-panel-selection label {
+  margin: 0.5rem;
+  padding: 0.5rem;
+  border: 1px solid #4cae4c;
+  background-color: #fff;
+  color: #000;
+  border-radius: 4px;
+  transition: background-color 0.5s;
+}
+
+.download-panel-selection input:checked + label {
+    background-color: #5cb85c;
+    color: #fff;
+}
+
+.download-panel dt {
+  margin-top: 0.5rem;
+}
+
+.download-panel dd {
+  margin-bottom: 0.5rem;
+}

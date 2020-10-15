@@ -1,4 +1,6 @@
 $(document).ready(function(){
+
+  // Landing page slideshow
   $('.landing-features').slick({
     infinite: true,
     dots: true,
@@ -19,4 +21,13 @@ $(document).ready(function(){
       }
     ]
   });
+
+  // Download page menus
+  $(".download-panel-content").css("display", "none");
+  $('input:radio[name="download-options"]').change(function(){
+    $(".download-panel-content").css("display", "none");
+    $("#" + $(this).val() + "-content").css("display", "block");
+  });
+  $('input:radio[value="download-via-update-site"]').change();
+  $('input:radio[value="download-via-update-site"]').prop("checked", true);
 });
