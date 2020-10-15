@@ -90,8 +90,8 @@ Section Uninstall
   Delete "$DESKTOP\JIPipe.lnk"
   Delete "$SMPROGRAMS\JIPipe\JIPipe.lnk"
 
-  RMDir /r "$SMPROGRAMS\JIPipe"
-  RMDir "$INSTDIR"
+  RMDir "$SMPROGRAMS\JIPipe"
+  RMDir /r "$INSTDIR"
 
   DeleteRegKey ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}"
   DeleteRegKey HKLM "${PRODUCT_DIR_REGKEY}"
