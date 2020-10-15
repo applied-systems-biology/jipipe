@@ -49,7 +49,7 @@ ShowUnInstDetails show
 Section "Common files (Required)" SEC01
   SetOutPath "$INSTDIR"
   SetOverwrite ifnewer
-  File /r "Fiji.app/*"
+  File /r "Fiji.app\*"
   CreateDirectory "$SMPROGRAMS\JIPipe"
   CreateShortCut "$SMPROGRAMS\JIPipe\JIPipe.lnk" "$INSTDIR\ImageJ-win64.exe" "--pass-classpath --full-classpath --main-class org.hkijena.jipipe.JIPipeLauncher" "$INSTDIR\jipipe-icon.ico"
   CreateShortCut "$SMPROGRAMS\JIPipe\ImageJ+JIPipe.lnk" "$INSTDIR\ImageJ-win64.exe"
