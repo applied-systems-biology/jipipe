@@ -42,13 +42,6 @@ public class MarkdownDocument {
 
     static final MutableDataHolder OPTIONS = new MutableDataSet()
             .set(Parser.EXTENSIONS, Arrays.asList(TablesExtension.create(), AutolinkExtension.create(), TocExtension.create()));
-    static final String[] CSS_RULES = {"body { font-family: \"Sans-serif\"; }",
-            "pre { background-color: #f5f2f0; border: 3px #f5f2f0 solid; }",
-            "code { background-color: #f5f2f0; }",
-            "h2 { padding-top: 30px; }",
-            "h3 { padding-top: 30px; }",
-            "th { border-bottom: 1px solid #c8c8c8; }",
-            ".toc-list { list-style: none; }"};
     private static Map<Path, MarkdownDocument> fromFileCache = new HashMap<>();
     private static Map<URL, MarkdownDocument> fromResourcesCache = new HashMap<>();
     private String markdown;
