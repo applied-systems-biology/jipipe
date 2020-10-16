@@ -7,6 +7,9 @@ Afterwards, the ImageJ updater will be run to install ImageJ dependencies from t
 
 You can choose to create launcher icons for the application menu at the right-hand side.
 
+If you point the installer to a directory that already contains a `Fiji.app` folder, the installer will not re-download Fiji, but instead install
+JIPipe into the existing installation.
+
 On installing JIPipe, you agree to the licenses of JIPipe (see below) and the licenses of ImageJ, Fiji, and dependencies.
 
 If you require any assistance, please feel free to contact us via E-Mail or the community (see https://www.jipipe.org/).

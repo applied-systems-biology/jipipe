@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.installer.linux.api;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -21,6 +22,13 @@ import java.util.List;
  */
 public class JIPipeRunnerSubStatus {
     private List<String> categories = new ArrayList<>();
+
+    public JIPipeRunnerSubStatus() {
+    }
+
+    public JIPipeRunnerSubStatus(String... categories) {
+        this.categories = Arrays.asList(categories);
+    }
 
     /**
      * Adds a new sub-category to the current task.

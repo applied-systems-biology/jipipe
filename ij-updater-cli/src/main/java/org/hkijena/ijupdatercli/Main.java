@@ -34,6 +34,10 @@ public class Main {
             firstArgIndex += 2;
         }
 
+        if(firstArgIndex >= args.length) {
+            showHelp();
+            return;
+        }
         if(args[firstArgIndex].contains("help")) {
            showHelp();
             return;

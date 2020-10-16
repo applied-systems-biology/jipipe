@@ -18,6 +18,7 @@ import org.hkijena.jipipe.installer.linux.ui.utils.JIPipeRunnerQueue;
 import org.hkijena.jipipe.installer.linux.ui.utils.MarkdownDocument;
 import org.hkijena.jipipe.installer.linux.ui.utils.MarkdownReader;
 import org.hkijena.jipipe.installer.linux.ui.utils.PathEditor;
+import org.hkijena.jipipe.installer.linux.ui.utils.ResourceUtils;
 import org.hkijena.jipipe.installer.linux.ui.utils.UIUtils;
 
 import javax.swing.*;
@@ -76,6 +77,11 @@ public class SetupPanel extends JPanel {
         toolBar.add(installButton);
 
         add(toolBar, BorderLayout.SOUTH);
+
+        JToolBar headerBar = new JToolBar();
+        headerBar.setFloatable(false);
+        headerBar.add(new JLabel(new ImageIcon(ResourceUtils.getPluginResource("header.png"))));
+        add(headerBar, BorderLayout.NORTH);
     }
 
     private void installNow() {
