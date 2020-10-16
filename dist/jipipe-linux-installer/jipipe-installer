@@ -1,0 +1,6 @@
+#!/bin/sh
+
+unset XDG_DATA_DIRS
+
+cd ${APP_ROOT}/usr/share/jipipe-installer
+exec "${APP_ROOT}/usr/bin/java" -Djava.library.path=/usr/lib -jar ${APP_ROOT}/usr/share/jipipe-installer/jipipe-installer-linux.jar "$@"
