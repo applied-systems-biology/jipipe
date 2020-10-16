@@ -1,14 +1,9 @@
 #!/bin/bash
 JIPIPE_VERSION=2020.10
-JDK_DIR=jdk-11.0.8+10
+APPIMAGE_TOOL_URL="https://github.com/AppImage/AppImageKit/releases/download/12/appimagetool-x86_64.AppImage"
 
 rm -rf AppDir
 mkdir AppDir
-
-# Create partial JDK 
-# Use ./$JDK_DIR/bin/jdeps --list-deps AppDir/jipipe-installer-linux-2020.10.jar to find the dependencies!
-# Here: java.base java.datatransfer java.desktop java.logging java.naming java.prefs java.scripting java.sql java.xml jdk.unsupported
-eval "./$JDK_DIR/bin/jlink --no-header-files --no-man-pages --compress=2 --strip-debug --add-modules java.base,java.datatransfer,java.desktop,java.logging,java.naming,java.prefs,java.scripting,java.sql,java.xml,jdk.unsupported --output AppDir/usr"
 
 # Copy JIPipe components
 mkdir -p AppDir/usr/share/jipipe-installer/jipipe-bin
@@ -23,8 +18,13 @@ cp -v ../../jipipe-installer-linux/target/jipipe-installer-linux-$JIPIPE_VERSION
 cp -v jipipe-installer.png AppDir/
 cp -v jipipe-installer.desktop AppDir/
 cp -v AppRun AppDir/
+mkdir -p AppDir/usr/bin/
 cp -v jipipe-installer AppDir/usr/bin/
 chmod +x AppDir/usr/bin/jipipe-installer
 
 # Build AppImage 
-./appimagetool-x86_64.AppImage AppDir
+if [[ ! -e "./appimagetool-x86_64.AppImage" ]]; then
+    wget $APPIMAGE_TOOL_URL
+fi
+chmod +x ./appimagetool-x86_64.AppImage
+ARCH=x86_64 ./appimagetool-x86_64.AppImage AppDir
