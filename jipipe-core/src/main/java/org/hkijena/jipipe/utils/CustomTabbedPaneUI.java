@@ -85,7 +85,7 @@ public class CustomTabbedPaneUI extends BasicTabbedPaneUI {
         int currentRun = getRunForTab(tabPane.getTabCount(), tabIndex);
         int lastIndex = lastTabInRun(tabPane.getTabCount(), currentRun);
         int firstIndex = tabRuns[currentRun];
-        boolean leftToRight = MetalUtils.isLeftToRight(tabPane);
+        boolean leftToRight = tabPane.getComponentOrientation().isLeftToRight();
         int selectedIndex = tabPane.getSelectedIndex();
         int bottom = h - 1;
         int right = w - 1;
@@ -254,7 +254,7 @@ public class CustomTabbedPaneUI extends BasicTabbedPaneUI {
         if (currentRun == runCount - 2) {  // If it's the second to last row.
             Rectangle lastTabBounds = getTabBounds(tabPane, tabPane.getTabCount() - 1);
             Rectangle tabBounds = getTabBounds(tabPane, tabIndex);
-            if (MetalUtils.isLeftToRight(tabPane)) {
+            if (tabPane.getComponentOrientation().isLeftToRight()) {
                 int lastTabRight = lastTabBounds.x + lastTabBounds.width - 1;
 
                 // is the right edge of the last tab to the right
@@ -292,7 +292,7 @@ public class CustomTabbedPaneUI extends BasicTabbedPaneUI {
             int tabLeft = tabBounds.x;
             int tabRight = (tabBounds.x + tabBounds.width) - 1;
             // Check to see if this tab is over the gap
-            if (MetalUtils.isLeftToRight(tabPane)) {
+            if (tabPane.getComponentOrientation().isLeftToRight()) {
                 if (tabLeft <= x && tabRight - shadowWidth > x) {
                     return selectedIndex == i ? selectColor : getUnselectedBackgroundAt(i);
                 }
@@ -424,7 +424,7 @@ public class CustomTabbedPaneUI extends BasicTabbedPaneUI {
         int currentRun = getRunForTab(tabCount, tabIndex);
         int lastIndex = lastTabInRun(tabCount, currentRun);
         int firstIndex = tabRuns[currentRun];
-        boolean leftToRight = MetalUtils.isLeftToRight(tabPane);
+        boolean leftToRight = tabPane.getComponentOrientation().isLeftToRight();
 
         int bottom = h - 1;
         int right = w - 1;
@@ -675,7 +675,7 @@ public class CustomTabbedPaneUI extends BasicTabbedPaneUI {
             g.setColor(getUnselectedBackgroundAt(tabIndex));
         }
 
-        if (MetalUtils.isLeftToRight(tabPane)) {
+        if (tabPane.getComponentOrientation().isLeftToRight()) {
             switch (tabPlacement) {
                 case LEFT:
                     g.fillRect(x, y, w, h);
@@ -883,7 +883,7 @@ public class CustomTabbedPaneUI extends BasicTabbedPaneUI {
     protected void paintContentBorderTopEdge(Graphics g, int tabPlacement,
                                              int selectedIndex,
                                              int x, int y, int w, int h) {
-        boolean leftToRight = MetalUtils.isLeftToRight(tabPane);
+        boolean leftToRight = tabPane.getComponentOrientation().isLeftToRight();
         int right = x + w - 1;
         Rectangle selRect = selectedIndex < 0 ? null :
                 getTabBounds(selectedIndex, calcRect);
@@ -962,7 +962,7 @@ public class CustomTabbedPaneUI extends BasicTabbedPaneUI {
     protected void paintContentBorderBottomEdge(Graphics g, int tabPlacement,
                                                 int selectedIndex,
                                                 int x, int y, int w, int h) {
-        boolean leftToRight = MetalUtils.isLeftToRight(tabPane);
+        boolean leftToRight = tabPane.getComponentOrientation().isLeftToRight();
         int bottom = y + h - 1;
         int right = x + w - 1;
         Rectangle selRect = selectedIndex < 0 ? null :

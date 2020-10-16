@@ -13,11 +13,9 @@
 
 package org.hkijena.jipipe.installer.linux.ui.utils;
 
-import sun.swing.PrintColorUIResource;
-import sun.swing.SwingLazyValue;
-
 import javax.swing.*;
 import javax.swing.border.Border;
+import javax.swing.plaf.BorderUIResource;
 import javax.swing.plaf.ColorUIResource;
 import javax.swing.plaf.IconUIResource;
 import javax.swing.plaf.metal.DefaultMetalTheme;
@@ -54,13 +52,13 @@ public class ModernMetalTheme extends DefaultMetalTheme {
     public static final Color GRAY = new ColorUIResource(0xe6e6e6);
     public static final Color LIGHT_GRAY = new ColorUIResource(0xf2f2f2);
     public static final ColorUIResource CONTROL_TEXT_COLOR =
-            new PrintColorUIResource(0x333333, Color.BLACK);
+            new ColorUIResource(0x333333);
     public static final ColorUIResource INACTIVE_CONTROL_TEXT_COLOR =
             new ColorUIResource(0x999999);
     public static final ColorUIResource MENU_DISABLED_FOREGROUND =
             new ColorUIResource(0x999999);
     public static final ColorUIResource OCEAN_BLACK =
-            new PrintColorUIResource(0x333333, Color.BLACK);
+            new ColorUIResource(0x333333);
     public static final ColorUIResource OCEAN_DROP =
             new ColorUIResource(0xD2E9FF);
     private static final Border NO_BORDER = BorderFactory.createEmptyBorder();
@@ -82,9 +80,7 @@ public class ModernMetalTheme extends DefaultMetalTheme {
      * @throws NullPointerException if {@code table} is {@code null}
      */
     public void addCustomEntriesToTable(UIDefaults table) {
-        Object focusBorder = new SwingLazyValue(
-                "javax.swing.plaf.BorderUIResource$LineBorderUIResource",
-                new Object[]{getPrimary1()});
+        Object focusBorder = new BorderUIResource.LineBorderUIResource(getPrimary1());
         // .30 0 DDE8F3 white secondary2
 //        List<Object> buttonGradient = Arrays.asList(
 //                new Object[] {.3f, 0f,
@@ -417,7 +413,7 @@ public class ModernMetalTheme extends DefaultMetalTheme {
         }
 
         public void paintIcon(Component c, Graphics g, int x, int y) {
-            if (MetalUtils.isLeftToRight(c)) {
+            if (c.getComponentOrientation().isLeftToRight()) {
                 super.paintIcon(c, g, x, y);
             } else {
                 rtl.paintIcon(c, g, x, y);

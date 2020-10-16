@@ -1,10 +1,8 @@
 package org.hkijena.jipipe.utils;
 
-import sun.swing.PrintColorUIResource;
-import sun.swing.SwingLazyValue;
-
 import javax.swing.*;
 import javax.swing.border.Border;
+import javax.swing.plaf.BorderUIResource;
 import javax.swing.plaf.ColorUIResource;
 import javax.swing.plaf.IconUIResource;
 import javax.swing.plaf.metal.DefaultMetalTheme;
@@ -41,13 +39,13 @@ public class ModernMetalTheme extends DefaultMetalTheme {
     public static final Color GRAY = new ColorUIResource(0xe6e6e6);
     public static final Color LIGHT_GRAY = new ColorUIResource(0xf2f2f2);
     public static final ColorUIResource CONTROL_TEXT_COLOR =
-            new PrintColorUIResource(0x333333, Color.BLACK);
+            new ColorUIResource(0x333333);
     public static final ColorUIResource INACTIVE_CONTROL_TEXT_COLOR =
             new ColorUIResource(0x999999);
     public static final ColorUIResource MENU_DISABLED_FOREGROUND =
             new ColorUIResource(0x999999);
     public static final ColorUIResource OCEAN_BLACK =
-            new PrintColorUIResource(0x333333, Color.BLACK);
+            new ColorUIResource(0x333333);
     public static final ColorUIResource OCEAN_DROP =
             new ColorUIResource(0xD2E9FF);
     private static final Border NO_BORDER = BorderFactory.createEmptyBorder();
@@ -69,9 +67,7 @@ public class ModernMetalTheme extends DefaultMetalTheme {
      * @throws NullPointerException if {@code table} is {@code null}
      */
     public void addCustomEntriesToTable(UIDefaults table) {
-        Object focusBorder = new SwingLazyValue(
-                "javax.swing.plaf.BorderUIResource$LineBorderUIResource",
-                new Object[]{getPrimary1()});
+        Object focusBorder = new BorderUIResource.LineBorderUIResource(getPrimary1());
         // .30 0 DDE8F3 white secondary2
 //        List<Object> buttonGradient = Arrays.asList(
 //                new Object[] {.3f, 0f,
@@ -280,7 +276,7 @@ public class ModernMetalTheme extends DefaultMetalTheme {
      * of {@code 0x6382BF}.
      *
      * @return the primary 1 color
-     * @see java.awt.Color#decode
+     * @see Color#decode
      */
     protected ColorUIResource getPrimary1() {
         return PRIMARY1;
@@ -291,7 +287,7 @@ public class ModernMetalTheme extends DefaultMetalTheme {
      * of {@code 0xA3B8CC}.
      *
      * @return the primary 2 color
-     * @see java.awt.Color#decode
+     * @see Color#decode
      */
     protected ColorUIResource getPrimary2() {
         return PRIMARY2;
@@ -302,7 +298,7 @@ public class ModernMetalTheme extends DefaultMetalTheme {
      * of {@code 0xB8CFE5}.
      *
      * @return the primary 3 color
-     * @see java.awt.Color#decode
+     * @see Color#decode
      */
     protected ColorUIResource getPrimary3() {
         return PRIMARY3;
@@ -313,7 +309,7 @@ public class ModernMetalTheme extends DefaultMetalTheme {
      * value of {@code 0x7A8A99}.
      *
      * @return the secondary 1 color
-     * @see java.awt.Color#decode
+     * @see Color#decode
      */
     protected ColorUIResource getSecondary1() {
         return SECONDARY1;
@@ -324,7 +320,7 @@ public class ModernMetalTheme extends DefaultMetalTheme {
      * value of {@code 0xB8CFE5}.
      *
      * @return the secondary 2 color
-     * @see java.awt.Color#decode
+     * @see Color#decode
      */
     protected ColorUIResource getSecondary2() {
         return SECONDARY2;
@@ -335,7 +331,7 @@ public class ModernMetalTheme extends DefaultMetalTheme {
      * value of {@code 0xEEEEEE}.
      *
      * @return the secondary 3 color
-     * @see java.awt.Color#decode
+     * @see Color#decode
      */
     protected ColorUIResource getSecondary3() {
         return SECONDARY3;
@@ -346,7 +342,7 @@ public class ModernMetalTheme extends DefaultMetalTheme {
      * value of {@code 0x333333}.
      *
      * @return the black color
-     * @see java.awt.Color#decode
+     * @see Color#decode
      */
     protected ColorUIResource getBlack() {
         return OCEAN_BLACK;
@@ -357,7 +353,7 @@ public class ModernMetalTheme extends DefaultMetalTheme {
      * value of {@code 0xFFFFFF}.
      *
      * @return the desktop color
-     * @see java.awt.Color#decode
+     * @see Color#decode
      */
     public ColorUIResource getDesktopColor() {
         return WHITE;
@@ -404,7 +400,7 @@ public class ModernMetalTheme extends DefaultMetalTheme {
         }
 
         public void paintIcon(Component c, Graphics g, int x, int y) {
-            if (MetalUtils.isLeftToRight(c)) {
+            if (c.getComponentOrientation().isLeftToRight()) {
                 super.paintIcon(c, g, x, y);
             } else {
                 rtl.paintIcon(c, g, x, y);
