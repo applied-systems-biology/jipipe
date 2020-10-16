@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2020-10-15T15:55:01 CEST">
+<meta name="revised" content="2020-10-16T23:44:33 CEST">
 <title>ImageJ integration :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../../images/favicon.png" type="image/x-icon" />
 <link href="../../../css/font-awesome.min.css" rel="stylesheet">
@@ -558,22 +558,20 @@ color spaces for generic colors (e.g. greyscale image):</p>
 <p>The JIPipe standard library contains color types that are intended to hold frequency-space (FFT) data.
 While the standard library only provides methods to handle 2D FFT, there are 3D, &hellip;, 5D data types
 available for future extensions.</p>
-
-<div class="notices warning" ><p><p>We rely on the mechanisms provided by ImageJ. For example, the ImageJ FFT generates a 8-bit greyscale power spectrum image and
+<div class="notices warning" ><p>
+We rely on the mechanisms provided by ImageJ. For example, the ImageJ FFT generates a 8-bit greyscale power spectrum image and
 attaches data to the image instance. JIPipe has no special methods to load and save the FFT data, aside from the image data itself.
-We recommend to generate FFT data within the pipeline to generate the correct data.</p>
+We recommend to generate FFT data within the pipeline to generate the correct data.
 </p></div>
-
 <h1 id="imagej-algorithms">ImageJ algorithms</h1>
 <p>The standard library provides a selection of common ImageJ algorithms as JIPipe algorithm nodes.
 Those algorithms wrap around the respective ImageJ methods and have the same feature set, aside
 from some changes that are required to make algorithms usable in a batch-environment like JIPipe.</p>
 <p>You can find a list of all algorithms via the <span class="fa fa-question-circle-o"  style="font-size:medium" aria-hidden="true"></span> <strong>Help</strong> menu on the top right corner and the item <code>Algorithm compendium</code>.</p>
-
-<div class="notices tip" ><p><p>You can run ImageJ macro code as node. The input slot names correspond to the image windows that are created. Macro nodes do not work in a headless (server) environment, so be careful
-when including them.</p>
+<div class="notices tip" ><p>
+You can run ImageJ macro code as node. The input slot names correspond to the image windows that are created. Macro nodes do not work in a headless (server) environment, so be careful
+when including them.
 </p></div>
-
 
 
     

@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2020-10-15T15:55:01 CEST">
+<meta name="revised" content="2020-10-16T23:44:33 CEST">
 <title>Pipeline editor :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../images/favicon.png" type="image/x-icon" />
 <link href="../../css/font-awesome.min.css" rel="stylesheet">
@@ -504,10 +504,9 @@ Its user interface is separated into three sections:</p>
 <h1 id="analysis-graph">Analysis graph</h1>
 <p>The analysis graph contains <em>algorithms</em> that are represented by rectangles. The algorithm graph area will automatically grow depending on where you place the algorithms.
 Scroll bars will appear if the graph area is larger than the available screen size.</p>
-
-<div class="notices tip" ><p><p>An alternative to using the scroll bars is to hold the middle mouse button while dragging the your mouse.</p>
+<div class="notices tip" ><p>
+An alternative to using the scroll bars is to hold the middle mouse button while dragging the your mouse.
 </p></div>
-
 <p>Algorithms read data from their <strong>input slots</strong> and output the results into the <strong>output slots</strong>.
 There are some algorithms that do not have input slots - they produce output based on their current <em>parameters</em>. The algorithm user interface has three sections:</p>
 <ol>
@@ -515,10 +514,9 @@ There are some algorithms that do not have input slots - they produce output bas
 <li><strong>The drag area</strong> allows you to move the algorithm around. Move your <span class="fa fa-mouse-pointer"  style="font-size:medium" aria-hidden="true"></span> mouse pointer over the area and drag your mouse while holding the 🖱 left mouse button. On clicking the <span class="fa fa-wrench"  style="font-size:medium" aria-hidden="true"></span> button, a menu will open that contains some algorithm options. Alternatively you can right-click the drag area to open this menu.</li>
 <li><strong>Output slots</strong> are located on the bottom and allow you to connect your output data to the input of another algorithm.</li>
 </ol>
-
-<div class="notices info" ><p><p>Any output data is always saved automatically by JIPipe. After generating the final output data, there is no need to connect it to any input.</p>
+<div class="notices info" ><p>
+Any output data is always saved automatically by JIPipe. After generating the final output data, there is no need to connect it to any input.
 </p></div>
-
 <p><img src="../../img/documentation/graph-algorithm.png" alt="User interface overview"></p>
 <h2 id="slot-connections">Slot connections</h2>
 <p>You can connect two slots by clicking the <span class="fa fa-chevron-up"  style="font-size:medium" aria-hidden="true"></span> or <span class="fa fa-chevron-down"  style="font-size:medium" aria-hidden="true"></span> button of a slot
@@ -532,10 +530,9 @@ the data types of the source and target.</p>
 <li>A <span style="color: blue;"><strong>blue</strong></span> line indicates that the types dont match exactly, but can be converted by JIPipe</li>
 <li>A <span style="color: red;"><strong>red</strong></span> line indicates that the types are incompatible. You will probably get an error message during the calculation.</li>
 </ul>
-
-<div class="notices tip" ><p><p>Hover with your mouse over a slot&rsquo;s name to show information about its data type.</p>
+<div class="notices tip" ><p>
+Hover with your mouse over a slot's name to show information about its data type.
 </p></div>
-
 <h2 id="slot-options">Slot options</h2>
 <p>The slot context menu opened by <span class="fa fa-chevron-up"  style="font-size:medium" aria-hidden="true"></span> or <span class="fa fa-chevron-down"  style="font-size:medium" aria-hidden="true"></span> contain
 additional entries to managing connections.</p>
