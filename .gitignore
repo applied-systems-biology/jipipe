@@ -3,3 +3,11 @@
 target
 /jipipe.properties.json
 /jars/
+/dist/jipipe-linux-installer/AppDir/
+/dist/jipipe-linux-installer/jdk-11.0.8+10/
+/dist/jipipe-linux-installer/appimagetool-x86_64.AppImage
+/dist/jipipe-linux-installer/jipipe-installer-x86_64.AppImage
+/dist/jipipe-windows-installer/fiji-win64.zip
+/dist/jipipe-windows-installer/Fiji.app/
+/dist/jipipe-windows-installer/dependencies/
+/dist/jipipe-windows-installer/JIPipe-2020.10-Setup.exe
