@@ -23,6 +23,10 @@ import org.hkijena.jipipe.installer.linux.ui.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.BorderLayout;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 public class MainWindow extends JFrame {
 
@@ -71,5 +75,10 @@ public class MainWindow extends JFrame {
                 "The installation failed! Please take a look at the log to find out the reason.",
                 "Installation failed",
                 JOptionPane.ERROR_MESSAGE);
+        try {
+            Files.write(Paths.get("installer-log.txt"), installerRun.getLog().toString().getBytes(Charset.defaultCharset()));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -140,6 +140,7 @@ public class JIPipeRunnerQueue {
      */
     @Subscribe
     public void onWorkerInterrupted(RunUIWorkerInterruptedEvent event) {
+        event.getException().printStackTrace();
         if (event.getWorker() == currentlyRunningWorker) {
             assignedWorkers.remove(currentlyRunningWorker.getRun());
             currentlyRunningWorker = null;

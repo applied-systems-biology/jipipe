@@ -89,6 +89,7 @@ public class InstallerRun implements JIPipeRunnable{
     private boolean createLauncher = true;
     private final int maxProgress = 7;
     private int progress = 0;
+    private StringBuilder log = new StringBuilder();
 
     public InstallerRun() {
         setInitialInstallationPath();
@@ -120,7 +121,10 @@ public class InstallerRun implements JIPipeRunnable{
 
     @Override
     public void run(Consumer<JIPipeRunnerStatus> onProgress, Supplier<Boolean> isCancelled) {
-        Consumer<JIPipeRunnerSubStatus> subStatusConsumer = (sub) -> onProgress.accept(new JIPipeRunnerStatus(progress, maxProgress, sub.toString()));
+        Consumer<JIPipeRunnerSubStatus> subStatusConsumer = (sub) -> {
+            log.append(progress).append("/").append(maxProgress).append(": ").append(sub.toString()).append("\n");
+            onProgress.accept(new JIPipeRunnerStatus(progress, maxProgress, sub.toString()));
+        };
         createInstallationDirectory(new JIPipeRunnerSubStatus("Creating installation directory"), subStatusConsumer);
         if(!Files.isDirectory(installationPath.resolve("Fiji.app"))) {
             downloadFiji(new JIPipeRunnerSubStatus("Downloading Fiji"), subStatusConsumer);
@@ -133,7 +137,13 @@ public class InstallerRun implements JIPipeRunnable{
         installJIPipeDependencies(new JIPipeRunnerSubStatus("Installing dependencies"), subStatusConsumer);
         installJIPipe(new JIPipeRunnerSubStatus("Installing JIPipe"), subStatusConsumer);
         installImageJDependencies(new JIPipeRunnerSubStatus("Installing ImageJ dependencies"), subStatusConsumer);
-        createLaunchers(new JIPipeRunnerSubStatus("Create launchers"), subStatusConsumer);
+        if(createLauncher)
+            createLaunchers(new JIPipeRunnerSubStatus("Create launchers"), subStatusConsumer);
+        else {
+            progress += 1;
+            subStatusConsumer.accept(new JIPipeRunnerSubStatus("Launcher creation was disabled."));
+        }
+        subStatusConsumer.accept(new JIPipeRunnerSubStatus("Installation successful."));
     }
 
     private void createLaunchers(JIPipeRunnerSubStatus subStatus, Consumer<JIPipeRunnerSubStatus> subStatusConsumer) {
@@ -348,4 +358,7 @@ public class InstallerRun implements JIPipeRunnable{
     }
 
 
+    public StringBuilder getLog() {
+        return log;
+    }
 }
