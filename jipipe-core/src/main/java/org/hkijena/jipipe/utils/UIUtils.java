@@ -106,7 +106,7 @@ public class UIUtils {
             try {
                 // Set cross-platform Java L&F (also called "Metal")
                 if (modernizeMetal)
-                    MetalLookAndFeel.setCurrentTheme(new ModernMetalTheme());
+                    MetalLookAndFeel.setCurrentTheme(new DarkModernMetalTheme());
                 UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
 
 //                try(FileWriter writer = new FileWriter("laf-keys.txt")) {
