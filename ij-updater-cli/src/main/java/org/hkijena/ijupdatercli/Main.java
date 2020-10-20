@@ -19,6 +19,7 @@ import java.net.Authenticator;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -59,7 +60,7 @@ public class Main {
         }
 
         if(Objects.equals(args[firstArgIndex], "activate")) {
-            Set<String> toActivateNames = new HashSet<>(Arrays.asList(args).subList(firstArgIndex + 1, args.length));
+            Set<String> toActivateNames = getUpdateSiteNames(Arrays.asList(args).subList(firstArgIndex + 1, args.length));
             Set<UpdateSite> toActivate = new HashSet<>();
             for (UpdateSite updateSite : filesCollection.getUpdateSites(true)) {
                 if(toActivateNames.contains(updateSite.getName())) {
@@ -87,7 +88,7 @@ public class Main {
             applyUpdates(filesCollection);
         }
         else if(Objects.equals(args[firstArgIndex], "deactivate")) {
-            Set<String> toDeactivateNames = new HashSet<>(Arrays.asList(args).subList(firstArgIndex + 1, args.length));
+            Set<String> toDeactivateNames = getUpdateSiteNames(Arrays.asList(args).subList(firstArgIndex + 1, args.length));
             Set<UpdateSite> toDeactivate = new HashSet<>();
             for (UpdateSite updateSite : filesCollection.getUpdateSites(true)) {
                 if(toDeactivateNames.contains(updateSite.getName())) {
@@ -135,6 +136,28 @@ public class Main {
         else {
             throw new RuntimeException("Invalid command!");
         }
+    }
+
+    private static Set<String> getUpdateSiteNames(List<String> list) {
+        Set<String> result = new HashSet<>();
+        String joined = String.join(" ", list);
+        StringBuilder current = new StringBuilder();
+        boolean isQuote = false;
+        for (int i = 0; i < joined.length(); i++) {
+            char c = current.charAt(i);
+            if(c == '"') {
+                isQuote = !isQuote;
+                continue;
+            }
+            if(c == ' ' && !isQuote) {
+                result.add(current.toString());
+                current.setLength(0);
+            }
+            else {
+                current.append(c);
+            }
+        }
+        return result;
     }
 
     public static Progress createProgress() {
