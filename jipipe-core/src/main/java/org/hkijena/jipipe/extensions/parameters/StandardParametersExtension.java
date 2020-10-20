@@ -573,6 +573,7 @@ public class StandardParametersExtension extends JIPipePrepackagedDefaultJavaExt
         // Register other common Java classes
         registerParameterEditor(Enum.class, EnumParameterEditorUI.class);
         registerParameterType("string", String.class, StringList.class, () -> "", s -> s, "String", "A text value", StringParameterEditorUI.class);
+        registerParameterType("password", PasswordParameter.class, null, null, "Password", "A password", PasswordParameterEditorUI.class);
         registerParameterType("path", Path.class, PathList.class, () -> Paths.get(""), p -> p, "Filesystem path", "A path", FilePathParameterEditorUI.class);
         registerParameterEditor(PathList.class, PathListParameterEditorUI.class);
         registerParameterType("file", File.class, () -> new File(""), f -> f, "Filesystem path", "A path", FileParameterEditorUI.class);
