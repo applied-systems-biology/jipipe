@@ -59,6 +59,10 @@ public class OMEROGateway implements JIPipeData {
         }
     }
 
+    /**
+     * Ensures that the connection is up and alive
+     * Should be run before executing any operation on the gateway
+     */
     public void ensureConnection() {
         if(!gateway.isConnected()) {
             try {
