@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.extensions.tables.algorithms;
 
 import com.google.common.html.HtmlEscapers;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
@@ -148,7 +149,7 @@ public class SetColumnAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         StringBuilder markdown = new StringBuilder();
         markdown.append("You can select from one of the following generators: ");
         markdown.append("<table>");
-        for (Class<? extends JIPipeData> klass : JIPipeDatatypeRegistry.getInstance().getRegisteredDataTypes().values()) {
+        for (Class<? extends JIPipeData> klass : JIPipe.getDataTypes().getRegisteredDataTypes().values()) {
             if (TableColumn.isGeneratingTableColumn(klass)) {
                 JIPipeDataInfo info = JIPipeDataInfo.getInstance(klass);
                 markdown.append("<tr><td><strong>").append(HtmlEscapers.htmlEscaper().escape(info.getName())).append("</strong></td><td>")

@@ -28,6 +28,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.EventBus;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
 import org.hkijena.jipipe.api.registries.JIPipeParameterTypeRegistry;
 import org.hkijena.jipipe.utils.JsonUtils;
@@ -73,7 +74,7 @@ public class ParameterTable implements TableModel {
         }
         for (List<Object> row : other.rows) {
             int columnIndex = 0;
-            JIPipeParameterTypeInfo info = JIPipeParameterTypeRegistry.getInstance().
+            JIPipeParameterTypeInfo info = JIPipe.getParameterTypes().
                     getInfoByFieldClass(columns.get(columnIndex).fieldClass);
             List<Object> thisRow = new ArrayList<>();
             for (Object o : row) {
@@ -92,7 +93,7 @@ public class ParameterTable implements TableModel {
      */
     public void addColumn(ParameterColumn column, Object initialValue) {
         columns.add(column);
-        JIPipeParameterTypeInfo info = JIPipeParameterTypeRegistry.getInstance().getInfoByFieldClass(column.fieldClass);
+        JIPipeParameterTypeInfo info = JIPipe.getParameterTypes().getInfoByFieldClass(column.fieldClass);
         for (List<Object> row : rows) {
             row.add(info.duplicate(initialValue)); // Deep-copy!
         }
@@ -182,7 +183,7 @@ public class ParameterTable implements TableModel {
             List<Object> row = new ArrayList<>();
 
             for (ParameterColumn column : columns) {
-                JIPipeParameterTypeInfo info = JIPipeParameterTypeRegistry.getInstance().getInfoByFieldClass(column.fieldClass);
+                JIPipeParameterTypeInfo info = JIPipe.getParameterTypes().getInfoByFieldClass(column.fieldClass);
                 row.add(info.newInstance());
             }
             rows.add(row);
@@ -299,12 +300,12 @@ public class ParameterTable implements TableModel {
 
         @JsonGetter("field-class-id")
         public String getFieldClassInfoId() {
-            return JIPipeParameterTypeRegistry.getInstance().getInfoByFieldClass(fieldClass).getId();
+            return JIPipe.getParameterTypes().getInfoByFieldClass(fieldClass).getId();
         }
 
         @JsonSetter("field-class-id")
         public void setFieldClassInfoId(String id) {
-            fieldClass = JIPipeParameterTypeRegistry.getInstance().getInfoById(id).getFieldClass();
+            fieldClass = JIPipe.getParameterTypes().getInfoById(id).getFieldClass();
         }
 
         @JsonGetter("key")

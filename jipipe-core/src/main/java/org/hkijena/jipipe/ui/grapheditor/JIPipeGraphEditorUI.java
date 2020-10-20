@@ -15,6 +15,7 @@ package org.hkijena.jipipe.ui.grapheditor;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.eventbus.Subscribe;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.events.GraphChangedEvent;
 import org.hkijena.jipipe.api.events.NodeInfoRegisteredEvent;
 import org.hkijena.jipipe.api.history.AddNodeGraphHistorySnapshot;
@@ -34,7 +35,6 @@ import org.hkijena.jipipe.ui.events.AlgorithmSelectedEvent;
 import org.hkijena.jipipe.ui.events.AlgorithmSelectionChangedEvent;
 import org.hkijena.jipipe.ui.events.ZoomChangedEvent;
 import org.hkijena.jipipe.ui.grapheditor.contextmenu.NodeUIContextAction;
-import org.hkijena.jipipe.ui.registries.JIPipeUINodeRegistry;
 import org.hkijena.jipipe.utils.CustomScrollPane;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -103,7 +103,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         this.compartment = compartment;
         initialize();
         reloadMenuBar();
-        JIPipeNodeRegistry.getInstance().getEventBus().register(this);
+        JIPipe.getNodes().getEventBus().register(this);
         algorithmGraph.getEventBus().register(this);
         updateNavigation();
         initializeHotkeys();
@@ -865,7 +865,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
                 actionLabel.setText("Create");
                 actionLabel.setForeground(new Color(0, 128, 0));
                 algorithmLabel.setText(info.getName());
-                algorithmLabel.setIcon(JIPipeUINodeRegistry.getInstance().getIconFor(info));
+                algorithmLabel.setIcon(JIPipe.getNodes().getIconFor(info));
                 menuLabel.setText(menuPath);
             } else if (value instanceof JIPipeNodeUI) {
                 JIPipeGraphNode node = ((JIPipeNodeUI) value).getNode();
@@ -880,7 +880,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
                 actionLabel.setText("Navigate");
                 actionLabel.setForeground(Color.BLUE);
                 algorithmLabel.setText(node.getName());
-                algorithmLabel.setIcon(JIPipeUINodeRegistry.getInstance().getIconFor(info));
+                algorithmLabel.setIcon(JIPipe.getNodes().getIconFor(info));
                 menuLabel.setText(menuPath);
             }
 

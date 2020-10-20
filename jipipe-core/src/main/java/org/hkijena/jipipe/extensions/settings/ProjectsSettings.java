@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.extensions.settings;
 
 import com.google.common.eventbus.EventBus;
-import org.hkijena.jipipe.JIPipeDefaultRegistry;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProjectTemplate;
 import org.hkijena.jipipe.api.events.ParameterChangedEvent;
@@ -136,7 +136,7 @@ public class ProjectsSettings implements JIPipeParameterCollection {
     }
 
     public static ProjectsSettings getInstance() {
-        return JIPipeDefaultRegistry.getInstance().getSettingsRegistry().getSettings(ID, ProjectsSettings.class);
+        return JIPipe.getSettings().getSettings(ID, ProjectsSettings.class);
     }
 
     /**

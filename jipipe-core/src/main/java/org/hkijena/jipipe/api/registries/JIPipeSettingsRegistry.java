@@ -23,7 +23,7 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import ij.IJ;
 import ij.Prefs;
-import org.hkijena.jipipe.JIPipeDefaultRegistry;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.events.ParameterChangedEvent;
 import org.hkijena.jipipe.api.parameters.JIPipeCustomParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
@@ -181,10 +181,6 @@ public class JIPipeSettingsRegistry implements JIPipeParameterCollection, JIPipe
      */
     public void reload() {
         load(getPropertyFile());
-    }
-
-    public static JIPipeSettingsRegistry getInstance() {
-        return JIPipeDefaultRegistry.getInstance().getSettingsRegistry();
     }
 
     /**

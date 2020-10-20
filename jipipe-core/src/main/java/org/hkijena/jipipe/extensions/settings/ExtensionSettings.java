@@ -15,7 +15,7 @@ package org.hkijena.jipipe.extensions.settings;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.eventbus.EventBus;
-import org.hkijena.jipipe.JIPipeDefaultRegistry;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
@@ -82,7 +82,7 @@ public class ExtensionSettings implements JIPipeParameterCollection {
     }
 
     public static ExtensionSettings getInstance() {
-        return JIPipeDefaultRegistry.getInstance().getSettingsRegistry().getSettings(ID, ExtensionSettings.class);
+        return JIPipe.getSettings().getSettings(ID, ExtensionSettings.class);
     }
 
     /**

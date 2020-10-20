@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.ui;
 
 import com.google.common.eventbus.Subscribe;
-import org.hkijena.jipipe.JIPipeDefaultRegistry;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeJsonExtension;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
@@ -93,7 +93,7 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
         this.context = context;
         initialize(showIntroduction, isNewProject);
         project.getEventBus().register(this);
-        JIPipeDefaultRegistry.getInstance().getEventBus().register(this);
+        JIPipe.getInstance().getEventBus().register(this);
 
         validatePlugins(true);
 

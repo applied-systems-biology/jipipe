@@ -22,6 +22,7 @@ import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 
@@ -114,7 +115,7 @@ public class JIPipeDataInfo implements Comparable<JIPipeDataInfo> {
      * @return The data type ID
      */
     public String getId() {
-        return JIPipeDatatypeRegistry.getInstance().getIdOf(dataClass);
+        return JIPipe.getDataTypes().getIdOf(dataClass);
     }
 
     /**
@@ -153,7 +154,7 @@ public class JIPipeDataInfo implements Comparable<JIPipeDataInfo> {
      * @return The info instance
      */
     public static JIPipeDataInfo getInstance(String id) {
-        return JIPipeDataInfo.getInstance(JIPipeDatatypeRegistry.getInstance().getById(id));
+        return JIPipeDataInfo.getInstance(JIPipe.getDataTypes().getById(id));
     }
 
     /**
@@ -173,7 +174,7 @@ public class JIPipeDataInfo implements Comparable<JIPipeDataInfo> {
     public static class Deserializer extends JsonDeserializer<JIPipeDataInfo> {
         @Override
         public JIPipeDataInfo deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
-            return JIPipeDataInfo.getInstance(JIPipeDatatypeRegistry.getInstance().getById(jsonParser.getValueAsString()));
+            return JIPipeDataInfo.getInstance(JIPipe.getDataTypes().getById(jsonParser.getValueAsString()));
         }
     }
 
@@ -183,7 +184,7 @@ public class JIPipeDataInfo implements Comparable<JIPipeDataInfo> {
     public static class KeyDeserializer extends com.fasterxml.jackson.databind.KeyDeserializer {
         @Override
         public Object deserializeKey(String s, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
-            return JIPipeDataInfo.getInstance(JIPipeDatatypeRegistry.getInstance().getById(s));
+            return JIPipeDataInfo.getInstance(JIPipe.getDataTypes().getById(s));
         }
     }
 }

@@ -15,6 +15,7 @@ package org.hkijena.jipipe.extensions.filesystem.dataypes;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
@@ -75,7 +76,7 @@ public class PathData implements JIPipeData {
      */
     @JsonGetter("jipipe:data-type")
     private String getDataTypeName() {
-        return JIPipeDatatypeRegistry.getInstance().getIdOf(getClass());
+        return JIPipe.getDataTypes().getIdOf(getClass());
     }
 
     /**

@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.extensions.jsonextensionloader;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import org.hkijena.jipipe.JIPipeDefaultRegistry;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.JIPipeValidatable;
@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
 public class JsonExtensionRegistrationTask implements JIPipeValidatable {
 
     private final Set<String> dependencyIds;
-    private JIPipeDefaultRegistry registry;
+    private JIPipe registry;
     private Path filePath;
     private JsonNode jsonNode;
 
@@ -39,7 +39,7 @@ public class JsonExtensionRegistrationTask implements JIPipeValidatable {
      * @param filePath the path the JSON data came from. Has only informational value. Can be null.
      * @param jsonNode the JSON data node that contains the serialized extension
      */
-    public JsonExtensionRegistrationTask(JIPipeDefaultRegistry registry, Path filePath, JsonNode jsonNode) {
+    public JsonExtensionRegistrationTask(JIPipe registry, Path filePath, JsonNode jsonNode) {
         this.registry = registry;
         this.filePath = filePath;
         this.jsonNode = jsonNode;

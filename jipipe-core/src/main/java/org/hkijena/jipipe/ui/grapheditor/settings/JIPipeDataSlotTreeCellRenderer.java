@@ -14,8 +14,8 @@
 package org.hkijena.jipipe.ui.grapheditor.settings;
 
 import com.google.common.html.HtmlEscapers;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.ui.registries.JIPipeUIDatatypeRegistry;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -85,7 +85,7 @@ public class JIPipeDataSlotTreeCellRenderer extends JPanel implements TreeCellRe
             JIPipeDataSlot slot = (JIPipeDataSlot) o;
 
             slotName.setText(slot.getName());
-            slotName.setIcon(JIPipeUIDatatypeRegistry.getInstance().getIconFor(slot.getAcceptedDataType()));
+            slotName.setIcon(JIPipe.getDataTypes().getIconFor(slot.getAcceptedDataType()));
             if (!StringUtils.isNullOrEmpty(slot.getDefinition().getCustomName())) {
                 slotLabel.setText(slot.getDefinition().getCustomName());
             } else {

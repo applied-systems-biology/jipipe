@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.ui.cache;
 
 import com.google.common.eventbus.Subscribe;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProjectCache;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
@@ -31,7 +32,6 @@ import org.hkijena.jipipe.ui.components.JIPipeComponentCellRenderer;
 import org.hkijena.jipipe.ui.components.SearchTextField;
 import org.hkijena.jipipe.ui.components.SearchTextFieldTableRowFilter;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
-import org.hkijena.jipipe.ui.registries.JIPipeUIDatatypeRegistry;
 import org.hkijena.jipipe.ui.resultanalysis.JIPipeNodeTableCellRenderer;
 import org.hkijena.jipipe.ui.resultanalysis.JIPipeProjectCompartmentTableCellRenderer;
 import org.hkijena.jipipe.ui.resultanalysis.JIPipeTraitTableCellRenderer;
@@ -174,7 +174,7 @@ public class JIPipeCacheMultiDataSlotTableUI extends JIPipeProjectWorkbenchPanel
             JIPipeDataSlot slot = multiSlotTable.getSlot(multiRow);
             int row = multiSlotTable.getRow(multiRow);
             String name = slot.getNode().getName() + "/" + slot.getName() + "/" + row;
-            JLabel nameLabel = new JLabel(name, JIPipeUIDatatypeRegistry.getInstance().getIconFor(slot.getAcceptedDataType()), JLabel.LEFT);
+            JLabel nameLabel = new JLabel(name, JIPipe.getDataTypes().getIconFor(slot.getAcceptedDataType()), JLabel.LEFT);
             nameLabel.setToolTipText(TooltipUtils.getSlotInstanceTooltip(slot));
             JIPipeDataSlotRowUI JIPipeDataSlotRowUI = new JIPipeDataSlotRowUI(getWorkbench(), slot, row);
             rowUIList.addToForm(JIPipeDataSlotRowUI, nameLabel, null);

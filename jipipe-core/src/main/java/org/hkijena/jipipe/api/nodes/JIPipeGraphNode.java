@@ -24,6 +24,7 @@ import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeRun;
@@ -845,14 +846,14 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
      */
     public Set<JIPipeDependency> getDependencies() {
         Set<JIPipeDependency> result = new HashSet<>();
-        result.add(JIPipeNodeRegistry.getInstance().getSourceOf(getInfo().getId()));
+        result.add(JIPipe.getNodes().getSourceOf(getInfo().getId()));
 
         // Add data slots
         for (JIPipeDataSlot slot : inputSlots) {
-            result.add(JIPipeDatatypeRegistry.getInstance().getSourceOf(slot.getAcceptedDataType()));
+            result.add(JIPipe.getDataTypes().getSourceOf(slot.getAcceptedDataType()));
         }
         for (JIPipeDataSlot slot : outputSlots) {
-            result.add(JIPipeDatatypeRegistry.getInstance().getSourceOf(slot.getAcceptedDataType()));
+            result.add(JIPipe.getDataTypes().getSourceOf(slot.getAcceptedDataType()));
         }
 
         return result;
@@ -961,7 +962,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
      * @return Algorithm instance
      */
     public static <T extends JIPipeGraphNode> T newInstance(String id, Class<T> klass) {
-        return (T) JIPipeNodeRegistry.getInstance().getInfoById(id).newInstance();
+        return (T) JIPipe.getNodes().getInfoById(id).newInstance();
     }
 
     /**

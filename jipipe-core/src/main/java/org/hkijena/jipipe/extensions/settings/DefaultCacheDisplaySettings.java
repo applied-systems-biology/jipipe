@@ -1,6 +1,6 @@
 package org.hkijena.jipipe.extensions.settings;
 
-import org.hkijena.jipipe.JIPipeDefaultRegistry;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 
 /**
@@ -18,6 +18,6 @@ public class DefaultCacheDisplaySettings extends JIPipeDynamicParameterCollectio
     }
 
     public static DefaultCacheDisplaySettings getInstance() {
-        return JIPipeDefaultRegistry.getInstance().getSettingsRegistry().getSettings(ID, DefaultCacheDisplaySettings.class);
+        return JIPipe.getSettings().getSettings(ID, DefaultCacheDisplaySettings.class);
     }
 }

@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.api.data;
 
 import com.google.common.eventbus.EventBus;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
@@ -95,7 +96,7 @@ public class JIPipeDataSlot implements TableModel {
     public boolean accepts(JIPipeData data) {
         if (data == null)
             throw new NullPointerException("Data slots cannot accept null data!");
-        return JIPipeDatatypeRegistry.getInstance().isConvertible(data.getClass(), getAcceptedDataType());
+        return JIPipe.getDataTypes().isConvertible(data.getClass(), getAcceptedDataType());
     }
 
     /**
@@ -107,7 +108,7 @@ public class JIPipeDataSlot implements TableModel {
      * @return Data at row
      */
     public <T extends JIPipeData> T getData(int row, Class<T> dataClass) {
-        return (T) JIPipeDatatypeRegistry.getInstance().convert(data.get(row), dataClass);
+        return (T) JIPipe.getDataTypes().convert(data.get(row), dataClass);
     }
 
     /**
@@ -172,7 +173,7 @@ public class JIPipeDataSlot implements TableModel {
                 uniqueData = false;
             }
         }
-        data.add(JIPipeDatatypeRegistry.getInstance().convert(value, getAcceptedDataType()));
+        data.add(JIPipe.getDataTypes().convert(value, getAcceptedDataType()));
         for (JIPipeAnnotation trait : traits) {
             List<JIPipeAnnotation> traitArray = getOrCreateAnnotationColumnData(trait.getName());
             traitArray.set(getRowCount() - 1, trait);
@@ -376,6 +377,15 @@ public class JIPipeDataSlot implements TableModel {
      */
     public Path getStoragePath() {
         return storagePath;
+    }
+
+    /**
+     * Gets the storage path of a data row from a result. This is not used during project creation.
+     * @param index row index
+     * @return path where the row's data is stored
+     */
+    public Path getRowStoragePath(int index) {
+        return storagePath.resolve("" + index);
     }
 
     /**

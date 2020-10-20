@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.ui.grapheditor.contextmenu;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.grouping.JsonAlgorithm;
 import org.hkijena.jipipe.api.history.GraphChangedHistorySnapshot;
 import org.hkijena.jipipe.api.registries.JIPipeNodeRegistry;
@@ -26,7 +27,7 @@ import java.util.Set;
 public class JsonAlgorithmToGroupNodeUIContextAction implements NodeUIContextAction {
     @Override
     public boolean matches(Set<JIPipeNodeUI> selection) {
-        return JIPipeNodeRegistry.getInstance().hasNodeInfoWithId("node-group") && selection.stream().map(JIPipeNodeUI::getNode).anyMatch(a -> a instanceof JsonAlgorithm);
+        return JIPipe.getNodes().hasNodeInfoWithId("node-group") && selection.stream().map(JIPipeNodeUI::getNode).anyMatch(a -> a instanceof JsonAlgorithm);
     }
 
     @Override

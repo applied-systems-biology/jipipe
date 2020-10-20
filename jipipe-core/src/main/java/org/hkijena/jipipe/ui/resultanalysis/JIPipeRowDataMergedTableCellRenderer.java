@@ -13,11 +13,11 @@
 
 package org.hkijena.jipipe.ui.resultanalysis;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeExportedDataTable;
 import org.hkijena.jipipe.api.data.JIPipeMergedExportedDataTable;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
-import org.hkijena.jipipe.ui.registries.JIPipeUIDatatypeRegistry;
 
 import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
@@ -52,7 +52,7 @@ public class JIPipeRowDataMergedTableCellRenderer implements TableCellRenderer {
             JIPipeDataSlot slot = model.getSlot(table.convertRowIndexToModel(row));
             JIPipeResultDataSlotPreviewUI preview = previewCache.get(row);
             if (preview == null) {
-                preview = JIPipeUIDatatypeRegistry.getInstance().getCellRendererFor(slot.getAcceptedDataType(), table);
+                preview = JIPipe.getDataTypes().getCellRendererFor(slot.getAcceptedDataType(), table);
                 preview.render(workbenchUI, slot, (JIPipeExportedDataTable.Row) value);
                 previewCache.set(row, preview);
             }

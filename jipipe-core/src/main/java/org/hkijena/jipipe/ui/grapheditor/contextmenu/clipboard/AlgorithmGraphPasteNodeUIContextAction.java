@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.ui.grapheditor.contextmenu.clipboard;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeCompartmentOutput;
 import org.hkijena.jipipe.api.history.PasteNodeGraphHistorySnapshot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
@@ -49,7 +50,7 @@ public class AlgorithmGraphPasteNodeUIContextAction implements NodeUIContextActi
                 // Replace project compartment with IOInterface
                 for (JIPipeGraphNode node : graph.getNodes().values()) {
                     if (node instanceof JIPipeCompartmentOutput) {
-                        node.setInfo(JIPipeNodeRegistry.getInstance().getInfoById("io-interface"));
+                        node.setInfo(JIPipe.getNodes().getInfoById("io-interface"));
                     }
                 }
 

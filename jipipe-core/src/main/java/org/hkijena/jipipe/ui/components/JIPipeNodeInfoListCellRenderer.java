@@ -13,8 +13,8 @@
 
 package org.hkijena.jipipe.ui.components;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.ui.registries.JIPipeUINodeRegistry;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -97,7 +97,7 @@ public class JIPipeNodeInfoListCellRenderer extends JPanel implements ListCellRe
 
             pathLabel.setText(menuPath);
             nameLabel.setText(info.getName());
-            nodeIcon.setIcon(JIPipeUINodeRegistry.getInstance().getIconFor(info));
+            nodeIcon.setIcon(JIPipe.getNodes().getIconFor(info));
         } else {
             nameLabel.setText("<Null>");
         }

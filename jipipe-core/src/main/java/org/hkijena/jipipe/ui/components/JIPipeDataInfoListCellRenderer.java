@@ -13,8 +13,8 @@
 
 package org.hkijena.jipipe.ui.components;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
-import org.hkijena.jipipe.ui.registries.JIPipeUIDatatypeRegistry;
 
 import javax.swing.*;
 import java.awt.Color;
@@ -40,7 +40,7 @@ public class JIPipeDataInfoListCellRenderer extends JLabel implements ListCellRe
         }
         if (value != null) {
             setText(value.getName());
-            setIcon(JIPipeUIDatatypeRegistry.getInstance().getIconFor(value.getDataClass()));
+            setIcon(JIPipe.getDataTypes().getIconFor(value.getDataClass()));
         } else {
             setText("<No data type>");
             setIcon(null);

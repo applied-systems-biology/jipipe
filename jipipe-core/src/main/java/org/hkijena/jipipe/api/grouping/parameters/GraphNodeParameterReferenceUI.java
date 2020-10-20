@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.api.grouping.parameters;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.registries.JIPipeParameterTypeRegistry;
@@ -55,7 +56,7 @@ public class GraphNodeParameterReferenceUI extends JPanel {
                             "Type <strong>'%s'</strong><br/>" +
                             "Unique key <strong>%s</strong><br/><br/>%s</html>",
                     reference.getOriginalName(tree),
-                    JIPipeParameterTypeRegistry.getInstance().getInfoByFieldClass(referencedParameter.getFieldClass()).getName(),
+                    JIPipe.getParameterTypes().getInfoByFieldClass(referencedParameter.getFieldClass()).getName(),
                     reference.getPath(),
                     referencedParameter.getDescription()));
             FancyTextField nameEditor = new FancyTextField(new JLabel(UIUtils.getIconFromResources("actions/configure.png")),

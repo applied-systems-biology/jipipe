@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.ui.grapheditor.settings;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatchAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.registries.JIPipeNodeRegistry;
@@ -162,7 +163,7 @@ public class JIPipeSingleAlgorithmSelectionPanelUI extends JIPipeProjectWorkbenc
                 canvas.getContextActions(),
                 canvas);
 
-        if (JIPipeNodeRegistry.getInstance().getRegisteredNodeInfos().containsValue(algorithm.getInfo())) {
+        if (JIPipe.getNodes().getRegisteredNodeInfos().containsValue(algorithm.getInfo())) {
             JButton openCompendiumButton = new JButton(UIUtils.getIconFromResources("actions/help.png"));
             UIUtils.makeFlat25x25(openCompendiumButton);
             openCompendiumButton.setToolTipText("Open in algorithm compendium");

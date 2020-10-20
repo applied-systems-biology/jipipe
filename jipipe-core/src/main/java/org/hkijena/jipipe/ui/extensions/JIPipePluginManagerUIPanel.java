@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.ui.extensions;
 
 import com.google.common.eventbus.Subscribe;
-import org.hkijena.jipipe.JIPipeDefaultRegistry;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeJsonExtension;
 import org.hkijena.jipipe.api.events.ExtensionRegisteredEvent;
@@ -44,7 +44,7 @@ public class JIPipePluginManagerUIPanel extends JIPipeProjectWorkbenchPanel {
         super(ui);
         initialize();
         reload();
-        JIPipeDefaultRegistry.getInstance().getEventBus().register(this);
+        JIPipe.getInstance().getEventBus().register(this);
     }
 
     private void initialize() {
@@ -112,7 +112,7 @@ public class JIPipePluginManagerUIPanel extends JIPipeProjectWorkbenchPanel {
     public void reload() {
         DefaultListModel<JIPipeDependency> model = (DefaultListModel<JIPipeDependency>) dependencyJList.getModel();
         model.clear();
-        for (JIPipeDependency extension : JIPipeDefaultRegistry.getInstance().getRegisteredExtensions()) {
+        for (JIPipeDependency extension : JIPipe.getInstance().getRegisteredExtensions()) {
             model.addElement(extension);
         }
         if (!model.isEmpty())

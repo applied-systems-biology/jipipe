@@ -13,11 +13,12 @@
 
 package org.hkijena.jipipe.extensions.parameters.collections;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.api.registries.JIPipeParameterTypeRegistry;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
-import org.hkijena.jipipe.ui.registries.JIPipeUIParameterTypeRegistry;
 import org.hkijena.jipipe.utils.ModernMetalTheme;
 import org.hkijena.jipipe.utils.RoundedLineBorder;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -92,7 +93,7 @@ public class ListParameterEditorUI extends JIPipeParameterEditorUI {
                     parameter,
                     parameter.getContentClass(),
                     i);
-            JIPipeParameterEditorUI ui = JIPipeUIParameterTypeRegistry.getInstance().createEditorFor(getWorkbench(), access);
+            JIPipeParameterEditorUI ui = JIPipe.getParameterTypes().createEditorFor(getWorkbench(), access);
             formPanel.addToForm(ui, removeButton, null);
         }
         emptyLabel.setVisible(parameter.isEmpty());

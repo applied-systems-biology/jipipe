@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.ui.components;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeMutableParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
@@ -62,7 +63,7 @@ public class AddDynamicParameterPanel extends JPanel {
     public AddDynamicParameterPanel(JIPipeDynamicParameterCollection parameterCollection) {
         this.parameterCollection = parameterCollection;
         this.availableTypes = parameterCollection.getAllowedTypes().stream().map(x ->
-                JIPipeParameterTypeRegistry.getInstance().getInfoByFieldClass(x)).collect(Collectors.toSet());
+                JIPipe.getParameterTypes().getInfoByFieldClass(x)).collect(Collectors.toSet());
         initialize();
         reloadTypeList();
         setInitialName();

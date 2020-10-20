@@ -13,8 +13,8 @@
 
 package org.hkijena.jipipe.ui.components;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.extensions.parameters.references.JIPipeDataInfoRef;
-import org.hkijena.jipipe.ui.registries.JIPipeUIDatatypeRegistry;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -41,7 +41,7 @@ public class JIPipeDataInfoRefListCellRenderer extends JLabel implements ListCel
         }
         if (value != null && value.getInfo() != null) {
             setText(value.getInfo().getName());
-            setIcon(JIPipeUIDatatypeRegistry.getInstance().getIconFor(value.getInfo().getDataClass()));
+            setIcon(JIPipe.getDataTypes().getIconFor(value.getInfo().getDataClass()));
         } else {
             setText("Nothing selected");
             setIcon(UIUtils.getIconFromResources("emblems/vcs-conflicting.png"));

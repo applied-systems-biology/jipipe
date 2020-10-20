@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.extensions.parameters.editors;
 
 import com.google.common.eventbus.Subscribe;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
@@ -22,7 +23,6 @@ import org.hkijena.jipipe.extensions.parameters.references.JIPipeDataInfoRef;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.JIPipeDataTypePicker;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
-import org.hkijena.jipipe.ui.registries.JIPipeUIDatatypeRegistry;
 import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -88,7 +88,7 @@ public class JIPipeDataInfoRefParameterEditorUI extends JIPipeParameterEditorUI 
         if (info != null) {
             currentlyDisplayed.setText(info.getName());
             currentlyDisplayed.setToolTipText(TooltipUtils.getDataTooltip(info));
-            currentlyDisplayed.setIcon(JIPipeUIDatatypeRegistry.getInstance().getIconFor(info.getDataClass()));
+            currentlyDisplayed.setIcon(JIPipe.getDataTypes().getIconFor(info.getDataClass()));
             if (!pickerDialog.isVisible())
                 picker.setSelectedDataTypes(Collections.singleton(info));
         } else {
@@ -110,7 +110,7 @@ public class JIPipeDataInfoRefParameterEditorUI extends JIPipeParameterEditorUI 
         }
 
         Set<JIPipeDataInfo> availableTraits = new HashSet<>();
-        for (Class<? extends JIPipeData> klass : JIPipeDatatypeRegistry.getInstance().getRegisteredDataTypes().values()) {
+        for (Class<? extends JIPipeData> klass : JIPipe.getDataTypes().getRegisteredDataTypes().values()) {
             JIPipeDataInfo info = JIPipeDataInfo.getInstance(klass);
             if (info.isHidden() && !showHidden)
                 continue;
