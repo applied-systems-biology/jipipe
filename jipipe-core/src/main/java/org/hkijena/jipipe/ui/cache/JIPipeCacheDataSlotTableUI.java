@@ -185,7 +185,7 @@ public class JIPipeCacheDataSlotTableUI extends JIPipeProjectWorkbenchPanel {
         if (slot.getRowCount() == 0) {
             removeAll();
             setLayout(new BorderLayout());
-            JLabel label = new JLabel("Data was cleared", UIUtils.getIcon64FromResources("shredder.png"), JLabel.LEFT);
+            JLabel label = new JLabel("No data available", UIUtils.getIcon64FromResources("no-data.png"), JLabel.LEFT);
             label.setFont(label.getFont().deriveFont(26.0f));
             add(label, BorderLayout.CENTER);
 
