@@ -13,10 +13,9 @@
 
 package org.hkijena.jipipe.ui.cache;
 
-import org.hkijena.jipipe.JIPipeDefaultRegistry;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataDisplayOperation;
-import org.hkijena.jipipe.api.data.JIPipeDataImportOperation;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
 import org.hkijena.jipipe.api.registries.JIPipeSettingsRegistry;
@@ -54,8 +53,8 @@ public class JIPipeDataSlotRowUI extends JIPipeWorkbenchPanel {
         super(workbench);
         this.slot = slot;
         this.row = row;
-        String datatypeId = JIPipeDefaultRegistry.getInstance().getDatatypeRegistry().getIdOf(slot.getAcceptedDataType());
-        displayOperations = JIPipeDefaultRegistry.getInstance().getDatatypeRegistry().getDisplayOperationsFor(datatypeId);
+        String datatypeId = JIPipe.getInstance().getDatatypeRegistry().getIdOf(slot.getAcceptedDataType());
+        displayOperations = JIPipe.getInstance().getDatatypeRegistry().getDisplayOperationsFor(datatypeId);
         this.initialize();
     }
 
@@ -100,12 +99,12 @@ public class JIPipeDataSlotRowUI extends JIPipeWorkbenchPanel {
         String displayName = slot.getNode().getName() + "/" + slot.getName() + "/" + row;
         operation.display(data, displayName, getWorkbench());
         if (GeneralDataSettings.getInstance().isAutoSaveLastDisplay()) {
-            String dataTypeId = JIPipeDatatypeRegistry.getInstance().getIdOf(slot.getAcceptedDataType());
+            String dataTypeId = JIPipe.getDataTypes().getIdOf(slot.getAcceptedDataType());
             DynamicStringEnumParameter parameter = DefaultCacheDisplaySettings.getInstance().getValue(dataTypeId, DynamicStringEnumParameter.class);
             if (parameter != null && !Objects.equals(operation.getName(), parameter.getValue())) {
                 parameter.setValue(operation.getName());
                 DefaultResultImporterSettings.getInstance().setValue(dataTypeId, parameter);
-                JIPipeSettingsRegistry.getInstance().save();
+                JIPipe.getSettings().save();
             }
         }
     }
@@ -113,7 +112,7 @@ public class JIPipeDataSlotRowUI extends JIPipeWorkbenchPanel {
     private JIPipeDataDisplayOperation getMainOperation() {
         if (!displayOperations.isEmpty()) {
             JIPipeDataDisplayOperation result = displayOperations.get(0);
-            String dataTypeId = JIPipeDatatypeRegistry.getInstance().getIdOf(slot.getAcceptedDataType());
+            String dataTypeId = JIPipe.getDataTypes().getIdOf(slot.getAcceptedDataType());
             DynamicStringEnumParameter parameter = DefaultCacheDisplaySettings.getInstance().getValue(dataTypeId, DynamicStringEnumParameter.class);
             if (parameter != null) {
                 String defaultName = parameter.getValue();

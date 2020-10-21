@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.ui.grapheditor;
 
 import com.google.common.eventbus.Subscribe;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeCompartmentOutput;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.events.ParameterChangedEvent;
@@ -23,7 +24,6 @@ import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.cache.JIPipeDataSlotCacheManagerUI;
 import org.hkijena.jipipe.ui.components.ZoomIcon;
 import org.hkijena.jipipe.ui.components.ZoomLabel;
-import org.hkijena.jipipe.ui.registries.JIPipeUIDatatypeRegistry;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -112,7 +112,7 @@ public class JIPipeVerticalDataSlotUI extends JIPipeDataSlotUI {
         reloadName();
         nameLabel.setToolTipText(TooltipUtils.getSlotInstanceTooltip(getSlot()));
         nameLabel.setBorder(BorderFactory.createEmptyBorder(2, 5, 2, 5));
-        nameLabel.setIcon(new ZoomIcon(JIPipeUIDatatypeRegistry.getInstance().getIconFor(getSlotDataType()), getGraphUI()));
+        nameLabel.setIcon(new ZoomIcon(JIPipe.getDataTypes().getIconFor(getSlotDataType()), getGraphUI()));
         centerPanel.add(nameLabel);
         centerPanel.add(Box.createHorizontalGlue());
 

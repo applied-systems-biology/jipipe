@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.extensions.tables.parameters.enums;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
@@ -98,7 +99,7 @@ public class TableColumnGeneratorParameterEditorUI extends JIPipeParameterEditor
     private JIPipeDataInfo[] getAvailableGenerators() {
         List<Object> result = new ArrayList<>();
         result.add(null);
-        for (Class<? extends JIPipeData> klass : JIPipeDatatypeRegistry.getInstance().getRegisteredDataTypes().values()) {
+        for (Class<? extends JIPipeData> klass : JIPipe.getDataTypes().getRegisteredDataTypes().values()) {
             if (TableColumn.isGeneratingTableColumn(klass)) {
                 result.add(JIPipeDataInfo.getInstance(klass));
             }

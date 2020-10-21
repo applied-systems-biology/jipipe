@@ -13,11 +13,10 @@
 
 package org.hkijena.jipipe.ui.resultanalysis;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
-import org.hkijena.jipipe.ui.registries.JIPipeUIDatatypeRegistry;
-import org.hkijena.jipipe.ui.registries.JIPipeUINodeRegistry;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -52,11 +51,11 @@ public class JIPipeResultTreeCellRenderer extends JLabel implements TreeCellRend
                 setText(compartment.getName());
             } else if (userObject instanceof JIPipeGraphNode) {
                 JIPipeGraphNode algorithm = (JIPipeGraphNode) userObject;
-                setIcon(JIPipeUINodeRegistry.getInstance().getIconFor(algorithm.getInfo()));
+                setIcon(JIPipe.getNodes().getIconFor(algorithm.getInfo()));
                 setText(algorithm.getName());
             } else if (userObject instanceof JIPipeDataSlot) {
                 JIPipeDataSlot slot = (JIPipeDataSlot) userObject;
-                setIcon(JIPipeUIDatatypeRegistry.getInstance().getIconFor(slot.getAcceptedDataType()));
+                setIcon(JIPipe.getDataTypes().getIconFor(slot.getAcceptedDataType()));
                 setText(slot.getName());
             } else {
                 setIcon(rootIcon);

@@ -13,12 +13,13 @@
 
 package org.hkijena.jipipe.extensions.parameters.primitives;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.events.ParameterChangedEvent;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
+import org.hkijena.jipipe.api.registries.JIPipeParameterTypeRegistry;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
-import org.hkijena.jipipe.ui.registries.JIPipeUIParameterTypeRegistry;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -63,10 +64,10 @@ public class StringOrDoubleParameterEditorUI extends JIPipeParameterEditorUI {
 
         if (parameter.getMode() == StringOrDouble.Mode.Double) {
             doubleToggle.setSelected(true);
-            add(JIPipeUIParameterTypeRegistry.getInstance().createEditorFor(getWorkbench(), traversedParameterCollection.getParameters().get("number")));
+            add(JIPipe.getParameterTypes().createEditorFor(getWorkbench(), traversedParameterCollection.getParameters().get("number")));
         } else if (parameter.getMode() == StringOrDouble.Mode.String) {
             stringToggle.setSelected(true);
-            add(JIPipeUIParameterTypeRegistry.getInstance().createEditorFor(getWorkbench(), traversedParameterCollection.getParameters().get("string")));
+            add(JIPipe.getParameterTypes().createEditorFor(getWorkbench(), traversedParameterCollection.getParameters().get("string")));
         }
 
         revalidate();

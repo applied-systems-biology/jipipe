@@ -19,6 +19,7 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import ij.macro.Variable;
 import ij.measure.ResultsTable;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeValidatable;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
@@ -122,7 +123,7 @@ public class JIPipePlotBuilderUI extends JIPipeWorkbenchPanel implements JIPipeP
     }
 
     private void installDefaultDataSources() {
-        for (Class<? extends JIPipeData> klass : JIPipeDatatypeRegistry.getInstance().getRegisteredDataTypes().values()) {
+        for (Class<? extends JIPipeData> klass : JIPipe.getDataTypes().getRegisteredDataTypes().values()) {
             if (TableColumn.isGeneratingTableColumn(klass)) {
                 TableColumn dataSource = (TableColumn) ReflectionUtils.newInstance(klass);
                 availableData.put(dataSource.getLabel(), dataSource);

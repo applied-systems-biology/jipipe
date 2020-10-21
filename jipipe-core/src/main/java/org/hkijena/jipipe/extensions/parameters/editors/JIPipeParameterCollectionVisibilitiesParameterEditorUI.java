@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.extensions.parameters.editors;
 
-import org.hkijena.jipipe.JIPipeDefaultRegistry;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollectionVisibilities;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterVisibility;
@@ -84,8 +84,8 @@ public class JIPipeParameterCollectionVisibilitiesParameterEditorUI extends JIPi
             for (String key : parameterIds) {
                 JIPipeParameterAccess parameterAccess = parameters.get(key);
 
-                JIPipeParameterEditorUI ui = JIPipeDefaultRegistry.getInstance()
-                        .getUIParameterTypeRegistry().createEditorFor(getWorkbench(), parameterAccess);
+                JIPipeParameterEditorUI ui = JIPipe.getInstance()
+                        .getParameterTypeRegistry().createEditorFor(getWorkbench(), parameterAccess);
 
                 JPanel labelPanel = new JPanel(new BorderLayout(8, 8));
                 JToggleButton exportParameterToggle = new JToggleButton(UIUtils.getIconFromResources("actions/eye.png"));

@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.ui.grapheditor.algorithmfinder;
 
 import com.google.common.eventbus.EventBus;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
@@ -27,7 +28,6 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
 import org.hkijena.jipipe.ui.events.AlgorithmFinderSuccessEvent;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphCanvasUI;
-import org.hkijena.jipipe.ui.registries.JIPipeUIDatatypeRegistry;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -80,7 +80,7 @@ public class JIPipeAlgorithmFinderSlotUI extends JPanel {
         else
             icon = UIUtils.getIconFromResources("emblems/slot-connected-horizontal.png");
         assignButton = new JButton(icon);
-        assignButton.setEnabled(JIPipeDatatypeRegistry.getInstance().isConvertible(outputSlot.getAcceptedDataType(), inputSlot.getAcceptedDataType()));
+        assignButton.setEnabled(JIPipe.getDataTypes().isConvertible(outputSlot.getAcceptedDataType(), inputSlot.getAcceptedDataType()));
         assignButton.setPreferredSize(new Dimension(25, 50));
         assignButton.setBorder(BorderFactory.createMatteBorder(0, 1, 0, 0, Color.GRAY));
         assignButtonMenu = UIUtils.addPopupMenuToComponent(assignButton);
@@ -89,7 +89,7 @@ public class JIPipeAlgorithmFinderSlotUI extends JPanel {
         JLabel nameLabel = new JLabel(inputSlot.getName());
         nameLabel.setToolTipText(JIPipeData.getNameOf(inputSlot.getAcceptedDataType()));
         nameLabel.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 5));
-        nameLabel.setIcon(JIPipeUIDatatypeRegistry.getInstance().getIconFor(inputSlot.getAcceptedDataType()));
+        nameLabel.setIcon(JIPipe.getDataTypes().getIconFor(inputSlot.getAcceptedDataType()));
 
         add(nameLabel, BorderLayout.CENTER);
 
@@ -109,12 +109,12 @@ public class JIPipeAlgorithmFinderSlotUI extends JPanel {
                 disconnectExistingButton.addActionListener(e -> disconnectAllExistingInstance());
                 assignButtonMenu.add(disconnectExistingButton);
             } else {
-                JMenuItem connectButton = new JMenuItem(inputSlot.getDisplayName(), JIPipeUIDatatypeRegistry.getInstance().getIconFor(inputSlot.getAcceptedDataType()));
+                JMenuItem connectButton = new JMenuItem(inputSlot.getDisplayName(), JIPipe.getDataTypes().getIconFor(inputSlot.getAcceptedDataType()));
                 connectButton.addActionListener(e -> connectToExistingInstance());
                 assignButtonMenu.add(connectButton);
             }
         } else {
-            JMenuItem connectButton = new JMenuItem(inputSlot.getDisplayName(), JIPipeUIDatatypeRegistry.getInstance().getIconFor(inputSlot.getAcceptedDataType()));
+            JMenuItem connectButton = new JMenuItem(inputSlot.getDisplayName(), JIPipe.getDataTypes().getIconFor(inputSlot.getAcceptedDataType()));
             connectButton.addActionListener(e -> connectToNewInstance());
             assignButtonMenu.add(connectButton);
         }

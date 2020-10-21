@@ -13,11 +13,12 @@
 
 package org.hkijena.jipipe.extensions.parameters.pairs;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.api.registries.JIPipeParameterTypeRegistry;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
-import org.hkijena.jipipe.ui.registries.JIPipeUIParameterTypeRegistry;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -66,8 +67,8 @@ public class PairParameterEditorUI extends JIPipeParameterEditorUI {
             singleRowChevron = settings.singleRowWithChevron();
         }
 
-        JIPipeParameterEditorUI keyEditor = JIPipeUIParameterTypeRegistry.getInstance().createEditorFor(getWorkbench(), keyAccess);
-        JIPipeParameterEditorUI valueEditor = JIPipeUIParameterTypeRegistry.getInstance().createEditorFor(getWorkbench(), valueAccess);
+        JIPipeParameterEditorUI keyEditor = JIPipe.getParameterTypes().createEditorFor(getWorkbench(), keyAccess);
+        JIPipeParameterEditorUI valueEditor = JIPipe.getParameterTypes().createEditorFor(getWorkbench(), valueAccess);
 
         if (singleRow) {
             setLayout(new BoxLayout(this, BoxLayout.X_AXIS));

@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.ui.batchassistant;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
@@ -26,7 +27,6 @@ import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.SearchTextField;
 import org.hkijena.jipipe.ui.components.SearchTextFieldTableRowFilter;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
-import org.hkijena.jipipe.ui.registries.JIPipeUIDatatypeRegistry;
 import org.hkijena.jipipe.ui.resultanalysis.JIPipeTraitTableCellRenderer;
 import org.hkijena.jipipe.utils.CustomScrollPane;
 import org.hkijena.jipipe.utils.TooltipUtils;
@@ -152,7 +152,7 @@ public class DataSlotTableUI extends JIPipeProjectWorkbenchPanel {
         for (int viewRow : selectedRows) {
             int row = table.getRowSorter().convertRowIndexToModel(viewRow);
             String name = slot.getNode().getName() + "/" + slot.getName() + "/" + row;
-            JLabel nameLabel = new JLabel(name, JIPipeUIDatatypeRegistry.getInstance().getIconFor(slot.getAcceptedDataType()), JLabel.LEFT);
+            JLabel nameLabel = new JLabel(name, JIPipe.getDataTypes().getIconFor(slot.getAcceptedDataType()), JLabel.LEFT);
             nameLabel.setToolTipText(TooltipUtils.getSlotInstanceTooltip(slot));
             JIPipeDataSlotRowUI rowUI = new JIPipeDataSlotRowUI(getWorkbench(), slot, row);
             rowUIList.addToForm(rowUI, nameLabel, null);

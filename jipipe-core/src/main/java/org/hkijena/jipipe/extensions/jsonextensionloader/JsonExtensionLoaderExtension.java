@@ -16,7 +16,7 @@ package org.hkijena.jipipe.extensions.jsonextensionloader;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.eventbus.Subscribe;
 import ij.Menus;
-import org.hkijena.jipipe.JIPipeDefaultRegistry;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.JIPipeJsonExtension;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
@@ -81,7 +81,7 @@ public class JsonExtensionLoaderExtension extends JIPipePrepackagedDefaultJavaEx
     }
 
     @Override
-    public void setRegistry(JIPipeDefaultRegistry registry) {
+    public void setRegistry(JIPipe registry) {
         super.setRegistry(registry);
         registry.getEventBus().register(this);
     }
@@ -102,7 +102,7 @@ public class JsonExtensionLoaderExtension extends JIPipePrepackagedDefaultJavaEx
     public void updateRegistrationTasks() {
         if (registrationTasks.isEmpty())
             return;
-        JIPipeDefaultRegistry.getInstance().getLogService().debug("[JIPipe Json Extension] There are still " + registrationTasks.size() + " unregistered extensions left");
+        JIPipe.getInstance().getLogService().debug("[JIPipe Json Extension] There are still " + registrationTasks.size() + " unregistered extensions left");
         Set<JsonExtensionRegistrationTask> runnable = new HashSet<>();
         for (JsonExtensionRegistrationTask task : registrationTasks) {
             if (task.canRegister()) {

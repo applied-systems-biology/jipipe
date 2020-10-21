@@ -13,11 +13,12 @@
 
 package org.hkijena.jipipe.extensions.tables.parameters;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
+import org.hkijena.jipipe.api.registries.JIPipeParameterTypeRegistry;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
-import org.hkijena.jipipe.ui.registries.JIPipeUIParameterTypeRegistry;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -61,10 +62,10 @@ public class TableColumnSourceParameterEditorUI extends JIPipeParameterEditorUI 
 
         if (parameter.getMode() == TableColumnSourceParameter.Mode.PickColumn) {
             pickColumnToggle.setSelected(true);
-            add(JIPipeUIParameterTypeRegistry.getInstance().createEditorFor(getWorkbench(), traversedParameterCollection.getParameters().get("column-source")));
+            add(JIPipe.getParameterTypes().createEditorFor(getWorkbench(), traversedParameterCollection.getParameters().get("column-source")));
         } else if (parameter.getMode() == TableColumnSourceParameter.Mode.GenerateColumn) {
             generateColumnToggle.setSelected(true);
-            add(JIPipeUIParameterTypeRegistry.getInstance().createEditorFor(getWorkbench(), traversedParameterCollection.getParameters().get("generator-source")));
+            add(JIPipe.getParameterTypes().createEditorFor(getWorkbench(), traversedParameterCollection.getParameters().get("generator-source")));
         }
 
         revalidate();

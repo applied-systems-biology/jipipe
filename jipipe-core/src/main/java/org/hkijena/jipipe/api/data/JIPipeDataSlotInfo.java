@@ -25,6 +25,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.EventBus;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.events.ParameterChangedEvent;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
@@ -299,7 +300,7 @@ public class JIPipeDataSlotInfo implements JIPipeParameterCollection {
         @Override
         public void serialize(JIPipeDataSlotInfo definition, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
             jsonGenerator.writeStartObject();
-            jsonGenerator.writeStringField("slot-data-type", JIPipeDatatypeRegistry.getInstance().getIdOf(definition.dataClass));
+            jsonGenerator.writeStringField("slot-data-type", JIPipe.getDataTypes().getIdOf(definition.dataClass));
             jsonGenerator.writeStringField("slot-type", definition.slotType.name());
             jsonGenerator.writeStringField("inherited-slot", definition.inheritedSlot);
             jsonGenerator.writeStringField("name", definition.name);
@@ -323,7 +324,7 @@ public class JIPipeDataSlotInfo implements JIPipeParameterCollection {
         public JIPipeDataSlotInfo deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
             JsonNode node = jsonParser.getCodec().readTree(jsonParser);
             JsonNode inheritedSlotNode = node.path("inherited-slot");
-            JIPipeDataSlotInfo definition = new JIPipeDataSlotInfo(JIPipeDatatypeRegistry.getInstance().getById(node.get("slot-data-type").asText()),
+            JIPipeDataSlotInfo definition = new JIPipeDataSlotInfo(JIPipe.getDataTypes().getById(node.get("slot-data-type").asText()),
                     JIPipeSlotType.valueOf(node.get("slot-type").asText()),
                     node.get("name").asText(),
                     inheritedSlotNode.isMissingNode() ? "" : inheritedSlotNode.asText(null));

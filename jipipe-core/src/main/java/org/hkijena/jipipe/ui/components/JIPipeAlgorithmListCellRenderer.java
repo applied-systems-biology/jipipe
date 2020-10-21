@@ -13,8 +13,9 @@
 
 package org.hkijena.jipipe.ui.components;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
-import org.hkijena.jipipe.ui.registries.JIPipeUINodeRegistry;
+import org.hkijena.jipipe.api.registries.JIPipeNodeRegistry;
 
 import javax.swing.*;
 import java.awt.Color;
@@ -40,7 +41,7 @@ public class JIPipeAlgorithmListCellRenderer extends JLabel implements ListCellR
         }
         if (value != null) {
             setText(value.getName());
-            setIcon(JIPipeUINodeRegistry.getInstance().getIconFor(value.getInfo()));
+            setIcon(JIPipe.getNodes().getIconFor(value.getInfo()));
         } else {
             setText("<No data type>");
             setIcon(null);

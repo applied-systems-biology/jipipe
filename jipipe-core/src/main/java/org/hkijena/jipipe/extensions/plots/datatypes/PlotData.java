@@ -22,6 +22,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.EventBus;
 import ij.measure.ResultsTable;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeHidden;
 import org.hkijena.jipipe.api.JIPipeValidatable;
@@ -279,7 +280,7 @@ public abstract class PlotData implements JIPipeData, JIPipeParameterCollection,
         PlotData result;
         try {
             JsonNode node = JsonUtils.getObjectMapper().readValue(folder.resolve("plot-metadata.json").toFile(), JsonNode.class);
-            Class<? extends JIPipeData> dataClass = JIPipeDatatypeRegistry.getInstance().getById(node.get("plot-data-type").textValue());
+            Class<? extends JIPipeData> dataClass = JIPipe.getDataTypes().getById(node.get("plot-data-type").textValue());
             result = (PlotData) JIPipeData.createInstance(dataClass);
 
             // Load metadata
@@ -307,7 +308,7 @@ public abstract class PlotData implements JIPipeData, JIPipeParameterCollection,
         @Override
         public void serialize(PlotData value, JsonGenerator gen, SerializerProvider serializers) throws IOException, JsonProcessingException {
             gen.writeStartObject();
-            gen.writeStringField("plot-data-type", JIPipeDatatypeRegistry.getInstance().getIdOf(value.getClass()));
+            gen.writeStringField("plot-data-type", JIPipe.getDataTypes().getIdOf(value.getClass()));
 
             // Write parameters
             JIPipeParameterCollection.serializeParametersToJson(value, gen);

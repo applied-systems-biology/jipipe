@@ -16,6 +16,7 @@ package org.hkijena.jipipe.api.data;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import ij.measure.ResultsTable;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
 import org.hkijena.jipipe.utils.JsonUtils;
@@ -127,7 +128,7 @@ public class JIPipeExportedDataTable implements TableModel {
      */
     @JsonGetter("data-type")
     public String getAcceptedDataTypeId() {
-        return JIPipeDatatypeRegistry.getInstance().getIdOf(acceptedDataType);
+        return JIPipe.getDataTypes().getIdOf(acceptedDataType);
     }
 
     /**
@@ -137,7 +138,7 @@ public class JIPipeExportedDataTable implements TableModel {
      */
     @JsonSetter("data-type")
     public void setAcceptedDataTypeId(String id) {
-        this.acceptedDataType = JIPipeDatatypeRegistry.getInstance().getById(id);
+        this.acceptedDataType = JIPipe.getDataTypes().getById(id);
     }
 
     /**
@@ -180,7 +181,7 @@ public class JIPipeExportedDataTable implements TableModel {
             table.incrementCounter();
             table.addValue("jipipe:algorithm-id", algorithmId);
             table.addValue("jipipe:slot", slotName);
-            table.addValue("jipipe:data-type", JIPipeDatatypeRegistry.getInstance().getIdOf(acceptedDataType));
+            table.addValue("jipipe:data-type", JIPipe.getDataTypes().getIdOf(acceptedDataType));
             table.addValue("jipipe:internal-path", internalPath.toString());
             table.addValue("jipipe:index", row.index);
             for (String traitColumn : getTraitColumns()) {

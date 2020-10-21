@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.extensions.multiparameters.datasources;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.events.ParameterStructureChangedEvent;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
@@ -37,7 +38,7 @@ public class GeneratedParameters extends JIPipeDynamicParameterCollection {
     private JIPipeGraphNode parent;
 
     public GeneratedParameters(JIPipeGraphNode parent) {
-        super(true, JIPipeParameterTypeRegistry.getInstance().getRegisteredParameters().values());
+        super(true, JIPipe.getParameterTypes().getRegisteredParameters().values());
         this.parent = parent;
     }
 

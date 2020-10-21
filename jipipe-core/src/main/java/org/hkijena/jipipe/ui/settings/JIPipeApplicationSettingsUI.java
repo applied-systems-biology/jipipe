@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.ui.settings;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDefaultDocumentation;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.registries.JIPipeSettingsRegistry;
@@ -71,7 +72,7 @@ public class JIPipeApplicationSettingsUI extends JIPipeWorkbenchPanel {
         add(splitPane, BorderLayout.CENTER);
 
         Map<String, List<JIPipeSettingsRegistry.Sheet>> byCategory =
-                JIPipeSettingsRegistry.getInstance().getRegisteredSheets().values().stream().collect(Collectors.groupingBy(JIPipeSettingsRegistry.Sheet::getCategory));
+                JIPipe.getSettings().getRegisteredSheets().values().stream().collect(Collectors.groupingBy(JIPipeSettingsRegistry.Sheet::getCategory));
         List<String> categories = byCategory.keySet().stream().sorted().collect(Collectors.toList());
         if (categories.contains("General")) {
             categories.remove("General");

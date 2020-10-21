@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.extensions.settings;
 
 import com.google.common.eventbus.EventBus;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
@@ -552,7 +553,7 @@ public class FileChooserSettings implements JIPipeParameterCollection {
     }
 
     public static FileChooserSettings getInstance() {
-        return JIPipeSettingsRegistry.getInstance().getSettings(ID, FileChooserSettings.class);
+        return JIPipe.getSettings().getSettings(ID, FileChooserSettings.class);
     }
 
 }

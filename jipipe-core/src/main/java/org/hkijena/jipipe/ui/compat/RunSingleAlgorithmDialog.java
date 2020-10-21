@@ -15,6 +15,7 @@ package org.hkijena.jipipe.ui.compat;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.eventbus.Subscribe;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.compat.ImageJDatatypeImporter;
 import org.hkijena.jipipe.api.compat.SingleImageJAlgorithmRun;
@@ -26,7 +27,6 @@ import org.hkijena.jipipe.api.events.NodeSlotsChangedEvent;
 import org.hkijena.jipipe.api.history.JIPipeGraphHistory;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.registries.JIPipeNodeRegistry;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.AddAlgorithmSlotPanel;
@@ -35,8 +35,6 @@ import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.JIPipeNodeInfoListCellRenderer;
 import org.hkijena.jipipe.ui.components.SearchTextField;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
-import org.hkijena.jipipe.ui.registries.JIPipeUIDatatypeRegistry;
-import org.hkijena.jipipe.ui.registries.JIPipeUIImageJDatatypeAdapterRegistry;
 import org.hkijena.jipipe.utils.CustomScrollPane;
 import org.hkijena.jipipe.utils.JsonUtils;
 import org.hkijena.jipipe.utils.MacroUtils;
@@ -145,7 +143,7 @@ public class RunSingleAlgorithmDialog extends JDialog implements JIPipeWorkbench
     private List<JIPipeNodeInfo> getFilteredAndSortedInfos() {
         Predicate<JIPipeNodeInfo> filterFunction = info -> searchField.test(info.getName() + " " + info.getDescription() + " " + info.getMenuPath());
 
-        return JIPipeNodeRegistry.getInstance().getRegisteredNodeInfos().values().stream().filter(filterFunction)
+        return JIPipe.getNodes().getRegisteredNodeInfos().values().stream().filter(filterFunction)
                 .sorted(Comparator.comparing(JIPipeNodeInfo::getName)).collect(Collectors.toList());
     }
 
@@ -230,7 +228,7 @@ public class RunSingleAlgorithmDialog extends JDialog implements JIPipeWorkbench
             }
         }
         for (Map.Entry<String, ImageJDatatypeImporter> entry : runSettings.getInputSlotImporters().entrySet()) {
-            ImageJDatatypeImporterUI ui = JIPipeUIImageJDatatypeAdapterRegistry.getInstance().getUIFor(entry.getValue());
+            ImageJDatatypeImporterUI ui = JIPipe.getImageJAdapters().getUIFor(entry.getValue());
             Component slotName;
             if (inputSlotsAreRemovable) {
                 JIPipeMutableSlotConfiguration slotConfiguration = (JIPipeMutableSlotConfiguration) getAlgorithm().getSlotConfiguration();
@@ -241,12 +239,12 @@ public class RunSingleAlgorithmDialog extends JDialog implements JIPipeWorkbench
                 removeButton.addActionListener(e -> slotConfiguration.removeInputSlot(entry.getKey(), true));
                 panel.add(removeButton, BorderLayout.WEST);
                 panel.add(new JLabel(entry.getKey(),
-                        JIPipeUIDatatypeRegistry.getInstance().getIconFor(entry.getValue().getAdapter().getJIPipeDatatype()),
+                        JIPipe.getDataTypes().getIconFor(entry.getValue().getAdapter().getJIPipeDatatype()),
                         JLabel.LEFT), BorderLayout.CENTER);
                 slotName = panel;
             } else {
                 slotName = new JLabel(entry.getKey(),
-                        JIPipeUIDatatypeRegistry.getInstance().getIconFor(entry.getValue().getAdapter().getJIPipeDatatype()),
+                        JIPipe.getDataTypes().getIconFor(entry.getValue().getAdapter().getJIPipeDatatype()),
                         JLabel.LEFT);
             }
             formPanel.addToForm(ui, slotName, null);
@@ -281,12 +279,12 @@ public class RunSingleAlgorithmDialog extends JDialog implements JIPipeWorkbench
                 removeButton.addActionListener(e -> slotConfiguration.removeOutputSlot(outputSlot.getName(), true));
                 panel.add(removeButton, BorderLayout.WEST);
                 panel.add(new JLabel(outputSlot.getName(),
-                        JIPipeUIDatatypeRegistry.getInstance().getIconFor(outputSlot.getAcceptedDataType()),
+                        JIPipe.getDataTypes().getIconFor(outputSlot.getAcceptedDataType()),
                         JLabel.LEFT), BorderLayout.CENTER);
                 slotName = panel;
             } else {
                 slotName = new JLabel(outputSlot.getName(),
-                        JIPipeUIDatatypeRegistry.getInstance().getIconFor(outputSlot.getAcceptedDataType()),
+                        JIPipe.getDataTypes().getIconFor(outputSlot.getAcceptedDataType()),
                         JLabel.LEFT);
             }
             formPanel.addWideToForm(slotName, null);

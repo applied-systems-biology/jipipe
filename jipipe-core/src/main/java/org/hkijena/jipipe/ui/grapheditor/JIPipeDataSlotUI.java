@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.ui.grapheditor;
 
 import com.google.common.eventbus.Subscribe;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeMutableSlotConfiguration;
@@ -29,12 +30,12 @@ import org.hkijena.jipipe.api.history.MoveNodesGraphHistorySnapshot;
 import org.hkijena.jipipe.api.history.SlotConfigurationHistorySnapshot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphEdge;
+import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.EditAlgorithmSlotPanel;
 import org.hkijena.jipipe.ui.events.AlgorithmFinderSuccessEvent;
 import org.hkijena.jipipe.ui.grapheditor.algorithmfinder.JIPipeAlgorithmFinderUI;
-import org.hkijena.jipipe.ui.registries.JIPipeUIDatatypeRegistry;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -149,7 +150,7 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
                     if (!source.getNode().isVisibleIn(compartment))
                         continue;
                     JMenuItem connectButton = new JMenuItem(source.getDisplayName(),
-                            JIPipeUIDatatypeRegistry.getInstance().getIconFor(source.getAcceptedDataType()));
+                            JIPipe.getDataTypes().getIconFor(source.getAcceptedDataType()));
                     connectButton.addActionListener(e -> connectSlot(source, slot));
                     installHighlightForConnect(source, connectButton);
                     assignButtonMenu.add(connectButton);
@@ -275,7 +276,7 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
 
             for (JIPipeDataSlot target : sortSlotsByDistance(availableTargets)) {
                 JMenuItem connectButton = new JMenuItem(target.getDisplayName(),
-                        JIPipeUIDatatypeRegistry.getInstance().getIconFor(target.getAcceptedDataType()));
+                        JIPipe.getDataTypes().getIconFor(target.getAcceptedDataType()));
                 connectButton.addActionListener(e -> connectSlot(slot, target));
                 connectButton.setToolTipText(TooltipUtils.getAlgorithmTooltip(target.getNode().getInfo()));
                 connectButton.addMouseListener(new MouseAdapter() {

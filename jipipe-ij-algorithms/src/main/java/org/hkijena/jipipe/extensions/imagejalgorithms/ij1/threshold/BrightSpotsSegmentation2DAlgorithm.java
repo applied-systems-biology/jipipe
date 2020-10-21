@@ -18,6 +18,7 @@ import ij.ImageStack;
 import ij.plugin.filter.BackgroundSubtracter;
 import ij.plugin.filter.Binary;
 import ij.plugin.filter.GaussianBlur;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
@@ -71,7 +72,7 @@ public class BrightSpotsSegmentation2DAlgorithm extends JIPipeSimpleIteratingAlg
                 .allowOutputSlotInheritance(true)
                 .seal()
                 .build());
-        this.autoThresholding = (AutoThreshold2DAlgorithm) JIPipeNodeRegistry.getInstance().getInfoById("ij1-threshold-auto2d").newInstance();
+        this.autoThresholding = (AutoThreshold2DAlgorithm) JIPipe.getNodes().getInfoById("ij1-threshold-auto2d").newInstance();
     }
 
     /**

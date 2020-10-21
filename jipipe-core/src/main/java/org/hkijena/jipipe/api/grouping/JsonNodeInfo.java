@@ -18,7 +18,7 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 import com.google.common.collect.Sets;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import org.hkijena.jipipe.JIPipeDefaultRegistry;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeValidatable;
@@ -169,8 +169,8 @@ public class JsonNodeInfo implements JIPipeNodeInfo, JIPipeValidatable, JIPipePa
     @Override
     public JIPipeNodeTypeCategory getCategory() {
         if (category != null && category.getValue() != null && !StringUtils.isNullOrEmpty("" + category.getValue())) {
-            if (JIPipeDefaultRegistry.getInstance() != null && JIPipeDefaultRegistry.getInstance().getNodeRegistry() != null) {
-                JIPipeNodeTypeCategory result = JIPipeNodeRegistry.getInstance().getRegisteredCategories().getOrDefault("" + category.getValue(), null);
+            if (JIPipe.getInstance() != null && JIPipe.getInstance().getNodeRegistry() != null) {
+                JIPipeNodeTypeCategory result = JIPipe.getNodes().getRegisteredCategories().getOrDefault("" + category.getValue(), null);
                 if (result != null)
                     return result;
             }
@@ -184,11 +184,11 @@ public class JsonNodeInfo implements JIPipeNodeInfo, JIPipeValidatable, JIPipePa
     @JsonGetter("category")
     public DynamicCategoryEnumParameter getCategoryParameter() {
         if (category != null) {
-            if (JIPipeDefaultRegistry.getInstance() != null && JIPipeDefaultRegistry.getInstance().getNodeRegistry() != null) {
+            if (JIPipe.getInstance() != null && JIPipe.getInstance().getNodeRegistry() != null) {
                 if (category.getAllowedValues() == null)
                     category.setAllowedValues(new ArrayList<>());
                 category.getAllowedValues().clear();
-                category.getAllowedValues().addAll(JIPipeNodeRegistry.getInstance().getRegisteredCategories().keySet());
+                category.getAllowedValues().addAll(JIPipe.getNodes().getRegisteredCategories().keySet());
             }
         }
         return category;

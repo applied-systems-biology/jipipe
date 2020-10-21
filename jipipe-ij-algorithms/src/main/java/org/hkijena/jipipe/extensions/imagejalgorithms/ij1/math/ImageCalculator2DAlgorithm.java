@@ -15,6 +15,7 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.math;
 
 import ij.ImagePlus;
 import ij.plugin.ImageCalculator;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
@@ -129,7 +130,7 @@ public class ImageCalculator2DAlgorithm extends JIPipeIteratingAlgorithm {
         }
 
         // Make both of the inputs the same type
-        rightOperand = (ImagePlusData) JIPipeDatatypeRegistry.getInstance().convert(rightOperand, leftOperand.getClass());
+        rightOperand = (ImagePlusData) JIPipe.getDataTypes().convert(rightOperand, leftOperand.getClass());
 
         ImageCalculator calculator = new ImageCalculator();
         ImagePlus img = calculator.run(operation.getId() + " stack create", leftOperand.getImage(), rightOperand.getImage());

@@ -16,8 +16,8 @@ package org.hkijena.jipipe.ui.tableanalyzer;
 import com.google.common.base.Charsets;
 import com.google.common.base.Joiner;
 import com.google.common.primitives.Ints;
-import org.hkijena.jipipe.api.registries.JIPipeImageJAdapterRegistry;
-import org.hkijena.jipipe.api.registries.JIPipeTableRegistry;
+import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.registries.JIPipeTableOperationRegistry;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.tables.ConvertingColumnOperation;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
@@ -265,7 +265,7 @@ public class JIPipeTableEditor extends JIPipeWorkbenchPanel {
     }
 
     private void exportToImageJ() {
-        JIPipeImageJAdapterRegistry.getInstance().getAdapterForJIPipeData(ResultsTableData.class).convertJIPipeToImageJ(
+        JIPipe.getImageJAdapters().getAdapterForJIPipeData(ResultsTableData.class).convertJIPipeToImageJ(
                 tableModel,
                 true,
                 false,
@@ -487,9 +487,9 @@ public class JIPipeTableEditor extends JIPipeWorkbenchPanel {
         if (isRebuildingSelection)
             return;
         convertSelectedCellsMenu.removeAll();
-        for (JIPipeTableRegistry.ColumnOperationEntry entry :
-                JIPipeTableRegistry.getInstance().getOperationsOfType(ConvertingColumnOperation.class)
-                        .values().stream().sorted(Comparator.comparing(JIPipeTableRegistry.ColumnOperationEntry::getName)).collect(Collectors.toList())) {
+        for (JIPipeTableOperationRegistry.ColumnOperationEntry entry :
+                JIPipe.getTableOperations().getOperationsOfType(ConvertingColumnOperation.class)
+                        .values().stream().sorted(Comparator.comparing(JIPipeTableOperationRegistry.ColumnOperationEntry::getName)).collect(Collectors.toList())) {
             JMenuItem item = new JMenuItem(entry.getName(), UIUtils.getIconFromResources("actions/configure.png"));
             item.setToolTipText(entry.getDescription());
             item.addActionListener(e -> {

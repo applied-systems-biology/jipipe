@@ -13,11 +13,11 @@
 
 package org.hkijena.jipipe.ui.components;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
-import org.hkijena.jipipe.ui.registries.JIPipeUINodeRegistry;
 import org.hkijena.jipipe.utils.CustomScrollPane;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -186,7 +186,7 @@ public class ParameterTreeUI extends JPanel {
                     Icon icon = null;
                     if (node.getCollection() instanceof JIPipeGraphNode) {
                         JIPipeNodeInfo info = ((JIPipeGraphNode) node.getCollection()).getInfo();
-                        icon = JIPipeUINodeRegistry.getInstance().getIconFor(info);
+                        icon = JIPipe.getNodes().getIconFor(info);
                     }
                     if (icon == null) {
                         UIUtils.getIconFromResources("actions/object-group.png");

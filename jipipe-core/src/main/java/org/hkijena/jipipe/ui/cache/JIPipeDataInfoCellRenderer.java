@@ -13,9 +13,9 @@
 
 package org.hkijena.jipipe.ui.cache;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
-import org.hkijena.jipipe.ui.registries.JIPipeUIDatatypeRegistry;
 
 import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
@@ -39,7 +39,7 @@ public class JIPipeDataInfoCellRenderer extends JLabel implements TableCellRende
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
         if (value instanceof JIPipeDataInfo) {
             JIPipeDataInfo data = (JIPipeDataInfo) value;
-            setIcon(JIPipeUIDatatypeRegistry.getInstance().getIconFor(data.getDataClass()));
+            setIcon(JIPipe.getDataTypes().getIconFor(data.getDataClass()));
             setText(data.getName());
         }
         if (isSelected) {

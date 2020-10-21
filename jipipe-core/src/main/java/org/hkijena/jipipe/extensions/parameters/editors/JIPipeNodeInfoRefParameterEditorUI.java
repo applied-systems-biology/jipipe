@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.extensions.parameters.editors;
 
 import com.google.common.eventbus.Subscribe;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.registries.JIPipeNodeRegistry;
@@ -92,7 +93,7 @@ public class JIPipeNodeInfoRefParameterEditorUI extends JIPipeParameterEditorUI 
     }
 
     private void initializePicker() {
-        picker = new JIPipeNodeInfoPicker(JIPipeNodeInfoPicker.Mode.Single, JIPipeNodeRegistry.getInstance().getRegisteredNodeInfos().values().stream()
+        picker = new JIPipeNodeInfoPicker(JIPipeNodeInfoPicker.Mode.Single, JIPipe.getNodes().getRegisteredNodeInfos().values().stream()
                 .filter(d -> !d.isHidden()).collect(Collectors.toSet()));
         picker.getEventBus().register(this);
     }

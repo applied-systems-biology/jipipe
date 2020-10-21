@@ -15,6 +15,7 @@ package org.hkijena.jipipe.extensions.clij2.algorithms;
 
 import net.haesleinhuepf.clij.clearcl.ClearCLBuffer;
 import net.haesleinhuepf.clij2.CLIJ2;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
@@ -172,7 +173,7 @@ public class Clij2ExecuteKernelSimpleIterating extends JIPipeSimpleIteratingAlgo
         for (Map.Entry<String, JIPipeParameterAccess> entry : scriptParameters.getParameters().entrySet()) {
             Object o = entry.getValue().get(Object.class);
             if (o == null) {
-                o = JIPipeParameterTypeRegistry.getInstance().getInfoByFieldClass(entry.getValue().getFieldClass()).newInstance();
+                o = JIPipe.getParameterTypes().getInfoByFieldClass(entry.getValue().getFieldClass()).newInstance();
             }
             if (o instanceof Boolean) {
                 o = (boolean) o ? 1 : 0;

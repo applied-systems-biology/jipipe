@@ -16,7 +16,7 @@ package org.hkijena.jipipe.ui;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.eventbus.EventBus;
 import net.imagej.updater.UpdateSite;
-import org.hkijena.jipipe.JIPipeDefaultRegistry;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeImageJUpdateSiteDependency;
 import org.hkijena.jipipe.api.JIPipeProject;
@@ -160,14 +160,14 @@ public class JIPipeProjectWindow extends JFrame {
                 JIPipeProjectMetadata metadata = JIPipeProject.loadMetadataFromJson(jsonData);
 
                 Set<JIPipeImageJUpdateSiteDependency> missingUpdateSites = new HashSet<>();
-                if (JIPipeDefaultRegistry.getInstance().getImageJPlugins() != null) {
+                if (JIPipe.getInstance().getImageJPlugins() != null) {
                     // Populate
                     for (JIPipeDependency dependency : dependencySet) {
                         missingUpdateSites.addAll(dependency.getImageJUpdateSiteDependencies());
                     }
                     missingUpdateSites.addAll(metadata.getUpdateSiteDependencies());
                     // Remove existing
-                    for (UpdateSite updateSite : JIPipeDefaultRegistry.getInstance().getImageJPlugins().getUpdateSites(true)) {
+                    for (UpdateSite updateSite : JIPipe.getInstance().getImageJPlugins().getUpdateSites(true)) {
                         if (updateSite.isActive()) {
                             missingUpdateSites.removeIf(site -> Objects.equals(site.getName(), updateSite.getName()));
                         }

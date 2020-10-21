@@ -16,6 +16,7 @@ package org.hkijena.jipipe.ui.compartments;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.eventbus.Subscribe;
 import ij.IJ;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.compartments.JIPipeExportedCompartment;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
@@ -145,7 +146,7 @@ public class JIPipeCompartmentGraphUI extends JIPipeGraphEditorUI {
      * Initializes the "Add nodes" area
      */
     protected void initializeAddNodesMenus() {
-        JIPipeNodeInfo info = JIPipeNodeRegistry.getInstance().getInfoById("jipipe:project-compartment");
+        JIPipeNodeInfo info = JIPipe.getNodes().getInfoById("jipipe:project-compartment");
 
         JButton addItem = new JButton("Add new compartment", UIUtils.getIconFromResources("actions/list-add.png"));
         UIUtils.makeFlatH25(addItem);

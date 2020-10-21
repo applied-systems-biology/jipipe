@@ -23,6 +23,7 @@ import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeValidatable;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -108,7 +109,7 @@ public class JIPipeNodeInfoRef implements JIPipeValidatable {
             JsonNode node = jsonParser.readValueAsTree();
             JIPipeNodeInfoRef result = new JIPipeNodeInfoRef();
             if (!node.isNull()) {
-                result.setInfo(JIPipeNodeRegistry.getInstance().getInfoById(node.textValue()));
+                result.setInfo(JIPipe.getNodes().getInfoById(node.textValue()));
             }
             return result;
         }

@@ -19,7 +19,7 @@ import com.google.common.collect.ImmutableBiMap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import org.hkijena.jipipe.JIPipeDefaultRegistry;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.JIPipeValidatable;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
@@ -30,7 +30,10 @@ import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
+import org.hkijena.jipipe.utils.ResourceUtils;
 
+import javax.swing.*;
+import java.net.URL;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -47,6 +50,7 @@ public class JIPipeNodeRegistry implements JIPipeValidatable {
     private Set<JIPipeNodeRegistrationTask> registrationTasks = new HashSet<>();
     private Map<String, JIPipeDependency> registeredNodeInfoSources = new HashMap<>();
     private BiMap<String, JIPipeNodeTypeCategory> registeredCategories = HashBiMap.create();
+    private Map<JIPipeNodeInfo, URL> icons = new HashMap<>();
     private boolean stateChanged;
     private boolean isRunning;
     private EventBus eventBus = new EventBus();
@@ -112,7 +116,7 @@ public class JIPipeNodeRegistry implements JIPipeValidatable {
         registeredNodeInfos.put(info.getId(), info);
         registeredNodeInfoSources.put(info.getId(), source);
         eventBus.post(new NodeInfoRegisteredEvent(info));
-        JIPipeDefaultRegistry.getInstance().getLogService().info("Registered algorithm '" + info.getName() + "' [" + info.getId() + "]");
+        JIPipe.getInstance().getLogService().info("Registered algorithm '" + info.getName() + "' [" + info.getId() + "]");
         runRegistrationTasks();
     }
 
@@ -211,7 +215,7 @@ public class JIPipeNodeRegistry implements JIPipeValidatable {
      * This method is only used internally.
      */
     public void installEvents() {
-        JIPipeDefaultRegistry.getInstance().getDatatypeRegistry().getEventBus().register(this);
+        JIPipe.getInstance().getDatatypeRegistry().getEventBus().register(this);
     }
 
     /**
@@ -263,10 +267,47 @@ public class JIPipeNodeRegistry implements JIPipeValidatable {
     }
 
     /**
-     * @return Singleton instance
+     * Registers a custom icon for a trait
+     *
+     * @param info         the trait type
+     * @param resourcePath icon url
      */
-    public static JIPipeNodeRegistry getInstance() {
-        return JIPipeDefaultRegistry.getInstance().getNodeRegistry();
+    public void registerIcon(JIPipeNodeInfo info, URL resourcePath) {
+        icons.put(info, resourcePath);
     }
 
+    /**
+     * Returns the icon resource path URL for a trait
+     *
+     * @param klass trait type
+     * @return icon url
+     */
+    public URL getIconURLFor(JIPipeNodeInfo klass) {
+        return icons.getOrDefault(klass, ResourceUtils.getPluginResource("icons/actions/configure.png"));
+    }
+
+    /**
+     * Returns the icon for a trait
+     *
+     * @param info trait type
+     * @return icon instance
+     */
+    public ImageIcon getIconFor(JIPipeNodeInfo info) {
+        URL uri = icons.getOrDefault(info, null);
+        if (uri == null) {
+            URL defaultIcon;
+            if (info.getCategory() instanceof DataSourceNodeTypeCategory) {
+                if (!info.getOutputSlots().isEmpty()) {
+                    defaultIcon = JIPipe.getDataTypes().getIconURLFor(info.getOutputSlots().get(0).value());
+                } else {
+                    defaultIcon = ResourceUtils.getPluginResource("icons/actions/configure.png");
+                }
+            } else {
+                defaultIcon = ResourceUtils.getPluginResource("icons/actions/configure.png");
+            }
+            icons.put(info, defaultIcon);
+            uri = defaultIcon;
+        }
+        return new ImageIcon(uri);
+    }
 }

@@ -480,7 +480,7 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
             ShapeRoi s1 = null, s2 = null;
             for (Roi roi : this) {
                 if (!roi.isArea() && roi.getType() != Roi.POINT)
-                    roi = roi.convertToPolygon();
+                    roi = Roi.convertLineToArea(roi);
                 if (s1 == null) {
                     if (roi instanceof ShapeRoi)
                         s1 = (ShapeRoi) roi;

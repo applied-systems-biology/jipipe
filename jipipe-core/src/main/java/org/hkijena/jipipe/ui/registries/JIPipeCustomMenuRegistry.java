@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.ui.registries;
 
-import org.hkijena.jipipe.JIPipeDefaultRegistry;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.extension.MenuExtension;
@@ -31,7 +31,7 @@ import java.util.Map;
 /**
  * Registry for menu extensions
  */
-public class JIPipeUIMenuServiceRegistry {
+public class JIPipeCustomMenuRegistry {
     private Map<MenuTarget, List<Class<? extends MenuExtension>>> registeredExtensions = new HashMap<>();
 
     /**
@@ -68,9 +68,5 @@ public class JIPipeUIMenuServiceRegistry {
 
     public Map<MenuTarget, List<Class<? extends MenuExtension>>> getRegisteredExtensions() {
         return Collections.unmodifiableMap(registeredExtensions);
-    }
-
-    public static JIPipeUIMenuServiceRegistry getInstance() {
-        return JIPipeDefaultRegistry.getInstance().getUIMenuServiceRegistry();
     }
 }
