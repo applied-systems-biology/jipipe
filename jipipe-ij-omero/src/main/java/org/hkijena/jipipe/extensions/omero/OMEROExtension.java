@@ -64,12 +64,12 @@ public class OMEROExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerNodeType("ij-image-from-omero", ImportOMEROImageAlgorithm.class);
     }
 
-    @Override
-    public List<JIPipeImageJUpdateSiteDependency> getImageJUpdateSiteDependencies() {
-        return Collections.singletonList(
-            new JIPipeImageJUpdateSiteDependency(new UpdateSite("OMERO 5.4", "https://sites.imagej.net/OMERO-5.4/", "", "", "", "", 0))
-        );
-    }
+//    @Override
+//    public List<JIPipeImageJUpdateSiteDependency> getImageJUpdateSiteDependencies() {
+//        return Collections.singletonList(
+//            new JIPipeImageJUpdateSiteDependency(new UpdateSite("OMERO 5.4", "https://sites.imagej.net/OMERO-5.4/", "", "", "", "", 0))
+//        );
+//    }
 
     @Override
     public List<ImageIcon> getSplashIcons() {

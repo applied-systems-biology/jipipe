@@ -13,18 +13,15 @@
 
 package org.hkijena.jipipe.extensions.omero.algorithms;
 
-import ij.ImagePlus;
-import net.imagej.Dataset;
-import net.imagej.legacy.convert.DatasetToImagePlusConverter;
-import net.imagej.omero.OMEROService;
-import net.imagej.omero.OMEROSession;
-import omero.ServerError;
-import omero.client;
-import org.hkijena.jipipe.JIPipe;
+import omero.gateway.Gateway;
+import omero.gateway.SecurityContext;
+import omero.gateway.exception.DSAccessException;
+import omero.gateway.exception.DSOutOfServiceException;
+import omero.gateway.facility.BrowseFacility;
+import omero.gateway.model.ImageData;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
-import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -35,8 +32,9 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.omero.OMEROCredentials;
 import org.hkijena.jipipe.extensions.omero.datatypes.OMEROImageReferenceData;
+import org.hkijena.jipipe.extensions.omero.util.OMEROToJIPipeLogger;
 
-import java.io.IOException;
+import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -47,7 +45,9 @@ import java.util.function.Supplier;
 public class ImportOMEROImageAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private OMEROCredentials credentials = new OMEROCredentials();
-    private OMEROSession session;
+    private Gateway session;
+    private BrowseFacility browseFacility;
+    private SecurityContext securityContext;
 
     public ImportOMEROImageAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -62,33 +62,36 @@ public class ImportOMEROImageAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @Override
     public void run(JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
-        System.setProperty("https.protocols", "TLSv1,TLSv1.1,TLSv1.2");
-        OMEROService service = JIPipe.getInstance().getContext().getService(OMEROService.class);
-        try(OMEROSession session = service.createSession(credentials.getLocation())){
-            this.session = session;
+        session = new Gateway(new OMEROToJIPipeLogger(subProgress, algorithmProgress));
+        try {
+            try {
+                session.connect(credentials.getLocation());
+                securityContext = new SecurityContext(session.getLoggedInUser().getGroupId());
+                browseFacility = session.getFacility(BrowseFacility.class);
+            } catch (DSOutOfServiceException | ExecutionException e) {
+                throw new RuntimeException(e);
+            }
             super.run(subProgress, algorithmProgress, isCancelled);
         }
         finally {
-            this.session = null;
+            try {
+                session.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            session = null;
+            browseFacility = null;
+            securityContext = null;
         }
     }
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         OMEROImageReferenceData imageReferenceData = dataBatch.getInputData(getFirstInputSlot(), OMEROImageReferenceData.class);
-        client client = session.getClient();
-        OMEROService service = JIPipe.getInstance().getContext().getService(OMEROService.class);
-        DatasetToImagePlusConverter converter = new DatasetToImagePlusConverter();
         try {
-            Dataset dataset = service.downloadImage(client, imageReferenceData.getImageId());
-            ImagePlus img = converter.convert(dataset, ImagePlus.class);
-            dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(img));
-        } catch (ServerError | IOException e) {
-            throw new UserFriendlyRuntimeException(e,
-                    "Could not download image from OMERO!",
-                    getName(),
-                    "Tried to download image with ID " + imageReferenceData.getImageId() + " from OMERO, but it failed!",
-                    "Please check if the image exists and you have access to it.");
+            ImageData image = browseFacility.getImage(securityContext, imageReferenceData.getImageId());
+        } catch (DSOutOfServiceException | DSAccessException e) {
+            throw new RuntimeException(e);
         }
     }
 

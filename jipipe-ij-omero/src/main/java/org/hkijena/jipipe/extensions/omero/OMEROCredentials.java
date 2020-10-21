@@ -14,14 +14,12 @@
 package org.hkijena.jipipe.extensions.omero;
 
 import com.google.common.eventbus.EventBus;
-import net.imagej.omero.OMEROLocation;
+import omero.gateway.LoginCredentials;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.parameters.primitives.PasswordParameter;
 import org.hkijena.jipipe.utils.StringUtils;
-
-import java.net.URISyntaxException;
 
 public class OMEROCredentials implements JIPipeParameterCollection {
     private final EventBus eventBus = new EventBus();
@@ -81,16 +79,12 @@ public class OMEROCredentials implements JIPipeParameterCollection {
      * Converts the credentials into a SciJava OMERO location
      * @return the location
      */
-    public OMEROLocation getLocation() {
+    public LoginCredentials getLocation() {
         String server_ = StringUtils.orElse(server, OMEROSettings.getInstance().getDefaultServer());
         String user_ = StringUtils.orElse(userName, OMEROSettings.getInstance().getDefaultUserName());
         String password_ = StringUtils.orElse(password.getPassword(), OMEROSettings.getInstance().getDefaultPassword().getPassword());
         int port_ = server_.contains(":") ? Integer.parseInt(server_.substring(server_.indexOf(':') + 1)) : 4064;
         String host_ = server_.contains(":") ? server_.substring(0, server_.indexOf(':')) : server_;
-        try {
-            return new OMEROLocation(host_, port_, user_, password_);
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
-        }
+        return new LoginCredentials(user_, password_, host_, port_);
     }
 }
