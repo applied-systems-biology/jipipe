@@ -19,6 +19,11 @@ import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.core.data.OpenInNativeApplicationDataImportOperation;
 import org.hkijena.jipipe.extensions.core.data.OpenTextInJIPipeDataOperation;
+import org.hkijena.jipipe.extensions.omero.algorithms.ImportOMEROImageAlgorithm;
+import org.hkijena.jipipe.extensions.omero.datasources.OMEROImageReferenceDataSource;
+import org.hkijena.jipipe.extensions.omero.datatypes.OMERODatasetReferenceData;
+import org.hkijena.jipipe.extensions.omero.datatypes.OMEROImageReferenceData;
+import org.hkijena.jipipe.extensions.omero.datatypes.OMEROProjectReferenceData;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.plugin.Plugin;
@@ -50,7 +55,13 @@ public class OMEROExtension extends JIPipePrepackagedDefaultJavaExtension {
 
     @Override
     public void register() {
+        registerSettingsSheet(OMEROSettings.ID, "OMERO", UIUtils.getIconFromResources("apps/omero.png"), "Extensions", null, new OMEROSettings());
+        registerDatatype("omero-project-id", OMEROProjectReferenceData.class, UIUtils.getIconURLFromResources("apps/omero.png"), null, null);
+        registerDatatype("omero-dataset-id", OMERODatasetReferenceData.class, UIUtils.getIconURLFromResources("apps/omero.png"), null, null);
+        registerDatatype("omero-image-id", OMEROImageReferenceData.class, UIUtils.getIconURLFromResources("apps/omero.png"), null, null);
 
+        registerNodeType("omero-image-id-definition", OMEROImageReferenceDataSource.class);
+        registerNodeType("ij-image-from-omero", ImportOMEROImageAlgorithm.class);
     }
 
     @Override

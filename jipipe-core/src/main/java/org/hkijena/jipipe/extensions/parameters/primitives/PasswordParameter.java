@@ -35,7 +35,7 @@ import java.util.Base64;
 @JsonDeserialize(using = PasswordParameter.Deserializer.class)
 public class PasswordParameter {
 
-    private String password;
+    private String password = "";
 
     public PasswordParameter() {
     }

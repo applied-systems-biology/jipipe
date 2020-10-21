@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.extensions.omero;
 
 import com.google.common.eventbus.EventBus;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
@@ -23,36 +24,50 @@ public class OMEROSettings implements JIPipeParameterCollection {
     public static final String ID = "org.hkijena.jipipe:omero";
     private final EventBus eventBus = new EventBus();
 
-    private String serverURL = "";
-    private String userName = "";
-    private PasswordParameter password = new PasswordParameter();
+    private String defaultServer = "";
+    private String defaultUserName = "";
+    private PasswordParameter defaultPassword = new PasswordParameter();
 
     @Override
     public EventBus getEventBus() {
         return eventBus;
     }
 
-    public String getServerURL() {
-        return serverURL;
+    @JIPipeDocumentation(name = "Default server URL", description = "The server URL used as default if none is provided. It has the following format [Host]:[Port] or [Host]. If only the host is provided, the port 4064 is assumed.")
+    @JIPipeParameter("default-server")
+    public String getDefaultServer() {
+        return defaultServer;
     }
 
-    public void setServerURL(String serverURL) {
-        this.serverURL = serverURL;
+    @JIPipeParameter("default-server")
+    public void setDefaultServer(String defaultServer) {
+        this.defaultServer = defaultServer;
     }
 
-    public String getUserName() {
-        return userName;
+    @JIPipeDocumentation(name = "Default user name", description = "The user name used as default if none is provided.")
+    @JIPipeParameter("default-user-name")
+    public String getDefaultUserName() {
+        return defaultUserName;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
+    @JIPipeParameter("default-user-name")
+    public void setDefaultUserName(String defaultUserName) {
+        this.defaultUserName = defaultUserName;
     }
 
-    public PasswordParameter getPassword() {
-        return password;
+    @JIPipeDocumentation(name = "Default password", description = "The password used as default if none is provided. The password is not saved in clear text, but encoded in Base64, which can be easily decoded by scripts. " +
+            "If you use JIPipe in a GUI environment, it will ask for the credentials when running a pipeline if you do not provide the password. In a CLI environment, the pipeline will fail.")
+    @JIPipeParameter("default-password")
+    public PasswordParameter getDefaultPassword() {
+        return defaultPassword;
     }
 
-    public void setPassword(PasswordParameter password) {
-        this.password = password;
+    @JIPipeParameter("default-password")
+    public void setDefaultPassword(PasswordParameter defaultPassword) {
+        this.defaultPassword = defaultPassword;
+    }
+
+    public static OMEROSettings getInstance() {
+        return JIPipe.getSettings().getSettings(ID, OMEROSettings.class);
     }
 }

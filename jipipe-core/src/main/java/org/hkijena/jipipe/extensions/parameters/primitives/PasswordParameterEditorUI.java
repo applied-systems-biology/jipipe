@@ -16,7 +16,9 @@ package org.hkijena.jipipe.extensions.parameters.primitives;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.DocumentChangeListener;
+import org.hkijena.jipipe.ui.components.FancyPasswordField;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
+import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -28,7 +30,7 @@ import java.util.Objects;
  */
 public class PasswordParameterEditorUI extends JIPipeParameterEditorUI {
 
-    private final JPasswordField passwordField = new JPasswordField();
+    private final FancyPasswordField passwordField = new FancyPasswordField(new JLabel(UIUtils.getIconFromResources("actions/pgp-keys.png")));
 
     /**
      * @param workbench       workbench
@@ -43,12 +45,7 @@ public class PasswordParameterEditorUI extends JIPipeParameterEditorUI {
     private void initialize() {
         setLayout(new BorderLayout());
         add(passwordField, BorderLayout.CENTER);
-        passwordField.getDocument().addDocumentListener(new DocumentChangeListener() {
-            @Override
-            public void changed(DocumentEvent documentEvent) {
-                setParameter(new PasswordParameter(new String(passwordField.getPassword())), false);
-            }
-        });
+        passwordField.addActionListener(e -> setParameter(new PasswordParameter(passwordField.getText()), false));
     }
 
     @Override

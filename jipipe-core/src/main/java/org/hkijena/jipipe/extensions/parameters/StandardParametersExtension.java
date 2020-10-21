@@ -606,7 +606,7 @@ public class StandardParametersExtension extends JIPipePrepackagedDefaultJavaExt
         registerParameterType(new ByteParameterTypeInfo(), NumberParameterEditorUI.class);
         registerParameterType(new ShortParameterTypeInfo(), NumberParameterEditorUI.class);
         registerParameterType(new IntParameterTypeInfo(), IntegerList.class, NumberParameterEditorUI.class);
-        registerParameterType(new LongParameterTypeInfo(), NumberParameterEditorUI.class);
+        registerParameterType(new LongParameterTypeInfo(), LongList.class, NumberParameterEditorUI.class);
         registerParameterType(new FloatParameterTypeInfo(), FloatList.class, NumberParameterEditorUI.class);
         registerParameterType(new DoubleParameterTypeInfo(), DoubleList.class, NumberParameterEditorUI.class);
     }
