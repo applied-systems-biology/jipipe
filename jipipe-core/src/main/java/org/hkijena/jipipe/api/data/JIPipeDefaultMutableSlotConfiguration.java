@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.EventBus;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.events.SlotsChangedEvent;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
@@ -54,8 +55,8 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
      * Creates a new instance
      */
     public JIPipeDefaultMutableSlotConfiguration() {
-        allowedInputSlotTypes = new HashSet<>(JIPipeDatatypeRegistry.getInstance().getUnhiddenRegisteredDataTypes().values());
-        allowedOutputSlotTypes = new HashSet<>(JIPipeDatatypeRegistry.getInstance().getUnhiddenRegisteredDataTypes().values());
+        allowedInputSlotTypes = new HashSet<>(JIPipe.getDataTypes().getUnhiddenRegisteredDataTypes().values());
+        allowedOutputSlotTypes = new HashSet<>(JIPipe.getDataTypes().getUnhiddenRegisteredDataTypes().values());
     }
 
     /**
@@ -676,7 +677,7 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
      * @return the collection
      */
     public static Set<Class<? extends JIPipeData>> getUnhiddenRegisteredDataTypes() {
-        return new HashSet<>(JIPipeDatatypeRegistry.getInstance().getUnhiddenRegisteredDataTypes().values());
+        return new HashSet<>(JIPipe.getDataTypes().getUnhiddenRegisteredDataTypes().values());
     }
 
     /**

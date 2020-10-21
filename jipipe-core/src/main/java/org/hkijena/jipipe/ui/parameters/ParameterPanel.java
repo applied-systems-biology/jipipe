@@ -15,6 +15,7 @@ package org.hkijena.jipipe.ui.parameters;
 
 import com.google.common.eventbus.Subscribe;
 import com.google.common.html.HtmlEscapers;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.events.ParameterStructureChangedEvent;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
@@ -31,7 +32,6 @@ import org.hkijena.jipipe.ui.components.AddDynamicParameterPanel;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.SearchTextField;
-import org.hkijena.jipipe.ui.registries.JIPipeUIParameterTypeRegistry;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -231,7 +231,7 @@ public class ParameterPanel extends FormPanel implements Contextual {
             if (withSearchBar && !searchField.test(parameterAccess.getName() + " " + parameterAccess.getDescription()))
                 continue;
 
-            JIPipeParameterEditorUI ui = JIPipeUIParameterTypeRegistry.getInstance().createEditorFor(workbench, parameterAccess);
+            JIPipeParameterEditorUI ui = JIPipe.getParameterTypes().createEditorFor(workbench, parameterAccess);
             uiList.add(ui);
         }
         Comparator<JIPipeParameterEditorUI> comparator;
@@ -272,7 +272,7 @@ public class ParameterPanel extends FormPanel implements Contextual {
         markdownString.append("<td><strong>Unique identifier</strong>: <code>");
         markdownString.append(HtmlEscapers.htmlEscaper().escape(access.getKey())).append("</code></td></tr>\n\n");
 
-        JIPipeParameterTypeInfo info = JIPipeParameterTypeRegistry.getInstance().getInfoByFieldClass(access.getFieldClass());
+        JIPipeParameterTypeInfo info = JIPipe.getParameterTypes().getInfoByFieldClass(access.getFieldClass());
         if (info != null) {
             markdownString.append("<td><img src=\"").append(ResourceUtils.getPluginResource("icons/data-types/data-type.png")).append("\" /></td>");
             markdownString.append("<td><strong>").append(HtmlEscapers.htmlEscaper().escape(info.getName())).append("</strong>: ");

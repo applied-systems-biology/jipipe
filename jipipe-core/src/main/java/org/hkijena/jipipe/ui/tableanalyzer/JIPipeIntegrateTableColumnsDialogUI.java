@@ -13,7 +13,8 @@
 
 package org.hkijena.jipipe.ui.tableanalyzer;
 
-import org.hkijena.jipipe.api.registries.JIPipeTableRegistry;
+import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.registries.JIPipeTableOperationRegistry;
 import org.hkijena.jipipe.extensions.tables.IntegratingColumnOperation;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.BusyCursor;
@@ -67,9 +68,9 @@ public class JIPipeIntegrateTableColumnsDialogUI extends JDialog {
             operationJComboBox.addItem(null);
             operationJComboBox.addItem(new CategorizeColumnRole());
 
-            for (JIPipeTableRegistry.ColumnOperationEntry entry :
-                    JIPipeTableRegistry.getInstance().getOperationsOfType(IntegratingColumnOperation.class)
-                            .values().stream().sorted(Comparator.comparing(JIPipeTableRegistry.ColumnOperationEntry::getName)).collect(Collectors.toList())) {
+            for (JIPipeTableOperationRegistry.ColumnOperationEntry entry :
+                    JIPipe.getTableOperations().getOperationsOfType(IntegratingColumnOperation.class)
+                            .values().stream().sorted(Comparator.comparing(JIPipeTableOperationRegistry.ColumnOperationEntry::getName)).collect(Collectors.toList())) {
                 operationJComboBox.addItem(entry);
             }
 
@@ -119,8 +120,8 @@ public class JIPipeIntegrateTableColumnsDialogUI extends JDialog {
                 Object value = entry.getValue().getSelectedItem();
                 if (value instanceof CategorizeColumnRole) {
                     categoryColumns.add(entry.getKey());
-                } else if (value instanceof JIPipeTableRegistry.ColumnOperationEntry) {
-                    JIPipeTableRegistry.ColumnOperationEntry operationEntry = (JIPipeTableRegistry.ColumnOperationEntry) value;
+                } else if (value instanceof JIPipeTableOperationRegistry.ColumnOperationEntry) {
+                    JIPipeTableOperationRegistry.ColumnOperationEntry operationEntry = (JIPipeTableOperationRegistry.ColumnOperationEntry) value;
                     operations.add(new ResultsTableData.IntegratingColumnOperationEntry(entry.getKey(),
                             String.format("%s(%s)", operationEntry.getShortName(), entry.getKey()),
                             (IntegratingColumnOperation) operationEntry.getOperation()));
@@ -160,8 +161,8 @@ public class JIPipeIntegrateTableColumnsDialogUI extends JDialog {
         public Component getListCellRendererComponent(JList<?> list, Object value,
                                                       int index, boolean isSelected, boolean cellHasFocus) {
 
-            if (value instanceof JIPipeTableRegistry.ColumnOperationEntry) {
-                setText(((JIPipeTableRegistry.ColumnOperationEntry) value).getName());
+            if (value instanceof JIPipeTableOperationRegistry.ColumnOperationEntry) {
+                setText(((JIPipeTableOperationRegistry.ColumnOperationEntry) value).getName());
                 setIcon(UIUtils.getIconFromResources("actions/statistics.png"));
             } else if (value instanceof CategorizeColumnRole) {
                 setText("Use as category");

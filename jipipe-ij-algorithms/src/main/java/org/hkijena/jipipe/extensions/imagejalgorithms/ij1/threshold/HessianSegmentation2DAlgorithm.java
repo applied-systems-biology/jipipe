@@ -21,6 +21,7 @@ import imagescience.feature.Hessian;
 import imagescience.image.Aspects;
 import imagescience.image.FloatImage;
 import imagescience.image.Image;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
@@ -76,7 +77,7 @@ public class HessianSegmentation2DAlgorithm extends JIPipeSimpleIteratingAlgorit
                 .allowOutputSlotInheritance(true)
                 .seal()
                 .build());
-        this.autoThresholding = (AutoThreshold2DAlgorithm) JIPipeNodeRegistry.getInstance().getInfoById("ij1-threshold-auto2d").newInstance();
+        this.autoThresholding = (AutoThreshold2DAlgorithm) JIPipe.getNodes().getInfoById("ij1-threshold-auto2d").newInstance();
     }
 
     /**

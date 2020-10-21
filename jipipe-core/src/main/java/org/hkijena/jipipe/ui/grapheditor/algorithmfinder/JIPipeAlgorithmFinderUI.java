@@ -13,9 +13,9 @@
 
 package org.hkijena.jipipe.ui.grapheditor.algorithmfinder;
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeMutableSlotConfiguration;
@@ -30,7 +30,6 @@ import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.SearchTextField;
 import org.hkijena.jipipe.ui.events.AlgorithmFinderSuccessEvent;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphCanvasUI;
-import org.hkijena.jipipe.ui.registries.JIPipeUIDatatypeRegistry;
 import org.hkijena.jipipe.utils.RankedData;
 import org.hkijena.jipipe.utils.RankingFunction;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -86,7 +85,7 @@ public class JIPipeAlgorithmFinderUI extends JPanel {
                 availableContents.add(node);
             }
         }
-        for (JIPipeNodeInfo info : JIPipeNodeRegistry.getInstance().getRegisteredNodeInfos().values()) {
+        for (JIPipeNodeInfo info : JIPipe.getNodes().getRegisteredNodeInfos().values()) {
             if (!info.isHidden())
                 availableContents.add(info);
         }
@@ -109,7 +108,7 @@ public class JIPipeAlgorithmFinderUI extends JPanel {
         algorithmNameLabel.setToolTipText(TooltipUtils.getAlgorithmTooltip(algorithm.getInfo()));
         toolBar.add(algorithmNameLabel);
         toolBar.add(Box.createHorizontalStrut(5));
-        JLabel slotNameLabel = new JLabel(outputSlot.getName(), JIPipeUIDatatypeRegistry.getInstance().getIconFor(outputSlot.getAcceptedDataType()), JLabel.LEFT);
+        JLabel slotNameLabel = new JLabel(outputSlot.getName(), JIPipe.getDataTypes().getIconFor(outputSlot.getAcceptedDataType()), JLabel.LEFT);
         slotNameLabel.setToolTipText(TooltipUtils.getSlotInstanceTooltip(outputSlot));
         toolBar.add(slotNameLabel);
 
@@ -221,9 +220,9 @@ public class JIPipeAlgorithmFinderUI extends JPanel {
     public static List<JIPipeNodeInfo> findCompatibleTargetAlgorithms(JIPipeDataSlot slot) {
         Class<? extends JIPipeData> outputSlotDataClass = slot.getAcceptedDataType();
         List<JIPipeNodeInfo> result = new ArrayList<>();
-        for (JIPipeNodeInfo info : JIPipeNodeRegistry.getInstance().getRegisteredNodeInfos().values()) {
+        for (JIPipeNodeInfo info : JIPipe.getNodes().getRegisteredNodeInfos().values()) {
             for (Class<? extends JIPipeData> inputSlotDataClass : info.getInputSlots().stream().map(JIPipeInputSlot::value).collect(Collectors.toList())) {
-                if (JIPipeDatatypeRegistry.getInstance().isConvertible(outputSlotDataClass, inputSlotDataClass)) {
+                if (JIPipe.getDataTypes().isConvertible(outputSlotDataClass, inputSlotDataClass)) {
                     result.add(info);
                     break;
                 }
@@ -298,7 +297,7 @@ public class JIPipeAlgorithmFinderUI extends JPanel {
                         compatibilityRanking = -3;
                     } else if (JIPipeDatatypeRegistry.isTriviallyConvertible(sourceSlot.getAcceptedDataType(), targetSlot.getAcceptedDataType())) {
                         compatibilityRanking = -2;
-                    } else if (JIPipeDatatypeRegistry.getInstance().isConvertible(sourceSlot.getAcceptedDataType(), targetSlot.getAcceptedDataType())) {
+                    } else if (JIPipe.getDataTypes().isConvertible(sourceSlot.getAcceptedDataType(), targetSlot.getAcceptedDataType())) {
                         compatibilityRanking = -1;
                     }
                     ranks[2] = Math.min(compatibilityRanking, ranks[2]);
@@ -316,7 +315,7 @@ public class JIPipeAlgorithmFinderUI extends JPanel {
                         compatibilityRanking = -3;
                     } else if (JIPipeDatatypeRegistry.isTriviallyConvertible(sourceSlot.getAcceptedDataType(), inputSlot.value())) {
                         compatibilityRanking = -2;
-                    } else if (JIPipeDatatypeRegistry.getInstance().isConvertible(sourceSlot.getAcceptedDataType(), inputSlot.value())) {
+                    } else if (JIPipe.getDataTypes().isConvertible(sourceSlot.getAcceptedDataType(), inputSlot.value())) {
                         compatibilityRanking = -1;
                     }
                     ranks[2] = Math.min(compatibilityRanking, ranks[2]);

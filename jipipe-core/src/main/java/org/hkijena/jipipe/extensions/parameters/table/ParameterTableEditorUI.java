@@ -14,25 +14,21 @@
 package org.hkijena.jipipe.extensions.parameters.table;
 
 import com.google.common.eventbus.Subscribe;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
-import org.hkijena.jipipe.api.parameters.JIPipeMutableParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterVisibility;
-import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
 import org.hkijena.jipipe.api.registries.JIPipeParameterTypeRegistry;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.compartments.JIPipeCompartmentUI;
 import org.hkijena.jipipe.ui.components.AddDynamicParameterPanel;
 import org.hkijena.jipipe.ui.components.ParameterTreeUI;
-import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphEditorUI;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterGeneratorUI;
-import org.hkijena.jipipe.ui.registries.JIPipeUIParameterTypeRegistry;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jdesktop.swingx.JXTable;
 
@@ -181,7 +177,7 @@ public class ParameterTableEditorUI extends JIPipeParameterEditorUI {
         column.setFieldClass(importedParameter.getFieldClass());
         column.setKey(uniqueKey);
         column.setName(importedParameter.getName());
-        JIPipeParameterTypeInfo info = JIPipeParameterTypeRegistry.getInstance().getInfoByFieldClass(column.getFieldClass());
+        JIPipeParameterTypeInfo info = JIPipe.getParameterTypes().getInfoByFieldClass(column.getFieldClass());
         parameterTable.addColumn(column, info.duplicate(importedParameter.get(Object.class)));
 
         setParameter(parameterTable, true);
@@ -191,7 +187,7 @@ public class ParameterTableEditorUI extends JIPipeParameterEditorUI {
     private void addCustomColumn() {
         ParameterTable parameterTable = getParameter(ParameterTable.class);
         JIPipeDynamicParameterCollection collection = new JIPipeDynamicParameterCollection();
-        collection.setAllowedTypes(JIPipeParameterTypeRegistry.getInstance()
+        collection.setAllowedTypes(JIPipe.getParameterTypes()
                 .getRegisteredParameters().values().stream().map(JIPipeParameterTypeInfo::getFieldClass).collect(Collectors.toSet()));
         AddDynamicParameterPanel.showDialog(this, collection);
         for (Map.Entry<String, JIPipeParameterAccess> entry : collection.getParameters().entrySet()) {
@@ -201,7 +197,7 @@ public class ParameterTableEditorUI extends JIPipeParameterEditorUI {
             column.setFieldClass(entry.getValue().getFieldClass());
             column.setKey(entry.getKey());
             column.setName(entry.getValue().getName());
-            JIPipeParameterTypeInfo info = JIPipeParameterTypeRegistry.getInstance().getInfoByFieldClass(column.getFieldClass());
+            JIPipeParameterTypeInfo info = JIPipe.getParameterTypes().getInfoByFieldClass(column.getFieldClass());
             parameterTable.addColumn(column, info.newInstance());
         }
         setParameter(parameterTable, true);
@@ -234,9 +230,9 @@ public class ParameterTableEditorUI extends JIPipeParameterEditorUI {
         ParameterTable parameterTable = getParameter(ParameterTable.class);
         boolean hasColumnEntries = false;
         if (parameterTable != null) {
-            for (Class<? extends JIPipeParameterGeneratorUI> generator : JIPipeUIParameterTypeRegistry.getInstance()
+            for (Class<? extends JIPipeParameterGeneratorUI> generator : JIPipe.getParameterTypes()
                     .getGeneratorsFor(parameterTable.getColumn(col).getFieldClass())) {
-                JIPipeDocumentation documentation = JIPipeUIParameterTypeRegistry.getInstance().getGeneratorDocumentationFor(generator);
+                JIPipeDocumentation documentation = JIPipe.getParameterTypes().getGeneratorDocumentationFor(generator);
                 JMenuItem replaceCellItem = new JMenuItem(documentation.name());
                 replaceCellItem.setToolTipText(documentation.description());
                 replaceCellItem.setIcon(UIUtils.getIconFromResources("actions/edit.png"));
@@ -280,9 +276,9 @@ public class ParameterTableEditorUI extends JIPipeParameterEditorUI {
                 JMenu columnMenu = new JMenu(parameterTable.getColumn(col).getName());
                 columnMenu.setIcon(UIUtils.getIconFromResources("data-types/parameters.png"));
 
-                for (Class<? extends JIPipeParameterGeneratorUI> generator : JIPipeUIParameterTypeRegistry.getInstance()
+                for (Class<? extends JIPipeParameterGeneratorUI> generator : JIPipe.getParameterTypes()
                         .getGeneratorsFor(parameterTable.getColumn(col).getFieldClass())) {
-                    JIPipeDocumentation documentation = JIPipeUIParameterTypeRegistry.getInstance().getGeneratorDocumentationFor(generator);
+                    JIPipeDocumentation documentation = JIPipe.getParameterTypes().getGeneratorDocumentationFor(generator);
                     JMenuItem generateRowItem = new JMenuItem(documentation.name());
                     generateRowItem.setToolTipText(documentation.description());
                     generateRowItem.setIcon(UIUtils.getIconFromResources("actions/list-add.png"));
@@ -331,7 +327,7 @@ public class ParameterTableEditorUI extends JIPipeParameterEditorUI {
                 ParameterTable parameterTable = getParameter(ParameterTable.class);
                 ParameterTableCellAccess access = new ParameterTableCellAccess(getParameterAccess(), parameterTable,
                         currentSelection.x, currentSelection.y);
-                currentEditor = JIPipeUIParameterTypeRegistry.getInstance().createEditorFor(getWorkbench(), access);
+                currentEditor = JIPipe.getParameterTypes().createEditorFor(getWorkbench(), access);
                 add(currentEditor, BorderLayout.SOUTH);
             }
         }

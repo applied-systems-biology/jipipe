@@ -18,6 +18,7 @@ import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
 import com.google.common.eventbus.Subscribe;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
@@ -85,7 +86,7 @@ public class NodeGroup extends GraphWrapperAlgorithm implements JIPipeCustomPara
      * @param autoCreateSlots automatically create input and output slots
      */
     public NodeGroup(JIPipeGraph graph, boolean autoCreateSlots) {
-        super(JIPipeNodeRegistry.getInstance().getInfoById("node-group"), new JIPipeGraph());
+        super(JIPipe.getNodes().getInfoById("node-group"), new JIPipeGraph());
 
         // Remove all algorithms with no i/o
 //        for (JIPipeGraphNode node : ImmutableList.copyOf(graph.getAlgorithmNodes().values())) {

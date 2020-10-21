@@ -44,7 +44,7 @@ public class JIPipeGUICommand implements Command {
     public void run() {
         // Update look & feel
         UIUtils.loadLookAndFeelFromSettings();
-        if (!JIPipeDefaultRegistry.isInstantiated()) {
+        if (!JIPipe.isInstantiated()) {
             SwingUtilities.invokeLater(() -> SplashScreen.getInstance().showSplash(context));
         }
 
@@ -52,10 +52,10 @@ public class JIPipeGUICommand implements Command {
         ExtensionSettings extensionSettings = ExtensionSettings.getInstanceFromRaw();
         JIPipeRegistryIssues issues = new JIPipeRegistryIssues();
         try {
-            if (JIPipeDefaultRegistry.getInstance() == null) {
-                JIPipeDefaultRegistry.createInstance(context);
-                SplashScreen.getInstance().setRegistry(JIPipeDefaultRegistry.getInstance());
-                JIPipeDefaultRegistry.getInstance().discover(extensionSettings, issues);
+            if (JIPipe.getInstance() == null) {
+                JIPipe jiPipe = JIPipe.createInstance(context);
+                SplashScreen.getInstance().setJIPipe(JIPipe.getInstance());
+                jiPipe.initialize(extensionSettings, issues);
             }
         } catch (Exception e) {
             e.printStackTrace();

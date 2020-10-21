@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.ui.components;
 
 import com.google.common.eventbus.Subscribe;
-import org.hkijena.jipipe.JIPipeDefaultRegistry;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.api.events.ExtensionDiscoveredEvent;
 import org.hkijena.jipipe.utils.ResourceUtils;
@@ -45,7 +45,7 @@ public class SplashScreen extends JWindow implements LogListener, Contextual {
     private Context context;
     private JPanel poweredByContainer;
     private JPanel poweredByIconContainer;
-    private JIPipeDefaultRegistry registry;
+    private JIPipe jiPipe;
     private JLabel statusLabel = new JLabel("Please wait ...",
             UIUtils.getIconFromResources("actions/hourglass-half.png"), JLabel.LEFT);
 
@@ -110,12 +110,12 @@ public class SplashScreen extends JWindow implements LogListener, Contextual {
         SwingUtilities.invokeLater(() -> this.dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING)));
     }
 
-    public JIPipeDefaultRegistry getRegistry() {
-        return registry;
+    public JIPipe getJiPipe() {
+        return jiPipe;
     }
 
-    public void setRegistry(JIPipeDefaultRegistry registry) {
-        this.registry = registry;
+    public void setJIPipe(JIPipe registry) {
+        this.jiPipe = registry;
         if (registry != null) {
             registry.getEventBus().register(this);
         }

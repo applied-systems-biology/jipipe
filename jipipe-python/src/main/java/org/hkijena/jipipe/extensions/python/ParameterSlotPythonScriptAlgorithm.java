@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.extensions.python;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
@@ -59,7 +60,7 @@ public class ParameterSlotPythonScriptAlgorithm extends JIPipeParameterSlotAlgor
 
     private PythonScript code = new PythonScript();
     private JIPipeDynamicParameterCollection scriptParameters = new JIPipeDynamicParameterCollection(true,
-            JIPipeParameterTypeRegistry.getInstance().getRegisteredParameters().values());
+            JIPipe.getParameterTypes().getRegisteredParameters().values());
 
     /**
      * Creates a new instance

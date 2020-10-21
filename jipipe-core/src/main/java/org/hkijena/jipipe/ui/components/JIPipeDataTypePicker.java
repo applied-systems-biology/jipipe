@@ -15,8 +15,9 @@ package org.hkijena.jipipe.ui.components;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.primitives.Ints;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
-import org.hkijena.jipipe.ui.registries.JIPipeUIDatatypeRegistry;
+import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
 import org.hkijena.jipipe.utils.CustomScrollPane;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -253,7 +254,7 @@ public class JIPipeDataTypePicker extends JPanel {
         @Override
         public Component getListCellRendererComponent(JList<? extends JIPipeDataInfo> list, JIPipeDataInfo value, int index, boolean isSelected, boolean cellHasFocus) {
             if (value != null) {
-                setText(StringUtils.createIconTextHTMLTable(value.getName(), JIPipeUIDatatypeRegistry.getInstance().getIconURLFor(value)));
+                setText(StringUtils.createIconTextHTMLTable(value.getName(), JIPipe.getDataTypes().getIconURLFor(value)));
             } else {
                 setText(StringUtils.createIconTextHTMLTable("Select none", ResourceUtils.getPluginResource("icons/actions/stock_calc-cancel.png")));
             }

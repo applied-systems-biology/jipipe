@@ -15,6 +15,7 @@ package org.hkijena.jipipe.utils;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import ij.IJ;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.registries.JIPipeSettingsRegistry;
@@ -25,7 +26,7 @@ import org.hkijena.jipipe.ui.components.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.UserFriendlyErrorUI;
 import org.hkijena.jipipe.ui.extension.MenuExtension;
 import org.hkijena.jipipe.ui.extension.MenuTarget;
-import org.hkijena.jipipe.ui.registries.JIPipeUIMenuServiceRegistry;
+import org.hkijena.jipipe.ui.registries.JIPipeCustomMenuRegistry;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -836,7 +837,7 @@ public class UIUtils {
      * @param withSeparator  if a separator should be prepended if items are installed
      */
     public static void installMenuExtension(JIPipeWorkbench workbench, JMenu targetMenu, MenuTarget targetMenuType, boolean withSeparator) {
-        List<MenuExtension> extensions = JIPipeUIMenuServiceRegistry.getInstance()
+        List<MenuExtension> extensions = JIPipe.getCustomMenus()
                 .getMenuExtensionsTargeting(targetMenuType, workbench);
         if (!extensions.isEmpty()) {
             if (withSeparator)

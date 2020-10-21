@@ -13,11 +13,10 @@
 
 package org.hkijena.jipipe.ui.cache;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProjectCache;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
-import org.hkijena.jipipe.ui.registries.JIPipeUIDatatypeRegistry;
-import org.hkijena.jipipe.ui.registries.JIPipeUINodeRegistry;
 import org.hkijena.jipipe.ui.resultanalysis.JIPipeResultAlgorithmTree;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -52,11 +51,11 @@ public class JIPipeCacheStateTreeCellRenderer extends JLabel implements TreeCell
                 setText("" + userObject);
             } else if (userObject instanceof JIPipeGraphNode) {
                 JIPipeGraphNode algorithm = (JIPipeGraphNode) userObject;
-                setIcon(JIPipeUINodeRegistry.getInstance().getIconFor(algorithm.getInfo()));
+                setIcon(JIPipe.getNodes().getIconFor(algorithm.getInfo()));
                 setText(algorithm.getName());
             } else if (userObject instanceof JIPipeDataSlot) {
                 JIPipeDataSlot slot = (JIPipeDataSlot) userObject;
-                setIcon(JIPipeUIDatatypeRegistry.getInstance().getIconFor(slot.getAcceptedDataType()));
+                setIcon(JIPipe.getDataTypes().getIconFor(slot.getAcceptedDataType()));
                 setText(slot.getName());
             } else if (userObject instanceof JIPipeProjectCache.State) {
                 JIPipeProjectCache.State state = (JIPipeProjectCache.State) userObject;

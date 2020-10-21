@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.ui;
 
 import com.google.common.eventbus.Subscribe;
-import org.hkijena.jipipe.JIPipeDefaultRegistry;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeJsonExtension;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.events.ExtensionContentRemovedEvent;
@@ -65,7 +65,7 @@ public class JIPipeJsonExtensionWorkbench extends JPanel implements JIPipeWorkbe
         initialize(showIntroduction);
 
         this.project.getEventBus().register(this);
-        JIPipeDefaultRegistry.getInstance().getEventBus().register(this);
+        JIPipe.getInstance().getEventBus().register(this);
         SplashScreen.getInstance().hideSplash();
     }
 

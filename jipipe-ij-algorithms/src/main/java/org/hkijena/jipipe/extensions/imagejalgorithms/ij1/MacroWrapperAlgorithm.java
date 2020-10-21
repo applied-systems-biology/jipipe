@@ -18,6 +18,7 @@ import ij.WindowManager;
 import ij.macro.Interpreter;
 import ij.measure.ResultsTable;
 import ij.plugin.frame.RoiManager;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
@@ -189,7 +190,7 @@ public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm {
 
     private void passOutputData(JIPipeDataBatch dataBatch) {
         for (JIPipeDataSlot outputSlot : getOutputSlots()) {
-            ImageJDatatypeAdapter adapter = JIPipeImageJAdapterRegistry.getInstance().getAdapterForJIPipeData(outputSlot.getAcceptedDataType());
+            ImageJDatatypeAdapter adapter = JIPipe.getImageJAdapters().getAdapterForJIPipeData(outputSlot.getAcceptedDataType());
             JIPipeData data = adapter.importFromImageJ(outputSlot.getName());
             dataBatch.addOutputData(outputSlot, data);
 
@@ -271,7 +272,7 @@ public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm {
             JIPipeData data = dataBatch.getInputData(inputSlot, JIPipeData.class);
             if (data instanceof PathData)
                 continue;
-            ImageJDatatypeAdapter adapter = JIPipeImageJAdapterRegistry.getInstance().getAdapterForJIPipeData(data);
+            ImageJDatatypeAdapter adapter = JIPipe.getImageJAdapters().getAdapterForJIPipeData(data);
             adapter.convertJIPipeToImageJ(data, true, false, inputSlot.getName());
         }
     }
@@ -373,7 +374,7 @@ public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm {
      * @return compatible data types
      */
     public static Class[] getCompatibleTypes() {
-        return JIPipeImageJAdapterRegistry.getInstance().getSupportedJIPipeDataTypes().toArray(new Class[0]);
+        return JIPipe.getImageJAdapters().getSupportedJIPipeDataTypes().toArray(new Class[0]);
     }
 }
 

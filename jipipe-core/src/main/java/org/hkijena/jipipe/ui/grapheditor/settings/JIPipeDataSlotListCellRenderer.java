@@ -13,8 +13,9 @@
 
 package org.hkijena.jipipe.ui.grapheditor.settings;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.ui.registries.JIPipeUIDatatypeRegistry;
+import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
 
 import javax.swing.*;
 import java.awt.Color;
@@ -42,7 +43,7 @@ public class JIPipeDataSlotListCellRenderer extends JLabel implements ListCellRe
         if (slot != null) {
             String type = slot.isInput() ? "Input:" : "Output:";
             setText(type + " " + slot.getName());
-            setIcon(JIPipeUIDatatypeRegistry.getInstance().getIconFor(slot.getAcceptedDataType()));
+            setIcon(JIPipe.getDataTypes().getIconFor(slot.getAcceptedDataType()));
         } else {
             setText("<No data slot selected>");
             setIcon(null);

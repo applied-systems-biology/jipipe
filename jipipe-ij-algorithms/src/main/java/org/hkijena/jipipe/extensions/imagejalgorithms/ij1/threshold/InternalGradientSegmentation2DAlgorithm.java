@@ -19,6 +19,7 @@ import ij.plugin.ImageCalculator;
 import ij.plugin.filter.Binary;
 import ij.plugin.filter.GaussianBlur;
 import ij.plugin.filter.RankFilters;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
@@ -78,8 +79,8 @@ public class InternalGradientSegmentation2DAlgorithm extends JIPipeSimpleIterati
                 .allowOutputSlotInheritance(true)
                 .seal()
                 .build());
-        this.contrastEnhancer = (CLAHEContrastEnhancer) JIPipeNodeRegistry.getInstance().getInfoById("ij1-contrast-clahe").newInstance();
-        this.autoThresholding = (AutoThreshold2DAlgorithm) JIPipeNodeRegistry.getInstance().getInfoById("ij1-threshold-auto2d").newInstance();
+        this.contrastEnhancer = (CLAHEContrastEnhancer) JIPipe.getNodes().getInfoById("ij1-contrast-clahe").newInstance();
+        this.autoThresholding = (AutoThreshold2DAlgorithm) JIPipe.getNodes().getInfoById("ij1-threshold-auto2d").newInstance();
     }
 
     /**

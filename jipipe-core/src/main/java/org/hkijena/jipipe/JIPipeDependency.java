@@ -110,7 +110,7 @@ public interface JIPipeDependency extends JIPipeValidatable {
     static Set<JIPipeDependency> findUnsatisfiedDependencies(Set<JIPipeDependency> dependencies) {
         Set<JIPipeDependency> result = new HashSet<>();
         for (JIPipeDependency dependency : dependencies) {
-            boolean found = JIPipeDefaultRegistry.getInstance().getRegisteredExtensions().stream().anyMatch(d -> d.getDependencyId().equals(dependency.getDependencyId()));
+            boolean found = JIPipe.getInstance().getRegisteredExtensions().stream().anyMatch(d -> d.getDependencyId().equals(dependency.getDependencyId()));
             if (!found)
                 result.add(dependency);
         }

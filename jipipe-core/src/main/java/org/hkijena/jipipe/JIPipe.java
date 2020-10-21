@@ -15,12 +15,16 @@ package org.hkijena.jipipe;
 
 import com.google.common.eventbus.EventBus;
 import ij.IJ;
+import net.imagej.ImageJ;
 import net.imagej.ui.swing.updater.SwingAuthenticator;
 import net.imagej.updater.FilesCollection;
 import net.imagej.updater.UpdateSite;
 import net.imagej.updater.util.AvailableSites;
 import net.imagej.updater.util.Progress;
 import net.imagej.updater.util.UpdaterUtil;
+import org.hkijena.jipipe.api.JIPipeProject;
+import org.hkijena.jipipe.api.JIPipeRun;
+import org.hkijena.jipipe.api.JIPipeRunSettings;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeDataDisplayOperation;
 import org.hkijena.jipipe.api.data.JIPipeDataImportOperation;
@@ -39,18 +43,15 @@ import org.hkijena.jipipe.api.registries.JIPipeNodeRegistrationTask;
 import org.hkijena.jipipe.api.registries.JIPipeNodeRegistry;
 import org.hkijena.jipipe.api.registries.JIPipeParameterTypeRegistry;
 import org.hkijena.jipipe.api.registries.JIPipeSettingsRegistry;
-import org.hkijena.jipipe.api.registries.JIPipeTableRegistry;
+import org.hkijena.jipipe.api.registries.JIPipeTableOperationRegistry;
 import org.hkijena.jipipe.extensions.parameters.primitives.DynamicStringEnumParameter;
 import org.hkijena.jipipe.extensions.settings.DefaultCacheDisplaySettings;
 import org.hkijena.jipipe.extensions.settings.DefaultResultImporterSettings;
 import org.hkijena.jipipe.extensions.settings.ExtensionSettings;
 import org.hkijena.jipipe.ui.ijupdater.IJProgressAdapter;
 import org.hkijena.jipipe.ui.ijupdater.JIPipeImageJPluginManager;
-import org.hkijena.jipipe.ui.registries.JIPipeUIDatatypeRegistry;
-import org.hkijena.jipipe.ui.registries.JIPipeUIImageJDatatypeAdapterRegistry;
-import org.hkijena.jipipe.ui.registries.JIPipeUIMenuServiceRegistry;
-import org.hkijena.jipipe.ui.registries.JIPipeUINodeRegistry;
-import org.hkijena.jipipe.ui.registries.JIPipeUIParameterTypeRegistry;
+import org.hkijena.jipipe.ui.registries.JIPipeCustomMenuRegistry;
+import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
 import org.scijava.Context;
 import org.scijava.InstantiableException;
 import org.scijava.log.LogService;
@@ -60,7 +61,9 @@ import org.scijava.plugin.PluginInfo;
 import org.scijava.plugin.PluginService;
 import org.scijava.service.AbstractService;
 
+import java.io.IOException;
 import java.net.Authenticator;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -74,23 +77,19 @@ import java.util.stream.Collectors;
  * A scijava service that discovers JIPipe plugins in the classpath
  */
 @Plugin(type = JIPipeRegistry.class)
-public class JIPipeDefaultRegistry extends AbstractService implements JIPipeRegistry {
-    private static JIPipeDefaultRegistry instance;
+public class JIPipe extends AbstractService implements JIPipeRegistry {
+    private static JIPipe instance;
     private EventBus eventBus = new EventBus();
     private Set<String> registeredExtensionIds = new HashSet<>();
     private List<JIPipeDependency> registeredExtensions = new ArrayList<>();
     private List<JIPipeDependency> failedExtensions = new ArrayList<>();
     private JIPipeNodeRegistry nodeRegistry = new JIPipeNodeRegistry();
     private JIPipeDatatypeRegistry datatypeRegistry = new JIPipeDatatypeRegistry();
-    private JIPipeUIDatatypeRegistry uiDatatypeRegistry = new JIPipeUIDatatypeRegistry();
-    private JIPipeUIParameterTypeRegistry uiParametertypeRegistry = new JIPipeUIParameterTypeRegistry();
     private JIPipeImageJAdapterRegistry imageJDataAdapterRegistry = new JIPipeImageJAdapterRegistry();
-    private JIPipeUIImageJDatatypeAdapterRegistry uiImageJDatatypeAdapterRegistry = new JIPipeUIImageJDatatypeAdapterRegistry();
-    private JIPipeUIMenuServiceRegistry uiMenuServiceRegistry = new JIPipeUIMenuServiceRegistry();
+    private JIPipeCustomMenuRegistry customMenuRegistry = new JIPipeCustomMenuRegistry();
     private JIPipeParameterTypeRegistry parameterTypeRegistry = new JIPipeParameterTypeRegistry();
     private JIPipeSettingsRegistry settingsRegistry = new JIPipeSettingsRegistry();
-    private JIPipeTableRegistry tableRegistry = new JIPipeTableRegistry();
-    private JIPipeUINodeRegistry jipipeuiNodeRegistry = new JIPipeUINodeRegistry();
+    private JIPipeTableOperationRegistry tableOperationRegistry = new JIPipeTableOperationRegistry();
     private FilesCollection imageJPlugins = null;
 
     @Parameter
@@ -99,33 +98,33 @@ public class JIPipeDefaultRegistry extends AbstractService implements JIPipeRegi
     @Parameter
     private PluginService pluginService;
 
-
-    /**
-     * Create a new registry instance
-     */
-    public JIPipeDefaultRegistry() {
+    public static JIPipeParameterTypeRegistry getParameterTypes() {
+        return instance.parameterTypeRegistry;
     }
 
-    /**
-     * Clears all registries and reloads them
-     */
-    public void reload() {
-        logService.info("JIPipe: Reloading registry service");
-        registeredExtensions = new ArrayList<>();
-        failedExtensions = new ArrayList<>();
-        registeredExtensionIds = new HashSet<>();
-        datatypeRegistry = new JIPipeDatatypeRegistry();
-        nodeRegistry = new JIPipeNodeRegistry();
-        uiDatatypeRegistry = new JIPipeUIDatatypeRegistry();
-        uiParametertypeRegistry = new JIPipeUIParameterTypeRegistry();
-        imageJDataAdapterRegistry = new JIPipeImageJAdapterRegistry();
-        uiImageJDatatypeAdapterRegistry = new JIPipeUIImageJDatatypeAdapterRegistry();
-        uiMenuServiceRegistry = new JIPipeUIMenuServiceRegistry();
-        parameterTypeRegistry = new JIPipeParameterTypeRegistry();
-        settingsRegistry = new JIPipeSettingsRegistry();
-        tableRegistry = new JIPipeTableRegistry();
-        jipipeuiNodeRegistry = new JIPipeUINodeRegistry();
-        discover(ExtensionSettings.getInstanceFromRaw(), new JIPipeRegistryIssues());
+    public static JIPipeTableOperationRegistry getTableOperations() {
+        return instance.tableOperationRegistry;
+    }
+
+    public static JIPipeCustomMenuRegistry getCustomMenus() {
+        return instance.customMenuRegistry;
+    }
+
+    public static JIPipeImageJAdapterRegistry getImageJAdapters() { return instance.imageJDataAdapterRegistry; }
+
+    public static JIPipeSettingsRegistry getSettings() {
+        return instance.settingsRegistry;
+    }
+
+    public static JIPipeNodeRegistry getNodes() {
+        return instance.nodeRegistry;
+    }
+
+    public static JIPipeDatatypeRegistry getDataTypes() {
+        return instance.datatypeRegistry;
+    }
+
+    public JIPipe() {
     }
 
     public List<JIPipeDependency> getFailedExtensions() {
@@ -133,15 +132,23 @@ public class JIPipeDefaultRegistry extends AbstractService implements JIPipeRegi
     }
 
     /**
-     * Discovers extension services that provide new JIPipe modules
+     * Initializes JIPipe. Uses the default extension settings and discards any detected issues.
+     */
+    public void initialize() {
+        initialize(ExtensionSettings.getInstanceFromRaw(), new JIPipeRegistryIssues());
+    }
+
+    /**
+     * Initializes JIPipe
      *
      * @param extensionSettings extension settings
      * @param issues            if no windows should be opened
      */
-    public void discover(ExtensionSettings extensionSettings, JIPipeRegistryIssues issues) {
+    public void initialize(ExtensionSettings extensionSettings, JIPipeRegistryIssues issues) {
         IJ.showStatus("Initializing JIPipe ...");
+        nodeRegistry.installEvents();
         List<PluginInfo<JIPipeJavaExtension>> pluginList = pluginService.getPluginsOfType(JIPipeJavaExtension.class).stream()
-                .sorted(JIPipeDefaultRegistry::comparePlugins).collect(Collectors.toList());
+                .sorted(JIPipe::comparePlugins).collect(Collectors.toList());
         List<JIPipeDependency> javaExtensions = new ArrayList<>();
         logService.info("[1/3] Pre-initialization phase ...");
         for (int i = 0; i < pluginList.size(); ++i) {
@@ -194,7 +201,7 @@ public class JIPipeDefaultRegistry extends AbstractService implements JIPipeRegi
                     JIPipeGraphNode algorithm = info.newInstance();
                     JIPipeParameterTree collection = new JIPipeParameterTree(algorithm);
                     for (Map.Entry<String, JIPipeParameterAccess> entry : collection.getParameters().entrySet()) {
-                        if (JIPipeParameterTypeRegistry.getInstance().getInfoByFieldClass(entry.getValue().getFieldClass()) == null) {
+                        if (JIPipe.getParameterTypes().getInfoByFieldClass(entry.getValue().getFieldClass()) == null) {
                             throw new UserFriendlyRuntimeException("Unregistered parameter found: " + entry.getValue().getFieldClass() + " @ "
                                     + algorithm + " -> " + entry.getKey(),
                                     "A plugin is invalid!",
@@ -385,16 +392,6 @@ public class JIPipeDefaultRegistry extends AbstractService implements JIPipeRegi
     }
 
     @Override
-    public JIPipeUIDatatypeRegistry getUIDatatypeRegistry() {
-        return uiDatatypeRegistry;
-    }
-
-    @Override
-    public JIPipeUIParameterTypeRegistry getUIParameterTypeRegistry() {
-        return uiParametertypeRegistry;
-    }
-
-    @Override
     public JIPipeImageJAdapterRegistry getImageJDataAdapterRegistry() {
         return imageJDataAdapterRegistry;
     }
@@ -405,17 +402,8 @@ public class JIPipeDefaultRegistry extends AbstractService implements JIPipeRegi
     }
 
     @Override
-    public JIPipeUIImageJDatatypeAdapterRegistry getUIImageJDatatypeAdapterRegistry() {
-        return uiImageJDatatypeAdapterRegistry;
-    }
-
-    @Override
-    public JIPipeUIMenuServiceRegistry getUIMenuServiceRegistry() {
-        return uiMenuServiceRegistry;
-    }
-
-    private void installEvents() {
-        nodeRegistry.installEvents();
+    public JIPipeCustomMenuRegistry getCustomMenuRegistry() {
+        return customMenuRegistry;
     }
 
     @Override
@@ -464,13 +452,8 @@ public class JIPipeDefaultRegistry extends AbstractService implements JIPipeRegi
     }
 
     @Override
-    public JIPipeTableRegistry getTableRegistry() {
-        return tableRegistry;
-    }
-
-    @Override
-    public JIPipeUINodeRegistry getUIAlgorithmRegistry() {
-        return jipipeuiNodeRegistry;
+    public JIPipeTableOperationRegistry getTableOperationRegistry() {
+        return tableOperationRegistry;
     }
 
     public FilesCollection getImageJPlugins() {
@@ -484,34 +467,28 @@ public class JIPipeDefaultRegistry extends AbstractService implements JIPipeRegi
     /**
      * @return Singleton instance
      */
-    public static JIPipeDefaultRegistry getInstance() {
+    public static JIPipe getInstance() {
+        return instance;
+    }
+
+    /**
+     * Helper to create JIPipe from a context
+     * @param context the context
+     */
+    public static JIPipe createInstance(Context context) {
+        PluginService pluginService = context.getService(PluginService.class);
+        try {
+            instance = (JIPipe) pluginService.getPlugin(JIPipe.class).createInstance();
+            context.inject(instance);
+            instance.setContext(context);
+        } catch (InstantiableException e) {
+            throw new RuntimeException(e);
+        }
         return instance;
     }
 
     public static boolean isInstantiated() {
         return instance != null;
-    }
-
-    /**
-     * Instantiates the plugin service. This is done within {@link JIPipeGUICommand}
-     *
-     * @param context the SciJava context
-     */
-    public static void createInstance(Context context) {
-        if (instance == null) {
-            try {
-                PluginService pluginService = context.getService(PluginService.class);
-                instance = (JIPipeDefaultRegistry) pluginService.getPlugin(JIPipeDefaultRegistry.class).createInstance();
-                context.inject(instance);
-                instance.setContext(context);
-                instance.installEvents();
-            } catch (InstantiableException e) {
-                throw new UserFriendlyRuntimeException(e, "Could not create essential JIPipe data structures.",
-                        "JIPipe plugin registry", "There seems to be an issue either with JIPipe or your ImageJ installation.",
-                        "Try to install JIPipe into a new ImageJ distribution and one-by-one install additional plugins. " +
-                                "Contact the JIPipe or plugin author if you cannot resolve the issue.");
-            }
-        }
     }
 
     /**
@@ -523,5 +500,90 @@ public class JIPipeDefaultRegistry extends AbstractService implements JIPipeRegi
      */
     public static int comparePlugins(PluginInfo<?> p0, PluginInfo<?> p1) {
         return -Double.compare(p0.getPriority(), p1.getPriority());
+    }
+
+    /**
+     * Loads a project
+     * @param fileName Project file
+     * @return the project
+     * @throws IOException thrown if the file could not be read or the file is corrupt
+     */
+    public static JIPipeProject loadProject(Path fileName) throws IOException {
+        return loadProject(fileName, new JIPipeValidityReport());
+    }
+
+    /**
+     * Loads a project
+     * @param fileName Project file
+     * @param report Report whether the project is valid
+     * @return the project
+     * @throws IOException thrown if the file could not be read or the file is corrupt
+     */
+    public static JIPipeProject loadProject(Path fileName, JIPipeValidityReport report) throws IOException {
+        return JIPipeProject.loadProject(fileName, report);
+    }
+
+    /**
+     * Runs a project in the current thread.
+     * The progress will be put into the stdout
+     * This will block the current thread.
+     * @param project the project
+     * @param outputFolder the output folder
+     * @param threads the number of threads (set to zero for using the default value)
+     * @return the result
+     */
+    public static JIPipeRun runProject(JIPipeProject project, Path outputFolder, int threads) {
+        JIPipeRunSettings settings = new JIPipeRunSettings();
+        settings.setOutputPath(outputFolder);
+        if(threads > 0)
+            settings.setNumThreads(threads);
+        JIPipeRun run = new JIPipeRun(project, settings);
+        run.run(status -> System.out.println(status.getProgress() + "/" + status.getMaxProgress()), () -> false);
+        return run;
+    }
+
+    /**
+     * Runs a project in the current thread.
+     * The progress will be put into the stdout
+     * This will block the current thread.
+     * @param project the project
+     * @param settings settings for the run
+     * @return the result
+     */
+    public static JIPipeRun runProject(JIPipeProject project, JIPipeRunSettings settings) {
+        JIPipeRun run = new JIPipeRun(project, settings);
+        run.run(status -> System.out.println(status.getProgress() + "/" + status.getMaxProgress()), () -> false);
+        return run;
+    }
+
+    /**
+     * Runs a project in a different thread.
+     * The progress will be put into the stdout
+     * @param project the project
+     * @param outputFolder the output folder
+     * @param threads the number of threads (set to zero for using the default value)
+     * @return the future result. You have to check the {@link JIPipeRunnerQueue} to see if the run is finished.
+     */
+    public static JIPipeRun enqueueProject(JIPipeProject project, Path outputFolder, int threads) {
+        JIPipeRunSettings settings = new JIPipeRunSettings();
+        settings.setOutputPath(outputFolder);
+        if(threads > 0)
+            settings.setNumThreads(threads);
+        JIPipeRun run = new JIPipeRun(project, settings);
+        JIPipeRunnerQueue.getInstance().enqueue(run);
+        return run;
+    }
+
+    /**
+     * Runs a project in the current thread.
+     * The progress will be put into the stdout
+     * @param project the project
+     * @param settings settings for the run
+     * @return the future result. You have to check the {@link JIPipeRunnerQueue} to see if the run is finished.
+     */
+    public static JIPipeRun enqueueProject(JIPipeProject project, JIPipeRunSettings settings) {
+        JIPipeRun run = new JIPipeRun(project, settings);
+        JIPipeRunnerQueue.getInstance().enqueue(run);
+        return run;
     }
 }

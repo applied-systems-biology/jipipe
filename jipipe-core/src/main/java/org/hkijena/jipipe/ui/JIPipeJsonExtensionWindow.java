@@ -17,7 +17,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.eventbus.EventBus;
 import ij.IJ;
 import net.imagej.ui.swing.updater.ProgressDialog;
-import org.hkijena.jipipe.JIPipeDefaultRegistry;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeJsonExtension;
 import org.hkijena.jipipe.JIPipeRegistryIssues;
@@ -337,7 +337,7 @@ public class JIPipeJsonExtensionWindow extends JFrame {
      * @param checkDependencies whether to check dependencies
      */
     public static void installExtension(JIPipeWorkbench workbench, JIPipeJsonExtension extension, boolean silent, boolean checkDependencies) {
-        boolean alreadyExists = JIPipeDefaultRegistry.getInstance().getRegisteredExtensionIds().contains(extension.getDependencyId());
+        boolean alreadyExists = JIPipe.getInstance().getRegisteredExtensionIds().contains(extension.getDependencyId());
         if (alreadyExists) {
             if (JOptionPane.showConfirmDialog(workbench.getWindow(), "There already exists an extension with ID '"
                     + extension.getDependencyId() + "'. Do you want to install this extension anyways?", "Install", JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION) {
@@ -356,7 +356,7 @@ public class JIPipeJsonExtensionWindow extends JFrame {
         // Suggest a path that the user can later change
         Path suggestedPath = pluginFolder.resolve(StringUtils.makeFilesystemCompatible(extension.getDependencyId()) + ".jipipe.json");
         if (alreadyExists) {
-            JIPipeDependency dependency = JIPipeDefaultRegistry.getInstance().findExtensionById(extension.getDependencyId());
+            JIPipeDependency dependency = JIPipe.getInstance().findExtensionById(extension.getDependencyId());
             if (dependency instanceof JIPipeJsonExtension) {
                 Path jsonExtensionPath = ((JIPipeJsonExtension) dependency).getJsonFilePath();
                 if (jsonExtensionPath != null && Files.exists(jsonExtensionPath)) {
@@ -383,7 +383,7 @@ public class JIPipeJsonExtensionWindow extends JFrame {
         // Install extension by reloading (to be sure)
         try {
             JIPipeJsonExtension loadedExtension = JsonUtils.getObjectMapper().readValue(selectedPath.toFile(), JIPipeJsonExtension.class);
-            JIPipeDefaultRegistry.getInstance().register(loadedExtension);
+            JIPipe.getInstance().register(loadedExtension);
             if (!silent) {
                 JOptionPane.showMessageDialog(workbench.getWindow(), "The extension was installed. We recommend to restart ImageJ, " +
                         "especially if you updated an existing extension.", "Extension installed", JOptionPane.INFORMATION_MESSAGE);
@@ -398,8 +398,8 @@ public class JIPipeJsonExtensionWindow extends JFrame {
 
     public static void checkExtensionDependencies(JIPipeWorkbench workbench) {
         JIPipeRegistryIssues issues = new JIPipeRegistryIssues();
-        JIPipeDefaultRegistry.getInstance().checkUpdateSites(issues,
-                JIPipeDefaultRegistry.getInstance().getRegisteredExtensions(),
+        JIPipe.getInstance().checkUpdateSites(issues,
+                JIPipe.getInstance().getRegisteredExtensions(),
                 new ProgressDialog((Frame) workbench.getWindow(), "Checking dependencies ..."));
         if (!issues.getMissingImageJSites().isEmpty()) {
             MissingUpdateSiteResolver resolver = new MissingUpdateSiteResolver(workbench.getContext(), issues);

@@ -24,7 +24,6 @@ import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.registries.JIPipeNodeRegistry;
 import org.hkijena.jipipe.extensions.settings.ExtensionSettings;
 import org.hkijena.jipipe.ui.compat.RunSingleAlgorithmDialog;
 import org.hkijena.jipipe.ui.components.SplashScreen;
@@ -68,13 +67,14 @@ public class JIPipeRunAlgorithmCommand extends DynamicCommand implements Initial
     private void initializeRegistry(boolean withSplash) {
         JIPipeRegistryIssues issues = new JIPipeRegistryIssues();
         ExtensionSettings extensionSettings = ExtensionSettings.getInstanceFromRaw();
-        if (!JIPipeDefaultRegistry.isInstantiated()) {
+        if (!JIPipe.isInstantiated()) {
             UIUtils.loadLookAndFeelFromSettings();
-            if (!JIPipeDefaultRegistry.isInstantiated() && withSplash) {
+            if (!JIPipe.isInstantiated() && withSplash) {
                 SwingUtilities.invokeLater(() -> SplashScreen.getInstance().showSplash(getContext()));
             }
-            JIPipeDefaultRegistry.createInstance(getContext());
-            JIPipeDefaultRegistry.getInstance().discover(extensionSettings, issues);
+            JIPipe jiPipe = JIPipe.createInstance(getContext());
+            SplashScreen.getInstance().setJIPipe(JIPipe.getInstance());
+            jiPipe.initialize(extensionSettings, issues);
             SwingUtilities.invokeLater(() -> SplashScreen.getInstance().hideSplash());
         }
         if (!extensionSettings.isSilent()) {
@@ -117,7 +117,7 @@ public class JIPipeRunAlgorithmCommand extends DynamicCommand implements Initial
             }
         } else {
             initializeRegistry(false);
-            JIPipeNodeInfo info = JIPipeNodeRegistry.getInstance().getInfoById(algorithmId);
+            JIPipeNodeInfo info = JIPipe.getNodes().getInfoById(algorithmId);
             algorithm = info.newInstance();
             settings = new SingleImageJAlgorithmRun(algorithm);
             try {

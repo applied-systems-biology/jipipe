@@ -27,6 +27,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
 import org.hkijena.jipipe.api.registries.JIPipeJavaNodeRegistrationTask;
 import org.hkijena.jipipe.api.registries.JIPipeNodeRegistrationTask;
+import org.hkijena.jipipe.api.registries.JIPipeParameterTypeRegistry;
 import org.hkijena.jipipe.extensions.parameters.collections.ListParameter;
 import org.hkijena.jipipe.extensions.parameters.primitives.EnumParameterTypeInfo;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
@@ -35,7 +36,6 @@ import org.hkijena.jipipe.ui.compat.ImageJDatatypeImporterUI;
 import org.hkijena.jipipe.ui.extension.MenuExtension;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterGeneratorUI;
-import org.hkijena.jipipe.ui.registries.JIPipeUIParameterTypeRegistry;
 import org.hkijena.jipipe.ui.resultanalysis.JIPipeResultDataSlotPreviewUI;
 import org.hkijena.jipipe.ui.resultanalysis.JIPipeResultDataSlotRowUI;
 import org.hkijena.jipipe.utils.ReflectionUtils;
@@ -56,7 +56,7 @@ import java.util.function.Supplier;
 public abstract class JIPipeDefaultJavaExtension extends AbstractService implements JIPipeJavaExtension {
 
     private JIPipeMetadata metadata;
-    private JIPipeDefaultRegistry registry;
+    private JIPipe registry;
 
     /**
      * Creates a new instance
@@ -125,12 +125,12 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
     }
 
     @Override
-    public JIPipeDefaultRegistry getRegistry() {
+    public JIPipe getRegistry() {
         return registry;
     }
 
     @Override
-    public void setRegistry(JIPipeDefaultRegistry registry) {
+    public void setRegistry(JIPipe registry) {
         this.registry = registry;
     }
 
@@ -140,7 +140,7 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
      * @param klass The menu entry
      */
     public void registerMenuExtension(Class<? extends MenuExtension> klass) {
-        registry.getUIMenuServiceRegistry().register(klass);
+        registry.getCustomMenuRegistry().register(klass);
     }
 
     /**
@@ -166,13 +166,13 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
     public void registerDatatype(String id, Class<? extends JIPipeData> dataClass, URL icon, Class<? extends JIPipeResultDataSlotRowUI> rowUI, Class<? extends JIPipeResultDataSlotPreviewUI> cellUI, JIPipeDataOperation... operations) {
         registry.getDatatypeRegistry().register(id, dataClass, this);
         if (icon != null) {
-            registry.getUIDatatypeRegistry().registerIcon(dataClass, icon);
+            registry.getDatatypeRegistry().registerIcon(dataClass, icon);
         }
         if (rowUI != null) {
-            registry.getUIDatatypeRegistry().registerResultSlotUI(dataClass, rowUI);
+            registry.getDatatypeRegistry().registerResultSlotUI(dataClass, rowUI);
         }
         if (cellUI != null) {
-            registry.getUIDatatypeRegistry().registerResultTableCellUI(dataClass, cellUI);
+            registry.getDatatypeRegistry().registerResultTableCellUI(dataClass, cellUI);
         }
         registerDatatypeOperation(id, operations);
     }
@@ -265,7 +265,7 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
      */
     public void registerNodeType(JIPipeNodeInfo info, URL icon) {
         registry.getNodeRegistry().register(info, this);
-        registry.getUIAlgorithmRegistry().registerIcon(info, icon);
+        registry.getNodeRegistry().registerIcon(info, icon);
     }
 
     /**
@@ -384,7 +384,7 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
      * @param uiClass        the editor class
      */
     public void registerParameterEditor(Class<?> parameterClass, Class<? extends JIPipeParameterEditorUI> uiClass) {
-        registry.getUIParameterTypeRegistry().registerParameterEditor(parameterClass, uiClass);
+        registry.getParameterTypeRegistry().registerParameterEditor(parameterClass, uiClass);
     }
 
     /**
@@ -396,7 +396,7 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
      * @param description    Description for the generator
      */
     public void registerParameterGenerator(Class<?> parameterClass, Class<? extends JIPipeParameterGeneratorUI> uiClass, String name, String description) {
-        JIPipeUIParameterTypeRegistry parametertypeRegistry = registry.getUIParameterTypeRegistry();
+        JIPipeParameterTypeRegistry parametertypeRegistry = registry.getParameterTypeRegistry();
         parametertypeRegistry.registerGenerator(parameterClass, uiClass, name, description);
     }
 
@@ -410,7 +410,7 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
      * @param description a description
      */
     public void registerTableColumnOperation(String id, ColumnOperation operation, String name, String shortName, String description) {
-        registry.getTableRegistry().registerColumnOperation(id, operation, name, shortName, description);
+        registry.getTableOperationRegistry().registerColumnOperation(id, operation, name, shortName, description);
     }
 
     /**
@@ -421,7 +421,7 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
      */
     public void registerImageJDataAdapter(ImageJDatatypeAdapter adapter, Class<? extends ImageJDatatypeImporterUI> importerUIClass) {
         registry.getImageJDataAdapterRegistry().register(adapter);
-        registry.getUIImageJDatatypeAdapterRegistry().registerImporterFor(adapter.getImageJDatatype(), importerUIClass);
+        registry.getImageJDataAdapterRegistry().registerImporterFor(adapter.getImageJDatatype(), importerUIClass);
     }
 
     /**

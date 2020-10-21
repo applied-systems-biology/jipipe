@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.ui.extensionbuilder;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeJsonExtension;
 import org.hkijena.jipipe.api.grouping.JsonNodeInfo;
 import org.hkijena.jipipe.api.grouping.NodeGroup;
@@ -129,7 +130,7 @@ public class JIPipeJsonExporter extends JIPipeGraphEditorUI {
             name = "my-algorithm";
         }
         name = StringUtils.jsonify(name);
-        name = StringUtils.makeUniqueString(name, "-", id -> JIPipeNodeRegistry.getInstance().hasNodeInfoWithId(id));
+        name = StringUtils.makeUniqueString(name, "-", id -> JIPipe.getNodes().hasNodeInfoWithId(id));
         nodeInfo.setId(name);
     }
 

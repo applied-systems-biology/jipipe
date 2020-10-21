@@ -59,7 +59,7 @@ public class JIPipeJsonExtension implements JIPipeParameterCollection, JIPipeDep
     private String version = "1.0.0";
     private JIPipeMetadata metadata = new JIPipeMetadata();
     private Path jsonFilePath;
-    private JIPipeDefaultRegistry registry;
+    private JIPipe registry;
     private JIPipeImageJUpdateSiteDependency.List updateSiteDependenciesParameter = new JIPipeImageJUpdateSiteDependency.List();
 
     private Set<JsonNodeInfo> nodeInfos = new HashSet<>();
@@ -190,7 +190,7 @@ public class JIPipeJsonExtension implements JIPipeParameterCollection, JIPipeDep
     /**
      * @return The registry instance
      */
-    public JIPipeDefaultRegistry getRegistry() {
+    public JIPipe getRegistry() {
         return registry;
     }
 
@@ -199,7 +199,7 @@ public class JIPipeJsonExtension implements JIPipeParameterCollection, JIPipeDep
      *
      * @param registry The registry
      */
-    public void setRegistry(JIPipeDefaultRegistry registry) {
+    public void setRegistry(JIPipe registry) {
         this.registry = registry;
     }
 
@@ -209,7 +209,7 @@ public class JIPipeJsonExtension implements JIPipeParameterCollection, JIPipeDep
      */
     public void register() {
         for (JsonNode entry : ImmutableList.copyOf(serializedJson.get("algorithms").elements())) {
-            JIPipeNodeRegistry.getInstance().scheduleRegister(new JsonNodeRegistrationTask(entry, this));
+            JIPipe.getNodes().scheduleRegister(new JsonNodeRegistrationTask(entry, this));
         }
     }
 

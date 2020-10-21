@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.api.registries;
 
-import org.hkijena.jipipe.JIPipeDefaultRegistry;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.extensions.tables.ColumnOperation;
 
 import java.util.Collections;
@@ -23,7 +23,7 @@ import java.util.Map;
 /**
  * Registry for table operations
  */
-public class JIPipeTableRegistry {
+public class JIPipeTableOperationRegistry {
     private Map<String, ColumnOperationEntry> registeredColumnOperations = new HashMap<>();
 
     /**
@@ -71,10 +71,6 @@ public class JIPipeTableRegistry {
         }
 
         return result;
-    }
-
-    public static JIPipeTableRegistry getInstance() {
-        return JIPipeDefaultRegistry.getInstance().getTableRegistry();
     }
 
     /**

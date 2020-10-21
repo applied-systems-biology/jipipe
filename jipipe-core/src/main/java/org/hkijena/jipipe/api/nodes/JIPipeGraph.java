@@ -30,6 +30,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.JIPipeValidatable;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
@@ -314,7 +315,7 @@ public class JIPipeGraph implements JIPipeValidatable {
     public boolean canConnectFast(JIPipeDataSlot source, JIPipeDataSlot target, boolean user) {
         if (!source.isOutput() || !target.isInput())
             return false;
-        if (user && !JIPipeDatatypeRegistry.getInstance().isConvertible(source.getAcceptedDataType(), target.getAcceptedDataType()))
+        if (user && !JIPipe.getDataTypes().isConvertible(source.getAcceptedDataType(), target.getAcceptedDataType()))
             return false;
         if (graph.inDegreeOf(target) > 0)
             return false;
@@ -661,7 +662,7 @@ public class JIPipeGraph implements JIPipeValidatable {
         for (Map.Entry<String, JsonNode> kv : ImmutableList.copyOf(node.get("nodes").fields())) {
             if (!nodes.containsKey(kv.getKey())) {
                 String id = kv.getValue().get("jipipe:node-info-id").asText();
-                if (!JIPipeNodeRegistry.getInstance().hasNodeInfoWithId(id)) {
+                if (!JIPipe.getNodes().hasNodeInfoWithId(id)) {
                     System.err.println("Unable to find node with ID '" + id + "'. Skipping.");
                     issues.forCategory("Nodes").forCategory(id).reportIsInvalid("Unable to find node type '" + id + "'!",
                             "The JSON data requested to load a node of type '" + id + "', but it is not known to JIPipe.",
@@ -669,7 +670,7 @@ public class JIPipeGraph implements JIPipeValidatable {
                             node);
                     continue;
                 }
-                JIPipeNodeInfo info = JIPipeNodeRegistry.getInstance().getInfoById(id);
+                JIPipeNodeInfo info = JIPipe.getNodes().getInfoById(id);
                 JIPipeGraphNode algorithm = info.newInstance();
                 algorithm.fromJson(kv.getValue(), issues.forCategory("Nodes").forCategory(id));
                 insertNode(StringUtils.jsonify(kv.getKey()), algorithm, algorithm.getCompartment());

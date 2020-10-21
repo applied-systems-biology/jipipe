@@ -29,14 +29,14 @@ public interface JIPipeJavaExtension extends SciJavaPlugin, JIPipeDependency {
      *
      * @return The registry
      */
-    JIPipeDefaultRegistry getRegistry();
+    JIPipe getRegistry();
 
     /**
      * Sets the registry
      *
      * @param registry The registry
      */
-    void setRegistry(JIPipeDefaultRegistry registry);
+    void setRegistry(JIPipe registry);
 
     /**
      * Registers custom modules into JIPipe

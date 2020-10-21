@@ -13,10 +13,10 @@
 
 package org.hkijena.jipipe.ui.components;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
-import org.hkijena.jipipe.ui.registries.JIPipeUIDatatypeRegistry;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -48,7 +48,7 @@ public class InheritedSlotListCellRenderer extends JLabel implements ListCellRen
             setText("<No inheritance>");
         } else if ("*".equals(value)) {
             if (!algorithm.getInputSlotOrder().isEmpty()) {
-                setIcon(JIPipeUIDatatypeRegistry.getInstance().getIconFor(algorithm.getFirstInputSlot().getAcceptedDataType()));
+                setIcon(JIPipe.getDataTypes().getIconFor(algorithm.getFirstInputSlot().getAcceptedDataType()));
             } else {
                 setIcon(UIUtils.getIconFromResources("actions/cancel.png"));
             }
@@ -56,7 +56,7 @@ public class InheritedSlotListCellRenderer extends JLabel implements ListCellRen
         } else {
             JIPipeDataSlot slotInstance = algorithm.getInputSlotMap().getOrDefault(value, null);
             if (slotInstance != null && slotInstance.isInput()) {
-                setIcon(JIPipeUIDatatypeRegistry.getInstance().getIconFor(slotInstance.getAcceptedDataType()));
+                setIcon(JIPipe.getDataTypes().getIconFor(slotInstance.getAcceptedDataType()));
             }
             setText(value);
         }
