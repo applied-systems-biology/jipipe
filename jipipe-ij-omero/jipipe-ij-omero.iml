@@ -30,7 +30,7 @@
     <orderEntry type="module" module-name="jipipe-tables" />
     <orderEntry type="module" module-name="jipipe-annotation" />
     <orderEntry type="module" module-name="jipipe-strings" />
-    <orderEntry type="library" name="Maven: org.openmicroscopy:omero-gateway:5.6.5" level="project" />
+    <orderEntry type="library" name="Maven: org.openmicroscopy:omero-gateway:5.6.3" level="project" />
     <orderEntry type="library" name="Maven: org.openmicroscopy:omero-blitz:5.5.6" level="project" />
     <orderEntry type="library" name="Maven: org.openmicroscopy:omero-server:5.5.6" level="project" />
     <orderEntry type="library" name="Maven: org.openmicroscopy:omero-renderer:5.5.5" level="project" />
@@ -61,7 +61,7 @@
     <orderEntry type="library" name="Maven: commons-logging:commons-logging:1.2" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: commons-collections:commons-collections:3.2.2" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: com.zeroc:icegrid:3.6.5" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: com.zeroc:ice:3.6.5" level="project" />
+    <orderEntry type="library" name="Maven: com.zeroc:ice:3.6.5" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: com.zeroc:glacier2:3.6.5" level="project" />
     <orderEntry type="library" name="Maven: net.imagej:imagej:2.1.0" level="project" />
     <orderEntry type="library" name="Maven: net.imagej:imagej-common:0.33.0" level="project" />

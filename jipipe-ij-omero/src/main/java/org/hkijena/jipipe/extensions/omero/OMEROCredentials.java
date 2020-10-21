@@ -79,7 +79,7 @@ public class OMEROCredentials implements JIPipeParameterCollection {
      * Converts the credentials into a SciJava OMERO location
      * @return the location
      */
-    public LoginCredentials getLocation() {
+    public LoginCredentials getCredentials() {
         String server_ = StringUtils.orElse(server, OMEROSettings.getInstance().getDefaultServer());
         String user_ = StringUtils.orElse(userName, OMEROSettings.getInstance().getDefaultUserName());
         String password_ = StringUtils.orElse(password.getPassword(), OMEROSettings.getInstance().getDefaultPassword().getPassword());
