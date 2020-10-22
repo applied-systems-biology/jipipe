@@ -51,6 +51,8 @@ public class JIPipeMergingDataBatchBuilder {
     }
     
     public void setReferenceColumns(JIPipeColumnGrouping columnGrouping, StringPredicate.List customColumns, boolean invertCustomColumns) {
+        if(slots.isEmpty())
+            System.err.println("Warning: Trying to calculate reference columns with empty slot list!");
         switch (columnGrouping) {
             case Custom:
                 referenceColumns = getInputAnnotationByFilter(customColumns, invertCustomColumns);
@@ -179,6 +181,7 @@ public class JIPipeMergingDataBatchBuilder {
                 singleBatch.setData(entry.getKey(), targetRow);
                 singleBatch.setAnnotations(batch.getAnnotations());
             }
+            result.add(singleBatch);
         }
         return result;
     }

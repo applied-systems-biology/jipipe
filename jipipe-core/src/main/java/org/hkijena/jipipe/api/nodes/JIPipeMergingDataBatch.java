@@ -295,4 +295,16 @@ public class JIPipeMergingDataBatch {
         }
         return false;
     }
+
+    /**
+     * Returns true if each slot only has one row
+     * @return if the batch is single
+     */
+    public boolean isSingle() {
+        for (Set<Integer> rows : inputSlotRows.values()) {
+            if(rows.size() != 1)
+                return false;
+        }
+        return true;
+    }
 }
