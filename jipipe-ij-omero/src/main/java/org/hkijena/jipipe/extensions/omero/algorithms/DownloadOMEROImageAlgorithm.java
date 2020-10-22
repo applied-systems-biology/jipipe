@@ -23,10 +23,7 @@ import ome.xml.meta.OMEXMLMetadata;
 import ome.xml.model.enums.DimensionOrder;
 import omero.gateway.Gateway;
 import omero.gateway.LoginCredentials;
-import omero.gateway.SecurityContext;
-import omero.gateway.facility.BrowseFacility;
 import omero.gateway.model.ExperimenterData;
-import omero.gateway.model.ImageData;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
@@ -37,9 +34,8 @@ import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
-import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.OMEImageData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.parameters.OMEColorMode;
@@ -59,11 +55,11 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-@JIPipeDocumentation(name = "Import from OMERO", description = "Imports an image from OMERO into ImageJ")
-@JIPipeOrganization(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@JIPipeDocumentation(name = "Download from OMERO", description = "Imports an image from OMERO into ImageJ")
+@JIPipeOrganization(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "OMERO")
 @JIPipeInputSlot(value = OMEROImageReferenceData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = OMEImageData.class, slotName = "Output", autoCreate = true)
-public class ImportOMEROImageAlgorithm extends JIPipeSimpleIteratingAlgorithm {
+public class DownloadOMEROImageAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private OMEROCredentials credentials = new OMEROCredentials();
     private OMEColorMode colorMode = OMEColorMode.Default;
@@ -82,13 +78,13 @@ public class ImportOMEROImageAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     private long currentGroupId;
 
 
-    public ImportOMEROImageAlgorithm(JIPipeNodeInfo info) {
+    public DownloadOMEROImageAlgorithm(JIPipeNodeInfo info) {
         super(info);
         registerSubParameter(credentials);
         titleAnnotation.setContent("Image title");
     }
 
-    public ImportOMEROImageAlgorithm(ImportOMEROImageAlgorithm other) {
+    public DownloadOMEROImageAlgorithm(DownloadOMEROImageAlgorithm other) {
         super(other);
         this.credentials = new OMEROCredentials(other.credentials);
         this.colorMode = other.colorMode;

@@ -15,7 +15,6 @@ package org.hkijena.jipipe;
 
 import com.google.common.eventbus.EventBus;
 import ij.IJ;
-import net.imagej.ImageJ;
 import net.imagej.ui.swing.updater.SwingAuthenticator;
 import net.imagej.updater.FilesCollection;
 import net.imagej.updater.UpdateSite;
@@ -62,6 +61,7 @@ import org.scijava.plugin.PluginService;
 import org.scijava.service.AbstractService;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.net.Authenticator;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -585,5 +585,53 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
         JIPipeRun run = new JIPipeRun(project, settings);
         JIPipeRunnerQueue.getInstance().enqueue(run);
         return run;
+    }
+
+    /**
+     * Creates a new node instance from its id
+     *
+     * @param id  Algorithm ID
+     * @param klass the node type
+     * @param <T> Algorithm class
+     * @return Algorithm instance
+     */
+    public static <T extends JIPipeGraphNode> T createNode(String id, Class<T> klass) {
+        return (T) getNodes().getInfoById(id).newInstance();
+    }
+
+    /**
+     * Creates a new node instance from its class.
+     * Please note that this might not work for all node types, as there is no 1:1 relation between node classes and their Ids
+     * @param klass node class
+     * @param <T> node class
+     * @return the node
+     */
+    public static <T extends JIPipeGraphNode> T createNode(Class<T> klass) {
+        Set<JIPipeNodeInfo> nodeInfos = getNodes().getNodeInfosFromClass(klass);
+        if(nodeInfos.size() > 1)
+            throw new RuntimeException("There are multiple node infos registered for " + klass);
+        if(nodeInfos.isEmpty())
+            throw new IndexOutOfBoundsException("No node infos registered for " + klass);
+        return (T) nodeInfos.iterator().next().newInstance();
+    }
+
+    /**
+     * Duplicates a {@link JIPipeGraphNode}
+     * @param node the node
+     * @param <T> the node class
+     * @return a deep copy
+     */
+    public static <T extends JIPipeGraphNode> T duplicateNode(T node) {
+        if(node.getInfo() == null) {
+            System.err.println("Warning: Node " + node + " has no info attached. Create nodes via the static JIPipe method!");
+            try {
+                return (T) node.getClass().getConstructor(node.getClass()).newInstance(node);
+            } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        else {
+            return (T) node.getInfo().duplicate(node);
+        }
     }
 }

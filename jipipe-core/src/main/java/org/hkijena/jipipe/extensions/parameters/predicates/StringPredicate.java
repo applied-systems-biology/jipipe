@@ -18,6 +18,7 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 import org.hkijena.jipipe.api.JIPipeValidatable;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.extensions.parameters.collections.ListParameter;
+import org.hkijena.jipipe.extensions.parameters.util.LogicalOperation;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.util.Objects;
@@ -192,6 +193,34 @@ public class StringPredicate implements Predicate<String>, JIPipeValidatable {
             }
         }
 
+        public boolean test(String s, LogicalOperation operation) {
+            if(operation == LogicalOperation.LogicalAnd) {
+                for (StringPredicate stringPredicate : this) {
+                    if (!stringPredicate.test(s))
+                        return false;
+                }
+                return false;
+            }
+            else if(operation == LogicalOperation.LogicalOr) {
+                for (StringPredicate stringPredicate : this) {
+                    if (stringPredicate.test(s))
+                        return true;
+                }
+                return false;
+            }
+            else {
+                boolean flag = false;
+                for (StringPredicate stringPredicate : this) {
+                    if (flag && stringPredicate.test(s))
+                        return false;
+                    else if(stringPredicate.test(s)) {
+                        flag = true;
+                    }
+                }
+                return true;
+            }
+        }
+
         /**
          * Returns true if one or more filters report that the string matches
          *
@@ -200,11 +229,7 @@ public class StringPredicate implements Predicate<String>, JIPipeValidatable {
          */
         @Override
         public boolean test(String s) {
-            for (StringPredicate stringPredicate : this) {
-                if (stringPredicate.test(s))
-                    return true;
-            }
-            return false;
+           return test(s, LogicalOperation.LogicalOr);
         }
     }
 }

@@ -18,12 +18,12 @@ import ij.ImagePlus;
 import ij.gui.Roi;
 import ij.plugin.filter.Filler;
 import ij.process.ImageProcessor;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
-import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeIteratingAlgorithm;
@@ -119,7 +119,7 @@ public class RoiToRGBAlgorithm extends JIPipeIteratingAlgorithm {
         Filler roiFiller = new Filler();
         if (drawLabel) {
             RoiStatisticsAlgorithm statisticsAlgorithm =
-                    JIPipeAlgorithm.newInstance("ij1-roi-statistics", RoiStatisticsAlgorithm.class);
+                    JIPipe.createNode("ij1-roi-statistics", RoiStatisticsAlgorithm.class);
             statisticsAlgorithm.setOverrideReferenceImage(true);
             statisticsAlgorithm.getMeasurements().setNativeValue(Measurement.Centroid.getNativeValue());
             statisticsAlgorithm.getInputSlot("ROI").addData(inputData);

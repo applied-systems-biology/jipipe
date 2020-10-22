@@ -18,6 +18,7 @@ import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.data.JIPipeDataByMetadataExporter;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
@@ -28,6 +29,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FolderData;
+import org.hkijena.jipipe.extensions.parameters.predicates.StringPredicate;
 import org.hkijena.jipipe.extensions.parameters.primitives.FilePathParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
 import org.hkijena.jipipe.ui.components.PathEditor;
@@ -49,42 +51,26 @@ import java.util.function.Supplier;
         "The output files are named according to the metadata columns and can be easily processed by humans or third-party scripts. " +
         "The output of this algorithm is the selected output directory. " +
         "Please note that you do not need to explicitly export data, as JIPipe automatically saves all output data.")
-@JIPipeInputSlot(JIPipeData.class)
-@JIPipeOutputSlot(FolderData.class)
+@JIPipeInputSlot(value = JIPipeData.class, slotName = "Data", autoCreate = true)
+@JIPipeOutputSlot(value = FolderData.class, slotName = "Output path", autoCreate = true)
 @JIPipeOrganization(nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
 public class ExportDataByParameter extends JIPipeAlgorithm {
 
     private boolean splitByInputSlots = true;
-    private boolean ignoreMissingMetadata = false;
-    private boolean withMetadataKeys = true;
-    private boolean appendDataTypeAsMetadata = false;
-    private boolean appendDataTypeUsesRealDataType = true;
-    private String appendDataTypeMetadataKey = "DataType";
-    private String separatorString = "_";
-    private String equalsString = "=";
-    private String missingString = "N/A";
     private Path outputDirectory = Paths.get("exported-data");
+    private JIPipeDataByMetadataExporter exporter = new JIPipeDataByMetadataExporter();
 
     public ExportDataByParameter(JIPipeNodeInfo info) {
-        super(info, JIPipeDefaultMutableSlotConfiguration.builder()
-                .addInputSlot("Input", JIPipeData.class)
-                .addOutputSlot("Output path", FolderData.class, null)
-                .sealOutput()
-                .build());
+        super(info);
+        registerSubParameter(exporter);
     }
 
     public ExportDataByParameter(ExportDataByParameter other) {
         super(other);
         this.splitByInputSlots = other.splitByInputSlots;
-        this.separatorString = other.separatorString;
-        this.equalsString = other.equalsString;
-        this.missingString = other.missingString;
-        this.ignoreMissingMetadata = other.ignoreMissingMetadata;
-        this.withMetadataKeys = other.withMetadataKeys;
         this.outputDirectory = other.outputDirectory;
-        this.appendDataTypeAsMetadata = other.appendDataTypeAsMetadata;
-        this.appendDataTypeUsesRealDataType = other.appendDataTypeUsesRealDataType;
-        this.appendDataTypeMetadataKey = other.appendDataTypeMetadataKey;
+        this.exporter = new JIPipeDataByMetadataExporter(other.exporter);
+        registerSubParameter(exporter);
     }
 
     @Override
@@ -105,65 +91,12 @@ public class ExportDataByParameter extends JIPipeAlgorithm {
             for (JIPipeDataSlot inputSlot : getInputSlots()) {
                 if (isCancelled.get())
                     return;
-                writeToFolder(Collections.singletonList(inputSlot), outputPath.resolve(inputSlot.getName()), subProgress.resolve("Slot '" + inputSlot.getName() + "'"), algorithmProgress, isCancelled);
+                exporter.writeToFolder(Collections.singletonList(inputSlot), outputPath.resolve(inputSlot.getName()), subProgress.resolve("Slot '" + inputSlot.getName() + "'"), algorithmProgress, isCancelled);
                 getFirstOutputSlot().addData(new FolderData(outputPath.resolve(inputSlot.getName())));
             }
         } else {
-            writeToFolder(getInputSlots(), outputPath, subProgress, algorithmProgress, isCancelled);
+            exporter.writeToFolder(getInputSlots(), outputPath, subProgress, algorithmProgress, isCancelled);
             getFirstOutputSlot().addData(new FolderData(outputPath));
-        }
-    }
-
-    private void writeToFolder(List<JIPipeDataSlot> dataSlotList, Path outputPath, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
-        if (!Files.isDirectory(outputPath)) {
-            try {
-                Files.createDirectories(outputPath);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        Set<String> existingMetadata = new HashSet<>();
-        for (JIPipeDataSlot dataSlot : dataSlotList) {
-            for (int row = 0; row < dataSlot.getRowCount(); row++) {
-                if (isCancelled.get())
-                    return;
-                StringBuilder metadataStringBuilder = new StringBuilder();
-                if (appendDataTypeAsMetadata) {
-                    String dataTypeName;
-                    if (appendDataTypeUsesRealDataType) {
-                        JIPipeData data = dataSlot.getData(row, JIPipeData.class);
-                        dataTypeName = JIPipeDataInfo.getInstance(data.getClass()).getName();
-                    } else {
-                        dataTypeName = JIPipeDataInfo.getInstance(dataSlot.getAcceptedDataType()).getName();
-                    }
-                    if (withMetadataKeys && !StringUtils.isNullOrEmpty(appendDataTypeMetadataKey))
-                        metadataStringBuilder.append(appendDataTypeMetadataKey).append(equalsString);
-                    metadataStringBuilder.append(dataTypeName);
-                }
-                for (int col = 0; col < dataSlot.getAnnotationColumns().size(); col++) {
-                    String metadataKey = dataSlot.getAnnotationColumns().get(col);
-                    JIPipeAnnotation metadataValue;
-                    if (ignoreMissingMetadata) {
-                        metadataValue = dataSlot.getAnnotationOr(row, metadataKey, null);
-                    } else {
-                        metadataValue = dataSlot.getAnnotationOr(row, metadataKey, new JIPipeAnnotation(metadataKey, missingString));
-                    }
-
-                    if (metadataValue != null) {
-                        if (metadataStringBuilder.length() > 0)
-                            metadataStringBuilder.append(separatorString);
-                        if (withMetadataKeys)
-                            metadataStringBuilder.append(metadataKey).append(equalsString);
-                        metadataStringBuilder.append(metadataValue.getValue());
-                    }
-                }
-
-                String metadataString = StringUtils.makeFilesystemCompatible(StringUtils.makeUniqueString(metadataStringBuilder.toString(), separatorString, existingMetadata));
-                existingMetadata.add(metadataString);
-                JIPipeData data = dataSlot.getData(row, JIPipeData.class);
-                algorithmProgress.accept(subProgress.resolve("Saving " + data + " as " + metadataString + " into " + outputPath));
-                data.saveTo(outputPath, metadataString, true);
-            }
         }
     }
 
@@ -183,64 +116,6 @@ public class ExportDataByParameter extends JIPipeAlgorithm {
         this.splitByInputSlots = splitByInputSlots;
     }
 
-    @JIPipeDocumentation(name = "Separator string", description = "String that separates multiple metadata column fields.")
-    @JIPipeParameter("separator-string")
-    @StringParameterSettings(monospace = true)
-    public String getSeparatorString() {
-        return separatorString;
-    }
-
-    @JIPipeParameter("separator-string")
-    public void setSeparatorString(String separatorString) {
-        this.separatorString = separatorString;
-    }
-
-    @JIPipeDocumentation(name = "Equals string", description = "String that separates the metadata name and value.")
-    @JIPipeParameter("equals-string")
-    @StringParameterSettings(monospace = true)
-    public String getEqualsString() {
-        return equalsString;
-    }
-
-    @JIPipeParameter("equals-string")
-    public void setEqualsString(String equalsString) {
-        this.equalsString = equalsString;
-    }
-
-    @JIPipeDocumentation(name = "Ignore missing metadata", description = "If enabled, missing metadata does not appear in the generated file names.")
-    @JIPipeParameter("ignore-missing-metadata")
-    public boolean isIgnoreMissingMetadata() {
-        return ignoreMissingMetadata;
-    }
-
-    @JIPipeParameter("ignore-missing-metadata")
-    public void setIgnoreMissingMetadata(boolean ignoreMissingMetadata) {
-        this.ignoreMissingMetadata = ignoreMissingMetadata;
-    }
-
-    @JIPipeDocumentation(name = "Missing metadata string", description = "Missing metadata is replaced by this value")
-    @JIPipeParameter("missing-string")
-    @StringParameterSettings(monospace = true)
-    public String getMissingString() {
-        return missingString;
-    }
-
-    @JIPipeParameter("missing-string")
-    public void setMissingString(String missingString) {
-        this.missingString = missingString;
-    }
-
-    @JIPipeDocumentation(name = "Add metadata keys", description = "If enabled, metadata keys are added to the generated file names. If this is disabled, the values are still written.")
-    @JIPipeParameter("with-metadata-keys")
-    public boolean isWithMetadataKeys() {
-        return withMetadataKeys;
-    }
-
-    @JIPipeParameter("with-metadata-keys")
-    public void setWithMetadataKeys(boolean withMetadataKeys) {
-        this.withMetadataKeys = withMetadataKeys;
-    }
-
     @JIPipeDocumentation(name = "Output directory", description = "Can be a relative or absolute directory. All collected files will be put into this directory. " +
             "If relative, it is relative to the output slot's output directory that is generated based on the current run's output path.")
     @JIPipeParameter("output-directory")
@@ -254,38 +129,9 @@ public class ExportDataByParameter extends JIPipeAlgorithm {
         this.outputDirectory = outputDirectory;
     }
 
-    @JIPipeDocumentation(name = "Append data type as metadata", description = "If enabled, the input slot data type is added as additional metadata to the file name.")
-    @JIPipeParameter("append-data-type-as-metadata")
-    public boolean isAppendDataTypeAsMetadata() {
-        return appendDataTypeAsMetadata;
-    }
-
-    @JIPipeParameter("append-data-type-as-metadata")
-    public void setAppendDataTypeAsMetadata(boolean appendDataTypeAsMetadata) {
-        this.appendDataTypeAsMetadata = appendDataTypeAsMetadata;
-    }
-
-    @JIPipeDocumentation(name = "Append true data type as metadata", description = "If enabled, data type added by 'Append data type as metadata' is the " +
-            "true data type, not the slot data type.")
-    @JIPipeParameter("append-true-data-type-as-metadata")
-    public boolean isAppendDataTypeUsesRealDataType() {
-        return appendDataTypeUsesRealDataType;
-    }
-
-    @JIPipeParameter("append-true-data-type-as-metadata")
-    public void setAppendDataTypeUsesRealDataType(boolean appendDataTypeUsesRealDataType) {
-        this.appendDataTypeUsesRealDataType = appendDataTypeUsesRealDataType;
-    }
-
-    @JIPipeDocumentation(name = "Append data type as", description = "The metadata key that is used to append the data type if enabled. Can be empty.")
-    @JIPipeParameter("append-data-type-metadata-key")
-    @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/annotation.png")
-    public String getAppendDataTypeMetadataKey() {
-        return appendDataTypeMetadataKey;
-    }
-
-    @JIPipeParameter("append-data-type-metadata-key")
-    public void setAppendDataTypeMetadataKey(String appendDataTypeMetadataKey) {
-        this.appendDataTypeMetadataKey = appendDataTypeMetadataKey;
+    @JIPipeDocumentation(name = "File name generation", description = "Following settings control how the output file names are generated from metadata columns.")
+    @JIPipeParameter("exporter")
+    public JIPipeDataByMetadataExporter getExporter() {
+        return exporter;
     }
 }

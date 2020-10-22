@@ -16,11 +16,11 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi;
 import gnu.trove.list.TDoubleList;
 import gnu.trove.list.array.TDoubleArrayList;
 import ij.gui.Roi;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
-import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -54,7 +54,7 @@ public class ColorRoiByStatisticsAlgorithm extends ImageRoiProcessorAlgorithm {
     private MeasurementColumn fillMeasurement = MeasurementColumn.Area;
     private MeasurementColumn lineMeasurement = MeasurementColumn.Area;
     private RoiStatisticsAlgorithm roiStatisticsAlgorithm =
-            JIPipeAlgorithm.newInstance("ij1-roi-statistics", RoiStatisticsAlgorithm.class);
+            JIPipe.createNode("ij1-roi-statistics", RoiStatisticsAlgorithm.class);
     private OptionalColorMapParameter mapFillColor = new OptionalColorMapParameter();
     private OptionalColorMapParameter mapLineColor = new OptionalColorMapParameter();
 

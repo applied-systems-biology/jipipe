@@ -15,11 +15,11 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
-import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -56,7 +56,7 @@ public class FilterRoiByStatisticsAlgorithm extends ImageRoiProcessorAlgorithm {
     private LogicalOperation betweenMeasurementOperation = LogicalOperation.LogicalAnd;
     private LogicalOperation sameMeasurementOperation = LogicalOperation.LogicalAnd;
     private RoiStatisticsAlgorithm roiStatisticsAlgorithm =
-            JIPipeAlgorithm.newInstance("ij1-roi-statistics", RoiStatisticsAlgorithm.class);
+            JIPipe.createNode("ij1-roi-statistics", RoiStatisticsAlgorithm.class);
 
     /**
      * Instantiates a new node type.

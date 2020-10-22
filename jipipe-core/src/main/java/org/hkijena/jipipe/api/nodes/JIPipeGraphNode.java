@@ -47,8 +47,6 @@ import org.hkijena.jipipe.api.events.WorkDirectoryChangedEvent;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterVisibility;
-import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
-import org.hkijena.jipipe.api.registries.JIPipeNodeRegistry;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
 import org.hkijena.jipipe.utils.StringUtils;
 
@@ -897,7 +895,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
      * @return the copy
      */
     public JIPipeGraphNode duplicate() {
-        return getInfo().clone(this);
+        return getInfo().duplicate(this);
     }
 
     /**
@@ -951,18 +949,6 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
      */
     public boolean renderOutputSlots() {
         return true;
-    }
-
-    /**
-     * Utility function to create an algorithm instance from its id
-     *
-     * @param id  Algorithm ID
-     * @param klass the node type
-     * @param <T> Algorithm class
-     * @return Algorithm instance
-     */
-    public static <T extends JIPipeGraphNode> T newInstance(String id, Class<T> klass) {
-        return (T) JIPipe.getNodes().getInfoById(id).newInstance();
     }
 
     /**

@@ -15,13 +15,13 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.contrast;
 
 import ij.ImagePlus;
 import ij.plugin.ImageCalculator;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
-import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
@@ -53,7 +53,7 @@ import java.util.function.Supplier;
 public class IlluminationCorrection2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private GaussianBlur2DAlgorithm gaussianAlgorithm =
-            JIPipeGraphNode.newInstance("ij1-blur-gaussian2d",GaussianBlur2DAlgorithm.class);
+            JIPipe.createNode("ij1-blur-gaussian2d",GaussianBlur2DAlgorithm.class);
 
     /**
      * @param info the algorithm info

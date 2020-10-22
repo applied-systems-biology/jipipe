@@ -184,7 +184,7 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
 
     private void refreshBatchPreview() {
         batchPreviewPanel.clear();
-        JIPipeGraphNode copy = algorithm.getInfo().clone(algorithm);
+        JIPipeGraphNode copy = algorithm.getInfo().duplicate(algorithm);
         if (copy instanceof JIPipeParameterSlotAlgorithm)
             ((JIPipeParameterSlotAlgorithm) copy).getParameterSlotAlgorithmSettings().setHasParameterSlot(false);
         // Pass cache as input slots

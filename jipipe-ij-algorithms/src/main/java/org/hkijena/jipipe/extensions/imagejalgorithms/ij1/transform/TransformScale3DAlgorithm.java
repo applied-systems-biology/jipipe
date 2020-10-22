@@ -16,12 +16,12 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.transform;
 import ij.ImagePlus;
 import ij.plugin.Resizer;
 import ij.process.ImageProcessor;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
-import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -51,7 +51,7 @@ public class TransformScale3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     private OptionalIntModificationParameter zAxis = new OptionalIntModificationParameter();
     private boolean useAveraging = true;
     private TransformScale2DAlgorithm scale2DAlgorithm =
-            JIPipeAlgorithm.newInstance("ij1-transform-scale2d", TransformScale2DAlgorithm.class);
+            JIPipe.createNode("ij1-transform-scale2d", TransformScale2DAlgorithm.class);
 
     /**
      * Instantiates a new node type.

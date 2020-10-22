@@ -31,6 +31,7 @@ import com.google.common.collect.ImmutableBiMap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeMutableDependency;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeCompartmentOutput;
@@ -159,7 +160,7 @@ public class JIPipeProject implements JIPipeValidatable {
      * @return The compartment
      */
     public JIPipeProjectCompartment addCompartment(String name) {
-        JIPipeProjectCompartment compartment = JIPipeGraphNode.newInstance("jipipe:project-compartment", JIPipeProjectCompartment.class);
+        JIPipeProjectCompartment compartment = JIPipe.createNode("jipipe:project-compartment", JIPipeProjectCompartment.class);
         compartment.setProject(this);
         compartment.setCustomName(name);
         compartmentGraph.insertNode(compartment, JIPipeGraph.COMPARTMENT_DEFAULT);
@@ -207,7 +208,7 @@ public class JIPipeProject implements JIPipeValidatable {
             }
         }
         if (compartmentOutput == null) {
-            compartmentOutput = JIPipeGraphNode.newInstance("jipipe:compartment-output", JIPipeCompartmentOutput.class);
+            compartmentOutput = JIPipe.createNode("jipipe:compartment-output", JIPipeCompartmentOutput.class);
             compartmentOutput.setCustomName(compartment.getName() + " output");
             compartmentOutput.setCompartment(compartment.getProjectCompartmentId());
             graph.insertNode(compartmentOutput, compartment.getProjectCompartmentId());

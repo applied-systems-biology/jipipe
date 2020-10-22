@@ -27,6 +27,7 @@ public class OMEROSettings implements JIPipeParameterCollection {
     private String defaultServer = "";
     private String defaultUserName = "";
     private PasswordParameter defaultPassword = new PasswordParameter();
+    private String email = "";
 
     @Override
     public EventBus getEventBus() {
@@ -65,6 +66,17 @@ public class OMEROSettings implements JIPipeParameterCollection {
     @JIPipeParameter("default-password")
     public void setDefaultPassword(PasswordParameter defaultPassword) {
         this.defaultPassword = defaultPassword;
+    }
+
+    @JIPipeDocumentation(name = "E-Mail", description = "E-Mail that is passed to the OMERO importer.")
+    @JIPipeParameter("email")
+    public String getEmail() {
+        return email;
+    }
+
+    @JIPipeParameter("email")
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public static OMEROSettings getInstance() {

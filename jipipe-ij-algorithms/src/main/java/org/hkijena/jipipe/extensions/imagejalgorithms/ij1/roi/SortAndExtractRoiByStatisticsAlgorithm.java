@@ -14,11 +14,11 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi;
 
 import ij.gui.Roi;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
-import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -56,7 +56,7 @@ public class SortAndExtractRoiByStatisticsAlgorithm extends ImageRoiProcessorAlg
 
     private MeasurementColumnSortOrder.List sortOrderList = new MeasurementColumnSortOrder.List();
     private IntModificationParameter selection = new IntModificationParameter();
-    private RoiStatisticsAlgorithm roiStatisticsAlgorithm = JIPipeAlgorithm.newInstance("ij1-roi-statistics",
+    private RoiStatisticsAlgorithm roiStatisticsAlgorithm = JIPipe.createNode("ij1-roi-statistics",
             RoiStatisticsAlgorithm.class);
     private boolean autoClamp = true;
     private OptionalColorMapParameter mapFillColor = new OptionalColorMapParameter();

@@ -59,7 +59,7 @@ public class MultiParameterNodeInfo implements JIPipeNodeInfo {
     }
 
     @Override
-    public JIPipeGraphNode clone(JIPipeGraphNode algorithm) {
+    public JIPipeGraphNode duplicate(JIPipeGraphNode algorithm) {
         return new MultiParameterAlgorithm((MultiParameterAlgorithm) algorithm);
     }
 

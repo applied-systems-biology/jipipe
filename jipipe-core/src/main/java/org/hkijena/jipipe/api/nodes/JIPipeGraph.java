@@ -42,8 +42,6 @@ import org.hkijena.jipipe.api.events.NodeSlotsChangedEvent;
 import org.hkijena.jipipe.api.events.ParameterStructureChangedEvent;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
-import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
-import org.hkijena.jipipe.api.registries.JIPipeNodeRegistry;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.utils.GraphUtils;
 import org.hkijena.jipipe.utils.JsonUtils;
@@ -93,7 +91,7 @@ public class JIPipeGraph implements JIPipeValidatable {
     public JIPipeGraph(JIPipeGraph other) {
         // Copy nodes
         for (Map.Entry<String, JIPipeGraphNode> kv : other.nodes.entrySet()) {
-            JIPipeGraphNode algorithm = kv.getValue().getInfo().clone(kv.getValue());
+            JIPipeGraphNode algorithm = kv.getValue().getInfo().duplicate(kv.getValue());
             nodes.put(kv.getKey(), algorithm);
             algorithm.setGraph(this);
             algorithm.getEventBus().register(this);
@@ -785,7 +783,7 @@ public class JIPipeGraph implements JIPipeValidatable {
         for (JIPipeGraphNode algorithm : nodes) {
             if (!withInternal && !algorithm.getCategory().canExtract())
                 continue;
-            JIPipeGraphNode copy = algorithm.getInfo().clone(algorithm);
+            JIPipeGraphNode copy = algorithm.getInfo().duplicate(algorithm);
             if (copy.getCompartment() != null) {
                 Map<String, Point> map = copy.getLocations().get(copy.getCompartment());
                 copy.getLocations().clear();
