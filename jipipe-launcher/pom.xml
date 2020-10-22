@@ -167,7 +167,21 @@
         <dependency>
             <groupId>org.openmicroscopy</groupId>
             <artifactId>omero-gateway</artifactId>
-            <version>5.6.3</version>
+            <version>5.6.5</version>
+            <scope>runtime</scope>
+            <!-- We need to exclude omero-blitz because it cannot handle tls1.2 -->
+            <exclusions>
+                <exclusion>
+                    <groupId>org.openmicroscopy</groupId>
+                    <artifactId>omero-blitz</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <!-- If not available, install with mvn install:install-file -Dfile=omero-blitz.jar -DgroupId=org.openmicroscopy -DartifactId=omero-blitz -Dversion=5.5.8 -Dpackaging=jar -DgeneratePom=true -->
+        <dependency>
+            <groupId>org.openmicroscopy</groupId>
+            <artifactId>omero-blitz</artifactId>
+            <version>5.5.8</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>

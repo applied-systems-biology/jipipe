@@ -18,6 +18,8 @@ import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.omero.algorithms.DownloadOMEROImageAlgorithm;
 import org.hkijena.jipipe.extensions.omero.algorithms.UploadOMEROImageAlgorithm;
 import org.hkijena.jipipe.extensions.omero.datasources.OMERODatasetReferenceDataSource;
+import org.hkijena.jipipe.extensions.omero.datasources.OMEROFindDatasetAlgorithm;
+import org.hkijena.jipipe.extensions.omero.datasources.OMEROFindImageAlgorithm;
 import org.hkijena.jipipe.extensions.omero.datasources.OMEROFindProjectAlgorithm;
 import org.hkijena.jipipe.extensions.omero.datasources.OMEROImageReferenceDataSource;
 import org.hkijena.jipipe.extensions.omero.datasources.OMEROProjectReferenceDataSource;
@@ -63,6 +65,8 @@ public class OMEROExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerNodeType("omero-dataset-id-definition", OMERODatasetReferenceDataSource.class);
         registerNodeType("omero-project-id-definition", OMEROProjectReferenceDataSource.class);
         registerNodeType("omero-find-project-id", OMEROFindProjectAlgorithm.class);
+        registerNodeType("omero-find-dataset-id", OMEROFindDatasetAlgorithm.class);
+        registerNodeType("omero-find-image-id", OMEROFindImageAlgorithm.class);
         registerNodeType("omero-download-image", DownloadOMEROImageAlgorithm.class, UIUtils.getIconURLFromResources("actions/cloud-download.png"));
         registerNodeType("omero-upload-image", UploadOMEROImageAlgorithm.class, UIUtils.getIconURLFromResources("actions/cloud-upload.png"));
     }

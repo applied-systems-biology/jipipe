@@ -29,6 +29,8 @@ import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDataByMetadataExporter;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeMergingAlgorithm;
+import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeParameterSlotAlgorithm;
@@ -38,6 +40,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.OMEImageData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.parameters.OMEExporterSettings;
 import org.hkijena.jipipe.extensions.omero.OMEROCredentials;
 import org.hkijena.jipipe.extensions.omero.OMEROSettings;
+import org.hkijena.jipipe.extensions.omero.datatypes.OMERODatasetReferenceData;
 import org.hkijena.jipipe.extensions.omero.datatypes.OMEROImageReferenceData;
 import org.hkijena.jipipe.extensions.omero.util.OMEROUploadToJIPipeLogger;
 import org.hkijena.jipipe.extensions.omero.util.OMEROUtils;
@@ -51,10 +54,11 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 @JIPipeDocumentation(name = "Upload to OMERO", description = "Uploads an image to OMERO.")
-@JIPipeOrganization(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "OMERO")
+@JIPipeOrganization(nodeTypeCategory = ImagesNodeTypeCategory.class)
 @JIPipeInputSlot(value = OMEImageData.class, slotName = "Image", autoCreate = true)
+@JIPipeInputSlot(value = OMERODatasetReferenceData.class, slotName = "Dataset", autoCreate = true)
 @JIPipeOutputSlot(value = OMEROImageReferenceData.class, slotName = "ID", autoCreate = true)
-public class UploadOMEROImageAlgorithm extends JIPipeParameterSlotAlgorithm {
+public class UploadOMEROImageAlgorithm extends JIPipeMergingAlgorithm {
 
     private OMEROCredentials credentials = new OMEROCredentials();
     private OMEExporterSettings exporterSettings = new OMEExporterSettings();
@@ -68,13 +72,15 @@ public class UploadOMEROImageAlgorithm extends JIPipeParameterSlotAlgorithm {
     }
 
     @Override
-    public void runParameterSet(JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled, List<JIPipeAnnotation> parameterAnnotations) {
+    protected void runIteration(JIPipeMergingDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         Path targetPath = RuntimeSettings.generateTempDirectory("OMERO-Upload");
         exportImages(targetPath, subProgress.resolve("Exporting images"), algorithmProgress, isCancelled);
-        uploadImages(targetPath, subProgress.resolve("Uploading"), algorithmProgress, isCancelled);
+        for (OMERODatasetReferenceData dataset : dataBatch.getInputData("Dataset", OMERODatasetReferenceData.class)) {
+            uploadImages(targetPath, dataset.getDatasetId(), subProgress.resolve("Uploading"), algorithmProgress, isCancelled);
+        }
     }
 
-    private void uploadImages(Path targetPath, JIPipeRunnerSubStatus subStatus, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+    private void uploadImages(Path targetPath, long datasetId, JIPipeRunnerSubStatus subStatus, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         List<String> filePaths = PathUtils.findFilesByExtensionIn(targetPath, ".ome.tif").stream().map(Path::toString).collect(Collectors.toList());
         algorithmProgress.accept(subStatus.resolve("Uploading " + filePaths.size() + " files"));
         LoginCredentials credentials = this.credentials.getCredentials();
@@ -90,6 +96,8 @@ public class UploadOMEROImageAlgorithm extends JIPipeParameterSlotAlgorithm {
         config.port.set(credentials.getServer().getPort());
         config.username.set(credentials.getUser().getUsername());
         config.password.set(credentials.getUser().getPassword());
+
+        config.target.set("Dataset:" + datasetId);
 
         OMEROMetadataStoreClient store = null;
         try {
