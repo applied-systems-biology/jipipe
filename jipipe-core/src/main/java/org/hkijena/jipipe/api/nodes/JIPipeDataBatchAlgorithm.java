@@ -32,19 +32,11 @@ public interface JIPipeDataBatchAlgorithm {
     JIPipeParameterCollection getGenerationSettingsInterface();
 
     /**
-     * Generate the initial data batches based on the slot map
-     *
-     * @param slotMap the slot map
-     * @return map from metadata table to the selected row indices per slot
-     */
-    Map<JIPipeDataBatchKey, Map<String, TIntSet>> groupDataByMetadata(Map<String, JIPipeDataSlot> slotMap);
-
-    /**
-     * Generates data batches for the groups.
+     * Generates data batches.
      * This is a dry-run function that should never throw errors
      *
-     * @param groups the grouped data
+     * @param slots the data slots
      * @return the batches
      */
-    List<JIPipeMergingDataBatch> generateDataBatchesDryRun(Map<JIPipeDataBatchKey, Map<String, TIntSet>> groups);
+    List<JIPipeMergingDataBatch> generateDataBatchesDryRun(List<JIPipeDataSlot> slots);
 }

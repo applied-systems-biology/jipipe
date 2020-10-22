@@ -185,17 +185,14 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
     private void refreshBatchPreview() {
         batchPreviewPanel.clear();
         JIPipeGraphNode copy = algorithm.getInfo().duplicate(algorithm);
-        if (copy instanceof JIPipeParameterSlotAlgorithm)
-            ((JIPipeParameterSlotAlgorithm) copy).getParameterSlotAlgorithmSettings().setHasParameterSlot(false);
         // Pass cache as input slots
-        for (JIPipeDataSlot inputSlot : copy.getInputSlots()) {
+        for (JIPipeDataSlot inputSlot : copy.getEffectiveInputSlots()) {
             JIPipeDataSlot cache = currentCache.getOrDefault(inputSlot.getName(), null);
             inputSlot.copyFrom(cache);
         }
         // Generate dry-run
         JIPipeDataBatchAlgorithm batchAlgorithm = (JIPipeDataBatchAlgorithm) copy;
-        Map<JIPipeDataBatchKey, Map<String, TIntSet>> groups = batchAlgorithm.groupDataByMetadata(copy.getInputSlotMap());
-        List<JIPipeMergingDataBatch> batches = batchAlgorithm.generateDataBatchesDryRun(groups);
+        List<JIPipeMergingDataBatch> batches = batchAlgorithm.generateDataBatchesDryRun(copy.getEffectiveInputSlots());
 
         batchPreviewNumberLabel.setText(batches.size() + " batches");
         batchPreviewMissingLabel.setVisible(false);

@@ -348,6 +348,15 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
     }
 
     /**
+     * Method that can be overwritten by child classes.
+     * Should return slots that are actually used as input.
+     * @return Input slots
+     */
+    public List<JIPipeDataSlot> getEffectiveInputSlots() {
+        return getInputSlots();
+    }
+
+    /**
      * Returns all output slots ordered by the slot order
      *
      * @return List of slots

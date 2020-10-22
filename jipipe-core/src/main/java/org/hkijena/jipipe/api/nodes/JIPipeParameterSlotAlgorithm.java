@@ -92,6 +92,20 @@ public abstract class JIPipeParameterSlotAlgorithm extends JIPipeAlgorithm {
         return effectiveSlotSize;
     }
 
+    public List<JIPipeDataSlot> getNonParameterInputSlots() {
+        if(parameterSlotAlgorithmSettings.isHasParameterSlot()) {
+            return getInputSlots().stream().filter(s -> s != getParameterSlot()).collect(Collectors.toList());
+        }
+        else {
+            return getInputSlots();
+        }
+    }
+
+    @Override
+    public List<JIPipeDataSlot> getEffectiveInputSlots() {
+        return getNonParameterInputSlots();
+    }
+
     @Override
     public JIPipeDataSlot getFirstInputSlot() {
         JIPipeDataSlot firstInputSlot = super.getFirstInputSlot();
@@ -225,32 +239,6 @@ public abstract class JIPipeParameterSlotAlgorithm extends JIPipeAlgorithm {
                 slotConfiguration.removeInputSlot(SLOT_PARAMETERS, false);
             }
         }
-    }
-
-    public Set<String> getInputAnnotationColumnIntersection(Map<String, JIPipeDataSlot> slotMap, String prefix) {
-        Set<String> result = new HashSet<>();
-        for (JIPipeDataSlot inputSlot : slotMap.values()) {
-            if (getParameterSlot() == inputSlot)
-                continue;
-            Set<String> filtered = inputSlot.getAnnotationColumns().stream().filter(s -> s.startsWith(prefix)).collect(Collectors.toSet());
-            if (result.isEmpty()) {
-                result.addAll(filtered);
-            } else {
-                result.retainAll(filtered);
-            }
-        }
-        return result;
-    }
-
-    public Set<String> getInputAnnotationColumnUnion(Map<String, JIPipeDataSlot> slotMap, String prefix) {
-        Set<String> result = new HashSet<>();
-        for (JIPipeDataSlot inputSlot : slotMap.values()) {
-            if (getParameterSlot() == inputSlot)
-                continue;
-            Set<String> filtered = inputSlot.getAnnotationColumns().stream().filter(s -> s.startsWith(prefix)).collect(Collectors.toSet());
-            result.addAll(filtered);
-        }
-        return result;
     }
 
     /**

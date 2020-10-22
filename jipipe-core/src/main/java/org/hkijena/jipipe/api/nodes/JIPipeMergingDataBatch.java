@@ -31,17 +31,17 @@ import java.util.Set;
  * This is a less restricted variant of {@link JIPipeDataBatch} used by {@link JIPipeMergingAlgorithm}
  */
 public class JIPipeMergingDataBatch {
-    private JIPipeGraphNode algorithm;
+    private JIPipeGraphNode node;
     private Map<JIPipeDataSlot, Set<Integer>> inputSlotRows;
     private Map<String, JIPipeAnnotation> annotations = new HashMap<>();
 
     /**
      * Creates a new interface
      *
-     * @param algorithm The algorithm
+     * @param node The algorithm
      */
-    public JIPipeMergingDataBatch(JIPipeGraphNode algorithm) {
-        this.algorithm = algorithm;
+    public JIPipeMergingDataBatch(JIPipeGraphNode node) {
+        this.node = node;
         this.inputSlotRows = new HashMap<>();
 //        initialize(inputSlots, row);
     }
@@ -52,9 +52,13 @@ public class JIPipeMergingDataBatch {
      * @param other the original
      */
     public JIPipeMergingDataBatch(JIPipeMergingDataBatch other) {
-        this.algorithm = other.algorithm;
+        this.node = other.node;
         this.inputSlotRows = new HashMap<>(other.inputSlotRows);
         this.annotations = new HashMap<>(other.annotations);
+    }
+
+    public JIPipeGraphNode getNode() {
+        return node;
     }
 
     /**
@@ -97,6 +101,10 @@ public class JIPipeMergingDataBatch {
         rows.add(row);
     }
 
+    public void setAnnotations(Map<String, JIPipeAnnotation> annotations) {
+        this.annotations = annotations;
+    }
+
     /**
      * Adds annotations to the global annotation storage of this interface.
      * Global annotations are passed to all output slots.
@@ -127,7 +135,7 @@ public class JIPipeMergingDataBatch {
      * @return Input data with provided name
      */
     public <T extends JIPipeData> List<T> getInputData(String slotName, Class<T> dataClass) {
-        return getInputData(algorithm.getInputSlot(slotName), dataClass);
+        return getInputData(node.getInputSlot(slotName), dataClass);
     }
 
     /**
@@ -139,7 +147,7 @@ public class JIPipeMergingDataBatch {
      * @return Input data with provided name
      */
     public <T extends JIPipeData> List<T> getInputData(JIPipeDataSlot slot, Class<T> dataClass) {
-        if (slot.getNode() != algorithm)
+        if (slot.getNode() != node)
             throw new IllegalArgumentException("The provided slot does not belong to the data interface algorithm!");
         if (!slot.isInput())
             throw new IllegalArgumentException("Slot is not an input slot!");
@@ -157,7 +165,7 @@ public class JIPipeMergingDataBatch {
      * @return the row indices that belong to this data interface
      */
     public Set<Integer> getInputRows(String slot) {
-        return getInputRows(algorithm.getInputSlot(slot));
+        return getInputRows(node.getInputSlot(slot));
     }
 
     /**
@@ -167,7 +175,7 @@ public class JIPipeMergingDataBatch {
      * @return the row indices that belong to this data interface
      */
     public Set<Integer> getInputRows(JIPipeDataSlot slot) {
-        if (slot.getNode() != algorithm)
+        if (slot.getNode() != node)
             throw new IllegalArgumentException("The provided slot does not belong to the data interface algorithm!");
         if (!slot.isInput())
             throw new IllegalArgumentException("Slot is not an input slot!");
@@ -227,7 +235,7 @@ public class JIPipeMergingDataBatch {
      * @param data     Added data
      */
     public void addOutputData(String slotName, JIPipeData data) {
-        addOutputData(algorithm.getOutputSlot(slotName), data);
+        addOutputData(node.getOutputSlot(slotName), data);
     }
 
     /**
@@ -239,7 +247,7 @@ public class JIPipeMergingDataBatch {
      * @param additionalAnnotations Annotations that are added additionally to the global ones
      */
     public void addOutputData(String slotName, JIPipeData data, List<JIPipeAnnotation> additionalAnnotations) {
-        addOutputData(algorithm.getOutputSlot(slotName), data, additionalAnnotations);
+        addOutputData(node.getOutputSlot(slotName), data, additionalAnnotations);
     }
 
     /**
@@ -250,7 +258,7 @@ public class JIPipeMergingDataBatch {
      * @param data Added data
      */
     public void addOutputData(JIPipeDataSlot slot, JIPipeData data) {
-        if (slot.getNode() != algorithm)
+        if (slot.getNode() != node)
             throw new IllegalArgumentException("The provided slot does not belong to the data interface algorithm!");
         if (!slot.isOutput())
             throw new IllegalArgumentException("Slot is not an output slot!");
@@ -266,7 +274,7 @@ public class JIPipeMergingDataBatch {
      * @param additionalAnnotations Annotations that are added additionally to the global ones
      */
     public void addOutputData(JIPipeDataSlot slot, JIPipeData data, List<JIPipeAnnotation> additionalAnnotations) {
-        if (slot.getNode() != algorithm)
+        if (slot.getNode() != node)
             throw new IllegalArgumentException("The provided slot does not belong to the data interface algorithm!");
         if (!slot.isOutput())
             throw new IllegalArgumentException("Slot is not an output slot!");
@@ -276,4 +284,15 @@ public class JIPipeMergingDataBatch {
     }
 
 
+    /**
+     * Returns true if there is at least one slot that has no rows attached to it
+     * @return if the batch is incomplete
+     */
+    public boolean isIncomplete() {
+        for (Set<Integer> rows : inputSlotRows.values()) {
+            if(rows.isEmpty())
+                return true;
+        }
+        return false;
+    }
 }
