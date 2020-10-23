@@ -30,7 +30,6 @@
     <orderEntry type="library" name="Maven: edu.ucar:udunits:4.3.18" level="project" />
     <orderEntry type="library" name="Maven: net.imagej:imagej-launcher:5.0.3" level="project" />
     <orderEntry type="library" name="Maven: net.imagej:imagej-notebook:0.7.1" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.commons:commons-text:1.8" level="project" />
     <orderEntry type="library" name="Maven: org.knowm.xchart:xchart:3.5.4" level="project" />
     <orderEntry type="library" name="Maven: de.erichseifert.vectorgraphics2d:VectorGraphics2D:0.13" level="project" />
     <orderEntry type="library" name="Maven: net.imagej:imagej-ops:0.45.5" level="project" />
@@ -214,6 +213,9 @@
     <orderEntry type="library" name="Maven: org.jetbrains:annotations:15.0" level="project" />
     <orderEntry type="library" name="Maven: org.jgrapht:jgrapht-core:1.4.0" level="project" />
     <orderEntry type="library" name="Maven: org.jheaps:jheaps:0.11" level="project" />
+    <orderEntry type="library" name="Maven: org.jgrapht:jgrapht-io:1.4.0" level="project" />
+    <orderEntry type="library" name="Maven: org.antlr:antlr4-runtime:4.7.2" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.commons:commons-text:1.8" level="project" />
     <orderEntry type="library" name="Maven: org.jfree:jfreechart:1.5.0" level="project" />
     <orderEntry type="library" name="Maven: org.jfree:jfreesvg:3.4" level="project" />
     <orderEntry type="library" name="Maven: org.scijava:script-editor:0.5.6" level="project" />

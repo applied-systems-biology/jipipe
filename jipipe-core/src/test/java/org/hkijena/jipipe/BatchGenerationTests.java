@@ -100,4 +100,27 @@ public class BatchGenerationTests {
         assertEquals(3, batches.size());
     }
 
+    /**
+     * A test where each row consists of one data set, but has two columns that are referenced.
+     * Should still create three batches.
+     */
+    @Test
+    public void equalTwoSlotTest() {
+        JIPipeDataSlot slot1 = new JIPipeDataSlot(new JIPipeDataSlotInfo(StringData.class, JIPipeSlotType.Input, "slot1", null), null);
+        slot1.addData(new StringData("A"), Arrays.asList(new JIPipeAnnotation("C1", "A"), new JIPipeAnnotation("C2", "X")));
+        slot1.addData(new StringData("B"), Arrays.asList(new JIPipeAnnotation("C1", "B"), new JIPipeAnnotation("C2", "Y")));
+        slot1.addData(new StringData("C"), Arrays.asList(new JIPipeAnnotation("C1", "C"), new JIPipeAnnotation("C3", "Z")));
+
+        JIPipeDataSlot slot2 = new JIPipeDataSlot(new JIPipeDataSlotInfo(StringData.class, JIPipeSlotType.Input, "slot2", null), null);
+        slot2.addData(new StringData("A"), Arrays.asList(new JIPipeAnnotation("C1", "A"), new JIPipeAnnotation("C2", "X")));
+        slot2.addData(new StringData("B"), Arrays.asList(new JIPipeAnnotation("C1", "B"), new JIPipeAnnotation("C2", "Y")));
+        slot2.addData(new StringData("C"), Arrays.asList(new JIPipeAnnotation("C1", "C"), new JIPipeAnnotation("C3", "Z")));
+
+        JIPipeMergingDataBatchBuilder builder = new JIPipeMergingDataBatchBuilder();
+        builder.setAnnotationMergeStrategy(JIPipeAnnotationMergeStrategy.Merge);
+        builder.setReferenceColumns(new HashSet<>(Arrays.asList("C1", "C2")));
+        builder.setSlots(Arrays.asList(slot1, slot2));
+        List<JIPipeMergingDataBatch> batches = builder.build();
+        assertEquals(3, batches.size());
+    }
 }
