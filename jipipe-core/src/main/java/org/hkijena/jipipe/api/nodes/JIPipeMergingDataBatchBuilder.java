@@ -14,7 +14,9 @@ import org.hkijena.jipipe.extensions.parameters.predicates.StringPredicate;
 import org.hkijena.jipipe.extensions.settings.ExtensionSettings;
 import org.hkijena.jipipe.extensions.strings.StringData;
 import org.jgrapht.GraphPath;
+import org.jgrapht.alg.interfaces.ShortestPathAlgorithm;
 import org.jgrapht.alg.shortestpath.AllDirectedPaths;
+import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.nio.Attribute;
@@ -34,6 +36,7 @@ public class JIPipeMergingDataBatchBuilder {
     private Map<String, JIPipeDataSlot> slots = new HashMap<>();
     private Set<String> referenceColumns = new HashSet<>();
     private JIPipeAnnotationMergeStrategy annotationMergeStrategy = JIPipeAnnotationMergeStrategy.Merge;
+    private boolean applyMerging = true;
 
     public JIPipeMergingDataBatchBuilder() {
 
@@ -130,167 +133,137 @@ public class JIPipeMergingDataBatchBuilder {
     }
 
     public List<JIPipeMergingDataBatch> build() {
-        DefaultDirectedGraph<AnnotationNode, DefaultEdge> graph = new DefaultDirectedGraph<>(DefaultEdge.class);
+        DefaultDirectedGraph<RowNode, DefaultEdge> graph = new DefaultDirectedGraph<>(DefaultEdge.class);
 
-        // Pin slots into an order
+        // Pin slots into a fixed order
         ArrayList<JIPipeDataSlot> slotList = new ArrayList<>(slots.values());
 
-        /*
-        Phase 1: Populate the graph with all known annotation values
-         */
-        Set<String> annotationKeys = new HashSet<>();
-        Multimap<String, AnnotationNode> nodeByKey = HashMultimap.create();
-        Map<String, Map<String, AnnotationNode>> nodeByKeyValue = new HashMap<>();
+        // Create one node per row
+        Multimap<JIPipeDataSlot, RowNode> rowNodesBySlot = HashMultimap.create();
         for (JIPipeDataSlot slot : slotList) {
             for (int row = 0; row < slot.getRowCount(); row++) {
+                Map<String, String> annotations = new HashMap<>();
                 if (referenceColumns != null) {
-                    for (JIPipeAnnotation annotation : slot.getAnnotations(row)) {
-                        if (!referenceColumns.contains(annotation.getName()))
-                            continue;
-                        AnnotationNode node = new AnnotationNode(annotation);
-                        annotationKeys.add(annotation.getName());
-                        if (!graph.vertexSet().contains(node)) {
-                            graph.addVertex(node);
-                            nodeByKey.put(annotation.getName(), node);
-                            Map<String, AnnotationNode> map = nodeByKeyValue.getOrDefault(annotation.getName(), null);
-                            if(map == null) {
-                                map = new HashMap<>();
-                                nodeByKeyValue.put(annotation.getName(), map);
-                            }
-                            map.put(annotation.getValue(), node);
+                    for (String column : referenceColumns) {
+                        JIPipeAnnotation annotation = slot.getAnnotationOr(row, column, null);
+                        if (annotation != null) {
+                            annotations.put(annotation.getName(), annotation.getValue());
                         }
                     }
+                } else {
+                    annotations.put("uid", slot.getName() + "/" + row);
                 }
-                else {
-                    // Special case: Assign unique Id to the row
-                    String uid = slot.getName() + "/" + row;
-                    JIPipeAnnotation annotation = new JIPipeAnnotation("uid", uid);
-                    AnnotationNode node = new AnnotationNode(annotation);
-                    annotationKeys.add(annotation.getName());
-                    if (!graph.vertexSet().contains(node)) {
-                        graph.addVertex(node);
-                        nodeByKey.put(annotation.getName(), node);
-                        Map<String, AnnotationNode> map = nodeByKeyValue.getOrDefault(annotation.getName(), null);
-                        if(map == null) {
-                            map = new HashMap<>();
-                            nodeByKeyValue.put(annotation.getName(), map);
-                        }
-                        map.put(annotation.getValue(), node);
+                RowNode rowNode = new RowNode(slot, row, annotations);
+                if(!applyMerging)
+                    graph.addVertex(rowNode);
+                rowNodesBySlot.put(slot, rowNode);
+            }
+            if(applyMerging) {
+                Map<Map<String, String>, List<RowNode>> partitions = rowNodesBySlot.get(slot).stream().collect(Collectors.groupingBy(RowNode::getAnnotations));
+                rowNodesBySlot.removeAll(slot);
+                for (Map.Entry<Map<String, String>, List<RowNode>> entry : partitions.entrySet()) {
+                    Set<Integer> rows = new HashSet<>();
+                    for (RowNode rowNode : entry.getValue()) {
+                        rows.addAll(rowNode.rows);
+                    }
+                    RowNode merged = new RowNode(slot, rows, entry.getKey());
+                    graph.addVertex(merged);
+                    rowNodesBySlot.put(slot, merged);
+                }
+            }
+        }
+
+        // Connect compatible rows
+        for (int layer = 1; layer < slotList.size(); layer++) {
+            JIPipeDataSlot previousSlot = slotList.get(layer - 1);
+            JIPipeDataSlot currentSlot = slotList.get(layer);
+            for (RowNode previousNode : rowNodesBySlot.get(previousSlot)) {
+                for (RowNode currentNode : rowNodesBySlot.get(currentSlot)) {
+                    if(previousNode.isCompatibleTo(currentNode)) {
+                        graph.addEdge(previousNode, currentNode);
                     }
                 }
             }
         }
 
-        if(annotationKeys.isEmpty()) {
-            // No annotations available -> Merge everything into one batch
-            JIPipeMergingDataBatch batch = new JIPipeMergingDataBatch(node);
-            for (JIPipeDataSlot slot : slotList) {
-                for (int row = 0; row < slot.getRowCount(); row++) {
-                    batch.addData(slot, row);
-                    batch.addGlobalAnnotations(slot.getAnnotations(row), annotationMergeStrategy);
-                }
-            }
-            return Arrays.asList(batch);
-        }
-
-        // Pin annotation keys into an order
-        List<String> annotationKeyList = new ArrayList<>(annotationKeys);
-
-        /*
-        Phase 2: Create source & sink, connect layers
-         */
-        AnnotationNode source = new AnnotationNode(new JIPipeAnnotation("", "source"));
-        AnnotationNode sink = new AnnotationNode(new JIPipeAnnotation("", "sink"));
+        // Create source and sink
+        RowNode source = new RowNode(null, 0,  Collections.singletonMap("", "source"));
+        RowNode sink = new RowNode(null, 0,  Collections.singletonMap("", "sink"));
         graph.addVertex(source);
         graph.addVertex(sink);
 
-        // Connect known references with each other
-        for (JIPipeDataSlot slot : slotList) {
-            for (int row = 0; row < slot.getRowCount(); row++) {
-                for (int i = 1; i < annotationKeyList.size(); i++) {
-                    String lastKey = annotationKeyList.get(i - 1);
-                    String currentKey = annotationKeyList.get(i);
-                    JIPipeAnnotation lastAnnotation = slot.getAnnotationOr(row, lastKey, null);
-                    JIPipeAnnotation currentAnnotation = slot.getAnnotationOr(row, currentKey, null);
+        // Trivial connections (first and last layer)
+        for (RowNode rowNode : rowNodesBySlot.get(slotList.get(0))) {
+            graph.addEdge(source, rowNode);
+        }
+        for (RowNode rowNode : rowNodesBySlot.get(slotList.get(slotList.size() - 1))) {
+            graph.addEdge(rowNode, sink);
+        }
+
+        // Add orphaned connections to source/sink
+        for (int i = 0; i < slotList.size(); i++) {
+
+            // Check source orphans
+            if(i != 0) {
+                ShortestPathAlgorithm<RowNode, DefaultEdge> shortestPathAlgorithm = new DijkstraShortestPath<>(graph);
+                Set<RowNode> orphans = new HashSet<>();
+                for (RowNode rowNode : rowNodesBySlot.get(slotList.get(i))) {
+                    if(shortestPathAlgorithm.getPath(source, rowNode) == null) {
+                        orphans.add(rowNode);
+                    }
+                }
+                shortestPathAlgorithm = null;
+                for (RowNode orphan : orphans) {
+                    graph.addEdge(source, orphan);
+                }
+            }
+            // Check sink orphans
+            if(i != slotList.size() - 1) {
+                ShortestPathAlgorithm<RowNode, DefaultEdge> shortestPathAlgorithm = new DijkstraShortestPath<>(graph);
+                Set<RowNode> orphans = new HashSet<>();
+                for (RowNode rowNode : rowNodesBySlot.get(slotList.get(i))) {
+                    if(shortestPathAlgorithm.getPath(rowNode, sink) == null) {
+                        orphans.add(rowNode);
+                    }
+                }
+                shortestPathAlgorithm = null;
+                for (RowNode orphan : orphans) {
+                    graph.addEdge(orphan, sink);
                 }
             }
         }
 
 
-//        for (int layer = 0; layer < annotationKeyList.size(); layer++) {
-//            String key = annotationKeyList.get(layer);
-//            // Connect to source/sink
-//            if (layer == 0) {
-//                for (AnnotationNode annotationNode : nodeByKey.get(key)) {
-//                    graph.addEdge(source, annotationNode);
-//                }
-//            }
-//            if (layer == annotationKeyList.size() - 1) {
-//                for (AnnotationNode annotationNode : nodeByKey.get(key)) {
-//                    graph.addEdge(annotationNode, sink);
-//                }
-//            }
-//            // Connect to previous layer
-//            if(layer != 0) {
-//                String previousKey = annotationKeyList.get(layer - 1);
-//                for (AnnotationNode current : nodeByKey.get(key)) {
-//                    for (AnnotationNode previous : nodeByKey.get(previousKey)) {
-//                        graph.addEdge(previous, current);
-//                    }
-//                }
-//            }
-//        }
+//        DOTExporter<RowNode, DefaultEdge> dotExporter = new DOTExporter<>();
+//        dotExporter.setVertexAttributeProvider(node -> {
+//            Map<String, Attribute> attributeMap = new HashMap<>();
+//            attributeMap.put("label", new DefaultAttribute<>(node.toString(), AttributeType.STRING));
+//            return attributeMap;
+//        });
+//        dotExporter.exportGraph(graph, new File("flowgraph.dot"));
 
-        /*
-        Phase 3: Assign slots & rows to the nodes
-         */
-        for (JIPipeDataSlot slot : slotList) {
-            for (int row = 0; row < slot.getRowCount(); row++) {
-                for (String key : annotationKeyList) {
-                    JIPipeAnnotation annotation = slot.getAnnotationOr(row, key, null);
-                    if(annotation != null) {
-                        AnnotationNode node = nodeByKeyValue.get(key).get(annotation.getValue());
-                        node.addSlotRow(slot, row);
-                    }
-                    else {
-                        // Applies to all entries of "key"
-                        for (AnnotationNode node : nodeByKey.get(key)) {
-                            node.addSlotRow(slot, row);
-                        }
-                    }
-                }
-            }
-        }
 
-        DOTExporter<AnnotationNode, DefaultEdge> dotExporter = new DOTExporter<>();
-        dotExporter.setVertexAttributeProvider(node -> {
-            Map<String, Attribute> attributeMap = new HashMap<>();
-            attributeMap.put("label", new DefaultAttribute<>(node.toString(), AttributeType.STRING));
-            return attributeMap;
-        });
-        dotExporter.exportGraph(graph, new File("flowgraph.dot"));
-
-        /*
-        Phase 4: Iterate through all paths from source to sink and build final data sets
-        Each path corresponds to a data batch
-         */
         List<JIPipeMergingDataBatch> result = new ArrayList<>();
-
-        AllDirectedPaths<AnnotationNode, DefaultEdge> paths = new AllDirectedPaths<>(graph);
-        for (GraphPath<AnnotationNode, DefaultEdge> path : paths.getAllPaths(source, sink, false, Integer.MAX_VALUE)) {
+        AllDirectedPaths<RowNode, DefaultEdge> directedPaths = new AllDirectedPaths<>(graph);
+        for (GraphPath<RowNode, DefaultEdge> path : directedPaths.getAllPaths(source, sink, false, Integer.MAX_VALUE)) {
             JIPipeMergingDataBatch dataBatch = new JIPipeMergingDataBatch(this.node);
-            for (AnnotationNode annotationNode : path.getVertexList()) {
-                if(annotationNode == source || annotationNode == sink)
+            for (RowNode rowNode : path.getVertexList()) {
+                if(rowNode == source || rowNode == sink)
                     continue;
-                for (Map.Entry<JIPipeDataSlot, Set<Integer>> entry : annotationNode.dataBatch.getInputSlotRows().entrySet()) {
-                    dataBatch.addData(entry.getKey(), entry.getValue());
-                    dataBatch.addGlobalAnnotations(entry.getKey().getAnnotations(entry.getValue()), annotationMergeStrategy);
-                }
+                dataBatch.addData(rowNode.slot, rowNode.rows);
+                dataBatch.addGlobalAnnotations(rowNode.annotations, annotationMergeStrategy);
             }
             result.add(dataBatch);
         }
-
         return result;
+    }
+
+    public boolean isApplyMerging() {
+        return applyMerging;
+    }
+
+    public void setApplyMerging(boolean applyMerging) {
+        this.applyMerging = applyMerging;
     }
 
     public static void main(String[] args) {
@@ -299,15 +272,22 @@ public class JIPipeMergingDataBatchBuilder {
         ExtensionSettings settings = new ExtensionSettings();
         JIPipeRegistryIssues issues = new JIPipeRegistryIssues();
         jiPipe.initialize(settings, issues);
+
         JIPipeDataSlot slot1 = new JIPipeDataSlot(new JIPipeDataSlotInfo(StringData.class, JIPipeSlotType.Input, "slot1", null), null);
-        slot1.addData(new StringData("A"), Arrays.asList(new JIPipeAnnotation("C1", "A"), new JIPipeAnnotation("C2", "X")));
-        slot1.addData(new StringData("B"), Arrays.asList(new JIPipeAnnotation("C1", "B"), new JIPipeAnnotation("C2", "Y")));
-        slot1.addData(new StringData("C"), Arrays.asList(new JIPipeAnnotation("C1", "C"), new JIPipeAnnotation("C3", "Z")));
+        JIPipeDataSlot slot2 = new JIPipeDataSlot(new JIPipeDataSlotInfo(StringData.class, JIPipeSlotType.Input, "slot2", null), null);
+        slot1.addData(new StringData("A"), Collections.singletonList(new JIPipeAnnotation("C1", "A")));
+        slot1.addData(new StringData("A2"), Collections.singletonList(new JIPipeAnnotation("C1", "A")));
+        slot1.addData(new StringData("B"), Collections.singletonList(new JIPipeAnnotation("C1", "B")));
+        slot1.addData(new StringData("C"), Collections.singletonList(new JIPipeAnnotation("C1", "C")));
+        slot2.addData(new StringData("N"), Collections.singletonList(new JIPipeAnnotation("C2", "N")));
+        slot2.addData(new StringData("N"), Collections.singletonList(new JIPipeAnnotation("C1", "N")));
+
         JIPipeMergingDataBatchBuilder builder = new JIPipeMergingDataBatchBuilder();
         builder.setAnnotationMergeStrategy(JIPipeAnnotationMergeStrategy.Merge);
-        builder.setReferenceColumns(new HashSet<>(Arrays.asList("C1", "C2")));
-        builder.setSlots(Collections.singletonList(slot1));
+        builder.setReferenceColumns(new HashSet<>(Collections.singletonList("C1")));
+        builder.setSlots(Arrays.asList(slot1, slot2));
         List<JIPipeMergingDataBatch> batches = builder.build();
+
         System.out.println(batches.size());
     }
 
@@ -347,40 +327,49 @@ public class JIPipeMergingDataBatchBuilder {
         this.annotationMergeStrategy = annotationMergeStrategy;
     }
 
-    private static class AnnotationNode {
-        private final JIPipeAnnotation annotation;
-        private final JIPipeMergingDataBatch dataBatch = new JIPipeMergingDataBatch((JIPipeGraphNode)null);
+    /**
+     * A node that represents one row in a {@link JIPipeDataSlot}
+     */
+    private static class RowNode {
+        private final JIPipeDataSlot slot;
+        private final Set<Integer> rows;
+        private final Map<String, String> annotations;
 
-        private AnnotationNode(JIPipeAnnotation annotation) {
-            this.annotation = annotation;
+        public RowNode(JIPipeDataSlot slot, int row, Map<String, String> annotations) {
+            this.slot = slot;
+            this.rows = new HashSet<>(Collections.singleton(row));
+            this.annotations = annotations;
         }
 
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            AnnotationNode that = (AnnotationNode) o;
-            return annotation.equals(that.annotation);
+        public RowNode(JIPipeDataSlot slot, Set<Integer> rows, Map<String, String> annotations) {
+            this.slot = slot;
+            this.rows = rows;
+            this.annotations = annotations;
         }
 
-        @Override
-        public int hashCode() {
-            return Objects.hash(annotation);
-        }
-
-        public void addSlotRow(JIPipeDataSlot slot, int row) {
-            dataBatch.addData(slot, row);
+        public boolean isCompatibleTo(RowNode otherNode) {
+            Set<String> annotationsToTest = new HashSet<>(annotations.keySet());
+            annotationsToTest.retainAll(otherNode.annotations.keySet());
+            for (String key : annotationsToTest) {
+                if(!Objects.equals(key, otherNode.annotations.get(key)))
+                    return false;
+            }
+            return true;
         }
 
         @Override
         public String toString() {
             StringBuilder builder = new StringBuilder();
-            builder.append(annotation.getName()).append("=").append(annotation.getValue()).append("\n");
-            for (Map.Entry<JIPipeDataSlot, Set<Integer>> entry : dataBatch.getInputSlotRows().entrySet()) {
-                builder.append(entry.getKey().getName()).append(": ").append(entry.getValue().stream().map(r -> "" + r).collect(Collectors.joining(",")));
-                builder.append("\n");
+            if(slot != null)
+                builder.append(slot.getName()).append(" / ").append(rows.stream().map(s -> "" + s).collect(Collectors.joining(","))).append("\n");
+            for (Map.Entry<String, String> entry : annotations.entrySet()) {
+                builder.append(entry.getKey()).append("=").append(entry.getValue()).append("\n");
             }
             return builder.toString();
+        }
+
+        public Map<String, String> getAnnotations() {
+            return annotations;
         }
     }
 }

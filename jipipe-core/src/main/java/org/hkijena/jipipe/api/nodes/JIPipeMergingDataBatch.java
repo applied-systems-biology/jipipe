@@ -128,6 +128,25 @@ public class JIPipeMergingDataBatch {
      * @param annotations the annotations
      * @param strategy    strategy to apply on merging existing values
      */
+    public void addGlobalAnnotations(Map<String, String> annotations, JIPipeAnnotationMergeStrategy strategy) {
+        for (Map.Entry<String, String> entry : annotations.entrySet()) {
+            JIPipeAnnotation existing = this.annotations.getOrDefault(entry.getKey(), null);
+            if (existing == null) {
+                this.annotations.put(entry.getKey(), new JIPipeAnnotation(entry.getKey(), entry.getValue()));
+            } else {
+                String newValue = strategy.merge(existing.getValue(), entry.getValue());
+                this.annotations.put(entry.getKey(), new JIPipeAnnotation(entry.getKey(), newValue));
+            }
+        }
+    }
+
+    /**
+     * Adds annotations to the global annotation storage of this interface.
+     * Global annotations are passed to all output slots.
+     *
+     * @param annotations the annotations
+     * @param strategy    strategy to apply on merging existing values
+     */
     public void addGlobalAnnotations(List<JIPipeAnnotation> annotations, JIPipeAnnotationMergeStrategy strategy) {
         for (JIPipeAnnotation annotation : annotations) {
             if (annotation != null) {

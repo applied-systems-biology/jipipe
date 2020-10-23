@@ -101,6 +101,7 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
     public List<JIPipeMergingDataBatch> generateDataBatchesDryRun(List<JIPipeDataSlot> slots) {
         JIPipeMergingDataBatchBuilder builder = new JIPipeMergingDataBatchBuilder();
         builder.setNode(this);
+        builder.setApplyMerging(false);
         builder.setSlots(slots);
         builder.setAnnotationMergeStrategy(dataBatchGenerationSettings.annotationMergeStrategy);
         builder.setReferenceColumns(dataBatchGenerationSettings.dataSetMatching,

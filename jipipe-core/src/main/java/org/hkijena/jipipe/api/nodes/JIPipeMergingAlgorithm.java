@@ -113,6 +113,7 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
         JIPipeMergingDataBatchBuilder builder = new JIPipeMergingDataBatchBuilder();
         builder.setNode(this);
         builder.setSlots(slots);
+        builder.setApplyMerging(true);
         builder.setAnnotationMergeStrategy(dataBatchGenerationSettings.annotationMergeStrategy);
         builder.setReferenceColumns(dataBatchGenerationSettings.dataSetMatching,
                 dataBatchGenerationSettings.customColumns,
