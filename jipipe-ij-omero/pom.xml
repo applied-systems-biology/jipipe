@@ -91,6 +91,11 @@
                 <version>5.6.5</version>
             </dependency>
             <dependency>
+                <groupId>org.openmicroscopy</groupId>
+                <artifactId>omero-blitz</artifactId>
+                <version>5.5.8</version>
+            </dependency>
+            <dependency>
                 <groupId>com.zeroc</groupId>
                 <artifactId>icegrid</artifactId>
                 <version>3.6.5</version>
@@ -129,13 +134,6 @@
             <scope>runtime</scope>
         </dependency>
     </dependencies>
-
-    <repositories>
-        <repository>
-            <id>omero</id>
-            <url>https://artifacts.openmicroscopy.org/</url>
-        </repository>
-    </repositories>
 
     <build>
         <plugins>
