@@ -24,6 +24,51 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="Maven: org.jgrapht:jgrapht-io:1.4.0" level="project" />
+    <orderEntry type="library" name="Maven: org.antlr:antlr4-runtime:4.7.2" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: fr.inra.ijpb:MorphoLibJ_:1.4.2.1" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: mpicbg:mpicbg:1.4.0" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: org.openmicroscopy:omero-gateway:5.6.5" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: org.openmicroscopy:omero-blitz:5.5.8" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: org.openmicroscopy:omero-server:5.5.6" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: org.openmicroscopy:omero-renderer:5.5.5" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: org.openmicroscopy:omero-romio:5.6.0" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: org.openmicroscopy:omero-common:5.5.5" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: org.openmicroscopy:omero-model:5.6.0" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: edu.ucar:bufr:3.0" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: org.apache.calcite:calcite-core:1.20.0" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: org.apache.calcite.avatica:avatica-core:1.15.0" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: org.apache.calcite.avatica:avatica-metrics:1.15.0" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: com.google.protobuf:protobuf-java:3.6.1" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: org.apache.calcite:calcite-linq4j:1.20.0" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: org.apache.commons:commons-dbcp2:2.6.0" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: org.apache.commons:commons-pool2:2.6.1" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: com.esri.geometry:esri-geometry-api:2.2.0" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.9.8" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: org.yaml:snakeyaml:1.26" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: com.yahoo.datasketches:sketches-core:0.9.0" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: com.yahoo.datasketches:memory:0.9.0" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: com.jayway.jsonpath:json-path:2.4.0" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: net.hydromatic:aggdesigner-algorithm:6.0" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: org.codehaus.janino:janino:3.0.11" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: org.codehaus.janino:commons-compiler:3.0.11" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: org.apache.commons:commons-collections4:4.1" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: com.sun.activation:javax.activation:1.2.0" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: org.ini4j:ini4j:0.4.1" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: com.zeroc:icestorm:3.6.4" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: commons-beanutils:commons-beanutils:1.9.4" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: commons-collections:commons-collections:3.2.2" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: com.zeroc:icegrid:3.6.5" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: com.zeroc:ice:3.6.5" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: com.zeroc:glacier2:3.6.5" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: org.junit.jupiter:junit-jupiter:5.7.0" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: org.junit.jupiter:junit-jupiter-api:5.6.2" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: org.apiguardian:apiguardian-api:1.1.0" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: org.opentest4j:opentest4j:1.2.0" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: org.junit.platform:junit-platform-commons:1.7.0" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: org.junit.jupiter:junit-jupiter-params:5.6.2" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: org.junit.jupiter:junit-jupiter-engine:5.6.2" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: org.junit.platform:junit-platform-engine:1.7.0" level="project" />
     <orderEntry type="module" module-name="jipipe-core" />
     <orderEntry type="library" name="Maven: net.imagej:imagej:2.1.0" level="project" />
     <orderEntry type="library" name="Maven: net.imagej:imagej-common:0.33.0" level="project" />

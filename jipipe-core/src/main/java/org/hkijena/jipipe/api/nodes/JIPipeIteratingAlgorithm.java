@@ -119,6 +119,8 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
             return;
         }
 
+        List<JIPipeDataBatch> dataBatches;
+
         // Special case: No input slots
         if (getEffectiveInputSlotCount() == 0) {
             if (isCancelled.get())
@@ -131,30 +133,40 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
             runIteration(dataBatch, slotProgress, algorithmProgress, isCancelled);
             return;
         }
-
-        // First generate merging data batches
-        List<JIPipeMergingDataBatch> mergingDataBatches = generateDataBatchesDryRun(getNonParameterInputSlots());
-
-        // Check for incomplete batches
-        if(dataBatchGenerationSettings.skipIncompleteDataSets) {
-            mergingDataBatches.removeIf(JIPipeMergingDataBatch::isIncomplete);
-        }
-        else {
-            for (JIPipeMergingDataBatch batch : mergingDataBatches) {
-                if(batch.isIncomplete()) {
-                    throw new UserFriendlyRuntimeException("Incomplete data set found!",
-                            "An incomplete data set was found!",
-                            "Algorithm '" + getName() + "'",
-                            "The algorithm needs to assign input a unique data set via annotations, but there is " +
-                                    "not a data set for each input slot.",
-                            "Please check the input of the algorithm by running the quick run on each input algorithm. " +
-                                    "You can also choose to skip incomplete data sets, although you might lose data in those cases.");
-                }
+        else if(getEffectiveInputSlotCount() == 1) {
+            dataBatches = new ArrayList<>();
+            for (int row = 0; row < getFirstInputSlot().getRowCount(); row++) {
+                JIPipeDataBatch dataBatch = new JIPipeDataBatch(this);
+                dataBatch.setData(getFirstInputSlot(), row);
+                dataBatch.addGlobalAnnotations(getFirstInputSlot().getAnnotations(row), dataBatchGenerationSettings.annotationMergeStrategy);
+                dataBatches.add(dataBatch);
             }
         }
+        else {
+            // First generate merging data batches
+            List<JIPipeMergingDataBatch> mergingDataBatches = generateDataBatchesDryRun(getNonParameterInputSlots());
 
-        // Convert to single batch
-        List<JIPipeDataBatch> dataBatches = JIPipeMergingDataBatchBuilder.convertMergingToSingleDataBatches(mergingDataBatches);
+            // Check for incomplete batches
+            if(dataBatchGenerationSettings.skipIncompleteDataSets) {
+                mergingDataBatches.removeIf(JIPipeMergingDataBatch::isIncomplete);
+            }
+            else {
+                for (JIPipeMergingDataBatch batch : mergingDataBatches) {
+                    if(batch.isIncomplete()) {
+                        throw new UserFriendlyRuntimeException("Incomplete data set found!",
+                                "An incomplete data set was found!",
+                                "Algorithm '" + getName() + "'",
+                                "The algorithm needs to assign input a unique data set via annotations, but there is " +
+                                        "not a data set for each input slot.",
+                                "Please check the input of the algorithm by running the quick run on each input algorithm. " +
+                                        "You can also choose to skip incomplete data sets, although you might lose data in those cases.");
+                    }
+                }
+            }
+            // Convert to single batch
+            dataBatches = JIPipeMergingDataBatchBuilder.convertMergingToSingleDataBatches(mergingDataBatches);
+        }
+
 
         if (!supportsParallelization() || !isParallelizationEnabled() || getThreadPool() == null || getThreadPool().getMaxThreads() <= 1) {
             for (int i = 0; i < dataBatches.size(); i++) {

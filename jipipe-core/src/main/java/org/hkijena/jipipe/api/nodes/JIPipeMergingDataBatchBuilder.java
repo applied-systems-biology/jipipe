@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
  */
 public class JIPipeMergingDataBatchBuilder {
     private JIPipeGraphNode node;
+    private List<JIPipeDataSlot> slotList = new ArrayList<>();
     private Map<String, JIPipeDataSlot> slots = new HashMap<>();
     private Set<String> referenceColumns = new HashSet<>();
     private JIPipeAnnotationMergeStrategy annotationMergeStrategy = JIPipeAnnotationMergeStrategy.Merge;
@@ -43,6 +44,8 @@ public class JIPipeMergingDataBatchBuilder {
 
     public void setSlots(List<JIPipeDataSlot> slots) {
         this.slots.clear();
+        this.slotList.clear();
+        this.slotList.addAll(slots);
         for (JIPipeDataSlot slot : slots) {
             this.slots.put(slot.getName(), slot);   
         }
@@ -129,9 +132,6 @@ public class JIPipeMergingDataBatchBuilder {
 
     public List<JIPipeMergingDataBatch> build() {
         DefaultDirectedGraph<RowNode, DefaultEdge> graph = new DefaultDirectedGraph<>(DefaultEdge.class);
-
-        // Pin slots into a fixed order
-        ArrayList<JIPipeDataSlot> slotList = new ArrayList<>(slots.values());
 
         // Create one node per row
         Multimap<JIPipeDataSlot, RowNode> rowNodesBySlot = HashMultimap.create();
@@ -243,8 +243,6 @@ public class JIPipeMergingDataBatchBuilder {
         for (GraphPath<RowNode, DefaultEdge> path : directedPaths.getAllPaths(source, sink, false, Integer.MAX_VALUE)) {
             JIPipeMergingDataBatch dataBatch = new JIPipeMergingDataBatch(this.node);
             for (RowNode rowNode : path.getVertexList()) {
-                if(rowNode == source || rowNode == sink)
-                    continue;
                 dataBatch.addData(rowNode.slot, rowNode.rows);
                 dataBatch.addGlobalAnnotations(rowNode.annotations, annotationMergeStrategy);
             }
