@@ -24,16 +24,6 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module-library" scope="RUNTIME">
-      <library>
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../../JIPipe/Fiji.app/plugins/omero_ij-5.5.14-all.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="library" scope="RUNTIME" name="Maven: org.openmicroscopy:omero-blitz:5.5.8" level="project" />
     <orderEntry type="module" module-name="jipipe-core" />
     <orderEntry type="module" module-name="jipipe-python" scope="RUNTIME" />
     <orderEntry type="module" module-name="jipipe-annotation" scope="RUNTIME" />

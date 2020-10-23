@@ -27,11 +27,13 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * A data slot holds an {@link JIPipeData} instance.
@@ -123,6 +125,24 @@ public class JIPipeDataSlot implements TableModel {
             JIPipeAnnotation trait = getOrCreateAnnotationColumnData(info).get(row);
             if (trait != null)
                 result.add(trait);
+        }
+        return result;
+    }
+
+    /**
+     * Gets the list of annotations for specific data rows
+     *
+     * @param rows The set of rows
+     * @return Annotations at row
+     */
+    public synchronized List<JIPipeAnnotation> getAnnotations(Set<Integer> rows) {
+        List<JIPipeAnnotation> result = new ArrayList<>();
+        for (String info : annotationColumns) {
+            for (int row : rows) {
+                JIPipeAnnotation trait = getOrCreateAnnotationColumnData(info).get(row);
+                if (trait != null)
+                    result.add(trait);
+            }
         }
         return result;
     }

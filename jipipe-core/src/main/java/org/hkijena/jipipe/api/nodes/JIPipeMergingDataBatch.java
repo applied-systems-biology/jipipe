@@ -19,6 +19,7 @@ import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -83,6 +84,21 @@ public class JIPipeMergingDataBatch {
             inputSlotRows.put(slot, rows);
         }
         rows.add(row);
+    }
+
+    /**
+     * Adds the data row of a given slot. This should not be called after the interface was generated
+     *
+     * @param slot the data slot
+     * @param rowsToAdd  the rows to add
+     */
+    public void addData(JIPipeDataSlot slot, Collection<Integer> rowsToAdd) {
+        Set<Integer> rows = inputSlotRows.getOrDefault(slot, null);
+        if (rows == null) {
+            rows = new HashSet<>();
+            inputSlotRows.put(slot, rows);
+        }
+        rows.addAll(rowsToAdd);
     }
 
     /**

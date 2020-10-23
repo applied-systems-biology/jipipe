@@ -23,11 +23,15 @@ import ome.formats.importer.OMEROWrapper;
 import ome.formats.importer.cli.ErrorHandler;
 import omero.gateway.LoginCredentials;
 import omero.model.Pixels;
+import org.apache.commons.io.FileUtils;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDataByMetadataExporter;
+import org.hkijena.jipipe.api.data.JIPipeDataSlot;
+import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
+import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeMergingAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
@@ -47,7 +51,9 @@ import org.hkijena.jipipe.extensions.omero.util.OMEROUtils;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.utils.PathUtils;
 
+import java.io.IOException;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -74,9 +80,14 @@ public class UploadOMEROImageAlgorithm extends JIPipeMergingAlgorithm {
     @Override
     protected void runIteration(JIPipeMergingDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         Path targetPath = RuntimeSettings.generateTempDirectory("OMERO-Upload");
-        exportImages(targetPath, subProgress.resolve("Exporting images"), algorithmProgress, isCancelled);
+        exportImages(dataBatch, targetPath, subProgress.resolve("Exporting images"), algorithmProgress, isCancelled);
         for (OMERODatasetReferenceData dataset : dataBatch.getInputData("Dataset", OMERODatasetReferenceData.class)) {
             uploadImages(targetPath, dataset.getDatasetId(), subProgress.resolve("Uploading"), algorithmProgress, isCancelled);
+        }
+        try {
+            FileUtils.deleteDirectory(targetPath.toFile());
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -130,15 +141,17 @@ public class UploadOMEROImageAlgorithm extends JIPipeMergingAlgorithm {
         }
     }
 
-    private void exportImages(Path targetPath, JIPipeRunnerSubStatus subStatus, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
-        // Update the exporter settings
-        for (int row = 0; row < getFirstInputSlot().getRowCount(); row++) {
-            getFirstInputSlot().getData(row, OMEImageData.class).setExporterSettings(exporterSettings);
+    private void exportImages(JIPipeMergingDataBatch dataBatch, Path targetPath, JIPipeRunnerSubStatus subStatus, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+        JIPipeDataSlot dummy = new JIPipeDataSlot(new JIPipeDataSlotInfo(OMEImageData.class, JIPipeSlotType.Input, null), this);
+        ArrayList<JIPipeAnnotation> annotations = new ArrayList<>(dataBatch.getAnnotations().values());
+        for (OMEImageData image : dataBatch.getInputData("Image", OMEImageData.class)) {
+            dummy.addData(image, annotations);
+            image.setExporterSettings(exporterSettings);
         }
 
         // Export to BioFormats
         algorithmProgress.accept(subStatus.resolve("Image files will be written into " + targetPath));
-        exporter.writeToFolder(getFirstInputSlot(), targetPath, subStatus.resolve("Export images"), algorithmProgress, isCancelled);
+        exporter.writeToFolder(dummy, targetPath, subStatus.resolve("Export images"), algorithmProgress, isCancelled);
     }
 
     public UploadOMEROImageAlgorithm(UploadOMEROImageAlgorithm other) {

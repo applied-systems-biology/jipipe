@@ -14,7 +14,6 @@
 package org.hkijena.jipipe.ui.batchassistant;
 
 import com.google.common.eventbus.Subscribe;
-import gnu.trove.set.TIntSet;
 import org.hkijena.jipipe.api.JIPipeProjectCache;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
@@ -22,10 +21,8 @@ import org.hkijena.jipipe.api.events.NodeDisconnectedEvent;
 import org.hkijena.jipipe.api.events.NodeSlotsChangedEvent;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatchAlgorithm;
-import org.hkijena.jipipe.api.nodes.JIPipeDataBatchKey;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
-import org.hkijena.jipipe.api.nodes.JIPipeParameterSlotAlgorithm;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.FormPanel;
