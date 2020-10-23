@@ -73,17 +73,30 @@
         <license.projectName>JIPipe-Tables</license.projectName>
     </properties>
 
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.hkijena</groupId>
+                <artifactId>jipipe-core</artifactId>
+                <version>2020.10</version>
+            </dependency>
+            <dependency>
+                <groupId>org.hkijena</groupId>
+                <artifactId>jipipe-annotation</artifactId>
+                <version>2020.10</version>
+                <scope>compile</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
     <dependencies>
         <dependency>
             <groupId>org.hkijena</groupId>
             <artifactId>jipipe-core</artifactId>
-            <version>2020.10</version>
         </dependency>
         <dependency>
             <groupId>org.hkijena</groupId>
             <artifactId>jipipe-annotation</artifactId>
-            <version>2020.10</version>
-            <scope>compile</scope>
         </dependency>
     </dependencies>
 

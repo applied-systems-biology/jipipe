@@ -73,26 +73,56 @@
         <license.projectName>JIPipe-IJ</license.projectName>
     </properties>
 
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.hkijena</groupId>
+                <artifactId>jipipe-core</artifactId>
+                <version>2020.10</version>
+            </dependency>
+            <dependency>
+                <groupId>org.hkijena</groupId>
+                <artifactId>jipipe-tables</artifactId>
+                <version>2020.10</version>
+            </dependency>
+            <dependency>
+                <groupId>org.hkijena</groupId>
+                <artifactId>jipipe-strings</artifactId>
+                <version>2020.10</version>
+            </dependency>
+            <dependency>
+                <groupId>org.hkijena</groupId>
+                <artifactId>jipipe-ij</artifactId>
+                <version>2020.10</version>
+            </dependency>
+            <dependency>
+                <groupId>org.python</groupId>
+                <artifactId>jython-slim</artifactId>
+                <version>2.7.2</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
     <dependencies>
         <dependency>
             <groupId>org.hkijena</groupId>
             <artifactId>jipipe-core</artifactId>
-            <version>2020.10</version>
         </dependency>
         <dependency>
             <groupId>org.hkijena</groupId>
             <artifactId>jipipe-tables</artifactId>
-            <version>2020.10</version>
         </dependency>
         <dependency>
             <groupId>org.hkijena</groupId>
             <artifactId>jipipe-strings</artifactId>
-            <version>2020.10</version>
         </dependency>
         <dependency>
             <groupId>org.hkijena</groupId>
             <artifactId>jipipe-ij</artifactId>
-            <version>2020.10</version>
+        </dependency>
+        <dependency>
+            <groupId>org.python</groupId>
+            <artifactId>jython-slim</artifactId>
         </dependency>
     </dependencies>
 

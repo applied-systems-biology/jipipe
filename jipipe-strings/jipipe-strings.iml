@@ -21,18 +21,19 @@
     <orderEntry type="library" name="Maven: edu.ucar:udunits:4.3.18" level="project" />
     <orderEntry type="library" name="Maven: net.imagej:imagej-launcher:5.0.3" level="project" />
     <orderEntry type="library" name="Maven: net.imagej:imagej-notebook:0.7.1" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.commons:commons-text:1.8" level="project" />
     <orderEntry type="library" name="Maven: org.knowm.xchart:xchart:3.5.4" level="project" />
     <orderEntry type="library" name="Maven: de.erichseifert.vectorgraphics2d:VectorGraphics2D:0.13" level="project" />
     <orderEntry type="library" name="Maven: net.imagej:imagej-ops:0.45.5" level="project" />
     <orderEntry type="library" name="Maven: net.imagej:imagej-mesh:0.8.0" level="project" />
     <orderEntry type="library" name="Maven: net.imglib2:imglib2-algorithm:0.11.2" level="project" />
     <orderEntry type="library" name="Maven: net.imglib2:imglib2-algorithm-fft:0.2.0" level="project" />
+    <orderEntry type="library" name="Maven: edu.mines:mines-jtk:20151125" level="project" />
     <orderEntry type="library" name="Maven: org.scijava:parsington:2.0.0" level="project" />
     <orderEntry type="library" name="Maven: org.scijava:scripting-javascript:0.5.0" level="project" />
     <orderEntry type="library" name="Maven: org.apache.commons:commons-math3:3.6.1" level="project" />
     <orderEntry type="library" name="Maven: org.joml:joml:1.9.25" level="project" />
     <orderEntry type="library" name="Maven: org.ojalgo:ojalgo:45.1.1" level="project" />
+    <orderEntry type="library" name="Maven: gov.nist.math:jama:1.0.3" level="project" />
     <orderEntry type="library" name="Maven: net.imagej:imagej-updater:0.10.5" level="project" />
     <orderEntry type="library" name="Maven: commons-lang:commons-lang:2.6" level="project" />
     <orderEntry type="library" name="Maven: io.scif:scifio:0.41.0" level="project" />
@@ -51,9 +52,9 @@
     <orderEntry type="library" scope="RUNTIME" name="Maven: com.jcraft:jsch:0.1.55" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: net.imagej:imagej-plugins-uploader-webdav:0.3.2" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.apache.jackrabbit:jackrabbit-webdav:2.21.1" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.httpcomponents:httpclient:4.5.12" level="project" />
-    <orderEntry type="library" name="Maven: commons-codec:commons-codec:1.14" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.httpcomponents:httpcore:4.4.13" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: org.apache.httpcomponents:httpclient:4.5.12" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: commons-codec:commons-codec:1.14" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: org.apache.httpcomponents:httpcore:4.4.13" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: net.imagej:imagej-scripting:0.8.2" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.scijava:scripting-beanshell:0.3.4" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.apache-extras.beanshell:bsh:2.0b6" level="project" />
@@ -72,8 +73,14 @@
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.codehaus.jsr166-mirror:jsr166y:1.7.0" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.scijava:scripting-jruby:0.3.1" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.jruby:jruby-core:9.1.17.0" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: com.github.jnr:jnr-netdb:1.1.6" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: com.github.jnr:jnr-enxio:0.16" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: com.github.jnr:jnr-x86asm:1.0.2" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: com.github.jnr:jnr-unixsocket:0.17" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: com.github.jnr:jnr-posix:3.0.44" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: com.github.jnr:jnr-constants:0.9.9" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: com.github.jnr:jffi:1.2.16" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: com.github.jnr:jffi:native:1.2.16" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.jruby.joni:joni:2.1.15" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.jruby.extras:bytelist:1.0.15" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.jruby.jcodings:jcodings:1.0.27" level="project" />
@@ -83,9 +90,36 @@
     <orderEntry type="library" scope="RUNTIME" name="Maven: com.headius:unsafe-fences:1.0" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: com.jcraft:jzlib:1.1.3" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: com.martiansoftware:nailgun-server:0.9.1" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: joda-time:joda-time:2.10.6" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: com.headius:modulator:1.0" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.jruby:jruby-stdlib:9.1.17.0" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.scijava:scripting-jython:1.0.0" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: org.python:jython-slim:2.7.2" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: org.antlr:antlr:3.5.2" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: org.antlr:ST4:4.0.8" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: javax.servlet:javax.servlet-api:3.1.0" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: org.antlr:antlr-runtime:3.5.2" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: org.apache.commons:commons-compress:1.20" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: org.bouncycastle:bcpkix-jdk15on:1.62" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: org.bouncycastle:bcprov-jdk15on:1.62" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: org.ow2.asm:asm:7.1" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: org.ow2.asm:asm-commons:7.1" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: org.ow2.asm:asm-tree:7.1" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: org.ow2.asm:asm-analysis:7.1" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: org.ow2.asm:asm-util:7.1" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: com.google.guava:failureaccess:1.0.1" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: com.carrotsearch:java-sizeof:0.0.5" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: com.github.jnr:jnr-ffi:2.1.10" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: com.github.jnr:jnr-a64asm:1.0.0" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: jline:jline:2.14.5" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: io.netty:netty-buffer:4.1.45.Final" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: io.netty:netty-codec:4.1.45.Final" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: io.netty:netty-common:4.1.45.Final" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: io.netty:netty-handler:4.1.45.Final" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: io.netty:netty-resolver:4.1.45.Final" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: io.netty:netty-transport:4.1.45.Final" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: org.apache.ant:ant:1.9.7" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: org.apache.ant:ant-launcher:1.9.7" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.scijava:scripting-renjin:0.2.3" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.renjin:renjin-script-engine:0.8.1906" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.renjin:renjin-core:0.8.1906" level="project" />
@@ -121,10 +155,10 @@
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.scala-lang:scala-reflect:2.12.1" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.scala-lang.modules:scala-xml_2.12:1.0.6" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.scijava:scijava-io-http:0.2.1" level="project" />
-    <orderEntry type="library" name="Maven: com.squareup.okhttp3:okhttp:4.7.2" level="project" />
-    <orderEntry type="library" name="Maven: com.squareup.okio:okio:2.6.0" level="project" />
-    <orderEntry type="library" name="Maven: org.jetbrains.kotlin:kotlin-stdlib-common:1.3.70" level="project" />
-    <orderEntry type="library" name="Maven: org.jetbrains.kotlin:kotlin-stdlib:1.3.71" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: com.squareup.okhttp3:okhttp:4.7.2" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: com.squareup.okio:okio:2.6.0" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: org.jetbrains.kotlin:kotlin-stdlib-common:1.3.70" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: org.jetbrains.kotlin:kotlin-stdlib:1.3.71" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.scijava:scijava-plugins-commands:0.2.3" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.scijava:scijava-plugins-io-table:0.3.0" level="project" />
     <orderEntry type="library" name="Maven: org.scijava:scijava-optional:1.0.0" level="project" />
@@ -170,11 +204,6 @@
     <orderEntry type="library" name="Maven: net.imagej:imagej-ui-swing:0.23.2" level="project" />
     <orderEntry type="library" name="Maven: org.jhotdraw:jhotdraw:7.6.0" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: net.imagej:imagej-ui-awt:0.3.1" level="project" />
-    <orderEntry type="library" name="Maven: sc.fiji:Feature_Detection:2.0.2" level="project" />
-    <orderEntry type="library" name="Maven: sc.fiji:legacy-imglib1:1.1.9" level="project" />
-    <orderEntry type="library" name="Maven: edu.mines:mines-jtk:20151125" level="project" />
-    <orderEntry type="library" name="Maven: org.scijava:vecmath:1.6.0-scijava-2" level="project" />
-    <orderEntry type="library" name="Maven: gov.nist.math:jama:1.0.3" level="project" />
     <orderEntry type="library" name="Maven: org.scijava:scijava-log-slf4j:1.0.5" level="project" />
     <orderEntry type="library" name="Maven: com.google.guava:guava:26.0-jre" level="project" />
     <orderEntry type="library" name="Maven: com.google.code.findbugs:jsr305:3.0.2" level="project" />
@@ -182,18 +211,11 @@
     <orderEntry type="library" name="Maven: com.google.errorprone:error_prone_annotations:2.1.3" level="project" />
     <orderEntry type="library" name="Maven: com.google.j2objc:j2objc-annotations:1.1" level="project" />
     <orderEntry type="library" name="Maven: org.codehaus.mojo:animal-sniffer-annotations:1.14" level="project" />
-    <orderEntry type="library" name="Maven: fr.inra.ijpb:MorphoLibJ_:1.4.1" level="project" />
-    <orderEntry type="library" name="Maven: sc.fiji:FeatureJ_:2.0.0" level="project" />
     <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-core:2.11.0" level="project" />
     <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-databind:2.11.0" level="project" />
     <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-annotations:2.11.0" level="project" />
-    <orderEntry type="library" name="Maven: sc.fiji:MTrackJ_:1.5.4" level="project" />
-    <orderEntry type="library" name="Maven: sc.fiji:RandomJ_:2.0.0" level="project" />
-    <orderEntry type="library" name="Maven: sc.fiji:imagescience:3.0.0" level="project" />
-    <orderEntry type="library" name="Maven: sc.fiji:Image_5D:2.0.2" level="project" />
     <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:1.7.9" level="project" />
     <orderEntry type="library" name="Maven: org.slf4j:slf4j-simple:1.7.9" level="project" />
-    <orderEntry type="library" name="Maven: mpicbg:mpicbg:1.3.0" level="project" />
     <orderEntry type="library" name="Maven: org.swinglabs:swingx:1.6.1" level="project" />
     <orderEntry type="library" name="Maven: com.jhlabs:filters:2.0.235" level="project" />
     <orderEntry type="library" name="Maven: org.swinglabs:swing-worker:1.1" level="project" />
@@ -222,52 +244,18 @@
     <orderEntry type="library" name="Maven: org.apache.pdfbox:xmpbox:2.0.16" level="project" />
     <orderEntry type="library" name="Maven: de.rototor.pdfbox:graphics2d:0.24" level="project" />
     <orderEntry type="library" name="Maven: com.openhtmltopdf:openhtmltopdf-rtl-support:1.0.0" level="project" />
+    <orderEntry type="library" name="Maven: com.ibm.icu:icu4j:59.1" level="project" />
     <orderEntry type="library" name="Maven: com.openhtmltopdf:openhtmltopdf-jsoup-dom-converter:1.0.0" level="project" />
     <orderEntry type="library" name="Maven: com.vladsch.flexmark:flexmark-util:0.62.2" level="project" />
     <orderEntry type="library" name="Maven: com.vladsch.flexmark:flexmark-util-options:0.62.2" level="project" />
     <orderEntry type="library" name="Maven: org.jetbrains:annotations:15.0" level="project" />
     <orderEntry type="library" name="Maven: org.jgrapht:jgrapht-core:1.4.0" level="project" />
     <orderEntry type="library" name="Maven: org.jheaps:jheaps:0.11" level="project" />
+    <orderEntry type="library" name="Maven: org.jgrapht:jgrapht-io:1.4.0" level="project" />
+    <orderEntry type="library" name="Maven: org.antlr:antlr4-runtime:4.7.2" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.commons:commons-text:1.8" level="project" />
     <orderEntry type="library" name="Maven: org.jfree:jfreechart:1.5.0" level="project" />
     <orderEntry type="library" name="Maven: org.jfree:jfreesvg:3.4" level="project" />
-    <orderEntry type="library" name="Maven: ome:bio-formats_plugins:6.5.1" level="project" />
-    <orderEntry type="library" name="Maven: org.openmicroscopy:ome-common:6.0.4" level="project" />
-    <orderEntry type="library" name="Maven: io.minio:minio:5.0.2" level="project" />
-    <orderEntry type="library" name="Maven: com.google.http-client:google-http-client-xml:1.20.0" level="project" />
-    <orderEntry type="library" name="Maven: com.google.http-client:google-http-client:1.20.0" level="project" />
-    <orderEntry type="library" name="Maven: xpp3:xpp3:1.1.4c" level="project" />
-    <orderEntry type="library" name="Maven: com.esotericsoftware.kryo:kryo:2.24.0" level="project" />
-    <orderEntry type="library" name="Maven: com.esotericsoftware.minlog:minlog:1.2" level="project" />
-    <orderEntry type="library" name="Maven: org.objenesis:objenesis:2.1" level="project" />
-    <orderEntry type="library" name="Maven: joda-time:joda-time:2.10.6" level="project" />
-    <orderEntry type="library" name="Maven: org.openmicroscopy:ome-xml:6.1.0" level="project" />
-    <orderEntry type="library" name="Maven: org.openmicroscopy:specification:6.1.0" level="project" />
-    <orderEntry type="library" name="Maven: ome:formats-api:6.5.1" level="project" />
-    <orderEntry type="library" name="Maven: org.openmicroscopy:ome-codecs:0.3.0" level="project" />
-    <orderEntry type="library" name="Maven: org.openmicroscopy:ome-jai:0.1.0" level="project" />
-    <orderEntry type="library" name="Maven: ome:formats-bsd:6.5.1" level="project" />
-    <orderEntry type="library" name="Maven: ome:turbojpeg:6.5.1" level="project" />
-    <orderEntry type="library" name="Maven: org.scijava:native-lib-loader:2.3.4" level="project" />
-    <orderEntry type="library" name="Maven: org.perf4j:perf4j:0.9.16" level="project" />
-    <orderEntry type="library" name="Maven: com.drewnoakes:metadata-extractor:2.11.0" level="project" />
-    <orderEntry type="library" name="Maven: com.adobe.xmp:xmpcore:5.1.3" level="project" />
-    <orderEntry type="library" name="Maven: ome:jxrlib-all:0.2.4" level="project" />
-    <orderEntry type="library" name="Maven: xerces:xercesImpl:2.8.1" level="project" />
-    <orderEntry type="library" name="Maven: ome:formats-gpl:6.5.1" level="project" />
-    <orderEntry type="library" name="Maven: org.openmicroscopy:ome-mdbtools:5.3.2" level="project" />
-    <orderEntry type="library" name="Maven: org.openmicroscopy:metakit:5.3.2" level="project" />
-    <orderEntry type="library" name="Maven: org.openmicroscopy:ome-poi:5.3.3" level="project" />
-    <orderEntry type="library" name="Maven: edu.ucar:cdm:4.6.13" level="project" />
-    <orderEntry type="library" name="Maven: edu.ucar:httpservices:4.6.13" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.httpcomponents:httpmime:4.5.1" level="project" />
-    <orderEntry type="library" name="Maven: com.mchange:c3p0:0.9.5.3" level="project" />
-    <orderEntry type="library" name="Maven: com.mchange:mchange-commons-java:0.2.15" level="project" />
-    <orderEntry type="library" name="Maven: woolz:JWlz:1.4.0" level="project" />
-    <orderEntry type="library" name="Maven: cisd:jhdf5:14.12.6" level="project" />
-    <orderEntry type="library" name="Maven: org.json:json:20090211" level="project" />
-    <orderEntry type="library" name="Maven: com.jgoodies:jgoodies-forms:1.7.2" level="project" />
-    <orderEntry type="library" name="Maven: com.jgoodies:jgoodies-common:1.7.0" level="project" />
-    <orderEntry type="library" name="Maven: ch.qos.logback:logback-core:1.2.3" level="project" />
     <orderEntry type="library" name="Maven: org.scijava:script-editor:0.5.6" level="project" />
     <orderEntry type="library" name="Maven: org.scijava:scripting-java:0.4.1" level="project" />
     <orderEntry type="library" name="Maven: org.scijava:minimaven:2.2.2" level="project" />
@@ -275,39 +263,6 @@
     <orderEntry type="library" name="Maven: commons-io:commons-io:2.7" level="project" />
     <orderEntry type="library" name="Maven: org.reflections:reflections:0.9.12" level="project" />
     <orderEntry type="library" name="Maven: net.sf.trove4j:trove4j:3.0.3" level="project" />
-    <orderEntry type="library" name="Maven: org.python:jython-slim:2.7.2" level="project" />
-    <orderEntry type="library" name="Maven: org.antlr:antlr:3.5.2" level="project" />
-    <orderEntry type="library" name="Maven: org.antlr:ST4:4.0.8" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: javax.servlet:javax.servlet-api:3.1.0" level="project" />
-    <orderEntry type="library" name="Maven: org.antlr:antlr-runtime:3.5.2" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: org.apache.commons:commons-compress:1.20" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: org.bouncycastle:bcpkix-jdk15on:1.62" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: org.bouncycastle:bcprov-jdk15on:1.62" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: org.ow2.asm:asm:7.1" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: org.ow2.asm:asm-commons:7.1" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: org.ow2.asm:asm-tree:7.1" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: org.ow2.asm:asm-analysis:7.1" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: org.ow2.asm:asm-util:7.1" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: com.google.guava:failureaccess:1.0.1" level="project" />
-    <orderEntry type="library" name="Maven: com.ibm.icu:icu4j:59.1" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: com.carrotsearch:java-sizeof:0.0.5" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: com.github.jnr:jffi:1.2.20" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: com.github.jnr:jnr-netdb:1.1.6" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: com.github.jnr:jnr-ffi:2.1.10" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: com.github.jnr:jffi:native:1.2.19" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: com.github.jnr:jnr-a64asm:1.0.0" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: com.github.jnr:jnr-x86asm:1.0.2" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: com.github.jnr:jnr-posix:3.0.50" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: com.github.jnr:jnr-constants:0.9.12" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: jline:jline:2.14.5" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: io.netty:netty-buffer:4.1.45.Final" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: io.netty:netty-codec:4.1.45.Final" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: io.netty:netty-common:4.1.45.Final" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: io.netty:netty-handler:4.1.45.Final" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: io.netty:netty-resolver:4.1.45.Final" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: io.netty:netty-transport:4.1.45.Final" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: org.apache.ant:ant:1.9.7" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: org.apache.ant:ant-launcher:1.9.7" level="project" />
     <orderEntry type="library" name="Maven: com.github.vatbub:mslinks:1.0.5" level="project" />
   </component>
 </module>
