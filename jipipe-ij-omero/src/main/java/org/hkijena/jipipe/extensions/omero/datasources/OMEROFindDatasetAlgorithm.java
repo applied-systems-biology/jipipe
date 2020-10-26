@@ -150,13 +150,13 @@ public class OMEROFindDatasetAlgorithm extends JIPipeParameterSlotAlgorithm {
         registerSubParameter(credentials);
     }
 
-    @JIPipeDocumentation(name = "Project name filters", description = "Filters for the project name. A project is returned if one of the filters apply. If the list is empty, all projects are returned.")
-    @JIPipeParameter("project-name-filters")
+    @JIPipeDocumentation(name = "Dataset name filters", description = "Filters for the dataset name. A dataset is returned if one of the filters apply. If the list is empty, all datasets are returned.")
+    @JIPipeParameter("dataset-name-filters")
     public StringPredicate.List getDatasetNameFilters() {
         return datasetNameFilters;
     }
 
-    @JIPipeParameter("project-name-filters")
+    @JIPipeParameter("dataset-name-filters")
     public void setDatasetNameFilters(StringPredicate.List datasetNameFilters) {
         this.datasetNameFilters = datasetNameFilters;
     }

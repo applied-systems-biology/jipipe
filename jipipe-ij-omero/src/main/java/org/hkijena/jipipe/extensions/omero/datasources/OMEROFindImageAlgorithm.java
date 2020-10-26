@@ -150,13 +150,13 @@ public class OMEROFindImageAlgorithm extends JIPipeParameterSlotAlgorithm {
         registerSubParameter(credentials);
     }
 
-    @JIPipeDocumentation(name = "Project name filters", description = "Filters for the project name. A project is returned if one of the filters apply. If the list is empty, all projects are returned.")
-    @JIPipeParameter("project-name-filters")
+    @JIPipeDocumentation(name = "Image name filters", description = "Filters for the image name. A image is returned if one of the filters apply. If the list is empty, all images are returned.")
+    @JIPipeParameter("image-name-filters")
     public StringPredicate.List getImageNameFilters() {
         return imageNameFilters;
     }
 
-    @JIPipeParameter("project-name-filters")
+    @JIPipeParameter("image-name-filters")
     public void setImageNameFilters(StringPredicate.List imageNameFilters) {
         this.imageNameFilters = imageNameFilters;
     }

@@ -23,7 +23,13 @@ import ome.xml.meta.OMEXMLMetadata;
 import ome.xml.model.enums.DimensionOrder;
 import omero.gateway.Gateway;
 import omero.gateway.LoginCredentials;
+import omero.gateway.SecurityContext;
+import omero.gateway.facility.BrowseFacility;
+import omero.gateway.facility.MetadataFacility;
+import omero.gateway.model.AnnotationData;
 import omero.gateway.model.ExperimenterData;
+import omero.gateway.model.ImageData;
+import omero.gateway.model.MapAnnotationData;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
@@ -44,17 +50,22 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ROIHandler;
 import org.hkijena.jipipe.extensions.omero.OMEROCredentials;
 import org.hkijena.jipipe.extensions.omero.datatypes.OMEROImageReferenceData;
 import org.hkijena.jipipe.extensions.omero.util.OMEROToJIPipeLogger;
+import org.hkijena.jipipe.extensions.omero.util.OMEROUtils;
+import org.hkijena.jipipe.extensions.parameters.predicates.StringPredicate;
 import org.hkijena.jipipe.extensions.parameters.primitives.OptionalStringParameter;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.roi.RectangleList;
+import org.hkijena.jipipe.utils.JsonUtils;
 import org.hkijena.jipipe.utils.ResourceUtils;
 
 import java.awt.Rectangle;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 @JIPipeDocumentation(name = "Download from OMERO", description = "Imports an image from OMERO into ImageJ")
 @JIPipeOrganization(nodeTypeCategory = DataSourceNodeTypeCategory.class)
@@ -76,6 +87,8 @@ public class DownloadOMEROImageAlgorithm extends JIPipeSimpleIteratingAlgorithm 
     private boolean extractRois = true;
     private OptionalStringParameter titleAnnotation = new OptionalStringParameter();
     private RectangleList cropRegions = new RectangleList();
+    private boolean addKeyValuePairsAsAnnotations = true;
+    private OptionalStringParameter tagAnnotation = new OptionalStringParameter("Tags", true);
     private long currentGroupId;
 
 
@@ -101,6 +114,8 @@ public class DownloadOMEROImageAlgorithm extends JIPipeSimpleIteratingAlgorithm 
         this.cropRegions = new RectangleList(other.cropRegions);
         this.titleAnnotation = new OptionalStringParameter(other.titleAnnotation);
         this.extractRois = other.extractRois;
+        this.addKeyValuePairsAsAnnotations = other.addKeyValuePairsAsAnnotations;
+        this.tagAnnotation = new OptionalStringParameter(other.tagAnnotation);
         registerSubParameter(credentials);
     }
 
@@ -187,6 +202,30 @@ public class DownloadOMEROImageAlgorithm extends JIPipeSimpleIteratingAlgorithm 
 
             for (ImagePlus image : images) {
                 List<JIPipeAnnotation> traits = new ArrayList<>();
+
+                if(addKeyValuePairsAsAnnotations || tagAnnotation.isEnabled()) {
+                    try(Gateway gateway = new Gateway(new OMEROToJIPipeLogger(subProgress, algorithmProgress))) {
+                        ExperimenterData user = gateway.connect(credentials.getCredentials());
+                        SecurityContext context = new SecurityContext(user.getGroupId());
+                        BrowseFacility browseFacility = gateway.getFacility(BrowseFacility.class);
+                        MetadataFacility metadata = gateway.getFacility(MetadataFacility.class);
+
+                        ImageData imageData = browseFacility.getImage(context, imageReferenceData.getImageId());
+                        if(addKeyValuePairsAsAnnotations) {
+                            for (Map.Entry<String, String> entry : OMEROUtils.getKeyValuePairAnnotations(metadata, context, imageData).entrySet()) {
+                                traits.add(new JIPipeAnnotation(entry.getKey(), entry.getValue()));
+                            }
+                        }
+                        if(tagAnnotation.isEnabled()) {
+                            List<String> sortedTags = OMEROUtils.getTagAnnotations(metadata, context, imageData).stream().sorted().collect(Collectors.toList());
+                            traits.add(new JIPipeAnnotation(tagAnnotation.getContent(), JsonUtils.toJsonString(sortedTags)));
+                        }
+
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+
                 if (titleAnnotation.isEnabled()) {
                     traits.add(new JIPipeAnnotation(titleAnnotation.getContent(), image.getTitle()));
                 }
@@ -215,6 +254,8 @@ public class DownloadOMEROImageAlgorithm extends JIPipeSimpleIteratingAlgorithm 
         super.reportValidity(report);
         if (titleAnnotation.isEnabled())
             report.forCategory("Title annotation").checkNonEmpty(getTitleAnnotation().getContent(), null);
+        if (tagAnnotation.isEnabled())
+            report.forCategory("Tag annotation").checkNonEmpty(getTitleAnnotation().getContent(), null);
     }
 
     @JIPipeDocumentation(name = "Auto scale", description = "Stretches the channel histograms to each channel's global minimum and maximum value throughout the stack. " +
@@ -391,5 +432,27 @@ public class DownloadOMEROImageAlgorithm extends JIPipeSimpleIteratingAlgorithm 
     @JIPipeParameter("extract-rois")
     public void setExtractRois(boolean extractRois) {
         this.extractRois = extractRois;
+    }
+
+    @JIPipeDocumentation(name = "Annotate with tags", description = "Creates an annotation with given key and writes the tags into them in JSON format.")
+    @JIPipeParameter("tag-annotation")
+    public OptionalStringParameter getTagAnnotation() {
+        return tagAnnotation;
+    }
+
+    @JIPipeParameter("tag-annotation")
+    public void setTagAnnotation(OptionalStringParameter tagAnnotation) {
+        this.tagAnnotation = tagAnnotation;
+    }
+
+    @JIPipeDocumentation(name = "Add Key-Value pairs as annotations", description = "Adds OMERO project annotations as JIPipe annotations")
+    @JIPipeParameter("add-key-value-pairs-as-annotations")
+    public boolean isAddKeyValuePairsAsAnnotations() {
+        return addKeyValuePairsAsAnnotations;
+    }
+
+    @JIPipeParameter("add-key-value-pairs-as-annotations")
+    public void setAddKeyValuePairsAsAnnotations(boolean addKeyValuePairsAsAnnotations) {
+        this.addKeyValuePairsAsAnnotations = addKeyValuePairsAsAnnotations;
     }
 }
