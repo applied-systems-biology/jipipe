@@ -29,7 +29,6 @@ import org.hkijena.jipipe.api.events.ParameterChangedEvent;
 import org.hkijena.jipipe.api.events.ParameterStructureChangedEvent;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
 import org.hkijena.jipipe.extensions.parameters.editors.JIPipeDataParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.references.JIPipeDataInfoRef;
 import org.hkijena.jipipe.extensions.plots.datatypes.PlotData;
@@ -171,7 +170,7 @@ public class JIPipePlotBuilderUI extends JIPipeWorkbenchPanel implements JIPipeP
         if (currentPlot == null || (plotType.getInfo() != null &&
                 !Objects.equals(plotType.getInfo().getDataClass(), currentPlot.getClass()))) {
             if (plotType.getInfo() != null) {
-                currentPlot = (PlotData) JIPipeData.createInstance(plotType.getInfo().getDataClass());
+                currentPlot = (PlotData) JIPipe.createData(plotType.getInfo().getDataClass());
                 changedPlot = true;
                 currentPlot.getEventBus().register(this);
             }

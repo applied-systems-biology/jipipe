@@ -26,6 +26,8 @@ import omero.gateway.facility.MetadataFacility;
 import omero.gateway.model.AnnotationData;
 import omero.gateway.model.DataObject;
 import omero.gateway.model.MapAnnotationData;
+import omero.gateway.model.TableData;
+import omero.gateway.model.TableDataColumn;
 import omero.gateway.model.TagAnnotationData;
 import omero.model.Annotation;
 import omero.model.IObject;
@@ -33,6 +35,7 @@ import omero.model.NamedValue;
 import omero.model.Pixels;
 import omero.model.TagAnnotation;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
+import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -48,6 +51,40 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 public class OMEROUtils {
+
+    public static ResultsTableData tableFromOMERO(TableData tableData) {
+        ResultsTableData resultsTableData = new ResultsTableData();
+        for (TableDataColumn column : tableData.getColumns()) {
+            resultsTableData.addColumn(column.getName(), column.getType() != Long.class && column.getType() != Double.class);
+        }
+        for (int row = 0; row < tableData.getNumberOfRows(); row++) {
+            resultsTableData.addRow();
+            for (int col = 0; col < tableData.getColumns().length; col++) {
+               resultsTableData.setValueAt(tableData.getData()[col][row], row, col);
+            }
+        }
+        return resultsTableData;
+    }
+    
+    public static TableData tableToOMERO(ResultsTableData resultsTableData) {
+        TableDataColumn[] columns = new TableDataColumn[resultsTableData.getColumnCount()];
+        for (int col = 0; col < resultsTableData.getColumnCount(); col++) {
+            if(resultsTableData.isNumeric(col))
+                columns[col] = new TableDataColumn(resultsTableData.getColumnName(col), col, Double.class);
+            else
+                columns[col] = new TableDataColumn(resultsTableData.getColumnName(col), col, String.class);
+        }
+        Object[][] data = new Object[columns.length][resultsTableData.getRowCount()];
+        for (int col = 0; col < columns.length; col++) {
+            for (int row = 0; row < resultsTableData.getRowCount(); row++) {
+                if(resultsTableData.isNumeric(col))
+                    data[col][row] = resultsTableData.getValueAsDouble(row, col);
+                else
+                    data[col][row] = resultsTableData.getValueAsString(row, col);
+            }
+        }
+        return new TableData(columns, data);
+    }
 
     public static Map<String, String> getKeyValuePairAnnotations(MetadataFacility metadata, SecurityContext context, DataObject dataObject) throws DSAccessException, DSOutOfServiceException {
         Map<String, String> keyValuePairs = new HashMap<>();

@@ -17,6 +17,7 @@ import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
+import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -341,5 +342,21 @@ public class JIPipeMergingDataBatch {
                 return false;
         }
         return true;
+    }
+
+    /**
+     * Creates a new dummy slot that contains the data of one input slot and the annotations of this batch
+     * @param info info of the new slot
+     * @param node the node that will own the new slot
+     * @param sourceSlot the source slot
+     * @return a new dummy slot
+     */
+    public JIPipeDataSlot toDummySlot(JIPipeDataSlotInfo info, JIPipeGraphNode node, JIPipeDataSlot sourceSlot) {
+        JIPipeDataSlot dummy = new JIPipeDataSlot(info, node);
+        ArrayList<JIPipeAnnotation> annotations = new ArrayList<>(getAnnotations().values());
+        for (JIPipeData data : getInputData(sourceSlot, JIPipeData.class)) {
+            dummy.addData(data, annotations);
+        }
+        return dummy;
     }
 }

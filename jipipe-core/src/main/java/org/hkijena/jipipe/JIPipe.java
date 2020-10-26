@@ -21,10 +21,12 @@ import net.imagej.updater.UpdateSite;
 import net.imagej.updater.util.AvailableSites;
 import net.imagej.updater.util.Progress;
 import net.imagej.updater.util.UpdaterUtil;
+import org.apache.commons.lang3.reflect.ConstructorUtils;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.JIPipeRun;
 import org.hkijena.jipipe.api.JIPipeRunSettings;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataDisplayOperation;
 import org.hkijena.jipipe.api.data.JIPipeDataImportOperation;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
@@ -632,6 +634,24 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
         }
         else {
             return (T) node.getInfo().duplicate(node);
+        }
+    }
+
+    /**
+     * Instantiates a data class with the provided parameters
+     * This method is helpful if output data is constructed based on slot types
+     *
+     * @param klass                 The data class
+     * @param constructorParameters Constructor parameters
+     * @param <T>                   Data class
+     * @return Data instance
+     */
+    public static <T extends JIPipeData> T createData(Class<T> klass, Object... constructorParameters) {
+        try {
+            return ConstructorUtils.invokeConstructor(klass, constructorParameters);
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | InstantiationException e) {
+            throw new UserFriendlyRuntimeException(e, "Cannot create data instance!", "Undefined", "There is an error in the code that provides the annotation type.",
+                    "Please contact the author of the plugin that provides the annotation type " + klass);
         }
     }
 }

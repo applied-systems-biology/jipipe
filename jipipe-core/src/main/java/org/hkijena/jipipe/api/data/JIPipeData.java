@@ -173,21 +173,4 @@ public interface JIPipeData {
         return result;
     }
 
-    /**
-     * Instantiates a data class with the provided parameters
-     * This method is helpful if output data is constructed based on slot types
-     *
-     * @param klass                 The data class
-     * @param constructorParameters Constructor parameters
-     * @param <T>                   Data class
-     * @return Data instance
-     */
-    static <T extends JIPipeData> T createInstance(Class<T> klass, Object... constructorParameters) {
-        try {
-            return ConstructorUtils.invokeConstructor(klass, constructorParameters);
-        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | InstantiationException e) {
-            throw new UserFriendlyRuntimeException(e, "Cannot create annotation instance!", "Undefined", "There is an error in the code that provides the annotation type.",
-                    "Please contact the author of the plugin that provides the annotation type " + klass);
-        }
-    }
 }

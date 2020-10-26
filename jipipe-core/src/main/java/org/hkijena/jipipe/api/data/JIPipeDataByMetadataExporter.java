@@ -22,6 +22,7 @@ import org.hkijena.jipipe.extensions.parameters.predicates.StringPredicate;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.StringUtils;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -246,6 +247,21 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
      * @param existingMetadata list of existing entries. used to avoid duplicates
      */
     public void writeToFolder(JIPipeDataSlot dataSlot, int row, Path outputPath, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Set<String> existingMetadata) {
+        String metadataString = generateMetadataString(dataSlot, row, existingMetadata);
+        JIPipeData data = dataSlot.getData(row, JIPipeData.class);
+        algorithmProgress.accept(subProgress.resolve("Saving " + data + " as " + metadataString + " into " + outputPath));
+        data.saveTo(outputPath, metadataString, true);
+    }
+
+    /**
+     * Generates a unique string based on metadata for the selected row
+     * @param dataSlot the slot
+     * @param row the row
+     * @param existingMetadata existing strings
+     * @return the string
+     */
+    @Nullable
+    public String generateMetadataString(JIPipeDataSlot dataSlot, int row, Set<String> existingMetadata) {
         StringBuilder metadataStringBuilder = new StringBuilder();
         if (appendDataTypeAsMetadata) {
             String dataTypeName;
@@ -281,8 +297,7 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
 
         String metadataString = StringUtils.makeFilesystemCompatible(StringUtils.makeUniqueString(metadataStringBuilder.toString(), separatorString, existingMetadata));
         existingMetadata.add(metadataString);
-        JIPipeData data = dataSlot.getData(row, JIPipeData.class);
-        algorithmProgress.accept(subProgress.resolve("Saving " + data + " as " + metadataString + " into " + outputPath));
-        data.saveTo(outputPath, metadataString, true);
+        return metadataString;
     }
+
 }

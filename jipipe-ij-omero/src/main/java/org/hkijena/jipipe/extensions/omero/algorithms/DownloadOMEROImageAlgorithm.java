@@ -89,7 +89,6 @@ public class DownloadOMEROImageAlgorithm extends JIPipeSimpleIteratingAlgorithm 
     private RectangleList cropRegions = new RectangleList();
     private boolean addKeyValuePairsAsAnnotations = true;
     private OptionalStringParameter tagAnnotation = new OptionalStringParameter("Tags", true);
-    private long currentGroupId;
 
 
     public DownloadOMEROImageAlgorithm(JIPipeNodeInfo info) {
@@ -117,19 +116,6 @@ public class DownloadOMEROImageAlgorithm extends JIPipeSimpleIteratingAlgorithm 
         this.addKeyValuePairsAsAnnotations = other.addKeyValuePairsAsAnnotations;
         this.tagAnnotation = new OptionalStringParameter(other.tagAnnotation);
         registerSubParameter(credentials);
-    }
-
-    @Override
-    public void runParameterSet(JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled, List<JIPipeAnnotation> parameterAnnotations) {
-        LoginCredentials loginCredentials = credentials.getCredentials();
-        try (Gateway gateway = new Gateway(new OMEROToJIPipeLogger(subProgress, algorithmProgress))) {
-            ExperimenterData user = gateway.connect(loginCredentials);
-            currentGroupId = user.getGroupId();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-
-        super.runParameterSet(subProgress, algorithmProgress, isCancelled, parameterAnnotations);
     }
 
     @Override
@@ -255,7 +241,7 @@ public class DownloadOMEROImageAlgorithm extends JIPipeSimpleIteratingAlgorithm 
         if (titleAnnotation.isEnabled())
             report.forCategory("Title annotation").checkNonEmpty(getTitleAnnotation().getContent(), null);
         if (tagAnnotation.isEnabled())
-            report.forCategory("Tag annotation").checkNonEmpty(getTitleAnnotation().getContent(), null);
+            report.forCategory("Tag annotation").checkNonEmpty(getTagAnnotation().getContent(), null);
     }
 
     @JIPipeDocumentation(name = "Auto scale", description = "Stretches the channel histograms to each channel's global minimum and maximum value throughout the stack. " +

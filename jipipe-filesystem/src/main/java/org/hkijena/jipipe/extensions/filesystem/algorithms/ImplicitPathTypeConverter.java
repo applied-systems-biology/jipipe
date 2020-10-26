@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.extensions.filesystem.algorithms;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataConverter;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.PathData;
@@ -45,6 +46,6 @@ public class ImplicitPathTypeConverter implements JIPipeDataConverter {
 
     @Override
     public JIPipeData convert(JIPipeData input) {
-        return JIPipeData.createInstance(outputType, ((PathData) input).getPath());
+        return JIPipe.createData(outputType, ((PathData) input).getPath());
     }
 }

@@ -33,7 +33,6 @@ import org.hkijena.jipipe.api.events.ParameterChangedEvent;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.DocumentTabPane;
@@ -164,7 +163,7 @@ public abstract class PlotData implements JIPipeData, JIPipeParameterCollection,
 
     @Override
     public JIPipeData duplicate() {
-        return JIPipeData.createInstance(getClass(), this);
+        return JIPipe.createData(getClass(), this);
     }
 
     @Override
@@ -281,7 +280,7 @@ public abstract class PlotData implements JIPipeData, JIPipeParameterCollection,
         try {
             JsonNode node = JsonUtils.getObjectMapper().readValue(folder.resolve("plot-metadata.json").toFile(), JsonNode.class);
             Class<? extends JIPipeData> dataClass = JIPipe.getDataTypes().getById(node.get("plot-data-type").textValue());
-            result = (PlotData) JIPipeData.createInstance(dataClass);
+            result = (PlotData) JIPipe.createData(dataClass);
 
             // Load metadata
             result.fromJson(node);

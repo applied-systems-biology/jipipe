@@ -30,7 +30,6 @@ import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeMutableParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
 import org.hkijena.jipipe.extensions.tables.ColumnContentType;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.extensions.tables.datatypes.TableColumn;
@@ -84,7 +83,7 @@ public class GenerateColumnAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                 continue;
 
             TableColumnGeneratorParameter generatorParameter = entry.getKey();
-            TableColumn generator = (TableColumn) JIPipeData.createInstance(generatorParameter.getGeneratorType().getInfo().getDataClass());
+            TableColumn generator = (TableColumn) JIPipe.createData(generatorParameter.getGeneratorType().getInfo().getDataClass());
             int columnId = table.getOrCreateColumnIndex(columnName);
 
             if (generatorParameter.getGeneratedType() == ColumnContentType.NumericColumn) {
