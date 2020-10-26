@@ -19,8 +19,12 @@ import omero.gateway.SecurityContext;
 import omero.gateway.exception.DSAccessException;
 import omero.gateway.exception.DSOutOfServiceException;
 import omero.gateway.facility.BrowseFacility;
+import omero.gateway.facility.MetadataFacility;
+import omero.gateway.model.AnnotationData;
 import omero.gateway.model.ExperimenterData;
+import omero.gateway.model.MapAnnotationData;
 import omero.gateway.model.ProjectData;
+import omero.model.NamedValue;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
@@ -34,13 +38,23 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.omero.OMEROCredentials;
 import org.hkijena.jipipe.extensions.omero.datatypes.OMEROProjectReferenceData;
 import org.hkijena.jipipe.extensions.omero.util.OMEROToJIPipeLogger;
+import org.hkijena.jipipe.extensions.omero.util.OMEROUtils;
+import org.hkijena.jipipe.extensions.parameters.pairs.StringAndStringPredicatePair;
 import org.hkijena.jipipe.extensions.parameters.predicates.StringPredicate;
 import org.hkijena.jipipe.extensions.parameters.primitives.OptionalStringParameter;
+import org.hkijena.jipipe.extensions.parameters.util.LogicalOperation;
+import org.hkijena.jipipe.utils.JsonUtils;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 @JIPipeDocumentation(name = "List projects", description = "Returns the ID(s) of project(s) according to search criteria.")
 @JIPipeOutputSlot(value = OMEROProjectReferenceData.class, slotName = "Projects", autoCreate = true)
@@ -49,7 +63,11 @@ public class OMEROFindProjectAlgorithm extends JIPipeParameterSlotAlgorithm {
 
     private OMEROCredentials credentials = new OMEROCredentials();
     private StringPredicate.List projectNameFilters = new StringPredicate.List();
+    private StringAndStringPredicatePair.List keyValuePairFilters = new StringAndStringPredicatePair.List();
+    private boolean addKeyValuePairsAsAnnotations = true;
     private OptionalStringParameter projectNameAnnotation = new OptionalStringParameter("Project", true);
+    private StringPredicate.List tagFilters = new StringPredicate.List();
+    private OptionalStringParameter tagAnnotation = new OptionalStringParameter("Tags", true);
 
     public OMEROFindProjectAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -64,12 +82,46 @@ public class OMEROFindProjectAlgorithm extends JIPipeParameterSlotAlgorithm {
             ExperimenterData user = gateway.connect(credentials);
             SecurityContext context = new SecurityContext(user.getGroupId());
             BrowseFacility browseFacility = gateway.getFacility(BrowseFacility.class);
+            MetadataFacility metadata = gateway.getFacility(MetadataFacility.class);
             algorithmProgress.accept(subProgress.resolve("Listing projects"));
-            for (ProjectData project : findProjects(browseFacility, context)) {
-                List<JIPipeAnnotation> annotations = new ArrayList<>();
-                if(projectNameAnnotation.isEnabled())
-                    annotations.add(new JIPipeAnnotation(projectNameAnnotation.getContent(), project.getName()));
-                getFirstOutputSlot().addData(new OMEROProjectReferenceData(project.getId()), annotations);
+            try {
+                for (ProjectData project : browseFacility.getProjects(context)) {
+                    if(!projectNameFilters.isEmpty() && !projectNameFilters.test(project.getName())) {
+                        continue;
+                    }
+                    Map<String, String> keyValuePairs = new HashMap<>();
+                    if(!keyValuePairFilters.isEmpty() || addKeyValuePairsAsAnnotations) {
+                        keyValuePairs = OMEROUtils.getKeyValuePairAnnotations(metadata, context, project);
+                    }
+                    if(!keyValuePairFilters.isEmpty()) {
+                        if(!keyValuePairFilters.test(keyValuePairs, LogicalOperation.LogicalAnd, LogicalOperation.LogicalOr))
+                            continue;
+                    }
+                    Set<String> tags = new HashSet<>();
+                    if(!tagFilters.isEmpty() || tagAnnotation.isEnabled()) {
+                        tags = OMEROUtils.getTagAnnotations(metadata, context, project);
+                    }
+                    if(!tagFilters.isEmpty() && !tagFilters.test(tags, LogicalOperation.LogicalOr, LogicalOperation.LogicalOr)) {
+                        continue;
+                    }
+                    List<JIPipeAnnotation> annotations = new ArrayList<>();
+                    if(addKeyValuePairsAsAnnotations) {
+                        for (Map.Entry<String, String> entry : keyValuePairs.entrySet()) {
+                            annotations.add(new JIPipeAnnotation(entry.getKey(), entry.getValue()));
+                        }
+                    }
+                    if(tagAnnotation.isEnabled()) {
+                        List<String> sortedTags = tags.stream().sorted().collect(Collectors.toList());
+                        String value = JsonUtils.toJsonString(sortedTags);
+                        annotations.add(new JIPipeAnnotation(tagAnnotation.getContent(), value));
+                    }
+                    if(projectNameAnnotation.isEnabled()) {
+                        annotations.add(new JIPipeAnnotation(projectNameAnnotation.getContent(), project.getName()));
+                    }
+                    getFirstOutputSlot().addData(new OMEROProjectReferenceData(project.getId()), annotations);
+                }
+            } catch (DSOutOfServiceException | DSAccessException e) {
+                throw new RuntimeException(e);
             }
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -80,7 +132,11 @@ public class OMEROFindProjectAlgorithm extends JIPipeParameterSlotAlgorithm {
         super(other);
         this.credentials = new OMEROCredentials(other.credentials);
         this.projectNameFilters = new StringPredicate.List(other.projectNameFilters);
+        this.keyValuePairFilters = new StringAndStringPredicatePair.List(other.keyValuePairFilters);
         this.projectNameAnnotation = new OptionalStringParameter(other.projectNameAnnotation);
+        this.addKeyValuePairsAsAnnotations = other.addKeyValuePairsAsAnnotations;
+        this.tagFilters = new StringPredicate.List(other.tagFilters);
+        this.tagAnnotation = new OptionalStringParameter(other.tagAnnotation);
         registerSubParameter(credentials);
     }
 
@@ -95,6 +151,17 @@ public class OMEROFindProjectAlgorithm extends JIPipeParameterSlotAlgorithm {
         this.projectNameFilters = projectNameFilters;
     }
 
+    @JIPipeDocumentation(name = "Key-Value pair filters", description = "Filters projects by attached key value pairs. Filters with same keys are connected via an AND operation. Filters with different keys are connected via an OR operation. If the list is empty, no filtering is applied.")
+    @JIPipeParameter("key-value-pair-filters")
+    public StringAndStringPredicatePair.List getKeyValuePairFilters() {
+        return keyValuePairFilters;
+    }
+
+    @JIPipeParameter("key-value-pair-filters")
+    public void setKeyValuePairFilters(StringAndStringPredicatePair.List keyValuePairFilters) {
+        this.keyValuePairFilters = keyValuePairFilters;
+    }
+
     @JIPipeDocumentation(name = "OMERO Server credentials", description = "The following credentials will be used to connect to the OMERO server. If you leave items empty, they will be " +
             "loaded from the OMERO category at the JIPipe application settings.")
     @JIPipeParameter("credentials")
@@ -102,31 +169,15 @@ public class OMEROFindProjectAlgorithm extends JIPipeParameterSlotAlgorithm {
         return credentials;
     }
 
-    /**
-     * Finds projects according to the current settings
-     * @param browse the browser
-     * @param context the security context
-     * @return list of projects
-     */
-    public List<ProjectData> findProjects(BrowseFacility browse, SecurityContext context) {
-        List<ProjectData> result = new ArrayList<>();
-        try {
-            for (ProjectData project : browse.getProjects(context)) {
-                if(projectNameFilters.isEmpty() || projectNameFilters.test(project.getName())) {
-                    result.add(project);
-                }
-            }
-        } catch (DSOutOfServiceException | DSAccessException e) {
-            throw new RuntimeException(e);
-        }
-        return result;
-    }
 
     @Override
     public void reportValidity(JIPipeValidityReport report) {
         super.reportValidity(report);
         if(projectNameAnnotation.isEnabled()) {
             report.forCategory("Annotate with name").checkNonEmpty(projectNameAnnotation.getContent(), this);
+        }
+        if(tagAnnotation.isEnabled()) {
+            report.forCategory("Annotate with tags").checkNonEmpty(tagAnnotation.getContent(), this);
         }
     }
 
@@ -139,5 +190,38 @@ public class OMEROFindProjectAlgorithm extends JIPipeParameterSlotAlgorithm {
     @JIPipeParameter("project-name-annotation")
     public void setProjectNameAnnotation(OptionalStringParameter projectNameAnnotation) {
         this.projectNameAnnotation = projectNameAnnotation;
+    }
+
+    @JIPipeDocumentation(name = "Add Key-Value pairs as annotations", description = "Adds OMERO project annotations as JIPipe annotations")
+    @JIPipeParameter("add-key-value-pairs-as-annotations")
+    public boolean isAddKeyValuePairsAsAnnotations() {
+        return addKeyValuePairsAsAnnotations;
+    }
+
+    @JIPipeParameter("add-key-value-pairs-as-annotations")
+    public void setAddKeyValuePairsAsAnnotations(boolean addKeyValuePairsAsAnnotations) {
+        this.addKeyValuePairsAsAnnotations = addKeyValuePairsAsAnnotations;
+    }
+
+    @JIPipeDocumentation(name = "Tag filters", description = "Filters by tag values. Filters are connected via OR. If the list is empty, no filtering is applied.")
+    @JIPipeParameter("tag-filters")
+    public StringPredicate.List getTagFilters() {
+        return tagFilters;
+    }
+
+    @JIPipeParameter("tag-filters")
+    public void setTagFilters(StringPredicate.List tagFilters) {
+        this.tagFilters = tagFilters;
+    }
+
+    @JIPipeDocumentation(name = "Annotate with tags", description = "Creates an annotation with given key and writes the tags into them in JSON format.")
+    @JIPipeParameter("tag-annotation")
+    public OptionalStringParameter getTagAnnotation() {
+        return tagAnnotation;
+    }
+
+    @JIPipeParameter("tag-annotation")
+    public void setTagAnnotation(OptionalStringParameter tagAnnotation) {
+        this.tagAnnotation = tagAnnotation;
     }
 }

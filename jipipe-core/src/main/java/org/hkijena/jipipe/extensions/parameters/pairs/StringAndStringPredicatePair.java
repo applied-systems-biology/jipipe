@@ -13,8 +13,16 @@
 
 package org.hkijena.jipipe.extensions.parameters.pairs;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import org.hkijena.jipipe.extensions.parameters.collections.ListParameter;
 import org.hkijena.jipipe.extensions.parameters.predicates.StringPredicate;
+import org.hkijena.jipipe.extensions.parameters.util.LogicalOperation;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Map;
+import java.util.List;
 
 /**
  * A parameter that renames an integer into another integer
@@ -57,6 +65,53 @@ public class StringAndStringPredicatePair extends Pair<String, StringPredicate> 
             super(StringAndStringPredicatePair.class);
             for (StringAndStringPredicatePair filter : other) {
                 add(new StringAndStringPredicatePair(filter));
+            }
+        }
+
+        /**
+         * Tests if the filter list applies to the map
+         * @param map the map
+         * @param same operation within the same key
+         * @param different operation between different keys
+         * @return if the filter applies to the map
+         */
+        public boolean test(Map<String, String> map, LogicalOperation same, LogicalOperation different) {
+            Multimap<String, StringPredicate> multimap = HashMultimap.create();
+            for (StringAndStringPredicatePair pair : this) {
+                multimap.put(pair.getKey(), pair.getValue());
+            }
+            java.util.List<Boolean> betweenResults = new ArrayList<>();
+            for (Map.Entry<String, Collection<StringPredicate>> entry : multimap.asMap().entrySet()) {
+                String value = map.getOrDefault(entry.getKey(), null);
+                if(value == null) {
+                    betweenResults.add(false);
+                    continue;
+                }
+                java.util.List<Boolean> inResults = new ArrayList<>();
+                for (StringPredicate predicate : entry.getValue()) {
+                    inResults.add(predicate.test(value));
+                }
+                switch (same) {
+                    case LogicalOr:
+                        betweenResults.add(inResults.contains(true));
+                        break;
+                    case LogicalAnd:
+                        betweenResults.add(!inResults.contains(false));
+                        break;
+                    case LogicalXor:
+                        betweenResults.add(inResults.stream().filter(x -> x).count() == 1);
+                        break;
+                }
+            }
+            switch (different) {
+                case LogicalOr:
+                    return betweenResults.contains(true);
+                case LogicalAnd:
+                    return !betweenResults.contains(false);
+                case LogicalXor:
+                    return betweenResults.stream().filter(x -> x).count() == 1;
+                default:
+                    throw new UnsupportedOperationException();
             }
         }
     }

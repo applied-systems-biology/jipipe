@@ -20,7 +20,10 @@ import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.extensions.parameters.collections.ListParameter;
 import org.hkijena.jipipe.extensions.parameters.util.LogicalOperation;
 import org.hkijena.jipipe.utils.StringUtils;
+import sun.rmi.runtime.Log;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
@@ -193,6 +196,36 @@ public class StringPredicate implements Predicate<String>, JIPipeValidatable {
             }
         }
 
+        /**
+         * Tests if all or any of the strings match
+         * @param strings the strings
+         * @param same how predicates are matched per string
+         * @param different how test results are connected
+         * @return result
+         */
+        public boolean test(Collection<String> strings, LogicalOperation same, LogicalOperation different) {
+            java.util.List<Boolean> results = new ArrayList<>();
+            for (String string : strings) {
+                results.add(test(string, same));
+            }
+            switch(different) {
+                case LogicalOr:
+                    return results.contains(true);
+                case LogicalAnd:
+                    return !results.contains(false);
+                case LogicalXor:
+                    return results.stream().filter(x -> x).count() == 1;
+                default:
+                    throw new UnsupportedOperationException();
+            }
+        }
+
+        /**
+         * Tests if the string matches the predicates
+         * @param s string
+         * @param operation how the predicates are connected
+         * @return if the string is matched
+         */
         public boolean test(String s, LogicalOperation operation) {
             if(operation == LogicalOperation.LogicalAnd) {
                 for (StringPredicate stringPredicate : this) {

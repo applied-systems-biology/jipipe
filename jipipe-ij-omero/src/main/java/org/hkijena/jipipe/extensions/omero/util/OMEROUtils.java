@@ -19,15 +19,27 @@ import ome.formats.importer.ImportConfig;
 import ome.formats.importer.ImportContainer;
 import ome.formats.importer.ImportLibrary;
 import ome.formats.importer.targets.ImportTarget;
-import omero.ServerError;
+import omero.gateway.SecurityContext;
+import omero.gateway.exception.DSAccessException;
+import omero.gateway.exception.DSOutOfServiceException;
+import omero.gateway.facility.MetadataFacility;
+import omero.gateway.model.AnnotationData;
+import omero.gateway.model.DataObject;
+import omero.gateway.model.MapAnnotationData;
+import omero.gateway.model.TagAnnotationData;
 import omero.model.Annotation;
 import omero.model.IObject;
+import omero.model.NamedValue;
 import omero.model.Pixels;
-import org.apache.commons.lang.StringUtils;
+import omero.model.TagAnnotation;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorCompletionService;
@@ -36,6 +48,30 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 public class OMEROUtils {
+
+    public static Map<String, String> getKeyValuePairAnnotations(MetadataFacility metadata, SecurityContext context, DataObject dataObject) throws DSAccessException, DSOutOfServiceException {
+        Map<String, String> keyValuePairs = new HashMap<>();
+        for (AnnotationData annotation : metadata.getAnnotations(context, dataObject)) {
+            if(annotation instanceof MapAnnotationData) {
+                List<NamedValue> pairs = (List<NamedValue>) annotation.getContent();
+                for (NamedValue pair : pairs) {
+                    keyValuePairs.put(pair.name, pair.value);
+                }
+            }
+        }
+        return keyValuePairs;
+    }
+
+    public static Set<String> getTagAnnotations(MetadataFacility metadata, SecurityContext context, DataObject dataObject) throws DSAccessException, DSOutOfServiceException {
+        Set<String> result = new HashSet<>();
+        for (AnnotationData annotation : metadata.getAnnotations(context, dataObject)) {
+            if(annotation instanceof TagAnnotationData) {
+                result.add(((TagAnnotationData) annotation).getTagValue());
+            }
+        }
+        return result;
+    }
+
     /**
      * Copy of importCandidates in {@link ome.formats.importer.ImportLibrary} that returns the list of uploaded images.
      * This method also throws all exceptions.

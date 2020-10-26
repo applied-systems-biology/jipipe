@@ -17,6 +17,7 @@ import omero.gateway.Gateway;
 import omero.gateway.LoginCredentials;
 import omero.gateway.SecurityContext;
 import omero.gateway.facility.BrowseFacility;
+import omero.gateway.facility.MetadataFacility;
 import omero.gateway.model.DatasetData;
 import omero.gateway.model.ExperimenterData;
 import omero.gateway.model.ImageData;
@@ -35,16 +36,23 @@ import org.hkijena.jipipe.extensions.omero.OMEROCredentials;
 import org.hkijena.jipipe.extensions.omero.datatypes.OMERODatasetReferenceData;
 import org.hkijena.jipipe.extensions.omero.datatypes.OMEROImageReferenceData;
 import org.hkijena.jipipe.extensions.omero.util.OMEROToJIPipeLogger;
+import org.hkijena.jipipe.extensions.omero.util.OMEROUtils;
+import org.hkijena.jipipe.extensions.parameters.pairs.StringAndStringPredicatePair;
 import org.hkijena.jipipe.extensions.parameters.predicates.StringPredicate;
 import org.hkijena.jipipe.extensions.parameters.primitives.OptionalStringParameter;
+import org.hkijena.jipipe.extensions.parameters.util.LogicalOperation;
+import org.hkijena.jipipe.utils.JsonUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 @JIPipeDocumentation(name = "List images", description = "Returns the ID(s) of images(s) according to search criteria. Requires project IDs as input.")
 @JIPipeInputSlot(value = OMERODatasetReferenceData.class, slotName = "Datasets", autoCreate = true)
@@ -57,6 +65,10 @@ public class OMEROFindImageAlgorithm extends JIPipeParameterSlotAlgorithm {
     private OptionalStringParameter projectNameAnnotation = new OptionalStringParameter("Project", true);
     private OptionalStringParameter datasetNameAnnotation = new OptionalStringParameter("Dataset", true);
     private OptionalStringParameter imageNameAnnotation = new OptionalStringParameter("Filename", true);
+    private StringAndStringPredicatePair.List keyValuePairFilters = new StringAndStringPredicatePair.List();
+    private boolean addKeyValuePairsAsAnnotations = true;
+    private StringPredicate.List tagFilters = new StringPredicate.List();
+    private OptionalStringParameter tagAnnotation = new OptionalStringParameter("Tags", true);
 
     public OMEROFindImageAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -76,6 +88,7 @@ public class OMEROFindImageAlgorithm extends JIPipeParameterSlotAlgorithm {
             ExperimenterData user = gateway.connect(credentials);
             SecurityContext context = new SecurityContext(user.getGroupId());
             BrowseFacility browseFacility = gateway.getFacility(BrowseFacility.class);
+            MetadataFacility metadata = gateway.getFacility(MetadataFacility.class);
             for (Long datasetId : datasetIds) {
                 DatasetData datasetData = browseFacility.getDatasets(context, Collections.singletonList(datasetId)).iterator().next();
                 algorithmProgress.accept(subProgress.resolve("Listing datasets in dataset ID=" + datasetData.getId()));
@@ -85,9 +98,32 @@ public class OMEROFindImageAlgorithm extends JIPipeParameterSlotAlgorithm {
                         if (!imageNameFilters.isEmpty() && !imageNameFilters.test(imageData.getName())) {
                             continue;
                         }
+                        Map<String, String> keyValuePairs = new HashMap<>();
+                        if(!keyValuePairFilters.isEmpty() || addKeyValuePairsAsAnnotations) {
+                            keyValuePairs = OMEROUtils.getKeyValuePairAnnotations(metadata, context, imageData);
+                        }
+                        if(!keyValuePairFilters.isEmpty()) {
+                            if(!keyValuePairFilters.test(keyValuePairs, LogicalOperation.LogicalAnd, LogicalOperation.LogicalOr))
+                                continue;
+                        }
+                        Set<String> tags = new HashSet<>();
+                        if(!tagFilters.isEmpty() || tagAnnotation.isEnabled()) {
+                            tags = OMEROUtils.getTagAnnotations(metadata, context, imageData);
+                        }
+                        if(!tagFilters.isEmpty() && !tagFilters.test(tags, LogicalOperation.LogicalOr, LogicalOperation.LogicalOr)) {
+                            continue;
+                        }
                         List<JIPipeAnnotation> annotations = new ArrayList<>();
-//                    if(projectNameAnnotation.isEnabled())
-//                        annotations.add(new JIPipeAnnotation(projectNameAnnotation.getContent(), projectData.getName()));
+                        if(addKeyValuePairsAsAnnotations) {
+                            for (Map.Entry<String, String> entry : keyValuePairs.entrySet()) {
+                                annotations.add(new JIPipeAnnotation(entry.getKey(), entry.getValue()));
+                            }
+                        }
+                        if(tagAnnotation.isEnabled()) {
+                            List<String> sortedTags = tags.stream().sorted().collect(Collectors.toList());
+                            String value = JsonUtils.toJsonString(sortedTags);
+                            annotations.add(new JIPipeAnnotation(tagAnnotation.getContent(), value));
+                        }
                         if (datasetNameAnnotation.isEnabled())
                             annotations.add(new JIPipeAnnotation(datasetNameAnnotation.getContent(), datasetData.getName()));
                         getFirstOutputSlot().addData(new OMEROImageReferenceData(imageData.getId()), annotations);
@@ -107,6 +143,10 @@ public class OMEROFindImageAlgorithm extends JIPipeParameterSlotAlgorithm {
         this.datasetNameAnnotation = new OptionalStringParameter(other.datasetNameAnnotation);
         this.projectNameAnnotation = new OptionalStringParameter(other.projectNameAnnotation);
         this.imageNameAnnotation = new OptionalStringParameter(other.imageNameAnnotation);
+        this.keyValuePairFilters = new StringAndStringPredicatePair.List(other.keyValuePairFilters);
+        this.addKeyValuePairsAsAnnotations = other.addKeyValuePairsAsAnnotations;
+        this.tagFilters = new StringPredicate.List(other.tagFilters);
+        this.tagAnnotation = new OptionalStringParameter(other.tagAnnotation);
         registerSubParameter(credentials);
     }
 
@@ -139,6 +179,9 @@ public class OMEROFindImageAlgorithm extends JIPipeParameterSlotAlgorithm {
         }
         if (imageNameAnnotation.isEnabled()) {
             report.forCategory("Annotate with file name").checkNonEmpty(imageNameAnnotation.getContent(), this);
+        }
+        if(tagAnnotation.isEnabled()) {
+            report.forCategory("Annotate with tags").checkNonEmpty(tagAnnotation.getContent(), this);
         }
     }
 
@@ -173,5 +216,27 @@ public class OMEROFindImageAlgorithm extends JIPipeParameterSlotAlgorithm {
     @JIPipeParameter("image-name-annotation")
     public void setImageNameAnnotation(OptionalStringParameter imageNameAnnotation) {
         this.imageNameAnnotation = imageNameAnnotation;
+    }
+
+    @JIPipeDocumentation(name = "Add Key-Value pairs as annotations", description = "Adds OMERO project annotations as JIPipe annotations")
+    @JIPipeParameter("add-key-value-pairs-as-annotations")
+    public boolean isAddKeyValuePairsAsAnnotations() {
+        return addKeyValuePairsAsAnnotations;
+    }
+
+    @JIPipeParameter("add-key-value-pairs-as-annotations")
+    public void setAddKeyValuePairsAsAnnotations(boolean addKeyValuePairsAsAnnotations) {
+        this.addKeyValuePairsAsAnnotations = addKeyValuePairsAsAnnotations;
+    }
+
+    @JIPipeDocumentation(name = "Key-Value pair filters", description = "Filters projects by attached key value pairs. Filters with same keys are connected via an AND operation. Filters with different keys are connected via an OR operation. If the list is empty, no filtering is applied.")
+    @JIPipeParameter("key-value-pair-filters")
+    public StringAndStringPredicatePair.List getKeyValuePairFilters() {
+        return keyValuePairFilters;
+    }
+
+    @JIPipeParameter("key-value-pair-filters")
+    public void setKeyValuePairFilters(StringAndStringPredicatePair.List keyValuePairFilters) {
+        this.keyValuePairFilters = keyValuePairFilters;
     }
 }
