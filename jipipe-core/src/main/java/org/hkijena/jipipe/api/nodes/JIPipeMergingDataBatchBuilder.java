@@ -243,6 +243,8 @@ public class JIPipeMergingDataBatchBuilder {
         for (GraphPath<RowNode, DefaultEdge> path : directedPaths.getAllPaths(source, sink, false, Integer.MAX_VALUE)) {
             JIPipeMergingDataBatch dataBatch = new JIPipeMergingDataBatch(this.node);
             for (RowNode rowNode : path.getVertexList()) {
+                if(rowNode == source || rowNode == sink)
+                    continue;
                 dataBatch.addData(rowNode.slot, rowNode.rows);
                 dataBatch.addGlobalAnnotations(rowNode.annotations, annotationMergeStrategy);
             }
