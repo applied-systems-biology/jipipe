@@ -16,7 +16,6 @@ package org.hkijena.jipipe.ui.tableanalyzer;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.ui.components.DocumentTabListCellRenderer;
 import org.hkijena.jipipe.ui.components.DocumentTabPane;
-import org.hkijena.jipipe.utils.CustomScrollPane;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jdesktop.swingx.JXTable;
 
@@ -67,7 +66,7 @@ public class JIPipeMergeTablesDialogUI extends JDialog {
         jxTable = new JXTable();
         jxTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         jxTable.setEditable(false);
-        JScrollPane scrollPane = new CustomScrollPane(jxTable);
+        JScrollPane scrollPane = new JScrollPane(jxTable);
         add(scrollPane, BorderLayout.CENTER);
 
         JPanel buttonPanel = new JPanel();

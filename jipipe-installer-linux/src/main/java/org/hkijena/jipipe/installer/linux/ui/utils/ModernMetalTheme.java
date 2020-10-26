@@ -402,42 +402,4 @@ public class ModernMetalTheme extends DefaultMetalTheme {
         return MENU_DISABLED_FOREGROUND;
     }
 
-    // ComponentOrientation Icon
-    // Delegates to different icons based on component orientation
-    private static class COIcon extends IconUIResource {
-        private Icon rtl;
-
-        public COIcon(Icon ltr, Icon rtl) {
-            super(ltr);
-            this.rtl = rtl;
-        }
-
-        public void paintIcon(Component c, Graphics g, int x, int y) {
-            if (c.getComponentOrientation().isLeftToRight()) {
-                super.paintIcon(c, g, x, y);
-            } else {
-                rtl.paintIcon(c, g, x, y);
-            }
-        }
-    }
-
-    // InternalFrame Icon
-    // Delegates to different icons based on button state
-    private static class IFIcon extends IconUIResource {
-        private Icon pressed;
-
-        public IFIcon(Icon normal, Icon pressed) {
-            super(normal);
-            this.pressed = pressed;
-        }
-
-        public void paintIcon(Component c, Graphics g, int x, int y) {
-            ButtonModel model = ((AbstractButton) c).getModel();
-            if (model.isPressed() && model.isArmed()) {
-                pressed.paintIcon(c, g, x, y);
-            } else {
-                super.paintIcon(c, g, x, y);
-            }
-        }
-    }
 }

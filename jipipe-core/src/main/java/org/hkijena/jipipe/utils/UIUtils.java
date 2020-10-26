@@ -128,23 +128,13 @@ public class UIUtils {
 //                    }
 //                }
 
-                UIUtils.installCustomTheme();
+                UIManager.put("swing.boldMetal", Boolean.FALSE);
+                UIManager.put("ScrollBarUI", ArrowLessScrollBarUI.class.getName());
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
 
-    }
-
-    /**
-     * Installs modifications to the Metal look & feel used by JIPipe
-     */
-    public static void installCustomTheme() {
-        UIManager.put("swing.boldMetal", Boolean.FALSE);
-//        UIManager.put("Button.background",  Color.decode("#eeeeee"));
-//        UIManager.put("ToggleButton.background",  Color.decode("#eeeeee"));
-//        UIManager.put("Button.border", new CompoundBorder(new LineBorder(new Color(200, 200, 200)), new EmptyBorder(2, 2, 2, 2)));
-//        UIManager.put("ToggleButton.border", new CompoundBorder(new LineBorder(new Color(200, 200, 200)), new EmptyBorder(2, 2, 2, 2)));
     }
 
     /**
@@ -550,7 +540,7 @@ public class UIUtils {
     public static String getMultiLineStringByDialog(Component parent, String title, String message, String initialValue) {
         JTextArea area = new JTextArea(5, 10);
         area.setText(initialValue);
-        JScrollPane scrollPane = new CustomScrollPane(area);
+        JScrollPane scrollPane = new JScrollPane(area);
         int result = JOptionPane.showOptionDialog(
                 parent,
                 new Object[]{message, scrollPane},

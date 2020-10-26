@@ -30,7 +30,6 @@ import org.hkijena.jipipe.ui.components.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.ModifiedFlowLayout;
 import org.hkijena.jipipe.ui.plotbuilder.JIPipePlotBuilderUI;
 import org.hkijena.jipipe.utils.BusyCursor;
-import org.hkijena.jipipe.utils.CustomScrollPane;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jdesktop.swingx.JXPanel;
@@ -247,7 +246,7 @@ public class JIPipeTableEditor extends JIPipeWorkbenchPanel {
         jxTable.setDefaultRenderer(Double.class, new Renderer(this));
         jxTable.packAll();
 
-        JScrollPane scrollPane = new CustomScrollPane(jxTable);
+        JScrollPane scrollPane = new JScrollPane(jxTable);
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, scrollPane, palettePanel);
         splitPane.setDividerSize(3);
         splitPane.setResizeWeight(0.66);

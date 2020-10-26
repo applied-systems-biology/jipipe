@@ -26,7 +26,6 @@ import org.hkijena.jipipe.ui.components.EditAlgorithmSlotPanel;
 import org.hkijena.jipipe.ui.components.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.MarkdownReader;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphEditorUI;
-import org.hkijena.jipipe.utils.CustomScrollPane;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -67,7 +66,7 @@ public class JIPipeSlotEditorUI extends JPanel {
 
         MarkdownReader helpPanel = new MarkdownReader(false);
         helpPanel.setDocument(MarkdownDocument.fromPluginResource("documentation/algorithm-slots.md"));
-        JScrollPane scrollPane = new CustomScrollPane(slotTree);
+        JScrollPane scrollPane = new JScrollPane(slotTree);
         JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, scrollPane, helpPanel);
         splitPane.setDividerSize(3);
         splitPane.setResizeWeight(0.33);

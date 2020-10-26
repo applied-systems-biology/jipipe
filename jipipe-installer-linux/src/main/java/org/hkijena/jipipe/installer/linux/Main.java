@@ -2,6 +2,7 @@ package org.hkijena.jipipe.installer.linux;
 
 import org.hkijena.jipipe.installer.linux.api.InstallerRun;
 import org.hkijena.jipipe.installer.linux.ui.MainWindow;
+import org.hkijena.jipipe.installer.linux.ui.utils.ArrowLessScrollBarUI;
 import org.hkijena.jipipe.installer.linux.ui.utils.ModernMetalTheme;
 
 import javax.swing.*;
@@ -41,6 +42,7 @@ public class Main {
                 MetalLookAndFeel.setCurrentTheme(new ModernMetalTheme());
                 UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
                 UIManager.put("swing.boldMetal", Boolean.FALSE);
+                UIManager.put("ScrollBarUI", ArrowLessScrollBarUI.class.getName());
             } catch (IllegalAccessException | InstantiationException | UnsupportedLookAndFeelException | ClassNotFoundException e) {
                 e.printStackTrace();
             }

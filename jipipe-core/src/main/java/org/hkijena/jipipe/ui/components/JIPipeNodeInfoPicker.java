@@ -17,8 +17,6 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.primitives.Ints;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.registries.JIPipeNodeRegistry;
-import org.hkijena.jipipe.utils.CustomScrollPane;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -86,7 +84,7 @@ public class JIPipeNodeInfoPicker extends JPanel {
             nodeInfoJList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         }
         nodeInfoJList.addListSelectionListener(e -> updateSelection());
-        JScrollPane scrollPane = new CustomScrollPane(nodeInfoJList);
+        JScrollPane scrollPane = new JScrollPane(nodeInfoJList);
         add(scrollPane, BorderLayout.CENTER);
     }
 

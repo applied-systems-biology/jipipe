@@ -17,15 +17,12 @@ import com.google.common.eventbus.Subscribe;
 import ij.IJ;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.events.ParameterChangedEvent;
-import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
-import org.hkijena.jipipe.api.registries.JIPipeNodeRegistry;
 import org.hkijena.jipipe.extensions.settings.ProjectsSettings;
 import org.hkijena.jipipe.ui.components.BackgroundPanel;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.MarkdownReader;
 import org.hkijena.jipipe.ui.components.RecentProjectListCellRenderer;
-import org.hkijena.jipipe.utils.CustomScrollPane;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -92,7 +89,7 @@ public class JIPipeInfoUI extends JIPipeProjectWorkbenchPanel {
 
     private void initRecentProjects() {
         recentProjectsList.setCellRenderer(new RecentProjectListCellRenderer());
-        JScrollPane scrollPane = new CustomScrollPane(recentProjectsList);
+        JScrollPane scrollPane = new JScrollPane(recentProjectsList);
         scrollPane.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, Color.DARK_GRAY));
         add(scrollPane, BorderLayout.WEST);
 

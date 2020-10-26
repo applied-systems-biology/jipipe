@@ -15,7 +15,6 @@ package org.hkijena.jipipe.ui.project;
 
 import org.hkijena.jipipe.api.JIPipeProjectTemplate;
 import org.hkijena.jipipe.ui.components.TemplateProjectListCellRenderer;
-import org.hkijena.jipipe.utils.CustomScrollPane;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -59,7 +58,7 @@ public class JIPipeTemplateSelectionDialog extends JDialog {
                 }
             }
         });
-        getContentPane().add(new CustomScrollPane(templateJList), BorderLayout.CENTER);
+        getContentPane().add(new JScrollPane(templateJList), BorderLayout.CENTER);
 
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));

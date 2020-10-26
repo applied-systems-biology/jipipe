@@ -17,8 +17,6 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeMutableParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
-import org.hkijena.jipipe.api.registries.JIPipeParameterTypeRegistry;
-import org.hkijena.jipipe.utils.CustomScrollPane;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jdesktop.swingx.JXTextField;
@@ -93,7 +91,7 @@ public class AddDynamicParameterPanel extends JPanel {
                 setSelectedInfo(datatypeList.getSelectedValue());
             }
         });
-        JScrollPane scrollPane = new CustomScrollPane(datatypeList);
+        JScrollPane scrollPane = new JScrollPane(datatypeList);
         add(scrollPane, BorderLayout.CENTER);
 
         // Create form located at the bottom

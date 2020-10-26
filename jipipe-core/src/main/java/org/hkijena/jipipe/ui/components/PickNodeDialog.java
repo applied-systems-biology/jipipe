@@ -14,7 +14,6 @@
 package org.hkijena.jipipe.ui.components;
 
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
-import org.hkijena.jipipe.utils.CustomScrollPane;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -66,7 +65,7 @@ public class PickNodeDialog extends JDialog {
                 setSelectedNode(nodeJList.getSelectedValue());
             }
         });
-        JScrollPane scrollPane = new CustomScrollPane(nodeJList);
+        JScrollPane scrollPane = new JScrollPane(nodeJList);
         add(scrollPane, BorderLayout.CENTER);
         initializeButtonPanel();
     }

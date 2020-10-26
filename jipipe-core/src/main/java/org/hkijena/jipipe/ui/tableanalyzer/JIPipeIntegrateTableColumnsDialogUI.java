@@ -18,7 +18,6 @@ import org.hkijena.jipipe.api.registries.JIPipeTableOperationRegistry;
 import org.hkijena.jipipe.extensions.tables.IntegratingColumnOperation;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.BusyCursor;
-import org.hkijena.jipipe.utils.CustomScrollPane;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -97,7 +96,7 @@ public class JIPipeIntegrateTableColumnsDialogUI extends JDialog {
             });
         }
         UIUtils.addFillerGridBagComponent(columnPanel, inputTableModel.getColumnCount(), 1);
-        JScrollPane scrollPane = new CustomScrollPane(columnPanel);
+        JScrollPane scrollPane = new JScrollPane(columnPanel);
         add(scrollPane, BorderLayout.CENTER);
 
         JPanel buttonPanel = new JPanel();
