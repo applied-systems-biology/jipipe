@@ -16,7 +16,7 @@ package org.hkijena.jipipe.extensions.parameters.formula.predicates;
 import org.hkijena.jipipe.extensions.parameters.formula.FormulaPredicate;
 import org.hkijena.jipipe.extensions.parameters.formula.FormulaPredicateInfo;
 
-@FormulaPredicateInfo(arguments = { Boolean.class, Boolean.class }, functionName = "OR", symbol = "∨")
+@FormulaPredicateInfo(arguments = { Boolean.class, Boolean.class }, functionName = "OR", symbols = {"∨"})
 public class OrPredicate implements FormulaPredicate {
     @Override
     public boolean test(Object[] objects) {

@@ -16,7 +16,7 @@ package org.hkijena.jipipe.extensions.parameters.formula.predicates;
 import org.hkijena.jipipe.extensions.parameters.formula.FormulaPredicate;
 import org.hkijena.jipipe.extensions.parameters.formula.FormulaPredicateInfo;
 
-@FormulaPredicateInfo(arguments = { Boolean.class, Boolean.class }, functionName = "AND", symbol = "∧")
+@FormulaPredicateInfo(arguments = { Boolean.class, Boolean.class }, functionName = "AND", symbols = { "∧" })
 public class AndPredicate implements FormulaPredicate {
     @Override
     public boolean test(Object[] objects) {

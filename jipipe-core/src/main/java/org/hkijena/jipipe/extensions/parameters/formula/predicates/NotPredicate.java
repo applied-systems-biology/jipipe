@@ -16,7 +16,7 @@ package org.hkijena.jipipe.extensions.parameters.formula.predicates;
 import org.hkijena.jipipe.extensions.parameters.formula.FormulaPredicate;
 import org.hkijena.jipipe.extensions.parameters.formula.FormulaPredicateInfo;
 
-@FormulaPredicateInfo(arguments = { Boolean.class }, functionName = "NOT", symbol = "¬")
+@FormulaPredicateInfo(arguments = { Boolean.class }, functionName = "NOT", symbols = {"¬"})
 public class NotPredicate implements FormulaPredicate {
     @Override
     public boolean test(Object[] objects) {

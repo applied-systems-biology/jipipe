@@ -37,8 +37,8 @@ public @interface FormulaPredicateInfo {
     String functionName();
 
     /**
-     * A short symbol of the function (1 character)
-     * @return the symbol
+     * A short symbols of the function. Used as alternative to the function name.
+     * @return the symbols
      */
-    String symbol();
+    String[] symbols();
 }

@@ -19,7 +19,7 @@ import org.hkijena.jipipe.extensions.parameters.formula.FormulaPredicateInfo;
 /**
  * Predicate that tests if two doubles are equal. If both objects are
  */
-@FormulaPredicateInfo(arguments = { Double.class, Double.class }, functionName = "NUMBER_EQUALS", symbol = "=")
+@FormulaPredicateInfo(arguments = { Double.class, Double.class }, functionName = "NUMBER_EQUALS", symbols = { "=", "==" })
 public class DoubleEqualsPredicate implements FormulaPredicate {
     @Override
     public boolean test(Object[] objects) {

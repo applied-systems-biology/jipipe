@@ -21,7 +21,7 @@ import java.util.Objects;
 /**
  * Predicate that tests if two doubles are equal. If both objects are
  */
-@FormulaPredicateInfo(arguments = { String.class, String.class }, functionName = "STRING_EQUALS", symbol = "=")
+@FormulaPredicateInfo(arguments = { String.class, String.class }, functionName = "STRING_EQUALS", symbols = {"=", "=="})
 public class StringEqualsPredicate implements FormulaPredicate {
     @Override
     public boolean test(Object[] objects) {

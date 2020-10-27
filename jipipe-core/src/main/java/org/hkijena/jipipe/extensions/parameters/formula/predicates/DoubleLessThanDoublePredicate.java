@@ -19,7 +19,7 @@ import org.hkijena.jipipe.extensions.parameters.formula.FormulaPredicateInfo;
 /**
  * Predicate that tests if one double is less than another
  */
-@FormulaPredicateInfo(arguments = { Double.class, Double.class }, functionName = "LESS_THAN", symbol = "<")
+@FormulaPredicateInfo(arguments = { Double.class, Double.class }, functionName = "LESS_THAN", symbols = {"<"})
 public class DoubleLessThanDoublePredicate implements FormulaPredicate {
     @Override
     public boolean test(Object[] objects) {
