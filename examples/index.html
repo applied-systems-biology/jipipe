@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2020-10-27T11:16:24 CET">
+<meta name="revised" content="2020-10-27T15:54:22 CET">
 <title>Examples :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../images/favicon.png" type="image/x-icon" />
 <link href="../css/font-awesome.min.css" rel="stylesheet">
@@ -487,22 +487,116 @@
     
     
 
-<div class=example-list>
-  <div class="example-item">
-    <div class="example-item-img" ><img src="../img/examples/example-spores-input.png" /></div>
-    <div class="example-item-img"><img src="../img/examples/example-spores-output.png" /></div>
-    <div class="example-item-content">
-    <h2>Segmenting spores</h2>
-    <p>This example applies auto-thresholding to segment spores from microscopy images. It makes use of the particle analyzer to extract ROI and measurements and shows how to create an area histogram plot.</p>
+<p>To get started, you can take a look at some example pipelines and other kind of examples:</p>
+<div class="examples-container">
+  <div class="examples">
     <div>
-      <button class="btn btn-success" type="button" onclick="location.href='../examples'"> <i class="fa fa-download"></i> Download </button>
-      <button class="btn btn-default" type="button" onclick="location.href='../tutorials/analysis'"> <i class="fa fa-graduation-cap"></i> Tutorial </button>
-      <button class="btn btn-default" type="button" onclick="location.href='../img/examples/example-spores-graph.png'"> <i class="fa fa-search"></i> Preview graph </button>
+      <img src="../img/examples/example-spores.png" />
+      <div class="feature-description">
+        <h2>Segmenting spores</h2>
+        <span>This example applies auto-thresholding to segment spores from microscopy images.
+        It makes use of the particle analyzer to extract ROI and measurements and shows how to create an area histogram plot.
+        There are both offline and online versions available. The online version downloads all necessary images from GitHub on executing the pipeline.
+        This example is based on one of the tutorials.</span>
+      </div>
+      <div class="downloads">
+        <button class="btn btn-default btn-success" type="button" onclick="alert('Sorry, the download is not available, yet!')"> <i class="fa fa-download"></i> Download (Offline)</button>
+        <button class="btn btn-default btn-success" type="button" onclick="alert('Sorry, the download is not available, yet!')"> <i class="fa fa-download"></i> Download (Online)</button>
+        <a class="btn btn-default" href="../tutorials/analysis"> <i class="fa fa-graduation-cap"></i> Tutorial</a>
+      </div>
     </div>
+    <div>
+      <img src="../img/examples/example-glomeruli.png" />
+      <div class="feature-description">
+        <h2>Segmenting glomeruli</h2>
+        <span>This example applies auto-thresholding and morphological operations to segment glomeruli in 2D slices of whole murine kidney light sheet microscopy images. This algorithm is part
+        of a 3D segmentation published by Klingberg et al. There are both offline and online versions available. The online version downloads all necessary images from GitHub on executing the pipeline.</span>
+      </div>
+      <div class="downloads">
+        <button class="btn btn-default btn-success" type="button" onclick="alert('Sorry, the download is not available, yet!')"> <i class="fa fa-download"></i> Download (Offline)</button>
+        <button class="btn btn-default btn-success" type="button" onclick="alert('Sorry, the download is not available, yet!')"> <i class="fa fa-download"></i> Download (Online)</button>
+        <a class="btn btn-default" href="https://pubmed.ncbi.nlm.nih.gov/27487796/" target="_blank"> <i class="fa fa-paragraph"></i> Publication</a>
+      </div>
+    </div>
+    <div>
+      <img src="../img/examples/example-unknown.png" />
+      <div class="feature-description">
+        <h2>Segmenting worms</h2>
+        <span>This example segments worms. This algorithm is part
+        of a 3D segmentation published by Klingberg et al. There are both offline and online versions available. The online version downloads all necessary images from GitHub on executing the pipeline.</span>
+      </div>
+      <div class="downloads">
+        <button class="btn btn-default btn-success" type="button" onclick="alert('Sorry, the download is not available, yet!')"> <i class="fa fa-download"></i> Download (Offline)</button>
+        <button class="btn btn-default btn-success" type="button" onclick="alert('Sorry, the download is not available, yet!')"> <i class="fa fa-download"></i> Download (Online)</button>
+        <a class="btn btn-default" href="https://pubmed.ncbi.nlm.nih.gov/27487796/" target="_blank"> <i class="fa fa-paragraph"></i> Publication</a>
+      </div>
+    </div>
+    <div>
+      <img src="../img/examples/example-unknown.png" />
+      <div class="feature-description">
+        <h2>Stack hypermontage</h2>
+        <span>A useful node that creates a montage of each incoming image stack and creates a montage of the montages. It is very useful when trying out different parameters for 3D analyses.
+        Just copy the node from this website and paste it into your JIPipe pipeline.</span>
+      </div>
+      <div class="downloads">
+        <button class="btn btn-default btn-success" type="button" onclick="copyMontageExample()"> <i class="fa fa-copy"></i> Copy</button>
+        <button class="btn btn-default" type="button" onclick="alert('Sorry, the download is not available, yet!')"> <i class="fa fa-download"></i> Download example pipeline</button>
+      </div>
     </div>
   </div>
 </div>
-<p>More examples will follow later.</p>
+<script type="text/javascript">
+$(document).ready(function(){
+  // Landing page slideshow
+  $('.examples').slick({
+    infinite: true,
+    dots: true,
+    slidesToShow: 3,
+    slidesToScroll: 3,
+    autoplay: true,
+    autoplaySpeed: 10000,
+    centerMode: true,
+    centerPadding: '5rem',
+    initialSlide: 1,
+    responsive: [
+      {
+        breakpoint: 1024,
+        settings: {
+          slidesToShow: 1,
+          slidesToScroll: 1
+        }
+      }
+    ]
+  });
+});
+
+function copyTextToClipboard(text, onsuccess) {
+  if (!navigator.clipboard) {
+    fallbackCopyTextToClipboard(text);
+    return;
+  }
+ navigator.permissions.query({name:'geolocation'}).then(function(result) {
+    if (result.state == "granted" || result.state == "prompt") {
+      navigator.clipboard.writeText(text).then(function() {
+        alert(onsuccess);
+      }, function(err) {
+        console.error('Async: Could not copy text: ', err);
+      });
+    }
+    else {
+      alert("Unable to copy to clipboard! You might be using an older browser that does not support this.");
+    }
+  });
+}
+
+function copyMontageExample() {
+  var url = window.location.origin + '/examples/example-montage.json';
+  fetch(url)
+  .then(function(response) {
+    response.text().then(text => copyTextToClipboard(text, "Copied the node to clipboard! Paste it into an existing JIPipe project."));
+  });
+}
+</script>
 
 
 

@@ -514,3 +514,72 @@ Download page
 .download-panel dd {
   margin-bottom: 0.5rem;
 }
+
+/*
+New landing page
+*/
+
+.examples-container {
+  margin-top: 5rem;
+}
+
+.examples .slick-track {
+    display: flex !important;
+}
+
+.examples .slick-slide {
+    display: flex!important;
+    flex-direction: column;
+    align-items: center;
+    height: inherit !important;
+}
+
+.examples .slick-slide h2 {
+  opacity: 0;
+  transition: opacity 1s;
+}
+
+.examples .slick-slide .feature-description {
+  flex-grow: 1;
+  width: 94%;
+  max-width: 1306px;
+}
+
+.examples .slick-slide span {
+  opacity: 0;
+  flex-grow: 1;
+  transition: opacity 1s;
+}
+
+.examples .slick-active h2 {
+  opacity: 1;
+}
+
+.examples .slick-active span {
+  opacity: 1;
+}
+
+.examples .slick-active .downloads {
+  opacity: 1;
+}
+
+.examples img {
+  width: 100%;
+}
+
+.examples .downloads {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  margin-top: 3rem;
+  opacity: 0;
+  transition: opacity 1s;
+}
+
+.examples .downloads button {
+  margin: 0.25rem;
+}
+
+.examples .downloads a {
+  margin: 0.25rem;
+}
