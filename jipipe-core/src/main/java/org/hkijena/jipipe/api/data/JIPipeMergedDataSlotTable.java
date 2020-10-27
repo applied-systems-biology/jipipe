@@ -17,6 +17,7 @@ import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.nodes.JIPipeEmptyNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
 import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
 import org.hkijena.jipipe.ui.components.JIPipeCachedDataPreview;
 
@@ -135,7 +136,7 @@ public class JIPipeMergedDataSlotTable implements TableModel {
         else if (columnIndex == 4) {
             Component preview = previewCache.get(rowIndex);
             if (preview == null) {
-                if (GeneralUISettings.getInstance().isGenerateCachePreviews()) {
+                if (GeneralDataSettings.getInstance().isGenerateCachePreviews()) {
                     JIPipeData data = slotList.get(rowIndex).getData(rowList.get(rowIndex), JIPipeData.class);
                     preview = new JIPipeCachedDataPreview(table, data);
                     previewCache.set(rowIndex, preview);

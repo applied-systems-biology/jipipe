@@ -23,6 +23,7 @@ import org.hkijena.jipipe.api.JIPipeHidden;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.events.DatatypeRegisteredEvent;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
+import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
 import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.resultanalysis.JIPipeDefaultResultDataSlotPreviewUI;
@@ -448,7 +449,7 @@ public class JIPipeDatatypeRegistry {
      * @return cell renderer
      */
     public JIPipeResultDataSlotPreviewUI getCellRendererFor(Class<? extends JIPipeData> klass, JTable table) {
-        if (GeneralUISettings.getInstance().isGenerateResultPreviews()) {
+        if (GeneralDataSettings.getInstance().isGenerateResultPreviews()) {
             Class<? extends JIPipeResultDataSlotPreviewUI> rendererClass = resultTableCellUIs.getOrDefault(klass, null);
             if (rendererClass != null) {
                 return (JIPipeResultDataSlotPreviewUI) ReflectionUtils.newInstance(rendererClass, table);

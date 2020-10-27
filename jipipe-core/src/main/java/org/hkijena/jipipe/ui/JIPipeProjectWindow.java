@@ -25,6 +25,7 @@ import org.hkijena.jipipe.api.JIPipeRun;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
+import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
 import org.hkijena.jipipe.extensions.settings.ProjectsSettings;
 import org.hkijena.jipipe.ui.components.DocumentTabPane;
 import org.hkijena.jipipe.ui.components.SplashScreen;
@@ -81,6 +82,9 @@ public class JIPipeProjectWindow extends JFrame {
         super.setTitle("JIPipe");
         setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
         UIUtils.setToAskOnClose(this, "Do you really want to close JIPipe?", "Close window");
+        if(GeneralUISettings.getInstance().isMaximizeWindows()) {
+            setExtendedState(getExtendedState() | MAXIMIZED_BOTH);
+        }
     }
 
     @Override

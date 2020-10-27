@@ -141,6 +141,7 @@ public class JIPipeJsonExtensionWorkbench extends JPanel implements JIPipeWorkbe
 
     private void initializeMenu() {
         JMenuBar menu = new JMenuBar();
+        menu.setBorderPainted(false);
 
         JMenu projectMenu = new JMenu("Extension");
 

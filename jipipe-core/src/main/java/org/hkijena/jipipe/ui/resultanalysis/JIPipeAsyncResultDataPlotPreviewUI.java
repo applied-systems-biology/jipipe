@@ -16,6 +16,7 @@ package org.hkijena.jipipe.ui.resultanalysis;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeExportedDataTable;
+import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
 import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -82,8 +83,8 @@ public abstract class JIPipeAsyncResultDataPlotPreviewUI extends JIPipeResultDat
 
         private final JIPipeAsyncResultDataPlotPreviewUI parent;
         private final Path storageFolder;
-        private final int width = GeneralUISettings.getInstance().getPreviewWidth();
-        private final int height = GeneralUISettings.getInstance().getPreviewHeight();
+        private final int width = GeneralDataSettings.getInstance().getPreviewWidth();
+        private final int height = GeneralDataSettings.getInstance().getPreviewHeight();
 
         private Worker(JIPipeAsyncResultDataPlotPreviewUI parent, Path storageFolder) {
             this.parent = parent;
