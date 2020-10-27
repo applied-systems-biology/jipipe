@@ -30,10 +30,7 @@ import org.hkijena.jipipe.ui.cache.JIPipeCacheManagerUI;
 import org.hkijena.jipipe.ui.compartments.JIPipeCompartmentGraphUI;
 import org.hkijena.jipipe.ui.compartments.JIPipeCompartmentUI;
 import org.hkijena.jipipe.ui.compendium.JIPipeAlgorithmCompendiumUI;
-import org.hkijena.jipipe.ui.components.DocumentTabPane;
-import org.hkijena.jipipe.ui.components.MemoryStatusUI;
-import org.hkijena.jipipe.ui.components.RecentProjectsMenu;
-import org.hkijena.jipipe.ui.components.ReloadableValidityChecker;
+import org.hkijena.jipipe.ui.components.*;
 import org.hkijena.jipipe.ui.extension.MenuTarget;
 import org.hkijena.jipipe.ui.extensionbuilder.JIPipeJsonExporter;
 import org.hkijena.jipipe.ui.extensions.JIPipePluginManagerUIPanel;
@@ -65,6 +62,7 @@ import java.util.List;
 public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
 
     public static final String TAB_INTRODUCTION = "INTRODUCTION";
+    public static final String TAB_LICENSE = "LICENSE";
     public static final String TAB_COMPARTMENT_EDITOR = "COMPARTMENT_EDITOR";
     public static final String TAB_PROJECT_SETTINGS = "PROJECT_SETTINGS";
     public static final String TAB_APPLICATION_SETTINGS = "APPLICATION_SETTINGS";
@@ -151,6 +149,11 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
                 UIUtils.getIconFromResources("actions/help-info.png"),
                 new JIPipeProjectInfoUI(this),
                 !GeneralUISettings.getInstance().isShowProjectInfo() || isNewProject);
+        documentTabPane.addSingletonTab(TAB_LICENSE,
+                "License",
+                UIUtils.getIconFromResources("actions/license.png"),
+                new MarkdownReader(true, MarkdownDocument.fromPluginResource("documentation/license.md")),
+                true);
         documentTabPane.addSingletonTab(TAB_COMPARTMENT_EDITOR,
                 "Compartments",
                 UIUtils.getIconFromResources("actions/straight-connector.png"),
@@ -434,7 +437,7 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
         JMenu helpMenu = new JMenu();
         helpMenu.setIcon(UIUtils.getIconFromResources("actions/help.png"));
 
-        JMenuItem quickHelp = new JMenuItem("Quick introduction", UIUtils.getIconFromResources("actions/help-info.png"));
+        JMenuItem quickHelp = new JMenuItem("Getting started", UIUtils.getIconFromResources("actions/help-info.png"));
         quickHelp.addActionListener(e -> documentTabPane.selectSingletonTab(TAB_INTRODUCTION));
         helpMenu.add(quickHelp);
 
@@ -452,6 +455,10 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
             getDocumentTabPane().switchToLastTab();
         });
         helpMenu.add(algorithmCompendiumButton);
+
+        JMenuItem license = new JMenuItem("License", UIUtils.getIconFromResources("actions/license.png"));
+        license.addActionListener(e -> documentTabPane.selectSingletonTab(TAB_LICENSE));
+        helpMenu.add(license);
 
         menu.add(helpMenu);
 
