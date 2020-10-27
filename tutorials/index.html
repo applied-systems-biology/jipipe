@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2020-10-17T14:22:51 CEST">
+<meta name="revised" content="2020-10-27T11:16:24 CET">
 <title>Tutorials :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../images/favicon.png" type="image/x-icon" />
 <link href="../css/font-awesome.min.css" rel="stylesheet">
@@ -24,7 +24,7 @@
 
     
   </head>
-  <body data-url="/tutorials/">
+  <body data-url="../tutorials/">
     
       <header>
   <div class="logo">
@@ -105,6 +105,12 @@
         </div>
     </li>
         </ul>
+    </li>
+    <li data-nav-id="https://www.jipipe.org/faq/" class="dd-item
+        ">
+      <div>
+      <a href="../faq/">Frequently asked questions</a><i class="fa fa-circle-thin read-icon"></i>
+      </div>
     </li>
     <li data-nav-id="https://www.jipipe.org/documentation/" class="dd-item haschildren
         ">
@@ -448,6 +454,8 @@
       <option value="/tutorials/analysis_video/" >- Image analysis pipeline (Video)</option>
       <option value="/tutorials/extension/" >- Creating an extension</option>
   
+    <option value="/faq/" >
+   Frequently asked questions</option>
     <option value="/documentation/" >
    Documentation</option>
     <option value="/documentation-java-api/" >
@@ -483,27 +491,7 @@
     
     
 
-<p>This section contains video and text tutorials for the most common tasks done with JIPipe.
-First, let&rsquo;s describe what JIPipe is and what it does for you.</p>
-<p>JIPipe is short for <strong>J</strong>ava <strong>I</strong>mage <strong>P</strong>rocessing <strong>Pipe</strong>line and provides a graphical programming language
-to design batch image processing pipelines, while solving some of the scalability issues that arise with other
-graphical programming languages.</p>
-<ol>
-<li>Introducing a powerful extension system that can integrate image analysis algorithms without losing usability</li>
-<li>Introduction of powerful filesystem handling that can be adapted to any data organization</li>
-<li>A powerful, yet easy-to-understand graphical programming language that was designed from the get-go for flexible scaling, and assisting the user as much as possible</li>
-</ol>
-<h1 id="why-jipipe">Why JIPipe?</h1>
-<p>JIPipe is a user-friendly alternative to ImageJ macro or script programming that brings following benefits to you:</p>
-<ul>
-<li>JIPipe is a batch processing tool. This means that you can scale your analyses up to larger or down to smaller data sets without modifying the whole pipeline</li>
-<li>JIPipe runs headless. Your pipelines generally work in environments without a graphical interface, like compute servers</li>
-<li>JIPipe has strong typing. Data types are well defined and you immediately see if and how data is converted into another format, bit depth, or dimensionality</li>
-<li>JIPipe standardizes parameters and output. A common issue is the question how to arrange the generated analysis outputs and how to save parameters. JIPipe does all of this for you completely automatically. For example, output files are written into a standardized filesystem hierarchy that allows third-party programs to read results automatically.</li>
-<li>JIPipe standardizes metadata. It comes with an powerful functionality to attach metadata to your data that can be queried and manipulated. All metadata is stored automatically in the results in standardized formats.</li>
-<li>JIPipe has a powerful standard library. It comes with many common ImageJ algorithms - with enhanced usability and designed for batch-processing, as well as tools for handling tables and creating or modifying plots.</li>
-<li>JIPipe can be extended without programming. You do not need programming knowledge to publish your own algorithms. Just export your pipeline or parts of it as extension from within a GUI</li>
-</ul>
+<p>This section contains video and text tutorials for the most common tasks done with JIPipe.</p>
 <h1 id="tutorial-list">Tutorial list</h1>
 <ul class="children children-li">
 <p><span><li>

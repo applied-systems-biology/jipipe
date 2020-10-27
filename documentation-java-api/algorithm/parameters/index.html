@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2020-10-17T14:22:51 CEST">
+<meta name="revised" content="2020-10-27T11:16:24 CET">
 <title>Parameters :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../../images/favicon.png" type="image/x-icon" />
 <link href="../../../css/font-awesome.min.css" rel="stylesheet">
@@ -24,7 +24,7 @@
 
     
   </head>
-  <body data-url="/documentation-java-api/algorithm/parameters/">
+  <body data-url="../../../documentation-java-api/algorithm/parameters/">
     
       <header>
   <div class="logo">
@@ -105,11 +105,16 @@
     </li>
         </ul>
     </li>
-    <li data-nav-id="https://www.jipipe.org/documentation/" class="dd-item parent haschildren
+    <li data-nav-id="https://www.jipipe.org/faq/" class="dd-item
         ">
       <div>
-      <a href="../../../documentation/">Documentation</a>
-            <i class="fa fa-angle-down fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
+      <a href="../../../faq/">Frequently asked questions</a><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+    </li>
+    <li data-nav-id="https://www.jipipe.org/documentation/" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../../../documentation/">Documentation</a><i class="fa fa-angle-right fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
       </div>
         <ul>
       <li data-nav-id="https://www.jipipe.org/documentation/batch-pipelines/" class="dd-item">
@@ -446,23 +451,10 @@
    Examples</option>
     <option value="/tutorials/" >
    Tutorials</option>
+    <option value="/faq/" >
+   Frequently asked questions</option>
     <option value="/documentation/" >
-   Documentation</option> 
-      <option value="/documentation/batch-pipelines/" >- Batch pipelines</option>
-      <option value="/documentation/graph-editor/" >- Pipeline editor</option>
-      <option value="/documentation/graph-compartment/" >- Graph compartments</option>
-      <option value="/documentation/result-analysis/" >- Running a pipeline</option>
-      <option value="/documentation/quick-run/" >- Testing algorithm parameters</option>
-      <option value="/documentation/cache/" >- Data caching</option>
-      <option value="/documentation/imagej-integration/" >- ImageJ integration</option>
-      <option value="/documentation/plugins/" >- Managing plugins</option>
-    <option value="/documentation/standard-library/" >
-  - 
-   Standard library</option>
-    <option value="/documentation/create-json-extensions/" >
-  - 
-   Extension builder</option>
-  
+   Documentation</option>
     <option value="/documentation-java-api/" >
    Java API documentation</option> 
       <option value="/documentation-java-api/javadocs/" >- JavaDocs</option>
@@ -543,35 +535,41 @@ Then you annotate the getter <strong>and</strong> setter with the same <a href="
     <span style="color:#f92672">}</span>
 
 <span style="color:#f92672">}</span>
-</code></pre></div><div class="notices tip" ><p>
-Your setter can return a boolean. If the output is true, JIPipe considers the value as valid. If false, the JIPipe UI re-loads a valid value via the getter.
+</code></pre></div><p>
+<div class="notices tip" ><p><p>Your setter can return a boolean. If the output is true, JIPipe considers the value as valid. If false, the JIPipe UI re-loads a valid value via the getter.</p>
 </p></div>
-<div class="notices warning" ><p>
-Please make sure that your parameter key is unique. Only one getter and one setter should have the same key.
+
+
+<div class="notices warning" ><p><p>Please make sure that your parameter key is unique. Only one getter and one setter should have the same key.</p>
 </p></div>
-<div class="notices warning" ><p>
-Not all data types are supported. Data types are registered into JIPipe and available via JIPipeUIParametertypeRegistry.getInstance(). In a later tutorial we show how to register custom data types. JIPipe supports common primitives like boolean, int, float, double, String, and all enum data types.
+
+
+<div class="notices warning" ><p><p>Not all data types are supported. Data types are registered into JIPipe and available via JIPipeUIParametertypeRegistry.getInstance(). In a later tutorial we show how to register custom data types. JIPipe supports common primitives like boolean, int, float, double, String, and all enum data types.</p>
 </p></div>
+</p>
 <h1 id="parameter-settings">Parameter settings</h1>
 <p>Some parameter types have different styles or other settings that can change the behavior of the parameter editor UI. An example is <a href="../../../apidocs/org/hkijena/jipipe/extensions/standardparametereditors/ui/parametereditors/StringParameterSettings.html">StringParameterSettings</a> that allows to change between single-line and multi-line editors.</p>
 <h1 id="sub-parameters">Sub-parameters</h1>
 <p><a href="../../../apidocs/org/hkijena/jipipe/api/nodes/JIPipeAlgorithm.html">JIPipeAlgorithm</a>, like any <a href="../../../apidocs/org/hkijena/jipipe/api/parameters/JIPipeParameterHolder.html">JIPipeParameterHolder</a> allows sub-parameters.</p>
 <p>To create a sub-parameter create a getter to an <a href="../../../apidocs/org/hkijena/jipipe/api/parameters/JIPipeParameterHolder.html">JIPipeParameterHolder</a> and annotate it with <a href="../../../apidocs/org/hkijena/jipipe/api/parameters/JIPipeSubParameters.html">@JIPipeParameter</a>. The key provided with the annotation should be an unique parameter key. The parameters in the sub-parameter instance are automatically displayed as new group in the parameter editor.</p>
-<div class="notices warning" ><p>
-Please do not forget to listen for the ParameterStructureChangedEvent and pass it to the algorithm's event bus. Otherwise there can be issues with the extension builder.
-You can use the registerSubParameter() method in the constructor and copy constructor as a shortcut.
+
+<div class="notices warning" ><p><p>Please do not forget to listen for the ParameterStructureChangedEvent and pass it to the algorithm&rsquo;s event bus. Otherwise there can be issues with the extension builder.
+You can use the registerSubParameter() method in the constructor and copy constructor as a shortcut.</p>
 </p></div>
+
 <h1 id="user-defined-parameters">User-defined parameters</h1>
 <p>If you want to make it possible for users to create custom parameters, create an <a href="../../../apidocs/org/hkijena/jipipe/api/parameters/JIPipeDynamicParameterHolder.html">JIPipeDynamicParameterHolder</a> as sub-parameter.
 You can control the list of allowed parameter types and other settings.</p>
-<div class="notices warning" ><p>
-Do not forget to deep-copy the JIPipeDynamicParameterHolder. The class has a copy constructor for
-such an operation.
+<p>
+<div class="notices warning" ><p><p>Do not forget to deep-copy the JIPipeDynamicParameterHolder. The class has a copy constructor for
+such an operation.</p>
 </p></div>
-<div class="notices warning" ><p>
-Please do not forget to listen for the ParameterStructureChangedEvent and pass it to the algorithm's event bus. Otherwise there can be issues with the extension builder.
-JIPipeAlgorithm comes with a pre-made function registerSubParameters() that should be called in the constructors.
+
+
+<div class="notices warning" ><p><p>Please do not forget to listen for the ParameterStructureChangedEvent and pass it to the algorithm&rsquo;s event bus. Otherwise there can be issues with the extension builder.
+JIPipeAlgorithm comes with a pre-made function registerSubParameters() that should be called in the constructors.</p>
 </p></div>
+</p>
 <h1 id="full-control">Full control</h1>
 <p>You can inherit from <a href="../../../apidocs/org/hkijena/jipipe/api/parameters/JIPipeCustomParameterHolder.html">JIPipeCustomParameterHolder</a> to define all parameters manually without the need for an <a href="../../../apidocs/org/hkijena/jipipe/api/parameters/JIPipeDynamicParameterHolder.html">JIPipeDynamicParameterHolder</a> or annotations.</p>
 

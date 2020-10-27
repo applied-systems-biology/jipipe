@@ -6,7 +6,7 @@
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <meta name="revised" content="2020-10-27T11:16:24 CET">
-<title>Tags :: JIPipe for ImageJ</title>
+<title>Frequently asked questions :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../images/favicon.png" type="image/x-icon" />
 <link href="../css/font-awesome.min.css" rel="stylesheet">
 <link href="../css/nucleus.css" rel="stylesheet">
@@ -24,7 +24,7 @@
 
     
   </head>
-  <body data-url="../tags/">
+  <body data-url="../faq/">
     
       <header>
   <div class="logo">
@@ -105,7 +105,7 @@
     </li>
         </ul>
     </li>
-    <li data-nav-id="https://www.jipipe.org/faq/" class="dd-item
+    <li data-nav-id="https://www.jipipe.org/faq/" class="dd-item parent active
         ">
       <div>
       <a href="../faq/">Frequently asked questions</a><i class="fa fa-circle-thin read-icon"></i>
@@ -449,8 +449,9 @@
    Examples</option>
     <option value="/tutorials/" >
    Tutorials</option>
-    <option value="/faq/" >
-   Frequently asked questions</option>
+    <option value="/faq/"  selected>
+   Frequently asked questions</option> 
+  
     <option value="/documentation/" >
    Documentation</option>
     <option value="/documentation-java-api/" >
@@ -481,32 +482,240 @@
       </div>
     
 
-    <h1>Tags</h1>
+    <h1>Frequently asked questions</h1>
     
     
     
 
-
-
-<div class="extra-pagination inner">
-<nav class="pagination" role="navigation">
-	
-	<span class="page-number">Page 1 of 0</span>
-	
-</nav>
-
-</div>
-
-
-
-<div style="margin-bottom:2rem"></div>
-
-<nav class="pagination" role="navigation">
-	
-	<span class="page-number">Page 1 of 0</span>
-	
-</nav>
-
+<h1 id="user-interface">User interface</h1>
+<h2 id="how-can-i-make-long-connections-without-zooming-out">How can I make long connections without zooming out?</h2>
+<p>Click the arrow button at the input/output slot. It lists all compatible sources/targets ordered by distance.</p>
+<h1 id="compartments">Compartments</h1>
+<h2 id="what-are-those-compartments-for">What are those compartments for?</h2>
+<p>Imagine you have a large complicated pipeline. Most certainly, you could split it into multiple
+sub-pipelines like &ldquo;preprocessing&rdquo; or &ldquo;segmentation&rdquo;. Compartments allow you to do exactly this.</p>
+<h2 id="what-is-the-difference-between-groups-and-compartments">What is the difference between groups and compartments?</h2>
+<p>If you use compartments, JIPipe is still aware of the whole pipeline. This allows it to run
+all dependency nodes via <em>Update cache</em> or <em>Quick run</em>.
+Groups are independent pipelines that are not aware where they are used. You can only extract the
+final outputs, not intermediate steps.</p>
+<h1 id="data-processing">Data processing</h1>
+<h2 id="why-should-i-care-to-add-those-annotations">Why should I care to add those annotations?</h2>
+<p>Annotations are optional for single data analyses or pipelines without multi-input nodes, but helpful anyways.
+They will allow you to quickly find out from which data set your data was generated.</p>
+<p>If you have a multi-input node, you <strong>will</strong> need annotations, as JIPipe needs to figure out which data from which input belongs together.</p>
+<p>You will find more information <a href="../documentation/batch-pipelines">here</a>.</p>
+<h2 id="can-you-give-me-an-example-of-multi-input-processing">Can you give me an example of multi-input processing?</h2>
+<p>OK, let&rsquo;s imaginge you have two sets of greyscale images (C1 and C2). You want to merge them as channels into an RGB image.</p>
+<table>
+<thead>
+<tr>
+<th>Data</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C1_1</td>
+</tr>
+<tr>
+<td>C1_2</td>
+</tr>
+<tr>
+<td>C1_3</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>Data</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C2_1</td>
+</tr>
+<tr>
+<td>C2_2</td>
+</tr>
+<tr>
+<td>C2_3</td>
+</tr>
+</tbody>
+</table>
+<p>The merge channels node has two inputs (one for each channel) and at some point needs to have a table like this to work on:</p>
+<table>
+<thead>
+<tr>
+<th>Data (Slot 1)</th>
+<th>Data (Slot 2)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C1_1</td>
+<td>C2_1</td>
+</tr>
+<tr>
+<td>C1_2</td>
+<td>C2_2</td>
+</tr>
+<tr>
+<td>C1_3</td>
+<td>C2_3</td>
+</tr>
+</tbody>
+</table>
+<p>The issue is now: JIPipe is not aware that <strong>you</strong> call the images C1_1, C2_1, [&hellip;] and that C1_1 and C2_1 should go together. That&rsquo;s why have to put annotation columns next to the data that will be used by JIPipe:</p>
+<table>
+<thead>
+<tr>
+<th>Data</th>
+<th>#Dataset</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C1_1</td>
+<td>D1</td>
+</tr>
+<tr>
+<td>C1_2</td>
+<td>D2</td>
+</tr>
+<tr>
+<td>C1_3</td>
+<td>D3</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>Data</th>
+<th>#Dataset</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C2_1</td>
+<td>D1</td>
+</tr>
+<tr>
+<td>C2_2</td>
+<td>D2</td>
+</tr>
+<tr>
+<td>C2_3</td>
+<td>D3</td>
+</tr>
+</tbody>
+</table>
+<p>JIPipe will look at <code>#Dataset</code> and match the rows together that have the same values.</p>
+<h2 id="why-do-you-create-annotations-with-a-">Why do you create annotations with a &lsquo;#&rsquo;?</h2>
+<p>There are two kinds of annotations: Ones that only <strong>you</strong> care about (e.g. the resolution) and the ones the <strong>JIPipe</strong> should care about.
+By default all JIPipe&rsquo;s multi-input nodes are configured to only care about annotation columns that begin with <code>#</code>.</p>
+<p>You can extensively configure this behavior in the node&rsquo;s properties and also manually define which columns JIPipe should look at.</p>
+<h2 id="what-happens-if-a-reference-column-is-missing">What happens if a reference column is missing?</h2>
+<p>JIPipe will assume an <code>ANY</code> for such columns.</p>
+<p>Let&rsquo;s create an example: Uploading OMERO images require a dataset Id. But often, you only want to upload all images to just one dataset.
+Here we have three annotated images and just one unannotated OMERO data set.</p>
+<table>
+<thead>
+<tr>
+<th>Data</th>
+<th>#Dataset</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Image1</td>
+<td>D1</td>
+</tr>
+<tr>
+<td>Image2</td>
+<td>D2</td>
+</tr>
+<tr>
+<td>Image3</td>
+<td>D3</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>Data</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>OMERO dataset Id</td>
+</tr>
+</tbody>
+</table>
+<p>What will to the OMERO data set happen if JIPipe combines the tables?</p>
+<table>
+<thead>
+<tr>
+<th>Data</th>
+<th>#Dataset</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>OMERO dataset Id</td>
+<td><code>{ANY}</code></td>
+</tr>
+</tbody>
+</table>
+<p>It will assume that the one row matches to any <code>#Dataset</code>.</p>
+<p>The final table will look like this:</p>
+<table>
+<thead>
+<tr>
+<th>Data (Slot 1)</th>
+<th>Data (Slot 2)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Image1</td>
+<td>OMERO dataset Id</td>
+</tr>
+<tr>
+<td>Image2</td>
+<td>OMERO dataset Id</td>
+</tr>
+<tr>
+<td>Image3</td>
+<td>OMERO dataset Id</td>
+</tr>
+</tbody>
+</table>
+<h2 id="can-i-preview-what-the-multi-input-processing-will-do-without-running-the-node">Can I preview what the multi-input processing will do without running the node?</h2>
+<p>Yes, switch to the &ldquo;Data batches&rdquo; tab in the properties panel. It allows you to configure
+how JIPipe merges data together and previews the results.</p>
+<p>Do not forget to refresh after changing a setting.</p>
+<h1 id="imagej-integration">ImageJ integration</h1>
+<h2 id="can-i-use-existing-imagej-macros-in-jipipe">Can I use existing ImageJ macros in JIPipe?</h2>
+<p>Yes, use <code>Images &gt; ImageJ macro</code>. The input slots are opened as image windows and can be addressed from within the macro with <code>selectWindow()</code>.
+You can also load an example that shows how to use the node.</p>
+<h2 id="can-i-use-jipipe-from-within-imagej-macros">Can I use JIPipe from within ImageJ macros?</h2>
+<p>Yes. You can use both pipelines and individual JIPipe algorithms from within ImageJ
+macros and the GUI.</p>
+<h2 id="why-are-some-jipipe-algorithms-not-availabe-from-within-imagej">Why are some JIPipe algorithms not availabe from within ImageJ?</h2>
+<p>JIPipe has a very general data model that makes it possible to develop pipelines for processing <strong>any</strong> kind of data.
+The communication between JIPipe&rsquo;s data types and ImageJ is handled by adaptors that will handle the &ldquo;translation&rdquo; back &amp; forth.
+For some of such data types, there is no adaptor. The reason behind this is that ImageJ might not have an equivalent data type or feature.</p>
+<h1 id="result-analysis">Result analysis</h1>
+<h2 id="can-i-open-a-table-in-imagej-instead-of-jipipe-or-vice-versa">Can I open a table in ImageJ instead of JIPipe or vice versa?</h2>
+<p>Yes, and even more: Depending on the data type there are multiple options on displaying data available.
+Select the data in the result view or cache browser and click the <code>...</code> button at the bottom.
+JIPipe will even remember the last setting for you.</p>
+<h2 id="can-i-save-data-by-their-metadata">Can I save data by their metadata?</h2>
+<p>Yes, use the node <code>Miscellaneous &gt; Export data</code>. It will export all incoming data into one or multiple folders and
+generates names based on metadata.</p>
 
 
 
@@ -514,7 +723,8 @@
     
         <div class="chevrons">
     <div id="navigation">
-<a class="nav nav-next" href="../download/" title="Download" style="margin-right: 0px;"><label>Download</label><i class="fa fa-chevron-right"></i></a></div>
+<a class="nav nav-prev" href="../tutorials/extension/" title="Creating an extension"> <i class="fa fa-chevron-left"></i><label>Creating an extension</label></a>
+    <a class="nav nav-next" href="../documentation/" title="Documentation" style="margin-right: 0px;"><label>Documentation</label><i class="fa fa-chevron-right"></i></a></div>
   </div>
 
   </section>
@@ -525,6 +735,10 @@
 <div class="footline">
     
 
+    
+    <div class="author">
+        <i class='fa fa-user'></i> <a href="mailto:ruman.gerst@leibniz-hki.de">Ruman Gerst</a>
+    </div>
     
 
     

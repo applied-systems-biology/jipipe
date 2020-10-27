@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2020-10-17T14:22:51 CEST">
+<meta name="revised" content="2020-10-27T11:16:24 CET">
 <title>Usage in Java :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../images/favicon.png" type="image/x-icon" />
 <link href="../../css/font-awesome.min.css" rel="stylesheet">
@@ -24,7 +24,7 @@
 
     
   </head>
-  <body data-url="/documentation-java-api/usage-in-java/">
+  <body data-url="../../documentation-java-api/usage-in-java/">
     
       <header>
   <div class="logo">
@@ -105,11 +105,16 @@
     </li>
         </ul>
     </li>
-    <li data-nav-id="https://www.jipipe.org/documentation/" class="dd-item parent haschildren
+    <li data-nav-id="https://www.jipipe.org/faq/" class="dd-item
         ">
       <div>
-      <a href="../../documentation/">Documentation</a>
-            <i class="fa fa-angle-down fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
+      <a href="../../faq/">Frequently asked questions</a><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+    </li>
+    <li data-nav-id="https://www.jipipe.org/documentation/" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../../documentation/">Documentation</a><i class="fa fa-angle-right fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
       </div>
         <ul>
       <li data-nav-id="https://www.jipipe.org/documentation/batch-pipelines/" class="dd-item">
@@ -445,23 +450,10 @@
    Examples</option>
     <option value="/tutorials/" >
    Tutorials</option>
+    <option value="/faq/" >
+   Frequently asked questions</option>
     <option value="/documentation/" >
-   Documentation</option> 
-      <option value="/documentation/batch-pipelines/" >- Batch pipelines</option>
-      <option value="/documentation/graph-editor/" >- Pipeline editor</option>
-      <option value="/documentation/graph-compartment/" >- Graph compartments</option>
-      <option value="/documentation/result-analysis/" >- Running a pipeline</option>
-      <option value="/documentation/quick-run/" >- Testing algorithm parameters</option>
-      <option value="/documentation/cache/" >- Data caching</option>
-      <option value="/documentation/imagej-integration/" >- ImageJ integration</option>
-      <option value="/documentation/plugins/" >- Managing plugins</option>
-    <option value="/documentation/standard-library/" >
-  - 
-   Standard library</option>
-    <option value="/documentation/create-json-extensions/" >
-  - 
-   Extension builder</option>
-  
+   Documentation</option>
     <option value="/documentation-java-api/" >
    Java API documentation</option> 
       <option value="/documentation-java-api/javadocs/" >- JavaDocs</option>
@@ -518,15 +510,10 @@ or any other way to load SciJava plugins. The following example shows how to ini
 </span><span style="color:#75715e"></span>  <span style="color:#00a8c8">final</span> <span style="color:#111">ImageJ</span> <span style="color:#111">ij</span> <span style="color:#f92672">=</span> <span style="color:#00a8c8">new</span> <span style="color:#111">ImageJ</span><span style="color:#f92672">();</span>
   <span style="color:#111">Context</span> <span style="color:#111">context</span> <span style="color:#f92672">=</span> <span style="color:#111">ij</span><span style="color:#f92672">.</span><span style="color:#75af00">context</span><span style="color:#f92672">();</span>
 
-  <span style="color:#75715e">// Load the settings that can modify the initialization
-</span><span style="color:#75715e"></span>  <span style="color:#75715e">// Please note that you cannot use ExtensionSettings.getInstance() yet as it is not available at this point
-</span><span style="color:#75715e"></span>  <span style="color:#111">ExtensionSettings</span> <span style="color:#111">extensionSettings</span> <span style="color:#f92672">=</span> <span style="color:#111">ExtensionSettings</span><span style="color:#f92672">.</span><span style="color:#75af00">getInstanceFromRaw</span><span style="color:#f92672">();</span>
-
   <span style="color:#75715e">// Execute the JIPipe registration if necessary
-</span><span style="color:#75715e"></span>  <span style="color:#111">JIPipeRegistryIssues</span> <span style="color:#111">issues</span> <span style="color:#f92672">=</span> <span style="color:#00a8c8">new</span> <span style="color:#111">JIPipeRegistryIssues</span><span style="color:#f92672">();</span>
-  <span style="color:#00a8c8">if</span> <span style="color:#f92672">(</span><span style="color:#111">JIPipeDefaultRegistry</span><span style="color:#f92672">.</span><span style="color:#75af00">getInstance</span><span style="color:#f92672">()</span> <span style="color:#f92672">==</span> <span style="color:#00a8c8">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-      <span style="color:#111">JIPipeDefaultRegistry</span><span style="color:#f92672">.</span><span style="color:#75af00">createInstance</span><span style="color:#f92672">(</span><span style="color:#111">context</span><span style="color:#f92672">);</span>
-      <span style="color:#111">JIPipeDefaultRegistry</span><span style="color:#f92672">.</span><span style="color:#75af00">getInstance</span><span style="color:#f92672">().</span><span style="color:#75af00">discover</span><span style="color:#f92672">(</span><span style="color:#111">extensionSettings</span><span style="color:#f92672">,</span> <span style="color:#111">issues</span><span style="color:#f92672">);</span>
+</span><span style="color:#75715e"></span>  <span style="color:#00a8c8">if</span> <span style="color:#f92672">(</span><span style="color:#111">JIPipe</span><span style="color:#f92672">.</span><span style="color:#75af00">getInstance</span><span style="color:#f92672">()</span> <span style="color:#f92672">==</span> <span style="color:#00a8c8">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+      <span style="color:#111">JIPipe</span><span style="color:#f92672">.</span><span style="color:#75af00">createInstance</span><span style="color:#f92672">(</span><span style="color:#111">context</span><span style="color:#f92672">);</span>
+      <span style="color:#111">JIPipe</span><span style="color:#f92672">.</span><span style="color:#75af00">getInstance</span><span style="color:#f92672">().</span><span style="color:#75af00">initialize</span><span style="color:#f92672">();</span>
   <span style="color:#f92672">}</span>
 
   <span style="color:#75715e">// JIPipe is now ready to use
@@ -595,7 +582,7 @@ A simple <a href="../../apidocs/org/hkijena/jipipe/api/JIPipeGraphRunner.html">g
     <span style="color:#75715e">// There are multiple ways to instantiate a new node:
 </span><span style="color:#75715e"></span>
     <span style="color:#75715e">// Option 1: Utility function
-</span><span style="color:#75715e"></span>    <span style="color:#111">JIPipeGraphNode</span> <span style="color:#111">first</span> <span style="color:#f92672">=</span> <span style="color:#111">JIPipeGraphNode</span><span style="color:#f92672">.</span><span style="color:#75af00">newInstance</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;import-file&#34;</span><span style="color:#f92672">);</span>
+</span><span style="color:#75715e"></span>    <span style="color:#111">JIPipeGraphNode</span> <span style="color:#111">first</span> <span style="color:#f92672">=</span> <span style="color:#111">JIPipe</span><span style="color:#f92672">.</span><span style="color:#75af00">createNode</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;import-file&#34;</span><span style="color:#f92672">,</span> <span style="color:#111">JIPipeGraphNode</span><span style="color:#f92672">.</span><span style="color:#75af00">class</span><span style="color:#f92672">);</span>
 
     <span style="color:#75715e">// Option 2: Using the registry
 </span><span style="color:#75715e"></span>    <span style="color:#111">JIPipeGraphNode</span> <span style="color:#111">second</span> <span style="color:#f92672">=</span> <span style="color:#111">JIPipeNodeRegistry</span><span style="color:#f92672">.</span><span style="color:#75af00">getInstance</span><span style="color:#f92672">().</span><span style="color:#75af00">getInfoById</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;import-imagej-imgplus-from-file&#34;</span><span style="color:#f92672">).</span><span style="color:#75af00">newInstance</span><span style="color:#f92672">();</span>
@@ -623,7 +610,7 @@ A simple <a href="../../apidocs/org/hkijena/jipipe/api/JIPipeGraphRunner.html">g
 <div class="highlight"><pre style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#00a8c8">public</span> <span style="color:#00a8c8">static</span> <span style="color:#00a8c8">void</span> <span style="color:#75af00">main</span><span style="color:#f92672">(</span><span style="color:#111">String</span><span style="color:#f92672">[]</span> <span style="color:#111">args</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
   <span style="color:#75715e">// First initialize JIPipe before this line!
 </span><span style="color:#75715e"></span>
-  <span style="color:#111">JIPipeSimpleIteratingAlgorithm</span> <span style="color:#111">node</span> <span style="color:#f92672">=</span> <span style="color:#f92672">(</span><span style="color:#111">JIPipeSimpleIteratingAlgorithm</span><span style="color:#f92672">)</span><span style="color:#111">JIPipeGraphNode</span><span style="color:#f92672">.</span><span style="color:#75af00">newInstance</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;import-imagej-imgplus-from-file&#34;</span><span style="color:#f92672">);</span>
+  <span style="color:#111">JIPipeSimpleIteratingAlgorithm</span> <span style="color:#111">node</span> <span style="color:#f92672">=</span> <span style="color:#111">JIPipe</span><span style="color:#f92672">.</span><span style="color:#75af00">createNode</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;import-imagej-imgplus-from-file&#34;</span><span style="color:#f92672">,</span> <span style="color:#111">JIPipeSimpleIteratingAlgorithm</span><span style="color:#f92672">.</span><span style="color:#75af00">class</span><span style="color:#f92672">);</span>
 
   <span style="color:#75715e">// Always clear the node first (allows you to re-use it)
 </span><span style="color:#75715e"></span>  <span style="color:#111">node</span><span style="color:#f92672">.</span><span style="color:#75af00">clearSlotData</span><span style="color:#f92672">();</span>

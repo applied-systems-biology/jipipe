@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2020-10-17T14:22:51 CEST">
+<meta name="revised" content="2020-10-27T11:16:24 CET">
 <title>Creating a data type :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../images/favicon.png" type="image/x-icon" />
 <link href="../../css/font-awesome.min.css" rel="stylesheet">
@@ -24,7 +24,7 @@
 
     
   </head>
-  <body data-url="/documentation-java-api/data-type/">
+  <body data-url="../../documentation-java-api/data-type/">
     
       <header>
   <div class="logo">
@@ -105,11 +105,16 @@
     </li>
         </ul>
     </li>
-    <li data-nav-id="https://www.jipipe.org/documentation/" class="dd-item parent haschildren
+    <li data-nav-id="https://www.jipipe.org/faq/" class="dd-item
         ">
       <div>
-      <a href="../../documentation/">Documentation</a>
-            <i class="fa fa-angle-down fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
+      <a href="../../faq/">Frequently asked questions</a><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+    </li>
+    <li data-nav-id="https://www.jipipe.org/documentation/" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../../documentation/">Documentation</a><i class="fa fa-angle-right fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
       </div>
         <ul>
       <li data-nav-id="https://www.jipipe.org/documentation/batch-pipelines/" class="dd-item">
@@ -446,23 +451,10 @@
    Examples</option>
     <option value="/tutorials/" >
    Tutorials</option>
+    <option value="/faq/" >
+   Frequently asked questions</option>
     <option value="/documentation/" >
-   Documentation</option> 
-      <option value="/documentation/batch-pipelines/" >- Batch pipelines</option>
-      <option value="/documentation/graph-editor/" >- Pipeline editor</option>
-      <option value="/documentation/graph-compartment/" >- Graph compartments</option>
-      <option value="/documentation/result-analysis/" >- Running a pipeline</option>
-      <option value="/documentation/quick-run/" >- Testing algorithm parameters</option>
-      <option value="/documentation/cache/" >- Data caching</option>
-      <option value="/documentation/imagej-integration/" >- ImageJ integration</option>
-      <option value="/documentation/plugins/" >- Managing plugins</option>
-    <option value="/documentation/standard-library/" >
-  - 
-   Standard library</option>
-    <option value="/documentation/create-json-extensions/" >
-  - 
-   Extension builder</option>
-  
+   Documentation</option>
     <option value="/documentation-java-api/" >
    Java API documentation</option> 
       <option value="/documentation-java-api/javadocs/" >- JavaDocs</option>
@@ -593,12 +585,14 @@ The name parameter in <code>storageFilePath</code> is usually the data slot name
     <span style="color:#f92672">}</span>
 
 <span style="color:#f92672">}</span>
-</code></pre></div><div class="notices tip" ><p>
-You can use JIPipe's JsonUtils class to get access to a Jackson JSON ObjectMapper.
+</code></pre></div>
+<div class="notices tip" ><p><p>You can use JIPipe&rsquo;s JsonUtils class to get access to a Jackson JSON ObjectMapper.</p>
 </p></div>
-<div class="notices info" ><p>
-Do not forget to override toString(), as the string representation will be displayed in the cache browser.
+
+
+<div class="notices info" ><p><p>Do not forget to override toString(), as the string representation will be displayed in the cache browser.</p>
 </p></div>
+
 <p>To register the data type and provide it with an id, and icon, use <a href="../../apidocs/org/hkijena/jipipe/JIPipeJavaExtension.html">JIPipeJavaExtension</a>:</p>
 <div class="highlight"><pre style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75af00">@Plugin</span><span style="color:#f92672">(</span><span style="color:#111">type</span> <span style="color:#f92672">=</span> <span style="color:#111">JIPipeJavaExtension</span><span style="color:#f92672">.</span><span style="color:#75af00">class</span><span style="color:#f92672">)</span>
 <span style="color:#00a8c8">public</span> <span style="color:#00a8c8">class</span> <span style="color:#75af00">MyExtension</span> <span style="color:#00a8c8">extends</span> <span style="color:#111">JIPipeDefaultJavaExtension</span> <span style="color:#f92672">{</span>
