@@ -50,6 +50,9 @@ public class PickNodeDialog extends JDialog {
         this.nodes = nodes;
         initialize();
         reloadNodeList();
+        if(preSelected == null) {
+            preSelected = nodeJList.getSelectedValue();
+        }
         setSelectedNode(preSelected);
         nodeJList.setSelectedValue(preSelected, true);
     }
