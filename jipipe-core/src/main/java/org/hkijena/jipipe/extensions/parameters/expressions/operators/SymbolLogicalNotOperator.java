@@ -11,15 +11,10 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.extensions.parameters.formula.predicates;
+package org.hkijena.jipipe.extensions.parameters.expressions.operators;
 
-import org.hkijena.jipipe.extensions.parameters.formula.FormulaPredicate;
-import org.hkijena.jipipe.extensions.parameters.formula.FormulaPredicateInfo;
-
-@FormulaPredicateInfo(arguments = { Boolean.class, Boolean.class }, functionName = "XOR", symbols = {"⊻"})
-public class XOrPredicate implements FormulaPredicate {
-    @Override
-    public boolean test(Object[] objects) {
-        return (boolean)objects[0] ^ (boolean)objects[1];
+public class SymbolLogicalNotOperator extends LogicalNotOperator {
+    public SymbolLogicalNotOperator() {
+        super("!");
     }
 }

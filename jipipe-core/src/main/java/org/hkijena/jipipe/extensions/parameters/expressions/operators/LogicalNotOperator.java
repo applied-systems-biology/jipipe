@@ -11,18 +11,20 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.extensions.parameters.formula;
+package org.hkijena.jipipe.extensions.parameters.expressions.operators;
 
-import java.util.Set;
+import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionOperator;
 
-/**
- * Describes basic properties of a {@link FormulaParameter}
- */
-public interface FormulaInfo {
+import java.util.Iterator;
 
-    /**
-     * Lists all variable names. If null or empty, there are no restrictions set that will be communicated to the editor.
-     * @return all variable names
-     */
-    Set<String> getAvailableVariables();
+public class LogicalNotOperator extends ExpressionOperator {
+
+    public LogicalNotOperator(String symbol) {
+        super(symbol, 1, Associativity.RIGHT, 3);
+    }
+
+    @Override
+    public Object evaluate(Iterator<Object> operands, Object evaluationContext) {
+        return !(boolean)operands.next();
+    }
 }

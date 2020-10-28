@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.extensions.parameters.formula;
+package org.hkijena.jipipe.extensions.parameters.expressions;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -19,26 +19,15 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotates a {@link FormulaPredicate} type with information about which types it consumes
+ * Controls the behavior of an {@link ExpressionParameter}.
+ * Attach it to the getter or setter within a {@link org.hkijena.jipipe.api.parameters.JIPipeParameterCollection}
  */
+@Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
-public @interface FormulaPredicateInfo {
+public @interface ExpressionParameterSettings {
     /**
-     * The arguments of the test() function of the predicate
-     * @return types consumed by test()
+     * The evaluator that controls executes the expression.
+     * @return the evaluator class
      */
-    Class<?>[] arguments();
-
-    /**
-     * The full name of the function
-     * @return function name
-     */
-    String functionName();
-
-    /**
-     * A short symbols of the function. Used as alternative to the function name.
-     * @return the symbols
-     */
-    String[] symbols();
+    Class<? extends ExpressionEvaluator> evaluator();
 }

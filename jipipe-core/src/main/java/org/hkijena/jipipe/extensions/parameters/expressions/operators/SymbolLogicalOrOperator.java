@@ -11,13 +11,10 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.extensions.parameters.formula;
+package org.hkijena.jipipe.extensions.parameters.expressions.operators;
 
-import java.util.function.Predicate;
-
-/**
- * A predicate that is used inside a {@link FormulaParameter}.
- *
- */
-public interface FormulaPredicate extends Predicate<Object[]> {
+public class SymbolLogicalOrOperator extends LogicalOrOperator {
+    public SymbolLogicalOrOperator() {
+        super("|");
+    }
 }

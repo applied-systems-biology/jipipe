@@ -11,15 +11,20 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.extensions.parameters.formula.predicates;
+package org.hkijena.jipipe.extensions.parameters.expressions.operators;
 
-import org.hkijena.jipipe.extensions.parameters.formula.FormulaPredicate;
-import org.hkijena.jipipe.extensions.parameters.formula.FormulaPredicateInfo;
+import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionOperator;
 
-@FormulaPredicateInfo(arguments = { Boolean.class, Boolean.class }, functionName = "OR", symbols = {"∨"})
-public class OrPredicate implements FormulaPredicate {
+import java.util.Iterator;
+
+public class XOrOperator extends ExpressionOperator {
+
+    public XOrOperator(String symbol) {
+        super(symbol, 2, Associativity.LEFT, 2);
+    }
+
     @Override
-    public boolean test(Object[] objects) {
-        return (boolean)objects[0] || (boolean)objects[1];
+    public Object evaluate(Iterator<Object> operands, Object evaluationContext) {
+        return (boolean)operands.next() ^ (boolean)operands.next();
     }
 }

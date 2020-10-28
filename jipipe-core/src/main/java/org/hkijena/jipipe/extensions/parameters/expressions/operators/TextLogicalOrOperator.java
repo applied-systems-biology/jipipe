@@ -11,11 +11,10 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.extensions.parameters.formula;
+package org.hkijena.jipipe.extensions.parameters.expressions.operators;
 
-/**
- * A parameter that is a logic formula.
- * This allows users to set up filters etc. from within the UI
- */
-public class FormulaParameter {
+public class TextLogicalOrOperator extends LogicalOrOperator {
+    public TextLogicalOrOperator() {
+        super("OR");
+    }
 }
