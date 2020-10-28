@@ -14,6 +14,7 @@
 package org.hkijena.jipipe;
 
 import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
+import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeMetadata;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.compat.ImageJDatatypeAdapter;
@@ -438,6 +439,15 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
      */
     public void registerExpressionFunction(ExpressionFunction function, String name, String description) {
         registry.getExpressionRegistry().registerExpressionFunction(function, name, description);
+    }
+
+    /**
+     * Registers a function that can be used within expressions. The name and description are taken from {@link org.hkijena.jipipe.api.JIPipeDocumentation} annotations.
+     * @param function the function. its internal name property must be unique
+     */
+    public void registerExpressionFunction(ExpressionFunction function) {
+        JIPipeDocumentation documentation = function.getClass().getAnnotation(JIPipeDocumentation.class);
+        registry.getExpressionRegistry().registerExpressionFunction(function, documentation.name(), documentation.description());
     }
 
     /**

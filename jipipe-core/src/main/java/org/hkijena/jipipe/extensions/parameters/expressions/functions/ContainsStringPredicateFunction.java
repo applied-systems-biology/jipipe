@@ -13,25 +13,23 @@
 
 package org.hkijena.jipipe.extensions.parameters.expressions.functions;
 
-import com.fathzer.soft.javaluator.Function;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionFunction;
-import org.hkijena.jipipe.utils.StringUtils;
 
 import java.util.List;
+import java.util.Objects;
 
-@JIPipeDocumentation(name = "String matches (Glob)", description = "Tests if the left operand matches the pattern described within the right operand.")
-public class GlobStringPredicateFunction extends ExpressionFunction {
+@JIPipeDocumentation(name = "String contains", description = "Tests if the right operand is contained within the left operand.")
+public class ContainsStringPredicateFunction extends ExpressionFunction {
 
-    public GlobStringPredicateFunction() {
-        super("MATCHES_GLOB", 2);
+    public ContainsStringPredicateFunction() {
+        super("STRING_CONTAINS", 2);
     }
 
     @Override
     public Object evaluate(List<Object> parameters) {
         String text = "" + parameters.get(0);
         String pattern = "" + parameters.get(1);
-        pattern = StringUtils.convertGlobToRegex(pattern);
-        return text.matches(pattern);
+        return text.contains(pattern);
     }
 }
