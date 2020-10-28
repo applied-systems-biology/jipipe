@@ -29,6 +29,8 @@ import org.hkijena.jipipe.api.registries.JIPipeJavaNodeRegistrationTask;
 import org.hkijena.jipipe.api.registries.JIPipeNodeRegistrationTask;
 import org.hkijena.jipipe.api.registries.JIPipeParameterTypeRegistry;
 import org.hkijena.jipipe.extensions.parameters.collections.ListParameter;
+import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionFunction;
+import org.hkijena.jipipe.extensions.parameters.expressions.functions.ColumnOperationAdapterFunction;
 import org.hkijena.jipipe.extensions.parameters.primitives.EnumParameterTypeInfo;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
 import org.hkijena.jipipe.extensions.tables.ColumnOperation;
@@ -410,7 +412,32 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
      * @param description a description
      */
     public void registerTableColumnOperation(String id, ColumnOperation operation, String name, String shortName, String description) {
-        registry.getTableOperationRegistry().registerColumnOperation(id, operation, name, shortName, description);
+        registry.getExpressionRegistry().registerColumnOperation(id, operation, name, shortName, description);
+    }
+
+    /**
+     * Registers a table column operation. Those operations are used in various places that handle tabular data.
+     * Also registers an expression function that is generated via an adapter class (its ID will be the upper-case of the the short name with spaces replaced by underscores)
+     *
+     * @param id          operation id
+     * @param operation   the operation instance
+     * @param name        the name
+     * @param shortName   a short name (like min, max, avg, ...)
+     * @param description a description
+     */
+    public void registerTableColumnOperationAndExpressionFunction(String id, ColumnOperation operation, String name, String shortName, String description) {
+        registry.getExpressionRegistry().registerColumnOperation(id, operation, name, shortName, description);
+        registerExpressionFunction(new ColumnOperationAdapterFunction(operation, shortName.toUpperCase().replace(' ', '_')), name, description);
+    }
+
+    /**
+     * Registers a function that can be used within expressions.
+     * @param function the function. its internal name property must be unique
+     * @param name human-readable name
+     * @param description the description
+     */
+    public void registerExpressionFunction(ExpressionFunction function, String name, String description) {
+        registry.getExpressionRegistry().registerExpressionFunction(function, name, description);
     }
 
     /**

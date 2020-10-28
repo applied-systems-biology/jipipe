@@ -13,6 +13,9 @@
 
 package org.hkijena.jipipe.extensions.parameters.expressions.operators;
 
+import org.hkijena.jipipe.api.JIPipeDocumentation;
+
+@JIPipeDocumentation(name = "Addition", description = "Adds two numbers together or concatenates two strings.")
 public class NumericPlusFunctionOperator extends NumericOrStringFunctionOperator {
     public NumericPlusFunctionOperator() {
         super("+", 6);

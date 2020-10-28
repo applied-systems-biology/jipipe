@@ -21,8 +21,15 @@ import com.fasterxml.jackson.annotation.JsonSetter;
  * This allows users to set up filters etc. from within the UI.
  * Use {@link ExpressionParameterSettings} to control the behavior of this parameter.
  */
-public abstract class ExpressionParameter {
+public class ExpressionParameter {
     private String expression = "";
+
+    public ExpressionParameter() {
+    }
+
+    public ExpressionParameter(ExpressionParameter other) {
+        this.expression = other.expression;
+    }
 
     @JsonGetter("expression")
     public String getExpression() {
@@ -33,10 +40,4 @@ public abstract class ExpressionParameter {
     public void setExpression(String expression) {
         this.expression = expression;
     }
-
-    /**
-     * Gets the executor instance that will execute the expression
-     * @return the executor
-     */
-    public abstract DefaultAbstractExpressionEvaluator getExecutor();
 }

@@ -36,6 +36,8 @@ import org.hkijena.jipipe.extensions.parameters.editors.JIPipeAlgorithmIconRefPa
 import org.hkijena.jipipe.extensions.parameters.editors.JIPipeDataInfoRefParameterEditorUI;
 import org.hkijena.jipipe.extensions.parameters.editors.JIPipeNodeInfoRefParameterEditorUI;
 import org.hkijena.jipipe.extensions.parameters.editors.JIPipeParameterCollectionVisibilitiesParameterEditorUI;
+import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameter;
+import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameterEditorUI;
 import org.hkijena.jipipe.extensions.parameters.functions.FunctionParameter;
 import org.hkijena.jipipe.extensions.parameters.functions.FunctionParameterEditorUI;
 import org.hkijena.jipipe.extensions.parameters.functions.StringPatternExtractionFunction;
@@ -150,8 +152,20 @@ public class StandardParametersExtension extends JIPipePrepackagedDefaultJavaExt
         registerParameterGenerators();
         registerPatternParameters();
         registerScriptParameters();
+        registerExpressionParameters();
 
         registerMenuExtension(ParameterTesterMenuExtension.class);
+        registerMenuExtension(ExpressionTesterMenuExtension.class);
+    }
+
+    private void registerExpressionParameters() {
+        registerParameterType("expression",
+                ExpressionParameter.class,
+                null,
+                null,
+                "Expression",
+                "A mathematical or conditional logic expression",
+                ExpressionParameterEditorUI.class);
     }
 
     private void registerScriptParameters() {

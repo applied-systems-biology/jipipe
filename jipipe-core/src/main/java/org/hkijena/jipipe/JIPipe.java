@@ -44,7 +44,7 @@ import org.hkijena.jipipe.api.registries.JIPipeNodeRegistrationTask;
 import org.hkijena.jipipe.api.registries.JIPipeNodeRegistry;
 import org.hkijena.jipipe.api.registries.JIPipeParameterTypeRegistry;
 import org.hkijena.jipipe.api.registries.JIPipeSettingsRegistry;
-import org.hkijena.jipipe.api.registries.JIPipeTableOperationRegistry;
+import org.hkijena.jipipe.api.registries.JIPipeExpressionRegistry;
 import org.hkijena.jipipe.extensions.parameters.primitives.DynamicStringEnumParameter;
 import org.hkijena.jipipe.extensions.settings.DefaultCacheDisplaySettings;
 import org.hkijena.jipipe.extensions.settings.DefaultResultImporterSettings;
@@ -91,7 +91,7 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
     private JIPipeCustomMenuRegistry customMenuRegistry = new JIPipeCustomMenuRegistry();
     private JIPipeParameterTypeRegistry parameterTypeRegistry = new JIPipeParameterTypeRegistry();
     private JIPipeSettingsRegistry settingsRegistry = new JIPipeSettingsRegistry();
-    private JIPipeTableOperationRegistry tableOperationRegistry = new JIPipeTableOperationRegistry();
+    private JIPipeExpressionRegistry tableOperationRegistry = new JIPipeExpressionRegistry();
     private FilesCollection imageJPlugins = null;
 
     @Parameter
@@ -104,7 +104,7 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
         return instance.parameterTypeRegistry;
     }
 
-    public static JIPipeTableOperationRegistry getTableOperations() {
+    public static JIPipeExpressionRegistry getTableOperations() {
         return instance.tableOperationRegistry;
     }
 
@@ -454,7 +454,7 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
     }
 
     @Override
-    public JIPipeTableOperationRegistry getTableOperationRegistry() {
+    public JIPipeExpressionRegistry getExpressionRegistry() {
         return tableOperationRegistry;
     }
 

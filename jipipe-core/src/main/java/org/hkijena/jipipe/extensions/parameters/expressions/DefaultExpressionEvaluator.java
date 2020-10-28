@@ -20,6 +20,8 @@ import com.fathzer.soft.javaluator.Operator;
 import com.fathzer.soft.javaluator.Parameters;
 import com.google.common.collect.ImmutableList;
 import org.apache.commons.lang3.math.NumberUtils;
+import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.registries.JIPipeExpressionRegistry;
 import org.hkijena.jipipe.extensions.parameters.expressions.operators.*;
 
 import java.util.ArrayList;
@@ -31,7 +33,7 @@ import java.util.Set;
 /**
  * Describes basic properties of a {@link ExpressionParameter}
  */
-public abstract class DefaultAbstractExpressionEvaluator extends ExpressionEvaluator {
+public class DefaultExpressionEvaluator extends ExpressionEvaluator {
     public static final Constant CONSTANT_TRUE = new Constant("TRUE");
     public static final Constant CONSTANT_FALSE = new Constant("FALSE");
     public static final ExpressionOperator OPERATOR_NEGATE_SYMBOL = new SymbolLogicalNotOperator();
@@ -54,40 +56,52 @@ public abstract class DefaultAbstractExpressionEvaluator extends ExpressionEvalu
     public static final NumericFunctionOperator OPERATOR_NUMERIC_EXPONENT = new NumericExponentFunctionOperator();
     public static final Operator OPERATOR_NUMERIC_NEGATE = new Operator("-", 1,Operator.Associativity.RIGHT, 8);
     public static final Operator OPERATOR_NUMERIC_NEGATE_HIGH = new Operator("-", 1,Operator.Associativity.RIGHT, 10);
-    public static final Parameters PARAMETERS;
 
-    static {
-        PARAMETERS = new Parameters();
-        PARAMETERS.addFunctionBracket(BracketPair.PARENTHESES);
-        PARAMETERS.addExpressionBracket(BracketPair.PARENTHESES);
-        PARAMETERS.add(OPERATOR_NEGATE_SYMBOL);
-        PARAMETERS.add(OPERATOR_NEGATE_TEXT);
-        PARAMETERS.add(OPERATOR_AND_SYMBOL);
-        PARAMETERS.add(OPERATOR_AND_TEXT);
-        PARAMETERS.add(OPERATOR_OR_SYMBOL);
-        PARAMETERS.add(OPERATOR_OR_TEXT);
-        PARAMETERS.add(OPERATOR_XOR_TEXT);
-        PARAMETERS.add(OPERATOR_NUMERIC_EQUALS);
-        PARAMETERS.add(OPERATOR_NUMERIC_LESS_THAN);
-        PARAMETERS.add(OPERATOR_NUMERIC_GREATER_THAN);
-        PARAMETERS.add(OPERATOR_NUMERIC_LESS_THAN_OR_EQUAL);
-        PARAMETERS.add(OPERATOR_NUMERIC_GREATER_THAN_OR_EQUAL);
+    public static Parameters createParameters() {
+        Parameters parameters = new Parameters();
+        parameters.addFunctionBracket(BracketPair.PARENTHESES);
+        parameters.addExpressionBracket(BracketPair.PARENTHESES);
 
-        PARAMETERS.add(OPERATOR_NUMERIC_STRING_PLUS);
-        PARAMETERS.add(OPERATOR_NUMERIC_MINUS);
-        PARAMETERS.add(OPERATOR_NUMERIC_MULTIPLY);
-        PARAMETERS.add(OPERATOR_NUMERIC_DIVIDE);
-        PARAMETERS.add(OPERATOR_NUMERIC_MODULO);
-        PARAMETERS.add(OPERATOR_NUMERIC_EXPONENT);
-        PARAMETERS.add(OPERATOR_NUMERIC_NEGATE);
+        // Add boolean operators
+        parameters.add(OPERATOR_NEGATE_SYMBOL);
+        parameters.add(OPERATOR_NEGATE_TEXT);
+        parameters.add(OPERATOR_AND_SYMBOL);
+        parameters.add(OPERATOR_AND_TEXT);
+        parameters.add(OPERATOR_OR_SYMBOL);
+        parameters.add(OPERATOR_OR_TEXT);
+        parameters.add(OPERATOR_XOR_TEXT);
+        parameters.add(OPERATOR_NUMERIC_EQUALS);
+        parameters.add(OPERATOR_NUMERIC_LESS_THAN);
+        parameters.add(OPERATOR_NUMERIC_GREATER_THAN);
+        parameters.add(OPERATOR_NUMERIC_LESS_THAN_OR_EQUAL);
+        parameters.add(OPERATOR_NUMERIC_GREATER_THAN_OR_EQUAL);
+
+        // Add numeric operators
+        parameters.add(OPERATOR_NUMERIC_STRING_PLUS);
+        parameters.add(OPERATOR_NUMERIC_MINUS);
+        parameters.add(OPERATOR_NUMERIC_MULTIPLY);
+        parameters.add(OPERATOR_NUMERIC_DIVIDE);
+        parameters.add(OPERATOR_NUMERIC_MODULO);
+        parameters.add(OPERATOR_NUMERIC_EXPONENT);
+        parameters.add(OPERATOR_NUMERIC_NEGATE);
+
+        // Add operators from JIPipe (if available)
+        if(JIPipe.getInstance() != null) {
+            for (JIPipeExpressionRegistry.ExpressionFunctionEntry functionEntry : JIPipe.getInstance().getExpressionRegistry().getRegisteredExpressionFunctions().values()) {
+                parameters.add(functionEntry.getFunction());
+            }
+        }
+
+        return parameters;
     }
 
-    public DefaultAbstractExpressionEvaluator() {
-        super(PARAMETERS);
+    public DefaultExpressionEvaluator() {
+        super(createParameters());
     }
 
     @Override
     protected Iterator<String> tokenize(String expression) {
+
         // Collect all tokens and constants
         Set<String> operators = new HashSet<>();
         operators.add("TRUE");
@@ -96,7 +110,49 @@ public abstract class DefaultAbstractExpressionEvaluator extends ExpressionEvalu
             operators.add(operator.getSymbol());
         }
 
+        StringBuilder buffer = new StringBuilder();
+        boolean isQuoted = false;
+        boolean escape = false;
         List<String> tokens = new ArrayList<>();
+
+        for (int i = 0; i < expression.length(); i++) {
+            char c = expression.charAt(i);
+            if(c == '"' && !escape) {
+                if(!isQuoted) {
+                    // Process buffer up until now
+                    if (buffer.length() > 0)
+                        fillTokenList(buffer.toString(), operators, tokens);
+                    buffer.setLength(0);
+                    isQuoted = true;
+                }
+                else {
+                    // Add buffer as whole token
+                    tokens.add(buffer.toString());
+                    buffer.setLength(0);
+                    isQuoted = false;
+                }
+            }
+            else if(c == '\\') {
+                if(escape)
+                    buffer.append(c);
+                escape = !escape;
+            }
+            else if(c == '"') {
+                buffer.append(c);
+                escape = false;
+            }
+            else {
+                buffer.append(c);
+            }
+        }
+
+        if(buffer.length() > 0)
+            fillTokenList(buffer.toString(), operators, tokens);
+
+        return tokens.iterator();
+    }
+
+    private void fillTokenList(String expression, Set<String> operators, List<String> tokens) {
         // First split by space
         for (String subToken : expression.split("\\s+")) {
             if (operators.contains(subToken)) {
@@ -106,13 +162,16 @@ public abstract class DefaultAbstractExpressionEvaluator extends ExpressionEvalu
                 tokens.addAll(ImmutableList.copyOf(super.tokenize(subToken)));
             }
         }
-
-        return tokens.iterator();
     }
 
     @Override
     protected Object evaluate(Function function, Iterator<Object> arguments, Object evaluationContext) {
-        return super.evaluate(function, arguments, evaluationContext);
+        if(function instanceof ExpressionFunction) {
+            return ((ExpressionFunction) function).evaluate(ImmutableList.copyOf(arguments));
+        }
+        else {
+            throw new UnsupportedOperationException();
+        }
     }
 
     @Override
@@ -147,12 +206,7 @@ public abstract class DefaultAbstractExpressionEvaluator extends ExpressionEvalu
             return false;
         else if(NumberUtils.isCreatable(literal))
             return NumberUtils.createDouble(literal);
-        return null;
-    }
-
-    public static void main(String[] args) {
-        DefaultAbstractExpressionEvaluator executor = new DefaultAbstractExpressionEvaluator() {
-        };
-        System.out.println(executor.evaluate("(10 + 10) == 20"));
+        else
+            return literal;
     }
 }

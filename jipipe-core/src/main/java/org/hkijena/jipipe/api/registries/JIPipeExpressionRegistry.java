@@ -13,7 +13,8 @@
 
 package org.hkijena.jipipe.api.registries;
 
-import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.extensions.parameters.expressions.DefaultExpressionEvaluator;
+import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionFunction;
 import org.hkijena.jipipe.extensions.tables.ColumnOperation;
 
 import java.util.Collections;
@@ -21,20 +22,31 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Registry for table operations
+ * Registry for table operations and other functional expressions
  */
-public class JIPipeTableOperationRegistry {
-    private Map<String, ColumnOperationEntry> registeredColumnOperations = new HashMap<>();
+public class JIPipeExpressionRegistry {
+    private Map<String, ColumnOperationEntry> registeredTableColumnOperations = new HashMap<>();
+    private Map<String, ExpressionFunctionEntry> registeredExpressionFunctions = new HashMap<>();
 
     /**
+     * The registered column operations. Column operations can work on arrays of {@link String} or {@link Double}
      * @return all registered column operations
      */
-    public Map<String, ColumnOperationEntry> getRegisteredColumnOperations() {
-        return Collections.unmodifiableMap(registeredColumnOperations);
+    public Map<String, ColumnOperationEntry> getRegisteredTableColumnOperations() {
+        return Collections.unmodifiableMap(registeredTableColumnOperations);
     }
 
     /**
-     * Registers a new operation
+     * Registered expression functions. Utilized within {@link DefaultExpressionEvaluator}.
+     * @return the registered functions
+     */
+    public Map<String, ExpressionFunctionEntry> getRegisteredExpressionFunctions() {
+        return Collections.unmodifiableMap(registeredExpressionFunctions);
+    }
+
+    /**
+     * Registers a new operation.
+     * The expression function will use the upper-case short name as function name and replace all spaces with underscores.
      *
      * @param id          unique id
      * @param operation   operation instance
@@ -43,7 +55,17 @@ public class JIPipeTableOperationRegistry {
      * @param description a description
      */
     public void registerColumnOperation(String id, ColumnOperation operation, String name, String shortName, String description) {
-        registeredColumnOperations.put(id, new ColumnOperationEntry(id, operation, name, shortName, description));
+        registeredTableColumnOperations.put(id, new ColumnOperationEntry(id, operation, name, shortName, description));
+    }
+
+    /**
+     * Registers an new function that will be usable within expressions.
+     * @param function the function instance. Its name will be used as identifier.
+     * @param name the human-readable name
+     * @param description a description
+     */
+    public void registerExpressionFunction(ExpressionFunction function, String name, String description) {
+        registeredExpressionFunctions.put(function.getName(), new ExpressionFunctionEntry(function.getName(), name, description, function));
     }
 
     /**
@@ -53,7 +75,7 @@ public class JIPipeTableOperationRegistry {
      * @return the operation
      */
     public ColumnOperationEntry getColumnOperationById(String id) {
-        return registeredColumnOperations.get(id);
+        return registeredTableColumnOperations.get(id);
     }
 
     /**
@@ -62,9 +84,9 @@ public class JIPipeTableOperationRegistry {
      * @param filterClass the filter class
      * @return all operations that are assignable to the filter class
      */
-    public Map<String, ColumnOperationEntry> getOperationsOfType(Class<? extends ColumnOperation> filterClass) {
+    public Map<String, ColumnOperationEntry> getTableColumnOperationsOfType(Class<? extends ColumnOperation> filterClass) {
         Map<String, ColumnOperationEntry> result = new HashMap<>();
-        for (Map.Entry<String, ColumnOperationEntry> entry : registeredColumnOperations.entrySet()) {
+        for (Map.Entry<String, ColumnOperationEntry> entry : registeredTableColumnOperations.entrySet()) {
             if (filterClass.isAssignableFrom(entry.getValue().getOperation().getClass())) {
                 result.put(entry.getKey(), entry.getValue());
             }
@@ -118,6 +140,36 @@ public class JIPipeTableOperationRegistry {
 
         public String getShortName() {
             return shortName;
+        }
+    }
+
+    public static class ExpressionFunctionEntry {
+        private String id;
+        private String name;
+        private String description;
+        private ExpressionFunction function;
+
+        public ExpressionFunctionEntry(String id, String name, String description, ExpressionFunction function) {
+            this.id = id;
+            this.name = name;
+            this.description = description;
+            this.function = function;
+        }
+
+        public String getId() {
+            return id;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public String getDescription() {
+            return description;
+        }
+
+        public ExpressionFunction getFunction() {
+            return function;
         }
     }
 }
