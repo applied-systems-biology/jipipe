@@ -13,6 +13,9 @@
 
 package org.hkijena.jipipe.extensions.parameters.expressions.operators;
 
+import org.hkijena.jipipe.api.JIPipeDocumentation;
+
+@JIPipeDocumentation(name = "Subtract", description = "Subtracts the right operand from the left operand")
 public class NumericMinusFunctionOperator extends NumericFunctionOperator {
     public NumericMinusFunctionOperator() {
         super("-", 6);

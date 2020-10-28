@@ -13,6 +13,9 @@
 
 package org.hkijena.jipipe.extensions.parameters.expressions.operators;
 
+import org.hkijena.jipipe.api.JIPipeDocumentation;
+
+@JIPipeDocumentation(name = "Logical OR", description = "Returns TRUE if one of the operands is TRUE")
 public class TextLogicalOrOperator extends LogicalOrOperator {
     public TextLogicalOrOperator() {
         super("OR");

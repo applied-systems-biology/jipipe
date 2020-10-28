@@ -13,13 +13,23 @@
 
 package org.hkijena.jipipe.extensions.parameters.expressions.operators;
 
-public class NumericEqualityPredicateOperator extends NumericPredicateOperator {
-    public NumericEqualityPredicateOperator() {
+import org.hkijena.jipipe.api.JIPipeDocumentation;
+
+import java.util.Objects;
+
+@JIPipeDocumentation(name = "Equality", description = "Returns TRUE if the left and right operands are equal")
+public class NumericOrStringEqualityPredicateOperator extends NumericOrStringPredicateOperator {
+    public NumericOrStringEqualityPredicateOperator() {
         super("==");
     }
 
     @Override
     public boolean evaluate(double left, double right) {
         return left == right;
+    }
+
+    @Override
+    public boolean evaluate(String left, String right) {
+        return Objects.equals(left, right);
     }
 }

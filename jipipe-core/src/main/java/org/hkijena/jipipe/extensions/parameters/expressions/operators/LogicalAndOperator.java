@@ -13,10 +13,12 @@
 
 package org.hkijena.jipipe.extensions.parameters.expressions.operators;
 
+import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionOperator;
 
 import java.util.Iterator;
 
+@JIPipeDocumentation(name = "Logical AND", description = "Returns true if both operands are TRUE.")
 public class LogicalAndOperator extends ExpressionOperator {
 
     public LogicalAndOperator(String symbol) {

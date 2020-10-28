@@ -13,6 +13,9 @@
 
 package org.hkijena.jipipe.extensions.parameters.expressions.operators;
 
+import org.hkijena.jipipe.api.JIPipeDocumentation;
+
+@JIPipeDocumentation(name = "Greater than", description = "Returns TRUE if the left operand is greater than the right operand")
 public class NumericGreaterThanPredicateOperator extends NumericPredicateOperator {
     public NumericGreaterThanPredicateOperator() {
         super(">");

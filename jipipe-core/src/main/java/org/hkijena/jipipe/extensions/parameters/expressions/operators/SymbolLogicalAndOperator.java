@@ -13,6 +13,9 @@
 
 package org.hkijena.jipipe.extensions.parameters.expressions.operators;
 
+import org.hkijena.jipipe.api.JIPipeDocumentation;
+
+@JIPipeDocumentation(name = "Logical AND", description = "Returns true if both operands are TRUE.")
 public class SymbolLogicalAndOperator extends LogicalAndOperator {
     public SymbolLogicalAndOperator() {
         super("&");

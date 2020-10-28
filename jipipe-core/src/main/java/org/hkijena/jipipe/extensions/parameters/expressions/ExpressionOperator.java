@@ -18,6 +18,7 @@ import com.fathzer.soft.javaluator.Operator;
 import java.util.Iterator;
 
 public abstract class ExpressionOperator extends Operator {
+
     public ExpressionOperator(String symbol, int operandCount, Associativity associativity, int precedence) {
         super(symbol, operandCount, associativity, precedence);
     }

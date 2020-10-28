@@ -13,6 +13,9 @@
 
 package org.hkijena.jipipe.extensions.parameters.expressions.operators;
 
+import org.hkijena.jipipe.api.JIPipeDocumentation;
+
+@JIPipeDocumentation(name = "Divide", description = "Divides the left operand by the right operand")
 public class NumericDivideFunctionOperator extends NumericFunctionOperator {
     public NumericDivideFunctionOperator() {
         super("/", 7);

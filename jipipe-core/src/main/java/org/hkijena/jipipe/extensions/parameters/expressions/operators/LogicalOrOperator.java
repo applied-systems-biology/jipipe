@@ -13,10 +13,12 @@
 
 package org.hkijena.jipipe.extensions.parameters.expressions.operators;
 
+import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionOperator;
 
 import java.util.Iterator;
 
+@JIPipeDocumentation(name = "Logical OR", description = "Returns TRUE if one of the operands is TRUE")
 public class LogicalOrOperator extends ExpressionOperator {
 
     public LogicalOrOperator(String symbol) {

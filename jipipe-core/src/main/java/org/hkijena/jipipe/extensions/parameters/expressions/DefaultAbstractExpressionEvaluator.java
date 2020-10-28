@@ -40,8 +40,8 @@ public abstract class DefaultAbstractExpressionEvaluator extends ExpressionEvalu
     public static final ExpressionOperator OPERATOR_AND_TEXT = new TextLogicalAndOperator();
     public static final ExpressionOperator OPERATOR_OR_SYMBOL = new SymbolLogicalOrOperator();
     public static final ExpressionOperator OPERATOR_OR_TEXT = new TextLogicalOrOperator();
-    public static final ExpressionOperator OPERATOR_XOR_TEXT = new TextXOrOperator();
-    public static final NumericPredicateOperator OPERATOR_NUMERIC_EQUALS = new NumericEqualityPredicateOperator();
+    public static final ExpressionOperator OPERATOR_XOR_TEXT = new TextLogicalXOrOperator();
+    public static final NumericOrStringPredicateOperator OPERATOR_NUMERIC_EQUALS = new NumericOrStringEqualityPredicateOperator();
     public static final NumericPredicateOperator OPERATOR_NUMERIC_LESS_THAN = new NumericLessThanPredicateOperator();
     public static final NumericPredicateOperator OPERATOR_NUMERIC_GREATER_THAN = new NumericGreaterThanPredicateOperator();
     public static final NumericPredicateOperator OPERATOR_NUMERIC_LESS_THAN_OR_EQUAL = new NumericLessThanOrEqualPredicateOperator();
@@ -153,6 +153,6 @@ public abstract class DefaultAbstractExpressionEvaluator extends ExpressionEvalu
     public static void main(String[] args) {
         DefaultAbstractExpressionEvaluator executor = new DefaultAbstractExpressionEvaluator() {
         };
-        System.out.println(executor.evaluate("--10 + 10"));
+        System.out.println(executor.evaluate("(10 + 10) == 20"));
     }
 }

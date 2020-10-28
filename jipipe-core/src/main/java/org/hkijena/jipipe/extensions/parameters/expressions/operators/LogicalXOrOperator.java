@@ -13,8 +13,20 @@
 
 package org.hkijena.jipipe.extensions.parameters.expressions.operators;
 
-public class TextXOrOperator extends XOrOperator {
-    public TextXOrOperator() {
-        super("XOR");
+import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionOperator;
+
+import java.util.Iterator;
+
+@JIPipeDocumentation(name = "Logical XOR", description = "Returns true if exactly one of the operands are TRUE.")
+public class LogicalXOrOperator extends ExpressionOperator {
+
+    public LogicalXOrOperator(String symbol) {
+        super(symbol, 2, Associativity.LEFT, 2);
+    }
+
+    @Override
+    public Object evaluate(Iterator<Object> operands, Object evaluationContext) {
+        return (boolean)operands.next() ^ (boolean)operands.next();
     }
 }

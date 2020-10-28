@@ -13,10 +13,12 @@
 
 package org.hkijena.jipipe.extensions.parameters.expressions.operators;
 
+import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionOperator;
 
 import java.util.Iterator;
 
+@JIPipeDocumentation(name = "Logical NOT", description = "Returns TRUE if the input is FALSE and vice versa.")
 public class LogicalNotOperator extends ExpressionOperator {
 
     public LogicalNotOperator(String symbol) {

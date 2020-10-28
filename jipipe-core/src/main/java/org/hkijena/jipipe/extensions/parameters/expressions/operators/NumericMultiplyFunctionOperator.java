@@ -13,6 +13,9 @@
 
 package org.hkijena.jipipe.extensions.parameters.expressions.operators;
 
+import org.hkijena.jipipe.api.JIPipeDocumentation;
+
+@JIPipeDocumentation(name = "Multiply", description = "Multiplies the left and right operands")
 public class NumericMultiplyFunctionOperator extends NumericFunctionOperator {
     public NumericMultiplyFunctionOperator() {
         super("*", 7);

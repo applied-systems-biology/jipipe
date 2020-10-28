@@ -13,6 +13,9 @@
 
 package org.hkijena.jipipe.extensions.parameters.expressions.operators;
 
+import org.hkijena.jipipe.api.JIPipeDocumentation;
+
+@JIPipeDocumentation(name = "Modulo", description = "Calculates the modulo between the left and right operands")
 public class NumericModuloFunctionOperator extends NumericFunctionOperator {
     public NumericModuloFunctionOperator() {
         super("%", 7);
