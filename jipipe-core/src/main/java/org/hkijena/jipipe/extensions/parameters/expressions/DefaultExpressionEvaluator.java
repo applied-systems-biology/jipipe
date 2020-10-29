@@ -57,6 +57,7 @@ public class DefaultExpressionEvaluator extends ExpressionEvaluator {
     public static final NumericFunctionOperator OPERATOR_NUMERIC_EXPONENT = new NumericExponentFunctionOperator();
     public static final Operator OPERATOR_NUMERIC_NEGATE = new Operator("-", 1,Operator.Associativity.RIGHT, 8);
     public static final Operator OPERATOR_NUMERIC_NEGATE_HIGH = new Operator("-", 1,Operator.Associativity.RIGHT, 10);
+    public static final ExpressionOperator OPERATOR_STRING_CONTAINS = new StringContainsOperator();
 
     private final Set<String> knownOperatorTokens = new HashSet<>();
 
@@ -87,6 +88,9 @@ public class DefaultExpressionEvaluator extends ExpressionEvaluator {
         parameters.add(OPERATOR_NUMERIC_MODULO);
         parameters.add(OPERATOR_NUMERIC_EXPONENT);
         parameters.add(OPERATOR_NUMERIC_NEGATE);
+
+        // Add string operators
+        parameters.add(OPERATOR_STRING_CONTAINS);
 
         // Add operators from JIPipe (if available)
         if(JIPipe.getInstance() != null) {

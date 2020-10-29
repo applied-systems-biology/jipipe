@@ -44,7 +44,6 @@ public class DefaultExpressionParameterEditorUI extends JIPipeParameterEditorUI 
     private RSyntaxTextArea expressionEditor;
     private final JPanel expressionEditorPanel = new JPanel(new BorderLayout());
     private final JPanel editorPanel = new JPanel(new BorderLayout());
-    private final JComboBox<Object> availableModes = new JComboBox<>();
     private JButton variableOptions;
     private DefaultExpressionEvaluatorSyntaxTokenMaker tokenMaker = new DefaultExpressionEvaluatorSyntaxTokenMaker();
     private Set<ExpressionParameterVariable> variables = new HashSet<>();
@@ -73,7 +72,7 @@ public class DefaultExpressionParameterEditorUI extends JIPipeParameterEditorUI 
 
     private void initialize() {
         setLayout(new BorderLayout());
-        add(availableModes, BorderLayout.WEST);
+//        add(availableModes, BorderLayout.WEST);
         add(editorPanel, BorderLayout.CENTER);
 
         JPanel optionPanel = new JPanel();
@@ -84,6 +83,11 @@ public class DefaultExpressionParameterEditorUI extends JIPipeParameterEditorUI 
         UIUtils.makeFlat25x25(variableOptions);
         optionPanel.add(variableOptions);
         variableOptions.addActionListener(e -> insertVariable());
+
+        JButton operatorOptions = new JButton(UIUtils.getIconFromResources("actions/equals.png"));
+        UIUtils.makeFlat25x25(operatorOptions);
+        optionPanel.add(operatorOptions);
+        operatorOptions.addActionListener(e -> insertOperator());
 
         JButton functionOptions = new JButton(UIUtils.getIconFromResources("actions/insert-math-expression.png"));
         UIUtils.makeFlat25x25(functionOptions);
@@ -121,6 +125,14 @@ public class DefaultExpressionParameterEditorUI extends JIPipeParameterEditorUI 
         expressionEditorPanel.setOpaque(true);
         expressionEditorPanel.setBackground(Color.WHITE);
         expressionEditorPanel.add(expressionEditor, BorderLayout.CENTER);
+    }
+
+    private void insertOperator() {
+        ExpressionOperatorEntry operator = OperatorSelectorList.showDialog(this, DefaultExpressionParameter.EVALUATOR);
+        if(operator != null) {
+            String template = operator.getTemplate();
+            insertIntoExpression(template);
+        }
     }
 
     private void insertVariable() {
