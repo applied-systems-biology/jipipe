@@ -25,11 +25,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.registries.JIPipeExpressionRegistry;
 import org.hkijena.jipipe.extensions.parameters.expressions.operators.*;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Describes basic properties of a {@link ExpressionParameter}
@@ -63,7 +59,7 @@ public class DefaultExpressionEvaluator extends ExpressionEvaluator {
     public static final ExpressionOperator OPERATOR_STRING_CONTAINS = new StringContainsOperator();
 
     private final Set<String> knownOperatorTokens = new HashSet<>();
-    private final Set<String> knownNonAlphanumericOperatorTokens = new HashSet<>();
+    private final List<String> knownNonAlphanumericOperatorTokens = new ArrayList<>();
 
     public static Parameters createParameters() {
         Parameters parameters = new Parameters();
@@ -119,6 +115,7 @@ public class DefaultExpressionEvaluator extends ExpressionEvaluator {
                 knownNonAlphanumericOperatorTokens.add(operator.getSymbol());
             }
         }
+        knownNonAlphanumericOperatorTokens.sort(Comparator.comparing(String::length).reversed());
     }
 
     public List<String> tokenize(String expression, boolean includeQuotesAsToken, boolean includeQuotesIntoToken) {
@@ -176,6 +173,14 @@ public class DefaultExpressionEvaluator extends ExpressionEvaluator {
             }
             if(!isQuoted && buffer.length() > 0) {
                 String s1 = buffer.toString();
+                if(i != expression.length() - 1) {
+                    // Workaround <= >=
+                    if(s1.endsWith("<") || s1.endsWith(">")) {
+                        char next = expression.charAt(i + 1);
+                        if(next == '=')
+                            continue;
+                    }
+                }
                 for (String s : knownNonAlphanumericOperatorTokens) {
                     int i1 = s1.indexOf(s);
                     if(i1 != -1) {
