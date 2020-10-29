@@ -38,11 +38,7 @@ import org.hkijena.jipipe.extensions.parameters.editors.JIPipeNodeInfoRefParamet
 import org.hkijena.jipipe.extensions.parameters.editors.JIPipeParameterCollectionVisibilitiesParameterEditorUI;
 import org.hkijena.jipipe.extensions.parameters.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.parameters.expressions.DefaultExpressionParameterEditorUI;
-import org.hkijena.jipipe.extensions.parameters.expressions.functions.ContainsStringPredicateFunction;
-import org.hkijena.jipipe.extensions.parameters.expressions.functions.EqualsStringPredicateFunction;
-import org.hkijena.jipipe.extensions.parameters.expressions.functions.GetVariableFunction;
-import org.hkijena.jipipe.extensions.parameters.expressions.functions.GlobStringPredicateFunction;
-import org.hkijena.jipipe.extensions.parameters.expressions.functions.RegexStringPredicateFunction;
+import org.hkijena.jipipe.extensions.parameters.expressions.functions.*;
 import org.hkijena.jipipe.extensions.parameters.functions.FunctionParameter;
 import org.hkijena.jipipe.extensions.parameters.functions.FunctionParameterEditorUI;
 import org.hkijena.jipipe.extensions.parameters.functions.StringPatternExtractionFunction;
@@ -170,6 +166,7 @@ public class StandardParametersExtension extends JIPipePrepackagedDefaultJavaExt
         registerExpressionFunction(new GlobStringPredicateFunction());
         registerExpressionFunction(new RegexStringPredicateFunction());
         registerExpressionFunction(new GetVariableFunction());
+        registerExpressionFunction(new IfElseFunction());
     }
 
     private void registerScriptParameters() {
