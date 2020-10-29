@@ -22,6 +22,10 @@ public class DefaultExpressionParameter extends ExpressionParameter {
     public DefaultExpressionParameter() {
     }
 
+    public DefaultExpressionParameter(String expression) {
+        super(expression);
+    }
+
     public DefaultExpressionParameter(ExpressionParameter other) {
         super(other);
     }
