@@ -165,6 +165,13 @@ public class DefaultExpressionEvaluator extends ExpressionEvaluator {
     }
 
     @Override
+    public Object evaluate(String expression, Object evaluationContext) {
+        if(expression.trim().isEmpty())
+            return true;
+        return super.evaluate(expression, evaluationContext);
+    }
+
+    @Override
     protected Object evaluate(Function function, Iterator<Object> arguments, Object evaluationContext) {
         if(function instanceof ExpressionFunction) {
             return ((ExpressionFunction) function).evaluate(ImmutableList.copyOf(arguments));

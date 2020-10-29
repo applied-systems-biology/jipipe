@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.extensions.filesystem.algorithms;
 
+import com.fathzer.soft.javaluator.StaticVariableSet;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
@@ -26,6 +27,9 @@ import org.hkijena.jipipe.api.nodes.categories.FileSystemNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FileData;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FolderData;
+import org.hkijena.jipipe.extensions.parameters.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionEvaluator;
+import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameter;
 import org.hkijena.jipipe.extensions.parameters.predicates.PathPredicate;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
 import org.hkijena.jipipe.utils.ResourceUtils;
@@ -53,7 +57,7 @@ import java.util.stream.Stream;
 // Traits
 public class ListFiles extends JIPipeSimpleIteratingAlgorithm {
 
-    private PathPredicate.List filters = new PathPredicate.List();
+    private DefaultExpressionParameter filters = new DefaultExpressionParameter();
     private boolean filterOnlyFileNames = true;
     private String subFolder;
     private boolean recursive = false;
@@ -76,17 +80,18 @@ public class ListFiles extends JIPipeSimpleIteratingAlgorithm {
     public ListFiles(ListFiles other) {
         super(other);
         this.filterOnlyFileNames = other.filterOnlyFileNames;
-        this.filters.clear();
+        this.filters = new DefaultExpressionParameter(other.filters);
         this.subFolder = other.subFolder;
         this.recursive = other.recursive;
         this.recursiveFollowsLinks = other.recursiveFollowsLinks;
-        for (PathPredicate filter : other.filters) {
-            this.filters.add(new PathPredicate(filter));
-        }
     }
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+        // Variables used for the filter
+        final ExpressionEvaluator evaluator = filters.getEvaluator();
+        final StaticVariableSet<Object> variableSet = new StaticVariableSet<>();
+
         FolderData inputFolder = dataBatch.getInputData(getFirstInputSlot(), FolderData.class);
         Path inputPath = inputFolder.getPath();
         if (!StringUtils.isNullOrEmpty(subFolder)) {
@@ -104,12 +109,13 @@ public class ListFiles extends JIPipeSimpleIteratingAlgorithm {
             } else
                 stream = Files.list(inputPath).filter(Files::isRegularFile);
             for (Path file : stream.collect(Collectors.toList())) {
-                Path testedFile;
+                String testedFile;
                 if (filterOnlyFileNames)
-                    testedFile = file.getFileName();
+                    testedFile = file.getFileName().toString();
                 else
-                    testedFile = file;
-                if (filters.isEmpty() || filters.stream().anyMatch(f -> f.test(testedFile))) {
+                    testedFile = file.toString();
+                variableSet.set("x", testedFile);
+                if (evaluator.test(filters.getExpression(), variableSet)) {
                     dataBatch.addOutputData(getFirstOutputSlot(), new FileData(file));
                 }
             }
@@ -118,20 +124,14 @@ public class ListFiles extends JIPipeSimpleIteratingAlgorithm {
         }
     }
 
-    @Override
-    public void reportValidity(JIPipeValidityReport report) {
-        report.forCategory("Filters").report(filters);
-    }
-
-    @JIPipeDocumentation(name = "Filters", description = "You can optionally filter the result folders. " +
-            "The filters are connected via a logical OR operation. An empty list disables filtering")
+    @JIPipeDocumentation(name = "Filters", description = "You can optionally filter the result folders.")
     @JIPipeParameter("filters")
-    public PathPredicate.List getFilters() {
+    public DefaultExpressionParameter getFilters() {
         return filters;
     }
 
     @JIPipeParameter("filters")
-    public void setFilters(PathPredicate.List filters) {
+    public void setFilters(DefaultExpressionParameter filters) {
         this.filters = filters;
     }
 

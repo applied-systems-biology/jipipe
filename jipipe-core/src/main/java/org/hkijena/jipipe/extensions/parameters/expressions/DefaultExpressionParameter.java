@@ -13,16 +13,21 @@
 
 package org.hkijena.jipipe.extensions.parameters.expressions;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
 /**
- * Controls the behavior of an {@link ExpressionParameter}.
- * Attach it to the getter or setter within a {@link org.hkijena.jipipe.api.parameters.JIPipeParameterCollection}
+ * An {@link ExpressionParameter} that utilizes the {@link DefaultExpressionEvaluator} to generate results
  */
-@Target(ElementType.METHOD)
-@Retention(RetentionPolicy.RUNTIME)
-public @interface ExpressionParameterSettings {
+public class DefaultExpressionParameter extends ExpressionParameter {
+    public static final DefaultExpressionEvaluator EVALUATOR = new DefaultExpressionEvaluator();
+
+    public DefaultExpressionParameter() {
+    }
+
+    public DefaultExpressionParameter(ExpressionParameter other) {
+        super(other);
+    }
+
+    @Override
+    public ExpressionEvaluator getEvaluator() {
+        return EVALUATOR;
+    }
 }

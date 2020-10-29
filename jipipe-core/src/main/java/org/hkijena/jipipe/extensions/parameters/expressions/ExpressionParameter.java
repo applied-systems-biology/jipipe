@@ -15,13 +15,14 @@ package org.hkijena.jipipe.extensions.parameters.expressions;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 
 /**
  * A parameter that contains an expression.
  * This allows users to set up filters etc. from within the UI.
  * Use {@link ExpressionParameterSettings} to control the behavior of this parameter.
  */
-public class ExpressionParameter {
+public abstract class ExpressionParameter {
     private String expression = "";
 
     public ExpressionParameter() {
@@ -40,4 +41,10 @@ public class ExpressionParameter {
     public void setExpression(String expression) {
         this.expression = expression;
     }
+
+    /**
+     * Returns the evaluator instance that should evaluate this expression type
+     * @return the evaluator
+     */
+    public abstract ExpressionEvaluator getEvaluator();
 }

@@ -14,7 +14,9 @@
 package org.hkijena.jipipe.extensions.parameters.expressions;
 
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.api.registries.JIPipeExpressionRegistry;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.DocumentChangeListener;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
@@ -24,8 +26,11 @@ import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.util.Comparator;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
-public class ExpressionParameterEditorUI extends JIPipeParameterEditorUI {
+public class DefaultExpressionParameterEditorUI extends JIPipeParameterEditorUI {
 
     private final RSyntaxTextArea expressionEditor = new RSyntaxTextArea();
     private final JPanel expressionEditorPanel = new JPanel(new BorderLayout());
@@ -38,10 +43,11 @@ public class ExpressionParameterEditorUI extends JIPipeParameterEditorUI {
      * @param workbench       the workbech
      * @param parameterAccess Parameter
      */
-    public ExpressionParameterEditorUI(JIPipeWorkbench workbench, JIPipeParameterAccess parameterAccess) {
+    public DefaultExpressionParameterEditorUI(JIPipeWorkbench workbench, JIPipeParameterAccess parameterAccess) {
         super(workbench, parameterAccess);
         initialize();
         setToAdvancedEditor();
+        reload();
     }
 
     private void setToAdvancedEditor() {
@@ -62,19 +68,37 @@ public class ExpressionParameterEditorUI extends JIPipeParameterEditorUI {
         expressionEditorPanel.setBackground(Color.WHITE);
         expressionEditorPanel.add(expressionEditor, BorderLayout.CENTER);
 
-        JButton expressionEditorOptions = new JButton(UIUtils.getIconFromResources("actions/settings.png"));
-        UIUtils.makeFlat25x25(expressionEditorOptions);
-        expressionEditorPanel.add(expressionEditorOptions, BorderLayout.EAST);
+        JPanel optionPanel = new JPanel();
+        optionPanel.setOpaque(false);
+        optionPanel.setLayout(new BoxLayout(optionPanel, BoxLayout.X_AXIS));
 
+        JButton variableOptions = new JButton(UIUtils.getIconFromResources("actions/variable.png"));
+        UIUtils.makeFlat25x25(variableOptions);
+        optionPanel.add(variableOptions);
+
+        JButton functionOptions = new JButton(UIUtils.getIconFromResources("actions/insert-math-expression.png"));
+        UIUtils.makeFlat25x25(functionOptions);
+        optionPanel.add(functionOptions);
+        functionOptions.addActionListener(e -> insertFunction());
+
+        expressionEditorPanel.add(optionPanel, BorderLayout.EAST);
+
+        expressionEditor.setBorder(BorderFactory.createEmptyBorder(5,4,1,4));
         expressionEditor.setHighlightCurrentLine(false);
         expressionEditor.getDocument().addDocumentListener(new DocumentChangeListener() {
             @Override
             public void changed(DocumentEvent documentEvent) {
-                ExpressionParameter parameter = new ExpressionParameter();
-                parameter.setExpression(expressionEditor.getText());
-                setParameter(parameter, false);
+                DefaultExpressionParameter parameter = getParameter(DefaultExpressionParameter.class);
+                if(!Objects.equals(parameter.getExpression(), expressionEditor.getText())) {
+                    parameter.setExpression(expressionEditor.getText());
+                    setParameter(parameter, false);
+                }
             }
         });
+    }
+
+    private void insertFunction() {
+        JIPipeExpressionRegistry.ExpressionFunctionEntry functionEntry = FunctionSelectorList.showDialog(this);
     }
 
     @Override
@@ -84,7 +108,9 @@ public class ExpressionParameterEditorUI extends JIPipeParameterEditorUI {
 
     @Override
     public void reload() {
-        ExpressionParameter parameter = getParameter(ExpressionParameter.class);
-        expressionEditor.setText(parameter.getExpression());
+        DefaultExpressionParameter parameter = getParameter(DefaultExpressionParameter.class);
+        if(!Objects.equals(parameter.getExpression(), expressionEditor.getText())) {
+            expressionEditor.setText(parameter.getExpression());
+        }
     }
 }

@@ -15,6 +15,10 @@ package org.hkijena.jipipe.extensions.parameters.expressions;
 
 import com.fathzer.soft.javaluator.AbstractEvaluator;
 import com.fathzer.soft.javaluator.Parameters;
+import com.fathzer.soft.javaluator.StaticVariableSet;
+import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
+
+import java.util.function.Predicate;
 
 /**
  * The base class for an evaluator
@@ -29,5 +33,24 @@ public abstract class ExpressionEvaluator extends AbstractEvaluator<Object> {
      */
     protected ExpressionEvaluator(Parameters parameters) {
         super(parameters);
+    }
+
+    /**
+     * Returns the boolean evaluated expression. If the expression does not return a boolean, an exception is thrown.
+     * @param expression the expression
+     * @param variables set of variables to use
+     */
+    public boolean test(String expression, StaticVariableSet<Object> variables) {
+        Object result = evaluate(expression, variables);
+        if(result instanceof Boolean) {
+            return (boolean) result;
+        }
+        else {
+            throw new UserFriendlyRuntimeException("Expression does not return a boolean value: " + expression,
+                    "Expression does not return a boolean!",
+                    "Expression evaluator",
+                    "You tried to evaluate the expression '" + expression + "', which did not return a boolean value (TRUE or FALSE).",
+                    "Please check if you apply testing like for equality or if a value matches another value.");
+        }
     }
 }

@@ -36,8 +36,9 @@ import org.hkijena.jipipe.extensions.parameters.editors.JIPipeAlgorithmIconRefPa
 import org.hkijena.jipipe.extensions.parameters.editors.JIPipeDataInfoRefParameterEditorUI;
 import org.hkijena.jipipe.extensions.parameters.editors.JIPipeNodeInfoRefParameterEditorUI;
 import org.hkijena.jipipe.extensions.parameters.editors.JIPipeParameterCollectionVisibilitiesParameterEditorUI;
-import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameter;
-import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameterEditorUI;
+import org.hkijena.jipipe.extensions.parameters.expressions.DefaultExpressionEvaluator;
+import org.hkijena.jipipe.extensions.parameters.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.parameters.expressions.DefaultExpressionParameterEditorUI;
 import org.hkijena.jipipe.extensions.parameters.expressions.functions.ContainsStringPredicateFunction;
 import org.hkijena.jipipe.extensions.parameters.expressions.functions.EqualsStringPredicateFunction;
 import org.hkijena.jipipe.extensions.parameters.expressions.functions.GlobStringPredicateFunction;
@@ -164,12 +165,12 @@ public class StandardParametersExtension extends JIPipePrepackagedDefaultJavaExt
 
     private void registerExpressionParameters() {
         registerParameterType("expression",
-                ExpressionParameter.class,
+                DefaultExpressionParameter.class,
                 null,
                 null,
                 "Expression",
                 "A mathematical or conditional logic expression",
-                ExpressionParameterEditorUI.class);
+                DefaultExpressionParameterEditorUI.class);
         registerExpressionFunction(new ContainsStringPredicateFunction());
         registerExpressionFunction(new EqualsStringPredicateFunction());
         registerExpressionFunction(new GlobStringPredicateFunction());
