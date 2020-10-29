@@ -109,6 +109,7 @@ public class DefaultExpressionParameterEditorUI extends JIPipeParameterEditorUI 
         };
         RSyntaxDocument document = new RSyntaxDocument(tokenMakerFactory, "text/expression");
         expressionEditor = new RSyntaxTextArea(document);
+        expressionEditor.setLineWrap(true);
         expressionEditor.setBorder(BorderFactory.createEmptyBorder(5,4,1,4));
         expressionEditor.setHighlightCurrentLine(false);
         expressionEditor.getDocument().addDocumentListener(new DocumentChangeListener() {
