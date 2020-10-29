@@ -75,8 +75,4 @@ public class StackInverterAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         reverser.flipStack(img);
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlus3DData(img));
     }
-
-    @Override
-    public void reportValidity(JIPipeValidityReport report) {
-    }
 }

@@ -113,11 +113,6 @@ public class Hessian2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             return eigenimages.get(1).imageplus();
     }
 
-
-    @Override
-    public void reportValidity(JIPipeValidityReport report) {
-    }
-
     @JIPipeDocumentation(name = "Eigenvalue", description = "Allows you to choose whether the largest or smallest Eigenvalues are chosen")
     @JIPipeParameter("eigenvalue-selection")
     public EigenvalueSelection2D getEigenvalueSelection2D() {

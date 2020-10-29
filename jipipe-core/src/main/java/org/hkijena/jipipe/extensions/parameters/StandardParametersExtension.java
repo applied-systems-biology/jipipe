@@ -36,7 +36,6 @@ import org.hkijena.jipipe.extensions.parameters.editors.JIPipeAlgorithmIconRefPa
 import org.hkijena.jipipe.extensions.parameters.editors.JIPipeDataInfoRefParameterEditorUI;
 import org.hkijena.jipipe.extensions.parameters.editors.JIPipeNodeInfoRefParameterEditorUI;
 import org.hkijena.jipipe.extensions.parameters.editors.JIPipeParameterCollectionVisibilitiesParameterEditorUI;
-import org.hkijena.jipipe.extensions.parameters.expressions.DefaultExpressionEvaluator;
 import org.hkijena.jipipe.extensions.parameters.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.parameters.expressions.DefaultExpressionParameterEditorUI;
 import org.hkijena.jipipe.extensions.parameters.expressions.functions.ContainsStringPredicateFunction;
@@ -63,12 +62,6 @@ import org.hkijena.jipipe.extensions.parameters.optional.OptionalParameterEditor
 import org.hkijena.jipipe.extensions.parameters.pairs.*;
 import org.hkijena.jipipe.extensions.parameters.patterns.StringPatternExtraction;
 import org.hkijena.jipipe.extensions.parameters.patterns.StringPatternExtractionParameterEditorUI;
-import org.hkijena.jipipe.extensions.parameters.predicates.DoublePredicate;
-import org.hkijena.jipipe.extensions.parameters.predicates.DoublePredicateParameterEditorUI;
-import org.hkijena.jipipe.extensions.parameters.predicates.PathPredicate;
-import org.hkijena.jipipe.extensions.parameters.predicates.PathPredicateParameterEditorUI;
-import org.hkijena.jipipe.extensions.parameters.predicates.StringOrDoublePredicate;
-import org.hkijena.jipipe.extensions.parameters.predicates.StringOrDoublePredicateParameterEditorUI;
 import org.hkijena.jipipe.extensions.parameters.predicates.StringPredicate;
 import org.hkijena.jipipe.extensions.parameters.predicates.StringPredicateParameterEditorUI;
 import org.hkijena.jipipe.extensions.parameters.primitives.*;
@@ -404,10 +397,6 @@ public class StandardParametersExtension extends JIPipePrepackagedDefaultJavaExt
                 ColorMap.class,
                 "Color map",
                 "Available color maps that convert a scalar to a color");
-        registerEnumParameterType("path-predicate:mode",
-                PathPredicate.Mode.class,
-                "Mode",
-                "Available modes");
         registerEnumParameterType("string-predicate:mode",
                 StringPredicate.Mode.class,
                 "Mode",
@@ -465,14 +454,6 @@ public class StandardParametersExtension extends JIPipePrepackagedDefaultJavaExt
                 "Double pair",
                 "A pair of 64-bit floating point numbers",
                 null);
-        registerParameterType("string-predicate:string-or-double-predicate:pair",
-                StringFilterAndStringOrDoubleFilterPair.class,
-                StringFilterAndStringOrDoubleFilterPair.List.class,
-                StringFilterAndStringOrDoubleFilterPair::new,
-                r -> new StringFilterAndStringOrDoubleFilterPair((StringFilterAndStringOrDoubleFilterPair) r),
-                "String predicate to string/double predicate",
-                "Mapping from a string predicate to a string/double predicate",
-                null);
         registerParameterType("string-predicate:sort-order:pair",
                 StringFilterAndSortOrderPair.class,
                 StringFilterAndSortOrderPair.List.class,
@@ -523,14 +504,6 @@ public class StandardParametersExtension extends JIPipePrepackagedDefaultJavaExt
 
     private void registerFilterParameters() {
         // Filter parameters
-        registerParameterType("path-predicate",
-                PathPredicate.class,
-                PathPredicate.List.class,
-                PathPredicate::new,
-                f -> new PathPredicate((PathPredicate) f),
-                "Path predicate",
-                "A predicate for file or folder names",
-                PathPredicateParameterEditorUI.class);
         registerParameterType("string-predicate",
                 StringPredicate.class,
                 StringPredicate.List.class,
@@ -539,22 +512,6 @@ public class StandardParametersExtension extends JIPipePrepackagedDefaultJavaExt
                 "String predicate",
                 "A predicate for text values",
                 StringPredicateParameterEditorUI.class);
-        registerParameterType("double-predicate",
-                DoublePredicate.class,
-                DoublePredicate.List.class,
-                DoublePredicate::new,
-                f -> new DoublePredicate((DoublePredicate) f),
-                "Double predicate",
-                "A predicate for numbers",
-                DoublePredicateParameterEditorUI.class);
-        registerParameterType("string-or-double-predicate",
-                StringOrDoublePredicate.class,
-                StringOrDoublePredicate.List.class,
-                StringOrDoublePredicate::new,
-                f -> new StringOrDoublePredicate((StringOrDoublePredicate) f),
-                "String/Double predicate",
-                "A predicate for numbers or strings",
-                StringOrDoublePredicateParameterEditorUI.class);
     }
 
     private void registerJIPipeTypes() {

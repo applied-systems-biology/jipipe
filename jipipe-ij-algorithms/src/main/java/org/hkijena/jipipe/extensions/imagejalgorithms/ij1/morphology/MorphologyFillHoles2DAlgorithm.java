@@ -115,8 +115,4 @@ public class MorphologyFillHoles2DAlgorithm extends JIPipeSimpleIteratingAlgorit
                 pixels[i] = (byte) foreground;
         }
     }
-
-    @Override
-    public void reportValidity(JIPipeValidityReport report) {
-    }
 }

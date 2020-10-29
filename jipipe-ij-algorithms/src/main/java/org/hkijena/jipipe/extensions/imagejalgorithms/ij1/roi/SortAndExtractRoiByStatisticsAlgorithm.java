@@ -155,11 +155,6 @@ public class SortAndExtractRoiByStatisticsAlgorithm extends ImageRoiProcessorAlg
         dataBatch.addOutputData(getFirstOutputSlot(), outputData);
     }
 
-
-    @Override
-    public void reportValidity(JIPipeValidityReport report) {
-    }
-
     @JIPipeDocumentation(name = "Sort order", description = "Allows you to determine by which measurement columns to sort by. You can order by multiple columns " +
             "where the order within this list. If you for example order by 'Area' and then 'Perimeter', the ROI will be ordered by area and if the area is the same by perimeter.")
     @JIPipeParameter("sort-orders")

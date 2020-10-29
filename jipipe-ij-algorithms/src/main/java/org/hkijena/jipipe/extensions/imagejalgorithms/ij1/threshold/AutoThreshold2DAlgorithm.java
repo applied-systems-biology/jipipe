@@ -103,11 +103,6 @@ public class AutoThreshold2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     }
 
-    @Override
-    public void reportValidity(JIPipeValidityReport report) {
-
-    }
-
     @JIPipeDocumentation(name = "Dark background", description = "If the background color is dark. Disable this if your image has a bright background.")
     @JIPipeParameter("dark-background")
     public boolean isDarkBackground() {

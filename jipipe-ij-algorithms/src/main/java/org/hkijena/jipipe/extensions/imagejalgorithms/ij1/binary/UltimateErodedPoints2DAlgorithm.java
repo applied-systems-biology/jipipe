@@ -77,9 +77,4 @@ public class UltimateErodedPoints2DAlgorithm extends JIPipeSimpleIteratingAlgori
         ImageJUtils.forEachSlice(img, edm::run);
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscale8UData(img));
     }
-
-
-    @Override
-    public void reportValidity(JIPipeValidityReport report) {
-    }
 }

@@ -153,9 +153,4 @@ public class CLAHEContrastEnhancer extends JIPipeSimpleIteratingAlgorithm {
         this.fastMode = fastMode;
 
     }
-
-    @Override
-    public void reportValidity(JIPipeValidityReport report) {
-
-    }
 }

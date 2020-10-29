@@ -67,11 +67,6 @@ public class IOInterfaceAlgorithm extends JIPipeAlgorithm {
         }
     }
 
-    @Override
-    public void reportValidity(JIPipeValidityReport report) {
-
-    }
-
     /**
      * Removes the interface and directly connects the inputs and outputs
      *

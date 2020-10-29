@@ -76,10 +76,6 @@ public class ReferencedAppendRectangularRoiAlgorithm extends JIPipeIteratingAlgo
     }
 
     @Override
-    public void reportValidity(JIPipeValidityReport report) {
-    }
-
-    @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         ROIListData currentData = (ROIListData) dataBatch.getInputData("ROI", ROIListData.class).duplicate();
         ImagePlus reference = dataBatch.getInputData("Reference", ImagePlusData.class).getImage();

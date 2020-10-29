@@ -79,7 +79,4 @@ public class SobelEdgeDetectorAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         return true;
     }
 
-    @Override
-    public void reportValidity(JIPipeValidityReport report) {
-    }
 }

@@ -74,9 +74,4 @@ public class FFT2DInverseTransform extends JIPipeSimpleIteratingAlgorithm {
         ImagePlus fft = FFT.inverse(img);
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlus2DData(fft));
     }
-
-    @Override
-    public void reportValidity(JIPipeValidityReport report) {
-
-    }
 }

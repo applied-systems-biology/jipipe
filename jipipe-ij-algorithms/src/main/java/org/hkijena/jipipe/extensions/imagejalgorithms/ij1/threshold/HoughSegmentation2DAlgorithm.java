@@ -323,11 +323,6 @@ public class HoughSegmentation2DAlgorithm extends JIPipeSimpleIteratingAlgorithm
 
     }
 
-    @Override
-    public void reportValidity(JIPipeValidityReport report) {
-
-    }
-
     @JIPipeDocumentation(name = "Local mode")
     @JIPipeParameter("local")
     public boolean isLocal() {

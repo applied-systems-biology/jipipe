@@ -124,10 +124,6 @@ public class StackMergerAlgorithm extends JIPipeMergingAlgorithm {
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(new ImagePlus("Stack", stack)));
     }
 
-    @Override
-    public void reportValidity(JIPipeValidityReport report) {
-    }
-
     @JIPipeDocumentation(name = "Slice index annotation",
             description = "Data annotation that is used as reference for ordering the slices. Annotation values are lexicographically sorted.")
     @JIPipeParameter("counter-annotation-type")

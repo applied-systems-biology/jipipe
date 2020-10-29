@@ -75,9 +75,4 @@ public class Voronoi2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         ImageJUtils.forEachSlice(img, edm::run);
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscale8UData(img));
     }
-
-
-    @Override
-    public void reportValidity(JIPipeValidityReport report) {
-    }
 }

@@ -119,11 +119,6 @@ public class TransformCrop2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         }
     }
 
-
-    @Override
-    public void reportValidity(JIPipeValidityReport report) {
-    }
-
     @JIPipeDocumentation(name = "ROI", description = "Defines the area to crop.")
     @JIPipeParameter("roi")
     public Margin getRoi() {

@@ -100,11 +100,6 @@ public class TransformFlip2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(img));
     }
 
-
-    @Override
-    public void reportValidity(JIPipeValidityReport report) {
-    }
-
     @JIPipeDocumentation(name = "Flip direction", description = "The direction to flip")
     @JIPipeParameter("flip-mode")
     public FlipMode getFlipMode() {

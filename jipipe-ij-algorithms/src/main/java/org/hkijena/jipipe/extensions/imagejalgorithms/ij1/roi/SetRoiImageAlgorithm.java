@@ -68,9 +68,4 @@ public class SetRoiImageAlgorithm extends JIPipeIteratingAlgorithm {
         }
         dataBatch.addOutputData(getFirstOutputSlot(), data);
     }
-
-
-    @Override
-    public void reportValidity(JIPipeValidityReport report) {
-    }
 }

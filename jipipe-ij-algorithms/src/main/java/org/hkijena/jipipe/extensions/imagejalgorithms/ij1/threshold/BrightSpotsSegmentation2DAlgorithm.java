@@ -193,9 +193,4 @@ public class BrightSpotsSegmentation2DAlgorithm extends JIPipeSimpleIteratingAlg
     public AutoThreshold2DAlgorithm getAutoThresholding() {
         return autoThresholding;
     }
-
-    @Override
-    public void reportValidity(JIPipeValidityReport report) {
-
-    }
 }

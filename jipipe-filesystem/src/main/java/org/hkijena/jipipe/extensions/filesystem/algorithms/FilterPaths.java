@@ -16,7 +16,6 @@ package org.hkijena.jipipe.extensions.filesystem.algorithms;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
@@ -29,7 +28,6 @@ import org.hkijena.jipipe.extensions.filesystem.dataypes.PathData;
 import org.hkijena.jipipe.extensions.parameters.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.expressions.variables.PathFilterExpressionParameterVariableSource;
-import org.hkijena.jipipe.extensions.parameters.predicates.PathPredicate;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -51,7 +49,6 @@ public class FilterPaths extends JIPipeSimpleIteratingAlgorithm {
 
     //    private PathFilter filter = new PathFilter();
     private DefaultExpressionParameter filters = new DefaultExpressionParameter("\".tif\" in name");
-    private boolean invert = false;
     private boolean outputFiles = true;
     private boolean outputFolders = true;
     private boolean outputNonExisting = true;
@@ -72,10 +69,10 @@ public class FilterPaths extends JIPipeSimpleIteratingAlgorithm {
      */
     public FilterPaths(FilterPaths other) {
         super(other);
-        this.invert = other.invert;
         this.outputFiles = other.outputFiles;
         this.outputFolders = other.outputFolders;
         this.outputNonExisting = other.outputNonExisting;
+        this.filters = new DefaultExpressionParameter(other.filters);
     }
 
     @Override

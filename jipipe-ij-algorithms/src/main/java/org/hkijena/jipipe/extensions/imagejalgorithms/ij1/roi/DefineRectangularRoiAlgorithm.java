@@ -81,10 +81,6 @@ public class DefineRectangularRoiAlgorithm extends JIPipeAlgorithm {
         }
     }
 
-    @Override
-    public void reportValidity(JIPipeValidityReport report) {
-    }
-
     @JIPipeDocumentation(name = "Rectangles", description = "List of rectangles")
     @JIPipeParameter("rectangles")
     public RectangleList getRectangles() {

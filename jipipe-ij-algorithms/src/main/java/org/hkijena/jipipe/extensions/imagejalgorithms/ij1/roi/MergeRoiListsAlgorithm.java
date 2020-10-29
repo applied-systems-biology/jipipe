@@ -72,8 +72,4 @@ public class MergeRoiListsAlgorithm extends JIPipeMergingAlgorithm {
         }
         dataBatch.addOutputData(getFirstOutputSlot(), result);
     }
-
-    @Override
-    public void reportValidity(JIPipeValidityReport report) {
-    }
 }

@@ -317,6 +317,66 @@ public class TablesExtension extends JIPipePrepackagedDefaultJavaExtension {
                 "Square",
                 "sqr",
                 "Calculates x^2 for each value x. String values are converted to numbers or zero.");
+        registerTableColumnOperationAndExpressionFunction("convert-acos",
+                new ArcusCosineColumnOperation(),
+                "Arc cosine",
+                "acos",
+                "Returns the arc cosine of each value; the returned angle is in the range 0.0 through pi");
+        registerTableColumnOperationAndExpressionFunction("convert-asin",
+                new ArcusSineColumnOperation(),
+                "Arc sine",
+                "asin",
+                "Returns the arc sine of each value; the returned angle is in the range -pi/2 through pi/2");
+        registerTableColumnOperationAndExpressionFunction("convert-atan",
+                new ArcusSineColumnOperation(),
+                "Arc tangent",
+                "atan",
+                "Returns the arc tangent of each value; the returned angle is in the range -pi/2 through pi/2");
+        registerTableColumnOperationAndExpressionFunction("convert-cos",
+                new CosineColumnOperation(),
+                "Cosine",
+                "cos",
+                "Returns the cosine of each value");
+        registerTableColumnOperationAndExpressionFunction("convert-cosh",
+                new HyperbolicCosineColumnOperation(),
+                "Hyperbolic cosine",
+                "cosh",
+                "Returns the hyperbolic cosine of each value");
+        registerTableColumnOperationAndExpressionFunction("convert-sinh",
+                new HyperbolicSineColumnOperation(),
+                "Hyperbolic sine",
+                "sinh",
+                "Returns the hyperbolic cosine of each value");
+        registerTableColumnOperationAndExpressionFunction("convert-tanh",
+                new HyperbolicTangentColumnOperation(),
+                "Hyperbolic tangent",
+                "tanh",
+                "Returns the hyperbolic tangent of each value");
+        registerTableColumnOperationAndExpressionFunction("convert-log10",
+                new Log10ColumnOperation(),
+                "Logarithm (base 10)",
+                "log10",
+                "Returns the logarithm to the base of 10 of each value");
+        registerTableColumnOperationAndExpressionFunction("convert-round",
+                new RoundColumnOperation(),
+                "Round",
+                "round",
+                "Rounds to the closest integer number");
+        registerTableColumnOperationAndExpressionFunction("convert-sign",
+                new SignColumnOperation(),
+                "Signum",
+                "sign",
+                "Returns -1 for negative values, 1 for positive values, and zero otherwise");
+        registerTableColumnOperationAndExpressionFunction("convert-sin",
+                new SineColumnOperation(),
+                "Sine",
+                "sin",
+                "Returns the sine of each value");
+        registerTableColumnOperationAndExpressionFunction("convert-tan",
+                new TangentColumnOperation(),
+                "Tangent",
+                "tan",
+                "Returns the tangent of each value");
 
         // Integrating functions
         registerTableColumnOperationAndExpressionFunction("statistics-average",

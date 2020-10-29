@@ -64,9 +64,4 @@ public class UnsetRoiImageAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         }
         dataBatch.addOutputData(getFirstOutputSlot(), data);
     }
-
-
-    @Override
-    public void reportValidity(JIPipeValidityReport report) {
-    }
 }

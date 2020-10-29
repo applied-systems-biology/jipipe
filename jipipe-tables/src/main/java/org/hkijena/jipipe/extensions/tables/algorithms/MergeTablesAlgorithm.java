@@ -66,8 +66,4 @@ public class MergeTablesAlgorithm extends JIPipeMergingAlgorithm {
         }
         dataBatch.addOutputData(getFirstOutputSlot(), resultsTableData);
     }
-
-    @Override
-    public void reportValidity(JIPipeValidityReport report) {
-    }
 }

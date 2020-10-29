@@ -72,8 +72,4 @@ public class MergeColumnsAlgorithm extends JIPipeMergingAlgorithm {
         ResultsTableData resultsTableData = new ResultsTableData(columnMap);
         dataBatch.addOutputData(getFirstOutputSlot(), resultsTableData);
     }
-
-    @Override
-    public void reportValidity(JIPipeValidityReport report) {
-    }
 }

@@ -76,9 +76,4 @@ public class FFT2DSwapQuadrants extends JIPipeSimpleIteratingAlgorithm {
     public boolean supportsParallelization() {
         return true;
     }
-
-    @Override
-    public void reportValidity(JIPipeValidityReport report) {
-
-    }
 }

@@ -97,11 +97,6 @@ public class ApplyTransform2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(img));
     }
 
-
-    @Override
-    public void reportValidity(JIPipeValidityReport report) {
-    }
-
     @JIPipeDocumentation(name = "Function", description = "The function that is applied to each pixel.")
     @JIPipeParameter("transformation-function")
     public Transformation getTransformation() {

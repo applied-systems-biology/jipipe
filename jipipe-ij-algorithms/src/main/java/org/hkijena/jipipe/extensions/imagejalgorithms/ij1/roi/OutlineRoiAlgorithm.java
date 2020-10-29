@@ -71,11 +71,6 @@ public class OutlineRoiAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         dataBatch.addOutputData(getFirstOutputSlot(), data);
     }
 
-
-    @Override
-    public void reportValidity(JIPipeValidityReport report) {
-    }
-
     @JIPipeDocumentation(name = "Outline method", description = "The outlining method that should be applied.")
     @JIPipeParameter("outline")
     public RoiOutline getOutline() {

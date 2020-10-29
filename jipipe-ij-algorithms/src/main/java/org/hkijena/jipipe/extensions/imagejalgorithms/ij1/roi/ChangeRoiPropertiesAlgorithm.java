@@ -125,11 +125,6 @@ public class ChangeRoiPropertiesAlgorithm extends JIPipeSimpleIteratingAlgorithm
         dataBatch.addOutputData(getFirstOutputSlot(), data);
     }
 
-
-    @Override
-    public void reportValidity(JIPipeValidityReport report) {
-    }
-
     @JIPipeDocumentation(name = "Location (X)", description = "The X location")
     @JIPipeParameter("position-x")
     public OptionalDoubleParameter getPositionX() {

@@ -76,10 +76,6 @@ public class ConvertAnnotationTableToAnnotatedTables extends JIPipeSimpleIterati
         }
     }
 
-    @Override
-    public void reportValidity(JIPipeValidityReport report) {
-    }
-
     @JIPipeDocumentation(name = "Keep annotation columns", description = "If enabled, annotation columns are copied into the result tables.")
     @JIPipeParameter("keep-annotation-columns")
     public boolean isKeepAnnotationColumns() {

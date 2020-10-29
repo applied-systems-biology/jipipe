@@ -62,10 +62,6 @@ public class RemoveAnnotationByValue extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    public void reportValidity(JIPipeValidityReport report) {
-    }
-
-    @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         for (StringAndStringPredicatePair filter : filters) {
             JIPipeAnnotation instance = dataBatch.getAnnotationOfType(filter.getKey());
