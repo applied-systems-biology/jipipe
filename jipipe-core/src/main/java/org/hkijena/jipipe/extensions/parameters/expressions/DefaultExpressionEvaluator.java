@@ -46,6 +46,8 @@ public class DefaultExpressionEvaluator extends ExpressionEvaluator {
     public static final ExpressionOperator OPERATOR_XOR_TEXT = new TextLogicalXOrOperator();
     public static final NumericOrStringPredicateOperator OPERATOR_NUMERIC_EQUALS = new NumericOrStringEqualityPredicateOperator();
     public static final NumericOrStringPredicateOperator OPERATOR_NUMERIC_EQUALS_TEXT = new NumericOrStringTextEqualityPredicateOperator();
+    public static final NumericOrStringPredicateOperator OPERATOR_NUMERIC_UNEQUALS = new NumericOrStringInEqualityPredicateOperator();
+    public static final NumericOrStringPredicateOperator OPERATOR_NUMERIC_UNEQUALS_TEXT = new NumericOrStringTextInEqualityPredicateOperator();
     public static final NumericPredicateOperator OPERATOR_NUMERIC_LESS_THAN = new NumericLessThanPredicateOperator();
     public static final NumericPredicateOperator OPERATOR_NUMERIC_GREATER_THAN = new NumericGreaterThanPredicateOperator();
     public static final NumericPredicateOperator OPERATOR_NUMERIC_LESS_THAN_OR_EQUAL = new NumericLessThanOrEqualPredicateOperator();
@@ -81,6 +83,8 @@ public class DefaultExpressionEvaluator extends ExpressionEvaluator {
         parameters.add(OPERATOR_NUMERIC_LESS_THAN_OR_EQUAL);
         parameters.add(OPERATOR_NUMERIC_GREATER_THAN_OR_EQUAL);
         parameters.add(OPERATOR_NUMERIC_EQUALS_TEXT);
+        parameters.add(OPERATOR_NUMERIC_UNEQUALS);
+        parameters.add(OPERATOR_NUMERIC_UNEQUALS_TEXT);
 
         // Add numeric operators
         parameters.add(OPERATOR_NUMERIC_STRING_PLUS);
