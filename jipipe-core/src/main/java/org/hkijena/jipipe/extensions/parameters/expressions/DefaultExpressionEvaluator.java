@@ -63,6 +63,7 @@ public class DefaultExpressionEvaluator extends ExpressionEvaluator {
     public static final ExpressionOperator OPERATOR_STRING_CONTAINS = new StringContainsOperator();
 
     private final Set<String> knownOperatorTokens = new HashSet<>();
+    private final Set<String> knownNonAlphanumericOperatorTokens = new HashSet<>();
 
     public static Parameters createParameters() {
         Parameters parameters = new Parameters();
@@ -114,6 +115,9 @@ public class DefaultExpressionEvaluator extends ExpressionEvaluator {
         knownOperatorTokens.add("FALSE");
         for (Operator operator : getOperators()) {
             knownOperatorTokens.add(operator.getSymbol());
+            if(!operator.getSymbol().matches("[A-Za-z0-9_]+")) {
+                knownNonAlphanumericOperatorTokens.add(operator.getSymbol());
+            }
         }
     }
 
@@ -129,7 +133,7 @@ public class DefaultExpressionEvaluator extends ExpressionEvaluator {
                 if(!isQuoted) {
                     // Process buffer up until now
                     if (buffer.length() > 0)
-                        fillTokenList(buffer.toString(), knownOperatorTokens, tokens);
+                        tokens.add(buffer.toString());
                     buffer.setLength(0);
                     isQuoted = true;
                 }
@@ -147,6 +151,17 @@ public class DefaultExpressionEvaluator extends ExpressionEvaluator {
                     tokens.add("\"");
                 }
             }
+            else if(c == ')' || c == '(' || c == ',') {
+                if (buffer.length() > 0)
+                    tokens.add(buffer.toString());
+                buffer.setLength(0);
+                tokens.add(""  + c);
+            }
+            else if(c == ' ' || c == '\t' || c == '\n' || c == '\r') {
+                if (buffer.length() > 0)
+                    tokens.add(buffer.toString());
+                buffer.setLength(0);
+            }
             else if(c == '\\') {
                 if(escape)
                     buffer.append(c);
@@ -159,10 +174,23 @@ public class DefaultExpressionEvaluator extends ExpressionEvaluator {
             else {
                 buffer.append(c);
             }
+            if(!isQuoted && buffer.length() > 0) {
+                String s1 = buffer.toString();
+                for (String s : knownNonAlphanumericOperatorTokens) {
+                    int i1 = s1.indexOf(s);
+                    if(i1 != -1) {
+                        if(i1 > 0)
+                            tokens.add(s1.substring(0, i1));
+                        tokens.add(s);
+                        buffer.setLength(0);
+                        break;
+                    }
+                }
+            }
         }
 
         if(buffer.length() > 0)
-            fillTokenList(buffer.toString(), knownOperatorTokens, tokens);
+            tokens.add(buffer.toString());
         return tokens;
     }
 
@@ -171,17 +199,23 @@ public class DefaultExpressionEvaluator extends ExpressionEvaluator {
         return tokenize(expression, false, true).iterator();
     }
 
-    private void fillTokenList(String expression, Set<String> operators, List<String> tokens) {
-        // First split by space
-        for (String subToken : expression.split("\\s+")) {
-            if (operators.contains(subToken)) {
-                // Prevent further tokenization
-                tokens.add(subToken);
-            } else {
-                tokens.addAll(ImmutableList.copyOf(super.tokenize(subToken)));
-            }
-        }
-    }
+//    private void fillTokenList(String expression, Set<String> operators, List<String> tokens) {
+////        // First split by space
+////        for (String subToken : expression.split("\\s+")) {
+////            if (operators.contains(subToken)) {
+////                // Prevent further tokenization
+////                tokens.add(subToken);
+////            } else {
+////                tokens.addAll(ImmutableList.copyOf(super.tokenize(subToken)));
+////            }
+////        }
+////        StringBuilder buffer = new StringBuilder();
+////        for (int i = 0; i < expression.length(); i++) {
+////            char c = expression.charAt(i);
+////
+////        }
+//        tokens.add(expression);
+//    }
 
     @Override
     public Object evaluate(String expression, Object evaluationContext) {

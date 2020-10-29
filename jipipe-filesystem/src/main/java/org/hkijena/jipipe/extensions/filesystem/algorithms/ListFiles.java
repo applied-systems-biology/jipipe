@@ -111,7 +111,9 @@ public class ListFiles extends JIPipeSimpleIteratingAlgorithm {
         }
     }
 
-    @JIPipeDocumentation(name = "Filters", description = "You can optionally filter the result folders.")
+    @JIPipeDocumentation(name = "Filters", description = "Filter expression that allows to filter the files. " +
+            "Click the [X] button to see all available variables. " +
+            "An example for an expression would be '\".tif\" IN name', which would test if there is '.tif' inside the file name.")
     @JIPipeParameter("filters")
     @ExpressionParameterSettings(variableSource = PathFilterExpressionParameterVariableSource.class)
     public DefaultExpressionParameter getFilters() {

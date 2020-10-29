@@ -76,7 +76,9 @@ public class FilterTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         dataBatch.addOutputData(getFirstOutputSlot(), output);
     }
 
-    @JIPipeDocumentation(name = "Filters", description = "Allows you to select how to filter the values.")
+    @JIPipeDocumentation(name = "Filters", description = "Allows you to select how to filter the values. " +
+            "Each row is iterated individually and its columns are available as variables inside the expression. For example there are columns 'Area' and 'X'. " +
+            "Then you can filter the table via an expression 'AREA > 100 AND X > 200 AND X < 1000'")
     @JIPipeParameter("filters")
     public DefaultExpressionParameter getFilters() {
         return filters;
