@@ -157,7 +157,7 @@ public class DefaultExpressionEvaluator extends ExpressionEvaluator {
                 buffer.setLength(0);
                 tokens.add(""  + c);
             }
-            else if(c == ' ' || c == '\t' || c == '\n' || c == '\r') {
+            else if(!isQuoted && (c == ' ' || c == '\t' || c == '\n' || c == '\r')) {
                 if (buffer.length() > 0)
                     tokens.add(buffer.toString());
                 buffer.setLength(0);

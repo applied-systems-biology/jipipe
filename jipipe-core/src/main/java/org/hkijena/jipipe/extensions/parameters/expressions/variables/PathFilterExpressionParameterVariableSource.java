@@ -28,7 +28,7 @@ import java.util.Set;
  */
 public class PathFilterExpressionParameterVariableSource implements ExpressionParameterVariableSource {
     public static final ExpressionParameterVariable VARIABLE_PATH = new ExpressionParameterVariable("Path", "The full path. Can be relative or absolute.", "path");
-    public static final ExpressionParameterVariable VARIABLE_ABSPATH = new ExpressionParameterVariable("Absolute path", "The full absolute path.", "absolutepath");
+    public static final ExpressionParameterVariable VARIABLE_ABSPATH = new ExpressionParameterVariable("Absolute path", "The full absolute path.", "absolute_path");
     public static final ExpressionParameterVariable VARIABLE_NAME = new ExpressionParameterVariable("Name", "The file or directory name", "name");
     public static final ExpressionParameterVariable VARIABLE_PARENT = new ExpressionParameterVariable("Parent", "The parent directory", "parent");
     private static final Set<ExpressionParameterVariable> VARIABLES;

@@ -30,13 +30,11 @@ import org.hkijena.jipipe.extensions.tables.operations.integrating.*;
 import org.hkijena.jipipe.extensions.tables.parameters.ResultsTableDataParameterEditorUI;
 import org.hkijena.jipipe.extensions.tables.parameters.TableColumnSourceParameter;
 import org.hkijena.jipipe.extensions.tables.parameters.TableColumnSourceParameterEditorUI;
-import org.hkijena.jipipe.extensions.tables.parameters.collections.ConvertingTableColumnProcessorParameterList;
-import org.hkijena.jipipe.extensions.tables.parameters.collections.IntegratingTableColumnProcessorParameterList;
-import org.hkijena.jipipe.extensions.tables.parameters.collections.ResultsTableDataList;
-import org.hkijena.jipipe.extensions.tables.parameters.collections.TableColumnGeneratorProcessorParameterList;
+import org.hkijena.jipipe.extensions.tables.parameters.collections.*;
 import org.hkijena.jipipe.extensions.tables.parameters.enums.TableColumnGeneratorParameter;
 import org.hkijena.jipipe.extensions.tables.parameters.enums.TableColumnGeneratorParameterEditorUI;
 import org.hkijena.jipipe.extensions.tables.parameters.processors.ConvertingTableColumnProcessorParameter;
+import org.hkijena.jipipe.extensions.tables.parameters.processors.ExpressionTableColumnGeneratorProcessor;
 import org.hkijena.jipipe.extensions.tables.parameters.processors.IntegratingTableColumnProcessorParameter;
 import org.hkijena.jipipe.extensions.tables.parameters.processors.TableColumnGeneratorProcessor;
 import org.hkijena.jipipe.utils.ResourceUtils;
@@ -151,6 +149,7 @@ public class TablesExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerNodeType("modify-tables", ModifyTablesScript.class, UIUtils.getIconURLFromResources("apps/python.png"));
         registerNodeType("modify-and-merge-tables", ModifyAndMergeTablesScript.class, UIUtils.getIconURLFromResources("apps/python.png"));
         registerNodeType("tables-from-script", TablesFromScript.class, UIUtils.getIconURLFromResources("apps/python.png"));
+        registerNodeType("tables-from-expression", GenerateTableFromExpressionAlgorithm.class, UIUtils.getIconURLFromResources("apps/insert-math-expression.png"));
         registerNodeType("tables-set-column", SetColumnAlgorithm.class, UIUtils.getIconURLFromResources("actions/edit-table-insert-column-right.png"));
         registerNodeType("define-tables", DefineTablesAlgorithm.class, UIUtils.getIconURLFromResources("data-types/results-table.png"));
     }
@@ -227,6 +226,15 @@ public class TablesExtension extends JIPipePrepackagedDefaultJavaExtension {
                 p -> new TableColumnGeneratorProcessorParameterList((TableColumnGeneratorProcessorParameterList) p),
                 "Column generator processor list",
                 "Defines multiple columns to be generated",
+                null);
+
+        registerParameterType("table-column-expression-generator-column-processor",
+                ExpressionTableColumnGeneratorProcessor.class,
+                ExpressionTableColumnGeneratorProcessorParameterList.class,
+                null,
+                null,
+                "Column generator (expression)",
+                "Generates a column via an expression",
                 null);
     }
 

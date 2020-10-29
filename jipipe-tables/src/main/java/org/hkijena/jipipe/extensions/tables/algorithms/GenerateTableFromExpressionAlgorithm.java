@@ -22,26 +22,19 @@ import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
-import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
+import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeMutableParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.pairs.PairParameterSettings;
-import org.hkijena.jipipe.extensions.tables.ColumnContentType;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.extensions.tables.datatypes.TableColumn;
 import org.hkijena.jipipe.extensions.tables.parameters.TableCellExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.tables.parameters.collections.ExpressionTableColumnGeneratorProcessorParameterList;
-import org.hkijena.jipipe.extensions.tables.parameters.collections.TableColumnGeneratorProcessorParameterList;
-import org.hkijena.jipipe.extensions.tables.parameters.enums.TableColumnGeneratorParameter;
 import org.hkijena.jipipe.extensions.tables.parameters.processors.ExpressionTableColumnGeneratorProcessor;
-import org.hkijena.jipipe.extensions.tables.parameters.processors.TableColumnGeneratorProcessor;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -49,21 +42,20 @@ import java.util.function.Supplier;
 /**
  * Algorithm that adds or replaces a column by a generated value
  */
-@JIPipeDocumentation(name = "Generate table column", description = "Adds a new column or replaces an existing table column by generating values")
-@JIPipeOrganization(nodeTypeCategory = TableNodeTypeCategory.class)
-@JIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", autoCreate = true)
+@JIPipeDocumentation(name = "Table from expressions", description = "Generates a table from expressions")
+@JIPipeOrganization(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 @JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
-public class GenerateColumnAlgorithm extends JIPipeSimpleIteratingAlgorithm {
+public class GenerateTableFromExpressionAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private ExpressionTableColumnGeneratorProcessorParameterList columns = new ExpressionTableColumnGeneratorProcessorParameterList();
-    private boolean replaceIfExists = false;
+    private int generatedRows = 10;
 
     /**
      * Creates a new instance
      *
      * @param info algorithm info
      */
-    public GenerateColumnAlgorithm(JIPipeNodeInfo info) {
+    public GenerateTableFromExpressionAlgorithm(JIPipeNodeInfo info) {
         super(info);
         columns.addNewInstance();
     }
@@ -73,23 +65,22 @@ public class GenerateColumnAlgorithm extends JIPipeSimpleIteratingAlgorithm {
      *
      * @param other the original
      */
-    public GenerateColumnAlgorithm(GenerateColumnAlgorithm other) {
+    public GenerateTableFromExpressionAlgorithm(GenerateTableFromExpressionAlgorithm other) {
         super(other);
-        this.replaceIfExists = other.replaceIfExists;
+        this.generatedRows = other.generatedRows;
         this.columns = new ExpressionTableColumnGeneratorProcessorParameterList(other.columns);
     }
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
-        ResultsTableData table = (ResultsTableData) dataBatch.getInputData(getFirstInputSlot(), ResultsTableData.class).duplicate();
+        ResultsTableData table = new ResultsTableData();
+        table.addRows(generatedRows);
         StaticVariableSet<Object> variableSet = new StaticVariableSet<>();
         for (ExpressionTableColumnGeneratorProcessor entry : columns) {
             String columnName = entry.getValue();
-
-            if (table.getColumnIndex(columnName) != -1 && !replaceIfExists)
-                continue;
-
-            int columnId = table.getOrCreateColumnIndex(columnName);
+            int columnId = table.getColumnIndex(columnName);
+            if(columnId == -1)
+                columnId = table.getOrCreateColumnIndex(columnName);
             variableSet.set("column", columnId);
             variableSet.set("column_name", columnName);
             for (int row = 0; row < table.getRowCount(); row++) {
@@ -108,16 +99,6 @@ public class GenerateColumnAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         report.forCategory("Columns").report(columns);
     }
 
-    @JIPipeDocumentation(name = "Replace existing data", description = "If the target column exists, replace its content")
-    @JIPipeParameter("replace-existing")
-    public boolean isReplaceIfExists() {
-        return replaceIfExists;
-    }
-
-    @JIPipeParameter("replace-existing")
-    public void setReplaceIfExists(boolean replaceIfExists) {
-        this.replaceIfExists = replaceIfExists;
-    }
 
     @JIPipeDocumentation(name = "Columns", description = "Columns to be generated")
     @JIPipeParameter("columns")
@@ -130,5 +111,19 @@ public class GenerateColumnAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeParameter("columns")
     public void setColumns(ExpressionTableColumnGeneratorProcessorParameterList columns) {
         this.columns = columns;
+    }
+
+    @JIPipeDocumentation(name = "Generated rows", description = "Determines how many rows to generate")
+    @JIPipeParameter("generated-rows")
+    public int getGeneratedRows() {
+        return generatedRows;
+    }
+
+    @JIPipeParameter("generated-rows")
+    public boolean setGeneratedRows(int generatedRows) {
+        if(generatedRows < 0)
+            return false;
+        this.generatedRows = generatedRows;
+        return true;
     }
 }

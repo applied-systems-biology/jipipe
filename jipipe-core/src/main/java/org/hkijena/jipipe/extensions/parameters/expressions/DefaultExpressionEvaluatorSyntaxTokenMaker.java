@@ -82,7 +82,7 @@ public class DefaultExpressionEvaluatorSyntaxTokenMaker extends AbstractTokenMak
                     }
                 }
             }
-            if(c == ' ' || c == '\t' || c == '\r' || c == '\n') {
+            if(!isQuote && (c == ' ' || c == '\t' || c == '\r' || c == '\n')) {
                 addTokenFromBuilder(text, builder.toString(), builderStart, offset, newStartOffset + offset);
                 builder.setLength(0);
                 builderStart = index + 1;
