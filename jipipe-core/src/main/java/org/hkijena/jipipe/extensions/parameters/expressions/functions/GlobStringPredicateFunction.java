@@ -24,7 +24,7 @@ import java.util.List;
 public class GlobStringPredicateFunction extends ExpressionFunction {
 
     public GlobStringPredicateFunction() {
-        super("MATCHES_GLOB", 2);
+        super("STRING_MATCHES_GLOB", 2);
     }
 
     @Override

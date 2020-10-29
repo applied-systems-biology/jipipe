@@ -23,7 +23,7 @@ import java.util.List;
 public class RegexStringPredicateFunction extends ExpressionFunction {
 
     public RegexStringPredicateFunction() {
-        super("MATCHES_REGEX", 2);
+        super("STRING_MATCHES_REGEX", 2);
     }
 
     @Override
