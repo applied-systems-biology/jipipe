@@ -112,11 +112,6 @@ public class LocalMaxima2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(resultImage));
     }
 
-
-    @Override
-    public void reportValidity(JIPipeValidityReport report) {
-    }
-
     @JIPipeDocumentation(name = "Height tolerance", description = "Maxima are accepted only if protruding more than this value from the ridge to a higher maximum")
     @JIPipeParameter("height-tolerance")
     public double getHeightTolerance() {

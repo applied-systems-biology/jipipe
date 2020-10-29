@@ -98,11 +98,6 @@ public class RemoveBorderRoisAlgorithm extends JIPipeIteratingAlgorithm {
         dataBatch.addOutputData(getFirstOutputSlot(), data);
     }
 
-
-    @Override
-    public void reportValidity(JIPipeValidityReport report) {
-    }
-
     @JIPipeDocumentation(name = "Border", description = "Defines the rectangle that is created within the image boundaries separate inside and outside. " +
             "If a ROI intersects with the outside area (meaning that it is not contained within the rectangle), it is removed.")
     @JIPipeParameter("border-definition")

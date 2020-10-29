@@ -94,10 +94,6 @@ public class ReferencedDefineRectangularRoiAlgorithm extends JIPipeIteratingAlgo
         }
     }
 
-    @Override
-    public void reportValidity(JIPipeValidityReport report) {
-    }
-
     @JIPipeDocumentation(name = "Rectangles", description = "List of rectangles")
     @JIPipeParameter("rectangles")
     public Margin.List getRectangles() {

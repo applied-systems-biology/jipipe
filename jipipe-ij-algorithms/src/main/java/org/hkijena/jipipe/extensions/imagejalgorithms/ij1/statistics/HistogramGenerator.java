@@ -160,11 +160,6 @@ public class HistogramGenerator extends JIPipeSimpleIteratingAlgorithm {
         return new ResultsTableData(resultsTable);
     }
 
-    @Override
-    public void reportValidity(JIPipeValidityReport report) {
-
-    }
-
     @JIPipeDocumentation(name = "Apply per slice", description = "If higher dimensional data is provided, generate a histogram for each slice. If disabled, " +
             "the histogram is generated for the whole image.")
     @JIPipeParameter("apply-per-slice")

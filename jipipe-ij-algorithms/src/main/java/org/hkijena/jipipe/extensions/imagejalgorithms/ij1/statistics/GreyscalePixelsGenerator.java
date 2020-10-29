@@ -106,11 +106,6 @@ public class GreyscalePixelsGenerator extends JIPipeSimpleIteratingAlgorithm {
         return new ResultsTableData(resultsTable);
     }
 
-    @Override
-    public void reportValidity(JIPipeValidityReport report) {
-
-    }
-
     @JIPipeDocumentation(name = "Apply per slice", description = "If higher dimensional data is provided, generate a table for each slice. If disabled, " +
             "a table is generated for the whole image.")
     @JIPipeParameter("apply-per-slice")

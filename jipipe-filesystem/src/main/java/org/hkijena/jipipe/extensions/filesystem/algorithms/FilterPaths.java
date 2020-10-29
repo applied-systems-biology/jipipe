@@ -16,7 +16,6 @@ package org.hkijena.jipipe.extensions.filesystem.algorithms;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
@@ -26,7 +25,9 @@ import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.FileSystemNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.PathData;
-import org.hkijena.jipipe.extensions.parameters.predicates.PathPredicate;
+import org.hkijena.jipipe.extensions.parameters.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameterSettings;
+import org.hkijena.jipipe.extensions.parameters.expressions.variables.PathFilterExpressionParameterVariableSource;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -47,9 +48,7 @@ import java.util.function.Supplier;
 public class FilterPaths extends JIPipeSimpleIteratingAlgorithm {
 
     //    private PathFilter filter = new PathFilter();
-    private PathPredicate.List filters = new PathPredicate.List();
-    private boolean filterOnlyNames = true;
-    private boolean invert = false;
+    private DefaultExpressionParameter filters = new DefaultExpressionParameter("\".tif\" in name");
     private boolean outputFiles = true;
     private boolean outputFolders = true;
     private boolean outputNonExisting = true;
@@ -61,7 +60,6 @@ public class FilterPaths extends JIPipeSimpleIteratingAlgorithm {
      */
     public FilterPaths(JIPipeNodeInfo info) {
         super(info);
-        filters.addNewInstance();
     }
 
     /**
@@ -71,15 +69,10 @@ public class FilterPaths extends JIPipeSimpleIteratingAlgorithm {
      */
     public FilterPaths(FilterPaths other) {
         super(other);
-        this.filters.clear();
-        for (PathPredicate filter : other.filters) {
-            this.filters.add(new PathPredicate(filter));
-        }
-        this.filterOnlyNames = other.filterOnlyNames;
-        this.invert = other.invert;
         this.outputFiles = other.outputFiles;
         this.outputFolders = other.outputFolders;
         this.outputNonExisting = other.outputNonExisting;
+        this.filters = new DefaultExpressionParameter(other.filters);
     }
 
     @Override
@@ -89,33 +82,7 @@ public class FilterPaths extends JIPipeSimpleIteratingAlgorithm {
         Path inputPath = inputData.getPath();
         if (!canOutput(inputPath))
             return;
-        if (filterOnlyNames)
-            inputPath = inputPath.getFileName();
-        else {
-            if (Files.exists(inputPath)) {
-                inputPath = inputPath.toAbsolutePath();
-            }
-        }
-        if (!filters.isEmpty()) {
-            if (!invert) {
-                for (PathPredicate filter : filters) {
-                    if (filter.test(inputPath)) {
-                        dataBatch.addOutputData(firstOutputSlot, inputData);
-                        break;
-                    }
-                }
-            } else {
-                boolean canPass = true;
-                for (PathPredicate filter : filters) {
-                    if (filter.test(inputPath)) {
-                        canPass = false;
-                        break;
-                    }
-                }
-                if (canPass)
-                    dataBatch.addOutputData(firstOutputSlot, inputData);
-            }
-        } else {
+        if (filters.test(PathFilterExpressionParameterVariableSource.buildFor(inputPath))) {
             dataBatch.addOutputData(firstOutputSlot, inputData);
         }
     }
@@ -130,48 +97,17 @@ public class FilterPaths extends JIPipeSimpleIteratingAlgorithm {
         }
     }
 
-    @Override
-    public void reportValidity(JIPipeValidityReport report) {
-        for (int i = 0; i < filters.size(); ++i) {
-            report.forCategory("Filter").forCategory("Item " + (i + 1)).report(filters.get(i));
-        }
-    }
-
     @JIPipeParameter("filters")
-    @JIPipeDocumentation(name = "Filters")
-    public PathPredicate.List getFilters() {
+    @JIPipeDocumentation(name = "Filters", description = "Filter expression that is used to filter the paths. Click [X] to see all available variables. " +
+            "An example for an expression would be '\".tif\" IN name', which would test if there is '.tif' inside the file name.")
+    @ExpressionParameterSettings(variableSource = PathFilterExpressionParameterVariableSource.class)
+    public DefaultExpressionParameter getFilters() {
         return filters;
     }
 
     @JIPipeParameter("filters")
-    public void setFilters(PathPredicate.List filters) {
+    public void setFilters(DefaultExpressionParameter filters) {
         this.filters = filters;
-
-    }
-
-    @JIPipeDocumentation(name = "Filter only names", description = "If enabled, the filter is only applied for the path name (file or directory name). If disabled, the filter is " +
-            "applied for the absolute path. For non-existing paths it cannot bne guaranteed that the absolute path is tested.")
-    @JIPipeParameter("only-names")
-    public boolean isFilterOnlyNames() {
-        return filterOnlyNames;
-    }
-
-    @JIPipeParameter("only-names")
-    public void setFilterOnlyNames(boolean filterOnlyNames) {
-        this.filterOnlyNames = filterOnlyNames;
-
-    }
-
-    @JIPipeParameter("invert")
-    @JIPipeDocumentation(name = "Invert filter", description = "If true, the filter is inverted")
-    public boolean isInvert() {
-        return invert;
-    }
-
-    @JIPipeParameter("invert")
-    public void setInvert(boolean invert) {
-        this.invert = invert;
-
     }
 
     @JIPipeDocumentation(name = "Output files", description = "If enabled, existing files are put into the output.")

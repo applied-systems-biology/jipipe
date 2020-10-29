@@ -64,10 +64,6 @@ public class RemoveAnnotationByType extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    public void reportValidity(JIPipeValidityReport report) {
-    }
-
-    @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         for (StringPredicate filter : annotationTypes) {
             Set<String> toRemove = dataBatch.getAnnotations().keySet().stream().filter(filter).collect(Collectors.toSet());

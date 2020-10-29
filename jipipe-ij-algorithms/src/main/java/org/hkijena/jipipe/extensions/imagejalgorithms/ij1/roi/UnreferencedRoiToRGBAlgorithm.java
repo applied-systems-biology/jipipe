@@ -225,11 +225,6 @@ public class UnreferencedRoiToRGBAlgorithm extends JIPipeSimpleIteratingAlgorith
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(result));
     }
 
-
-    @Override
-    public void reportValidity(JIPipeValidityReport report) {
-    }
-
     @JIPipeDocumentation(name = "Image area", description = "Allows modification of the output image width and height.")
     @JIPipeParameter("image-area")
     public Margin getImageArea() {

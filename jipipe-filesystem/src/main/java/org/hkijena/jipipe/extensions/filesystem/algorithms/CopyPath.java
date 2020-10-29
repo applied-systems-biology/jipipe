@@ -149,10 +149,6 @@ public class CopyPath extends JIPipeIteratingAlgorithm {
         dataBatch.addOutputData(getFirstOutputSlot(), new PathData(destination));
     }
 
-    @Override
-    public void reportValidity(JIPipeValidityReport report) {
-    }
-
     @JIPipeDocumentation(name = "Skip invalid paths", description = "If enabled, invalid copy instructions are skipped.")
     @JIPipeParameter("skip-invalid")
     public boolean isSkipInvalid() {

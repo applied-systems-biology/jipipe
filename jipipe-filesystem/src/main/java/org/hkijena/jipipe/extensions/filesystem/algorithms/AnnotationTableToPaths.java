@@ -98,10 +98,6 @@ public class AnnotationTableToPaths extends JIPipeSimpleIteratingAlgorithm {
         }
     }
 
-    @Override
-    public void reportValidity(JIPipeValidityReport report) {
-    }
-
     @JIPipeDocumentation(name = "Column", description = "The column that contains the paths")
     @JIPipeParameter("column")
     public StringPredicate getColumn() {

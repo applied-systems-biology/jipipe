@@ -73,9 +73,4 @@ public class DistanceTransformWatershed2DAlgorithm extends JIPipeSimpleIterating
         ImageJUtils.forEachSlice(img, edm::toWatershed);
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleMaskData(img));
     }
-
-
-    @Override
-    public void reportValidity(JIPipeValidityReport report) {
-    }
 }

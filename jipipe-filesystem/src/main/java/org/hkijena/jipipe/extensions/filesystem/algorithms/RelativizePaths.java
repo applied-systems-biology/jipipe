@@ -66,8 +66,4 @@ public class RelativizePaths extends JIPipeIteratingAlgorithm {
 
         dataBatch.addOutputData(getFirstOutputSlot(), new PathData(parent.getPath().relativize(child.getPath())));
     }
-
-    @Override
-    public void reportValidity(JIPipeValidityReport report) {
-    }
 }

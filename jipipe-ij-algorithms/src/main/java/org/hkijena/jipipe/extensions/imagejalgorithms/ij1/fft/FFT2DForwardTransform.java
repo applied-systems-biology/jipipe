@@ -74,9 +74,4 @@ public class FFT2DForwardTransform extends JIPipeSimpleIteratingAlgorithm {
         ImagePlus fft = FFT.forward(img);
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusFFT2DData(fft));
     }
-
-    @Override
-    public void reportValidity(JIPipeValidityReport report) {
-
-    }
 }

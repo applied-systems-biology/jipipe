@@ -253,6 +253,7 @@
     <orderEntry type="library" scope="RUNTIME" name="Maven: io.netty:netty-transport:4.1.45.Final" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.apache.ant:ant:1.9.7" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.apache.ant:ant-launcher:1.9.7" level="project" />
+    <orderEntry type="library" name="Maven: com.fathzer:javaluator:3.0.3" level="project" />
     <orderEntry type="module" module-name="jipipe-ij" />
     <orderEntry type="module" module-name="jipipe-tables" />
     <orderEntry type="module" module-name="jipipe-annotation" />

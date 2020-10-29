@@ -77,9 +77,4 @@ public class MorphologySkeletonize2DAlgorithm extends JIPipeSimpleIteratingAlgor
         ImageJUtils.forEachSlice(img, ip -> ((ByteProcessor) ip).skeletonize());
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleMaskData(img));
     }
-
-
-    @Override
-    public void reportValidity(JIPipeValidityReport report) {
-    }
 }

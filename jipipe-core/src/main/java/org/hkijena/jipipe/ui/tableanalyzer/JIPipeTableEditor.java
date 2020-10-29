@@ -17,7 +17,7 @@ import com.google.common.base.Charsets;
 import com.google.common.base.Joiner;
 import com.google.common.primitives.Ints;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.registries.JIPipeTableOperationRegistry;
+import org.hkijena.jipipe.api.registries.JIPipeExpressionRegistry;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.tables.ConvertingColumnOperation;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
@@ -486,9 +486,9 @@ public class JIPipeTableEditor extends JIPipeWorkbenchPanel {
         if (isRebuildingSelection)
             return;
         convertSelectedCellsMenu.removeAll();
-        for (JIPipeTableOperationRegistry.ColumnOperationEntry entry :
-                JIPipe.getTableOperations().getOperationsOfType(ConvertingColumnOperation.class)
-                        .values().stream().sorted(Comparator.comparing(JIPipeTableOperationRegistry.ColumnOperationEntry::getName)).collect(Collectors.toList())) {
+        for (JIPipeExpressionRegistry.ColumnOperationEntry entry :
+                JIPipe.getTableOperations().getTableColumnOperationsOfType(ConvertingColumnOperation.class)
+                        .values().stream().sorted(Comparator.comparing(JIPipeExpressionRegistry.ColumnOperationEntry::getName)).collect(Collectors.toList())) {
             JMenuItem item = new JMenuItem(entry.getName(), UIUtils.getIconFromResources("actions/configure.png"));
             item.setToolTipText(entry.getDescription());
             item.addActionListener(e -> {

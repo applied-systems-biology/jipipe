@@ -66,9 +66,4 @@ public class SplitRoiAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         data.splitAll();
         dataBatch.addOutputData(getFirstOutputSlot(), data);
     }
-
-
-    @Override
-    public void reportValidity(JIPipeValidityReport report) {
-    }
 }

@@ -68,9 +68,4 @@ public class GetRoiImageAlgorithm extends JIPipeIteratingAlgorithm {
             }
         }
     }
-
-
-    @Override
-    public void reportValidity(JIPipeValidityReport report) {
-    }
 }

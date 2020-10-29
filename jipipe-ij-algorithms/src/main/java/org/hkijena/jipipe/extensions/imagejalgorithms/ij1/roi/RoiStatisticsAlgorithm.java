@@ -103,11 +103,6 @@ public class RoiStatisticsAlgorithm extends ImageRoiProcessorAlgorithm {
         }
     }
 
-
-    @Override
-    public void reportValidity(JIPipeValidityReport report) {
-    }
-
     @JIPipeDocumentation(name = "Extracted measurements", description = "Please select which measurements should be extracted. " +
             "Each measurement will be assigned to one or multiple output table columns.<br/><br/>" + ImageStatisticsSetParameter.ALL_DESCRIPTIONS)
     @JIPipeParameter("measurements")

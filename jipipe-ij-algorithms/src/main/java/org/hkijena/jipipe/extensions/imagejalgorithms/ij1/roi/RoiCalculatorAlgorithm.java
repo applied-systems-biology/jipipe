@@ -110,11 +110,6 @@ public class RoiCalculatorAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         dataBatch.addOutputData(getFirstOutputSlot(), outputData);
     }
 
-
-    @Override
-    public void reportValidity(JIPipeValidityReport report) {
-    }
-
     @JIPipeDocumentation(name = "Operation", description = "The operation to apply on the list of ROI")
     @JIPipeParameter("operation")
     public LogicalOperation getOperation() {

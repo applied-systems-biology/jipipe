@@ -83,8 +83,4 @@ public class AddAnnotationColumnsAlgorithm extends JIPipeSimpleIteratingAlgorith
     public void setAnnotationPrefix(String annotationPrefix) {
         this.annotationPrefix = annotationPrefix;
     }
-
-    @Override
-    public void reportValidity(JIPipeValidityReport report) {
-    }
 }

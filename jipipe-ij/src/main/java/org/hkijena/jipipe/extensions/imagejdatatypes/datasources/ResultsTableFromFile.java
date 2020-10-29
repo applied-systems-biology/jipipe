@@ -62,8 +62,4 @@ public class ResultsTableFromFile extends JIPipeSimpleIteratingAlgorithm {
             throw new RuntimeException(e);
         }
     }
-
-    @Override
-    public void reportValidity(JIPipeValidityReport report) {
-    }
 }

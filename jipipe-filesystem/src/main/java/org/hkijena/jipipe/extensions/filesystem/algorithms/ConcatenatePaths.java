@@ -65,7 +65,4 @@ public class ConcatenatePaths extends JIPipeIteratingAlgorithm {
         dataBatch.addOutputData(getFirstOutputSlot(), new PathData(left.getPath().resolve(right.getPath())));
     }
 
-    @Override
-    public void reportValidity(JIPipeValidityReport report) {
-    }
 }

@@ -80,9 +80,4 @@ public class DespeckleFilter2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     public boolean supportsParallelization() {
         return true;
     }
-
-
-    @Override
-    public void reportValidity(JIPipeValidityReport report) {
-    }
 }

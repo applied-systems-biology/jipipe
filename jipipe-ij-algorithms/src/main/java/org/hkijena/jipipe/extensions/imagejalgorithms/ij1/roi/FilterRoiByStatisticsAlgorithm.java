@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi;
 
+import com.fathzer.soft.javaluator.StaticVariableSet;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import org.hkijena.jipipe.JIPipe;
@@ -28,8 +29,11 @@ import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.MeasurementColumn;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.MeasurementFilter;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.MeasurementExpressionParameterVariableSource;
+import org.hkijena.jipipe.extensions.parameters.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.util.LogicalOperation;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 
@@ -51,12 +55,10 @@ import static org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.ImageRoiPro
 @JIPipeOutputSlot(value = ROIListData.class, slotName = "Output")
 public class FilterRoiByStatisticsAlgorithm extends ImageRoiProcessorAlgorithm {
 
-    private MeasurementFilter.List measurementFilters = new MeasurementFilter.List();
-    private boolean invert = false;
-    private LogicalOperation betweenMeasurementOperation = LogicalOperation.LogicalAnd;
-    private LogicalOperation sameMeasurementOperation = LogicalOperation.LogicalAnd;
+    private DefaultExpressionParameter filters = new DefaultExpressionParameter();
     private RoiStatisticsAlgorithm roiStatisticsAlgorithm =
             JIPipe.createNode("ij1-roi-statistics", RoiStatisticsAlgorithm.class);
+    private ImageStatisticsSetParameter measurements = new ImageStatisticsSetParameter();
 
     /**
      * Instantiates a new node type.
@@ -65,7 +67,6 @@ public class FilterRoiByStatisticsAlgorithm extends ImageRoiProcessorAlgorithm {
      */
     public FilterRoiByStatisticsAlgorithm(JIPipeNodeInfo info) {
         super(info, ROIListData.class, "Output");
-        measurementFilters.addNewInstance();
     }
 
     /**
@@ -75,17 +76,14 @@ public class FilterRoiByStatisticsAlgorithm extends ImageRoiProcessorAlgorithm {
      */
     public FilterRoiByStatisticsAlgorithm(FilterRoiByStatisticsAlgorithm other) {
         super(other);
-        this.invert = other.invert;
-        this.sameMeasurementOperation = other.sameMeasurementOperation;
-        this.measurementFilters = new MeasurementFilter.List(other.measurementFilters);
-        this.betweenMeasurementOperation = other.betweenMeasurementOperation;
-        this.sameMeasurementOperation = other.sameMeasurementOperation;
+        this.filters = new DefaultExpressionParameter(other.filters);
+        this.measurements = new ImageStatisticsSetParameter(other.measurements);
     }
 
     @Override
     public void run(JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         // Set parameters of ROI statistics algorithm
-        roiStatisticsAlgorithm.getMeasurements().setNativeValue(measurementFilters.getNativeMeasurementEnumValue());
+        roiStatisticsAlgorithm.setMeasurements(measurements);
 
         // Continue with run
         super.run(subProgress, algorithmProgress, isCancelled);
@@ -110,24 +108,13 @@ public class FilterRoiByStatisticsAlgorithm extends ImageRoiProcessorAlgorithm {
         }
 
         // Apply filter
-        Multimap<MeasurementColumn, MeasurementFilter> filtersPerColumn = HashMultimap.create();
-        for (MeasurementFilter measurementFilter : measurementFilters) {
-            filtersPerColumn.put(measurementFilter.getKey(), measurementFilter);
-        }
-
         ROIListData outputData = new ROIListData();
+        StaticVariableSet<Object> variableSet = new StaticVariableSet<>();
         for (int row = 0; row < allStatistics.getRowCount(); row++) {
-            List<Boolean> betweenMeasurements = new ArrayList<>();
-            for (MeasurementColumn measurementColumn : filtersPerColumn.keySet()) {
-                double value = allStatistics.getTable().getValue(measurementColumn.getColumnName(), row);
-                List<Boolean> withinMeasurement = new ArrayList<>();
-                for (MeasurementFilter measurementFilter : filtersPerColumn.get(measurementColumn)) {
-                    withinMeasurement.add(measurementFilter.getValue().test(value));
-                }
-                betweenMeasurements.add(sameMeasurementOperation.apply(withinMeasurement));
+            for (int col = 0; col < allStatistics.getColumnCount(); col++) {
+                variableSet.set(allStatistics.getColumnName(col), allStatistics.getValueAt(row, col));
             }
-            boolean rowResult = betweenMeasurementOperation.apply(betweenMeasurements);
-            if (rowResult == !invert) {
+            if(filters.test(variableSet)) {
                 outputData.add(allROIs.get(row));
             }
         }
@@ -135,53 +122,28 @@ public class FilterRoiByStatisticsAlgorithm extends ImageRoiProcessorAlgorithm {
         dataBatch.addOutputData(getFirstOutputSlot(), outputData);
     }
 
-
-    @Override
-    public void reportValidity(JIPipeValidityReport report) {
-    }
-
-    @JIPipeParameter("invert")
-    @JIPipeDocumentation(name = "Invert filter", description = "If true, the filter is inverted")
-    public boolean isInvert() {
-        return invert;
-    }
-
-    @JIPipeParameter("invert")
-    public void setInvert(boolean invert) {
-        this.invert = invert;
-
+    @JIPipeParameter("filter")
+    @JIPipeDocumentation(name = "Filter", description = "Filtering expression. This is applied per ROI. " +
+            "Click the 'X' button to see all available variables you can test for (note: requires from you to enable the corresponding measurement!)." +
+            "An example for an expression would be 'Area > 200 AND Mean > 10'")
+    @ExpressionParameterSettings(variableSource = MeasurementExpressionParameterVariableSource.class)
+    public DefaultExpressionParameter getFilters() {
+        return filters;
     }
 
     @JIPipeParameter("filter")
-    @JIPipeDocumentation(name = "Filter", description = "The set of filters to apply")
-    public MeasurementFilter.List getMeasurementFilters() {
-        return measurementFilters;
+    public void setFilters(DefaultExpressionParameter filters) {
+        this.filters = filters;
     }
 
-    @JIPipeParameter("filter")
-    public void setMeasurementFilters(MeasurementFilter.List measurementFilters) {
-        this.measurementFilters = measurementFilters;
+    @JIPipeDocumentation(name = "Measurements", description = "The measurements to calculate.")
+    @JIPipeParameter("measurements")
+    public ImageStatisticsSetParameter getMeasurements() {
+        return measurements;
     }
 
-    @JIPipeParameter("same-measurement-operation")
-    @JIPipeDocumentation(name = "Connect same measurements by", description = "The logical operation to apply between filters that filter the same measurement column")
-    public LogicalOperation getSameMeasurementOperation() {
-        return sameMeasurementOperation;
-    }
-
-    @JIPipeParameter("same-measurement-operation")
-    public void setSameMeasurementOperation(LogicalOperation sameMeasurementOperation) {
-        this.sameMeasurementOperation = sameMeasurementOperation;
-    }
-
-    @JIPipeParameter("between-measurement-operation")
-    @JIPipeDocumentation(name = "Connect different measurements by", description = "The logical operation to apply between different measurement columns")
-    public LogicalOperation getBetweenMeasurementOperation() {
-        return betweenMeasurementOperation;
-    }
-
-    @JIPipeParameter("between-measurement-operation")
-    public void setBetweenMeasurementOperation(LogicalOperation betweenMeasurementOperation) {
-        this.betweenMeasurementOperation = betweenMeasurementOperation;
+    @JIPipeParameter("measurements")
+    public void setMeasurements(ImageStatisticsSetParameter measurements) {
+        this.measurements = measurements;
     }
 }
