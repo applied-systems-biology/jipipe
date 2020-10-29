@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.extensions.parameters.expressions.functions;
 
-import com.fathzer.soft.javaluator.Function;
+import com.fathzer.soft.javaluator.StaticVariableSet;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionFunction;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -28,7 +28,7 @@ public class GlobStringPredicateFunction extends ExpressionFunction {
     }
 
     @Override
-    public Object evaluate(List<Object> parameters) {
+    public Object evaluate(List<Object> parameters, StaticVariableSet<Object> variables) {
         String text = "" + parameters.get(0);
         String pattern = "" + parameters.get(1);
         pattern = StringUtils.convertGlobToRegex(pattern);

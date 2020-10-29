@@ -24,6 +24,7 @@ import org.hkijena.jipipe.api.registries.JIPipeExpressionRegistry;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.DocumentChangeListener;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
+import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -33,6 +34,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -43,7 +45,9 @@ public class DefaultExpressionParameterEditorUI extends JIPipeParameterEditorUI 
     private final JPanel expressionEditorPanel = new JPanel(new BorderLayout());
     private final JPanel editorPanel = new JPanel(new BorderLayout());
     private final JComboBox<Object> availableModes = new JComboBox<>();
+    private JButton variableOptions;
     private DefaultExpressionEvaluatorSyntaxTokenMaker tokenMaker = new DefaultExpressionEvaluatorSyntaxTokenMaker();
+    private Set<ExpressionParameterVariable> variables = new HashSet<>();
 
     /**
      * Creates new instance
@@ -55,6 +59,7 @@ public class DefaultExpressionParameterEditorUI extends JIPipeParameterEditorUI 
         super(workbench, parameterAccess);
         initialize();
         setToAdvancedEditor();
+        reloadVariables();
         reload();
     }
 
@@ -75,9 +80,10 @@ public class DefaultExpressionParameterEditorUI extends JIPipeParameterEditorUI 
         optionPanel.setOpaque(false);
         optionPanel.setLayout(new BoxLayout(optionPanel, BoxLayout.X_AXIS));
 
-        JButton variableOptions = new JButton(UIUtils.getIconFromResources("actions/variable.png"));
+        variableOptions = new JButton(UIUtils.getIconFromResources("actions/variable.png"));
         UIUtils.makeFlat25x25(variableOptions);
         optionPanel.add(variableOptions);
+        variableOptions.addActionListener(e -> insertVariable());
 
         JButton functionOptions = new JButton(UIUtils.getIconFromResources("actions/insert-math-expression.png"));
         UIUtils.makeFlat25x25(functionOptions);
@@ -117,19 +123,31 @@ public class DefaultExpressionParameterEditorUI extends JIPipeParameterEditorUI 
         expressionEditorPanel.add(expressionEditor, BorderLayout.CENTER);
     }
 
+    private void insertVariable() {
+        ExpressionParameterVariable variable = VariableSelectorList.showDialog(this, variables);
+        if(variable != null) {
+            String template = variable.getKey();
+            insertIntoExpression(template);
+        }
+    }
+
+    private void insertIntoExpression(String template) {
+        int caret = expressionEditor.getCaretPosition();
+        if(caret != 0)
+            template = " " + template;
+        try {
+            if(!Objects.equals(expressionEditor.getText(caret, 1), " "))
+                template = template + " ";
+        } catch (BadLocationException e) {
+        }
+        expressionEditor.insert(template, expressionEditor.getCaretPosition());
+    }
+
     private void insertFunction() {
         JIPipeExpressionRegistry.ExpressionFunctionEntry functionEntry = FunctionSelectorList.showDialog(this);
         if(functionEntry != null) {
             String template = functionEntry.getFunction().getTemplate();
-            int caret = expressionEditor.getCaretPosition();
-            if(caret != 0)
-                template = " " + template;
-            try {
-                if(!Objects.equals(expressionEditor.getText(caret, 1), " "))
-                    template = template + " ";
-            } catch (BadLocationException e) {
-            }
-            expressionEditor.insert(template, expressionEditor.getCaretPosition());
+            insertIntoExpression(template);
         }
     }
 
@@ -144,5 +162,16 @@ public class DefaultExpressionParameterEditorUI extends JIPipeParameterEditorUI 
         if(!Objects.equals(parameter.getExpression(), expressionEditor.getText())) {
             expressionEditor.setText(parameter.getExpression());
         }
+    }
+
+    private void reloadVariables() {
+        variables.clear();
+        ExpressionParameterSettings settings = getParameterAccess().getAnnotationOfType(ExpressionParameterSettings.class);
+        if(settings != null) {
+            ExpressionParameterVariableSource variableSource = (ExpressionParameterVariableSource) ReflectionUtils.newInstance(settings.variableSource());
+            variables.addAll(variableSource.getVariables(getParameterAccess()));
+        }
+        variableOptions.setVisible(!variables.isEmpty());
+        tokenMaker.setDynamicVariables(variables);
     }
 }

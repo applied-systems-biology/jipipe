@@ -30,6 +30,8 @@ import org.hkijena.jipipe.extensions.filesystem.dataypes.FolderData;
 import org.hkijena.jipipe.extensions.parameters.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionEvaluator;
 import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameter;
+import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameterSettings;
+import org.hkijena.jipipe.extensions.parameters.expressions.variables.SinglePathExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.parameters.predicates.PathPredicate;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
 import org.hkijena.jipipe.utils.ResourceUtils;
@@ -126,6 +128,7 @@ public class ListFiles extends JIPipeSimpleIteratingAlgorithm {
 
     @JIPipeDocumentation(name = "Filters", description = "You can optionally filter the result folders.")
     @JIPipeParameter("filters")
+    @ExpressionParameterSettings(variableSource = SinglePathExpressionParameterVariableSource.class)
     public DefaultExpressionParameter getFilters() {
         return filters;
     }

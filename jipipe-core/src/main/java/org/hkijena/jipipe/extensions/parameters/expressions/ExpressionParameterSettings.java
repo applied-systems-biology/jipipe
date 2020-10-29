@@ -13,6 +13,8 @@
 
 package org.hkijena.jipipe.extensions.parameters.expressions;
 
+import org.hkijena.jipipe.extensions.parameters.expressions.variables.UndefinedExpressionParameterVariableSource;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -25,4 +27,10 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ExpressionParameterSettings {
+    /**
+     * Allows to give hints to the editor UI which variables are available.
+     * The variable source instance has access to the {@link org.hkijena.jipipe.api.parameters.JIPipeParameterAccess}.
+     * @return the variable source class
+     */
+    Class<? extends ExpressionParameterVariableSource> variableSource() default UndefinedExpressionParameterVariableSource.class;
 }

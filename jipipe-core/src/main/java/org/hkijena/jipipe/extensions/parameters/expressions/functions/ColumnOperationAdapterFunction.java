@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.extensions.parameters.expressions.functions;
 
+import com.fathzer.soft.javaluator.StaticVariableSet;
 import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionFunction;
 import org.hkijena.jipipe.extensions.tables.ColumnOperation;
 import org.hkijena.jipipe.extensions.tables.IntegratingColumnOperation;
@@ -41,7 +42,7 @@ public class ColumnOperationAdapterFunction extends ExpressionFunction {
     }
 
     @Override
-    public Object evaluate(List<Object> parameters) {
+    public Object evaluate(List<Object> parameters, StaticVariableSet<Object> variables) {
         boolean isNumeric = parameters.stream().allMatch(o -> o instanceof Number);
         if(isNumeric) {
             double[] arr = new double[parameters.size()];

@@ -19,22 +19,15 @@ import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionFunction;
 
 import java.util.List;
 
-@JIPipeDocumentation(name = "String contains", description = "Tests if the right operand is contained within the left operand.")
-public class ContainsStringPredicateFunction extends ExpressionFunction {
+@JIPipeDocumentation(name = "Get variable", description = "Returns the variable for given string. Useful if you have variables with spaces or that are equal to operators.")
+public class GetVariableFunction extends ExpressionFunction {
 
-    public ContainsStringPredicateFunction() {
-        super("STRING_CONTAINS", 2);
+    public GetVariableFunction() {
+        super("GET_VARIABLE", 1);
     }
 
     @Override
     public Object evaluate(List<Object> parameters, StaticVariableSet<Object> variables) {
-        String text = "" + parameters.get(0);
-        String pattern = "" + parameters.get(1);
-        return text.contains(pattern);
-    }
-
-    @Override
-    public String getSignature() {
-        return String.format("%s(%s, %s)", getName(), "haystack", "needle");
+        return variables.get("" + parameters.get(0));
     }
 }

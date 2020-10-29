@@ -18,6 +18,7 @@ import com.fathzer.soft.javaluator.Constant;
 import com.fathzer.soft.javaluator.Function;
 import com.fathzer.soft.javaluator.Operator;
 import com.fathzer.soft.javaluator.Parameters;
+import com.fathzer.soft.javaluator.StaticVariableSet;
 import com.google.common.collect.ImmutableList;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.hkijena.jipipe.JIPipe;
@@ -106,7 +107,7 @@ public class DefaultExpressionEvaluator extends ExpressionEvaluator {
         }
     }
 
-    public List<String> tokenize(String expression, boolean includeQuotes) {
+    public List<String> tokenize(String expression, boolean includeQuotesAsToken, boolean includeQuotesIntoToken) {
         StringBuilder buffer = new StringBuilder();
         boolean isQuoted = false;
         boolean escape = false;
@@ -124,11 +125,15 @@ public class DefaultExpressionEvaluator extends ExpressionEvaluator {
                 }
                 else {
                     // Add buffer as whole token
+                    if(includeQuotesIntoToken) {
+                        buffer.insert(0, '"');
+                        buffer.append("\"");
+                    }
                     tokens.add(buffer.toString());
                     buffer.setLength(0);
                     isQuoted = false;
                 }
-                if(includeQuotes) {
+                if(includeQuotesAsToken) {
                     tokens.add("\"");
                 }
             }
@@ -153,7 +158,7 @@ public class DefaultExpressionEvaluator extends ExpressionEvaluator {
 
     @Override
     protected Iterator<String> tokenize(String expression) {
-        return tokenize(expression, false).iterator();
+        return tokenize(expression, false, true).iterator();
     }
 
     private void fillTokenList(String expression, Set<String> operators, List<String> tokens) {
@@ -178,7 +183,7 @@ public class DefaultExpressionEvaluator extends ExpressionEvaluator {
     @Override
     protected Object evaluate(Function function, Iterator<Object> arguments, Object evaluationContext) {
         if(function instanceof ExpressionFunction) {
-            return ((ExpressionFunction) function).evaluate(ImmutableList.copyOf(arguments));
+            return ((ExpressionFunction) function).evaluate(ImmutableList.copyOf(arguments), (StaticVariableSet<Object>) evaluationContext);
         }
         else {
             throw new UnsupportedOperationException();
@@ -217,6 +222,8 @@ public class DefaultExpressionEvaluator extends ExpressionEvaluator {
             return false;
         else if(NumberUtils.isCreatable(literal))
             return NumberUtils.createDouble(literal);
+        else if(literal.length() >= 2 && literal.startsWith("\"") && literal.endsWith("\""))
+            return literal.substring(1, literal.length() - 1);
         else
             return literal;
     }

@@ -15,16 +15,23 @@ package org.hkijena.jipipe.extensions.parameters.expressions;
 
 import com.fathzer.soft.javaluator.Function;
 import com.fathzer.soft.javaluator.Operator;
+import gnu.trove.set.TCharSet;
 import org.fife.ui.rsyntaxtextarea.AbstractTokenMaker;
 import org.fife.ui.rsyntaxtextarea.Token;
 import org.fife.ui.rsyntaxtextarea.TokenMap;
 
 import javax.swing.text.Segment;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
 
 /**
  * Generates tokens for an {@link ExpressionEvaluator} instance.
  */
 public class DefaultExpressionEvaluatorSyntaxTokenMaker extends AbstractTokenMaker {
+
+    private Set<ExpressionParameterVariable> dynamicVariables;
+    private Set<String> operators;
 
     public DefaultExpressionEvaluatorSyntaxTokenMaker() {
     }
@@ -32,11 +39,15 @@ public class DefaultExpressionEvaluatorSyntaxTokenMaker extends AbstractTokenMak
     @Override
     public TokenMap getWordsToHighlight() {
         TokenMap tokenMap = new TokenMap();
+        tokenMap.put("TRUE", Token.LITERAL_BOOLEAN);
+        tokenMap.put("FALSE", Token.LITERAL_BOOLEAN);
         for (Function function : DefaultExpressionParameter.EVALUATOR.getFunctions()) {
             tokenMap.put(function.getName(), Token.FUNCTION);
         }
+        operators = new HashSet<>();
         for (Operator operator : DefaultExpressionParameter.EVALUATOR.getOperators()) {
             tokenMap.put(operator.getSymbol(), Token.OPERATOR);
+            operators.add(operator.getSymbol());
         }
         return tokenMap;
     }
@@ -86,6 +97,12 @@ public class DefaultExpressionEvaluatorSyntaxTokenMaker extends AbstractTokenMak
                 continue;
             }
             builder.append(c);
+            if(!isQuote && operators.contains(builder.toString())) {
+                // Builder is operator
+                addTokenFromBuilder(text, builder.toString(), builderStart, offset, newStartOffset);
+                builder.setLength(0);
+                builderStart = index + 1;
+            }
         }
         if(builder.length() > 0) {
             addTokenFromBuilder(text, builder.toString(), builderStart, offset, newStartOffset);
@@ -102,10 +119,20 @@ public class DefaultExpressionEvaluatorSyntaxTokenMaker extends AbstractTokenMak
         int tokenType = getWordsToHighlight().get(segment, index + offset, index + offset + text.length() - 1);
         if(text.startsWith("\""))
             tokenType = Token.LITERAL_STRING_DOUBLE_QUOTE;
+        if(dynamicVariables != null && dynamicVariables.stream().anyMatch(v -> Objects.equals(v.getKey(), text)))
+            tokenType = Token.VARIABLE;
         if(tokenType == -1)
             tokenType = Token.IDENTIFIER;
         for (int i = 0; i < text.length(); i++) {
             addToken(segment, index + offset + i, index + offset + i, tokenType, startOffset + index + offset + i);
         }
+    }
+
+    public void setDynamicVariables(Set<ExpressionParameterVariable> variables) {
+        this.dynamicVariables = variables;
+    }
+
+    public Set<ExpressionParameterVariable> getDynamicVariables() {
+        return dynamicVariables;
     }
 }

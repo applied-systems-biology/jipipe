@@ -41,6 +41,7 @@ import org.hkijena.jipipe.extensions.parameters.expressions.DefaultExpressionPar
 import org.hkijena.jipipe.extensions.parameters.expressions.DefaultExpressionParameterEditorUI;
 import org.hkijena.jipipe.extensions.parameters.expressions.functions.ContainsStringPredicateFunction;
 import org.hkijena.jipipe.extensions.parameters.expressions.functions.EqualsStringPredicateFunction;
+import org.hkijena.jipipe.extensions.parameters.expressions.functions.GetVariableFunction;
 import org.hkijena.jipipe.extensions.parameters.expressions.functions.GlobStringPredicateFunction;
 import org.hkijena.jipipe.extensions.parameters.expressions.functions.RegexStringPredicateFunction;
 import org.hkijena.jipipe.extensions.parameters.functions.FunctionParameter;
@@ -175,6 +176,7 @@ public class StandardParametersExtension extends JIPipePrepackagedDefaultJavaExt
         registerExpressionFunction(new EqualsStringPredicateFunction());
         registerExpressionFunction(new GlobStringPredicateFunction());
         registerExpressionFunction(new RegexStringPredicateFunction());
+        registerExpressionFunction(new GetVariableFunction());
     }
 
     private void registerScriptParameters() {
