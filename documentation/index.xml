@@ -32,6 +32,15 @@ mermaid.initialize({startOnLoad:true}); graph LR; A[File] -- B[Load image] B -- 
     </item>
     
     <item>
+      <title>Expression parameters</title>
+      <link>https://www.jipipe.org/documentation/expressions/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/documentation/expressions/</guid>
+      <description>When using nodes that filter or generate data, you might encounter a parameter type called &amp;ldquo;Expression&amp;rdquo;. This parameter allows to to write simple to complex functions that can test for one or multiple conditions or act as input for a generator node. The basic concept of this expression language is to mix string, boolean, and numeric operations into one simple but powerful language. It allows you for example to first calculate a numeric metric and use it for filtering objects within one line.</description>
+    </item>
+    
+    <item>
       <title>Graph compartments</title>
       <link>https://www.jipipe.org/documentation/graph-compartment/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -49,7 +58,7 @@ The difference between compartments and simple node groups is that compartments 
       <guid>https://www.jipipe.org/documentation/result-analysis/</guid>
       <description>JIPipe stores its results in a user-defined output folder. After clicking  Run (located at the top right corner of a project window) JIPipe will query the output folder from you. You can also generate a random folder that will be located on your operating system&amp;rsquo;s temporary directory by clicking the button.
 After confirming the settings by clicking  Run now, JIPipe will start processing the pipeline.
-You can have as many runs as you want.</description>
+ You can have as many runs as you want.</description>
     </item>
     
     <item>

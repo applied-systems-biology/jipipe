@@ -6,7 +6,7 @@
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <meta name="revised" content="2020-10-29T23:34:04 CET">
-<title>Creating an extension :: JIPipe for ImageJ</title>
+<title>Expression parameters :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../images/favicon.png" type="image/x-icon" />
 <link href="../../css/font-awesome.min.css" rel="stylesheet">
 <link href="../../css/nucleus.css" rel="stylesheet">
@@ -24,7 +24,7 @@
 
     
   </head>
-  <body data-url="../../tutorials/extension/">
+  <body data-url="../../documentation/expressions/">
     
       <header>
   <div class="logo">
@@ -76,11 +76,10 @@
       <a href="../../examples/">Examples</a><i class="fa fa-circle-thin read-icon"></i>
       </div>
     </li>
-    <li data-nav-id="https://www.jipipe.org/tutorials/" class="dd-item parent haschildren
+    <li data-nav-id="https://www.jipipe.org/tutorials/" class="dd-item haschildren
         ">
       <div>
-      <a href="../../tutorials/">Tutorials</a>
-            <i class="fa fa-angle-down fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
+      <a href="../../tutorials/">Tutorials</a><i class="fa fa-angle-right fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
       </div>
         <ul>
       <li data-nav-id="https://www.jipipe.org/tutorials/analysis/" class="dd-item">
@@ -97,7 +96,7 @@
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
-      <li data-nav-id="https://www.jipipe.org/tutorials/extension/" class="dd-item active">
+      <li data-nav-id="https://www.jipipe.org/tutorials/extension/" class="dd-item">
         <div>
           <a href="../../tutorials/extension/">
             Creating an extension
@@ -112,10 +111,11 @@
       <a href="../../faq/">Frequently asked questions</a><i class="fa fa-circle-thin read-icon"></i>
       </div>
     </li>
-    <li data-nav-id="https://www.jipipe.org/documentation/" class="dd-item haschildren
+    <li data-nav-id="https://www.jipipe.org/documentation/" class="dd-item parent haschildren
         ">
       <div>
-      <a href="../../documentation/">Documentation</a><i class="fa fa-angle-right fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
+      <a href="../../documentation/">Documentation</a>
+            <i class="fa fa-angle-down fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
       </div>
         <ul>
       <li data-nav-id="https://www.jipipe.org/documentation/batch-pipelines/" class="dd-item">
@@ -132,7 +132,7 @@
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
-      <li data-nav-id="https://www.jipipe.org/documentation/expressions/" class="dd-item">
+      <li data-nav-id="https://www.jipipe.org/documentation/expressions/" class="dd-item active">
         <div>
           <a href="../../documentation/expressions/">
             Expression parameters
@@ -456,15 +456,27 @@
     <option value="/examples/" >
    Examples</option>
     <option value="/tutorials/" >
-   Tutorials</option> 
-      <option value="/tutorials/analysis/" >- Image analysis pipeline</option>
-      <option value="/tutorials/analysis_video/" >- Image analysis pipeline (Video)</option>
-      <option value="/tutorials/extension/"  selected>- Creating an extension</option>
-  
+   Tutorials</option>
     <option value="/faq/" >
    Frequently asked questions</option>
     <option value="/documentation/" >
-   Documentation</option>
+   Documentation</option> 
+      <option value="/documentation/batch-pipelines/" >- Batch pipelines</option>
+      <option value="/documentation/graph-editor/" >- Pipeline editor</option>
+      <option value="/documentation/expressions/"  selected>- Expression parameters</option>
+      <option value="/documentation/graph-compartment/" >- Graph compartments</option>
+      <option value="/documentation/result-analysis/" >- Running a pipeline</option>
+      <option value="/documentation/quick-run/" >- Testing algorithm parameters</option>
+      <option value="/documentation/cache/" >- Data caching</option>
+      <option value="/documentation/imagej-integration/" >- ImageJ integration</option>
+      <option value="/documentation/plugins/" >- Managing plugins</option>
+    <option value="/documentation/standard-library/" >
+  - 
+   Standard library</option>
+    <option value="/documentation/create-json-extensions/" >
+  - 
+   Extension builder</option>
+  
     <option value="/documentation-java-api/" >
    Java API documentation</option>
     <option value="/documentation-json-api/" >
@@ -493,187 +505,351 @@
       </div>
     
 
-    <h1>Creating an extension</h1>
+    <h1>Expression parameters</h1>
     
     
     
-    <div class=tutorial-list>
-  <div class="tutorial-item">
-    <div class="tutorial-item-img"><img src="../../img/tutorials/extension/step0.png" /></div>
-    <div class="tutorial-item-content">
-    <h2>1. Existing pipeline</h2>
-    In this tutorial, we will create a custom algorithm extension based on parts of the pipeline created in the <a href="../../tutorials/analysis">other tutorial</a>.
-    Please open the project file for the pipeline and navigate to the <code>Preprocessing</code> tab.
-    </div>
-  </div>
-  <div class="tutorial-item">
-    <div class="tutorial-item-img"><img src="../../img/tutorials/extension/step1.png" /></div>
-    <div class="tutorial-item-content">
-    <h2>2. Selecting the algorithms</h2>
-    Please select the following algorithms (you can either do this by holding the <code>Shift</code> keyboard button and clicking the nodes or dragging a selection around the nodes):
-    <ul>
-      <li>Folder list</li>
-      <li>Path to annotation</li>
-      <li>List files</li>
-      <li>Import image</li>
-    </ul>
-    After selecting the algorithms, right-click a selected node and click <strong>Export</strong>.
-    <div class="notices info">
-      <p>
-        Selecting one or multiple algorithms is only <strong>one</strong> way to create a custom algorithm. You can also export a whole project compartment (via the <code>Compartments</code> tab) or
-        the whole pipeline (via <code>Project &gt; Export as custom algorithm</code>)
-      </p>
-    </div>
-    </div>
-  </div>
-  <div class="tutorial-item">
-    <div class="tutorial-item-img"><img src="../../img/tutorials/extension/step2.png" /></div>
-    <div class="tutorial-item-content">
-    <h2>3. Preview</h2>
-    This will open a new tab where you can see a preview of the pipeline that will be exported.
-    You see that the connections between the selected algorithms were kept, while two additional nodes were added:
-    <ul>
-      <li>Group input</li>
-      <li>Group output</li>
-    </ul>
-    Those two nodes respectively act as input and output of the whole exported algorithm. Its input and output slots will be accessible to users of your custom algorithm.
-    JIPipe automatically creates matching input and output slots based on the selected algorithms, but you can choose to modify your pipeline in this step.<br/>
-    Now click <code>Export to extension</code> and then <code>New extension</code>.
-    <div class="notices tip">
-      <p>
-        You can always modify custom algorithms within the extension builder. This will be shown in a later step.
-      </p>
-    </div>
-    </div>
-  </div>
-  <div class="tutorial-item">
-    <div class="tutorial-item-img"><img src="../../img/tutorials/extension/step3.png" /></div>
-    <div class="tutorial-item-content">
-    <h2>4. Extension builder</h2>
-    This will open the JIPipe extension builder tool that allows you to package one or multiple custom algorithms into an extension. Such extensions can be just put
-    into the ImageJ plugin directory and will be automatically picked up by JIPipe just like any ImageJ plugin.<br/>
-    An extension has a set of metadata that you need to set up. To do this, switch to <code>Extension settings</code>.
-    <div class="notices tip">
-      <p>
-        You can always find the extension builder in <code>Plugins &gt; New JSON extension ...</code>
-      </p>
-    </div>
-    </div>
-  </div>
-  <div class="tutorial-item">
-    <div class="tutorial-item-img"><img src="../../img/tutorials/extension/step4.png" /></div>
-    <div class="tutorial-item-content">
-    <h2>5. Extension metadata</h2>
-    JIPipe utilizes a unique extension ID to identify an extension. This is the most important setting and should be chosen carefully. The format must follow a specific structure: <code>[Author]:[Extension]</code>, where <code>[Author]</code> provides information about the extension author, and <code>[Extension]</code> contains some identifier. We recommend to let the <code>[Author]</code> information follow the <a href="https://maven.apache.org/guides/mini/guide-naming-conventions.html" target="_blank">Maven naming conventions</a>.<br/>
-    All the other metadata can be freely chosen or left out (with the exception of the name). Use the other metadata to add authors (including affiliations), a website, define a license, and cite
-    work your pipeline is depending on.
-    <br/><br/>Finally, you can review or modify the extension contents by going to <code>Extension contents</code>.
-    <div class="notices tip">
-      <p>
-        Any dependency to other JIPipe extensions are automatically stored within any project or extension file. JIPipe uses this information to figure out a valid load order.
-      </p>
-    </div>
-    </div>
-  </div>
-  <div class="tutorial-item">
-    <div class="tutorial-item-img"><img src="../../img/tutorials/extension/step5.png" /></div>
-    <div class="tutorial-item-content">
-      <h2>6. Extension content</h2>
-      Our custom algorithm is already included in the list of extension contents (left-hand side). You only need to provide metadata. The most important setting is the unique algorithm ID that is
-      used by JIPipe to identify your algorithm. Please choose a meaningful string that avoids having duplicate identifiers. Then you can provide a name, category, icon and menu location.
-      <div class="notices info">
-        <p>
-          The extension builder will warn you if an algorithm ID already exists (we will show this function later). You can choose to ignore this if a duplicate ID is intentional - this will
-          override an algorithm and replace it by the new one.
-        </p>
-      </div>
-      <div class="notices info">
-        <p>
-          Algorithm IDs are not namespaced, meaning that they are independent of the extension ID.
-        </p>
-      </div>
-    </div>
-  </div>
-  <div class="tutorial-item">
-    <div class="tutorial-item-img"><img src="../../img/tutorials/extension/step6.png" /></div>
-    <div class="tutorial-item-content">
-      <h2>7. Parameters</h2>
-      By default, your algorithm does not come with parameters aside of the few default parameters (name, description, pass-through, enable). For your pipelines it can be useful to
-      let users change some parameters. The <code>Exported parameters</code> section gives you full control on which parameters can be changed and how they are organized.<br/><br/>
-      First, you need to create a group by clicking the <i class="fa fa-add"></i> <strong>Add group</strong> button. This will create a new section in the final parameter UI. Then you can
-      reference parameters by clicking <i class="fa fa-cog"></i> <strong>Add parameter</strong>. You can customize the name and descriptions of any item.
-      <br/><br/>
-      It is always a good idea to check the parameters or maybe apply some corrections to the algorithm. To do this, click <i class="fa fa-pencil"></i> <strong>Edit graph</strong>
-      <div class="notices tip">
-        <p>
-          You can just add all parameters of a specific algorithm by clicking <code>Auto add algorithm</code>. Just check if users can properly decipher the function of each parameter.
-        </p>
-      </div>
-      <div class="notices tip">
-        <p>
-          Hover over the blue <i class="fa fa-wrench"></i> <strong>wrench</strong> icon to display information about the referenced parameter.
-        </p>
-      </div>
-      <div class="notices info">
-        <p>
-          Each parameter can only be referenced once. You will get a warning if you have duplicate references.
-        </p>
-      </div>
-    </div>
-  </div>
-  <div class="tutorial-item">
-    <div class="tutorial-item-img"><img src="../../img/tutorials/extension/step7.png" /></div>
-    <div class="tutorial-item-content">
-      <h2>8. Modifying the algorithm</h2>
-      The extension builder contains a fully function algorithm graph editor (aside of anything that runs the graph) that allows you to modify an algorithm or create
-      one from scratch. Use the editor to check the parameters of your algorithm. For example, it is a good idea to remove the folders from the <code>Folder list</code> algorithm.
-    </div>
-  </div>
-  <div class="tutorial-item">
-    <div class="tutorial-item-img"><img src="../../img/tutorials/extension/step8.png" /></div>
-    <div class="tutorial-item-content">
-      <h2>9. Validation and installation</h2>
-      Click the <i class="fa fa-check"></i> <strong>Validate</strong> button on the top right corner to check for any issues. This tool will also detect duplicate extension and algorithm IDs.
-      Errors about duplicates can be ignored if they are intentional.
-      <br/></br/>
-      Finally, you can install the extension by clicking <i class="fa fa-download"></i> <strong>Install</strong>. This will open a dialog to save the extension into the ImageJ plugin directory and
-      attempt to load the extension.
-      <div class="notices tip">
-        <p>
-          We still recommend to restart ImageJ, especially if you are installing duplicate IDs.
-        </p>
-      </div>
-    </div>
-  </div>
-  <div class="tutorial-item">
-    <div class="tutorial-item-img"><img src="../../img/tutorials/extension/step9.png" /></div>
-    <div class="tutorial-item-content">
-      <h2>10. Using the algorithm</h2>
-      You can find your algorithm in the menu, navigation bar, and algorithm finder just like any other algorithm. You can see that the parameters are included according to the settings within
-      the extension builder.
-      <div class="notices tip">
-        <p>
-          JSON Algorithms can be always converted into <i class="fa fa-cubes"></i> <strong>Group nodes</strong> that unlink the underlying pipeline from the JSON algorithm definition
-          and allows users to modify them. Just select <i class="fa fa-file-zip-o"></i> <strong>Convert to group</strong> to apply such conversions.
-        </p>
-      </div>
-      <div class="notices tip">
-        <p>
-          <i class="fa fa-cubes"></i> <strong>Group nodes</strong> are related to JSON algorithms. If you export a single group node, its contents are exported into an algorithm instead of
-          the node itself.
-        </p>
-      </div>
-    </div>
-  </div>
-</div>
+    <p>When using nodes that filter or generate data, you might encounter a parameter type called &ldquo;Expression&rdquo;.
+This parameter allows to to write simple to complex functions that can test for one or multiple conditions or
+act as input for a generator node.
+The basic concept of this expression language is to mix string, boolean, and numeric operations into one simple but powerful language.
+It allows you for example to first calculate a numeric metric and use it for filtering objects within one line.</p>
+<p>There are always four components you will interact with:</p>
+<ol>
+<li>Literals like numbers (<code>0.5</code>), strings (<code>&quot;hello world&quot;</code>), and boolean values (<code>TRUE</code>, <code>FALSE</code>)</li>
+<li>Variables that are supplied from the node itself like <code>x</code>, <code>y</code>, or <code>Area</code></li>
+<li>Functions that process literals or variables like <code>MIN(x, 5)</code>, <code>STRING_EQUALS(&quot;abc&quot;, &quot;abc&quot;)</code>. Parameters are separated by commas.</li>
+<li>Operators that do something with the literals, variables, or function results, like subtraction, concatentation, or conditions</li>
+</ol>
+<p>The expression language is interpreted as <strong>one line</strong> and you cannot write own variables. The result of the one expression is supplied to the node for processing.</p>
+<p><img src="../../img/documentation/expressions_filter.png" alt=""></p>
+<p><img src="../../img/documentation/expressions_function.png" alt=""></p>
+<p>The user interface of the expression parameter contains four items:</p>
+<ol>
+<li>The editor. Here you can type mathematical or conditional logic formulas</li>
+<li>(Optional) A button that opens a list of all available <strong>variables</strong> that you can use within the expression</li>
+<li>A button that opens a list of all available <strong>operators</strong></li>
+<li>A button that opens a list of all available <strong>functions</strong></li>
+</ol>
+<h2 id="variables">Variables</h2>
+<p>Variables are set externally by the node and can contain various useful values.
+For example, filter nodes will put numbers into the variables. Image generator nodes
+might put the pixel coordinates into them.</p>
+<p><strong>Example</strong>
+Here the node supplies the variables <code>x</code> and <code>y</code> and expects a number back. You can input a formula that will be
+automatically applied to ally <code>x</code> and <code>y</code> values:</p>
+<pre><code>(x + y) + x/y + 1
+</code></pre><h2 id="operators">Operators</h2>
+<p>The expressions understand a wide range of common operators for numeric, string, and boolean data:</p>
+<ul>
+<li>You can add, subtract, divide, &hellip; numbers</li>
+<li>Strings can be concatenated or checked for if one string contains another</li>
+<li>All basic boolean operators are available</li>
+</ul>
+<p><strong>Example</strong>
+You can combine various operators to do complex filtering. Here the node supplies variables <code>Area</code> and <code>MaxWidth</code>:</p>
+<pre><code>(Area &gt; 1000) AND ((MaxWidth^2 / Area &gt; 0.5))
+</code></pre><h2 id="functions">Functions</h2>
+<p>The expression language comes with a large library of predefined functions that you can use for more complex tasks:</p>
+<p><strong>Example</strong>
+To find files, it can be useful to utilize a Glob-filter that can reliably test for the file extension. Here <code>name</code> is the file name and supplied by the node.</p>
+<pre><code>STRING_MATCHES_GLOB(name, &quot;*.tif&quot;) AND (&quot;data&quot; IN name)
+</code></pre><h1 id="operators-1">Operators</h1>
+<h2 id="precedence">Precedence</h2>
+<p>The operators are ordered according to a precedence table. You might need to use brackets (<code>()</code>) to force the order you expect:</p>
+<p>The higher the number is the more the operator is preferred.</p>
+<table>
+<thead>
+<tr>
+<th>1</th>
+<th>2</th>
+<th>3</th>
+<th>4</th>
+<th>5</th>
+<th>6</th>
+<th>7</th>
+<th>8</th>
+<th>9</th>
+<th>10</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>OR</td>
+<td>AND</td>
+<td>NOT</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>XOR</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>Subtraction (x - y)</td>
+<td>Divide (x / y)</td>
+<td></td>
+<td>Power (x^y)</td>
+<td>Negate (-x)</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>Modulo (x % y)</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>Multiply (x * y)</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>Greater than or equal (x &gt;= y)</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>Greater than (x &gt; y)</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>Less than or equal (x &lt;= y)</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>Less than (x &lt; y)</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>Equal (x == y)</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>Unequal (x != y)</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>String contains (x IN y)</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>Addition (x + y)</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2 id="compatible-types">Compatible types</h2>
+<p>Not all operators are compatible to all types. See following table for the operator&rsquo;s behavior:</p>
+<table>
+<thead>
+<tr>
+<th>Operator</th>
+<th>Number</th>
+<th>Boolean</th>
+<th>String</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AND</td>
+<td>Error</td>
+<td>OK</td>
+<td>Error</td>
+</tr>
+<tr>
+<td>NOT</td>
+<td>Error</td>
+<td>OK</td>
+<td>Error</td>
+</tr>
+<tr>
+<td>OR</td>
+<td>Error</td>
+<td>OK</td>
+<td>Error</td>
+</tr>
+<tr>
+<td>XOR</td>
+<td>Error</td>
+<td>OK</td>
+<td>Error</td>
+</tr>
+<tr>
+<td>Divide (x / y)</td>
+<td>OK</td>
+<td>OK (TRUE=1, FALSE=0)</td>
+<td>Works (If can be converted to number)</td>
+</tr>
+<tr>
+<td>Multiply (x * y)</td>
+<td>OK</td>
+<td>OK (TRUE=1, FALSE=0)</td>
+<td>Works (If can be converted to number)</td>
+</tr>
+<tr>
+<td>Modulo (x % y)</td>
+<td>OK</td>
+<td>OK (TRUE=1, FALSE=0)</td>
+<td>Works (If can be converted to number)</td>
+</tr>
+<tr>
+<td>Subtract (x - y)</td>
+<td>OK</td>
+<td>OK (TRUE=1, FALSE=0)</td>
+<td>Works (If can be converted to number)</td>
+</tr>
+<tr>
+<td>Addition (x + y)</td>
+<td>OK</td>
+<td>OK (TRUE=1, FALSE=0)</td>
+<td>OK (Conversion to strings, string concatenation)</td>
+</tr>
+<tr>
+<td>Equality (x == y)</td>
+<td>OK</td>
+<td>OK</td>
+<td>OK (If types differ, conversion to strings)</td>
+</tr>
+<tr>
+<td>Inequality (x != y)</td>
+<td>OK</td>
+<td>OK</td>
+<td>OK</td>
+</tr>
+<tr>
+<td>String contains (x IN y)</td>
+<td>Error</td>
+<td>Error</td>
+<td>OK</td>
+</tr>
+<tr>
+<td>Less than (x &lt; y)</td>
+<td>OK</td>
+<td>OK (TRUE=1, FALSE=0)</td>
+<td>Error</td>
+</tr>
+<tr>
+<td>Less than or equal (x &lt;= y)</td>
+<td>OK</td>
+<td>OK (TRUE=1, FALSE=0)</td>
+<td>Error</td>
+</tr>
+<tr>
+<td>Greater than (x &gt; y)</td>
+<td>OK</td>
+<td>OK (TRUE=1, FALSE=0)</td>
+<td>Error</td>
+</tr>
+<tr>
+<td>Greater than or equal (x &gt;= y)</td>
+<td>OK</td>
+<td>OK (TRUE=1, FALSE=0)</td>
+<td>Error</td>
+</tr>
+</tbody>
+</table>
 
 
     
     
         <div class="chevrons">
     <div id="navigation">
-<a class="nav nav-prev" href="../../tutorials/analysis_video/" title="Image analysis pipeline (Video)"> <i class="fa fa-chevron-left"></i><label>Image analysis pipeline (Video)</label></a>
-    <a class="nav nav-next" href="../../faq/" title="Frequently asked questions" style="margin-right: 0px;"><label>Frequently asked questions</label><i class="fa fa-chevron-right"></i></a></div>
+<a class="nav nav-prev" href="../../documentation/graph-editor/" title="Pipeline editor"> <i class="fa fa-chevron-left"></i><label>Pipeline editor</label></a>
+    <a class="nav nav-next" href="../../documentation/graph-compartment/" title="Graph compartments" style="margin-right: 0px;"><label>Graph compartments</label><i class="fa fa-chevron-right"></i></a></div>
   </div>
 
   </section>

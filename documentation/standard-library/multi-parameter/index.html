@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2020-10-27T15:54:22 CET">
+<meta name="revised" content="2020-10-29T23:34:04 CET">
 <title>Multi-parameter algorithms :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../../images/favicon.png" type="image/x-icon" />
 <link href="../../../css/font-awesome.min.css" rel="stylesheet">
@@ -129,6 +129,13 @@
         <div>
           <a href="../../../documentation/graph-editor/">
             Pipeline editor
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/documentation/expressions/" class="dd-item">
+        <div>
+          <a href="../../../documentation/expressions/">
+            Expression parameters
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
@@ -457,6 +464,7 @@
    Documentation</option> 
       <option value="/documentation/batch-pipelines/" >- Batch pipelines</option>
       <option value="/documentation/graph-editor/" >- Pipeline editor</option>
+      <option value="/documentation/expressions/" >- Expression parameters</option>
       <option value="/documentation/graph-compartment/" >- Graph compartments</option>
       <option value="/documentation/result-analysis/" >- Running a pipeline</option>
       <option value="/documentation/quick-run/" >- Testing algorithm parameters</option>
@@ -519,20 +527,18 @@ data source algorithms available:</p>
 <li><strong>Define parameter</strong> defines a single set of parameters</li>
 <li><strong>Define multiple parameters</strong> lets you define a table of parameters</li>
 </ol>
-
-<div class="notices tip" ><p><p>Use Process &gt; Merge &gt; Merge slots to merge multiple parameter sets.</p>
+<div class="notices tip" ><p>
+Use Process > Merge > Merge slots to merge multiple parameter sets.
 </p></div>
-
 <h1 id="defining-parameters">Defining parameters</h1>
 <p>Both data sources require you to determine which parameters should be created.
 To do this, add parameters into the <code>Parameters</code> section (red box).</p>
 <p>For <code>Define multiple parameters</code>, there is an additional element (blue box)
 that contains a parameter table. Each row represents a parameter set, while a column
 represents a parameter type. Columns can be added by adding parameters into the <code>Parameters</code> section.</p>
-
-<div class="notices tip" ><p><p>You can leave the table empty. In this case, the parameters are extracted from the &lsquo;Parameters&rsquo; section.</p>
+<div class="notices tip" ><p>
+You can leave the table empty. In this case, the parameters are extracted from the 'Parameters' section.
 </p></div>
-
 <p>Select a table cell to open the parameter editor below the table.</p>
 <p>There are following buttons available:</p>
 <ul>
