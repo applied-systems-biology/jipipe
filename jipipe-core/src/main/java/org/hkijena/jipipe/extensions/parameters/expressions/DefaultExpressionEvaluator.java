@@ -57,6 +57,8 @@ public class DefaultExpressionEvaluator extends ExpressionEvaluator {
     public static final Operator OPERATOR_NUMERIC_NEGATE = new Operator("-", 1,Operator.Associativity.RIGHT, 8);
     public static final Operator OPERATOR_NUMERIC_NEGATE_HIGH = new Operator("-", 1,Operator.Associativity.RIGHT, 10);
 
+    private final Set<String> knownOperatorTokens = new HashSet<>();
+
     public static Parameters createParameters() {
         Parameters parameters = new Parameters();
         parameters.addFunctionBracket(BracketPair.PARENTHESES);
@@ -97,19 +99,14 @@ public class DefaultExpressionEvaluator extends ExpressionEvaluator {
 
     public DefaultExpressionEvaluator() {
         super(createParameters());
+        knownOperatorTokens.add("TRUE");
+        knownOperatorTokens.add("FALSE");
+        for (Operator operator : getOperators()) {
+            knownOperatorTokens.add(operator.getSymbol());
+        }
     }
 
-    @Override
-    protected Iterator<String> tokenize(String expression) {
-
-        // Collect all tokens and constants
-        Set<String> operators = new HashSet<>();
-        operators.add("TRUE");
-        operators.add("FALSE");
-        for (Operator operator : getOperators()) {
-            operators.add(operator.getSymbol());
-        }
-
+    public List<String> tokenize(String expression, boolean includeQuotes) {
         StringBuilder buffer = new StringBuilder();
         boolean isQuoted = false;
         boolean escape = false;
@@ -121,7 +118,7 @@ public class DefaultExpressionEvaluator extends ExpressionEvaluator {
                 if(!isQuoted) {
                     // Process buffer up until now
                     if (buffer.length() > 0)
-                        fillTokenList(buffer.toString(), operators, tokens);
+                        fillTokenList(buffer.toString(), knownOperatorTokens, tokens);
                     buffer.setLength(0);
                     isQuoted = true;
                 }
@@ -130,6 +127,9 @@ public class DefaultExpressionEvaluator extends ExpressionEvaluator {
                     tokens.add(buffer.toString());
                     buffer.setLength(0);
                     isQuoted = false;
+                }
+                if(includeQuotes) {
+                    tokens.add("\"");
                 }
             }
             else if(c == '\\') {
@@ -147,9 +147,13 @@ public class DefaultExpressionEvaluator extends ExpressionEvaluator {
         }
 
         if(buffer.length() > 0)
-            fillTokenList(buffer.toString(), operators, tokens);
+            fillTokenList(buffer.toString(), knownOperatorTokens, tokens);
+        return tokens;
+    }
 
-        return tokens.iterator();
+    @Override
+    protected Iterator<String> tokenize(String expression) {
+        return tokenize(expression, false).iterator();
     }
 
     private void fillTokenList(String expression, Set<String> operators, List<String> tokens) {

@@ -35,4 +35,36 @@ public abstract class ExpressionFunction extends Function {
      * @return the result
      */
     public abstract Object evaluate(List<Object> parameters);
+
+    /**
+     * Returns a template function that can be used to get users started
+     * @return the template
+     */
+    public String getTemplate() {
+        if(getMaximumArgumentCount() == Integer.MAX_VALUE)
+            return getName() + "()";
+        else
+            return getSignature();
+    }
+
+    /**
+     * Returns the signature of the function
+     * @return the signature
+     */
+    public String getSignature() {
+        if(getMaximumArgumentCount() > 5) {
+            return getName() + "(x1, x2, x3, x4, ...)";
+        }
+        else {
+            StringBuilder result = new StringBuilder();
+            result.append(getName()).append("(");
+            for (int i = 0; i < getMaximumArgumentCount(); i++) {
+                if(i != 0)
+                    result.append(", ");
+                result.append("x").append(i + 1);
+            }
+            result.append(")");
+            return result.toString();
+        }
+    }
 }

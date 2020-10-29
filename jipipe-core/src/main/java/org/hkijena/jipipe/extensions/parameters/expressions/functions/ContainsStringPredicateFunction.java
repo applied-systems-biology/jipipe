@@ -32,4 +32,9 @@ public class ContainsStringPredicateFunction extends ExpressionFunction {
         String pattern = "" + parameters.get(1);
         return text.contains(pattern);
     }
+
+    @Override
+    public String getSignature() {
+        return String.format("%s(%s, %s)", getName(), "haystack", "needle");
+    }
 }

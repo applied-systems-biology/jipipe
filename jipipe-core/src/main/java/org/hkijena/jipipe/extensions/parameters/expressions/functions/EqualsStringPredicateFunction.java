@@ -32,4 +32,9 @@ public class EqualsStringPredicateFunction extends ExpressionFunction {
         String pattern = "" + parameters.get(1);
         return Objects.equals(text, pattern);
     }
+
+    @Override
+    public String getSignature() {
+        return String.format("%s(%s, %s)", getName(), "text1", "text2");
+    }
 }

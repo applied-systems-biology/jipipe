@@ -13,7 +13,11 @@
 
 package org.hkijena.jipipe.extensions.parameters.expressions;
 
+import org.fife.ui.rsyntaxtextarea.AbstractTokenMakerFactory;
+import org.fife.ui.rsyntaxtextarea.RSyntaxDocument;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
+import org.fife.ui.rsyntaxtextarea.TokenMaker;
+import org.fife.ui.rsyntaxtextarea.TokenMakerFactory;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.registries.JIPipeExpressionRegistry;
@@ -24,18 +28,22 @@ import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
+import javax.swing.text.BadLocationException;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class DefaultExpressionParameterEditorUI extends JIPipeParameterEditorUI {
 
-    private final RSyntaxTextArea expressionEditor = new RSyntaxTextArea();
+    private RSyntaxTextArea expressionEditor;
     private final JPanel expressionEditorPanel = new JPanel(new BorderLayout());
     private final JPanel editorPanel = new JPanel(new BorderLayout());
     private final JComboBox<Object> availableModes = new JComboBox<>();
+    private DefaultExpressionEvaluatorSyntaxTokenMaker tokenMaker = new DefaultExpressionEvaluatorSyntaxTokenMaker();
 
     /**
      * Creates new instance
@@ -63,11 +71,6 @@ public class DefaultExpressionParameterEditorUI extends JIPipeParameterEditorUI 
         add(availableModes, BorderLayout.WEST);
         add(editorPanel, BorderLayout.CENTER);
 
-        expressionEditorPanel.setBorder(BorderFactory.createEtchedBorder());
-        expressionEditorPanel.setOpaque(true);
-        expressionEditorPanel.setBackground(Color.WHITE);
-        expressionEditorPanel.add(expressionEditor, BorderLayout.CENTER);
-
         JPanel optionPanel = new JPanel();
         optionPanel.setOpaque(false);
         optionPanel.setLayout(new BoxLayout(optionPanel, BoxLayout.X_AXIS));
@@ -83,6 +86,19 @@ public class DefaultExpressionParameterEditorUI extends JIPipeParameterEditorUI 
 
         expressionEditorPanel.add(optionPanel, BorderLayout.EAST);
 
+        TokenMakerFactory tokenMakerFactory = new TokenMakerFactory() {
+            @Override
+            protected TokenMaker getTokenMakerImpl(String key) {
+                return tokenMaker;
+            }
+
+            @Override
+            public Set<String> keySet() {
+                return Collections.singleton("text/expression");
+            }
+        };
+        RSyntaxDocument document = new RSyntaxDocument(tokenMakerFactory, "text/expression");
+        expressionEditor = new RSyntaxTextArea(document);
         expressionEditor.setBorder(BorderFactory.createEmptyBorder(5,4,1,4));
         expressionEditor.setHighlightCurrentLine(false);
         expressionEditor.getDocument().addDocumentListener(new DocumentChangeListener() {
@@ -95,10 +111,26 @@ public class DefaultExpressionParameterEditorUI extends JIPipeParameterEditorUI 
                 }
             }
         });
+        expressionEditorPanel.setBorder(BorderFactory.createEtchedBorder());
+        expressionEditorPanel.setOpaque(true);
+        expressionEditorPanel.setBackground(Color.WHITE);
+        expressionEditorPanel.add(expressionEditor, BorderLayout.CENTER);
     }
 
     private void insertFunction() {
         JIPipeExpressionRegistry.ExpressionFunctionEntry functionEntry = FunctionSelectorList.showDialog(this);
+        if(functionEntry != null) {
+            String template = functionEntry.getFunction().getTemplate();
+            int caret = expressionEditor.getCaretPosition();
+            if(caret != 0)
+                template = " " + template;
+            try {
+                if(!Objects.equals(expressionEditor.getText(caret, 1), " "))
+                    template = template + " ";
+            } catch (BadLocationException e) {
+            }
+            expressionEditor.insert(template, expressionEditor.getCaretPosition());
+        }
     }
 
     @Override

@@ -34,4 +34,9 @@ public class GlobStringPredicateFunction extends ExpressionFunction {
         pattern = StringUtils.convertGlobToRegex(pattern);
         return text.matches(pattern);
     }
+
+    @Override
+    public String getSignature() {
+        return String.format("%s(%s, %s)", getName(), "text", "pattern");
+    }
 }

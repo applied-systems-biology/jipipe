@@ -25,6 +25,8 @@ import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.Comparator;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
@@ -68,7 +70,17 @@ public class FunctionSelectorList extends JList<JIPipeExpressionRegistry.Express
         JButton confirmButton = new JButton("Pick", UIUtils.getIconFromResources("actions/checkmark.png"));
         confirmButton.addActionListener(e -> {
             confirmed.set(true);
-            dialog.setVisible(false); });
+            dialog.setVisible(false);
+        });
+        functionSelectorList.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if(e.getClickCount() == 2) {
+                    confirmed.set(true);
+                    dialog.setVisible(false);
+                }
+            }
+        });
         buttonPanel.add(confirmButton);
 
         contentPanel.add(buttonPanel, BorderLayout.SOUTH);
@@ -155,9 +167,7 @@ public class FunctionSelectorList extends JList<JIPipeExpressionRegistry.Express
 
         @Override
         public Component getListCellRendererComponent(JList<? extends JIPipeExpressionRegistry.ExpressionFunctionEntry> list, JIPipeExpressionRegistry.ExpressionFunctionEntry value, int index, boolean isSelected, boolean cellHasFocus) {
-            String id = value.getId();
-            // TODO: Signature instead of Id
-            idLabel.setText(id);
+            idLabel.setText(value.getFunction().getSignature());
             nameLabel.setText(value.getName());
             descriptionLabel.setText(value.getDescription());
             if (isSelected) {
