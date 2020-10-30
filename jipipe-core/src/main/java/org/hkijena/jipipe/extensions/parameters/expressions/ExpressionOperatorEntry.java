@@ -62,6 +62,9 @@ public class ExpressionOperatorEntry {
         if(operator.getOperandCount() == 2) {
             return "x " + operator.getSymbol() + " y";
         }
+        else if(operator.getAssociativity() == Operator.Associativity.LEFT){
+            return "x " + operator.getSymbol();
+        }
         else {
             return operator.getSymbol() + " x";
         }
