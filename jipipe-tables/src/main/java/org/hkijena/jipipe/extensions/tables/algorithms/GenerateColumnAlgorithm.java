@@ -84,6 +84,11 @@ public class GenerateColumnAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             variableSet.set("column_name", columnName);
             variableSet.set("num_cols", table.getColumnCount());
             for (int row = 0; row < table.getRowCount(); row++) {
+                for (int col = 0; col < table.getColumnCount(); col++) {
+                    if(col != columnId) {
+                        variableSet.set(table.getColumnName(col), table.getValueAt(row, col));
+                    }
+                }
                 variableSet.set("row", row);
                 Object value = entry.getKey().evaluate(variableSet);
                 if(!(value instanceof Number) && !(value instanceof String))
@@ -110,7 +115,10 @@ public class GenerateColumnAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.replaceIfExists = replaceIfExists;
     }
 
-    @JIPipeDocumentation(name = "Columns", description = "Columns to be generated")
+    @JIPipeDocumentation(name = "Columns", description = "Columns to be generated. The function is applied for each row. " +
+            "You will have the standard set of table location variables available (e.g. the row index), but also access to the other column values within the same row. " +
+            "Access them just as any variable. If the column name has special characters or spaces, use the $ operator. Example: " +
+            "<pre>$\"%Area\" * 10</pre>")
     @JIPipeParameter("columns")
     @ExpressionParameterSettings(variableSource = TableCellExpressionParameterVariableSource.class)
     @PairParameterSettings(singleRow = false, keyLabel = "Function", valueLabel = "Output column")
