@@ -194,6 +194,12 @@ public class DefaultExpressionEvaluator extends ExpressionEvaluator {
                         if(next == '=')
                             continue;
                     }
+                    // Workaround !=
+                    if(s1.endsWith("!")) {
+                        char next = expression.charAt(i + 1);
+                        if(next == '=')
+                            continue;
+                    }
                 }
                 for (String s : knownNonAlphanumericOperatorTokens) {
                     int i1 = s1.indexOf(s);
