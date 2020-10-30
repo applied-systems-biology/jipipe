@@ -14,11 +14,9 @@
 package org.hkijena.jipipe.extensions.parameters.expressions;
 
 import com.fathzer.soft.javaluator.StaticVariableSet;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.extensions.parameters.collections.ListParameter;
 import org.hkijena.jipipe.extensions.parameters.pairs.PairParameter;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 

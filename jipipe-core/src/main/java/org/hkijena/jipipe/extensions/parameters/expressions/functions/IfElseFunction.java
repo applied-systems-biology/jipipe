@@ -2,7 +2,6 @@ package org.hkijena.jipipe.extensions.parameters.expressions.functions;
 
 import com.fathzer.soft.javaluator.StaticVariableSet;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionFunction;
 
 import java.util.List;

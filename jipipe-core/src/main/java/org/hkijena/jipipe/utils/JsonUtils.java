@@ -22,7 +22,6 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 
 import java.nio.file.Path;
-import java.util.List;
 
 /**
  * Global utilities for JSON data

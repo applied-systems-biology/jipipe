@@ -26,7 +26,7 @@ import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.PathUtils;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.Component;
 import java.awt.image.BufferedImage;
 import java.nio.file.Path;
 

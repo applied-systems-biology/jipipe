@@ -14,8 +14,6 @@
 package org.hkijena.jipipe.extensions.parameters.expressions;
 
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameterVariable;
-import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameterVariableSource;
 
 import java.util.HashSet;
 import java.util.Set;

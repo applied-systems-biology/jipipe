@@ -4,9 +4,11 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 
 import javax.swing.*;
-import java.awt.*;
-import java.util.List;
+import java.awt.BorderLayout;
+import java.awt.CardLayout;
+import java.awt.Component;
 import java.util.ArrayList;
+import java.util.List;
 
 public class DotSlideshow extends JPanel {
     private final JPanel target = new JPanel();

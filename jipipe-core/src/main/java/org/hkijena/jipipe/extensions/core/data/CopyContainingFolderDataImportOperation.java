@@ -21,13 +21,10 @@ import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.Desktop;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
-import java.io.IOException;
 import java.nio.file.Path;
-import java.util.Objects;
 
 /**
  * Import operation that copies the containing folder path into the clipboard. Is always added to the menu.

@@ -15,7 +15,6 @@ package org.hkijena.jipipe.ui.components;
 
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
-import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;

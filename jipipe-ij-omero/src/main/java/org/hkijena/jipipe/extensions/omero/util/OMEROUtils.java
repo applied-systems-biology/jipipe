@@ -33,7 +33,6 @@ import omero.model.Annotation;
 import omero.model.IObject;
 import omero.model.NamedValue;
 import omero.model.Pixels;
-import omero.model.TagAnnotation;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 

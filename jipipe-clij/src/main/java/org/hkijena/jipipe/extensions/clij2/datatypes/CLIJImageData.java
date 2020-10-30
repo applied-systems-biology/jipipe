@@ -10,7 +10,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.algorithms.DisplayRangeCali
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 
-import java.awt.*;
+import java.awt.Component;
 import java.nio.file.Path;
 
 /**

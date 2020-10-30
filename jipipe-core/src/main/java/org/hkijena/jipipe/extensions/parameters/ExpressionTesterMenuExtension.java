@@ -19,7 +19,6 @@ import org.hkijena.jipipe.ui.components.DocumentTabPane;
 import org.hkijena.jipipe.ui.extension.MenuExtension;
 import org.hkijena.jipipe.ui.extension.MenuTarget;
 import org.hkijena.jipipe.utils.ExpressionTesterUI;
-import org.hkijena.jipipe.utils.ParameterUITester;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import java.awt.event.ActionEvent;

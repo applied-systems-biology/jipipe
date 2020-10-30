@@ -18,8 +18,6 @@ import com.fathzer.soft.javaluator.Parameters;
 import com.fathzer.soft.javaluator.StaticVariableSet;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 
-import java.util.function.Predicate;
-
 /**
  * The base class for an evaluator
  */

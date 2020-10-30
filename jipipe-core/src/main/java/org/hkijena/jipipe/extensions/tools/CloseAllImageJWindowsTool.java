@@ -13,8 +13,6 @@
 
 package org.hkijena.jipipe.extensions.tools;
 
-import ij.IJ;
-import ij.ImageJ;
 import ij.WindowManager;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;

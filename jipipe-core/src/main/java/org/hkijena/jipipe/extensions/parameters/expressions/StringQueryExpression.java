@@ -14,13 +14,11 @@
 package org.hkijena.jipipe.extensions.parameters.expressions;
 
 import com.fathzer.soft.javaluator.StaticVariableSet;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 /**
  * Expression for querying strings

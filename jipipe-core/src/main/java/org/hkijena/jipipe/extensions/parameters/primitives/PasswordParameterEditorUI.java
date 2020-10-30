@@ -15,13 +15,11 @@ package org.hkijena.jipipe.extensions.parameters.primitives;
 
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.components.DocumentChangeListener;
 import org.hkijena.jipipe.ui.components.FancyPasswordField;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import javax.swing.event.DocumentEvent;
 import java.awt.BorderLayout;
 import java.util.Objects;
 

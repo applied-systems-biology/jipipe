@@ -15,7 +15,6 @@ package org.hkijena.jipipe.extensions.tables.parameters.collections;
 
 import org.hkijena.jipipe.extensions.parameters.collections.ListParameter;
 import org.hkijena.jipipe.extensions.tables.parameters.processors.ExpressionTableColumnGeneratorProcessor;
-import org.hkijena.jipipe.extensions.tables.parameters.processors.TableColumnGeneratorProcessor;
 
 public class ExpressionTableColumnGeneratorProcessorParameterList extends ListParameter<ExpressionTableColumnGeneratorProcessor> {
 

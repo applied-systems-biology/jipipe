@@ -14,14 +14,19 @@
 package org.hkijena.jipipe.api.registries;
 
 import org.apache.commons.lang3.reflect.ConstructorUtils;
-import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.compat.ImageJDatatypeAdapter;
 import org.hkijena.jipipe.api.compat.ImageJDatatypeImporter;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.ui.compat.ImageJDatatypeImporterUI;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Registers all known adapters between ImageJ and JIPipe data types

@@ -13,12 +13,10 @@
 
 package org.hkijena.jipipe.api.nodes;
 
-import gnu.trove.set.TIntSet;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * Methods shared across all {@link JIPipeAlgorithm} that generate data batches

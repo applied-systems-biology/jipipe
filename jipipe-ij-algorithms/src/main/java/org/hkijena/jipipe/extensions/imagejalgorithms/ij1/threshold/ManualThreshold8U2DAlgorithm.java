@@ -14,9 +14,7 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.threshold;
 
 import ij.ImagePlus;
-import ij.process.ByteProcessor;
 import ij.process.ImageProcessor;
-import ij.process.ShortProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
