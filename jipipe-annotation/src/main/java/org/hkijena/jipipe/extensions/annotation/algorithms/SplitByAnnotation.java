@@ -86,7 +86,9 @@ public class SplitByAnnotation extends JIPipeAlgorithm {
 
     @JIPipeParameter("target-slots")
     @JIPipeDocumentation(name = "Target slots", description = "Data that matches the filter on the right-hand side are redirected to the data slot on the left-hand side. " +
-            "Annotation values are available as variables. If an annotation has special characters, use GET_VARIABLE() to access its value.")
+            "Annotation values are available as variables. If an annotation has spaces special characters, use $ to access its value. Examples: <pre>" +
+            "#Dataset CONTAINS \"Raw\" AND condition EQUALS \"mock\"</pre>" +
+            "<pre>NUMBER($\"my column\") < 10</pre>")
     public OutputSlotMapParameterCollection getTargetSlots() {
         return targetSlots;
     }

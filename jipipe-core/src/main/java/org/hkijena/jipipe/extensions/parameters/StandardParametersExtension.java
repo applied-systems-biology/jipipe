@@ -37,13 +37,7 @@ import org.hkijena.jipipe.extensions.parameters.editors.JIPipeDataInfoRefParamet
 import org.hkijena.jipipe.extensions.parameters.editors.JIPipeNodeInfoRefParameterEditorUI;
 import org.hkijena.jipipe.extensions.parameters.editors.JIPipeParameterCollectionVisibilitiesParameterEditorUI;
 import org.hkijena.jipipe.extensions.parameters.expressions.*;
-import org.hkijena.jipipe.extensions.parameters.expressions.functions.ContainsStringPredicateFunction;
-import org.hkijena.jipipe.extensions.parameters.expressions.functions.EqualsStringPredicateFunction;
-import org.hkijena.jipipe.extensions.parameters.expressions.functions.GetVariableFunction;
-import org.hkijena.jipipe.extensions.parameters.expressions.functions.GlobStringPredicateFunction;
-import org.hkijena.jipipe.extensions.parameters.expressions.functions.IfElseFunction;
-import org.hkijena.jipipe.extensions.parameters.expressions.functions.RegexStringPredicateFunction;
-import org.hkijena.jipipe.extensions.parameters.expressions.functions.VariableExistsFunction;
+import org.hkijena.jipipe.extensions.parameters.expressions.functions.*;
 import org.hkijena.jipipe.extensions.parameters.functions.FunctionParameter;
 import org.hkijena.jipipe.extensions.parameters.functions.FunctionParameterEditorUI;
 import org.hkijena.jipipe.extensions.parameters.functions.StringPatternExtractionFunction;
@@ -229,6 +223,9 @@ public class StandardParametersExtension extends JIPipePrepackagedDefaultJavaExt
         registerExpressionFunction(new GetVariableFunction());
         registerExpressionFunction(new IfElseFunction());
         registerExpressionFunction(new VariableExistsFunction());
+        registerExpressionFunction(new ToNumberFunction());
+        registerExpressionFunction(new ToStringFunction());
+        registerExpressionFunction(new ToBooleanFunction());
     }
 
     private void registerScriptParameters() {
