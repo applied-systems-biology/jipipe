@@ -36,15 +36,12 @@ import org.hkijena.jipipe.extensions.omero.OMEROCredentials;
 import org.hkijena.jipipe.extensions.omero.datatypes.OMEROProjectReferenceData;
 import org.hkijena.jipipe.extensions.omero.util.OMEROToJIPipeLogger;
 import org.hkijena.jipipe.extensions.omero.util.OMEROUtils;
-import org.hkijena.jipipe.extensions.parameters.pairs.StringAndStringPredicatePairParameter;
-import org.hkijena.jipipe.extensions.parameters.predicates.StringPredicate;
+import org.hkijena.jipipe.extensions.parameters.expressions.StringMapQueryExpression;
+import org.hkijena.jipipe.extensions.parameters.expressions.StringQueryExpression;
 import org.hkijena.jipipe.extensions.parameters.primitives.OptionalStringParameter;
-import org.hkijena.jipipe.extensions.parameters.util.LogicalOperation;
 import org.hkijena.jipipe.utils.JsonUtils;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -58,11 +55,11 @@ import java.util.stream.Collectors;
 public class OMEROFindProjectAlgorithm extends JIPipeParameterSlotAlgorithm {
 
     private OMEROCredentials credentials = new OMEROCredentials();
-    private StringPredicate.List projectNameFilters = new StringPredicate.List();
-    private StringAndStringPredicatePairParameter.List keyValuePairFilters = new StringAndStringPredicatePairParameter.List();
+    private StringQueryExpression projectNameFilters = new StringQueryExpression();
+    private StringMapQueryExpression keyValuePairFilters = new StringMapQueryExpression();
     private boolean addKeyValuePairsAsAnnotations = true;
     private OptionalStringParameter projectNameAnnotation = new OptionalStringParameter("Project", true);
-    private StringPredicate.List tagFilters = new StringPredicate.List();
+    private StringMapQueryExpression tagFilters = new StringMapQueryExpression();
     private OptionalStringParameter tagAnnotation = new OptionalStringParameter("Tags", true);
 
     public OMEROFindProjectAlgorithm(JIPipeNodeInfo info) {
@@ -82,22 +79,14 @@ public class OMEROFindProjectAlgorithm extends JIPipeParameterSlotAlgorithm {
             algorithmProgress.accept(subProgress.resolve("Listing projects"));
             try {
                 for (ProjectData project : browseFacility.getProjects(context)) {
-                    if(!projectNameFilters.isEmpty() && !projectNameFilters.test(project.getName())) {
+                    if(!projectNameFilters.test(project.getName())) {
                         continue;
                     }
-                    Map<String, String> keyValuePairs = new HashMap<>();
-                    if(!keyValuePairFilters.isEmpty() || addKeyValuePairsAsAnnotations) {
-                        keyValuePairs = OMEROUtils.getKeyValuePairAnnotations(metadata, context, project);
-                    }
-                    if(!keyValuePairFilters.isEmpty()) {
-                        if(!keyValuePairFilters.test(keyValuePairs, LogicalOperation.LogicalAnd, LogicalOperation.LogicalOr))
-                            continue;
-                    }
-                    Set<String> tags = new HashSet<>();
-                    if(!tagFilters.isEmpty() || tagAnnotation.isEnabled()) {
-                        tags = OMEROUtils.getTagAnnotations(metadata, context, project);
-                    }
-                    if(!tagFilters.isEmpty() && !tagFilters.test(tags, LogicalOperation.LogicalOr, LogicalOperation.LogicalOr)) {
+                    Map<String, String> keyValuePairs = OMEROUtils.getKeyValuePairAnnotations(metadata, context, project);
+                    if(!keyValuePairFilters.test(keyValuePairs))
+                        continue;
+                    Set<String> tags = OMEROUtils.getTagAnnotations(metadata, context, project);
+                    if(!tagFilters.test(tags)) {
                         continue;
                     }
                     List<JIPipeAnnotation> annotations = new ArrayList<>();
@@ -127,34 +116,34 @@ public class OMEROFindProjectAlgorithm extends JIPipeParameterSlotAlgorithm {
     public OMEROFindProjectAlgorithm(OMEROFindProjectAlgorithm other) {
         super(other);
         this.credentials = new OMEROCredentials(other.credentials);
-        this.projectNameFilters = new StringPredicate.List(other.projectNameFilters);
-        this.keyValuePairFilters = new StringAndStringPredicatePairParameter.List(other.keyValuePairFilters);
+        this.projectNameFilters = new StringQueryExpression(other.projectNameFilters);
+        this.keyValuePairFilters = new StringMapQueryExpression(other.keyValuePairFilters);
         this.projectNameAnnotation = new OptionalStringParameter(other.projectNameAnnotation);
         this.addKeyValuePairsAsAnnotations = other.addKeyValuePairsAsAnnotations;
-        this.tagFilters = new StringPredicate.List(other.tagFilters);
+        this.tagFilters = new  StringMapQueryExpression(other.tagFilters);
         this.tagAnnotation = new OptionalStringParameter(other.tagAnnotation);
         registerSubParameter(credentials);
     }
 
-    @JIPipeDocumentation(name = "Project name filters", description = "Filters for the project name. A project is returned if one of the filters apply. If the list is empty, all projects are returned.")
+    @JIPipeDocumentation(name = "Project name filters", description = "Filters for the project name. " + StringQueryExpression.DOCUMENTATION_DESCRIPTION)
     @JIPipeParameter("project-name-filters")
-    public StringPredicate.List getProjectNameFilters() {
+    public StringQueryExpression getProjectNameFilters() {
         return projectNameFilters;
     }
 
     @JIPipeParameter("project-name-filters")
-    public void setProjectNameFilters(StringPredicate.List projectNameFilters) {
+    public void setProjectNameFilters(StringQueryExpression projectNameFilters) {
         this.projectNameFilters = projectNameFilters;
     }
 
-    @JIPipeDocumentation(name = "Key-Value pair filters", description = "Filters projects by attached key value pairs. Filters with same keys are connected via an AND operation. Filters with different keys are connected via an OR operation. If the list is empty, no filtering is applied.")
+    @JIPipeDocumentation(name = "Key-Value pair filters", description = "Filters projects by attached key value pairs. " + StringMapQueryExpression.DOCUMENTATION_DESCRIPTION)
     @JIPipeParameter("key-value-pair-filters")
-    public StringAndStringPredicatePairParameter.List getKeyValuePairFilters() {
+    public StringMapQueryExpression getKeyValuePairFilters() {
         return keyValuePairFilters;
     }
 
     @JIPipeParameter("key-value-pair-filters")
-    public void setKeyValuePairFilters(StringAndStringPredicatePairParameter.List keyValuePairFilters) {
+    public void setKeyValuePairFilters(StringMapQueryExpression keyValuePairFilters) {
         this.keyValuePairFilters = keyValuePairFilters;
     }
 
@@ -199,14 +188,14 @@ public class OMEROFindProjectAlgorithm extends JIPipeParameterSlotAlgorithm {
         this.addKeyValuePairsAsAnnotations = addKeyValuePairsAsAnnotations;
     }
 
-    @JIPipeDocumentation(name = "Tag filters", description = "Filters by tag values. Filters are connected via OR. If the list is empty, no filtering is applied.")
+    @JIPipeDocumentation(name = "Tag filters", description = "Filters by tag values. " + StringMapQueryExpression.DOCUMENTATION_DESCRIPTION)
     @JIPipeParameter("tag-filters")
-    public StringPredicate.List getTagFilters() {
+    public StringMapQueryExpression getTagFilters() {
         return tagFilters;
     }
 
     @JIPipeParameter("tag-filters")
-    public void setTagFilters(StringPredicate.List tagFilters) {
+    public void setTagFilters(StringMapQueryExpression tagFilters) {
         this.tagFilters = tagFilters;
     }
 

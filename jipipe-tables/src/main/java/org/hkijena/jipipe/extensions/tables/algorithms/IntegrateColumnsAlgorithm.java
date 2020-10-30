@@ -76,7 +76,7 @@ public class IntegrateColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         ResultsTableData input = dataBatch.getInputData(getFirstInputSlot(), ResultsTableData.class);
         Map<String, TableColumn> resultColumns = new HashMap<>();
         for (IntegratingTableColumnProcessorParameter processor : processorParameters) {
-            String sourceColumn = input.getColumnNames().stream().filter(processor.getInput()).findFirst().orElse(null);
+            String sourceColumn = processor.getInput().queryFirst(input.getColumnNames());
             if (sourceColumn == null) {
                 throw new UserFriendlyRuntimeException(new NullPointerException(),
                         "Unable to find column matching " + processor.getInput(),

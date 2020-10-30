@@ -14,21 +14,18 @@
 package org.hkijena.jipipe.extensions.parameters.pairs;
 
 import org.hkijena.jipipe.extensions.parameters.collections.ListParameter;
-import org.hkijena.jipipe.extensions.parameters.predicates.StringPredicate;
-import org.hkijena.jipipe.extensions.parameters.util.SortOrder;
+import org.hkijena.jipipe.extensions.parameters.expressions.StringQueryExpression;
 
 /**
- * A pair of {@link StringPredicate} and {@link SortOrder}
+ * A parameter that renames a matching string into another string
  */
-public class StringFilterAndSortOrderPairParameter extends PairParameter<StringPredicate, SortOrder> {
+public class StringQueryExpressionAndStringPairParameter extends PairParameter<StringQueryExpression, String> {
 
     /**
      * Creates a new instance
      */
-    public StringFilterAndSortOrderPairParameter() {
-        super(StringPredicate.class, SortOrder.class);
-        setKey(new StringPredicate());
-        setValue(SortOrder.Ascending);
+    public StringQueryExpressionAndStringPairParameter() {
+        super(StringQueryExpression.class, String.class);
     }
 
     /**
@@ -36,19 +33,19 @@ public class StringFilterAndSortOrderPairParameter extends PairParameter<StringP
      *
      * @param other the original
      */
-    public StringFilterAndSortOrderPairParameter(StringFilterAndSortOrderPairParameter other) {
+    public StringQueryExpressionAndStringPairParameter(StringQueryExpressionAndStringPairParameter other) {
         super(other);
     }
 
     /**
-     * A collection of multiple {@link StringFilterAndSortOrderPairParameter}
+     * A collection of multiple {@link StringQueryExpressionAndStringPairParameter}
      */
-    public static class List extends ListParameter<StringFilterAndSortOrderPairParameter> {
+    public static class List extends ListParameter<StringQueryExpressionAndStringPairParameter> {
         /**
          * Creates a new instance
          */
         public List() {
-            super(StringFilterAndSortOrderPairParameter.class);
+            super(StringQueryExpressionAndStringPairParameter.class);
         }
 
         /**
@@ -57,9 +54,9 @@ public class StringFilterAndSortOrderPairParameter extends PairParameter<StringP
          * @param other the original
          */
         public List(List other) {
-            super(StringFilterAndSortOrderPairParameter.class);
-            for (StringFilterAndSortOrderPairParameter filter : other) {
-                add(new StringFilterAndSortOrderPairParameter(filter));
+            super(StringQueryExpressionAndStringPairParameter.class);
+            for (StringQueryExpressionAndStringPairParameter filter : other) {
+                add(new StringQueryExpressionAndStringPairParameter(filter));
             }
         }
     }

@@ -37,18 +37,13 @@ import org.hkijena.jipipe.extensions.omero.datatypes.OMERODatasetReferenceData;
 import org.hkijena.jipipe.extensions.omero.datatypes.OMEROProjectReferenceData;
 import org.hkijena.jipipe.extensions.omero.util.OMEROToJIPipeLogger;
 import org.hkijena.jipipe.extensions.omero.util.OMEROUtils;
-import org.hkijena.jipipe.extensions.parameters.expressions.NamedStringQueryExpression;
 import org.hkijena.jipipe.extensions.parameters.expressions.StringMapQueryExpression;
 import org.hkijena.jipipe.extensions.parameters.expressions.StringQueryExpression;
-import org.hkijena.jipipe.extensions.parameters.pairs.StringAndStringPredicatePairParameter;
-import org.hkijena.jipipe.extensions.parameters.predicates.StringPredicate;
 import org.hkijena.jipipe.extensions.parameters.primitives.OptionalStringParameter;
-import org.hkijena.jipipe.extensions.parameters.util.LogicalOperation;
 import org.hkijena.jipipe.utils.JsonUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;

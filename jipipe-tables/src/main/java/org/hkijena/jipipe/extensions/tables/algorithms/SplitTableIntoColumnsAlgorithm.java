@@ -16,7 +16,6 @@ package org.hkijena.jipipe.extensions.tables.algorithms;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
@@ -25,7 +24,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.parameters.predicates.StringPredicate;
+import org.hkijena.jipipe.extensions.parameters.expressions.StringQueryExpression;
 import org.hkijena.jipipe.extensions.parameters.primitives.OptionalStringParameter;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
@@ -48,7 +47,7 @@ import java.util.function.Supplier;
 public class SplitTableIntoColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private OptionalStringParameter generatedAnnotation = new OptionalStringParameter();
-    private StringPredicate.List filters = new StringPredicate.List();
+    private StringQueryExpression columnFilter = new StringQueryExpression("TRUE");
 
     /**
      * Creates a new instance
@@ -68,14 +67,14 @@ public class SplitTableIntoColumnsAlgorithm extends JIPipeSimpleIteratingAlgorit
     public SplitTableIntoColumnsAlgorithm(SplitTableIntoColumnsAlgorithm other) {
         super(other);
         this.generatedAnnotation = other.generatedAnnotation;
-        this.filters = new StringPredicate.List(other.filters);
+        this.columnFilter = new StringQueryExpression(other.columnFilter);
     }
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         ResultsTableData input = dataBatch.getInputData(getFirstInputSlot(), ResultsTableData.class);
         for (String columnName : input.getColumnNames()) {
-            if (filters.isEmpty() || filters.test(columnName)) {
+            if (columnFilter.test(columnName)) {
                 TableColumn column = input.getColumnCopy(input.getColumnIndex(columnName));
                 List<JIPipeAnnotation> traitList = new ArrayList<>();
                 if (generatedAnnotation.isEnabled() && !StringUtils.isNullOrEmpty(generatedAnnotation.getContent())) {
@@ -84,11 +83,6 @@ public class SplitTableIntoColumnsAlgorithm extends JIPipeSimpleIteratingAlgorit
                 dataBatch.addOutputData(getFirstOutputSlot(), column, traitList);
             }
         }
-    }
-
-    @Override
-    public void reportValidity(JIPipeValidityReport report) {
-        report.forCategory("Filters").report(filters);
     }
 
     @JIPipeDocumentation(name = "Generated annotation", description = "Optional. The annotation that is created for each table column. The column header will be stored inside it.")
@@ -103,14 +97,14 @@ public class SplitTableIntoColumnsAlgorithm extends JIPipeSimpleIteratingAlgorit
         this.generatedAnnotation = generatedAnnotation;
     }
 
-    @JIPipeDocumentation(name = "Filters", description = "Allows you to filter only specific columns that will be extracted. The filters are connected via OR.")
+    @JIPipeDocumentation(name = "Filters", description = "Allows you to filter only specific columns that will be extracted. " + StringQueryExpression.DOCUMENTATION_DESCRIPTION)
     @JIPipeParameter("filters")
-    public StringPredicate.List getFilters() {
-        return filters;
+    public StringQueryExpression getColumnFilter() {
+        return columnFilter;
     }
 
     @JIPipeParameter("filters")
-    public void setFilters(StringPredicate.List filters) {
-        this.filters = filters;
+    public void setColumnFilter(StringQueryExpression columnFilter) {
+        this.columnFilter = columnFilter;
     }
 }

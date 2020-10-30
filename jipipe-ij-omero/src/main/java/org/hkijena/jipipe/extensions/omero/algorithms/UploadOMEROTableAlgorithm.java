@@ -13,31 +13,16 @@
 
 package org.hkijena.jipipe.extensions.omero.algorithms;
 
-import loci.formats.in.DefaultMetadataOptions;
-import loci.formats.in.MetadataLevel;
-import ome.formats.OMEROMetadataStoreClient;
-import ome.formats.importer.ImportCandidates;
-import ome.formats.importer.ImportConfig;
-import ome.formats.importer.ImportLibrary;
-import ome.formats.importer.OMEROWrapper;
-import ome.formats.importer.cli.ErrorHandler;
 import omero.gateway.Gateway;
-import omero.gateway.LoginCredentials;
 import omero.gateway.SecurityContext;
 import omero.gateway.facility.BrowseFacility;
-import omero.gateway.facility.DataManagerFacility;
 import omero.gateway.facility.TablesFacility;
 import omero.gateway.model.ExperimenterData;
 import omero.gateway.model.ImageData;
-import omero.gateway.model.MapAnnotationData;
 import omero.gateway.model.TableData;
-import omero.model.NamedValue;
-import omero.model.Pixels;
-import org.apache.commons.io.FileUtils;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDataByMetadataExporter;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
@@ -46,35 +31,20 @@ import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeMergingAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
-import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.OMEImageData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.parameters.OMEExporterSettings;
 import org.hkijena.jipipe.extensions.omero.OMEROCredentials;
-import org.hkijena.jipipe.extensions.omero.OMEROSettings;
-import org.hkijena.jipipe.extensions.omero.datatypes.OMERODatasetReferenceData;
 import org.hkijena.jipipe.extensions.omero.datatypes.OMEROImageReferenceData;
 import org.hkijena.jipipe.extensions.omero.util.OMEROToJIPipeLogger;
-import org.hkijena.jipipe.extensions.omero.util.OMEROUploadToJIPipeLogger;
 import org.hkijena.jipipe.extensions.omero.util.OMEROUtils;
-import org.hkijena.jipipe.extensions.parameters.predicates.StringPredicate;
-import org.hkijena.jipipe.extensions.parameters.primitives.OptionalStringParameter;
-import org.hkijena.jipipe.extensions.parameters.util.LogicalOperation;
-import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
-import org.hkijena.jipipe.utils.PathUtils;
 
-import java.io.IOException;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 @JIPipeDocumentation(name = "Upload to OMERO", description = "Uploads tables to OMERO. The table is attached to an image.")
 @JIPipeOrganization(nodeTypeCategory = TableNodeTypeCategory.class)

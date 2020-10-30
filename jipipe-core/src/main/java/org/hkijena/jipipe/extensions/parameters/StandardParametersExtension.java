@@ -57,8 +57,6 @@ import org.hkijena.jipipe.extensions.parameters.optional.OptionalParameterEditor
 import org.hkijena.jipipe.extensions.parameters.pairs.*;
 import org.hkijena.jipipe.extensions.parameters.patterns.StringPatternExtraction;
 import org.hkijena.jipipe.extensions.parameters.patterns.StringPatternExtractionParameterEditorUI;
-import org.hkijena.jipipe.extensions.parameters.predicates.StringPredicate;
-import org.hkijena.jipipe.extensions.parameters.predicates.StringPredicateParameterEditorUI;
 import org.hkijena.jipipe.extensions.parameters.primitives.*;
 import org.hkijena.jipipe.extensions.parameters.references.JIPipeAlgorithmIconRef;
 import org.hkijena.jipipe.extensions.parameters.references.JIPipeDataInfoRef;
@@ -134,7 +132,6 @@ public class StandardParametersExtension extends JIPipePrepackagedDefaultJavaExt
         registerPrimitives();
         registerCommonJavaTypes();
         registerJIPipeTypes();
-        registerFilterParameters();
         registerGeneratingParameters();
         registerPairParameters();
         registerEnumParameters();
@@ -446,10 +443,6 @@ public class StandardParametersExtension extends JIPipePrepackagedDefaultJavaExt
                 ColorMap.class,
                 "Color map",
                 "Available color maps that convert a scalar to a color");
-        registerEnumParameterType("string-predicate:mode",
-                StringPredicate.Mode.class,
-                "Mode",
-                "Available modes");
         registerEnumParameterType("column-matching",
                 JIPipeColumnGrouping.class,
                 "Column matching strategy",
@@ -479,11 +472,11 @@ public class StandardParametersExtension extends JIPipePrepackagedDefaultJavaExt
     private void registerPairParameters() {
         // Pair-like parameters
         registerParameterEditor(PairParameter.class, PairParameterEditorUI.class);
-        registerParameterType("string-predicate:string:pair",
-                StringFilterAndStringPairParameter.class,
-                StringFilterAndStringPairParameter.List.class,
-                StringFilterAndStringPairParameter::new,
-                r -> new StringFilterAndStringPairParameter((StringFilterAndStringPairParameter) r),
+        registerParameterType("string-query-expression:string:pair",
+                StringQueryExpressionAndStringPairParameter.class,
+                StringQueryExpressionAndStringPairParameter.List.class,
+                StringQueryExpressionAndStringPairParameter::new,
+                r -> new StringQueryExpressionAndStringPairParameter((StringQueryExpressionAndStringPairParameter) r),
                 "String pair",
                 "A pair of a string predicate and a string",
                 null);
@@ -503,21 +496,13 @@ public class StandardParametersExtension extends JIPipePrepackagedDefaultJavaExt
                 "Double pair",
                 "A pair of 64-bit floating point numbers",
                 null);
-        registerParameterType("string-predicate:sort-order:pair",
-                StringFilterAndSortOrderPairParameter.class,
-                StringFilterAndSortOrderPairParameter.List.class,
-                StringFilterAndSortOrderPairParameter::new,
-                r -> new StringFilterAndSortOrderPairParameter((StringFilterAndSortOrderPairParameter) r),
+        registerParameterType("string-query-expression:sort-order:pair",
+                StringQueryExpressionAndSortOrderPairParameter.class,
+                StringQueryExpressionAndSortOrderPairParameter.List.class,
+                StringQueryExpressionAndSortOrderPairParameter::new,
+                r -> new StringQueryExpressionAndSortOrderPairParameter((StringQueryExpressionAndSortOrderPairParameter) r),
                 "String predicate to sort order",
                 "Mapping from a string predicate to a sort order",
-                null);
-        registerParameterType("string:string-predicate:pair",
-                StringAndStringPredicatePairParameter.class,
-                StringAndStringPredicatePairParameter.List.class,
-                null,
-                null,
-                "String to string predicate",
-                "Mapping from a string to a string predicate",
                 null);
         registerParameterType("string:string:pair",
                 StringAndStringPairParameter.class,
@@ -549,18 +534,6 @@ public class StandardParametersExtension extends JIPipePrepackagedDefaultJavaExt
                         "encased with (brackets). [from] and [to] can be in inverse order, generating numbers in inverse order. Spaces are ignored. " +
                         "Example: 0-10;5;3-(-1)",
                 IntegerRangeParameterEditorUI.class);
-    }
-
-    private void registerFilterParameters() {
-        // Filter parameters
-        registerParameterType("string-predicate",
-                StringPredicate.class,
-                StringPredicate.List.class,
-                StringPredicate::new,
-                f -> new StringPredicate((StringPredicate) f),
-                "String predicate",
-                "A predicate for text values",
-                StringPredicateParameterEditorUI.class);
     }
 
     private void registerJIPipeTypes() {

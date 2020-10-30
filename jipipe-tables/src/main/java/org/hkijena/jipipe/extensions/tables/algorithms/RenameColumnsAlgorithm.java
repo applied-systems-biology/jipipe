@@ -24,7 +24,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.parameters.pairs.StringFilterAndStringPairParameter;
+import org.hkijena.jipipe.extensions.parameters.pairs.StringQueryExpressionAndStringPairParameter;
 import org.hkijena.jipipe.extensions.tables.datatypes.DoubleArrayTableColumn;
 import org.hkijena.jipipe.extensions.tables.datatypes.StringArrayTableColumn;
 import org.hkijena.jipipe.extensions.tables.datatypes.TableColumn;
@@ -42,7 +42,7 @@ import java.util.function.Supplier;
 @JIPipeOutputSlot(value = TableColumn.class, slotName = "Output", autoCreate = true)
 public class RenameColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
-    private StringFilterAndStringPairParameter.List renamingEntries = new StringFilterAndStringPairParameter.List();
+    private StringQueryExpressionAndStringPairParameter.List renamingEntries = new StringQueryExpressionAndStringPairParameter.List();
 
     /**
      * Creates a new instance
@@ -60,14 +60,14 @@ public class RenameColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
      */
     public RenameColumnsAlgorithm(RenameColumnsAlgorithm other) {
         super(other);
-        this.renamingEntries = new StringFilterAndStringPairParameter.List(other.renamingEntries);
+        this.renamingEntries = new StringQueryExpressionAndStringPairParameter.List(other.renamingEntries);
     }
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         TableColumn input = dataBatch.getInputData(getFirstInputSlot(), TableColumn.class);
         String name = input.getLabel();
-        for (StringFilterAndStringPairParameter renamingEntry : renamingEntries) {
+        for (StringQueryExpressionAndStringPairParameter renamingEntry : renamingEntries) {
             if (renamingEntry.getKey().test(name)) {
                 name = renamingEntry.getValue();
                 break;
@@ -96,12 +96,12 @@ public class RenameColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @JIPipeDocumentation(name = "Renaming entries", description = "You can rename one or multiple columns.")
     @JIPipeParameter("renaming-entries")
-    public StringFilterAndStringPairParameter.List getRenamingEntries() {
+    public StringQueryExpressionAndStringPairParameter.List getRenamingEntries() {
         return renamingEntries;
     }
 
     @JIPipeParameter("renaming-entries")
-    public void setRenamingEntries(StringFilterAndStringPairParameter.List renamingEntries) {
+    public void setRenamingEntries(StringQueryExpressionAndStringPairParameter.List renamingEntries) {
         this.renamingEntries = renamingEntries;
     }
 }

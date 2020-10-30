@@ -37,15 +37,13 @@ import org.hkijena.jipipe.extensions.omero.datatypes.OMERODatasetReferenceData;
 import org.hkijena.jipipe.extensions.omero.datatypes.OMEROImageReferenceData;
 import org.hkijena.jipipe.extensions.omero.util.OMEROToJIPipeLogger;
 import org.hkijena.jipipe.extensions.omero.util.OMEROUtils;
-import org.hkijena.jipipe.extensions.parameters.pairs.StringAndStringPredicatePairParameter;
-import org.hkijena.jipipe.extensions.parameters.predicates.StringPredicate;
+import org.hkijena.jipipe.extensions.parameters.expressions.StringMapQueryExpression;
+import org.hkijena.jipipe.extensions.parameters.expressions.StringQueryExpression;
 import org.hkijena.jipipe.extensions.parameters.primitives.OptionalStringParameter;
-import org.hkijena.jipipe.extensions.parameters.util.LogicalOperation;
 import org.hkijena.jipipe.utils.JsonUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -61,13 +59,13 @@ import java.util.stream.Collectors;
 public class OMEROFindImageAlgorithm extends JIPipeParameterSlotAlgorithm {
 
     private OMEROCredentials credentials = new OMEROCredentials();
-    private StringPredicate.List imageNameFilters = new StringPredicate.List();
+    private StringQueryExpression imageNameFilters = new StringQueryExpression("TRUE");
     private OptionalStringParameter projectNameAnnotation = new OptionalStringParameter("Project", true);
     private OptionalStringParameter datasetNameAnnotation = new OptionalStringParameter("Dataset", true);
     private OptionalStringParameter imageNameAnnotation = new OptionalStringParameter("Filename", true);
-    private StringAndStringPredicatePairParameter.List keyValuePairFilters = new StringAndStringPredicatePairParameter.List();
+    private StringMapQueryExpression keyValuePairFilters = new StringMapQueryExpression("TRUE");
     private boolean addKeyValuePairsAsAnnotations = true;
-    private StringPredicate.List tagFilters = new StringPredicate.List();
+    private StringMapQueryExpression tagFilters = new StringMapQueryExpression("TRUE");
     private OptionalStringParameter tagAnnotation = new OptionalStringParameter("Tags", true);
 
     public OMEROFindImageAlgorithm(JIPipeNodeInfo info) {
@@ -95,22 +93,14 @@ public class OMEROFindImageAlgorithm extends JIPipeParameterSlotAlgorithm {
                 for (Object obj : datasetData.getImages()) {
                     if (obj instanceof ImageData) {
                         ImageData imageData = (ImageData) obj;
-                        if (!imageNameFilters.isEmpty() && !imageNameFilters.test(imageData.getName())) {
+                        if(!imageNameFilters.test(imageData.getName())) {
                             continue;
                         }
-                        Map<String, String> keyValuePairs = new HashMap<>();
-                        if(!keyValuePairFilters.isEmpty() || addKeyValuePairsAsAnnotations) {
-                            keyValuePairs = OMEROUtils.getKeyValuePairAnnotations(metadata, context, imageData);
-                        }
-                        if(!keyValuePairFilters.isEmpty()) {
-                            if(!keyValuePairFilters.test(keyValuePairs, LogicalOperation.LogicalAnd, LogicalOperation.LogicalOr))
-                                continue;
-                        }
-                        Set<String> tags = new HashSet<>();
-                        if(!tagFilters.isEmpty() || tagAnnotation.isEnabled()) {
-                            tags = OMEROUtils.getTagAnnotations(metadata, context, imageData);
-                        }
-                        if(!tagFilters.isEmpty() && !tagFilters.test(tags, LogicalOperation.LogicalOr, LogicalOperation.LogicalOr)) {
+                        Map<String, String> keyValuePairs = OMEROUtils.getKeyValuePairAnnotations(metadata, context, imageData);
+                        if(!keyValuePairFilters.test(keyValuePairs))
+                            continue;
+                        Set<String> tags = OMEROUtils.getTagAnnotations(metadata, context, imageData);
+                        if(!tagFilters.test(tags)) {
                             continue;
                         }
                         List<JIPipeAnnotation> annotations = new ArrayList<>();
@@ -139,25 +129,25 @@ public class OMEROFindImageAlgorithm extends JIPipeParameterSlotAlgorithm {
     public OMEROFindImageAlgorithm(OMEROFindImageAlgorithm other) {
         super(other);
         this.credentials = new OMEROCredentials(other.credentials);
-        this.imageNameFilters = new StringPredicate.List(other.imageNameFilters);
+        this.imageNameFilters = new StringQueryExpression(other.imageNameFilters);
         this.datasetNameAnnotation = new OptionalStringParameter(other.datasetNameAnnotation);
         this.projectNameAnnotation = new OptionalStringParameter(other.projectNameAnnotation);
         this.imageNameAnnotation = new OptionalStringParameter(other.imageNameAnnotation);
-        this.keyValuePairFilters = new StringAndStringPredicatePairParameter.List(other.keyValuePairFilters);
+        this.keyValuePairFilters = new StringMapQueryExpression(other.keyValuePairFilters);
         this.addKeyValuePairsAsAnnotations = other.addKeyValuePairsAsAnnotations;
-        this.tagFilters = new StringPredicate.List(other.tagFilters);
+        this.tagFilters = new StringMapQueryExpression(other.tagFilters);
         this.tagAnnotation = new OptionalStringParameter(other.tagAnnotation);
         registerSubParameter(credentials);
     }
 
-    @JIPipeDocumentation(name = "Image name filters", description = "Filters for the image name. A image is returned if one of the filters apply. If the list is empty, all images are returned.")
+    @JIPipeDocumentation(name = "Image name filters", description = "Filters for the image name. " + StringMapQueryExpression.DOCUMENTATION_DESCRIPTION)
     @JIPipeParameter("image-name-filters")
-    public StringPredicate.List getImageNameFilters() {
+    public StringQueryExpression getImageNameFilters() {
         return imageNameFilters;
     }
 
     @JIPipeParameter("image-name-filters")
-    public void setImageNameFilters(StringPredicate.List imageNameFilters) {
+    public void setImageNameFilters(StringQueryExpression imageNameFilters) {
         this.imageNameFilters = imageNameFilters;
     }
 
@@ -229,14 +219,25 @@ public class OMEROFindImageAlgorithm extends JIPipeParameterSlotAlgorithm {
         this.addKeyValuePairsAsAnnotations = addKeyValuePairsAsAnnotations;
     }
 
-    @JIPipeDocumentation(name = "Key-Value pair filters", description = "Filters projects by attached key value pairs. Filters with same keys are connected via an AND operation. Filters with different keys are connected via an OR operation. If the list is empty, no filtering is applied.")
+    @JIPipeDocumentation(name = "Key-Value pair filters", description = "Filters projects by attached key value pairs. " + StringMapQueryExpression.DOCUMENTATION_DESCRIPTION)
     @JIPipeParameter("key-value-pair-filters")
-    public StringAndStringPredicatePairParameter.List getKeyValuePairFilters() {
+    public StringMapQueryExpression getKeyValuePairFilters() {
         return keyValuePairFilters;
     }
 
     @JIPipeParameter("key-value-pair-filters")
-    public void setKeyValuePairFilters(StringAndStringPredicatePairParameter.List keyValuePairFilters) {
+    public void setKeyValuePairFilters(StringMapQueryExpression keyValuePairFilters) {
         this.keyValuePairFilters = keyValuePairFilters;
+    }
+
+    @JIPipeDocumentation(name = "Tag filters", description = "Filters by tag values. If no tag is matched, the data set is skipped. " + StringMapQueryExpression.DOCUMENTATION_DESCRIPTION)
+    @JIPipeParameter("tag-filters")
+    public StringMapQueryExpression getTagFilters() {
+        return tagFilters;
+    }
+
+    @JIPipeParameter("tag-filters")
+    public void setTagFilters(StringMapQueryExpression tagFilters) {
+        this.tagFilters = tagFilters;
     }
 }

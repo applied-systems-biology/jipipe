@@ -25,28 +25,29 @@ import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.AnnotationsNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.parameters.pairs.PairParameterSettings;
-import org.hkijena.jipipe.extensions.parameters.pairs.StringAndStringPredicatePairParameter;
+import org.hkijena.jipipe.extensions.parameters.expressions.AnnotationQueryExpression;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
+import org.hkijena.jipipe.utils.ResourceUtils;
 
+import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 /**
  * Removes a specified annotation
  */
-@JIPipeDocumentation(name = "Remove annotation by value", description = "Removes annotations that match a filter value")
+@JIPipeDocumentation(name = "Remove annotation", description = "Removes annotations by name or value")
 @JIPipeOrganization(menuPath = "Remove", nodeTypeCategory = AnnotationsNodeTypeCategory.class)
 @JIPipeInputSlot(value = JIPipeData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = JIPipeData.class, slotName = "Output", inheritedSlot = "Input", autoCreate = true)
-public class RemoveAnnotationByValue extends JIPipeSimpleIteratingAlgorithm {
+public class RemoveAnnotationAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
-    private StringAndStringPredicatePairParameter.List filters = new StringAndStringPredicatePairParameter.List();
+    private AnnotationQueryExpression annotationExpression = new AnnotationQueryExpression("\"#Dataset\"");
 
     /**
      * @param info algorithm info
      */
-    public RemoveAnnotationByValue(JIPipeNodeInfo info) {
+    public RemoveAnnotationAlgorithm(JIPipeNodeInfo info) {
         super(info);
     }
 
@@ -55,36 +56,30 @@ public class RemoveAnnotationByValue extends JIPipeSimpleIteratingAlgorithm {
      *
      * @param other the original
      */
-    public RemoveAnnotationByValue(RemoveAnnotationByValue other) {
+    public RemoveAnnotationAlgorithm(RemoveAnnotationAlgorithm other) {
         super(other);
-        this.filters = other.filters;
+        this.annotationExpression = new AnnotationQueryExpression(other.annotationExpression);
     }
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
-        for (StringAndStringPredicatePairParameter filter : filters) {
-            JIPipeAnnotation instance = dataBatch.getAnnotationOfType(filter.getKey());
-            if (instance != null) {
-                if (filter.getValue().test(instance.getValue())) {
-                    dataBatch.removeGlobalAnnotation(filter.getKey());
-                }
-            }
+        List<JIPipeAnnotation> matches = annotationExpression.queryAll(dataBatch.getAnnotations().values());
+        for (JIPipeAnnotation match : matches) {
+            dataBatch.removeGlobalAnnotation(match.getName());
         }
         dataBatch.addOutputData(getFirstOutputSlot(), dataBatch.getInputData(getFirstInputSlot(), JIPipeData.class));
     }
 
-    @JIPipeDocumentation(name = "Filters", description = "This annotation is removed from each input data")
-    @JIPipeParameter("filters")
-    @StringParameterSettings(monospace = true)
-    @PairParameterSettings(singleRow = false, keyLabel = "Annotation column", valueLabel = "Remove value if")
-    public StringAndStringPredicatePairParameter.List getFilters() {
-        return filters;
+    @JIPipeDocumentation(name = "Removed annotations", description = "Annotations that match any of the filters are removed.")
+    @JIPipeParameter("annotation-type")
+    @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/annotation.png")
+    public AnnotationQueryExpression getAnnotationExpression() {
+        return annotationExpression;
     }
 
-    @JIPipeParameter("filters")
-    public void setFilters(StringAndStringPredicatePairParameter.List annotationTypes) {
-        this.filters = annotationTypes;
+    @JIPipeParameter("annotation-type")
+    public void setAnnotationExpression(AnnotationQueryExpression annotationExpression) {
+        this.annotationExpression = annotationExpression;
 
     }
-
 }

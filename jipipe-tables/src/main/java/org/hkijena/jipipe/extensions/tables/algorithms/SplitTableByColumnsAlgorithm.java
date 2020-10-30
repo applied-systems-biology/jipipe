@@ -16,7 +16,6 @@ package org.hkijena.jipipe.extensions.tables.algorithms;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
@@ -25,7 +24,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.parameters.predicates.StringPredicate;
+import org.hkijena.jipipe.extensions.parameters.expressions.StringQueryExpression;
 import org.hkijena.jipipe.extensions.parameters.primitives.OptionalStringParameter;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
@@ -51,7 +50,7 @@ import java.util.stream.Collectors;
 public class SplitTableByColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private OptionalStringParameter generatedAnnotation = new OptionalStringParameter();
-    private StringPredicate.List columns = new StringPredicate.List();
+    private StringQueryExpression columns = new StringQueryExpression();
 
     /**
      * Creates a new instance
@@ -71,13 +70,13 @@ public class SplitTableByColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm
     public SplitTableByColumnsAlgorithm(SplitTableByColumnsAlgorithm other) {
         super(other);
         this.generatedAnnotation = other.generatedAnnotation;
-        this.columns = new StringPredicate.List(other.columns);
+        this.columns = new StringQueryExpression(other.columns);
     }
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         ResultsTableData input = dataBatch.getInputData(getFirstInputSlot(), ResultsTableData.class);
-        List<String> interestingColumns = input.getColumnNames().stream().filter(columns).distinct().collect(Collectors.toList());
+        List<String> interestingColumns = columns.queryAll(input.getColumnNames());
         if (interestingColumns.isEmpty()) {
             dataBatch.addOutputData(getFirstOutputSlot(), input.duplicate());
         } else {
@@ -102,11 +101,6 @@ public class SplitTableByColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm
         }
     }
 
-    @Override
-    public void reportValidity(JIPipeValidityReport report) {
-        report.forCategory("Filters").report(columns);
-    }
-
     @JIPipeDocumentation(name = "Generated annotation", description = "Optional. The annotation that is created for each table column. The column header will be stored inside it.")
     @JIPipeParameter("generated-annotation")
     @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/annotation.png")
@@ -119,14 +113,14 @@ public class SplitTableByColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm
         this.generatedAnnotation = generatedAnnotation;
     }
 
-    @JIPipeDocumentation(name = "Selected columns", description = "The list of columns to select")
+    @JIPipeDocumentation(name = "Selected columns", description = "Expression that selects the columns. " + StringQueryExpression.DOCUMENTATION_DESCRIPTION)
     @JIPipeParameter("columns")
-    public StringPredicate.List getColumns() {
+    public StringQueryExpression getColumns() {
         return columns;
     }
 
     @JIPipeParameter("columns")
-    public void setColumns(StringPredicate.List columns) {
+    public void setColumns(StringQueryExpression columns) {
         this.columns = columns;
     }
 }
