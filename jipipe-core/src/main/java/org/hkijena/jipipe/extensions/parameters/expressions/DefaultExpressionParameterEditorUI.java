@@ -110,7 +110,6 @@ public class DefaultExpressionParameterEditorUI extends JIPipeParameterEditorUI 
         RSyntaxDocument document = new RSyntaxDocument(tokenMakerFactory, "text/expression");
         expressionEditor = new RSyntaxTextArea(document);
         expressionEditor.setLineWrap(true);
-        expressionEditor.setBorder(BorderFactory.createEmptyBorder(5,4,1,4));
         expressionEditor.setHighlightCurrentLine(false);
         expressionEditor.getDocument().addDocumentListener(new DocumentChangeListener() {
             @Override
@@ -125,7 +124,11 @@ public class DefaultExpressionParameterEditorUI extends JIPipeParameterEditorUI 
         expressionEditorPanel.setBorder(BorderFactory.createEtchedBorder());
         expressionEditorPanel.setOpaque(true);
         expressionEditorPanel.setBackground(Color.WHITE);
-        expressionEditorPanel.add(expressionEditor, BorderLayout.CENTER);
+        JPanel borderPanel = new JPanel(new BorderLayout());
+        borderPanel.setBackground(Color.WHITE);
+        borderPanel.setBorder(BorderFactory.createEmptyBorder(5,4,0,4));
+        borderPanel.add(expressionEditor, BorderLayout.CENTER);
+        expressionEditorPanel.add(borderPanel, BorderLayout.CENTER);
     }
 
     private void insertOperator() {

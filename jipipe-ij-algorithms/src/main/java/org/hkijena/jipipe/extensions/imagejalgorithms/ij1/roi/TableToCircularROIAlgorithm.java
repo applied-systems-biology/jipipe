@@ -17,7 +17,6 @@ import ij.gui.OvalRoi;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
@@ -28,9 +27,10 @@ import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
-import org.hkijena.jipipe.extensions.parameters.predicates.StringPredicate;
+import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameterSettings;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.extensions.tables.datatypes.TableColumn;
+import org.hkijena.jipipe.extensions.tables.parameters.TableCellExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.tables.parameters.TableColumnSourceParameter;
 
 import java.util.function.Consumer;
@@ -60,9 +60,9 @@ public class TableToCircularROIAlgorithm extends JIPipeSimpleIteratingAlgorithm 
                 .addOutputSlot("Output", ROIListData.class, null)
                 .seal()
                 .build());
-        columnX1.setColumnSource(new StringPredicate(StringPredicate.Mode.Equals, "X", false));
-        columnY1.setColumnSource(new StringPredicate(StringPredicate.Mode.Equals, "Y", false));
-        columnRadius.setColumnSource(new StringPredicate(StringPredicate.Mode.Equals, "Radius", false));
+        columnX1.setExpression("\"X\"");
+        columnY1.setExpression("\"Y\"");
+        columnRadius.setExpression("\"Radius\"");
     }
 
     /**
@@ -75,13 +75,6 @@ public class TableToCircularROIAlgorithm extends JIPipeSimpleIteratingAlgorithm 
         this.columnX1 = new TableColumnSourceParameter(other.columnX1);
         this.columnY1 = new TableColumnSourceParameter(other.columnY1);
         this.columnRadius = new TableColumnSourceParameter(other.columnRadius);
-    }
-
-    @Override
-    public void reportValidity(JIPipeValidityReport report) {
-        report.forCategory("Column 'X1'").report(columnX1);
-        report.forCategory("Column 'Y1'").report(columnY1);
-        report.forCategory("Column 'Width'").report(columnRadius);
     }
 
     @Override
@@ -126,8 +119,9 @@ public class TableToCircularROIAlgorithm extends JIPipeSimpleIteratingAlgorithm 
         dataBatch.addOutputData(getFirstOutputSlot(), rois);
     }
 
-    @JIPipeDocumentation(name = "Column 'X1'", description = "The table column that is used for the X1 coordinate.")
+    @JIPipeDocumentation(name = "Column 'X1'", description = "The table column that is used for the X1 coordinate. " + TableColumnSourceParameter.DOCUMENTATION_DESCRIPTION)
     @JIPipeParameter(value = "column-x1")
+    @ExpressionParameterSettings(variableSource = TableCellExpressionParameterVariableSource.class)
     public TableColumnSourceParameter getColumnX1() {
         return columnX1;
     }
@@ -137,7 +131,8 @@ public class TableToCircularROIAlgorithm extends JIPipeSimpleIteratingAlgorithm 
         this.columnX1 = columnX1;
     }
 
-    @JIPipeDocumentation(name = "Column 'Y1'", description = "The table column that is used for the Y1 coordinate.")
+    @JIPipeDocumentation(name = "Column 'Y1'", description = "The table column that is used for the Y1 coordinate. " + TableColumnSourceParameter.DOCUMENTATION_DESCRIPTION)
+    @ExpressionParameterSettings(variableSource = TableCellExpressionParameterVariableSource.class)
     @JIPipeParameter(value = "column-y1")
     public TableColumnSourceParameter getColumnY1() {
         return columnY1;
@@ -148,7 +143,8 @@ public class TableToCircularROIAlgorithm extends JIPipeSimpleIteratingAlgorithm 
         this.columnY1 = columnY1;
     }
 
-    @JIPipeDocumentation(name = "Column 'Radius'", description = "The table column that is used for the radius. ")
+    @JIPipeDocumentation(name = "Column 'Radius'", description = "The table column that is used for the radius. " + TableColumnSourceParameter.DOCUMENTATION_DESCRIPTION)
+    @ExpressionParameterSettings(variableSource = TableCellExpressionParameterVariableSource.class)
     @JIPipeParameter(value = "column-radius")
     public TableColumnSourceParameter getColumnRadius() {
         return columnRadius;

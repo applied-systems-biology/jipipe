@@ -76,6 +76,8 @@ public class GenerateTableFromExpressionAlgorithm extends JIPipeSimpleIteratingA
         ResultsTableData table = new ResultsTableData();
         table.addRows(generatedRows);
         StaticVariableSet<Object> variableSet = new StaticVariableSet<>();
+        variableSet.set("num_rows", generatedRows);
+        variableSet.set("num_cols", columns.size());
         for (ExpressionTableColumnGeneratorProcessor entry : columns) {
             String columnName = entry.getValue();
             int columnId = table.getColumnIndex(columnName);

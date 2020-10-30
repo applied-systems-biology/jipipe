@@ -83,6 +83,7 @@ public class GenerateColumnAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         ResultsTableData table = (ResultsTableData) dataBatch.getInputData(getFirstInputSlot(), ResultsTableData.class).duplicate();
         StaticVariableSet<Object> variableSet = new StaticVariableSet<>();
+        variableSet.set("num_rows", table.getRowCount());
         for (ExpressionTableColumnGeneratorProcessor entry : columns) {
             String columnName = entry.getValue();
 
@@ -92,6 +93,7 @@ public class GenerateColumnAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             int columnId = table.getOrCreateColumnIndex(columnName);
             variableSet.set("column", columnId);
             variableSet.set("column_name", columnName);
+            variableSet.set("num_cols", table.getColumnCount());
             for (int row = 0; row < table.getRowCount(); row++) {
                 variableSet.set("row", row);
                 Object value = entry.getKey().evaluate(variableSet);

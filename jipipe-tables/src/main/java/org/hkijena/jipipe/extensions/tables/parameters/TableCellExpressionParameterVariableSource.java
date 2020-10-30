@@ -15,6 +15,8 @@ public class TableCellExpressionParameterVariableSource implements ExpressionPar
         VARIABLES.add(new ExpressionParameterVariable("Table row index", "The row index", "row"));
         VARIABLES.add(new ExpressionParameterVariable("Table column index", "The column index", "column"));
         VARIABLES.add(new ExpressionParameterVariable("Table column name", "The column name", "column_name"));
+        VARIABLES.add(new ExpressionParameterVariable("Number of rows", "The number of rows within the table", "num_rows"));
+        VARIABLES.add(new ExpressionParameterVariable("Number of columns", "The number of columns within the table", "num_cols"));
     }
 
     @Override

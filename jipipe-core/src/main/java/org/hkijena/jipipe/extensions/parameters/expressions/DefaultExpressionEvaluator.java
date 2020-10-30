@@ -22,6 +22,7 @@ import com.fathzer.soft.javaluator.StaticVariableSet;
 import com.google.common.collect.ImmutableList;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.registries.JIPipeExpressionRegistry;
 import org.hkijena.jipipe.extensions.parameters.expressions.operators.*;
 
@@ -204,24 +205,6 @@ public class DefaultExpressionEvaluator extends ExpressionEvaluator {
         return tokenize(expression, false, true).iterator();
     }
 
-//    private void fillTokenList(String expression, Set<String> operators, List<String> tokens) {
-////        // First split by space
-////        for (String subToken : expression.split("\\s+")) {
-////            if (operators.contains(subToken)) {
-////                // Prevent further tokenization
-////                tokens.add(subToken);
-////            } else {
-////                tokens.addAll(ImmutableList.copyOf(super.tokenize(subToken)));
-////            }
-////        }
-////        StringBuilder buffer = new StringBuilder();
-////        for (int i = 0; i < expression.length(); i++) {
-////            char c = expression.charAt(i);
-////
-////        }
-//        tokens.add(expression);
-//    }
-
     @Override
     public Object evaluate(String expression, Object evaluationContext) {
         if(expression.trim().isEmpty())
@@ -265,6 +248,7 @@ public class DefaultExpressionEvaluator extends ExpressionEvaluator {
 
     @Override
     protected Object toValue(String literal, Object evaluationContext) {
+        StaticVariableSet<Object> variableSet = (StaticVariableSet<Object>) evaluationContext;
         if("TRUE".equals(literal))
             return true;
         else if("FALSE".equals(literal))
@@ -273,7 +257,15 @@ public class DefaultExpressionEvaluator extends ExpressionEvaluator {
             return NumberUtils.createDouble(literal);
         else if(literal.length() >= 2 && literal.startsWith("\"") && literal.endsWith("\""))
             return literal.substring(1, literal.length() - 1);
-        else
-            return literal;
+        else {
+            Object variable = variableSet.get(literal);
+            if(variable == null) {
+                throw new UserFriendlyRuntimeException(new NullPointerException(), "Unable to find variable '" + literal + "' in expression",
+                        "Expression parser",
+                        "Your expression has a variable '" + literal + "', but it does not exist",
+                        "Check if the variable exists. If you intended to create a string, put double quotes around it.");
+            }
+            return variable;
+        }
     }
 }

@@ -15,125 +15,130 @@ package org.hkijena.jipipe.extensions.tables.parameters;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
+import com.fathzer.soft.javaluator.StaticVariableSet;
 import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeValidatable;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
+import org.hkijena.jipipe.extensions.parameters.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameter;
 import org.hkijena.jipipe.extensions.parameters.predicates.StringPredicate;
+import org.hkijena.jipipe.extensions.tables.datatypes.DoubleArrayTableColumn;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
+import org.hkijena.jipipe.extensions.tables.datatypes.StringArrayTableColumn;
 import org.hkijena.jipipe.extensions.tables.datatypes.TableColumn;
 import org.hkijena.jipipe.extensions.tables.parameters.enums.TableColumnGeneratorParameter;
 
 /**
  * Parameter that acts as source (via matching a column) or a generator
  */
-public class TableColumnSourceParameter implements JIPipeParameterCollection, JIPipeValidatable {
+public class TableColumnSourceParameter extends DefaultExpressionParameter implements JIPipeValidatable {
 
-    private EventBus eventBus = new EventBus();
-    private Mode mode = Mode.PickColumn;
-    private StringPredicate columnSource = new StringPredicate();
-    private TableColumnGeneratorParameter generatorSource = new TableColumnGeneratorParameter();
+    public static final String DOCUMENTATION_DESCRIPTION = "This parameter is an expression that has three modes: " +
+            "(1) Selecting an existing column by name, (2) Matching an existing column by boolean operators, and (3) Generating a new column based on a mathematical formula.<br/>" +
+            "<ol><li>Type in the name of the existing column. If there is a space or special character within the name, put it in between double quotes. Example: <pre>\"Area\"</pre></li>" +
+            "<li>There will be two variables 'column_name' and 'column' available. The expression is repeated for all available columns. Example: <pre>\"Data\" IN column_name</pre></li>" +
+            "<li>There will be : 'row', 'num_rows', and 'num_cols'. Use them to generate values. Example: <pre>row^2</pre></li></ol>";
 
-    /**
-     * Creates a new instance
-     */
     public TableColumnSourceParameter() {
     }
 
-    /**
-     * Copies the object
-     *
-     * @param other the original
-     */
-    public TableColumnSourceParameter(TableColumnSourceParameter other) {
-        this.mode = other.mode;
-        this.columnSource = new StringPredicate(other.columnSource);
-        this.generatorSource = new TableColumnGeneratorParameter(other.generatorSource);
+    public TableColumnSourceParameter(String expression) {
+        super(expression);
     }
 
-    @JIPipeDocumentation(name = "Mode", description = "Which source is used")
-    @JIPipeParameter("mode")
-    @JsonGetter("mode")
-    public Mode getMode() {
-        return mode;
-    }
-
-    @JIPipeParameter("mode")
-    @JsonSetter("mode")
-    public void setMode(Mode mode) {
-        this.mode = mode;
-    }
-
-    @JIPipeDocumentation(name = "Column source", description = "Source that picks a column")
-    @JIPipeParameter("column-source")
-    @JsonGetter("column-source")
-    public StringPredicate getColumnSource() {
-        return columnSource;
-    }
-
-    @JIPipeParameter("column-source")
-    @JsonSetter("column-source")
-    public void setColumnSource(StringPredicate columnSource) {
-        this.columnSource = columnSource;
-    }
-
-    @JIPipeDocumentation(name = "Generator source", description = "Source that generates a column")
-    @JIPipeParameter("generator-source")
-    @JsonGetter("generator-source")
-    public TableColumnGeneratorParameter getGeneratorSource() {
-        return generatorSource;
-    }
-
-    @JIPipeParameter("generator-source")
-    @JsonSetter("generator-source")
-    public void setGeneratorSource(TableColumnGeneratorParameter generatorSource) {
-        this.generatorSource = generatorSource;
+    public TableColumnSourceParameter(ExpressionParameter other) {
+        super(other);
     }
 
     /**
-     * Returns a column according to the data
-     *
-     * @param tableData the table
-     * @return the column or null if none could be found
+     * Picks or generates a table column based on selecting by name, matching one column by boolean expressions, or using a mathematical expression.
+     * Operations are applied in order until a column is generated
+     * @param table the table
+     * @return the column
      */
-    public TableColumn pickColumn(ResultsTableData tableData) {
-        if (mode == Mode.GenerateColumn) {
-            if (generatorSource.getGeneratorType() != null && generatorSource.getGeneratorType().getInfo() != null) {
-                return (TableColumn) generatorSource.getGeneratorType().getInfo().newInstance();
-            } else {
-                return null;
-            }
-        } else {
-            for (int col = 0; col < tableData.getColumnCount(); col++) {
-                if (columnSource.test(tableData.getColumnName(col))) {
-                    return tableData.getColumnReference(col);
+    public TableColumn pickColumn(ResultsTableData table) {
+        StaticVariableSet<Object> variableSet = new StaticVariableSet<>();
+        variableSet.set("num_rows", table.getRowCount());
+        variableSet.set("num_cols", table.getColumnCount());
+
+        // Option 1: Column name string
+        try {
+            String expression = getExpression();
+
+            // Apply user-friendliness fix
+            if(!expression.startsWith("\"") && !expression.endsWith("\""))
+                expression = "\"" + expression + "\"";
+
+            Object evaluationResult = getEvaluator().evaluate(expression, variableSet);
+            if(evaluationResult instanceof String) {
+                int columnIndex = table.getColumnIndex((String) evaluationResult);
+                if(columnIndex != -1) {
+                    return table.getColumnReference(columnIndex);
                 }
             }
-            return null;
         }
-    }
+        catch (Exception e) {
+        }
 
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
+        // Option 2: Column matching
+        for (int col = 0; col < table.getColumnCount(); col++) {
+            variableSet.set("column_name", table.getColumnName(col));
+            variableSet.set("column", col);
+            try {
+                Object evaluationResult = getEvaluator().evaluate(getExpression(), variableSet);
+                if(evaluationResult instanceof Boolean) {
+                    if((boolean)evaluationResult) {
+                        return table.getColumnReference(col);
+                    }
+                }
+            }
+            catch (Exception e) {
+            }
+        }
+
+        // Option 3: Column generation
+        try {
+            Object[] rawData = new Object[table.getRowCount()];
+            boolean isNumeric = true;
+            for (int row = 0; row < table.getRowCount(); row++) {
+                variableSet.set("row", row);
+                rawData[row] = getEvaluator().evaluate(getExpression(), variableSet);
+                if(!(rawData[row] instanceof Number))
+                    isNumeric = false;
+            }
+
+            if(isNumeric) {
+                double[] data = new double[table.getRowCount()];
+                for (int row = 0; row < table.getRowCount(); row++) {
+                    data[row] = ((Number)rawData[row]).doubleValue();
+                }
+                return new DoubleArrayTableColumn(data, "Generated");
+            }
+            else {
+                String[] data = new String[table.getRowCount()];
+                for (int row = 0; row < table.getRowCount(); row++) {
+                    data[row] = "" + rawData[row];
+                }
+                return new StringArrayTableColumn(data, "Generated");
+            }
+
+        }
+        catch (Exception e) {
+            throw new UserFriendlyRuntimeException(e,
+                    "Could not find or generate column!",
+                    "Table column source parameter",
+                    "A node requested from you to specify a table column. You entered the expression '" + getExpression() + "', but it did not yield in a column.",
+                    "Check if the expression is correct. If you want an existing column, it should return a string. If you want to search for one, it should return a boolean value. " +
+                            "If you want to generate one, it can return a number or string.");
+        }
     }
 
     @Override
     public void reportValidity(JIPipeValidityReport report) {
-        if (mode == Mode.PickColumn) {
-            report.report(columnSource);
-        } else if (mode == Mode.GenerateColumn) {
-            report.report(generatorSource);
-        }
-    }
-
-    /**
-     * Modes are that a column is picked or one is generated
-     */
-    public enum Mode {
-        PickColumn,
-        GenerateColumn
+        report.checkNonEmpty(getExpression(), this);
     }
 }

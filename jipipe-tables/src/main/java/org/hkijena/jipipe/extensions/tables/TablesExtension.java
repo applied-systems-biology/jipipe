@@ -15,6 +15,7 @@ package org.hkijena.jipipe.extensions.tables;
 
 import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
+import org.hkijena.jipipe.extensions.parameters.expressions.DefaultExpressionParameterEditorUI;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
 import org.hkijena.jipipe.extensions.tables.algorithms.*;
 import org.hkijena.jipipe.extensions.tables.datatypes.DoubleArrayTableColumn;
@@ -29,7 +30,6 @@ import org.hkijena.jipipe.extensions.tables.operations.converting.*;
 import org.hkijena.jipipe.extensions.tables.operations.integrating.*;
 import org.hkijena.jipipe.extensions.tables.parameters.ResultsTableDataParameterEditorUI;
 import org.hkijena.jipipe.extensions.tables.parameters.TableColumnSourceParameter;
-import org.hkijena.jipipe.extensions.tables.parameters.TableColumnSourceParameterEditorUI;
 import org.hkijena.jipipe.extensions.tables.parameters.collections.*;
 import org.hkijena.jipipe.extensions.tables.parameters.enums.TableColumnGeneratorParameter;
 import org.hkijena.jipipe.extensions.tables.parameters.enums.TableColumnGeneratorParameterEditorUI;
@@ -172,7 +172,7 @@ public class TablesExtension extends JIPipePrepackagedDefaultJavaExtension {
                 p -> new TableColumnSourceParameter((TableColumnSourceParameter) p),
                 "Column source",
                 "Defines a column source",
-                TableColumnSourceParameterEditorUI.class);
+                DefaultExpressionParameterEditorUI.class);
         registerParameterType("results-table",
                 ResultsTableData.class,
                 ResultsTableDataList.class,

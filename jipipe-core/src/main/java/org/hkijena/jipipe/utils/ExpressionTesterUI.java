@@ -26,6 +26,7 @@ import org.hkijena.jipipe.api.registries.JIPipeExpressionRegistry;
 import org.hkijena.jipipe.extensions.parameters.expressions.DefaultExpressionEvaluator;
 import org.hkijena.jipipe.extensions.parameters.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionFunction;
+import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionOperatorEntry;
 import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameter;
 import org.hkijena.jipipe.extensions.parameters.expressions.DefaultExpressionParameterEditorUI;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
@@ -78,31 +79,23 @@ public class ExpressionTesterUI extends JIPipeWorkbenchPanel {
         StringBuilder helpText = new StringBuilder();
         helpText.append("<table>");
         for (Operator operator : evaluator.getOperators()) {
-            JIPipeDocumentation documentation = operator.getClass().getAnnotation(JIPipeDocumentation.class);
-            if(documentation == null) {
-                documentation = new JIPipeDefaultDocumentation("", "");
-            }
-            String operatorInfo;
-            if(operator.getOperandCount() == 1) {
-                operatorInfo = operator.getSymbol() + " [value]";
-            }
-            else {
-                operatorInfo = "[value] " + operator.getSymbol() + " [value]";
-            }
-           helpText.append("<tr><td><pre>").append(HtmlEscapers.htmlEscaper().escape(operatorInfo)).append("</pre></td>")
-                   .append("<td>").append(documentation.name()).append("</td><td>").append(documentation.description()).append("</td></tr>");
+            ExpressionOperatorEntry info = new ExpressionOperatorEntry(operator);
+           helpText.append("<tr><td><pre>").append(HtmlEscapers.htmlEscaper().escape(info.getSignature())).append("</pre></td>")
+                   .append("<td>").append(info.getName()).append("</td><td>").append(info.getDescription()).append("</td></tr>");
         }
         for (Function function : evaluator.getFunctions()) {
+            String signature = function.getName() + "(...)";
             String name = "";
             String description = "";
             if(function instanceof ExpressionFunction) {
                 JIPipeExpressionRegistry.ExpressionFunctionEntry functionEntry = JIPipe.getInstance().getExpressionRegistry().getRegisteredExpressionFunctions().getOrDefault(function.getName(), null);
                 if(functionEntry != null) {
+                    signature = functionEntry.getFunction().getSignature();
                     name = functionEntry.getName();
                     description = functionEntry.getDescription();
                 }
             }
-            helpText.append("<tr><td><pre>").append(HtmlEscapers.htmlEscaper().escape(function.getName() + "(...)")).append("</pre></td>")
+            helpText.append("<tr><td><pre>").append(HtmlEscapers.htmlEscaper().escape(signature)).append("</pre></td>")
                     .append("<td>").append(name).append("</td><td>").append(description).append("</td></tr>");
         }
         helpText.append("<table>\n\n");

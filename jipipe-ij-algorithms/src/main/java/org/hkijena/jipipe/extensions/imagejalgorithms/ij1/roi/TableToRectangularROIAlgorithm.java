@@ -47,12 +47,12 @@ import java.util.function.Supplier;
 @JIPipeOutputSlot(value = ROIListData.class, slotName = "Output")
 public class TableToRectangularROIAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
-    private TableColumnSourceParameter columnX1 = new TableColumnSourceParameter();
-    private TableColumnSourceParameter columnY1 = new TableColumnSourceParameter();
-    private TableColumnSourceParameter columnX2 = new TableColumnSourceParameter();
-    private TableColumnSourceParameter columnY2 = new TableColumnSourceParameter();
-    private TableColumnSourceParameter columnWidth = new TableColumnSourceParameter();
-    private TableColumnSourceParameter columnHeight = new TableColumnSourceParameter();
+    private TableColumnSourceParameter columnX1 = new TableColumnSourceParameter("\"X1\"");
+    private TableColumnSourceParameter columnY1 = new TableColumnSourceParameter("\"Y1\"");
+    private TableColumnSourceParameter columnX2 = new TableColumnSourceParameter("\"X2\"");
+    private TableColumnSourceParameter columnY2 = new TableColumnSourceParameter("\"Y2\"");
+    private TableColumnSourceParameter columnWidth = new TableColumnSourceParameter("\"Width\"");
+    private TableColumnSourceParameter columnHeight = new TableColumnSourceParameter("\"Height\"");
     private Anchor anchor = Anchor.TopLeft;
     private Mode mode = Mode.Rectangle;
 
@@ -67,12 +67,6 @@ public class TableToRectangularROIAlgorithm extends JIPipeSimpleIteratingAlgorit
                 .addOutputSlot("Output", ROIListData.class, null)
                 .seal()
                 .build());
-        columnX1.setColumnSource(new StringPredicate(StringPredicate.Mode.Equals, "X1", false));
-        columnY1.setColumnSource(new StringPredicate(StringPredicate.Mode.Equals, "Y1", false));
-        columnX2.setColumnSource(new StringPredicate(StringPredicate.Mode.Equals, "X2", false));
-        columnY2.setColumnSource(new StringPredicate(StringPredicate.Mode.Equals, "Y2", false));
-        columnWidth.setColumnSource(new StringPredicate(StringPredicate.Mode.Equals, "Width", false));
-        columnHeight.setColumnSource(new StringPredicate(StringPredicate.Mode.Equals, "Height", false));
     }
 
     /**
@@ -94,6 +88,7 @@ public class TableToRectangularROIAlgorithm extends JIPipeSimpleIteratingAlgorit
 
     @Override
     public void reportValidity(JIPipeValidityReport report) {
+        super.reportValidity(report);
         report.forCategory("Column 'X1'").report(columnX1);
         report.forCategory("Column 'Y1'").report(columnY1);
         if (anchor == Anchor.TopLeft || anchor == Anchor.Center) {
