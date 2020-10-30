@@ -34,6 +34,8 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
 import org.hkijena.jipipe.extensions.parameters.editors.JIPipeDataParameterSettings;
+import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameterSettings;
+import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.parameters.predicates.StringPredicate;
 import org.hkijena.jipipe.extensions.parameters.references.JIPipeDataInfoRef;
 import org.hkijena.jipipe.extensions.plots.datatypes.PlotColumn;
@@ -167,7 +169,7 @@ public class PlotGeneratorAlgorithm extends JIPipeAlgorithm {
                 parameterAccess.setFieldClass(TableColumnSourceParameter.class);
                 TableColumnSourceParameter initialValue = new TableColumnSourceParameter();
                 parameterAccess.set(initialValue);
-                parameterAccess.setDescription(column.description() + " " + (column.isNumeric() ? "(Numeric column)" : "(String column)"));
+                parameterAccess.setDescription(column.description() + " " + (column.isNumeric() ? "(Numeric column)" : "(String column)") + " " + TableColumnSourceParameter.DOCUMENTATION_DESCRIPTION);
                 columnAssignments.addParameter(parameterAccess);
             }
         }

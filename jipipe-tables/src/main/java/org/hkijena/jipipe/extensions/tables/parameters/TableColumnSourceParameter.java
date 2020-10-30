@@ -25,6 +25,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.parameters.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameter;
+import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.predicates.StringPredicate;
 import org.hkijena.jipipe.extensions.tables.datatypes.DoubleArrayTableColumn;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
@@ -35,6 +36,7 @@ import org.hkijena.jipipe.extensions.tables.parameters.enums.TableColumnGenerato
 /**
  * Parameter that acts as source (via matching a column) or a generator
  */
+@ExpressionParameterSettings(variableSource = TableCellExpressionParameterVariableSource.class)
 public class TableColumnSourceParameter extends DefaultExpressionParameter implements JIPipeValidatable {
 
     public static final String DOCUMENTATION_DESCRIPTION = "This parameter is an expression that has three modes: " +
@@ -70,8 +72,8 @@ public class TableColumnSourceParameter extends DefaultExpressionParameter imple
             String expression = getExpression();
 
             // Apply user-friendliness fix
-            if(!expression.startsWith("\"") && !expression.endsWith("\""))
-                expression = "\"" + expression + "\"";
+//            if(!expression.startsWith("\"") && !expression.endsWith("\""))
+//                expression = "\"" + expression + "\"";
 
             Object evaluationResult = getEvaluator().evaluate(expression, variableSet);
             if(evaluationResult instanceof String) {

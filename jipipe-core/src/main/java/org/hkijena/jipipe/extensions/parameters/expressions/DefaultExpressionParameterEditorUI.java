@@ -183,6 +183,9 @@ public class DefaultExpressionParameterEditorUI extends JIPipeParameterEditorUI 
     private void reloadVariables() {
         variables.clear();
         ExpressionParameterSettings settings = getParameterAccess().getAnnotationOfType(ExpressionParameterSettings.class);
+        if(settings == null) {
+            settings = getParameterAccess().getFieldClass().getAnnotation(ExpressionParameterSettings.class);
+        }
         if(settings != null) {
             ExpressionParameterVariableSource variableSource = (ExpressionParameterVariableSource) ReflectionUtils.newInstance(settings.variableSource());
             variables.addAll(variableSource.getVariables(getParameterAccess()));

@@ -24,7 +24,7 @@ import java.lang.annotation.Target;
  * Controls the behavior of an {@link ExpressionParameter}.
  * Attach it to the getter or setter within a {@link org.hkijena.jipipe.api.parameters.JIPipeParameterCollection}
  */
-@Target(ElementType.METHOD)
+@Target({ElementType.METHOD, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ExpressionParameterSettings {
     /**

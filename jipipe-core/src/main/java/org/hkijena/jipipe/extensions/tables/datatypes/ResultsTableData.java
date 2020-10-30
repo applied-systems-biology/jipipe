@@ -916,8 +916,11 @@ public class ResultsTableData implements JIPipeData, TableModel {
         if(columnIndex != -1) {
             if(column.isNumeric() != isNumeric(columnIndex)) {
                 removeColumnAt(columnIndex);
-                columnIndex = addColumn(columnName, !column.isNumeric());
+                columnIndex = -1;
             }
+        }
+        if(columnIndex == -1) {
+            columnIndex = addColumn(columnName, !column.isNumeric());
         }
         if(column.isNumeric()) {
             for (int row = 0; row < getRowCount(); row++) {
@@ -943,8 +946,11 @@ public class ResultsTableData implements JIPipeData, TableModel {
         if(columnIndex != -1) {
             if(numeric != isNumeric(columnIndex)) {
                 removeColumnAt(columnIndex);
-                columnIndex = addColumn(columnName, !column.isNumeric());
+                columnIndex = -1;
             }
+        }
+        if(columnIndex == -1) {
+            columnIndex = addColumn(columnName, !column.isNumeric());
         }
         if(numeric) {
             for (int row = 0; row < getRowCount(); row++) {
