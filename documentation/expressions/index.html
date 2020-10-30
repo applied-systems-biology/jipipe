@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2020-10-29T23:34:04 CET">
+<meta name="revised" content="2020-10-30T23:08:28 CET">
 <title>Expression parameters :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../images/favicon.png" type="image/x-icon" />
 <link href="../../css/font-awesome.min.css" rel="stylesheet">
@@ -555,6 +555,124 @@ You can combine various operators to do complex filtering. Here the node supplie
 To find files, it can be useful to utilize a Glob-filter that can reliably test for the file extension. Here <code>name</code> is the file name and supplied by the node.</p>
 <pre><code>STRING_MATCHES_GLOB(name, &quot;*.tif&quot;) AND (&quot;data&quot; IN name)
 </code></pre><h1 id="operators-1">Operators</h1>
+<p>There are many operators with alternative ways to write them available. There are two kinds of operators:</p>
+<ol>
+<li>Symbolic operators are using symbols like <code>$</code>, <code>&amp;</code> or <code>*</code></li>
+<li>Textual operators are written words like <code>AND</code> or <code>CONTAINS</code></li>
+</ol>
+<p>The difference between the operators is that symbolic operators can be written without spaces. For example you can write <code>5+5</code> or <code>!x</code>.
+Textual operators require spaces to be separated. For example you cannot write <code>NOTx</code>. You have to write <code>NOT x</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Operator</th>
+<th>Description</th>
+<th>Usage</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Logical AND</td>
+<td>Returns TRUE if both operands are TRUE</td>
+<td><code>x AND y</code> or <code>x &amp; y</code></td>
+</tr>
+<tr>
+<td>Logical OR</td>
+<td>Returns TRUE if one of the operands is TRUE</td>
+<td><code>x OR y</code> or <code>x | y</code></td>
+</tr>
+<tr>
+<td>Logical XOR</td>
+<td>Returns TRUE if exactly one operand is TRUE</td>
+<td><code>x XOR y</code></td>
+</tr>
+<tr>
+<td>Logical NOT</td>
+<td>Returns TRUE if input is FALSE and vice versa</td>
+<td><code>NOT x</code> or <code>! x</code></td>
+</tr>
+<tr>
+<td>Numeric division</td>
+<td>Divides the left by the right operand</td>
+<td><code>x / y</code></td>
+</tr>
+<tr>
+<td>Numeric exponent</td>
+<td>Calculates left to the power of the right operand</td>
+<td><code>x ^ y</code></td>
+</tr>
+<tr>
+<td>Numeric subtraction</td>
+<td>Subtracts right from left</td>
+<td><code>x - y</code></td>
+</tr>
+<tr>
+<td>Numeric multiplication</td>
+<td>Multiplies the two operands</td>
+<td><code>x * y</code></td>
+</tr>
+<tr>
+<td>Numeric addition / String concatenation</td>
+<td>Adds two numbers. Concatenates if the operands are strings.</td>
+<td><code>x + y</code></td>
+</tr>
+<tr>
+<td>Numeric greater than</td>
+<td>Returns TRUE if the left operand is greater than the right one</td>
+<td><code>x &gt; y</code></td>
+</tr>
+<tr>
+<td>Numeric greater or equal</td>
+<td>Returns TRUE if the left operand is greater or equal to the right</td>
+<td><code>x &gt;= y</code></td>
+</tr>
+<tr>
+<td>Numeric less than</td>
+<td>Returns TRUE if the left operand is less than the right one</td>
+<td><code>x &lt; y</code></td>
+</tr>
+<tr>
+<td>Numeric less or equal</td>
+<td>Returns TRUE if the left operand is less or equal to the right one</td>
+<td><code>x &lt;= y</code></td>
+</tr>
+<tr>
+<td>Numeric / String / Boolean equality</td>
+<td>Returns TRUE if the operands are equal</td>
+<td><code>x == y</code> or <code>x EQUALS y</code></td>
+</tr>
+<tr>
+<td>Numeric / String / Boolean inequality</td>
+<td>Returns TRUE if the operands are unequal</td>
+<td><code>x != y</code> or <code>x UNEQUAL y</code></td>
+</tr>
+<tr>
+<td>Numeric negation</td>
+<td>This is technically an operator</td>
+<td><code>-x</code></td>
+</tr>
+<tr>
+<td>Numeric modulo</td>
+<td>Calculates the modulo</td>
+<td><code>x % y</code></td>
+</tr>
+<tr>
+<td>String contains</td>
+<td>Returns TRUE if the one string is contained in the other one</td>
+<td><code>x IN y</code> or <code>y CONTAINS x</code></td>
+</tr>
+<tr>
+<td>Variable exists</td>
+<td>Returns TRUE if the a variable with the name exists</td>
+<td><code>x EXISTS</code></td>
+</tr>
+<tr>
+<td>Resolve variable</td>
+<td>Returns the value of the variable with name. Useful for variables that have spaces in their names or special characters.</td>
+<td><code>$ x</code></td>
+</tr>
+</tbody>
+</table>
 <h2 id="precedence">Precedence</h2>
 <p>The operators are ordered according to a precedence table. You might need to use brackets (<code>()</code>) to force the order you expect:</p>
 <p>The higher the number is the more the operator is preferred.</p>
@@ -730,6 +848,42 @@ To find files, it can be useful to utilize a Glob-filter that can reliably test 
 <td></td>
 <td></td>
 </tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>String contains (x CONTAINS y)</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>Variable exists (x EXISTS)</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>Variable resolve ($ x)</td>
+</tr>
 </tbody>
 </table>
 <h2 id="compatible-types">Compatible types</h2>
@@ -811,7 +965,7 @@ To find files, it can be useful to utilize a Glob-filter that can reliably test 
 <td>OK</td>
 </tr>
 <tr>
-<td>String contains (x IN y)</td>
+<td>String contains (x IN y / x CONTAINS y)</td>
 <td>Error</td>
 <td>Error</td>
 <td>OK</td>
@@ -839,6 +993,18 @@ To find files, it can be useful to utilize a Glob-filter that can reliably test 
 <td>OK</td>
 <td>OK (TRUE=1, FALSE=0)</td>
 <td>Error</td>
+</tr>
+<tr>
+<td>Variable exists (x EXISTS)</td>
+<td>Works (Converted to string)</td>
+<td>Works (Converted to string)</td>
+<td>OK</td>
+</tr>
+<tr>
+<td>Variable resolve ($ x)</td>
+<td>Works (Converted to string)</td>
+<td>Works (Converted to string)</td>
+<td>OK</td>
 </tr>
 </tbody>
 </table>
