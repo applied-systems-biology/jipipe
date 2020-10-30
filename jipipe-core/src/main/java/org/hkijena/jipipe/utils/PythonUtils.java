@@ -16,8 +16,8 @@ package org.hkijena.jipipe.utils;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.parameters.JIPipeCustomParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.extensions.parameters.pairs.IntegerAndIntegerPair;
-import org.hkijena.jipipe.extensions.parameters.pairs.StringAndStringPair;
+import org.hkijena.jipipe.extensions.parameters.pairs.IntegerAndIntegerPairParameter;
+import org.hkijena.jipipe.extensions.parameters.pairs.StringAndStringPairParameter;
 import org.python.core.PyCode;
 import org.python.core.PyDictionary;
 import org.python.util.PythonInterpreter;
@@ -35,15 +35,15 @@ public class PythonUtils {
 
     public static void passParametersToPython(PythonInterpreter pythonInterpreter, JIPipeCustomParameterCollection collection) {
         for (Map.Entry<String, JIPipeParameterAccess> entry : collection.getParameters().entrySet()) {
-            if (entry.getValue().getFieldClass() == StringAndStringPair.List.class) {
+            if (entry.getValue().getFieldClass() == StringAndStringPairParameter.List.class) {
                 PyDictionary dictionary = new PyDictionary();
-                for (StringAndStringPair pair : entry.getValue().get(StringAndStringPair.List.class)) {
+                for (StringAndStringPairParameter pair : entry.getValue().get(StringAndStringPairParameter.List.class)) {
                     dictionary.put(pair.getKey(), pair.getValue());
                 }
                 pythonInterpreter.set(entry.getKey(), dictionary);
-            } else if (entry.getValue().getFieldClass() == IntegerAndIntegerPair.List.class) {
+            } else if (entry.getValue().getFieldClass() == IntegerAndIntegerPairParameter.List.class) {
                 PyDictionary dictionary = new PyDictionary();
-                for (IntegerAndIntegerPair pair : entry.getValue().get(IntegerAndIntegerPair.List.class)) {
+                for (IntegerAndIntegerPairParameter pair : entry.getValue().get(IntegerAndIntegerPairParameter.List.class)) {
                     dictionary.put(pair.getKey(), pair.getValue());
                 }
                 pythonInterpreter.set(entry.getKey(), dictionary);

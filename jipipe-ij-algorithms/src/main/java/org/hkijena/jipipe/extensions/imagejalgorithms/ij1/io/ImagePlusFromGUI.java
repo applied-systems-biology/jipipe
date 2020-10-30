@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.io;
 
+import com.fathzer.soft.javaluator.StaticVariableSet;
 import ij.ImagePlus;
 import ij.WindowManager;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
@@ -25,6 +26,9 @@ import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.parameters.ImageQueryExpressionVariableSource;
+import org.hkijena.jipipe.extensions.parameters.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.predicates.StringPredicate;
 import org.hkijena.jipipe.extensions.parameters.util.LogicalOperation;
 
@@ -42,7 +46,7 @@ import java.util.function.Supplier;
 public class ImagePlusFromGUI extends JIPipeSimpleIteratingAlgorithm {
 
     private boolean onlyActiveImage = true;
-    private StringPredicate.List imageFilters = new StringPredicate.List();
+    private DefaultExpressionParameter imageFilters = new DefaultExpressionParameter("TRUE");
     private LogicalOperation imageFiltersOperation = LogicalOperation.LogicalOr;
 
     public ImagePlusFromGUI(JIPipeNodeInfo info) {
@@ -52,7 +56,7 @@ public class ImagePlusFromGUI extends JIPipeSimpleIteratingAlgorithm {
     public ImagePlusFromGUI(ImagePlusFromGUI other) {
         super(other);
         this.onlyActiveImage = other.onlyActiveImage;
-        this.imageFilters = new StringPredicate.List(other.imageFilters);
+        this.imageFilters = new DefaultExpressionParameter(other.imageFilters);
         this.imageFiltersOperation = other.imageFiltersOperation;
     }
 
@@ -73,17 +77,12 @@ public class ImagePlusFromGUI extends JIPipeSimpleIteratingAlgorithm {
                 }
             }
         }
+        StaticVariableSet<Object> variableSet = new StaticVariableSet<>();
         for (ImagePlus rawImage : rawImages) {
-            String imageString = rawImage.toString();
-            if (!imageFilters.isEmpty()) {
-                List<Boolean> predicateResults = new ArrayList<>();
-                for (StringPredicate filter : imageFilters) {
-                    predicateResults.add(filter.test(imageString));
-                }
-                if (!imageFiltersOperation.apply(predicateResults))
-                    continue;
+            ImageQueryExpressionVariableSource.buildVariablesSet(rawImage, variableSet);
+            if("TRUE".equals(imageFilters.getExpression()) || imageFilters.test(variableSet)) {
+                dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(rawImage).duplicate());
             }
-            dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(rawImage).duplicate());
         }
     }
 
@@ -99,14 +98,15 @@ public class ImagePlusFromGUI extends JIPipeSimpleIteratingAlgorithm {
         this.onlyActiveImage = onlyActiveImage;
     }
 
-    @JIPipeDocumentation(name = "Filter images", description = "Predicates to filter the list of images by their string representation. The string representation includes the title, resolution, and bit depth. If no filter is in the list, images will not be filtered.")
+    @JIPipeDocumentation(name = "Filter images", description = "Expression to filter the image(s). Each image is tested individually and added imported based on the test results. The expression should return a boolean value. Example: <pre>(title CONTAINS \"data\") AND (depth > 3). Defaults to 'TRUE'</pre>")
     @JIPipeParameter("image-filters")
-    public StringPredicate.List getImageFilters() {
+    @ExpressionParameterSettings(variableSource = ImageQueryExpressionVariableSource.class)
+    public DefaultExpressionParameter getImageFilters() {
         return imageFilters;
     }
 
     @JIPipeParameter("image-filters")
-    public void setImageFilters(StringPredicate.List imageFilters) {
+    public void setImageFilters(DefaultExpressionParameter imageFilters) {
         this.imageFilters = imageFilters;
     }
 

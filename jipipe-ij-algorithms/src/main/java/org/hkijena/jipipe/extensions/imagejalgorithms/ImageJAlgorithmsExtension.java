@@ -321,8 +321,8 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
                 "Hyperstack dimension",
                 "Dimension assigned to a plane within a Hyperstack");
         registerParameterType("ij1-hyperstack-dimension:pair",
-                HyperstackDimensionPair.class,
-                HyperstackDimensionPair.List.class,
+                HyperstackDimensionPairParameter.class,
+                HyperstackDimensionPairParameter.List.class,
                 null,
                 null,
                 "Hyperstack dimension",

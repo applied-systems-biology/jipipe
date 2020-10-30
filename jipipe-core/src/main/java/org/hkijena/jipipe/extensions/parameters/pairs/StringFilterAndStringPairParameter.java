@@ -19,12 +19,12 @@ import org.hkijena.jipipe.extensions.parameters.predicates.StringPredicate;
 /**
  * A parameter that renames a matching string into another string
  */
-public class StringFilterAndStringPair extends Pair<StringPredicate, String> {
+public class StringFilterAndStringPairParameter extends PairParameter<StringPredicate, String> {
 
     /**
      * Creates a new instance
      */
-    public StringFilterAndStringPair() {
+    public StringFilterAndStringPairParameter() {
         super(StringPredicate.class, String.class);
     }
 
@@ -33,19 +33,19 @@ public class StringFilterAndStringPair extends Pair<StringPredicate, String> {
      *
      * @param other the original
      */
-    public StringFilterAndStringPair(StringFilterAndStringPair other) {
+    public StringFilterAndStringPairParameter(StringFilterAndStringPairParameter other) {
         super(other);
     }
 
     /**
-     * A collection of multiple {@link StringFilterAndStringPair}
+     * A collection of multiple {@link StringFilterAndStringPairParameter}
      */
-    public static class List extends ListParameter<StringFilterAndStringPair> {
+    public static class List extends ListParameter<StringFilterAndStringPairParameter> {
         /**
          * Creates a new instance
          */
         public List() {
-            super(StringFilterAndStringPair.class);
+            super(StringFilterAndStringPairParameter.class);
         }
 
         /**
@@ -54,9 +54,9 @@ public class StringFilterAndStringPair extends Pair<StringPredicate, String> {
          * @param other the original
          */
         public List(List other) {
-            super(StringFilterAndStringPair.class);
-            for (StringFilterAndStringPair filter : other) {
-                add(new StringFilterAndStringPair(filter));
+            super(StringFilterAndStringPairParameter.class);
+            for (StringFilterAndStringPairParameter filter : other) {
+                add(new StringFilterAndStringPairParameter(filter));
             }
         }
     }

@@ -36,8 +36,13 @@ import org.hkijena.jipipe.extensions.parameters.editors.JIPipeAlgorithmIconRefPa
 import org.hkijena.jipipe.extensions.parameters.editors.JIPipeDataInfoRefParameterEditorUI;
 import org.hkijena.jipipe.extensions.parameters.editors.JIPipeNodeInfoRefParameterEditorUI;
 import org.hkijena.jipipe.extensions.parameters.editors.JIPipeParameterCollectionVisibilitiesParameterEditorUI;
+import org.hkijena.jipipe.extensions.parameters.expressions.AnnotationGeneratorExpression;
+import org.hkijena.jipipe.extensions.parameters.expressions.AnnotationQueryExpression;
 import org.hkijena.jipipe.extensions.parameters.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.parameters.expressions.DefaultExpressionParameterEditorUI;
+import org.hkijena.jipipe.extensions.parameters.expressions.NamedAnnotationGeneratorExpression;
+import org.hkijena.jipipe.extensions.parameters.expressions.StringQueryExpression;
+import org.hkijena.jipipe.extensions.parameters.expressions.TableColumnSourceExpressionParameter;
 import org.hkijena.jipipe.extensions.parameters.expressions.functions.*;
 import org.hkijena.jipipe.extensions.parameters.functions.FunctionParameter;
 import org.hkijena.jipipe.extensions.parameters.functions.FunctionParameterEditorUI;
@@ -161,6 +166,43 @@ public class StandardParametersExtension extends JIPipePrepackagedDefaultJavaExt
                 "Expression",
                 "A mathematical or conditional logic expression",
                 DefaultExpressionParameterEditorUI.class);
+        registerParameterEditor(DefaultExpressionParameter.class, DefaultExpressionParameterEditorUI.class);
+        registerParameterType("table-column-source",
+                TableColumnSourceExpressionParameter.class,
+                TableColumnSourceExpressionParameter::new,
+                p -> new TableColumnSourceExpressionParameter((TableColumnSourceExpressionParameter) p),
+                "Column source",
+                "Defines a column source",
+                DefaultExpressionParameterEditorUI.class);
+        registerParameterType("annotation-query-expression",
+                AnnotationQueryExpression.class,
+                null,
+                null,
+                "Annotation query expression",
+                "An expression that is used to filter annotations",
+                DefaultExpressionParameterEditorUI.class);
+        registerParameterType("string-query-expression",
+                StringQueryExpression.class,
+                null,
+                null,
+                "String query expression",
+                "An expression that is used to filter strings",
+                DefaultExpressionParameterEditorUI.class);
+        registerParameterType("annotation-generator-expression",
+                AnnotationGeneratorExpression.class,
+                null,
+                null,
+                "Annotation generator expression",
+                "An expression that is used to generate annotations",
+                DefaultExpressionParameterEditorUI.class);
+        registerParameterType("named-annotation-generator-expression",
+                NamedAnnotationGeneratorExpression.class,
+                NamedAnnotationGeneratorExpression.List.class,
+                null,
+                null,
+                "Named annotation generator expression",
+                "Used to generate annotations",
+                null);
         registerExpressionFunction(new ContainsStringPredicateFunction());
         registerExpressionFunction(new EqualsStringPredicateFunction());
         registerExpressionFunction(new GlobStringPredicateFunction());
@@ -426,58 +468,58 @@ public class StandardParametersExtension extends JIPipePrepackagedDefaultJavaExt
 
     private void registerPairParameters() {
         // Pair-like parameters
-        registerParameterEditor(Pair.class, PairParameterEditorUI.class);
+        registerParameterEditor(PairParameter.class, PairParameterEditorUI.class);
         registerParameterType("string-predicate:string:pair",
-                StringFilterAndStringPair.class,
-                StringFilterAndStringPair.List.class,
-                StringFilterAndStringPair::new,
-                r -> new StringFilterAndStringPair((StringFilterAndStringPair) r),
+                StringFilterAndStringPairParameter.class,
+                StringFilterAndStringPairParameter.List.class,
+                StringFilterAndStringPairParameter::new,
+                r -> new StringFilterAndStringPairParameter((StringFilterAndStringPairParameter) r),
                 "String pair",
                 "A pair of a string predicate and a string",
                 null);
         registerParameterType("integer:integer:pair",
-                IntegerAndIntegerPair.class,
-                IntegerAndIntegerPair.List.class,
-                IntegerAndIntegerPair::new,
-                r -> new IntegerAndIntegerPair((IntegerAndIntegerPair) r),
+                IntegerAndIntegerPairParameter.class,
+                IntegerAndIntegerPairParameter.List.class,
+                IntegerAndIntegerPairParameter::new,
+                r -> new IntegerAndIntegerPairParameter((IntegerAndIntegerPairParameter) r),
                 "Integer pair",
                 "A pair of integers",
                 null);
         registerParameterType("double:double:pair",
-                DoubleAndDoublePair.class,
-                DoubleAndDoublePair.List.class,
+                DoubleAndDoublePairParameter.class,
+                DoubleAndDoublePairParameter.List.class,
                 null,
                 null,
                 "Double pair",
                 "A pair of 64-bit floating point numbers",
                 null);
         registerParameterType("string-predicate:sort-order:pair",
-                StringFilterAndSortOrderPair.class,
-                StringFilterAndSortOrderPair.List.class,
-                StringFilterAndSortOrderPair::new,
-                r -> new StringFilterAndSortOrderPair((StringFilterAndSortOrderPair) r),
+                StringFilterAndSortOrderPairParameter.class,
+                StringFilterAndSortOrderPairParameter.List.class,
+                StringFilterAndSortOrderPairParameter::new,
+                r -> new StringFilterAndSortOrderPairParameter((StringFilterAndSortOrderPairParameter) r),
                 "String predicate to sort order",
                 "Mapping from a string predicate to a sort order",
                 null);
         registerParameterType("string:string-predicate:pair",
-                StringAndStringPredicatePair.class,
-                StringAndStringPredicatePair.List.class,
+                StringAndStringPredicatePairParameter.class,
+                StringAndStringPredicatePairParameter.List.class,
                 null,
                 null,
                 "String to string predicate",
                 "Mapping from a string to a string predicate",
                 null);
         registerParameterType("string:string:pair",
-                StringAndStringPair.class,
-                StringAndStringPair.List.class,
+                StringAndStringPairParameter.class,
+                StringAndStringPairParameter.List.class,
                 null,
                 null,
                 "String pair",
                 "A pair of strings",
                 null);
         registerParameterType("string:string-or-double:pair",
-                StringAndStringOrDoublePair.class,
-                StringAndStringOrDoublePair.List.class,
+                StringAndStringOrDoublePairParameter.class,
+                StringAndStringOrDoublePairParameter.List.class,
                 null,
                 null,
                 "String and String/Double pair",

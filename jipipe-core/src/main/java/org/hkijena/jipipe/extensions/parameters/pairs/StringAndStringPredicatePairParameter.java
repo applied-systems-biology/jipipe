@@ -22,17 +22,16 @@ import org.hkijena.jipipe.extensions.parameters.util.LogicalOperation;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
-import java.util.List;
 
 /**
  * A parameter that renames an integer into another integer
  */
-public class StringAndStringPredicatePair extends Pair<String, StringPredicate> {
+public class StringAndStringPredicatePairParameter extends PairParameter<String, StringPredicate> {
 
     /**
      * Creates a new instance
      */
-    public StringAndStringPredicatePair() {
+    public StringAndStringPredicatePairParameter() {
         super(String.class, StringPredicate.class);
     }
 
@@ -41,19 +40,19 @@ public class StringAndStringPredicatePair extends Pair<String, StringPredicate> 
      *
      * @param other the original
      */
-    public StringAndStringPredicatePair(StringAndStringPredicatePair other) {
+    public StringAndStringPredicatePairParameter(StringAndStringPredicatePairParameter other) {
         super(other);
     }
 
     /**
-     * A collection of multiple {@link StringAndStringPredicatePair}
+     * A collection of multiple {@link StringAndStringPredicatePairParameter}
      */
-    public static class List extends ListParameter<StringAndStringPredicatePair> {
+    public static class List extends ListParameter<StringAndStringPredicatePairParameter> {
         /**
          * Creates a new instance
          */
         public List() {
-            super(StringAndStringPredicatePair.class);
+            super(StringAndStringPredicatePairParameter.class);
         }
 
         /**
@@ -62,9 +61,9 @@ public class StringAndStringPredicatePair extends Pair<String, StringPredicate> 
          * @param other the original
          */
         public List(List other) {
-            super(StringAndStringPredicatePair.class);
-            for (StringAndStringPredicatePair filter : other) {
-                add(new StringAndStringPredicatePair(filter));
+            super(StringAndStringPredicatePairParameter.class);
+            for (StringAndStringPredicatePairParameter filter : other) {
+                add(new StringAndStringPredicatePairParameter(filter));
             }
         }
 
@@ -77,7 +76,7 @@ public class StringAndStringPredicatePair extends Pair<String, StringPredicate> 
          */
         public boolean test(Map<String, String> map, LogicalOperation same, LogicalOperation different) {
             Multimap<String, StringPredicate> multimap = HashMultimap.create();
-            for (StringAndStringPredicatePair pair : this) {
+            for (StringAndStringPredicatePairParameter pair : this) {
                 multimap.put(pair.getKey(), pair.getValue());
             }
             java.util.List<Boolean> betweenResults = new ArrayList<>();

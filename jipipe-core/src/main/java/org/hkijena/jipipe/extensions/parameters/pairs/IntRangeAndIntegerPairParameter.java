@@ -14,17 +14,18 @@
 package org.hkijena.jipipe.extensions.parameters.pairs;
 
 import org.hkijena.jipipe.extensions.parameters.collections.ListParameter;
+import org.hkijena.jipipe.extensions.parameters.generators.IntegerRange;
 
 /**
  * A parameter that renames an integer into another integer
  */
-public class IntegerAndIntegerPair extends Pair<Integer, Integer> {
+public class IntRangeAndIntegerPairParameter extends PairParameter<IntegerRange, Integer> {
 
     /**
      * Creates a new instance
      */
-    public IntegerAndIntegerPair() {
-        super(Integer.class, Integer.class);
+    public IntRangeAndIntegerPairParameter() {
+        super(IntegerRange.class, Integer.class);
     }
 
     /**
@@ -32,19 +33,19 @@ public class IntegerAndIntegerPair extends Pair<Integer, Integer> {
      *
      * @param other the original
      */
-    public IntegerAndIntegerPair(IntegerAndIntegerPair other) {
+    public IntRangeAndIntegerPairParameter(IntRangeAndIntegerPairParameter other) {
         super(other);
     }
 
     /**
-     * A collection of multiple {@link IntegerAndIntegerPair}
+     * A collection of multiple {@link IntRangeAndIntegerPairParameter}
      */
-    public static class List extends ListParameter<IntegerAndIntegerPair> {
+    public static class List extends ListParameter<IntRangeAndIntegerPairParameter> {
         /**
          * Creates a new instance
          */
         public List() {
-            super(IntegerAndIntegerPair.class);
+            super(IntRangeAndIntegerPairParameter.class);
         }
 
         /**
@@ -53,9 +54,9 @@ public class IntegerAndIntegerPair extends Pair<Integer, Integer> {
          * @param other the original
          */
         public List(List other) {
-            super(IntegerAndIntegerPair.class);
-            for (IntegerAndIntegerPair filter : other) {
-                add(new IntegerAndIntegerPair(filter));
+            super(IntRangeAndIntegerPairParameter.class);
+            for (IntRangeAndIntegerPairParameter filter : other) {
+                add(new IntRangeAndIntegerPairParameter(filter));
             }
         }
     }

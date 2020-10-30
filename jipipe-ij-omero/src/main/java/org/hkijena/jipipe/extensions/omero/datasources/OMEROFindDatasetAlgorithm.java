@@ -16,8 +16,6 @@ package org.hkijena.jipipe.extensions.omero.datasources;
 import omero.gateway.Gateway;
 import omero.gateway.LoginCredentials;
 import omero.gateway.SecurityContext;
-import omero.gateway.exception.DSAccessException;
-import omero.gateway.exception.DSOutOfServiceException;
 import omero.gateway.facility.BrowseFacility;
 import omero.gateway.facility.MetadataFacility;
 import omero.gateway.model.DatasetData;
@@ -28,12 +26,10 @@ import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
-import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeParameterSlotAlgorithm;
-import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.omero.OMEROCredentials;
@@ -41,7 +37,7 @@ import org.hkijena.jipipe.extensions.omero.datatypes.OMERODatasetReferenceData;
 import org.hkijena.jipipe.extensions.omero.datatypes.OMEROProjectReferenceData;
 import org.hkijena.jipipe.extensions.omero.util.OMEROToJIPipeLogger;
 import org.hkijena.jipipe.extensions.omero.util.OMEROUtils;
-import org.hkijena.jipipe.extensions.parameters.pairs.StringAndStringPredicatePair;
+import org.hkijena.jipipe.extensions.parameters.pairs.StringAndStringPredicatePairParameter;
 import org.hkijena.jipipe.extensions.parameters.predicates.StringPredicate;
 import org.hkijena.jipipe.extensions.parameters.primitives.OptionalStringParameter;
 import org.hkijena.jipipe.extensions.parameters.util.LogicalOperation;
@@ -68,7 +64,7 @@ public class OMEROFindDatasetAlgorithm extends JIPipeParameterSlotAlgorithm {
     private StringPredicate.List datasetNameFilters = new StringPredicate.List();
     private OptionalStringParameter projectNameAnnotation = new OptionalStringParameter("Project", true);
     private OptionalStringParameter datasetNameAnnotation = new OptionalStringParameter("Dataset", true);
-    private StringAndStringPredicatePair.List keyValuePairFilters = new StringAndStringPredicatePair.List();
+    private StringAndStringPredicatePairParameter.List keyValuePairFilters = new StringAndStringPredicatePairParameter.List();
     private boolean addKeyValuePairsAsAnnotations = true;
     private StringPredicate.List tagFilters = new StringPredicate.List();
     private OptionalStringParameter tagAnnotation = new OptionalStringParameter("Tags", true);
@@ -143,7 +139,7 @@ public class OMEROFindDatasetAlgorithm extends JIPipeParameterSlotAlgorithm {
         this.datasetNameFilters = new StringPredicate.List(other.datasetNameFilters);
         this.datasetNameAnnotation = new OptionalStringParameter(other.datasetNameAnnotation);
         this.projectNameAnnotation = new OptionalStringParameter(other.projectNameAnnotation);
-        this.keyValuePairFilters = new StringAndStringPredicatePair.List(other.keyValuePairFilters);
+        this.keyValuePairFilters = new StringAndStringPredicatePairParameter.List(other.keyValuePairFilters);
         this.addKeyValuePairsAsAnnotations = other.addKeyValuePairsAsAnnotations;
         this.tagFilters = new StringPredicate.List(other.tagFilters);
         this.tagAnnotation = new OptionalStringParameter(other.tagAnnotation);
@@ -217,12 +213,12 @@ public class OMEROFindDatasetAlgorithm extends JIPipeParameterSlotAlgorithm {
 
     @JIPipeDocumentation(name = "Key-Value pair filters", description = "Filters projects by attached key value pairs. Filters with same keys are connected via an AND operation. Filters with different keys are connected via an OR operation. If the list is empty, no filtering is applied.")
     @JIPipeParameter("key-value-pair-filters")
-    public StringAndStringPredicatePair.List getKeyValuePairFilters() {
+    public StringAndStringPredicatePairParameter.List getKeyValuePairFilters() {
         return keyValuePairFilters;
     }
 
     @JIPipeParameter("key-value-pair-filters")
-    public void setKeyValuePairFilters(StringAndStringPredicatePair.List keyValuePairFilters) {
+    public void setKeyValuePairFilters(StringAndStringPredicatePairParameter.List keyValuePairFilters) {
         this.keyValuePairFilters = keyValuePairFilters;
     }
 

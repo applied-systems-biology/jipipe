@@ -14,13 +14,12 @@
 package org.hkijena.jipipe.extensions.tables.parameters.processors;
 
 import org.hkijena.jipipe.extensions.parameters.expressions.DefaultExpressionParameter;
-import org.hkijena.jipipe.extensions.parameters.pairs.Pair;
-import org.hkijena.jipipe.extensions.tables.parameters.enums.TableColumnGeneratorParameter;
+import org.hkijena.jipipe.extensions.parameters.pairs.PairParameter;
 
 /**
  * Processor-like parameter that maps a column generator to a string
  */
-public class ExpressionTableColumnGeneratorProcessor extends Pair<DefaultExpressionParameter, String> {
+public class ExpressionTableColumnGeneratorProcessor extends PairParameter<DefaultExpressionParameter, String> {
     /**
      * Creates a new instance
      */

@@ -25,7 +25,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.parameters.pairs.StringFilterAndSortOrderPair;
+import org.hkijena.jipipe.extensions.parameters.pairs.StringFilterAndSortOrderPairParameter;
 import org.hkijena.jipipe.extensions.parameters.predicates.StringPredicate;
 import org.hkijena.jipipe.extensions.parameters.util.SortOrder;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
@@ -44,7 +44,7 @@ import java.util.function.Supplier;
 @JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
 public class SortTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
-    private StringFilterAndSortOrderPair.List sortOrderList = new StringFilterAndSortOrderPair.List();
+    private StringFilterAndSortOrderPairParameter.List sortOrderList = new StringFilterAndSortOrderPairParameter.List();
 
     /**
      * Creates a new instance
@@ -63,7 +63,7 @@ public class SortTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
      */
     public SortTableAlgorithm(SortTableAlgorithm other) {
         super(other);
-        this.sortOrderList = new StringFilterAndSortOrderPair.List(other.sortOrderList);
+        this.sortOrderList = new StringFilterAndSortOrderPairParameter.List(other.sortOrderList);
     }
 
     @Override
@@ -89,7 +89,7 @@ public class SortTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         dataBatch.addOutputData(getFirstOutputSlot(), output);
     }
 
-    private Comparator<Integer> getRowComparator(StringFilterAndSortOrderPair pair, ResultsTableData input) {
+    private Comparator<Integer> getRowComparator(StringFilterAndSortOrderPairParameter pair, ResultsTableData input) {
         Comparator<Integer> result = null;
         StringPredicate filter = pair.getKey();
         for (String columnName : input.getColumnNames()) {
@@ -138,12 +138,12 @@ public class SortTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeDocumentation(name = "Filters", description = "Allows you determine by which columns the table is sorted. The order determines the " +
             "sorting priority. Columns can be matched multiple times.")
     @JIPipeParameter("sort-order")
-    public StringFilterAndSortOrderPair.List getSortOrderList() {
+    public StringFilterAndSortOrderPairParameter.List getSortOrderList() {
         return sortOrderList;
     }
 
     @JIPipeParameter("sort-order")
-    public void setSortOrderList(StringFilterAndSortOrderPair.List sortOrderList) {
+    public void setSortOrderList(StringFilterAndSortOrderPairParameter.List sortOrderList) {
         this.sortOrderList = sortOrderList;
     }
 }

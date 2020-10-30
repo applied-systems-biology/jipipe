@@ -11,48 +11,37 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.extensions.tables.parameters;
+package org.hkijena.jipipe.extensions.parameters.expressions;
 
-import com.fasterxml.jackson.annotation.JsonGetter;
-import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fathzer.soft.javaluator.StaticVariableSet;
-import com.google.common.eventbus.EventBus;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeValidatable;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
-import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.extensions.parameters.expressions.DefaultExpressionParameter;
-import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameter;
-import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameterSettings;
-import org.hkijena.jipipe.extensions.parameters.predicates.StringPredicate;
 import org.hkijena.jipipe.extensions.tables.datatypes.DoubleArrayTableColumn;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.extensions.tables.datatypes.StringArrayTableColumn;
 import org.hkijena.jipipe.extensions.tables.datatypes.TableColumn;
-import org.hkijena.jipipe.extensions.tables.parameters.enums.TableColumnGeneratorParameter;
 
 /**
  * Parameter that acts as source (via matching a column) or a generator
  */
 @ExpressionParameterSettings(variableSource = TableCellExpressionParameterVariableSource.class)
-public class TableColumnSourceParameter extends DefaultExpressionParameter implements JIPipeValidatable {
+public class TableColumnSourceExpressionParameter extends DefaultExpressionParameter implements JIPipeValidatable {
 
     public static final String DOCUMENTATION_DESCRIPTION = "This parameter is an expression that has three modes: " +
             "(1) Selecting an existing column by name, (2) Matching an existing column by boolean operators, and (3) Generating a new column based on a mathematical formula.<br/>" +
-            "<ol><li>Type in the name of the existing column. If there is a space or special character within the name, put it in between double quotes. Example: <pre>\"Area\"</pre></li>" +
+            "<ol><li>Type in the name of the existing column. Put the name in double quotes. Example: <pre>\"Area\"</pre></li>" +
             "<li>There will be two variables 'column_name' and 'column' available. The expression is repeated for all available columns. Example: <pre>\"Data\" IN column_name</pre></li>" +
             "<li>There will be : 'row', 'num_rows', and 'num_cols'. Use them to generate values. Example: <pre>row^2</pre></li></ol>";
 
-    public TableColumnSourceParameter() {
+    public TableColumnSourceExpressionParameter() {
     }
 
-    public TableColumnSourceParameter(String expression) {
+    public TableColumnSourceExpressionParameter(String expression) {
         super(expression);
     }
 
-    public TableColumnSourceParameter(ExpressionParameter other) {
+    public TableColumnSourceExpressionParameter(ExpressionParameter other) {
         super(other);
     }
 

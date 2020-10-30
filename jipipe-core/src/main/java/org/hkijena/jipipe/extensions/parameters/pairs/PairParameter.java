@@ -37,9 +37,9 @@ import java.util.Map;
 /**
  * Parameter equivalent of {@link Map.Entry}
  */
-@JsonSerialize(using = Pair.Serializer.class)
-@JsonDeserialize(using = Pair.Deserializer.class)
-public abstract class Pair<K, V> implements JIPipeValidatable, Map.Entry<K, V> {
+@JsonSerialize(using = PairParameter.Serializer.class)
+@JsonDeserialize(using = PairParameter.Deserializer.class)
+public abstract class PairParameter<K, V> implements JIPipeValidatable, Map.Entry<K, V> {
 
     private Class<K> keyClass;
     private Class<V> valueClass;
@@ -50,7 +50,7 @@ public abstract class Pair<K, V> implements JIPipeValidatable, Map.Entry<K, V> {
      * @param keyClass   the key class
      * @param valueClass the stored content
      */
-    public Pair(Class<K> keyClass, Class<V> valueClass) {
+    public PairParameter(Class<K> keyClass, Class<V> valueClass) {
         this.keyClass = keyClass;
         this.valueClass = valueClass;
     }
@@ -61,7 +61,7 @@ public abstract class Pair<K, V> implements JIPipeValidatable, Map.Entry<K, V> {
      *
      * @param other the original
      */
-    public Pair(Pair<K, V> other) {
+    public PairParameter(PairParameter<K, V> other) {
         this.keyClass = other.keyClass;
         this.valueClass = other.valueClass;
         this.key = other.key;
@@ -112,9 +112,9 @@ public abstract class Pair<K, V> implements JIPipeValidatable, Map.Entry<K, V> {
     /**
      * Serializes the parameter
      */
-    public static class Serializer extends JsonSerializer<Pair<?, ?>> {
+    public static class Serializer extends JsonSerializer<PairParameter<?, ?>> {
         @Override
-        public void serialize(Pair<?, ?> objects, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
+        public void serialize(PairParameter<?, ?> objects, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
             jsonGenerator.writeStartObject();
             jsonGenerator.writeObjectField("key", objects.key);
             jsonGenerator.writeObjectField("value", objects.value);
@@ -125,16 +125,16 @@ public abstract class Pair<K, V> implements JIPipeValidatable, Map.Entry<K, V> {
     /**
      * Deserializes the parameter
      */
-    public static class Deserializer<K, V> extends JsonDeserializer<Pair<?, ?>> implements ContextualDeserializer {
+    public static class Deserializer<K, V> extends JsonDeserializer<PairParameter<?, ?>> implements ContextualDeserializer {
 
         private JavaType deserializedType;
 
         @Override
-        public Pair<K, V> deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
+        public PairParameter<K, V> deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
             JsonNode root = jsonParser.readValueAsTree();
-            Pair<K, V> pair;
+            PairParameter<K, V> pair;
             try {
-                pair = (Pair<K, V>) deserializedType.getRawClass().newInstance();
+                pair = (PairParameter<K, V>) deserializedType.getRawClass().newInstance();
             } catch (InstantiationException | IllegalAccessException e) {
                 throw new RuntimeException(e);
             }

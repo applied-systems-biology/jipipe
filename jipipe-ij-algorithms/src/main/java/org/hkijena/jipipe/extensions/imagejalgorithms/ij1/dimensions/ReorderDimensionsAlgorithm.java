@@ -9,7 +9,7 @@ import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.HyperstackDimension;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.HyperstackDimensionPair;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.HyperstackDimensionPairParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 
 import java.util.HashSet;
@@ -28,18 +28,18 @@ import java.util.function.Supplier;
 @JIPipeOrganization(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Dimensions")
 public class ReorderDimensionsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
-    private HyperstackDimensionPair.List hyperstackReassignments = new HyperstackDimensionPair.List();
+    private HyperstackDimensionPairParameter.List hyperstackReassignments = new HyperstackDimensionPairParameter.List();
 
     public ReorderDimensionsAlgorithm(JIPipeNodeInfo info) {
         super(info);
-        hyperstackReassignments.add(new HyperstackDimensionPair(HyperstackDimension.Depth, HyperstackDimension.Depth));
-        hyperstackReassignments.add(new HyperstackDimensionPair(HyperstackDimension.Channel, HyperstackDimension.Channel));
-        hyperstackReassignments.add(new HyperstackDimensionPair(HyperstackDimension.Frame, HyperstackDimension.Frame));
+        hyperstackReassignments.add(new HyperstackDimensionPairParameter(HyperstackDimension.Depth, HyperstackDimension.Depth));
+        hyperstackReassignments.add(new HyperstackDimensionPairParameter(HyperstackDimension.Channel, HyperstackDimension.Channel));
+        hyperstackReassignments.add(new HyperstackDimensionPairParameter(HyperstackDimension.Frame, HyperstackDimension.Frame));
     }
 
     public ReorderDimensionsAlgorithm(ReorderDimensionsAlgorithm other) {
         super(other);
-        this.hyperstackReassignments = new HyperstackDimensionPair.List(other.hyperstackReassignments);
+        this.hyperstackReassignments = new HyperstackDimensionPairParameter.List(other.hyperstackReassignments);
     }
 
     @Override
@@ -66,7 +66,7 @@ public class ReorderDimensionsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         int newChannels = channels;
         int newFrames = frames;
 
-        for (HyperstackDimensionPair reassignment : hyperstackReassignments) {
+        for (HyperstackDimensionPairParameter reassignment : hyperstackReassignments) {
             int source;
             switch (reassignment.getKey()) {
                 case Depth:
@@ -103,12 +103,12 @@ public class ReorderDimensionsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeDocumentation(name = "Reassignments", description = "Determines which channel is assigned to which other channel. To switch two channels, add two entries " +
             "into the list and assign the switching. For example A -> B and B -> A. Only having A -> B is not sufficient and will generate an error message.")
     @JIPipeParameter("hyperstack-reassignments")
-    public HyperstackDimensionPair.List getHyperstackReassignments() {
+    public HyperstackDimensionPairParameter.List getHyperstackReassignments() {
         return hyperstackReassignments;
     }
 
     @JIPipeParameter("hyperstack-reassignments")
-    public void setHyperstackReassignments(HyperstackDimensionPair.List hyperstackReassignments) {
+    public void setHyperstackReassignments(HyperstackDimensionPairParameter.List hyperstackReassignments) {
         this.hyperstackReassignments = hyperstackReassignments;
     }
 
@@ -118,7 +118,7 @@ public class ReorderDimensionsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         if (!hyperstackReassignments.isEmpty()) {
             Set<HyperstackDimension> sources = new HashSet<>();
             Set<HyperstackDimension> targets = new HashSet<>();
-            for (HyperstackDimensionPair reassignment : hyperstackReassignments) {
+            for (HyperstackDimensionPairParameter reassignment : hyperstackReassignments) {
                 sources.add(reassignment.getKey());
                 targets.add(reassignment.getValue());
             }

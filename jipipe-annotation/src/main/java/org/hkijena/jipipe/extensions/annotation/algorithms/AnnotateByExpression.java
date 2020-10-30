@@ -17,7 +17,6 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
@@ -27,8 +26,8 @@ import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.AnnotationsNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.extensions.parameters.expressions.NamedAnnotationGeneratorExpression;
 import org.hkijena.jipipe.extensions.parameters.pairs.PairParameterSettings;
-import org.hkijena.jipipe.extensions.parameters.pairs.StringAndStringPairParameter;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
 
 import java.util.function.Consumer;
@@ -41,15 +40,15 @@ import java.util.function.Supplier;
 @JIPipeOrganization(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "Modify")
 @JIPipeInputSlot(value = JIPipeData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = JIPipeData.class, slotName = "Output", inheritedSlot = "Input", autoCreate = true)
-public class AnnotateAll extends JIPipeSimpleIteratingAlgorithm {
+public class AnnotateByExpression extends JIPipeSimpleIteratingAlgorithm {
 
-    private StringAndStringPairParameter.List annotations = new StringAndStringPairParameter.List();
+    private NamedAnnotationGeneratorExpression.List annotations = new NamedAnnotationGeneratorExpression.List();
     private JIPipeAnnotationMergeStrategy annotationMergeStrategy = JIPipeAnnotationMergeStrategy.OverwriteExisting;
 
     /**
      * @param info the info
      */
-    public AnnotateAll(JIPipeNodeInfo info) {
+    public AnnotateByExpression(JIPipeNodeInfo info) {
         super(info);
         annotations.addNewInstance();
     }
@@ -59,37 +58,38 @@ public class AnnotateAll extends JIPipeSimpleIteratingAlgorithm {
      *
      * @param other the original
      */
-    public AnnotateAll(AnnotateAll other) {
+    public AnnotateByExpression(AnnotateByExpression other) {
         super(other);
-        this.annotations = new StringAndStringPairParameter.List(other.annotations);
+        this.annotations = new NamedAnnotationGeneratorExpression.List(other.annotations);
         this.annotationMergeStrategy = other.annotationMergeStrategy;
     }
 
     @Override
     public void reportValidity(JIPipeValidityReport report) {
         for (int i = 0; i < annotations.size(); i++) {
-            report.forCategory("Annotations").forCategory("Item #" + (i + 1)).forCategory("Name").checkNonEmpty(annotations.get(i).getKey(), this);
+            report.forCategory("Annotations").forCategory("Item #" + (i + 1)).forCategory("Name").checkNonEmpty(annotations.get(i).getValue(), this);
         }
     }
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
-        for (StringAndStringPairParameter annotation : annotations) {
-            dataBatch.addGlobalAnnotation(new JIPipeAnnotation(annotation.getKey(), annotation.getValue()), annotationMergeStrategy);
+        for (NamedAnnotationGeneratorExpression expression : annotations) {
+            dataBatch.addGlobalAnnotation(expression.generateAnnotation(dataBatch.getAnnotations().values(), dataBatch.getInputData(getFirstInputSlot(), JIPipeData.class).toString()), annotationMergeStrategy);
         }
         dataBatch.addOutputData(getFirstOutputSlot(), dataBatch.getInputData(getFirstInputSlot(), JIPipeData.class));
     }
 
-    @JIPipeDocumentation(name = "Annotations", description = "Allows you to set the annotation to add/modify")
+    @JIPipeDocumentation(name = "Annotations", description = "Allows you to set the annotation to add/modify. The expression result will be converted into a string. All other annotations are available as variables. " +
+            "If an annotation variable has special characters, use the GET_VARIABLE() function to access it.")
     @JIPipeParameter("generated-annotation")
     @PairParameterSettings(keyLabel = "Name", valueLabel = "Value")
     @StringParameterSettings(monospace = true)
-    public StringAndStringPairParameter.List getAnnotations() {
+    public NamedAnnotationGeneratorExpression.List getAnnotations() {
         return annotations;
     }
 
     @JIPipeParameter("generated-annotation")
-    public void setAnnotations(StringAndStringPairParameter.List annotations) {
+    public void setAnnotations(NamedAnnotationGeneratorExpression.List annotations) {
         this.annotations = annotations;
 
     }

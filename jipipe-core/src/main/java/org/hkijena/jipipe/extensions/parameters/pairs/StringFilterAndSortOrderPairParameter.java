@@ -14,17 +14,21 @@
 package org.hkijena.jipipe.extensions.parameters.pairs;
 
 import org.hkijena.jipipe.extensions.parameters.collections.ListParameter;
+import org.hkijena.jipipe.extensions.parameters.predicates.StringPredicate;
+import org.hkijena.jipipe.extensions.parameters.util.SortOrder;
 
 /**
- * A parameter that renames an integer into another integer
+ * A pair of {@link StringPredicate} and {@link SortOrder}
  */
-public class DoubleAndDoublePair extends Pair<Double, Double> {
+public class StringFilterAndSortOrderPairParameter extends PairParameter<StringPredicate, SortOrder> {
 
     /**
      * Creates a new instance
      */
-    public DoubleAndDoublePair() {
-        super(Double.class, Double.class);
+    public StringFilterAndSortOrderPairParameter() {
+        super(StringPredicate.class, SortOrder.class);
+        setKey(new StringPredicate());
+        setValue(SortOrder.Ascending);
     }
 
     /**
@@ -32,19 +36,19 @@ public class DoubleAndDoublePair extends Pair<Double, Double> {
      *
      * @param other the original
      */
-    public DoubleAndDoublePair(DoubleAndDoublePair other) {
+    public StringFilterAndSortOrderPairParameter(StringFilterAndSortOrderPairParameter other) {
         super(other);
     }
 
     /**
-     * A collection of multiple {@link DoubleAndDoublePair}
+     * A collection of multiple {@link StringFilterAndSortOrderPairParameter}
      */
-    public static class List extends ListParameter<DoubleAndDoublePair> {
+    public static class List extends ListParameter<StringFilterAndSortOrderPairParameter> {
         /**
          * Creates a new instance
          */
         public List() {
-            super(DoubleAndDoublePair.class);
+            super(StringFilterAndSortOrderPairParameter.class);
         }
 
         /**
@@ -53,9 +57,9 @@ public class DoubleAndDoublePair extends Pair<Double, Double> {
          * @param other the original
          */
         public List(List other) {
-            super(DoubleAndDoublePair.class);
-            for (DoubleAndDoublePair filter : other) {
-                add(new DoubleAndDoublePair(filter));
+            super(StringFilterAndSortOrderPairParameter.class);
+            for (StringFilterAndSortOrderPairParameter filter : other) {
+                add(new StringFilterAndSortOrderPairParameter(filter));
             }
         }
     }

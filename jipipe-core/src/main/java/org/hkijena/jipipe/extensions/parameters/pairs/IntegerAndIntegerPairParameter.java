@@ -18,13 +18,13 @@ import org.hkijena.jipipe.extensions.parameters.collections.ListParameter;
 /**
  * A parameter that renames an integer into another integer
  */
-public class StringAndStringPair extends Pair<String, String> {
+public class IntegerAndIntegerPairParameter extends PairParameter<Integer, Integer> {
 
     /**
      * Creates a new instance
      */
-    public StringAndStringPair() {
-        super(String.class, String.class);
+    public IntegerAndIntegerPairParameter() {
+        super(Integer.class, Integer.class);
     }
 
     /**
@@ -32,19 +32,19 @@ public class StringAndStringPair extends Pair<String, String> {
      *
      * @param other the original
      */
-    public StringAndStringPair(StringAndStringPair other) {
+    public IntegerAndIntegerPairParameter(IntegerAndIntegerPairParameter other) {
         super(other);
     }
 
     /**
-     * A collection of multiple {@link StringAndStringPair}
+     * A collection of multiple {@link IntegerAndIntegerPairParameter}
      */
-    public static class List extends ListParameter<StringAndStringPair> {
+    public static class List extends ListParameter<IntegerAndIntegerPairParameter> {
         /**
          * Creates a new instance
          */
         public List() {
-            super(StringAndStringPair.class);
+            super(IntegerAndIntegerPairParameter.class);
         }
 
         /**
@@ -53,9 +53,9 @@ public class StringAndStringPair extends Pair<String, String> {
          * @param other the original
          */
         public List(List other) {
-            super(StringAndStringPair.class);
-            for (StringAndStringPair filter : other) {
-                add(new StringAndStringPair(filter));
+            super(IntegerAndIntegerPairParameter.class);
+            for (IntegerAndIntegerPairParameter filter : other) {
+                add(new IntegerAndIntegerPairParameter(filter));
             }
         }
     }

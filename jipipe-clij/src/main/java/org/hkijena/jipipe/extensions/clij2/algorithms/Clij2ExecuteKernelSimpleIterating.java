@@ -28,11 +28,10 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.*;
-import org.hkijena.jipipe.api.registries.JIPipeParameterTypeRegistry;
 import org.hkijena.jipipe.extensions.clij2.CLIJExtension;
 import org.hkijena.jipipe.extensions.clij2.datatypes.CLIJImageData;
 import org.hkijena.jipipe.extensions.clij2.parameters.OpenCLKernelScript;
-import org.hkijena.jipipe.extensions.parameters.pairs.StringAndStringPair;
+import org.hkijena.jipipe.extensions.parameters.pairs.StringAndStringPairParameter;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.scripts.PythonScript;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
@@ -55,7 +54,7 @@ public class Clij2ExecuteKernelSimpleIterating extends JIPipeSimpleIteratingAlgo
     private PythonScript preprocessingScript = new PythonScript();
     private JIPipeDynamicParameterCollection scriptParameters = new JIPipeDynamicParameterCollection(true,
             CLIJExtension.ALLOWED_PARAMETER_TYPES);
-    private StringAndStringPair.List outputSizes = new StringAndStringPair.List();
+    private StringAndStringPairParameter.List outputSizes = new StringAndStringPairParameter.List();
 
     public Clij2ExecuteKernelSimpleIterating(JIPipeNodeInfo info) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder()
@@ -73,7 +72,7 @@ public class Clij2ExecuteKernelSimpleIterating extends JIPipeSimpleIteratingAlgo
         this.kernelFunction = other.kernelFunction;
         this.preprocessingScript = new PythonScript(other.preprocessingScript);
         this.scriptParameters = new JIPipeDynamicParameterCollection(other.scriptParameters);
-        this.outputSizes = new StringAndStringPair.List(other.outputSizes);
+        this.outputSizes = new StringAndStringPairParameter.List(other.outputSizes);
         registerSubParameter(scriptParameters);
     }
 

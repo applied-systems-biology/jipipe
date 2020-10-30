@@ -37,7 +37,7 @@ import org.hkijena.jipipe.extensions.omero.datatypes.OMERODatasetReferenceData;
 import org.hkijena.jipipe.extensions.omero.datatypes.OMEROImageReferenceData;
 import org.hkijena.jipipe.extensions.omero.util.OMEROToJIPipeLogger;
 import org.hkijena.jipipe.extensions.omero.util.OMEROUtils;
-import org.hkijena.jipipe.extensions.parameters.pairs.StringAndStringPredicatePair;
+import org.hkijena.jipipe.extensions.parameters.pairs.StringAndStringPredicatePairParameter;
 import org.hkijena.jipipe.extensions.parameters.predicates.StringPredicate;
 import org.hkijena.jipipe.extensions.parameters.primitives.OptionalStringParameter;
 import org.hkijena.jipipe.extensions.parameters.util.LogicalOperation;
@@ -65,7 +65,7 @@ public class OMEROFindImageAlgorithm extends JIPipeParameterSlotAlgorithm {
     private OptionalStringParameter projectNameAnnotation = new OptionalStringParameter("Project", true);
     private OptionalStringParameter datasetNameAnnotation = new OptionalStringParameter("Dataset", true);
     private OptionalStringParameter imageNameAnnotation = new OptionalStringParameter("Filename", true);
-    private StringAndStringPredicatePair.List keyValuePairFilters = new StringAndStringPredicatePair.List();
+    private StringAndStringPredicatePairParameter.List keyValuePairFilters = new StringAndStringPredicatePairParameter.List();
     private boolean addKeyValuePairsAsAnnotations = true;
     private StringPredicate.List tagFilters = new StringPredicate.List();
     private OptionalStringParameter tagAnnotation = new OptionalStringParameter("Tags", true);
@@ -143,7 +143,7 @@ public class OMEROFindImageAlgorithm extends JIPipeParameterSlotAlgorithm {
         this.datasetNameAnnotation = new OptionalStringParameter(other.datasetNameAnnotation);
         this.projectNameAnnotation = new OptionalStringParameter(other.projectNameAnnotation);
         this.imageNameAnnotation = new OptionalStringParameter(other.imageNameAnnotation);
-        this.keyValuePairFilters = new StringAndStringPredicatePair.List(other.keyValuePairFilters);
+        this.keyValuePairFilters = new StringAndStringPredicatePairParameter.List(other.keyValuePairFilters);
         this.addKeyValuePairsAsAnnotations = other.addKeyValuePairsAsAnnotations;
         this.tagFilters = new StringPredicate.List(other.tagFilters);
         this.tagAnnotation = new OptionalStringParameter(other.tagAnnotation);
@@ -231,12 +231,12 @@ public class OMEROFindImageAlgorithm extends JIPipeParameterSlotAlgorithm {
 
     @JIPipeDocumentation(name = "Key-Value pair filters", description = "Filters projects by attached key value pairs. Filters with same keys are connected via an AND operation. Filters with different keys are connected via an OR operation. If the list is empty, no filtering is applied.")
     @JIPipeParameter("key-value-pair-filters")
-    public StringAndStringPredicatePair.List getKeyValuePairFilters() {
+    public StringAndStringPredicatePairParameter.List getKeyValuePairFilters() {
         return keyValuePairFilters;
     }
 
     @JIPipeParameter("key-value-pair-filters")
-    public void setKeyValuePairFilters(StringAndStringPredicatePair.List keyValuePairFilters) {
+    public void setKeyValuePairFilters(StringAndStringPredicatePairParameter.List keyValuePairFilters) {
         this.keyValuePairFilters = keyValuePairFilters;
     }
 }

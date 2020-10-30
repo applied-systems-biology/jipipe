@@ -16,7 +16,6 @@ package org.hkijena.jipipe.extensions.filesystem.algorithms;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
@@ -27,8 +26,9 @@ import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.AnnotationsNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.PathData;
-import org.hkijena.jipipe.extensions.parameters.predicates.StringPredicate;
+import org.hkijena.jipipe.extensions.parameters.expressions.TableColumnSourceExpressionParameter;
 import org.hkijena.jipipe.extensions.tables.datatypes.AnnotationTableData;
+import org.hkijena.jipipe.extensions.tables.datatypes.TableColumn;
 
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -50,7 +50,7 @@ import java.util.function.Supplier;
 // Traits
 public class AnnotationTableToPaths extends JIPipeSimpleIteratingAlgorithm {
 
-    private StringPredicate column = new StringPredicate(StringPredicate.Mode.Equals, "data", false);
+    private TableColumnSourceExpressionParameter column = new TableColumnSourceExpressionParameter("\"data\"");
 
     /**
      * Instantiates the algorithm
@@ -68,14 +68,14 @@ public class AnnotationTableToPaths extends JIPipeSimpleIteratingAlgorithm {
      */
     public AnnotationTableToPaths(AnnotationTableToPaths other) {
         super(other);
-        this.column = new StringPredicate(other.column);
+        this.column = new TableColumnSourceExpressionParameter(other.column);
     }
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         AnnotationTableData tableData = dataBatch.getInputData(getFirstInputSlot(), AnnotationTableData.class);
-        String dataColumn = tableData.getColumnNames().stream().filter(column).findFirst().orElse(null);
-        if (dataColumn == null) {
+        TableColumn tableColumn = column.pickColumn(tableData);
+        if (tableColumn == null) {
             throw new UserFriendlyRuntimeException("Could not find column that matches '" + column.toString() + "'!",
                     "Could not find column!",
                     "Algorithm '" + getName() + "'",
@@ -93,19 +93,19 @@ public class AnnotationTableToPaths extends JIPipeSimpleIteratingAlgorithm {
                     annotations.add(new JIPipeAnnotation(info, tableData.getValueAsString(row, annotationColumn)));
             }
 
-            String data = tableData.getValueAsString(row, dataColumn);
+            String data = tableColumn.getRowAsString(row);
             dataBatch.addOutputData(getFirstOutputSlot(), new PathData(Paths.get(data)), annotations);
         }
     }
 
     @JIPipeDocumentation(name = "Column", description = "The column that contains the paths")
     @JIPipeParameter("column")
-    public StringPredicate getColumn() {
+    public TableColumnSourceExpressionParameter getColumn() {
         return column;
     }
 
     @JIPipeParameter("column")
-    public void setColumn(StringPredicate column) {
+    public void setColumn(TableColumnSourceExpressionParameter column) {
         this.column = column;
     }
 }

@@ -16,7 +16,6 @@ package org.hkijena.jipipe.extensions.annotation.algorithms;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
@@ -27,7 +26,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.AnnotationsNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.parameters.pairs.PairParameterSettings;
-import org.hkijena.jipipe.extensions.parameters.pairs.StringAndStringPredicatePair;
+import org.hkijena.jipipe.extensions.parameters.pairs.StringAndStringPredicatePairParameter;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
 
 import java.util.function.Consumer;
@@ -42,7 +41,7 @@ import java.util.function.Supplier;
 @JIPipeOutputSlot(value = JIPipeData.class, slotName = "Output", inheritedSlot = "Input", autoCreate = true)
 public class RemoveAnnotationByValue extends JIPipeSimpleIteratingAlgorithm {
 
-    private StringAndStringPredicatePair.List filters = new StringAndStringPredicatePair.List();
+    private StringAndStringPredicatePairParameter.List filters = new StringAndStringPredicatePairParameter.List();
 
     /**
      * @param info algorithm info
@@ -63,7 +62,7 @@ public class RemoveAnnotationByValue extends JIPipeSimpleIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
-        for (StringAndStringPredicatePair filter : filters) {
+        for (StringAndStringPredicatePairParameter filter : filters) {
             JIPipeAnnotation instance = dataBatch.getAnnotationOfType(filter.getKey());
             if (instance != null) {
                 if (filter.getValue().test(instance.getValue())) {
@@ -78,12 +77,12 @@ public class RemoveAnnotationByValue extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeParameter("filters")
     @StringParameterSettings(monospace = true)
     @PairParameterSettings(singleRow = false, keyLabel = "Annotation column", valueLabel = "Remove value if")
-    public StringAndStringPredicatePair.List getFilters() {
+    public StringAndStringPredicatePairParameter.List getFilters() {
         return filters;
     }
 
     @JIPipeParameter("filters")
-    public void setFilters(StringAndStringPredicatePair.List annotationTypes) {
+    public void setFilters(StringAndStringPredicatePairParameter.List annotationTypes) {
         this.filters = annotationTypes;
 
     }

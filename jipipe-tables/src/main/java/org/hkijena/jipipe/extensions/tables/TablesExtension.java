@@ -29,7 +29,7 @@ import org.hkijena.jipipe.extensions.tables.datatypes.ZeroTableColumn;
 import org.hkijena.jipipe.extensions.tables.operations.converting.*;
 import org.hkijena.jipipe.extensions.tables.operations.integrating.*;
 import org.hkijena.jipipe.extensions.tables.parameters.ResultsTableDataParameterEditorUI;
-import org.hkijena.jipipe.extensions.tables.parameters.TableColumnSourceParameter;
+import org.hkijena.jipipe.extensions.parameters.expressions.TableColumnSourceExpressionParameter;
 import org.hkijena.jipipe.extensions.tables.parameters.collections.*;
 import org.hkijena.jipipe.extensions.tables.parameters.enums.TableColumnGeneratorParameter;
 import org.hkijena.jipipe.extensions.tables.parameters.enums.TableColumnGeneratorParameterEditorUI;
@@ -166,13 +166,6 @@ public class TablesExtension extends JIPipePrepackagedDefaultJavaExtension {
                 "Column generator",
                 "Defines a column generator",
                 TableColumnGeneratorParameterEditorUI.class);
-        registerParameterType("table-column-source",
-                TableColumnSourceParameter.class,
-                TableColumnSourceParameter::new,
-                p -> new TableColumnSourceParameter((TableColumnSourceParameter) p),
-                "Column source",
-                "Defines a column source",
-                DefaultExpressionParameterEditorUI.class);
         registerParameterType("results-table",
                 ResultsTableData.class,
                 ResultsTableDataList.class,
@@ -212,7 +205,6 @@ public class TablesExtension extends JIPipePrepackagedDefaultJavaExtension {
                 "Column conversion processor list",
                 "Defines processors that apply a function to each cell",
                 null);
-
         registerParameterType("table-column-generator-column-processor",
                 TableColumnGeneratorProcessor.class,
                 TableColumnGeneratorProcessor::new,
@@ -227,7 +219,6 @@ public class TablesExtension extends JIPipePrepackagedDefaultJavaExtension {
                 "Column generator processor list",
                 "Defines multiple columns to be generated",
                 null);
-
         registerParameterType("table-column-expression-generator-column-processor",
                 ExpressionTableColumnGeneratorProcessor.class,
                 ExpressionTableColumnGeneratorProcessorParameterList.class,

@@ -19,12 +19,12 @@ import org.hkijena.jipipe.extensions.parameters.primitives.StringOrDouble;
 /**
  * A parameter that renames an integer into another integer
  */
-public class StringAndStringOrDoublePair extends Pair<String, StringOrDouble> {
+public class StringAndStringOrDoublePairParameter extends PairParameter<String, StringOrDouble> {
 
     /**
      * Creates a new instance
      */
-    public StringAndStringOrDoublePair() {
+    public StringAndStringOrDoublePairParameter() {
         super(String.class, StringOrDouble.class);
     }
 
@@ -33,19 +33,19 @@ public class StringAndStringOrDoublePair extends Pair<String, StringOrDouble> {
      *
      * @param other the original
      */
-    public StringAndStringOrDoublePair(StringAndStringOrDoublePair other) {
+    public StringAndStringOrDoublePairParameter(StringAndStringOrDoublePairParameter other) {
         super(other);
     }
 
     /**
-     * A collection of multiple {@link StringAndStringOrDoublePair}
+     * A collection of multiple {@link StringAndStringOrDoublePairParameter}
      */
-    public static class List extends ListParameter<StringAndStringOrDoublePair> {
+    public static class List extends ListParameter<StringAndStringOrDoublePairParameter> {
         /**
          * Creates a new instance
          */
         public List() {
-            super(StringAndStringOrDoublePair.class);
+            super(StringAndStringOrDoublePairParameter.class);
         }
 
         /**
@@ -54,9 +54,9 @@ public class StringAndStringOrDoublePair extends Pair<String, StringOrDouble> {
          * @param other the original
          */
         public List(List other) {
-            super(StringAndStringOrDoublePair.class);
-            for (StringAndStringOrDoublePair filter : other) {
-                add(new StringAndStringOrDoublePair(filter));
+            super(StringAndStringOrDoublePairParameter.class);
+            for (StringAndStringOrDoublePairParameter filter : other) {
+                add(new StringAndStringOrDoublePairParameter(filter));
             }
         }
     }

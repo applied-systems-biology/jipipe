@@ -14,18 +14,17 @@
 package org.hkijena.jipipe.extensions.parameters.pairs;
 
 import org.hkijena.jipipe.extensions.parameters.collections.ListParameter;
-import org.hkijena.jipipe.extensions.parameters.generators.IntegerRange;
 
 /**
  * A parameter that renames an integer into another integer
  */
-public class IntRangeAndIntegerPair extends Pair<IntegerRange, Integer> {
+public class StringAndStringPairParameter extends PairParameter<String, String> {
 
     /**
      * Creates a new instance
      */
-    public IntRangeAndIntegerPair() {
-        super(IntegerRange.class, Integer.class);
+    public StringAndStringPairParameter() {
+        super(String.class, String.class);
     }
 
     /**
@@ -33,19 +32,19 @@ public class IntRangeAndIntegerPair extends Pair<IntegerRange, Integer> {
      *
      * @param other the original
      */
-    public IntRangeAndIntegerPair(IntRangeAndIntegerPair other) {
+    public StringAndStringPairParameter(StringAndStringPairParameter other) {
         super(other);
     }
 
     /**
-     * A collection of multiple {@link IntRangeAndIntegerPair}
+     * A collection of multiple {@link StringAndStringPairParameter}
      */
-    public static class List extends ListParameter<IntRangeAndIntegerPair> {
+    public static class List extends ListParameter<StringAndStringPairParameter> {
         /**
          * Creates a new instance
          */
         public List() {
-            super(IntRangeAndIntegerPair.class);
+            super(StringAndStringPairParameter.class);
         }
 
         /**
@@ -54,9 +53,9 @@ public class IntRangeAndIntegerPair extends Pair<IntegerRange, Integer> {
          * @param other the original
          */
         public List(List other) {
-            super(IntRangeAndIntegerPair.class);
-            for (IntRangeAndIntegerPair filter : other) {
-                add(new IntRangeAndIntegerPair(filter));
+            super(StringAndStringPairParameter.class);
+            for (StringAndStringPairParameter filter : other) {
+                add(new StringAndStringPairParameter(filter));
             }
         }
     }

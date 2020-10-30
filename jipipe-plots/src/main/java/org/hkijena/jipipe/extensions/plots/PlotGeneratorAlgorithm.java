@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.extensions.plots;
 
-import ij.measure.ResultsTable;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
@@ -34,24 +33,16 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
 import org.hkijena.jipipe.extensions.parameters.editors.JIPipeDataParameterSettings;
-import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameterSettings;
-import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameterVariableSource;
-import org.hkijena.jipipe.extensions.parameters.predicates.StringPredicate;
 import org.hkijena.jipipe.extensions.parameters.references.JIPipeDataInfoRef;
 import org.hkijena.jipipe.extensions.plots.datatypes.PlotColumn;
 import org.hkijena.jipipe.extensions.plots.datatypes.PlotData;
 import org.hkijena.jipipe.extensions.plots.datatypes.PlotDataSeries;
 import org.hkijena.jipipe.extensions.plots.datatypes.PlotMetadata;
-import org.hkijena.jipipe.extensions.tables.ColumnContentType;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
-import org.hkijena.jipipe.extensions.tables.datatypes.TableColumn;
-import org.hkijena.jipipe.extensions.tables.parameters.TableColumnSourceParameter;
-import org.hkijena.jipipe.utils.ReflectionUtils;
+import org.hkijena.jipipe.extensions.parameters.expressions.TableColumnSourceExpressionParameter;
 import org.scijava.Priority;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -112,7 +103,7 @@ public class PlotGeneratorAlgorithm extends JIPipeAlgorithm {
 
             // First generate real column data
             for (Map.Entry<String, JIPipeParameterAccess> entry : columnAssignments.getParameters().entrySet()) {
-                TableColumnSourceParameter parameter = entry.getValue().get(TableColumnSourceParameter.class);
+                TableColumnSourceExpressionParameter parameter = entry.getValue().get(TableColumnSourceExpressionParameter.class);
                 seriesTable.setColumn(entry.getKey(), parameter.pickColumn(inputData), plotColumns.get(entry.getKey()).isNumeric());
             }
 
@@ -166,10 +157,10 @@ public class PlotGeneratorAlgorithm extends JIPipeAlgorithm {
                 JIPipeMutableParameterAccess parameterAccess = new JIPipeMutableParameterAccess();
                 parameterAccess.setKey(column.name());
                 parameterAccess.setName(column.name());
-                parameterAccess.setFieldClass(TableColumnSourceParameter.class);
-                TableColumnSourceParameter initialValue = new TableColumnSourceParameter();
+                parameterAccess.setFieldClass(TableColumnSourceExpressionParameter.class);
+                TableColumnSourceExpressionParameter initialValue = new TableColumnSourceExpressionParameter();
                 parameterAccess.set(initialValue);
-                parameterAccess.setDescription(column.description() + " " + (column.isNumeric() ? "(Numeric column)" : "(String column)") + " " + TableColumnSourceParameter.DOCUMENTATION_DESCRIPTION);
+                parameterAccess.setDescription(column.description() + " " + (column.isNumeric() ? "(Numeric column)" : "(String column)") + " " + TableColumnSourceExpressionParameter.DOCUMENTATION_DESCRIPTION);
                 columnAssignments.addParameter(parameterAccess);
             }
         }

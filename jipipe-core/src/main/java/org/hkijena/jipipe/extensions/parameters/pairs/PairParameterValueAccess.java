@@ -20,11 +20,11 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterVisibility;
 import java.lang.annotation.Annotation;
 
 /**
- * Parameter access for the key entry in {@link Pair}
+ * Parameter access for the key entry in {@link PairParameter}
  */
 public class PairParameterValueAccess<K, V> implements JIPipeParameterAccess {
     private JIPipeParameterAccess parent;
-    private Pair<K, V> pair;
+    private PairParameter<K, V> pair;
 
     /**
      * Creates a new instance
@@ -32,12 +32,12 @@ public class PairParameterValueAccess<K, V> implements JIPipeParameterAccess {
      * @param parent the parent access
      * @param pair   the parameter
      */
-    public PairParameterValueAccess(JIPipeParameterAccess parent, Pair<K, V> pair) {
+    public PairParameterValueAccess(JIPipeParameterAccess parent, PairParameter<K, V> pair) {
         this.parent = parent;
         this.pair = pair;
     }
 
-    public Pair<K, V> getPair() {
+    public PairParameter<K, V> getPair() {
         return pair;
     }
 
