@@ -113,6 +113,7 @@ Section "Common files (Required)" SEC01
   inetc::get "https://maven.scijava.org/service/local/repositories/central/content/org/apache/pdfbox/pdfbox/2.0.4/pdfbox-2.0.4.jar" "$INSTDIR\Fiji.app\jars\pdfbox-2.0.4.jar"
   inetc::get "https://maven.scijava.org/service/local/repositories/central/content/com/openhtmltopdf/openhtmltopdf-rtl-support/1.0.4/openhtmltopdf-rtl-support-1.0.4.jar" "$INSTDIR\Fiji.app\jars\openhtmltopdf-rtl-support-1.0.4.jar"
   inetc::get "https://maven.scijava.org/service/local/repositories/central/content/com/openhtmltopdf/openhtmltopdf-pdfbox/1.0.4/openhtmltopdf-pdfbox-1.0.4.jar" "$INSTDIR\Fiji.app\jars\openhtmltopdf-pdfbox-1.0.4.jar"
+  inetc::get "https://maven.scijava.org/service/local/repositories/central/content/com/fathzer/javaluator/3.0.3/javaluator-3.0.3.jar" "$INSTDIR\Fiji.app\jars\javaluator-3.0.3.jar"
 
   ; Bootstrap update sites
   SetOutPath "$INSTDIR\Fiji.app"
