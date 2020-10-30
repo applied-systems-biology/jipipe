@@ -61,6 +61,7 @@ import org.hkijena.jipipe.extensions.omero.datatypes.OMEROImageReferenceData;
 import org.hkijena.jipipe.extensions.omero.util.OMEROToJIPipeLogger;
 import org.hkijena.jipipe.extensions.omero.util.OMEROUploadToJIPipeLogger;
 import org.hkijena.jipipe.extensions.omero.util.OMEROUtils;
+import org.hkijena.jipipe.extensions.parameters.expressions.AnnotationQueryExpression;
 import org.hkijena.jipipe.extensions.parameters.predicates.StringPredicate;
 import org.hkijena.jipipe.extensions.parameters.util.LogicalOperation;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
@@ -85,7 +86,7 @@ public class UploadOMEROImageAlgorithm extends JIPipeMergingAlgorithm {
     private OMEExporterSettings exporterSettings = new OMEExporterSettings();
     private JIPipeDataByMetadataExporter exporter = new JIPipeDataByMetadataExporter();
     private boolean uploadAnnotations = false;
-    private StringPredicate.List uploadedAnnotationsFilter = new StringPredicate.List();
+    private AnnotationQueryExpression uploadedAnnotationsFilter = new AnnotationQueryExpression("TRUE");
 
     public UploadOMEROImageAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -100,7 +101,7 @@ public class UploadOMEROImageAlgorithm extends JIPipeMergingAlgorithm {
         this.exporterSettings = new OMEExporterSettings(other.exporterSettings);
         this.exporter = new JIPipeDataByMetadataExporter(other.exporter);
         this.uploadAnnotations = other.uploadAnnotations;
-        this.uploadedAnnotationsFilter = new StringPredicate.List(other.uploadedAnnotationsFilter);
+        this.uploadedAnnotationsFilter = new AnnotationQueryExpression(other.uploadedAnnotationsFilter);
         registerSubParameter(credentials);
         registerSubParameter(exporterSettings);
         registerSubParameter(exporter);
@@ -178,9 +179,7 @@ public class UploadOMEROImageAlgorithm extends JIPipeMergingAlgorithm {
                 BrowseFacility browseFacility = gateway.getFacility(BrowseFacility.class);
                 DataManagerFacility dataManagerFacility = gateway.getFacility(DataManagerFacility.class);
                 List<NamedValue> namedValues = new ArrayList<>();
-                for (JIPipeAnnotation annotation : annotations) {
-                    if(!uploadedAnnotationsFilter.isEmpty() && !uploadedAnnotationsFilter.test(annotation.getName(), LogicalOperation.LogicalOr))
-                        continue;
+                for (JIPipeAnnotation annotation : uploadedAnnotationsFilter.queryAll(annotations)) {
                     namedValues.add(new NamedValue(annotation.getName(), annotation.getValue()));
                 }
                 MapAnnotationData mapAnnotationData = new MapAnnotationData();
@@ -241,14 +240,14 @@ public class UploadOMEROImageAlgorithm extends JIPipeMergingAlgorithm {
         this.uploadAnnotations = uploadAnnotations;
     }
 
-    @JIPipeDocumentation(name = "Uploaded annotations", description = "Determines which annotations should be uploaded. An annotation is uploaded if any of the filters match. If the list is empty, no filtering is applied.")
+    @JIPipeDocumentation(name = "Uploaded annotations", description = "Determines which annotations should be uploaded. " + AnnotationQueryExpression.DOCUMENTATION_DESCRIPTION)
     @JIPipeParameter("uploaded-annotations")
-    public StringPredicate.List getUploadedAnnotationsFilter() {
+    public AnnotationQueryExpression getUploadedAnnotationsFilter() {
         return uploadedAnnotationsFilter;
     }
 
     @JIPipeParameter("uploaded-annotations")
-    public void setUploadedAnnotationsFilter(StringPredicate.List uploadedAnnotationsFilter) {
+    public void setUploadedAnnotationsFilter(AnnotationQueryExpression uploadedAnnotationsFilter) {
         this.uploadedAnnotationsFilter = uploadedAnnotationsFilter;
     }
 }

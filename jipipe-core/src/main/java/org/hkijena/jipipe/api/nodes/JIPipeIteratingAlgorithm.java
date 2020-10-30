@@ -28,6 +28,7 @@ import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterVisibility;
+import org.hkijena.jipipe.extensions.parameters.expressions.StringQueryExpression;
 import org.hkijena.jipipe.extensions.parameters.predicates.StringPredicate;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
 import org.hkijena.jipipe.utils.ResourceUtils;
@@ -105,8 +106,7 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
         builder.setSlots(slots);
         builder.setAnnotationMergeStrategy(dataBatchGenerationSettings.annotationMergeStrategy);
         builder.setReferenceColumns(dataBatchGenerationSettings.dataSetMatching,
-                dataBatchGenerationSettings.customColumns,
-                dataBatchGenerationSettings.invertCustomColumns);
+                dataBatchGenerationSettings.customColumns);
         return builder.build();
     }
 
@@ -233,19 +233,6 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
         this.parallelizationEnabled = parallelizationEnabled;
     }
 
-    private Set<String> getInputAnnotationByFilter(Map<String, JIPipeDataSlot> slotMap, StringPredicate.List predicates) {
-        Set<String> result = new HashSet<>();
-        for (JIPipeDataSlot slot : slotMap.values()) {
-            result.addAll(slot.getAnnotationColumns());
-        }
-        if (dataBatchGenerationSettings.invertCustomColumns) {
-            result.removeIf(s -> predicates.stream().anyMatch(p -> p.test(s)));
-        } else {
-            result.removeIf(s -> predicates.stream().noneMatch(p -> p.test(s)));
-        }
-        return result;
-    }
-
     /**
      * Runs code on one data row
      *
@@ -262,10 +249,8 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
     public static class DataBatchGenerationSettings implements JIPipeParameterCollection {
         private final EventBus eventBus = new EventBus();
         private JIPipeColumnGrouping dataSetMatching = JIPipeColumnGrouping.PrefixHashIntersection;
-//        private boolean allowDuplicateDataSets = true;
         private boolean skipIncompleteDataSets = false;
-        private StringPredicate.List customColumns = new StringPredicate.List();
-        private boolean invertCustomColumns = false;
+        private StringQueryExpression customColumns = new StringQueryExpression();
         private JIPipeAnnotationMergeStrategy annotationMergeStrategy = JIPipeAnnotationMergeStrategy.Merge;
 
         public DataBatchGenerationSettings() {
@@ -273,10 +258,8 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
 
         public DataBatchGenerationSettings(DataBatchGenerationSettings other) {
             this.dataSetMatching = other.dataSetMatching;
-//            this.allowDuplicateDataSets = other.allowDuplicateDataSets;
             this.skipIncompleteDataSets = other.skipIncompleteDataSets;
-            this.customColumns = new StringPredicate.List(other.customColumns);
-            this.invertCustomColumns = other.invertCustomColumns;
+            this.customColumns = new StringQueryExpression(other.customColumns);
             this.annotationMergeStrategy = other.annotationMergeStrategy;
         }
 
@@ -300,45 +283,20 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
 
         }
 
-//        @JIPipeDocumentation(name = "Allow duplicate data sets", description = "If disabled, there will be an error if duplicate data sets are detected. " +
-//                "Data sets are detected by grouping incoming data via their data annotations.")
-//        @JIPipeParameter(value = "allow-duplicates", uiOrder = 999, visibility = JIPipeParameterVisibility.Visible)
-//        public boolean isAllowDuplicateDataSets() {
-//            return allowDuplicateDataSets;
-//        }
-//
-//        @JIPipeParameter("allow-duplicates")
-//        public void setAllowDuplicateDataSets(boolean allowDuplicateDataSets) {
-//            this.allowDuplicateDataSets = allowDuplicateDataSets;
-//
-//        }
-
         @JIPipeDocumentation(name = "Custom grouping columns", description = "Only used if 'Grouping method' is set to 'Custom'. " +
                 "Determines which annotation columns are referred to group data sets. The filters determine which columns should be included. " +
                 "You can also invert the filters to determine which columns should be excluded.")
-        @JIPipeParameter(value = "custom-matched-columns-predicates", uiOrder = 999, visibility = JIPipeParameterVisibility.Visible)
+        @JIPipeParameter(value = "custom-matched-columns-expression", uiOrder = 999, visibility = JIPipeParameterVisibility.Visible)
         @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/annotation.png")
-        public StringPredicate.List getCustomColumns() {
+        public StringQueryExpression getCustomColumns() {
             if (customColumns == null)
-                customColumns = new StringPredicate.List();
+                customColumns = new StringQueryExpression();
             return customColumns;
         }
 
-        @JIPipeParameter(value = "custom-matched-columns-predicates", visibility = JIPipeParameterVisibility.Visible)
-        public void setCustomColumns(StringPredicate.List customColumns) {
+        @JIPipeParameter(value = "custom-matched-columns-expression", visibility = JIPipeParameterVisibility.Visible)
+        public void setCustomColumns(StringQueryExpression customColumns) {
             this.customColumns = customColumns;
-        }
-
-        @JIPipeDocumentation(name = "Invert custom filters", description = "If enabled, the filters in 'Custom grouping columns' determine which columns should be " +
-                "excluded instead of included.")
-        @JIPipeParameter("invert-custom-columns")
-        public boolean isInvertCustomColumns() {
-            return invertCustomColumns;
-        }
-
-        @JIPipeParameter("invert-custom-columns")
-        public void setInvertCustomColumns(boolean invertCustomColumns) {
-            this.invertCustomColumns = invertCustomColumns;
         }
 
         @JIPipeDocumentation(name = "Skip incomplete data sets", description = "If enabled, incomplete data sets are silently skipped. " +

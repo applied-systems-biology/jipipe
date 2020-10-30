@@ -27,6 +27,7 @@ import org.hkijena.jipipe.api.registries.JIPipeExpressionRegistry;
 import org.hkijena.jipipe.extensions.parameters.expressions.operators.*;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Describes basic properties of a {@link ExpressionParameter}
@@ -59,6 +60,8 @@ public class DefaultExpressionEvaluator extends ExpressionEvaluator {
     public static final Operator OPERATOR_NUMERIC_NEGATE_HIGH = new Operator("-", 1,Operator.Associativity.RIGHT, 10);
     public static final ExpressionOperator OPERATOR_STRING_CONTAINS = new StringContainsOperator();
     public static final ExpressionOperator OPERATOR_STRING_CONTAINS2 = new StringContainsOperator2();
+    public static final ExpressionOperator OPERATOR_VARIABLE_EXISTS = new VariableExistsOperator();
+    public static final ExpressionOperator OPERATOR_VARIABLE_RESOLVE = new ResolveVariableOperator();
 
     private final Set<String> knownOperatorTokens = new HashSet<>();
     private final List<String> knownNonAlphanumericOperatorTokens = new ArrayList<>();
@@ -98,6 +101,10 @@ public class DefaultExpressionEvaluator extends ExpressionEvaluator {
         parameters.add(OPERATOR_STRING_CONTAINS);
         parameters.add(OPERATOR_STRING_CONTAINS2);
 
+        // Add variable operators
+        parameters.add(OPERATOR_VARIABLE_EXISTS);
+        parameters.add(OPERATOR_VARIABLE_RESOLVE);
+
         // Add operators from JIPipe (if available)
         if(JIPipe.getInstance() != null) {
             for (JIPipeExpressionRegistry.ExpressionFunctionEntry functionEntry : JIPipe.getInstance().getExpressionRegistry().getRegisteredExpressionFunctions().values()) {
@@ -125,6 +132,7 @@ public class DefaultExpressionEvaluator extends ExpressionEvaluator {
         StringBuilder buffer = new StringBuilder();
         boolean isQuoted = false;
         boolean escape = false;
+        AtomicBoolean resolveVariable = new AtomicBoolean(false);
         List<String> tokens = new ArrayList<>();
 
         for (int i = 0; i < expression.length(); i++) {
@@ -132,9 +140,7 @@ public class DefaultExpressionEvaluator extends ExpressionEvaluator {
             if(c == '"' && !escape) {
                 if(!isQuoted) {
                     // Process buffer up until now
-                    if (buffer.length() > 0)
-                        tokens.add(buffer.toString());
-                    buffer.setLength(0);
+                    flushBufferToToken(buffer, tokens, resolveVariable);
                     isQuoted = true;
                 }
                 else {
@@ -143,24 +149,19 @@ public class DefaultExpressionEvaluator extends ExpressionEvaluator {
                         buffer.insert(0, '"');
                         buffer.append("\"");
                     }
-                    tokens.add(buffer.toString());
-                    buffer.setLength(0);
+                    flushBufferToToken(buffer, tokens, resolveVariable);
                     isQuoted = false;
                 }
                 if(includeQuotesAsToken) {
                     tokens.add("\"");
                 }
             }
-            else if(c == ')' || c == '(' || c == ',') {
-                if (buffer.length() > 0)
-                    tokens.add(buffer.toString());
-                buffer.setLength(0);
+            else if(!isQuoted && (c == ')' || c == '(' || c == ',')) {
+                flushBufferToToken(buffer, tokens, resolveVariable);
                 tokens.add(""  + c);
             }
             else if(!isQuoted && (c == ' ' || c == '\t' || c == '\n' || c == '\r')) {
-                if (buffer.length() > 0)
-                    tokens.add(buffer.toString());
-                buffer.setLength(0);
+                flushBufferToToken(buffer, tokens, resolveVariable);
             }
             else if(c == '\\') {
                 if(escape)
@@ -170,6 +171,11 @@ public class DefaultExpressionEvaluator extends ExpressionEvaluator {
             else if(c == '"') {
                 buffer.append(c);
                 escape = false;
+            }
+            else if (!isQuoted && c == '$') {
+                flushBufferToToken(buffer, tokens, resolveVariable);
+                resolveVariable.set(true);
+                tokens.add("" + c);
             }
             else {
                 buffer.append(c);
@@ -197,9 +203,23 @@ public class DefaultExpressionEvaluator extends ExpressionEvaluator {
             }
         }
 
-        if(buffer.length() > 0)
-            tokens.add(buffer.toString());
+        flushBufferToToken(buffer, tokens, resolveVariable);
         return tokens;
+    }
+
+    private void flushBufferToToken(StringBuilder buffer, List<String> tokens, AtomicBoolean resolveVariable) {
+        if(buffer.length() > 0) {
+            if(resolveVariable.get()) {
+                // Escape on resolving a variable
+                if(buffer.charAt(0) != '"' && buffer.charAt(buffer.length() - 1) != '"') {
+                    buffer.insert(0, '"');
+                    buffer.append('"');
+                }
+            }
+            tokens.add(buffer.toString());
+            buffer.setLength(0);
+        }
+        resolveVariable.set(false);
     }
 
     @Override

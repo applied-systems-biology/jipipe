@@ -74,7 +74,7 @@ public class AnnotationQueryExpression extends DefaultExpressionParameter {
     }
 
     /**
-     * Generates an annotation value
+     * Returns all annotations that match the query
      * @param annotations existing annotations for the data
      * @return the annotation that matches the query or null if none matches
      */

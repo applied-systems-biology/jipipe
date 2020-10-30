@@ -18,6 +18,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
+import org.hkijena.jipipe.extensions.parameters.expressions.StringQueryExpression;
 import org.hkijena.jipipe.extensions.parameters.predicates.StringPredicate;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
 import org.hkijena.jipipe.utils.ResourceUtils;
@@ -46,7 +47,7 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
     private String separatorString = "_";
     private String equalsString = "=";
     private String missingString = "NA";
-    private StringPredicate.List metadataKeyFilter = new StringPredicate.List();
+    private StringQueryExpression metadataKeyFilter = new StringQueryExpression("TRUE");
 
     public JIPipeDataByMetadataExporter() {
     }
@@ -60,17 +61,17 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
         this.separatorString = other.separatorString;
         this.equalsString = other.equalsString;
         this.missingString = other.missingString;
-        this.metadataKeyFilter = new StringPredicate.List(other.metadataKeyFilter);
+        this.metadataKeyFilter = new StringQueryExpression(other.metadataKeyFilter);
     }
 
-    @JIPipeDocumentation(name = "Metadata key filters", description = "Only includes the metadata keys that match the filters. If this list is empty, no filtering is applied.")
+    @JIPipeDocumentation(name = "Metadata key filters", description = "Only includes the metadata keys that match the filter. " + StringQueryExpression.DOCUMENTATION_DESCRIPTION)
     @JIPipeParameter("metadata-key-filters")
-    public StringPredicate.List getMetadataKeyFilter() {
+    public StringQueryExpression getMetadataKeyFilter() {
         return metadataKeyFilter;
     }
 
     @JIPipeParameter("metadata-key-filters")
-    public void setMetadataKeyFilter(StringPredicate.List metadataKeyFilter) {
+    public void setMetadataKeyFilter(StringQueryExpression metadataKeyFilter) {
         this.metadataKeyFilter = metadataKeyFilter;
     }
 
@@ -277,7 +278,7 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
         }
         for (int col = 0; col < dataSlot.getAnnotationColumns().size(); col++) {
             String metadataKey = dataSlot.getAnnotationColumns().get(col);
-            if(!metadataKeyFilter.isEmpty() && !metadataKeyFilter.test(metadataKey))
+            if(!metadataKeyFilter.test(metadataKey))
                 continue;
             JIPipeAnnotation metadataValue;
             if (ignoreMissingMetadata) {
@@ -285,7 +286,6 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
             } else {
                 metadataValue = dataSlot.getAnnotationOr(row, metadataKey, new JIPipeAnnotation(metadataKey, missingString));
             }
-
             if (metadataValue != null) {
                 if (metadataStringBuilder.length() > 0)
                     metadataStringBuilder.append(separatorString);

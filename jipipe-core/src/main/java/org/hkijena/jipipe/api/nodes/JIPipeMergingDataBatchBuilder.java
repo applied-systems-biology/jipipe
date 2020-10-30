@@ -10,6 +10,7 @@ import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
+import org.hkijena.jipipe.extensions.parameters.expressions.StringQueryExpression;
 import org.hkijena.jipipe.extensions.parameters.predicates.StringPredicate;
 import org.hkijena.jipipe.extensions.settings.ExtensionSettings;
 import org.hkijena.jipipe.extensions.strings.StringData;
@@ -65,12 +66,12 @@ public class JIPipeMergingDataBatchBuilder {
         this.referenceColumns = referenceColumns;
     }
     
-    public void setReferenceColumns(JIPipeColumnGrouping columnGrouping, StringPredicate.List customColumns, boolean invertCustomColumns) {
+    public void setReferenceColumns(JIPipeColumnGrouping columnGrouping, StringQueryExpression customColumns) {
         if(slots.isEmpty())
             System.err.println("Warning: Trying to calculate reference columns with empty slot list!");
         switch (columnGrouping) {
             case Custom:
-                referenceColumns = getInputAnnotationByFilter(customColumns, invertCustomColumns);
+                referenceColumns = getInputAnnotationByFilter(customColumns);
                 break;
             case Union:
                 referenceColumns = getInputAnnotationColumnUnion("");
@@ -95,17 +96,12 @@ public class JIPipeMergingDataBatchBuilder {
         }
     }
 
-    public Set<String> getInputAnnotationByFilter(StringPredicate.List predicates, boolean invertCustomColumns) {
+    public Set<String> getInputAnnotationByFilter(StringQueryExpression expression) {
         Set<String> result = new HashSet<>();
         for (JIPipeDataSlot slot : slots.values()) {
             result.addAll(slot.getAnnotationColumns());
         }
-        if (invertCustomColumns) {
-            result.removeIf(s -> predicates.stream().anyMatch(p -> p.test(s)));
-        } else {
-            result.removeIf(s -> predicates.stream().noneMatch(p -> p.test(s)));
-        }
-        return result;
+        return new HashSet<>(expression.queryAll(result));
     }
     
     public Set<String> getInputAnnotationColumnIntersection(String prefix) {

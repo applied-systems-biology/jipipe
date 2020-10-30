@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * Expression for querying strings
@@ -49,6 +50,10 @@ public class StringQueryExpression extends DefaultExpressionParameter {
      * @return the annotation that matches the query or null if none matches
      */
     public String queryFirst(Collection<String> strings) {
+        if(strings.isEmpty())
+            return null;
+        if("TRUE".equals(getExpression()))
+            return strings.iterator().next();
         StaticVariableSet<Object> variableSet = new StaticVariableSet<>();
         try {
             Object evaluationResult = evaluate(variableSet);
@@ -75,6 +80,8 @@ public class StringQueryExpression extends DefaultExpressionParameter {
      * @return the annotation that matches the query or null if none matches
      */
     public List<String> queryAll(Collection<String> strings) {
+        if("TRUE".equals(getExpression()))
+            return new ArrayList<>(strings);
         List<String> result = new ArrayList<>();
         StaticVariableSet<Object> variableSet = new StaticVariableSet<>();
         try {
@@ -96,5 +103,55 @@ public class StringQueryExpression extends DefaultExpressionParameter {
                 result.add(string);
         }
         return result;
+    }
+
+    /**
+     * Returns true if the query matches the string
+     * @param string the string
+     * @return if the query matches
+     */
+    public boolean test(String string) {
+        if("TRUE".equals(getExpression()))
+            return true;
+        StaticVariableSet<Object> variableSet = new StaticVariableSet<>();
+        try {
+            Object evaluationResult = evaluate(variableSet);
+            if(evaluationResult instanceof String) {
+                String key = (String) evaluationResult;
+                if(Objects.equals(key, string))
+                    return true;
+            }
+        }
+        catch (Exception e) {
+        }
+        variableSet.set("value", string);
+        return test(variableSet);
+    }
+
+    /**
+     * Returns true of one of the strings matches the query.
+     * @param strings the strings
+     * @return if one string matches
+     */
+    public boolean test(Collection<String> strings) {
+        if("TRUE".equals(getExpression()))
+            return true;
+        StaticVariableSet<Object> variableSet = new StaticVariableSet<>();
+        for (String string : strings) {
+            try {
+                Object evaluationResult = evaluate(variableSet);
+                if(evaluationResult instanceof String) {
+                    String key = (String) evaluationResult;
+                    if(Objects.equals(key, string))
+                        return true;
+                }
+            }
+            catch (Exception e) {
+            }
+            variableSet.set("value", string);
+            if(test(variableSet))
+                return true;
+        }
+        return false;
     }
 }

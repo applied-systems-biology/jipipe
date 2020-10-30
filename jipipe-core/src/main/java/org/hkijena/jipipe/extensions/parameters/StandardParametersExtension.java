@@ -36,13 +36,7 @@ import org.hkijena.jipipe.extensions.parameters.editors.JIPipeAlgorithmIconRefPa
 import org.hkijena.jipipe.extensions.parameters.editors.JIPipeDataInfoRefParameterEditorUI;
 import org.hkijena.jipipe.extensions.parameters.editors.JIPipeNodeInfoRefParameterEditorUI;
 import org.hkijena.jipipe.extensions.parameters.editors.JIPipeParameterCollectionVisibilitiesParameterEditorUI;
-import org.hkijena.jipipe.extensions.parameters.expressions.AnnotationGeneratorExpression;
-import org.hkijena.jipipe.extensions.parameters.expressions.AnnotationQueryExpression;
-import org.hkijena.jipipe.extensions.parameters.expressions.DefaultExpressionParameter;
-import org.hkijena.jipipe.extensions.parameters.expressions.DefaultExpressionParameterEditorUI;
-import org.hkijena.jipipe.extensions.parameters.expressions.NamedAnnotationGeneratorExpression;
-import org.hkijena.jipipe.extensions.parameters.expressions.StringQueryExpression;
-import org.hkijena.jipipe.extensions.parameters.expressions.TableColumnSourceExpressionParameter;
+import org.hkijena.jipipe.extensions.parameters.expressions.*;
 import org.hkijena.jipipe.extensions.parameters.expressions.functions.*;
 import org.hkijena.jipipe.extensions.parameters.functions.FunctionParameter;
 import org.hkijena.jipipe.extensions.parameters.functions.FunctionParameterEditorUI;
@@ -188,6 +182,21 @@ public class StandardParametersExtension extends JIPipePrepackagedDefaultJavaExt
                 "String query expression",
                 "An expression that is used to filter strings",
                 DefaultExpressionParameterEditorUI.class);
+        registerParameterType("named-string-query-expression",
+                NamedStringQueryExpression.class,
+                NamedStringQueryExpression.List.class,
+                null,
+                null,
+                "Named string query expression",
+                "Used to query named strings",
+                null);
+        registerParameterType("string-map-query-expression",
+                StringMapQueryExpression.class,
+                null,
+                null,
+                "String map query expression",
+                "An expression that is used to query string-string key value pairs",
+                DefaultExpressionParameterEditorUI.class);
         registerParameterType("annotation-generator-expression",
                 AnnotationGeneratorExpression.class,
                 null,
@@ -209,6 +218,7 @@ public class StandardParametersExtension extends JIPipePrepackagedDefaultJavaExt
         registerExpressionFunction(new RegexStringPredicateFunction());
         registerExpressionFunction(new GetVariableFunction());
         registerExpressionFunction(new IfElseFunction());
+        registerExpressionFunction(new VariableExistsFunction());
     }
 
     private void registerScriptParameters() {

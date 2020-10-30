@@ -37,6 +37,9 @@ import org.hkijena.jipipe.extensions.omero.datatypes.OMERODatasetReferenceData;
 import org.hkijena.jipipe.extensions.omero.datatypes.OMEROProjectReferenceData;
 import org.hkijena.jipipe.extensions.omero.util.OMEROToJIPipeLogger;
 import org.hkijena.jipipe.extensions.omero.util.OMEROUtils;
+import org.hkijena.jipipe.extensions.parameters.expressions.NamedStringQueryExpression;
+import org.hkijena.jipipe.extensions.parameters.expressions.StringMapQueryExpression;
+import org.hkijena.jipipe.extensions.parameters.expressions.StringQueryExpression;
 import org.hkijena.jipipe.extensions.parameters.pairs.StringAndStringPredicatePairParameter;
 import org.hkijena.jipipe.extensions.parameters.predicates.StringPredicate;
 import org.hkijena.jipipe.extensions.parameters.primitives.OptionalStringParameter;
@@ -61,12 +64,12 @@ import java.util.stream.Collectors;
 public class OMEROFindDatasetAlgorithm extends JIPipeParameterSlotAlgorithm {
 
     private OMEROCredentials credentials = new OMEROCredentials();
-    private StringPredicate.List datasetNameFilters = new StringPredicate.List();
+    private StringQueryExpression datasetNameFilters = new StringQueryExpression("TRUE");
     private OptionalStringParameter projectNameAnnotation = new OptionalStringParameter("Project", true);
     private OptionalStringParameter datasetNameAnnotation = new OptionalStringParameter("Dataset", true);
-    private StringAndStringPredicatePairParameter.List keyValuePairFilters = new StringAndStringPredicatePairParameter.List();
+    private StringMapQueryExpression keyValuePairFilters = new StringMapQueryExpression("TRUE");
     private boolean addKeyValuePairsAsAnnotations = true;
-    private StringPredicate.List tagFilters = new StringPredicate.List();
+    private StringMapQueryExpression tagFilters = new StringMapQueryExpression("TRUE");
     private OptionalStringParameter tagAnnotation = new OptionalStringParameter("Tags", true);
 
     public OMEROFindDatasetAlgorithm(JIPipeNodeInfo info) {
@@ -92,22 +95,14 @@ public class OMEROFindDatasetAlgorithm extends JIPipeParameterSlotAlgorithm {
                 algorithmProgress.accept(subProgress.resolve("Listing datasets in project ID=" + projectId));
                 ProjectData projectData = browseFacility.getProjects(context, Collections.singletonList(projectId)).iterator().next();
                 for (DatasetData dataset : projectData.getDatasets()) {
-                    if(!datasetNameFilters.isEmpty() && !datasetNameFilters.test(dataset.getName())) {
+                    if(!datasetNameFilters.test(dataset.getName())) {
                         continue;
                     }
-                    Map<String, String> keyValuePairs = new HashMap<>();
-                    if(!keyValuePairFilters.isEmpty() || addKeyValuePairsAsAnnotations) {
-                        keyValuePairs = OMEROUtils.getKeyValuePairAnnotations(metadata, context, dataset);
-                    }
-                    if(!keyValuePairFilters.isEmpty()) {
-                        if(!keyValuePairFilters.test(keyValuePairs, LogicalOperation.LogicalAnd, LogicalOperation.LogicalOr))
-                            continue;
-                    }
-                    Set<String> tags = new HashSet<>();
-                    if(!tagFilters.isEmpty() || tagAnnotation.isEnabled()) {
-                        tags = OMEROUtils.getTagAnnotations(metadata, context, dataset);
-                    }
-                    if(!tagFilters.isEmpty() && !tagFilters.test(tags, LogicalOperation.LogicalOr, LogicalOperation.LogicalOr)) {
+                    Map<String, String> keyValuePairs = OMEROUtils.getKeyValuePairAnnotations(metadata, context, dataset);
+                    if(!keyValuePairFilters.test(keyValuePairs))
+                        continue;
+                    Set<String> tags = OMEROUtils.getTagAnnotations(metadata, context, dataset);
+                    if(!tagFilters.test(tags)) {
                         continue;
                     }
                     List<JIPipeAnnotation> annotations = new ArrayList<>();
@@ -136,24 +131,24 @@ public class OMEROFindDatasetAlgorithm extends JIPipeParameterSlotAlgorithm {
     public OMEROFindDatasetAlgorithm(OMEROFindDatasetAlgorithm other) {
         super(other);
         this.credentials = new OMEROCredentials(other.credentials);
-        this.datasetNameFilters = new StringPredicate.List(other.datasetNameFilters);
+        this.datasetNameFilters = new StringQueryExpression(other.datasetNameFilters);
         this.datasetNameAnnotation = new OptionalStringParameter(other.datasetNameAnnotation);
         this.projectNameAnnotation = new OptionalStringParameter(other.projectNameAnnotation);
-        this.keyValuePairFilters = new StringAndStringPredicatePairParameter.List(other.keyValuePairFilters);
+        this.keyValuePairFilters = new StringMapQueryExpression(other.keyValuePairFilters);
         this.addKeyValuePairsAsAnnotations = other.addKeyValuePairsAsAnnotations;
-        this.tagFilters = new StringPredicate.List(other.tagFilters);
+        this.tagFilters = new StringMapQueryExpression(other.tagFilters);
         this.tagAnnotation = new OptionalStringParameter(other.tagAnnotation);
         registerSubParameter(credentials);
     }
 
-    @JIPipeDocumentation(name = "Dataset name filters", description = "Filters for the dataset name. A dataset is returned if one of the filters apply. If the list is empty, all datasets are returned.")
+    @JIPipeDocumentation(name = "Dataset name filters", description = "Filters for the dataset name. " + StringQueryExpression.DOCUMENTATION_DESCRIPTION)
     @JIPipeParameter("dataset-name-filters")
-    public StringPredicate.List getDatasetNameFilters() {
+    public StringQueryExpression getDatasetNameFilters() {
         return datasetNameFilters;
     }
 
     @JIPipeParameter("dataset-name-filters")
-    public void setDatasetNameFilters(StringPredicate.List datasetNameFilters) {
+    public void setDatasetNameFilters(StringQueryExpression datasetNameFilters) {
         this.datasetNameFilters = datasetNameFilters;
     }
 
@@ -211,25 +206,25 @@ public class OMEROFindDatasetAlgorithm extends JIPipeParameterSlotAlgorithm {
         this.addKeyValuePairsAsAnnotations = addKeyValuePairsAsAnnotations;
     }
 
-    @JIPipeDocumentation(name = "Key-Value pair filters", description = "Filters projects by attached key value pairs. Filters with same keys are connected via an AND operation. Filters with different keys are connected via an OR operation. If the list is empty, no filtering is applied.")
+    @JIPipeDocumentation(name = "Key-Value pair filters", description = "Filters projects by attached key value pairs. " + StringMapQueryExpression.DOCUMENTATION_DESCRIPTION)
     @JIPipeParameter("key-value-pair-filters")
-    public StringAndStringPredicatePairParameter.List getKeyValuePairFilters() {
+    public StringMapQueryExpression getKeyValuePairFilters() {
         return keyValuePairFilters;
     }
 
     @JIPipeParameter("key-value-pair-filters")
-    public void setKeyValuePairFilters(StringAndStringPredicatePairParameter.List keyValuePairFilters) {
+    public void setKeyValuePairFilters(StringMapQueryExpression keyValuePairFilters) {
         this.keyValuePairFilters = keyValuePairFilters;
     }
 
-    @JIPipeDocumentation(name = "Tag filters", description = "Filters by tag values. Filters are connected via OR. If the list is empty, no filtering is applied.")
+    @JIPipeDocumentation(name = "Tag filters", description = "Filters by tag values. If no tag is matched, the data set is skipped. " + StringMapQueryExpression.DOCUMENTATION_DESCRIPTION)
     @JIPipeParameter("tag-filters")
-    public StringPredicate.List getTagFilters() {
+    public StringMapQueryExpression getTagFilters() {
         return tagFilters;
     }
 
     @JIPipeParameter("tag-filters")
-    public void setTagFilters(StringPredicate.List tagFilters) {
+    public void setTagFilters(StringMapQueryExpression tagFilters) {
         this.tagFilters = tagFilters;
     }
 
