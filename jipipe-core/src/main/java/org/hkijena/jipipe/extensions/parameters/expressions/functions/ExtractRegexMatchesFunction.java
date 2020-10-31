@@ -17,6 +17,11 @@ public class ExtractRegexMatchesFunction extends ExpressionFunction {
     }
 
     @Override
+    public String getSignature() {
+        return getName() + "(text, pattern)";
+    }
+
+    @Override
     public Object evaluate(List<Object> parameters, StaticVariableSet<Object> variables) {
         String haystack = "" + parameters.get(0);
         String pattern = "" + parameters.get(1);

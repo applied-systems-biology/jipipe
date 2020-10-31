@@ -15,6 +15,11 @@ public class StringSplitFunction extends ExpressionFunction {
     }
 
     @Override
+    public String getSignature() {
+        return getName() + "(text, pattern)";
+    }
+
+    @Override
     public Object evaluate(List<Object> parameters, StaticVariableSet<Object> variables) {
         String text = "" + parameters.get(0);
         String pattern = "" + parameters.get(1);

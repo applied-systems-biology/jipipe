@@ -18,6 +18,11 @@ public class StringJoinFunction extends ExpressionFunction {
     }
 
     @Override
+    public String getSignature() {
+        return getName() + "(array, delimiter)";
+    }
+
+    @Override
     public Object evaluate(List<Object> parameters, StaticVariableSet<Object> variables) {
         List<String> strings = new ArrayList<>();
         for (Object item : (Collection<?>) parameters.get(0)) {
