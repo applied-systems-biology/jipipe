@@ -15,14 +15,28 @@ package org.hkijena.jipipe.extensions.parameters.expressions.operators;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 
-@JIPipeDocumentation(name = "Subtract", description = "Subtracts the right operand from the left operand")
-public class NumericMinusFunctionOperator extends NumericFunctionOperator {
-    public NumericMinusFunctionOperator() {
+import java.util.*;
+
+@JIPipeDocumentation(name = "Subtract", description = "Subtracts the right operand from the left operand. If the left operand is an array, the right operand is removed from the array.")
+public class SubtractionFunctionOperator extends GenericOperator {
+    public SubtractionFunctionOperator() {
         super("-", 6);
     }
 
     @Override
-    public double evaluate(double left, double right) {
+    public Object evaluate(Collection<Object> left, Collection<Object> right) {
+        List<Object> result = new ArrayList<>(left);
+        result.removeAll(right);
+        return result;
+    }
+
+    @Override
+    public Object evaluate(double left, double right) {
         return left - right;
+    }
+
+    @Override
+    public Object evaluate(String left, String right) {
+        return false;
     }
 }

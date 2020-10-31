@@ -15,12 +15,19 @@ package org.hkijena.jipipe.extensions.parameters.expressions.operators;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Objects;
 
 @JIPipeDocumentation(name = "Equality", description = "Returns TRUE if the left and right operands are equal")
-public class NumericOrStringEqualityPredicateOperator extends NumericOrStringPredicateOperator {
-    public NumericOrStringEqualityPredicateOperator() {
-        super("==");
+public class EqualityPredicateTextOperator extends GenericPredicateOperator {
+    public EqualityPredicateTextOperator() {
+        super("EQUALS");
+    }
+
+    @Override
+    public boolean evaluate(Collection<Object> left, Collection<Object> right) {
+        return Objects.equals(new ArrayList<>(left), new ArrayList<>(right));
     }
 
     @Override

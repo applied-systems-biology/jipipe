@@ -36,6 +36,9 @@ import javax.swing.*;
 import java.awt.BorderLayout;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * A developer tool to test {@link org.hkijena.jipipe.extensions.parameters.expressions.DefaultExpressionEvaluator}
@@ -123,6 +126,13 @@ public class ExpressionTesterUI extends JIPipeWorkbenchPanel {
         Object result;
         try {
             result = evaluator.evaluate(expressionToEvaluate, new StaticVariableSet<>());
+            if(result instanceof Collection) {
+                List<String> values = new ArrayList<>();
+                for (Object item : (Collection) result) {
+                    values.add("" + item);
+                }
+                result = JsonUtils.toJsonString(values);
+            }
         }
         catch (Exception e) {
             result = e;

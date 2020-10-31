@@ -47,26 +47,27 @@ public class DefaultExpressionEvaluator extends ExpressionEvaluator {
     public static final ExpressionOperator OPERATOR_OR_SYMBOL = new SymbolLogicalOrOperator();
     public static final ExpressionOperator OPERATOR_OR_TEXT = new TextLogicalOrOperator();
     public static final ExpressionOperator OPERATOR_XOR_TEXT = new TextLogicalXOrOperator();
-    public static final NumericOrStringPredicateOperator OPERATOR_NUMERIC_EQUALS = new NumericOrStringEqualityPredicateOperator();
-    public static final NumericOrStringPredicateOperator OPERATOR_NUMERIC_EQUALS_TEXT = new NumericOrStringTextEqualityPredicateOperator();
-    public static final NumericOrStringPredicateOperator OPERATOR_NUMERIC_UNEQUALS = new NumericOrStringInEqualityPredicateOperator();
-    public static final NumericOrStringPredicateOperator OPERATOR_NUMERIC_UNEQUALS_TEXT = new NumericOrStringTextInEqualityPredicateOperator();
-    public static final NumericPredicateOperator OPERATOR_NUMERIC_LESS_THAN = new NumericLessThanPredicateOperator();
-    public static final NumericPredicateOperator OPERATOR_NUMERIC_GREATER_THAN = new NumericGreaterThanPredicateOperator();
-    public static final NumericPredicateOperator OPERATOR_NUMERIC_LESS_THAN_OR_EQUAL = new NumericLessThanOrEqualPredicateOperator();
-    public static final NumericPredicateOperator OPERATOR_NUMERIC_GREATER_THAN_OR_EQUAL = new NumericGreaterThanOrEqualPredicateOperator();
-    public static final NumericOrStringFunctionOperator OPERATOR_NUMERIC_STRING_PLUS = new NumericPlusFunctionOperator();
-    public static final NumericFunctionOperator OPERATOR_NUMERIC_MINUS = new NumericMinusFunctionOperator();
-    public static final NumericFunctionOperator OPERATOR_NUMERIC_MULTIPLY = new NumericMultiplyFunctionOperator();
-    public static final NumericFunctionOperator OPERATOR_NUMERIC_DIVIDE = new NumericDivideFunctionOperator();
-    public static final NumericFunctionOperator OPERATOR_NUMERIC_MODULO = new NumericModuloFunctionOperator();
-    public static final NumericFunctionOperator OPERATOR_NUMERIC_EXPONENT = new NumericExponentFunctionOperator();
+    public static final ExpressionOperator OPERATOR_NUMERIC_EQUALS = new EqualityPredicateOperator();
+    public static final ExpressionOperator OPERATOR_NUMERIC_EQUALS_TEXT = new EqualityPredicateTextOperator();
+    public static final ExpressionOperator OPERATOR_NUMERIC_UNEQUALS = new InequalityPredicateOperator();
+    public static final ExpressionOperator OPERATOR_NUMERIC_UNEQUALS_TEXT = new InequalityPredicateTextOperator();
+    public static final ExpressionOperator OPERATOR_NUMERIC_LESS_THAN = new NumericLessThanPredicateOperator();
+    public static final ExpressionOperator OPERATOR_NUMERIC_GREATER_THAN = new NumericGreaterThanPredicateOperator();
+    public static final ExpressionOperator OPERATOR_NUMERIC_LESS_THAN_OR_EQUAL = new NumericLessThanOrEqualPredicateOperator();
+    public static final ExpressionOperator OPERATOR_NUMERIC_GREATER_THAN_OR_EQUAL = new NumericGreaterThanOrEqualPredicateOperator();
+    public static final ExpressionOperator OPERATOR_NUMERIC_STRING_PLUS = new AdditionFunctionOperator();
+    public static final ExpressionOperator OPERATOR_NUMERIC_MINUS = new SubtractionFunctionOperator();
+    public static final ExpressionOperator OPERATOR_NUMERIC_MULTIPLY = new NumericMultiplyFunctionOperator();
+    public static final ExpressionOperator OPERATOR_NUMERIC_DIVIDE = new NumericDivideFunctionOperator();
+    public static final ExpressionOperator OPERATOR_NUMERIC_MODULO = new NumericModuloFunctionOperator();
+    public static final ExpressionOperator OPERATOR_NUMERIC_EXPONENT = new NumericExponentFunctionOperator();
     public static final Operator OPERATOR_NUMERIC_NEGATE = new Operator("-", 1,Operator.Associativity.RIGHT, 8);
     public static final Operator OPERATOR_NUMERIC_NEGATE_HIGH = new Operator("-", 1,Operator.Associativity.RIGHT, 10);
-    public static final ExpressionOperator OPERATOR_STRING_CONTAINS = new StringContainsOperator();
-    public static final ExpressionOperator OPERATOR_STRING_CONTAINS2 = new StringContainsOperator2();
+    public static final ExpressionOperator OPERATOR_STRING_CONTAINS = new ContainsOperator();
+    public static final ExpressionOperator OPERATOR_STRING_CONTAINS2 = new ContainsOperator2();
     public static final ExpressionOperator OPERATOR_VARIABLE_EXISTS = new VariableExistsOperator();
     public static final ExpressionOperator OPERATOR_VARIABLE_RESOLVE = new ResolveVariableOperator();
+    public static final ExpressionOperator OPERATOR_ELEMENT_ACCESS = new ElementAccessOperator();
 
     private final Set<String> knownOperatorTokens = new HashSet<>();
     private final List<String> knownNonAlphanumericOperatorTokens = new ArrayList<>();
@@ -109,6 +110,7 @@ public class DefaultExpressionEvaluator extends ExpressionEvaluator {
         // Add variable operators
         parameters.add(OPERATOR_VARIABLE_EXISTS);
         parameters.add(OPERATOR_VARIABLE_RESOLVE);
+        parameters.add(OPERATOR_ELEMENT_ACCESS);
 
         // Add operators from JIPipe (if available)
         if(JIPipe.getInstance() != null) {

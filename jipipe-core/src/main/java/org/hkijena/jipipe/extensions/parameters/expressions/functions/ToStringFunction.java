@@ -17,6 +17,8 @@ import com.fathzer.soft.javaluator.StaticVariableSet;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionFunction;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 @JIPipeDocumentation(name = "Convert to string", description = "Converts the input to a string.")
@@ -28,6 +30,20 @@ public class ToStringFunction extends ExpressionFunction {
 
     @Override
     public Object evaluate(List<Object> parameters, StaticVariableSet<Object> variables) {
-       return "" + parameters.get(0);
+        Object value = parameters.get(0);
+        if(value instanceof Collection) {
+            List<Object> result = new ArrayList<>();
+            for (Object item : ((Collection) value)) {
+                result.add(convert(item));
+            }
+            return result;
+        }
+        else {
+            return convert(value);
+        }
+    }
+
+    private Object convert(Object item) {
+        return "" + item;
     }
 }

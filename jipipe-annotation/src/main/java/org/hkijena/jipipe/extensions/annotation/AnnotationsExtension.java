@@ -68,7 +68,7 @@ public class AnnotationsExtension extends JIPipePrepackagedDefaultJavaExtension 
     private void registerAlgorithms() {
         registerNodeType("merge-slots", MergeDataSlots.class);
         registerNodeType("annotation-table-from-file", AnnotationTableFromFile.class);
-        registerNodeType("annotate-all", AnnotateAll.class, UIUtils.getIconURLFromResources("actions/tag.png"));
+        registerNodeType("annotate-set", AnnotateByExpression.class, UIUtils.getIconURLFromResources("actions/tag.png"));
         registerNodeType("annotate-remove", RemoveAnnotationAlgorithm.class, UIUtils.getIconURLFromResources("actions/entry-delete.png"));
         registerNodeType("annotate-split-by-annotation", SplitByAnnotation.class, UIUtils.getIconURLFromResources("actions/split.png"));
         registerNodeType("data-to-annotation-table", ConvertToAnnotationTable.class, UIUtils.getIconURLFromResources("data-types/annotation-table.png"));

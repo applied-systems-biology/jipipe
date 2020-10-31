@@ -21,10 +21,12 @@ import java.util.Iterator;
 /**
  * Operator that tests if the left string is contained in the right string
  */
-@JIPipeDocumentation(name = "String contains", description = "Returns true if the right operand is contained in the left operand")
-public class StringContainsOperator2 extends ExpressionOperator {
+@JIPipeDocumentation(name = "Contains", description = "Returns true if the right operand is contained in the left operand. " +
+        "The left operand can be a string, where the operator checks if the left string contains the right string. " +
+        "If the left operand is an array, the operator checks if the right operand is in the array.")
+public class ContainsOperator2 extends ExpressionOperator {
 
-    public StringContainsOperator2() {
+    public ContainsOperator2() {
         super("CONTAINS", 2, Associativity.LEFT, 6);
     }
 

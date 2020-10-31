@@ -15,12 +15,17 @@ package org.hkijena.jipipe.extensions.parameters.expressions.operators;
 
 import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionOperator;
 
+import java.util.Collection;
 import java.util.Iterator;
 
-public abstract class NumericOrStringPredicateOperator extends ExpressionOperator {
+public abstract class GenericOperator extends ExpressionOperator {
 
-    public NumericOrStringPredicateOperator(String symbol) {
+    public GenericOperator(String symbol) {
         super(symbol, 2, Associativity.LEFT, 5);
+    }
+
+    public GenericOperator(String symbol, int precedence) {
+        super(symbol, 2, Associativity.LEFT, precedence);
     }
 
     @Override
@@ -41,12 +46,17 @@ public abstract class NumericOrStringPredicateOperator extends ExpressionOperato
                 right = (boolean)o2 ? 1 : 0;
             return evaluate(left, right);
         }
+        else if(o1 instanceof Collection && o2 instanceof Collection) {
+            return evaluate((Collection<Object>)o1, (Collection<Object>)o2);
+        }
         else {
             return evaluate("" + o1, "" + o2);
         }
     }
 
-    public abstract boolean evaluate(double left, double right);
+    public abstract Object evaluate(Collection<Object> left, Collection<Object> right);
 
-    public abstract boolean evaluate(String left, String right);
+    public abstract Object evaluate(double left, double right);
+
+    public abstract Object evaluate(String left, String right);
 }

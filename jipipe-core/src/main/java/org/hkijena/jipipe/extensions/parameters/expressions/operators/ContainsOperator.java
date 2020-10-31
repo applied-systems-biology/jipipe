@@ -16,22 +16,34 @@ package org.hkijena.jipipe.extensions.parameters.expressions.operators;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionOperator;
 
+import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * Operator that tests if the left string is contained in the right string
  */
-@JIPipeDocumentation(name = "String contains", description = "Returns true if the left operand is contained in the right operand")
-public class StringContainsOperator extends ExpressionOperator {
+@JIPipeDocumentation(name = "Contains", description = "Returns true if the left operand is contained in the right operand. " +
+        "The right operand can be a string, where the operator checks if the right string contains the left string. " +
+        "If the right operand is an array, the operator checks if the left operand is in the array.")
+public class ContainsOperator extends ExpressionOperator {
 
-    public StringContainsOperator() {
+    public ContainsOperator() {
         super("IN", 2, Associativity.LEFT, 6);
     }
 
     @Override
     public Object evaluate(Iterator<Object> operands, Object evaluationContext) {
-        String left = "" + operands.next();
-        String right = "" + operands.next();
-        return right.contains(left);
+        Object left = operands.next();
+        Object right = operands.next();
+        if(right instanceof Collection) {
+            return ((Collection)right).contains(left);
+        }
+        else {
+            String leftString= "" + left;
+            String rightString = "" + right;
+            return rightString.contains(leftString);
+        }
     }
 }

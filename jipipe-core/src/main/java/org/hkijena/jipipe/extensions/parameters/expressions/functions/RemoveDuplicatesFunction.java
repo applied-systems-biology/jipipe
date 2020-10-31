@@ -1,0 +1,22 @@
+package org.hkijena.jipipe.extensions.parameters.expressions.functions;
+
+import com.fathzer.soft.javaluator.StaticVariableSet;
+import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionFunction;
+
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+
+@JIPipeDocumentation(name = "Remove duplicates", description = "Removes duplicate elements from arrays")
+public class RemoveDuplicatesFunction extends ExpressionFunction {
+
+    public RemoveDuplicatesFunction() {
+        super("REMOVE_DUPLICATES", 1);
+    }
+
+    @Override
+    public Object evaluate(List<Object> parameters, StaticVariableSet<Object> variables) {
+        return new HashSet<>((Collection<?>)parameters.get(0));
+    }
+}

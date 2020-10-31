@@ -15,19 +15,31 @@ package org.hkijena.jipipe.extensions.parameters.expressions.operators;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 @JIPipeDocumentation(name = "Addition", description = "Adds two numbers together or concatenates two strings.")
-public class NumericPlusFunctionOperator extends NumericOrStringFunctionOperator {
-    public NumericPlusFunctionOperator() {
+public class AdditionFunctionOperator extends GenericOperator {
+    public AdditionFunctionOperator() {
         super("+", 6);
     }
 
     @Override
-    public double evaluate(double left, double right) {
+    public Object evaluate(Collection<Object> left, Collection<Object> right) {
+        List<Object> result= new ArrayList<>();
+        result.addAll(left);
+        result.addAll(right);
+        return result;
+    }
+
+    @Override
+    public Object evaluate(double left, double right) {
         return left + right;
     }
 
     @Override
-    public String evaluate(String left, String right) {
+    public Object evaluate(String left, String right) {
         return left + right;
     }
 }

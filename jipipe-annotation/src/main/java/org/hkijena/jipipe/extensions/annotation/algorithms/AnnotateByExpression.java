@@ -26,6 +26,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.AnnotationsNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.extensions.parameters.expressions.AnnotationGeneratorExpression;
 import org.hkijena.jipipe.extensions.parameters.expressions.NamedAnnotationGeneratorExpression;
 import org.hkijena.jipipe.extensions.parameters.pairs.PairParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
@@ -79,10 +80,9 @@ public class AnnotateByExpression extends JIPipeSimpleIteratingAlgorithm {
         dataBatch.addOutputData(getFirstOutputSlot(), dataBatch.getInputData(getFirstInputSlot(), JIPipeData.class));
     }
 
-    @JIPipeDocumentation(name = "Annotations", description = "Allows you to set the annotation to add/modify. The expression result will be converted into a string. All other annotations are available as variables. " +
-            "If an annotation variable has special characters, use the GET_VARIABLE() function to access it.")
+    @JIPipeDocumentation(name = "Annotations", description = "Allows you to set the annotation to add/modify. " + AnnotationGeneratorExpression.DOCUMENTATION_DESCRIPTION)
     @JIPipeParameter("generated-annotation")
-    @PairParameterSettings(keyLabel = "Name", valueLabel = "Value")
+    @PairParameterSettings(keyLabel = "Value", valueLabel = "Name", singleRow = false)
     @StringParameterSettings(monospace = true)
     public NamedAnnotationGeneratorExpression.List getAnnotations() {
         return annotations;

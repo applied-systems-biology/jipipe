@@ -23,6 +23,10 @@ import java.util.Collection;
  */
 @ExpressionParameterSettings(variableSource = AnnotationGeneratorExpressionVariableSource.class)
 public class AnnotationGeneratorExpression extends DefaultExpressionParameter {
+
+    public static final String DOCUMENTATION_DESCRIPTION = "The expression result will be converted to a string. All existing annotations are available " +
+            "as variables that can be accessed directly, or if they contain special characters or spaces via the $ operator.";
+
     public AnnotationGeneratorExpression() {
     }
 

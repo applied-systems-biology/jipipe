@@ -15,13 +15,20 @@ package org.hkijena.jipipe.extensions.parameters.expressions.operators;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Objects;
 
 @JIPipeDocumentation(name = "Inequality", description = "Returns TRUE if the left and right operands are unequal")
-public class NumericOrStringTextInEqualityPredicateOperator extends NumericOrStringPredicateOperator {
+public class InequalityPredicateOperator extends GenericPredicateOperator {
 
-    public NumericOrStringTextInEqualityPredicateOperator() {
-        super("UNEQUAL");
+    public InequalityPredicateOperator() {
+        super("!=");
+    }
+
+    @Override
+    public boolean evaluate(Collection<Object> left, Collection<Object> right) {
+        return !Objects.equals(new ArrayList<>(left), new ArrayList<>(right));
     }
 
     @Override

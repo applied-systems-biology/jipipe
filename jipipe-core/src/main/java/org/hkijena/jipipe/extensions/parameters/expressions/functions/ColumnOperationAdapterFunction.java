@@ -21,6 +21,8 @@ import org.hkijena.jipipe.extensions.tables.datatypes.DoubleArrayTableColumn;
 import org.hkijena.jipipe.extensions.tables.datatypes.StringArrayTableColumn;
 import org.hkijena.jipipe.extensions.tables.datatypes.TableColumn;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -43,6 +45,20 @@ public class ColumnOperationAdapterFunction extends ExpressionFunction {
 
     @Override
     public Object evaluate(List<Object> parameters, StaticVariableSet<Object> variables) {
+        if(parameters.stream().anyMatch(o -> o instanceof Collection)) {
+            // Requires parameter expansion
+            List<Object> unExpanded = parameters;
+            parameters = new ArrayList<>();
+            for (Object item : unExpanded) {
+                if(item instanceof Collection) {
+                    parameters.addAll((Collection)item);
+                }
+                else {
+                    parameters.add(item);
+                }
+            }
+        }
+
         boolean isNumeric = parameters.stream().allMatch(o -> o instanceof Number);
         if(isNumeric) {
             double[] arr = new double[parameters.size()];
