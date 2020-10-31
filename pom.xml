@@ -16,7 +16,7 @@ See the LICENSE file provided with this code for the full license.
     <packaging>pom</packaging>
     <groupId>org.hkijena</groupId>
     <artifactId>jipipe</artifactId>
-    <version>2020.10</version>
+    <version>2020.11</version>
     <name>jipipe</name>
     <description>JIPipe</description>
     <url>https://www.jipipe.org/</url>

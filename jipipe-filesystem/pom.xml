@@ -5,11 +5,11 @@
     <parent>
         <artifactId>jipipe</artifactId>
         <groupId>org.hkijena</groupId>
-        <version>2020.10</version>
+        <version>2020.11</version>
     </parent>
 
     <artifactId>jipipe-filesystem</artifactId>
-    <version>2020.10</version>
+    <version>2020.11</version>
 
     <name>jipipe-filesystem</name>
     <description>JIPipe Filesystem Processing</description>
@@ -77,7 +77,7 @@
         <dependency>
             <groupId>org.hkijena</groupId>
             <artifactId>jipipe-core</artifactId>
-            <version>2020.10</version>
+            <version>2020.11</version>
         </dependency>
     </dependencies>
 
