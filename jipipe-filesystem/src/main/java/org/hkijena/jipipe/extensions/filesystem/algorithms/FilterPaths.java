@@ -23,11 +23,15 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.FileSystemNodeTypeCategory;
+import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.PathData;
 import org.hkijena.jipipe.extensions.parameters.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.expressions.variables.PathFilterExpressionParameterVariableSource;
+import org.hkijena.jipipe.ui.JIPipeWorkbench;
+import org.hkijena.jipipe.utils.ResourceUtils;
+import org.hkijena.jipipe.utils.UIUtils;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -141,5 +145,13 @@ public class FilterPaths extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeParameter("output-non-existing")
     public void setOutputNonExisting(boolean outputNonExisting) {
         this.outputNonExisting = outputNonExisting;
+    }
+
+    @JIPipeDocumentation(name = "Filter only *.tif", description = "Sets the filter, so only *.tif files are returned.")
+    @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/graduation-cap.png")
+    public void setToExample(JIPipeWorkbench parent) {
+        if (UIUtils.confirmResetParameters(parent, "Load example")) {
+            setFilters(new DefaultExpressionParameter("STRING_MATCHES_GLOB(name, \"*.tif\")"));
+        }
     }
 }

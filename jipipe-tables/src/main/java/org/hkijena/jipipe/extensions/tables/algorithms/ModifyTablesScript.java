@@ -35,6 +35,7 @@ import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.PythonUtils;
 import org.hkijena.jipipe.utils.ResourceUtils;
+import org.hkijena.jipipe.utils.UIUtils;
 import org.python.core.PyDictionary;
 import org.python.util.PythonInterpreter;
 
@@ -80,11 +81,7 @@ public class ModifyTablesScript extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeDocumentation(name = "Load example", description = "Loads example parameters that showcase how to use this algorithm.")
     @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/graduation-cap.png")
     public void setToExample(JIPipeWorkbench parent) {
-        if (JOptionPane.showConfirmDialog(parent.getWindow(),
-                "This will reset most of the properties. Continue?",
-                "Load example",
-                JOptionPane.YES_NO_OPTION,
-                JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
+        if (UIUtils.confirmResetParameters(parent, "Load example")) {
             code.setCode("# This script is executed for each table\n" +
                     "# Tables are passed as dictionary 'table'\n" +
                     "# Key are the column names\n" +

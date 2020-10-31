@@ -54,7 +54,7 @@ import java.util.stream.Stream;
 // Traits
 public class ListSubfolders extends JIPipeSimpleIteratingAlgorithm {
 
-    private DefaultExpressionParameter filters = new DefaultExpressionParameter();
+    private DefaultExpressionParameter filters = new DefaultExpressionParameter("TRUE");
     private String subFolder;
     private boolean recursive = false;
     private boolean recursiveFollowsLinks = true;

@@ -17,15 +17,20 @@ import com.fathzer.soft.javaluator.StaticVariableSet;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
+import org.hkijena.jipipe.api.events.ParameterChangedEvent;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
+import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.parameters.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
+import org.hkijena.jipipe.ui.JIPipeWorkbench;
+import org.hkijena.jipipe.utils.ResourceUtils;
+import org.hkijena.jipipe.utils.UIUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -91,5 +96,13 @@ public class FilterTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeParameter("filters")
     public void setFilters(DefaultExpressionParameter filters) {
         this.filters = filters;
+    }
+
+    @JIPipeDocumentation(name = "Load example", description = "Loads example parameters that showcase how to use this algorithm.")
+    @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/graduation-cap.png")
+    public void setToExample(JIPipeWorkbench parent) {
+        if (UIUtils.confirmResetParameters(parent, "Load example")) {
+            setFilters(new DefaultExpressionParameter("Area > 1000 AND Circulary >= 0.6"));
+        }
     }
 }

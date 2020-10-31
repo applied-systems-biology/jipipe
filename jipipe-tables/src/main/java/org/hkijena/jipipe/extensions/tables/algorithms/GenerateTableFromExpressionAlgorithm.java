@@ -18,18 +18,24 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.events.ParameterChangedEvent;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
+import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.extensions.parameters.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.expressions.TableCellExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.parameters.pairs.PairParameterSettings;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.extensions.tables.parameters.collections.ExpressionTableColumnGeneratorProcessorParameterList;
 import org.hkijena.jipipe.extensions.tables.parameters.processors.ExpressionTableColumnGeneratorProcessor;
+import org.hkijena.jipipe.ui.JIPipeWorkbench;
+import org.hkijena.jipipe.utils.ResourceUtils;
+import org.hkijena.jipipe.utils.UIUtils;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -122,5 +128,20 @@ public class GenerateTableFromExpressionAlgorithm extends JIPipeSimpleIteratingA
             return false;
         this.generatedRows = generatedRows;
         return true;
+    }
+
+    @JIPipeDocumentation(name = "Load example", description = "Loads example parameters that showcase how to use this algorithm.")
+    @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/graduation-cap.png")
+    public void setToExample(JIPipeWorkbench parent) {
+        if (UIUtils.confirmResetParameters(parent, "Load example")) {
+             columns.clear();
+            ExpressionTableColumnGeneratorProcessor columnX = columns.addNewInstance();
+            columnX.setKey(new DefaultExpressionParameter("row / 100"));
+            columnX.setValue("x");
+            ExpressionTableColumnGeneratorProcessor columnY = columns.addNewInstance();
+            columnY.setKey(new DefaultExpressionParameter("SIN(row / 100)"));
+            columnY.setValue("y");
+            getEventBus().post(new ParameterChangedEvent(this, "columns"));
+        }
     }
 }

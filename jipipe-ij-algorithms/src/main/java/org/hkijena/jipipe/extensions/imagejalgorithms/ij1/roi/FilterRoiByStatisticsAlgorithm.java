@@ -23,6 +23,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
+import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
@@ -31,6 +32,9 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.MeasurementExp
 import org.hkijena.jipipe.extensions.parameters.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameterSettings;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
+import org.hkijena.jipipe.ui.JIPipeWorkbench;
+import org.hkijena.jipipe.utils.ResourceUtils;
+import org.hkijena.jipipe.utils.UIUtils;
 
 import java.util.Map;
 import java.util.function.Consumer;
@@ -138,5 +142,13 @@ public class FilterRoiByStatisticsAlgorithm extends ImageRoiProcessorAlgorithm {
     @JIPipeParameter("measurements")
     public void setMeasurements(ImageStatisticsSetParameter measurements) {
         this.measurements = measurements;
+    }
+
+    @JIPipeDocumentation(name = "Load example", description = "Loads example parameters that showcase how to use this algorithm.")
+    @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/graduation-cap.png")
+    public void setToExample(JIPipeWorkbench parent) {
+        if (UIUtils.confirmResetParameters(parent, "Load example")) {
+            setFilters(new DefaultExpressionParameter("Area > 100 AND Circ. >= 0.6"));
+        }
     }
 }

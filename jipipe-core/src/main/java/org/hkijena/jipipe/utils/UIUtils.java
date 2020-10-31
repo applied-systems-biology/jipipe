@@ -893,4 +893,12 @@ public class UIUtils {
             IJ.handleException(e);
         }
     }
+
+    public static boolean confirmResetParameters(JIPipeWorkbench parent, String title) {
+        return JOptionPane.showConfirmDialog(parent.getWindow(),
+                "This will reset most of the properties. Continue?",
+                title,
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION;
+    }
 }

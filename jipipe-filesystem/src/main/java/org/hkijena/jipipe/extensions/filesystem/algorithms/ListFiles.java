@@ -16,12 +16,14 @@ package org.hkijena.jipipe.extensions.filesystem.algorithms;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
+import org.hkijena.jipipe.api.events.ParameterChangedEvent;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.FileSystemNodeTypeCategory;
+import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FileData;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FolderData;
@@ -29,8 +31,10 @@ import org.hkijena.jipipe.extensions.parameters.expressions.DefaultExpressionPar
 import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.expressions.variables.PathFilterExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
+import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.StringUtils;
+import org.hkijena.jipipe.utils.UIUtils;
 
 import java.io.IOException;
 import java.nio.file.FileVisitOption;
@@ -157,5 +161,13 @@ public class ListFiles extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeParameter("recursive-follows-links")
     public void setRecursiveFollowsLinks(boolean recursiveFollowsLinks) {
         this.recursiveFollowsLinks = recursiveFollowsLinks;
+    }
+
+    @JIPipeDocumentation(name = "Filter only *.tif", description = "Sets the filter, so only *.tif files are returned.")
+    @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/graduation-cap.png")
+    public void setToExample(JIPipeWorkbench parent) {
+        if (UIUtils.confirmResetParameters(parent, "Load example")) {
+            setFilters(new DefaultExpressionParameter("STRING_MATCHES_GLOB(name, \"*.tif\")"));
+        }
     }
 }

@@ -19,17 +19,22 @@ import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.events.ParameterChangedEvent;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.AnnotationsNodeTypeCategory;
+import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.parameters.expressions.AnnotationGeneratorExpression;
 import org.hkijena.jipipe.extensions.parameters.expressions.NamedAnnotationGeneratorExpression;
 import org.hkijena.jipipe.extensions.parameters.pairs.PairParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
+import org.hkijena.jipipe.ui.JIPipeWorkbench;
+import org.hkijena.jipipe.utils.ResourceUtils;
+import org.hkijena.jipipe.utils.UIUtils;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -91,7 +96,6 @@ public class AnnotateByExpression extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeParameter("generated-annotation")
     public void setAnnotations(NamedAnnotationGeneratorExpression.List annotations) {
         this.annotations = annotations;
-
     }
 
     @JIPipeDocumentation(name = "Merge same annotation values", description = "Determines which strategy is applied if an annotation already exists.")
@@ -103,5 +107,17 @@ public class AnnotateByExpression extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeParameter("annotation-merge-strategy")
     public void setAnnotationMergeStrategy(JIPipeAnnotationMergeStrategy annotationMergeStrategy) {
         this.annotationMergeStrategy = annotationMergeStrategy;
+    }
+
+    @JIPipeDocumentation(name = "Load example", description = "Loads example parameters that showcase how to use this algorithm.")
+    @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/graduation-cap.png")
+    public void setToExample(JIPipeWorkbench parent) {
+        if (UIUtils.confirmResetParameters(parent, "Load example")) {
+            annotations.clear();
+            NamedAnnotationGeneratorExpression expression = annotations.addNewInstance();
+            expression.setKey(new AnnotationGeneratorExpression("\"My value\""));
+            expression.setValue("My annotation");
+            getEventBus().post(new ParameterChangedEvent(this, "generated-annotation"));
+        }
     }
 }
