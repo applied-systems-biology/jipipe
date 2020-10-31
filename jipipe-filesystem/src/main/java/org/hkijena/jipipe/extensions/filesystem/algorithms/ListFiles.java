@@ -168,6 +168,7 @@ public class ListFiles extends JIPipeSimpleIteratingAlgorithm {
     public void setToExample(JIPipeWorkbench parent) {
         if (UIUtils.confirmResetParameters(parent, "Load example")) {
             setFilters(new DefaultExpressionParameter("STRING_MATCHES_GLOB(name, \"*.tif\")"));
+            getEventBus().post(new ParameterChangedEvent(this, "filters"));
         }
     }
 }

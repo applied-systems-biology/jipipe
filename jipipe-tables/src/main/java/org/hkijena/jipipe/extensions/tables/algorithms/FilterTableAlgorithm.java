@@ -103,6 +103,7 @@ public class FilterTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     public void setToExample(JIPipeWorkbench parent) {
         if (UIUtils.confirmResetParameters(parent, "Load example")) {
             setFilters(new DefaultExpressionParameter("Area > 1000 AND Circulary >= 0.6"));
+            getEventBus().post(new ParameterChangedEvent(this, "filters"));
         }
     }
 }
