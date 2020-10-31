@@ -583,3 +583,7 @@ New landing page
 .examples .downloads a {
   margin: 0.25rem;
 }
+
+code {
+  background-color: #e3dfe7;
+}

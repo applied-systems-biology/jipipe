@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2020-10-30T23:08:28 CET">
+<meta name="revised" content="2020-10-31T22:45:03 CET">
 <title>Expression parameters :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../images/favicon.png" type="image/x-icon" />
 <link href="../../css/font-awesome.min.css" rel="stylesheet">
@@ -602,8 +602,8 @@ Textual operators require spaces to be separated. For example you cannot write <
 <td><code>x ^ y</code></td>
 </tr>
 <tr>
-<td>Numeric subtraction</td>
-<td>Subtracts right from left</td>
+<td>Numeric subtraction / Array removal</td>
+<td>Subtracts right from left (Numbers). If the operands are arrays, the right items are removed from the left array</td>
 <td><code>x - y</code></td>
 </tr>
 <tr>
@@ -612,8 +612,8 @@ Textual operators require spaces to be separated. For example you cannot write <
 <td><code>x * y</code></td>
 </tr>
 <tr>
-<td>Numeric addition / String concatenation</td>
-<td>Adds two numbers. Concatenates if the operands are strings.</td>
+<td>Numeric addition / String concatenation / Array concatentation</td>
+<td>Adds two numbers. Concatenates if the operands are strings. Merges two arrays</td>
 <td><code>x + y</code></td>
 </tr>
 <tr>
@@ -670,6 +670,11 @@ Textual operators require spaces to be separated. For example you cannot write <
 <td>Resolve variable</td>
 <td>Returns the value of the variable with name. Useful for variables that have spaces in their names or special characters.</td>
 <td><code>$ x</code></td>
+</tr>
+<tr>
+<td>Get item in array</td>
+<td>Returns the array item(s) or string characters of the left operands. The right-hand side can be a number (the index starting from 0) or an array of indices.</td>
+<td><code>x @ y</code></td>
 </tr>
 </tbody>
 </table>
@@ -881,7 +886,7 @@ Textual operators require spaces to be separated. For example you cannot write <
 <td></td>
 <td></td>
 <td></td>
-<td></td>
+<td>Array access (x @ y)</td>
 <td>Variable resolve ($ x)</td>
 </tr>
 </tbody>
@@ -895,6 +900,7 @@ Textual operators require spaces to be separated. For example you cannot write <
 <th>Number</th>
 <th>Boolean</th>
 <th>String</th>
+<th>Array</th>
 </tr>
 </thead>
 <tbody>
@@ -903,11 +909,13 @@ Textual operators require spaces to be separated. For example you cannot write <
 <td>Error</td>
 <td>OK</td>
 <td>Error</td>
+<td>Error</td>
 </tr>
 <tr>
 <td>NOT</td>
 <td>Error</td>
 <td>OK</td>
+<td>Error</td>
 <td>Error</td>
 </tr>
 <tr>
@@ -915,11 +923,13 @@ Textual operators require spaces to be separated. For example you cannot write <
 <td>Error</td>
 <td>OK</td>
 <td>Error</td>
+<td>Error</td>
 </tr>
 <tr>
 <td>XOR</td>
 <td>Error</td>
 <td>OK</td>
+<td>Error</td>
 <td>Error</td>
 </tr>
 <tr>
@@ -927,47 +937,55 @@ Textual operators require spaces to be separated. For example you cannot write <
 <td>OK</td>
 <td>OK (TRUE=1, FALSE=0)</td>
 <td>Works (If can be converted to number)</td>
+<td>Error</td>
 </tr>
 <tr>
 <td>Multiply (x * y)</td>
 <td>OK</td>
 <td>OK (TRUE=1, FALSE=0)</td>
 <td>Works (If can be converted to number)</td>
+<td>Error</td>
 </tr>
 <tr>
 <td>Modulo (x % y)</td>
 <td>OK</td>
 <td>OK (TRUE=1, FALSE=0)</td>
 <td>Works (If can be converted to number)</td>
+<td>Error</td>
 </tr>
 <tr>
 <td>Subtract (x - y)</td>
 <td>OK</td>
 <td>OK (TRUE=1, FALSE=0)</td>
 <td>Works (If can be converted to number)</td>
+<td>OK (both operands are arrays)</td>
 </tr>
 <tr>
 <td>Addition (x + y)</td>
 <td>OK</td>
 <td>OK (TRUE=1, FALSE=0)</td>
 <td>OK (Conversion to strings, string concatenation)</td>
+<td>OK (both operands are arrays)</td>
 </tr>
 <tr>
 <td>Equality (x == y)</td>
 <td>OK</td>
 <td>OK</td>
 <td>OK (If types differ, conversion to strings)</td>
+<td>OK</td>
 </tr>
 <tr>
 <td>Inequality (x != y)</td>
 <td>OK</td>
 <td>OK</td>
 <td>OK</td>
+<td>OK</td>
 </tr>
 <tr>
-<td>String contains (x IN y / x CONTAINS y)</td>
+<td>Contains (x IN y / x CONTAINS y)</td>
 <td>Error</td>
 <td>Error</td>
+<td>OK</td>
 <td>OK</td>
 </tr>
 <tr>
@@ -975,11 +993,13 @@ Textual operators require spaces to be separated. For example you cannot write <
 <td>OK</td>
 <td>OK (TRUE=1, FALSE=0)</td>
 <td>Error</td>
+<td>Error</td>
 </tr>
 <tr>
 <td>Less than or equal (x &lt;= y)</td>
 <td>OK</td>
 <td>OK (TRUE=1, FALSE=0)</td>
+<td>Error</td>
 <td>Error</td>
 </tr>
 <tr>
@@ -987,11 +1007,13 @@ Textual operators require spaces to be separated. For example you cannot write <
 <td>OK</td>
 <td>OK (TRUE=1, FALSE=0)</td>
 <td>Error</td>
+<td>Error</td>
 </tr>
 <tr>
 <td>Greater than or equal (x &gt;= y)</td>
 <td>OK</td>
 <td>OK (TRUE=1, FALSE=0)</td>
+<td>Error</td>
 <td>Error</td>
 </tr>
 <tr>
@@ -999,11 +1021,20 @@ Textual operators require spaces to be separated. For example you cannot write <
 <td>Works (Converted to string)</td>
 <td>Works (Converted to string)</td>
 <td>OK</td>
+<td>Error</td>
 </tr>
 <tr>
 <td>Variable resolve ($ x)</td>
 <td>Works (Converted to string)</td>
 <td>Works (Converted to string)</td>
+<td>OK</td>
+<td>Error</td>
+</tr>
+<tr>
+<td>Get item in array (x @ y)</td>
+<td>Error</td>
+<td>Error</td>
+<td>Error</td>
 <td>OK</td>
 </tr>
 </tbody>
