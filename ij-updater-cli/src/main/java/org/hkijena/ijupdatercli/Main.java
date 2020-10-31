@@ -144,7 +144,7 @@ public class Main {
         StringBuilder current = new StringBuilder();
         boolean isQuote = false;
         for (int i = 0; i < joined.length(); i++) {
-            char c = current.charAt(i);
+            char c = joined.charAt(i);
             if(c == '"') {
                 isQuote = !isQuote;
                 continue;
