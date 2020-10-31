@@ -157,6 +157,8 @@ public class Main {
                 current.append(c);
             }
         }
+        if(current.length() > 0)
+            result.add(current.toString());
         return result;
     }
 
