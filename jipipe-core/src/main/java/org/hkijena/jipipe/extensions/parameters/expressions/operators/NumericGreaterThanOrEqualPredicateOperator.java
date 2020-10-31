@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.extensions.parameters.expressions.operators;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.extensions.parameters.expressions.ParameterInfo;
 
 @JIPipeDocumentation(name = "Greater than or equal", description = "Returns TRUE if the left operand is greater than or equal to the right operand")
 public class NumericGreaterThanOrEqualPredicateOperator extends NumericPredicateOperator {
@@ -24,5 +25,17 @@ public class NumericGreaterThanOrEqualPredicateOperator extends NumericPredicate
     @Override
     public boolean evaluate(double left, double right) {
         return left >= right;
+    }
+
+    @Override
+    public ParameterInfo getParameterInfo(int index) {
+        switch (index) {
+            case 0:
+                return new ParameterInfo("value1", "", Number.class);
+            case 1:
+                return new ParameterInfo("value2", "", Number.class);
+            default:
+                return null;
+        }
     }
 }

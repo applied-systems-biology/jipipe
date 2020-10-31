@@ -3,6 +3,7 @@ package org.hkijena.jipipe.extensions.parameters.expressions.functions;
 import com.fathzer.soft.javaluator.StaticVariableSet;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionFunction;
+import org.hkijena.jipipe.extensions.parameters.expressions.ParameterInfo;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,6 +16,18 @@ public class StringJoinFunction extends ExpressionFunction {
 
     public StringJoinFunction() {
         super("JOIN_STRING", 1, 2);
+    }
+
+    @Override
+    public ParameterInfo getParameterInfo(int index) {
+        switch (index) {
+            case 0:
+                return new ParameterInfo("array", "The array of strings", Collection.class);
+            case 1:
+                return new ParameterInfo("delimiter", "The delimiter that is put in between the strings", String.class);
+            default:
+                return null;
+        }
     }
 
     @Override

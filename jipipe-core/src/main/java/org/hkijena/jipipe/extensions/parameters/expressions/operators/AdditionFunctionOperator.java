@@ -14,12 +14,13 @@
 package org.hkijena.jipipe.extensions.parameters.expressions.operators;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.extensions.parameters.expressions.ParameterInfo;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-@JIPipeDocumentation(name = "Addition", description = "Adds two numbers together or concatenates two strings.")
+@JIPipeDocumentation(name = "Addition", description = "Adds two numbers together, concatenates two strings, or concatenates two arrays.")
 public class AdditionFunctionOperator extends GenericOperator {
     public AdditionFunctionOperator() {
         super("+", 6);
@@ -41,5 +42,17 @@ public class AdditionFunctionOperator extends GenericOperator {
     @Override
     public Object evaluate(String left, String right) {
         return left + right;
+    }
+
+    @Override
+    public ParameterInfo getParameterInfo(int index) {
+        switch (index) {
+            case 0:
+                return new ParameterInfo("value1", "", String.class, Number.class, Collection.class);
+            case 1:
+                return new ParameterInfo("value2", "", String.class, Number.class, Collection.class);
+            default:
+                return null;
+        }
     }
 }

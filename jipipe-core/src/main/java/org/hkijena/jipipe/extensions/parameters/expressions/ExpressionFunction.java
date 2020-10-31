@@ -39,6 +39,15 @@ public abstract class ExpressionFunction extends Function {
     public abstract Object evaluate(List<Object> parameters, StaticVariableSet<Object> variables);
 
     /**
+     * Returns info about the parameter at index
+     * @param index the parameter index
+     * @return the info
+     */
+    public ParameterInfo getParameterInfo(int index) {
+        return new ParameterInfo("x" + (index + 1), "");
+    }
+
+    /**
      * Returns a template function that can be used to get users started
      * @return the template
      */

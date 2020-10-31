@@ -15,6 +15,7 @@ package org.hkijena.jipipe.extensions.parameters.expressions.functions;
 
 import com.fathzer.soft.javaluator.StaticVariableSet;
 import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionFunction;
+import org.hkijena.jipipe.extensions.parameters.expressions.ParameterInfo;
 import org.hkijena.jipipe.extensions.tables.ColumnOperation;
 import org.hkijena.jipipe.extensions.tables.IntegratingColumnOperation;
 import org.hkijena.jipipe.extensions.tables.datatypes.DoubleArrayTableColumn;
@@ -41,6 +42,16 @@ public class ColumnOperationAdapterFunction extends ExpressionFunction {
 
     public ColumnOperation getColumnOperation() {
         return columnOperation;
+    }
+
+    /**
+     * Returns info about the parameter at index
+     * @param index the parameter index
+     * @return the info
+     */
+    @Override
+    public ParameterInfo getParameterInfo(int index) {
+        return new ParameterInfo("x" + (index + 1), "", String.class, Number.class);
     }
 
     @Override

@@ -3,6 +3,7 @@ package org.hkijena.jipipe.extensions.parameters.expressions.functions;
 import com.fathzer.soft.javaluator.StaticVariableSet;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionFunction;
+import org.hkijena.jipipe.extensions.parameters.expressions.ParameterInfo;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -15,6 +16,14 @@ public class SortAscendingArrayFunction extends ExpressionFunction {
 
     public SortAscendingArrayFunction() {
         super("SORT_ASCENDING", 1);
+    }
+
+    @Override
+    public ParameterInfo getParameterInfo(int index) {
+        if (index == 0) {
+            return new ParameterInfo("array", "The array", Collection.class);
+        }
+        return null;
     }
 
     @Override

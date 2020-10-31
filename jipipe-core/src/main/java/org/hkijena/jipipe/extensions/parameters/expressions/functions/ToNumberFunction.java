@@ -17,6 +17,7 @@ import com.fathzer.soft.javaluator.StaticVariableSet;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionFunction;
+import org.hkijena.jipipe.extensions.parameters.expressions.ParameterInfo;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -31,11 +32,19 @@ public class ToNumberFunction extends ExpressionFunction {
     }
 
     @Override
+    public ParameterInfo getParameterInfo(int index) {
+        if (index == 0) {
+            return new ParameterInfo("value", "The value to convert");
+        }
+        return null;
+    }
+
+    @Override
     public Object evaluate(List<Object> parameters, StaticVariableSet<Object> variables) {
         Object value = parameters.get(0);
         if(value instanceof Collection) {
             List<Object> result = new ArrayList<>();
-            for (Object item : ((Collection) value)) {
+            for (Object item : ((Collection<?>) value)) {
                 result.add(convert(item));
             }
             return result;

@@ -16,7 +16,9 @@ package org.hkijena.jipipe.extensions.parameters.expressions.functions;
 import com.fathzer.soft.javaluator.StaticVariableSet;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionFunction;
+import org.hkijena.jipipe.extensions.parameters.expressions.ParameterInfo;
 
+import java.util.Collection;
 import java.util.List;
 
 @JIPipeDocumentation(name = "Get variable", description = "Returns the variable for given string. Useful if you have variables with spaces or that are equal to operators.")
@@ -24,6 +26,14 @@ public class GetVariableFunction extends ExpressionFunction {
 
     public GetVariableFunction() {
         super("GET_VARIABLE", 1);
+    }
+
+    @Override
+    public ParameterInfo getParameterInfo(int index) {
+        if (index == 0) {
+            return new ParameterInfo("name", "The variable name", String.class);
+        }
+        return null;
     }
 
     @Override

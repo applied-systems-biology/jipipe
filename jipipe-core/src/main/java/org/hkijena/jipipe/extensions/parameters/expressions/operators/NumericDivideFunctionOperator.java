@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.extensions.parameters.expressions.operators;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.extensions.parameters.expressions.ParameterInfo;
 
 @JIPipeDocumentation(name = "Divide", description = "Divides the left operand by the right operand")
 public class NumericDivideFunctionOperator extends NumericFunctionOperator {
@@ -24,5 +25,17 @@ public class NumericDivideFunctionOperator extends NumericFunctionOperator {
     @Override
     public double evaluate(double left, double right) {
         return left / right;
+    }
+
+    @Override
+    public ParameterInfo getParameterInfo(int index) {
+        switch (index) {
+            case 0:
+                return new ParameterInfo("dividend", "", Number.class);
+            case 1:
+                return new ParameterInfo("divisor", "", Number.class);
+            default:
+                return null;
+        }
     }
 }

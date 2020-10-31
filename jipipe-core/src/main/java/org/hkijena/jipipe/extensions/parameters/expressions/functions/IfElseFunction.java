@@ -3,6 +3,7 @@ package org.hkijena.jipipe.extensions.parameters.expressions.functions;
 import com.fathzer.soft.javaluator.StaticVariableSet;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionFunction;
+import org.hkijena.jipipe.extensions.parameters.expressions.ParameterInfo;
 
 import java.util.List;
 
@@ -11,6 +12,20 @@ public class IfElseFunction extends ExpressionFunction {
 
     public IfElseFunction() {
         super("IF_ELSE", 3);
+    }
+
+    @Override
+    public ParameterInfo getParameterInfo(int index) {
+        switch (index) {
+            case 0:
+                return new ParameterInfo("boolean", "The condition", Boolean.class);
+            case 1:
+                return new ParameterInfo("if_true", "Returned if the boolean is true");
+            case 2:
+                return new ParameterInfo("if_false", "Returned if the boolean is false");
+            default:
+                return null;
+        }
     }
 
     @Override

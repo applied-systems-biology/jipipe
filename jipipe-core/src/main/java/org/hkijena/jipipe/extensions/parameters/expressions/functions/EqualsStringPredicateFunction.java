@@ -16,6 +16,7 @@ package org.hkijena.jipipe.extensions.parameters.expressions.functions;
 import com.fathzer.soft.javaluator.StaticVariableSet;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionFunction;
+import org.hkijena.jipipe.extensions.parameters.expressions.ParameterInfo;
 
 import java.util.List;
 import java.util.Objects;
@@ -32,6 +33,18 @@ public class EqualsStringPredicateFunction extends ExpressionFunction {
         String text = "" + parameters.get(0);
         String pattern = "" + parameters.get(1);
         return Objects.equals(text, pattern);
+    }
+
+    @Override
+    public ParameterInfo getParameterInfo(int index) {
+        switch (index) {
+            case 0:
+                return new ParameterInfo("text1", "The first text", String.class);
+            case 1:
+                return new ParameterInfo("text2", "The second text", String.class);
+            default:
+                return null;
+        }
     }
 
     @Override

@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.extensions.parameters.expressions.operators;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.extensions.parameters.expressions.ParameterInfo;
 
 import java.util.*;
 
@@ -38,5 +39,17 @@ public class SubtractionFunctionOperator extends GenericOperator {
     @Override
     public Object evaluate(String left, String right) {
         return false;
+    }
+
+    @Override
+    public ParameterInfo getParameterInfo(int index) {
+        switch (index) {
+            case 0:
+                return new ParameterInfo("value1", "", Number.class, Collection.class);
+            case 1:
+                return new ParameterInfo("value2", "", Number.class, Collection.class);
+            default:
+                return null;
+        }
     }
 }

@@ -30,4 +30,20 @@ public abstract class ExpressionOperator extends Operator {
      * @return the result (should be a boolean)
      */
     public abstract Object evaluate(Iterator<Object> operands, Object evaluationContext);
+
+    /**
+     * Returns info about the parameter at index (left to right)
+     * @param index the parameter index
+     * @return the info
+     */
+    public ParameterInfo getParameterInfo(int index) {
+        switch (index) {
+            case 0:
+                return new ParameterInfo("x", "");
+            case 1:
+                return new ParameterInfo("y", "");
+            default:
+                return null;
+        }
+    }
 }

@@ -4,6 +4,7 @@ import com.fathzer.soft.javaluator.StaticVariableSet;
 import org.apache.commons.lang3.StringUtils;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionFunction;
+import org.hkijena.jipipe.extensions.parameters.expressions.ParameterInfo;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -15,6 +16,14 @@ public class InvertFunction extends ExpressionFunction {
 
     public InvertFunction() {
         super("INVERT", 1);
+    }
+
+    @Override
+    public ParameterInfo getParameterInfo(int index) {
+        if (index == 0) {
+            return new ParameterInfo("value", "The value", String.class, Collection.class, Number.class);
+        }
+        return null;
     }
 
     @Override

@@ -58,6 +58,21 @@ public class ExpressionOperatorEntry {
         return operator;
     }
 
+    public ParameterInfo getParameterInfo(int index) {
+        if(operator instanceof ExpressionOperator)
+            return ((ExpressionOperator) operator).getParameterInfo(index);
+        else {
+            switch (index) {
+                case 0:
+                    return new ParameterInfo("x", "");
+                case 1:
+                    return new ParameterInfo("y", "");
+                default:
+                    return null;
+            }
+        }
+    }
+
     public String getSignature() {
         if(operator.getOperandCount() == 2) {
             return "x " + operator.getSymbol() + " y";

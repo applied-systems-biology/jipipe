@@ -15,6 +15,7 @@ package org.hkijena.jipipe.extensions.parameters.expressions.operators;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionOperator;
+import org.hkijena.jipipe.extensions.parameters.expressions.ParameterInfo;
 
 import java.util.Iterator;
 
@@ -28,5 +29,13 @@ public class LogicalNotOperator extends ExpressionOperator {
     @Override
     public Object evaluate(Iterator<Object> operands, Object evaluationContext) {
         return !(boolean)operands.next();
+    }
+
+    @Override
+    public ParameterInfo getParameterInfo(int index) {
+        if (index == 0) {
+            return new ParameterInfo("value", "", Boolean.class);
+        }
+        return null;
     }
 }

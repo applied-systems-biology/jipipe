@@ -3,6 +3,7 @@ package org.hkijena.jipipe.extensions.parameters.expressions.functions;
 import com.fathzer.soft.javaluator.StaticVariableSet;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionFunction;
+import org.hkijena.jipipe.extensions.parameters.expressions.ParameterInfo;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +20,18 @@ public class ExtractRegexMatchesFunction extends ExpressionFunction {
     @Override
     public String getSignature() {
         return getName() + "(text, pattern)";
+    }
+
+    @Override
+    public ParameterInfo getParameterInfo(int index) {
+        switch (index) {
+            case 0:
+                return new ParameterInfo("text", "The text to search in", String.class);
+            case 1:
+                return new ParameterInfo("pattern", "The pattern to search in the text", String.class);
+            default:
+                return null;
+        }
     }
 
     @Override

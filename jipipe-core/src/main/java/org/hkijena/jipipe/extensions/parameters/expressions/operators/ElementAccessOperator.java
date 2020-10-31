@@ -3,6 +3,7 @@ package org.hkijena.jipipe.extensions.parameters.expressions.operators;
 import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionOperator;
+import org.hkijena.jipipe.extensions.parameters.expressions.ParameterInfo;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -14,6 +15,18 @@ public class ElementAccessOperator extends ExpressionOperator {
 
     public ElementAccessOperator() {
         super("@", 2, Associativity.RIGHT, 9);
+    }
+
+    @Override
+    public ParameterInfo getParameterInfo(int index) {
+        switch (index) {
+            case 0:
+                return new ParameterInfo("array", "The array", String.class, Collection.class);
+            case 1:
+                return new ParameterInfo("index", "The indices", Number.class, Collection.class);
+            default:
+                return null;
+        }
     }
 
     @Override

@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.extensions.parameters.expressions.operators;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.extensions.parameters.expressions.ParameterInfo;
 
 @JIPipeDocumentation(name = "Less than", description = "Returns TRUE if the left operand is less than the right operand")
 public class NumericLessThanPredicateOperator extends NumericPredicateOperator {
@@ -24,5 +25,17 @@ public class NumericLessThanPredicateOperator extends NumericPredicateOperator {
     @Override
     public boolean evaluate(double left, double right) {
         return left < right;
+    }
+
+    @Override
+    public ParameterInfo getParameterInfo(int index) {
+        switch (index) {
+            case 0:
+                return new ParameterInfo("value1", "", Number.class);
+            case 1:
+                return new ParameterInfo("value2", "", Number.class);
+            default:
+                return null;
+        }
     }
 }

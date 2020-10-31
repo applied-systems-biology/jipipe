@@ -3,6 +3,7 @@ package org.hkijena.jipipe.extensions.parameters.expressions.functions;
 import com.fathzer.soft.javaluator.StaticVariableSet;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionFunction;
+import org.hkijena.jipipe.extensions.parameters.expressions.ParameterInfo;
 
 import java.util.Collection;
 import java.util.List;
@@ -12,6 +13,14 @@ public class LengthFunction extends ExpressionFunction {
 
     public LengthFunction() {
         super("LENGTH", 1);
+    }
+
+    @Override
+    public ParameterInfo getParameterInfo(int index) {
+        if (index == 0) {
+            return new ParameterInfo("value", "The value", String.class, Collection.class);
+        }
+        return null;
     }
 
     @Override

@@ -16,6 +16,7 @@ package org.hkijena.jipipe.extensions.parameters.expressions.functions;
 import com.fathzer.soft.javaluator.StaticVariableSet;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionFunction;
+import org.hkijena.jipipe.extensions.parameters.expressions.ParameterInfo;
 
 import java.util.List;
 
@@ -24,6 +25,14 @@ public class VariableExistsFunction extends ExpressionFunction {
 
     public VariableExistsFunction() {
         super("IS_VARIABLE", 1);
+    }
+
+    @Override
+    public ParameterInfo getParameterInfo(int index) {
+        if (index == 0) {
+            return new ParameterInfo("name", "The variable name");
+        }
+        return null;
     }
 
     @Override

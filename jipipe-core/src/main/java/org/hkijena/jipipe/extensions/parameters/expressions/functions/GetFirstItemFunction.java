@@ -4,6 +4,7 @@ import com.fathzer.soft.javaluator.StaticVariableSet;
 import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionFunction;
+import org.hkijena.jipipe.extensions.parameters.expressions.ParameterInfo;
 
 import java.util.Collection;
 import java.util.List;
@@ -13,6 +14,16 @@ public class GetFirstItemFunction extends ExpressionFunction {
 
     public GetFirstItemFunction() {
         super("FIRST_OF", 1);
+    }
+
+    @Override
+    public ParameterInfo getParameterInfo(int index) {
+        switch (index) {
+            case 0:
+                return new ParameterInfo("array", "An array or a string", String.class, Collection.class);
+            default:
+                return null;
+        }
     }
 
     @Override

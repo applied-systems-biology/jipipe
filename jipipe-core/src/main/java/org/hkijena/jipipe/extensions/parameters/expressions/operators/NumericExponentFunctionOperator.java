@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.extensions.parameters.expressions.operators;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.extensions.parameters.expressions.ParameterInfo;
 
 @JIPipeDocumentation(name = "Power", description = "Calculates the left operand to the power of the right operand")
 public class NumericExponentFunctionOperator extends NumericFunctionOperator {
@@ -24,5 +25,17 @@ public class NumericExponentFunctionOperator extends NumericFunctionOperator {
     @Override
     public double evaluate(double left, double right) {
         return Math.pow(left, right);
+    }
+
+    @Override
+    public ParameterInfo getParameterInfo(int index) {
+        switch (index) {
+            case 0:
+                return new ParameterInfo("base", "", Number.class);
+            case 1:
+                return new ParameterInfo("exponent", "", Number.class);
+            default:
+                return null;
+        }
     }
 }

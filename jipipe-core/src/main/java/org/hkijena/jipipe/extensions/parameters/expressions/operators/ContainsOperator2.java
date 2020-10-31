@@ -15,7 +15,9 @@ package org.hkijena.jipipe.extensions.parameters.expressions.operators;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionOperator;
+import org.hkijena.jipipe.extensions.parameters.expressions.ParameterInfo;
 
+import java.util.Collection;
 import java.util.Iterator;
 
 /**
@@ -35,5 +37,17 @@ public class ContainsOperator2 extends ExpressionOperator {
         String left = "" + operands.next();
         String right = "" + operands.next();
         return left.contains(right);
+    }
+
+    @Override
+    public ParameterInfo getParameterInfo(int index) {
+        switch (index) {
+            case 0:
+                return new ParameterInfo("array", "", String.class, Collection.class);
+            case 1:
+                return new ParameterInfo("item", "");
+            default:
+                return null;
+        }
     }
 }

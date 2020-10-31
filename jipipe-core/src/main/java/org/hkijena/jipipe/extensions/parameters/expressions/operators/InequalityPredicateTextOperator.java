@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.extensions.parameters.expressions.operators;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.extensions.parameters.expressions.ParameterInfo;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -39,5 +40,17 @@ public class InequalityPredicateTextOperator extends GenericPredicateOperator {
     @Override
     public boolean evaluate(String left, String right) {
         return !Objects.equals(left, right);
+    }
+
+    @Override
+    public ParameterInfo getParameterInfo(int index) {
+        switch (index) {
+            case 0:
+                return new ParameterInfo("value1", "", Number.class, String.class, Collection.class);
+            case 1:
+                return new ParameterInfo("value2", "", Number.class, String.class, Collection.class);
+            default:
+                return null;
+        }
     }
 }

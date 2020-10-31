@@ -16,6 +16,7 @@ package org.hkijena.jipipe.extensions.parameters.expressions.functions;
 import com.fathzer.soft.javaluator.StaticVariableSet;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionFunction;
+import org.hkijena.jipipe.extensions.parameters.expressions.ParameterInfo;
 
 import java.util.List;
 
@@ -24,6 +25,18 @@ public class RegexStringPredicateFunction extends ExpressionFunction {
 
     public RegexStringPredicateFunction() {
         super("STRING_MATCHES_REGEX", 2);
+    }
+
+    @Override
+    public ParameterInfo getParameterInfo(int index) {
+        switch (index) {
+            case 0:
+                return new ParameterInfo("text", "The text to search in", String.class);
+            case 1:
+                return new ParameterInfo("pattern", "The pattern to search in the text", String.class);
+            default:
+                return null;
+        }
     }
 
     @Override

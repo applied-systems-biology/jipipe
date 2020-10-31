@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.extensions.parameters.expressions.operators;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.extensions.parameters.expressions.ParameterInfo;
 
 @JIPipeDocumentation(name = "Multiply", description = "Multiplies the left and right operands")
 public class NumericMultiplyFunctionOperator extends NumericFunctionOperator {
@@ -24,5 +25,17 @@ public class NumericMultiplyFunctionOperator extends NumericFunctionOperator {
     @Override
     public double evaluate(double left, double right) {
         return left * right;
+    }
+
+    @Override
+    public ParameterInfo getParameterInfo(int index) {
+        switch (index) {
+            case 0:
+                return new ParameterInfo("factor1", "", Number.class);
+            case 1:
+                return new ParameterInfo("factor2", "", Number.class);
+            default:
+                return null;
+        }
     }
 }

@@ -16,6 +16,7 @@ package org.hkijena.jipipe.extensions.parameters.expressions.functions;
 import com.fathzer.soft.javaluator.StaticVariableSet;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionFunction;
+import org.hkijena.jipipe.extensions.parameters.expressions.ParameterInfo;
 
 import java.util.List;
 
@@ -27,6 +28,18 @@ public class ContainsStringPredicateFunction extends ExpressionFunction {
     }
 
     @Override
+    public ParameterInfo getParameterInfo(int index) {
+        switch (index) {
+            case 0:
+                return new ParameterInfo("text", "The text to search in", String.class);
+            case 1:
+                return new ParameterInfo("pattern", "The pattern to search in the text", String.class);
+            default:
+                return null;
+        }
+    }
+
+    @Override
     public Object evaluate(List<Object> parameters, StaticVariableSet<Object> variables) {
         String text = "" + parameters.get(0);
         String pattern = "" + parameters.get(1);
@@ -35,6 +48,6 @@ public class ContainsStringPredicateFunction extends ExpressionFunction {
 
     @Override
     public String getSignature() {
-        return String.format("%s(%s, %s)", getName(), "haystack", "needle");
+        return String.format("%s(%s, %s)", getName(), "text", "pattern");
     }
 }
