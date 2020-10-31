@@ -21,6 +21,7 @@ import org.fife.ui.rsyntaxtextarea.TokenMap;
 
 import javax.swing.text.Segment;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -31,8 +32,10 @@ public class DefaultExpressionEvaluatorSyntaxTokenMaker extends AbstractTokenMak
 
     private Set<ExpressionParameterVariable> dynamicVariables;
     private Set<String> operators;
+    private final List<String> knownNonAlphanumericOperatorTokens;
 
     public DefaultExpressionEvaluatorSyntaxTokenMaker() {
+        knownNonAlphanumericOperatorTokens = DefaultExpressionParameter.EVALUATOR.getKnownNonAlphanumericOperatorTokens();
     }
 
     @Override
@@ -59,9 +62,9 @@ public class DefaultExpressionEvaluatorSyntaxTokenMaker extends AbstractTokenMak
 
         String expression = text.toString();
 
-        StringBuilder builder = new StringBuilder();
-        int builderStart = 0;
-        boolean isQuote = false;
+        StringBuilder buffer = new StringBuilder();
+        int bufferStart = 0;
+        boolean isQuoted = false;
         boolean isEscape = false;
         for (int index = 0; index < expression.length(); index++) {
             char c = expression.charAt(index);
@@ -70,41 +73,70 @@ public class DefaultExpressionEvaluatorSyntaxTokenMaker extends AbstractTokenMak
             }
             if(c == '"') {
                 if(!isEscape) {
-                    isQuote = !isQuote;
-                    if(!isQuote) {
+                    isQuoted = !isQuoted;
+                    if(!isQuoted) {
                         // Flush the builder
-                        builder.append(c);
-                        addTokenFromBuilder(text, builder.toString(), builderStart, offset, newStartOffset + offset);
-                        builderStart = index + 1;
-                        builder.setLength(0);
+                        buffer.append(c);
+                        addToken(text, buffer.toString(), bufferStart, offset, newStartOffset + offset);
+                        bufferStart = index + 1;
+                        buffer.setLength(0);
                         continue;
                     }
                 }
             }
-            if(!isQuote && (c == ' ' || c == '\t' || c == '\r' || c == '\n')) {
-                addTokenFromBuilder(text, builder.toString(), builderStart, offset, newStartOffset + offset);
-                builder.setLength(0);
-                builderStart = index + 1;
+            if(!isQuoted && (c == ' ' || c == '\t' || c == '\r' || c == '\n')) {
+                addToken(text, buffer.toString(), bufferStart, offset, newStartOffset + offset);
+                buffer.setLength(0);
+                bufferStart = index + 1;
                 addToken(text, index + offset, index + offset, Token.WHITESPACE, newStartOffset + index + offset);
                 continue;
             }
-            if(c == '(' || c == ')') {
-                addTokenFromBuilder(text, builder.toString(), builderStart, offset, newStartOffset);
-                builder.setLength(0);
-                builderStart = index + 1;
+            if(!isQuoted && (c == '(' || c == ')')) {
+                addToken(text, buffer.toString(), bufferStart, offset, newStartOffset);
+                buffer.setLength(0);
+                bufferStart = index + 1;
                 addToken(text, index + offset, index + offset, Token.SEPARATOR, newStartOffset + index + offset);
                 continue;
             }
-            builder.append(c);
-            if(!isQuote && operators.contains(builder.toString())) {
-                // Builder is operator
-                addTokenFromBuilder(text, builder.toString(), builderStart, offset, newStartOffset);
-                builder.setLength(0);
-                builderStart = index + 1;
+            buffer.append(c);
+//            if(!isQuote && operators.contains(builder.toString())) {
+//                // Builder is operator
+//                addTokenFromBuilder(text, builder.toString(), builderStart, offset, newStartOffset);
+//                builder.setLength(0);
+//                builderStart = index + 1;
+//            }
+            if(!isQuoted && buffer.length() > 0) {
+                String s1 = buffer.toString();
+                if(index != expression.length() - 1) {
+                    // Workaround <= >=
+                    if(s1.endsWith("<") || s1.endsWith(">")) {
+                        char next = expression.charAt(index + 1);
+                        if(next == '=')
+                            continue;
+                    }
+                    // Workaround !=
+                    if(s1.endsWith("!")) {
+                        char next = expression.charAt(index + 1);
+                        if(next == '=')
+                            continue;
+                    }
+                }
+                for (String s : knownNonAlphanumericOperatorTokens) {
+                    int i1 = s1.indexOf(s);
+                    if(i1 != -1) {
+                        if(i1 > 0) {
+                            addToken(text, s1.substring(0, i1), bufferStart, offset, newStartOffset);
+                        }
+                        addToken(text, s, bufferStart + i1, offset, newStartOffset);
+                        buffer.setLength(0);
+                        bufferStart = index + 1;
+                        break;
+                    }
+                }
             }
         }
-        if(builder.length() > 0) {
-            addTokenFromBuilder(text, builder.toString(), builderStart, offset, newStartOffset);
+        if(buffer.length() > 0) {
+            addToken(text, buffer.toString(), bufferStart, offset, newStartOffset);
         }
         if(firstToken == null) {
             addToken(text, 0, text.count, Token.NULL, newStartOffset);
@@ -112,7 +144,8 @@ public class DefaultExpressionEvaluatorSyntaxTokenMaker extends AbstractTokenMak
         return firstToken;
     }
 
-    private void addTokenFromBuilder(Segment segment, String text, int index, int offset, int startOffset) {
+    private void addToken(Segment segment, String text, int index, int offset, int startOffset) {
+//        System.out.println("Add " + text + " @ " + index + ":" + (index + text.length()));
         if(text.isEmpty())
             return;
         int tokenType = getWordsToHighlight().get(segment, index + offset, index + offset + text.length() - 1);

@@ -303,4 +303,8 @@ public class DefaultExpressionEvaluator extends ExpressionEvaluator {
             return variable;
         }
     }
+
+    public List<String> getKnownNonAlphanumericOperatorTokens() {
+        return knownNonAlphanumericOperatorTokens;
+    }
 }
