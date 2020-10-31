@@ -100,7 +100,6 @@ Section "Common files (Required)" SEC01
   inetc::get "https://maven.scijava.org/service/local/repositories/central/content/com/vladsch/flexmark/flexmark-ext-autolink/0.62.2/flexmark-ext-autolink-0.62.2.jar" "$INSTDIR\Fiji.app\jars\flexmark-ext-autolink-0.62.2.jar"
   inetc::get "https://maven.scijava.org/service/local/repositories/central/content/com/vladsch/flexmark/flexmark/0.62.2/flexmark-0.62.2.jar" "$INSTDIR\Fiji.app\jars\flexmark-0.62.2.jar"
   inetc::get "https://maven.scijava.org/service/local/repositories/central/content/com/vladsch/flexmark/flexmark-ext-tables/0.62.2/flexmark-ext-tables-0.62.2.jar" "$INSTDIR\Fiji.app\jars\flexmark-ext-tables-0.62.2.jar"
-  inetc::get "https://maven.scijava.org/service/local/repositories/releases/content/sc/fiji/imagescience/3.0.0/imagescience-3.0.0.jar" "$INSTDIR\Fiji.app\jars\imagescience-3.0.0.jar"
   inetc::get "https://maven.scijava.org/service/local/repositories/releases/content/sc/fiji/Image_5D/2.0.2/Image_5D-2.0.2.jar" "$INSTDIR\Fiji.app\jars\Image_5D-2.0.2.jar"
   inetc::get "https://maven.scijava.org/service/local/repositories/sonatype/content/com/fasterxml/jackson/core/jackson-databind/2.11.0/jackson-databind-2.11.0.jar" "$INSTDIR\Fiji.app\jars\jackson-databind-2.11.0.jar"
   inetc::get "https://maven.scijava.org/service/local/repositories/sonatype/content/com/fasterxml/jackson/core/jackson-core/2.11.0/jackson-core-2.11.0.jar" "$INSTDIR\Fiji.app\jars\jackson-core-2.11.0.jar"
