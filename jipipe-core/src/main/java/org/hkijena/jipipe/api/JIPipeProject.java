@@ -42,6 +42,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeMutableSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.events.CompartmentRemovedEvent;
+import org.hkijena.jipipe.api.events.CompartmentRenamedEvent;
 import org.hkijena.jipipe.api.events.GraphChangedEvent;
 import org.hkijena.jipipe.api.events.WorkDirectoryChangedEvent;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
@@ -51,6 +52,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphEdge;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.ui.components.MarkdownDocument;
+import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphCompartmentUI;
 import org.hkijena.jipipe.utils.JsonUtils;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -344,6 +346,7 @@ public class JIPipeProject implements JIPipeValidatable {
         for (Map.Entry<String, String> entry : compartmentRenames.entrySet()) {
             Set<JIPipeGraphNode> nodes = graph.getNodes().values().stream().filter(node -> Objects.equals(node.getCompartment(), entry.getKey())).collect(Collectors.toSet());
             compartmentNodes.put(entry.getKey(), nodes);
+            eventBus.post(new CompartmentRenamedEvent((JIPipeProjectCompartment) compartmentGraph.getNodes().get(entry.getValue())));
         }
         for (Map.Entry<String, Set<JIPipeGraphNode>> entry : compartmentNodes.entrySet()) {
             String newCompartment = compartmentRenames.get(entry.getKey());

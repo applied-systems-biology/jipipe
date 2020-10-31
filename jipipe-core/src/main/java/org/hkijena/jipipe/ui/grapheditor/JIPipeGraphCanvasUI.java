@@ -21,7 +21,10 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.JIPipeProject;
+import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
+import org.hkijena.jipipe.api.events.CompartmentRenamedEvent;
 import org.hkijena.jipipe.api.events.GraphChangedEvent;
 import org.hkijena.jipipe.api.events.NodeConnectedEvent;
 import org.hkijena.jipipe.api.history.JIPipeGraphHistory;
@@ -31,6 +34,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphEdge;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
 import org.hkijena.jipipe.extensions.settings.GraphEditorUISettings;
+import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.ZoomViewPort;
@@ -83,7 +87,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
     private final BiMap<JIPipeGraphNode, JIPipeNodeUI> nodeUIs = HashBiMap.create();
     private final Set<JIPipeNodeUI> selection = new HashSet<>();
     private final EventBus eventBus = new EventBus();
-    private final String compartment;
+    private String compartment;
     private final JIPipeGraphHistory graphHistory = new JIPipeGraphHistory();
     private boolean layoutHelperEnabled;
     private JIPipeGraphViewMode viewMode = GraphEditorUISettings.getInstance().getDefaultViewMode();
@@ -122,6 +126,23 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
         addNewNodes();
         graph.getEventBus().register(this);
         initializeHotkeys();
+
+        // If there is a project, listen to compartment renames
+        if(workbench instanceof JIPipeProjectWorkbench) {
+            JIPipeProject project = ((JIPipeProjectWorkbench) workbench).getProject();
+            JIPipeProjectCompartment compartmentInstance = project.getCompartments().get(compartment);
+            if(compartmentInstance != null) {
+                project.getEventBus().register(new Object() {
+                    @Subscribe
+                    public void onCompartmentRenamed(CompartmentRenamedEvent event) {
+                        if(event.getCompartment() == compartmentInstance) {
+                            JIPipeGraphCanvasUI.this.compartment = event.getCompartment().getProjectCompartmentId();
+                            JIPipeGraphCanvasUI.this.fullRedraw();
+                        }
+                    }
+                });
+            }
+        }
     }
 
     private void initializeHotkeys() {
