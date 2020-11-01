@@ -86,9 +86,9 @@ public class RecentProjectListCellRenderer extends JPanel implements ListCellRen
         }
 
         if (isSelected) {
-            setBackground(new Color(184, 207, 229));
+            setBackground(UIManager.getColor("List.selectionBackground"));
         } else {
-            setBackground(new Color(255, 255, 255));
+            setBackground(UIManager.getColor("List.background"));
         }
         return this;
     }

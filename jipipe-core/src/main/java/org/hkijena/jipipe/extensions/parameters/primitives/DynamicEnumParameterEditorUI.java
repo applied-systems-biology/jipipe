@@ -104,9 +104,9 @@ public class DynamicEnumParameterEditorUI extends JIPipeParameterEditorUI {
             setText(parameter.renderLabel(value));
             setToolTipText(parameter.renderTooltip(value));
             if (isSelected || cellHasFocus) {
-                setBackground(new Color(184, 207, 229));
+                setBackground(UIManager.getColor("List.selectionBackground"));
             } else {
-                setBackground(new Color(255, 255, 255));
+                setBackground(UIManager.getColor("List.background"));
             }
             return this;
         }

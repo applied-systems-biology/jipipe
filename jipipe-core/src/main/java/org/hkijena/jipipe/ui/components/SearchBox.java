@@ -68,7 +68,7 @@ public class SearchBox<T> extends JPanel {
 
     private void initialize() {
         setLayout(new BorderLayout());
-        setBackground(Color.WHITE);
+        setBackground(UIManager.getColor("TextField.background"));
         setBorder(BorderFactory.createEtchedBorder());
 
         comboBox.setEditable(true);

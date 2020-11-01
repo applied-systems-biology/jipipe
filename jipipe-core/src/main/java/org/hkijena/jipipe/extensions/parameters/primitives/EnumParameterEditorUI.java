@@ -98,9 +98,9 @@ public class EnumParameterEditorUI extends JIPipeParameterEditorUI {
             setText(info.getLabel(value));
             setToolTipText(info.getTooltip(value));
             if (isSelected || cellHasFocus) {
-                setBackground(new Color(184, 207, 229));
+                setBackground(UIManager.getColor("List.selectionBackground"));
             } else {
-                setBackground(new Color(255, 255, 255));
+                setBackground(UIManager.getColor("List.background"));
             }
             return this;
         }

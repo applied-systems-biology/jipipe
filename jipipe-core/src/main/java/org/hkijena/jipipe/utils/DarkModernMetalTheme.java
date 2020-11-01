@@ -34,6 +34,8 @@ public class DarkModernMetalTheme extends DefaultMetalTheme {
     public static final Color MEDIUM_GRAY = new ColorUIResource(0x333333);
     public static final Color GRAY = new ColorUIResource(0x212121);
     public static final Color LIGHT_GRAY = new ColorUIResource(0x2f2f2f);
+    public static final Color TEXTAREA_BACKGROUND = new ColorUIResource(0x121212);
+    public static final Color SUBCONTROL_BACKGROUND = new ColorUIResource(0x121212);
     public static final ColorUIResource CONTROL_TEXT_COLOR =
             new ColorUIResource(0xeeeeee);
     public static final ColorUIResource INACTIVE_CONTROL_TEXT_COLOR =
@@ -43,7 +45,7 @@ public class DarkModernMetalTheme extends DefaultMetalTheme {
     public static final ColorUIResource OCEAN_BLACK =
             new ColorUIResource(0xeeeeee);
     public static final ColorUIResource OCEAN_DROP =
-            new ColorUIResource(0xD2E9FF);
+            new ColorUIResource(0x65a4e3);
     private static final Border NO_BORDER = BorderFactory.createEmptyBorder();
     private static final Border BUTTON_BORDER = BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1),
             BorderFactory.createCompoundBorder(new RoundedLineBorder(Color.BLACK, 1, 2),
@@ -216,6 +218,9 @@ public class DarkModernMetalTheme extends DefaultMetalTheme {
                 "ToggleButton.select", PRIMARY5,
 
                 "TextField.inactiveForeground", PRIMARY1,
+                "TextField.background", TEXTAREA_BACKGROUND,
+
+                "TextArea.background", TEXTAREA_BACKGROUND,
 
 //                "ToolBar.borderColor", GRAY2,
                 "ToolBar.border", BorderFactory.createMatteBorder(0, 0, 1, 0, GRAY),
@@ -246,7 +251,10 @@ public class DarkModernMetalTheme extends DefaultMetalTheme {
 
                 "ProgressBar.background", BLACK,
                 "ProgressBar.foreground", PRIMARY5,
-                "ProgressBar.border", new RoundedLineBorder(MEDIUM_GRAY, 1, 2)
+                "ProgressBar.border", new RoundedLineBorder(MEDIUM_GRAY, 1, 2),
+
+                "List.background", SUBCONTROL_BACKGROUND,
+                "EditorPane.background", SUBCONTROL_BACKGROUND
         };
         table.putDefaults(defaults);
     }
@@ -385,42 +393,4 @@ public class DarkModernMetalTheme extends DefaultMetalTheme {
         return MENU_DISABLED_FOREGROUND;
     }
 
-    // ComponentOrientation Icon
-    // Delegates to different icons based on component orientation
-    private static class COIcon extends IconUIResource {
-        private Icon rtl;
-
-        public COIcon(Icon ltr, Icon rtl) {
-            super(ltr);
-            this.rtl = rtl;
-        }
-
-        public void paintIcon(Component c, Graphics g, int x, int y) {
-            if (c.getComponentOrientation().isLeftToRight()) {
-                super.paintIcon(c, g, x, y);
-            } else {
-                rtl.paintIcon(c, g, x, y);
-            }
-        }
-    }
-
-    // InternalFrame Icon
-    // Delegates to different icons based on button state
-    private static class IFIcon extends IconUIResource {
-        private Icon pressed;
-
-        public IFIcon(Icon normal, Icon pressed) {
-            super(normal);
-            this.pressed = pressed;
-        }
-
-        public void paintIcon(Component c, Graphics g, int x, int y) {
-            ButtonModel model = ((AbstractButton) c).getModel();
-            if (model.isPressed() && model.isArmed()) {
-                pressed.paintIcon(c, g, x, y);
-            } else {
-                super.paintIcon(c, g, x, y);
-            }
-        }
-    }
 }

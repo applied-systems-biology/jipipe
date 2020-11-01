@@ -56,9 +56,9 @@ public class JIPipeRowDataTableCellRenderer implements TableCellRenderer {
                 previewCache.set(row, preview);
             }
             if (isSelected) {
-                preview.setBackground(new Color(184, 207, 229));
+                preview.setBackground(UIManager.getColor("List.selectionBackground"));
             } else {
-                preview.setBackground(new Color(255, 255, 255));
+                preview.setBackground(UIManager.getColor("List.background"));
             }
             return preview;
         }
