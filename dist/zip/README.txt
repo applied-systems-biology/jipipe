@@ -41,5 +41,5 @@ This package contains following third party software:
 * Jackson (https://github.com/FasterXML/jackson) licensed under Apache License v2 (https://www.apache.org/licenses/LICENSE-2.0)
 * Image5D (https://github.com/fiji/Image_5D) License: https://github.com/fiji/Image_5D/blob/master/LICENSE.txt
 * Flexmark-Java (https://github.com/vsch/flexmark-java) License: https://raw.githubusercontent.com/vsch/flexmark-java/master/LICENSE.txt
-* Reflections (https://github.com/ronmamo/reflections) licensed under WTFPL (https://github.com/ronmamo/reflections/blob/master/COPYING.txt)
+* Reflections (https://github.com/ronmamo/reflections) licensed under WTFPL (https://raw.githubusercontent.com/ronmamo/reflections/master/COPYING.txt)
 * mslinks (https://github.com/DmitriiShamrikov/mslinks) licensed under WTFPL (https://github.com/DmitriiShamrikov/mslinks/blob/master/LICENSE)
