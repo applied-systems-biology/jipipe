@@ -15,17 +15,18 @@ package org.hkijena.jipipe;
 
 import com.google.common.eventbus.EventBus;
 import ij.IJ;
-import net.imagej.ImageJ;
 import net.imagej.ui.swing.updater.SwingAuthenticator;
 import net.imagej.updater.FilesCollection;
 import net.imagej.updater.UpdateSite;
 import net.imagej.updater.util.AvailableSites;
 import net.imagej.updater.util.Progress;
 import net.imagej.updater.util.UpdaterUtil;
+import org.apache.commons.lang3.reflect.ConstructorUtils;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.JIPipeRun;
 import org.hkijena.jipipe.api.JIPipeRunSettings;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataDisplayOperation;
 import org.hkijena.jipipe.api.data.JIPipeDataImportOperation;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
@@ -38,12 +39,12 @@ import org.hkijena.jipipe.api.parameters.JIPipeMutableParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
+import org.hkijena.jipipe.api.registries.JIPipeExpressionRegistry;
 import org.hkijena.jipipe.api.registries.JIPipeImageJAdapterRegistry;
 import org.hkijena.jipipe.api.registries.JIPipeNodeRegistrationTask;
 import org.hkijena.jipipe.api.registries.JIPipeNodeRegistry;
 import org.hkijena.jipipe.api.registries.JIPipeParameterTypeRegistry;
 import org.hkijena.jipipe.api.registries.JIPipeSettingsRegistry;
-import org.hkijena.jipipe.api.registries.JIPipeTableOperationRegistry;
 import org.hkijena.jipipe.extensions.parameters.primitives.DynamicStringEnumParameter;
 import org.hkijena.jipipe.extensions.settings.DefaultCacheDisplaySettings;
 import org.hkijena.jipipe.extensions.settings.DefaultResultImporterSettings;
@@ -62,6 +63,7 @@ import org.scijava.plugin.PluginService;
 import org.scijava.service.AbstractService;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.net.Authenticator;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -89,7 +91,7 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
     private JIPipeCustomMenuRegistry customMenuRegistry = new JIPipeCustomMenuRegistry();
     private JIPipeParameterTypeRegistry parameterTypeRegistry = new JIPipeParameterTypeRegistry();
     private JIPipeSettingsRegistry settingsRegistry = new JIPipeSettingsRegistry();
-    private JIPipeTableOperationRegistry tableOperationRegistry = new JIPipeTableOperationRegistry();
+    private JIPipeExpressionRegistry tableOperationRegistry = new JIPipeExpressionRegistry();
     private FilesCollection imageJPlugins = null;
 
     @Parameter
@@ -102,7 +104,7 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
         return instance.parameterTypeRegistry;
     }
 
-    public static JIPipeTableOperationRegistry getTableOperations() {
+    public static JIPipeExpressionRegistry getTableOperations() {
         return instance.tableOperationRegistry;
     }
 
@@ -452,7 +454,7 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
     }
 
     @Override
-    public JIPipeTableOperationRegistry getTableOperationRegistry() {
+    public JIPipeExpressionRegistry getExpressionRegistry() {
         return tableOperationRegistry;
     }
 
@@ -585,5 +587,71 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
         JIPipeRun run = new JIPipeRun(project, settings);
         JIPipeRunnerQueue.getInstance().enqueue(run);
         return run;
+    }
+
+    /**
+     * Creates a new node instance from its id
+     *
+     * @param id  Algorithm ID
+     * @param klass the node type
+     * @param <T> Algorithm class
+     * @return Algorithm instance
+     */
+    public static <T extends JIPipeGraphNode> T createNode(String id, Class<T> klass) {
+        return (T) getNodes().getInfoById(id).newInstance();
+    }
+
+    /**
+     * Creates a new node instance from its class.
+     * Please note that this might not work for all node types, as there is no 1:1 relation between node classes and their Ids
+     * @param klass node class
+     * @param <T> node class
+     * @return the node
+     */
+    public static <T extends JIPipeGraphNode> T createNode(Class<T> klass) {
+        Set<JIPipeNodeInfo> nodeInfos = getNodes().getNodeInfosFromClass(klass);
+        if(nodeInfos.size() > 1)
+            throw new RuntimeException("There are multiple node infos registered for " + klass);
+        if(nodeInfos.isEmpty())
+            throw new IndexOutOfBoundsException("No node infos registered for " + klass);
+        return (T) nodeInfos.iterator().next().newInstance();
+    }
+
+    /**
+     * Duplicates a {@link JIPipeGraphNode}
+     * @param node the node
+     * @param <T> the node class
+     * @return a deep copy
+     */
+    public static <T extends JIPipeGraphNode> T duplicateNode(T node) {
+        if(node.getInfo() == null) {
+            System.err.println("Warning: Node " + node + " has no info attached. Create nodes via the static JIPipe method!");
+            try {
+                return (T) node.getClass().getConstructor(node.getClass()).newInstance(node);
+            } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        else {
+            return (T) node.getInfo().duplicate(node);
+        }
+    }
+
+    /**
+     * Instantiates a data class with the provided parameters
+     * This method is helpful if output data is constructed based on slot types
+     *
+     * @param klass                 The data class
+     * @param constructorParameters Constructor parameters
+     * @param <T>                   Data class
+     * @return Data instance
+     */
+    public static <T extends JIPipeData> T createData(Class<T> klass, Object... constructorParameters) {
+        try {
+            return ConstructorUtils.invokeConstructor(klass, constructorParameters);
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | InstantiationException e) {
+            throw new UserFriendlyRuntimeException(e, "Cannot create data instance!", "Undefined", "There is an error in the code that provides the annotation type.",
+                    "Please contact the author of the plugin that provides the annotation type " + klass);
+        }
     }
 }

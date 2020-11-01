@@ -20,7 +20,6 @@ import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.SearchTextField;
 import org.hkijena.jipipe.ui.components.SearchTextFieldTableRowFilter;
-import org.hkijena.jipipe.utils.CustomScrollPane;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jdesktop.swingx.JXTable;
 
@@ -65,7 +64,7 @@ public class ManagerUI extends JIPipeWorkbenchPanel {
         table.setRowFilter(new SearchTextFieldTableRowFilter(searchTextField));
         table.setRowHeight(25);
         table.getSelectionModel().addListSelectionListener(e -> showSelectedRows(table.getSelectedRows()));
-        CustomScrollPane scrollPane = new CustomScrollPane(table);
+        JScrollPane scrollPane = new JScrollPane(table);
         tablePanel.add(scrollPane, BorderLayout.CENTER);
         tablePanel.add(table.getTableHeader(), BorderLayout.NORTH);
 

@@ -19,9 +19,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataDisplayOperation;
 import org.hkijena.jipipe.api.data.JIPipeDataImportOperation;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeExportedDataTable;
-import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.tableanalyzer.JIPipeTableEditor;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 

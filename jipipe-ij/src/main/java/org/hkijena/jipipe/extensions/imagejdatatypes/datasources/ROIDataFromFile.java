@@ -17,8 +17,11 @@ import ij.gui.Roi;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
-import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
+import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FileData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
@@ -57,9 +60,5 @@ public class ROIDataFromFile extends JIPipeSimpleIteratingAlgorithm {
         FileData fileData = dataBatch.getInputData(getFirstInputSlot(), FileData.class);
         List<Roi> rois = ROIListData.loadRoiListFromFile(fileData.getPath());
         dataBatch.addOutputData(getFirstOutputSlot(), new ROIListData(rois));
-    }
-
-    @Override
-    public void reportValidity(JIPipeValidityReport report) {
     }
 }

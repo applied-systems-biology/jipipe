@@ -95,7 +95,7 @@ public class MarkdownReader extends JPanel {
 
         content.setEditorKit(kit);
         content.setContentType("text/html");
-        scrollPane = new CustomScrollPane(content);
+        scrollPane = new JScrollPane(content);
         add(scrollPane, BorderLayout.CENTER);
     }
 

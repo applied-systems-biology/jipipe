@@ -28,15 +28,15 @@ import org.hkijena.jipipe.extensions.tables.datatypes.ZeroTableColumn;
 import org.hkijena.jipipe.extensions.tables.operations.converting.*;
 import org.hkijena.jipipe.extensions.tables.operations.integrating.*;
 import org.hkijena.jipipe.extensions.tables.parameters.ResultsTableDataParameterEditorUI;
-import org.hkijena.jipipe.extensions.tables.parameters.TableColumnSourceParameter;
-import org.hkijena.jipipe.extensions.tables.parameters.TableColumnSourceParameterEditorUI;
 import org.hkijena.jipipe.extensions.tables.parameters.collections.ConvertingTableColumnProcessorParameterList;
+import org.hkijena.jipipe.extensions.tables.parameters.collections.ExpressionTableColumnGeneratorProcessorParameterList;
 import org.hkijena.jipipe.extensions.tables.parameters.collections.IntegratingTableColumnProcessorParameterList;
 import org.hkijena.jipipe.extensions.tables.parameters.collections.ResultsTableDataList;
 import org.hkijena.jipipe.extensions.tables.parameters.collections.TableColumnGeneratorProcessorParameterList;
 import org.hkijena.jipipe.extensions.tables.parameters.enums.TableColumnGeneratorParameter;
 import org.hkijena.jipipe.extensions.tables.parameters.enums.TableColumnGeneratorParameterEditorUI;
 import org.hkijena.jipipe.extensions.tables.parameters.processors.ConvertingTableColumnProcessorParameter;
+import org.hkijena.jipipe.extensions.tables.parameters.processors.ExpressionTableColumnGeneratorProcessor;
 import org.hkijena.jipipe.extensions.tables.parameters.processors.IntegratingTableColumnProcessorParameter;
 import org.hkijena.jipipe.extensions.tables.parameters.processors.TableColumnGeneratorProcessor;
 import org.hkijena.jipipe.utils.ResourceUtils;
@@ -76,7 +76,7 @@ public class TablesExtension extends JIPipePrepackagedDefaultJavaExtension {
 
     @Override
     public String getDependencyVersion() {
-        return "2020.10";
+        return "2020.11";
     }
 
     @Override
@@ -151,6 +151,7 @@ public class TablesExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerNodeType("modify-tables", ModifyTablesScript.class, UIUtils.getIconURLFromResources("apps/python.png"));
         registerNodeType("modify-and-merge-tables", ModifyAndMergeTablesScript.class, UIUtils.getIconURLFromResources("apps/python.png"));
         registerNodeType("tables-from-script", TablesFromScript.class, UIUtils.getIconURLFromResources("apps/python.png"));
+        registerNodeType("tables-from-expression", GenerateTableFromExpressionAlgorithm.class, UIUtils.getIconURLFromResources("apps/insert-math-expression.png"));
         registerNodeType("tables-set-column", SetColumnAlgorithm.class, UIUtils.getIconURLFromResources("actions/edit-table-insert-column-right.png"));
         registerNodeType("define-tables", DefineTablesAlgorithm.class, UIUtils.getIconURLFromResources("data-types/results-table.png"));
     }
@@ -167,13 +168,6 @@ public class TablesExtension extends JIPipePrepackagedDefaultJavaExtension {
                 "Column generator",
                 "Defines a column generator",
                 TableColumnGeneratorParameterEditorUI.class);
-        registerParameterType("table-column-source",
-                TableColumnSourceParameter.class,
-                TableColumnSourceParameter::new,
-                p -> new TableColumnSourceParameter((TableColumnSourceParameter) p),
-                "Column source",
-                "Defines a column source",
-                TableColumnSourceParameterEditorUI.class);
         registerParameterType("results-table",
                 ResultsTableData.class,
                 ResultsTableDataList.class,
@@ -213,7 +207,6 @@ public class TablesExtension extends JIPipePrepackagedDefaultJavaExtension {
                 "Column conversion processor list",
                 "Defines processors that apply a function to each cell",
                 null);
-
         registerParameterType("table-column-generator-column-processor",
                 TableColumnGeneratorProcessor.class,
                 TableColumnGeneratorProcessor::new,
@@ -227,6 +220,14 @@ public class TablesExtension extends JIPipePrepackagedDefaultJavaExtension {
                 p -> new TableColumnGeneratorProcessorParameterList((TableColumnGeneratorProcessorParameterList) p),
                 "Column generator processor list",
                 "Defines multiple columns to be generated",
+                null);
+        registerParameterType("table-column-expression-generator-column-processor",
+                ExpressionTableColumnGeneratorProcessor.class,
+                ExpressionTableColumnGeneratorProcessorParameterList.class,
+                null,
+                null,
+                "Column generator (expression)",
+                "Generates a column via an expression",
                 null);
     }
 
@@ -262,124 +263,184 @@ public class TablesExtension extends JIPipePrepackagedDefaultJavaExtension {
                 "Remove NaN",
                 "rmnan",
                 "Replaces all NaN values by a zero. The same applies to string values.");
-        registerTableColumnOperation("convert-absolute",
+        registerTableColumnOperationAndExpressionFunction("convert-absolute",
                 new AbsoluteColumnOperation(),
                 "Absolute value",
                 "abs",
                 "Calculates the absolute values. String values are converted to numbers or zero.");
-        registerTableColumnOperation("convert-ceiling",
+        registerTableColumnOperationAndExpressionFunction("convert-ceiling",
                 new CeilingColumnOperation(),
                 "Ceiling",
                 "ceil",
                 "Rounds the values to the higher integer value. String values are converted to numbers or zero.");
-        registerTableColumnOperation("convert-floor",
+        registerTableColumnOperationAndExpressionFunction("convert-floor",
                 new FloorColumnOperation(),
                 "Floor",
                 "floor",
                 "Rounds the values to the lower integer value. String values are converted to numbers or zero.");
-        registerTableColumnOperation("convert-clamp-negative",
+        registerTableColumnOperationAndExpressionFunction("convert-clamp-negative",
                 new ClampNegativeColumnOperation(),
                 "Set positive to zero",
                 "clampn",
                 "Sets positives numbers to zero. String values are converted to numbers or zero.");
-        registerTableColumnOperation("convert-clamp-positive",
+        registerTableColumnOperationAndExpressionFunction("convert-clamp-positive",
                 new ClampPositiveColumnOperation(),
                 "Set negative to zero",
                 "clampp",
                 "Sets negative numbers to zero. String values are converted to numbers or zero.");
-        registerTableColumnOperation("convert-degree-to-radians",
+        registerTableColumnOperationAndExpressionFunction("convert-degree-to-radians",
                 new DegreeToRadiansColumnOperation(),
                 "Degree to radians",
                 "deg2rad",
                 "Converts the value from degree to radians. String values are converted to numbers or zero.");
-        registerTableColumnOperation("convert-radians-to-degree",
+        registerTableColumnOperationAndExpressionFunction("convert-radians-to-degree",
                 new RadiansToDegreeColumnOperation(),
                 "Radians to degree",
                 "rad2deg",
                 "Converts the value from radians to degree. String values are converted to numbers or zero.");
-        registerTableColumnOperation("convert-exp",
+        registerTableColumnOperationAndExpressionFunction("convert-exp",
                 new ExpColumnOperation(),
                 "Exponent (base e)",
                 "exp",
                 "Calculates e^x for each value x. String values are converted to numbers or zero.");
-        registerTableColumnOperation("convert-ln",
+        registerTableColumnOperationAndExpressionFunction("convert-ln",
                 new LnColumnOperation(),
                 "Logarithm (base e)",
                 "ln",
                 "Calculates ln(x) for each value x. String values are converted to numbers or zero.");
-        registerTableColumnOperation("convert-sqrt",
+        registerTableColumnOperationAndExpressionFunction("convert-sqrt",
                 new SqrtColumnOperation(),
                 "Square root",
                 "sqrt",
                 "Calculates sqrt(x) for each value x. String values are converted to numbers or zero.");
-        registerTableColumnOperation("convert-square",
+        registerTableColumnOperationAndExpressionFunction("convert-square",
                 new SquareColumnOperation(),
                 "Square",
                 "sqr",
                 "Calculates x^2 for each value x. String values are converted to numbers or zero.");
+        registerTableColumnOperationAndExpressionFunction("convert-acos",
+                new ArcusCosineColumnOperation(),
+                "Arc cosine",
+                "acos",
+                "Returns the arc cosine of each value; the returned angle is in the range 0.0 through pi");
+        registerTableColumnOperationAndExpressionFunction("convert-asin",
+                new ArcusSineColumnOperation(),
+                "Arc sine",
+                "asin",
+                "Returns the arc sine of each value; the returned angle is in the range -pi/2 through pi/2");
+        registerTableColumnOperationAndExpressionFunction("convert-atan",
+                new ArcusSineColumnOperation(),
+                "Arc tangent",
+                "atan",
+                "Returns the arc tangent of each value; the returned angle is in the range -pi/2 through pi/2");
+        registerTableColumnOperationAndExpressionFunction("convert-cos",
+                new CosineColumnOperation(),
+                "Cosine",
+                "cos",
+                "Returns the cosine of each value");
+        registerTableColumnOperationAndExpressionFunction("convert-cosh",
+                new HyperbolicCosineColumnOperation(),
+                "Hyperbolic cosine",
+                "cosh",
+                "Returns the hyperbolic cosine of each value");
+        registerTableColumnOperationAndExpressionFunction("convert-sinh",
+                new HyperbolicSineColumnOperation(),
+                "Hyperbolic sine",
+                "sinh",
+                "Returns the hyperbolic cosine of each value");
+        registerTableColumnOperationAndExpressionFunction("convert-tanh",
+                new HyperbolicTangentColumnOperation(),
+                "Hyperbolic tangent",
+                "tanh",
+                "Returns the hyperbolic tangent of each value");
+        registerTableColumnOperationAndExpressionFunction("convert-log10",
+                new Log10ColumnOperation(),
+                "Logarithm (base 10)",
+                "log10",
+                "Returns the logarithm to the base of 10 of each value");
+        registerTableColumnOperationAndExpressionFunction("convert-round",
+                new RoundColumnOperation(),
+                "Round",
+                "round",
+                "Rounds to the closest integer number");
+        registerTableColumnOperationAndExpressionFunction("convert-sign",
+                new SignColumnOperation(),
+                "Signum",
+                "sign",
+                "Returns -1 for negative values, 1 for positive values, and zero otherwise");
+        registerTableColumnOperationAndExpressionFunction("convert-sin",
+                new SineColumnOperation(),
+                "Sine",
+                "sin",
+                "Returns the sine of each value");
+        registerTableColumnOperationAndExpressionFunction("convert-tan",
+                new TangentColumnOperation(),
+                "Tangent",
+                "tan",
+                "Returns the tangent of each value");
 
         // Integrating functions
-        registerTableColumnOperation("statistics-average",
+        registerTableColumnOperationAndExpressionFunction("statistics-average",
                 new StatisticsAverageIntegratingColumnOperation(),
                 "Average",
                 "avg",
                 "Calculates the average value of all numeric values. String values are converted to numbers or zero.");
-        registerTableColumnOperation("statistics-count",
+        registerTableColumnOperationAndExpressionFunction("statistics-count",
                 new StatisticsCountIntegratingColumnOperation(),
                 "Count",
                 "count",
                 "Outputs the number of input rows.");
-        registerTableColumnOperation("statistics-count-non-zero",
+        registerTableColumnOperationAndExpressionFunction("statistics-count-non-zero",
                 new StatisticsCountNonZeroIntegratingColumnOperation(),
                 "Count non-zero",
                 "countn0",
                 "Counts all values that are not zero. String values are converted to numbers or zero.");
-        registerTableColumnOperation("statistics-cumulative-sum",
+        registerTableColumnOperationAndExpressionFunction("statistics-cumulative-sum",
                 new StatisticsCumulativeSumColumnOperation(),
                 "Cumulative sum",
                 "cumsum",
                 "Calculates the cumulative sum of the rows in their order.");
-        registerTableColumnOperation("statistics-geometric-mean",
+        registerTableColumnOperationAndExpressionFunction("statistics-geometric-mean",
                 new StatisticsGeometricMeanIntegratingColumnOperation(),
                 "Geometric mean",
                 "geomean",
                 "Calculates the geometric mean of all numeric values. String values are converted to numbers or zero.");
-        registerTableColumnOperation("statistics-kurtosis",
+        registerTableColumnOperationAndExpressionFunction("statistics-kurtosis",
                 new StatisticsKurtosisIntegratingColumnOperation(),
                 "Kurtosis",
                 "kurt",
                 "Calculates the kurtosis of all numeric values. String values are converted to numbers or zero.");
-        registerTableColumnOperation("statistics-min",
+        registerTableColumnOperationAndExpressionFunction("statistics-min",
                 new StatisticsMinIntegratingColumnOperation(),
                 "Minimum",
                 "min",
                 "Calculates the minimum of all numeric values. String values are converted to numbers or zero.");
-        registerTableColumnOperation("statistics-max",
+        registerTableColumnOperationAndExpressionFunction("statistics-max",
                 new StatisticsMaxIntegratingColumnOperation(),
                 "Maximum",
                 "max",
                 "Calculates the maximum of all numeric values. String values are converted to numbers or zero.");
-        registerTableColumnOperation("statistics-median",
+        registerTableColumnOperationAndExpressionFunction("statistics-median",
                 new StatisticsMedianIntegratingColumnOperation(),
                 "Median",
                 "median",
                 "Calculates the median of all numeric values. String values are converted to numbers or zero.");
-        registerTableColumnOperation("statistics-skewness",
+        registerTableColumnOperationAndExpressionFunction("statistics-skewness",
                 new StatisticsSkewnessIntegratingColumnOperation(),
                 "Skewness",
                 "skewness",
                 "Calculates the skewness of all numeric values. String values are converted to numbers or zero.");
-        registerTableColumnOperation("statistics-standard-deviation",
+        registerTableColumnOperationAndExpressionFunction("statistics-standard-deviation",
                 new StatisticsStandardDeviationIntegratingColumnOperation(),
                 "Standard deviation",
                 "stdev",
                 "Calculates the standard deviation of all numeric values. String values are converted to numbers or zero.");
-        registerTableColumnOperation("statistics-variance",
+        registerTableColumnOperationAndExpressionFunction("statistics-variance",
                 new StatisticsVarianceIntegratingColumnOperation(),
                 "Variance",
                 "var",
                 "Calculates the variance of all numeric values. String values are converted to numbers or zero.");
-        registerTableColumnOperation("statistics-weighted-sum",
+        registerTableColumnOperationAndExpressionFunction("statistics-weighted-sum",
                 new StatisticsWeightedSumColumnOperation(),
                 "Weighted sum",
                 "wsum",

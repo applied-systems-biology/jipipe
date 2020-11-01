@@ -16,7 +16,6 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeMergingAlgorithm;
@@ -71,9 +70,5 @@ public class MergeRoiListsAlgorithm extends JIPipeMergingAlgorithm {
             result.mergeWith(rois);
         }
         dataBatch.addOutputData(getFirstOutputSlot(), result);
-    }
-
-    @Override
-    public void reportValidity(JIPipeValidityReport report) {
     }
 }

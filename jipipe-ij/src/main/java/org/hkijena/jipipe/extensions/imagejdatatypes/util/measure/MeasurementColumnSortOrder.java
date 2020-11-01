@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.extensions.imagejdatatypes.util.measure;
 
 import org.hkijena.jipipe.extensions.parameters.collections.ListParameter;
-import org.hkijena.jipipe.extensions.parameters.pairs.Pair;
+import org.hkijena.jipipe.extensions.parameters.pairs.PairParameter;
 import org.hkijena.jipipe.extensions.parameters.util.SortOrder;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 
@@ -23,7 +23,7 @@ import java.util.Comparator;
 /**
  * A key-value pair parameter of {@link MeasurementColumn} to {@link SortOrder}
  */
-public class MeasurementColumnSortOrder extends Pair<MeasurementColumn, SortOrder> {
+public class MeasurementColumnSortOrder extends PairParameter<MeasurementColumn, SortOrder> {
     /**
      * Creates a new instance
      */

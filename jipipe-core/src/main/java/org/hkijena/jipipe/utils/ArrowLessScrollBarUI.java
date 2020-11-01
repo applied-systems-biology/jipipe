@@ -3,6 +3,7 @@ package org.hkijena.jipipe.utils;
 import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
 
 import javax.swing.*;
+import javax.swing.plaf.ComponentUI;
 import javax.swing.plaf.basic.BasicScrollBarUI;
 import java.awt.Dimension;
 
@@ -30,4 +31,9 @@ public class ArrowLessScrollBarUI extends BasicScrollBarUI {
         jbutton.setMaximumSize(new Dimension(0, 0));
         return jbutton;
     }
+
+    public static ComponentUI createUI(JComponent c)    {
+        return new ArrowLessScrollBarUI();
+    }
+
 }

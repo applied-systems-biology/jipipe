@@ -19,7 +19,6 @@ import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
@@ -122,10 +121,6 @@ public class StackMergerAlgorithm extends JIPipeMergingAlgorithm {
         }
 
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(new ImagePlus("Stack", stack)));
-    }
-
-    @Override
-    public void reportValidity(JIPipeValidityReport report) {
     }
 
     @JIPipeDocumentation(name = "Slice index annotation",

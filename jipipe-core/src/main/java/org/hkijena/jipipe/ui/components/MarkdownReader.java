@@ -22,7 +22,6 @@ import com.vladsch.flexmark.pdf.converter.PdfConverterExtension;
 import com.vladsch.flexmark.util.data.MutableDataHolder;
 import com.vladsch.flexmark.util.data.MutableDataSet;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
-import org.hkijena.jipipe.utils.CustomScrollPane;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -105,7 +104,7 @@ public class MarkdownReader extends JPanel {
 
         content.setEditorKit(kit);
         content.setContentType("text/html");
-        scrollPane = new CustomScrollPane(content);
+        scrollPane = new JScrollPane(content);
         add(scrollPane, BorderLayout.CENTER);
 
         if (withToolbar) {

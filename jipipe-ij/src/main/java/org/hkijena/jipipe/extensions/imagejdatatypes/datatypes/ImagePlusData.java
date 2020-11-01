@@ -16,6 +16,7 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.datatypes;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
@@ -25,7 +26,7 @@ import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.PathUtils;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.Component;
 import java.awt.image.BufferedImage;
 import java.nio.file.Path;
 
@@ -106,7 +107,7 @@ public class ImagePlusData implements JIPipeData {
     public JIPipeData duplicate() {
         ImagePlus imp = image.duplicate();
         imp.setTitle(getImage().getTitle());
-        return JIPipeData.createInstance(getClass(), imp);
+        return JIPipe.createData(getClass(), imp);
     }
 
     /**

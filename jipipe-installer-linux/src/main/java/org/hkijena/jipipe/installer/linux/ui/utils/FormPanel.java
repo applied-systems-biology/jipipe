@@ -99,7 +99,7 @@ public class FormPanel extends JXPanel {
 
         Component content;
         if ((flags & WITH_SCROLLING) == WITH_SCROLLING) {
-            scrollPane = new CustomScrollPane(contentPanel);
+            scrollPane = new JScrollPane(contentPanel);
             scrollPane.getVerticalScrollBar().setUnitIncrement(10);
             content = scrollPane;
         } else

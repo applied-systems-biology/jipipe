@@ -32,7 +32,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColorData;
-import org.hkijena.jipipe.extensions.parameters.pairs.IntegerAndIntegerPair;
+import org.hkijena.jipipe.extensions.parameters.pairs.IntegerAndIntegerPairParameter;
 
 import java.util.Comparator;
 import java.util.function.Consumer;
@@ -47,7 +47,7 @@ import java.util.function.Supplier;
 @JIPipeOutputSlot(value = ImagePlusColorData.class, slotName = "Output")
 public class ArrangeChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
-    private IntegerAndIntegerPair.List channelReordering = new IntegerAndIntegerPair.List();
+    private IntegerAndIntegerPairParameter.List channelReordering = new IntegerAndIntegerPairParameter.List();
     private boolean keepSameChannelCount = true;
 
     /**
@@ -71,7 +71,7 @@ public class ArrangeChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
      */
     public ArrangeChannelsAlgorithm(ArrangeChannelsAlgorithm other) {
         super(other);
-        this.channelReordering = new IntegerAndIntegerPair.List(other.channelReordering);
+        this.channelReordering = new IntegerAndIntegerPairParameter.List(other.channelReordering);
         this.keepSameChannelCount = other.keepSameChannelCount;
     }
 
@@ -84,7 +84,7 @@ public class ArrangeChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         if (keepSameChannelCount) {
             nChannels = image.getNChannels();
         } else {
-            IntegerAndIntegerPair max = channelReordering.stream().max(Comparator.comparing(IntegerAndIntegerPair::getKey)).orElse(null);
+            IntegerAndIntegerPairParameter max = channelReordering.stream().max(Comparator.comparing(IntegerAndIntegerPairParameter::getKey)).orElse(null);
             if (max != null) {
                 nChannels = max.getValue() + 1;
             } else {
@@ -93,7 +93,7 @@ public class ArrangeChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         }
         int[] order = new int[nChannels]; // Info: Order starts with 1. Map from Array index <- Source channel
         TIntIntMap targetToSourceAssignment = new TIntIntHashMap();
-        for (IntegerAndIntegerPair renaming : channelReordering) {
+        for (IntegerAndIntegerPairParameter renaming : channelReordering) {
             targetToSourceAssignment.put(renaming.getValue(), renaming.getKey());
         }
 
@@ -125,10 +125,10 @@ public class ArrangeChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     public void reportValidity(JIPipeValidityReport report) {
         if (channelReordering.size() > 1) {
             TIntSet generatedTargets = new TIntHashSet();
-            IntegerAndIntegerPair max = channelReordering.stream().max(Comparator.comparing(IntegerAndIntegerPair::getKey)).get();
+            IntegerAndIntegerPairParameter max = channelReordering.stream().max(Comparator.comparing(IntegerAndIntegerPairParameter::getKey)).get();
 
             for (int i = 0; i <= max.getValue(); i++) {
-                for (IntegerAndIntegerPair integerAndIntegerPair : channelReordering) {
+                for (IntegerAndIntegerPairParameter integerAndIntegerPair : channelReordering) {
                     if (integerAndIntegerPair.getValue() == i) {
                         if (generatedTargets.contains(i)) {
                             report.forCategory("Channel reordering").reportIsInvalid("Duplicate reordering targets!",
@@ -144,7 +144,7 @@ public class ArrangeChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                 generatedTargets.add(i);
             }
         }
-        for (IntegerAndIntegerPair renaming : channelReordering) {
+        for (IntegerAndIntegerPairParameter renaming : channelReordering) {
             if (renaming.getKey() < 0 | renaming.getValue() < 0) {
                 report.forCategory("Channel reordering").reportIsInvalid("Invalid channel index!",
                         "A channel index cannot be negative. The first channel index is 0.",
@@ -159,12 +159,12 @@ public class ArrangeChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeDocumentation(name = "Channel reordering", description = "The channel with index on the left hand side is assigned to the channel with the index on the right hand side. " +
             "The first index is 0. Channels left out of this assignment stay at the same index after transformation.")
     @JIPipeParameter("channel-reordering")
-    public IntegerAndIntegerPair.List getChannelReordering() {
+    public IntegerAndIntegerPairParameter.List getChannelReordering() {
         return channelReordering;
     }
 
     @JIPipeParameter("channel-reordering")
-    public void setChannelReordering(IntegerAndIntegerPair.List channelReordering) {
+    public void setChannelReordering(IntegerAndIntegerPairParameter.List channelReordering) {
         this.channelReordering = channelReordering;
     }
 

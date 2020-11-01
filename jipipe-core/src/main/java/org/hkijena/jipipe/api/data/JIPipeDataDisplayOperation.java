@@ -15,8 +15,6 @@ package org.hkijena.jipipe.api.data;
 
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 
-import javax.swing.*;
-
 /**
  * An operation that is executed on showing existing data located in memory/cache.
  * This acts as additional entry in the cache browser display menu. Must be registered.

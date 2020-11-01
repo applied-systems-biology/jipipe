@@ -15,7 +15,6 @@ package org.hkijena.jipipe.ui.grapheditor.settings;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
 
 import javax.swing.*;
 import java.awt.Color;

@@ -26,6 +26,7 @@ import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.extensions.jsonextensionloader.JsonExtensionLoaderExtension;
 import org.hkijena.jipipe.extensions.settings.ExtensionSettings;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
+import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
 import org.hkijena.jipipe.extensions.settings.ProjectsSettings;
 import org.hkijena.jipipe.ui.events.WindowClosedEvent;
 import org.hkijena.jipipe.ui.events.WindowOpenedEvent;
@@ -92,6 +93,9 @@ public class JIPipeJsonExtensionWindow extends JFrame {
         super.setTitle("JIPipe extension builder");
         setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
         UIUtils.setToAskOnClose(this, "Do you really want to close this JIPipe extension builder?", "Close window");
+        if(GeneralUISettings.getInstance().isMaximizeWindows()) {
+            setExtendedState(getExtendedState() | MAXIMIZED_BOTH);
+        }
     }
 
     @Override

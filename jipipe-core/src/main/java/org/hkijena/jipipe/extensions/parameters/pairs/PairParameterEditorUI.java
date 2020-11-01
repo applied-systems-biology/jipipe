@@ -15,7 +15,6 @@ package org.hkijena.jipipe.extensions.parameters.pairs;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.api.registries.JIPipeParameterTypeRegistry;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
@@ -26,7 +25,7 @@ import javax.swing.*;
 import java.awt.BorderLayout;
 
 /**
- * Editor for {@link Pair}
+ * Editor for {@link PairParameter}
  */
 public class PairParameterEditorUI extends JIPipeParameterEditorUI {
 
@@ -50,7 +49,7 @@ public class PairParameterEditorUI extends JIPipeParameterEditorUI {
     public void reload() {
         removeAll();
 
-        Pair<?, ?> renaming = getParameter(Pair.class);
+        PairParameter<?, ?> renaming = getParameter(PairParameter.class);
         PairParameterKeyAccess<?, ?> keyAccess = new PairParameterKeyAccess<>(getParameterAccess(), renaming);
         PairParameterValueAccess<?, ?> valueAccess = new PairParameterValueAccess<>(getParameterAccess(), renaming);
 

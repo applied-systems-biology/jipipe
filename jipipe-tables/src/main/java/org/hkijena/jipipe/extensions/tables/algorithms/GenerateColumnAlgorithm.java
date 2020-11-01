@@ -13,30 +13,24 @@
 
 package org.hkijena.jipipe.extensions.tables.algorithms;
 
-import com.google.common.html.HtmlEscapers;
-import org.hkijena.jipipe.JIPipe;
+import com.fathzer.soft.javaluator.StaticVariableSet;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
-import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
-import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
-import org.hkijena.jipipe.api.parameters.JIPipeMutableParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
-import org.hkijena.jipipe.extensions.tables.ColumnContentType;
+import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameterSettings;
+import org.hkijena.jipipe.extensions.parameters.expressions.TableCellExpressionParameterVariableSource;
+import org.hkijena.jipipe.extensions.parameters.pairs.PairParameterSettings;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
-import org.hkijena.jipipe.extensions.tables.datatypes.TableColumn;
-import org.hkijena.jipipe.extensions.tables.parameters.collections.TableColumnGeneratorProcessorParameterList;
-import org.hkijena.jipipe.extensions.tables.parameters.enums.TableColumnGeneratorParameter;
-import org.hkijena.jipipe.extensions.tables.parameters.processors.TableColumnGeneratorProcessor;
+import org.hkijena.jipipe.extensions.tables.parameters.collections.ExpressionTableColumnGeneratorProcessorParameterList;
+import org.hkijena.jipipe.extensions.tables.parameters.processors.ExpressionTableColumnGeneratorProcessor;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -50,7 +44,7 @@ import java.util.function.Supplier;
 @JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
 public class GenerateColumnAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
-    private TableColumnGeneratorProcessorParameterList columns = new TableColumnGeneratorProcessorParameterList();
+    private ExpressionTableColumnGeneratorProcessorParameterList columns = new ExpressionTableColumnGeneratorProcessorParameterList();
     private boolean replaceIfExists = false;
 
     /**
@@ -71,32 +65,35 @@ public class GenerateColumnAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     public GenerateColumnAlgorithm(GenerateColumnAlgorithm other) {
         super(other);
         this.replaceIfExists = other.replaceIfExists;
-        this.columns = new TableColumnGeneratorProcessorParameterList(other.columns);
+        this.columns = new ExpressionTableColumnGeneratorProcessorParameterList(other.columns);
     }
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         ResultsTableData table = (ResultsTableData) dataBatch.getInputData(getFirstInputSlot(), ResultsTableData.class).duplicate();
-        for (TableColumnGeneratorProcessor entry : columns) {
+        StaticVariableSet<Object> variableSet = new StaticVariableSet<>();
+        variableSet.set("num_rows", table.getRowCount());
+        for (ExpressionTableColumnGeneratorProcessor entry : columns) {
             String columnName = entry.getValue();
 
             if (table.getColumnIndex(columnName) != -1 && !replaceIfExists)
                 continue;
 
-            TableColumnGeneratorParameter generatorParameter = entry.getKey();
-            TableColumn generator = (TableColumn) JIPipeData.createInstance(generatorParameter.getGeneratorType().getInfo().getDataClass());
             int columnId = table.getOrCreateColumnIndex(columnName);
-
-            if (generatorParameter.getGeneratedType() == ColumnContentType.NumericColumn) {
-                double[] data = generator.getDataAsDouble(table.getRowCount());
-                for (int row = 0; row < table.getRowCount(); ++row) {
-                    table.getTable().setValue(columnId, row, data[row]);
+            variableSet.set("column", columnId);
+            variableSet.set("column_name", columnName);
+            variableSet.set("num_cols", table.getColumnCount());
+            for (int row = 0; row < table.getRowCount(); row++) {
+                for (int col = 0; col < table.getColumnCount(); col++) {
+                    if(col != columnId) {
+                        variableSet.set(table.getColumnName(col), table.getValueAt(row, col));
+                    }
                 }
-            } else {
-                String[] data = generator.getDataAsString(table.getRowCount());
-                for (int row = 0; row < table.getRowCount(); ++row) {
-                    table.getTable().setValue(columnId, row, data[row]);
-                }
+                variableSet.set("row", row);
+                Object value = entry.getKey().evaluate(variableSet);
+                if(!(value instanceof Number) && !(value instanceof String))
+                    value = "" + value;
+                table.setValueAt(value, row, columnId);
             }
         }
         dataBatch.addOutputData(getFirstOutputSlot(), table);
@@ -118,41 +115,19 @@ public class GenerateColumnAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.replaceIfExists = replaceIfExists;
     }
 
-    @JIPipeDocumentation(name = "Columns", description = "Columns to be generated")
+    @JIPipeDocumentation(name = "Columns", description = "Columns to be generated. The function is applied for each row. " +
+            "You will have the standard set of table location variables available (e.g. the row index), but also access to the other column values within the same row. " +
+            "Access them just as any variable. If the column name has special characters or spaces, use the $ operator. Example: " +
+            "<pre>$\"%Area\" * 10</pre>")
     @JIPipeParameter("columns")
-    public TableColumnGeneratorProcessorParameterList getColumns() {
+    @ExpressionParameterSettings(variableSource = TableCellExpressionParameterVariableSource.class)
+    @PairParameterSettings(singleRow = false, keyLabel = "Function", valueLabel = "Output column")
+    public ExpressionTableColumnGeneratorProcessorParameterList getColumns() {
         return columns;
     }
 
     @JIPipeParameter("columns")
-    public void setColumns(TableColumnGeneratorProcessorParameterList columns) {
+    public void setColumns(ExpressionTableColumnGeneratorProcessorParameterList columns) {
         this.columns = columns;
-    }
-
-    /**
-     * Used for generating a new generator entry
-     *
-     * @param definition the parameter definition
-     * @return generated parameter
-     */
-    public static JIPipeMutableParameterAccess generateColumnParameter(JIPipeDynamicParameterCollection.UserParameterDefinition definition) {
-        JIPipeMutableParameterAccess result = new JIPipeMutableParameterAccess(definition.getSource(), definition.getName(), definition.getFieldClass());
-        result.setKey(definition.getName());
-
-        StringBuilder markdown = new StringBuilder();
-        markdown.append("You can select from one of the following generators: ");
-        markdown.append("<table>");
-        for (Class<? extends JIPipeData> klass : JIPipe.getDataTypes().getRegisteredDataTypes().values()) {
-            if (TableColumn.isGeneratingTableColumn(klass)) {
-                JIPipeDataInfo info = JIPipeDataInfo.getInstance(klass);
-                markdown.append("<tr><td><strong>").append(HtmlEscapers.htmlEscaper().escape(info.getName())).append("</strong></td><td>")
-                        .append(HtmlEscapers.htmlEscaper().escape(info.getDescription())).append("</td></tr>");
-            }
-        }
-
-        markdown.append("</table>");
-        result.setDescription(markdown.toString());
-
-        return result;
     }
 }

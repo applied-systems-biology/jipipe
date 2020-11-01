@@ -15,7 +15,6 @@ package org.hkijena.jipipe.extensions.multiparameters;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeJavaExtension;
-import org.hkijena.jipipe.api.registries.JIPipeNodeRegistry;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.multiparameters.algorithms.MultiParameterNodeInfo;
 import org.hkijena.jipipe.extensions.multiparameters.datasources.ParametersDataDefinition;
@@ -61,6 +60,6 @@ public class MultiParameterAlgorithmsExtension extends JIPipePrepackagedDefaultJ
 
     @Override
     public String getDependencyVersion() {
-        return "2020.10";
+        return "2020.11";
     }
 }

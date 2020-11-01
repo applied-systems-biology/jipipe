@@ -18,7 +18,6 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 import ij.measure.ResultsTable;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
-import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
 import org.hkijena.jipipe.utils.JsonUtils;
 
 import javax.swing.event.TableModelListener;

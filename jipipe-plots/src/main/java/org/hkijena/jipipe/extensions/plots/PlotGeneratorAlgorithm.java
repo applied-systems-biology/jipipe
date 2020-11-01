@@ -13,12 +13,11 @@
 
 package org.hkijena.jipipe.extensions.plots;
 
-import ij.measure.ResultsTable;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
-import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.events.NodeSlotsChangedEvent;
 import org.hkijena.jipipe.api.events.ParameterStructureChangedEvent;
@@ -34,22 +33,16 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
 import org.hkijena.jipipe.extensions.parameters.editors.JIPipeDataParameterSettings;
-import org.hkijena.jipipe.extensions.parameters.predicates.StringPredicate;
+import org.hkijena.jipipe.extensions.parameters.expressions.TableColumnSourceExpressionParameter;
 import org.hkijena.jipipe.extensions.parameters.references.JIPipeDataInfoRef;
 import org.hkijena.jipipe.extensions.plots.datatypes.PlotColumn;
 import org.hkijena.jipipe.extensions.plots.datatypes.PlotData;
 import org.hkijena.jipipe.extensions.plots.datatypes.PlotDataSeries;
 import org.hkijena.jipipe.extensions.plots.datatypes.PlotMetadata;
-import org.hkijena.jipipe.extensions.tables.ColumnContentType;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
-import org.hkijena.jipipe.extensions.tables.datatypes.TableColumn;
-import org.hkijena.jipipe.extensions.tables.parameters.TableColumnSourceParameter;
-import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.scijava.Priority;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -101,45 +94,20 @@ public class PlotGeneratorAlgorithm extends JIPipeAlgorithm {
             plotColumns.put(column.name(), column);
         }
 
-
         for (int row = 0; row < getFirstInputSlot().getRowCount(); ++row) {
             ResultsTableData inputData = getFirstInputSlot().getData(row, ResultsTableData.class);
             PlotData plot = (PlotData) plotTypeParameters.duplicate();
 
-            ResultsTable seriesTable = new ResultsTable(inputData.getTable().getCounter());
-
-            // Get column headings
-            List<String> columnHeadings = new ArrayList<>();
-            for (int i = 0; i <= inputData.getTable().getLastColumn(); ++i) {
-                columnHeadings.add(inputData.getTable().getColumnHeading(i));
-            }
+            ResultsTableData seriesTable = new ResultsTableData();
+            seriesTable.addRows(inputData.getRowCount());
 
             // First generate real column data
             for (Map.Entry<String, JIPipeParameterAccess> entry : columnAssignments.getParameters().entrySet()) {
-                TableColumnSourceParameter parameter = entry.getValue().get(TableColumnSourceParameter.class);
-                if (parameter.getMode() == TableColumnSourceParameter.Mode.PickColumn) {
-                    String matchingColumn = null;
-                    StringPredicate filter = parameter.getColumnSource();
-                    for (String columnHeading : columnHeadings) {
-                        if (filter.test(columnHeading)) {
-                            matchingColumn = columnHeading;
-                            break;
-                        }
-                    }
-                    if (matchingColumn == null) {
-                        throw new UserFriendlyRuntimeException("Could not find column that matches '" + filter.toString() + "'!",
-                                "Could not find column!",
-                                "Algorithm '" + getName() + "'",
-                                "A plot generator algorithm was instructed to extract a column matching the rule '" + filter.toString() + "' for plotting. The column could note be found. " +
-                                        "The table contains only following columns: " + String.join(", ", columnHeadings),
-                                "Please check if your input columns are set up with valid filters. Please check the input of the plot generator " +
-                                        "via the quick run to see if the input data is correct. You can also select a generator instead of picking a column.");
-                    }
-                    seriesTable.setColumn(entry.getKey(), inputData.getTable().getColumnAsVariables(matchingColumn));
-                }
+                TableColumnSourceExpressionParameter parameter = entry.getValue().get(TableColumnSourceExpressionParameter.class);
+                seriesTable.setColumn(entry.getKey(), parameter.pickColumn(inputData), plotColumns.get(entry.getKey()).isNumeric());
             }
 
-            if (seriesTable.getCounter() == 0) {
+            if (seriesTable.getRowCount() == 0) {
                 throw new UserFriendlyRuntimeException("Table has now rows!",
                         "Plot has no real input data!",
                         "Algorithm '" + getName() + "'",
@@ -147,29 +115,7 @@ public class PlotGeneratorAlgorithm extends JIPipeAlgorithm {
                         "Please pick at least one input column from the input table.");
             }
 
-            for (Map.Entry<String, JIPipeParameterAccess> entry : columnAssignments.getParameters().entrySet()) {
-                TableColumnSourceParameter parameter = entry.getValue().get(TableColumnSourceParameter.class);
-                if (parameter.getMode() == TableColumnSourceParameter.Mode.GenerateColumn) {
-                    PlotColumn column = plotColumns.get(entry.getKey());
-                    TableColumn generator = (TableColumn) ReflectionUtils.newInstance(parameter.getGeneratorSource().getGeneratorType().getInfo().getDataClass());
-                    if (column.isNumeric()) {
-                        double[] data = generator.getDataAsDouble(seriesTable.getCounter());
-                        int col = seriesTable.getFreeColumn(entry.getKey());
-                        for (int i = 0; i < data.length; i++) {
-                            seriesTable.setValue(col, i, data[i]);
-                        }
-                    } else {
-                        String[] data = generator.getDataAsString(seriesTable.getCounter());
-                        int col = seriesTable.getFreeColumn(entry.getKey());
-                        for (int i = 0; i < data.length; i++) {
-                            seriesTable.setValue(col, i, data[i]);
-                        }
-                    }
-                }
-            }
-
-            plot.addSeries(new PlotDataSeries(seriesTable));
-
+            plot.addSeries(new PlotDataSeries(seriesTable.getTable()));
             getFirstOutputSlot().addData(plot, getFirstInputSlot().getAnnotations(row));
         }
     }
@@ -180,22 +126,6 @@ public class PlotGeneratorAlgorithm extends JIPipeAlgorithm {
         if (plotTypeParameters != null) {
             report.forCategory("Plot parameters").report(plotTypeParameters);
         }
-        boolean foundRealDataColumn = false;
-        for (Map.Entry<String, JIPipeParameterAccess> entry : columnAssignments.getParameters().entrySet()) {
-            TableColumnSourceParameter parameter = entry.getValue().get(TableColumnSourceParameter.class);
-            report.forCategory("Input columns").forCategory(entry.getKey()).report(parameter);
-            if (parameter.getMode() == TableColumnSourceParameter.Mode.PickColumn) {
-                foundRealDataColumn = true;
-                break;
-            }
-        }
-        if (!foundRealDataColumn) {
-            report.forCategory("Input columns").reportIsInvalid("Plot has no input data!",
-                    "A plot only has column generators. But generators need to know how many rows they should generate.",
-                    "Please pick at least one input column from the input table.",
-                    this);
-        }
-
     }
 
     @JIPipeDocumentation(name = "Plot type", description = "The type of plot to be generated.")
@@ -227,13 +157,10 @@ public class PlotGeneratorAlgorithm extends JIPipeAlgorithm {
                 JIPipeMutableParameterAccess parameterAccess = new JIPipeMutableParameterAccess();
                 parameterAccess.setKey(column.name());
                 parameterAccess.setName(column.name());
-                parameterAccess.setFieldClass(TableColumnSourceParameter.class);
-                TableColumnSourceParameter initialValue = new TableColumnSourceParameter();
-                initialValue.setMode(TableColumnSourceParameter.Mode.PickColumn);
-                initialValue.setColumnSource(new StringPredicate(StringPredicate.Mode.Equals, column.name(), false));
-                initialValue.getGeneratorSource().setGeneratedType(column.isNumeric() ? ColumnContentType.NumericColumn : ColumnContentType.StringColumn);
+                parameterAccess.setFieldClass(TableColumnSourceExpressionParameter.class);
+                TableColumnSourceExpressionParameter initialValue = new TableColumnSourceExpressionParameter();
                 parameterAccess.set(initialValue);
-                parameterAccess.setDescription(column.description() + " " + (column.isNumeric() ? "(Numeric column)" : "(String column)"));
+                parameterAccess.setDescription(column.description() + " " + (column.isNumeric() ? "(Numeric column)" : "(String column)") + " " + TableColumnSourceExpressionParameter.DOCUMENTATION_DESCRIPTION);
                 columnAssignments.addParameter(parameterAccess);
             }
         }
@@ -243,7 +170,7 @@ public class PlotGeneratorAlgorithm extends JIPipeAlgorithm {
     private void updatePlotTypeParameters() {
         if (plotTypeParameters == null || (plotType.getInfo() != null && !Objects.equals(plotType.getInfo().getDataClass(), plotTypeParameters.getClass()))) {
             if (plotType.getInfo() != null) {
-                plotTypeParameters = (PlotData) JIPipeData.createInstance(plotType.getInfo().getDataClass());
+                plotTypeParameters = (PlotData) JIPipe.createData(plotType.getInfo().getDataClass());
                 getEventBus().post(new ParameterStructureChangedEvent(this));
             }
         } else if (plotType.getInfo() == null) {

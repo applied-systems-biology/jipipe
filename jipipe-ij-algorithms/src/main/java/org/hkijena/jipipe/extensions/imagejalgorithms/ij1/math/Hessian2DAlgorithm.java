@@ -23,7 +23,6 @@ import imagescience.image.Image;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
@@ -111,11 +110,6 @@ public class Hessian2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             return eigenimages.get(0).imageplus();
         else
             return eigenimages.get(1).imageplus();
-    }
-
-
-    @Override
-    public void reportValidity(JIPipeValidityReport report) {
     }
 
     @JIPipeDocumentation(name = "Eigenvalue", description = "Allows you to choose whether the largest or smallest Eigenvalues are chosen")

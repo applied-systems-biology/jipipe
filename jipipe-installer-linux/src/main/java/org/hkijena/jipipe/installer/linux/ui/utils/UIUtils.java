@@ -18,13 +18,15 @@ import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
-import javax.swing.filechooser.FileNameExtensionFilter;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Desktop;
+import java.awt.Dimension;
+import java.awt.Insets;
+import java.awt.MouseInfo;
+import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
@@ -35,61 +37,15 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * Utils for UI
  */
 public class UIUtils {
 
-    public static final FileNameExtensionFilter EXTENSION_FILTER_CSV = new FileNameExtensionFilter("CSV table (*.csv)", "csv");
-    public static final FileNameExtensionFilter EXTENSION_FILTER_PNG = new FileNameExtensionFilter("PNG image (*.png)", "png");
-    public static final FileNameExtensionFilter EXTENSION_FILTER_SVG = new FileNameExtensionFilter("SVG image (*.svg)", "svg");
-    public static final FileNameExtensionFilter EXTENSION_FILTER_MD = new FileNameExtensionFilter("Markdown text (*.md)", "md");
-    public static final FileNameExtensionFilter EXTENSION_FILTER_PDF = new FileNameExtensionFilter("Portable document format (*.pdf)", "pdf");
-    public static final FileNameExtensionFilter EXTENSION_FILTER_HTML = new FileNameExtensionFilter("HTML document (*.html, *.htm)", "html", "htm");
-    public static final FileNameExtensionFilter EXTENSION_FILTER_JPEG = new FileNameExtensionFilter("JPEG image (*.jpg, *.jpeg)", "jpg", "jpeg");
-    public static final FileNameExtensionFilter EXTENSION_FILTER_JIP = new FileNameExtensionFilter("JIPipe project (*.jip)", "jip");
-    public static final FileNameExtensionFilter EXTENSION_FILTER_JIPE = new FileNameExtensionFilter("JIPipe extension (*.jipe)", "jipe");
-    public static final FileNameExtensionFilter EXTENSION_FILTER_JIPC = new FileNameExtensionFilter("JIPipe compartment (*.jipc)", "jipc");
-
     public static final Insets UI_PADDING = new Insets(4, 4, 4, 4);
     public static final Map<String, ImageIcon> ICON_FROM_RESOURCES_CACHE = new HashMap<>();
-
-    /**
-     * Equivalent of {@link Box}.verticalGlue() for {@link GridBagLayout}
-     *
-     * @param component the target component that has {@link GridBagLayout}
-     * @param row       the row
-     * @param column    the column
-     */
-    public static void addFillerGridBagComponent(Container component, int row, int column) {
-        component.add(new JPanel(), new GridBagConstraints() {
-            {
-                anchor = GridBagConstraints.PAGE_START;
-                gridx = column;
-                gridy = row;
-                fill = GridBagConstraints.HORIZONTAL | GridBagConstraints.VERTICAL;
-                weightx = 1;
-                weighty = 1;
-            }
-        });
-    }
-
-    /**
-     * Adds a popup menu to a button.
-     * Creates a new popup menu instance.
-     *
-     * @param target target button
-     * @return the popup menu
-     */
-    public static JPopupMenu addPopupMenuToComponent(AbstractButton target) {
-        return addPopupMenuToComponent(target, new JPopupMenu());
-    }
 
     /**
      * Adds an existing popup menu to a button
@@ -120,40 +76,6 @@ public class UIUtils {
         return popupMenu;
     }
 
-    /**
-     * Adds an existing popup menu to a button
-     * Adds a function that is run before the popup is shown
-     *
-     * @param target         target button
-     * @param popupMenu      the popup menu
-     * @param reloadFunction the function that is run before showing the popup
-     * @return the popup menu
-     */
-    public static JPopupMenu addReloadablePopupMenuToComponent(AbstractButton target, JPopupMenu popupMenu, Runnable reloadFunction) {
-        target.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent mouseEvent) {
-                super.mouseClicked(mouseEvent);
-                reloadFunction.run();
-                popupMenu.revalidate();
-                popupMenu.show(mouseEvent.getComponent(), mouseEvent.getX(), mouseEvent.getY());
-            }
-        });
-        target.addActionListener(e -> {
-            try {
-                if (target.isDisplayable() && MouseInfo.getPointerInfo().getLocation().x < target.getLocationOnScreen().x
-                        || MouseInfo.getPointerInfo().getLocation().x > target.getLocationOnScreen().x + target.getWidth()
-                        || MouseInfo.getPointerInfo().getLocation().y < target.getLocationOnScreen().y
-                        || MouseInfo.getPointerInfo().getLocation().y > target.getLocationOnScreen().y + target.getHeight()) {
-                    reloadFunction.run();
-                    popupMenu.revalidate();
-                    popupMenu.show(target, 0, target.getHeight());
-                }
-            } catch (IllegalComponentStateException e1) {
-            }
-        });
-        return popupMenu;
-    }
 
     /**
      * Returns an icon from JIPipe resources
@@ -344,86 +266,6 @@ public class UIUtils {
     }
 
     /**
-     * Expands the whole tree
-     *
-     * @param tree the tree
-     */
-    public static void expandAllTree(JTree tree) {
-        for (int i = 0; i < tree.getRowCount(); i++) {
-            tree.expandRow(i);
-        }
-    }
-
-    /**
-     * Asks the user how to open a project: In the current window or a new window
-     *
-     * @param parent parent component
-     * @param title  window title
-     * @return {@link JOptionPane}.YES_OPTION to open in this window; {@link JOptionPane}.NO_OPTION to open in a new window; {@link JOptionPane}.CANCEL_OPTION to cancel.
-     */
-    public static int askOpenInCurrentWindow(Component parent, String title) {
-        return JOptionPane.showOptionDialog(parent,
-                "Projects can either be opened in a new window or replace the project in an existing window.",
-                title,
-                JOptionPane.YES_NO_CANCEL_OPTION,
-                JOptionPane.QUESTION_MESSAGE,
-                null,
-                new Object[]{"This window", "New window", "Cancel"},
-                "New window");
-    }
-
-    /**
-     * Creates a read-only "star-rating" label
-     *
-     * @param title   the label title
-     * @param stars   the number of stars
-     * @param maximum the maximum number of stars
-     * @return the generated label
-     */
-    public static JLabel createStarRatingLabel(String title, double stars, int maximum) {
-        StringBuilder builder = new StringBuilder();
-        builder.append("<html>");
-        builder.append("<table><tr>");
-        if (title != null && !title.isEmpty())
-            builder.append("<td>").append(title).append("</td>");
-        builder.append("<td>");
-        for (int i = 0; i < maximum; ++i) {
-            if (stars >= i + 1)
-                builder.append("<img style=\"vertical-align:middle\" src=\"").append(ResourceUtils.getPluginResource("icons/star.png")).append("\" />");
-            else if (stars >= i + 0.5)
-                builder.append("<img style=\"vertical-align:middle\" src=\"").append(ResourceUtils.getPluginResource("icons/star-half-o.png")).append("\" />");
-            else
-                builder.append("<img style=\"vertical-align:middle\" src=\"").append(ResourceUtils.getPluginResource("icons/star-o.png")).append("\" />");
-        }
-        builder.append("</td>");
-        builder.append("</tr></table>");
-        builder.append("</html>");
-        return new JLabel(builder.toString());
-    }
-
-    /**
-     * Makes a toggle button readonly without greying it out
-     *
-     * @param toggleButton toggle button
-     */
-    public static void makeToggleReadonly(JToggleButton toggleButton) {
-        toggleButton.addActionListener(e -> toggleButton.setSelected(!toggleButton.isSelected()));
-    }
-
-    /**
-     * Creates a readonly text field
-     *
-     * @param value text
-     * @return textfield
-     */
-    public static JTextField makeReadonlyTextField(String value) {
-        JTextField textField = new JTextField();
-        textField.setText(value);
-        textField.setEditable(false);
-        return textField;
-    }
-
-    /**
      * Creates a readonly text area
      * Cannot do HTML.
      *
@@ -440,165 +282,7 @@ public class UIUtils {
         return textArea;
     }
 
-    /**
-     * Creates a readonly text pane (that can do HTML)
-     *
-     * @param text text
-     * @return text area
-     */
-    public static JTextPane makeReadonlyTextPane(String text) {
-        JTextPane textPane = new JTextPane();
-        textPane.setBorder(BorderFactory.createEtchedBorder());
-        textPane.setEditable(false);
-        textPane.setContentType("text/html");
-        textPane.setText(text);
-        return textPane;
-    }
 
-    /**
-     * Creates a readonly text pane (that can do HTML)
-     *
-     * @param text text
-     * @return text area
-     */
-    public static JTextPane makeBorderlessReadonlyTextPane(String text) {
-        JTextPane textPane = new JTextPane();
-        textPane.setBorder(BorderFactory.createEtchedBorder());
-        textPane.setEditable(false);
-        textPane.setContentType("text/html");
-        textPane.setText(text);
-        textPane.setBorder(null);
-        return textPane;
-    }
-
-    /**
-     * Creates a readonly text field
-     *
-     * @param value text
-     * @return textfield
-     */
-    public static JTextField makeReadonlyBorderlessTextField(String value) {
-        JTextField textField = new JTextField();
-        textField.setText(value);
-        textField.setBorder(null);
-        textField.setOpaque(false);
-        textField.setEditable(false);
-        return textField;
-    }
-
-    /**
-     * Creates a readonly text area
-     *
-     * @param text text
-     * @return text area
-     */
-    public static JTextArea makeReadonlyBorderlessTextArea(String text) {
-        JTextArea textArea = new JTextArea();
-        textArea.setBorder(null);
-        textArea.setOpaque(false);
-        textArea.setEditable(false);
-        textArea.setLineWrap(true);
-        textArea.setWrapStyleWord(true);
-        textArea.setText(text);
-        return textArea;
-    }
-
-    /**
-     * Fits the row heights of a {@link JTable}
-     *
-     * @param table the table
-     */
-    public static void fitRowHeights(JTable table) {
-        for (int row = 0; row < table.getRowCount(); row++) {
-            int rowHeight = table.getRowHeight();
-
-            for (int column = 0; column < table.getColumnCount(); column++) {
-                Component comp = table.prepareRenderer(table.getCellRenderer(row, column), row, column);
-                rowHeight = Math.max(rowHeight, comp.getPreferredSize().height);
-            }
-
-            table.setRowHeight(row, rowHeight);
-        }
-    }
-
-    /**
-     * Creates a hierarchy of menus based on the menu paths vector
-     *
-     * @param rootMenu  the root menu
-     * @param menuPaths strings that have menu items separated by newlines
-     * @return map from menu path to submenu
-     */
-    public static Map<String, JMenu> createMenuTree(JMenu rootMenu, Set<String> menuPaths) {
-        Set<String> decomposedPaths = new HashSet<>();
-        for (String menuPath : menuPaths) {
-            String[] components = menuPath.split("\n");
-            String path = null;
-            for (String component : components) {
-                if (path == null)
-                    path = component;
-                else
-                    path += "\n" + component;
-                decomposedPaths.add(path);
-            }
-        }
-
-        Map<String, JMenu> result = new HashMap<>();
-        List<String> sortedMenuPaths = decomposedPaths.stream().sorted().collect(Collectors.toList());
-        result.put("", rootMenu);
-        for (String menuPath : sortedMenuPaths) {
-            if (menuPath != null && !menuPath.isEmpty()) {
-                if (!menuPath.contains("\n")) {
-                    JMenu menu = new JMenu(menuPath);
-                    rootMenu.add(menu);
-                    result.put(menuPath, menu);
-                } else {
-                    int lastNewLine = menuPath.lastIndexOf("\n");
-                    String parentMenuPath = menuPath.substring(0, lastNewLine);
-                    String lastComponent = menuPath.substring(lastNewLine + 1);
-                    JMenu parentMenu = result.get(parentMenuPath);
-                    JMenu menu = new JMenu(lastComponent);
-                    parentMenu.add(menu);
-                    result.put(menuPath, menu);
-                }
-            }
-        }
-        return result;
-    }
-
-    /**
-     * Makes a {@link JDialog} close when the escape key is hit
-     *
-     * @param dialog the dialog
-     */
-    public static void addEscapeListener(final JDialog dialog) {
-        ActionListener escListener = e -> dialog.setVisible(false);
-        dialog.getRootPane().registerKeyboardAction(escListener,
-                KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
-                JComponent.WHEN_IN_FOCUSED_WINDOW);
-
-    }
-
-    /**
-     * Makes a label that contains a URL and opens the URL when clicked
-     *
-     * @param url the URL
-     * @return the label
-     */
-    public static JLabel makeURLLabel(String url) {
-        JLabel label = new JLabel("<html><a href=\"" + url + "\">" + url + "</a></html>");
-        label.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        label.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                try {
-                    Desktop.getDesktop().browse(new URI(url));
-                } catch (URISyntaxException | IOException ex) {
-                    throw new RuntimeException(ex);
-                }
-            }
-        });
-        return label;
-    }
 
     /**
      * Returns a string from clipboard or an empty string

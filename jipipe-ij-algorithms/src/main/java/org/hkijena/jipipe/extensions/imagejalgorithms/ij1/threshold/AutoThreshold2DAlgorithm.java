@@ -18,7 +18,6 @@ import ij.process.AutoThresholder;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
@@ -100,11 +99,6 @@ public class AutoThreshold2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeParameter("method")
     public void setMethod(AutoThresholder.Method method) {
         this.method = method;
-
-    }
-
-    @Override
-    public void reportValidity(JIPipeValidityReport report) {
 
     }
 

@@ -18,7 +18,6 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
-import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import javax.swing.event.TableModelListener;
@@ -32,6 +31,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * A data slot holds an {@link JIPipeData} instance.
@@ -123,6 +123,24 @@ public class JIPipeDataSlot implements TableModel {
             JIPipeAnnotation trait = getOrCreateAnnotationColumnData(info).get(row);
             if (trait != null)
                 result.add(trait);
+        }
+        return result;
+    }
+
+    /**
+     * Gets the list of annotations for specific data rows
+     *
+     * @param rows The set of rows
+     * @return Annotations at row
+     */
+    public synchronized List<JIPipeAnnotation> getAnnotations(Set<Integer> rows) {
+        List<JIPipeAnnotation> result = new ArrayList<>();
+        for (String info : annotationColumns) {
+            for (int row : rows) {
+                JIPipeAnnotation trait = getOrCreateAnnotationColumnData(info).get(row);
+                if (trait != null)
+                    result.add(trait);
+            }
         }
         return result;
     }

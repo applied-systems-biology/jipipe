@@ -25,7 +25,6 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeTypeCategory;
-import org.hkijena.jipipe.api.registries.JIPipeNodeRegistry;
 import org.hkijena.jipipe.extensions.parameters.primitives.DynamicStringEnumParameter;
 
 import javax.swing.*;

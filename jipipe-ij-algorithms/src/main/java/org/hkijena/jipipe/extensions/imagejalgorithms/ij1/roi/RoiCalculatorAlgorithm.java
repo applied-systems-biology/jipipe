@@ -17,7 +17,6 @@ import ij.gui.Roi;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
@@ -108,11 +107,6 @@ public class RoiCalculatorAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             outputData.addAll(data);
         }
         dataBatch.addOutputData(getFirstOutputSlot(), outputData);
-    }
-
-
-    @Override
-    public void reportValidity(JIPipeValidityReport report) {
     }
 
     @JIPipeDocumentation(name = "Operation", description = "The operation to apply on the list of ROI")

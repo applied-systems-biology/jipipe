@@ -56,7 +56,7 @@ public interface JIPipeNodeInfo {
      * @param algorithm Original algorithm instance
      * @return Copied algorithm instance
      */
-    JIPipeGraphNode clone(JIPipeGraphNode algorithm);
+    JIPipeGraphNode duplicate(JIPipeGraphNode algorithm);
 
     /**
      * Returns the algorithm name

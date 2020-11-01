@@ -70,7 +70,7 @@ public class JIPipeExportedCompartment {
         for (JIPipeGraphNode algorithm : sourceGraph.getNodes().values()) {
             if (!algorithm.getCompartment().equals(compartmentId))
                 continue;
-            JIPipeGraphNode copy = algorithm.getInfo().clone(algorithm);
+            JIPipeGraphNode copy = algorithm.getInfo().duplicate(algorithm);
             graph.insertNode(copy, copy.getCompartment());
             copies.put(algorithm.getIdInGraph(), copy);
         }
@@ -128,7 +128,7 @@ public class JIPipeExportedCompartment {
                 // Copy the slot configuration over
                 projectOutputNode.getSlotConfiguration().setTo(algorithm.getSlotConfiguration());
             } else {
-                JIPipeGraphNode copy = algorithm.getInfo().clone(algorithm);
+                JIPipeGraphNode copy = algorithm.getInfo().duplicate(algorithm);
                 project.getGraph().insertNode(copy, copy.getCompartment());
                 copies.put(algorithm.getIdInGraph(), copy);
             }

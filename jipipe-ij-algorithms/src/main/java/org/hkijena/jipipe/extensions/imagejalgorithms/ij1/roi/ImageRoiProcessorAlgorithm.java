@@ -14,13 +14,13 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi;
 
 import ij.ImagePlus;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
-import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -62,7 +62,7 @@ public abstract class ImageRoiProcessorAlgorithm extends JIPipeIteratingAlgorith
                 .addOutputSlot(outputName, output, null)
                 .seal()
                 .build());
-        toMaskAlgorithm = JIPipeAlgorithm.newInstance("ij1-roi-to-mask-unreferenced", UnreferencedRoiToMaskAlgorithm.class);
+        toMaskAlgorithm = JIPipe.createNode("ij1-roi-to-mask-unreferenced", UnreferencedRoiToMaskAlgorithm.class);
         registerSubParameter(toMaskAlgorithm);
     }
 

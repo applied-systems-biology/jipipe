@@ -18,7 +18,6 @@ import ij.gui.ShapeRoi;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
@@ -73,10 +72,6 @@ public class ReferencedAppendRectangularRoiAlgorithm extends JIPipeIteratingAlgo
     public ReferencedAppendRectangularRoiAlgorithm(ReferencedAppendRectangularRoiAlgorithm other) {
         super(other);
         this.rectangles = new Margin.List(other.rectangles);
-    }
-
-    @Override
-    public void reportValidity(JIPipeValidityReport report) {
     }
 
     @Override

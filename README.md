@@ -22,16 +22,25 @@ The project consists of following parts:
 * **JIPipe-Core** provides all basic functionality, such as the graph model, projects, and the GUI
 * **JIPipe-Annotation** provides algorithms and data types for handling annotation data.
 * **JIPipe-Filesystem** provides algorithms and data types for handling filesystem data.
-* **JIPipe-IJ** integrates ImageJ data types and algorithms.
+* **JIPipe-IJ** integrates ImageJ data types.
+* **JIPipe-IJ-Algorithms** integrates ImageJ algorithms.
+* **JIPipe-IJ-Multi-Template-Matching** integrates the ImageJ multi-template matching plugin.
+* **JIPipe-IJ-OMERO** integrates OMERO.
 * **JIPipe-Multiparameters** provides algorithms and data types for handling parameter data. It contains the data source algorithms to define parameters.
 * **JIPipe-Plots** provides data types and algorithms for generating plots.
 * **JIPipe-Python** provides a Python-scripting node.
 * **JIPipe-Tables** provides algorithms and data types to handle table data.
+* **JIPipe-Strings** provides algorithms and data types for handling string data.
+* **JIPipe-Utils** provides some helpful utility extensions.
+* **JIPipe-Launcher** provides a JAR file that launches JIPipe from outside of ImageJ
+* **IJ-Updater-CLI** is an alternative way to trigger ImageJ updates. This is used within the installer tools.
 
-You can use the **JIPipe-Debug** project to setup a development environment, as this project depends on all
+You can use the **JIPipe-Launcher** project to setup a development environment, as this project depends on all
 libraries.
 Due to internal dependencies, some data types are present in the **JIPipe-Core** library, but not registered into 
 the JIPipe runtime. 
+
+The `dist` folder contains scripts and project files to generate installers for Windows, Mac, and Linux.
 
 ## Building JIPipe
 

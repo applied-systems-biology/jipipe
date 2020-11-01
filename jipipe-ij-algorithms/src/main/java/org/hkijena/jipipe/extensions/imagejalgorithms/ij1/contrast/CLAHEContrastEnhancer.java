@@ -19,7 +19,6 @@ import mpicbg.ij.clahe.Flat;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
@@ -151,11 +150,6 @@ public class CLAHEContrastEnhancer extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeParameter("fast-mode")
     public void setFastMode(boolean fastMode) {
         this.fastMode = fastMode;
-
-    }
-
-    @Override
-    public void reportValidity(JIPipeValidityReport report) {
 
     }
 }

@@ -17,8 +17,6 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeDataImportOperation;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeExportedDataTable;
-import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
-import org.hkijena.jipipe.api.registries.JIPipeSettingsRegistry;
 import org.hkijena.jipipe.extensions.parameters.primitives.DynamicStringEnumParameter;
 import org.hkijena.jipipe.extensions.settings.DefaultResultImporterSettings;
 import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;

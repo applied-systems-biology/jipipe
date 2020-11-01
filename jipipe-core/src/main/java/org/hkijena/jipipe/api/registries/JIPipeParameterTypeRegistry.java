@@ -16,7 +16,6 @@ package org.hkijena.jipipe.api.registries;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableBiMap;
-import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDefaultDocumentation;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
@@ -26,7 +25,11 @@ import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterGeneratorUI;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Registry for all known parameter types

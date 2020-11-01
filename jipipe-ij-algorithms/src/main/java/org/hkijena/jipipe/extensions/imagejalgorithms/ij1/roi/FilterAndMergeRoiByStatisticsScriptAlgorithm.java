@@ -21,7 +21,6 @@ import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.events.ParameterChangedEvent;
-import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -31,7 +30,6 @@ import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
-import org.hkijena.jipipe.api.registries.JIPipeParameterTypeRegistry;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.parameters.scripts.PythonScript;
@@ -39,6 +37,7 @@ import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.PythonUtils;
 import org.hkijena.jipipe.utils.ResourceUtils;
+import org.hkijena.jipipe.utils.UIUtils;
 import org.python.core.PyDictionary;
 import org.python.util.PythonInterpreter;
 
@@ -64,7 +63,7 @@ import static org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.ImageRoiPro
 public class FilterAndMergeRoiByStatisticsScriptAlgorithm extends ImageRoiProcessorAlgorithm {
 
     private RoiStatisticsAlgorithm roiStatisticsAlgorithm =
-            JIPipeAlgorithm.newInstance("ij1-roi-statistics", RoiStatisticsAlgorithm.class);
+            JIPipe.createNode("ij1-roi-statistics", RoiStatisticsAlgorithm.class);
     private PythonInterpreter pythonInterpreter;
     private PythonScript code = new PythonScript();
     private JIPipeDynamicParameterCollection scriptParameters = new JIPipeDynamicParameterCollection(true,
@@ -96,11 +95,7 @@ public class FilterAndMergeRoiByStatisticsScriptAlgorithm extends ImageRoiProces
     @JIPipeDocumentation(name = "Load example", description = "Loads example parameters that showcase how to use this algorithm.")
     @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/graduation-cap.png")
     public void setToExample(JIPipeWorkbench parent) {
-        if (JOptionPane.showConfirmDialog(parent.getWindow(),
-                "This will reset most of the properties. Continue?",
-                "Load example",
-                JOptionPane.YES_NO_OPTION,
-                JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
+        if (UIUtils.confirmResetParameters(parent, "Load example")) {
             code.setCode("# This script is executed once\n" +
                     "# All ROI lists are passed as array 'roi_lists'\n" +
                     "# It contains dictionaries with following structure:\n" +

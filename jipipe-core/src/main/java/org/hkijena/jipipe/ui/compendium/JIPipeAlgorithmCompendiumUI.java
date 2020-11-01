@@ -28,8 +28,6 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterVisibility;
-import org.hkijena.jipipe.api.registries.JIPipeNodeRegistry;
-import org.hkijena.jipipe.api.registries.JIPipeParameterTypeRegistry;
 import org.hkijena.jipipe.ui.components.JIPipeNodeInfoListCellRenderer;
 import org.hkijena.jipipe.ui.components.MarkdownDocument;
 import org.hkijena.jipipe.utils.ResourceUtils;

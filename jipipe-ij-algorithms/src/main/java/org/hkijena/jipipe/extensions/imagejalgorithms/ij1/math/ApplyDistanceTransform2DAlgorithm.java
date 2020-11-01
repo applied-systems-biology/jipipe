@@ -18,7 +18,6 @@ import ij.plugin.filter.EDM;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
@@ -78,10 +77,5 @@ public class ApplyDistanceTransform2DAlgorithm extends JIPipeSimpleIteratingAlgo
         EDM edm = new EDM();
         ImageJUtils.forEachSlice(img, edm::toEDM);
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscale8UData(img));
-    }
-
-
-    @Override
-    public void reportValidity(JIPipeValidityReport report) {
     }
 }

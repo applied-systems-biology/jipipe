@@ -19,7 +19,6 @@ import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
@@ -117,11 +116,6 @@ public class TransformCrop2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             ImagePlus result = new ImagePlus("Cropped", croppedImage);
             dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(result));
         }
-    }
-
-
-    @Override
-    public void reportValidity(JIPipeValidityReport report) {
     }
 
     @JIPipeDocumentation(name = "ROI", description = "Defines the area to crop.")

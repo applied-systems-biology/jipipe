@@ -17,7 +17,6 @@ import ij.ImagePlus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
@@ -85,10 +84,6 @@ public class DivideByMaximumAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             DisplayRangeCalibrationAlgorithm.calibrate(img, CalibrationMode.AutomaticImageJ, 0, 1);
         }
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(img));
-    }
-
-    @Override
-    public void reportValidity(JIPipeValidityReport report) {
     }
 
     @JIPipeDocumentation(name = "Recalibrate afterwards", description = "Without this setting enabled, the generated image might only be shown as black in ImageJ.")

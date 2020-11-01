@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.ui.registries;
 
-import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.extension.MenuExtension;

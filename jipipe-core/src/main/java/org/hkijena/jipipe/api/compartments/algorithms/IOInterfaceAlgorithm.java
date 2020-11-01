@@ -13,10 +13,10 @@
 
 package org.hkijena.jipipe.api.compartments.algorithms;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
@@ -66,11 +66,6 @@ public class IOInterfaceAlgorithm extends JIPipeAlgorithm {
         }
     }
 
-    @Override
-    public void reportValidity(JIPipeValidityReport report) {
-
-    }
-
     /**
      * Removes the interface and directly connects the inputs and outputs
      *
@@ -109,7 +104,7 @@ public class IOInterfaceAlgorithm extends JIPipeAlgorithm {
     public static void replaceCompartmentOutput(JIPipeCompartmentOutput compartmentOutput) {
         JIPipeGraph graph = compartmentOutput.getGraph();
         String id = compartmentOutput.getIdInGraph();
-        IOInterfaceAlgorithm ioInterfaceAlgorithm = JIPipeAlgorithm.newInstance("io-interface", IOInterfaceAlgorithm.class);
+        IOInterfaceAlgorithm ioInterfaceAlgorithm = JIPipe.createNode("io-interface", IOInterfaceAlgorithm.class);
         ioInterfaceAlgorithm.setCustomName(compartmentOutput.getName());
         ioInterfaceAlgorithm.setCustomDescription(compartmentOutput.getCustomDescription());
         ioInterfaceAlgorithm.getSlotConfiguration().setTo(compartmentOutput.getSlotConfiguration());

@@ -18,7 +18,6 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
-import org.hkijena.jipipe.utils.CustomScrollPane;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -65,7 +64,7 @@ public class ParameterTreeUI extends JPanel {
         setLayout(new BorderLayout());
         treeComponent = new JTree();
         treeComponent.setCellRenderer(new Renderer());
-        treeScrollPane = new CustomScrollPane(treeComponent);
+        treeScrollPane = new JScrollPane(treeComponent);
         add(treeScrollPane, BorderLayout.CENTER);
         searchTextField = new SearchTextField();
         searchTextField.addActionListener(e -> rebuildModel());

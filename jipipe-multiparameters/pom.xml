@@ -5,11 +5,11 @@
     <parent>
         <artifactId>jipipe</artifactId>
         <groupId>org.hkijena</groupId>
-        <version>2020.10</version>
+        <version>2020.11</version>
     </parent>
 
     <artifactId>jipipe-multiparameters</artifactId>
-    <version>2020.10</version>
+    <version>2020.11</version>
 
     <name>jipipe-multiparameters</name>
     <description>JIPipe Parameter Data Processing</description>
@@ -73,11 +73,20 @@
         <license.projectName>JIPipe-Multi-Parameters</license.projectName>
     </properties>
 
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.hkijena</groupId>
+                <artifactId>jipipe-core</artifactId>
+                <version>2020.11</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
     <dependencies>
         <dependency>
             <groupId>org.hkijena</groupId>
             <artifactId>jipipe-core</artifactId>
-            <version>2020.10</version>
         </dependency>
     </dependencies>
 

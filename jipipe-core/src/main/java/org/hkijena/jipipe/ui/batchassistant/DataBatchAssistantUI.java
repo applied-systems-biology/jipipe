@@ -14,7 +14,6 @@
 package org.hkijena.jipipe.ui.batchassistant;
 
 import com.google.common.eventbus.Subscribe;
-import gnu.trove.set.TIntSet;
 import org.hkijena.jipipe.api.JIPipeProjectCache;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
@@ -22,10 +21,8 @@ import org.hkijena.jipipe.api.events.NodeDisconnectedEvent;
 import org.hkijena.jipipe.api.events.NodeSlotsChangedEvent;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatchAlgorithm;
-import org.hkijena.jipipe.api.nodes.JIPipeDataBatchKey;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
-import org.hkijena.jipipe.api.nodes.JIPipeParameterSlotAlgorithm;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.FormPanel;
@@ -184,18 +181,15 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
 
     private void refreshBatchPreview() {
         batchPreviewPanel.clear();
-        JIPipeGraphNode copy = algorithm.getInfo().clone(algorithm);
-        if (copy instanceof JIPipeParameterSlotAlgorithm)
-            ((JIPipeParameterSlotAlgorithm) copy).getParameterSlotAlgorithmSettings().setHasParameterSlot(false);
+        JIPipeGraphNode copy = algorithm.getInfo().duplicate(algorithm);
         // Pass cache as input slots
-        for (JIPipeDataSlot inputSlot : copy.getInputSlots()) {
+        for (JIPipeDataSlot inputSlot : copy.getEffectiveInputSlots()) {
             JIPipeDataSlot cache = currentCache.getOrDefault(inputSlot.getName(), null);
             inputSlot.copyFrom(cache);
         }
         // Generate dry-run
         JIPipeDataBatchAlgorithm batchAlgorithm = (JIPipeDataBatchAlgorithm) copy;
-        Map<JIPipeDataBatchKey, Map<String, TIntSet>> groups = batchAlgorithm.groupDataByMetadata(copy.getInputSlotMap());
-        List<JIPipeMergingDataBatch> batches = batchAlgorithm.generateDataBatchesDryRun(groups);
+        List<JIPipeMergingDataBatch> batches = batchAlgorithm.generateDataBatchesDryRun(copy.getEffectiveInputSlots());
 
         batchPreviewNumberLabel.setText(batches.size() + " batches");
         batchPreviewMissingLabel.setVisible(false);

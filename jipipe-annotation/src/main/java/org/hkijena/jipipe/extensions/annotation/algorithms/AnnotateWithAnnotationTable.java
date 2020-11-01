@@ -1,8 +1,5 @@
 package org.hkijena.jipipe.extensions.annotation.algorithms;
 
-import gnu.trove.iterator.TIntIterator;
-import gnu.trove.set.TIntSet;
-import gnu.trove.set.hash.TIntHashSet;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
@@ -12,9 +9,9 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
-import org.hkijena.jipipe.api.nodes.JIPipeDataBatchKey;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeIteratingAlgorithm;
+import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.categories.AnnotationsNodeTypeCategory;
@@ -22,6 +19,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.tables.datatypes.AnnotationTableData;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -68,13 +66,10 @@ public class AnnotateWithAnnotationTable extends JIPipeIteratingAlgorithm {
             return;
         }
 
-        Map<String, JIPipeDataSlot> slotMap = new HashMap<>();
         JIPipeDataSlot dataInputSlot = getInputSlot("Data");
-        slotMap.put("Data", dataInputSlot);
 
         // Create a dummy slot where we put the annotations
         JIPipeDataSlot dummy = new JIPipeDataSlot(new JIPipeDataSlotInfo(JIPipeData.class, JIPipeSlotType.Input, "dummy", null), this);
-        slotMap.put("dummy", dummy);
         JIPipeDataSlot annotationSlot = getInputSlot("Annotations");
         for (int i = 0; i < annotationSlot.getRowCount(); i++) {
             AnnotationTableData data = annotationSlot.getData(i, AnnotationTableData.class);
@@ -85,16 +80,15 @@ public class AnnotateWithAnnotationTable extends JIPipeIteratingAlgorithm {
         }
 
         // Group the data by annotations
-        Set<Map.Entry<JIPipeDataBatchKey, Map<String, TIntSet>>> byDataBatch = groupDataByMetadata(slotMap).entrySet();
-        for (Map.Entry<JIPipeDataBatchKey, Map<String, TIntSet>> entry : byDataBatch) {
-            TIntSet dataRows = entry.getValue().getOrDefault("Data", null);
+        List<JIPipeMergingDataBatch> mergingDataBatches = generateDataBatchesDryRun(Arrays.asList(dataInputSlot, dummy));
+        for (JIPipeMergingDataBatch dataBatch : mergingDataBatches) {
+            Set<Integer> dataRows = dataBatch.getInputRows("Data");
             if (dataRows == null)
                 continue;
-            TIntSet metadataRows = entry.getValue().getOrDefault("dummy", new TIntHashSet());
+            Set<Integer> metadataRows = dataBatch.getInputRows("dummy");
 
             Map<String, JIPipeAnnotation> newAnnotations = new HashMap<>();
-            for (TIntIterator it = metadataRows.iterator(); it.hasNext(); ) {
-                int row = it.next();
+            for (int row : metadataRows) {
                 for (JIPipeAnnotation annotation : dummy.getAnnotations(row)) {
                     JIPipeAnnotation existing = newAnnotations.getOrDefault(annotation.getName(), null);
                     if (existing != null) {
@@ -107,8 +101,7 @@ public class AnnotateWithAnnotationTable extends JIPipeIteratingAlgorithm {
                 }
             }
 
-            for (TIntIterator it = dataRows.iterator(); it.hasNext(); ) {
-                int row = it.next();
+            for (int row : dataRows) {
                 Map<String, JIPipeAnnotation> annotationMap = new HashMap<>();
 
                 // Fetch existing annotations

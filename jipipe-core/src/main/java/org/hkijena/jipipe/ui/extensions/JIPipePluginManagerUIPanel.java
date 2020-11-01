@@ -21,7 +21,6 @@ import org.hkijena.jipipe.api.events.ExtensionRegisteredEvent;
 import org.hkijena.jipipe.ui.JIPipeJsonExtensionWindow;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
-import org.hkijena.jipipe.utils.CustomScrollPane;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -67,7 +66,7 @@ public class JIPipePluginManagerUIPanel extends JIPipeProjectWorkbenchPanel {
                 splitPane.setDividerLocation(0.33);
             }
         });
-        JScrollPane scrollPane = new CustomScrollPane(dependencyJList);
+        JScrollPane scrollPane = new JScrollPane(dependencyJList);
         splitPane.setLeftComponent(scrollPane);
         splitPane.setRightComponent(new JPanel());
 

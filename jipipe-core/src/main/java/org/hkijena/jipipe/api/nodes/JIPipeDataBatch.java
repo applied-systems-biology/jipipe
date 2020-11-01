@@ -28,17 +28,17 @@ import java.util.Map;
  * This can be used for convenience
  */
 public class JIPipeDataBatch {
-    private JIPipeGraphNode algorithm;
+    private JIPipeGraphNode node;
     private Map<JIPipeDataSlot, Integer> inputSlotRows;
     private Map<String, JIPipeAnnotation> annotations = new HashMap<>();
 
     /**
      * Creates a new interface
      *
-     * @param algorithm The algorithm
+     * @param node The algorithm
      */
-    public JIPipeDataBatch(JIPipeGraphNode algorithm) {
-        this.algorithm = algorithm;
+    public JIPipeDataBatch(JIPipeGraphNode node) {
+        this.node = node;
         this.inputSlotRows = new HashMap<>();
 //        initialize(inputSlots, row);
     }
@@ -49,9 +49,13 @@ public class JIPipeDataBatch {
      * @param other the original
      */
     public JIPipeDataBatch(JIPipeDataBatch other) {
-        this.algorithm = other.algorithm;
+        this.node = other.node;
         this.inputSlotRows = new HashMap<>(other.inputSlotRows);
         this.annotations = new HashMap<>(other.annotations);
+    }
+
+    public JIPipeGraphNode getNode() {
+        return node;
     }
 
     /**
@@ -94,7 +98,11 @@ public class JIPipeDataBatch {
         }
     }
 
-//    private void initialize(List<JIPipeDataSlot> inputSlots, int referenceInputSlotRow) {
+    public void setAnnotations(Map<String, JIPipeAnnotation> annotations) {
+        this.annotations = annotations;
+    }
+
+    //    private void initialize(List<JIPipeDataSlot> inputSlots, int referenceInputSlotRow) {
 //        JIPipeDataSlot referenceInputSlot = inputSlots.get(0);
 //        inputSlotRows.put(referenceInputSlot, referenceInputSlotRow);
 //        annotations = referenceInputSlot.getAnnotations(referenceInputSlotRow);
@@ -124,7 +132,7 @@ public class JIPipeDataBatch {
      * @return Input data with provided name
      */
     public <T extends JIPipeData> T getInputData(String slotName, Class<T> dataClass) {
-        return getInputData(algorithm.getInputSlot(slotName), dataClass);
+        return getInputData(node.getInputSlot(slotName), dataClass);
     }
 
     /**
@@ -136,7 +144,7 @@ public class JIPipeDataBatch {
      * @return Input data with provided name
      */
     public <T extends JIPipeData> T getInputData(JIPipeDataSlot slot, Class<T> dataClass) {
-        if (slot.getNode() != algorithm)
+        if (slot.getNode() != node)
             throw new IllegalArgumentException("The provided slot does not belong to the data interface algorithm!");
         if (!slot.isInput())
             throw new IllegalArgumentException("Slot is not an input slot!");
@@ -197,7 +205,7 @@ public class JIPipeDataBatch {
      * @param data     Added data
      */
     public void addOutputData(String slotName, JIPipeData data) {
-        addOutputData(algorithm.getOutputSlot(slotName), data);
+        addOutputData(node.getOutputSlot(slotName), data);
     }
 
     /**
@@ -209,7 +217,7 @@ public class JIPipeDataBatch {
      * @param additionalAnnotations Annotations that are added additionally to the global ones
      */
     public void addOutputData(String slotName, JIPipeData data, List<JIPipeAnnotation> additionalAnnotations) {
-        addOutputData(algorithm.getOutputSlot(slotName), data, additionalAnnotations);
+        addOutputData(node.getOutputSlot(slotName), data, additionalAnnotations);
     }
 
     /**
@@ -220,7 +228,7 @@ public class JIPipeDataBatch {
      * @param data Added data
      */
     public void addOutputData(JIPipeDataSlot slot, JIPipeData data) {
-        if (slot.getNode() != algorithm)
+        if (slot.getNode() != node)
             throw new IllegalArgumentException("The provided slot does not belong to the data interface algorithm!");
         if (!slot.isOutput())
             throw new IllegalArgumentException("Slot is not an output slot!");
@@ -236,7 +244,7 @@ public class JIPipeDataBatch {
      * @param additionalAnnotations Annotations that are added additionally to the global ones
      */
     public void addOutputData(JIPipeDataSlot slot, JIPipeData data, List<JIPipeAnnotation> additionalAnnotations) {
-        if (slot.getNode() != algorithm)
+        if (slot.getNode() != node)
             throw new IllegalArgumentException("The provided slot does not belong to the data interface algorithm!");
         if (!slot.isOutput())
             throw new IllegalArgumentException("Slot is not an output slot!");

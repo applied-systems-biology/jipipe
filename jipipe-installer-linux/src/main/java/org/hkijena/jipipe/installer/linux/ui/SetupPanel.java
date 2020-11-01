@@ -14,7 +14,6 @@
 package org.hkijena.jipipe.installer.linux.ui;
 
 import org.hkijena.jipipe.installer.linux.ui.utils.FormPanel;
-import org.hkijena.jipipe.installer.linux.ui.utils.JIPipeRunnerQueue;
 import org.hkijena.jipipe.installer.linux.ui.utils.MarkdownDocument;
 import org.hkijena.jipipe.installer.linux.ui.utils.MarkdownReader;
 import org.hkijena.jipipe.installer.linux.ui.utils.PathEditor;

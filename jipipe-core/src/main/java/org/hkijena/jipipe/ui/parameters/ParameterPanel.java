@@ -25,7 +25,6 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterVisibility;
-import org.hkijena.jipipe.api.registries.JIPipeParameterTypeRegistry;
 import org.hkijena.jipipe.extensions.settings.GraphEditorUISettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.AddDynamicParameterPanel;
@@ -266,7 +265,7 @@ public class ParameterPanel extends FormPanel implements Contextual {
 
     private MarkdownDocument generateParameterDocumentation(JIPipeParameterAccess access) {
         StringBuilder markdownString = new StringBuilder();
-        markdownString.append("# Parameter '").append(access.getName()).append("'\n\n");
+        markdownString.append("# ").append(access.getName()).append("\n\n");
         markdownString.append("<table><tr>");
         markdownString.append("<td><img src=\"").append(ResourceUtils.getPluginResource("icons/actions/dialog-xml-editor.png")).append("\" /></td>");
         markdownString.append("<td><strong>Unique identifier</strong>: <code>");

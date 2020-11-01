@@ -17,17 +17,17 @@ import com.google.common.eventbus.Subscribe;
 import ij.IJ;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.events.ParameterChangedEvent;
-import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
-import org.hkijena.jipipe.api.registries.JIPipeNodeRegistry;
+import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
 import org.hkijena.jipipe.extensions.settings.ProjectsSettings;
 import org.hkijena.jipipe.ui.components.BackgroundPanel;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.MarkdownReader;
 import org.hkijena.jipipe.ui.components.RecentProjectListCellRenderer;
-import org.hkijena.jipipe.utils.CustomScrollPane;
+import org.hkijena.jipipe.utils.DotSlideshow;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.ResourceUtils;
+import org.hkijena.jipipe.utils.RoundedLineBorder;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -84,17 +84,59 @@ public class JIPipeInfoUI extends JIPipeProjectWorkbenchPanel {
     }
 
     private void initContent() {
-        MarkdownReader markdownReader = new MarkdownReader(false, MarkdownDocument.fromPluginResource("documentation/introduction.md"));
-        markdownReader.setBorder(null);
-        markdownReader.getScrollPane().setBorder(null);
-        add(markdownReader, BorderLayout.CENTER);
+        if(!GeneralUISettings.getInstance().isShowIntroductionTour())
+            return;
+//        MarkdownReader markdownReader = new MarkdownReader(false, MarkdownDocument.fromPluginResource("documentation/introduction.md"));
+//        markdownReader.setBorder(null);
+//        markdownReader.getScrollPane().setBorder(null);
+//        add(markdownReader, BorderLayout.CENTER);
+
+        JPanel tourPanel = new JPanel();
+        tourPanel.setLayout(new BoxLayout(tourPanel, BoxLayout.Y_AXIS));
+        JPanel tourContentPanel = new JPanel(new BorderLayout());
+        tourContentPanel.setAlignmentY(JComponent.CENTER_ALIGNMENT);
+        tourContentPanel.setAlignmentX(JComponent.CENTER_ALIGNMENT);
+        tourContentPanel.setBorder(new RoundedLineBorder(Color.GRAY, 1, 3, true));
+        tourContentPanel.setMaximumSize(new Dimension(800,600));
+//        tourContentPanel.setMinimumSize(new Dimension(800,600));
+        tourContentPanel.setPreferredSize(new Dimension(800,600));
+        tourContentPanel.setBackground(Color.WHITE);
+        tourPanel.add(Box.createVerticalGlue());
+        tourPanel.add(tourContentPanel);
+        tourPanel.add(Box.createVerticalGlue());
+        add(tourPanel, BorderLayout.CENTER);
+
+        DotSlideshow slideshow = new DotSlideshow();
+        MarkdownReader slideWelcome = new MarkdownReader(false, MarkdownDocument.fromPluginResource("documentation/introduction_welcome.md"));
+        slideWelcome.setBorder(BorderFactory.createLineBorder(Color.WHITE, 16));
+        slideshow.addSlide(slideWelcome, "Welcome to JIPipe");
+
+        MarkdownReader slideOrganization = new MarkdownReader(false, MarkdownDocument.fromPluginResource("documentation/introduction_organization.md"));
+        slideOrganization.setBorder(BorderFactory.createLineBorder(Color.WHITE, 16));
+        slideshow.addSlide(slideOrganization, "Organizing your pipeline");
+
+        MarkdownReader slideNodes = new MarkdownReader(false, MarkdownDocument.fromPluginResource("documentation/introduction_nodes.md"));
+        slideNodes.setBorder(BorderFactory.createLineBorder(Color.WHITE, 16));
+        slideshow.addSlide(slideNodes, "Adding nodes");
+
+        MarkdownReader slidesRunning = new MarkdownReader(false, MarkdownDocument.fromPluginResource("documentation/introduction_running.md"));
+        slidesRunning.setBorder(BorderFactory.createLineBorder(Color.WHITE, 16));
+        slideshow.addSlide(slidesRunning, "Running your pipeline");
+
+        slideshow.showSlide("Welcome to JIPipe");
+
+        tourContentPanel.add(slideshow, BorderLayout.CENTER);
     }
 
     private void initRecentProjects() {
         recentProjectsList.setCellRenderer(new RecentProjectListCellRenderer());
-        JScrollPane scrollPane = new CustomScrollPane(recentProjectsList);
+        JScrollPane scrollPane = new JScrollPane(recentProjectsList);
         scrollPane.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, Color.DARK_GRAY));
-        add(scrollPane, BorderLayout.WEST);
+        if(!GeneralUISettings.getInstance().isShowIntroductionTour())
+            add(scrollPane, BorderLayout.CENTER);
+        else
+            add(scrollPane, BorderLayout.WEST);
+
 
         recentProjectsList.addMouseListener(new MouseAdapter() {
             @Override

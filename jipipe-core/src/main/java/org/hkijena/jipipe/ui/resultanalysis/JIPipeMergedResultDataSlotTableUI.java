@@ -23,7 +23,7 @@ import org.hkijena.jipipe.api.data.JIPipeExportedDataTable;
 import org.hkijena.jipipe.api.data.JIPipeMergedExportedDataTable;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
-import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
+import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
@@ -32,7 +32,6 @@ import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.SearchTextField;
 import org.hkijena.jipipe.ui.components.SearchTextFieldTableRowFilter;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
-import org.hkijena.jipipe.utils.CustomScrollPane;
 import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jdesktop.swingx.JXTable;
@@ -77,8 +76,8 @@ public class JIPipeMergedResultDataSlotTableUI extends JIPipeProjectWorkbenchPan
     private void initialize() {
         setLayout(new BorderLayout());
         table = new JXTable();
-        if (GeneralUISettings.getInstance().isGenerateResultPreviews())
-            table.setRowHeight(GeneralUISettings.getInstance().getPreviewHeight());
+        if (GeneralDataSettings.getInstance().isGenerateResultPreviews())
+            table.setRowHeight(GeneralDataSettings.getInstance().getPreviewHeight());
         else
             table.setRowHeight(25);
         table.setDefaultRenderer(Path.class, new JIPipeRowIndexTableCellRenderer());
@@ -88,7 +87,7 @@ public class JIPipeMergedResultDataSlotTableUI extends JIPipeProjectWorkbenchPan
         table.setDefaultRenderer(JIPipeAnnotation.class, new JIPipeTraitTableCellRenderer());
         table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
-        JScrollPane scrollPane = new CustomScrollPane(table);
+        JScrollPane scrollPane = new JScrollPane(table);
         scrollPane.getViewport().setBackground(Color.WHITE);
         add(scrollPane, BorderLayout.CENTER);
         add(table.getTableHeader(), BorderLayout.NORTH);

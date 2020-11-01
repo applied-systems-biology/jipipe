@@ -30,13 +30,19 @@ import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.events.GraphChangedEvent;
 import org.hkijena.jipipe.api.events.ParameterStructureChangedEvent;
 import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameters;
-import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.DefaultJIPipeInputSlot;
+import org.hkijena.jipipe.api.nodes.DefaultJIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeGraph;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
-import org.hkijena.jipipe.api.registries.JIPipeNodeRegistry;
 import org.hkijena.jipipe.extensions.parameters.enums.DynamicCategoryEnumParameter;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
@@ -128,7 +134,7 @@ public class JsonNodeInfo implements JIPipeNodeInfo, JIPipeValidatable, JIPipePa
     }
 
     @Override
-    public JIPipeGraphNode clone(JIPipeGraphNode algorithm) {
+    public JIPipeGraphNode duplicate(JIPipeGraphNode algorithm) {
         return new JsonAlgorithm((GraphWrapperAlgorithm) algorithm);
     }
 
@@ -308,7 +314,7 @@ public class JsonNodeInfo implements JIPipeNodeInfo, JIPipeValidatable, JIPipePa
         }
         if (algorithmInput == null) {
             // Create if it doesn't exist
-            algorithmInput = JIPipeAlgorithm.newInstance("graph-wrapper:input", GraphWrapperAlgorithmInput.class);
+            algorithmInput = JIPipe.createNode("graph-wrapper:input", GraphWrapperAlgorithmInput.class);
             graph.insertNode(algorithmInput, JIPipeGraph.COMPARTMENT_DEFAULT);
         }
         return algorithmInput;
@@ -330,7 +336,7 @@ public class JsonNodeInfo implements JIPipeNodeInfo, JIPipeValidatable, JIPipePa
         }
         if (algorithmOutput == null) {
             // Create if it doesn't exist
-            algorithmOutput = JIPipeAlgorithm.newInstance("graph-wrapper:output", GraphWrapperAlgorithmOutput.class);
+            algorithmOutput = JIPipe.createNode("graph-wrapper:output", GraphWrapperAlgorithmOutput.class);
             graph.insertNode(algorithmOutput, JIPipeGraph.COMPARTMENT_DEFAULT);
         }
         return algorithmOutput;

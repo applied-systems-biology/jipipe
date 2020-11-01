@@ -22,7 +22,6 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
@@ -31,7 +30,6 @@ import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.registries.JIPipeNodeRegistry;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.greyscale.ImagePlus2DGreyscaleData;
@@ -85,7 +83,7 @@ public class BrightSpotsSegmentation2DAlgorithm extends JIPipeSimpleIteratingAlg
         this.rollingBallRadius = other.rollingBallRadius;
         this.dilationErodeSteps = other.dilationErodeSteps;
         this.gaussianSigma = other.gaussianSigma;
-        this.autoThresholding = (AutoThreshold2DAlgorithm) other.autoThresholding.getInfo().clone(other.autoThresholding);
+        this.autoThresholding = (AutoThreshold2DAlgorithm) other.autoThresholding.getInfo().duplicate(other.autoThresholding);
     }
 
     @Override
@@ -193,10 +191,5 @@ public class BrightSpotsSegmentation2DAlgorithm extends JIPipeSimpleIteratingAlg
     @JIPipeDocumentation(name = "Auto thresholding", description = "Parameters for underlying auto thresholding")
     public AutoThreshold2DAlgorithm getAutoThresholding() {
         return autoThresholding;
-    }
-
-    @Override
-    public void reportValidity(JIPipeValidityReport report) {
-
     }
 }

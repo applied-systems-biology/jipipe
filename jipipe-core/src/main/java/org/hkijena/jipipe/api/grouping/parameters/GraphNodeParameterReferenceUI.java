@@ -16,7 +16,6 @@ package org.hkijena.jipipe.api.grouping.parameters;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
-import org.hkijena.jipipe.api.registries.JIPipeParameterTypeRegistry;
 import org.hkijena.jipipe.ui.components.DocumentChangeListener;
 import org.hkijena.jipipe.ui.components.FancyTextField;
 import org.hkijena.jipipe.utils.UIUtils;

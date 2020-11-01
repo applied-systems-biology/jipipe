@@ -18,7 +18,6 @@ import org.hkijena.jipipe.JIPipeJsonExtension;
 import org.hkijena.jipipe.api.JIPipeValidatable;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.grouping.JsonNodeInfo;
-import org.hkijena.jipipe.api.registries.JIPipeNodeRegistry;
 import org.hkijena.jipipe.utils.StringUtils;
 
 /**

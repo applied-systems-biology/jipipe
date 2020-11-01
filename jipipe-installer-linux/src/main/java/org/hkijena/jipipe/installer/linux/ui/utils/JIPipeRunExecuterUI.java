@@ -47,7 +47,7 @@ public class JIPipeRunExecuterUI extends JPanel {
         log = new JTextArea();
         log.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
         log.setEditable(false);
-        logScrollPane = new CustomScrollPane(log);
+        logScrollPane = new JScrollPane(log);
         add(logScrollPane, BorderLayout.CENTER);
 
         JPanel buttonPanel = new JPanel();

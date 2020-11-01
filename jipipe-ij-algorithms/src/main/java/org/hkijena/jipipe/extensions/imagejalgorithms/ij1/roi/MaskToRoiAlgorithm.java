@@ -14,7 +14,6 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi;
 
 import ij.ImagePlus;
-import ij.Prefs;
 import ij.gui.Roi;
 import ij.plugin.filter.ThresholdToSelection;
 import ij.process.ImageProcessor;

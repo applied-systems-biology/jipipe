@@ -22,7 +22,6 @@ import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
@@ -158,11 +157,6 @@ public class HistogramGenerator extends JIPipeSimpleIteratingAlgorithm {
             ++row;
         }
         return new ResultsTableData(resultsTable);
-    }
-
-    @Override
-    public void reportValidity(JIPipeValidityReport report) {
-
     }
 
     @JIPipeDocumentation(name = "Apply per slice", description = "If higher dimensional data is provided, generate a histogram for each slice. If disabled, " +

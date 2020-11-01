@@ -25,8 +25,8 @@ import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.parameters.pairs.StringFilterAndSortOrderPair;
-import org.hkijena.jipipe.extensions.parameters.predicates.StringPredicate;
+import org.hkijena.jipipe.extensions.parameters.expressions.StringQueryExpression;
+import org.hkijena.jipipe.extensions.parameters.pairs.StringQueryExpressionAndSortOrderPairParameter;
 import org.hkijena.jipipe.extensions.parameters.util.SortOrder;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 
@@ -44,7 +44,7 @@ import java.util.function.Supplier;
 @JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
 public class SortTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
-    private StringFilterAndSortOrderPair.List sortOrderList = new StringFilterAndSortOrderPair.List();
+    private StringQueryExpressionAndSortOrderPairParameter.List sortOrderList = new StringQueryExpressionAndSortOrderPairParameter.List();
 
     /**
      * Creates a new instance
@@ -63,7 +63,7 @@ public class SortTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
      */
     public SortTableAlgorithm(SortTableAlgorithm other) {
         super(other);
-        this.sortOrderList = new StringFilterAndSortOrderPair.List(other.sortOrderList);
+        this.sortOrderList = new StringQueryExpressionAndSortOrderPairParameter.List(other.sortOrderList);
     }
 
     @Override
@@ -89,11 +89,11 @@ public class SortTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         dataBatch.addOutputData(getFirstOutputSlot(), output);
     }
 
-    private Comparator<Integer> getRowComparator(StringFilterAndSortOrderPair pair, ResultsTableData input) {
+    private Comparator<Integer> getRowComparator(StringQueryExpressionAndSortOrderPairParameter pair, ResultsTableData input) {
         Comparator<Integer> result = null;
-        StringPredicate filter = pair.getKey();
+        StringQueryExpression expression = pair.getKey();
         for (String columnName : input.getColumnNames()) {
-            if (filter.test(columnName)) {
+            if (expression.test(columnName)) {
                 boolean isNumeric = input.isNumeric(input.getColumnIndex(columnName));
                 Comparator<Integer> chain = (r1, r2) -> {
                     if (isNumeric) {
@@ -119,10 +119,10 @@ public class SortTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             }
         }
         if (result == null) {
-            throw new UserFriendlyRuntimeException("Could not find column that matches '" + filter.toString() + "'!",
+            throw new UserFriendlyRuntimeException("Could not find column that matches '" + expression.toString() + "'!",
                     "Could not find column!",
                     "Algorithm '" + getName() + "'",
-                    "A plot generator algorithm was instructed to extract a column matching the rule '" + filter.toString() + "' for plotting. The column could note be found. " +
+                    "A plot generator algorithm was instructed to extract a column matching the rule '" + expression.toString() + "' for plotting. The column could note be found. " +
                             "The table contains only following columns: " + String.join(", ", input.getColumnNames()),
                     "Please check if your input columns are set up with valid filters. Please check the input of the plot generator " +
                             "via the quick run to see if the input data is correct. You can also select a generator instead of picking a column.");
@@ -138,12 +138,12 @@ public class SortTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeDocumentation(name = "Filters", description = "Allows you determine by which columns the table is sorted. The order determines the " +
             "sorting priority. Columns can be matched multiple times.")
     @JIPipeParameter("sort-order")
-    public StringFilterAndSortOrderPair.List getSortOrderList() {
+    public StringQueryExpressionAndSortOrderPairParameter.List getSortOrderList() {
         return sortOrderList;
     }
 
     @JIPipeParameter("sort-order")
-    public void setSortOrderList(StringFilterAndSortOrderPair.List sortOrderList) {
+    public void setSortOrderList(StringQueryExpressionAndSortOrderPairParameter.List sortOrderList) {
         this.sortOrderList = sortOrderList;
     }
 }

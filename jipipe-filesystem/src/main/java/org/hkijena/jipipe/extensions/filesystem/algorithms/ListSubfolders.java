@@ -16,7 +16,6 @@ package org.hkijena.jipipe.extensions.filesystem.algorithms;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -26,7 +25,9 @@ import org.hkijena.jipipe.api.nodes.categories.FileSystemNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FileData;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FolderData;
-import org.hkijena.jipipe.extensions.parameters.predicates.PathPredicate;
+import org.hkijena.jipipe.extensions.parameters.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameterSettings;
+import org.hkijena.jipipe.extensions.parameters.expressions.variables.PathFilterExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -53,8 +54,7 @@ import java.util.stream.Stream;
 // Traits
 public class ListSubfolders extends JIPipeSimpleIteratingAlgorithm {
 
-    private PathPredicate.List filters = new PathPredicate.List();
-    private boolean filterOnlyFolderNames = true;
+    private DefaultExpressionParameter filters = new DefaultExpressionParameter("TRUE");
     private String subFolder;
     private boolean recursive = false;
     private boolean recursiveFollowsLinks = true;
@@ -75,14 +75,10 @@ public class ListSubfolders extends JIPipeSimpleIteratingAlgorithm {
      */
     public ListSubfolders(ListSubfolders other) {
         super(other);
-        this.filterOnlyFolderNames = other.filterOnlyFolderNames;
-        this.filters.clear();
         this.subFolder = other.subFolder;
         this.recursive = other.recursive;
         this.recursiveFollowsLinks = other.recursiveFollowsLinks;
-        for (PathPredicate filter : other.filters) {
-            this.filters.add(new PathPredicate(filter));
-        }
+        this.filters = new DefaultExpressionParameter(other.filters);
     }
 
     @Override
@@ -104,12 +100,7 @@ public class ListSubfolders extends JIPipeSimpleIteratingAlgorithm {
             } else
                 stream = Files.list(inputPath).filter(Files::isDirectory);
             for (Path file : stream.collect(Collectors.toList())) {
-                Path testedFile;
-                if (filterOnlyFolderNames)
-                    testedFile = file.getFileName();
-                else
-                    testedFile = file;
-                if (filters.isEmpty() || filters.stream().anyMatch(f -> f.test(testedFile))) {
+                if (filters.test(PathFilterExpressionParameterVariableSource.buildFor(file))) {
                     dataBatch.addOutputData(getFirstOutputSlot(), new FileData(file));
                 }
             }
@@ -118,33 +109,17 @@ public class ListSubfolders extends JIPipeSimpleIteratingAlgorithm {
         }
     }
 
-    @Override
-    public void reportValidity(JIPipeValidityReport report) {
-        report.forCategory("Filters").report(filters);
-    }
-
     @JIPipeDocumentation(name = "Filters", description = "You can optionally filter the result folders. " +
             "The filters are connected via a logical OR operation. An empty list disables filtering")
     @JIPipeParameter("filters")
-    public PathPredicate.List getFilters() {
+    @ExpressionParameterSettings(variableSource = PathFilterExpressionParameterVariableSource.class)
+    public DefaultExpressionParameter getFilters() {
         return filters;
     }
 
     @JIPipeParameter("filters")
-    public void setFilters(PathPredicate.List filters) {
+    public void setFilters(DefaultExpressionParameter filters) {
         this.filters = filters;
-    }
-
-    @JIPipeDocumentation(name = "Filter only folder names", description = "If enabled, the filter is only applied for the folder name. If disabled, the filter is " +
-            "applied for the absolute path. For non-existing paths it cannot bne guaranteed that the absolute path is tested.")
-    @JIPipeParameter("only-filenames")
-    public boolean isFilterOnlyFolderNames() {
-        return filterOnlyFolderNames;
-    }
-
-    @JIPipeParameter("only-filenames")
-    public void setFilterOnlyFolderNames(boolean filterOnlyFolderNames) {
-        this.filterOnlyFolderNames = filterOnlyFolderNames;
     }
 
     @JIPipeDocumentation(name = "Subfolder", description = "Optional. If non-empty, all files are extracted from the provided sub-folder. " +

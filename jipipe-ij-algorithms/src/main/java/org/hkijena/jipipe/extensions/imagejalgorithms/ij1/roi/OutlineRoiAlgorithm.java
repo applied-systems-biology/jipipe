@@ -16,7 +16,6 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
@@ -69,11 +68,6 @@ public class OutlineRoiAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         ROIListData data = (ROIListData) dataBatch.getInputData(getFirstInputSlot(), ROIListData.class).duplicate();
         data.outline(outline);
         dataBatch.addOutputData(getFirstOutputSlot(), data);
-    }
-
-
-    @Override
-    public void reportValidity(JIPipeValidityReport report) {
     }
 
     @JIPipeDocumentation(name = "Outline method", description = "The outlining method that should be applied.")

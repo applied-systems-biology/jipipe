@@ -15,6 +15,7 @@ package org.hkijena.jipipe.utils;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
@@ -45,5 +46,13 @@ public class JsonUtils {
             objectMapper.registerModule(m);
         }
         return objectMapper;
+    }
+
+    public static String toJsonString(Object data) {
+        try {
+            return objectMapper.writerFor(data.getClass()).writeValueAsString(data);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

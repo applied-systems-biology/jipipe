@@ -26,8 +26,6 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
-import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
-import org.hkijena.jipipe.api.registries.JIPipeNodeRegistry;
 import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
@@ -277,7 +275,6 @@ public class JIPipeGraphCompartmentUI extends JIPipeGraphEditorUI {
      */
     public static void initializeMenuForCategory(JIPipeGraphEditorUI graphEditorUI, JMenu menu, JIPipeNodeTypeCategory category, Set<JIPipeNodeInfo> addedAlgorithms) {
         JIPipeGraph algorithmGraph = graphEditorUI.getAlgorithmGraph();
-        String compartment = graphEditorUI.getCompartment();
         JIPipe registryService = JIPipe.getInstance();
         Set<JIPipeNodeInfo> algorithmsOfCategory = registryService.getNodeRegistry().getNodesOfCategory(category);
         if (algorithmsOfCategory.isEmpty()) {
@@ -298,7 +295,7 @@ public class JIPipeGraphCompartmentUI extends JIPipeGraphEditorUI {
                 addItem.addActionListener(e -> {
                     JIPipeGraphNode node = info.newInstance();
                     graphEditorUI.getCanvasUI().getGraphHistory().addSnapshotBefore(new AddNodeGraphHistorySnapshot(algorithmGraph, Collections.singleton(node)));
-                    algorithmGraph.insertNode(node, compartment);
+                    algorithmGraph.insertNode(node, graphEditorUI.getCompartment());
                 });
                 addedAlgorithms.add(info);
                 subMenu.add(addItem);
@@ -315,7 +312,6 @@ public class JIPipeGraphCompartmentUI extends JIPipeGraphEditorUI {
      */
     public static void initializeAddDataSourceMenu(JIPipeGraphEditorUI graphEditorUI, JMenu menu, Set<JIPipeNodeInfo> addedAlgorithms) {
         JIPipeGraph algorithmGraph = graphEditorUI.getAlgorithmGraph();
-        String compartment = graphEditorUI.getCompartment();
         JIPipe registryService = JIPipe.getInstance();
         Map<String, Set<Class<? extends JIPipeData>>> dataTypesByMenuPaths = JIPipe.getDataTypes().getDataTypesByMenuPaths();
         Map<String, JMenu> menuTree = UIUtils.createMenuTree(menu, dataTypesByMenuPaths.keySet());
@@ -339,7 +335,7 @@ public class JIPipeGraphCompartmentUI extends JIPipeGraphEditorUI {
                     addItem.addActionListener(e -> {
                         JIPipeGraphNode node = info.newInstance();
                         graphEditorUI.getCanvasUI().getGraphHistory().addSnapshotBefore(new AddNodeGraphHistorySnapshot(algorithmGraph, Collections.singleton(node)));
-                        algorithmGraph.insertNode(node, compartment);
+                        algorithmGraph.insertNode(node, graphEditorUI.getCompartment());
                     });
                     addedAlgorithms.add(info);
                     dataMenu.add(addItem);

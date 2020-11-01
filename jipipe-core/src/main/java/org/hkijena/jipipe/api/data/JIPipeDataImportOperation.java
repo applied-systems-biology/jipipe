@@ -14,11 +14,8 @@
 package org.hkijena.jipipe.api.data;
 
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.jetbrains.annotations.NotNull;
 
-import javax.swing.*;
 import java.nio.file.Path;
-import java.util.function.Consumer;
 
 /**
  * An operation that is executed on showing existing data located in memory/cache

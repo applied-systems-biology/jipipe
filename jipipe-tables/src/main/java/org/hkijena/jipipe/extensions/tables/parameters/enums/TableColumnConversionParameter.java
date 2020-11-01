@@ -17,7 +17,7 @@ import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.google.common.html.HtmlEscapers;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.registries.JIPipeTableOperationRegistry;
+import org.hkijena.jipipe.api.registries.JIPipeExpressionRegistry;
 import org.hkijena.jipipe.extensions.parameters.primitives.DynamicEnumParameter;
 import org.hkijena.jipipe.extensions.tables.ConvertingColumnOperation;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -38,8 +38,8 @@ public class TableColumnConversionParameter extends DynamicEnumParameter {
      * Creates a new instance
      */
     public TableColumnConversionParameter() {
-        List<Object> allowedValues = new ArrayList<>(JIPipe.getTableOperations().getOperationsOfType(ConvertingColumnOperation.class).values()
-                .stream().sorted(Comparator.comparing(JIPipeTableOperationRegistry.ColumnOperationEntry::getName)).collect(Collectors.toList()));
+        List<Object> allowedValues = new ArrayList<>(JIPipe.getTableOperations().getTableColumnOperationsOfType(ConvertingColumnOperation.class).values()
+                .stream().sorted(Comparator.comparing(JIPipeExpressionRegistry.ColumnOperationEntry::getName)).collect(Collectors.toList()));
         setAllowedValues(allowedValues);
         setValue(allowedValues.get(0));
     }
@@ -55,8 +55,8 @@ public class TableColumnConversionParameter extends DynamicEnumParameter {
 
     @Override
     public String renderLabel(Object value) {
-        if (value instanceof JIPipeTableOperationRegistry.ColumnOperationEntry) {
-            JIPipeTableOperationRegistry.ColumnOperationEntry entry = (JIPipeTableOperationRegistry.ColumnOperationEntry) value;
+        if (value instanceof JIPipeExpressionRegistry.ColumnOperationEntry) {
+            JIPipeExpressionRegistry.ColumnOperationEntry entry = (JIPipeExpressionRegistry.ColumnOperationEntry) value;
             return entry.getName();
         } else {
             return "[None selected]";
@@ -72,7 +72,7 @@ public class TableColumnConversionParameter extends DynamicEnumParameter {
     public String getId() {
         if (getValue() == null)
             return null;
-        return ((JIPipeTableOperationRegistry.ColumnOperationEntry) getValue()).getId();
+        return ((JIPipeExpressionRegistry.ColumnOperationEntry) getValue()).getId();
     }
 
     /**
@@ -89,8 +89,8 @@ public class TableColumnConversionParameter extends DynamicEnumParameter {
 
     @Override
     public String renderTooltip(Object value) {
-        if (value instanceof JIPipeTableOperationRegistry.ColumnOperationEntry) {
-            JIPipeTableOperationRegistry.ColumnOperationEntry entry = (JIPipeTableOperationRegistry.ColumnOperationEntry) value;
+        if (value instanceof JIPipeExpressionRegistry.ColumnOperationEntry) {
+            JIPipeExpressionRegistry.ColumnOperationEntry entry = (JIPipeExpressionRegistry.ColumnOperationEntry) value;
             return "<html><strong>" + HtmlEscapers.htmlEscaper().escape(entry.getName()) + "</strong><br/>" + HtmlEscapers.htmlEscaper().escape(entry.getDescription()) + "</html>";
         } else {
             return null;

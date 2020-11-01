@@ -38,7 +38,6 @@ if [[ ! -e $PWD/Fiji.app ]]; then
   download_url "https://maven.scijava.org/service/local/repositories/central/content/com/vladsch/flexmark/flexmark-ext-autolink/0.62.2/flexmark-ext-autolink-0.62.2.jar"
   download_url "https://maven.scijava.org/service/local/repositories/central/content/com/vladsch/flexmark/flexmark/0.62.2/flexmark-0.62.2.jar"
   download_url "https://maven.scijava.org/service/local/repositories/central/content/com/vladsch/flexmark/flexmark-ext-tables/0.62.2/flexmark-ext-tables-0.62.2.jar"
-  download_url "https://maven.scijava.org/service/local/repositories/releases/content/sc/fiji/imagescience/3.0.0/imagescience-3.0.0.jar"
   download_url "https://maven.scijava.org/service/local/repositories/releases/content/sc/fiji/Image_5D/2.0.2/Image_5D-2.0.2.jar"
   download_url "https://maven.scijava.org/service/local/repositories/sonatype/content/com/fasterxml/jackson/core/jackson-databind/2.11.0/jackson-databind-2.11.0.jar"
   download_url "https://maven.scijava.org/service/local/repositories/sonatype/content/com/fasterxml/jackson/core/jackson-core/2.11.0/jackson-core-2.11.0.jar"
@@ -52,6 +51,8 @@ if [[ ! -e $PWD/Fiji.app ]]; then
   download_url "https://maven.scijava.org/service/local/repositories/central/content/com/openhtmltopdf/openhtmltopdf-rtl-support/1.0.4/openhtmltopdf-rtl-support-1.0.4.jar"
   download_url "https://maven.scijava.org/service/local/repositories/central/content/com/openhtmltopdf/openhtmltopdf-pdfbox/1.0.4/openhtmltopdf-pdfbox-1.0.4.jar"
   download_url "https://maven.scijava.org/service/local/repositories/central/content/org/jgrapht/jgrapht-core/1.4.0/jgrapht-core-1.4.0.jar"
+  download_url "https://maven.scijava.org/service/local/repositories/central/content/com/fathzer/javaluator/3.0.3/javaluator-3.0.3.jar"
+  download_url "https://github.com/ome/omero-insight/releases/download/v5.5.14/omero_ij-5.5.14-all.jar"
   popd
   echo "PROGRESS:50"
 

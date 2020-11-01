@@ -5,11 +5,11 @@
     <parent>
         <artifactId>jipipe</artifactId>
         <groupId>org.hkijena</groupId>
-        <version>2020.10</version>
+        <version>2020.11</version>
     </parent>
 
     <artifactId>jipipe-python</artifactId>
-    <version>2020.10</version>
+    <version>2020.11</version>
 
     <name>jipipe-python</name>
     <description>JIPipe Python Integration</description>
@@ -73,11 +73,29 @@
         <license.projectName>JIPipe-Python</license.projectName>
     </properties>
 
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.hkijena</groupId>
+                <artifactId>jipipe-core</artifactId>
+                <version>2020.11</version>
+            </dependency>
+            <dependency>
+                <groupId>org.python</groupId>
+                <artifactId>jython-slim</artifactId>
+                <version>2.7.2</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
     <dependencies>
         <dependency>
             <groupId>org.hkijena</groupId>
             <artifactId>jipipe-core</artifactId>
-            <version>2020.10</version>
+        </dependency>
+        <dependency>
+            <groupId>org.python</groupId>
+            <artifactId>jython-slim</artifactId>
         </dependency>
     </dependencies>
 

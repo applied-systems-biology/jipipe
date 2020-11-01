@@ -23,7 +23,6 @@ import org.hkijena.jipipe.api.history.MoveNodesGraphHistorySnapshot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.registries.JIPipeNodeRegistry;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.settings.GraphEditorUISettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
@@ -35,7 +34,6 @@ import org.hkijena.jipipe.ui.events.AlgorithmSelectedEvent;
 import org.hkijena.jipipe.ui.events.AlgorithmSelectionChangedEvent;
 import org.hkijena.jipipe.ui.events.ZoomChangedEvent;
 import org.hkijena.jipipe.ui.grapheditor.contextmenu.NodeUIContextAction;
-import org.hkijena.jipipe.utils.CustomScrollPane;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jfree.graphics2d.svg.SVGGraphics2D;
@@ -80,7 +78,6 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
     protected JMenuBar menuBar = new JMenuBar();
     private JIPipeGraphCanvasUI canvasUI;
     private JIPipeGraph algorithmGraph;
-    private String compartment;
 
     private JSplitPane splitPane;
     private JScrollPane scrollPane;
@@ -100,7 +97,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
     public JIPipeGraphEditorUI(JIPipeWorkbench workbenchUI, JIPipeGraph algorithmGraph, String compartment) {
         super(workbenchUI);
         this.algorithmGraph = algorithmGraph;
-        this.compartment = compartment;
+        this.canvasUI = new JIPipeGraphCanvasUI(getWorkbench(), algorithmGraph, compartment);
         initialize();
         reloadMenuBar();
         JIPipe.getNodes().getEventBus().register(this);
@@ -160,12 +157,11 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
             }
         });
 
-        canvasUI = new JIPipeGraphCanvasUI(getWorkbench(), algorithmGraph, compartment);
         canvasUI.fullRedraw();
         canvasUI.getEventBus().register(this);
         canvasUI.addMouseListener(this);
         canvasUI.addMouseMotionListener(this);
-        scrollPane = new CustomScrollPane(canvasUI);
+        scrollPane = new JScrollPane(canvasUI);
         scrollPane.getVerticalScrollBar().setUnitIncrement(25);
         scrollPane.getHorizontalScrollBar().setUnitIncrement(25);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
@@ -207,7 +203,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
             JIPipeNodeInfo info = (JIPipeNodeInfo) event.getValue();
             JIPipeGraphNode node = info.newInstance();
             getCanvasUI().getGraphHistory().addSnapshotBefore(new AddNodeGraphHistorySnapshot(algorithmGraph, Collections.singleton(node)));
-            algorithmGraph.insertNode(node, compartment);
+            algorithmGraph.insertNode(node, getCompartment());
             navigator.setSelectedItem(null);
         }
     }
@@ -665,7 +661,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
      * @return The displayed graph compartment
      */
     public String getCompartment() {
-        return compartment;
+        return canvasUI.getCompartment();
     }
 
     protected JMenuBar getMenuBar() {

@@ -22,7 +22,6 @@ import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.extensions.tables.ConvertingColumnOperation;
 import org.hkijena.jipipe.extensions.tables.IntegratingColumnOperation;
 import org.hkijena.jipipe.extensions.tables.TableColumnReference;
-import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.DocumentTabPane;
 import org.hkijena.jipipe.ui.tableanalyzer.JIPipeTableEditor;
@@ -36,9 +35,6 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
 import java.awt.Component;
-import java.awt.Graphics2D;
-import java.awt.Image;
-import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.nio.file.Path;
@@ -903,6 +899,65 @@ public class ResultsTableData implements JIPipeData, TableModel {
     @Override
     public String toString() {
         return "Table (" + getRowCount() + " rows, " + getColumnCount() + " columns): " + String.join(", ", getColumnNames());
+    }
+
+    /**
+     * Sets a column from another table column.
+     * If the types do not match, the old column is deleted
+     * @param columnName the column name
+     * @param column the column data
+     */
+    public void setColumn(String columnName, TableColumn column) {
+        int columnIndex = getColumnIndex(columnName);
+        if(columnIndex != -1) {
+            if(column.isNumeric() != isNumeric(columnIndex)) {
+                removeColumnAt(columnIndex);
+                columnIndex = -1;
+            }
+        }
+        if(columnIndex == -1) {
+            columnIndex = addColumn(columnName, !column.isNumeric());
+        }
+        if(column.isNumeric()) {
+            for (int row = 0; row < getRowCount(); row++) {
+                setValueAt(column.getRowAsDouble(row), row, columnIndex);
+            }
+        }
+        else {
+            for (int row = 0; row < getRowCount(); row++) {
+                setValueAt(column.getRowAsString(row), row, columnIndex);
+            }
+        }
+    }
+
+    /**
+     * Sets a column from another table column.
+     * The column type is forced by the third parameter
+     * @param columnName the column name
+     * @param column the column data
+     * @param numeric if the table column should be numeric
+     */
+    public void setColumn(String columnName, TableColumn column, boolean numeric) {
+        int columnIndex = getColumnIndex(columnName);
+        if(columnIndex != -1) {
+            if(numeric != isNumeric(columnIndex)) {
+                removeColumnAt(columnIndex);
+                columnIndex = -1;
+            }
+        }
+        if(columnIndex == -1) {
+            columnIndex = addColumn(columnName, !column.isNumeric());
+        }
+        if(numeric) {
+            for (int row = 0; row < getRowCount(); row++) {
+                setValueAt(column.getRowAsDouble(row), row, columnIndex);
+            }
+        }
+        else {
+            for (int row = 0; row < getRowCount(); row++) {
+                setValueAt(column.getRowAsString(row), row, columnIndex);
+            }
+        }
     }
 
     /**

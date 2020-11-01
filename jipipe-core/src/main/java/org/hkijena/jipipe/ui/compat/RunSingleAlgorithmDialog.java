@@ -35,7 +35,6 @@ import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.JIPipeNodeInfoListCellRenderer;
 import org.hkijena.jipipe.ui.components.SearchTextField;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
-import org.hkijena.jipipe.utils.CustomScrollPane;
 import org.hkijena.jipipe.utils.JsonUtils;
 import org.hkijena.jipipe.utils.MacroUtils;
 import org.hkijena.jipipe.utils.TooltipUtils;
@@ -155,7 +154,7 @@ public class RunSingleAlgorithmDialog extends JDialog implements JIPipeWorkbench
         algorithmList.addListSelectionListener(e -> {
             selectNodeInfo(algorithmList.getSelectedValue());
         });
-        JScrollPane scrollPane = new CustomScrollPane(algorithmList);
+        JScrollPane scrollPane = new JScrollPane(algorithmList);
         listPanel.add(scrollPane, BorderLayout.CENTER);
     }
 

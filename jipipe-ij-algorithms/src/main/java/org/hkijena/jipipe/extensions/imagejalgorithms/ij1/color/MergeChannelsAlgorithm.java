@@ -17,7 +17,6 @@ import ij.CompositeImage;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.ImageStack;
-import ij.WindowManager;
 import ij.plugin.CompositeConverter;
 import ij.plugin.RGBStackMerge;
 import ij.plugin.ZProjector;
@@ -28,7 +27,6 @@ import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
-import org.hkijena.jipipe.api.data.JIPipeMutableSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
@@ -40,14 +38,13 @@ import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColorRGBData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale8UData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.extensions.parameters.collections.InputSlotMapParameterCollection;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.ResourceUtils;
+import org.hkijena.jipipe.utils.UIUtils;
 
-import javax.swing.*;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -300,11 +297,7 @@ public class MergeChannelsAlgorithm extends JIPipeIteratingAlgorithm {
     @JIPipeDocumentation(name = "3 channel merge", description = "Loads example parameters that merge three channels.")
     @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/channelmixer.png")
     public void setTo3ChannelExample(JIPipeWorkbench parent) {
-        if (JOptionPane.showConfirmDialog(parent.getWindow(),
-                "This will reset most of the properties. Continue?",
-                "Load example",
-                JOptionPane.YES_NO_OPTION,
-                JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
+        if (UIUtils.confirmResetParameters(parent, "Load example")) {
             JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) getSlotConfiguration();
             slotConfiguration.clearInputSlots(true);
             for (int i = 0; i < 3; i++) {
@@ -316,11 +309,7 @@ public class MergeChannelsAlgorithm extends JIPipeIteratingAlgorithm {
     @JIPipeDocumentation(name = "2 channel merge", description = "Loads example parameters that merge two channels.")
     @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/channelmixer.png")
     public void setTo2ChannelExample(JIPipeWorkbench parent) {
-        if (JOptionPane.showConfirmDialog(parent.getWindow(),
-                "This will reset most of the properties. Continue?",
-                "Load example",
-                JOptionPane.YES_NO_OPTION,
-                JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
+        if (UIUtils.confirmResetParameters(parent, "Load example")) {
             JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) getSlotConfiguration();
             slotConfiguration.clearInputSlots(true);
             for (int i = 0; i < 2; i++) {

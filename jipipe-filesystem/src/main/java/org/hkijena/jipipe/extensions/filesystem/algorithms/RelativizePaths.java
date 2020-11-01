@@ -16,7 +16,6 @@ package org.hkijena.jipipe.extensions.filesystem.algorithms;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeIteratingAlgorithm;
@@ -65,9 +64,5 @@ public class RelativizePaths extends JIPipeIteratingAlgorithm {
         PathData child = dataBatch.getInputData("Child", PathData.class);
 
         dataBatch.addOutputData(getFirstOutputSlot(), new PathData(parent.getPath().relativize(child.getPath())));
-    }
-
-    @Override
-    public void reportValidity(JIPipeValidityReport report) {
     }
 }

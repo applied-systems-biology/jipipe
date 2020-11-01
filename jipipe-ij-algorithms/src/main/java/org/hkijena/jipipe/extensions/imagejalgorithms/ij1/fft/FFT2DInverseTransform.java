@@ -18,7 +18,6 @@ import ij.plugin.FFT;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
@@ -73,10 +72,5 @@ public class FFT2DInverseTransform extends JIPipeSimpleIteratingAlgorithm {
         ImagePlus img = dataBatch.getInputData(getFirstInputSlot(), ImagePlusFFT2DData.class).getImage();
         ImagePlus fft = FFT.inverse(img);
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlus2DData(fft));
-    }
-
-    @Override
-    public void reportValidity(JIPipeValidityReport report) {
-
     }
 }

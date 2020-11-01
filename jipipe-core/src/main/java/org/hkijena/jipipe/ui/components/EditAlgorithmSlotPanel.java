@@ -22,7 +22,6 @@ import org.hkijena.jipipe.api.history.JIPipeGraphHistory;
 import org.hkijena.jipipe.api.history.SlotConfigurationHistorySnapshot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
-import org.hkijena.jipipe.utils.CustomScrollPane;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -97,7 +96,7 @@ public class EditAlgorithmSlotPanel extends JPanel {
                 setSelectedInfo(datatypeList.getSelectedValue());
             }
         });
-        JScrollPane scrollPane = new CustomScrollPane(datatypeList);
+        JScrollPane scrollPane = new JScrollPane(datatypeList);
         add(scrollPane, BorderLayout.CENTER);
 
         FormPanel formPanel = new FormPanel(null, FormPanel.NONE);

@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.ui.components;
 
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
+import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -69,8 +69,8 @@ public class JIPipeCachedDataPreview extends JPanel {
     private static class Worker extends SwingWorker<Component, Object> {
 
         private final JIPipeCachedDataPreview parent;
-        private final int width = GeneralUISettings.getInstance().getPreviewWidth();
-        private final int height = GeneralUISettings.getInstance().getPreviewHeight();
+        private final int width = GeneralDataSettings.getInstance().getPreviewWidth();
+        private final int height = GeneralDataSettings.getInstance().getPreviewHeight();
 
         private Worker(JIPipeCachedDataPreview parent) {
             this.parent = parent;

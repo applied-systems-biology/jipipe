@@ -20,7 +20,6 @@ import ij.process.ByteProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
@@ -110,11 +109,6 @@ public class LocalMaxima2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         resultImage.setDimensions(img.getNChannels(), img.getNSlices(), img.getNFrames());
 
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(resultImage));
-    }
-
-
-    @Override
-    public void reportValidity(JIPipeValidityReport report) {
     }
 
     @JIPipeDocumentation(name = "Height tolerance", description = "Maxima are accepted only if protruding more than this value from the ridge to a higher maximum")

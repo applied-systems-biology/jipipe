@@ -11,6 +11,7 @@
       <module fileurl="file://$PROJECT_DIR$/jipipe-ij/jipipe-ij.iml" filepath="$PROJECT_DIR$/jipipe-ij/jipipe-ij.iml" />
       <module fileurl="file://$PROJECT_DIR$/jipipe-ij-algorithms/jipipe-ij-algorithms.iml" filepath="$PROJECT_DIR$/jipipe-ij-algorithms/jipipe-ij-algorithms.iml" />
       <module fileurl="file://$PROJECT_DIR$/jipipe-ij-multi-template-matching/jipipe-ij-multi-template-matching.iml" filepath="$PROJECT_DIR$/jipipe-ij-multi-template-matching/jipipe-ij-multi-template-matching.iml" />
+      <module fileurl="file://$PROJECT_DIR$/jipipe-ij-omero/jipipe-ij-omero.iml" filepath="$PROJECT_DIR$/jipipe-ij-omero/jipipe-ij-omero.iml" />
       <module fileurl="file://$PROJECT_DIR$/jipipe-installer-linux/jipipe-installer-linux.iml" filepath="$PROJECT_DIR$/jipipe-installer-linux/jipipe-installer-linux.iml" />
       <module fileurl="file://$PROJECT_DIR$/jipipe-launcher/jipipe-launcher.iml" filepath="$PROJECT_DIR$/jipipe-launcher/jipipe-launcher.iml" />
       <module fileurl="file://$PROJECT_DIR$/jipipe-multiparameters/jipipe-multiparameters.iml" filepath="$PROJECT_DIR$/jipipe-multiparameters/jipipe-multiparameters.iml" />

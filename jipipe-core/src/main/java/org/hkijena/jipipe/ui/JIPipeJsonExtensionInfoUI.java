@@ -22,7 +22,6 @@ import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.MarkdownReader;
 import org.hkijena.jipipe.ui.components.RecentProjectListCellRenderer;
-import org.hkijena.jipipe.utils.CustomScrollPane;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -89,7 +88,7 @@ public class JIPipeJsonExtensionInfoUI extends JIPipeJsonExtensionWorkbenchPanel
 
     private void initRecentProjects() {
         recentProjectsList.setCellRenderer(new RecentProjectListCellRenderer());
-        JScrollPane scrollPane = new CustomScrollPane(recentProjectsList);
+        JScrollPane scrollPane = new JScrollPane(recentProjectsList);
         scrollPane.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, Color.DARK_GRAY));
         add(scrollPane, BorderLayout.WEST);
 

@@ -17,8 +17,6 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataDisplayOperation;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
-import org.hkijena.jipipe.api.registries.JIPipeSettingsRegistry;
 import org.hkijena.jipipe.extensions.parameters.primitives.DynamicStringEnumParameter;
 import org.hkijena.jipipe.extensions.settings.DefaultCacheDisplaySettings;
 import org.hkijena.jipipe.extensions.settings.DefaultResultImporterSettings;
@@ -28,7 +26,8 @@ import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.Dimension;
+import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.util.List;

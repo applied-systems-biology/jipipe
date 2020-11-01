@@ -15,8 +15,11 @@ package org.hkijena.jipipe.api.registries;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableBiMap;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMultimap;
+import com.google.common.collect.Multimap;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
@@ -27,6 +30,7 @@ import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.events.DatatypeRegisteredEvent;
 import org.hkijena.jipipe.api.events.NodeInfoRegisteredEvent;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
@@ -47,6 +51,7 @@ import java.util.stream.Collectors;
  */
 public class JIPipeNodeRegistry implements JIPipeValidatable {
     private Map<String, JIPipeNodeInfo> registeredNodeInfos = new HashMap<>();
+    private Multimap<Class<? extends JIPipeGraphNode>, JIPipeNodeInfo> registeredNodeClasses = HashMultimap.create();
     private Set<JIPipeNodeRegistrationTask> registrationTasks = new HashSet<>();
     private Map<String, JIPipeDependency> registeredNodeInfoSources = new HashMap<>();
     private BiMap<String, JIPipeNodeTypeCategory> registeredCategories = HashBiMap.create();
@@ -114,6 +119,7 @@ public class JIPipeNodeRegistry implements JIPipeValidatable {
      */
     public void register(JIPipeNodeInfo info, JIPipeDependency source) {
         registeredNodeInfos.put(info.getId(), info);
+        registeredNodeClasses.put(info.getInstanceClass(), info);
         registeredNodeInfoSources.put(info.getId(), source);
         eventBus.post(new NodeInfoRegisteredEvent(info));
         JIPipe.getInstance().getLogService().info("Registered algorithm '" + info.getName() + "' [" + info.getId() + "]");
@@ -309,5 +315,18 @@ public class JIPipeNodeRegistry implements JIPipeValidatable {
             uri = defaultIcon;
         }
         return new ImageIcon(uri);
+    }
+
+    /**
+     * Returns all node infos that create a node of the specified class
+     * @param klass the class
+     * @return node infos
+     */
+    public Set<JIPipeNodeInfo> getNodeInfosFromClass(Class<? extends JIPipeGraphNode> klass) {
+        return new HashSet<>(registeredNodeClasses.get(klass));
+    }
+
+    public Multimap<Class<? extends JIPipeGraphNode>, JIPipeNodeInfo> getRegisteredNodeClasses() {
+        return ImmutableMultimap.copyOf(registeredNodeClasses);
     }
 }

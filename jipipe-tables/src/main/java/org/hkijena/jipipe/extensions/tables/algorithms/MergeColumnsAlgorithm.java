@@ -16,7 +16,6 @@ package org.hkijena.jipipe.extensions.tables.algorithms;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeMergingAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
@@ -71,9 +70,5 @@ public class MergeColumnsAlgorithm extends JIPipeMergingAlgorithm {
         }
         ResultsTableData resultsTableData = new ResultsTableData(columnMap);
         dataBatch.addOutputData(getFirstOutputSlot(), resultsTableData);
-    }
-
-    @Override
-    public void reportValidity(JIPipeValidityReport report) {
     }
 }

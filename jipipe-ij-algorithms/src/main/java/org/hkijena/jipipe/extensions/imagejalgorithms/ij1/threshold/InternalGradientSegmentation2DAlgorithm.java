@@ -32,7 +32,6 @@ import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.registries.JIPipeNodeRegistry;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.contrast.CLAHEContrastEnhancer;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
@@ -94,8 +93,8 @@ public class InternalGradientSegmentation2DAlgorithm extends JIPipeSimpleIterati
         this.internalGradientRadius = other.internalGradientRadius;
         this.dilationIterations = other.dilationIterations;
         this.erosionIterations = other.erosionIterations;
-        this.autoThresholding = (AutoThreshold2DAlgorithm) other.autoThresholding.getInfo().clone(other.autoThresholding);
-        this.contrastEnhancer = (CLAHEContrastEnhancer) other.contrastEnhancer.getInfo().clone(other.contrastEnhancer);
+        this.autoThresholding = (AutoThreshold2DAlgorithm) other.autoThresholding.getInfo().duplicate(other.autoThresholding);
+        this.contrastEnhancer = (CLAHEContrastEnhancer) other.contrastEnhancer.getInfo().duplicate(other.contrastEnhancer);
         this.applyFirstCLAHE = other.applyFirstCLAHE;
         this.applySecondCLAHE = other.applySecondCLAHE;
         this.applyGaussian = other.applyGaussian;

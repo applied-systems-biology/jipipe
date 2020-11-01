@@ -16,11 +16,11 @@ package org.hkijena.jipipe;
 import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.JIPipeValidatable;
 import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
+import org.hkijena.jipipe.api.registries.JIPipeExpressionRegistry;
 import org.hkijena.jipipe.api.registries.JIPipeImageJAdapterRegistry;
 import org.hkijena.jipipe.api.registries.JIPipeNodeRegistry;
 import org.hkijena.jipipe.api.registries.JIPipeParameterTypeRegistry;
 import org.hkijena.jipipe.api.registries.JIPipeSettingsRegistry;
-import org.hkijena.jipipe.api.registries.JIPipeTableOperationRegistry;
 import org.hkijena.jipipe.ui.registries.JIPipeCustomMenuRegistry;
 import org.scijava.service.Service;
 
@@ -48,7 +48,7 @@ public interface JIPipeRegistry extends Service, JIPipeValidatable {
 
     JIPipeSettingsRegistry getSettingsRegistry();
 
-    JIPipeTableOperationRegistry getTableOperationRegistry();
+    JIPipeExpressionRegistry getExpressionRegistry();
 
     Set<String> getRegisteredExtensionIds();
 

@@ -3,7 +3,7 @@ RequestExecutionLevel user
 
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "JIPipe"
-!define PRODUCT_VERSION "2020.10"
+!define PRODUCT_VERSION "2020.11"
 !define PRODUCT_PUBLISHER "Applied Systems Biology - HKI Jena, Germany"
 !define PRODUCT_WEB_SITE "https://www.jipipe.org/"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\JIPipe"
@@ -100,7 +100,6 @@ Section "Common files (Required)" SEC01
   inetc::get "https://maven.scijava.org/service/local/repositories/central/content/com/vladsch/flexmark/flexmark-ext-autolink/0.62.2/flexmark-ext-autolink-0.62.2.jar" "$INSTDIR\Fiji.app\jars\flexmark-ext-autolink-0.62.2.jar"
   inetc::get "https://maven.scijava.org/service/local/repositories/central/content/com/vladsch/flexmark/flexmark/0.62.2/flexmark-0.62.2.jar" "$INSTDIR\Fiji.app\jars\flexmark-0.62.2.jar"
   inetc::get "https://maven.scijava.org/service/local/repositories/central/content/com/vladsch/flexmark/flexmark-ext-tables/0.62.2/flexmark-ext-tables-0.62.2.jar" "$INSTDIR\Fiji.app\jars\flexmark-ext-tables-0.62.2.jar"
-  inetc::get "https://maven.scijava.org/service/local/repositories/releases/content/sc/fiji/imagescience/3.0.0/imagescience-3.0.0.jar" "$INSTDIR\Fiji.app\jars\imagescience-3.0.0.jar"
   inetc::get "https://maven.scijava.org/service/local/repositories/releases/content/sc/fiji/Image_5D/2.0.2/Image_5D-2.0.2.jar" "$INSTDIR\Fiji.app\jars\Image_5D-2.0.2.jar"
   inetc::get "https://maven.scijava.org/service/local/repositories/sonatype/content/com/fasterxml/jackson/core/jackson-databind/2.11.0/jackson-databind-2.11.0.jar" "$INSTDIR\Fiji.app\jars\jackson-databind-2.11.0.jar"
   inetc::get "https://maven.scijava.org/service/local/repositories/sonatype/content/com/fasterxml/jackson/core/jackson-core/2.11.0/jackson-core-2.11.0.jar" "$INSTDIR\Fiji.app\jars\jackson-core-2.11.0.jar"
@@ -113,6 +112,8 @@ Section "Common files (Required)" SEC01
   inetc::get "https://maven.scijava.org/service/local/repositories/central/content/org/apache/pdfbox/pdfbox/2.0.4/pdfbox-2.0.4.jar" "$INSTDIR\Fiji.app\jars\pdfbox-2.0.4.jar"
   inetc::get "https://maven.scijava.org/service/local/repositories/central/content/com/openhtmltopdf/openhtmltopdf-rtl-support/1.0.4/openhtmltopdf-rtl-support-1.0.4.jar" "$INSTDIR\Fiji.app\jars\openhtmltopdf-rtl-support-1.0.4.jar"
   inetc::get "https://maven.scijava.org/service/local/repositories/central/content/com/openhtmltopdf/openhtmltopdf-pdfbox/1.0.4/openhtmltopdf-pdfbox-1.0.4.jar" "$INSTDIR\Fiji.app\jars\openhtmltopdf-pdfbox-1.0.4.jar"
+  inetc::get "https://maven.scijava.org/service/local/repositories/central/content/com/fathzer/javaluator/3.0.3/javaluator-3.0.3.jar" "$INSTDIR\Fiji.app\jars\javaluator-3.0.3.jar"
+  inetc::get "https://github.com/ome/omero-insight/releases/download/v5.5.14/omero_ij-5.5.14-all.jar" "$INSTDIR\Fiji.app\plugins\omero_ij-5.5.14-all.jar"
 
   ; Bootstrap update sites
   SetOutPath "$INSTDIR\Fiji.app"

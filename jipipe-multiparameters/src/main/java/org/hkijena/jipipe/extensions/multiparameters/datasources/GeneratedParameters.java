@@ -23,7 +23,6 @@ import org.hkijena.jipipe.api.parameters.JIPipeMutableParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterVisibility;
-import org.hkijena.jipipe.api.registries.JIPipeParameterTypeRegistry;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.ParameterTreeUI;
 import org.hkijena.jipipe.utils.ResourceUtils;

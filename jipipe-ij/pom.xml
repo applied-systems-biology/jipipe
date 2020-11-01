@@ -5,11 +5,11 @@
     <parent>
         <artifactId>jipipe</artifactId>
         <groupId>org.hkijena</groupId>
-        <version>2020.10</version>
+        <version>2020.11</version>
     </parent>
 
     <artifactId>jipipe-ij</artifactId>
-    <version>2020.10</version>
+    <version>2020.11</version>
 
     <name>jipipe-ij</name>
     <description>JIPipe ImageJ data types</description>
@@ -73,21 +73,48 @@
         <license.projectName>JIPipe-IJ</license.projectName>
     </properties>
 
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.hkijena</groupId>
+                <artifactId>jipipe-core</artifactId>
+                <version>2020.11</version>
+            </dependency>
+            <dependency>
+                <groupId>org.hkijena</groupId>
+                <artifactId>jipipe-tables</artifactId>
+                <version>2020.11</version>
+            </dependency>
+            <dependency>
+                <groupId>org.hkijena</groupId>
+                <artifactId>jipipe-strings</artifactId>
+                <version>2020.11</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
     <dependencies>
         <dependency>
             <groupId>org.hkijena</groupId>
             <artifactId>jipipe-core</artifactId>
-            <version>2020.10</version>
         </dependency>
         <dependency>
             <groupId>org.hkijena</groupId>
             <artifactId>jipipe-tables</artifactId>
-            <version>2020.10</version>
         </dependency>
         <dependency>
             <groupId>org.hkijena</groupId>
             <artifactId>jipipe-strings</artifactId>
-            <version>2020.10</version>
+        </dependency>
+        <dependency>
+            <groupId>ome</groupId>
+            <artifactId>bio-formats_plugins</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>ch.qos.logback</groupId>
+                    <artifactId>logback-classic</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
     </dependencies>
 

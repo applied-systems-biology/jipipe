@@ -18,7 +18,6 @@ import ij.ImagePlus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
@@ -119,10 +118,6 @@ public class UnreferencedRoiToMaskAlgorithm extends JIPipeSimpleIteratingAlgorit
             ImagePlus result = inputData.toMask(imageArea, drawOutline, drawFilledOutline, lineThickness);
             dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(result));
         }
-    }
-
-    @Override
-    public void reportValidity(JIPipeValidityReport report) {
     }
 
     @JIPipeDocumentation(name = "Image area", description = "Allows modification of the output image width and height.")

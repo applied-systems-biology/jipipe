@@ -34,7 +34,6 @@ import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.registries.JIPipeNodeRegistry;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.EigenvalueSelection2D;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
@@ -91,7 +90,7 @@ public class HessianSegmentation2DAlgorithm extends JIPipeSimpleIteratingAlgorit
         this.gradientRadius = other.gradientRadius;
         this.eigenvalueSelection = other.eigenvalueSelection;
         this.compareAbsolute = other.compareAbsolute;
-        this.autoThresholding = (AutoThreshold2DAlgorithm) other.autoThresholding.getInfo().clone(other.autoThresholding);
+        this.autoThresholding = (AutoThreshold2DAlgorithm) other.autoThresholding.getInfo().duplicate(other.autoThresholding);
         this.applyInternalGradient = other.applyInternalGradient;
         this.applyDespeckle = other.applyDespeckle;
         this.despeckleIterations = other.despeckleIterations;

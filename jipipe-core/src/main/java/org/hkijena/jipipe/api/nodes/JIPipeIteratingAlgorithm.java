@@ -13,11 +13,7 @@
 
 package org.hkijena.jipipe.api.nodes;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.EventBus;
-import gnu.trove.iterator.TIntIterator;
-import gnu.trove.set.TIntSet;
-import gnu.trove.set.hash.TIntHashSet;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
@@ -28,22 +24,16 @@ import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterVisibility;
-import org.hkijena.jipipe.extensions.parameters.predicates.StringPredicate;
+import org.hkijena.jipipe.extensions.parameters.expressions.StringQueryExpression;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
 import org.hkijena.jipipe.utils.ResourceUtils;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 /**
  * An {@link JIPipeAlgorithm} that iterates through each data row.
@@ -98,112 +88,15 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
     }
 
     @Override
-    public Map<JIPipeDataBatchKey, Map<String, TIntSet>> groupDataByMetadata(Map<String, JIPipeDataSlot> slotMap) {
-        Set<String> referenceTraitColumns;
-
-        switch (dataBatchGenerationSettings.dataSetMatching) {
-            case Custom:
-                referenceTraitColumns = getInputAnnotationByFilter(slotMap, dataBatchGenerationSettings.customColumns);
-                break;
-            case Union:
-                referenceTraitColumns = getInputAnnotationColumnUnion(slotMap, "");
-                break;
-            case Intersection:
-                referenceTraitColumns = getInputAnnotationColumnIntersection(slotMap, "");
-                break;
-            case PrefixHashUnion:
-                referenceTraitColumns = getInputAnnotationColumnUnion(slotMap, "#");
-                break;
-            case PrefixHashIntersection:
-                referenceTraitColumns = getInputAnnotationColumnIntersection(slotMap, "#");
-                break;
-            case MergeAll:
-                referenceTraitColumns = Collections.emptySet();
-                break;
-            case SplitAll:
-                referenceTraitColumns = null;
-                break;
-            default:
-                throw new UnsupportedOperationException("Unknown column matching strategy: " + dataBatchGenerationSettings.dataSetMatching);
-        }
-
-        Map<JIPipeDataBatchKey, Map<String, TIntSet>> dataSets = new HashMap<>();
-        for (JIPipeDataSlot inputSlot : slotMap.values()) {
-            if (inputSlot == getParameterSlot())
-                continue;
-            for (int row = 0; row < inputSlot.getRowCount(); row++) {
-                JIPipeDataBatchKey key = new JIPipeDataBatchKey();
-                if(referenceTraitColumns != null) {
-                    for (String referenceTraitColumn : referenceTraitColumns) {
-                        key.getEntries().put(referenceTraitColumn, null);
-                    }
-                    for (JIPipeAnnotation annotation : inputSlot.getAnnotations(row)) {
-                        if (annotation != null && referenceTraitColumns.contains(annotation.getName())) {
-                            key.getEntries().put(annotation.getName(), annotation);
-                        }
-                    }
-                }
-                else {
-                    key.getEntries().put("#uid", new JIPipeAnnotation("#uid", inputSlot.getName() + "[" + row + "]"));
-                }
-
-                Map<String, TIntSet> dataSet = dataSets.getOrDefault(key, null);
-                if (dataSet == null) {
-                    dataSet = new HashMap<>();
-                    dataSets.put(key, dataSet);
-                }
-                TIntSet rows = dataSet.getOrDefault(inputSlot.getName(), null);
-                if (rows == null) {
-                    rows = new TIntHashSet();
-                    dataSet.put(inputSlot.getName(), rows);
-                }
-                rows.add(row);
-            }
-        }
-        return dataSets;
-    }
-
-    @Override
-    public List<JIPipeMergingDataBatch> generateDataBatchesDryRun(Map<JIPipeDataBatchKey, Map<String, TIntSet>> groups) {
-        List<JIPipeMergingDataBatch> dataBatches = new ArrayList<>();
-        for (Map.Entry<JIPipeDataBatchKey, Map<String, TIntSet>> dataSetEntry : ImmutableList.copyOf(groups.entrySet())) {
-            List<JIPipeMergingDataBatch> dataBatchesForDataSet = new ArrayList<>();
-            // Create the first batch
-            {
-                JIPipeDataSlot inputSlot = getFirstInputSlot();
-                TIntSet rows = dataSetEntry.getValue().get(inputSlot.getName());
-                for (TIntIterator it = rows.iterator(); it.hasNext(); ) {
-                    int row = it.next();
-                    JIPipeMergingDataBatch dataBatch = new JIPipeMergingDataBatch(this);
-                    dataBatch.addData(inputSlot, row);
-                    dataBatch.addGlobalAnnotations(inputSlot.getAnnotations(row), dataBatchGenerationSettings.annotationMergeStrategy);
-                    dataBatchesForDataSet.add(dataBatch);
-                }
-            }
-            // Create subsequent batches
-            for (int slotIndex = 1; slotIndex < getInputSlots().size(); slotIndex++) {
-                JIPipeDataSlot inputSlot = getInputSlots().get(slotIndex);
-                if (getParameterSlot() == inputSlot)
-                    continue;
-                TIntSet rows = dataSetEntry.getValue().get(inputSlot.getName());
-
-                List<JIPipeMergingDataBatch> backup = dataBatchesForDataSet;
-                dataBatchesForDataSet = new ArrayList<>();
-
-                for (TIntIterator it = rows.iterator(); it.hasNext(); ) {
-                    int row = it.next();
-                    // We have to copy each input entry and adapt it to the row
-                    for (JIPipeMergingDataBatch dataBatch : backup) {
-                        JIPipeMergingDataBatch copy = new JIPipeMergingDataBatch(dataBatch);
-                        copy.setData(inputSlot, row);
-                        copy.addGlobalAnnotations(inputSlot.getAnnotations(row), dataBatchGenerationSettings.annotationMergeStrategy);
-                        dataBatchesForDataSet.add(copy);
-                    }
-                }
-            }
-            dataBatches.addAll(dataBatchesForDataSet);
-        }
-        return dataBatches;
+    public List<JIPipeMergingDataBatch> generateDataBatchesDryRun(List<JIPipeDataSlot> slots) {
+        JIPipeMergingDataBatchBuilder builder = new JIPipeMergingDataBatchBuilder();
+        builder.setNode(this);
+        builder.setApplyMerging(false);
+        builder.setSlots(slots);
+        builder.setAnnotationMergeStrategy(dataBatchGenerationSettings.annotationMergeStrategy);
+        builder.setReferenceColumns(dataBatchGenerationSettings.dataSetMatching,
+                dataBatchGenerationSettings.customColumns);
+        return builder.build();
     }
 
     @Override
@@ -214,6 +107,8 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
             runPassThrough();
             return;
         }
+
+        List<JIPipeDataBatch> dataBatches;
 
         // Special case: No input slots
         if (getEffectiveInputSlotCount() == 0) {
@@ -227,107 +122,40 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
             runIteration(dataBatch, slotProgress, algorithmProgress, isCancelled);
             return;
         }
-
-        Map<String, JIPipeDataSlot> slotMap = new HashMap<>();
-        for (JIPipeDataSlot inputSlot : getInputSlots()) {
-            if (inputSlot == getParameterSlot())
-                continue;
-            slotMap.put(inputSlot.getName(), inputSlot);
+        else if(getEffectiveInputSlotCount() == 1) {
+            dataBatches = new ArrayList<>();
+            for (int row = 0; row < getFirstInputSlot().getRowCount(); row++) {
+                JIPipeDataBatch dataBatch = new JIPipeDataBatch(this);
+                dataBatch.setData(getFirstInputSlot(), row);
+                dataBatch.addGlobalAnnotations(getFirstInputSlot().getAnnotations(row), dataBatchGenerationSettings.annotationMergeStrategy);
+                dataBatches.add(dataBatch);
+            }
         }
+        else {
+            // First generate merging data batches
+            List<JIPipeMergingDataBatch> mergingDataBatches = generateDataBatchesDryRun(getNonParameterInputSlots());
 
-        // Organize the input data by Dataset -> Slot -> Data row
-        Map<JIPipeDataBatchKey, Map<String, TIntSet>> dataSets = groupDataByMetadata(slotMap);
-
-        // Check for duplicates
-        if (!dataBatchGenerationSettings.allowDuplicateDataSets) {
-            for (Map.Entry<JIPipeDataBatchKey, Map<String, TIntSet>> dataSetEntry : dataSets.entrySet()) {
-                for (Map.Entry<String, TIntSet> slotEntry : dataSetEntry.getValue().entrySet()) {
-                    if (slotEntry.getValue().size() > 1) {
-                        throw new UserFriendlyRuntimeException("Duplicate data set found!",
-                                "A duplicate data set was found!",
+            // Check for incomplete batches
+            if(dataBatchGenerationSettings.skipIncompleteDataSets) {
+                mergingDataBatches.removeIf(JIPipeMergingDataBatch::isIncomplete);
+            }
+            else {
+                for (JIPipeMergingDataBatch batch : mergingDataBatches) {
+                    if(batch.isIncomplete()) {
+                        throw new UserFriendlyRuntimeException("Incomplete data set found!",
+                                "An incomplete data set was found!",
                                 "Algorithm '" + getName() + "'",
-                                "The algorithm needs to assign input to a unique data set via the data annotations. " +
-                                        "The duplicate data set is: " + dataSetEntry.getKey(),
+                                "The algorithm needs to assign input a unique data set via annotations, but there is " +
+                                        "not a data set for each input slot.",
                                 "Please check the input of the algorithm by running the quick run on each input algorithm. " +
-                                        "You can then either modify the pipeline to make the data sets unique or modify the settings of this algorithm " +
-                                        "to enable duplicate entries.");
+                                        "You can also choose to skip incomplete data sets, although you might lose data in those cases.");
                     }
                 }
             }
+            // Convert to single batch
+            dataBatches = JIPipeMergingDataBatchBuilder.convertMergingToSingleDataBatches(mergingDataBatches);
         }
 
-        // Check for missing data sets
-        for (Map.Entry<JIPipeDataBatchKey, Map<String, TIntSet>> dataSetEntry : ImmutableList.copyOf(dataSets.entrySet())) {
-            boolean incomplete = false;
-            for (JIPipeDataSlot inputSlot : getInputSlots()) {
-                if (getParameterSlot() == inputSlot)
-                    continue;
-                TIntSet slotEntry = dataSetEntry.getValue().getOrDefault(inputSlot.getName(), null);
-                if (slotEntry == null) {
-                    incomplete = true;
-                    break;
-                }
-            }
-            if (incomplete) {
-                if (!dataBatchGenerationSettings.skipIncompleteDataSets) {
-                    throw new UserFriendlyRuntimeException("Incomplete data set found!",
-                            "An incomplete data set was found!",
-                            "Algorithm '" + getName() + "'",
-                            "The algorithm needs to assign input a unique data set via annotations, but there is " +
-                                    "not a data set for each input slot.",
-                            "Please check the input of the algorithm by running the quick run on each input algorithm. " +
-                                    "You can also choose to skip incomplete data sets, although you might lose data in those cases.");
-                }
-                dataSets.remove(dataSetEntry.getKey());
-            }
-        }
-
-        // Generate data interfaces
-        List<JIPipeDataBatch> dataBatches = new ArrayList<>();
-        for (Map.Entry<JIPipeDataBatchKey, Map<String, TIntSet>> dataSetEntry : ImmutableList.copyOf(dataSets.entrySet())) {
-            List<JIPipeDataBatch> dataBatchesForDataSet = new ArrayList<>();
-            // Create the first batch
-            {
-                JIPipeDataSlot inputSlot = getFirstInputSlot();
-                TIntSet rows = dataSetEntry.getValue().get(inputSlot.getName());
-                for (TIntIterator it = rows.iterator(); it.hasNext(); ) {
-                    int row = it.next();
-                    JIPipeDataBatch dataBatch = new JIPipeDataBatch(this);
-                    dataBatch.setData(inputSlot, row);
-                    dataBatch.addGlobalAnnotations(inputSlot.getAnnotations(row), dataBatchGenerationSettings.annotationMergeStrategy);
-                    dataBatchesForDataSet.add(dataBatch);
-                }
-            }
-            // Create subsequent batches
-            for (int slotIndex = 1; slotIndex < getInputSlots().size(); slotIndex++) {
-                JIPipeDataSlot inputSlot = getInputSlots().get(slotIndex);
-                if (getParameterSlot() == inputSlot)
-                    continue;
-                TIntSet rows = dataSetEntry.getValue().get(inputSlot.getName());
-
-                List<JIPipeDataBatch> backup = dataBatchesForDataSet;
-                dataBatchesForDataSet = new ArrayList<>();
-
-                for (TIntIterator it = rows.iterator(); it.hasNext(); ) {
-                    int row = it.next();
-                    // We have to copy each input entry and adapt it to the row
-                    for (JIPipeDataBatch dataBatch : backup) {
-                        JIPipeDataBatch copy = new JIPipeDataBatch(dataBatch);
-                        copy.setData(inputSlot, row);
-                        copy.addGlobalAnnotations(inputSlot.getAnnotations(row), dataBatchGenerationSettings.annotationMergeStrategy);
-                        dataBatchesForDataSet.add(copy);
-                    }
-                }
-            }
-
-            // Add parameter annotations
-            for (JIPipeDataBatch dataBatch : dataBatchesForDataSet) {
-                dataBatch.addGlobalAnnotations(parameterAnnotations, dataBatchGenerationSettings.annotationMergeStrategy);
-            }
-
-
-            dataBatches.addAll(dataBatchesForDataSet);
-        }
 
         if (!supportsParallelization() || !isParallelizationEnabled() || getThreadPool() == null || getThreadPool().getMaxThreads() <= 1) {
             for (int i = 0; i < dataBatches.size(); i++) {
@@ -394,19 +222,6 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
         this.parallelizationEnabled = parallelizationEnabled;
     }
 
-    private Set<String> getInputAnnotationByFilter(Map<String, JIPipeDataSlot> slotMap, StringPredicate.List predicates) {
-        Set<String> result = new HashSet<>();
-        for (JIPipeDataSlot slot : slotMap.values()) {
-            result.addAll(slot.getAnnotationColumns());
-        }
-        if (dataBatchGenerationSettings.invertCustomColumns) {
-            result.removeIf(s -> predicates.stream().anyMatch(p -> p.test(s)));
-        } else {
-            result.removeIf(s -> predicates.stream().noneMatch(p -> p.test(s)));
-        }
-        return result;
-    }
-
     /**
      * Runs code on one data row
      *
@@ -423,10 +238,8 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
     public static class DataBatchGenerationSettings implements JIPipeParameterCollection {
         private final EventBus eventBus = new EventBus();
         private JIPipeColumnGrouping dataSetMatching = JIPipeColumnGrouping.PrefixHashIntersection;
-        private boolean allowDuplicateDataSets = true;
         private boolean skipIncompleteDataSets = false;
-        private StringPredicate.List customColumns = new StringPredicate.List();
-        private boolean invertCustomColumns = false;
+        private StringQueryExpression customColumns = new StringQueryExpression();
         private JIPipeAnnotationMergeStrategy annotationMergeStrategy = JIPipeAnnotationMergeStrategy.Merge;
 
         public DataBatchGenerationSettings() {
@@ -434,10 +247,8 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
 
         public DataBatchGenerationSettings(DataBatchGenerationSettings other) {
             this.dataSetMatching = other.dataSetMatching;
-            this.allowDuplicateDataSets = other.allowDuplicateDataSets;
             this.skipIncompleteDataSets = other.skipIncompleteDataSets;
-            this.customColumns = new StringPredicate.List(other.customColumns);
-            this.invertCustomColumns = other.invertCustomColumns;
+            this.customColumns = new StringQueryExpression(other.customColumns);
             this.annotationMergeStrategy = other.annotationMergeStrategy;
         }
 
@@ -461,45 +272,19 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
 
         }
 
-        @JIPipeDocumentation(name = "Allow duplicate data sets", description = "If disabled, there will be an error if duplicate data sets are detected. " +
-                "Data sets are detected by grouping incoming data via their data annotations.")
-        @JIPipeParameter(value = "allow-duplicates", uiOrder = 999, visibility = JIPipeParameterVisibility.Visible)
-        public boolean isAllowDuplicateDataSets() {
-            return allowDuplicateDataSets;
-        }
-
-        @JIPipeParameter("allow-duplicates")
-        public void setAllowDuplicateDataSets(boolean allowDuplicateDataSets) {
-            this.allowDuplicateDataSets = allowDuplicateDataSets;
-
-        }
-
         @JIPipeDocumentation(name = "Custom grouping columns", description = "Only used if 'Grouping method' is set to 'Custom'. " +
-                "Determines which annotation columns are referred to group data sets. The filters determine which columns should be included. " +
-                "You can also invert the filters to determine which columns should be excluded.")
-        @JIPipeParameter(value = "custom-matched-columns-predicates", uiOrder = 999, visibility = JIPipeParameterVisibility.Visible)
+                "Determines which annotation columns are referred to group data sets. " + StringQueryExpression.DOCUMENTATION_DESCRIPTION)
+        @JIPipeParameter(value = "custom-matched-columns-expression", uiOrder = 999, visibility = JIPipeParameterVisibility.Visible)
         @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/annotation.png")
-        public StringPredicate.List getCustomColumns() {
+        public StringQueryExpression getCustomColumns() {
             if (customColumns == null)
-                customColumns = new StringPredicate.List();
+                customColumns = new StringQueryExpression();
             return customColumns;
         }
 
-        @JIPipeParameter(value = "custom-matched-columns-predicates", visibility = JIPipeParameterVisibility.Visible)
-        public void setCustomColumns(StringPredicate.List customColumns) {
+        @JIPipeParameter(value = "custom-matched-columns-expression", visibility = JIPipeParameterVisibility.Visible)
+        public void setCustomColumns(StringQueryExpression customColumns) {
             this.customColumns = customColumns;
-        }
-
-        @JIPipeDocumentation(name = "Invert custom filters", description = "If enabled, the filters in 'Custom grouping columns' determine which columns should be " +
-                "excluded instead of included.")
-        @JIPipeParameter("invert-custom-columns")
-        public boolean isInvertCustomColumns() {
-            return invertCustomColumns;
-        }
-
-        @JIPipeParameter("invert-custom-columns")
-        public void setInvertCustomColumns(boolean invertCustomColumns) {
-            this.invertCustomColumns = invertCustomColumns;
         }
 
         @JIPipeDocumentation(name = "Skip incomplete data sets", description = "If enabled, incomplete data sets are silently skipped. " +

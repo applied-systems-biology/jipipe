@@ -21,7 +21,12 @@ import org.hkijena.jipipe.JIPipeImageJUpdateSiteDependency;
 import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.*;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.EigenvalueSelection2D;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.HyperstackDimension;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.HyperstackDimensionPairParameter;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.InterpolationMethod;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.MacroWrapperAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.Neighborhood2D;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.analyze.FindParticles2D;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.background.RollingBallBackgroundEstimator2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.binary.DistanceTransformWatershed2DAlgorithm;
@@ -42,7 +47,14 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.color.SplitChannelsAlg
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.contrast.CLAHEContrastEnhancer;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.contrast.IlluminationCorrection2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.convolve.Convolve2DAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.dimensions.*;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.dimensions.MontageToStackAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.dimensions.ReorderDimensionsAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.dimensions.StackInverterAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.dimensions.StackMergerAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.dimensions.StackSplitterAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.dimensions.StackTo2DAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.dimensions.StackToMontageAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.dimensions.ZProjectorAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.edge.SobelEdgeDetectorAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.features.FrangiVesselnessFeatures;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.features.LocalMaxima2DAlgorithm;
@@ -134,7 +146,6 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.ImageStatistic
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.Measurement;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.MeasurementColumn;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.MeasurementColumnSortOrder;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.MeasurementFilter;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.plugin.Plugin;
@@ -286,20 +297,6 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
     }
 
     private void registerGlobalParameters() {
-        registerParameterType("ij1:measurement-filter",
-                MeasurementFilter.class,
-                MeasurementFilter::new,
-                o -> new MeasurementFilter((MeasurementFilter) o),
-                "Measurement filter",
-                "Models filtering of measurements",
-                null);
-        registerParameterType("ij1:measurement-filter-list",
-                MeasurementFilter.List.class,
-                MeasurementFilter.List::new,
-                o -> new MeasurementFilter.List((MeasurementFilter.List) o),
-                "Measurement filter list",
-                "Models filtering of measurements",
-                null);
         registerParameterType("ij1:measurement-column-sort-order",
                 MeasurementColumnSortOrder.class,
                 MeasurementColumnSortOrder::new,
@@ -336,8 +333,8 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
                 "Hyperstack dimension",
                 "Dimension assigned to a plane within a Hyperstack");
         registerParameterType("ij1-hyperstack-dimension:pair",
-                HyperstackDimensionPair.class,
-                HyperstackDimensionPair.List.class,
+                HyperstackDimensionPairParameter.class,
+                HyperstackDimensionPairParameter.List.class,
                 null,
                 null,
                 "Hyperstack dimension",
@@ -503,6 +500,7 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
     private void registerMathAlgorithms() {
         registerNodeType("ij1-math-math2d", ApplyMath2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
         registerNodeType("ij1-math-transform2d", ApplyTransform2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
+        registerNodeType("ij1-math-math2d-expression", ApplyMathExpression2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
         registerNodeType("ij1-math-edt2d", ApplyDistanceTransform2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
         registerNodeType("ij1-math-local-variance2d", LocalVarianceFilter2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
         registerNodeType("ij1-math-local-maximum2d", LocalMaximumFilter2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
@@ -514,6 +512,8 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         registerNodeType("ij1-math-imagecalculator2d", ImageCalculator2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/calculator.png"));
         registerNodeType("ij1-math-hessian2d", Hessian2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
         registerNodeType("ij1-math-divide-by-maximum", DivideByMaximumAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
+
+        registerNodeType("ij1-math-generate-from-expression", GenerateFromMathExpression2D.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
 
         registerEnumParameterType("ij1-math-math2d:transformation", ApplyMath2DAlgorithm.Transformation.class,
                 "Transformation", "Available transformations");
@@ -575,7 +575,7 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
 
     @Override
     public String getDependencyVersion() {
-        return "2020.10";
+        return "2020.11";
     }
 
     private static Map<Class<? extends JIPipeData>, Class<? extends JIPipeData>> get3DConversion() {

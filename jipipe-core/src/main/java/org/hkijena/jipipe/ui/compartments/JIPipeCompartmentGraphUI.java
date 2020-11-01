@@ -23,7 +23,6 @@ import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.history.AddCompartmentGraphHistorySnapshot;
 import org.hkijena.jipipe.api.history.ImportCompartmentGraphHistorySnapshot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.registries.JIPipeNodeRegistry;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.components.MarkdownDocument;

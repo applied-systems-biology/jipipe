@@ -23,7 +23,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeMergedDataSlotTable;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
-import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
+import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
@@ -35,7 +35,6 @@ import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.ui.resultanalysis.JIPipeNodeTableCellRenderer;
 import org.hkijena.jipipe.ui.resultanalysis.JIPipeProjectCompartmentTableCellRenderer;
 import org.hkijena.jipipe.ui.resultanalysis.JIPipeTraitTableCellRenderer;
-import org.hkijena.jipipe.utils.CustomScrollPane;
 import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jdesktop.swingx.JXTable;
@@ -98,8 +97,8 @@ public class JIPipeCacheMultiDataSlotTableUI extends JIPipeProjectWorkbenchPanel
 
     private void initialize() {
         setLayout(new BorderLayout());
-        if (GeneralUISettings.getInstance().isGenerateCachePreviews())
-            table.setRowHeight(GeneralUISettings.getInstance().getPreviewHeight());
+        if (GeneralDataSettings.getInstance().isGenerateCachePreviews())
+            table.setRowHeight(GeneralDataSettings.getInstance().getPreviewHeight());
         else
             table.setRowHeight(25);
         table.setDefaultRenderer(JIPipeData.class, new JIPipeDataCellRenderer());
@@ -109,7 +108,7 @@ public class JIPipeCacheMultiDataSlotTableUI extends JIPipeProjectWorkbenchPanel
         table.setDefaultRenderer(JIPipeAnnotation.class, new JIPipeTraitTableCellRenderer());
         table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
-        JScrollPane scrollPane = new CustomScrollPane(table);
+        JScrollPane scrollPane = new JScrollPane(table);
         scrollPane.getViewport().setBackground(Color.WHITE);
         add(scrollPane, BorderLayout.CENTER);
         add(table.getTableHeader(), BorderLayout.NORTH);
@@ -196,7 +195,7 @@ public class JIPipeCacheMultiDataSlotTableUI extends JIPipeProjectWorkbenchPanel
             if (slot.getRowCount() == 0) {
                 removeAll();
                 setLayout(new BorderLayout());
-                JLabel label = new JLabel("Data was cleared", UIUtils.getIcon64FromResources("shredder.png"), JLabel.LEFT);
+                JLabel label = new JLabel("No data available", UIUtils.getIcon64FromResources("no-data.png"), JLabel.LEFT);
                 label.setFont(label.getFont().deriveFont(26.0f));
                 add(label, BorderLayout.CENTER);
 

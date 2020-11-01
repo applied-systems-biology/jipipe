@@ -16,7 +16,6 @@ package org.hkijena.jipipe.extensions.tables.algorithms;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -24,7 +23,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.parameters.predicates.StringPredicate;
+import org.hkijena.jipipe.extensions.parameters.expressions.StringQueryExpression;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 
 import java.util.function.Consumer;
@@ -39,7 +38,7 @@ import java.util.function.Supplier;
 @JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
 public class RemoveColumnAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
-    private StringPredicate.List filters = new StringPredicate.List();
+    private StringQueryExpression filters = new StringQueryExpression();
 
     /**
      * Creates a new instance
@@ -57,7 +56,7 @@ public class RemoveColumnAlgorithm extends JIPipeSimpleIteratingAlgorithm {
      */
     public RemoveColumnAlgorithm(RemoveColumnAlgorithm other) {
         super(other);
-        this.filters = new StringPredicate.List(other.filters);
+        this.filters = new StringQueryExpression(other.filters);
     }
 
     @Override
@@ -72,20 +71,14 @@ public class RemoveColumnAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         dataBatch.addOutputData(getFirstOutputSlot(), table);
     }
 
-    @Override
-    public void reportValidity(JIPipeValidityReport report) {
-        report.forCategory("Filters").report(filters);
-    }
-
-    @JIPipeDocumentation(name = "Filters", description = "Please create one or more filters to select the removed columns. " +
-            "Filters are linked via a logical OR operation.")
+    @JIPipeDocumentation(name = "Filters", description = "Filter expression that is used to find columns to be removed. " + StringQueryExpression.DOCUMENTATION_DESCRIPTION)
     @JIPipeParameter("filters")
-    public StringPredicate.List getFilters() {
+    public StringQueryExpression getFilters() {
         return filters;
     }
 
     @JIPipeParameter("filters")
-    public void setFilters(StringPredicate.List filters) {
+    public void setFilters(StringQueryExpression filters) {
         this.filters = filters;
     }
 }

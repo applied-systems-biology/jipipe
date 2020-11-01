@@ -29,14 +29,14 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.deser.ContextualDeserializer;
 import org.hkijena.jipipe.api.JIPipeValidatable;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
-import org.hkijena.jipipe.extensions.parameters.pairs.Pair;
+import org.hkijena.jipipe.extensions.parameters.pairs.PairParameter;
 import org.hkijena.jipipe.utils.JsonUtils;
 
 import java.io.IOException;
 
 /**
  * A parameter that allows to model a function with an input, an output, and parameters.
- * This can be used if {@link Pair} is not sufficient
+ * This can be used if {@link PairParameter} is not sufficient
  */
 @JsonSerialize(using = FunctionParameter.Serializer.class)
 @JsonDeserialize(using = FunctionParameter.Deserializer.class)

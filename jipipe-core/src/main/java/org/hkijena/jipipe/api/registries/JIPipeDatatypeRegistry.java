@@ -17,13 +17,18 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.eventbus.EventBus;
 import org.apache.commons.lang3.reflect.ConstructorUtils;
-import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.JIPipeHidden;
-import org.hkijena.jipipe.api.data.*;
+import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.data.JIPipeDataConverter;
+import org.hkijena.jipipe.api.data.JIPipeDataDisplayOperation;
+import org.hkijena.jipipe.api.data.JIPipeDataImportOperation;
+import org.hkijena.jipipe.api.data.JIPipeDataInfo;
+import org.hkijena.jipipe.api.data.JIPipeDataSlot;
+import org.hkijena.jipipe.api.data.JIPipeExportedDataTable;
 import org.hkijena.jipipe.api.events.DatatypeRegisteredEvent;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
-import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
+import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.resultanalysis.JIPipeDefaultResultDataSlotPreviewUI;
 import org.hkijena.jipipe.ui.resultanalysis.JIPipeDefaultResultDataSlotRowUI;
@@ -448,7 +453,7 @@ public class JIPipeDatatypeRegistry {
      * @return cell renderer
      */
     public JIPipeResultDataSlotPreviewUI getCellRendererFor(Class<? extends JIPipeData> klass, JTable table) {
-        if (GeneralUISettings.getInstance().isGenerateResultPreviews()) {
+        if (GeneralDataSettings.getInstance().isGenerateResultPreviews()) {
             Class<? extends JIPipeResultDataSlotPreviewUI> rendererClass = resultTableCellUIs.getOrDefault(klass, null);
             if (rendererClass != null) {
                 return (JIPipeResultDataSlotPreviewUI) ReflectionUtils.newInstance(rendererClass, table);

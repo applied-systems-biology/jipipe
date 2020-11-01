@@ -18,6 +18,7 @@ import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.core.data.OpenInNativeApplicationDataImportOperation;
 import org.hkijena.jipipe.extensions.core.data.OpenTextInJIPipeDataOperation;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
+import org.hkijena.jipipe.extensions.strings.datasources.StringDefinitionDataSource;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.plugin.Plugin;
 
@@ -51,6 +52,8 @@ public class StringsExtension extends JIPipePrepackagedDefaultJavaExtension {
                 new OpenInNativeApplicationDataImportOperation(".json"), new OpenTextInJIPipeDataOperation(".json"));
         registerDatatypeConversion(new StringDataConverter(XMLData.class));
         registerDatatypeConversion(new StringDataConverter(JsonData.class));
+
+        registerNodeType("define-string", StringDefinitionDataSource.class);
     }
 
     @Override
@@ -60,6 +63,6 @@ public class StringsExtension extends JIPipePrepackagedDefaultJavaExtension {
 
     @Override
     public String getDependencyVersion() {
-        return "2020.10";
+        return "2020.11";
     }
 }

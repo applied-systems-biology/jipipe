@@ -29,10 +29,9 @@ import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
-import org.hkijena.jipipe.extensions.parameters.predicates.StringPredicate;
+import org.hkijena.jipipe.extensions.parameters.expressions.TableColumnSourceExpressionParameter;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.extensions.tables.datatypes.TableColumn;
-import org.hkijena.jipipe.extensions.tables.parameters.TableColumnSourceParameter;
 
 import java.awt.Rectangle;
 import java.util.function.Consumer;
@@ -47,12 +46,12 @@ import java.util.function.Supplier;
 @JIPipeOutputSlot(value = ROIListData.class, slotName = "Output")
 public class TableToRectangularROIAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
-    private TableColumnSourceParameter columnX1 = new TableColumnSourceParameter();
-    private TableColumnSourceParameter columnY1 = new TableColumnSourceParameter();
-    private TableColumnSourceParameter columnX2 = new TableColumnSourceParameter();
-    private TableColumnSourceParameter columnY2 = new TableColumnSourceParameter();
-    private TableColumnSourceParameter columnWidth = new TableColumnSourceParameter();
-    private TableColumnSourceParameter columnHeight = new TableColumnSourceParameter();
+    private TableColumnSourceExpressionParameter columnX1 = new TableColumnSourceExpressionParameter("\"X1\"");
+    private TableColumnSourceExpressionParameter columnY1 = new TableColumnSourceExpressionParameter("\"Y1\"");
+    private TableColumnSourceExpressionParameter columnX2 = new TableColumnSourceExpressionParameter("\"X2\"");
+    private TableColumnSourceExpressionParameter columnY2 = new TableColumnSourceExpressionParameter("\"Y2\"");
+    private TableColumnSourceExpressionParameter columnWidth = new TableColumnSourceExpressionParameter("\"Width\"");
+    private TableColumnSourceExpressionParameter columnHeight = new TableColumnSourceExpressionParameter("\"Height\"");
     private Anchor anchor = Anchor.TopLeft;
     private Mode mode = Mode.Rectangle;
 
@@ -67,12 +66,6 @@ public class TableToRectangularROIAlgorithm extends JIPipeSimpleIteratingAlgorit
                 .addOutputSlot("Output", ROIListData.class, null)
                 .seal()
                 .build());
-        columnX1.setColumnSource(new StringPredicate(StringPredicate.Mode.Equals, "X1", false));
-        columnY1.setColumnSource(new StringPredicate(StringPredicate.Mode.Equals, "Y1", false));
-        columnX2.setColumnSource(new StringPredicate(StringPredicate.Mode.Equals, "X2", false));
-        columnY2.setColumnSource(new StringPredicate(StringPredicate.Mode.Equals, "Y2", false));
-        columnWidth.setColumnSource(new StringPredicate(StringPredicate.Mode.Equals, "Width", false));
-        columnHeight.setColumnSource(new StringPredicate(StringPredicate.Mode.Equals, "Height", false));
     }
 
     /**
@@ -84,16 +77,17 @@ public class TableToRectangularROIAlgorithm extends JIPipeSimpleIteratingAlgorit
         super(other);
         this.anchor = other.anchor;
         this.mode = other.mode;
-        this.columnX1 = new TableColumnSourceParameter(other.columnX1);
-        this.columnY1 = new TableColumnSourceParameter(other.columnY1);
-        this.columnX2 = new TableColumnSourceParameter(other.columnX2);
-        this.columnY2 = new TableColumnSourceParameter(other.columnY2);
-        this.columnWidth = new TableColumnSourceParameter(other.columnWidth);
-        this.columnHeight = new TableColumnSourceParameter(other.columnHeight);
+        this.columnX1 = new TableColumnSourceExpressionParameter(other.columnX1);
+        this.columnY1 = new TableColumnSourceExpressionParameter(other.columnY1);
+        this.columnX2 = new TableColumnSourceExpressionParameter(other.columnX2);
+        this.columnY2 = new TableColumnSourceExpressionParameter(other.columnY2);
+        this.columnWidth = new TableColumnSourceExpressionParameter(other.columnWidth);
+        this.columnHeight = new TableColumnSourceExpressionParameter(other.columnHeight);
     }
 
     @Override
     public void reportValidity(JIPipeValidityReport report) {
+        super.reportValidity(report);
         report.forCategory("Column 'X1'").report(columnX1);
         report.forCategory("Column 'Y1'").report(columnY1);
         if (anchor == Anchor.TopLeft || anchor == Anchor.Center) {
@@ -226,71 +220,71 @@ public class TableToRectangularROIAlgorithm extends JIPipeSimpleIteratingAlgorit
 
     @JIPipeDocumentation(name = "Column 'X1'", description = "The table column that is used for the X1 coordinate.")
     @JIPipeParameter(value = "column-x1")
-    public TableColumnSourceParameter getColumnX1() {
+    public TableColumnSourceExpressionParameter getColumnX1() {
         return columnX1;
     }
 
     @JIPipeParameter(value = "column-x1")
-    public void setColumnX1(TableColumnSourceParameter columnX1) {
+    public void setColumnX1(TableColumnSourceExpressionParameter columnX1) {
         this.columnX1 = columnX1;
     }
 
     @JIPipeDocumentation(name = "Column 'Y1'", description = "The table column that is used for the Y1 coordinate.")
     @JIPipeParameter(value = "column-y1")
-    public TableColumnSourceParameter getColumnY1() {
+    public TableColumnSourceExpressionParameter getColumnY1() {
         return columnY1;
     }
 
     @JIPipeParameter(value = "column-y1")
-    public void setColumnY1(TableColumnSourceParameter columnY1) {
+    public void setColumnY1(TableColumnSourceExpressionParameter columnY1) {
         this.columnY1 = columnY1;
     }
 
     @JIPipeDocumentation(name = "Column 'X2'", description = "The table column that is used for the X2 coordinate. " +
             "The usage of this column depends on the current 'Anchor' setting.")
     @JIPipeParameter(value = "column-x2")
-    public TableColumnSourceParameter getColumnX2() {
+    public TableColumnSourceExpressionParameter getColumnX2() {
         return columnX2;
     }
 
     @JIPipeParameter(value = "column-x2")
-    public void setColumnX2(TableColumnSourceParameter columnX2) {
+    public void setColumnX2(TableColumnSourceExpressionParameter columnX2) {
         this.columnX2 = columnX2;
     }
 
     @JIPipeDocumentation(name = "Column 'Y2'", description = "The table column that is used for the Y2 coordinate. " +
             "The usage of this column depends on the current 'Anchor' setting.")
     @JIPipeParameter(value = "column-y2")
-    public TableColumnSourceParameter getColumnY2() {
+    public TableColumnSourceExpressionParameter getColumnY2() {
         return columnY2;
     }
 
     @JIPipeParameter(value = "column-y2")
-    public void setColumnY2(TableColumnSourceParameter columnY2) {
+    public void setColumnY2(TableColumnSourceExpressionParameter columnY2) {
         this.columnY2 = columnY2;
     }
 
     @JIPipeDocumentation(name = "Column 'Width'", description = "The table column that is used for the width. " +
             "The usage of this column depends on the current 'Anchor' setting.")
     @JIPipeParameter(value = "column-width")
-    public TableColumnSourceParameter getColumnWidth() {
+    public TableColumnSourceExpressionParameter getColumnWidth() {
         return columnWidth;
     }
 
     @JIPipeParameter(value = "column-width")
-    public void setColumnWidth(TableColumnSourceParameter columnWidth) {
+    public void setColumnWidth(TableColumnSourceExpressionParameter columnWidth) {
         this.columnWidth = columnWidth;
     }
 
     @JIPipeDocumentation(name = "Column 'Height'", description = "The table column that is used for the height. " +
             "The usage of this column depends on the current 'Anchor' setting.")
     @JIPipeParameter(value = "column-height")
-    public TableColumnSourceParameter getColumnHeight() {
+    public TableColumnSourceExpressionParameter getColumnHeight() {
         return columnHeight;
     }
 
     @JIPipeParameter(value = "column-height")
-    public void setColumnHeight(TableColumnSourceParameter columnHeight) {
+    public void setColumnHeight(TableColumnSourceExpressionParameter columnHeight) {
         this.columnHeight = columnHeight;
     }
 

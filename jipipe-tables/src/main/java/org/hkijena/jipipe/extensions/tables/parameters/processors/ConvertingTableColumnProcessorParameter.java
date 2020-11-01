@@ -13,19 +13,19 @@
 
 package org.hkijena.jipipe.extensions.tables.parameters.processors;
 
+import org.hkijena.jipipe.extensions.parameters.expressions.StringQueryExpression;
 import org.hkijena.jipipe.extensions.parameters.functions.FunctionParameter;
-import org.hkijena.jipipe.extensions.parameters.predicates.StringPredicate;
 import org.hkijena.jipipe.extensions.tables.parameters.enums.TableColumnConversionParameter;
 
 /**
  * A parameter that models processing an input column via an conversion function
  * and generating an output column
  */
-public class ConvertingTableColumnProcessorParameter extends FunctionParameter<StringPredicate, TableColumnConversionParameter, String> {
+public class ConvertingTableColumnProcessorParameter extends FunctionParameter<StringQueryExpression, TableColumnConversionParameter, String> {
 
     public ConvertingTableColumnProcessorParameter() {
-        super(StringPredicate.class, TableColumnConversionParameter.class, String.class);
-        setInput(new StringPredicate());
+        super(StringQueryExpression.class, TableColumnConversionParameter.class, String.class);
+        setInput(new StringQueryExpression());
         setParameter(new TableColumnConversionParameter());
         setOutput("Output column");
     }

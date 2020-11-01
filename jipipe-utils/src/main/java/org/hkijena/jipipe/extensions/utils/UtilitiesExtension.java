@@ -53,6 +53,6 @@ public class UtilitiesExtension extends JIPipePrepackagedDefaultJavaExtension {
 
     @Override
     public String getDependencyVersion() {
-        return "2020.10";
+        return "2020.11";
     }
 }
