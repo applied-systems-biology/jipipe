@@ -66,6 +66,7 @@ public class ModernMetalTheme extends DefaultMetalTheme {
     private static final Border BUTTON_BORDER = BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1),
             BorderFactory.createCompoundBorder(new RoundedLineBorder(MEDIUM_GRAY, 1, 2),
                     BorderFactory.createEmptyBorder(3, 3, 3, 3)));
+    private static final Border INVISIBLE_BORDER = BorderFactory.createEmptyBorder(5, 5, 5, 5);
     static ColorUIResource WHITE = new ColorUIResource(255, 255, 255);
 
     /**
@@ -185,6 +186,8 @@ public class ModernMetalTheme extends DefaultMetalTheme {
                 "Spinner.arrowButtonBorder", BorderFactory.createMatteBorder(0, 1, 0, 0, GRAY),
                 "Spinner.arrowButtonInsets", new Insets(2, 2, 2, 2),
                 "Spinner.arrowButtonSize", new Dimension(16, 16),
+                "Spinner.border", BUTTON_BORDER,
+                "Spinner.background", WHITE,
 
                 "RadioButtonMenuItem.background", LIGHT_GRAY,
 
