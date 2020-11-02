@@ -38,9 +38,9 @@ public class ResultsTableDataListCellRenderer extends JLabel implements ListCell
     public Component getListCellRendererComponent(JList<? extends ResultsTableData> list, ResultsTableData value, int index, boolean isSelected, boolean cellHasFocus) {
         setText("" + value);
         if (isSelected) {
-            setBackground(new Color(184, 207, 229));
+            setBackground(UIManager.getColor("List.selectionBackground"));
         } else {
-            setBackground(new Color(255, 255, 255));
+            setBackground(UIManager.getColor("List.background"));
         }
         return this;
     }

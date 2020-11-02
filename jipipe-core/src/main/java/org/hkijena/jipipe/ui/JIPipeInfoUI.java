@@ -97,10 +97,10 @@ public class JIPipeInfoUI extends JIPipeProjectWorkbenchPanel {
         tourContentPanel.setAlignmentY(JComponent.CENTER_ALIGNMENT);
         tourContentPanel.setAlignmentX(JComponent.CENTER_ALIGNMENT);
         tourContentPanel.setBorder(new RoundedLineBorder(Color.GRAY, 1, 3, true));
-        tourContentPanel.setMaximumSize(new Dimension(800,600));
+        tourContentPanel.setMaximumSize(new Dimension(800,650));
 //        tourContentPanel.setMinimumSize(new Dimension(800,600));
-        tourContentPanel.setPreferredSize(new Dimension(800,600));
-        tourContentPanel.setBackground(Color.WHITE);
+        tourContentPanel.setPreferredSize(new Dimension(800,650));
+        tourContentPanel.setBackground(UIManager.getColor("TextArea.background"));
         tourPanel.add(Box.createVerticalGlue());
         tourPanel.add(tourContentPanel);
         tourPanel.add(Box.createVerticalGlue());
@@ -108,19 +108,19 @@ public class JIPipeInfoUI extends JIPipeProjectWorkbenchPanel {
 
         DotSlideshow slideshow = new DotSlideshow();
         MarkdownReader slideWelcome = new MarkdownReader(false, MarkdownDocument.fromPluginResource("documentation/introduction_welcome.md"));
-        slideWelcome.setBorder(BorderFactory.createLineBorder(Color.WHITE, 16));
+        slideWelcome.setBorder(BorderFactory.createLineBorder(UIManager.getColor("TextArea.background"), 16));
         slideshow.addSlide(slideWelcome, "Welcome to JIPipe");
 
         MarkdownReader slideOrganization = new MarkdownReader(false, MarkdownDocument.fromPluginResource("documentation/introduction_organization.md"));
-        slideOrganization.setBorder(BorderFactory.createLineBorder(Color.WHITE, 16));
+        slideOrganization.setBorder(BorderFactory.createLineBorder(UIManager.getColor("TextArea.background"), 16));
         slideshow.addSlide(slideOrganization, "Organizing your pipeline");
 
         MarkdownReader slideNodes = new MarkdownReader(false, MarkdownDocument.fromPluginResource("documentation/introduction_nodes.md"));
-        slideNodes.setBorder(BorderFactory.createLineBorder(Color.WHITE, 16));
+        slideNodes.setBorder(BorderFactory.createLineBorder(UIManager.getColor("TextArea.background"), 16));
         slideshow.addSlide(slideNodes, "Adding nodes");
 
         MarkdownReader slidesRunning = new MarkdownReader(false, MarkdownDocument.fromPluginResource("documentation/introduction_running.md"));
-        slidesRunning.setBorder(BorderFactory.createLineBorder(Color.WHITE, 16));
+        slidesRunning.setBorder(BorderFactory.createLineBorder(UIManager.getColor("TextArea.background"), 16));
         slideshow.addSlide(slidesRunning, "Running your pipeline");
 
         slideshow.showSlide("Welcome to JIPipe");
@@ -166,16 +166,11 @@ public class JIPipeInfoUI extends JIPipeProjectWorkbenchPanel {
     }
 
     private void initializeHeaderPanel() {
-        JPanel headerPanel;
-        try {
-            headerPanel = new BackgroundPanel(ImageIO.read(ResourceUtils.getPluginResource("infoui-background.png")), false);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        JPanel headerPanel = new BackgroundPanel(UIUtils.getHeaderPanelBackground(), false);
         headerPanel.setLayout(new BorderLayout());
         headerPanel.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.DARK_GRAY));
         headerPanel.setPreferredSize(new Dimension(headerPanel.getPreferredSize().width, 200));
-        JLabel logo = new JLabel(new ImageIcon(ResourceUtils.getPluginResource("logo-400.png")));
+        JLabel logo = new JLabel(new ImageIcon(UIUtils.getLogo400()));
         logo.setBorder(BorderFactory.createEmptyBorder(0, 32, 0, 0));
         headerPanel.add(logo, BorderLayout.WEST);
 

@@ -38,7 +38,7 @@ import java.util.function.Supplier;
 /**
  * Algorithm that adds or replaces a column by a generated value
  */
-@JIPipeDocumentation(name = "Generate table column", description = "Adds a new column or replaces an existing table column by generating values")
+@JIPipeDocumentation(name = "Set/replace table column", description = "Adds a new column or replaces an existing table column by generating values")
 @JIPipeOrganization(nodeTypeCategory = TableNodeTypeCategory.class)
 @JIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)

@@ -105,6 +105,8 @@ public class DefaultExpressionParameterEditorUI extends JIPipeParameterEditorUI 
         };
         RSyntaxDocument document = new RSyntaxDocument(tokenMakerFactory, "text/expression");
         expressionEditor = new RSyntaxTextArea(document);
+        UIUtils.applyThemeToCodeEditor(expressionEditor);
+        expressionEditor.setBackground(UIManager.getColor("TextArea.background"));
         expressionEditor.setLineWrap(true);
         expressionEditor.setHighlightCurrentLine(false);
         expressionEditor.getDocument().addDocumentListener(new DocumentChangeListener() {
@@ -119,9 +121,9 @@ public class DefaultExpressionParameterEditorUI extends JIPipeParameterEditorUI 
         });
         expressionEditorPanel.setBorder(BorderFactory.createEtchedBorder());
         expressionEditorPanel.setOpaque(true);
-        expressionEditorPanel.setBackground(Color.WHITE);
+        expressionEditorPanel.setBackground(UIManager.getColor("TextArea.background"));
         JPanel borderPanel = new JPanel(new BorderLayout());
-        borderPanel.setBackground(Color.WHITE);
+        borderPanel.setBackground(UIManager.getColor("TextArea.background"));
         borderPanel.setBorder(BorderFactory.createEmptyBorder(5,4,0,4));
         borderPanel.add(expressionEditor, BorderLayout.CENTER);
         expressionEditorPanel.add(borderPanel, BorderLayout.CENTER);

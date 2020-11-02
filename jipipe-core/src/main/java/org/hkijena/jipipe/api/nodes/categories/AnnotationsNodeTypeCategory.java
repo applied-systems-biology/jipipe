@@ -23,6 +23,8 @@ public class AnnotationsNodeTypeCategory implements JIPipeNodeTypeCategory {
 
     public static final Color FILL_COLOR = Color.getHSBColor(264.0f / 360.0f, 0.1f, 0.9f);
     public static final Color BORDER_COLOR = Color.getHSBColor(264.0f / 360.0f, 0.1f, 0.5f);
+    public static final Color FILL_COLOR_DARK = Color.getHSBColor(264.0f / 360.0f, 0.5f, 0.3f);
+    public static final Color BORDER_COLOR_DARK = Color.getHSBColor(264.0f / 360.0f, 0.5f, 0.9f);
 
     @Override
     public String getId() {
@@ -57,6 +59,16 @@ public class AnnotationsNodeTypeCategory implements JIPipeNodeTypeCategory {
     @Override
     public Color getBorderColor() {
         return BORDER_COLOR;
+    }
+
+    @Override
+    public Color getDarkFillColor() {
+        return FILL_COLOR_DARK;
+    }
+
+    @Override
+    public Color getDarkBorderColor() {
+        return BORDER_COLOR_DARK;
     }
 
     @Override

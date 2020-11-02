@@ -166,9 +166,9 @@ public class VariableSelectorList extends JList<ExpressionParameterVariable> {
             nameLabel.setText(value.getName());
             descriptionLabel.setText(value.getDescription());
             if (isSelected) {
-                setBackground(new Color(184, 207, 229));
+                setBackground(UIManager.getColor("List.selectionBackground"));
             } else {
-                setBackground(new Color(255, 255, 255));
+                setBackground(UIManager.getColor("List.background"));
             }
             return this;
         }

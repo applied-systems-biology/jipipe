@@ -15,6 +15,7 @@ import org.hkijena.jipipe.extensions.core.data.CopyContainingFolderDataImportOpe
 import org.hkijena.jipipe.extensions.core.data.DefaultDataDisplayOperation;
 import org.hkijena.jipipe.extensions.core.data.OpenContainingFolderDataImportOperation;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
+import org.hkijena.jipipe.ui.theme.JIPipeUITheme;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.plugin.Plugin;
@@ -59,6 +60,9 @@ public class CoreExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerDatatypeImportOperation("", new CopyContainingFolderDataImportOperation());
         registerDatatypeImportOperation("", new OpenContainingFolderDataImportOperation());
         registerDatatypeDisplayOperation("", new DefaultDataDisplayOperation());
+
+        // Global parameters
+        registerEnumParameterType("theme", JIPipeUITheme.class, "Theme", "A theme for the JIPipe GUI");
     }
 
     @Override

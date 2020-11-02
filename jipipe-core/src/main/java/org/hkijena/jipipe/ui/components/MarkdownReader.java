@@ -22,6 +22,7 @@ import com.vladsch.flexmark.pdf.converter.PdfConverterExtension;
 import com.vladsch.flexmark.util.data.MutableDataHolder;
 import com.vladsch.flexmark.util.data.MutableDataSet;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
+import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -51,6 +52,13 @@ public class MarkdownReader extends JPanel {
     public static final String[] CSS_RULES = {"body { font-family: \"Sans-serif\"; }",
             "pre { background-color: #f5f2f0; border: 3px #f5f2f0 solid; }",
             "code { background-color: #f5f2f0; }",
+            "h2 { padding-top: 30px; }",
+            "h3 { padding-top: 30px; }",
+            "th { border-bottom: 1px solid #c8c8c8; }",
+            ".toc-list { list-style: none; }"};
+    public static final String[] CSS_RULES_DARK = {"body { font-family: \"Sans-serif\"; color: #eeeeee; }",
+            "pre { background-color: #333333; border: 3px #333333 solid; }",
+            "code { background-color: #333333; }",
             "h2 { padding-top: 30px; }",
             "h3 { padding-top: 30px; }",
             "th { border-bottom: 1px solid #c8c8c8; }",
@@ -214,8 +222,15 @@ public class MarkdownReader extends JPanel {
     }
 
     private void initializeStyleSheet(StyleSheet styleSheet) {
-        for (String rule : CSS_RULES) {
-            styleSheet.addRule(rule);
+        if(GeneralUISettings.getInstance().getTheme().isDark()) {
+            for (String rule : CSS_RULES_DARK) {
+                styleSheet.addRule(rule);
+            }
+        }
+        else {
+            for (String rule : CSS_RULES) {
+                styleSheet.addRule(rule);
+            }
         }
     }
 

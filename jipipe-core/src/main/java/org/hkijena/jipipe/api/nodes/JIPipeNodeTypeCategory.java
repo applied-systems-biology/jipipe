@@ -70,6 +70,20 @@ public interface JIPipeNodeTypeCategory {
     Color getBorderColor();
 
     /**
+     * The fill color for algorithm nodes (dark theme)
+     *
+     * @return fill color
+     */
+    Color getDarkFillColor();
+
+    /**
+     * The border color for algorithm nodes (dark theme)
+     *
+     * @return border color
+     */
+    Color getDarkBorderColor();
+
+    /**
      * If the category should be available in the graph compartment editor
      *
      * @return if the category should be visible

@@ -121,15 +121,11 @@ public class JIPipeJsonExtensionInfoUI extends JIPipeJsonExtensionWorkbenchPanel
 
     private void initializeHeaderPanel() {
         JPanel headerPanel;
-        try {
-            headerPanel = new BackgroundPanel(ImageIO.read(ResourceUtils.getPluginResource("infoui-background.png")), true);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        headerPanel = new BackgroundPanel(UIUtils.getHeaderPanelBackground(), true);
         headerPanel.setLayout(new BorderLayout());
         headerPanel.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.DARK_GRAY));
         headerPanel.setPreferredSize(new Dimension(headerPanel.getPreferredSize().width, 200));
-        JLabel logo = new JLabel(new ImageIcon(ResourceUtils.getPluginResource("logo-extension-builder-400.png")));
+        JLabel logo = new JLabel(new ImageIcon(UIUtils.getExtensionBuilderLogo400()));
         logo.setBorder(BorderFactory.createEmptyBorder(0, 32, 0, 0));
         headerPanel.add(logo, BorderLayout.WEST);
 

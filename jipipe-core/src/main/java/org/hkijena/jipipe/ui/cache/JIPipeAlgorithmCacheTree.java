@@ -19,7 +19,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
-import org.hkijena.jipipe.utils.ArrowLessScrollBarUI;
+import org.hkijena.jipipe.ui.theme.ArrowLessScrollBarUI;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;

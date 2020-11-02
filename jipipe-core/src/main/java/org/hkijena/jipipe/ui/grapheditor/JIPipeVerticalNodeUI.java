@@ -317,11 +317,11 @@ public class JIPipeVerticalNodeUI extends JIPipeNodeUI {
             if (algorithm.isEnabled()) {
                 if (!algorithm.isPassThrough()) {
                     setBackground(getFillColor());
-                    nameLabel.setForeground(Color.BLACK);
+                    nameLabel.setForeground(UIManager.getColor("Label.foreground"));
                     openSettingsButton.setIcon(UIUtils.getIconFromResources("actions/wrench.png"));
                 } else {
-                    setBackground(Color.WHITE);
-                    nameLabel.setForeground(Color.BLACK);
+                    setBackground(UIManager.getColor("TextArea.background"));
+                    nameLabel.setForeground(UIManager.getColor("Label.foreground"));
                     openSettingsButton.setIcon(UIUtils.getIconFromResources("emblems/pass-through.png"));
                 }
             } else {
@@ -331,7 +331,7 @@ public class JIPipeVerticalNodeUI extends JIPipeNodeUI {
             }
         } else {
             setBackground(getFillColor());
-            nameLabel.setForeground(Color.BLACK);
+            nameLabel.setForeground(UIManager.getColor("Label.foreground"));
             openSettingsButton.setIcon(UIUtils.getIconFromResources("actions/wrench.png"));
         }
     }

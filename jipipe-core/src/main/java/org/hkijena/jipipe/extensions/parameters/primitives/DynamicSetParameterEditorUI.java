@@ -16,7 +16,7 @@ package org.hkijena.jipipe.extensions.parameters.primitives;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
-import org.hkijena.jipipe.utils.ModernMetalTheme;
+import org.hkijena.jipipe.ui.theme.ModernMetalTheme;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -78,7 +78,7 @@ public class DynamicSetParameterEditorUI extends JIPipeParameterEditorUI {
 
     private void initialize() {
         setLayout(new BorderLayout());
-        setBorder(BorderFactory.createLineBorder(ModernMetalTheme.MEDIUM_GRAY));
+        setBorder(BorderFactory.createLineBorder(UIManager.getColor("Button.borderColor")));
 
         DynamicSetParameter<Object> parameter = getParameter(DynamicSetParameter.class);
         Object[] values;

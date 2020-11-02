@@ -18,7 +18,7 @@ import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableBiMap;
 import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
-import org.hkijena.jipipe.utils.CustomTabbedPaneUI;
+import org.hkijena.jipipe.ui.theme.CustomTabbedPaneUI;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -87,7 +87,7 @@ public class DocumentTabPane extends JPanel {
                 }
             }
         });
-        if (GeneralUISettings.getInstance().isModernizeCrossPlatformLookAndFeel()) {
+        if (GeneralUISettings.getInstance().getTheme().isModern()) {
             tabbedPane.setUI(new CustomTabbedPaneUI());
         }
         add(tabbedPane, BorderLayout.CENTER);
@@ -192,7 +192,7 @@ public class DocumentTabPane extends JPanel {
 //            } else {
 //                closeButton.setBackground(Color.WHITE);
 //            }
-            closeButton.setBackground(Color.WHITE);
+            closeButton.setBackground(UIManager.getColor("TextArea.background"));
 
             closeButton.setOpaque(false);
             closeButton.setEnabled(closeMode != CloseMode.withDisabledCloseButton);

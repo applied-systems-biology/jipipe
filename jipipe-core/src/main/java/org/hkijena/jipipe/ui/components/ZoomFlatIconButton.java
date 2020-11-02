@@ -19,7 +19,7 @@ public class ZoomFlatIconButton extends JButton {
     public ZoomFlatIconButton(ImageIcon icon, ZoomViewPort viewPort) {
         super(new ZoomIcon(icon, viewPort));
         this.viewPort = viewPort;
-        setBackground(Color.WHITE);
+        setBackground(UIManager.getColor("TextArea.background"));
         setOpaque(false);
         viewPort.getEventBus().register(this);
         updateSize();

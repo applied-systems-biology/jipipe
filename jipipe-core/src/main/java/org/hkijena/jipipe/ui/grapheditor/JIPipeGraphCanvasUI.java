@@ -171,7 +171,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
     }
 
     private void initialize() {
-        setBackground(Color.WHITE);
+        setBackground(UIManager.getColor("EditorPane.background"));
         addMouseListener(this);
         addMouseMotionListener(this);
         addMouseWheelListener(this);

@@ -37,7 +37,7 @@ public class SearchTextField extends JPanel implements Predicate<String> {
      */
     public SearchTextField() {
         setLayout(new BorderLayout(4, 0));
-        setBackground(Color.WHITE);
+        setBackground(UIManager.getColor("TextField.background"));
         setBorder(BorderFactory.createEtchedBorder());
 
         textField.setPrompt("Search ...");

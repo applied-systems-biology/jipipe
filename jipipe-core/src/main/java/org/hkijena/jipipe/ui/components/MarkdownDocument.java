@@ -24,6 +24,7 @@ import com.vladsch.flexmark.util.ast.Node;
 import com.vladsch.flexmark.util.data.MutableDataHolder;
 import com.vladsch.flexmark.util.data.MutableDataSet;
 import org.hkijena.jipipe.utils.ResourceUtils;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.net.URL;
@@ -44,6 +45,8 @@ public class MarkdownDocument {
             .set(Parser.EXTENSIONS, Arrays.asList(TablesExtension.create(), AutolinkExtension.create(), TocExtension.create()));
     private static Map<Path, MarkdownDocument> fromFileCache = new HashMap<>();
     private static Map<URL, MarkdownDocument> fromResourcesCache = new HashMap<>();
+    private static Map<String, URL> resourceReplacementCache = new HashMap<>();
+    private static Map<String, URL> iconResourceReplacementCache = new HashMap<>();
     private String markdown;
     private String renderedHTML;
 
@@ -103,35 +106,13 @@ public class MarkdownDocument {
             if (existing != null)
                 return existing;
             String md = Resources.toString(resourcePath, Charsets.UTF_8);
-//            md = md.replace("image://", ResourceUtils.getPluginResource("").toString());
-            Set<String> imageURLs = new HashSet<>();
-            int index = md.indexOf("image://");
-            while (index >= 0) {
-                if (index > 0) {
-                    char lbracket = md.charAt(index - 1);
-                    char rbracket;
-
-                    index += "image://".length();
-
-                    if (lbracket == '(')
-                        rbracket = ')';
-                    else if (lbracket == '"')
-                        rbracket = '"';
-                    else {
-                        continue;
-                    }
-                    StringBuilder pathString = new StringBuilder();
-                    while (md.charAt(index) != rbracket) {
-                        pathString.append(md.charAt(index));
-                        ++index;
-                    }
-                    imageURLs.add(pathString.toString());
+            Set<String> resourceURLs = getResourceURLs(md, "resource://");
+            for (String imageURL : resourceURLs) {
+                URL url = resourceReplacementCache.getOrDefault(imageURL, null);
+                if(url == null) {
+                    url = ResourceUtils.getPluginResource(imageURL);
                 }
-                index = md.indexOf("image://", index);
-            }
-            for (String imageURL : imageURLs) {
-                URL url = ResourceUtils.getPluginResource(imageURL);
-                md = md.replace("image://" + imageURL, "" + url);
+                md = md.replace("resource://" + imageURL, "" + url);
             }
 
             MarkdownDocument markdownDocument = new MarkdownDocument(md);
@@ -140,6 +121,36 @@ public class MarkdownDocument {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @NotNull
+    private static Set<String> getResourceURLs(String md, String protocol) {
+        Set<String> imageURLs = new HashSet<>();
+        int index = md.indexOf(protocol);
+        while (index >= 0) {
+            if (index > 0) {
+                char lbracket = md.charAt(index - 1);
+                char rbracket;
+
+                index += protocol.length();
+
+                if (lbracket == '(')
+                    rbracket = ')';
+                else if (lbracket == '"')
+                    rbracket = '"';
+                else {
+                    continue;
+                }
+                StringBuilder pathString = new StringBuilder();
+                while (md.charAt(index) != rbracket) {
+                    pathString.append(md.charAt(index));
+                    ++index;
+                }
+                imageURLs.add(pathString.toString());
+            }
+            index = md.indexOf(protocol, index);
+        }
+        return imageURLs;
     }
 
 

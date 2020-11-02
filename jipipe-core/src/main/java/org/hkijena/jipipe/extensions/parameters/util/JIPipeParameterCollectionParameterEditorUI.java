@@ -20,7 +20,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
-import org.hkijena.jipipe.utils.ModernMetalTheme;
+import org.hkijena.jipipe.ui.theme.ModernMetalTheme;
 
 import javax.swing.*;
 import java.awt.BorderLayout;
@@ -43,7 +43,7 @@ public class JIPipeParameterCollectionParameterEditorUI extends JIPipeParameterE
 
     private void initialize() {
         setLayout(new BorderLayout());
-        setBorder(BorderFactory.createLineBorder(ModernMetalTheme.MEDIUM_GRAY));
+        setBorder(BorderFactory.createLineBorder(UIManager.getColor("Button.borderColor")));
         parameterPanel = new ParameterPanel(getWorkbench(), null, null, ParameterPanel.NO_GROUP_HEADERS);
         add(parameterPanel, BorderLayout.CENTER);
     }

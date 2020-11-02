@@ -40,9 +40,6 @@ public class JIPipeRowDataMergedTableCellRenderer implements TableCellRenderer {
      */
     public JIPipeRowDataMergedTableCellRenderer(JIPipeProjectWorkbench workbenchUI, JIPipeMergedExportedDataTable mergedDataTable) {
         this.workbenchUI = workbenchUI;
-        for (int i = 0; i < mergedDataTable.getRowCount(); i++) {
-            previewCache.add(null);
-        }
     }
 
     @Override
@@ -50,6 +47,9 @@ public class JIPipeRowDataMergedTableCellRenderer implements TableCellRenderer {
         if (value instanceof JIPipeExportedDataTable.Row) {
             JIPipeMergedExportedDataTable model = (JIPipeMergedExportedDataTable) table.getModel();
             JIPipeDataSlot slot = model.getSlot(table.convertRowIndexToModel(row));
+            while(row > previewCache.size() - 1) {
+                previewCache.add(null);
+            }
             JIPipeResultDataSlotPreviewUI preview = previewCache.get(row);
             if (preview == null) {
                 preview = JIPipe.getDataTypes().getCellRendererFor(slot.getAcceptedDataType(), table);
@@ -57,9 +57,9 @@ public class JIPipeRowDataMergedTableCellRenderer implements TableCellRenderer {
                 previewCache.set(row, preview);
             }
             if (isSelected) {
-                preview.setBackground(new Color(184, 207, 229));
+                preview.setBackground(UIManager.getColor("List.selectionBackground"));
             } else {
-                preview.setBackground(new Color(255, 255, 255));
+                preview.setBackground(UIManager.getColor("List.background"));
             }
             return preview;
         }
