@@ -20,7 +20,7 @@ import org.hkijena.jipipe.api.JIPipeProjectCache;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
-import org.hkijena.jipipe.utils.ModernMetalTheme;
+import org.hkijena.jipipe.ui.theme.ModernMetalTheme;
 import org.hkijena.jipipe.utils.RoundedLineBorder;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -52,7 +52,7 @@ public class JIPipeCacheManagerUI extends JIPipeProjectWorkbenchPanel {
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
         setOpaque(false);
         setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1),
-                BorderFactory.createCompoundBorder(new RoundedLineBorder(ModernMetalTheme.MEDIUM_GRAY, 1, 2),
+                BorderFactory.createCompoundBorder(new RoundedLineBorder(UIManager.getColor("Button.borderColor"), 1, 2),
                         BorderFactory.createEmptyBorder(5, 15, 5, 15))));
 
 

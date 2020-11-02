@@ -58,7 +58,6 @@ import org.hkijena.jipipe.extensions.parameters.pairs.DoubleAndDoublePairParamet
 import org.hkijena.jipipe.extensions.parameters.pairs.IntegerAndIntegerPairParameter;
 import org.hkijena.jipipe.extensions.parameters.pairs.PairParameter;
 import org.hkijena.jipipe.extensions.parameters.pairs.PairParameterEditorUI;
-import org.hkijena.jipipe.extensions.parameters.pairs.StringAndStringOrDoublePairParameter;
 import org.hkijena.jipipe.extensions.parameters.pairs.StringAndStringPairParameter;
 import org.hkijena.jipipe.extensions.parameters.pairs.StringQueryExpressionAndSortOrderPairParameter;
 import org.hkijena.jipipe.extensions.parameters.pairs.StringQueryExpressionAndStringPairParameter;
@@ -532,14 +531,6 @@ public class StandardParametersExtension extends JIPipePrepackagedDefaultJavaExt
                 null,
                 "String pair",
                 "A pair of strings",
-                null);
-        registerParameterType("string:string-or-double:pair",
-                StringAndStringOrDoublePairParameter.class,
-                StringAndStringOrDoublePairParameter.List.class,
-                null,
-                null,
-                "String and String/Double pair",
-                "A pair of string and a String/Double",
                 null);
     }
 

@@ -19,6 +19,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphEditorUI;
+import org.hkijena.jipipe.ui.theme.JIPipeUITheme;
 
 /**
  * All settings for {@link JIPipeGraphEditorUI}
@@ -34,11 +35,10 @@ public class GeneralUISettings implements JIPipeParameterCollection {
     private boolean neverAskOnClosingTabs = false;
     private boolean validateOnSave = true;
     private boolean projectInfoGeneratesPreview = true;
-    private boolean forceCrossPlatformLookAndFeel = true;
-    private boolean modernizeCrossPlatformLookAndFeel = true;
     private boolean addContextActionsToContextMenu = true;
     private boolean maximizeWindows = true;
     private boolean showIntroductionTour = true;
+    private JIPipeUITheme theme = JIPipeUITheme.ModernLight;
 
     @Override
     public EventBus getEventBus() {
@@ -55,7 +55,6 @@ public class GeneralUISettings implements JIPipeParameterCollection {
     @JIPipeParameter("show-introduction")
     public void setShowIntroduction(boolean showIntroduction) {
         this.showIntroduction = showIntroduction;
-
     }
 
     @JIPipeDocumentation(name = "Show parameter search bar", description = "If enabled, you can search parameters (Re-open parameters to apply changes)")
@@ -116,30 +115,6 @@ public class GeneralUISettings implements JIPipeParameterCollection {
         this.projectInfoGeneratesPreview = projectInfoGeneratesPreview;
     }
 
-    @JIPipeDocumentation(name = "Force cross-platform look & feel", description = "If enabled, the design is set to the 'Metal' look & feel that " +
-            "looks the same on all platforms. We recommend to keep this setting, as other designs might cause flaws in the UI. " +
-            "This requires an ImageJ restart to take effect.")
-    @JIPipeParameter("force-cross-platform-look-and-feel")
-    public boolean isForceCrossPlatformLookAndFeel() {
-        return forceCrossPlatformLookAndFeel;
-    }
-
-    @JIPipeParameter("force-cross-platform-look-and-feel")
-    public void setForceCrossPlatformLookAndFeel(boolean forceCrossPlatformLookAndFeel) {
-        this.forceCrossPlatformLookAndFeel = forceCrossPlatformLookAndFeel;
-    }
-
-    @JIPipeDocumentation(name = "Modern cross-platform look & feel", description = "If enabled, the 'Metal' look & feel is modernized to a flat design.")
-    @JIPipeParameter("modernize-cross-platform-look-and-feel")
-    public boolean isModernizeCrossPlatformLookAndFeel() {
-        return modernizeCrossPlatformLookAndFeel;
-    }
-
-    @JIPipeParameter("modernize-cross-platform-look-and-feel")
-    public void setModernizeCrossPlatformLookAndFeel(boolean modernizeCrossPlatformLookAndFeel) {
-        this.modernizeCrossPlatformLookAndFeel = modernizeCrossPlatformLookAndFeel;
-    }
-
     @JIPipeDocumentation(name = "Node context actions appear in the context menu", description = "If enabled, node-specific context actions (e.g. loading example data) are added into the node's context menu.")
     @JIPipeParameter("add-context-actions-to-context-menu")
     public boolean isAddContextActionsToContextMenu() {
@@ -172,6 +147,17 @@ public class GeneralUISettings implements JIPipeParameterCollection {
     @JIPipeParameter("show-introduction-tour")
     public void setShowIntroductionTour(boolean showIntroductionTour) {
         this.showIntroductionTour = showIntroductionTour;
+    }
+
+    @JIPipeDocumentation(name = "Theme", description = "The theme that is used for the user interface. Requires a restart to take effect.")
+    @JIPipeParameter("theme")
+    public JIPipeUITheme getTheme() {
+        return theme;
+    }
+
+    @JIPipeParameter("theme")
+    public void setTheme(JIPipeUITheme theme) {
+        this.theme = theme;
     }
 
     public static GeneralUISettings getInstance() {

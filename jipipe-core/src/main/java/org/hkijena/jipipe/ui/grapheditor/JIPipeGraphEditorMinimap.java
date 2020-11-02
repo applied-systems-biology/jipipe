@@ -3,7 +3,7 @@ package org.hkijena.jipipe.ui.grapheditor;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.events.GraphCanvasUpdatedEvent;
-import org.hkijena.jipipe.utils.ModernMetalTheme;
+import org.hkijena.jipipe.ui.theme.ModernMetalTheme;
 import org.hkijena.jipipe.utils.ScreenImage;
 
 import javax.swing.*;
@@ -139,7 +139,7 @@ public class JIPipeGraphEditorMinimap extends JIPipeWorkbenchPanel implements Mo
 
     @Override
     public void paint(Graphics g) {
-        g.setColor(Color.WHITE);
+        g.setColor(UIManager.getColor("Panel.background"));
         g.fillRect(0, 0, getWidth(), getHeight());
         if (graphImage != null) {
             if (viewBaseWidth != getWidth() || viewBaseHeight != getHeight()) {

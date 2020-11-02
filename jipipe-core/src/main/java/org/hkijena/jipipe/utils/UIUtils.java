@@ -19,6 +19,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.registries.JIPipeSettingsRegistry;
+import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.ColorIcon;
 import org.hkijena.jipipe.ui.components.JIPipeValidityReportUI;
@@ -26,7 +27,11 @@ import org.hkijena.jipipe.ui.components.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.UserFriendlyErrorUI;
 import org.hkijena.jipipe.ui.extension.MenuExtension;
 import org.hkijena.jipipe.ui.extension.MenuTarget;
+import org.hkijena.jipipe.ui.theme.DarkModernMetalTheme;
+import org.hkijena.jipipe.ui.theme.JIPipeUITheme;
+import org.hkijena.jipipe.ui.theme.ModernMetalTheme;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
@@ -44,6 +49,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -63,6 +69,7 @@ import java.util.stream.Collectors;
  */
 public class UIUtils {
 
+    public static boolean DARK_THEME = false;
     public static final FileNameExtensionFilter EXTENSION_FILTER_CSV = new FileNameExtensionFilter("CSV table (*.csv)", "csv");
     public static final FileNameExtensionFilter EXTENSION_FILTER_PNG = new FileNameExtensionFilter("PNG image (*.png)", "png");
     public static final FileNameExtensionFilter EXTENSION_FILTER_SVG = new FileNameExtensionFilter("SVG image (*.svg)", "svg");
@@ -81,59 +88,92 @@ public class UIUtils {
      * Attempts to override the look & feel based on the JIPipe settings
      */
     public static void loadLookAndFeelFromSettings() {
+        JIPipeUITheme theme = getThemeFromRawSettings();
+        theme.install();
+    }
+
+    public static JIPipeUITheme getThemeFromRawSettings() {
         Path propertyFile = JIPipeSettingsRegistry.getPropertyFile();
-        boolean forceMetal;
-        boolean modernizeMetal = true;
-        if (!Files.exists(propertyFile)) {
-            forceMetal = true;
-        } else {
+        JIPipeUITheme theme = JIPipeUITheme.ModernLight;
+        if(Files.exists(propertyFile)){
+             try {
+                 JsonNode node = JsonUtils.getObjectMapper().readValue(propertyFile.toFile(), JsonNode.class);
+                 JsonNode themeNode = node.path("general-ui/theme");
+                 if (!themeNode.isMissingNode())
+                     theme = JsonUtils.getObjectMapper().readerFor(JIPipeUITheme.class).readValue(themeNode);
+             } catch (Exception e) {
+                 e.printStackTrace();
+             }
+         }
+        return theme;
+    }
+
+    public static BufferedImage getExtensionBuilderLogo400() {
+        if(DARK_THEME) {
             try {
-                JsonNode node = JsonUtils.getObjectMapper().readValue(propertyFile.toFile(), JsonNode.class);
-                JsonNode forceMetalNode = node.path("general-ui/force-cross-platform-look-and-feel");
-                JsonNode modernizeMetalNode = node.path("general-ui/modernize-cross-platform-look-and-feel");
-                if (!forceMetalNode.isMissingNode())
-                    forceMetal = forceMetalNode.booleanValue();
-                else
-                    forceMetal = true;
-                if (!modernizeMetalNode.isMissingNode())
-                    modernizeMetal = modernizeMetalNode.booleanValue();
-            } catch (Exception e) {
-                forceMetal = true;
+                return ImageIO.read(ResourceUtils.getPluginResource("logo-extension-builder-400-dark.png"));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
         }
-        if (forceMetal) {
+        else {
             try {
-                // Set cross-platform Java L&F (also called "Metal")
-                if (modernizeMetal)
-                    MetalLookAndFeel.setCurrentTheme(new DarkModernMetalTheme());
-                UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
-
-//                try(FileWriter writer = new FileWriter("laf-keys.txt")) {
-//                    UIManager.LookAndFeelInfo looks[] = UIManager
-//                            .getInstalledLookAndFeels();
-//                    for (UIManager.LookAndFeelInfo info : looks) {
-//                        SortedSet<String> lafDefaultKeys = new TreeSet<>();
-//                        writer.write("\n\nL&F " + info.getName() + "\n");
-//                        UIDefaults defaults = UIManager.getDefaults();
-//                        Enumeration<Object> newKeys = defaults.keys();
-//
-//                        while (newKeys.hasMoreElements()) {
-//                            lafDefaultKeys.add(newKeys.nextElement().toString());
-//                        }
-//                        for (String lafDefaultKey : lafDefaultKeys) {
-//                            writer.write(lafDefaultKey + "\n");
-//                        }
-//
-//                    }
-//                }
-
-                UIManager.put("swing.boldMetal", Boolean.FALSE);
-                UIManager.put("ScrollBarUI", ArrowLessScrollBarUI.class.getName());
-            } catch (Exception e) {
-                e.printStackTrace();
+                return ImageIO.read(ResourceUtils.getPluginResource("logo-extension-builder-400.png"));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
         }
+    }
 
+    public static BufferedImage getLogo400() {
+        if(DARK_THEME) {
+            try {
+                return ImageIO.read(ResourceUtils.getPluginResource("logo-400-dark.png"));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        else {
+            try {
+                return ImageIO.read(ResourceUtils.getPluginResource("logo-400.png"));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    public static BufferedImage getLogo() {
+        if(DARK_THEME) {
+            try {
+                return ImageIO.read(ResourceUtils.getPluginResource("logo-dark.png"));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        else {
+            try {
+                return ImageIO.read(ResourceUtils.getPluginResource("logo.png"));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    public static BufferedImage getHeaderPanelBackground() {
+        if(DARK_THEME) {
+            try {
+                return ImageIO.read(ResourceUtils.getPluginResource("infoui-background-dark.png"));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        else {
+            try {
+                return ImageIO.read(ResourceUtils.getPluginResource("infoui-background.png"));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     /**
@@ -343,7 +383,7 @@ public class UIUtils {
 //        Border compound = new CompoundBorder(BorderFactory.createEtchedBorder(), margin);
         //        Border margin = new EmptyBorder(2, 2, 2, 2);
         Border compound = new CompoundBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1),
-                new CompoundBorder(new RoundedLineBorder(ModernMetalTheme.MEDIUM_GRAY, 1, 2), margin));
+                new CompoundBorder(new RoundedLineBorder(UIManager.getColor("Button.borderColor"), 1, 2), margin));
         component.setBorder(compound);
     }
 
@@ -585,7 +625,10 @@ public class UIUtils {
      * @return the fill color
      */
     public static Color getFillColorFor(JIPipeNodeInfo info) {
-        return info.getCategory().getFillColor();
+        if(DARK_THEME)
+            return info.getCategory().getDarkFillColor();
+        else
+            return info.getCategory().getFillColor();
     }
 
     /**
@@ -595,7 +638,10 @@ public class UIUtils {
      * @return the border color
      */
     public static Color getBorderColorFor(JIPipeNodeInfo info) {
-        return info.getCategory().getBorderColor();
+        if(DARK_THEME)
+            return info.getCategory().getDarkBorderColor();
+        else
+            return info.getCategory().getBorderColor();
     }
 
     /**

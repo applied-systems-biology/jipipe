@@ -57,6 +57,16 @@ public class InternalNodeTypeCategory implements JIPipeNodeTypeCategory {
     }
 
     @Override
+    public Color getDarkFillColor() {
+        return Color.DARK_GRAY;
+    }
+
+    @Override
+    public Color getDarkBorderColor() {
+        return Color.BLACK;
+    }
+
+    @Override
     public boolean isVisibleInGraphCompartment() {
         return false;
     }

@@ -2,11 +2,11 @@
 
 <div style="text-align: justify; margin-bottom: 40px;">
 To create a pipeline, switch to one of the already open tabs at the top. If you create a new project, there is
-always one tab to manage <img src="image://icons/actions/straight-connector.png"/> <strong>Graph compartments</strong> and multiple 
-<img src="image://icons/data-types/graph-compartment.png"/> <strong>Compartment</strong> items.
+always one tab to manage <img src="resource://icons/actions/straight-connector.png"/> <strong>Graph compartments</strong> and multiple 
+<img src="resource://icons/data-types/graph-compartment.png"/> <strong>Compartment</strong> items.
 Compartments are a way to organize large pipelines into smaller sub-graphs. You can create as many compartments as you want 
 and pass data between them. Please take a look at out online tutorials for step-by-step explanations.
 </div>
 <div style="text-align:center; ">
-<img src="image://documentation/introduction-compartments.png" />
+<img src="resource://documentation/introduction-compartments.png" />
 </div>

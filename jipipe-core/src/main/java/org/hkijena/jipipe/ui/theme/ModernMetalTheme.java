@@ -1,4 +1,21 @@
-package org.hkijena.jipipe.utils;
+/*
+ * Copyright by Zoltán Cseresnyés, Ruman Gerst
+ *
+ * Research Group Applied Systems Biology - Head: Prof. Dr. Marc Thilo Figge
+ * https://www.leibniz-hki.de/en/applied-systems-biology.html
+ * HKI-Center for Systems Biology of Infection
+ * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)
+ * Adolf-Reichwein-Straße 23, 07745 Jena, Germany
+ *
+ * The project code is licensed under BSD 2-Clause.
+ * See the LICENSE file provided with the code for the full license.
+ */
+
+package org.hkijena.jipipe.ui.theme;
+
+import org.hkijena.jipipe.utils.CheckBoxIcon;
+import org.hkijena.jipipe.utils.RoundedLineBorder;
+import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -65,21 +82,6 @@ public class ModernMetalTheme extends DefaultMetalTheme {
      */
     public void addCustomEntriesToTable(UIDefaults table) {
         Object focusBorder = new BorderUIResource.LineBorderUIResource(getPrimary1());
-        // .30 0 DDE8F3 white secondary2
-//        List<Object> buttonGradient = Arrays.asList(
-//                new Object[] {.3f, 0f,
-//                        new ColorUIResource(0xDDE8F3), getWhite(), getSecondary2() });
-//        List<Object> menuBarGradient = Arrays.asList(new Object[] {
-//                new Float(1f), new Float(0f),
-//                getWhite(), dadada,
-//                new ColorUIResource(dadada) });
-        // Other possible properties that aren't defined:
-        //
-        // Used when generating the disabled Icons, provides the region to
-        // constrain grays to.
-        // Button.disabledGrayRange -> Object[] of Integers giving min/max
-        // InternalFrame.inactiveTitleGradient -> Gradient when the
-        //   internal frame is inactive.
         Object directoryIcon = UIUtils.getIconFromResources("places/folder-blue.png");
         Object fileIcon = UIUtils.getIconFromResources("mimetypes/application-x-kgeo.png");
         List<Object> sliderGradient = Arrays.asList(new Object[]{
@@ -93,6 +95,7 @@ public class ModernMetalTheme extends DefaultMetalTheme {
                 "Button.disabledToolBarBorderBackground", GRAY,
                 "Button.rolloverIconType", "ocean",
                 "Button.border", BUTTON_BORDER,
+                "Button.borderColor", MEDIUM_GRAY,
                 "Button.focus", PRIMARY1,
                 "ScrollPane.border", NO_BORDER,
 
@@ -103,7 +106,7 @@ public class ModernMetalTheme extends DefaultMetalTheme {
 
                 "CheckBox.rollover", Boolean.TRUE,
                 "CheckBoxMenuItem.background", WHITE,
-                "CheckBox.icon", new CheckBoxIcon(),
+                "CheckBox.icon", new CheckBoxIcon(WHITE),
 
                 // home2
                 "FileChooser.homeFolderIcon",

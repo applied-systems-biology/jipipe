@@ -1,10 +1,26 @@
-package org.hkijena.jipipe.utils;
+/*
+ * Copyright by Zoltán Cseresnyés, Ruman Gerst
+ *
+ * Research Group Applied Systems Biology - Head: Prof. Dr. Marc Thilo Figge
+ * https://www.leibniz-hki.de/en/applied-systems-biology.html
+ * HKI-Center for Systems Biology of Infection
+ * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)
+ * Adolf-Reichwein-Straße 23, 07745 Jena, Germany
+ *
+ * The project code is licensed under BSD 2-Clause.
+ * See the LICENSE file provided with the code for the full license.
+ */
+
+package org.hkijena.jipipe.ui.theme;
+
+import org.hkijena.jipipe.utils.CheckBoxIcon;
+import org.hkijena.jipipe.utils.RoundedLineBorder;
+import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.plaf.BorderUIResource;
 import javax.swing.plaf.ColorUIResource;
-import javax.swing.plaf.IconUIResource;
 import javax.swing.plaf.metal.DefaultMetalTheme;
 import java.awt.*;
 import java.util.Arrays;
@@ -48,7 +64,7 @@ public class DarkModernMetalTheme extends DefaultMetalTheme {
             new ColorUIResource(0x65a4e3);
     private static final Border NO_BORDER = BorderFactory.createEmptyBorder();
     private static final Border BUTTON_BORDER = BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1),
-            BorderFactory.createCompoundBorder(new RoundedLineBorder(Color.BLACK, 1, 2),
+            BorderFactory.createCompoundBorder(new RoundedLineBorder(PRIMARY3, 1, 2),
                     BorderFactory.createEmptyBorder(3, 3, 3, 3)));
     static ColorUIResource BLACK = new ColorUIResource(0x222222);
 
@@ -96,6 +112,7 @@ public class DarkModernMetalTheme extends DefaultMetalTheme {
                 "Button.border", BUTTON_BORDER,
                 "Button.focus", PRIMARY1,
                 "ScrollPane.border", NO_BORDER,
+                "Button.borderColor", PRIMARY3,
 
                 "Separator.foreground", GRAY,
                 "Separator.background", PRIMARY4,
@@ -104,7 +121,7 @@ public class DarkModernMetalTheme extends DefaultMetalTheme {
 
                 "CheckBox.rollover", Boolean.TRUE,
                 "CheckBoxMenuItem.background", BLACK,
-                "CheckBox.icon", new CheckBoxIcon(),
+                "CheckBox.icon", new CheckBoxIcon(SUBCONTROL_BACKGROUND),
 
                 // home2
                 "FileChooser.homeFolderIcon",
@@ -222,6 +239,9 @@ public class DarkModernMetalTheme extends DefaultMetalTheme {
 
                 "TextArea.background", TEXTAREA_BACKGROUND,
 
+                "TextPane.background", TEXTAREA_BACKGROUND,
+                "TextPane.foreground", CONTROL_TEXT_COLOR,
+
 //                "ToolBar.borderColor", GRAY2,
                 "ToolBar.border", BorderFactory.createMatteBorder(0, 0, 1, 0, GRAY),
                 "ToolBar.isRollover", Boolean.TRUE,
@@ -243,6 +263,8 @@ public class DarkModernMetalTheme extends DefaultMetalTheme {
                 "Tree.dropLineColor", getPrimary1(),
                 "Table.dropLineColor", getPrimary1(),
                 "Table.dropLineShortColor", OCEAN_BLACK,
+                "Table.background", SUBCONTROL_BACKGROUND,
+                "TableHeader.background", Color.BLACK,
 
                 "Table.dropCellBackground", OCEAN_DROP,
                 "Tree.dropCellBackground", OCEAN_DROP,
@@ -254,7 +276,10 @@ public class DarkModernMetalTheme extends DefaultMetalTheme {
                 "ProgressBar.border", new RoundedLineBorder(MEDIUM_GRAY, 1, 2),
 
                 "List.background", SUBCONTROL_BACKGROUND,
-                "EditorPane.background", SUBCONTROL_BACKGROUND
+                "EditorPane.background", SUBCONTROL_BACKGROUND,
+
+                "TabbedPane.tabAreaBackground", SUBCONTROL_BACKGROUND,
+                "Panel.background", MEDIUM_GRAY
         };
         table.putDefaults(defaults);
     }

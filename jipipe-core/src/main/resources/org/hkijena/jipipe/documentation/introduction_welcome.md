@@ -12,5 +12,5 @@ Please feel free to provide us with feedback and discuss feature requests, solut
 **Thank you for using JIPipe!**
 
 <div style="text-align:center; margin-top: 30px;">
-<img src="image://documentation/introduction-welcome.png" />
+<img src="resource://documentation/introduction-welcome.png" />
 </div>

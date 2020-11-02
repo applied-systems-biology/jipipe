@@ -102,15 +102,15 @@ public class MarkdownDocument {
             if (existing != null)
                 return existing;
             String md = Resources.toString(resourcePath, Charsets.UTF_8);
-//            md = md.replace("image://", ResourceUtils.getPluginResource("").toString());
+//            md = md.replace("resource://", ResourceUtils.getPluginResource("").toString());
             Set<String> imageURLs = new HashSet<>();
-            int index = md.indexOf("image://");
+            int index = md.indexOf("resource://");
             while (index >= 0) {
                 if (index > 0) {
                     char lbracket = md.charAt(index - 1);
                     char rbracket;
 
-                    index += "image://".length();
+                    index += "resource://".length();
 
                     if (lbracket == '(')
                         rbracket = ')';
@@ -126,11 +126,11 @@ public class MarkdownDocument {
                     }
                     imageURLs.add(pathString.toString());
                 }
-                index = md.indexOf("image://", index);
+                index = md.indexOf("resource://", index);
             }
             for (String imageURL : imageURLs) {
                 URL url = ResourceUtils.getPluginResource(imageURL);
-                md = md.replace("image://" + imageURL, "" + url);
+                md = md.replace("resource://" + imageURL, "" + url);
             }
 
             MarkdownDocument markdownDocument = new MarkdownDocument(md);

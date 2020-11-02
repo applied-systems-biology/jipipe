@@ -1,4 +1,4 @@
-![](image://logo-400.png)
+![](resource://logo-400.png)
 
 <div style="margin-top: 50px"></div>
 <h1>Copyright</h1>

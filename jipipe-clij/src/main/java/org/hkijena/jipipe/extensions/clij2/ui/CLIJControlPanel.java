@@ -69,11 +69,7 @@ public class CLIJControlPanel extends JIPipeWorkbenchPanel {
 
     private void initializeHeaderPanel() {
         JPanel headerPanel;
-        try {
-            headerPanel = new BackgroundPanel(ImageIO.read(ResourceUtils.getPluginResource("infoui-background.png")), false);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        headerPanel = new BackgroundPanel(UIUtils.getHeaderPanelBackground(), false);
         headerPanel.setLayout(new BorderLayout());
         headerPanel.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.DARK_GRAY));
         headerPanel.setPreferredSize(new Dimension(headerPanel.getPreferredSize().width, 200));
