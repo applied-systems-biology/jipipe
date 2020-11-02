@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2020-10-31T22:45:03 CET">
+<meta name="revised" content="2020-11-02T20:39:56 CET">
 <title>Frequently asked questions :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../images/favicon.png" type="image/x-icon" />
 <link href="../css/font-awesome.min.css" rel="stylesheet">
@@ -494,7 +494,15 @@
     
     
 
+<h1 id="general">General</h1>
+<h2 id="can-i-make-the-startup-faster">Can I make the startup faster?</h2>
+<p>Many JIPipe extensions rely on other ImageJ plugins to work. That is why JIPipe always checks if all necessary ImageJ plugins are available.
+If you are sure that you have everything installed, you can disable this check at <code>Project &gt; Application settings &gt; General &gt; Extensions</code>.
+Disable <code>Validate ImageJ dependencies</code>.</p>
 <h1 id="user-interface">User interface</h1>
+<h2 id="does-jipipe-have-a-dark-mode">Does JIPipe have a dark mode?</h2>
+<p>Yes, you can enable it in <code>Project &gt; Application settings &gt; UI &gt; General &gt; Theme</code>.
+Set the theme to <code>Modern dark</code> and restart JIPipe/ImageJ.</p>
 <h2 id="how-can-i-make-long-connections-without-zooming-out">How can I make long connections without zooming out?</h2>
 <p>Click the arrow button at the input/output slot. It lists all compatible sources/targets ordered by distance.</p>
 <h1 id="compartments">Compartments</h1>
@@ -723,6 +731,10 @@ JIPipe will even remember the last setting for you.</p>
 <h2 id="can-i-save-data-by-their-metadata">Can I save data by their metadata?</h2>
 <p>Yes, use the node <code>Miscellaneous &gt; Export data</code>. It will export all incoming data into one or multiple folders and
 generates names based on metadata.</p>
+<h1 id="omero">OMERO</h1>
+<h2 id="i-do-not-want-to-always-put-in-the-credentials-into-each-omero-node-what-can-i-do">I do not want to always put in the credentials into each OMERO node. What can I do?</h2>
+<p>Go to <code>Project &gt; Application settings &gt; Extensions &gt; OMERO</code> and set your credentials there.
+Any OMERO node will supplement unset credentials by those settings.</p>
 
 
 
