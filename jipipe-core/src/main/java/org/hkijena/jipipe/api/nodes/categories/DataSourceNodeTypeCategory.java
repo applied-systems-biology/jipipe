@@ -24,7 +24,7 @@ public class DataSourceNodeTypeCategory implements JIPipeNodeTypeCategory {
     public static final Color FILL_COLOR = Color.getHSBColor(136.0f / 360.0f, 0.1f, 0.9f);
     public static final Color BORDER_COLOR = Color.getHSBColor(136.0f / 360.0f, 0.1f, 0.5f);
     public static final Color FILL_COLOR_DARK = Color.getHSBColor(136.0f / 360.0f, 0.5f, 0.3f);
-    public static final Color BORDER_COLOR_DARK = Color.getHSBColor(136.0f / 360.0f, 0.5f, 0.1f);
+    public static final Color BORDER_COLOR_DARK = Color.getHSBColor(136.0f / 360.0f, 0.5f, 0.9f);
 
     @Override
     public String getId() {

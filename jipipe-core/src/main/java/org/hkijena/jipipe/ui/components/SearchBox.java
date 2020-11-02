@@ -113,7 +113,7 @@ public class SearchBox<T> extends JPanel {
                 UIUtils.makeFlat((AbstractButton) component);
                 ((AbstractButton) component).setBorder(null);
                 ((AbstractButton) component).setOpaque(true);
-                component.setBackground(Color.WHITE);
+                component.setBackground(UIManager.getColor("TextField.background"));
                 break;
             }
         }

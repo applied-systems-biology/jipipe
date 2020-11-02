@@ -38,7 +38,7 @@ public class FancyPasswordField extends JPanel {
      */
     public FancyPasswordField(JLabel icon) {
         setLayout(new BorderLayout(4, 0));
-        setBackground(Color.WHITE);
+        setBackground(UIManager.getColor("TextField.background"));
         setBorder(BorderFactory.createEtchedBorder());
 
         textField.setBorder(null);

@@ -15,6 +15,8 @@ package org.hkijena.jipipe.utils;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import ij.IJ;
+import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
+import org.fife.ui.rsyntaxtextarea.Theme;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -90,6 +92,18 @@ public class UIUtils {
     public static void loadLookAndFeelFromSettings() {
         JIPipeUITheme theme = getThemeFromRawSettings();
         theme.install();
+    }
+
+    public static void applyThemeToCodeEditor(RSyntaxTextArea textArea) {
+        if(DARK_THEME) {
+            try {
+                Theme theme = Theme.load(ResourceUtils.class.getResourceAsStream(
+                        "/org/fife/ui/rsyntaxtextarea/themes/dark.xml"));
+                theme.apply(textArea);
+            } catch (IOException ioe) { // Never happens
+                ioe.printStackTrace();
+            }
+        }
     }
 
     public static JIPipeUITheme getThemeFromRawSettings() {

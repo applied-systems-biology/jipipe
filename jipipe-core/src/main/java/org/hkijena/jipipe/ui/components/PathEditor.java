@@ -64,7 +64,7 @@ public class PathEditor extends JPanel {
 
     private void initialize() {
         // Setup the GUI
-        setBackground(Color.WHITE);
+        setBackground(UIManager.getColor("TextArea.background"));
         setBorder(BorderFactory.createEtchedBorder());
         setLayout(new GridBagLayout());
 

@@ -248,6 +248,8 @@ public class ModernMetalTheme extends DefaultMetalTheme {
                 "List.dropCellBackground", OCEAN_DROP,
                 "List.dropLineColor", getPrimary1(),
 
+                "List.selectionBackground", PRIMARY1,
+
                 "ProgressBar.background", WHITE,
                 "ProgressBar.foreground", PRIMARY5,
                 "ProgressBar.border", new RoundedLineBorder(MEDIUM_GRAY, 1, 2)

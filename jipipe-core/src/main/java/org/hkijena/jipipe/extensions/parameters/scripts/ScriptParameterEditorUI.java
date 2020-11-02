@@ -55,6 +55,9 @@ public class ScriptParameterEditorUI extends JIPipeParameterEditorUI {
                 JLabel.LEFT);
         collapseInfoLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, 12));
         textArea = new EditorPane();
+        UIUtils.applyThemeToCodeEditor(textArea);
+        textArea.setBackground(UIManager.getColor("TextArea.background"));
+        textArea.setHighlightCurrentLine(false);
         if (code.getLanguage() != null) {
             ReflectionUtils.invokeMethod(textArea, "setLanguage", code.getLanguage());
             textArea.setAutoCompletionEnabled(true);

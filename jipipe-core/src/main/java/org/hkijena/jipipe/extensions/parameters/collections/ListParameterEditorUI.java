@@ -47,7 +47,7 @@ public class ListParameterEditorUI extends JIPipeParameterEditorUI {
 
     private void initialize() {
         setLayout(new BorderLayout());
-        setBorder(new RoundedLineBorder(ModernMetalTheme.MEDIUM_GRAY, 1, 2));
+        setBorder(new RoundedLineBorder(UIManager.getColor("Button.borderColor"), 1, 2));
         JToolBar toolBar = new JToolBar();
         toolBar.setFloatable(false);
 

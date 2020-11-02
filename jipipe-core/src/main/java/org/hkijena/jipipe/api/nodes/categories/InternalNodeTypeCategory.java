@@ -53,7 +53,7 @@ public class InternalNodeTypeCategory implements JIPipeNodeTypeCategory {
 
     @Override
     public Color getBorderColor() {
-        return Color.DARK_GRAY;
+        return Color.LIGHT_GRAY;
     }
 
     @Override
@@ -63,7 +63,7 @@ public class InternalNodeTypeCategory implements JIPipeNodeTypeCategory {
 
     @Override
     public Color getDarkBorderColor() {
-        return Color.BLACK;
+        return Color.LIGHT_GRAY;
     }
 
     @Override

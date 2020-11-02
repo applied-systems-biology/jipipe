@@ -166,8 +166,7 @@ public class JIPipeInfoUI extends JIPipeProjectWorkbenchPanel {
     }
 
     private void initializeHeaderPanel() {
-        JPanel headerPanel;
-        headerPanel = new BackgroundPanel(UIUtils.getHeaderPanelBackground(), false);
+        JPanel headerPanel = new BackgroundPanel(UIUtils.getHeaderPanelBackground(), false);
         headerPanel.setLayout(new BorderLayout());
         headerPanel.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.DARK_GRAY));
         headerPanel.setPreferredSize(new Dimension(headerPanel.getPreferredSize().width, 200));

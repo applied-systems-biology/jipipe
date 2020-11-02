@@ -52,7 +52,7 @@ public class CompartmentNodeTypeCategory implements JIPipeNodeTypeCategory {
 
     @Override
     public Color getBorderColor() {
-        return Color.DARK_GRAY;
+        return Color.LIGHT_GRAY;
     }
 
     @Override

@@ -50,6 +50,7 @@ public class DarkModernMetalTheme extends DefaultMetalTheme {
     public static final Color MEDIUM_GRAY = new ColorUIResource(0x333333);
     public static final Color GRAY = new ColorUIResource(0x212121);
     public static final Color LIGHT_GRAY = new ColorUIResource(0x2f2f2f);
+    public static final Color LIGHTEST_GRAY = new ColorUIResource(0x888888);
     public static final Color TEXTAREA_BACKGROUND = new ColorUIResource(0x121212);
     public static final Color SUBCONTROL_BACKGROUND = new ColorUIResource(0x121212);
     public static final ColorUIResource CONTROL_TEXT_COLOR =
@@ -66,6 +67,7 @@ public class DarkModernMetalTheme extends DefaultMetalTheme {
     private static final Border BUTTON_BORDER = BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1),
             BorderFactory.createCompoundBorder(new RoundedLineBorder(PRIMARY3, 1, 2),
                     BorderFactory.createEmptyBorder(3, 3, 3, 3)));
+    private static final Border INVISIBLE_BORDER = BorderFactory.createEmptyBorder(5, 5, 5, 5);
     static ColorUIResource BLACK = new ColorUIResource(0x222222);
 
     /**
@@ -114,10 +116,16 @@ public class DarkModernMetalTheme extends DefaultMetalTheme {
                 "ScrollPane.border", NO_BORDER,
                 "Button.borderColor", PRIMARY3,
 
+                "ComboBox.background", TEXTAREA_BACKGROUND,
+                "ComboBox.buttonBackground", TEXTAREA_BACKGROUND,
+                "ComboBox.disabledBackground", TEXTAREA_BACKGROUND,
+
                 "Separator.foreground", GRAY,
                 "Separator.background", PRIMARY4,
                 "Separator.highlight", PRIMARY4,
                 "Separator.shadow", false,
+
+                "controlHighlight", PRIMARY4,
 
                 "CheckBox.rollover", Boolean.TRUE,
                 "CheckBoxMenuItem.background", BLACK,
@@ -148,7 +156,7 @@ public class DarkModernMetalTheme extends DefaultMetalTheme {
                 "Label.disabledForeground", getInactiveControlTextColor(),
 
                 "Menu.opaque", Boolean.FALSE,
-                "MenuItem.acceleratorForeground", DARK_GRAY,
+                "MenuItem.acceleratorForeground", PRIMARY6,
 
                 "PopupMenu.border", BorderFactory.createLineBorder(MEDIUM_GRAY, 1, false),
 
@@ -197,17 +205,19 @@ public class DarkModernMetalTheme extends DefaultMetalTheme {
                 "RadioButton.background", LIGHT_GRAY,
                 "RadioButton.rollover", Boolean.TRUE,
 
-                "Spinner.arrowButtonBorder", BorderFactory.createMatteBorder(0, 1, 0, 0, GRAY),
+                "Spinner.arrowButtonBorder", BorderFactory.createMatteBorder(0, 1, 0, 0, PRIMARY3),
                 "Spinner.arrowButtonInsets", new Insets(2, 2, 2, 2),
                 "Spinner.arrowButtonSize", new Dimension(16, 16),
+                "Spinner.background", TEXTAREA_BACKGROUND,
+                "Spinner.border", INVISIBLE_BORDER,
 
                 "RadioButtonMenuItem.background", LIGHT_GRAY,
 
-                "ScrollBar.background", GRAY,
+                "ScrollBar.background", SUBCONTROL_BACKGROUND,
                 "ScrollBar.thumbHighlight", TRANSPARENT,
                 "ScrollBar.thumbShadow", TRANSPARENT,
                 "ScrollBar.trackHighlight", TRANSPARENT,
-                "ScrollBar.thumb", MEDIUM_GRAY,
+                "ScrollBar.thumb", LIGHTEST_GRAY,
                 "ScrollBar.width", 12,
 
                 "Slider.altTrackColor", new ColorUIResource(0xD2E2EF),
@@ -217,7 +227,11 @@ public class DarkModernMetalTheme extends DefaultMetalTheme {
                 "SplitPane.oneTouchButtonsOpaque", Boolean.FALSE,
                 "SplitPane.dividerFocusColor", PRIMARY4,
                 "SplitPane.border", BorderFactory.createEmptyBorder(),
+                "SplitPane.highlight", PRIMARY4,
 
+                "TabbedPane.highlight", PRIMARY4,
+                "TabbedPane.light", PRIMARY4,
+                "TabbedPane.selectHighlight", PRIMARY4,
                 "TabbedPane.borderHightlightColor", LIGHT_GRAY,
                 "TabbedPane.contentAreaColor", PRIMARY4,
                 "TabbedPane.contentBorderInsets", new Insets(2, 2, 3, 3),
@@ -236,11 +250,15 @@ public class DarkModernMetalTheme extends DefaultMetalTheme {
 
                 "TextField.inactiveForeground", PRIMARY1,
                 "TextField.background", TEXTAREA_BACKGROUND,
+                "TextField.border", NO_BORDER,
 
                 "TextArea.background", TEXTAREA_BACKGROUND,
 
                 "TextPane.background", TEXTAREA_BACKGROUND,
                 "TextPane.foreground", CONTROL_TEXT_COLOR,
+
+                "PasswordField.background", TEXTAREA_BACKGROUND,
+                "PasswordField.foreground", CONTROL_TEXT_COLOR,
 
 //                "ToolBar.borderColor", GRAY2,
                 "ToolBar.border", BorderFactory.createMatteBorder(0, 0, 1, 0, GRAY),
@@ -250,11 +268,12 @@ public class DarkModernMetalTheme extends DefaultMetalTheme {
                 "ToolTip.backgroundInactive", BLACK,
                 "ToolTip.border", BorderFactory.createLineBorder(DARK_GRAY),
                 "ToolTip.borderInactive", BorderFactory.createLineBorder(DARK_GRAY),
-                "ToolTip.foreground", Color.BLACK,
-                "ToolTip.foregroundInactive", Color.BLACK,
+                "ToolTip.foreground", CONTROL_TEXT_COLOR,
+                "ToolTip.foregroundInactive", CONTROL_TEXT_COLOR,
 
                 "Tree.closedIcon", directoryIcon,
 
+                "Tree.background", SUBCONTROL_BACKGROUND,
                 "Tree.collapsedIcon", UIUtils.getIcon8FromResources("tree-expand.png"),
                 "Tree.expandedIcon", UIUtils.getIcon8FromResources("tree-shrink.png"),
                 "Tree.leafIcon", fileIcon,
@@ -276,7 +295,9 @@ public class DarkModernMetalTheme extends DefaultMetalTheme {
                 "ProgressBar.border", new RoundedLineBorder(MEDIUM_GRAY, 1, 2),
 
                 "List.background", SUBCONTROL_BACKGROUND,
-                "EditorPane.background", SUBCONTROL_BACKGROUND,
+                "List.selectionBackground", PRIMARY1,
+                "EditorPane.background", TEXTAREA_BACKGROUND,
+                "FormattedTextField.background", TEXTAREA_BACKGROUND,
 
                 "TabbedPane.tabAreaBackground", SUBCONTROL_BACKGROUND,
                 "Panel.background", MEDIUM_GRAY
