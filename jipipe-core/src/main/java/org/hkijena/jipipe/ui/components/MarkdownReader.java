@@ -59,6 +59,7 @@ public class MarkdownReader extends JPanel {
     public static final String[] CSS_RULES_DARK = {"body { font-family: \"Sans-serif\"; color: #eeeeee; }",
             "pre { background-color: #333333; border: 3px #333333 solid; }",
             "code { background-color: #333333; }",
+            "a { color: #65a4e3; }",
             "h2 { padding-top: 30px; }",
             "h3 { padding-top: 30px; }",
             "th { border-bottom: 1px solid #c8c8c8; }",
