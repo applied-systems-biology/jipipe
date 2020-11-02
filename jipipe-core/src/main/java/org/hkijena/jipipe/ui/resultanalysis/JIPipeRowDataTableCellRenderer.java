@@ -41,14 +41,14 @@ public class JIPipeRowDataTableCellRenderer implements TableCellRenderer {
     public JIPipeRowDataTableCellRenderer(JIPipeProjectWorkbench workbenchUI, JIPipeDataSlot slot) {
         this.workbenchUI = workbenchUI;
         this.slot = slot;
-        for (int i = 0; i < slot.getRowCount(); i++) {
-            previewCache.add(null);
-        }
     }
 
     @Override
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
         if (value instanceof JIPipeExportedDataTable.Row) {
+           while(row > previewCache.size() - 1) {
+               previewCache.add(null);
+           }
             JIPipeResultDataSlotPreviewUI preview = previewCache.get(row);
             if (preview == null) {
                 preview = JIPipe.getDataTypes().getCellRendererFor(slot.getAcceptedDataType(), table);

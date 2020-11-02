@@ -192,7 +192,7 @@ public class DocumentTabPane extends JPanel {
 //            } else {
 //                closeButton.setBackground(Color.WHITE);
 //            }
-            closeButton.setBackground(Color.WHITE);
+            closeButton.setBackground(UIManager.getColor("TextArea.background"));
 
             closeButton.setOpaque(false);
             closeButton.setEnabled(closeMode != CloseMode.withDisabledCloseButton);

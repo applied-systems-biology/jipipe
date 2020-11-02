@@ -243,6 +243,7 @@ public class DarkModernMetalTheme extends DefaultMetalTheme {
                 "Table.focusCellHighlightBorder", focusBorder,
                 "Table.gridColor", SECONDARY1,
                 "TableHeader.focusCellBackground", PRIMARY4,
+                "TableHeader.cellBorder", PRIMARY4,
 
                 "ToggleButton.background", LIGHT_GRAY,
                 "ToggleButton.border", BUTTON_BORDER,
