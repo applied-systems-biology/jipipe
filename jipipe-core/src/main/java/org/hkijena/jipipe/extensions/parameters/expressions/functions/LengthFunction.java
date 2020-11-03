@@ -7,8 +7,9 @@ import org.hkijena.jipipe.extensions.parameters.expressions.ParameterInfo;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
-@JIPipeDocumentation(name = "Get length", description = "For arrays and strings, this function returns their length/size. For numbers and boolean values, this function will throw an error")
+@JIPipeDocumentation(name = "Get length", description = "For arrays, maps, and strings, this function returns their length/size. For numbers and boolean values, this function will throw an error")
 public class LengthFunction extends ExpressionFunction {
 
     public LengthFunction() {
@@ -28,6 +29,8 @@ public class LengthFunction extends ExpressionFunction {
         Object value = parameters.get(0);
         if(value instanceof Collection)
             return ((Collection<?>) value).size();
+        if(value instanceof Map)
+            return ((Map<?, ?>) value).size();
         else if(value instanceof String)
             return ((String) value).length();
         else
