@@ -15,6 +15,7 @@ package org.hkijena.jipipe.api;
 
 import com.google.common.base.Charsets;
 import ij.IJ;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
@@ -157,6 +158,8 @@ public class JIPipeRun implements JIPipeRunnable {
             threadPool = new JIPipeFixedThreadPool(configuration.getNumThreads());
             runAnalysis(onProgress, isCancelled);
         } catch (Exception e) {
+            log.append(e.toString()).append("\n");
+            log.append(ExceptionUtils.getStackTrace(e)).append("\n");
             try {
                 if (configuration.getOutputPath() != null)
                     Files.write(configuration.getOutputPath().resolve("log.txt"), log.toString().getBytes(Charsets.UTF_8));

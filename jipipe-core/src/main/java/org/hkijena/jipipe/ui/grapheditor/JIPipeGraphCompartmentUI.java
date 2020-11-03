@@ -112,6 +112,7 @@ public class JIPipeGraphCompartmentUI extends JIPipeGraphEditorUI {
                 NodeUIContextAction.SEPARATOR,
                 new RunAndShowResultsNodeUIContextAction(),
                 new UpdateCacheNodeUIContextAction(),
+                new OpenCacheBrowserInWindowUIContextAction(),
                 NodeUIContextAction.SEPARATOR,
                 new ExportNodeUIContextAction(),
                 NodeUIContextAction.SEPARATOR,

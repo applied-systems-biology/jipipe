@@ -42,8 +42,10 @@ import org.hkijena.jipipe.ui.extensions.JIPipePluginManagerUIPanel;
 import org.hkijena.jipipe.ui.extensions.JIPipePluginValidityCheckerPanel;
 import org.hkijena.jipipe.ui.ijupdater.JIPipeImageJPluginManager;
 import org.hkijena.jipipe.ui.project.JIPipeProjectTabMetadata;
+import org.hkijena.jipipe.ui.running.JIPipeLogViewer;
 import org.hkijena.jipipe.ui.running.JIPipeRunSettingsUI;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueueUI;
+import org.hkijena.jipipe.ui.running.RealTimeProjectRunner;
 import org.hkijena.jipipe.ui.settings.JIPipeApplicationSettingsUI;
 import org.hkijena.jipipe.ui.settings.JIPipeProjectSettingsUI;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -75,6 +77,7 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
     public static final String TAB_VALIDITY_CHECK = "VALIDITY_CHECK";
     public static final String TAB_PLUGIN_VALIDITY_CHECK = "PLUGIN_VALIDITY_CHECK";
     private static final String TAB_PROJECT_OVERVIEW = "PROJECT_OVERVIEW";
+    private static final String TAB_LOG = "LOG";
     public DocumentTabPane documentTabPane;
     private JIPipeProjectWindow window;
     private JIPipeProject project;
@@ -82,6 +85,8 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
     private Context context;
     private ReloadableValidityChecker validityCheckerPanel;
     private JIPipePluginValidityCheckerPanel pluginValidityCheckerPanel;
+    private RealTimeProjectRunner realTimeProjectRunner;
+
 
     /**
      * @param window           Parent window
@@ -94,6 +99,7 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
         this.window = window;
         this.project = project;
         this.context = context;
+        this.realTimeProjectRunner = new RealTimeProjectRunner(this);
         initialize(showIntroduction, isNewProject);
         project.getEventBus().register(this);
         JIPipe.getInstance().getEventBus().register(this);
@@ -190,6 +196,11 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
                 "Plugin validation",
                 UIUtils.getIconFromResources("actions/plugins.png"),
                 pluginValidityCheckerPanel,
+                true);
+        documentTabPane.addSingletonTab(TAB_LOG,
+                "Log viewer",
+                UIUtils.getIconFromResources("actions/show_log.png"),
+                new JIPipeLogViewer(this),
                 true);
         add(documentTabPane, BorderLayout.CENTER);
 
@@ -409,11 +420,21 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
         openCacheBrowserButton.addActionListener(e -> openCacheBrowser());
         toolsMenu.add(openCacheBrowserButton);
 
+        JMenuItem openLogsButton = new JMenuItem("Logs", UIUtils.getIconFromResources("actions/show_log.png"));
+        openLogsButton.addActionListener(e -> documentTabPane.selectSingletonTab(TAB_LOG));
+        toolsMenu.add(openLogsButton);
+
         UIUtils.installMenuExtension(this, toolsMenu, MenuTarget.ProjectToolsMenu, false);
         if (toolsMenu.getItemCount() > 0)
             menu.add(toolsMenu);
 
         menu.add(Box.createHorizontalGlue());
+
+        // Real-time runner control
+        JToggleButton realtimeToggleButton = realTimeProjectRunner.createToggleButton();
+        UIUtils.makeFlat(realtimeToggleButton);
+        menu.add(realtimeToggleButton);
+
         // Cache monitor
 //        menu.add(new JIPipeCacheManagerUI(this));
 
