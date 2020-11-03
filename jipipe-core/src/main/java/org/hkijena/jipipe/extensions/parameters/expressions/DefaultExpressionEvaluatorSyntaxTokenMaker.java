@@ -157,7 +157,7 @@ public class DefaultExpressionEvaluatorSyntaxTokenMaker extends AbstractTokenMak
         else if(NumberUtils.isCreatable(text))
             tokenType = Token.LITERAL_NUMBER_FLOAT;
         if(tokenType == -1)
-            tokenType = Token.IDENTIFIER;
+            tokenType = Token.VARIABLE;
         for (int i = 0; i < text.length(); i++) {
             addToken(segment, index + offset + i, index + offset + i, tokenType, startOffset + index + offset + i);
         }
