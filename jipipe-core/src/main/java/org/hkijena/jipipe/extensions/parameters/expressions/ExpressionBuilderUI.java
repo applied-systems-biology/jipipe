@@ -126,7 +126,10 @@ public class ExpressionBuilderUI extends JPanel {
         expressionEditor.setBackground(UIManager.getColor("TextArea.background"));
         expressionEditor.setLineWrap(true);
         expressionEditor.setHighlightCurrentLine(false);
-        contentPanel.add(expressionEditor, BorderLayout.SOUTH);
+        JPanel expressionEditorPanel = new JPanel(new BorderLayout());
+        expressionEditorPanel.setBorder(BorderFactory.createEtchedBorder());
+        expressionEditorPanel.add(expressionEditor, BorderLayout.CENTER);
+        contentPanel.add(expressionEditorPanel, BorderLayout.SOUTH);
         contentPanel.add(inserterPanel, BorderLayout.CENTER);
 
         // Command panel
