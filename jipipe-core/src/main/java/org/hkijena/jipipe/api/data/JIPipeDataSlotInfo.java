@@ -293,6 +293,15 @@ public class JIPipeDataSlotInfo implements JIPipeParameterCollection {
     }
 
     /**
+     * Returns true if the provided string is a valid slot name
+     * @param slotName the name
+     * @return if the name is valid
+     */
+    public static boolean isValidName(String slotName) {
+        return slotName.matches("[\\w.\\-,# ]+");
+    }
+
+    /**
      * Serializes an {@link JIPipeDataSlotInfo}
      */
     public static class Serializer extends JsonSerializer<JIPipeDataSlotInfo> {

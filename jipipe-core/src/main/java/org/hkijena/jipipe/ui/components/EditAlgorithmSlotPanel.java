@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.ui.components;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
@@ -80,14 +81,14 @@ public class EditAlgorithmSlotPanel extends JPanel {
     private void setInitialValues() {
         nameEditor.setText(existingSlot.getName());
         datatypeList.setSelectedValue(JIPipeDataInfo.getInstance(existingSlot.getAcceptedDataType()), true);
-
     }
 
     private void initialize() {
         JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) existingSlot.getNode().getSlotConfiguration();
         setLayout(new BorderLayout());
-        initializeToolBar();
 
+        JPanel listPanel = new JPanel(new BorderLayout());
+        initializeToolBar(listPanel);
 
         datatypeList = new JList<>();
         datatypeList.setCellRenderer(new JIPipeDataInfoListCellRenderer());
@@ -97,9 +98,12 @@ public class EditAlgorithmSlotPanel extends JPanel {
             }
         });
         JScrollPane scrollPane = new JScrollPane(datatypeList);
-        add(scrollPane, BorderLayout.CENTER);
+        listPanel.add(scrollPane, BorderLayout.CENTER);
+        add(listPanel, BorderLayout.WEST);
 
         FormPanel formPanel = new FormPanel(null, FormPanel.NONE);
+        FormPanel.GroupHeaderPanel header = formPanel.addGroupHeader("Edit slot '" + existingSlot.getName() + "' in '" + existingSlot.getNode().getName() + "'", JIPipe.getInstance().getNodeRegistry().getIconFor(existingSlot.getNode().getInfo()));
+        header.setDescription("You can change the data type of the slot at the left-hand side. Other properties can be changed below. Please note, that existing connections might be removed when editing a slot.");
         nameEditor = new JXTextField();
         nameEditor.addKeyListener(new KeyAdapter() {
             @Override
@@ -137,10 +141,11 @@ public class EditAlgorithmSlotPanel extends JPanel {
             inheritanceConversionEditorUI.setBorder(BorderFactory.createEtchedBorder());
             formPanel.addToForm(inheritanceConversionEditorUI, new JLabel("Inheritance conversions"), null);
         }
+        formPanel.addVerticalGlue();
+        add(formPanel, BorderLayout.CENTER);
 
         JPanel bottomPanel = new JPanel();
         bottomPanel.setLayout(new BoxLayout(bottomPanel, BoxLayout.Y_AXIS));
-        bottomPanel.add(formPanel);
         bottomPanel.add(initializeButtonPanel());
         add(bottomPanel, BorderLayout.SOUTH);
     }
@@ -180,13 +185,19 @@ public class EditAlgorithmSlotPanel extends JPanel {
     }
 
     private void editSlot() {
+
+        String slotName = nameEditor.getText().trim();
+        if(!JIPipeDataSlotInfo.isValidName(slotName)) {
+            JOptionPane.showMessageDialog(this, "The name '" + slotName + "' is not a valid slot name. It can only contain alphanumeric characters and following characters: . _ , #");
+            return;
+        }
+
         if (!settingsAreValid())
             return;
 
         // Create a undo snapshot
         graphHistory.addSnapshotBefore(new SlotConfigurationHistorySnapshot(existingSlot.getNode(), "Edit slot '" + existingSlot.getDisplayName() + "'"));
 
-        String slotName = nameEditor.getText().trim();
         JIPipeGraphNode algorithm = existingSlot.getNode();
         JIPipeSlotType slotType = existingSlot.getSlotType();
         JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) algorithm.getSlotConfiguration();
@@ -275,19 +286,10 @@ public class EditAlgorithmSlotPanel extends JPanel {
         return true;
     }
 
-    private void initializeToolBar() {
+    private void initializeToolBar(JPanel listPanel) {
         JToolBar toolBar = new JToolBar();
         toolBar.setFloatable(false);
 
-        JIPipeGraphNode algorithm = existingSlot.getNode();
-        JLabel algorithmNameLabel = new JLabel(algorithm.getName(),
-                new ColorIcon(16, 16, UIUtils.getFillColorFor(algorithm.getInfo())), JLabel.LEFT);
-        algorithmNameLabel.setToolTipText(TooltipUtils.getAlgorithmTooltip(algorithm.getInfo()));
-        toolBar.add(algorithmNameLabel);
-        toolBar.add(Box.createHorizontalStrut(5));
-
-        toolBar.add(Box.createHorizontalGlue());
-        toolBar.add(Box.createHorizontalStrut(16));
         searchField = new SearchTextField();
         searchField.addActionListener(e -> reloadTypeList());
         searchField.addKeyListener(new KeyAdapter() {
@@ -301,7 +303,7 @@ public class EditAlgorithmSlotPanel extends JPanel {
         });
         toolBar.add(searchField);
 
-        add(toolBar, BorderLayout.NORTH);
+        listPanel.add(toolBar, BorderLayout.NORTH);
     }
 
     private void initializeAvailableInfos() {
@@ -368,7 +370,7 @@ public class EditAlgorithmSlotPanel extends JPanel {
         dialog.setTitle("Edit slot '" + existingSlot.getName() + "'");
         dialog.setModal(true);
         dialog.pack();
-        dialog.setSize(new Dimension(500, 600));
+        dialog.setSize(new Dimension(640, 480));
         dialog.setLocationRelativeTo(parent);
         UIUtils.addEscapeListener(dialog);
         dialog.setVisible(true);

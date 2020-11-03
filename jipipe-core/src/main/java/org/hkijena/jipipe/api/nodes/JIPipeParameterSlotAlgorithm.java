@@ -49,7 +49,7 @@ import java.util.stream.Collectors;
  */
 public abstract class JIPipeParameterSlotAlgorithm extends JIPipeAlgorithm {
 
-    public static final String SLOT_PARAMETERS = "Parameters";
+    public static final String SLOT_PARAMETERS = "{Parameters}";
     private ParameterSlotAlgorithmSettings parameterSlotAlgorithmSettings = new ParameterSlotAlgorithmSettings();
 
     public JIPipeParameterSlotAlgorithm(JIPipeNodeInfo info, JIPipeSlotConfiguration slotConfiguration) {
@@ -287,7 +287,7 @@ public abstract class JIPipeParameterSlotAlgorithm extends JIPipeAlgorithm {
         }
 
         @JIPipeDocumentation(name = "Attach only non-default parameter annotations", description = "If multiple parameters are allowed, " +
-                "attach only parameter annotations that have different values from the current settings. Requries 'Attach parameter annotations' to be enabled.")
+                "attach only parameter annotations that have different values from the current settings. Requires 'Attach parameter annotations' to be enabled.")
         @JIPipeParameter(value = "attach-only-non-default-parameter-annotations", visibility = JIPipeParameterVisibility.Visible)
         public boolean isAttachOnlyNonDefaultParameterAnnotations() {
             return attachOnlyNonDefaultParameterAnnotations;

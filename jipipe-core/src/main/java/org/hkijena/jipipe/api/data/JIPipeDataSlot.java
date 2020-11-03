@@ -551,5 +551,4 @@ public class JIPipeDataSlot implements TableModel {
     public String toString() {
         return String.format("%s: %s (%d rows, %d annotation columns)", getSlotType(), getName(), getRowCount(), getAnnotationColumns().size());
     }
-
 }
