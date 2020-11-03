@@ -23,7 +23,7 @@ import java.util.Iterator;
 @JIPipeDocumentation(name = "Variable exists", description = "Returns true if the left string operand is a variable that exists.")
 public class VariableExistsOperator extends ExpressionOperator {
     public VariableExistsOperator() {
-        super("EXISTS", 1, Associativity.RIGHT, 7);
+        super("EXISTS", 1, Associativity.LEFT, 7);
     }
 
     @Override

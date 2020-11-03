@@ -59,12 +59,12 @@ import java.util.stream.Collectors;
 public class OMEROFindDatasetAlgorithm extends JIPipeParameterSlotAlgorithm {
 
     private OMEROCredentials credentials = new OMEROCredentials();
-    private StringQueryExpression datasetNameFilters = new StringQueryExpression("TRUE");
+    private StringQueryExpression datasetNameFilters = new StringQueryExpression("");
     private OptionalStringParameter projectNameAnnotation = new OptionalStringParameter("Project", true);
     private OptionalStringParameter datasetNameAnnotation = new OptionalStringParameter("Dataset", true);
-    private StringMapQueryExpression keyValuePairFilters = new StringMapQueryExpression("TRUE");
+    private StringMapQueryExpression keyValuePairFilters = new StringMapQueryExpression("");
     private boolean addKeyValuePairsAsAnnotations = true;
-    private StringMapQueryExpression tagFilters = new StringMapQueryExpression("TRUE");
+    private StringMapQueryExpression tagFilters = new StringMapQueryExpression("");
     private OptionalStringParameter tagAnnotation = new OptionalStringParameter("Tags", true);
 
     public OMEROFindDatasetAlgorithm(JIPipeNodeInfo info) {

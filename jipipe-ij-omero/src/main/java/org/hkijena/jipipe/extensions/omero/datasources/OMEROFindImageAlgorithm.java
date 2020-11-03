@@ -59,13 +59,13 @@ import java.util.stream.Collectors;
 public class OMEROFindImageAlgorithm extends JIPipeParameterSlotAlgorithm {
 
     private OMEROCredentials credentials = new OMEROCredentials();
-    private StringQueryExpression imageNameFilters = new StringQueryExpression("TRUE");
+    private StringQueryExpression imageNameFilters = new StringQueryExpression("");
     private OptionalStringParameter projectNameAnnotation = new OptionalStringParameter("Project", true);
     private OptionalStringParameter datasetNameAnnotation = new OptionalStringParameter("Dataset", true);
     private OptionalStringParameter imageNameAnnotation = new OptionalStringParameter("Filename", true);
-    private StringMapQueryExpression keyValuePairFilters = new StringMapQueryExpression("TRUE");
+    private StringMapQueryExpression keyValuePairFilters = new StringMapQueryExpression("");
     private boolean addKeyValuePairsAsAnnotations = true;
-    private StringMapQueryExpression tagFilters = new StringMapQueryExpression("TRUE");
+    private StringMapQueryExpression tagFilters = new StringMapQueryExpression("");
     private OptionalStringParameter tagAnnotation = new OptionalStringParameter("Tags", true);
 
     public OMEROFindImageAlgorithm(JIPipeNodeInfo info) {

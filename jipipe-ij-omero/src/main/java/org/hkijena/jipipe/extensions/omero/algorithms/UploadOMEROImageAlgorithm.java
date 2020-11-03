@@ -79,7 +79,7 @@ public class UploadOMEROImageAlgorithm extends JIPipeMergingAlgorithm {
     private OMEExporterSettings exporterSettings = new OMEExporterSettings();
     private JIPipeDataByMetadataExporter exporter = new JIPipeDataByMetadataExporter();
     private boolean uploadAnnotations = false;
-    private AnnotationQueryExpression uploadedAnnotationsFilter = new AnnotationQueryExpression("TRUE");
+    private AnnotationQueryExpression uploadedAnnotationsFilter = new AnnotationQueryExpression("");
 
     public UploadOMEROImageAlgorithm(JIPipeNodeInfo info) {
         super(info);

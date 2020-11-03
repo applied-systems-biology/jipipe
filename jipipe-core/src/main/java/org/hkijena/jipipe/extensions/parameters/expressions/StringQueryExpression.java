@@ -50,8 +50,6 @@ public class StringQueryExpression extends DefaultExpressionParameter {
     public String queryFirst(Collection<String> strings) {
         if(strings.isEmpty())
             return null;
-        if("TRUE".equals(getExpression()))
-            return strings.iterator().next();
         StaticVariableSet<Object> variableSet = new StaticVariableSet<>();
         try {
             Object evaluationResult = evaluate(variableSet);
@@ -65,7 +63,7 @@ public class StringQueryExpression extends DefaultExpressionParameter {
         }
         for (String string : strings) {
             variableSet.set("value", string);
-            boolean evaluationResult = (boolean) evaluate(variableSet);
+            boolean evaluationResult = test(variableSet);
             if(evaluationResult)
                 return string;
         }
@@ -78,8 +76,6 @@ public class StringQueryExpression extends DefaultExpressionParameter {
      * @return the annotation that matches the query or null if none matches
      */
     public List<String> queryAll(Collection<String> strings) {
-        if("TRUE".equals(getExpression()))
-            return new ArrayList<>(strings);
         List<String> result = new ArrayList<>();
         StaticVariableSet<Object> variableSet = new StaticVariableSet<>();
         try {
@@ -96,7 +92,7 @@ public class StringQueryExpression extends DefaultExpressionParameter {
             return result;
         for (String string : strings) {
             variableSet.set("value", string);
-            boolean evaluationResult = (boolean) evaluate(variableSet);
+            boolean evaluationResult = test(variableSet);
             if(evaluationResult)
                 result.add(string);
         }

@@ -46,7 +46,7 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
     private String separatorString = "_";
     private String equalsString = "=";
     private String missingString = "NA";
-    private StringQueryExpression metadataKeyFilter = new StringQueryExpression("TRUE");
+    private StringQueryExpression metadataKeyFilter = new StringQueryExpression("");
 
     public JIPipeDataByMetadataExporter() {
     }

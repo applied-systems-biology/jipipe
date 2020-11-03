@@ -55,11 +55,11 @@ import java.util.stream.Collectors;
 public class OMEROFindProjectAlgorithm extends JIPipeParameterSlotAlgorithm {
 
     private OMEROCredentials credentials = new OMEROCredentials();
-    private StringQueryExpression projectNameFilters = new StringQueryExpression("TRUE");
-    private StringMapQueryExpression keyValuePairFilters = new StringMapQueryExpression("TRUE");
+    private StringQueryExpression projectNameFilters = new StringQueryExpression("");
+    private StringMapQueryExpression keyValuePairFilters = new StringMapQueryExpression("");
     private boolean addKeyValuePairsAsAnnotations = true;
     private OptionalStringParameter projectNameAnnotation = new OptionalStringParameter("Project", true);
-    private StringMapQueryExpression tagFilters = new StringMapQueryExpression("TRUE");
+    private StringMapQueryExpression tagFilters = new StringMapQueryExpression("");
     private OptionalStringParameter tagAnnotation = new OptionalStringParameter("Tags", true);
 
     public OMEROFindProjectAlgorithm(JIPipeNodeInfo info) {

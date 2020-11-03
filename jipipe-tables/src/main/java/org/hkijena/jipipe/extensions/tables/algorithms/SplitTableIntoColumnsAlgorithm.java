@@ -47,7 +47,7 @@ import java.util.function.Supplier;
 public class SplitTableIntoColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private OptionalStringParameter generatedAnnotation = new OptionalStringParameter();
-    private StringQueryExpression columnFilter = new StringQueryExpression("TRUE");
+    private StringQueryExpression columnFilter = new StringQueryExpression("");
 
     /**
      * Creates a new instance

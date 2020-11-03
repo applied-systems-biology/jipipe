@@ -45,7 +45,7 @@ import java.util.function.Supplier;
 public class ImagePlusFromGUI extends JIPipeSimpleIteratingAlgorithm {
 
     private boolean onlyActiveImage = true;
-    private DefaultExpressionParameter imageFilters = new DefaultExpressionParameter("TRUE");
+    private DefaultExpressionParameter imageFilters = new DefaultExpressionParameter("");
     private LogicalOperation imageFiltersOperation = LogicalOperation.LogicalOr;
 
     public ImagePlusFromGUI(JIPipeNodeInfo info) {

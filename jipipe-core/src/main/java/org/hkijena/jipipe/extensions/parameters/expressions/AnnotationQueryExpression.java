@@ -66,7 +66,7 @@ public class AnnotationQueryExpression extends DefaultExpressionParameter {
         for (JIPipeAnnotation annotation : annotations) {
             variableSet.set("key", annotation.getName());
             variableSet.set("value", annotation.getValue());
-            boolean evaluationResult = (boolean) evaluate(variableSet);
+            boolean evaluationResult = test(variableSet);
             if(evaluationResult)
                 return annotation;
         }
@@ -99,7 +99,7 @@ public class AnnotationQueryExpression extends DefaultExpressionParameter {
         for (JIPipeAnnotation annotation : annotations) {
             variableSet.set("key", annotation.getName());
             variableSet.set("value", annotation.getValue());
-            boolean evaluationResult = (boolean) evaluate(variableSet);
+            boolean evaluationResult = test(variableSet);
             if(evaluationResult)
                 result.add(annotation);
         }
