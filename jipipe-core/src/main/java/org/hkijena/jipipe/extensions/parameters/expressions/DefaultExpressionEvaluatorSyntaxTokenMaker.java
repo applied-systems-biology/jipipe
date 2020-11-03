@@ -15,6 +15,7 @@ package org.hkijena.jipipe.extensions.parameters.expressions;
 
 import com.fathzer.soft.javaluator.Function;
 import com.fathzer.soft.javaluator.Operator;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.fife.ui.rsyntaxtextarea.AbstractTokenMaker;
 import org.fife.ui.rsyntaxtextarea.Token;
 import org.fife.ui.rsyntaxtextarea.TokenMap;
@@ -149,10 +150,12 @@ public class DefaultExpressionEvaluatorSyntaxTokenMaker extends AbstractTokenMak
         if(text.isEmpty())
             return;
         int tokenType = getWordsToHighlight().get(segment, index + offset, index + offset + text.length() - 1);
-        if(text.startsWith("\""))
-            tokenType = Token.LITERAL_STRING_DOUBLE_QUOTE;
         if(dynamicVariables != null && dynamicVariables.stream().anyMatch(v -> Objects.equals(v.getKey(), text)))
             tokenType = Token.VARIABLE;
+        if(text.startsWith("\""))
+            tokenType = Token.LITERAL_STRING_DOUBLE_QUOTE;
+        else if(NumberUtils.isCreatable(text))
+            tokenType = Token.LITERAL_NUMBER_FLOAT;
         if(tokenType == -1)
             tokenType = Token.IDENTIFIER;
         for (int i = 0; i < text.length(); i++) {
