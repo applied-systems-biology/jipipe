@@ -18,7 +18,10 @@ import org.hkijena.jipipe.extensions.parameters.expressions.ParameterInfo;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 @JIPipeDocumentation(name = "Addition", description = "Adds two numbers together, concatenates two strings, or concatenates two arrays.")
 public class AdditionFunctionOperator extends GenericOperator {
@@ -27,10 +30,34 @@ public class AdditionFunctionOperator extends GenericOperator {
     }
 
     @Override
-    public Object evaluate(Collection<Object> left, Collection<Object> right) {
+    public Object evaluate(Map<Object, Object> left, Object right) {
+        Map<Object, Object> result = new HashMap<>(left);
+        if(right instanceof Map) {
+            for (Map.Entry<?, ?> entry : ((Map<?, ?>) right).entrySet()) {
+                result.put(entry.getKey(), entry.getValue());
+            }
+        }
+        else if(right instanceof Collection) {
+            Collection<?> pair = (Collection<?>) right;
+            Iterator<?> iterator = pair.iterator();
+            Object key = iterator.next();
+            Object value = iterator.next();
+            result.put(key, value);
+        }
+        else {
+            throw new UnsupportedOperationException("Unsupported right operand for map: " + right);
+        }
+        return result;
+    }
+
+    @Override
+    public Object evaluate(Collection<Object> left, Object right) {
         List<Object> result= new ArrayList<>();
         result.addAll(left);
-        result.addAll(right);
+        if(right instanceof Collection)
+            result.addAll((Collection<Object>)right);
+        else
+            result.add(right);
         return result;
     }
 

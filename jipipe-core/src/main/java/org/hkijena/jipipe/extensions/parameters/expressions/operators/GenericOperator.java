@@ -17,6 +17,7 @@ import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionOperator;
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Map;
 
 public abstract class GenericOperator extends ExpressionOperator {
 
@@ -46,15 +47,20 @@ public abstract class GenericOperator extends ExpressionOperator {
                 right = (boolean)o2 ? 1 : 0;
             return evaluate(left, right);
         }
-        else if(o1 instanceof Collection && o2 instanceof Collection) {
-            return evaluate((Collection<Object>)o1, (Collection<Object>)o2);
+        else if(o1 instanceof Collection) {
+            return evaluate((Collection<Object>)o1, o2);
+        }
+        else if(o1 instanceof Map) {
+            return evaluate((Map<Object, Object>)o1, o2);
         }
         else {
             return evaluate("" + o1, "" + o2);
         }
     }
 
-    public abstract Object evaluate(Collection<Object> left, Collection<Object> right);
+    public abstract Object evaluate(Map<Object, Object> left, Object right);
+
+    public abstract Object evaluate(Collection<Object> left, Object right);
 
     public abstract Object evaluate(double left, double right);
 

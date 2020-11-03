@@ -9,12 +9,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 @JIPipeDocumentation(name = "Element access", description = "Access the array element at given position. The first position is zero. If a string is provided, the character at the given position is returned instead.")
 public class ElementAccessOperator extends ExpressionOperator {
 
-    public ElementAccessOperator() {
-        super("@", 2, Associativity.RIGHT, 9);
+    public ElementAccessOperator(String symbol) {
+        super(symbol, 2, Associativity.RIGHT, 9);
     }
 
     @Override
@@ -35,7 +36,10 @@ public class ElementAccessOperator extends ExpressionOperator {
         Object indices = operands.next();
         if(indices instanceof Number) {
             int index = ((Number) indices).intValue();
-            if (array instanceof List) {
+            if(array instanceof Map) {
+                return ((Map<?,?>)array).get(index);
+            }
+            else if (array instanceof List) {
                 return ((List<?>) array).get(index);
             } else if (array instanceof Collection) {
                 return ImmutableList.copyOf((Collection<?>) array).get(index);
@@ -47,7 +51,13 @@ public class ElementAccessOperator extends ExpressionOperator {
         }
         else if(indices instanceof Collection) {
             List<Object> result = new ArrayList<>();
-            if (array instanceof List) {
+            if(array instanceof Map) {
+                Map<?, ?> targetMap = (Map<?, ?>) array;
+                for (Object indexItem : (Collection<?>) indices) {
+                    result.add(targetMap.get(indexItem));
+                }
+            }
+            else if (array instanceof List) {
                 List<?> targetList = (List<?>) array;
                 for (Object indexItem : (Collection<?>) indices) {
                     int index = ((Number)indexItem).intValue();
@@ -69,6 +79,9 @@ public class ElementAccessOperator extends ExpressionOperator {
                 throw new UnsupportedOperationException("Element access does not support array " + array);
             }
             return result;
+        }
+        else if(array instanceof Map) {
+            return ((Map<?,?>)array).get(indices);
         }
         else {
             throw new UnsupportedOperationException("Element access does not support indices " + indices);

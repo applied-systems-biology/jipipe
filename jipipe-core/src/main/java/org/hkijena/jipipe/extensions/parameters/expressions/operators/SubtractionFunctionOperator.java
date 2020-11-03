@@ -18,16 +18,39 @@ import org.hkijena.jipipe.extensions.parameters.expressions.ParameterInfo;
 
 import java.util.*;
 
-@JIPipeDocumentation(name = "Subtract", description = "Subtracts the right operand from the left operand. If the left operand is an array, the right operand is removed from the array.")
+@JIPipeDocumentation(name = "Subtract", description = "Subtracts the right operand from the left operand. If the left operand is an array, the right operand is removed from the array. If the left operand is a map, the right operand is removed from the map's keys.")
 public class SubtractionFunctionOperator extends GenericOperator {
     public SubtractionFunctionOperator() {
         super("-", 6);
     }
 
     @Override
-    public Object evaluate(Collection<Object> left, Collection<Object> right) {
+    public Object evaluate(Map<Object, Object> left, Object right) {
+        Map<Object, Object> result = new HashMap<>(left);
+        if(right instanceof Map) {
+            for (Map.Entry<?, ?> entry : ((Map<?, ?>) right).entrySet()) {
+                result.remove(entry.getKey());
+            }
+        }
+        else if(right instanceof Collection) {
+            Collection<?> pair = (Collection<?>) right;
+            Iterator<?> iterator = pair.iterator();
+            Object key = iterator.next();
+            result.remove(key);
+        }
+        else {
+            result.remove(right);
+        }
+        return result;
+    }
+
+    @Override
+    public Object evaluate(Collection<Object> left, Object right) {
         List<Object> result = new ArrayList<>(left);
-        result.removeAll(right);
+        if(right instanceof Collection)
+            result.removeAll((Collection<?>)right);
+        else
+            result.remove(right);
         return result;
     }
 

@@ -40,17 +40,17 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class DefaultExpressionEvaluator extends ExpressionEvaluator {
     public static final Constant CONSTANT_TRUE = new Constant("TRUE");
     public static final Constant CONSTANT_FALSE = new Constant("FALSE");
-    public static final ExpressionOperator OPERATOR_NEGATE_SYMBOL = new SymbolLogicalNotOperator();
-    public static final ExpressionOperator OPERATOR_NEGATE_TEXT = new TextLogicalNotOperator();
-    public static final ExpressionOperator OPERATOR_AND_SYMBOL = new SymbolLogicalAndOperator();
-    public static final ExpressionOperator OPERATOR_AND_TEXT = new TextLogicalAndOperator();
-    public static final ExpressionOperator OPERATOR_OR_SYMBOL = new SymbolLogicalOrOperator();
-    public static final ExpressionOperator OPERATOR_OR_TEXT = new TextLogicalOrOperator();
-    public static final ExpressionOperator OPERATOR_XOR_TEXT = new TextLogicalXOrOperator();
-    public static final ExpressionOperator OPERATOR_NUMERIC_EQUALS = new EqualityPredicateOperator();
-    public static final ExpressionOperator OPERATOR_NUMERIC_EQUALS_TEXT = new EqualityPredicateTextOperator();
-    public static final ExpressionOperator OPERATOR_NUMERIC_UNEQUALS = new InequalityPredicateOperator();
-    public static final ExpressionOperator OPERATOR_NUMERIC_UNEQUALS_TEXT = new InequalityPredicateTextOperator();
+    public static final ExpressionOperator OPERATOR_NEGATE_SYMBOL = new LogicalNotOperator("!");
+    public static final ExpressionOperator OPERATOR_NEGATE_TEXT = new LogicalNotOperator("NOT");
+    public static final ExpressionOperator OPERATOR_AND_SYMBOL = new LogicalAndOperator("&");
+    public static final ExpressionOperator OPERATOR_AND_TEXT = new LogicalAndOperator("AND");
+    public static final ExpressionOperator OPERATOR_OR_SYMBOL = new LogicalOrOperator("|");
+    public static final ExpressionOperator OPERATOR_OR_TEXT = new LogicalOrOperator("OR");
+    public static final ExpressionOperator OPERATOR_XOR_TEXT = new LogicalXOrOperator("XOR");
+    public static final ExpressionOperator OPERATOR_NUMERIC_EQUALS = new EqualityPredicateOperator("==");
+    public static final ExpressionOperator OPERATOR_NUMERIC_EQUALS_TEXT = new EqualityPredicateOperator("EQUALS");
+    public static final ExpressionOperator OPERATOR_NUMERIC_UNEQUALS = new InequalityPredicateOperator("!=");
+    public static final ExpressionOperator OPERATOR_NUMERIC_UNEQUALS_TEXT = new InequalityPredicateOperator("UNEQUAL");
     public static final ExpressionOperator OPERATOR_NUMERIC_LESS_THAN = new NumericLessThanPredicateOperator();
     public static final ExpressionOperator OPERATOR_NUMERIC_GREATER_THAN = new NumericGreaterThanPredicateOperator();
     public static final ExpressionOperator OPERATOR_NUMERIC_LESS_THAN_OR_EQUAL = new NumericLessThanOrEqualPredicateOperator();
@@ -67,7 +67,8 @@ public class DefaultExpressionEvaluator extends ExpressionEvaluator {
     public static final ExpressionOperator OPERATOR_STRING_CONTAINS2 = new ContainsOperator2();
     public static final ExpressionOperator OPERATOR_VARIABLE_EXISTS = new VariableExistsOperator();
     public static final ExpressionOperator OPERATOR_VARIABLE_RESOLVE = new ResolveVariableOperator();
-    public static final ExpressionOperator OPERATOR_ELEMENT_ACCESS = new ElementAccessOperator();
+    public static final ExpressionOperator OPERATOR_ELEMENT_ACCESS_TEXT = new ElementAccessOperator("AT");
+    public static final ExpressionOperator OPERATOR_ELEMENT_ACCESS_SYMBOL = new ElementAccessOperator("@");
 
     private final Set<String> knownOperatorTokens = new HashSet<>();
     private final List<String> knownNonAlphanumericOperatorTokens = new ArrayList<>();
@@ -110,7 +111,8 @@ public class DefaultExpressionEvaluator extends ExpressionEvaluator {
         // Add variable operators
         parameters.add(OPERATOR_VARIABLE_EXISTS);
         parameters.add(OPERATOR_VARIABLE_RESOLVE);
-        parameters.add(OPERATOR_ELEMENT_ACCESS);
+        parameters.add(OPERATOR_ELEMENT_ACCESS_TEXT);
+        parameters.add(OPERATOR_ELEMENT_ACCESS_SYMBOL);
 
         // Add operators from JIPipe (if available)
         if(JIPipe.getInstance() != null) {

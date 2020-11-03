@@ -18,18 +18,25 @@ import org.hkijena.jipipe.extensions.parameters.expressions.ParameterInfo;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 @JIPipeDocumentation(name = "Inequality", description = "Returns TRUE if the left and right operands are unequal")
 public class InequalityPredicateOperator extends GenericPredicateOperator {
 
-    public InequalityPredicateOperator() {
-        super("!=");
+    public InequalityPredicateOperator(String symbol) {
+        super(symbol);
     }
 
     @Override
     public boolean evaluate(Collection<Object> left, Collection<Object> right) {
         return !Objects.equals(new ArrayList<>(left), new ArrayList<>(right));
+    }
+
+    @Override
+    public boolean evaluate(Map<Object, Object> left, Map<Object, Object> right) {
+        return !Objects.equals(new HashMap<>(left), new HashMap<>(right));
     }
 
     @Override

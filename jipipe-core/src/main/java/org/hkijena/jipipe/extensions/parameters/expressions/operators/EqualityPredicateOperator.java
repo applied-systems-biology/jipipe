@@ -18,17 +18,24 @@ import org.hkijena.jipipe.extensions.parameters.expressions.ParameterInfo;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 @JIPipeDocumentation(name = "Equality", description = "Returns TRUE if the left and right operands are equal")
 public class EqualityPredicateOperator extends GenericPredicateOperator {
-    public EqualityPredicateOperator() {
-        super("==");
+    public EqualityPredicateOperator(String symbol) {
+        super(symbol);
     }
 
     @Override
     public boolean evaluate(Collection<Object> left, Collection<Object> right) {
         return Objects.equals(new ArrayList<>(left), new ArrayList<>(right));
+    }
+
+    @Override
+    public boolean evaluate(Map<Object, Object> left, Map<Object, Object> right) {
+        return Objects.equals(new HashMap<>(left), new HashMap<>(right));
     }
 
     @Override

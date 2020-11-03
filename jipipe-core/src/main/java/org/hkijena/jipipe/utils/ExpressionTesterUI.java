@@ -31,6 +31,7 @@ import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.MarkdownReader;
+import org.python.antlr.ast.Num;
 
 import javax.swing.*;
 import java.awt.BorderLayout;
@@ -38,7 +39,9 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * A developer tool to test {@link org.hkijena.jipipe.extensions.parameters.expressions.DefaultExpressionEvaluator}
@@ -127,9 +130,25 @@ public class ExpressionTesterUI extends JIPipeWorkbenchPanel {
         try {
             result = evaluator.evaluate(expressionToEvaluate, new StaticVariableSet<>());
             if(result instanceof Collection) {
-                List<String> values = new ArrayList<>();
-                for (Object item : (Collection) result) {
-                    values.add("" + item);
+                List<Object> values = new ArrayList<>();
+                for (Object item : (Collection<?>) result) {
+                    if(item instanceof Boolean || item instanceof Number)
+                        values.add(item);
+                    else
+                        values.add("" + item);
+                }
+                result = JsonUtils.toJsonString(values);
+            }
+            if(result instanceof Map) {
+                Map<String, Object> values = new HashMap<>();
+                for (Map.Entry<?, ?> item : ((Map<?, ?>) result).entrySet()) {
+                    String key = "" + item.getKey();
+                    Object value;
+                    if(item.getValue() instanceof Boolean || item.getValue() instanceof Number)
+                        value = item.getValue();
+                    else
+                        value = "" + item.getValue();
+                    values.put(key, value);
                 }
                 result = JsonUtils.toJsonString(values);
             }
