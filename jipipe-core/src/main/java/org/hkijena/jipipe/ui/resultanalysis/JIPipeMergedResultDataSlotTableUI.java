@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.ui.resultanalysis;
 
+import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeRun;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
@@ -21,6 +22,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeExportedDataTable;
 import org.hkijena.jipipe.api.data.JIPipeMergedExportedDataTable;
+import org.hkijena.jipipe.api.events.ParameterChangedEvent;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
@@ -29,6 +31,7 @@ import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
 import org.hkijena.jipipe.ui.cache.JIPipeDataInfoCellRenderer;
 import org.hkijena.jipipe.ui.components.FormPanel;
+import org.hkijena.jipipe.ui.components.PreviewControlUI;
 import org.hkijena.jipipe.ui.components.SearchTextField;
 import org.hkijena.jipipe.ui.components.SearchTextFieldTableRowFilter;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
@@ -71,6 +74,14 @@ public class JIPipeMergedResultDataSlotTableUI extends JIPipeProjectWorkbenchPan
 
         initialize();
         reloadTable();
+        GeneralDataSettings.getInstance().getEventBus().register(new Object() {
+            @Subscribe
+            public void onPreviewSizeChanged(ParameterChangedEvent event) {
+                if("preview-size".equals(event.getKey())) {
+                    reloadTable();
+                }
+            }
+        });
     }
 
     private void initialize() {
@@ -126,6 +137,9 @@ public class JIPipeMergedResultDataSlotTableUI extends JIPipeProjectWorkbenchPan
         JMenuItem exportAsCsvItem = new JMenuItem("as *.csv", UIUtils.getIconFromResources("data-types/results-table.png"));
         exportAsCsvItem.addActionListener(e -> exportAsCSV());
         exportMenu.add(exportAsCsvItem);
+
+        PreviewControlUI previewControlUI = new PreviewControlUI();
+        toolBar.add(previewControlUI);
     }
 
     private void exportAsCSV() {
@@ -163,6 +177,10 @@ public class JIPipeMergedResultDataSlotTableUI extends JIPipeProjectWorkbenchPan
             JIPipeExportedDataTable dataTable = JIPipeExportedDataTable.loadFromJson(slot.getStoragePath().resolve("data-table.json"));
             mergedDataTable.add(getProject(), slot, dataTable);
         }
+        if (GeneralDataSettings.getInstance().isGenerateResultPreviews())
+            table.setRowHeight(GeneralDataSettings.getInstance().getPreviewSize());
+        else
+            table.setRowHeight(25);
         table.setDefaultRenderer(JIPipeExportedDataTable.Row.class, new JIPipeRowDataMergedTableCellRenderer(getProjectWorkbench(), mergedDataTable));
         table.setModel(mergedDataTable);
         refreshTable();

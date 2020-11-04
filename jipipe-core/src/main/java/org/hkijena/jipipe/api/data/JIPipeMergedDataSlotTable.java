@@ -39,6 +39,8 @@ public class JIPipeMergedDataSlotTable implements TableModel {
     private ArrayList<JIPipeDataSlot> slotList = new ArrayList<>();
     private ArrayList<Integer> rowList = new ArrayList<>();
     private List<Component> previewCache = new ArrayList<>();
+    private final GeneralDataSettings dataSettings =GeneralDataSettings.getInstance();
+    private int previewCacheSize = GeneralDataSettings.getInstance().getPreviewSize();
 
     public JIPipeMergedDataSlotTable(JTable table) {
         this.table = table;
@@ -68,6 +70,15 @@ public class JIPipeMergedDataSlotTable implements TableModel {
             algorithmList.add(algorithm);
             rowList.add(i);
             previewCache.add(null);
+        }
+    }
+
+    private void revalidatePreviewCache() {
+        if(dataSettings.getPreviewSize() != previewCacheSize) {
+            for (int i = 0; i < previewCache.size(); i++) {
+                previewCache.set(i, null);
+            }
+            previewCacheSize = dataSettings.getPreviewSize();
         }
     }
 
@@ -133,6 +144,7 @@ public class JIPipeMergedDataSlotTable implements TableModel {
         else if (columnIndex == 3)
             return slotList.get(rowIndex).getData(rowList.get(rowIndex), JIPipeData.class);
         else if (columnIndex == 4) {
+            revalidatePreviewCache();
             Component preview = previewCache.get(rowIndex);
             if (preview == null) {
                 if (GeneralDataSettings.getInstance().isGenerateCachePreviews()) {

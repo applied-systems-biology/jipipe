@@ -21,12 +21,12 @@ import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 
-public class CachePreviewControlUI extends JPanel {
+public class PreviewControlUI extends JPanel {
 
     private final GeneralDataSettings dataSettings = GeneralDataSettings.getInstance();
     private final JButton zoomStatusButton = new JButton();
 
-    public CachePreviewControlUI() {
+    public PreviewControlUI() {
         initialize();
         refreshZoomStatus();
         dataSettings.getEventBus().register(this);
@@ -75,7 +75,7 @@ public class CachePreviewControlUI extends JPanel {
 
     private void increaseSize() {
         int current = dataSettings.getPreviewSize();
-        int newSize = Math.max(40, current - Math.max(1, current / 3));
+        int newSize = current + Math.max(1, current / 3);
         if(newSize != current) {
             JIPipeParameterCollection.setParameter(dataSettings, "preview-size", newSize);
         }
@@ -83,7 +83,7 @@ public class CachePreviewControlUI extends JPanel {
 
     @Subscribe
     public void onSettingChanged(ParameterChangedEvent event) {
-        if("preview-width".equals(event.getKey())) {
+        if("preview-size".equals(event.getKey())) {
             refreshZoomStatus();
         }
     }

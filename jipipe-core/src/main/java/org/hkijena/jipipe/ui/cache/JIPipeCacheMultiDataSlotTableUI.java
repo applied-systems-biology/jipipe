@@ -21,12 +21,14 @@ import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeMergedDataSlotTable;
+import org.hkijena.jipipe.api.events.ParameterChangedEvent;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
+import org.hkijena.jipipe.ui.components.PreviewControlUI;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.JIPipeComponentCellRenderer;
 import org.hkijena.jipipe.ui.components.SearchTextField;
@@ -45,7 +47,6 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -80,9 +81,21 @@ public class JIPipeCacheMultiDataSlotTableUI extends JIPipeProjectWorkbenchPanel
         reloadTable();
         getProject().getCache().getEventBus().register(this);
         updateStatus();
+        GeneralDataSettings.getInstance().getEventBus().register(new Object() {
+            @Subscribe
+            public void onPreviewSizeChanged(ParameterChangedEvent event) {
+                if("preview-size".equals(event.getKey())) {
+                    reloadTable();
+                }
+            }
+        });
     }
 
     private void reloadTable() {
+        if (GeneralDataSettings.getInstance().isGenerateCachePreviews())
+            table.setRowHeight(GeneralDataSettings.getInstance().getPreviewSize());
+        else
+            table.setRowHeight(25);
         table.setModel(new DefaultTableModel());
         table.setModel(multiSlotTable);
         TableColumnModel columnModel = table.getColumnModel();
@@ -93,6 +106,7 @@ public class JIPipeCacheMultiDataSlotTableUI extends JIPipeProjectWorkbenchPanel
         table.setAutoCreateRowSorter(true);
         table.setRowFilter(new SearchTextFieldTableRowFilter(searchTextField));
         table.packAll();
+        columnModel.getColumn(4).setPreferredWidth(GeneralDataSettings.getInstance().getPreviewSize());
     }
 
     private void initialize() {
@@ -147,6 +161,9 @@ public class JIPipeCacheMultiDataSlotTableUI extends JIPipeProjectWorkbenchPanel
         JMenuItem exportAsCsvItem = new JMenuItem("as *.csv", UIUtils.getIconFromResources("data-types/results-table.png"));
         exportAsCsvItem.addActionListener(e -> exportAsCSV());
         exportMenu.add(exportAsCsvItem);
+
+        PreviewControlUI previewControlUI = new PreviewControlUI();
+        toolBar.add(previewControlUI);
     }
 
     private void exportAsCSV() {
