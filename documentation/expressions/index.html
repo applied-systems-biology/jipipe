@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2020-11-02T20:39:56 CET">
+<meta name="revised" content="2020-11-04T18:12:02 CET">
 <title>Expression parameters :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../images/favicon.png" type="image/x-icon" />
 <link href="../../css/font-awesome.min.css" rel="stylesheet">
@@ -524,13 +524,14 @@ It allows you for example to first calculate a numeric metric and use it for fil
 <p>The expression language is interpreted as <strong>one line</strong> and you cannot write own variables. The result of the one expression is supplied to the node for processing.</p>
 <p><img src="../../img/documentation/expressions_filter.png" alt=""></p>
 <p><img src="../../img/documentation/expressions_function.png" alt=""></p>
-<p>The user interface of the expression parameter contains four items:</p>
-<ol>
-<li>The editor. Here you can type mathematical or conditional logic formulas</li>
-<li>(Optional) A button that opens a list of all available <strong>variables</strong> that you can use within the expression</li>
-<li>A button that opens a list of all available <strong>operators</strong></li>
-<li>A button that opens a list of all available <strong>functions</strong></li>
-</ol>
+<p>The user interface of the expression parameter allows you to type the expression via a text field. You can also create new lines if you have longer expressions. They will be all merged automatically.
+If you are unfamiliar with the expression language, you can click the <img class="inline-image" src="../../img/icons/insert-math-expression.png"/> button to open a tool that lists all available functions and operators. This tool will help you to build expressions and check the syntax.</p>
+<p><img src="../../img/documentation/expression-builder.png" alt="Expression builder"></p>
+
+<div class="notices tip" ><p><p>To get familiar with expression, use JIPipe&rsquo;s integrated calculator tool (Tools &gt; Development &gt; Calculator).
+You can play around with any expression you like without breaking something.</p>
+</p></div>
+
 <h2 id="variables">Variables</h2>
 <p>Variables are set externally by the node and can contain various useful values.
 For example, filter nodes will put numbers into the variables. Image generator nodes
@@ -554,7 +555,24 @@ You can combine various operators to do complex filtering. Here the node supplie
 <p><strong>Example</strong>
 To find files, it can be useful to utilize a Glob-filter that can reliably test for the file extension. Here <code>name</code> is the file name and supplied by the node.</p>
 <pre><code>STRING_MATCHES_GLOB(name, &quot;*.tif&quot;) AND (&quot;data&quot; IN name)
-</code></pre><h1 id="operators-1">Operators</h1>
+</code></pre><h1 id="data-types">Data types</h1>
+<p>The expression language supports five basic data types: Numbers, strings, arrays, and maps</p>
+<h2 id="numbers">Numbers</h2>
+<p>Numbers are any kind of number (integer or floating point). Number literals are read as floating point numbers (double).</p>
+<p>Example: <code>1</code>, <code>0.5</code></p>
+<h2 id="strings">Strings</h2>
+<p>Strings are character sequences (texts). They are defined by putting double quotes around a text. If you want to have a double quote inside your string, escape it via <code>\</code>. If you want a <code>\</code> in your text, escape it with another <code>\</code>.</p>
+<p>Example: <code>&quot;hello world&quot;</code>, <code>&quot;this text has a \&quot; quote and \\ backslash&quot;</code></p>
+<h2 id="arrays">Arrays</h2>
+<p>Arrays are collections of values. They are defined via the <code>ARRAY(...)</code> function. Individual items are access via the <code>@</code> operator and a numeric index starting from zero.</p>
+<p>Example: <code>ARRAY(1,2,3,4) @ 2</code> will return <code>3</code>.</p>
+<p>Example: <code>ARRAY(1,2,3,4) @ ARRAY(0,1)</code> will return an array with <code>1</code> and <code>2</code></p>
+<h2 id="maps">Maps</h2>
+<p>Maps are collections of values where each value is given a unique name. They are defined via the <code>MAP(...)</code> function that should be provided with 2-item arrays (there is a <code>PAIR(key, value)</code> function for this). You can get an array of all keys via the <code>KEYS()</code> function and can access elements via the <code>@</code> operator.</p>
+<p>Example: <code>MAP(PAIR(&quot;a&quot;, 1), PAIR(&quot;b&quot;, 2), PAIR(&quot;c&quot;, 3)) @ &quot;b&quot;</code> returns 2</p>
+<p>Example: <code>KEYS(MAP(PAIR(&quot;a&quot;, 1), PAIR(&quot;b&quot;, 2), PAIR(&quot;c&quot;, 3)))</code> returns an array with <code>a</code>, <code>b</code>, and <code>c</code></p>
+<p>Example: <code>VALUES(MAP(PAIR(&quot;a&quot;, 1), PAIR(&quot;b&quot;, 2), PAIR(&quot;c&quot;, 3)))</code> returns an array with <code>1</code>, <code>2</code>, and <code>3</code></p>
+<h1 id="operators-1">Operators</h1>
 <p>There are many operators with alternative ways to write them available. There are two kinds of operators:</p>
 <ol>
 <li>Symbolic operators are using symbols like <code>$</code>, <code>&amp;</code> or <code>*</code></li>
@@ -657,8 +675,8 @@ Textual operators require spaces to be separated. For example you cannot write <
 <td><code>x % y</code></td>
 </tr>
 <tr>
-<td>String contains</td>
-<td>Returns TRUE if the one string is contained in the other one</td>
+<td>Contains</td>
+<td>Returns TRUE if the one string is contained in the other one (both operands are strings), or if an array contains an item, or a map contains a values</td>
 <td><code>x IN y</code> or <code>y CONTAINS x</code></td>
 </tr>
 <tr>
@@ -669,12 +687,12 @@ Textual operators require spaces to be separated. For example you cannot write <
 <tr>
 <td>Resolve variable</td>
 <td>Returns the value of the variable with name. Useful for variables that have spaces in their names or special characters.</td>
-<td><code>$ x</code></td>
+<td><code>$ x</code> (Alternative function: <code>GET_VARIABLE(x)</code>)</td>
 </tr>
 <tr>
-<td>Get item in array</td>
-<td>Returns the array item(s) or string characters of the left operands. The right-hand side can be a number (the index starting from 0) or an array of indices.</td>
-<td><code>x @ y</code></td>
+<td>Get item in array/map</td>
+<td>Returns the array item(s) or string characters of the left operands. The right-hand side can be a number (the index starting from 0) or an array of indices. If the left operand is a map, the indices are whatever the map uses as index</td>
+<td><code>x @ y</code> or <code>x AT y</code></td>
 </tr>
 </tbody>
 </table>
@@ -886,7 +904,7 @@ Textual operators require spaces to be separated. For example you cannot write <
 <td></td>
 <td></td>
 <td></td>
-<td>Array access (x @ y)</td>
+<td>Array/Map access (x @ y)</td>
 <td>Variable resolve ($ x)</td>
 </tr>
 </tbody>
@@ -901,6 +919,7 @@ Textual operators require spaces to be separated. For example you cannot write <
 <th>Boolean</th>
 <th>String</th>
 <th>Array</th>
+<th>Map</th>
 </tr>
 </thead>
 <tbody>
@@ -910,11 +929,13 @@ Textual operators require spaces to be separated. For example you cannot write <
 <td>OK</td>
 <td>Error</td>
 <td>Error</td>
+<td>Error</td>
 </tr>
 <tr>
 <td>NOT</td>
 <td>Error</td>
 <td>OK</td>
+<td>Error</td>
 <td>Error</td>
 <td>Error</td>
 </tr>
@@ -924,11 +945,13 @@ Textual operators require spaces to be separated. For example you cannot write <
 <td>OK</td>
 <td>Error</td>
 <td>Error</td>
+<td>Error</td>
 </tr>
 <tr>
 <td>XOR</td>
 <td>Error</td>
 <td>OK</td>
+<td>Error</td>
 <td>Error</td>
 <td>Error</td>
 </tr>
@@ -938,12 +961,14 @@ Textual operators require spaces to be separated. For example you cannot write <
 <td>OK (TRUE=1, FALSE=0)</td>
 <td>Works (If can be converted to number)</td>
 <td>Error</td>
+<td>Error</td>
 </tr>
 <tr>
 <td>Multiply (x * y)</td>
 <td>OK</td>
 <td>OK (TRUE=1, FALSE=0)</td>
 <td>Works (If can be converted to number)</td>
+<td>Error</td>
 <td>Error</td>
 </tr>
 <tr>
@@ -952,6 +977,7 @@ Textual operators require spaces to be separated. For example you cannot write <
 <td>OK (TRUE=1, FALSE=0)</td>
 <td>Works (If can be converted to number)</td>
 <td>Error</td>
+<td>Error</td>
 </tr>
 <tr>
 <td>Subtract (x - y)</td>
@@ -959,6 +985,7 @@ Textual operators require spaces to be separated. For example you cannot write <
 <td>OK (TRUE=1, FALSE=0)</td>
 <td>Works (If can be converted to number)</td>
 <td>OK (both operands are arrays)</td>
+<td>OK (left operand is map, right operand is array or map)</td>
 </tr>
 <tr>
 <td>Addition (x + y)</td>
@@ -966,6 +993,7 @@ Textual operators require spaces to be separated. For example you cannot write <
 <td>OK (TRUE=1, FALSE=0)</td>
 <td>OK (Conversion to strings, string concatenation)</td>
 <td>OK (both operands are arrays)</td>
+<td>OK (both operands are maps)</td>
 </tr>
 <tr>
 <td>Equality (x == y)</td>
@@ -973,9 +1001,11 @@ Textual operators require spaces to be separated. For example you cannot write <
 <td>OK</td>
 <td>OK (If types differ, conversion to strings)</td>
 <td>OK</td>
+<td>OK</td>
 </tr>
 <tr>
 <td>Inequality (x != y)</td>
+<td>OK</td>
 <td>OK</td>
 <td>OK</td>
 <td>OK</td>
@@ -987,11 +1017,13 @@ Textual operators require spaces to be separated. For example you cannot write <
 <td>Error</td>
 <td>OK</td>
 <td>OK</td>
+<td>OK</td>
 </tr>
 <tr>
 <td>Less than (x &lt; y)</td>
 <td>OK</td>
 <td>OK (TRUE=1, FALSE=0)</td>
+<td>Error</td>
 <td>Error</td>
 <td>Error</td>
 </tr>
@@ -1001,11 +1033,13 @@ Textual operators require spaces to be separated. For example you cannot write <
 <td>OK (TRUE=1, FALSE=0)</td>
 <td>Error</td>
 <td>Error</td>
+<td>Error</td>
 </tr>
 <tr>
 <td>Greater than (x &gt; y)</td>
 <td>OK</td>
 <td>OK (TRUE=1, FALSE=0)</td>
+<td>Error</td>
 <td>Error</td>
 <td>Error</td>
 </tr>
@@ -1015,12 +1049,14 @@ Textual operators require spaces to be separated. For example you cannot write <
 <td>OK (TRUE=1, FALSE=0)</td>
 <td>Error</td>
 <td>Error</td>
+<td>Error</td>
 </tr>
 <tr>
 <td>Variable exists (x EXISTS)</td>
 <td>Works (Converted to string)</td>
 <td>Works (Converted to string)</td>
 <td>OK</td>
+<td>Error</td>
 <td>Error</td>
 </tr>
 <tr>
@@ -1029,12 +1065,14 @@ Textual operators require spaces to be separated. For example you cannot write <
 <td>Works (Converted to string)</td>
 <td>OK</td>
 <td>Error</td>
+<td>Error</td>
 </tr>
 <tr>
-<td>Get item in array (x @ y)</td>
+<td>Get item in array or map (x @ y)</td>
 <td>Error</td>
 <td>Error</td>
 <td>Error</td>
+<td>OK</td>
 <td>OK</td>
 </tr>
 </tbody>
