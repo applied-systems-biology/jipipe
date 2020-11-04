@@ -140,8 +140,6 @@ public class DefaultExpressionEvaluator extends ExpressionEvaluator {
 
     public DefaultExpressionEvaluator() {
         super(createParameters());
-        knownOperatorTokens.add("TRUE");
-        knownOperatorTokens.add("FALSE");
         for (Operator operator : getOperators()) {
             knownOperatorTokens.add(operator.getSymbol());
             if(!operator.getSymbol().matches("[A-Za-z0-9_]+")) {
@@ -294,6 +292,52 @@ public class DefaultExpressionEvaluator extends ExpressionEvaluator {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * Checks the syntax of an expression.
+     * @return the exception that was thrown if some error was returned. Null if syntax is correct.
+     */
+    public Exception checkSyntax(String expression) {
+        int quoteStack = 0;
+        int paraStack = 0;
+        boolean canLiteral = true;
+        List<String> tokens = tokenize(expression, true, true);
+        for (String token : tokens) {
+            switch (token) {
+                case "(":
+                    ++paraStack;
+                    break;
+                case ")":
+                    if (paraStack <= 0)
+                        return new IllegalArgumentException("Unmatched parentheses!");
+                    --paraStack;
+                    break;
+                case "\"":
+                    if (quoteStack == 0)
+                        ++quoteStack;
+                    else if (quoteStack == 1)
+                        --quoteStack;
+                    else
+                        return new IllegalArgumentException("Unmatched double quotes!");
+                    break;
+                default: {
+                    if(knownOperatorTokens.contains(token))
+                        canLiteral = true;
+                    else if(!canLiteral) {
+                        return new IllegalArgumentException("Literal follows another literal!");
+                    }
+                    else {
+                        canLiteral = false;
+                    }
+                }
+            }
+        }
+        if(quoteStack != 0)
+            return new IllegalArgumentException("Unmatched double quotes!");
+        if(paraStack != 0)
+            return new IllegalArgumentException("Unmatched parentheses!");
+        return null;
+    }
+
     @Override
     protected Object toValue(String literal, Object evaluationContext) {
         StaticVariableSet<Object> variableSet = (StaticVariableSet<Object>) evaluationContext;
@@ -315,6 +359,46 @@ public class DefaultExpressionEvaluator extends ExpressionEvaluator {
 
     public List<String> getKnownNonAlphanumericOperatorTokens() {
         return knownNonAlphanumericOperatorTokens;
+    }
+
+    /**
+     * Escapes a variable name into a valid expression
+     * @param variableName the variable name
+     * @return an expression that evaluates the variable
+     */
+    public static String escapeVariable(String variableName) {
+        if (variableName.contains(" ") || variableName.contains("(") || variableName.contains(")"))
+            variableName = "$\"" + DefaultExpressionEvaluator.escapeString(variableName) + "\"";
+        else {
+            List<String> tokens = DefaultExpressionParameter.EVALUATOR.getKnownNonAlphanumericOperatorTokens();
+            boolean processed = false;
+            for (String token : tokens) {
+                if (variableName.contains(token)) {
+                    variableName = "$\"" + DefaultExpressionEvaluator.escapeString(variableName) + "\"";
+                    processed = true;
+                    break;
+                }
+            }
+            if (!processed) {
+                for (Operator operator : DefaultExpressionParameter.EVALUATOR.getOperators()) {
+                    if (operator.getSymbol().equals(variableName)) {
+                        variableName = "$\"" + DefaultExpressionEvaluator.escapeString(variableName) + "\"";
+                        processed = true;
+                        break;
+                    }
+                }
+            }
+            if (!processed) {
+                for (Constant constant : DefaultExpressionParameter.EVALUATOR.getConstants()) {
+                    if (constant.getName().equals(variableName)) {
+                        variableName = "$\"" + DefaultExpressionEvaluator.escapeString(variableName) + "\"";
+                        processed = true;
+                        break;
+                    }
+                }
+            }
+        }
+        return variableName;
     }
 
     /**

@@ -37,7 +37,6 @@ public class DefaultExpressionParameterEditorUI extends JIPipeParameterEditorUI 
 
     private RSyntaxTextArea expressionEditor;
     private final JPanel expressionEditorPanel = new JPanel(new BorderLayout());
-    private final JPanel editorPanel = new JPanel(new BorderLayout());
     private DefaultExpressionEvaluatorSyntaxTokenMaker tokenMaker = new DefaultExpressionEvaluatorSyntaxTokenMaker();
     private Set<ExpressionParameterVariable> variables = new HashSet<>();
 
@@ -50,23 +49,13 @@ public class DefaultExpressionParameterEditorUI extends JIPipeParameterEditorUI 
     public DefaultExpressionParameterEditorUI(JIPipeWorkbench workbench, JIPipeParameterAccess parameterAccess) {
         super(workbench, parameterAccess);
         initialize();
-        setToAdvancedEditor();
         reloadVariables();
         reload();
-    }
-
-    private void setToAdvancedEditor() {
-        editorPanel.removeAll();
-        editorPanel.add(expressionEditorPanel, BorderLayout.CENTER);
-
-        revalidate();
-        repaint();
     }
 
     private void initialize() {
         setLayout(new BorderLayout());
 //        add(availableModes, BorderLayout.WEST);
-        add(editorPanel, BorderLayout.CENTER);
 
         JPanel optionPanel = new JPanel();
         optionPanel.setOpaque(false);
@@ -114,6 +103,8 @@ public class DefaultExpressionParameterEditorUI extends JIPipeParameterEditorUI 
         borderPanel.setBorder(BorderFactory.createEmptyBorder(5,4,0,4));
         borderPanel.add(expressionEditor, BorderLayout.CENTER);
         expressionEditorPanel.add(borderPanel, BorderLayout.CENTER);
+
+        add(expressionEditorPanel, BorderLayout.CENTER);
     }
 
     private void editInFunctionBuilder() {

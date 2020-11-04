@@ -24,7 +24,7 @@ import java.util.Iterator;
 @JIPipeDocumentation(name = "Resolve variable", description = "Resolves the right operand as variable.")
 public class ResolveVariableOperator extends ExpressionOperator {
     public ResolveVariableOperator() {
-        super("$", 1, Associativity.LEFT, 10);
+        super("$", 1, Associativity.RIGHT, 10);
     }
 
     @Override
