@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.extensions.parameters.expressions;
 
+import com.fathzer.soft.javaluator.Constant;
 import com.fathzer.soft.javaluator.Function;
 import com.fathzer.soft.javaluator.Operator;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -42,8 +43,9 @@ public class DefaultExpressionEvaluatorSyntaxTokenMaker extends AbstractTokenMak
     @Override
     public TokenMap getWordsToHighlight() {
         TokenMap tokenMap = new TokenMap();
-        tokenMap.put("TRUE", Token.LITERAL_BOOLEAN);
-        tokenMap.put("FALSE", Token.LITERAL_BOOLEAN);
+        for (Constant constant : DefaultExpressionParameter.EVALUATOR.getConstants()) {
+            tokenMap.put(constant.getName(), Token.RESERVED_WORD);
+        }
         for (Function function : DefaultExpressionParameter.EVALUATOR.getFunctions()) {
             tokenMap.put(function.getName(), Token.FUNCTION);
         }

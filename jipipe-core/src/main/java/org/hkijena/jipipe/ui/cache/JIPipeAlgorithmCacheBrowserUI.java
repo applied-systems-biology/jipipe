@@ -151,6 +151,8 @@ public class JIPipeAlgorithmCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
         clearAllButton.addActionListener(e -> getProject().getCache().clear());
         toolBar.add(clearAllButton);
 
+        toolBar.add(Box.createHorizontalGlue());
+
         add(toolBar, BorderLayout.NORTH);
     }
 

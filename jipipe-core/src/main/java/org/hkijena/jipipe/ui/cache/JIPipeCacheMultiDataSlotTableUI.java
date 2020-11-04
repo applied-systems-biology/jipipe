@@ -98,7 +98,7 @@ public class JIPipeCacheMultiDataSlotTableUI extends JIPipeProjectWorkbenchPanel
     private void initialize() {
         setLayout(new BorderLayout());
         if (GeneralDataSettings.getInstance().isGenerateCachePreviews())
-            table.setRowHeight(GeneralDataSettings.getInstance().getPreviewHeight());
+            table.setRowHeight(GeneralDataSettings.getInstance().getPreviewSize());
         else
             table.setRowHeight(25);
         table.setDefaultRenderer(JIPipeData.class, new JIPipeDataCellRenderer());

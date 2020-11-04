@@ -24,6 +24,11 @@ import org.apache.commons.lang3.math.NumberUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.registries.JIPipeExpressionRegistry;
+import org.hkijena.jipipe.extensions.parameters.expressions.constants.BooleanFalseConstant;
+import org.hkijena.jipipe.extensions.parameters.expressions.constants.BooleanTrueConstant;
+import org.hkijena.jipipe.extensions.parameters.expressions.constants.NumericEulerConstant;
+import org.hkijena.jipipe.extensions.parameters.expressions.constants.NumericPiConstant;
+import org.hkijena.jipipe.extensions.parameters.expressions.constants.NumericTauConstant;
 import org.hkijena.jipipe.extensions.parameters.expressions.operators.*;
 
 import java.util.ArrayList;
@@ -38,8 +43,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * Describes basic properties of a {@link ExpressionParameter}
  */
 public class DefaultExpressionEvaluator extends ExpressionEvaluator {
-    public static final Constant CONSTANT_TRUE = new Constant("TRUE");
-    public static final Constant CONSTANT_FALSE = new Constant("FALSE");
+    public static final ExpressionConstant CONSTANT_TRUE = new BooleanTrueConstant();
+    public static final ExpressionConstant CONSTANT_FALSE = new BooleanFalseConstant();
+    public static final ExpressionConstant CONSTANT_PI = new NumericPiConstant();
+    public static final ExpressionConstant CONSTANT_TAU = new NumericTauConstant();
+    public static final ExpressionConstant CONSTANT_E = new NumericEulerConstant();
     public static final ExpressionOperator OPERATOR_NEGATE_SYMBOL = new LogicalNotOperator("!");
     public static final ExpressionOperator OPERATOR_NEGATE_TEXT = new LogicalNotOperator("NOT");
     public static final ExpressionOperator OPERATOR_AND_SYMBOL = new LogicalAndOperator("&");
@@ -77,6 +85,12 @@ public class DefaultExpressionEvaluator extends ExpressionEvaluator {
         Parameters parameters = new Parameters();
         parameters.addFunctionBracket(BracketPair.PARENTHESES);
         parameters.addExpressionBracket(BracketPair.PARENTHESES);
+
+        parameters.add(CONSTANT_TRUE);
+        parameters.add(CONSTANT_FALSE);
+        parameters.add(CONSTANT_E);
+        parameters.add(CONSTANT_PI);
+        parameters.add(CONSTANT_TAU);
 
         // Add boolean operators
         parameters.add(OPERATOR_NEGATE_SYMBOL);
@@ -261,11 +275,8 @@ public class DefaultExpressionEvaluator extends ExpressionEvaluator {
 
     @Override
     protected Object evaluate(Constant constant, Object evaluationContext) {
-        if(constant == CONSTANT_TRUE) {
-            return true;
-        }
-        else if(constant == CONSTANT_FALSE) {
-            return false;
+        if(constant instanceof ExpressionConstant) {
+            return ((ExpressionConstant) constant).getValue();
         }
         else {
             throw new UnsupportedOperationException("Unsupported constant: " + constant.getName());
@@ -286,11 +297,7 @@ public class DefaultExpressionEvaluator extends ExpressionEvaluator {
     @Override
     protected Object toValue(String literal, Object evaluationContext) {
         StaticVariableSet<Object> variableSet = (StaticVariableSet<Object>) evaluationContext;
-        if("TRUE".equals(literal))
-            return true;
-        else if("FALSE".equals(literal))
-            return false;
-        else if(NumberUtils.isCreatable(literal))
+        if(NumberUtils.isCreatable(literal))
             return NumberUtils.createDouble(literal);
         else if(literal.length() >= 2 && literal.startsWith("\"") && literal.endsWith("\""))
             return literal.substring(1, literal.length() - 1);
@@ -308,5 +315,14 @@ public class DefaultExpressionEvaluator extends ExpressionEvaluator {
 
     public List<String> getKnownNonAlphanumericOperatorTokens() {
         return knownNonAlphanumericOperatorTokens;
+    }
+
+    /**
+     * Escapes a string, so it can be used within quotes
+     * @param string the string
+     * @return string with quotes and backslashes escaped
+     */
+    public static String escapeString(String string) {
+        return string.replace("\\", "\\\\").replace("\"", "\\\"");
     }
 }

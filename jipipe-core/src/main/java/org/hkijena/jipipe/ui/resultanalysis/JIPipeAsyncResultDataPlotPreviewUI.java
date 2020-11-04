@@ -82,8 +82,7 @@ public abstract class JIPipeAsyncResultDataPlotPreviewUI extends JIPipeResultDat
 
         private final JIPipeAsyncResultDataPlotPreviewUI parent;
         private final Path storageFolder;
-        private final int width = GeneralDataSettings.getInstance().getPreviewWidth();
-        private final int height = GeneralDataSettings.getInstance().getPreviewHeight();
+        private final int width = GeneralDataSettings.getInstance().getPreviewSize();
 
         private Worker(JIPipeAsyncResultDataPlotPreviewUI parent, Path storageFolder) {
             this.parent = parent;
@@ -94,7 +93,7 @@ public abstract class JIPipeAsyncResultDataPlotPreviewUI extends JIPipeResultDat
         protected Component doInBackground() throws Exception {
             JIPipeData data = parent.loadData(storageFolder);
             if (data != null)
-                return data.preview(width, height);
+                return data.preview(width, width);
             else
                 return null;
         }

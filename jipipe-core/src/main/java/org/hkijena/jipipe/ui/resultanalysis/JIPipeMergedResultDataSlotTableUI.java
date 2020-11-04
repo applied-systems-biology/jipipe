@@ -77,7 +77,7 @@ public class JIPipeMergedResultDataSlotTableUI extends JIPipeProjectWorkbenchPan
         setLayout(new BorderLayout());
         table = new JXTable();
         if (GeneralDataSettings.getInstance().isGenerateResultPreviews())
-            table.setRowHeight(GeneralDataSettings.getInstance().getPreviewHeight());
+            table.setRowHeight(GeneralDataSettings.getInstance().getPreviewSize());
         else
             table.setRowHeight(25);
         table.setDefaultRenderer(Path.class, new JIPipeRowIndexTableCellRenderer());

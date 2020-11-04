@@ -12,7 +12,7 @@ public class GeneralDataSettings implements JIPipeParameterCollection {
 
     private boolean autoSaveLastImporter = true;
     private boolean autoSaveLastDisplay = true;
-    private int previewWidth = 64;
+    private int previewSize = 64;
     private int previewHeight = 64;
     private boolean generateCachePreviews = true;
     private boolean generateResultPreviews = true;
@@ -46,26 +46,15 @@ public class GeneralDataSettings implements JIPipeParameterCollection {
         this.autoSaveLastDisplay = autoSaveLastDisplay;
     }
 
-    @JIPipeDocumentation(name = "Preview width", description = "The width for data previews")
-    @JIPipeParameter("preview-widths")
-    public int getPreviewWidth() {
-        return previewWidth;
+    @JIPipeDocumentation(name = "Preview size", description = "The width and height for data previews")
+    @JIPipeParameter("preview-size")
+    public int getPreviewSize() {
+        return previewSize;
     }
 
-    @JIPipeParameter("preview-widths")
-    public void setPreviewWidth(int previewWidth) {
-        this.previewWidth = previewWidth;
-    }
-
-    @JIPipeDocumentation(name = "Preview height", description = "The height for data previews")
-    @JIPipeParameter("preview-height")
-    public int getPreviewHeight() {
-        return previewHeight;
-    }
-
-    @JIPipeParameter("preview-height")
-    public void setPreviewHeight(int previewHeight) {
-        this.previewHeight = previewHeight;
+    @JIPipeParameter("preview-size")
+    public void setPreviewSize(int previewSize) {
+        this.previewSize = previewSize;
     }
 
     @JIPipeDocumentation(name = "Generate previews in cache browser", description = "If enabled, cached items are previewed in JIPipe")

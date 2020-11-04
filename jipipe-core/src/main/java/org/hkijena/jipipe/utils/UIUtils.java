@@ -609,6 +609,32 @@ public class UIUtils {
     }
 
     /**
+     * Gets an integer by dialog
+     * @param parent parent component
+     * @param title title
+     * @param message message
+     * @param initialValue initial value
+     * @param min minimum value
+     * @param max maximum value
+     * @return the selected integer or null if cancelled
+     */
+    public static Integer getIntegerByDialog(Component parent, String title, String message, int initialValue, int min, int max) {
+        JSpinner spinner = new JSpinner(new SpinnerNumberModel(initialValue, min, max, 1));
+        int result = JOptionPane.showOptionDialog(
+                parent,
+                new Object[]{message, spinner},
+                title,
+                JOptionPane.OK_CANCEL_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null, null, null);
+
+        if (result == JOptionPane.OK_OPTION) {
+            return ((SpinnerNumberModel)spinner.getModel()).getNumber().intValue();
+        }
+        return null;
+    }
+
+    /**
      * Continuously asks for an unique string
      *
      * @param parent       parent component

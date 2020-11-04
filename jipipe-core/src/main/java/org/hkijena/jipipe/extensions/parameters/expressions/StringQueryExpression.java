@@ -105,7 +105,7 @@ public class StringQueryExpression extends DefaultExpressionParameter {
      * @return if the query matches
      */
     public boolean test(String string) {
-        if("TRUE".equals(getExpression()))
+        if("true".equals(getExpression()) || getExpression().trim().isEmpty())
             return true;
         StaticVariableSet<Object> variableSet = new StaticVariableSet<>();
         try {
@@ -128,7 +128,7 @@ public class StringQueryExpression extends DefaultExpressionParameter {
      * @return if one string matches
      */
     public boolean test(Collection<String> strings) {
-        if("TRUE".equals(getExpression()))
+        if("true".equals(getExpression()) || getExpression().trim().isEmpty())
             return true;
         StaticVariableSet<Object> variableSet = new StaticVariableSet<>();
         for (String string : strings) {

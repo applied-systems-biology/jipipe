@@ -69,8 +69,7 @@ public class JIPipeCachedDataPreview extends JPanel {
     private static class Worker extends SwingWorker<Component, Object> {
 
         private final JIPipeCachedDataPreview parent;
-        private final int width = GeneralDataSettings.getInstance().getPreviewWidth();
-        private final int height = GeneralDataSettings.getInstance().getPreviewHeight();
+        private final int width = GeneralDataSettings.getInstance().getPreviewSize();
 
         private Worker(JIPipeCachedDataPreview parent) {
             this.parent = parent;
@@ -78,7 +77,7 @@ public class JIPipeCachedDataPreview extends JPanel {
 
         @Override
         protected Component doInBackground() throws Exception {
-            return parent.data.preview(width, height);
+            return parent.data.preview(width, width);
         }
 
         @Override
