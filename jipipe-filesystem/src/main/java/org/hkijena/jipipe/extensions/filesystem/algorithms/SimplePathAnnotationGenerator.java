@@ -39,7 +39,7 @@ import java.util.function.Supplier;
 /**
  * Algorithm that generates annotations from folder names
  */
-@JIPipeDocumentation(name = "Path to annotation", description = "Creates an annotation for each path based on its name or its full path.")
+@JIPipeDocumentation(name = "Add path to annotations", description = "Creates an annotation for each path based on its name or its full path.")
 @JIPipeOrganization(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "Generate")
 @JIPipeInputSlot(value = PathData.class, slotName = "Paths", autoCreate = true)
 @JIPipeOutputSlot(value = PathData.class, slotName = "Annotated paths", autoCreate = true, inheritedSlot = "Paths")
