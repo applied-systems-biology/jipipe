@@ -112,6 +112,7 @@ public class RealTimeProjectRunner extends JIPipeProjectWorkbenchPanel {
         settings.setLoadFromCache(true);
         settings.setStoreToCache(true);
         settings.setSaveOutputs(false);
+        settings.setSilent(true);
         currentRun = new JIPipeRun(getProject(), settings);
         JIPipeRunnerQueue.getInstance().enqueue(currentRun);
     }

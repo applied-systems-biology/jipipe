@@ -164,7 +164,8 @@ public class JIPipeRun implements JIPipeRunnable {
                 if (configuration.getOutputPath() != null)
                     Files.write(configuration.getOutputPath().resolve("log.txt"), log.toString().getBytes(Charsets.UTF_8));
             } catch (IOException ex) {
-                IJ.handleException(ex);
+                if(!configuration.isSilent())
+                    IJ.handleException(ex);
             }
             throw e;
         } finally {
