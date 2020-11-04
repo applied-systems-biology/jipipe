@@ -23,6 +23,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
@@ -36,7 +37,7 @@ import java.util.function.Supplier;
 @JIPipeDocumentation(name = "ROI to ImageJ", description = "Adds all incoming ROI into the ImageJ ROI manager")
 @JIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
-@JIPipeOrganization(nodeTypeCategory = ImagesNodeTypeCategory.class)
+@JIPipeOrganization(nodeTypeCategory = RoiNodeTypeCategory.class)
 public class ROIToGUI extends JIPipeSimpleIteratingAlgorithm {
 
     public ROIToGUI(JIPipeNodeInfo info) {
