@@ -6,7 +6,6 @@ import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionFunction;
 import org.hkijena.jipipe.extensions.parameters.expressions.ParameterInfo;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 
 @JIPipeDocumentation(name = "Split string", description = "Splits a string by the right parameter into an array. For example you can split a string 'a_b_c' by '_' into 'a', 'b', and 'c'")

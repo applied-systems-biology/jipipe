@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.extensions.parameters.expressions;
 
-import com.fathzer.soft.javaluator.Constant;
 import com.fathzer.soft.javaluator.Operator;
 import com.google.common.html.HtmlEscapers;
 import org.fife.ui.rsyntaxtextarea.RSyntaxDocument;
@@ -28,7 +27,6 @@ import org.hkijena.jipipe.utils.RankedData;
 import org.hkijena.jipipe.utils.RankingFunction;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.python.indexer.Def;
 
 import javax.swing.*;
 import javax.swing.text.BadLocationException;
@@ -43,9 +41,6 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.security.interfaces.RSAKey;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -55,7 +50,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 

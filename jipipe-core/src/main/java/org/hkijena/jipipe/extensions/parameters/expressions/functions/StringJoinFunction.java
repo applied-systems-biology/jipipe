@@ -6,7 +6,6 @@ import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionFunction;
 import org.hkijena.jipipe.extensions.parameters.expressions.ParameterInfo;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 

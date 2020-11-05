@@ -17,7 +17,6 @@ import org.hkijena.jipipe.api.testbench.JIPipeTestbenchSnapshot;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.Color;
 import java.awt.Component;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;

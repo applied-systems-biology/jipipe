@@ -31,7 +31,6 @@ import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.MarkdownReader;
-import org.python.antlr.ast.Num;
 
 import javax.swing.*;
 import java.awt.BorderLayout;

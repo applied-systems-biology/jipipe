@@ -29,12 +29,6 @@ import org.hkijena.jipipe.ui.events.RunUIWorkerStartedEvent;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * A tool that automatically runs 'update cache' when any parameter or graph property is changed

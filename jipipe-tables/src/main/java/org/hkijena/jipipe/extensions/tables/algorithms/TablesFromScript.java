@@ -37,7 +37,6 @@ import org.hkijena.jipipe.utils.UIUtils;
 import org.python.core.PyDictionary;
 import org.python.util.PythonInterpreter;
 
-import javax.swing.*;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;

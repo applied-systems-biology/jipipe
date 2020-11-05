@@ -17,7 +17,6 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 
 import javax.swing.*;
-import java.awt.Color;
 import java.awt.Component;
 
 /**

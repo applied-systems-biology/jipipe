@@ -18,7 +18,6 @@ import org.hkijena.jipipe.JIPipeJsonExtension;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.Color;
 import java.awt.Component;
 
 /**

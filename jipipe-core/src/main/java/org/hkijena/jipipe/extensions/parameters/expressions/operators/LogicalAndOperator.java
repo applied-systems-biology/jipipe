@@ -17,7 +17,6 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionOperator;
 import org.hkijena.jipipe.extensions.parameters.expressions.ParameterInfo;
 
-import java.util.Collection;
 import java.util.Iterator;
 
 @JIPipeDocumentation(name = "Logical AND", description = "Returns true if both operands are TRUE.")

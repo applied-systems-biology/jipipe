@@ -15,7 +15,6 @@ package org.hkijena.jipipe.ui.resultanalysis;
 
 import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
-import java.awt.Color;
 import java.awt.Component;
 
 /**

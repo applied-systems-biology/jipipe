@@ -51,7 +51,6 @@ import org.hkijena.jipipe.utils.MacroUtils;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
-import javax.swing.*;
 import java.awt.Window;
 import java.nio.file.Path;
 import java.util.ArrayList;

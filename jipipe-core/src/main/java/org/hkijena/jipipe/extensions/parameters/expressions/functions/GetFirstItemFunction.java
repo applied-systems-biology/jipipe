@@ -1,7 +1,6 @@
 package org.hkijena.jipipe.extensions.parameters.expressions.functions;
 
 import com.fathzer.soft.javaluator.StaticVariableSet;
-import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionFunction;
 import org.hkijena.jipipe.extensions.parameters.expressions.ParameterInfo;

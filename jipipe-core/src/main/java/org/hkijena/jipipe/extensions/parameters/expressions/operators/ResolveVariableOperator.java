@@ -17,7 +17,6 @@ import com.fathzer.soft.javaluator.StaticVariableSet;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionOperator;
 import org.hkijena.jipipe.extensions.parameters.expressions.ParameterInfo;
-import org.python.antlr.ast.Str;
 
 import java.util.Iterator;
 

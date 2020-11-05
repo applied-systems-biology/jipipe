@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.ui.grapheditor.contextmenu;
 
-import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.cache.JIPipeAlgorithmCacheBrowserUI;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphCanvasUI;

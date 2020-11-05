@@ -4,7 +4,6 @@ import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.ui.events.ZoomChangedEvent;
 
 import javax.swing.*;
-import java.awt.Color;
 import java.awt.Dimension;
 
 /**

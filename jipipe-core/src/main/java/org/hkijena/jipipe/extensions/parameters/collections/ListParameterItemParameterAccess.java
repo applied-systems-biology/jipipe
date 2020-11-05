@@ -13,8 +13,6 @@
 
 package org.hkijena.jipipe.extensions.parameters.collections;
 
-import com.google.common.eventbus.Subscribe;
-import org.hkijena.jipipe.api.events.ParameterChangedEvent;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterVisibility;

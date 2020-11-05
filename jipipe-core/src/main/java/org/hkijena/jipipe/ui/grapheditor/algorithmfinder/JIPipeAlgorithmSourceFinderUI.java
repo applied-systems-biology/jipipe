@@ -34,6 +34,7 @@ import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.BorderLayout;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -53,8 +54,13 @@ public class JIPipeAlgorithmSourceFinderUI extends JPanel {
     private final JIPipeAlgorithmSourceRanking ranking;
     private final EventBus eventBus = new EventBus();
     private SearchTextField searchField;
-    private List<Object> availableContents = new ArrayList<>();
+    private final List<Object> availableContents = new ArrayList<>();
     private FormPanel formPanel;
+    /**
+     * Contains {@link JIPipeNodeInfo} or {@link JIPipeGraphNode} instances
+     */
+    private final ArrayDeque<Object> infiniteScrollingQueue = new ArrayDeque<>();
+    private final Timer scrollToBeginTimer = new Timer(200, e -> scrollToBeginning());
 
     /**
      * Creates a new UI
@@ -71,9 +77,17 @@ public class JIPipeAlgorithmSourceFinderUI extends JPanel {
         this.algorithm = inputSlot.getNode();
         this.graph = canvasUI.getGraph();
         this.ranking = new JIPipeAlgorithmSourceRanking(inputSlot);
+        this.scrollToBeginTimer.setRepeats(false);
         initialize();
         initializeAvailableContents();
         reloadAlgorithmList();
+    }
+
+    private void scrollToBeginning() {
+        formPanel.getScrollPane().getVerticalScrollBar().setValue(0);
+        formPanel.getScrollPane().getVerticalScrollBar().addAdjustmentListener(e -> {
+            updateInfiniteScroll();
+        });
     }
 
     private void initializeAvailableContents() {
@@ -119,6 +133,7 @@ public class JIPipeAlgorithmSourceFinderUI extends JPanel {
     }
 
     private void reloadAlgorithmList() {
+        infiniteScrollingQueue.clear();
         formPanel.clear();
 
         // Add possible algorithms
@@ -157,9 +172,10 @@ public class JIPipeAlgorithmSourceFinderUI extends JPanel {
         for (RankedData<Object> data : rankedData) {
             if (data.getData() instanceof JIPipeNodeInfo) {
                 JIPipeNodeInfo info = (JIPipeNodeInfo) data.getData();
-                JIPipeAlgorithmSourceFinderAlgorithmUI algorithmUI = new JIPipeAlgorithmSourceFinderAlgorithmUI(canvasUI, inputSlot, info);
-                algorithmUI.getEventBus().register(this);
-                formPanel.addToForm(algorithmUI, null);
+//                JIPipeAlgorithmSourceFinderAlgorithmUI algorithmUI = new JIPipeAlgorithmSourceFinderAlgorithmUI(canvasUI, inputSlot, info);
+//                algorithmUI.getEventBus().register(this);
+//                formPanel.addToForm(algorithmUI, null);
+                infiniteScrollingQueue.addLast(info);
             } else if (data.getData() instanceof JIPipeGraphNode) {
                 JIPipeGraphNode node = (JIPipeGraphNode) data.getData();
                 if (knownTargetAlgorithms.contains(node)) {
@@ -170,14 +186,38 @@ public class JIPipeAlgorithmSourceFinderUI extends JPanel {
                         continue;
                     }
                 }
-                JIPipeAlgorithmSourceFinderAlgorithmUI algorithmUI = new JIPipeAlgorithmSourceFinderAlgorithmUI(canvasUI, inputSlot, node);
-                algorithmUI.getEventBus().register(this);
-                formPanel.addToForm(algorithmUI, null);
+//                JIPipeAlgorithmSourceFinderAlgorithmUI algorithmUI = new JIPipeAlgorithmSourceFinderAlgorithmUI(canvasUI, inputSlot, node);
+//                algorithmUI.getEventBus().register(this);
+//                formPanel.addToForm(algorithmUI, null);
+                infiniteScrollingQueue.addLast(node);
             }
         }
 
         formPanel.addVerticalGlue();
-        SwingUtilities.invokeLater(() -> formPanel.getScrollPane().getVerticalScrollBar().setValue(0));
+        SwingUtilities.invokeLater(this::updateInfiniteScroll);
+        scrollToBeginTimer.restart();
+    }
+
+    private void updateInfiniteScroll() {
+        JScrollBar scrollBar = formPanel.getScrollPane().getVerticalScrollBar();
+        if((!scrollBar.isVisible() || (scrollBar.getValue() + scrollBar.getVisibleAmount()) > (scrollBar.getMaximum() - 32)) && !infiniteScrollingQueue.isEmpty()) {
+            formPanel.removeLastRow();
+            Object value = infiniteScrollingQueue.removeFirst();
+            if(value instanceof JIPipeNodeInfo) {
+                JIPipeAlgorithmSourceFinderAlgorithmUI algorithmUI = new JIPipeAlgorithmSourceFinderAlgorithmUI(canvasUI, inputSlot, (JIPipeNodeInfo) value);
+                algorithmUI.getEventBus().register(this);
+                formPanel.addToForm(algorithmUI, null);
+            }
+            else {
+                JIPipeAlgorithmSourceFinderAlgorithmUI algorithmUI = new JIPipeAlgorithmSourceFinderAlgorithmUI(canvasUI, inputSlot, (JIPipeGraphNode) value);
+                algorithmUI.getEventBus().register(this);
+                formPanel.addToForm(algorithmUI, null);
+            }
+            formPanel.addVerticalGlue();
+            formPanel.revalidate();
+            formPanel.repaint();
+            SwingUtilities.invokeLater(this::updateInfiniteScroll);
+        }
     }
 
     /**

@@ -22,7 +22,6 @@ import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 
 import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
-import java.awt.Color;
 import java.awt.Component;
 import java.util.ArrayList;
 import java.util.List;

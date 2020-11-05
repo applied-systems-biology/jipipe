@@ -49,7 +49,6 @@ import org.python.core.PyArray;
 import org.python.core.PyDictionary;
 import org.python.util.PythonInterpreter;
 
-import javax.swing.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;

@@ -19,8 +19,6 @@ import org.hkijena.jipipe.extensions.parameters.expressions.ParameterInfo;
 
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
-import java.util.Objects;
 
 /**
  * Operator that tests if the left string is contained in the right string

@@ -18,7 +18,6 @@ import org.hkijena.jipipe.utils.UIUtils;
 import javax.swing.*;
 import javax.swing.plaf.ComponentUI;
 import javax.swing.plaf.basic.BasicSpinnerUI;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 

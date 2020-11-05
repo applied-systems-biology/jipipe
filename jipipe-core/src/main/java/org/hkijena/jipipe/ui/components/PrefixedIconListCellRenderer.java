@@ -16,7 +16,6 @@ package org.hkijena.jipipe.ui.components;
 import org.hkijena.jipipe.utils.ResourceUtils;
 
 import javax.swing.*;
-import java.awt.Color;
 import java.awt.Component;
 
 /**

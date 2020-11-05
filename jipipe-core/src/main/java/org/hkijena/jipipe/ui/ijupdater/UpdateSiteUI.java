@@ -14,7 +14,6 @@
 package org.hkijena.jipipe.ui.ijupdater;
 
 import net.imagej.updater.UpdateSite;
-import org.hkijena.jipipe.ui.theme.ModernMetalTheme;
 import org.hkijena.jipipe.utils.RoundedLineBorder;
 import org.hkijena.jipipe.utils.UIUtils;
 
