@@ -41,9 +41,9 @@ import java.awt.GridBagLayout;
 /**
  * UI for finding algorithms
  */
-public class JIPipeAlgorithmFinderAlgorithmUI extends JPanel {
+public class JIPipeAlgorithmSourceFinderAlgorithmUI extends JPanel {
     private final JIPipeGraphCanvasUI canvasUI;
-    private final JIPipeDataSlot outputSlot;
+    private final JIPipeDataSlot inputSlot;
     private final JIPipeGraphNode algorithm;
     private final boolean isExistingInstance;
     private final EventBus eventBus = new EventBus();
@@ -53,12 +53,12 @@ public class JIPipeAlgorithmFinderAlgorithmUI extends JPanel {
      * Creates an algorithm UI for one target algorithm
      *
      * @param canvasUI   the canvas
-     * @param outputSlot The output slot to connect
+     * @param inputSlot The output slot to connect
      * @param info       The target algorithm
      */
-    public JIPipeAlgorithmFinderAlgorithmUI(JIPipeGraphCanvasUI canvasUI, JIPipeDataSlot outputSlot, JIPipeNodeInfo info) {
+    public JIPipeAlgorithmSourceFinderAlgorithmUI(JIPipeGraphCanvasUI canvasUI, JIPipeDataSlot inputSlot, JIPipeNodeInfo info) {
         this.canvasUI = canvasUI;
-        this.outputSlot = outputSlot;
+        this.inputSlot = inputSlot;
         this.algorithm = info.newInstance();
         this.isExistingInstance = false;
 
@@ -69,12 +69,12 @@ public class JIPipeAlgorithmFinderAlgorithmUI extends JPanel {
      * Creates an algorithm UI for one target algorithm
      *
      * @param canvasUI   the canvas
-     * @param outputSlot The output slot to connect
+     * @param inputSlot The output slot to connect
      * @param algorithm  The target algorithm
      */
-    public JIPipeAlgorithmFinderAlgorithmUI(JIPipeGraphCanvasUI canvasUI, JIPipeDataSlot outputSlot, JIPipeGraphNode algorithm) {
+    public JIPipeAlgorithmSourceFinderAlgorithmUI(JIPipeGraphCanvasUI canvasUI, JIPipeDataSlot inputSlot, JIPipeGraphNode algorithm) {
         this.canvasUI = canvasUI;
-        this.outputSlot = outputSlot;
+        this.inputSlot = inputSlot;
         this.algorithm = algorithm;
         this.isExistingInstance = true;
 
@@ -173,9 +173,9 @@ public class JIPipeAlgorithmFinderAlgorithmUI extends JPanel {
         });
 
         // Outputs
-        if (!algorithm.getOutputSlots().isEmpty()) {
+        if (!algorithm.getInputSlots().isEmpty()) {
             int row = 3;
-            centerPanel.add(new JLabel("Generates following outputs:"), new GridBagConstraints() {
+            centerPanel.add(new JLabel("Has following inputs:"), new GridBagConstraints() {
                 {
                     anchor = WEST;
                     gridx = 1;
@@ -185,7 +185,7 @@ public class JIPipeAlgorithmFinderAlgorithmUI extends JPanel {
                     insets = UIUtils.UI_PADDING;
                 }
             });
-            for (JIPipeDataSlot slot : algorithm.getOutputSlots()) {
+            for (JIPipeDataSlot slot : algorithm.getInputSlots()) {
                 ++row;
                 int finalRow = row;
                 JLabel label = new JLabel(slot.getName(), JIPipe.getDataTypes().getIconFor(slot.getAcceptedDataType()), JLabel.LEFT);
@@ -210,26 +210,26 @@ public class JIPipeAlgorithmFinderAlgorithmUI extends JPanel {
     public void reloadSlotUI() {
         slotPanel.removeAll();
 
-        boolean createAddInputSlotButton = false;
+        boolean createAddOutputSlotButton = false;
 
         if (algorithm.getSlotConfiguration() instanceof JIPipeMutableSlotConfiguration) {
             JIPipeMutableSlotConfiguration slotConfiguration = (JIPipeMutableSlotConfiguration) algorithm.getSlotConfiguration();
-            createAddInputSlotButton = slotConfiguration.canAddInputSlot();
+            createAddOutputSlotButton = slotConfiguration.canAddOutputSlot();
         }
 
-        for (JIPipeDataSlot slot : algorithm.getInputSlots()) {
-            JIPipeAlgorithmFinderSlotUI ui = new JIPipeAlgorithmFinderSlotUI(canvasUI, outputSlot, slot, isExistingInstance);
+        for (JIPipeDataSlot slot : algorithm.getOutputSlots()) {
+            JIPipeAlgorithmSourceFinderSlotUI ui = new JIPipeAlgorithmSourceFinderSlotUI(canvasUI, inputSlot, slot, isExistingInstance);
             ui.getEventBus().register(this);
             slotPanel.add(ui);
         }
 
-        if (createAddInputSlotButton) {
-            JButton addInputSlotButton = createAddSlotButton(JIPipeSlotType.Input);
-            addInputSlotButton.setPreferredSize(new Dimension(25, 50));
+        if (createAddOutputSlotButton) {
+            JButton addOutputSlotButton = createAddSlotButton(JIPipeSlotType.Output);
+            addOutputSlotButton.setPreferredSize(new Dimension(25, 50));
             JPanel panel = new JPanel(new BorderLayout());
 //            panel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(0,0,0,1, getAlgorithmBorderColor()),
 //                    BorderFactory.createEmptyBorder(0,0,0,4)));
-            panel.add(addInputSlotButton, BorderLayout.EAST);
+            panel.add(addOutputSlotButton, BorderLayout.EAST);
             slotPanel.add(panel);
         }
 

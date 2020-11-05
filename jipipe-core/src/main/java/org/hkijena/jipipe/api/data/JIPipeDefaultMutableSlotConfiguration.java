@@ -564,11 +564,29 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
      * @param acceptedDataType Slot data type
      * @return True if it can be added
      */
+    @Override
     public boolean canCreateCompatibleInputSlot(Class<? extends JIPipeData> acceptedDataType) {
         if (!canModifyInputSlots())
             return false;
         for (Class<? extends JIPipeData> allowedInputSlotType : allowedInputSlotTypes) {
             if (allowedInputSlotType.isAssignableFrom(acceptedDataType))
+                return true;
+        }
+        return false;
+    }
+
+    /**
+     * Returns if an output slot with specified type can be created
+     *
+     * @param acceptedDataType Slot data type
+     * @return True if it can be added
+     */
+    @Override
+    public boolean canCreateCompatibleOutputSlot(Class<? extends JIPipeData> acceptedDataType) {
+        if (!canModifyOutputSlots())
+            return false;
+        for (Class<? extends JIPipeData> allowedOutputSlotType : allowedOutputSlotTypes) {
+            if (allowedOutputSlotType.isAssignableFrom(acceptedDataType))
                 return true;
         }
         return false;

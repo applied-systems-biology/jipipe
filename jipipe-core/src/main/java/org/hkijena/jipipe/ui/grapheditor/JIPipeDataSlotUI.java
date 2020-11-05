@@ -34,7 +34,9 @@ import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.EditAlgorithmSlotPanel;
 import org.hkijena.jipipe.ui.events.AlgorithmFinderSuccessEvent;
-import org.hkijena.jipipe.ui.grapheditor.algorithmfinder.JIPipeAlgorithmFinderUI;
+import org.hkijena.jipipe.ui.grapheditor.algorithmfinder.JIPipeAlgorithmSourceFinderAlgorithmUI;
+import org.hkijena.jipipe.ui.grapheditor.algorithmfinder.JIPipeAlgorithmSourceFinderUI;
+import org.hkijena.jipipe.ui.grapheditor.algorithmfinder.JIPipeAlgorithmTargetFinderUI;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -145,6 +147,14 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
             if (sourceSlot == null) {
                 Set<JIPipeDataSlot> availableSources = getGraph().getAvailableSources(slot, true, false);
                 availableSources.removeIf(slot -> !slot.getNode().isVisibleIn(compartment));
+
+                JMenuItem findAlgorithmButton = new JMenuItem("Find matching algorithm ...", UIUtils.getIconFromResources("actions/find.png"));
+                findAlgorithmButton.setToolTipText("Opens a tool to find a matching algorithm based on the data");
+                findAlgorithmButton.addActionListener(e -> findSourceAlgorithm(slot));
+                assignButtonMenu.add(findAlgorithmButton);
+                if (!availableSources.isEmpty())
+                    assignButtonMenu.addSeparator();
+
                 for (JIPipeDataSlot source : sortSlotsByDistance(availableSources)) {
                     if (!source.getNode().isVisibleIn(compartment))
                         continue;
@@ -268,7 +278,7 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
 
             JMenuItem findAlgorithmButton = new JMenuItem("Find matching algorithm ...", UIUtils.getIconFromResources("actions/find.png"));
             findAlgorithmButton.setToolTipText("Opens a tool to find a matching algorithm based on the data");
-            findAlgorithmButton.addActionListener(e -> findAlgorithm(slot));
+            findAlgorithmButton.addActionListener(e -> findTargetAlgorithm(slot));
             assignButtonMenu.add(findAlgorithmButton);
             if (!availableTargets.isEmpty())
                 assignButtonMenu.addSeparator();
@@ -326,6 +336,27 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
             relabelButton.addActionListener(e -> relabelSlot());
             assignButtonMenu.add(relabelButton);
         }
+    }
+
+    private void findSourceAlgorithm(JIPipeDataSlot slot) {
+        JIPipeAlgorithmSourceFinderUI algorithmFinderUI = new JIPipeAlgorithmSourceFinderUI(nodeUI.getGraphUI(), slot);
+        JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(this), "Find matching algorithm");
+        UIUtils.addEscapeListener(dialog);
+        dialog.setModal(true);
+        dialog.setContentPane(algorithmFinderUI);
+        dialog.pack();
+        dialog.setSize(640, 480);
+        dialog.setLocationRelativeTo(this);
+
+        algorithmFinderUI.getEventBus().register(new Consumer<AlgorithmFinderSuccessEvent>() {
+            @Override
+            @Subscribe
+            public void accept(AlgorithmFinderSuccessEvent event) {
+                dialog.setVisible(false);
+            }
+        });
+
+        dialog.setVisible(true);
     }
 
     private void installHighlightForConnect(JIPipeDataSlot source, JMenuItem connectButton) {
@@ -391,8 +422,8 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
             slotConfiguration.removeOutputSlot(slot.getName(), true);
     }
 
-    private void findAlgorithm(JIPipeDataSlot slot) {
-        JIPipeAlgorithmFinderUI algorithmFinderUI = new JIPipeAlgorithmFinderUI(nodeUI.getGraphUI(), slot);
+    private void findTargetAlgorithm(JIPipeDataSlot slot) {
+        JIPipeAlgorithmTargetFinderUI algorithmFinderUI = new JIPipeAlgorithmTargetFinderUI(nodeUI.getGraphUI(), slot);
         JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(this), "Find matching algorithm");
         UIUtils.addEscapeListener(dialog);
         dialog.setModal(true);

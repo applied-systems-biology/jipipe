@@ -39,7 +39,7 @@ import java.util.Collections;
 /**
  * UI for one slot in the algorithm finder
  */
-public class JIPipeAlgorithmFinderSlotUI extends JPanel {
+public class JIPipeAlgorithmTargetFinderSlotUI extends JPanel {
 
     private final JIPipeGraphCanvasUI canvasUI;
     private final JIPipeDataSlot outputSlot;
@@ -60,7 +60,7 @@ public class JIPipeAlgorithmFinderSlotUI extends JPanel {
      * @param inputSlot          The target slot
      * @param isExistingInstance If true, the algorithm already exists within the graph
      */
-    public JIPipeAlgorithmFinderSlotUI(JIPipeGraphCanvasUI canvasUI, JIPipeDataSlot outputSlot, JIPipeDataSlot inputSlot, boolean isExistingInstance) {
+    public JIPipeAlgorithmTargetFinderSlotUI(JIPipeGraphCanvasUI canvasUI, JIPipeDataSlot outputSlot, JIPipeDataSlot inputSlot, boolean isExistingInstance) {
         this.canvasUI = canvasUI;
         this.outputSlot = outputSlot;
         this.graph = canvasUI.getGraph();
