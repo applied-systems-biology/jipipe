@@ -214,6 +214,9 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
                     }
                     logService.debug("OK: Algorithm '" + info.getId() + "'");
                 } catch (NoClassDefFoundError | Exception e) {
+                    // Unregister node
+                    logService.warn("Unregistering node with id '" + info.getId() + "' as it cannot be instantiated.");
+                    nodeRegistry.unregister(info.getId());
                     issues.getErroneousNodes().add(info);
                     e.printStackTrace();
                 }

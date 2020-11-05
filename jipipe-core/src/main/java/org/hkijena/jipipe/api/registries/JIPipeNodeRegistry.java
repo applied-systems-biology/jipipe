@@ -329,4 +329,16 @@ public class JIPipeNodeRegistry implements JIPipeValidatable {
     public Multimap<Class<? extends JIPipeGraphNode>, JIPipeNodeInfo> getRegisteredNodeClasses() {
         return ImmutableMultimap.copyOf(registeredNodeClasses);
     }
+
+    /**
+     * Removes a node from the registry
+     * @param id the node id
+     */
+    public void unregister(String id) {
+        JIPipeNodeInfo info = registeredNodeInfos.get(id);
+        registeredNodeInfos.remove(id);
+        registeredNodeClasses.remove(info.getInstanceClass(), info);
+        registeredNodeInfoSources.remove(id);
+        icons.remove(info);
+    }
 }
