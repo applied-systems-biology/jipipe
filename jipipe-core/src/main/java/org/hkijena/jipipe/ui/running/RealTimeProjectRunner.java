@@ -25,6 +25,7 @@ import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
 import org.hkijena.jipipe.ui.events.RunUIWorkerFinishedEvent;
 import org.hkijena.jipipe.ui.events.RunUIWorkerInterruptedEvent;
+import org.hkijena.jipipe.ui.events.RunUIWorkerStartedEvent;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -115,6 +116,16 @@ public class RealTimeProjectRunner extends JIPipeProjectWorkbenchPanel {
         settings.setSilent(true);
         currentRun = new JIPipeRun(getProject(), settings);
         JIPipeRunnerQueue.getInstance().enqueue(currentRun);
+    }
+
+    @Subscribe
+    public void onRunStarted(RunUIWorkerStartedEvent event) {
+        if(event.getRun() == currentRun) {
+            if(!runtimeSettings.isRealTimeRunEnabled()) {
+                return;
+            }
+            getProject().getCache().autoClean(true, true);
+        }
     }
 
     @Subscribe
