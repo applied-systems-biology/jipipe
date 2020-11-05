@@ -43,7 +43,7 @@ public class PairParameterValueAccess<K, V> implements JIPipeParameterAccess {
 
     @Override
     public String getKey() {
-        return "value";
+        return parent.getKey() + "/value";
     }
 
     @Override
