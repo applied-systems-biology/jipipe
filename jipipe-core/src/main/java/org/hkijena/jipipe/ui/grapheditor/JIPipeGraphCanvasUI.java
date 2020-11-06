@@ -135,7 +135,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
                 project.getEventBus().register(new Object() {
                     @Subscribe
                     public void onCompartmentRenamed(CompartmentRenamedEvent event) {
-                        if(event.getCompartment() == compartmentInstance) {
+                        if(event.getCompartment() == compartmentInstance && !Objects.equals(compartment, event.getCompartment().getProjectCompartmentId())) {
                             JIPipeGraphCanvasUI.this.compartment = event.getCompartment().getProjectCompartmentId();
                             JIPipeGraphCanvasUI.this.fullRedraw();
                         }
