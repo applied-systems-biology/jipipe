@@ -48,6 +48,14 @@ public class RealTimeProjectRunner extends JIPipeProjectWorkbenchPanel {
         getProject().getGraph().getEventBus().register(this);
         refreshEventRegistrations();
         JIPipeRunnerQueue.getInstance().getEventBus().register(this);
+        runtimeSettings.getEventBus().register(new Object() {
+            @Subscribe
+            public void onParameterChanged(ParameterChangedEvent event) {
+                if("real-time-run-enabled".equals(event.getKey()) && runtimeSettings.isRealTimeRunEnabled()) {
+                    scheduleRun();
+                }
+            }
+        });
     }
 
     public JToggleButton createToggleButton() {

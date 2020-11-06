@@ -23,8 +23,10 @@ import org.hkijena.jipipe.api.events.CompartmentRemovedEvent;
 import org.hkijena.jipipe.api.events.ExtensionRegisteredEvent;
 import org.hkijena.jipipe.api.grouping.NodeGroup;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
+import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
 import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
 import org.hkijena.jipipe.extensions.settings.ProjectsSettings;
+import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.ui.cache.JIPipeCacheBrowserUI;
 import org.hkijena.jipipe.ui.cache.JIPipeCacheManagerUI;
 import org.hkijena.jipipe.ui.compartments.JIPipeCompartmentGraphUI;
@@ -111,6 +113,9 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
             restoreTabs();
         if (GeneralUISettings.getInstance().isShowIntroduction() && showIntroduction)
             documentTabPane.selectSingletonTab(TAB_INTRODUCTION);
+        if(!isNewProject && RuntimeSettings.getInstance().isRealTimeRunEnabled()) {
+            SwingUtilities.invokeLater(() -> realTimeProjectRunner.scheduleRun());
+        }
     }
 
     public void restoreStandardTabs(boolean showIntroduction, boolean isNewProject) {

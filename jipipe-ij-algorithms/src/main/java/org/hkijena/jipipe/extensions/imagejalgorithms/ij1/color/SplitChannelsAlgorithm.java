@@ -209,13 +209,25 @@ public class SplitChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                 for (int z = 0; z < image.getNSlices(); z++) {
                     tempIndex.setZ(z);
                     ImageProcessor processor = decomposedSlices.get(tempIndex).duplicate();
-                    stack.setProcessor(processor, image.getStackIndex(1, z + 1, t + 1));
+                    stack.setProcessor(processor, getStackIndexInSingleChannel(image, z + 1, t + 1));
                 }
             }
 
             ImagePlus output = new ImagePlus(image.getTitle() + " C=" + channelIndex, stack);
             dataBatch.addOutputData(slotName, new ImagePlusGreyscaleData(output), annotations);
         }
+    }
+
+    public int getStackIndexInSingleChannel(ImagePlus image, int slice, int frame) {
+        int nSlices = image.getNSlices();
+        int nFrames = image.getNFrames();
+        int nChannels = 1;
+        int channel = 1;
+        if (slice<1) slice = 1;
+        if (slice>nSlices) slice = nSlices;
+        if (frame<1) frame = 1;
+        if (frame>nFrames) frame = nFrames;
+        return (frame-1)*nChannels*nSlices + (slice-1)*nChannels + channel;
     }
 
     @Override
@@ -303,9 +315,9 @@ public class SplitChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     public void setTo3ChannelExample(JIPipeWorkbench parent) {
         if (UIUtils.confirmResetParameters(parent, "Load example")) {
             JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) getSlotConfiguration();
-            slotConfiguration.clearInputSlots(true);
+            slotConfiguration.clearOutputSlots(true);
             for (int i = 0; i < 3; i++) {
-                slotConfiguration.addSlot("C" + (i + 1), new JIPipeDataSlotInfo(ImagePlusGreyscaleData.class, JIPipeSlotType.Input), true);
+                slotConfiguration.addSlot("C" + (i + 1), new JIPipeDataSlotInfo(ImagePlusGreyscaleData.class, JIPipeSlotType.Output), true);
                 channelToSlotAssignment.setValue("C" + (i + 1), i);
             }
         }
@@ -316,9 +328,9 @@ public class SplitChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     public void setTo2ChannelExample(JIPipeWorkbench parent) {
         if (UIUtils.confirmResetParameters(parent, "Load example")) {
             JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) getSlotConfiguration();
-            slotConfiguration.clearInputSlots(true);
+            slotConfiguration.clearOutputSlots(true);
             for (int i = 0; i < 2; i++) {
-                slotConfiguration.addSlot("C" + (i + 1), new JIPipeDataSlotInfo(ImagePlusGreyscaleData.class, JIPipeSlotType.Input), true);
+                slotConfiguration.addSlot("C" + (i + 1), new JIPipeDataSlotInfo(ImagePlusGreyscaleData.class, JIPipeSlotType.Output), true);
                 channelToSlotAssignment.setValue("C" + (i + 1), i);
             }
         }
