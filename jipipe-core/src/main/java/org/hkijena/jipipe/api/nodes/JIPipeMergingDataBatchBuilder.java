@@ -126,6 +126,19 @@ public class JIPipeMergingDataBatchBuilder {
     }
 
     public List<JIPipeMergingDataBatch> build() {
+
+        // Special case: Merge all
+        if(getReferenceColumns().isEmpty()) {
+            JIPipeMergingDataBatch batch = new JIPipeMergingDataBatch(this.node);
+            for (JIPipeDataSlot slot : slotList) {
+                for (int row = 0; row < slot.getRowCount(); row++) {
+                    batch.addData(slot, row);
+                    batch.addGlobalAnnotations(slot.getAnnotations(row), getAnnotationMergeStrategy());
+                }
+            }
+            return Arrays.asList(batch);
+        }
+
         DefaultDirectedGraph<RowNode, DefaultEdge> graph = new DefaultDirectedGraph<>(DefaultEdge.class);
 
         // Create one node per row
