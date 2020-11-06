@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.EventBus;
 import ij.IJ;
 import net.imagej.ui.swing.updater.SwingAuthenticator;
@@ -33,6 +34,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.events.ExtensionDiscoveredEvent;
 import org.hkijena.jipipe.api.events.ExtensionRegisteredEvent;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
+import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeMutableParameterAccess;
@@ -53,6 +55,7 @@ import org.hkijena.jipipe.ui.ijupdater.IJProgressAdapter;
 import org.hkijena.jipipe.ui.ijupdater.JIPipeImageJPluginManager;
 import org.hkijena.jipipe.ui.registries.JIPipeCustomMenuRegistry;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
+import org.hkijena.jipipe.utils.JsonUtils;
 import org.scijava.Context;
 import org.scijava.InstantiableException;
 import org.scijava.log.LogService;
@@ -198,9 +201,12 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
         // Check for errors
         logService.info("[3/3] Error-checking-phase ...");
         if (extensionSettings.isValidateNodeTypes()) {
-            for (JIPipeNodeInfo info : nodeRegistry.getRegisteredNodeInfos().values()) {
+            for (JIPipeNodeInfo info : ImmutableList.copyOf(nodeRegistry.getRegisteredNodeInfos().values())) {
                 try {
+                    // Test instantiation
                     JIPipeGraphNode algorithm = info.newInstance();
+
+                    // Test parameters
                     JIPipeParameterTree collection = new JIPipeParameterTree(algorithm);
                     for (Map.Entry<String, JIPipeParameterAccess> entry : collection.getParameters().entrySet()) {
                         if (JIPipe.getParameterTypes().getInfoByFieldClass(entry.getValue().getFieldClass()) == null) {
@@ -212,10 +218,49 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
                                     "Please contact the plugin author for further help.");
                         }
                     }
+
+                    // Test duplication
+                    try {
+                        algorithm.duplicate();
+                    }
+                    catch (Exception e1) {
+                        throw new UserFriendlyRuntimeException(e1,
+                                "A plugin is invalid!",
+                                "JIPipe plugin checker",
+                                "There is an error in the plugin's code that prevents the copying of a node.",
+                                "Please contact the plugin author for further help.");
+                    }
+
+                    // Test serialization
+                    try {
+                        JsonUtils.toJsonString(algorithm);
+                    }
+                    catch (Exception e1) {
+                        throw new UserFriendlyRuntimeException(e1,
+                                "A plugin is invalid!",
+                                "JIPipe plugin checker",
+                                "There is an error in the plugin's code that prevents the saving of a node.",
+                                "Please contact the plugin author for further help.");
+                    }
+
+                    // Test cache state generation
+                    try {
+                        if (algorithm instanceof JIPipeAlgorithm) {
+                            ((JIPipeAlgorithm) algorithm).getStateId();
+                        }
+                    }
+                    catch (Exception e1) {
+                        throw new UserFriendlyRuntimeException(e1,
+                                "A plugin is invalid!",
+                                "JIPipe plugin checker",
+                                "There is an error in the plugin's code that prevents the cache state generation of a node.",
+                                "Please contact the plugin author for further help.");
+                    }
+
                     logService.debug("OK: Algorithm '" + info.getId() + "'");
                 } catch (NoClassDefFoundError | Exception e) {
                     // Unregister node
-                    logService.warn("Unregistering node with id '" + info.getId() + "' as it cannot be instantiated.");
+                    logService.warn("Unregistering node with id '" + info.getId() + "' as it cannot be instantiated, duplicated, serialized, or cached.");
                     nodeRegistry.unregister(info.getId());
                     issues.getErroneousNodes().add(info);
                     e.printStackTrace();

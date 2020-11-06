@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.extensions.tables.parameters.enums;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.google.common.html.HtmlEscapers;
 import org.hkijena.jipipe.JIPipe;
@@ -84,6 +85,18 @@ public class TableColumnIntegrationParameter extends DynamicEnumParameter<Object
         if (id != null) {
             setValue(JIPipe.getTableOperations().getColumnOperationById(id));
         }
+    }
+
+    @Override
+    @JsonIgnore
+    public Object getValue() {
+        return super.getValue();
+    }
+
+    @Override
+    @JsonIgnore
+    public void setValue(Object value) {
+        super.setValue(value);
     }
 
     @Override

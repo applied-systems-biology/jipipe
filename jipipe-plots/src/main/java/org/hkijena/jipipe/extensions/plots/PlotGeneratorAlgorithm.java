@@ -82,7 +82,8 @@ public class PlotGeneratorAlgorithm extends JIPipeAlgorithm {
     public PlotGeneratorAlgorithm(PlotGeneratorAlgorithm other) {
         super(other);
         this.plotType = new JIPipeDataInfoRef(other.plotType);
-        this.plotTypeParameters = (PlotData) other.plotTypeParameters.duplicate();
+        if(other.plotTypeParameters != null)
+            this.plotTypeParameters = (PlotData) other.plotTypeParameters.duplicate();
         this.columnAssignments = new JIPipeDynamicParameterCollection(other.columnAssignments);
     }
 
