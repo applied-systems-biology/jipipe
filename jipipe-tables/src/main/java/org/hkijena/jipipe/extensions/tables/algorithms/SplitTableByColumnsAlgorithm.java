@@ -17,6 +17,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
+import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -49,8 +50,8 @@ import java.util.stream.Collectors;
 @JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
 public class SplitTableByColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
-    private OptionalStringParameter generatedAnnotation = new OptionalStringParameter();
     private StringQueryExpression columns = new StringQueryExpression();
+    private boolean addAsAnnotations = false;
 
     /**
      * Creates a new instance
@@ -59,7 +60,6 @@ public class SplitTableByColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm
      */
     public SplitTableByColumnsAlgorithm(JIPipeNodeInfo info) {
         super(info);
-        generatedAnnotation.setContent("Row filter");
     }
 
     /**
@@ -69,8 +69,8 @@ public class SplitTableByColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm
      */
     public SplitTableByColumnsAlgorithm(SplitTableByColumnsAlgorithm other) {
         super(other);
-        this.generatedAnnotation = other.generatedAnnotation;
         this.columns = new StringQueryExpression(other.columns);
+        this.addAsAnnotations = other.addAsAnnotations;
     }
 
     @Override
@@ -93,24 +93,14 @@ public class SplitTableByColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm
             for (Map.Entry<String, List<Integer>> entry : groupedByCondition.entrySet()) {
                 ResultsTableData output = input.getRows(entry.getValue());
                 List<JIPipeAnnotation> traits = new ArrayList<>();
-                if (generatedAnnotation.isEnabled() && !StringUtils.isNullOrEmpty(generatedAnnotation.getContent())) {
-                    traits.add(new JIPipeAnnotation(generatedAnnotation.getContent(), entry.getKey()));
+                if(addAsAnnotations && output.getRowCount() > 0) {
+                    for (String column : interestingColumns) {
+                        traits.add(new JIPipeAnnotation(column, output.getValueAsString(0, column)));
+                    }
                 }
                 dataBatch.addOutputData(getFirstOutputSlot(), output, traits);
             }
         }
-    }
-
-    @JIPipeDocumentation(name = "Generated annotation", description = "Optional. The annotation that is created for each table column. The column header will be stored inside it.")
-    @JIPipeParameter("generated-annotation")
-    @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/annotation.png")
-    public OptionalStringParameter getGeneratedAnnotation() {
-        return generatedAnnotation;
-    }
-
-    @JIPipeParameter("generated-annotation")
-    public void setGeneratedAnnotation(OptionalStringParameter generatedAnnotation) {
-        this.generatedAnnotation = generatedAnnotation;
     }
 
     @JIPipeDocumentation(name = "Selected columns", description = "Expression that selects the columns. " + StringQueryExpression.DOCUMENTATION_DESCRIPTION)
@@ -122,5 +112,16 @@ public class SplitTableByColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm
     @JIPipeParameter("columns")
     public void setColumns(StringQueryExpression columns) {
         this.columns = columns;
+    }
+
+    @JIPipeDocumentation(name = "Add as annotations", description = "If enabled, columns are added as annotation columns")
+    @JIPipeParameter("add-as-annotations")
+    public boolean isAddAsAnnotations() {
+        return addAsAnnotations;
+    }
+
+    @JIPipeParameter("add-as-annotations")
+    public void setAddAsAnnotations(boolean addAsAnnotations) {
+        this.addAsAnnotations = addAsAnnotations;
     }
 }
