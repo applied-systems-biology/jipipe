@@ -47,14 +47,7 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.color.SplitChannelsAlg
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.contrast.CLAHEContrastEnhancer;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.contrast.IlluminationCorrection2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.convolve.Convolve2DAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.dimensions.MontageToStackAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.dimensions.ReorderDimensionsAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.dimensions.StackInverterAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.dimensions.StackMergerAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.dimensions.StackSplitterAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.dimensions.StackTo2DAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.dimensions.StackToMontageAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.dimensions.ZProjectorAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.dimensions.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.edge.SobelEdgeDetectorAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.features.FrangiVesselnessFeatures;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.features.LocalMaxima2DAlgorithm;
@@ -429,6 +422,7 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         registerNodeType("ij1-dimensions-stack2montage", StackToMontageAlgorithm.class, UIUtils.getIconURLFromResources("actions/view-grid.png"));
         registerNodeType("ij1-dimensions-montage2stack", MontageToStackAlgorithm.class, UIUtils.getIconURLFromResources("actions/view-grid.png"));
         registerNodeType("ij1-dimensions-reorder", ReorderDimensionsAlgorithm.class, UIUtils.getIconURLFromResources("actions/split.png"));
+        registerNodeType("ij1-dimensions-inpput2montage", InputImagesToMontage.class, UIUtils.getIconURLFromResources("actions/view-grid.png"));
 
         registerEnumParameterType("ij1-dimensions-zproject:method", ZProjectorAlgorithm.Method.class,
                 "Method", "Available methods");
