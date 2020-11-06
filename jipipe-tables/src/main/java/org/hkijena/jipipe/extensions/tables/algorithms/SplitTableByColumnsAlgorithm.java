@@ -46,7 +46,7 @@ import java.util.stream.Collectors;
         "Sub-tables that have the same values in the selected columns are put into the same output table.")
 @JIPipeOrganization(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Split")
 @JIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = TableColumn.class, slotName = "Output", autoCreate = true)
+@JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
 public class SplitTableByColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private OptionalStringParameter generatedAnnotation = new OptionalStringParameter();
