@@ -24,6 +24,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.extensions.parameters.expressions.StringQueryExpression;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 
 import java.util.Map;
@@ -40,6 +41,7 @@ import java.util.function.Supplier;
 public class AddAnnotationColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private String annotationPrefix = "annotation:";
+    private StringQueryExpression annotationNameFilter = new StringQueryExpression("");
 
     /**
      * Creates a new instance
@@ -58,12 +60,15 @@ public class AddAnnotationColumnsAlgorithm extends JIPipeSimpleIteratingAlgorith
     public AddAnnotationColumnsAlgorithm(AddAnnotationColumnsAlgorithm other) {
         super(other);
         this.annotationPrefix = other.annotationPrefix;
+        this.annotationNameFilter = new StringQueryExpression(other.annotationNameFilter);
     }
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         ResultsTableData resultsTableData = new ResultsTableData(dataBatch.getInputData(getFirstInputSlot(), ResultsTableData.class));
         for (Map.Entry<String, JIPipeAnnotation> entry : dataBatch.getAnnotations().entrySet()) {
+            if(!annotationNameFilter.test(entry.getKey()))
+                continue;
             int col = resultsTableData.addColumn(annotationPrefix + entry.getKey(), true);
             for (int row = 0; row < resultsTableData.getRowCount(); row++) {
                 resultsTableData.setValueAt(entry.getValue() != null ? "" + entry.getValue().getValue() : "", row, col);
@@ -81,5 +86,16 @@ public class AddAnnotationColumnsAlgorithm extends JIPipeSimpleIteratingAlgorith
     @JIPipeParameter("annotation-prefix")
     public void setAnnotationPrefix(String annotationPrefix) {
         this.annotationPrefix = annotationPrefix;
+    }
+
+    @JIPipeDocumentation(name = "Annotation name filter", description = "Filters the name of the added annotations. " + StringQueryExpression.DOCUMENTATION_DESCRIPTION)
+    @JIPipeParameter("annotation-name-filter")
+    public StringQueryExpression getAnnotationNameFilter() {
+        return annotationNameFilter;
+    }
+
+    @JIPipeParameter("annotation-name-filter")
+    public void setAnnotationNameFilter(StringQueryExpression annotationNameFilter) {
+        this.annotationNameFilter = annotationNameFilter;
     }
 }
