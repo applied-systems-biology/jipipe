@@ -237,6 +237,11 @@ public class TablesExtension extends JIPipePrepackagedDefaultJavaExtension {
                 "Convert to numeric",
                 "numeric",
                 "Converts string columns into numeric columns. Attempts to convert a string into a numeric value. If this fails, zero is returned for this item.");
+        registerTableColumnOperation("convert-to-string",
+                new ToStringColumnOperation(),
+                "Convert to string",
+                "string",
+                "Converts numeric columns into string columns.");
         registerTableColumnOperation("convert-factorize",
                 new FactorizeColumnOperation(),
                 "Factorize",

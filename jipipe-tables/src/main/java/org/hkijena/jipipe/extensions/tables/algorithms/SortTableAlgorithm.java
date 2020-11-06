@@ -26,6 +26,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.parameters.expressions.StringQueryExpression;
+import org.hkijena.jipipe.extensions.parameters.pairs.PairParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.pairs.StringQueryExpressionAndSortOrderPairParameter;
 import org.hkijena.jipipe.extensions.parameters.util.SortOrder;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
@@ -136,8 +137,9 @@ public class SortTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @JIPipeDocumentation(name = "Filters", description = "Allows you determine by which columns the table is sorted. The order determines the " +
-            "sorting priority. Columns can be matched multiple times.")
+            "sorting priority. Columns can be matched multiple times. " + StringQueryExpression.DOCUMENTATION_DESCRIPTION)
     @JIPipeParameter("sort-order")
+    @PairParameterSettings(singleRow = false)
     public StringQueryExpressionAndSortOrderPairParameter.List getSortOrderList() {
         return sortOrderList;
     }

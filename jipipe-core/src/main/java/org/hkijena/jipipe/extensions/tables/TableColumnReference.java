@@ -75,7 +75,7 @@ public class TableColumnReference implements TableColumn {
 
     @Override
     public boolean isNumeric() {
-        return false;
+        return source.isNumeric(sourceColumn);
     }
 
     @Override

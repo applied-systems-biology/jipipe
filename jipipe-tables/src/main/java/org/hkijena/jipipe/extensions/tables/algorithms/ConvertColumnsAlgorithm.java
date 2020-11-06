@@ -43,7 +43,7 @@ import java.util.function.Supplier;
 /**
  * Algorithm that integrates columns
  */
-@JIPipeDocumentation(name = "Apply function to each cell", description = "Applies a function to each individual cell")
+@JIPipeDocumentation(name = "Apply function to columns", description = "Applies a function per column")
 @JIPipeOrganization(nodeTypeCategory = TableNodeTypeCategory.class)
 @JIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
