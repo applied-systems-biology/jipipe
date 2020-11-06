@@ -30,7 +30,7 @@ import java.awt.Color;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-@JIPipeDocumentation(name = "Set LUT from color", description = "Generates a LUT from the first to the second color. " +
+@JIPipeDocumentation(name = "Define LUT", description = "Generates a LUT from the first to the second color. " +
         "This does not change the pixel data.")
 @JIPipeOrganization(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "LUT")
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)
@@ -48,6 +48,7 @@ public class SetLUTFromColorAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         super(other);
         this.duplicateImage = other.duplicateImage;
         this.firstColor = other.firstColor;
+        this.secondColor = other.secondColor;
     }
 
     @Override
