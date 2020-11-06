@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.ui.extensions;
 
 import com.google.common.eventbus.Subscribe;
-import org.hkijena.jipipe.JIPipeDefaultRegistry;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.events.ExtensionRegisteredEvent;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -33,7 +33,7 @@ public class JIPipePluginValidityCheckerButton extends JButton {
      */
     public JIPipePluginValidityCheckerButton() {
         recheckValidity();
-        JIPipeDefaultRegistry.getInstance().getEventBus().register(this);
+        JIPipe.getInstance().getEventBus().register(this);
     }
 
     /**
@@ -41,7 +41,7 @@ public class JIPipePluginValidityCheckerButton extends JButton {
      */
     public void recheckValidity() {
         report.clear();
-        JIPipeDefaultRegistry.getInstance().reportValidity(report);
+        JIPipe.getInstance().reportValidity(report);
 
         if (report.isValid()) {
             setText("All plugins valid");

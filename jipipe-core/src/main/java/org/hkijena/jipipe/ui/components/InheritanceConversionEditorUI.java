@@ -13,13 +13,13 @@
 
 package org.hkijena.jipipe.ui.components;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
-import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
 import java.util.Map;
 import java.util.Objects;
 
@@ -75,7 +75,7 @@ public class InheritanceConversionEditorUI extends JPanel {
 
     private void addEntry() {
         FormPanel formPanel = new FormPanel(null, FormPanel.NONE);
-        JIPipeDataInfo[] available = JIPipeDatatypeRegistry.getInstance().getUnhiddenRegisteredDataTypes().values()
+        JIPipeDataInfo[] available = JIPipe.getDataTypes().getUnhiddenRegisteredDataTypes().values()
                 .stream().map(JIPipeDataInfo::getInstance).toArray(JIPipeDataInfo[]::new);
         JComboBox<JIPipeDataInfo> from = new JComboBox<>(available);
         from.setRenderer(new JIPipeDataInfoListCellRenderer());

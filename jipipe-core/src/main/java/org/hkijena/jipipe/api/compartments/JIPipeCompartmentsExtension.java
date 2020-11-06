@@ -15,7 +15,6 @@ package org.hkijena.jipipe.api.compartments;
 
 import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.api.compartments.algorithms.CompartmentNodeTypeCategory;
-import org.hkijena.jipipe.api.compartments.algorithms.IOInterfaceAlgorithm;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeCompartmentOutput;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.compartments.datatypes.JIPipeCompartmentOutputData;
@@ -53,7 +52,7 @@ public class JIPipeCompartmentsExtension extends JIPipePrepackagedDefaultJavaExt
 
     @Override
     public String getDependencyVersion() {
-        return "1.0.0";
+        return "2020.11";
     }
 
     @Override

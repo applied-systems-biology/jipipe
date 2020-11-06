@@ -18,12 +18,12 @@ import org.hkijena.jipipe.ui.events.RunUIWorkerFinishedEvent;
 import org.hkijena.jipipe.ui.events.RunUIWorkerInterruptedEvent;
 import org.hkijena.jipipe.ui.events.RunUIWorkerProgressEvent;
 import org.hkijena.jipipe.ui.events.RunUIWorkerStartedEvent;
-import org.hkijena.jipipe.utils.ModernMetalTheme;
 import org.hkijena.jipipe.utils.RoundedLineBorder;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
 
 /**
  * UI that monitors the queue
@@ -55,7 +55,7 @@ public class JIPipeRunnerQueueUI extends JPanel {
         emptyQueuePanel.add(new JLabel("No processes are running", UIUtils.getIconFromResources("actions/media-pause.png"), JLabel.LEFT),
                 BorderLayout.EAST);
         emptyQueuePanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1),
-                BorderFactory.createCompoundBorder(new RoundedLineBorder(ModernMetalTheme.MEDIUM_GRAY, 1, 2),
+                BorderFactory.createCompoundBorder(new RoundedLineBorder(UIManager.getColor("Button.borderColor"), 1, 2),
                         BorderFactory.createEmptyBorder(5, 15, 5, 15))));
 
         // UI for running queue
@@ -63,7 +63,7 @@ public class JIPipeRunnerQueueUI extends JPanel {
         runningQueuePanel.setOpaque(false);
         runningQueuePanel.setLayout(new BoxLayout(runningQueuePanel, BoxLayout.X_AXIS));
         runningQueuePanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1),
-                BorderFactory.createCompoundBorder(new RoundedLineBorder(ModernMetalTheme.MEDIUM_GRAY, 1, 2),
+                BorderFactory.createCompoundBorder(new RoundedLineBorder(UIManager.getColor("Button.borderColor"), 1, 2),
                         BorderFactory.createEmptyBorder(5, 15, 5, 15))));
         runningQueueProgress = new JProgressBar();
         runningQueuePanel.add(runningQueueProgress);

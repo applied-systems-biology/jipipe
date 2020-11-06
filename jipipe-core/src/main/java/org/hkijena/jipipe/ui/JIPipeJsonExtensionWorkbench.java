@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.ui;
 
 import com.google.common.eventbus.Subscribe;
-import org.hkijena.jipipe.JIPipeDefaultRegistry;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeJsonExtension;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.events.ExtensionContentRemovedEvent;
@@ -33,7 +33,8 @@ import org.jdesktop.swingx.JXStatusBar;
 import org.scijava.Context;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Window;
 import java.awt.event.KeyEvent;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -64,7 +65,7 @@ public class JIPipeJsonExtensionWorkbench extends JPanel implements JIPipeWorkbe
         initialize(showIntroduction);
 
         this.project.getEventBus().register(this);
-        JIPipeDefaultRegistry.getInstance().getEventBus().register(this);
+        JIPipe.getInstance().getEventBus().register(this);
         SplashScreen.getInstance().hideSplash();
     }
 
@@ -140,6 +141,7 @@ public class JIPipeJsonExtensionWorkbench extends JPanel implements JIPipeWorkbe
 
     private void initializeMenu() {
         JMenuBar menu = new JMenuBar();
+        menu.setBorderPainted(false);
 
         JMenu projectMenu = new JMenu("Extension");
 

@@ -48,7 +48,7 @@ public class ListParameterItemParameterAccess<T> implements JIPipeParameterAcces
 
     @Override
     public String getKey() {
-        return "" + index;
+        return parent.getKey() + "/" + index;
     }
 
     @Override

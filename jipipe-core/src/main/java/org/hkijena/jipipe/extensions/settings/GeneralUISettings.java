@@ -14,11 +14,12 @@
 package org.hkijena.jipipe.extensions.settings;
 
 import com.google.common.eventbus.EventBus;
-import org.hkijena.jipipe.JIPipeDefaultRegistry;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphEditorUI;
+import org.hkijena.jipipe.ui.theme.JIPipeUITheme;
 
 /**
  * All settings for {@link JIPipeGraphEditorUI}
@@ -34,12 +35,10 @@ public class GeneralUISettings implements JIPipeParameterCollection {
     private boolean neverAskOnClosingTabs = false;
     private boolean validateOnSave = true;
     private boolean projectInfoGeneratesPreview = true;
-    private boolean forceCrossPlatformLookAndFeel = true;
-    private boolean modernizeCrossPlatformLookAndFeel = true;
-    private boolean generateCachePreviews = true;
-    private boolean generateResultPreviews = true;
-    private int previewWidth = 64;
-    private int previewHeight = 64;
+    private boolean addContextActionsToContextMenu = true;
+    private boolean maximizeWindows = true;
+    private boolean showIntroductionTour = true;
+    private JIPipeUITheme theme = JIPipeUITheme.ModernLight;
 
     @Override
     public EventBus getEventBus() {
@@ -56,7 +55,6 @@ public class GeneralUISettings implements JIPipeParameterCollection {
     @JIPipeParameter("show-introduction")
     public void setShowIntroduction(boolean showIntroduction) {
         this.showIntroduction = showIntroduction;
-
     }
 
     @JIPipeDocumentation(name = "Show parameter search bar", description = "If enabled, you can search parameters (Re-open parameters to apply changes)")
@@ -117,75 +115,52 @@ public class GeneralUISettings implements JIPipeParameterCollection {
         this.projectInfoGeneratesPreview = projectInfoGeneratesPreview;
     }
 
-    @JIPipeDocumentation(name = "Force cross-platform look & feel", description = "If enabled, the design is set to the 'Metal' look & feel that " +
-            "looks the same on all platforms. We recommend to keep this setting, as other designs might cause flaws in the UI. " +
-            "This requires an ImageJ restart to take effect.")
-    @JIPipeParameter("force-cross-platform-look-and-feel")
-    public boolean isForceCrossPlatformLookAndFeel() {
-        return forceCrossPlatformLookAndFeel;
+    @JIPipeDocumentation(name = "Node context actions appear in the context menu", description = "If enabled, node-specific context actions (e.g. loading example data) are added into the node's context menu.")
+    @JIPipeParameter("add-context-actions-to-context-menu")
+    public boolean isAddContextActionsToContextMenu() {
+        return addContextActionsToContextMenu;
     }
 
-    @JIPipeParameter("force-cross-platform-look-and-feel")
-    public void setForceCrossPlatformLookAndFeel(boolean forceCrossPlatformLookAndFeel) {
-        this.forceCrossPlatformLookAndFeel = forceCrossPlatformLookAndFeel;
+    @JIPipeParameter("add-context-actions-to-context-menu")
+    public void setAddContextActionsToContextMenu(boolean addContextActionsToContextMenu) {
+        this.addContextActionsToContextMenu = addContextActionsToContextMenu;
     }
 
-    @JIPipeDocumentation(name = "Modern cross-platform look & feel", description = "If enabled, the 'Metal' look & feel is modernized to a flat design.")
-    @JIPipeParameter("modernize-cross-platform-look-and-feel")
-    public boolean isModernizeCrossPlatformLookAndFeel() {
-        return modernizeCrossPlatformLookAndFeel;
+    @JIPipeDocumentation(name = "Maximize windows", description = "If enabled, the JIPipe main and extension editor windows are maximized on opening.")
+    @JIPipeParameter("maximize-windows")
+    public boolean isMaximizeWindows() {
+        return maximizeWindows;
     }
 
-    @JIPipeParameter("modernize-cross-platform-look-and-feel")
-    public void setModernizeCrossPlatformLookAndFeel(boolean modernizeCrossPlatformLookAndFeel) {
-        this.modernizeCrossPlatformLookAndFeel = modernizeCrossPlatformLookAndFeel;
+    @JIPipeParameter("maximize-windows")
+    public void setMaximizeWindows(boolean maximizeWindows) {
+        this.maximizeWindows = maximizeWindows;
     }
 
-    @JIPipeDocumentation(name = "Generate previews in cache browser", description = "If enabled, cached items are previewed in JIPipe")
-    @JIPipeParameter("generate-cache-previews")
-    public boolean isGenerateCachePreviews() {
-        return generateCachePreviews;
+    @JIPipeDocumentation(name = "'Getting started' screen shows tutorial", description = "If enabled, there is a tutorial or other information displayed in the 'Getting started' tab. " +
+            "If disabled, only the recent projects are listed. Requires creating a new project or opening an existing one to take effect.")
+    @JIPipeParameter("show-introduction-tour")
+    public boolean isShowIntroductionTour() {
+        return showIntroductionTour;
     }
 
-    @JIPipeParameter("generate-cache-previews")
-    public void setGenerateCachePreviews(boolean generateCachePreviews) {
-        this.generateCachePreviews = generateCachePreviews;
+    @JIPipeParameter("show-introduction-tour")
+    public void setShowIntroductionTour(boolean showIntroductionTour) {
+        this.showIntroductionTour = showIntroductionTour;
     }
 
-    @JIPipeDocumentation(name = "Preview width", description = "The width for data previews")
-    @JIPipeParameter("preview-widths")
-    public int getPreviewWidth() {
-        return previewWidth;
+    @JIPipeDocumentation(name = "Theme", description = "The theme that is used for the user interface. Requires a restart to take effect.")
+    @JIPipeParameter("theme")
+    public JIPipeUITheme getTheme() {
+        return theme;
     }
 
-    @JIPipeParameter("preview-widths")
-    public void setPreviewWidth(int previewWidth) {
-        this.previewWidth = previewWidth;
-    }
-
-    @JIPipeDocumentation(name = "Preview height", description = "The height for data previews")
-    @JIPipeParameter("preview-height")
-    public int getPreviewHeight() {
-        return previewHeight;
-    }
-
-    @JIPipeParameter("preview-height")
-    public void setPreviewHeight(int previewHeight) {
-        this.previewHeight = previewHeight;
-    }
-
-    @JIPipeDocumentation(name = "Generate previews in results", description = "If enabled, result items are previewed in JIPipe")
-    @JIPipeParameter("generate-result-previews")
-    public boolean isGenerateResultPreviews() {
-        return generateResultPreviews;
-    }
-
-    @JIPipeParameter("generate-result-previews")
-    public void setGenerateResultPreviews(boolean generateResultPreviews) {
-        this.generateResultPreviews = generateResultPreviews;
+    @JIPipeParameter("theme")
+    public void setTheme(JIPipeUITheme theme) {
+        this.theme = theme;
     }
 
     public static GeneralUISettings getInstance() {
-        return JIPipeDefaultRegistry.getInstance().getSettingsRegistry().getSettings(ID, GeneralUISettings.class);
+        return JIPipe.getSettings().getSettings(ID, GeneralUISettings.class);
     }
 }

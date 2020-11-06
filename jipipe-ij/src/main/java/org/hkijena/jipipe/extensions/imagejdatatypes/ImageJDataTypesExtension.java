@@ -18,8 +18,15 @@ import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
+import org.hkijena.jipipe.extensions.core.data.OpenInNativeApplicationDataImportOperation;
 import org.hkijena.jipipe.extensions.imagejdatatypes.algorithms.*;
-import org.hkijena.jipipe.extensions.imagejdatatypes.compat.*;
+import org.hkijena.jipipe.extensions.imagejdatatypes.compat.ImagePlusDataImporterUI;
+import org.hkijena.jipipe.extensions.imagejdatatypes.compat.ImgPlusDataImageJAdapter;
+import org.hkijena.jipipe.extensions.imagejdatatypes.compat.OMEImageDataImageJAdapter;
+import org.hkijena.jipipe.extensions.imagejdatatypes.compat.ROIDataImageJAdapter;
+import org.hkijena.jipipe.extensions.imagejdatatypes.compat.ROIDataImporterUI;
+import org.hkijena.jipipe.extensions.imagejdatatypes.compat.ResultsTableDataImageJAdapter;
+import org.hkijena.jipipe.extensions.imagejdatatypes.compat.ResultsTableDataImporterUI;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datasources.BioFormatsImporter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datasources.ImagePlusFromFile;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datasources.ROIDataFromFile;
@@ -34,35 +41,61 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.ImagePlus2DDat
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.color.ImagePlus2DColor8UData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.color.ImagePlus2DColorData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.color.ImagePlus2DColorRGBData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.greyscale.*;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.greyscale.ImagePlus2DGreyscale16UData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.greyscale.ImagePlus2DGreyscale32FData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.greyscale.ImagePlus2DGreyscale8UData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.greyscale.ImagePlus2DGreyscaleData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.greyscale.ImagePlus2DGreyscaleMaskData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.ImagePlus3DData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.color.ImagePlus3DColor8UData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.color.ImagePlus3DColorData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.color.ImagePlus3DColorRGBData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.*;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscale16UData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscale32FData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscale8UData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscaleData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscaleMaskData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d4.ImagePlus4DData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d4.color.ImagePlus4DColor8UData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d4.color.ImagePlus4DColorData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d4.color.ImagePlus4DColorRGBData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d4.greyscale.*;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d4.greyscale.ImagePlus4DGreyscale16UData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d4.greyscale.ImagePlus4DGreyscale32FData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d4.greyscale.ImagePlus4DGreyscale8UData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d4.greyscale.ImagePlus4DGreyscaleData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d4.greyscale.ImagePlus4DGreyscaleMaskData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d5.ImagePlus5DData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d5.color.ImagePlus5DColor8UData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d5.color.ImagePlus5DColorData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d5.color.ImagePlus5DColorRGBData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d5.greyscale.*;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.fft.*;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.*;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d5.greyscale.ImagePlus5DGreyscale16UData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d5.greyscale.ImagePlus5DGreyscale32FData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d5.greyscale.ImagePlus5DGreyscale8UData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d5.greyscale.ImagePlus5DGreyscaleData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d5.greyscale.ImagePlus5DGreyscaleMaskData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.fft.ImagePlusFFT2DData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.fft.ImagePlusFFT3DData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.fft.ImagePlusFFT4DData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.fft.ImagePlusFFT5DData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.fft.ImagePlusFFTData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale16UData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale8UData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.parameters.OMEColorMode;
 import org.hkijena.jipipe.extensions.imagejdatatypes.parameters.OMETIFFCompression;
 import org.hkijena.jipipe.extensions.imagejdatatypes.resultanalysis.ImageDataPreviewUI;
-import org.hkijena.jipipe.extensions.imagejdatatypes.resultanalysis.ImageDataSlotRowUI;
+import org.hkijena.jipipe.extensions.imagejdatatypes.resultanalysis.ImagePlusDataImportOperation;
+import org.hkijena.jipipe.extensions.imagejdatatypes.resultanalysis.ImportImageJPathDataOperation;
+import org.hkijena.jipipe.extensions.imagejdatatypes.resultanalysis.OMEImageDataImportOperation;
 import org.hkijena.jipipe.extensions.imagejdatatypes.resultanalysis.OMEImageDataPreviewUI;
-import org.hkijena.jipipe.extensions.imagejdatatypes.resultanalysis.OMEImageDataSlotRowUI;
+import org.hkijena.jipipe.extensions.imagejdatatypes.resultanalysis.ROIDataImportIntoImageOperation;
 import org.hkijena.jipipe.extensions.imagejdatatypes.resultanalysis.ROIDataPreviewUI;
-import org.hkijena.jipipe.extensions.imagejdatatypes.resultanalysis.ROIDataSlotRowUI;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
 import org.hkijena.jipipe.extensions.tables.ResultsTableDataPreviewUI;
-import org.hkijena.jipipe.extensions.tables.ResultsTableDataSlotRowUI;
+import org.hkijena.jipipe.extensions.tables.datatypes.OpenResultsTableInImageJDataOperation;
+import org.hkijena.jipipe.extensions.tables.datatypes.OpenResultsTableInJIPipeDataOperation;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -180,7 +213,7 @@ public class ImageJDataTypesExtension extends JIPipePrepackagedDefaultJavaExtens
 
     @Override
     public String getDependencyVersion() {
-        return "1.0.0";
+        return "2020.11";
     }
 
     @Override
@@ -192,6 +225,7 @@ public class ImageJDataTypesExtension extends JIPipePrepackagedDefaultJavaExtens
     public void register() {
         registerSettingsSheet(ImageJDataTypesSettings.ID,
                 "ImageJ data types",
+                UIUtils.getIconFromResources("apps/imagej.png"),
                 "Extensions",
                 UIUtils.getIconFromResources("actions/plugins.png"),
                 new ImageJDataTypesSettings());
@@ -201,7 +235,12 @@ public class ImageJDataTypesExtension extends JIPipePrepackagedDefaultJavaExtens
                 "Available compression algorithms");
 
         // Register data types
-        registerDatatype("imagej-ome", OMEImageData.class, UIUtils.getIconURLFromResources("data-types/bioformats.png"), OMEImageDataSlotRowUI.class, OMEImageDataPreviewUI.class);
+        registerDatatype("imagej-ome",
+                OMEImageData.class,
+                UIUtils.getIconURLFromResources("data-types/bioformats.png"),
+                null,
+                OMEImageDataPreviewUI.class,
+                new OMEImageDataImportOperation());
         registerImageJDataAdapter(new OMEImageDataImageJAdapter(), ImagePlusDataImporterUI.class);
         registerImageDataType("imagej-imgplus", ImagePlusData.class, "icons/data-types/imgplus.png");
         registerImageDataType("imagej-imgplus-greyscale", ImagePlusGreyscaleData.class, "icons/data-types/imgplus-greyscale.png");
@@ -251,10 +290,16 @@ public class ImageJDataTypesExtension extends JIPipePrepackagedDefaultJavaExtens
         registerConverters();
 
         registerDatatype("imagej-roi", ROIListData.class, ResourceUtils.getPluginResource("icons/data-types/roi.png"),
-                ROIDataSlotRowUI.class, ROIDataPreviewUI.class);
+                null, ROIDataPreviewUI.class, new ROIDataImportIntoImageOperation());
         registerImageJDataAdapter(new ROIDataImageJAdapter(), ROIDataImporterUI.class);
-        registerDatatype("imagej-results-table", ResultsTableData.class, ResourceUtils.getPluginResource("icons/data-types/results-table.png"),
-                ResultsTableDataSlotRowUI.class, ResultsTableDataPreviewUI.class);
+        registerDatatype("imagej-results-table",
+                ResultsTableData.class,
+                ResourceUtils.getPluginResource("icons/data-types/results-table.png"),
+                null,
+                ResultsTableDataPreviewUI.class,
+                new OpenResultsTableInImageJDataOperation(),
+                new OpenResultsTableInJIPipeDataOperation(),
+                new OpenInNativeApplicationDataImportOperation(".csv"));
         registerImageJDataAdapter(new ResultsTableDataImageJAdapter(), ResultsTableDataImporterUI.class);
 
         // Register FFT data types
@@ -280,6 +325,10 @@ public class ImageJDataTypesExtension extends JIPipePrepackagedDefaultJavaExtens
                 "Color mode", "Available modes");
         registerEnumParameterType("import-imagej-bioformats:order", DimensionOrder.class,
                 "Order", "Available orders");
+
+        // Register additional file importers
+        registerDatatypeOperation("path", new ImportImageJPathDataOperation());
+        registerDatatypeOperation("file", new ImportImageJPathDataOperation());
 
     }
 
@@ -320,7 +369,7 @@ public class ImageJDataTypesExtension extends JIPipePrepackagedDefaultJavaExtens
     }
 
     private void registerImageDataType(String id, Class<? extends ImagePlusData> dataClass, String iconResource) {
-        registerDatatype(id, dataClass, ResourceUtils.getPluginResource(iconResource), ImageDataSlotRowUI.class, ImageDataPreviewUI.class);
+        registerDatatype(id, dataClass, ResourceUtils.getPluginResource(iconResource), null, ImageDataPreviewUI.class, new ImagePlusDataImportOperation());
         registerImageJDataAdapter(new ImgPlusDataImageJAdapter(dataClass), ImagePlusDataImporterUI.class);
     }
 }

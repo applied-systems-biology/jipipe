@@ -13,19 +13,19 @@
 
 package org.hkijena.jipipe.extensions.tables.parameters.processors;
 
+import org.hkijena.jipipe.extensions.parameters.expressions.StringQueryExpression;
 import org.hkijena.jipipe.extensions.parameters.functions.FunctionParameter;
-import org.hkijena.jipipe.extensions.parameters.predicates.StringPredicate;
 import org.hkijena.jipipe.extensions.tables.parameters.enums.TableColumnIntegrationParameter;
 
 /**
  * A parameter that models processing an input column via an integration function
  * and generating an output column
  */
-public class IntegratingTableColumnProcessorParameter extends FunctionParameter<StringPredicate, TableColumnIntegrationParameter, String> {
+public class IntegratingTableColumnProcessorParameter extends FunctionParameter<StringQueryExpression, TableColumnIntegrationParameter, String> {
 
     public IntegratingTableColumnProcessorParameter() {
-        super(StringPredicate.class, TableColumnIntegrationParameter.class, String.class);
-        setInput(new StringPredicate());
+        super(StringQueryExpression.class, TableColumnIntegrationParameter.class, String.class);
+        setInput(new StringQueryExpression());
         setParameter(new TableColumnIntegrationParameter());
         setOutput("Output column");
     }

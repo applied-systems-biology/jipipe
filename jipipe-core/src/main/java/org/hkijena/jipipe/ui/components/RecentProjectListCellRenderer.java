@@ -3,7 +3,12 @@ package org.hkijena.jipipe.ui.components;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.nio.file.Path;
 
 /**
@@ -81,9 +86,9 @@ public class RecentProjectListCellRenderer extends JPanel implements ListCellRen
         }
 
         if (isSelected) {
-            setBackground(new Color(184, 207, 229));
+            setBackground(UIManager.getColor("List.selectionBackground"));
         } else {
-            setBackground(new Color(255, 255, 255));
+            setBackground(UIManager.getColor("List.background"));
         }
         return this;
     }

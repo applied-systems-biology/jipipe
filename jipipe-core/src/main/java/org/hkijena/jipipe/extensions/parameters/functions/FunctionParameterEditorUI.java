@@ -13,14 +13,14 @@
 
 package org.hkijena.jipipe.extensions.parameters.functions;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
-import org.hkijena.jipipe.ui.registries.JIPipeUIParameterTypeRegistry;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
 
 /**
  * Editor for {@link FunctionParameter}
@@ -61,8 +61,8 @@ public class FunctionParameterEditorUI extends JIPipeParameterEditorUI {
         FunctionParameterParameterAccess<Object, Object, Object> parameterAccess = new FunctionParameterParameterAccess<>(getParameterAccess());
         FunctionParameterOutputAccess<Object, Object, Object> outputAccess = new FunctionParameterOutputAccess<>(getParameterAccess());
 
-        formPanel.addToForm(JIPipeUIParameterTypeRegistry.getInstance().createEditorFor(getWorkbench(), inputAccess), new JLabel(functionParameter.renderInputName()), null);
-        formPanel.addToForm(JIPipeUIParameterTypeRegistry.getInstance().createEditorFor(getWorkbench(), parameterAccess), new JLabel(functionParameter.renderParameterName()), null);
-        formPanel.addToForm(JIPipeUIParameterTypeRegistry.getInstance().createEditorFor(getWorkbench(), outputAccess), new JLabel(functionParameter.renderOutputName()), null);
+        formPanel.addToForm(JIPipe.getParameterTypes().createEditorFor(getWorkbench(), inputAccess), new JLabel(functionParameter.renderInputName()), null);
+        formPanel.addToForm(JIPipe.getParameterTypes().createEditorFor(getWorkbench(), parameterAccess), new JLabel(functionParameter.renderParameterName()), null);
+        formPanel.addToForm(JIPipe.getParameterTypes().createEditorFor(getWorkbench(), outputAccess), new JLabel(functionParameter.renderOutputName()), null);
     }
 }

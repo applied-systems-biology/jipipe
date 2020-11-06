@@ -18,7 +18,7 @@ import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.PathEditor;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
 
-import java.awt.*;
+import java.awt.BorderLayout;
 import java.nio.file.Path;
 
 /**
@@ -59,9 +59,7 @@ public class FilePathParameterEditorUI extends JIPipeParameterEditorUI {
 
         pathEditor.setPath(getParameterAccess().get(Path.class));
         add(pathEditor, BorderLayout.CENTER);
-        pathEditor.addActionListener(e -> {
-            setParameter(pathEditor.getPath(), false);
-        });
+        pathEditor.addActionListener(e -> setParameter(pathEditor.getPath(), false));
     }
 
 //    @Subscribe

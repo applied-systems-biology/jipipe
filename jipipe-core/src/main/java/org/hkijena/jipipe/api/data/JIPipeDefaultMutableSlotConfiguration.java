@@ -20,9 +20,9 @@ import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.EventBus;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.events.SlotsChangedEvent;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
-import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
 import org.hkijena.jipipe.utils.JsonUtils;
 
 import java.io.IOException;
@@ -54,8 +54,8 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
      * Creates a new instance
      */
     public JIPipeDefaultMutableSlotConfiguration() {
-        allowedInputSlotTypes = new HashSet<>(JIPipeDatatypeRegistry.getInstance().getUnhiddenRegisteredDataTypes().values());
-        allowedOutputSlotTypes = new HashSet<>(JIPipeDatatypeRegistry.getInstance().getUnhiddenRegisteredDataTypes().values());
+        allowedInputSlotTypes = new HashSet<>(JIPipe.getDataTypes().getUnhiddenRegisteredDataTypes().values());
+        allowedOutputSlotTypes = new HashSet<>(JIPipe.getDataTypes().getUnhiddenRegisteredDataTypes().values());
     }
 
     /**
@@ -429,6 +429,8 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
         this.inputSlotOrder.clear();
         for (String s : newOrder) {
             JIPipeDataSlotInfo slot = inputSlots.getOrDefault(s, null);
+            if (slot == null)
+                continue;
             if (slot.getSlotType() != JIPipeSlotType.Input)
                 continue;
             if (inputSlotOrder.contains(s))
@@ -454,6 +456,8 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
         this.outputSlotOrder.clear();
         for (String s : newOrder) {
             JIPipeDataSlotInfo slot = outputSlots.getOrDefault(s, null);
+            if (slot == null)
+                continue;
             if (slot.getSlotType() != JIPipeSlotType.Output)
                 continue;
             if (outputSlotOrder.contains(s))
@@ -560,11 +564,29 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
      * @param acceptedDataType Slot data type
      * @return True if it can be added
      */
+    @Override
     public boolean canCreateCompatibleInputSlot(Class<? extends JIPipeData> acceptedDataType) {
         if (!canModifyInputSlots())
             return false;
         for (Class<? extends JIPipeData> allowedInputSlotType : allowedInputSlotTypes) {
             if (allowedInputSlotType.isAssignableFrom(acceptedDataType))
+                return true;
+        }
+        return false;
+    }
+
+    /**
+     * Returns if an output slot with specified type can be created
+     *
+     * @param acceptedDataType Slot data type
+     * @return True if it can be added
+     */
+    @Override
+    public boolean canCreateCompatibleOutputSlot(Class<? extends JIPipeData> acceptedDataType) {
+        if (!canModifyOutputSlots())
+            return false;
+        for (Class<? extends JIPipeData> allowedOutputSlotType : allowedOutputSlotTypes) {
+            if (allowedOutputSlotType.isAssignableFrom(acceptedDataType))
                 return true;
         }
         return false;
@@ -672,7 +694,7 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
      * @return the collection
      */
     public static Set<Class<? extends JIPipeData>> getUnhiddenRegisteredDataTypes() {
-        return new HashSet<>(JIPipeDatatypeRegistry.getInstance().getUnhiddenRegisteredDataTypes().values());
+        return new HashSet<>(JIPipe.getDataTypes().getUnhiddenRegisteredDataTypes().values());
     }
 
     /**

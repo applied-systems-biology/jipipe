@@ -13,22 +13,23 @@
 
 package org.hkijena.jipipe.extensions.parameters.collections;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
-import org.hkijena.jipipe.ui.registries.JIPipeUIParameterTypeRegistry;
-import org.hkijena.jipipe.utils.ModernMetalTheme;
 import org.hkijena.jipipe.utils.RoundedLineBorder;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
 
 /**
  * Generic parameter for {@link ListParameter}
  */
 public class ListParameterEditorUI extends JIPipeParameterEditorUI {
+    private final JLabel emptyLabel = new JLabel("<html><strong>This list is empty</strong><br/>Click 'Add' to add items.</html>",
+            UIUtils.getIcon32FromResources("info.png"), JLabel.LEFT);
     private FormPanel formPanel;
 
     /**
@@ -45,10 +46,11 @@ public class ListParameterEditorUI extends JIPipeParameterEditorUI {
 
     private void initialize() {
         setLayout(new BorderLayout());
-        setBorder(new RoundedLineBorder(ModernMetalTheme.MEDIUM_GRAY, 1, 2));
+        setBorder(new RoundedLineBorder(UIManager.getColor("Button.borderColor"), 1, 2));
         JToolBar toolBar = new JToolBar();
         toolBar.setFloatable(false);
 
+        toolBar.add(Box.createHorizontalStrut(4));
         toolBar.add(new JLabel(getParameterAccess().getName()));
 
         toolBar.add(Box.createHorizontalGlue());
@@ -60,6 +62,8 @@ public class ListParameterEditorUI extends JIPipeParameterEditorUI {
 
         formPanel = new FormPanel(null, FormPanel.NONE);
         add(formPanel, BorderLayout.CENTER);
+        add(emptyLabel, BorderLayout.SOUTH);
+        emptyLabel.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
     }
 
     private void addNewEntry() {
@@ -87,9 +91,10 @@ public class ListParameterEditorUI extends JIPipeParameterEditorUI {
                     parameter,
                     parameter.getContentClass(),
                     i);
-            JIPipeParameterEditorUI ui = JIPipeUIParameterTypeRegistry.getInstance().createEditorFor(getWorkbench(), access);
+            JIPipeParameterEditorUI ui = JIPipe.getParameterTypes().createEditorFor(getWorkbench(), access);
             formPanel.addToForm(ui, removeButton, null);
         }
+        emptyLabel.setVisible(parameter.isEmpty());
     }
 
     private void removeEntry(Object entry) {

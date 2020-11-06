@@ -16,7 +16,6 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.resultanalysis;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.ui.resultanalysis.JIPipeAsyncResultDataPlotPreviewUI;
-import org.hkijena.jipipe.utils.PathUtils;
 
 import javax.swing.*;
 import java.nio.file.Path;

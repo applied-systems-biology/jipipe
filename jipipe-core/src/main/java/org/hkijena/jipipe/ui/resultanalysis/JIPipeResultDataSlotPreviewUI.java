@@ -30,6 +30,7 @@ public abstract class JIPipeResultDataSlotPreviewUI extends JPanel {
 
     /**
      * Creates a new renderer
+     *
      * @param table the table where the data is rendered in
      */
     public JIPipeResultDataSlotPreviewUI(JTable table) {
@@ -84,7 +85,7 @@ public abstract class JIPipeResultDataSlotPreviewUI extends JPanel {
      * @return The display name
      */
     public static String getDisplayName(JIPipeProjectWorkbench workbenchUI, JIPipeDataSlot slot, JIPipeExportedDataTable.Row row) {
-        return getAlgorithmCompartment(workbenchUI, slot) + "/" + getAlgorithmName(slot) + "/" + slot.getName() + "/" + row.getLocation();
+        return getAlgorithmCompartment(workbenchUI, slot) + "/" + getAlgorithmName(slot) + "/" + slot.getName() + "/" + row.getIndex();
     }
 
     /**
@@ -95,6 +96,6 @@ public abstract class JIPipeResultDataSlotPreviewUI extends JPanel {
      * @return The row storage folder
      */
     public static Path getRowStorageFolder(JIPipeDataSlot slot, JIPipeExportedDataTable.Row row) {
-        return slot.getStoragePath().resolve(row.getLocation());
+        return slot.getStoragePath().resolve("" + row.getIndex());
     }
 }

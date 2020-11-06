@@ -14,15 +14,18 @@
 package org.hkijena.jipipe.ui.grapheditor.settings;
 
 import com.google.common.html.HtmlEscapers;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.ui.registries.JIPipeUIDatatypeRegistry;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeCellRenderer;
-import java.awt.*;
+import java.awt.Component;
+import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.util.Set;
 
 /**
@@ -81,7 +84,7 @@ public class JIPipeDataSlotTreeCellRenderer extends JPanel implements TreeCellRe
             JIPipeDataSlot slot = (JIPipeDataSlot) o;
 
             slotName.setText(slot.getName());
-            slotName.setIcon(JIPipeUIDatatypeRegistry.getInstance().getIconFor(slot.getAcceptedDataType()));
+            slotName.setIcon(JIPipe.getDataTypes().getIconFor(slot.getAcceptedDataType()));
             if (!StringUtils.isNullOrEmpty(slot.getDefinition().getCustomName())) {
                 slotLabel.setText(slot.getDefinition().getCustomName());
             } else {
@@ -118,9 +121,9 @@ public class JIPipeDataSlotTreeCellRenderer extends JPanel implements TreeCellRe
         // Update status
         // Update status
         if (selected) {
-            setBackground(new Color(184, 207, 229));
+            setBackground(UIManager.getColor("List.selectionBackground"));
         } else {
-            setBackground(new Color(255, 255, 255));
+            setBackground(UIManager.getColor("List.background"));
         }
 
         return this;

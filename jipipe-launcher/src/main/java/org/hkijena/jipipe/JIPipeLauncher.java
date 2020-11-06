@@ -13,8 +13,11 @@
 
 package org.hkijena.jipipe;
 
+import com.google.common.eventbus.Subscribe;
 import net.imagej.ImageJ;
-import org.hkijena.jipipe.JIPipeGUICommand;
+import org.hkijena.jipipe.ui.JIPipeJsonExtensionWindow;
+import org.hkijena.jipipe.ui.JIPipeProjectWindow;
+import org.hkijena.jipipe.ui.events.WindowClosedEvent;
 
 import javax.swing.*;
 
@@ -24,6 +27,25 @@ public class JIPipeLauncher {
      */
     public static void main(final String... args) {
         final ImageJ ij = new ImageJ();
+        final WindowWatcher windowWatcher = new WindowWatcher();
         SwingUtilities.invokeLater(() -> ij.command().run(JIPipeGUICommand.class, true));
+    }
+
+    public static class WindowWatcher {
+        public WindowWatcher() {
+            JIPipeProjectWindow.WINDOWS_EVENTS.register(this);
+            JIPipeJsonExtensionWindow.WINDOWS_EVENTS.register(this);
+        }
+
+        @Subscribe
+        public void onWindowClosed(WindowClosedEvent event) {
+            int windowsOpen = 0;
+            windowsOpen += JIPipeProjectWindow.getOpenWindows().size();
+            windowsOpen += JIPipeJsonExtensionWindow.getOpenWindows().size();
+
+            if (windowsOpen == 0) {
+                System.exit(0);
+            }
+        }
     }
 }

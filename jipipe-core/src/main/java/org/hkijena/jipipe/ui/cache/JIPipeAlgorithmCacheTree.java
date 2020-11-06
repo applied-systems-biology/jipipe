@@ -19,15 +19,14 @@ import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
-import org.hkijena.jipipe.utils.ArrowLessScrollBarUI;
-import org.hkijena.jipipe.utils.CustomScrollPane;
+import org.hkijena.jipipe.ui.theme.ArrowLessScrollBarUI;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
-import java.awt.*;
+import java.awt.BorderLayout;
 import java.util.Map;
 
 /**
@@ -85,7 +84,7 @@ public class JIPipeAlgorithmCacheTree extends JIPipeProjectWorkbenchPanel {
         setLayout(new BorderLayout());
         tree = new JTree();
         tree.setCellRenderer(new JIPipeCacheStateTreeCellRenderer());
-        treeScollPane = new CustomScrollPane(tree);
+        treeScollPane = new JScrollPane(tree);
         treeScollPane.getVerticalScrollBar().setUI(new ArrowLessScrollBarUI());
         treeScollPane.getHorizontalScrollBar().setUI(new ArrowLessScrollBarUI());
         add(treeScollPane, BorderLayout.CENTER);

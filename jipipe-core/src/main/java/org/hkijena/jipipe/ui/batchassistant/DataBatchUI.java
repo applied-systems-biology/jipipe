@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.ui.batchassistant;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
@@ -21,11 +22,12 @@ import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.FormPanel;
-import org.hkijena.jipipe.ui.registries.JIPipeUIDatatypeRegistry;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Font;
 import java.util.Collections;
 import java.util.Set;
 
@@ -81,7 +83,7 @@ public class DataBatchUI extends JIPipeProjectWorkbenchPanel {
         FormPanel dataList = new FormPanel(null, FormPanel.NONE);
         for (JIPipeDataSlot slot : node.getInputSlots()) {
             Set<Integer> rows = batch.getInputSlotRows().getOrDefault(slot, Collections.emptySet());
-            Icon dataTypeIcon = JIPipeUIDatatypeRegistry.getInstance().getIconFor(slot.getAcceptedDataType());
+            Icon dataTypeIcon = JIPipe.getDataTypes().getIconFor(slot.getAcceptedDataType());
             JToggleButton toggleButton = new JToggleButton(slot.getName(), dataTypeIcon);
             UIUtils.makeFlat(toggleButton);
             if (!rows.isEmpty()) {

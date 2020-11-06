@@ -4,7 +4,7 @@ import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.ui.events.ZoomChangedEvent;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.Dimension;
 
 /**
  * Flat {@link javax.swing.JButton} that zooms and displays a zoomable icon
@@ -18,7 +18,7 @@ public class ZoomFlatIconButton extends JButton {
     public ZoomFlatIconButton(ImageIcon icon, ZoomViewPort viewPort) {
         super(new ZoomIcon(icon, viewPort));
         this.viewPort = viewPort;
-        setBackground(Color.WHITE);
+        setBackground(UIManager.getColor("TextArea.background"));
         setOpaque(false);
         viewPort.getEventBus().register(this);
         updateSize();

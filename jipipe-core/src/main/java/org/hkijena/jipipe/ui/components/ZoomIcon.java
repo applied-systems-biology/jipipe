@@ -1,15 +1,16 @@
 package org.hkijena.jipipe.ui.components;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.Component;
+import java.awt.Graphics;
 
 /**
  * Icon that adapts to the zoom level of a {@link ZoomViewPort}
  */
 public class ZoomIcon implements Icon {
 
-    private ImageIcon icon;
     private final ZoomViewPort viewPort;
+    private ImageIcon icon;
 
     public ZoomIcon(ImageIcon icon, ZoomViewPort viewPort) {
         this.icon = icon;
@@ -18,23 +19,23 @@ public class ZoomIcon implements Icon {
 
     @Override
     public void paintIcon(Component c, Graphics g, int x, int y) {
-        if(icon != null) {
-            g.drawImage(icon.getImage(), x,y,getIconWidth(), getIconHeight(), null);
+        if (icon != null) {
+            g.drawImage(icon.getImage(), x, y, getIconWidth(), getIconHeight(), null);
         }
     }
 
     @Override
     public int getIconWidth() {
-        if(icon != null) {
-            return (int)Math.round(icon.getIconWidth() * viewPort.getZoom());
+        if (icon != null) {
+            return (int) Math.round(icon.getIconWidth() * viewPort.getZoom());
         }
         return 0;
     }
 
     @Override
     public int getIconHeight() {
-        if(icon != null) {
-            return (int)Math.round(icon.getIconHeight() * viewPort.getZoom());
+        if (icon != null) {
+            return (int) Math.round(icon.getIconHeight() * viewPort.getZoom());
         }
         return 0;
     }

@@ -19,13 +19,17 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.EventBus;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
-import org.hkijena.jipipe.api.registries.JIPipeParameterTypeRegistry;
 import org.hkijena.jipipe.utils.JsonUtils;
 
 import javax.swing.event.TableModelEvent;
@@ -36,6 +40,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Supplier;
 
 /**
@@ -68,7 +73,7 @@ public class ParameterTable implements TableModel {
         }
         for (List<Object> row : other.rows) {
             int columnIndex = 0;
-            JIPipeParameterTypeInfo info = JIPipeParameterTypeRegistry.getInstance().
+            JIPipeParameterTypeInfo info = JIPipe.getParameterTypes().
                     getInfoByFieldClass(columns.get(columnIndex).fieldClass);
             List<Object> thisRow = new ArrayList<>();
             for (Object o : row) {
@@ -87,11 +92,10 @@ public class ParameterTable implements TableModel {
      */
     public void addColumn(ParameterColumn column, Object initialValue) {
         columns.add(column);
-        JIPipeParameterTypeInfo info = JIPipeParameterTypeRegistry.getInstance().getInfoByFieldClass(column.fieldClass);
+        JIPipeParameterTypeInfo info = JIPipe.getParameterTypes().getInfoByFieldClass(column.fieldClass);
         for (List<Object> row : rows) {
             row.add(info.duplicate(initialValue)); // Deep-copy!
         }
-
     }
 
     @Override
@@ -178,7 +182,7 @@ public class ParameterTable implements TableModel {
             List<Object> row = new ArrayList<>();
 
             for (ParameterColumn column : columns) {
-                JIPipeParameterTypeInfo info = JIPipeParameterTypeRegistry.getInstance().getInfoByFieldClass(column.fieldClass);
+                JIPipeParameterTypeInfo info = JIPipe.getParameterTypes().getInfoByFieldClass(column.fieldClass);
                 row.add(info.newInstance());
             }
             rows.add(row);
@@ -229,6 +233,10 @@ public class ParameterTable implements TableModel {
 
     public EventBus getEventBus() {
         return eventBus;
+    }
+
+    public boolean containsColumn(String column) {
+        return columns.stream().anyMatch(c -> Objects.equals(column, c.getKey()));
     }
 
     /**
@@ -291,12 +299,12 @@ public class ParameterTable implements TableModel {
 
         @JsonGetter("field-class-id")
         public String getFieldClassInfoId() {
-            return JIPipeParameterTypeRegistry.getInstance().getInfoByFieldClass(fieldClass).getId();
+            return JIPipe.getParameterTypes().getInfoByFieldClass(fieldClass).getId();
         }
 
         @JsonSetter("field-class-id")
         public void setFieldClassInfoId(String id) {
-            fieldClass = JIPipeParameterTypeRegistry.getInstance().getInfoById(id).getFieldClass();
+            fieldClass = JIPipe.getParameterTypes().getInfoById(id).getFieldClass();
         }
 
         @JsonGetter("key")

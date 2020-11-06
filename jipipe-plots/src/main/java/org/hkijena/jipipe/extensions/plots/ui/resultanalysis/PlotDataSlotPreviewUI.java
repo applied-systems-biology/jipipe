@@ -14,21 +14,10 @@
 package org.hkijena.jipipe.extensions.plots.ui.resultanalysis;
 
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.data.JIPipeExportedDataTable;
 import org.hkijena.jipipe.extensions.plots.datatypes.PlotData;
-import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
-import org.hkijena.jipipe.ui.registries.JIPipeUIDatatypeRegistry;
 import org.hkijena.jipipe.ui.resultanalysis.JIPipeAsyncResultDataPlotPreviewUI;
-import org.hkijena.jipipe.ui.resultanalysis.JIPipeResultDataSlotPreviewUI;
-import org.hkijena.jipipe.utils.PathUtils;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
-import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 
 /**
@@ -38,6 +27,7 @@ public class PlotDataSlotPreviewUI extends JIPipeAsyncResultDataPlotPreviewUI {
 
     /**
      * Creates a new renderer
+     *
      * @param table the parent table
      */
     public PlotDataSlotPreviewUI(JTable table) {

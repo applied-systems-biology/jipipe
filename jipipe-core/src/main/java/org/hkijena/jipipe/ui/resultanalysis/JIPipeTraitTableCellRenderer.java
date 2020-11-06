@@ -17,7 +17,7 @@ import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 
 import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
-import java.awt.*;
+import java.awt.Component;
 
 /**
  * Renders {@link JIPipeAnnotation}
@@ -41,9 +41,9 @@ public class JIPipeTraitTableCellRenderer extends JLabel implements TableCellRen
         }
 
         if (isSelected) {
-            setBackground(new Color(184, 207, 229));
+            setBackground(UIManager.getColor("List.selectionBackground"));
         } else {
-            setBackground(new Color(255, 255, 255));
+            setBackground(UIManager.getColor("List.background"));
         }
 
         return this;

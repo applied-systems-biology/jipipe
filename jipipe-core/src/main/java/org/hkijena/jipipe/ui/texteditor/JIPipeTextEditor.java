@@ -14,18 +14,13 @@
 package org.hkijena.jipipe.ui.texteditor;
 
 import org.fife.ui.rtextarea.RTextScrollPane;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.extensions.parameters.scripts.ScriptParameter;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
-import org.hkijena.jipipe.ui.components.DocumentChangeListener;
 import org.hkijena.jipipe.ui.components.DocumentTabPane;
-import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.ui.swing.script.EditorPane;
 
 import javax.swing.*;
-import javax.swing.event.DocumentEvent;
 import java.awt.BorderLayout;
 
 public class JIPipeTextEditor extends JIPipeWorkbenchPanel {

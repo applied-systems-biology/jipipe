@@ -1,15 +1,14 @@
 #!/usr/bin/env python3
 
-from pathlib import Path
-import urllib.request
-from zipfile import ZipFile
-from glob import glob
+import inflection
 import javalang
 import javalang.tree
-from bidict import bidict
-from itertools import groupby
-import inflection
 import json
+import urllib.request
+from glob import glob
+from itertools import groupby
+from pathlib import Path
+from zipfile import ZipFile
 
 known_parameter_types = ["Integer", "Float", "String", "Double"]
 known_slot_types = ["ClearCLBuffer", "ClearCLImageInterface", "ResultsTable"]

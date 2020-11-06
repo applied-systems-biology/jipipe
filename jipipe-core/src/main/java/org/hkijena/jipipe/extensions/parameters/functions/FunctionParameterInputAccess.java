@@ -38,7 +38,7 @@ public class FunctionParameterInputAccess<I, P, O> implements JIPipeParameterAcc
 
     @Override
     public String getKey() {
-        return "input";
+        return parent.getKey() + "/input";
     }
 
     @Override

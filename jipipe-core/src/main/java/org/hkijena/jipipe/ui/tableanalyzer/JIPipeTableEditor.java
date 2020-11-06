@@ -16,8 +16,8 @@ package org.hkijena.jipipe.ui.tableanalyzer;
 import com.google.common.base.Charsets;
 import com.google.common.base.Joiner;
 import com.google.common.primitives.Ints;
-import org.hkijena.jipipe.api.registries.JIPipeImageJAdapterRegistry;
-import org.hkijena.jipipe.api.registries.JIPipeTableRegistry;
+import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.registries.JIPipeExpressionRegistry;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.tables.ConvertingColumnOperation;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
@@ -30,7 +30,6 @@ import org.hkijena.jipipe.ui.components.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.ModifiedFlowLayout;
 import org.hkijena.jipipe.ui.plotbuilder.JIPipePlotBuilderUI;
 import org.hkijena.jipipe.utils.BusyCursor;
-import org.hkijena.jipipe.utils.CustomScrollPane;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jdesktop.swingx.JXPanel;
@@ -40,15 +39,23 @@ import org.jdesktop.swingx.ScrollableSizeHint;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.io.BufferedOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
-import java.util.*;
+import java.util.Objects;
+import java.util.Set;
+import java.util.Stack;
 import java.util.stream.Collectors;
 
 /**
@@ -238,7 +245,7 @@ public class JIPipeTableEditor extends JIPipeWorkbenchPanel {
         jxTable.setDefaultRenderer(Double.class, new Renderer(this));
         jxTable.packAll();
 
-        JScrollPane scrollPane = new CustomScrollPane(jxTable);
+        JScrollPane scrollPane = new JScrollPane(jxTable);
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, scrollPane, palettePanel);
         splitPane.setDividerSize(3);
         splitPane.setResizeWeight(0.66);
@@ -256,7 +263,7 @@ public class JIPipeTableEditor extends JIPipeWorkbenchPanel {
     }
 
     private void exportToImageJ() {
-        JIPipeImageJAdapterRegistry.getInstance().getAdapterForJIPipeData(ResultsTableData.class).convertJIPipeToImageJ(
+        JIPipe.getImageJAdapters().getAdapterForJIPipeData(ResultsTableData.class).convertJIPipeToImageJ(
                 tableModel,
                 true,
                 false,
@@ -478,9 +485,9 @@ public class JIPipeTableEditor extends JIPipeWorkbenchPanel {
         if (isRebuildingSelection)
             return;
         convertSelectedCellsMenu.removeAll();
-        for (JIPipeTableRegistry.ColumnOperationEntry entry :
-                JIPipeTableRegistry.getInstance().getOperationsOfType(ConvertingColumnOperation.class)
-                        .values().stream().sorted(Comparator.comparing(JIPipeTableRegistry.ColumnOperationEntry::getName)).collect(Collectors.toList())) {
+        for (JIPipeExpressionRegistry.ColumnOperationEntry entry :
+                JIPipe.getTableOperations().getTableColumnOperationsOfType(ConvertingColumnOperation.class)
+                        .values().stream().sorted(Comparator.comparing(JIPipeExpressionRegistry.ColumnOperationEntry::getName)).collect(Collectors.toList())) {
             JMenuItem item = new JMenuItem(entry.getName(), UIUtils.getIconFromResources("actions/configure.png"));
             item.setToolTipText(entry.getDescription());
             item.addActionListener(e -> {
@@ -688,12 +695,13 @@ public class JIPipeTableEditor extends JIPipeWorkbenchPanel {
      * @param fileName    CSV file
      * @param workbenchUI workbench
      */
-    public static void importTableFromCSV(Path fileName, JIPipeProjectWorkbench workbenchUI) {
+    public static ResultsTableData importTableFromCSV(Path fileName, JIPipeProjectWorkbench workbenchUI) {
         try {
             ResultsTableData tableData = ResultsTableData.fromCSV(fileName);
             // Create table analyzer
             workbenchUI.getDocumentTabPane().addTab(fileName.getFileName().toString(), UIUtils.getIconFromResources("data-types/results-table.png"),
                     new JIPipeTableEditor(workbenchUI, tableData), DocumentTabPane.CloseMode.withAskOnCloseButton, true);
+            return tableData;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -728,9 +736,9 @@ public class JIPipeTableEditor extends JIPipeWorkbenchPanel {
             }
 
             if (isSelected) {
-                setBackground(new Color(184, 207, 229));
+                setBackground(UIManager.getColor("List.selectionBackground"));
             } else {
-                setBackground(new Color(255, 255, 255));
+                setBackground(UIManager.getColor("List.background"));
             }
 
             return this;

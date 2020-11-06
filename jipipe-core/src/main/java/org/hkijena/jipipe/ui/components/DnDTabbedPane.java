@@ -2,7 +2,14 @@ package org.hkijena.jipipe.ui.components;
 
 import javax.swing.*;
 import javax.swing.plaf.metal.MetalTabbedPaneUI;
-import java.awt.*;
+import java.awt.AlphaComposite;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.dnd.*;

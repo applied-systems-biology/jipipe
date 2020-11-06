@@ -37,6 +37,12 @@ public class OptionalStringParameter extends OptionalParameter<String> {
         this.setContent(other.getContent());
     }
 
+    public OptionalStringParameter(String value, boolean enabled) {
+        super(String.class);
+        setContent(value);
+        setEnabled(enabled);
+    }
+
     @Override
     public String setNewInstance() {
         setContent("");

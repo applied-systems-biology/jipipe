@@ -17,15 +17,21 @@ import com.google.common.eventbus.Subscribe;
 import ij.IJ;
 import org.hkijena.jipipe.api.events.ParameterChangedEvent;
 import org.hkijena.jipipe.extensions.settings.ProjectsSettings;
-import org.hkijena.jipipe.ui.components.*;
-import org.hkijena.jipipe.utils.*;
+import org.hkijena.jipipe.ui.components.BackgroundPanel;
+import org.hkijena.jipipe.ui.components.FormPanel;
+import org.hkijena.jipipe.ui.components.MarkdownDocument;
+import org.hkijena.jipipe.ui.components.MarkdownReader;
+import org.hkijena.jipipe.ui.components.RecentProjectListCellRenderer;
+import org.hkijena.jipipe.utils.ReflectionUtils;
+import org.hkijena.jipipe.utils.StringUtils;
+import org.hkijena.jipipe.utils.UIUtils;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.jar.Attributes;
@@ -79,7 +85,7 @@ public class JIPipeJsonExtensionInfoUI extends JIPipeJsonExtensionWorkbenchPanel
 
     private void initRecentProjects() {
         recentProjectsList.setCellRenderer(new RecentProjectListCellRenderer());
-        JScrollPane scrollPane = new CustomScrollPane(recentProjectsList);
+        JScrollPane scrollPane = new JScrollPane(recentProjectsList);
         scrollPane.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, Color.DARK_GRAY));
         add(scrollPane, BorderLayout.WEST);
 
@@ -112,15 +118,11 @@ public class JIPipeJsonExtensionInfoUI extends JIPipeJsonExtensionWorkbenchPanel
 
     private void initializeHeaderPanel() {
         JPanel headerPanel;
-        try {
-            headerPanel = new BackgroundPanel(ImageIO.read(ResourceUtils.getPluginResource("infoui-background.png")), true);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        headerPanel = new BackgroundPanel(UIUtils.getHeaderPanelBackground(), true);
         headerPanel.setLayout(new BorderLayout());
         headerPanel.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.DARK_GRAY));
         headerPanel.setPreferredSize(new Dimension(headerPanel.getPreferredSize().width, 200));
-        JLabel logo = new JLabel(new ImageIcon(ResourceUtils.getPluginResource("logo-extension-builder-400.png")));
+        JLabel logo = new JLabel(new ImageIcon(UIUtils.getExtensionBuilderLogo400()));
         logo.setBorder(BorderFactory.createEmptyBorder(0, 32, 0, 0));
         headerPanel.add(logo, BorderLayout.WEST);
 
@@ -152,24 +154,24 @@ public class JIPipeJsonExtensionInfoUI extends JIPipeJsonExtensionWorkbenchPanel
         toolBar.setOpaque(false);
 
         JButton openWebsiteButton = new JButton("Visit our website", UIUtils.getIconFromResources("actions/web-browser.png"));
-        openWebsiteButton.setToolTipText("https://applied-systems-biology.github.io/jipipe");
-        openWebsiteButton.addActionListener(e -> UIUtils.openWebsite("https://applied-systems-biology.github.io/jipipe"));
+        openWebsiteButton.setToolTipText("https://www.jipipe.org/");
+        openWebsiteButton.addActionListener(e -> UIUtils.openWebsite("https://www.jipipe.org/"));
         openWebsiteButton.setOpaque(false);
         openWebsiteButton.setBackground(new Color(0, 0, 0, 0));
         toolBar.add(openWebsiteButton);
         toolBar.add(Box.createHorizontalStrut(4));
 
         JButton openTutorialsButton = new JButton("Tutorial", UIUtils.getIconFromResources("actions/graduation-cap.png"));
-        openTutorialsButton.setToolTipText("https://applied-systems-biology.github.io/jipipe/tutorials/extension");
-        openTutorialsButton.addActionListener(e -> UIUtils.openWebsite("https://applied-systems-biology.github.io/jipipe/tutorial/extension"));
+        openTutorialsButton.setToolTipText("https://www.jipipe.org/tutorials/extension");
+        openTutorialsButton.addActionListener(e -> UIUtils.openWebsite("https://www.jipipe.org/tutorial/extension"));
         openTutorialsButton.setOpaque(false);
         openTutorialsButton.setBackground(new Color(0, 0, 0, 0));
         toolBar.add(openTutorialsButton);
         toolBar.add(Box.createHorizontalStrut(4));
 
         JButton openDocumentationButton = new JButton("Documentation", UIUtils.getIconFromResources("actions/help-info.png"));
-        openDocumentationButton.setToolTipText("https://applied-systems-biology.github.io/jipipe/documentation/create-json-extensions");
-        openDocumentationButton.addActionListener(e -> UIUtils.openWebsite("https://applied-systems-biology.github.io/jipipe/documentation/create-json-extensions"));
+        openDocumentationButton.setToolTipText("https://www.jipipe.org/documentation/create-json-extensions");
+        openDocumentationButton.addActionListener(e -> UIUtils.openWebsite("https://www.jipipe.org/documentation/create-json-extensions"));
         openDocumentationButton.setOpaque(false);
         openDocumentationButton.setBackground(new Color(0, 0, 0, 0));
         toolBar.add(openDocumentationButton);

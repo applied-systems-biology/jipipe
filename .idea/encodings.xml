@@ -1,14 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="Encoding">
+    <file url="file://$PROJECT_DIR$/ij-updater-cli/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/jipipe-annotation/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/jipipe-clij/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/jipipe-clij/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/jipipe-core/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/jipipe-core/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/jipipe-filesystem/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/jipipe-ij-algorithms/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/jipipe-ij-multi-template-matching/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/jipipe-ij-multi-template-matching/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/jipipe-ij-omero/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/jipipe-ij/src/main/java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/jipipe-ij/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/jipipe-launcher/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/jipipe-multiparameters/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/jipipe-plots/src/main/java" charset="UTF-8" />

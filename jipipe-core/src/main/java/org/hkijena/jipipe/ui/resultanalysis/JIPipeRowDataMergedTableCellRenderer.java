@@ -13,15 +13,16 @@
 
 package org.hkijena.jipipe.ui.resultanalysis;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeExportedDataTable;
 import org.hkijena.jipipe.api.data.JIPipeMergedExportedDataTable;
+import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
-import org.hkijena.jipipe.ui.registries.JIPipeUIDatatypeRegistry;
 
 import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
-import java.awt.*;
+import java.awt.Component;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,15 +33,23 @@ public class JIPipeRowDataMergedTableCellRenderer implements TableCellRenderer {
 
     private JIPipeProjectWorkbench workbenchUI;
     private List<JIPipeResultDataSlotPreviewUI> previewCache = new ArrayList<>();
+    private int previewCacheSize = GeneralDataSettings.getInstance().getPreviewSize();
+    private final GeneralDataSettings dataSettings =GeneralDataSettings.getInstance();
 
     /**
-     * @param workbenchUI The workbench
+     * @param workbenchUI     The workbench
      * @param mergedDataTable the table to be displayed
      */
     public JIPipeRowDataMergedTableCellRenderer(JIPipeProjectWorkbench workbenchUI, JIPipeMergedExportedDataTable mergedDataTable) {
         this.workbenchUI = workbenchUI;
-        for (int i = 0; i < mergedDataTable.getRowCount(); i++) {
-            previewCache.add(null);
+    }
+
+    private void revalidatePreviewCache() {
+        if(dataSettings.getPreviewSize() != previewCacheSize) {
+            for (int i = 0; i < previewCache.size(); i++) {
+                previewCache.set(i, null);
+            }
+            previewCacheSize = dataSettings.getPreviewSize();
         }
     }
 
@@ -49,16 +58,20 @@ public class JIPipeRowDataMergedTableCellRenderer implements TableCellRenderer {
         if (value instanceof JIPipeExportedDataTable.Row) {
             JIPipeMergedExportedDataTable model = (JIPipeMergedExportedDataTable) table.getModel();
             JIPipeDataSlot slot = model.getSlot(table.convertRowIndexToModel(row));
+            while(row > previewCache.size() - 1) {
+                previewCache.add(null);
+            }
+            revalidatePreviewCache();
             JIPipeResultDataSlotPreviewUI preview = previewCache.get(row);
-            if(preview == null) {
-                preview = JIPipeUIDatatypeRegistry.getInstance().getCellRendererFor(slot.getAcceptedDataType(), table);
+            if (preview == null) {
+                preview = JIPipe.getDataTypes().getCellRendererFor(slot.getAcceptedDataType(), table);
                 preview.render(workbenchUI, slot, (JIPipeExportedDataTable.Row) value);
                 previewCache.set(row, preview);
             }
             if (isSelected) {
-                preview.setBackground(new Color(184, 207, 229));
+                preview.setBackground(UIManager.getColor("List.selectionBackground"));
             } else {
-                preview.setBackground(new Color(255, 255, 255));
+                preview.setBackground(UIManager.getColor("List.background"));
             }
             return preview;
         }

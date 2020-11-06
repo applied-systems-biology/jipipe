@@ -38,18 +38,18 @@ import java.util.stream.Collectors;
  */
 public class JIPipeProjectTemplate {
 
+    private static List<JIPipeProjectTemplate> availableTemplatesFromResources;
     private String resourcePath;
     private Path relativeLocation;
     private boolean storedAsResource;
-    private JIPipeMetadata metadata;
+    private JIPipeProjectMetadata metadata;
 
     public JIPipeProjectTemplate() {
     }
 
-    private static List<JIPipeProjectTemplate> availableTemplatesFromResources;
-
     /**
      * Loads the project
+     *
      * @return the project
      * @throws IOException thrown by project loading
      */
@@ -90,12 +90,80 @@ public class JIPipeProjectTemplate {
         this.relativeLocation = relativeLocation;
     }
 
+    public URL getLocation() {
+        if (isStoredAsResource()) {
+            if (StringUtils.isNullOrEmpty(resourcePath)) {
+                return ResourceUtils.getPluginResource("templates/Empty (3 compartments).jip");
+            }
+            return ResourceUtils.class.getResource(resourcePath);
+        } else {
+            if (relativeLocation == null) {
+                return ResourceUtils.getPluginResource("templates/Empty (3 compartments).jip");
+            }
+            Path imageJDir = Paths.get(Prefs.getImageJDir());
+            if (!Files.isDirectory(imageJDir)) {
+                try {
+                    Files.createDirectories(imageJDir);
+                } catch (IOException e) {
+                    IJ.handleException(e);
+                }
+            }
+            Path path = imageJDir.resolve(relativeLocation);
+            if (!Files.exists(path)) {
+                return ResourceUtils.getPluginResource("templates/Empty (3 compartments).jip");
+            }
+            try {
+                return path.toUri().toURL();
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+                return ResourceUtils.getPluginResource("templates/Empty (3 compartments).jip");
+            }
+        }
+    }
+
+    @JsonGetter("metadata")
+    public JIPipeProjectMetadata getMetadata() {
+        if (metadata == null) {
+            JsonNode node = null;
+            try {
+                node = JsonUtils.getObjectMapper().readValue(getLocation(), JsonNode.class);
+                metadata = JsonUtils.getObjectMapper().convertValue(node.get("metadata"), JIPipeProjectMetadata.class);
+            } catch (IOException e) {
+                e.printStackTrace();
+                metadata = new JIPipeProjectMetadata();
+                metadata.setName("Could not load!");
+            }
+        }
+        return metadata;
+    }
+
+    @JsonSetter("metadata")
+    public void setMetadata(JIPipeProjectMetadata metadata) {
+        this.metadata = metadata;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        JIPipeProjectTemplate that = (JIPipeProjectTemplate) o;
+        return storedAsResource == that.storedAsResource &&
+                Objects.equals(resourcePath, that.resourcePath) &&
+                Objects.equals(relativeLocation, that.relativeLocation);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(resourcePath, relativeLocation, storedAsResource);
+    }
+
     /**
      * Lists all available templates
+     *
      * @return the templates
      */
     public static List<JIPipeProjectTemplate> listTemplates() {
-        if(availableTemplatesFromResources == null) {
+        if (availableTemplatesFromResources == null) {
             availableTemplatesFromResources = new ArrayList<>();
             for (String resource : ResourceUtils.walkInternalResourceFolder("templates/")) {
                 try {
@@ -120,7 +188,7 @@ public class JIPipeProjectTemplate {
         }
         Path templatesDir = imageJDir.resolve("jipipe-templates");
         List<JIPipeProjectTemplate> result = new ArrayList<>(availableTemplatesFromResources);
-        if(Files.exists(templatesDir)) {
+        if (Files.exists(templatesDir)) {
             try {
                 for (Path file : Files.list(templatesDir).collect(Collectors.toList())) {
                     try {
@@ -138,73 +206,5 @@ public class JIPipeProjectTemplate {
         }
 
         return result;
-    }
-
-    public URL getLocation() {
-        if(isStoredAsResource()) {
-            if(StringUtils.isNullOrEmpty(resourcePath)) {
-                return ResourceUtils.getPluginResource("templates/Empty (3 compartments).jip");
-            }
-            return ResourceUtils.class.getResource(resourcePath);
-        }
-        else {
-            if(relativeLocation == null) {
-                return ResourceUtils.getPluginResource("templates/Empty (3 compartments).jip");
-            }
-            Path imageJDir = Paths.get(Prefs.getImageJDir());
-            if (!Files.isDirectory(imageJDir)) {
-                try {
-                    Files.createDirectories(imageJDir);
-                } catch (IOException e) {
-                    IJ.handleException(e);
-                }
-            }
-            Path path = imageJDir.resolve(relativeLocation);
-            if(!Files.exists(path)) {
-                return ResourceUtils.getPluginResource("templates/Empty (3 compartments).jip");
-            }
-            try {
-                return path.toUri().toURL();
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-                return ResourceUtils.getPluginResource("templates/Empty (3 compartments).jip");
-            }
-        }
-    }
-
-    @JsonGetter("metadata")
-    public JIPipeMetadata getMetadata() {
-        if(metadata == null) {
-            JsonNode node = null;
-            try {
-                node = JsonUtils.getObjectMapper().readValue(getLocation(), JsonNode.class);
-                metadata = JsonUtils.getObjectMapper().convertValue(node.get("metadata"), JIPipeMetadata.class);
-            } catch (IOException e) {
-                e.printStackTrace();
-                metadata = new JIPipeMetadata();
-                metadata.setName("Could not load!");
-            }
-        }
-        return metadata;
-    }
-
-    @JsonSetter("metadata")
-    public void setMetadata(JIPipeMetadata metadata) {
-        this.metadata = metadata;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        JIPipeProjectTemplate that = (JIPipeProjectTemplate) o;
-        return storedAsResource == that.storedAsResource &&
-                Objects.equals(resourcePath, that.resourcePath) &&
-                Objects.equals(relativeLocation, that.relativeLocation);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(resourcePath, relativeLocation, storedAsResource);
     }
 }

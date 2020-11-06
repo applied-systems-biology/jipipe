@@ -13,11 +13,20 @@
 
 package org.hkijena.jipipe.api.registries;
 
-import org.hkijena.jipipe.JIPipeDefaultRegistry;
+import org.apache.commons.lang3.reflect.ConstructorUtils;
 import org.hkijena.jipipe.api.compat.ImageJDatatypeAdapter;
+import org.hkijena.jipipe.api.compat.ImageJDatatypeImporter;
 import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.ui.compat.ImageJDatatypeImporterUI;
 
-import java.util.*;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Registers all known adapters between ImageJ and JIPipe data types
@@ -26,6 +35,7 @@ public class JIPipeImageJAdapterRegistry {
     private List<ImageJDatatypeAdapter> registeredAdapters = new ArrayList<>();
     private Set<Class<? extends JIPipeData>> registeredJIPipeDataTypes = new HashSet<>();
     private Set<Class<?>> registeredImageJDataTypes = new HashSet<>();
+    private Map<Class<?>, Class<? extends ImageJDatatypeImporterUI>> registeredImporterUIs = new HashMap<>();
 
     /**
      * Registers an adapter
@@ -36,6 +46,53 @@ public class JIPipeImageJAdapterRegistry {
         registeredAdapters.add(adapter);
         registeredJIPipeDataTypes.add(adapter.getJIPipeDatatype());
         registeredImageJDataTypes.add(adapter.getImageJDatatype());
+    }
+
+    /**
+     * @param imageJDataType imageJ data type
+     * @param importerClass  importer UI class
+     */
+    public void registerImporterFor(Class<?> imageJDataType, Class<? extends ImageJDatatypeImporterUI> importerClass) {
+        registeredImporterUIs.put(imageJDataType, importerClass);
+    }
+
+    public Map<Class<?>, Class<? extends ImageJDatatypeImporterUI>> getRegisteredImporterUIs() {
+        return Collections.unmodifiableMap(registeredImporterUIs);
+    }
+
+    /**
+     * Gets the importer for the specified ImageJ data type
+     *
+     * @param imageJDataType imageJ data type
+     * @return importer UI class
+     */
+    public Class<? extends ImageJDatatypeImporterUI> getImporterClassFor(Class<?> imageJDataType) {
+        Class<? extends ImageJDatatypeImporterUI> importerClass = registeredImporterUIs.getOrDefault(imageJDataType, null);
+        if (importerClass != null) {
+            return importerClass;
+        } else {
+            for (Map.Entry<Class<?>, Class<? extends ImageJDatatypeImporterUI>> entry : registeredImporterUIs.entrySet()) {
+                if (entry.getKey().isAssignableFrom(imageJDataType)) {
+                    return entry.getValue();
+                }
+            }
+            return null;
+        }
+    }
+
+    /**
+     * Generates a UI for the importer
+     *
+     * @param importer importer
+     * @return UI instance
+     */
+    public ImageJDatatypeImporterUI getUIFor(ImageJDatatypeImporter importer) {
+        Class<? extends ImageJDatatypeImporterUI> importerClass = getImporterClassFor(importer.getAdapter().getImageJDatatype());
+        try {
+            return ConstructorUtils.invokeConstructor(importerClass, importer);
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | InstantiationException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -153,12 +210,5 @@ public class JIPipeImageJAdapterRegistry {
      */
     public List<ImageJDatatypeAdapter> getRegisteredAdapters() {
         return registeredAdapters;
-    }
-
-    /**
-     * @return Singleton instance
-     */
-    public static JIPipeImageJAdapterRegistry getInstance() {
-        return JIPipeDefaultRegistry.getInstance().getImageJDataAdapterRegistry();
     }
 }

@@ -15,6 +15,7 @@ package org.hkijena.jipipe.ui.grapheditor;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeCompartmentOutput;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeMutableSlotConfiguration;
@@ -26,7 +27,6 @@ import org.hkijena.jipipe.ui.components.ZoomFlatIconButton;
 import org.hkijena.jipipe.ui.components.ZoomIcon;
 import org.hkijena.jipipe.ui.components.ZoomLabel;
 import org.hkijena.jipipe.ui.events.AlgorithmUIActionRequestedEvent;
-import org.hkijena.jipipe.ui.registries.JIPipeUINodeRegistry;
 import org.hkijena.jipipe.utils.PointRange;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -34,8 +34,11 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.font.FontRenderContext;
 import java.awt.font.TextLayout;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * An algorithm UI for vertical display
@@ -77,7 +80,7 @@ public class JIPipeVerticalNodeUI extends JIPipeNodeUI {
         outputSlotPanel.setOpaque(false);
 
         nameLabel = new ZoomLabel(getNode().getName(), null, getGraphUI());
-        nameLabel.setIcon(new ZoomIcon(JIPipeUINodeRegistry.getInstance().getIconFor(getNode().getInfo()), getGraphUI()));
+        nameLabel.setIcon(new ZoomIcon(JIPipe.getNodes().getIconFor(getNode().getInfo()), getGraphUI()));
         openSettingsButton = new ZoomFlatIconButton(UIUtils.getIconFromResources("actions/wrench.png"), getGraphUI());
         openSettingsButton.setBorder(null);
         openSettingsButton.addActionListener(e -> getEventBus().post(new AlgorithmUIActionRequestedEvent(this, REQUEST_OPEN_CONTEXT_MENU)));
@@ -227,7 +230,7 @@ public class JIPipeVerticalNodeUI extends JIPipeNodeUI {
                 createInputSlots = false;
             }
         }
-        if(getGraphUI().getCompartment() != null) {
+        if (getGraphUI().getCompartment() != null) {
             if (!getNode().renderInputSlots()) {
                 createAddInputSlotButton = false;
                 createInputSlots = false;
@@ -314,11 +317,11 @@ public class JIPipeVerticalNodeUI extends JIPipeNodeUI {
             if (algorithm.isEnabled()) {
                 if (!algorithm.isPassThrough()) {
                     setBackground(getFillColor());
-                    nameLabel.setForeground(Color.BLACK);
+                    nameLabel.setForeground(UIManager.getColor("Label.foreground"));
                     openSettingsButton.setIcon(UIUtils.getIconFromResources("actions/wrench.png"));
                 } else {
-                    setBackground(Color.WHITE);
-                    nameLabel.setForeground(Color.BLACK);
+                    setBackground(UIManager.getColor("TextArea.background"));
+                    nameLabel.setForeground(UIManager.getColor("Label.foreground"));
                     openSettingsButton.setIcon(UIUtils.getIconFromResources("emblems/pass-through.png"));
                 }
             } else {
@@ -328,7 +331,7 @@ public class JIPipeVerticalNodeUI extends JIPipeNodeUI {
             }
         } else {
             setBackground(getFillColor());
-            nameLabel.setForeground(Color.BLACK);
+            nameLabel.setForeground(UIManager.getColor("Label.foreground"));
             openSettingsButton.setIcon(UIUtils.getIconFromResources("actions/wrench.png"));
         }
     }
@@ -336,31 +339,29 @@ public class JIPipeVerticalNodeUI extends JIPipeNodeUI {
     @Override
     public void updateSize() {
         Dimension gridSize = calculateGridSize();
-        Dimension realSize = new Dimension((int)Math.round(gridSize.width * JIPipeGraphViewMode.Vertical.getGridWidth() * getGraphUI().getZoom()),
-                (int)Math.round(gridSize.height * JIPipeGraphViewMode.Vertical.getGridHeight() * getGraphUI().getZoom()));
+        Dimension realSize = new Dimension((int) Math.round(gridSize.width * JIPipeGraphViewMode.Vertical.getGridWidth() * getGraphUI().getZoom()),
+                (int) Math.round(gridSize.height * JIPipeGraphViewMode.Vertical.getGridHeight() * getGraphUI().getZoom()));
         Dimension slotSize = JIPipeGraphViewMode.Vertical.gridToRealSize(new Dimension(1, 1), getGraphUI().getZoom());
         slotSize.width = realSize.width;
-        if(inputSlotPanel.getComponentCount() > 0) {
+        if (inputSlotPanel.getComponentCount() > 0) {
             inputSlotPanel.setMinimumSize(slotSize);
             inputSlotPanel.setMaximumSize(slotSize);
             inputSlotPanel.setPreferredSize(slotSize);
-        }
-        else {
+        } else {
             inputSlotPanel.setMinimumSize(new Dimension());
             inputSlotPanel.setMaximumSize(new Dimension());
             inputSlotPanel.setMaximumSize(new Dimension());
         }
-        if(outputSlotPanel.getComponentCount() > 0) {
+        if (outputSlotPanel.getComponentCount() > 0) {
             outputSlotPanel.setMinimumSize(slotSize);
             outputSlotPanel.setMaximumSize(slotSize);
             outputSlotPanel.setPreferredSize(slotSize);
-        }
-        else {
+        } else {
             outputSlotPanel.setMinimumSize(new Dimension());
             outputSlotPanel.setMaximumSize(new Dimension());
             outputSlotPanel.setMaximumSize(new Dimension());
         }
-        if(!Objects.equals(getSize(), realSize)) {
+        if (!Objects.equals(getSize(), realSize)) {
             setSize(realSize);
             revalidate();
             getGraphUI().repaint();

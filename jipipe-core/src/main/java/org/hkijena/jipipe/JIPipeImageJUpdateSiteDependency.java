@@ -4,21 +4,18 @@ import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.google.common.eventbus.EventBus;
 import net.imagej.updater.UpdateSite;
-import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.parameters.collections.ListParameter;
-import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
 import org.hkijena.jipipe.utils.ResourceUtils;
-import org.hkijena.jipipe.utils.StringUtils;
 
 /**
  * A dependency that points to an ImageJ update site.
  * The ID contains the update site name and the URL is the site URL that might be used if the site does not exist in the repository.
  */
-public class JIPipeImageJUpdateSiteDependency implements JIPipeParameterCollection  {
+public class JIPipeImageJUpdateSiteDependency implements JIPipeParameterCollection {
 
     private final EventBus eventBus = new EventBus();
     private String name;

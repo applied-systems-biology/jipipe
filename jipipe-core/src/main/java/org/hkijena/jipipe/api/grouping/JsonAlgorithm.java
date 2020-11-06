@@ -13,10 +13,10 @@
 
 package org.hkijena.jipipe.api.grouping;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameterReferenceAccessGroupList;
 import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameters;
-import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.parameters.JIPipeCustomParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
@@ -80,7 +80,7 @@ public class JsonAlgorithm extends GraphWrapperAlgorithm implements JIPipeCustom
      */
     public static void unpackToNodeGroup(JsonAlgorithm algorithm) {
         JIPipeGraph graph = algorithm.getGraph();
-        NodeGroup group = JIPipeAlgorithm.newInstance("node-group");
+        NodeGroup group = JIPipe.createNode("node-group", NodeGroup.class);
         group.setCustomName(algorithm.getName());
         group.setCustomDescription(algorithm.getCustomDescription());
         group.setEnabled(algorithm.isEnabled());

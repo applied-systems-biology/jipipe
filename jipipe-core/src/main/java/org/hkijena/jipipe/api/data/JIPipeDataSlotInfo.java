@@ -16,11 +16,16 @@ package org.hkijena.jipipe.api.data;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.EventBus;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.events.ParameterChangedEvent;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
@@ -28,10 +33,13 @@ import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 
 /**
  * Defines an {@link JIPipeGraphNode} data slot.
@@ -285,13 +293,22 @@ public class JIPipeDataSlotInfo implements JIPipeParameterCollection {
     }
 
     /**
+     * Returns true if the provided string is a valid slot name
+     * @param slotName the name
+     * @return if the name is valid
+     */
+    public static boolean isValidName(String slotName) {
+        return slotName.matches("[\\w.\\-,# ]+");
+    }
+
+    /**
      * Serializes an {@link JIPipeDataSlotInfo}
      */
     public static class Serializer extends JsonSerializer<JIPipeDataSlotInfo> {
         @Override
         public void serialize(JIPipeDataSlotInfo definition, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
             jsonGenerator.writeStartObject();
-            jsonGenerator.writeStringField("slot-data-type", JIPipeDatatypeRegistry.getInstance().getIdOf(definition.dataClass));
+            jsonGenerator.writeStringField("slot-data-type", JIPipe.getDataTypes().getIdOf(definition.dataClass));
             jsonGenerator.writeStringField("slot-type", definition.slotType.name());
             jsonGenerator.writeStringField("inherited-slot", definition.inheritedSlot);
             jsonGenerator.writeStringField("name", definition.name);
@@ -315,7 +332,7 @@ public class JIPipeDataSlotInfo implements JIPipeParameterCollection {
         public JIPipeDataSlotInfo deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
             JsonNode node = jsonParser.getCodec().readTree(jsonParser);
             JsonNode inheritedSlotNode = node.path("inherited-slot");
-            JIPipeDataSlotInfo definition = new JIPipeDataSlotInfo(JIPipeDatatypeRegistry.getInstance().getById(node.get("slot-data-type").asText()),
+            JIPipeDataSlotInfo definition = new JIPipeDataSlotInfo(JIPipe.getDataTypes().getById(node.get("slot-data-type").asText()),
                     JIPipeSlotType.valueOf(node.get("slot-type").asText()),
                     node.get("name").asText(),
                     inheritedSlotNode.isMissingNode() ? "" : inheritedSlotNode.asText(null));

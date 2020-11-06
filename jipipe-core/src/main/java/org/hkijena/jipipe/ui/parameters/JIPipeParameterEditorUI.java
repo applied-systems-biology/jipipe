@@ -14,10 +14,10 @@
 package org.hkijena.jipipe.ui.parameters;
 
 import com.google.common.eventbus.Subscribe;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.events.ParameterChangedEvent;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.api.registries.JIPipeParameterTypeRegistry;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.scijava.Context;
@@ -68,7 +68,7 @@ public abstract class JIPipeParameterEditorUI extends JIPipeWorkbenchPanel imple
         T value = (T) getParameterAccess().get(getParameterAccess().getFieldClass());
         if (value == null) {
             ++preventReload;
-            value = (T) JIPipeParameterTypeRegistry.getInstance().getInfoByFieldClass(getParameterAccess().getFieldClass()).newInstance();
+            value = (T) JIPipe.getParameterTypes().getInfoByFieldClass(getParameterAccess().getFieldClass()).newInstance();
             getParameterAccess().set(value);
             --preventReload;
         }

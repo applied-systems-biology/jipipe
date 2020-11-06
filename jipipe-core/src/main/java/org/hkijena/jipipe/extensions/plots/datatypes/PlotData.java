@@ -22,6 +22,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.EventBus;
 import ij.measure.ResultsTable;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeHidden;
 import org.hkijena.jipipe.api.JIPipeValidatable;
@@ -32,7 +33,6 @@ import org.hkijena.jipipe.api.events.ParameterChangedEvent;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.DocumentTabPane;
@@ -45,7 +45,9 @@ import org.jfree.graphics2d.svg.SVGGraphics2D;
 import org.jfree.graphics2d.svg.SVGUtils;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.Component;
+import java.awt.Image;
+import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -103,8 +105,8 @@ public abstract class PlotData implements JIPipeData, JIPipeParameterCollection,
         double factorX = 1.0 * width / image.getWidth();
         double factorY = 1.0 * height / image.getHeight();
         double factor = Math.max(factorX, factorY);
-        int imageWidth = (int)(image.getWidth() * factor);
-        int imageHeight = (int)(image.getHeight() * factor);
+        int imageWidth = (int) (image.getWidth() * factor);
+        int imageHeight = (int) (image.getHeight() * factor);
         return new JLabel(new ImageIcon(image.getScaledInstance(imageWidth, imageHeight, Image.SCALE_SMOOTH)));
     }
 
@@ -161,7 +163,7 @@ public abstract class PlotData implements JIPipeData, JIPipeParameterCollection,
 
     @Override
     public JIPipeData duplicate() {
-        return JIPipeData.createInstance(getClass(), this);
+        return JIPipe.createData(getClass(), this);
     }
 
     @Override
@@ -277,8 +279,8 @@ public abstract class PlotData implements JIPipeData, JIPipeParameterCollection,
         PlotData result;
         try {
             JsonNode node = JsonUtils.getObjectMapper().readValue(folder.resolve("plot-metadata.json").toFile(), JsonNode.class);
-            Class<? extends JIPipeData> dataClass = JIPipeDatatypeRegistry.getInstance().getById(node.get("plot-data-type").textValue());
-            result = (PlotData) JIPipeData.createInstance(dataClass);
+            Class<? extends JIPipeData> dataClass = JIPipe.getDataTypes().getById(node.get("plot-data-type").textValue());
+            result = (PlotData) JIPipe.createData(dataClass);
 
             // Load metadata
             result.fromJson(node);
@@ -305,7 +307,7 @@ public abstract class PlotData implements JIPipeData, JIPipeParameterCollection,
         @Override
         public void serialize(PlotData value, JsonGenerator gen, SerializerProvider serializers) throws IOException, JsonProcessingException {
             gen.writeStartObject();
-            gen.writeStringField("plot-data-type", JIPipeDatatypeRegistry.getInstance().getIdOf(value.getClass()));
+            gen.writeStringField("plot-data-type", JIPipe.getDataTypes().getIdOf(value.getClass()));
 
             // Write parameters
             JIPipeParameterCollection.serializeParametersToJson(value, gen);

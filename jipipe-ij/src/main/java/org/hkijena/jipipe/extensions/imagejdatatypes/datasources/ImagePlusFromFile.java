@@ -23,7 +23,11 @@ import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.events.NodeSlotsChangedEvent;
-import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
+import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FileData;
@@ -122,7 +126,7 @@ public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
     protected JIPipeData readImageFrom(Path fileName) {
         try {
             ImagePlus imagePlus = IJ.openImage(fileName.toString());
-            if(removeLut) {
+            if (removeLut) {
                 imagePlus.getProcessor().setLut(null);
             }
             return generatedImageType.getInfo().getDataClass().getConstructor(ImagePlus.class).newInstance(imagePlus);

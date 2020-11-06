@@ -35,7 +35,11 @@ import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.ComponentAdapter;
@@ -146,16 +150,12 @@ public class JIPipeProjectInfoUI extends JIPipeProjectWorkbenchPanel {
 
     private void refreshTechnicalInfo() {
         licenseInfo.setText(StringUtils.orElse(getProject().getMetadata().getLicense(), "No license"));
-        projectStats.setText(getProject().getGraph().getAlgorithmCount() + " nodes in " + getProject().getCompartments().size() + " compartments");
+        projectStats.setText(getProject().getGraph().getNodeCount() + " nodes in " + getProject().getCompartments().size() + " compartments");
     }
 
     private void renderBackgroundPanel() {
         BufferedImage headerBackground;
-        try {
-            headerBackground = ImageIO.read(ResourceUtils.getPluginResource("infoui-background.png"));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        headerBackground = UIUtils.getHeaderPanelBackground();
 
         headerPanel.setBackgroundImage(headerBackground);
         if (GeneralUISettings.getInstance().isProjectInfoGeneratesPreview()) {

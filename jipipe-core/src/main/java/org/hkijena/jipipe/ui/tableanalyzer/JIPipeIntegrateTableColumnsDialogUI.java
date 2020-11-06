@@ -13,17 +13,25 @@
 
 package org.hkijena.jipipe.ui.tableanalyzer;
 
-import org.hkijena.jipipe.api.registries.JIPipeTableRegistry;
+import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.registries.JIPipeExpressionRegistry;
 import org.hkijena.jipipe.extensions.tables.IntegratingColumnOperation;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.BusyCursor;
-import org.hkijena.jipipe.utils.CustomScrollPane;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
-import java.util.*;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -58,9 +66,9 @@ public class JIPipeIntegrateTableColumnsDialogUI extends JDialog {
             operationJComboBox.addItem(null);
             operationJComboBox.addItem(new CategorizeColumnRole());
 
-            for (JIPipeTableRegistry.ColumnOperationEntry entry :
-                    JIPipeTableRegistry.getInstance().getOperationsOfType(IntegratingColumnOperation.class)
-                            .values().stream().sorted(Comparator.comparing(JIPipeTableRegistry.ColumnOperationEntry::getName)).collect(Collectors.toList())) {
+            for (JIPipeExpressionRegistry.ColumnOperationEntry entry :
+                    JIPipe.getTableOperations().getTableColumnOperationsOfType(IntegratingColumnOperation.class)
+                            .values().stream().sorted(Comparator.comparing(JIPipeExpressionRegistry.ColumnOperationEntry::getName)).collect(Collectors.toList())) {
                 operationJComboBox.addItem(entry);
             }
 
@@ -87,7 +95,7 @@ public class JIPipeIntegrateTableColumnsDialogUI extends JDialog {
             });
         }
         UIUtils.addFillerGridBagComponent(columnPanel, inputTableModel.getColumnCount(), 1);
-        JScrollPane scrollPane = new CustomScrollPane(columnPanel);
+        JScrollPane scrollPane = new JScrollPane(columnPanel);
         add(scrollPane, BorderLayout.CENTER);
 
         JPanel buttonPanel = new JPanel();
@@ -110,8 +118,8 @@ public class JIPipeIntegrateTableColumnsDialogUI extends JDialog {
                 Object value = entry.getValue().getSelectedItem();
                 if (value instanceof CategorizeColumnRole) {
                     categoryColumns.add(entry.getKey());
-                } else if (value instanceof JIPipeTableRegistry.ColumnOperationEntry) {
-                    JIPipeTableRegistry.ColumnOperationEntry operationEntry = (JIPipeTableRegistry.ColumnOperationEntry) value;
+                } else if (value instanceof JIPipeExpressionRegistry.ColumnOperationEntry) {
+                    JIPipeExpressionRegistry.ColumnOperationEntry operationEntry = (JIPipeExpressionRegistry.ColumnOperationEntry) value;
                     operations.add(new ResultsTableData.IntegratingColumnOperationEntry(entry.getKey(),
                             String.format("%s(%s)", operationEntry.getShortName(), entry.getKey()),
                             (IntegratingColumnOperation) operationEntry.getOperation()));
@@ -151,8 +159,8 @@ public class JIPipeIntegrateTableColumnsDialogUI extends JDialog {
         public Component getListCellRendererComponent(JList<?> list, Object value,
                                                       int index, boolean isSelected, boolean cellHasFocus) {
 
-            if (value instanceof JIPipeTableRegistry.ColumnOperationEntry) {
-                setText(((JIPipeTableRegistry.ColumnOperationEntry) value).getName());
+            if (value instanceof JIPipeExpressionRegistry.ColumnOperationEntry) {
+                setText(((JIPipeExpressionRegistry.ColumnOperationEntry) value).getName());
                 setIcon(UIUtils.getIconFromResources("actions/statistics.png"));
             } else if (value instanceof CategorizeColumnRole) {
                 setText("Use as category");
@@ -163,9 +171,9 @@ public class JIPipeIntegrateTableColumnsDialogUI extends JDialog {
             }
 
             if (isSelected) {
-                setBackground(new Color(184, 207, 229));
+                setBackground(UIManager.getColor("List.selectionBackground"));
             } else {
-                setBackground(new Color(255, 255, 255));
+                setBackground(UIManager.getColor("List.background"));
             }
 
             return this;

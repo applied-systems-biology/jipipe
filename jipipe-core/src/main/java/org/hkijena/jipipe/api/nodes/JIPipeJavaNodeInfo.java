@@ -68,7 +68,7 @@ public class JIPipeJavaNodeInfo extends JIPipeMutableNodeInfo {
     }
 
     @Override
-    public JIPipeGraphNode clone(JIPipeGraphNode algorithm) {
+    public JIPipeGraphNode duplicate(JIPipeGraphNode algorithm) {
         try {
             return ConstructorUtils.getMatchingAccessibleConstructor(getInstanceClass(), algorithm.getClass()).newInstance(algorithm);
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {

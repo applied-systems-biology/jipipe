@@ -15,16 +15,20 @@ package org.hkijena.jipipe.ui.components;
 
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
+import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
-import java.awt.*;
+import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -59,7 +63,7 @@ public class PathEditor extends JPanel {
 
     private void initialize() {
         // Setup the GUI
-        setBackground(Color.WHITE);
+        setBackground(UIManager.getColor("TextArea.background"));
         setBorder(BorderFactory.createEtchedBorder());
         setLayout(new GridBagLayout());
 
@@ -139,9 +143,12 @@ public class PathEditor extends JPanel {
     }
 
     public void setPath(Path path) {
-        if (path != null)
-            pathEdit.setText(path.toString());
-        else
+        if (path != null) {
+            String current = StringUtils.orElse(pathEdit.getText(), "");
+            if (!Objects.equals(current, path.toString())) {
+                pathEdit.setText(path.toString());
+            }
+        } else
             pathEdit.setText("");
     }
 

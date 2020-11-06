@@ -16,31 +16,54 @@ package org.hkijena.jipipe.api.registries;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.eventbus.EventBus;
-import jdk.nashorn.internal.runtime.regexp.joni.constants.EncloseType;
-import org.hkijena.jipipe.JIPipeDefaultRegistry;
+import org.apache.commons.lang3.reflect.ConstructorUtils;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.JIPipeHidden;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataConverter;
+import org.hkijena.jipipe.api.data.JIPipeDataDisplayOperation;
+import org.hkijena.jipipe.api.data.JIPipeDataImportOperation;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
+import org.hkijena.jipipe.api.data.JIPipeExportedDataTable;
 import org.hkijena.jipipe.api.events.DatatypeRegisteredEvent;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
+import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
+import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
+import org.hkijena.jipipe.ui.resultanalysis.JIPipeDefaultResultDataSlotPreviewUI;
+import org.hkijena.jipipe.ui.resultanalysis.JIPipeDefaultResultDataSlotRowUI;
+import org.hkijena.jipipe.ui.resultanalysis.JIPipeResultDataSlotPreviewUI;
+import org.hkijena.jipipe.ui.resultanalysis.JIPipeResultDataSlotRowUI;
+import org.hkijena.jipipe.utils.ReflectionUtils;
+import org.hkijena.jipipe.utils.ResourceUtils;
 import org.jgrapht.Graph;
 import org.jgrapht.GraphPath;
-import org.jgrapht.alg.connectivity.ConnectivityInspector;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultDirectedGraph;
-import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.DefaultWeightedEdge;
 
-import java.util.*;
+import javax.swing.*;
+import java.lang.reflect.InvocationTargetException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Contains known {@link JIPipeData} types, and associates them to their respective {@link JIPipeDataSlot}.
  */
 public class JIPipeDatatypeRegistry {
     private BiMap<String, Class<? extends JIPipeData>> registeredDataTypes = HashBiMap.create();
+    private Map<String, List<JIPipeDataDisplayOperation>> registeredDisplayOperations = new HashMap<>();
+    private Map<String, List<JIPipeDataImportOperation>> registeredImportOperations = new HashMap<>();
+    private Map<Class<? extends JIPipeData>, URL> icons = new HashMap<>();
+    private Map<Class<? extends JIPipeData>, Class<? extends JIPipeResultDataSlotRowUI>> resultUIs = new HashMap<>();
+    private Map<Class<? extends JIPipeData>, Class<? extends JIPipeResultDataSlotPreviewUI>> resultTableCellUIs = new HashMap<>();
     private Set<String> hiddenDataTypeIds = new HashSet<>();
     private Map<String, JIPipeDependency> registeredDatatypeSources = new HashMap<>();
     private Graph<JIPipeDataInfo, DataConverterEdge> conversionGraph = new DefaultDirectedGraph<>(DataConverterEdge.class);
@@ -60,10 +83,10 @@ public class JIPipeDatatypeRegistry {
      * @param converter the converter
      */
     public void registerConversion(JIPipeDataConverter converter) {
-        if(!isRegistered(converter.getInputType())) {
+        if (!isRegistered(converter.getInputType())) {
             conversionGraph.addVertex(JIPipeDataInfo.getInstance(converter.getInputType()));
         }
-        if(!isRegistered(converter.getOutputType())) {
+        if (!isRegistered(converter.getOutputType())) {
             conversionGraph.addVertex(JIPipeDataInfo.getInstance(converter.getOutputType()));
         }
         conversionGraph.addEdge(JIPipeDataInfo.getInstance(converter.getInputType()),
@@ -88,7 +111,7 @@ public class JIPipeDatatypeRegistry {
             return inputData;
         else {
             GraphPath<JIPipeDataInfo, DataConverterEdge> path = shortestPath.getPath(JIPipeDataInfo.getInstance(inputData.getClass()), JIPipeDataInfo.getInstance(outputDataType));
-            if(path == null) {
+            if (path == null) {
                 throw new UserFriendlyRuntimeException("Could not convert " + inputData.getClass() + " to " + outputDataType,
                         "Unable to convert data type!",
                         "JIPipe plugin manager",
@@ -98,7 +121,7 @@ public class JIPipeDatatypeRegistry {
             }
             JIPipeData data = inputData;
             for (DataConverterEdge edge : path.getEdgeList()) {
-                if(edge.getConverter() != null) {
+                if (edge.getConverter() != null) {
                     data = edge.getConverter().convert(data);
                 }
             }
@@ -137,20 +160,76 @@ public class JIPipeDatatypeRegistry {
             hiddenDataTypeIds.add(id);
 
         JIPipeDataInfo info = JIPipeDataInfo.getInstance(klass);
-        if(!conversionGraph.containsVertex(info))
+        if (!conversionGraph.containsVertex(info))
             conversionGraph.addVertex(info);
         conversionGraph.addEdge(info, info);
         for (Class<? extends JIPipeData> otherClass : registeredDataTypes.values()) {
             JIPipeDataInfo otherInfo = JIPipeDataInfo.getInstance(otherClass);
-            if(isTriviallyConvertible(info.getDataClass(), otherClass)) {
+            if (isTriviallyConvertible(info.getDataClass(), otherClass)) {
                 conversionGraph.addEdge(info, otherInfo);
             }
-            if(isTriviallyConvertible(otherClass, info.getDataClass())) {
+            if (isTriviallyConvertible(otherClass, info.getDataClass())) {
                 conversionGraph.addEdge(otherInfo, info);
             }
         }
 
         eventBus.post(new DatatypeRegisteredEvent(id));
+    }
+
+    /**
+     * Registers an operation that will be available to users in the results view (after runs).
+     *
+     * @param dataTypeId data type id. if empty, the operation applies to all data types.
+     * @param operation  the operation
+     */
+    public void registerImportOperation(String dataTypeId, JIPipeDataImportOperation operation) {
+        List<JIPipeDataImportOperation> existing = registeredImportOperations.getOrDefault(dataTypeId, null);
+        if (existing == null) {
+            existing = new ArrayList<>();
+            registeredImportOperations.put(dataTypeId, existing);
+        }
+        existing.add(operation);
+    }
+
+    /**
+     * Registers an operation that will be available to users in the cache view
+     *
+     * @param dataTypeId data type id. if empty, the operation applies to all data types.
+     * @param operation  the operation
+     */
+    public void registerDisplayOperation(String dataTypeId, JIPipeDataDisplayOperation operation) {
+        List<JIPipeDataDisplayOperation> existing = registeredDisplayOperations.getOrDefault(dataTypeId, null);
+        if (existing == null) {
+            existing = new ArrayList<>();
+            registeredDisplayOperations.put(dataTypeId, existing);
+        }
+        existing.add(operation);
+    }
+
+    /**
+     * Gets all import operations for a data type ID
+     *
+     * @param id the id
+     * @return list of import operations
+     */
+    public List<JIPipeDataImportOperation> getImportOperationsFor(String id) {
+        List<JIPipeDataImportOperation> result = new ArrayList<>(registeredImportOperations.getOrDefault(id, Collections.emptyList()));
+        result.addAll(registeredImportOperations.getOrDefault("", Collections.emptyList()));
+        result.sort(Comparator.comparing(JIPipeDataImportOperation::getOrder));
+        return result;
+    }
+
+    /**
+     * Gets all import operations for a data type ID
+     *
+     * @param id the id
+     * @return list of import operations
+     */
+    public List<JIPipeDataDisplayOperation> getDisplayOperationsFor(String id) {
+        List<JIPipeDataDisplayOperation> result = new ArrayList<>(registeredDisplayOperations.getOrDefault(id, Collections.emptyList()));
+        result.addAll(registeredDisplayOperations.getOrDefault("", Collections.emptyList()));
+        result.sort(Comparator.comparing(JIPipeDataDisplayOperation::getOrder));
+        return result;
     }
 
     /**
@@ -304,10 +383,102 @@ public class JIPipeDatatypeRegistry {
     }
 
     /**
-     * @return Singleton instance
+     * Registers a custom icon for a datatype
+     *
+     * @param klass        data class
+     * @param resourcePath icon resource
      */
-    public static JIPipeDatatypeRegistry getInstance() {
-        return JIPipeDefaultRegistry.getInstance().getDatatypeRegistry();
+    public void registerIcon(Class<? extends JIPipeData> klass, URL resourcePath) {
+        icons.put(klass, resourcePath);
+    }
+
+    /**
+     * Registers a custom UI for a result data slot
+     *
+     * @param klass   data class
+     * @param uiClass slot ui
+     */
+    public void registerResultSlotUI(Class<? extends JIPipeData> klass, Class<? extends JIPipeResultDataSlotRowUI> uiClass) {
+        resultUIs.put(klass, uiClass);
+    }
+
+    /**
+     * Registers a custom renderer for the data displayed in the dataslot result table
+     *
+     * @param klass    data class
+     * @param renderer cell renderer
+     */
+    public void registerResultTableCellUI(Class<? extends JIPipeData> klass, Class<? extends JIPipeResultDataSlotPreviewUI> renderer) {
+        resultTableCellUIs.put(klass, renderer);
+    }
+
+    /**
+     * Returns the icon for a datatype
+     *
+     * @param klass data class
+     * @return icon instance
+     */
+    public ImageIcon getIconFor(Class<? extends JIPipeData> klass) {
+        URL uri = icons.getOrDefault(klass, ResourceUtils.getPluginResource("icons/data-types/data-type.png"));
+        return new ImageIcon(uri);
+    }
+
+    /**
+     * Generates a UI for a result data slot
+     *
+     * @param workbenchUI workbench UI
+     * @param slot        data slot
+     * @param row         table row
+     * @return slot UI
+     */
+    public JIPipeResultDataSlotRowUI getUIForResultSlot(JIPipeProjectWorkbench workbenchUI, JIPipeDataSlot slot, JIPipeExportedDataTable.Row row) {
+        Class<? extends JIPipeResultDataSlotRowUI> uiClass = resultUIs.getOrDefault(slot.getAcceptedDataType(), null);
+        if (uiClass != null) {
+            try {
+                return ConstructorUtils.getMatchingAccessibleConstructor(uiClass, JIPipeProjectWorkbench.class, JIPipeDataSlot.class, JIPipeExportedDataTable.Row.class)
+                        .newInstance(workbenchUI, slot, row);
+            } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            return new JIPipeDefaultResultDataSlotRowUI(workbenchUI, slot, row);
+        }
+    }
+
+    /**
+     * Returns a cell renderer for dataslot result table
+     *
+     * @param klass data class
+     * @param table the table that owns the renderer
+     * @return cell renderer
+     */
+    public JIPipeResultDataSlotPreviewUI getCellRendererFor(Class<? extends JIPipeData> klass, JTable table) {
+        if (GeneralDataSettings.getInstance().isGenerateResultPreviews()) {
+            Class<? extends JIPipeResultDataSlotPreviewUI> rendererClass = resultTableCellUIs.getOrDefault(klass, null);
+            if (rendererClass != null) {
+                return (JIPipeResultDataSlotPreviewUI) ReflectionUtils.newInstance(rendererClass, table);
+            } else {
+                return new JIPipeDefaultResultDataSlotPreviewUI(table);
+            }
+        } else {
+            return new JIPipeDefaultResultDataSlotPreviewUI(table);
+        }
+    }
+
+    /**
+     * @param klass data class
+     * @return icon resource
+     */
+    public URL getIconURLFor(Class<? extends JIPipeData> klass) {
+        return icons.getOrDefault(klass, ResourceUtils.getPluginResource("icons/data-types/data-type.png"));
+    }
+
+    /**
+     * @param info data info
+     * @return icon resource
+     */
+    public URL getIconURLFor(JIPipeDataInfo info) {
+        return getIconURLFor(info.getDataClass());
     }
 
     /**
@@ -318,6 +489,7 @@ public class JIPipeDatatypeRegistry {
 
         /**
          * The converter if the data types cannot be trivially converted
+         *
          * @return converter or null
          */
         public JIPipeDataConverter getConverter() {

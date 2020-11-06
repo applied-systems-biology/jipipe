@@ -4,13 +4,13 @@ import com.google.common.eventbus.EventBus;
 import net.haesleinhuepf.clij.CLIJ;
 import net.haesleinhuepf.clij.converters.CLIJConverterService;
 import net.haesleinhuepf.clij.macro.CLIJHandler;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.JIPipeJavaNodeInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.api.registries.JIPipeSettingsRegistry;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.lut.DisplayRangeCalibrationAlgorithm;
+import org.hkijena.jipipe.extensions.imagejdatatypes.algorithms.DisplayRangeCalibrationAlgorithm;
 import org.scijava.Context;
 import org.scijava.log.LogService;
 
@@ -71,7 +71,7 @@ public class CLIJSettings implements JIPipeParameterCollection {
     }
 
     public static CLIJSettings getInstance() {
-        return JIPipeSettingsRegistry.getInstance().getSettings(ID, CLIJSettings.class);
+        return JIPipe.getSettings().getSettings(ID, CLIJSettings.class);
     }
 
     /**

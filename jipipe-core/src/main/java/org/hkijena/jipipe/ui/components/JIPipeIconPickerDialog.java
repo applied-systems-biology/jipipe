@@ -13,11 +13,13 @@
 
 package org.hkijena.jipipe.ui.components;
 
-import org.hkijena.jipipe.utils.CustomScrollPane;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Window;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
@@ -60,7 +62,7 @@ public class JIPipeIconPickerDialog extends JDialog implements MouseListener {
         iconList.setModel(new DefaultListModel<>());
         iconList.addListSelectionListener(e -> selectedIcon = iconList.getSelectedValue());
         iconList.addMouseListener(this);
-        JScrollPane scrollPane = new CustomScrollPane(iconList);
+        JScrollPane scrollPane = new JScrollPane(iconList);
         add(scrollPane, BorderLayout.CENTER);
     }
 

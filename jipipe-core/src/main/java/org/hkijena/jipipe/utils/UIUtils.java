@@ -15,6 +15,9 @@ package org.hkijena.jipipe.utils;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import ij.IJ;
+import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
+import org.fife.ui.rsyntaxtextarea.Theme;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.registries.JIPipeSettingsRegistry;
@@ -25,28 +28,37 @@ import org.hkijena.jipipe.ui.components.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.UserFriendlyErrorUI;
 import org.hkijena.jipipe.ui.extension.MenuExtension;
 import org.hkijena.jipipe.ui.extension.MenuTarget;
-import org.hkijena.jipipe.ui.registries.JIPipeUIMenuServiceRegistry;
+import org.hkijena.jipipe.ui.theme.JIPipeUITheme;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import javax.swing.plaf.metal.MetalLookAndFeel;
 import javax.swing.text.html.HTMLEditorKit;
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
-import java.awt.event.*;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
-import java.util.*;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -55,6 +67,7 @@ import java.util.stream.Collectors;
  */
 public class UIUtils {
 
+    public static boolean DARK_THEME = false;
     public static final FileNameExtensionFilter EXTENSION_FILTER_CSV = new FileNameExtensionFilter("CSV table (*.csv)", "csv");
     public static final FileNameExtensionFilter EXTENSION_FILTER_PNG = new FileNameExtensionFilter("PNG image (*.png)", "png");
     public static final FileNameExtensionFilter EXTENSION_FILTER_SVG = new FileNameExtensionFilter("SVG image (*.svg)", "svg");
@@ -73,69 +86,104 @@ public class UIUtils {
      * Attempts to override the look & feel based on the JIPipe settings
      */
     public static void loadLookAndFeelFromSettings() {
-        Path propertyFile = JIPipeSettingsRegistry.getPropertyFile();
-        boolean forceMetal;
-        boolean modernizeMetal = true;
-        if (!Files.exists(propertyFile)) {
-            forceMetal = true;
-        } else {
-            try {
-                JsonNode node = JsonUtils.getObjectMapper().readValue(propertyFile.toFile(), JsonNode.class);
-                JsonNode forceMetalNode = node.path("general-ui/force-cross-platform-look-and-feel");
-                JsonNode modernizeMetalNode = node.path("general-ui/modernize-cross-platform-look-and-feel");
-                if (!forceMetalNode.isMissingNode())
-                    forceMetal = forceMetalNode.booleanValue();
-                else
-                    forceMetal = true;
-                if (!modernizeMetalNode.isMissingNode())
-                    modernizeMetal = modernizeMetalNode.booleanValue();
-            } catch (Exception e) {
-                forceMetal = true;
-            }
-        }
-        if (forceMetal) {
-            try {
-                // Set cross-platform Java L&F (also called "Metal")
-                if (modernizeMetal)
-                    MetalLookAndFeel.setCurrentTheme(new ModernMetalTheme());
-                UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
-
-//                try(FileWriter writer = new FileWriter("laf-keys.txt")) {
-//                    UIManager.LookAndFeelInfo looks[] = UIManager
-//                            .getInstalledLookAndFeels();
-//                    for (UIManager.LookAndFeelInfo info : looks) {
-//                        SortedSet<String> lafDefaultKeys = new TreeSet<>();
-//                        writer.write("\n\nL&F " + info.getName() + "\n");
-//                        UIDefaults defaults = UIManager.getDefaults();
-//                        Enumeration<Object> newKeys = defaults.keys();
-//
-//                        while (newKeys.hasMoreElements()) {
-//                            lafDefaultKeys.add(newKeys.nextElement().toString());
-//                        }
-//                        for (String lafDefaultKey : lafDefaultKeys) {
-//                            writer.write(lafDefaultKey + "\n");
-//                        }
-//
-//                    }
-//                }
-
-                UIUtils.installCustomTheme();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
+        JIPipeUITheme theme = getThemeFromRawSettings();
+        theme.install();
     }
 
-    /**
-     * Installs modifications to the Metal look & feel used by JIPipe
-     */
-    public static void installCustomTheme() {
-        UIManager.put("swing.boldMetal", Boolean.FALSE);
-//        UIManager.put("Button.background",  Color.decode("#eeeeee"));
-//        UIManager.put("ToggleButton.background",  Color.decode("#eeeeee"));
-//        UIManager.put("Button.border", new CompoundBorder(new LineBorder(new Color(200, 200, 200)), new EmptyBorder(2, 2, 2, 2)));
-//        UIManager.put("ToggleButton.border", new CompoundBorder(new LineBorder(new Color(200, 200, 200)), new EmptyBorder(2, 2, 2, 2)));
+    public static void applyThemeToCodeEditor(RSyntaxTextArea textArea) {
+        if(DARK_THEME) {
+            try {
+                Theme theme = Theme.load(ResourceUtils.class.getResourceAsStream(
+                        "/org/fife/ui/rsyntaxtextarea/themes/dark.xml"));
+                theme.apply(textArea);
+            } catch (IOException ioe) { // Never happens
+                ioe.printStackTrace();
+            }
+        }
+    }
+
+    public static JIPipeUITheme getThemeFromRawSettings() {
+        Path propertyFile = JIPipeSettingsRegistry.getPropertyFile();
+        JIPipeUITheme theme = JIPipeUITheme.ModernLight;
+        if(Files.exists(propertyFile)){
+             try {
+                 JsonNode node = JsonUtils.getObjectMapper().readValue(propertyFile.toFile(), JsonNode.class);
+                 JsonNode themeNode = node.path("general-ui/theme");
+                 if (!themeNode.isMissingNode())
+                     theme = JsonUtils.getObjectMapper().readerFor(JIPipeUITheme.class).readValue(themeNode);
+             } catch (Exception e) {
+                 e.printStackTrace();
+             }
+         }
+        return theme;
+    }
+
+    public static BufferedImage getExtensionBuilderLogo400() {
+        if(DARK_THEME) {
+            try {
+                return ImageIO.read(ResourceUtils.getPluginResource("logo-extension-builder-400-dark.png"));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        else {
+            try {
+                return ImageIO.read(ResourceUtils.getPluginResource("logo-extension-builder-400.png"));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    public static BufferedImage getLogo400() {
+        if(DARK_THEME) {
+            try {
+                return ImageIO.read(ResourceUtils.getPluginResource("logo-400-dark.png"));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        else {
+            try {
+                return ImageIO.read(ResourceUtils.getPluginResource("logo-400.png"));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    public static BufferedImage getLogo() {
+        if(DARK_THEME) {
+            try {
+                return ImageIO.read(ResourceUtils.getPluginResource("logo-dark.png"));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        else {
+            try {
+                return ImageIO.read(ResourceUtils.getPluginResource("logo.png"));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    public static BufferedImage getHeaderPanelBackground() {
+        if(DARK_THEME) {
+            try {
+                return ImageIO.read(ResourceUtils.getPluginResource("infoui-background-dark.png"));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        else {
+            try {
+                return ImageIO.read(ResourceUtils.getPluginResource("infoui-background.png"));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     /**
@@ -345,7 +393,7 @@ public class UIUtils {
 //        Border compound = new CompoundBorder(BorderFactory.createEtchedBorder(), margin);
         //        Border margin = new EmptyBorder(2, 2, 2, 2);
         Border compound = new CompoundBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1),
-                new CompoundBorder(new RoundedLineBorder(ModernMetalTheme.MEDIUM_GRAY, 1, 2), margin));
+                new CompoundBorder(new RoundedLineBorder(UIManager.getColor("Button.borderColor"), 1, 2), margin));
         component.setBorder(compound);
     }
 
@@ -541,7 +589,7 @@ public class UIUtils {
     public static String getMultiLineStringByDialog(Component parent, String title, String message, String initialValue) {
         JTextArea area = new JTextArea(5, 10);
         area.setText(initialValue);
-        JScrollPane scrollPane = new CustomScrollPane(area);
+        JScrollPane scrollPane = new JScrollPane(area);
         int result = JOptionPane.showOptionDialog(
                 parent,
                 new Object[]{message, scrollPane},
@@ -552,6 +600,32 @@ public class UIUtils {
 
         if (result == JOptionPane.OK_OPTION) {
             return area.getText();
+        }
+        return null;
+    }
+
+    /**
+     * Gets an integer by dialog
+     * @param parent parent component
+     * @param title title
+     * @param message message
+     * @param initialValue initial value
+     * @param min minimum value
+     * @param max maximum value
+     * @return the selected integer or null if cancelled
+     */
+    public static Integer getIntegerByDialog(Component parent, String title, String message, int initialValue, int min, int max) {
+        JSpinner spinner = new JSpinner(new SpinnerNumberModel(initialValue, min, max, 1));
+        int result = JOptionPane.showOptionDialog(
+                parent,
+                new Object[]{message, spinner},
+                title,
+                JOptionPane.OK_CANCEL_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null, null, null);
+
+        if (result == JOptionPane.OK_OPTION) {
+            return ((SpinnerNumberModel)spinner.getModel()).getNumber().intValue();
         }
         return null;
     }
@@ -587,7 +661,10 @@ public class UIUtils {
      * @return the fill color
      */
     public static Color getFillColorFor(JIPipeNodeInfo info) {
-        return info.getCategory().getFillColor();
+        if(DARK_THEME)
+            return info.getCategory().getDarkFillColor();
+        else
+            return info.getCategory().getFillColor();
     }
 
     /**
@@ -597,7 +674,10 @@ public class UIUtils {
      * @return the border color
      */
     public static Color getBorderColorFor(JIPipeNodeInfo info) {
-        return info.getCategory().getBorderColor();
+        if(DARK_THEME)
+            return info.getCategory().getDarkBorderColor();
+        else
+            return info.getCategory().getBorderColor();
     }
 
     /**
@@ -828,7 +908,7 @@ public class UIUtils {
      * @param withSeparator  if a separator should be prepended if items are installed
      */
     public static void installMenuExtension(JIPipeWorkbench workbench, JMenu targetMenu, MenuTarget targetMenuType, boolean withSeparator) {
-        List<MenuExtension> extensions = JIPipeUIMenuServiceRegistry.getInstance()
+        List<MenuExtension> extensions = JIPipe.getCustomMenus()
                 .getMenuExtensionsTargeting(targetMenuType, workbench);
         if (!extensions.isEmpty()) {
             if (withSeparator)
@@ -894,5 +974,13 @@ public class UIUtils {
         } catch (IOException e) {
             IJ.handleException(e);
         }
+    }
+
+    public static boolean confirmResetParameters(JIPipeWorkbench parent, String title) {
+        return JOptionPane.showConfirmDialog(parent.getWindow(),
+                "This will reset most of the properties. Continue?",
+                title,
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION;
     }
 }

@@ -14,8 +14,9 @@
 package org.hkijena.jipipe.ui;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.google.common.eventbus.EventBus;
 import net.imagej.updater.UpdateSite;
-import org.hkijena.jipipe.JIPipeDefaultRegistry;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeImageJUpdateSiteDependency;
 import org.hkijena.jipipe.api.JIPipeProject;
@@ -24,9 +25,12 @@ import org.hkijena.jipipe.api.JIPipeRun;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
+import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
 import org.hkijena.jipipe.extensions.settings.ProjectsSettings;
 import org.hkijena.jipipe.ui.components.DocumentTabPane;
 import org.hkijena.jipipe.ui.components.SplashScreen;
+import org.hkijena.jipipe.ui.events.WindowClosedEvent;
+import org.hkijena.jipipe.ui.events.WindowOpenedEvent;
 import org.hkijena.jipipe.ui.project.JIPipeProjectTabMetadata;
 import org.hkijena.jipipe.ui.project.JIPipeTemplateSelectionDialog;
 import org.hkijena.jipipe.ui.project.UnsatisfiedDependenciesDialog;
@@ -36,7 +40,7 @@ import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Context;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -50,7 +54,8 @@ import java.util.Set;
  */
 public class JIPipeProjectWindow extends JFrame {
 
-    private static Set<JIPipeProjectWindow> OPEN_WINDOWS = new HashSet<>();
+    public static final EventBus WINDOWS_EVENTS = new EventBus();
+    private static final Set<JIPipeProjectWindow> OPEN_WINDOWS = new HashSet<>();
     private Context context;
     private JIPipeProject project;
     private JIPipeProjectWorkbench projectUI;
@@ -66,20 +71,26 @@ public class JIPipeProjectWindow extends JFrame {
         SplashScreen.getInstance().hideSplash();
         this.context = context;
         OPEN_WINDOWS.add(this);
+        WINDOWS_EVENTS.post(new WindowOpenedEvent(this));
         initialize();
         loadProject(project, showIntroduction, isNewProject);
     }
 
     private void initialize() {
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         getContentPane().setLayout(new BorderLayout(8, 8));
         super.setTitle("JIPipe");
         setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
         UIUtils.setToAskOnClose(this, "Do you really want to close JIPipe?", "Close window");
+        if(GeneralUISettings.getInstance().isMaximizeWindows()) {
+            SwingUtilities.invokeLater(() -> setExtendedState(getExtendedState() | MAXIMIZED_BOTH));
+        }
     }
 
     @Override
     public void dispose() {
         OPEN_WINDOWS.remove(this);
+        WINDOWS_EVENTS.post(new WindowClosedEvent(this));
         super.dispose();
     }
 
@@ -122,7 +133,7 @@ public class JIPipeProjectWindow extends JFrame {
         JIPipeTemplateSelectionDialog dialog = new JIPipeTemplateSelectionDialog(this);
         dialog.setLocationRelativeTo(this);
         dialog.setVisible(true);
-        if(dialog.getSelectedTemplate() != null) {
+        if (dialog.getSelectedTemplate() != null) {
             try {
                 JIPipeProject project = dialog.getSelectedTemplate().load();
                 JIPipeProjectWindow window = openProjectInThisOrNewWindow("New project", project, true, true);
@@ -135,26 +146,6 @@ public class JIPipeProjectWindow extends JFrame {
                 e.printStackTrace();
             }
         }
-    }
-
-    /**
-     * Creates a new project instance based on the current template selection
-     * @return the project
-     */
-    public static JIPipeProject getDefaultTemplateProject() {
-        JIPipeProject project = null;
-        if(ProjectsSettings.getInstance().getProjectTemplate().getValue() != null) {
-            try {
-                project = ProjectsSettings.getInstance().getProjectTemplate().getValue().load();
-            }
-            catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        if(project == null) {
-            project = new JIPipeProject();
-        }
-        return project;
     }
 
     /**
@@ -173,15 +164,15 @@ public class JIPipeProjectWindow extends JFrame {
                 JIPipeProjectMetadata metadata = JIPipeProject.loadMetadataFromJson(jsonData);
 
                 Set<JIPipeImageJUpdateSiteDependency> missingUpdateSites = new HashSet<>();
-                if(JIPipeDefaultRegistry.getInstance().getImageJPlugins() != null) {
+                if (JIPipe.getInstance().getImageJPlugins() != null) {
                     // Populate
                     for (JIPipeDependency dependency : dependencySet) {
                         missingUpdateSites.addAll(dependency.getImageJUpdateSiteDependencies());
                     }
                     missingUpdateSites.addAll(metadata.getUpdateSiteDependencies());
                     // Remove existing
-                    for (UpdateSite updateSite : JIPipeDefaultRegistry.getInstance().getImageJPlugins().getUpdateSites(true)) {
-                        if(updateSite.isActive()) {
+                    for (UpdateSite updateSite : JIPipe.getInstance().getImageJPlugins().getUpdateSites(true)) {
+                        if (updateSite.isActive()) {
                             missingUpdateSites.removeIf(site -> Objects.equals(site.getName(), updateSite.getName()));
                         }
                     }
@@ -205,7 +196,7 @@ public class JIPipeProjectWindow extends JFrame {
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-            if(!report.isValid()) {
+            if (!report.isValid()) {
                 UIUtils.openValidityReportDialog(this, report, false);
             }
         } else if (Files.isDirectory(path)) {
@@ -239,7 +230,7 @@ public class JIPipeProjectWindow extends JFrame {
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-            if(!report.isValid()) {
+            if (!report.isValid()) {
                 UIUtils.openValidityReportDialog(this, report, false);
             }
         }
@@ -359,6 +350,26 @@ public class JIPipeProjectWindow extends JFrame {
     }
 
     /**
+     * Creates a new project instance based on the current template selection
+     *
+     * @return the project
+     */
+    public static JIPipeProject getDefaultTemplateProject() {
+        JIPipeProject project = null;
+        if (ProjectsSettings.getInstance().getProjectTemplate().getValue() != null) {
+            try {
+                project = ProjectsSettings.getInstance().getProjectTemplate().getValue().load();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        if (project == null) {
+            project = new JIPipeProject();
+        }
+        return project;
+    }
+
+    /**
      * Creates a new window
      *
      * @param context          context
@@ -381,5 +392,12 @@ public class JIPipeProjectWindow extends JFrame {
      */
     public static Set<JIPipeProjectWindow> getOpenWindows() {
         return Collections.unmodifiableSet(OPEN_WINDOWS);
+    }
+
+    /**
+     * @return EventBus that generate window open/close events
+     */
+    public static EventBus getWindowsEvents() {
+        return WINDOWS_EVENTS;
     }
 }

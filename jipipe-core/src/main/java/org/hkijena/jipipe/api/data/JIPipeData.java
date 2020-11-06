@@ -13,18 +13,21 @@
 
 package org.hkijena.jipipe.api.data;
 
-import org.apache.commons.lang3.reflect.ConstructorUtils;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeHidden;
 import org.hkijena.jipipe.api.JIPipeOrganization;
-import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.awt.Component;
-import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -53,7 +56,9 @@ public interface JIPipeData {
     JIPipeData duplicate();
 
     /**
-     * This function should display the data in the GUI
+     * This function should display the data in the GUI.
+     * The UI can handle multiple of such operations via {@link JIPipeDataDisplayOperation} that can be registered separately.
+     * This item will always be shown as "Default" in the list of operations.
      *
      * @param displayName a name that can be used
      * @param workbench   the workbench
@@ -63,7 +68,8 @@ public interface JIPipeData {
     /**
      * This function generates a preview component for usage within the GUI
      * Can return null
-     * @param width the target width
+     *
+     * @param width  the target width
      * @param height the target height
      * @return the component or null if none should be available
      */
@@ -164,21 +170,4 @@ public interface JIPipeData {
         return result;
     }
 
-    /**
-     * Instantiates a data class with the provided parameters
-     * This method is helpful if output data is constructed based on slot types
-     *
-     * @param klass                 The data class
-     * @param constructorParameters Constructor parameters
-     * @param <T>                   Data class
-     * @return Data instance
-     */
-    static <T extends JIPipeData> T createInstance(Class<T> klass, Object... constructorParameters) {
-        try {
-            return ConstructorUtils.invokeConstructor(klass, constructorParameters);
-        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | InstantiationException e) {
-            throw new UserFriendlyRuntimeException(e, "Cannot create annotation instance!", "Undefined", "There is an error in the code that provides the annotation type.",
-                    "Please contact the author of the plugin that provides the annotation type " + klass);
-        }
-    }
 }

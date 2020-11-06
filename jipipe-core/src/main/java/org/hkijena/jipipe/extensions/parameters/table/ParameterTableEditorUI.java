@@ -14,12 +14,20 @@
 package org.hkijena.jipipe.extensions.parameters.table;
 
 import com.google.common.eventbus.Subscribe;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.nodes.JIPipeGraph;
+import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterVisibility;
+import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
+import org.hkijena.jipipe.ui.components.AddDynamicParameterPanel;
+import org.hkijena.jipipe.ui.components.ParameterTreeUI;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterGeneratorUI;
-import org.hkijena.jipipe.ui.registries.JIPipeUIParameterTypeRegistry;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jdesktop.swingx.JXTable;
 
@@ -27,10 +35,14 @@ import javax.swing.*;
 import javax.swing.event.TableModelEvent;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Point;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * UI for {@link ParameterTable}
@@ -64,12 +76,29 @@ public class ParameterTableEditorUI extends JIPipeParameterEditorUI {
         toolBar.setFloatable(false);
         add(toolBar, BorderLayout.NORTH);
 
-        JButton addButton = new JButton("Add row", UIUtils.getIconFromResources("actions/list-add.png"));
-        addButton.setToolTipText("Adds a new row to the table. It contains the default values.");
-        addButton.addActionListener(e -> addRow());
-        toolBar.add(addButton);
+        JButton addRowButton = new JButton("Add row", UIUtils.getIconFromResources("actions/edit-table-insert-row-under.png"));
+        addRowButton.setToolTipText("Adds a new row to the table. It contains the default values.");
+        addRowButton.addActionListener(e -> addRow());
+        toolBar.add(addRowButton);
 
-        JButton generateButton = new JButton("Generate rows", UIUtils.getIconFromResources("actions/list-add.png"));
+        JButton addColumnButton = new JButton("Add columns", UIUtils.getIconFromResources("actions/edit-table-insert-column-right.png"));
+        addColumnButton.setToolTipText("Adds new columns to the table.");
+        JPopupMenu addColumnMenu = UIUtils.addPopupMenuToComponent(addColumnButton);
+
+        if(getWorkbench() instanceof JIPipeProjectWorkbench) {
+            JMenuItem importColumnFromAlgorithmButton = new JMenuItem("Import from node", UIUtils.getIconFromResources("actions/rabbitvcs-import.png"));
+            importColumnFromAlgorithmButton.addActionListener(e -> importColumnFromAlgorithm());
+            importColumnFromAlgorithmButton.setToolTipText("Imports a column from an existing node.");
+            addColumnMenu.add(importColumnFromAlgorithmButton);
+        }
+        JMenuItem addCustomColumnButton = new JMenuItem("Custom", UIUtils.getIconFromResources("actions/auto-type.png"));
+        addCustomColumnButton.addActionListener(e -> addCustomColumn());
+        addCustomColumnButton.setToolTipText("Allows you to enter a custom column.");
+        addColumnMenu.add(addCustomColumnButton);
+
+        toolBar.add(addColumnButton);
+
+        JButton generateButton = new JButton("Generate rows", UIUtils.getIconFromResources("actions/autocorrection.png"));
         generateButton.setToolTipText("Generates new rows and adds them to the table. You can select one column to generate data for.\n" +
                 "The other columns contain default values.");
         generatePopupMenu = UIUtils.addPopupMenuToComponent(generateButton);
@@ -83,7 +112,17 @@ public class ParameterTableEditorUI extends JIPipeParameterEditorUI {
         toolBar.add(Box.createHorizontalGlue());
 
         JButton removeButton = new JButton(UIUtils.getIconFromResources("actions/delete.png"));
-        removeButton.addActionListener(e -> removeSelectedRows());
+
+        JPopupMenu removeMenu = UIUtils.addPopupMenuToComponent(removeButton);
+
+        JMenuItem removeRowsButton = new JMenuItem("Remove selected rows", UIUtils.getIconFromResources("actions/edit-table-delete-row.png"));
+        removeRowsButton.addActionListener(e -> removeSelectedRows());
+        removeMenu.add(removeRowsButton);
+
+        JMenuItem removeColumnsButton = new JMenuItem("Remove selected columns", UIUtils.getIconFromResources("actions/edit-table-delete-column.png"));
+        removeColumnsButton.addActionListener(e -> removeSelectedColumns());
+        removeMenu.add(removeColumnsButton);
+
         toolBar.add(removeButton);
 
         // Create table panel
@@ -95,6 +134,81 @@ public class ParameterTableEditorUI extends JIPipeParameterEditorUI {
         tablePanel.add(table.getTableHeader(), BorderLayout.NORTH);
         tablePanel.add(table, BorderLayout.CENTER);
         add(tablePanel, BorderLayout.CENTER);
+    }
+
+
+    private void importColumnFromAlgorithm() {
+        Component content = getWorkbench().getDocumentTabPane().getCurrentContent();
+        if(getWorkbench() instanceof JIPipeProjectWorkbench) {
+            JIPipeGraph graph =((JIPipeProjectWorkbench) getWorkbench()).getProject().getGraph();
+            JIPipeParameterTree globalTree = graph.getParameterTree();
+
+            List<Object> importedParameters = ParameterTreeUI.showPickerDialog(getWorkbench().getWindow(), globalTree, "Import parameter");
+            for (Object importedParameter : importedParameters) {
+                if (importedParameter instanceof JIPipeParameterAccess) {
+                    JIPipeParameterTree.Node node = globalTree.getSourceNode(((JIPipeParameterAccess) importedParameter).getSource());
+                    importParameterColumn(node, (JIPipeParameterAccess) importedParameter);
+                } else if (importedParameter instanceof JIPipeParameterTree.Node) {
+                    for (JIPipeParameterAccess access : ((JIPipeParameterTree.Node) importedParameter).getParameters().values()) {
+                        if (access.getVisibility().isVisibleIn(JIPipeParameterVisibility.TransitiveVisible)) {
+                            JIPipeParameterTree.Node node = globalTree.getSourceNode(access.getSource());
+                            importParameterColumn(node, access);
+                        }
+                    }
+                }
+            }
+        }
+        else {
+            JOptionPane.showMessageDialog(this, "There is no graph editor open.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void importParameterColumn(JIPipeParameterTree.Node node, JIPipeParameterAccess importedParameter) {
+        List<String> path = node.getPath();
+        path.add(importedParameter.getKey());
+        path.remove(0);
+
+        String uniqueKey = String.join("/", path);
+        ParameterTable parameterTable = getParameter(ParameterTable.class);
+        if(parameterTable.containsColumn(uniqueKey))
+            return;
+        ParameterTable.ParameterColumn column = new ParameterTable.ParameterColumn();
+        column.setFieldClass(importedParameter.getFieldClass());
+        column.setKey(uniqueKey);
+        column.setName(importedParameter.getName());
+        JIPipeParameterTypeInfo info = JIPipe.getParameterTypes().getInfoByFieldClass(column.getFieldClass());
+        parameterTable.addColumn(column, info.duplicate(importedParameter.get(Object.class)));
+
+        setParameter(parameterTable, true);
+        refreshTable();
+    }
+
+    private void addCustomColumn() {
+        ParameterTable parameterTable = getParameter(ParameterTable.class);
+        JIPipeDynamicParameterCollection collection = new JIPipeDynamicParameterCollection();
+        collection.setAllowedTypes(JIPipe.getParameterTypes()
+                .getRegisteredParameters().values().stream().map(JIPipeParameterTypeInfo::getFieldClass).collect(Collectors.toSet()));
+        AddDynamicParameterPanel.showDialog(this, collection);
+        for (Map.Entry<String, JIPipeParameterAccess> entry : collection.getParameters().entrySet()) {
+            if(parameterTable.containsColumn(entry.getKey()))
+                continue;
+            ParameterTable.ParameterColumn column = new ParameterTable.ParameterColumn();
+            column.setFieldClass(entry.getValue().getFieldClass());
+            column.setKey(entry.getKey());
+            column.setName(entry.getValue().getName());
+            JIPipeParameterTypeInfo info = JIPipe.getParameterTypes().getInfoByFieldClass(column.getFieldClass());
+            parameterTable.addColumn(column, info.newInstance());
+        }
+        setParameter(parameterTable, true);
+        refreshTable();
+    }
+
+
+    private void refreshTable() {
+        ParameterTable parameterTable = getParameter(ParameterTable.class);
+        table.setModel(new DefaultTableModel());
+        table.setModel(parameterTable);
+        table.packAll();
     }
 
     private void reloadReplacePopupMenu() {
@@ -115,9 +229,9 @@ public class ParameterTableEditorUI extends JIPipeParameterEditorUI {
         ParameterTable parameterTable = getParameter(ParameterTable.class);
         boolean hasColumnEntries = false;
         if (parameterTable != null) {
-            for (Class<? extends JIPipeParameterGeneratorUI> generator : JIPipeUIParameterTypeRegistry.getInstance()
+            for (Class<? extends JIPipeParameterGeneratorUI> generator : JIPipe.getParameterTypes()
                     .getGeneratorsFor(parameterTable.getColumn(col).getFieldClass())) {
-                JIPipeDocumentation documentation = JIPipeUIParameterTypeRegistry.getInstance().getGeneratorDocumentationFor(generator);
+                JIPipeDocumentation documentation = JIPipe.getParameterTypes().getGeneratorDocumentationFor(generator);
                 JMenuItem replaceCellItem = new JMenuItem(documentation.name());
                 replaceCellItem.setToolTipText(documentation.description());
                 replaceCellItem.setIcon(UIUtils.getIconFromResources("actions/edit.png"));
@@ -161,9 +275,9 @@ public class ParameterTableEditorUI extends JIPipeParameterEditorUI {
                 JMenu columnMenu = new JMenu(parameterTable.getColumn(col).getName());
                 columnMenu.setIcon(UIUtils.getIconFromResources("data-types/parameters.png"));
 
-                for (Class<? extends JIPipeParameterGeneratorUI> generator : JIPipeUIParameterTypeRegistry.getInstance()
+                for (Class<? extends JIPipeParameterGeneratorUI> generator : JIPipe.getParameterTypes()
                         .getGeneratorsFor(parameterTable.getColumn(col).getFieldClass())) {
-                    JIPipeDocumentation documentation = JIPipeUIParameterTypeRegistry.getInstance().getGeneratorDocumentationFor(generator);
+                    JIPipeDocumentation documentation = JIPipe.getParameterTypes().getGeneratorDocumentationFor(generator);
                     JMenuItem generateRowItem = new JMenuItem(documentation.name());
                     generateRowItem.setToolTipText(documentation.description());
                     generateRowItem.setIcon(UIUtils.getIconFromResources("actions/list-add.png"));
@@ -212,7 +326,7 @@ public class ParameterTableEditorUI extends JIPipeParameterEditorUI {
                 ParameterTable parameterTable = getParameter(ParameterTable.class);
                 ParameterTableCellAccess access = new ParameterTableCellAccess(getParameterAccess(), parameterTable,
                         currentSelection.x, currentSelection.y);
-                currentEditor = JIPipeUIParameterTypeRegistry.getInstance().createEditorFor(getWorkbench(), access);
+                currentEditor = JIPipe.getParameterTypes().createEditorFor(getWorkbench(), access);
                 add(currentEditor, BorderLayout.SOUTH);
             }
         }
@@ -234,6 +348,21 @@ public class ParameterTableEditorUI extends JIPipeParameterEditorUI {
         return displayRows;
     }
 
+    /**
+     * Returns selected rows as sorted array of model indices
+     *
+     * @return selected rows in model indices
+     */
+    private int[] getSelectedColumns(boolean sort) {
+        int[] displayColumns = table.getSelectedColumns();
+        for (int i = 0; i < displayColumns.length; ++i) {
+            displayColumns[i] = table.convertColumnIndexToModel(displayColumns[i]);
+        }
+        if (sort)
+            Arrays.sort(displayColumns);
+        return displayColumns;
+    }
+
     private void removeSelectedRows() {
         int[] selectedRows = getSelectedRows(true);
         ParameterTable parameterTable = getParameter(ParameterTable.class);
@@ -241,6 +370,15 @@ public class ParameterTableEditorUI extends JIPipeParameterEditorUI {
             parameterTable.removeRow(selectedRows[i]);
         }
     }
+
+    private void removeSelectedColumns() {
+        int[] selectedColumns = getSelectedColumns(true);
+        ParameterTable parameterTable = getParameter(ParameterTable.class);
+        for (int i = selectedColumns.length - 1; i >= 0; --i) {
+            parameterTable.removeColumn(selectedColumns[i]);
+        }
+    }
+
 
     private void addRow() {
         ParameterTable parameterTable = getParameter(ParameterTable.class);

@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.extensions.tools;
 
-import net.imagej.ImageJ;
+import ij.ImageJ;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.extension.MenuExtension;
@@ -36,7 +36,7 @@ public class OpenImageJTool extends MenuExtension {
     }
 
     private void showImageJ() {
-        final ImageJ ij = new ImageJ();
-        ij.ui().showUI();
+        final ImageJ ij = new ImageJ(ImageJ.EMBEDDED);
+        ij.setVisible(true);
     }
 }

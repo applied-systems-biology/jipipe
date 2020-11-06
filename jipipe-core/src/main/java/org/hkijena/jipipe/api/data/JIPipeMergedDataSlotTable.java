@@ -17,7 +17,7 @@ import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.nodes.JIPipeEmptyNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
-import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
+import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
 import org.hkijena.jipipe.ui.components.JIPipeCachedDataPreview;
 
 import javax.swing.*;
@@ -39,6 +39,8 @@ public class JIPipeMergedDataSlotTable implements TableModel {
     private ArrayList<JIPipeDataSlot> slotList = new ArrayList<>();
     private ArrayList<Integer> rowList = new ArrayList<>();
     private List<Component> previewCache = new ArrayList<>();
+    private final GeneralDataSettings dataSettings =GeneralDataSettings.getInstance();
+    private int previewCacheSize = GeneralDataSettings.getInstance().getPreviewSize();
 
     public JIPipeMergedDataSlotTable(JTable table) {
         this.table = table;
@@ -68,6 +70,15 @@ public class JIPipeMergedDataSlotTable implements TableModel {
             algorithmList.add(algorithm);
             rowList.add(i);
             previewCache.add(null);
+        }
+    }
+
+    private void revalidatePreviewCache() {
+        if(dataSettings.getPreviewSize() != previewCacheSize) {
+            for (int i = 0; i < previewCache.size(); i++) {
+                previewCache.set(i, null);
+            }
+            previewCacheSize = dataSettings.getPreviewSize();
         }
     }
 
@@ -133,21 +144,20 @@ public class JIPipeMergedDataSlotTable implements TableModel {
         else if (columnIndex == 3)
             return slotList.get(rowIndex).getData(rowList.get(rowIndex), JIPipeData.class);
         else if (columnIndex == 4) {
+            revalidatePreviewCache();
             Component preview = previewCache.get(rowIndex);
-            if(preview == null) {
-                if(GeneralUISettings.getInstance().isGenerateCachePreviews()) {
+            if (preview == null) {
+                if (GeneralDataSettings.getInstance().isGenerateCachePreviews()) {
                     JIPipeData data = slotList.get(rowIndex).getData(rowList.get(rowIndex), JIPipeData.class);
                     preview = new JIPipeCachedDataPreview(table, data);
                     previewCache.set(rowIndex, preview);
-                }
-                else {
+                } else {
                     preview = new JLabel("N/A");
                     previewCache.set(rowIndex, preview);
                 }
             }
             return preview;
-        }
-        else if (columnIndex == 5)
+        } else if (columnIndex == 5)
             return "" + slotList.get(rowIndex).getData(rowList.get(rowIndex), JIPipeData.class);
         else {
             String traitColumn = traitColumns.get(columnIndex - 6);

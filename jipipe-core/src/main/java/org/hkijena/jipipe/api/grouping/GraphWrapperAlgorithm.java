@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.api.grouping;
 
 import com.google.common.eventbus.Subscribe;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.JIPipeGraphRunner;
 import org.hkijena.jipipe.api.JIPipeRunnerStatus;
@@ -117,7 +118,7 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm {
         }
         if (algorithmInput == null) {
             // Create if it doesn't exist
-            algorithmInput = JIPipeAlgorithm.newInstance("graph-wrapper:input");
+            algorithmInput = JIPipe.createNode("graph-wrapper:input", GraphWrapperAlgorithmInput.class);
             wrappedGraph.insertNode(algorithmInput, JIPipeGraph.COMPARTMENT_DEFAULT);
         }
         return algorithmInput;
@@ -139,7 +140,7 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm {
         }
         if (algorithmOutput == null) {
             // Create if it doesn't exist
-            algorithmOutput = JIPipeAlgorithm.newInstance("graph-wrapper:output");
+            algorithmOutput = JIPipe.createNode("graph-wrapper:output", GraphWrapperAlgorithmOutput.class);
             wrappedGraph.insertNode(algorithmOutput, JIPipeGraph.COMPARTMENT_DEFAULT);
         }
         return algorithmOutput;

@@ -13,12 +13,12 @@
 
 package org.hkijena.jipipe.ui.resultanalysis;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
-import org.hkijena.jipipe.ui.registries.JIPipeUINodeRegistry;
 
 import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
-import java.awt.*;
+import java.awt.Component;
 
 /**
  * Renders {@link JIPipeGraphNode} instances in a table cell
@@ -38,14 +38,14 @@ public class JIPipeNodeTableCellRenderer extends JLabel implements TableCellRend
 
         if (value instanceof JIPipeGraphNode) {
             JIPipeGraphNode algorithm = (JIPipeGraphNode) value;
-            setIcon(JIPipeUINodeRegistry.getInstance().getIconFor(algorithm.getInfo()));
+            setIcon(JIPipe.getNodes().getIconFor(algorithm.getInfo()));
             setText(algorithm.getName());
         }
 
         if (isSelected) {
-            setBackground(new Color(184, 207, 229));
+            setBackground(UIManager.getColor("List.selectionBackground"));
         } else {
-            setBackground(new Color(255, 255, 255));
+            setBackground(UIManager.getColor("List.background"));
         }
 
         return this;

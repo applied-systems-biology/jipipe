@@ -13,10 +13,18 @@
 
 package org.hkijena.jipipe.ui.grapheditor;
 
-import com.google.common.collect.*;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
+import com.google.common.collect.ImmutableBiMap;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.JIPipeProject;
+import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
+import org.hkijena.jipipe.api.events.CompartmentRenamedEvent;
 import org.hkijena.jipipe.api.events.GraphChangedEvent;
 import org.hkijena.jipipe.api.events.NodeConnectedEvent;
 import org.hkijena.jipipe.api.history.JIPipeGraphHistory;
@@ -26,10 +34,17 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphEdge;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
 import org.hkijena.jipipe.extensions.settings.GraphEditorUISettings;
+import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.ZoomViewPort;
-import org.hkijena.jipipe.ui.events.*;
+import org.hkijena.jipipe.ui.events.AlgorithmEvent;
+import org.hkijena.jipipe.ui.events.AlgorithmSelectedEvent;
+import org.hkijena.jipipe.ui.events.AlgorithmSelectionChangedEvent;
+import org.hkijena.jipipe.ui.events.AlgorithmUIActionRequestedEvent;
+import org.hkijena.jipipe.ui.events.DefaultAlgorithmUIActionRequestedEvent;
+import org.hkijena.jipipe.ui.events.GraphCanvasUpdatedEvent;
+import org.hkijena.jipipe.ui.events.ZoomChangedEvent;
 import org.hkijena.jipipe.ui.grapheditor.connections.RectangularLineDrawer;
 import org.hkijena.jipipe.ui.grapheditor.contextmenu.NodeUIContextAction;
 import org.hkijena.jipipe.ui.grapheditor.layout.MSTGraphAutoLayoutMethod;
@@ -44,7 +59,13 @@ import javax.swing.FocusManager;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.dnd.DropTarget;
-import java.awt.event.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 import java.awt.image.BufferedImage;
 import java.util.List;
 import java.util.*;
@@ -66,7 +87,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
     private final BiMap<JIPipeGraphNode, JIPipeNodeUI> nodeUIs = HashBiMap.create();
     private final Set<JIPipeNodeUI> selection = new HashSet<>();
     private final EventBus eventBus = new EventBus();
-    private final String compartment;
+    private String compartment;
     private final JIPipeGraphHistory graphHistory = new JIPipeGraphHistory();
     private boolean layoutHelperEnabled;
     private JIPipeGraphViewMode viewMode = GraphEditorUISettings.getInstance().getDefaultViewMode();
@@ -82,6 +103,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
     private JIPipeDataSlotUI currentConnectionDragTarget;
     private JIPipeDataSlotUI currentHighlightedForDisconnect;
     private double zoom = 1.0;
+    private JScrollPane scrollPane;
 
     /**
      * Used to store the minimum dimensions of the canvas to reduce user disruption
@@ -104,6 +126,23 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
         addNewNodes();
         graph.getEventBus().register(this);
         initializeHotkeys();
+
+        // If there is a project, listen to compartment renames
+        if(workbench instanceof JIPipeProjectWorkbench) {
+            JIPipeProject project = ((JIPipeProjectWorkbench) workbench).getProject();
+            JIPipeProjectCompartment compartmentInstance = project.getCompartments().get(compartment);
+            if(compartmentInstance != null) {
+                project.getEventBus().register(new Object() {
+                    @Subscribe
+                    public void onCompartmentRenamed(CompartmentRenamedEvent event) {
+                        if(event.getCompartment() == compartmentInstance) {
+                            JIPipeGraphCanvasUI.this.compartment = event.getCompartment().getProjectCompartmentId();
+                            JIPipeGraphCanvasUI.this.fullRedraw();
+                        }
+                    }
+                });
+            }
+        }
     }
 
     private void initializeHotkeys() {
@@ -132,7 +171,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
     }
 
     private void initialize() {
-        setBackground(Color.WHITE);
+        setBackground(UIManager.getColor("EditorPane.background"));
         addMouseListener(this);
         addMouseMotionListener(this);
         addMouseWheelListener(this);
@@ -310,7 +349,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
         getEventBus().post(event);
     }
 
-    private void autoPlaceCloseToCursor(JIPipeNodeUI ui) {
+    public void autoPlaceCloseToCursor(JIPipeNodeUI ui) {
         int minX = 0;
         int minY = 0;
         if (graphEditCursor != null) {
@@ -336,10 +375,12 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
                     break;
                 }
             }
-            if (viewMode == JIPipeGraphViewMode.Horizontal) {
-                currentShape.y += viewMode.getGridHeight();
-            } else {
-                currentShape.x += viewMode.getGridWidth();
+            if (!found) {
+                if (viewMode == JIPipeGraphViewMode.Horizontal) {
+                    currentShape.y += viewMode.getGridHeight();
+                } else {
+                    currentShape.x += viewMode.getGridWidth();
+                }
             }
         }
         while (!found);
@@ -382,7 +423,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
 
             Point targetPoint = new Point(minX, targetY);
             if (!targetAlgorithmUI.moveToNextGridPoint(targetPoint, false, true)) {
-                if(nodesAfter.isEmpty())
+                if (nodesAfter.isEmpty())
                     return;
                 // Move all other algorithms
                 int minDistance = Integer.MAX_VALUE;
@@ -391,7 +432,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
                         continue;
                     minDistance = Math.min(minDistance, ui.getX() - sourceAlgorithmUI.getRightX());
                 }
-                int translateX = (int)Math.round(targetAlgorithmUI.getWidth() + viewMode.getGridWidth() * zoom * 4 - minDistance);
+                int translateX = (int) Math.round(targetAlgorithmUI.getWidth() + viewMode.getGridWidth() * zoom * 4 - minDistance);
                 for (JIPipeNodeUI ui : nodesAfter) {
                     if (ui == targetAlgorithmUI || ui == sourceAlgorithmUI)
                         continue;
@@ -404,10 +445,10 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
         } else {
             int x = sourceAlgorithmUI.getSlotLocation(source).center.x + sourceAlgorithmUI.getX();
             x -= targetAlgorithmUI.getSlotLocation(target).center.x;
-            int y = (int)Math.round(sourceAlgorithmUI.getBottomY() + viewMode.getGridHeight() * zoom);
+            int y = (int) Math.round(sourceAlgorithmUI.getBottomY() + viewMode.getGridHeight() * zoom);
             Point targetPoint = new Point(x, y);
             if (!targetAlgorithmUI.moveToNextGridPoint(targetPoint, false, true)) {
-                if(nodesAfter.isEmpty())
+                if (nodesAfter.isEmpty())
                     return;
                 // Move all other algorithms
                 int minDistance = Integer.MAX_VALUE;
@@ -416,7 +457,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
                         continue;
                     minDistance = Math.min(minDistance, ui.getY() - sourceAlgorithmUI.getBottomY());
                 }
-                int translateY = (int)Math.round(targetAlgorithmUI.getHeight() + viewMode.getGridHeight() * zoom * 2 - minDistance);
+                int translateY = (int) Math.round(targetAlgorithmUI.getHeight() + viewMode.getGridHeight() * zoom * 2 - minDistance);
                 for (JIPipeNodeUI ui : nodesAfter) {
                     if (ui == targetAlgorithmUI || ui == sourceAlgorithmUI)
                         continue;
@@ -511,17 +552,18 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
      * @param left expand left
      * @param top  expand top
      */
-    public void expandLeftTop(boolean left, boolean top) {
-        int ex = left ? viewMode.getGridWidth() : 0;
-        int ey = top ? viewMode.getGridHeight() : 0;
+    public void expandLeftTop(int left, int top) {
         for (JIPipeNodeUI value : nodeUIs.values()) {
             if (!currentlyDraggedOffsets.containsKey(value)) {
-                value.moveToNextGridPoint(new Point(value.getX() + ex, value.getY() + ey), false, true);
+                Point gridLocation = viewMode.realLocationToGrid(value.getLocation(), zoom);
+                gridLocation.x += left;
+                gridLocation.y += top;
+                value.moveToGridLocation(gridLocation, false, true);
             }
         }
         if (graphEditCursor != null) {
-            graphEditCursor.x += ex;
-            graphEditCursor.y += ey;
+            graphEditCursor.x = (int) Math.round(graphEditCursor.x + left * viewMode.getGridWidth() * zoom);
+            graphEditCursor.y = (int) Math.round(graphEditCursor.y + top * viewMode.getGridHeight() * zoom);
         }
         if (getParent() != null)
             getParent().revalidate();
@@ -1016,7 +1058,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
     private Color getEdgeColor(JIPipeDataSlot source, JIPipeDataSlot target) {
         if (JIPipeDatatypeRegistry.isTriviallyConvertible(source.getAcceptedDataType(), target.getAcceptedDataType()))
             return Color.DARK_GRAY;
-        else if (JIPipeDatatypeRegistry.getInstance().isConvertible(source.getAcceptedDataType(), target.getAcceptedDataType()))
+        else if (JIPipe.getDataTypes().isConvertible(source.getAcceptedDataType(), target.getAcceptedDataType()))
             return Color.BLUE;
         else
             return Color.RED;
@@ -1449,15 +1491,31 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
     @Override
     public void mouseWheelMoved(MouseWheelEvent e) {
         if (e.isControlDown()) {
+            // We move the graph cursor to the mouse
+            // The zoom will "focus" on this cursor and modify the scroll bars accordingly
+            int x = e.getX();
+            int y = e.getY();
+            double beforeZoomX = x * zoom;
+            double beforeZoomY = y * zoom;
+
             if (e.getWheelRotation() < 0) {
                 zoomIn();
-            }
-            else {
+            } else {
                 zoomOut();
             }
-        }
-        else
-        {
+
+            double afterZoomX = x * zoom;
+            double afterZoomY = y * zoom;
+
+            double dX = afterZoomX - beforeZoomX;
+            double dY = afterZoomY - beforeZoomY;
+
+            if (scrollPane != null) {
+                scrollPane.getHorizontalScrollBar().setValue(scrollPane.getHorizontalScrollBar().getValue() + (int) dX);
+                scrollPane.getVerticalScrollBar().setValue(scrollPane.getVerticalScrollBar().getValue() + (int) dY);
+            }
+
+        } else {
             getParent().dispatchEvent(e);
         }
     }
@@ -1472,5 +1530,13 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
 
     public void zoomIn() {
         setZoom(Math.min(2, zoom + 0.05));
+    }
+
+    public JScrollPane getScrollPane() {
+        return scrollPane;
+    }
+
+    public void setScrollPane(JScrollPane scrollPane) {
+        this.scrollPane = scrollPane;
     }
 }

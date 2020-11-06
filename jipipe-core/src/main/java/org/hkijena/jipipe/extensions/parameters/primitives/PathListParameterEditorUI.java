@@ -19,12 +19,11 @@ import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.PathEditor;
 import org.hkijena.jipipe.ui.components.PathListCellRenderer;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
-import org.hkijena.jipipe.utils.ModernMetalTheme;
 import org.hkijena.jipipe.utils.RoundedLineBorder;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
@@ -34,6 +33,8 @@ import java.util.List;
  */
 public class PathListParameterEditorUI extends JIPipeParameterEditorUI {
 
+    private final JLabel emptyLabel = new JLabel("<html><strong>This list is empty</strong><br/>Click 'Add' to add items.</html>",
+            UIUtils.getIcon32FromResources("info.png"), JLabel.LEFT);
     private JList<Path> listPanel;
     private PathEditor.IOMode ioMode = PathEditor.IOMode.Open;
     private PathEditor.PathMode pathMode = PathEditor.PathMode.FilesOnly;
@@ -59,18 +60,20 @@ public class PathListParameterEditorUI extends JIPipeParameterEditorUI {
 
     private void initialize() {
         setLayout(new BorderLayout());
-        setBorder(new RoundedLineBorder(ModernMetalTheme.MEDIUM_GRAY, 1, 2));
+        setBorder(new RoundedLineBorder(UIManager.getColor("Button.borderColor"), 1, 2));
         listPanel = new JList<>();
         listPanel.setCellRenderer(new PathListCellRenderer());
         listPanel.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         add(listPanel, BorderLayout.CENTER);
+        emptyLabel.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
+        add(emptyLabel, BorderLayout.SOUTH);
 
         JToolBar toolBar = new JToolBar();
         toolBar.setFloatable(false);
         add(toolBar, BorderLayout.NORTH);
 
+        toolBar.add(Box.createHorizontalStrut(4));
         toolBar.add(new JLabel(getParameterAccess().getName()));
-
         toolBar.add(Box.createHorizontalGlue());
 
         JButton addButton = new JButton("Add", UIUtils.getIconFromResources("actions/list-add.png"));
@@ -116,5 +119,6 @@ public class PathListParameterEditorUI extends JIPipeParameterEditorUI {
             listModel.addElement(path);
         }
         listPanel.setModel(listModel);
+        emptyLabel.setVisible(parameter.isEmpty());
     }
 }

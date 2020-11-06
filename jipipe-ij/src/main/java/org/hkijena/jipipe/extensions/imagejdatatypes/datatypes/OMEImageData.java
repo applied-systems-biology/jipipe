@@ -17,14 +17,10 @@ import ij.CompositeImage;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.ImageStack;
-import ij.Macro;
 import ij.Prefs;
-import ij.WindowManager;
-import ij.gui.*;
+import ij.gui.Roi;
 import ij.io.FileInfo;
-import ij.io.OpenDialog;
 import ij.measure.Calibration;
-import ij.plugin.frame.Recorder;
 import ij.process.ByteProcessor;
 import ij.process.ColorProcessor;
 import ij.process.FloatProcessor;
@@ -41,11 +37,8 @@ import loci.formats.IFormatWriter;
 import loci.formats.ImageWriter;
 import loci.formats.MetadataTools;
 import loci.formats.gui.AWTImageTools;
-import loci.formats.gui.ExtensionFileFilter;
-import loci.formats.gui.GUITools;
 import loci.formats.gui.Index16ColorModel;
 import loci.formats.meta.IMetadata;
-import loci.formats.meta.MetadataStore;
 import loci.formats.services.OMEXMLService;
 import loci.plugins.BF;
 import loci.plugins.in.ImagePlusReader;
@@ -56,7 +49,6 @@ import loci.plugins.util.WindowTools;
 import ome.xml.meta.OMEXMLMetadata;
 import ome.xml.meta.OMEXMLMetadataRoot;
 import ome.xml.model.Image;
-import ome.xml.model.OME;
 import ome.xml.model.ROI;
 import ome.xml.model.enums.DimensionOrder;
 import ome.xml.model.enums.EnumerationException;
@@ -72,8 +64,6 @@ import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.PathUtils;
 
 import javax.swing.*;
-import javax.swing.filechooser.FileFilter;
-import java.awt.Checkbox;
 import java.awt.Component;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -81,7 +71,6 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 /**
  * Data that is a representation of all information saved in Bio-Formats
@@ -193,26 +182,25 @@ public class OMEImageData implements JIPipeData {
 
     @Override
     public void display(String displayName, JIPipeWorkbench workbench) {
-        if(rois != null && !rois.isEmpty()) {
+        if (rois != null && !rois.isEmpty()) {
             ROIListData data = new ROIListData(rois);
             for (Roi roi : data) {
                 roi.setImage(image);
             }
             data.display(displayName, workbench);
-        }
-        else {
+        } else {
             (new ImagePlusData(image)).display(displayName, workbench);
         }
     }
 
     @Override
     public String toString() {
-       String result = "OME [" + image + "]";
-       if(rois != null && !rois.isEmpty())
-           result += " + [" + rois + "]";
-       if(metadata != null)
-           result += " + OME-XML";
-       return result;
+        String result = "OME [" + image + "]";
+        if (rois != null && !rois.isEmpty())
+            result += " + [" + rois + "]";
+        if (metadata != null)
+            result += " + OME-XML";
+        return result;
     }
 
     /**
@@ -228,8 +216,9 @@ public class OMEImageData implements JIPipeData {
 
     /**
      * Copy of the run method in {@link loci.plugins.out.Exporter} that allows configuration via a parameter object
+     *
      * @param outputPath the output path
-     * @param settings the parameters
+     * @param settings   the parameters
      */
     public static void OMEExport(OMEImageData imageData, Path outputPath, OMEExporterSettings settings) {
         String outfile = outputPath.toString();
@@ -270,7 +259,7 @@ public class OMEImageData implements JIPipeData {
                     fi.description.indexOf("xml") == -1 ? null : fi.description;
 
             // Use existing metadata
-            if(imageData.getMetadata() != null) {
+            if (imageData.getMetadata() != null) {
                 xml = imageData.getMetadata().dumpXML();
             }
 
@@ -281,16 +270,15 @@ public class OMEImageData implements JIPipeData {
                 ServiceFactory factory = new ServiceFactory();
                 service = factory.getInstance(OMEXMLService.class);
                 store = service.createOMEXMLMetadata(xml);
+            } catch (DependencyException de) {
+            } catch (ServiceException se) {
             }
-            catch (DependencyException de) { }
-            catch (ServiceException se) { }
-
 
 
             if (store == null) IJ.error("OME-XML Java library not found.");
 
             OMEXMLMetadataRoot root = (OMEXMLMetadataRoot) store.getRoot();
-            if (root.sizeOfROIList()>0){
+            if (root.sizeOfROIList() > 0) {
                 while (root.sizeOfROIList() > 0) {
                     ROI roi = root.getROI(0);
                     root.removeROI(roi);
@@ -299,12 +287,11 @@ public class OMEImageData implements JIPipeData {
             }
             if (xml == null) {
                 store.createRoot();
-            }
-            else if (store.getImageCount() > 1) {
+            } else if (store.getImageCount() > 1) {
                 // the original dataset had multiple series
                 // we need to modify the IMetadata to represent the correct series
                 ArrayList<Integer> matchingSeries = new ArrayList<Integer>();
-                for (int series=0; series<store.getImageCount(); series++) {
+                for (int series = 0; series < store.getImageCount(); series++) {
                     String type = store.getPixelsType(series).toString();
                     int pixelType = FormatTools.pixelTypeFromString(type);
                     if (pixelType == ptype) {
@@ -317,11 +304,11 @@ public class OMEImageData implements JIPipeData {
 
                 int series = 0;
                 if (matchingSeries.size() > 1) {
-                    for (int i=0; i<matchingSeries.size(); i++) {
+                    for (int i = 0; i < matchingSeries.size(); i++) {
                         int index = matchingSeries.get(i);
                         String name = store.getImageName(index);
                         boolean valid = true;
-                        for (int j=0; j<matchingSeries.size(); j++) {
+                        for (int j = 0; j < matchingSeries.size(); j++) {
                             if (i != j) {
                                 String compName = store.getImageName(matchingSeries.get(j));
                                 if (compName.indexOf(name) >= 0) {
@@ -335,8 +322,7 @@ public class OMEImageData implements JIPipeData {
                             break;
                         }
                     }
-                }
-                else if (matchingSeries.size() == 1) series = matchingSeries.get(0);
+                } else if (matchingSeries.size() == 1) series = matchingSeries.get(0);
 
                 ome.xml.model.Image exportImage = root.getImage(series);
                 List<ome.xml.model.Image> allImages = root.copyImageList();
@@ -351,7 +337,7 @@ public class OMEImageData implements JIPipeData {
             store.setPixelsSizeX(new PositiveInteger(imp.getWidth()), 0);
             store.setPixelsSizeY(new PositiveInteger(imp.getHeight()), 0);
             store.setPixelsSizeZ(new PositiveInteger(imp.getNSlices()), 0);
-            store.setPixelsSizeC(new PositiveInteger(channels*imp.getNChannels()), 0);
+            store.setPixelsSizeC(new PositiveInteger(channels * imp.getNChannels()), 0);
             store.setPixelsSizeT(new PositiveInteger(imp.getNFrames()), 0);
 
             if (store.getImageID(0) == null) {
@@ -374,20 +360,17 @@ public class OMEImageData implements JIPipeData {
                         (store.getPixelsType(0) == null ||
                                 !FormatTools.isSigned(originalType) ||
                                 FormatTools.getBytesPerPixel(originalType) !=
-                                        FormatTools.getBytesPerPixel(ptype)))
-                {
+                                        FormatTools.getBytesPerPixel(ptype))) {
                     store.setPixelsType(PixelType.fromString(
                             FormatTools.getPixelTypeString(ptype)), 0);
-                }
-                else if (FormatTools.isSigned(originalType)) {
+                } else if (FormatTools.isSigned(originalType)) {
                     applyCalibrationFunction = true;
                 }
+            } catch (EnumerationException e) {
             }
-            catch (EnumerationException e) { }
 
             if (store.getPixelsBinDataCount(0) == 0 ||
-                    store.getPixelsBinDataBigEndian(0, 0) == null)
-            {
+                    store.getPixelsBinDataBigEndian(0, 0) == null) {
                 store.setPixelsBinDataBigEndian(Boolean.FALSE, 0, 0);
             }
             if (store.getPixelsDimensionOrder(0) == null) {
@@ -396,7 +379,7 @@ public class OMEImageData implements JIPipeData {
 
             LUT[] luts = new LUT[imp.getNChannels()];
 
-            for (int c=0; c<imp.getNChannels(); c++) {
+            for (int c = 0; c < imp.getNChannels(); c++) {
                 if (c >= store.getChannelCount(0) || store.getChannelID(0, c) == null) {
                     String lsid = MetadataTools.createLSID("Channel", 0, c);
                     store.setChannelID(lsid, 0, c);
@@ -416,8 +399,7 @@ public class OMEImageData implements JIPipeData {
             store.setPixelsTimeIncrement(FormatTools.getTime(new Double(cal.frameInterval), cal.getTimeUnit()), 0);
 
             if (imp.getImageStackSize() !=
-                    imp.getNChannels() * imp.getNSlices() * imp.getNFrames())
-            {
+                    imp.getNChannels() * imp.getNSlices() * imp.getNFrames()) {
                 if (!windowless) {
                     IJ.showMessageWithCancel("Bio-Formats Exporter Warning",
                             "The number of planes in the stack (" + imp.getImageStackSize() +
@@ -457,18 +439,16 @@ public class OMEImageData implements JIPipeData {
             final int rate;
             if (cal.fps != 0.0) {
                 rate = (int) cal.fps;
-            }
-            else if (cal.frameInterval != 0.0 && cal.getTimeUnit().equals("sec")) {
+            } else if (cal.frameInterval != 0.0 && cal.getTimeUnit().equals("sec")) {
                 rate = (int) (1.0 / cal.frameInterval);
-            }
-            else {
+            } else {
                 // NB: Code from ij.plugin.Animator#animationRate initializer.
                 // The value is 7 by default in ImageJ, so must be 7 here as well.
                 rate = (int) Prefs.getDouble(Prefs.FPS, 7.0);
             }
             if (rate > 0) w.setFramesPerSecond(rate);
 
-            String[] outputFiles = new String[] {outfile};
+            String[] outputFiles = new String[]{outfile};
 
             int sizeZ = store.getPixelsSizeZ(0).getValue();
             int sizeC = store.getPixelsSizeC(0).getValue();
@@ -493,10 +473,10 @@ public class OMEImageData implements JIPipeData {
                 String ext = outfile.substring(dot);
 
                 int nextFile = 0;
-                for (int t=0; t<(splitT ? sizeT : 1); t++) {
-                    for (int z=0; z<(splitZ ? sizeZ : 1); z++) {
-                        for (int c=0; c<(splitC ? sizeC : 1); c++) {
-                            int index = FormatTools.getIndex(settings.getDimensionOrder().getValue(), sizeZ, sizeC, sizeT, sizeZ*sizeC*sizeT, z, c, t);
+                for (int t = 0; t < (splitT ? sizeT : 1); t++) {
+                    for (int z = 0; z < (splitZ ? sizeZ : 1); z++) {
+                        for (int c = 0; c < (splitC ? sizeC : 1); c++) {
+                            int index = FormatTools.getIndex(settings.getDimensionOrder().getValue(), sizeZ, sizeC, sizeT, sizeZ * sizeC * sizeT, z, c, t);
                             String pattern = base + (splitZ ? "_Z%z" : "") + (splitC ? "_C%c" : "") + (splitT ? "_T%t" : "") + ext;
                             outputFiles[nextFile++] = FormatTools.getFilename(0, index, store, pattern, padded);
                         }
@@ -525,8 +505,7 @@ public class OMEImageData implements JIPipeData {
             int thisType = AWTImageTools.getPixelType((BufferedImage) firstImage);
             if (proc instanceof ColorProcessor) {
                 thisType = FormatTools.UINT8;
-            }
-            else if (proc instanceof ShortProcessor) {
+            } else if (proc instanceof ShortProcessor) {
                 thisType = FormatTools.UINT16;
             }
 
@@ -588,23 +567,20 @@ public class OMEImageData implements JIPipeData {
             int end = doStack ? size : start + 1;
 
             boolean littleEndian = false;
-            if (w.getMetadataRetrieve().getPixelsBigEndian(0) != null)
-            {
+            if (w.getMetadataRetrieve().getPixelsBigEndian(0) != null) {
                 littleEndian = !w.getMetadataRetrieve().getPixelsBigEndian(0).booleanValue();
-            }
-            else if (w.getMetadataRetrieve().getPixelsBinDataCount(0) == 0) {
+            } else if (w.getMetadataRetrieve().getPixelsBinDataCount(0) == 0) {
                 littleEndian = !w.getMetadataRetrieve().getPixelsBinDataBigEndian(0, 0).booleanValue();
             }
             byte[] plane = null;
             w.setInterleaved(false);
 
             int[] no = new int[outputFiles.length];
-            for (int i=start; i<end; i++) {
+            for (int i = start; i < end; i++) {
                 if (doStack) {
                     BF.status(false, "Saving plane " + (i + 1) + "/" + size);
                     BF.progress(false, i, size);
-                }
-                else BF.status(false, "Saving image");
+                } else BF.status(false, "Saving image");
                 proc = is.getProcessor(i + 1);
 
                 if (proc instanceof RecordedImageProcessor) {
@@ -621,37 +597,32 @@ public class OMEImageData implements JIPipeData {
                         byte[] pixels = (byte[]) proc.getPixels();
                         plane = new byte[pixels.length];
                         float[] calibration = proc.getCalibrationTable();
-                        for (int pixel=0; pixel<pixels.length; pixel++) {
+                        for (int pixel = 0; pixel < pixels.length; pixel++) {
                             plane[pixel] = (byte) calibration[pixels[pixel] & 0xff];
                         }
-                    }
-                    else {
+                    } else {
                         plane = (byte[]) proc.getPixels();
                     }
-                }
-                else if (proc instanceof ShortProcessor) {
+                } else if (proc instanceof ShortProcessor) {
                     short[] pixels = (short[]) proc.getPixels();
                     if (applyCalibrationFunction) {
                         // don't alter 'pixels' directly as that will
                         // affect the open ImagePlus
                         plane = new byte[pixels.length * 2];
                         float[] calibration = proc.getCalibrationTable();
-                        for (int pixel=0; pixel<pixels.length; pixel++) {
+                        for (int pixel = 0; pixel < pixels.length; pixel++) {
                             short v = (short) calibration[pixels[pixel] & 0xffff];
                             DataTools.unpackBytes(
                                     v, plane, pixel * 2, 2, littleEndian);
                         }
-                    }
-                    else {
+                    } else {
                         plane = DataTools.shortsToBytes(pixels, littleEndian);
                     }
-                }
-                else if (proc instanceof FloatProcessor) {
+                } else if (proc instanceof FloatProcessor) {
                     plane = DataTools.floatsToBytes(
                             (float[]) proc.getPixels(), littleEndian);
-                }
-                else if (proc instanceof ColorProcessor) {
-                    byte[][] pix = new byte[3][x*y];
+                } else if (proc instanceof ColorProcessor) {
+                    byte[][] pix = new byte[3][x * y];
                     ((ColorProcessor) proc).getRGB(pix[0], pix[1], pix[2]);
                     plane = new byte[3 * x * y];
                     System.arraycopy(pix[0], 0, plane, 0, x * y);
@@ -703,8 +674,7 @@ public class OMEImageData implements JIPipeData {
                         int bpp = FormatTools.getBytesPerPixel(thisType);
                         if (bpp == 1) {
                             w.setColorModel(luts[currentChannel]);
-                        }
-                        else if (bpp == 2) {
+                        } else if (bpp == 2) {
                             int lutSize = luts[currentChannel].getMapSize();
                             byte[][] lut = new byte[3][lutSize];
                             luts[currentChannel].getReds(lut[0]);
@@ -713,8 +683,8 @@ public class OMEImageData implements JIPipeData {
 
                             short[][] newLut = new short[3][65536];
                             int bins = newLut[0].length / lut[0].length;
-                            for (int c=0; c<newLut.length; c++) {
-                                for (int q=0; q<newLut[c].length; q++) {
+                            for (int c = 0; c < newLut.length; c++) {
+                                for (int q = 0; q < newLut[c].length; q++) {
                                     int index = q / bins;
                                     newLut[c][q] = (short) ((lut[c][index] * lut[0].length) + (q % bins));
                                 }
@@ -723,18 +693,15 @@ public class OMEImageData implements JIPipeData {
                             w.setColorModel(new Index16ColorModel(16, newLut[0].length,
                                     newLut, littleEndian));
                         }
-                    }
-                    else {
+                    } else {
                         w.setColorModel(proc.getColorModel());
                     }
                 }
                 w.saveBytes(no[fileIndex]++, plane);
             }
-        }
-        catch (FormatException e) {
+        } catch (FormatException e) {
             WindowTools.reportException(e);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             WindowTools.reportException(e);
         }
     }

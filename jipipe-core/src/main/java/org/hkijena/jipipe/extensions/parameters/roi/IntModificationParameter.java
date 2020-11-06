@@ -33,6 +33,12 @@ public class IntModificationParameter implements Function<Integer, Integer> {
     public IntModificationParameter() {
     }
 
+    public IntModificationParameter(int exactValue, double factor, boolean useExactValue) {
+        this.exactValue = exactValue;
+        this.factor = factor;
+        this.useExactValue = useExactValue;
+    }
+
     /**
      * Creates a copy
      *

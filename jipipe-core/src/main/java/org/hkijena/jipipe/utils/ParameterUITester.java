@@ -13,15 +13,15 @@
 
 package org.hkijena.jipipe.utils;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeMutableParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
-import org.hkijena.jipipe.api.registries.JIPipeParameterTypeRegistry;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 
-import java.awt.*;
+import java.awt.BorderLayout;
 
 /**
  * UI that shows all parameter types
@@ -52,7 +52,7 @@ public class ParameterUITester extends JIPipeWorkbenchPanel {
 
     private void initializeParameters() {
         parameterCollection = new JIPipeDynamicParameterCollection(false);
-        for (JIPipeParameterTypeInfo info : JIPipeParameterTypeRegistry.getInstance().getRegisteredParameters().values()) {
+        for (JIPipeParameterTypeInfo info : JIPipe.getParameterTypes().getRegisteredParameters().values()) {
             JIPipeMutableParameterAccess parameterAccess = parameterCollection.addParameter(info.getId(), info.getFieldClass());
             parameterAccess.setName(info.getName());
         }

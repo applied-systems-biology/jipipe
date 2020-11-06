@@ -13,23 +13,25 @@
 
 package org.hkijena.jipipe.ui.resultanalysis;
 
+import com.google.common.eventbus.Subscribe;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeRun;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeExportedDataTable;
+import org.hkijena.jipipe.api.events.ParameterChangedEvent;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
-import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
+import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
 import org.hkijena.jipipe.ui.cache.JIPipeDataInfoCellRenderer;
 import org.hkijena.jipipe.ui.components.FormPanel;
+import org.hkijena.jipipe.ui.components.PreviewControlUI;
 import org.hkijena.jipipe.ui.components.SearchTextField;
 import org.hkijena.jipipe.ui.components.SearchTextFieldTableRowFilter;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
-import org.hkijena.jipipe.ui.registries.JIPipeUIDatatypeRegistry;
-import org.hkijena.jipipe.utils.CustomScrollPane;
 import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jdesktop.swingx.JXTable;
@@ -38,7 +40,7 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
-import java.awt.*;
+import java.awt.BorderLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.nio.file.Path;
@@ -67,23 +69,31 @@ public class JIPipeResultDataSlotTableUI extends JIPipeProjectWorkbenchPanel {
 
         initialize();
         reloadTable();
+        GeneralDataSettings.getInstance().getEventBus().register(new Object() {
+            @Subscribe
+            public void onPreviewSizeChanged(ParameterChangedEvent event) {
+                if("preview-size".equals(event.getKey())) {
+                    reloadTable();
+                }
+            }
+        });
     }
 
     private void initialize() {
         setLayout(new BorderLayout());
         table = new JXTable();
-        if(GeneralUISettings.getInstance().isGenerateResultPreviews())
-            table.setRowHeight(GeneralUISettings.getInstance().getPreviewHeight());
+        if (GeneralDataSettings.getInstance().isGenerateResultPreviews())
+            table.setRowHeight(GeneralDataSettings.getInstance().getPreviewSize());
         else
             table.setRowHeight(25);
-        table.setDefaultRenderer(Path.class, new JIPipeRowLocationTableCellRenderer());
+        table.setDefaultRenderer(Path.class, new JIPipeRowIndexTableCellRenderer());
         table.setDefaultRenderer(JIPipeDataInfo.class, new JIPipeDataInfoCellRenderer());
         table.setDefaultRenderer(JIPipeExportedDataTable.Row.class, new JIPipeRowDataTableCellRenderer(getProjectWorkbench(), slot));
         table.setDefaultRenderer(JIPipeAnnotation.class, new JIPipeTraitTableCellRenderer());
         table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
-        JScrollPane scrollPane = new CustomScrollPane(table);
-        scrollPane.getViewport().setBackground(Color.WHITE);
+        JScrollPane scrollPane = new JScrollPane(table);
+        scrollPane.getViewport().setBackground(UIManager.getColor("TextArea.background"));
         add(scrollPane, BorderLayout.CENTER);
         add(table.getTableHeader(), BorderLayout.NORTH);
 
@@ -121,6 +131,9 @@ public class JIPipeResultDataSlotTableUI extends JIPipeProjectWorkbenchPanel {
         JMenuItem exportAsCsvItem = new JMenuItem("as *.csv", UIUtils.getIconFromResources("data-types/results-table.png"));
         exportAsCsvItem.addActionListener(e -> exportAsCSV());
         exportMenu.add(exportAsCsvItem);
+
+        PreviewControlUI previewControlUI = new PreviewControlUI();
+        toolBar.add(previewControlUI);
     }
 
     private void exportAsCSV() {
@@ -134,7 +147,7 @@ public class JIPipeResultDataSlotTableUI extends JIPipeProjectWorkbenchPanel {
     private void handleSlotRowDefaultAction(int selectedRow) {
         int row = table.getRowSorter().convertRowIndexToModel(selectedRow);
         JIPipeExportedDataTable.Row rowInstance = dataTable.getRowList().get(row);
-        JIPipeResultDataSlotRowUI ui = JIPipeUIDatatypeRegistry.getInstance().getUIForResultSlot(getProjectWorkbench(), slot, rowInstance);
+        JIPipeResultDataSlotRowUI ui = JIPipe.getDataTypes().getUIForResultSlot(getProjectWorkbench(), slot, rowInstance);
         ui.handleDefaultAction();
     }
 
@@ -143,15 +156,19 @@ public class JIPipeResultDataSlotTableUI extends JIPipeProjectWorkbenchPanel {
         for (int viewRow : selectedRows) {
             int row = table.getRowSorter().convertRowIndexToModel(viewRow);
             JIPipeExportedDataTable.Row rowInstance = dataTable.getRowList().get(row);
-            JLabel nameLabel = new JLabel(rowInstance.getLocation().toString(), JIPipeUIDatatypeRegistry.getInstance().getIconFor(slot.getAcceptedDataType()), JLabel.LEFT);
+            JLabel nameLabel = new JLabel("" + rowInstance.getIndex(), JIPipe.getDataTypes().getIconFor(slot.getAcceptedDataType()), JLabel.LEFT);
             nameLabel.setToolTipText(TooltipUtils.getSlotInstanceTooltip(slot));
-            JIPipeResultDataSlotRowUI rowUI = JIPipeUIDatatypeRegistry.getInstance().getUIForResultSlot(getProjectWorkbench(), slot, rowInstance);
+            JIPipeResultDataSlotRowUI rowUI = JIPipe.getDataTypes().getUIForResultSlot(getProjectWorkbench(), slot, rowInstance);
             rowUIList.addToForm(rowUI, nameLabel, null);
         }
     }
 
     private void reloadTable() {
         dataTable = JIPipeExportedDataTable.loadFromJson(slot.getStoragePath().resolve("data-table.json"));
+        if (GeneralDataSettings.getInstance().isGenerateResultPreviews())
+            table.setRowHeight(GeneralDataSettings.getInstance().getPreviewSize());
+        else
+            table.setRowHeight(25);
         table.setModel(dataTable);
         refreshTable();
     }

@@ -14,20 +14,28 @@
 package org.hkijena.jipipe.ui.grapheditor;
 
 import com.google.common.eventbus.Subscribe;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeMutableSlotConfiguration;
 import org.hkijena.jipipe.api.events.GraphChangedEvent;
 import org.hkijena.jipipe.api.events.ParameterChangedEvent;
-import org.hkijena.jipipe.api.history.*;
+import org.hkijena.jipipe.api.history.CompoundGraphHistorySnapshot;
+import org.hkijena.jipipe.api.history.EdgeConnectGraphHistorySnapshot;
+import org.hkijena.jipipe.api.history.EdgeDisconnectAllTargetsGraphHistorySnapshot;
+import org.hkijena.jipipe.api.history.EdgeDisconnectGraphHistorySnapshot;
+import org.hkijena.jipipe.api.history.GraphChangedHistorySnapshot;
+import org.hkijena.jipipe.api.history.JIPipeGraphHistory;
+import org.hkijena.jipipe.api.history.MoveNodesGraphHistorySnapshot;
+import org.hkijena.jipipe.api.history.SlotConfigurationHistorySnapshot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphEdge;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.EditAlgorithmSlotPanel;
 import org.hkijena.jipipe.ui.events.AlgorithmFinderSuccessEvent;
-import org.hkijena.jipipe.ui.grapheditor.algorithmfinder.JIPipeAlgorithmFinderUI;
-import org.hkijena.jipipe.ui.registries.JIPipeUIDatatypeRegistry;
+import org.hkijena.jipipe.ui.grapheditor.algorithmfinder.JIPipeAlgorithmSourceFinderUI;
+import org.hkijena.jipipe.ui.grapheditor.algorithmfinder.JIPipeAlgorithmTargetFinderUI;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -35,11 +43,18 @@ import org.hkijena.jipipe.utils.UIUtils;
 import javax.swing.*;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
-import java.awt.*;
+import java.awt.Dimension;
+import java.awt.Point;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
-import java.util.*;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -131,11 +146,19 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
             if (sourceSlot == null) {
                 Set<JIPipeDataSlot> availableSources = getGraph().getAvailableSources(slot, true, false);
                 availableSources.removeIf(slot -> !slot.getNode().isVisibleIn(compartment));
+
+                JMenuItem findAlgorithmButton = new JMenuItem("Find matching algorithm ...", UIUtils.getIconFromResources("actions/find.png"));
+                findAlgorithmButton.setToolTipText("Opens a tool to find a matching algorithm based on the data");
+                findAlgorithmButton.addActionListener(e -> findSourceAlgorithm(slot));
+                assignButtonMenu.add(findAlgorithmButton);
+                if (!availableSources.isEmpty())
+                    assignButtonMenu.addSeparator();
+
                 for (JIPipeDataSlot source : sortSlotsByDistance(availableSources)) {
                     if (!source.getNode().isVisibleIn(compartment))
                         continue;
                     JMenuItem connectButton = new JMenuItem(source.getDisplayName(),
-                            JIPipeUIDatatypeRegistry.getInstance().getIconFor(source.getAcceptedDataType()));
+                            JIPipe.getDataTypes().getIconFor(source.getAcceptedDataType()));
                     connectButton.addActionListener(e -> connectSlot(source, slot));
                     installHighlightForConnect(source, connectButton);
                     assignButtonMenu.add(connectButton);
@@ -254,14 +277,14 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
 
             JMenuItem findAlgorithmButton = new JMenuItem("Find matching algorithm ...", UIUtils.getIconFromResources("actions/find.png"));
             findAlgorithmButton.setToolTipText("Opens a tool to find a matching algorithm based on the data");
-            findAlgorithmButton.addActionListener(e -> findAlgorithm(slot));
+            findAlgorithmButton.addActionListener(e -> findTargetAlgorithm(slot));
             assignButtonMenu.add(findAlgorithmButton);
             if (!availableTargets.isEmpty())
                 assignButtonMenu.addSeparator();
 
             for (JIPipeDataSlot target : sortSlotsByDistance(availableTargets)) {
                 JMenuItem connectButton = new JMenuItem(target.getDisplayName(),
-                        JIPipeUIDatatypeRegistry.getInstance().getIconFor(target.getAcceptedDataType()));
+                        JIPipe.getDataTypes().getIconFor(target.getAcceptedDataType()));
                 connectButton.addActionListener(e -> connectSlot(slot, target));
                 connectButton.setToolTipText(TooltipUtils.getAlgorithmTooltip(target.getNode().getInfo()));
                 connectButton.addMouseListener(new MouseAdapter() {
@@ -312,6 +335,27 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
             relabelButton.addActionListener(e -> relabelSlot());
             assignButtonMenu.add(relabelButton);
         }
+    }
+
+    private void findSourceAlgorithm(JIPipeDataSlot slot) {
+        JIPipeAlgorithmSourceFinderUI algorithmFinderUI = new JIPipeAlgorithmSourceFinderUI(nodeUI.getGraphUI(), slot);
+        JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(this), "Find matching algorithm");
+        UIUtils.addEscapeListener(dialog);
+        dialog.setModal(true);
+        dialog.setContentPane(algorithmFinderUI);
+        dialog.pack();
+        dialog.setSize(640, 480);
+        dialog.setLocationRelativeTo(this);
+
+        algorithmFinderUI.getEventBus().register(new Consumer<AlgorithmFinderSuccessEvent>() {
+            @Override
+            @Subscribe
+            public void accept(AlgorithmFinderSuccessEvent event) {
+                dialog.setVisible(false);
+            }
+        });
+
+        dialog.setVisible(true);
     }
 
     private void installHighlightForConnect(JIPipeDataSlot source, JMenuItem connectButton) {
@@ -377,8 +421,8 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
             slotConfiguration.removeOutputSlot(slot.getName(), true);
     }
 
-    private void findAlgorithm(JIPipeDataSlot slot) {
-        JIPipeAlgorithmFinderUI algorithmFinderUI = new JIPipeAlgorithmFinderUI(nodeUI.getGraphUI(), slot);
+    private void findTargetAlgorithm(JIPipeDataSlot slot) {
+        JIPipeAlgorithmTargetFinderUI algorithmFinderUI = new JIPipeAlgorithmTargetFinderUI(nodeUI.getGraphUI(), slot);
         JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(this), "Find matching algorithm");
         UIUtils.addEscapeListener(dialog);
         dialog.setModal(true);
@@ -405,6 +449,7 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
 
     /**
      * Calculates the size in grid coordinates
+     *
      * @return the size
      */
     public abstract Dimension calculateGridSize();
@@ -474,7 +519,11 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
         if (hasCustomName) {
             return slot.getDefinition().getCustomName();
         }
-        return slot.getName();
+        String name = slot.getName();
+        if(name.startsWith("{") && name.endsWith("}"))
+            return name.substring(1, name.length() - 1);
+        else
+            return name;
     }
 
     /**

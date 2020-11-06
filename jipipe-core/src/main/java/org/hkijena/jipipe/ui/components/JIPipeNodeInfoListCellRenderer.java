@@ -13,13 +13,17 @@
 
 package org.hkijena.jipipe.ui.components;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.ui.registries.JIPipeUINodeRegistry;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 
 /**
  * Renderer for {@link JIPipeNodeInfo}
@@ -93,15 +97,15 @@ public class JIPipeNodeInfoListCellRenderer extends JPanel implements ListCellRe
 
             pathLabel.setText(menuPath);
             nameLabel.setText(info.getName());
-            nodeIcon.setIcon(JIPipeUINodeRegistry.getInstance().getIconFor(info));
+            nodeIcon.setIcon(JIPipe.getNodes().getIconFor(info));
         } else {
             nameLabel.setText("<Null>");
         }
 
         if (isSelected) {
-            setBackground(new Color(184, 207, 229));
+            setBackground(UIManager.getColor("List.selectionBackground"));
         } else {
-            setBackground(new Color(255, 255, 255));
+            setBackground(UIManager.getColor("List.background"));
         }
         return this;
     }

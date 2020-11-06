@@ -14,10 +14,10 @@
 package org.hkijena.jipipe.extensions.imagejdatatypes;
 
 import com.google.common.eventbus.EventBus;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.api.registries.JIPipeSettingsRegistry;
 import org.hkijena.jipipe.extensions.imagejdatatypes.parameters.OMETIFFCompression;
 
 public class ImageJDataTypesSettings implements JIPipeParameterCollection {
@@ -58,6 +58,6 @@ public class ImageJDataTypesSettings implements JIPipeParameterCollection {
 
 
     public static ImageJDataTypesSettings getInstance() {
-        return JIPipeSettingsRegistry.getInstance().getSettings(ID, ImageJDataTypesSettings.class);
+        return JIPipe.getSettings().getSettings(ID, ImageJDataTypesSettings.class);
     }
 }

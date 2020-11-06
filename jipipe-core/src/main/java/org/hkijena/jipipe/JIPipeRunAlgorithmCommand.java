@@ -24,9 +24,9 @@ import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.registries.JIPipeNodeRegistry;
 import org.hkijena.jipipe.extensions.settings.ExtensionSettings;
 import org.hkijena.jipipe.ui.compat.RunSingleAlgorithmDialog;
+import org.hkijena.jipipe.ui.components.SplashScreen;
 import org.hkijena.jipipe.utils.JsonUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -36,7 +36,9 @@ import org.scijava.command.DynamicCommand;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
-import java.awt.*;
+import javax.swing.*;
+import java.awt.Dimension;
+import java.awt.GraphicsEnvironment;
 import java.io.IOException;
 import java.util.Map;
 
@@ -62,12 +64,19 @@ public class JIPipeRunAlgorithmCommand extends DynamicCommand implements Initial
         resolveInput("threads");
     }
 
-    @Override
-    public void run() {
+    private void initializeRegistry(boolean withSplash) {
         JIPipeRegistryIssues issues = new JIPipeRegistryIssues();
         ExtensionSettings extensionSettings = ExtensionSettings.getInstanceFromRaw();
-        JIPipeDefaultRegistry.createInstance(getContext());
-        JIPipeDefaultRegistry.getInstance().discover(extensionSettings, issues);
+        if (!JIPipe.isInstantiated()) {
+            UIUtils.loadLookAndFeelFromSettings();
+            if (!JIPipe.isInstantiated() && withSplash) {
+                SwingUtilities.invokeLater(() -> SplashScreen.getInstance().showSplash(getContext()));
+            }
+            JIPipe jiPipe = JIPipe.createInstance(getContext());
+            SplashScreen.getInstance().setJIPipe(JIPipe.getInstance());
+            jiPipe.initialize(extensionSettings, issues);
+            SwingUtilities.invokeLater(() -> SplashScreen.getInstance().hideSplash());
+        }
         if (!extensionSettings.isSilent()) {
             JIPipeValidityReport report = new JIPipeValidityReport();
             issues.reportValidity(report);
@@ -79,10 +88,15 @@ public class JIPipeRunAlgorithmCommand extends DynamicCommand implements Initial
                 }
             }
         }
+    }
+
+    @Override
+    public void run() {
         JIPipeGraphNode algorithm;
         SingleImageJAlgorithmRun settings;
         if (StringUtils.isNullOrEmpty(algorithmId) || StringUtils.isNullOrEmpty(algorithmParameters)) {
             UIUtils.loadLookAndFeelFromSettings();
+            initializeRegistry(true);
             RunSingleAlgorithmDialog dialog = new RunSingleAlgorithmDialog(getContext());
             dialog.setTitle("Run JIPipe algorithm");
             dialog.setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
@@ -102,7 +116,8 @@ public class JIPipeRunAlgorithmCommand extends DynamicCommand implements Initial
                 settings = dialog.getRunSettings();
             }
         } else {
-            JIPipeNodeInfo info = JIPipeNodeRegistry.getInstance().getInfoById(algorithmId);
+            initializeRegistry(false);
+            JIPipeNodeInfo info = JIPipe.getNodes().getInfoById(algorithmId);
             algorithm = info.newInstance();
             settings = new SingleImageJAlgorithmRun(algorithm);
             try {

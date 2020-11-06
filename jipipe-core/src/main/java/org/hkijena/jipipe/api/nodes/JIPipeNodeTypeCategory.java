@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.api.nodes;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.Color;
 
 /**
  * Describes a node category
@@ -68,6 +68,20 @@ public interface JIPipeNodeTypeCategory {
      * @return border color
      */
     Color getBorderColor();
+
+    /**
+     * The fill color for algorithm nodes (dark theme)
+     *
+     * @return fill color
+     */
+    Color getDarkFillColor();
+
+    /**
+     * The border color for algorithm nodes (dark theme)
+     *
+     * @return border color
+     */
+    Color getDarkBorderColor();
 
     /**
      * If the category should be available in the graph compartment editor

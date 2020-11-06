@@ -13,11 +13,11 @@
 
 package org.hkijena.jipipe.ui.grapheditor.contextmenu.clipboard;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeCompartmentOutput;
 import org.hkijena.jipipe.api.history.PasteNodeGraphHistorySnapshot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
-import org.hkijena.jipipe.api.registries.JIPipeNodeRegistry;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphCanvasUI;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeNodeUI;
 import org.hkijena.jipipe.ui.grapheditor.contextmenu.NodeUIContextAction;
@@ -25,7 +25,7 @@ import org.hkijena.jipipe.utils.JsonUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.Point;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.util.HashMap;
@@ -49,7 +49,7 @@ public class AlgorithmGraphPasteNodeUIContextAction implements NodeUIContextActi
                 // Replace project compartment with IOInterface
                 for (JIPipeGraphNode node : graph.getNodes().values()) {
                     if (node instanceof JIPipeCompartmentOutput) {
-                        node.setInfo(JIPipeNodeRegistry.getInstance().getInfoById("io-interface"));
+                        node.setInfo(JIPipe.getNodes().getInfoById("io-interface"));
                     }
                 }
 
@@ -65,9 +65,9 @@ public class AlgorithmGraphPasteNodeUIContextAction implements NodeUIContextActi
                         minY = Math.min(minY, point.y);
                     }
                 }
-                if(minX == Integer.MAX_VALUE)
+                if (minX == Integer.MAX_VALUE)
                     minX = 0;
-                if(minY == Integer.MAX_VALUE)
+                if (minY == Integer.MAX_VALUE)
                     minY = 0;
 
                 // Change the compartment
@@ -81,8 +81,8 @@ public class AlgorithmGraphPasteNodeUIContextAction implements NodeUIContextActi
                 for (JIPipeGraphNode algorithm : graph.getNodes().values()) {
                     Point original = originalLocations.getOrDefault(algorithm, null);
                     if (original != null) {
-                        original.x = (int)(original.x - minX + cursor.x * canvasUI.getZoom() / canvasUI.getViewMode().getGridWidth());
-                        original.y = (int)(original.y - minY + cursor.y * canvasUI.getZoom() / canvasUI.getViewMode().getGridHeight());
+                        original.x = (int) (original.x - minX + cursor.x * canvasUI.getZoom() / canvasUI.getViewMode().getGridWidth());
+                        original.y = (int) (original.y - minY + cursor.y * canvasUI.getZoom() / canvasUI.getViewMode().getGridHeight());
                         algorithm.setLocationWithin(compartment, original, canvasUI.getViewMode().name());
                     }
                 }

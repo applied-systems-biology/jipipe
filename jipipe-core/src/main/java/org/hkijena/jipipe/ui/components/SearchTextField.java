@@ -18,7 +18,7 @@ import org.jdesktop.swingx.JXTextField;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
-import java.awt.*;
+import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.function.Predicate;
@@ -36,7 +36,7 @@ public class SearchTextField extends JPanel implements Predicate<String> {
      */
     public SearchTextField() {
         setLayout(new BorderLayout(4, 0));
-        setBackground(Color.WHITE);
+        setBackground(UIManager.getColor("TextField.background"));
         setBorder(BorderFactory.createEtchedBorder());
 
         textField.setPrompt("Search ...");

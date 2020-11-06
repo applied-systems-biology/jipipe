@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.extensions.settings;
 
 import com.google.common.eventbus.EventBus;
-import org.hkijena.jipipe.JIPipeDefaultRegistry;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
@@ -140,6 +140,6 @@ public class GraphEditorUISettings implements JIPipeParameterCollection {
 
 
     public static GraphEditorUISettings getInstance() {
-        return JIPipeDefaultRegistry.getInstance().getSettingsRegistry().getSettings(ID, GraphEditorUISettings.class);
+        return JIPipe.getSettings().getSettings(ID, GraphEditorUISettings.class);
     }
 }

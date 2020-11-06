@@ -24,7 +24,7 @@ import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -102,7 +102,7 @@ public class UpdateSiteListUI extends JPanel {
         Collection<UpdateSite> updateSites = Collections.emptySet();
         if (filesCollection != null)
             updateSites = filesCollection.getUpdateSites(true);
-        filteredUpdateSites = RankedData.getSortedAndFilteredData(updateSites, rankingFunction, searchTextField.getSearchStrings());
+        filteredUpdateSites = RankedData.getSortedAndFilteredData(updateSites, UpdateSite::getName, rankingFunction, searchTextField.getSearchStrings());
         contentPanel.clear();
         for (UpdateSite updateSite : filteredUpdateSites) {
             UpdateSiteUI updateSiteUI = new UpdateSiteUI(this, updateSite);

@@ -33,9 +33,9 @@ public class ImagePlusToOMEImageTypeConverter implements JIPipeDataConverter {
 
     @Override
     public JIPipeData convert(JIPipeData input) {
-        ImagePlus img = ((ImagePlusData)input).getImage();
+        ImagePlus img = ((ImagePlusData) input).getImage();
         ROIListData rois = new ROIListData();
-        if(img.getRoi() != null) {
+        if (img.getRoi() != null) {
             rois.add(img.getRoi());
         }
         return new OMEImageData(img, rois, null);

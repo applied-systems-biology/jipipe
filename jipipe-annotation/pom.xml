@@ -5,16 +5,16 @@
     <parent>
         <artifactId>jipipe</artifactId>
         <groupId>org.hkijena</groupId>
-        <version>1.0-SNAPSHOT</version>
+        <version>2020.11</version>
     </parent>
 
     <artifactId>jipipe-annotation</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>2020.11</version>
 
     <name>jipipe-annotation</name>
     <description>JIPipe Annotation Processing</description>
     <inceptionYear>2020</inceptionYear>
-    <url>https://applied-systems-biology.github.io/jipipe/</url>
+    <url>https://www.jipipe.org/</url>
 
     <organization>
         <name>Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)</name>
@@ -73,11 +73,20 @@
         <license.projectName>JIPipe-Annotation</license.projectName>
     </properties>
 
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.hkijena</groupId>
+                <artifactId>jipipe-core</artifactId>
+                <version>2020.11</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
     <dependencies>
         <dependency>
             <groupId>org.hkijena</groupId>
             <artifactId>jipipe-core</artifactId>
-            <version>1.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
 

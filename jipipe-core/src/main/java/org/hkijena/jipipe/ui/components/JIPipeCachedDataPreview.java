@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.ui.components;
 
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
+import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -44,15 +44,14 @@ public class JIPipeCachedDataPreview extends JPanel {
 
     private void setPreview(Component component) {
         removeAll();
-        if(component == null) {
+        if (component == null) {
             add(new JLabel("N/A"), BorderLayout.CENTER);
-        }
-        else {
+        } else {
             add(component, BorderLayout.CENTER);
         }
         revalidate();
         repaint();
-        if(parentComponent != null) {
+        if (parentComponent != null) {
             parentComponent.repaint();
         }
     }
@@ -70,8 +69,7 @@ public class JIPipeCachedDataPreview extends JPanel {
     private static class Worker extends SwingWorker<Component, Object> {
 
         private final JIPipeCachedDataPreview parent;
-        private final int width = GeneralUISettings.getInstance().getPreviewWidth();
-        private final int height = GeneralUISettings.getInstance().getPreviewHeight();
+        private final int width = GeneralDataSettings.getInstance().getPreviewSize();
 
         private Worker(JIPipeCachedDataPreview parent) {
             this.parent = parent;
@@ -79,7 +77,7 @@ public class JIPipeCachedDataPreview extends JPanel {
 
         @Override
         protected Component doInBackground() throws Exception {
-            return parent.data.preview(width, height);
+            return parent.data.preview(width, width);
         }
 
         @Override

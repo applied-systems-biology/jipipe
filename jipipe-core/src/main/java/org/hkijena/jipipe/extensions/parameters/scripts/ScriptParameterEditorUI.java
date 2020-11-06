@@ -24,7 +24,8 @@ import org.scijava.ui.swing.script.EditorPane;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Font;
 import java.util.Objects;
 
 /**
@@ -54,6 +55,9 @@ public class ScriptParameterEditorUI extends JIPipeParameterEditorUI {
                 JLabel.LEFT);
         collapseInfoLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, 12));
         textArea = new EditorPane();
+        UIUtils.applyThemeToCodeEditor(textArea);
+        textArea.setBackground(UIManager.getColor("TextArea.background"));
+        textArea.setHighlightCurrentLine(false);
         if (code.getLanguage() != null) {
             ReflectionUtils.invokeMethod(textArea, "setLanguage", code.getLanguage());
             textArea.setAutoCompletionEnabled(true);

@@ -16,7 +16,11 @@ package org.hkijena.jipipe.api.compartments;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.hkijena.jipipe.api.JIPipeMetadata;
@@ -66,13 +70,15 @@ public class JIPipeExportedCompartment {
         for (JIPipeGraphNode algorithm : sourceGraph.getNodes().values()) {
             if (!algorithm.getCompartment().equals(compartmentId))
                 continue;
-            JIPipeGraphNode copy = algorithm.getInfo().clone(algorithm);
+            JIPipeGraphNode copy = algorithm.getInfo().duplicate(algorithm);
             graph.insertNode(copy, copy.getCompartment());
             copies.put(algorithm.getIdInGraph(), copy);
         }
         for (Map.Entry<JIPipeDataSlot, JIPipeDataSlot> edge : sourceGraph.getSlotEdges()) {
-            JIPipeGraphNode copySource = copies.get(edge.getKey().getNode().getIdInGraph());
-            JIPipeGraphNode copyTarget = copies.get(edge.getValue().getNode().getIdInGraph());
+            JIPipeGraphNode copySource = copies.getOrDefault(edge.getKey().getNode().getIdInGraph(), null);
+            JIPipeGraphNode copyTarget = copies.getOrDefault(edge.getValue().getNode().getIdInGraph(), null);
+            if (copySource == null || copyTarget == null)
+                continue;
             if (!copySource.getCompartment().equals(compartmentId))
                 continue;
             if (!copyTarget.getCompartment().equals(compartmentId))
@@ -80,6 +86,7 @@ public class JIPipeExportedCompartment {
             graph.connect(copySource.getOutputSlotMap().get(edge.getKey().getName()),
                     copyTarget.getInputSlotMap().get(edge.getValue().getName()));
         }
+        metadata.setName(compartment.getName());
     }
 
     /**
@@ -121,7 +128,7 @@ public class JIPipeExportedCompartment {
                 // Copy the slot configuration over
                 projectOutputNode.getSlotConfiguration().setTo(algorithm.getSlotConfiguration());
             } else {
-                JIPipeGraphNode copy = algorithm.getInfo().clone(algorithm);
+                JIPipeGraphNode copy = algorithm.getInfo().duplicate(algorithm);
                 project.getGraph().insertNode(copy, copy.getCompartment());
                 copies.put(algorithm.getIdInGraph(), copy);
             }

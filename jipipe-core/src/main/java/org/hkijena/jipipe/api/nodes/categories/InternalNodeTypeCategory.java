@@ -17,7 +17,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeTypeCategory;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.Color;
 
 public class InternalNodeTypeCategory implements JIPipeNodeTypeCategory {
 
@@ -53,7 +53,17 @@ public class InternalNodeTypeCategory implements JIPipeNodeTypeCategory {
 
     @Override
     public Color getBorderColor() {
+        return Color.LIGHT_GRAY;
+    }
+
+    @Override
+    public Color getDarkFillColor() {
         return Color.DARK_GRAY;
+    }
+
+    @Override
+    public Color getDarkBorderColor() {
+        return Color.LIGHT_GRAY;
     }
 
     @Override

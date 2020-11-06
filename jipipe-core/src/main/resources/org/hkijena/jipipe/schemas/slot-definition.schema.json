@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema",
-  "$id": "https://applied-systems-biology.github.io/jipipe/schemas/slot-definition.schema.json",
+  "$id": "https://www.jipipe.org/schemas/slot-definition.schema.json",
   "type": "object",
   "title": "Slot definition",
   "description": "Defines a data slot",

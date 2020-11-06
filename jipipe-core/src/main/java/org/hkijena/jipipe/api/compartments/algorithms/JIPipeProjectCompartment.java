@@ -87,11 +87,6 @@ public class JIPipeProjectCompartment extends JIPipeGraphNode {
 
     }
 
-    @Override
-    public void reportValidity(JIPipeValidityReport report) {
-
-    }
-
     /**
      * @return The project
      */
@@ -122,6 +117,11 @@ public class JIPipeProjectCompartment extends JIPipeGraphNode {
      */
     public void setOutputNode(JIPipeCompartmentOutput outputNode) {
         this.outputNode = outputNode;
+    }
+
+    @Override
+    public void reportValidity(JIPipeValidityReport report) {
+
     }
 
     /**

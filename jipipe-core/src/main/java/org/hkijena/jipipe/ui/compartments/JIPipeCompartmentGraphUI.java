@@ -16,13 +16,13 @@ package org.hkijena.jipipe.ui.compartments;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.eventbus.Subscribe;
 import ij.IJ;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.compartments.JIPipeExportedCompartment;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.history.AddCompartmentGraphHistorySnapshot;
 import org.hkijena.jipipe.api.history.ImportCompartmentGraphHistorySnapshot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.registries.JIPipeNodeRegistry;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.components.MarkdownDocument;
@@ -30,7 +30,13 @@ import org.hkijena.jipipe.ui.components.MarkdownReader;
 import org.hkijena.jipipe.ui.events.DefaultAlgorithmUIActionRequestedEvent;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphEditorMinimap;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphEditorUI;
-import org.hkijena.jipipe.ui.grapheditor.contextmenu.*;
+import org.hkijena.jipipe.ui.grapheditor.contextmenu.DeleteCompartmentUIContextAction;
+import org.hkijena.jipipe.ui.grapheditor.contextmenu.ExportCompartmentAsJsonNodeUIContextAction;
+import org.hkijena.jipipe.ui.grapheditor.contextmenu.ExportCompartmentToNodeUIContextAction;
+import org.hkijena.jipipe.ui.grapheditor.contextmenu.InvertSelectionNodeUIContextAction;
+import org.hkijena.jipipe.ui.grapheditor.contextmenu.NodeUIContextAction;
+import org.hkijena.jipipe.ui.grapheditor.contextmenu.SelectAllNodeUIContextAction;
+import org.hkijena.jipipe.ui.grapheditor.contextmenu.SelectAndMoveNodeHereNodeUIContextAction;
 import org.hkijena.jipipe.ui.grapheditor.contextmenu.clipboard.GraphCompartmentCopyNodeUIContextAction;
 import org.hkijena.jipipe.ui.grapheditor.contextmenu.clipboard.GraphCompartmentCutNodeUIContextAction;
 import org.hkijena.jipipe.ui.grapheditor.contextmenu.clipboard.GraphCompartmentPasteNodeUIContextAction;
@@ -39,7 +45,7 @@ import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.io.IOException;
@@ -139,7 +145,7 @@ public class JIPipeCompartmentGraphUI extends JIPipeGraphEditorUI {
      * Initializes the "Add nodes" area
      */
     protected void initializeAddNodesMenus() {
-        JIPipeNodeInfo info = JIPipeNodeRegistry.getInstance().getInfoById("jipipe:project-compartment");
+        JIPipeNodeInfo info = JIPipe.getNodes().getInfoById("jipipe:project-compartment");
 
         JButton addItem = new JButton("Add new compartment", UIUtils.getIconFromResources("actions/list-add.png"));
         UIUtils.makeFlatH25(addItem);

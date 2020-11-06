@@ -15,13 +15,13 @@ package org.hkijena.jipipe.extensions.filesystem.dataypes;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.JsonUtils;
 
-import java.awt.*;
+import java.awt.Desktop;
 import java.io.IOException;
 import java.nio.file.Path;
 
@@ -75,7 +75,7 @@ public class PathData implements JIPipeData {
      */
     @JsonGetter("jipipe:data-type")
     private String getDataTypeName() {
-        return JIPipeDatatypeRegistry.getInstance().getIdOf(getClass());
+        return JIPipe.getDataTypes().getIdOf(getClass());
     }
 
     /**

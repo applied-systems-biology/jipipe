@@ -2,9 +2,20 @@ package org.hkijena.jipipe.extensions.core;
 
 import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.nodes.categories.*;
+import org.hkijena.jipipe.api.nodes.categories.AnnotationsNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.categories.FileSystemNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.categories.InternalNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
+import org.hkijena.jipipe.extensions.core.data.CopyContainingFolderDataImportOperation;
+import org.hkijena.jipipe.extensions.core.data.DefaultDataDisplayOperation;
+import org.hkijena.jipipe.extensions.core.data.OpenContainingFolderDataImportOperation;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
+import org.hkijena.jipipe.ui.theme.JIPipeUITheme;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.plugin.Plugin;
@@ -44,6 +55,14 @@ public class CoreExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerNodeTypeCategory(new TableNodeTypeCategory());
         registerNodeTypeCategory(new RoiNodeTypeCategory());
         registerNodeTypeCategory(new AnnotationsNodeTypeCategory());
+
+        // Global data importers
+        registerDatatypeImportOperation("", new CopyContainingFolderDataImportOperation());
+        registerDatatypeImportOperation("", new OpenContainingFolderDataImportOperation());
+        registerDatatypeDisplayOperation("", new DefaultDataDisplayOperation());
+
+        // Global parameters
+        registerEnumParameterType("theme", JIPipeUITheme.class, "Theme", "A theme for the JIPipe GUI");
     }
 
     @Override
@@ -73,6 +92,6 @@ public class CoreExtension extends JIPipePrepackagedDefaultJavaExtension {
 
     @Override
     public String getDependencyVersion() {
-        return "1.0.0";
+        return "2020.11";
     }
 }

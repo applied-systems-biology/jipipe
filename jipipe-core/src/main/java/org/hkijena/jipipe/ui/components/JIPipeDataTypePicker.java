@@ -15,17 +15,22 @@ package org.hkijena.jipipe.ui.components;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.primitives.Ints;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
-import org.hkijena.jipipe.ui.registries.JIPipeUIDatatypeRegistry;
-import org.hkijena.jipipe.utils.CustomScrollPane;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
-import java.util.*;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -77,7 +82,7 @@ public class JIPipeDataTypePicker extends JPanel {
             dataTypeList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         }
         dataTypeList.addListSelectionListener(e -> updateSelection());
-        JScrollPane scrollPane = new CustomScrollPane(dataTypeList);
+        JScrollPane scrollPane = new JScrollPane(dataTypeList);
         add(scrollPane, BorderLayout.CENTER);
     }
 
@@ -246,15 +251,15 @@ public class JIPipeDataTypePicker extends JPanel {
         @Override
         public Component getListCellRendererComponent(JList<? extends JIPipeDataInfo> list, JIPipeDataInfo value, int index, boolean isSelected, boolean cellHasFocus) {
             if (value != null) {
-                setText(StringUtils.createIconTextHTMLTable(value.getName(), JIPipeUIDatatypeRegistry.getInstance().getIconURLFor(value)));
+                setText(StringUtils.createIconTextHTMLTable(value.getName(), JIPipe.getDataTypes().getIconURLFor(value)));
             } else {
                 setText(StringUtils.createIconTextHTMLTable("Select none", ResourceUtils.getPluginResource("icons/actions/stock_calc-cancel.png")));
             }
             setSelected(isSelected);
             if (isSelected) {
-                setBackground(new Color(184, 207, 229));
+                setBackground(UIManager.getColor("List.selectionBackground"));
             } else {
-                setBackground(new Color(255, 255, 255));
+                setBackground(UIManager.getColor("List.background"));
             }
             return this;
         }

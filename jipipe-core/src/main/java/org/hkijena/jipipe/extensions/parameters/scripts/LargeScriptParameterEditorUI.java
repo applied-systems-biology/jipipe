@@ -24,7 +24,7 @@ import org.scijava.ui.swing.script.EditorPane;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
-import java.awt.*;
+import java.awt.BorderLayout;
 import java.util.Objects;
 
 /**
@@ -49,6 +49,9 @@ public class LargeScriptParameterEditorUI extends JIPipeParameterEditorUI {
         setLayout(new BorderLayout());
         ScriptParameter code = getParameter(ScriptParameter.class);
         textArea = new EditorPane();
+        UIUtils.applyThemeToCodeEditor(textArea);
+        textArea.setHighlightCurrentLine(false);
+        textArea.setBackground(UIManager.getColor("TextArea.background"));
         textArea.setCodeFoldingEnabled(true);
         if (code.getLanguage() != null) {
             ReflectionUtils.invokeMethod(textArea, "setLanguage", code.getLanguage());

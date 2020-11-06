@@ -13,10 +13,16 @@
 
 package org.hkijena.jipipe.extensions.parameters.generators;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.SerializerProvider;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.io.IOException;
@@ -56,10 +62,12 @@ public class IntegerRange {
         this.value = other.value;
     }
 
+    @JsonGetter("value")
     public String getValue() {
         return value;
     }
 
+    @JsonSetter("value")
     public void setValue(String value) {
         this.value = value;
     }

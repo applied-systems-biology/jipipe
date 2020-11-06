@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema",
-  "$id": "https://applied-systems-biology.github.io/jipipe/schemas/metadata.schema.json",
+  "$id": "https://www.jipipe.org/schemas/metadata.schema.json",
   "type": "object",
   "title": "Metadata",
   "description": "Commonly used metadata type in JIPipe.",
@@ -50,7 +50,7 @@
       "description": "Website of the project",
       "default": "",
       "examples": [
-        "https://applied-systems-biology.github.io/jipipe/"
+        "https://www.jipipe.org/"
       ]
     },
     "license": {

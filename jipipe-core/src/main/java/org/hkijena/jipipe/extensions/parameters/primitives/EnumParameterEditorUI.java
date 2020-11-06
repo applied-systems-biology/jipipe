@@ -19,7 +19,9 @@ import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Font;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Objects;
@@ -95,9 +97,9 @@ public class EnumParameterEditorUI extends JIPipeParameterEditorUI {
             setText(info.getLabel(value));
             setToolTipText(info.getTooltip(value));
             if (isSelected || cellHasFocus) {
-                setBackground(new Color(184, 207, 229));
+                setBackground(UIManager.getColor("List.selectionBackground"));
             } else {
-                setBackground(new Color(255, 255, 255));
+                setBackground(UIManager.getColor("List.background"));
             }
             return this;
         }

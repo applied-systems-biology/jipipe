@@ -13,17 +13,16 @@
 
 package org.hkijena.jipipe.ui.resultanalysis;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
-import org.hkijena.jipipe.ui.registries.JIPipeUIDatatypeRegistry;
-import org.hkijena.jipipe.ui.registries.JIPipeUINodeRegistry;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeCellRenderer;
-import java.awt.*;
+import java.awt.Component;
 
 /**
  * Renders the tree in {@link JIPipeResultAlgorithmTree}
@@ -51,11 +50,11 @@ public class JIPipeResultTreeCellRenderer extends JLabel implements TreeCellRend
                 setText(compartment.getName());
             } else if (userObject instanceof JIPipeGraphNode) {
                 JIPipeGraphNode algorithm = (JIPipeGraphNode) userObject;
-                setIcon(JIPipeUINodeRegistry.getInstance().getIconFor(algorithm.getInfo()));
+                setIcon(JIPipe.getNodes().getIconFor(algorithm.getInfo()));
                 setText(algorithm.getName());
             } else if (userObject instanceof JIPipeDataSlot) {
                 JIPipeDataSlot slot = (JIPipeDataSlot) userObject;
-                setIcon(JIPipeUIDatatypeRegistry.getInstance().getIconFor(slot.getAcceptedDataType()));
+                setIcon(JIPipe.getDataTypes().getIconFor(slot.getAcceptedDataType()));
                 setText(slot.getName());
             } else {
                 setIcon(rootIcon);
@@ -67,9 +66,9 @@ public class JIPipeResultTreeCellRenderer extends JLabel implements TreeCellRend
         }
 
         if (selected) {
-            setBackground(new Color(184, 207, 229));
+            setBackground(UIManager.getColor("List.selectionBackground"));
         } else {
-            setBackground(new Color(255, 255, 255));
+            setBackground(UIManager.getColor("List.background"));
         }
 
         return this;

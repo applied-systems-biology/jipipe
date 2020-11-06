@@ -23,7 +23,6 @@ import loci.formats.MetadataTools;
 import loci.formats.meta.IMetadata;
 import loci.formats.meta.MetadataStore;
 import loci.formats.ome.OMEXMLMetadata;
-import loci.plugins.in.ImporterOptions;
 import ome.units.UNITS;
 import ome.units.quantity.Length;
 import ome.xml.model.Ellipse;
@@ -54,19 +53,19 @@ public class ROIHandler {
      * them to the given images and display them in the ROI manager.
      */
     public static ROIListData openROIs(IMetadata retrieve, ImagePlus[] images) {
-        return openROIs(retrieve,images, false);
+        return openROIs(retrieve, images, false);
     }
 
     /**
      * Opens the rois and converts them into ImageJ Rois.
      *
      * @param retrieve The OMEXML store.
-     * @param images The imageJ object.
-     * @param isOMERO <code>true</code> if data stored in OMERO,
-     *        <code>false</code> otherwise.
+     * @param images   The imageJ object.
+     * @param isOMERO  <code>true</code> if data stored in OMERO,
+     *                 <code>false</code> otherwise.
      */
     public static ROIListData openROIs(IMetadata retrieve, ImagePlus[] images,
-                                boolean isOMERO) {
+                                       boolean isOMERO) {
         if (!(retrieve instanceof OMEXMLMetadata)) return new ROIListData();
         int nextRoi = 0;
         ROIListData resultROIs = new ROIListData();
@@ -78,14 +77,14 @@ public class ROIHandler {
         Color fc;
 
         int imageCount = images.length;
-        for (int imageNum=0; imageNum<imageCount; imageNum++) {
+        for (int imageNum = 0; imageNum < imageCount; imageNum++) {
             int roiCount = root.sizeOfROIList();
 
             for (int roiNum = 0; roiNum < roiCount; roiNum++) {
                 Union shapeSet = root.getROI(roiNum).getUnion();
                 int shapeCount = shapeSet.sizeOfShapeList();
 
-                for (int shape = 0; shape<shapeCount; shape++) {
+                for (int shape = 0; shape < shapeCount; shape++) {
                     Shape shapeObject = shapeSet.getShape(shape);
 
                     roi = null;
@@ -107,7 +106,7 @@ public class ROIHandler {
                         if (ellipse.getStrokeColor() != null) {
                             ome.xml.model.primitives.Color StrokeColor = ellipse.getStrokeColor();
                             sc = new Color(StrokeColor.getRed(), StrokeColor.getGreen(),
-                                    StrokeColor.getBlue(),StrokeColor.getAlpha());
+                                    StrokeColor.getBlue(), StrokeColor.getAlpha());
                             if (isOMERO) {
                                 sc = new Color(StrokeColor.getGreen(), StrokeColor.getBlue(),
                                         StrokeColor.getAlpha(), StrokeColor.getRed());
@@ -125,8 +124,7 @@ public class ROIHandler {
                         if (ellipse.getStrokeWidth() != null) {
                             sw = ellipse.getStrokeWidth().value().floatValue();
                         }
-                    }
-                    else if (shapeObject instanceof ome.xml.model.Line) {
+                    } else if (shapeObject instanceof ome.xml.model.Line) {
                         ome.xml.model.Line line = (ome.xml.model.Line) shapeObject;
                         int x1 = line.getX1().intValue();
                         int x2 = line.getX2().intValue();
@@ -146,7 +144,7 @@ public class ROIHandler {
                         if (line.getFillColor() != null) {
                             ome.xml.model.primitives.Color FillColor = line.getFillColor();
                             fc = new Color(FillColor.getRed(), FillColor.getGreen(),
-                                    FillColor.getBlue(),FillColor.getAlpha());
+                                    FillColor.getBlue(), FillColor.getAlpha());
                             if (isOMERO) {
                                 fc = new Color(FillColor.getGreen(), FillColor.getBlue(),
                                         FillColor.getAlpha(), FillColor.getRed());
@@ -155,14 +153,13 @@ public class ROIHandler {
                         if (line.getStrokeWidth() != null) {
                             sw = line.getStrokeWidth().value().floatValue();
                         }
-                    }
-                    else if (shapeObject instanceof Point) {
+                    } else if (shapeObject instanceof Point) {
                         Point point = (Point) shapeObject;
                         int x = point.getX().intValue();
                         int y = point.getY().intValue();
                         roi = new PointRoi(x, y);
 
-                        if (point.getStrokeColor() != null){
+                        if (point.getStrokeColor() != null) {
                             ome.xml.model.primitives.Color StrokeColor = point.getStrokeColor();
                             sc = new Color(StrokeColor.getRed(), StrokeColor.getGreen(),
                                     StrokeColor.getBlue(), StrokeColor.getAlpha());
@@ -171,7 +168,7 @@ public class ROIHandler {
                                         StrokeColor.getAlpha(), StrokeColor.getRed());
                             }
                         }
-                        if (point.getFillColor() != null){
+                        if (point.getFillColor() != null) {
                             ome.xml.model.primitives.Color FillColor = point.getFillColor();
                             fc = new Color(FillColor.getRed(), FillColor.getGreen(),
                                     FillColor.getBlue(), FillColor.getAlpha());
@@ -180,18 +177,17 @@ public class ROIHandler {
                                         FillColor.getAlpha(), FillColor.getRed());
                             }
                         }
-                        if (point.getStrokeWidth() != null){
+                        if (point.getStrokeWidth() != null) {
                             sw = point.getStrokeWidth().value().floatValue();
                         }
-                    }
-                    else if (shapeObject instanceof Polyline) {
+                    } else if (shapeObject instanceof Polyline) {
                         Polyline polyline = (Polyline) shapeObject;
                         String points = polyline.getPoints();
                         int[][] coordinates = parsePoints(points);
                         roi = new PolygonRoi(coordinates[0], coordinates[1],
                                 coordinates[0].length, Roi.POLYLINE);
 
-                        if (polyline.getStrokeColor() != null){
+                        if (polyline.getStrokeColor() != null) {
                             ome.xml.model.primitives.Color StrokeColor = polyline.getStrokeColor();
                             sc = new Color(StrokeColor.getRed(), StrokeColor.getGreen(),
                                     StrokeColor.getBlue(), StrokeColor.getAlpha());
@@ -200,7 +196,7 @@ public class ROIHandler {
                                         StrokeColor.getAlpha(), StrokeColor.getRed());
                             }
                         }
-                        if (polyline.getFillColor() != null){
+                        if (polyline.getFillColor() != null) {
                             ome.xml.model.primitives.Color FillColor = polyline.getFillColor();
                             fc = new Color(FillColor.getRed(), FillColor.getGreen(),
                                     FillColor.getBlue(), FillColor.getAlpha());
@@ -209,18 +205,17 @@ public class ROIHandler {
                                         FillColor.getAlpha(), FillColor.getRed());
                             }
                         }
-                        if (polyline.getStrokeWidth() != null){
+                        if (polyline.getStrokeWidth() != null) {
                             sw = polyline.getStrokeWidth().value().floatValue();
                         }
-                    }
-                    else if (shapeObject instanceof Polygon) {
+                    } else if (shapeObject instanceof Polygon) {
                         Polygon polygon = (Polygon) shapeObject;
                         String points = polygon.getPoints();
                         int[][] coordinates = parsePoints(points);
                         roi = new PolygonRoi(coordinates[0], coordinates[1],
                                 coordinates[0].length, Roi.POLYGON);
 
-                        if (polygon.getStrokeColor() != null){
+                        if (polygon.getStrokeColor() != null) {
                             ome.xml.model.primitives.Color StrokeColor = polygon.getStrokeColor();
                             sc = new Color(StrokeColor.getRed(), StrokeColor.getGreen(),
                                     StrokeColor.getBlue(), StrokeColor.getAlpha());
@@ -229,7 +224,7 @@ public class ROIHandler {
                                         StrokeColor.getAlpha(), StrokeColor.getRed());
                             }
                         }
-                        if (polygon.getFillColor() != null){
+                        if (polygon.getFillColor() != null) {
                             ome.xml.model.primitives.Color FillColor = polygon.getFillColor();
                             fc = new Color(FillColor.getRed(), FillColor.getGreen(),
                                     FillColor.getBlue(), FillColor.getAlpha());
@@ -238,11 +233,10 @@ public class ROIHandler {
                                         FillColor.getAlpha(), FillColor.getRed());
                             }
                         }
-                        if (polygon.getStrokeWidth() != null){
+                        if (polygon.getStrokeWidth() != null) {
                             sw = polygon.getStrokeWidth().value().floatValue();
                         }
-                    }
-                    else if (shapeObject instanceof ome.xml.model.Label){
+                    } else if (shapeObject instanceof ome.xml.model.Label) {
                         //add support for TextROI's
                         ome.xml.model.Label label =
                                 (ome.xml.model.Label) shapeObject;
@@ -252,7 +246,7 @@ public class ROIHandler {
 
                         int size = label.getFontSize().value().intValue();
                         Font font = new Font(labelText, Font.PLAIN, size);
-                        roi = new TextRoi((int) x,(int) y, labelText,font);
+                        roi = new TextRoi((int) x, (int) y, labelText, font);
 
                         if (label.getStrokeColor() != null) {
                             ome.xml.model.primitives.Color StrokeColor = label.getStrokeColor();
@@ -276,8 +270,7 @@ public class ROIHandler {
                             sw = label.getStrokeWidth().value().floatValue();
                         }
 
-                    }
-                    else if (shapeObject instanceof ome.xml.model.Rectangle) {
+                    } else if (shapeObject instanceof ome.xml.model.Rectangle) {
                         ome.xml.model.Rectangle rectangle =
                                 (ome.xml.model.Rectangle) shapeObject;
                         int x = rectangle.getX().intValue();
@@ -287,7 +280,7 @@ public class ROIHandler {
 
                         roi = new Roi(x, y, w, h);
 
-                        if (rectangle.getStrokeColor() != null){
+                        if (rectangle.getStrokeColor() != null) {
                             ome.xml.model.primitives.Color StrokeColor = rectangle.getStrokeColor();
                             sc = new Color(StrokeColor.getRed(), StrokeColor.getGreen(),
                                     StrokeColor.getBlue(), StrokeColor.getAlpha());
@@ -296,7 +289,7 @@ public class ROIHandler {
                                         StrokeColor.getAlpha(), StrokeColor.getRed());
                             }
                         }
-                        if (rectangle.getFillColor() != null){
+                        if (rectangle.getFillColor() != null) {
                             ome.xml.model.primitives.Color FillColor = rectangle.getFillColor();
                             fc = new Color(FillColor.getRed(), FillColor.getGreen(),
                                     FillColor.getBlue(), FillColor.getAlpha());
@@ -305,7 +298,7 @@ public class ROIHandler {
                                         FillColor.getAlpha(), FillColor.getRed());
                             }
                         }
-                        if (rectangle.getStrokeWidth() != null){
+                        if (rectangle.getStrokeWidth() != null) {
                             sw = rectangle.getStrokeWidth().value().floatValue();
                         }
                     }
@@ -379,6 +372,7 @@ public class ROIHandler {
 
     /**
      * Returns the rois if any stored in the ROI manager.
+     *
      * @return See above.
      */
     public static Roi[] readFromRoiManager() {
@@ -390,6 +384,7 @@ public class ROIHandler {
 
     /**
      * Returns rois if any from the overlay.
+     *
      * @return See above
      */
     public static Roi[] readFromOverlays() {
@@ -410,10 +405,9 @@ public class ROIHandler {
 
         Roi[] rois;
 
-        if(roiListData != null && !roiListData.isEmpty()) {
+        if (roiListData != null && !roiListData.isEmpty()) {
             rois = roiListData.toArray(new Roi[0]);
-        }
-        else {
+        } else {
             rois = readFromOverlays();
         }
 
@@ -431,9 +425,9 @@ public class ROIHandler {
             String polylineID = MetadataTools.createLSID("Shape", cntr, 0);
             roiID = MetadataTools.createLSID("ROI", cntr, 0);
             Roi ijRoi = rois[i];
-            int c = ijRoi.getCPosition()-1;
-            int z = ijRoi.getZPosition()-1;
-            int t = ijRoi.getTPosition()-1;
+            int c = ijRoi.getCPosition() - 1;
+            int z = ijRoi.getZPosition() - 1;
+            int t = ijRoi.getTPosition() - 1;
             ImagePlus image = WindowManager.getImage(ijRoi.getImageID());
             if (image == null) {
                 image = imp; //pick the current image in that case
@@ -441,20 +435,20 @@ public class ROIHandler {
             int pos = ijRoi.getPosition();
             if (imp != null) {
                 if (imp.getNChannels() == 1 && imp.getNSlices() == 1) {
-                    t = pos-1;
+                    t = pos - 1;
                 } else if (imp.getNChannels() == 1 && imp.getNFrames() == 1) {
-                    z = pos-1;
+                    z = pos - 1;
                 } else if (imp.getNSlices() == 1 && imp.getNFrames() == 1) {
-                    c = pos-1;
+                    c = pos - 1;
                 }
-                if (t > imp.getNFrames()-1 || c > imp.getNChannels() -1 ||
-                        z > imp.getNSlices()-1) {
+                if (t > imp.getNFrames() - 1 || c > imp.getNChannels() - 1 ||
+                        z > imp.getNSlices() - 1) {
                     continue;//
                 }
             }
             if (ijRoi.isDrawingTool()) {//Checks if the given roi is a Text box/Arrow/Rounded Rectangle
                 if (ijRoi.getTypeAsString().matches("Text")) {
-                    if (ijRoi instanceof TextRoi){
+                    if (ijRoi instanceof TextRoi) {
                         store.setLabelID(polylineID, cntr, 0);
                         storeText((TextRoi) ijRoi, store, cntr, 0, c, z, t);
                     }
@@ -479,7 +473,7 @@ public class ROIHandler {
                 } else {
                     roiID = null;
                     String type = ijRoi.getName();
-                    IJ.log("ROI ID : " + type + " ROI type : " +  "Arrow (Drawing Tool) is not supported");
+                    IJ.log("ROI ID : " + type + " ROI type : " + "Arrow (Drawing Tool) is not supported");
                 }
             } else if (ijRoi instanceof PolygonRoi || ijRoi instanceof EllipseRoi) {
                 if (ijRoi.getTypeAsString().matches("Polyline") ||
@@ -517,7 +511,7 @@ public class ROIHandler {
                         } else {
                             roiID = null;
                             String type = ijShape.getName();
-                            IJ.log("ROI ID : " + type + " ROI type : " +  "Arrow (Drawing Tool) is not supported");
+                            IJ.log("ROI ID : " + type + " ROI type : " + "Arrow (Drawing Tool) is not supported");
                         }
                     } else if (ijShape instanceof Line) {
                         boolean checkpoint = ijShape.isDrawingTool();
@@ -577,6 +571,7 @@ public class ROIHandler {
     }
 
     // -- Helper methods --
+
     /**
      * Wraps the specified integer into a Non negative integer.
      *
@@ -590,13 +585,13 @@ public class ROIHandler {
     /**
      * Stores the text ROI into the metadata stored.
      *
-     * @param roi The roi to convert.
-     * @param store The store to handle.
+     * @param roi    The roi to convert.
+     * @param store  The store to handle.
      * @param roiNum The roi number
-     * @param shape The index of the shape.
-     * @param c The selected channel.
-     * @param z The selected slice.
-     * @param t The selected timepoint.
+     * @param shape  The index of the shape.
+     * @param c      The selected channel.
+     * @param z      The selected slice.
+     * @param t      The selected timepoint.
      */
     private static void storeText(TextRoi roi, MetadataStore store, int roiNum,
                                   int shape, int c, int z, int t) {
@@ -621,11 +616,11 @@ public class ROIHandler {
                     UNITS.PIXEL), roiNum, shape);
         }
         if (roi.getStrokeColor() != null) {
-            store.setLabelStrokeColor(toOMExmlColor(roi.getStrokeColor()) ,
+            store.setLabelStrokeColor(toOMExmlColor(roi.getStrokeColor()),
                     roiNum, shape);
         }
         if (roi.getFillColor() != null) {
-            store.setLabelFillColor(toOMExmlColor(roi.getFillColor()) , roiNum, shape);
+            store.setLabelFillColor(toOMExmlColor(roi.getFillColor()), roiNum, shape);
         }
 
     }
@@ -633,13 +628,13 @@ public class ROIHandler {
     /**
      * Stores the Point ROI into the specified metadata store.
      *
-     * @param roi The roi to convert.
-     * @param store The store to handle.
+     * @param roi    The roi to convert.
+     * @param store  The store to handle.
      * @param roiNum The roi number
-     * @param shape The index of the shape.
-     * @param c The selected channel.
-     * @param z The selected slice.
-     * @param t The selected timepoint.
+     * @param shape  The index of the shape.
+     * @param c      The selected channel.
+     * @param z      The selected slice.
+     * @param t      The selected timepoint.
      */
     private static void storePoint(PointRoi roi, MetadataStore store,
                                    int roiNum, int shape, int c, int z, int t) {
@@ -647,12 +642,12 @@ public class ROIHandler {
         int[] xCoordinates = roi.getPolygon().xpoints;
         int[] yCoordinates = roi.getPolygon().ypoints;
 
-        for (int cntr = 0 ; cntr < xCoordinates.length; cntr++) {
-            String polylineID = MetadataTools.createLSID("Shape", roiNum, shape+cntr);
-            store.setPointID(polylineID, roiNum, shape+cntr);
-            store.setPointX((double) xCoordinates[cntr], roiNum, shape+cntr);
-            store.setPointY((double) yCoordinates[cntr], roiNum, shape+cntr);
-            store.setPointText(roi.getName(), roiNum, shape+cntr);
+        for (int cntr = 0; cntr < xCoordinates.length; cntr++) {
+            String polylineID = MetadataTools.createLSID("Shape", roiNum, shape + cntr);
+            store.setPointID(polylineID, roiNum, shape + cntr);
+            store.setPointX((double) xCoordinates[cntr], roiNum, shape + cntr);
+            store.setPointY((double) yCoordinates[cntr], roiNum, shape + cntr);
+            store.setPointText(roi.getName(), roiNum, shape + cntr);
             if (c >= 0) {
                 store.setPointTheC(unwrap(c), roiNum, shape);
             }
@@ -663,16 +658,16 @@ public class ROIHandler {
                 store.setPointTheT(unwrap(t), roiNum, shape);
             }
             if (roi.getStrokeWidth() > 0) {
-                store.setPointStrokeWidth( new Length((roi.getStrokeWidth()),
-                        UNITS.PIXEL), roiNum, shape+cntr);
+                store.setPointStrokeWidth(new Length((roi.getStrokeWidth()),
+                        UNITS.PIXEL), roiNum, shape + cntr);
             }
             if (roi.getStrokeColor() != null) {
                 store.setPointStrokeColor(toOMExmlColor(roi.getStrokeColor()),
-                        roiNum, shape+cntr);
+                        roiNum, shape + cntr);
             }
-            if (roi.getFillColor() != null){
+            if (roi.getFillColor() != null) {
                 store.setPointFillColor(toOMExmlColor(roi.getFillColor()),
-                        roiNum, shape+cntr);
+                        roiNum, shape + cntr);
             }
         }
     }
@@ -680,17 +675,16 @@ public class ROIHandler {
     /**
      * Stores the Line ROI into the specified metadata store.
      *
-     * @param roi The roi to convert.
-     * @param store The store to handle.
+     * @param roi    The roi to convert.
+     * @param store  The store to handle.
      * @param roiNum The roi number
-     * @param shape The index of the shape.
-     * @param c The selected channel.
-     * @param z The selected slice.
-     * @param t The selected timepoint.
+     * @param shape  The index of the shape.
+     * @param c      The selected channel.
+     * @param z      The selected slice.
+     * @param t      The selected timepoint.
      */
     private static void storeLine(Line roi, MetadataStore store,
-                                  int roiNum, int shape, int c, int z, int t)
-    {
+                                  int roiNum, int shape, int c, int z, int t) {
         store.setLineX1(new Double(roi.x1), roiNum, shape);
         store.setLineX2(new Double(roi.x2), roiNum, shape);
         store.setLineY1(new Double(roi.y1), roiNum, shape);
@@ -721,17 +715,16 @@ public class ROIHandler {
     /**
      * Stores the Rectangle ROI into the specified metadata store.
      *
-     * @param roi The roi to convert.
-     * @param store The store to handle.
+     * @param roi    The roi to convert.
+     * @param store  The store to handle.
      * @param roiNum The roi number
-     * @param shape The index of the shape.
-     * @param c The selected channel.
-     * @param z The selected slice.
-     * @param t The selected timepoint.
+     * @param shape  The index of the shape.
+     * @param c      The selected channel.
+     * @param z      The selected slice.
+     * @param t      The selected timepoint.
      */
     private static void storeRectangle(Roi roi, MetadataStore store,
-                                       int roiNum, int shape, int c, int z, int t)
-    {
+                                       int roiNum, int shape, int c, int z, int t) {
         Rectangle bounds = roi.getBounds();
         store.setRectangleX(new Double(bounds.x), roiNum, shape);
         store.setRectangleY(new Double(bounds.y), roiNum, shape);
@@ -755,7 +748,7 @@ public class ROIHandler {
             store.setRectangleStrokeColor(toOMExmlColor(roi.getStrokeColor()),
                     roiNum, shape);
         }
-        if (roi.getFillColor() != null){
+        if (roi.getFillColor() != null) {
             store.setRectangleFillColor(toOMExmlColor(roi.getFillColor()), roiNum, shape);
         }
 
@@ -764,26 +757,25 @@ public class ROIHandler {
     /**
      * Stores the Polygon ROI into the specified metadata store.
      *
-     * @param roi The roi to convert.
-     * @param store The store to handle.
+     * @param roi    The roi to convert.
+     * @param store  The store to handle.
      * @param roiNum The roi number
-     * @param shape The index of the shape.
-     * @param c The selected channel.
-     * @param z The selected slice.
-     * @param t The selected timepoint.
+     * @param shape  The index of the shape.
+     * @param c      The selected channel.
+     * @param z      The selected slice.
+     * @param t      The selected timepoint.
      */
     private static void storePolygon(PolygonRoi roi, MetadataStore store,
-                                     int roiNum, int shape, int c, int z, int t)
-    {
+                                     int roiNum, int shape, int c, int z, int t) {
         int[] xCoordinates = roi.getPolygon().xpoints;
         int[] yCoordinates = roi.getPolygon().ypoints;
         String st1 = roi.getTypeAsString();
         String points = "1";
-        for (int i = 0; i < xCoordinates.length; i++){
+        for (int i = 0; i < xCoordinates.length; i++) {
             if (i == 0) {
                 points = (xCoordinates[i] + "," + yCoordinates[i]);
             } else {
-                points= (points + " " + xCoordinates[i] + "," + yCoordinates[i]);
+                points = (points + " " + xCoordinates[i] + "," + yCoordinates[i]);
             }
         }
 
@@ -807,10 +799,9 @@ public class ROIHandler {
                 store.setPolylineStrokeColor(toOMExmlColor(roi.getStrokeColor()), roiNum, shape);
             }
             if (roi.getFillColor() != null) {
-                store.setPolylineFillColor(toOMExmlColor(roi.getFillColor()) , roiNum, shape);
+                store.setPolylineFillColor(toOMExmlColor(roi.getFillColor()), roiNum, shape);
             }
-        }
-        else if (st1.matches("Polygon") || st1.matches("Freehand") || st1.matches("Traced")){
+        } else if (st1.matches("Polygon") || st1.matches("Freehand") || st1.matches("Traced")) {
             store.setPolygonPoints(points.toString(), roiNum, shape);
             store.setPolygonText(roi.getName(), roiNum, shape);
             if (c >= 0) {
@@ -827,9 +818,9 @@ public class ROIHandler {
                         UNITS.PIXEL), roiNum, shape);
             }
             if (roi.getStrokeColor() != null) {
-                store.setPolygonStrokeColor(toOMExmlColor(roi.getStrokeColor()) , roiNum, shape);
+                store.setPolygonStrokeColor(toOMExmlColor(roi.getStrokeColor()), roiNum, shape);
             }
-            if (roi.getFillColor() != null){
+            if (roi.getFillColor() != null) {
                 store.setPolygonFillColor(toOMExmlColor(roi.getFillColor()), roiNum, shape);
             }
         }
@@ -838,17 +829,16 @@ public class ROIHandler {
     /**
      * Stores the Oval ROI into the specified metadata store.
      *
-     * @param roi The roi to convert.
-     * @param store The store to handle.
+     * @param roi    The roi to convert.
+     * @param store  The store to handle.
      * @param roiNum The roi number
-     * @param shape The index of the shape.
-     * @param c The selected channel.
-     * @param z The selected slice.
-     * @param t The selected timepoint.
+     * @param shape  The index of the shape.
+     * @param c      The selected channel.
+     * @param z      The selected slice.
+     * @param t      The selected timepoint.
      */
     private static void storeOval(OvalRoi roi,
-                                  MetadataStore store, int roiNum, int shape, int c, int z, int t)
-    {
+                                  MetadataStore store, int roiNum, int shape, int c, int z, int t) {
         Rectangle vnRectBounds = roi.getPolygon().getBounds();
         int x = vnRectBounds.x;
         int y = vnRectBounds.y;
@@ -856,10 +846,10 @@ public class ROIHandler {
         double rx = vnRectBounds.getWidth();
         double ry = vnRectBounds.getHeight();
 
-        store.setEllipseX(((double) x + rx/2), roiNum, shape);
-        store.setEllipseY(((double) y + ry/2), roiNum, shape);
-        store.setEllipseRadiusX((double) rx/2, roiNum, shape);
-        store.setEllipseRadiusY((double) ry/2, roiNum, shape);
+        store.setEllipseX(((double) x + rx / 2), roiNum, shape);
+        store.setEllipseY(((double) y + ry / 2), roiNum, shape);
+        store.setEllipseRadiusX((double) rx / 2, roiNum, shape);
+        store.setEllipseRadiusY((double) ry / 2, roiNum, shape);
         store.setEllipseText(roi.getName(), roiNum, shape);
         if (c >= 0) {
             store.setEllipseTheC(unwrap(c), roiNum, shape);
@@ -877,8 +867,8 @@ public class ROIHandler {
         if (roi.getStrokeColor() != null) {
             store.setEllipseStrokeColor(toOMExmlColor(roi.getStrokeColor()), roiNum, shape);
         }
-        if (roi.getFillColor() != null){
-            store.setEllipseFillColor(toOMExmlColor(roi.getFillColor()) , roiNum, shape);
+        if (roi.getFillColor() != null) {
+            store.setEllipseFillColor(toOMExmlColor(roi.getFillColor()), roiNum, shape);
         }
     }
 
@@ -893,7 +883,7 @@ public class ROIHandler {
         String[] pointList = points.split(" ");
         int[][] coordinates = new int[2][pointList.length];
 
-        for (int q=0; q<pointList.length; q++) {
+        for (int q = 0; q < pointList.length; q++) {
             pointList[q] = pointList[q].trim();
             int delim = pointList[q].indexOf(',');
             coordinates[0][q] =
@@ -913,7 +903,7 @@ public class ROIHandler {
     private static ome.xml.model.primitives.Color toOMExmlColor(Color color) {
 
         return new ome.xml.model.primitives.Color(color.getRed(),
-                color.getGreen(), color.getBlue(),color.getAlpha());
+                color.getGreen(), color.getBlue(), color.getAlpha());
     }
 
 }

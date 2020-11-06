@@ -15,7 +15,7 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale;
 
 import ij.ImagePlus;
 import ij.process.ImageConverter;
-import org.hkijena.jipipe.JIPipeDefaultRegistry;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
@@ -53,8 +53,8 @@ public class ImagePlusGreyscaleData extends ImagePlusData {
         if (image.getType() != ImagePlus.GRAY8 &&
                 image.getType() != ImagePlus.GRAY16 &&
                 image.getType() != ImagePlus.GRAY32) {
-            if(JIPipeDefaultRegistry.getInstance() != null)
-                JIPipeDefaultRegistry.getInstance().getLogService().warn("Attempt to store non-grayscale data into a grayscale image. Converting to 32-bit floating point.");
+            if (JIPipe.getInstance() != null)
+                JIPipe.getInstance().getLogService().warn("Attempt to store non-grayscale data into a grayscale image. Converting to 32-bit floating point.");
             ImageConverter ic = new ImageConverter(image);
             ic.convertToGray32();
         }

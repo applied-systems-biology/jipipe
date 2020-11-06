@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.extensions.imagejdatatypes.algorithms;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
@@ -69,7 +70,7 @@ public class ImageTypeConverter extends JIPipeAlgorithm {
         JIPipeDataSlot outputSlot = getFirstOutputSlot();
         for (int i = 0; i < inputSlot.getRowCount(); ++i) {
             ImagePlusData data = inputSlot.getData(i, ImagePlusData.class);
-            JIPipeData converted = JIPipeData.createInstance(outputSlot.getAcceptedDataType(), data.getImage());
+            JIPipeData converted = JIPipe.createData(outputSlot.getAcceptedDataType(), data.getImage());
             outputSlot.addData(converted, outputSlot.getAnnotations(i));
         }
     }

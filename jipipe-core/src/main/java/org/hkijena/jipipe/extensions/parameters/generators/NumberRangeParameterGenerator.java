@@ -20,15 +20,14 @@ import org.hkijena.jipipe.api.parameters.JIPipeMutableParameterAccess;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterGeneratorUI;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
-import org.hkijena.jipipe.ui.registries.JIPipeUIParameterTypeRegistry;
 
-import java.awt.*;
+import java.awt.BorderLayout;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Generator that creates instances of {@link Number}.
- * This cannot be used directly in {@link JIPipeUIParameterTypeRegistry}, as the constructor does
+ * This cannot be used directly in {@link JIPipeParameterTypeRegistry}, as the constructor does
  * not match. You have to inherit from this type and define the number type.
  */
 public class NumberRangeParameterGenerator<T extends Number & Comparable<T>> extends JIPipeParameterGeneratorUI {

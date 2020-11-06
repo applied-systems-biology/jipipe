@@ -18,7 +18,7 @@ import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.PathEditor;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
 
-import java.awt.*;
+import java.awt.BorderLayout;
 import java.io.File;
 
 /**

@@ -13,9 +13,9 @@
 
 package org.hkijena.jipipe.ui.grapheditor.settings;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatchAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
-import org.hkijena.jipipe.api.registries.JIPipeNodeRegistry;
 import org.hkijena.jipipe.api.testbench.JIPipeTestBenchSettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
@@ -31,7 +31,7 @@ import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
@@ -75,24 +75,24 @@ public class JIPipeSingleAlgorithmSelectionPanelUI extends JIPipeProjectWorkbenc
         JIPipeSlotEditorUI slotEditorUI = new JIPipeSlotEditorUI(graphEditorUI, algorithm);
         tabbedPane.addSingletonTab("SLOTS", "Slots", UIUtils.getIconFromResources("actions/plug.png"),
                 slotEditorUI,
-                DocumentTabPane.CloseMode.withoutCloseButton,false);
+                DocumentTabPane.CloseMode.withoutCloseButton, false);
 
         cacheBrowserTabContent = new JPanel(new BorderLayout());
         tabbedPane.addSingletonTab("CACHE_BROWSER", "Cache browser", UIUtils.getIconFromResources("actions/database.png"),
                 cacheBrowserTabContent,
-                DocumentTabPane.CloseMode.withoutCloseButton,false);
+                DocumentTabPane.CloseMode.withoutCloseButton, false);
 
         if (algorithm instanceof JIPipeDataBatchAlgorithm) {
             batchAssistantTabContent = new JPanel(new BorderLayout());
             tabbedPane.addSingletonTab("DATA_BATCHES", "Data batches", UIUtils.getIconFromResources("actions/package.png"),
                     batchAssistantTabContent,
-                    DocumentTabPane.CloseMode.withoutCloseButton,false);
+                    DocumentTabPane.CloseMode.withoutCloseButton, false);
         }
 
         testBenchTabContent = new JPanel(new BorderLayout());
         tabbedPane.addSingletonTab("QUICK_RUN", "Quick run", UIUtils.getIconFromResources("actions/media-play.png"),
                 testBenchTabContent,
-                DocumentTabPane.CloseMode.withoutCloseButton,false);
+                DocumentTabPane.CloseMode.withoutCloseButton, false);
 
 
         add(tabbedPane, BorderLayout.CENTER);
@@ -105,10 +105,10 @@ public class JIPipeSingleAlgorithmSelectionPanelUI extends JIPipeProjectWorkbenc
     }
 
     private void restoreTabState() {
-        if(SAVED_TAB == null)
+        if (SAVED_TAB == null)
             return;
         for (Map.Entry<String, DocumentTabPane.DocumentTab> entry : tabbedPane.getSingletonTabs().entrySet()) {
-            if(Objects.equals(entry.getKey(), SAVED_TAB)) {
+            if (Objects.equals(entry.getKey(), SAVED_TAB)) {
                 tabbedPane.switchToContent(entry.getValue().getContent());
                 return;
             }
@@ -117,7 +117,7 @@ public class JIPipeSingleAlgorithmSelectionPanelUI extends JIPipeProjectWorkbenc
 
     private void saveTabState(DocumentTabPane tabbedPane) {
         for (Map.Entry<String, DocumentTabPane.DocumentTab> entry : tabbedPane.getSingletonTabs().entrySet()) {
-            if(entry.getValue().getContent() == tabbedPane.getCurrentContent()) {
+            if (entry.getValue().getContent() == tabbedPane.getCurrentContent()) {
                 SAVED_TAB = entry.getKey();
                 return;
             }
@@ -162,7 +162,7 @@ public class JIPipeSingleAlgorithmSelectionPanelUI extends JIPipeProjectWorkbenc
                 canvas.getContextActions(),
                 canvas);
 
-        if (JIPipeNodeRegistry.getInstance().getRegisteredNodeInfos().containsValue(algorithm.getInfo())) {
+        if (JIPipe.getNodes().getRegisteredNodeInfos().containsValue(algorithm.getInfo())) {
             JButton openCompendiumButton = new JButton(UIUtils.getIconFromResources("actions/help.png"));
             UIUtils.makeFlat25x25(openCompendiumButton);
             openCompendiumButton.setToolTipText("Open in algorithm compendium");

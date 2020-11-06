@@ -15,6 +15,7 @@ package org.hkijena.jipipe.api;
 
 import com.google.common.base.Charsets;
 import ij.IJ;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
@@ -22,12 +23,13 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.utils.StringUtils;
 
-import java.awt.*;
+import java.awt.HeadlessException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -136,7 +138,7 @@ public class JIPipeRun implements JIPipeRunnable {
                 project.getCache().store((JIPipeAlgorithm) projectAlgorithm, stateId, outputSlot);
             }
             if (configuration.isSaveOutputs()) {
-                outputSlot.flush(!configuration.isStoreToCache());
+                outputSlot.flush(configuration.getOutputPath(), !configuration.isStoreToCache());
             } else {
                 outputSlot.clearData(false);
             }
@@ -156,11 +158,14 @@ public class JIPipeRun implements JIPipeRunnable {
             threadPool = new JIPipeFixedThreadPool(configuration.getNumThreads());
             runAnalysis(onProgress, isCancelled);
         } catch (Exception e) {
+            log.append(e.toString()).append("\n");
+            log.append(ExceptionUtils.getStackTrace(e)).append("\n");
             try {
                 if (configuration.getOutputPath() != null)
                     Files.write(configuration.getOutputPath().resolve("log.txt"), log.toString().getBytes(Charsets.UTF_8));
             } catch (IOException ex) {
-                IJ.handleException(ex);
+                if(!configuration.isSilent())
+                    IJ.handleException(ex);
             }
             throw e;
         } finally {
@@ -173,7 +178,7 @@ public class JIPipeRun implements JIPipeRunnable {
         // Postprocessing
         log.append("Postprocessing steps ...\n");
         try {
-            if (configuration.getOutputPath() != null)
+            if (configuration.getOutputPath() != null && configuration.isSaveOutputs())
                 project.saveProject(configuration.getOutputPath().resolve("project.jip"));
         } catch (IOException e) {
             throw new UserFriendlyRuntimeException(e, "Could not save project to '" + configuration.getOutputPath().resolve("project.jip") + "'!",
@@ -229,57 +234,87 @@ public class JIPipeRun implements JIPipeRunnable {
                 // Check if we can flush the output
                 flushFinishedSlots(traversedSlots, traversedProjectAlgorithms, executedAlgorithms, index, sourceSlot, flushedSlots);
             } else if (slot.isOutput()) {
+                JIPipeGraphNode node = slot.getNode();
                 // Ensure the algorithm has run
-                if (!executedAlgorithms.contains(slot.getNode())) {
-                    onProgress.accept(new JIPipeRunnerStatus(index, traversedSlots.size(), statusMessage));
-
-                    // If enabled try to extract outputs from cache
-                    boolean dataLoadedFromCache = false;
-                    if (configuration.isLoadFromCache()) {
-                        dataLoadedFromCache = tryLoadFromCache(slot.getNode(),
-                                onProgress,
-                                traversingIndex,
-                                traversedSlots.size(),
-                                statusMessage,
-                                traversedProjectAlgorithms);
-                    }
-
-                    if (!dataLoadedFromCache) {
-                        try {
-                            if (slot.getNode() instanceof JIPipeAlgorithm) {
-                                ((JIPipeAlgorithm) slot.getNode()).setThreadPool(threadPool);
-                            }
-                            slot.getNode().run(new JIPipeRunnerSubStatus(), algorithmProgress, isCancelled);
-                        } catch (HeadlessException e) {
-                            throw new UserFriendlyRuntimeException("Algorithm " + slot.getNode() + " does not work in a headless environment!",
-                                    e,
-                                    "An error occurred during processing",
-                                    "On running the algorithm '" + slot.getNode().getName() + "', within compartment '" + getProject().getCompartments().get(slot.getNode().getCompartment()).getName() + "'",
-                                    "The algorithm raised an error, as it is not compatible with a headless environment.",
-                                    "Please contact the plugin developers about this issue. If this happens in an ImageJ method, please contact the ImageJ developers.");
-                        } catch (Exception e) {
-                            throw new UserFriendlyRuntimeException("Algorithm " + slot.getNode() + " raised an exception!",
-                                    e,
-                                    "An error occurred during processing",
-                                    "On running the algorithm '" + slot.getNode().getName() + "', within compartment '" + getProject().getCompartments().get(slot.getNode().getCompartment()).getName() + "'",
-                                    "Please refer to the other error messages.",
-                                    "Please follow the instructions for the other error messages.");
-                        } finally {
-                            if (slot.getNode() instanceof JIPipeAlgorithm) {
-                                ((JIPipeAlgorithm) slot.getNode()).setThreadPool(null);
-                            }
-                        }
-                    } else {
-                        onProgress.accept(new JIPipeRunnerStatus(index, traversedSlots.size(), statusMessage + " | Output data was loaded from cache. Not executing."));
-                    }
-
-                    executedAlgorithms.add(slot.getNode());
+                if (!executedAlgorithms.contains(node)) {
+                    runNode(onProgress, isCancelled, executedAlgorithms, traversedSlots, traversedProjectAlgorithms, index, statusMessage, traversingIndex, algorithmProgress, node);
                 }
 
                 // Check if we can flush the output
                 flushFinishedSlots(traversedSlots, traversedProjectAlgorithms, executedAlgorithms, index, slot, flushedSlots);
             }
         }
+
+        // There might be some algorithms missing (ones that do not have an output)
+        List<JIPipeGraphNode> additionalAlgorithms = new ArrayList<>();
+        for (JIPipeGraphNode node : algorithmGraph.getNodes().values()) {
+            if(!executedAlgorithms.contains(node) && !unExecutableAlgorithms.contains(node)) {
+                additionalAlgorithms.add(node);
+            }
+        }
+        for (int index = 0; index < additionalAlgorithms.size(); index++) {
+            JIPipeGraphNode node = additionalAlgorithms.get(index);
+            String statusMessage = "Algorithm: " + node.getName();
+            int absoluteIndex = index + traversedSlots.size() - 1;
+            Consumer<JIPipeRunnerSubStatus> algorithmProgress = s -> logStatus(onProgress, new JIPipeRunnerStatus(absoluteIndex, traversedSlots.size() + additionalAlgorithms.size(),
+                    statusMessage + " | " + s));
+            runNode(onProgress,
+                    isCancelled,
+                    executedAlgorithms,
+                    traversedSlots,
+                    traversedProjectAlgorithms,
+                    absoluteIndex,
+                    statusMessage,
+                    absoluteIndex,
+                    algorithmProgress,
+                    node);
+        }
+    }
+
+    private void runNode(Consumer<JIPipeRunnerStatus> onProgress, Supplier<Boolean> isCancelled, Set<JIPipeGraphNode> executedAlgorithms, List<JIPipeDataSlot> traversedSlots, List<JIPipeGraphNode> traversedProjectAlgorithms, int index, String statusMessage, int traversingIndex, Consumer<JIPipeRunnerSubStatus> algorithmProgress, JIPipeGraphNode node) {
+        onProgress.accept(new JIPipeRunnerStatus(index, traversedSlots.size(), statusMessage));
+
+        // If enabled try to extract outputs from cache
+        boolean dataLoadedFromCache = false;
+        if (configuration.isLoadFromCache()) {
+            dataLoadedFromCache = tryLoadFromCache(node,
+                    onProgress,
+                    traversingIndex,
+                    traversedSlots.size(),
+                    statusMessage,
+                    traversedProjectAlgorithms);
+        }
+
+        if (!dataLoadedFromCache) {
+            try {
+                if (node instanceof JIPipeAlgorithm) {
+                    ((JIPipeAlgorithm) node).setThreadPool(threadPool);
+                }
+                node.run(new JIPipeRunnerSubStatus(), algorithmProgress, isCancelled);
+            } catch (HeadlessException e) {
+                throw new UserFriendlyRuntimeException("Algorithm " + node + " does not work in a headless environment!",
+                        e,
+                        "An error occurred during processing",
+                        "On running the algorithm '" + node.getName() + "', within compartment '" + getProject().getCompartments().get(node.getCompartment()).getName() + "'",
+                        "The algorithm raised an error, as it is not compatible with a headless environment.",
+                        "Please contact the plugin developers about this issue. If this happens in an ImageJ method, please contact the ImageJ developers.");
+            } catch (Exception e) {
+                throw new UserFriendlyRuntimeException("Algorithm " + node + " raised an exception!",
+                        e,
+                        "An error occurred during processing",
+                        "On running the algorithm '" + node.getName() + "', within compartment '" + getProject().getCompartments().get(node.getCompartment()).getName() + "'",
+                        "Please refer to the other error messages.",
+                        "Please follow the instructions for the other error messages.");
+            } finally {
+                if (node instanceof JIPipeAlgorithm) {
+                    ((JIPipeAlgorithm) node).setThreadPool(null);
+                }
+            }
+        } else {
+            onProgress.accept(new JIPipeRunnerStatus(index, traversedSlots.size(), statusMessage + " | Output data was loaded from cache. Not executing."));
+        }
+
+        executedAlgorithms.add(node);
     }
 
     /**

@@ -15,9 +15,6 @@ package org.hkijena.jipipe.ui.project;
 
 import org.hkijena.jipipe.api.JIPipeProjectTemplate;
 import org.hkijena.jipipe.ui.components.TemplateProjectListCellRenderer;
-import org.hkijena.jipipe.ui.tableanalyzer.JIPipeTableEditor;
-import org.hkijena.jipipe.ui.tableanalyzer.JIPipeTableImporterDialog;
-import org.hkijena.jipipe.utils.CustomScrollPane;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -55,13 +52,13 @@ public class JIPipeTemplateSelectionDialog extends JDialog {
         templateJList.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if(e.getClickCount() == 2) {
+                if (e.getClickCount() == 2) {
                     isConfirmed = true;
                     setVisible(false);
                 }
             }
         });
-        getContentPane().add(new CustomScrollPane(templateJList), BorderLayout.CENTER);
+        getContentPane().add(new JScrollPane(templateJList), BorderLayout.CENTER);
 
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
@@ -77,13 +74,13 @@ public class JIPipeTemplateSelectionDialog extends JDialog {
         exportButton.addActionListener(e -> {
             isConfirmed = true;
             setVisible(false);
-        } );
+        });
         buttonPanel.add(exportButton);
 
         getContentPane().add(buttonPanel, BorderLayout.SOUTH);
 
         pack();
-        setSize(800,600);
+        setSize(800, 600);
         revalidate();
         repaint();
     }

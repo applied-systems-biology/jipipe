@@ -16,7 +16,7 @@ package org.hkijena.jipipe.ui.components;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.Component;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -51,9 +51,9 @@ public class PathListCellRenderer extends JLabel implements ListCellRenderer<Pat
         }
 
         if (isSelected) {
-            setBackground(new Color(184, 207, 229));
+            setBackground(UIManager.getColor("List.selectionBackground"));
         } else {
-            setBackground(new Color(255, 255, 255));
+            setBackground(UIManager.getColor("List.background"));
         }
 
         return this;

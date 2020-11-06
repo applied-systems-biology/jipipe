@@ -15,7 +15,7 @@ package org.hkijena.jipipe.ui.ijupdater;
 
 import ij.IJ;
 import net.imagej.updater.util.Progress;
-import org.hkijena.jipipe.JIPipeDefaultRegistry;
+import org.hkijena.jipipe.JIPipe;
 
 /**
  * Adapter between JIPipe and ImageJ progress implementations
@@ -67,8 +67,8 @@ public class IJProgressAdapter implements Progress {
     }
 
     private void postProgress() {
-        if(JIPipeDefaultRegistry.getInstance() != null)
-            JIPipeDefaultRegistry.getInstance().getLogService().info("[" + progress + " / " + maxProgress + "] " + title + " " + item);
+        if (JIPipe.getInstance() != null)
+            JIPipe.getInstance().getLogService().info("[" + progress + " / " + maxProgress + "] " + title + " " + item);
         else
             System.out.println("[" + progress + " / " + maxProgress + "] " + title + " " + item);
         IJ.showProgress(progress, maxProgress);

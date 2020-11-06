@@ -13,17 +13,14 @@
 
 package org.hkijena.jipipe.ui.extensions;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeJsonExtension;
 import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
-import org.hkijena.jipipe.api.registries.JIPipeImageJAdapterRegistry;
-import org.hkijena.jipipe.api.registries.JIPipeNodeRegistry;
 import org.hkijena.jipipe.ui.components.FormPanel;
-import org.hkijena.jipipe.ui.registries.JIPipeUIDatatypeRegistry;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.TooltipUtils;
@@ -32,7 +29,7 @@ import org.jdesktop.swingx.JXTable;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import java.awt.*;
+import java.awt.BorderLayout;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -109,20 +106,20 @@ public class JIPipeDependencyUI extends JPanel {
     }
 
     private void insertAddedDatatypes(FormPanel formPanel) {
-        Set<JIPipeDataInfo> list = JIPipeDatatypeRegistry.getInstance().getDeclaredBy(dependency);
+        Set<JIPipeDataInfo> list = JIPipe.getDataTypes().getDeclaredBy(dependency);
         if (list.isEmpty())
             return;
         DefaultTableModel model = new DefaultTableModel();
         model.setColumnIdentifiers(new Object[]{"Name", "ID", "Description", "ImageJ support"});
         for (JIPipeDataInfo info : list) {
-            boolean supportsImageJ = JIPipeImageJAdapterRegistry.getInstance().supportsJIPipeData(info.getDataClass());
+            boolean supportsImageJ = JIPipe.getImageJAdapters().supportsJIPipeData(info.getDataClass());
             String supportsImageJEntry;
             if (supportsImageJ)
                 supportsImageJEntry = StringUtils.createIconTextHTMLTable("Yes", ResourceUtils.getPluginResource("icons/emblems/vcs-normal.png"));
             else
                 supportsImageJEntry = StringUtils.createIconTextHTMLTable("No", ResourceUtils.getPluginResource("icons/emblems/vcs-conflicting.png"));
             model.addRow(new Object[]{
-                    StringUtils.createIconTextHTMLTable(info.getName(), JIPipeUIDatatypeRegistry.getInstance().getIconURLFor(info)),
+                    StringUtils.createIconTextHTMLTable(info.getName(), JIPipe.getDataTypes().getIconURLFor(info)),
                     info.getId(),
                     StringUtils.wordWrappedHTML(info.getDescription(), 50),
                     supportsImageJEntry
@@ -144,7 +141,7 @@ public class JIPipeDependencyUI extends JPanel {
     }
 
     private void insertAddedAlgorithms(FormPanel formPanel) {
-        List<JIPipeNodeInfo> list = new ArrayList<>(JIPipeNodeRegistry.getInstance().getDeclaredBy(dependency));
+        List<JIPipeNodeInfo> list = new ArrayList<>(JIPipe.getNodes().getDeclaredBy(dependency));
         if (list.isEmpty())
             return;
         DefaultTableModel model = new DefaultTableModel();

@@ -15,11 +15,14 @@ package org.hkijena.jipipe.api.registries;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableBiMap;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMultimap;
+import com.google.common.collect.Multimap;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import org.hkijena.jipipe.JIPipeDefaultRegistry;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.JIPipeValidatable;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
@@ -27,11 +30,20 @@ import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.events.DatatypeRegisteredEvent;
 import org.hkijena.jipipe.api.events.NodeInfoRegisteredEvent;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
+import org.hkijena.jipipe.utils.ResourceUtils;
 
-import java.util.*;
+import javax.swing.*;
+import java.net.URL;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -39,9 +51,11 @@ import java.util.stream.Collectors;
  */
 public class JIPipeNodeRegistry implements JIPipeValidatable {
     private Map<String, JIPipeNodeInfo> registeredNodeInfos = new HashMap<>();
+    private Multimap<Class<? extends JIPipeGraphNode>, JIPipeNodeInfo> registeredNodeClasses = HashMultimap.create();
     private Set<JIPipeNodeRegistrationTask> registrationTasks = new HashSet<>();
     private Map<String, JIPipeDependency> registeredNodeInfoSources = new HashMap<>();
     private BiMap<String, JIPipeNodeTypeCategory> registeredCategories = HashBiMap.create();
+    private Map<JIPipeNodeInfo, URL> icons = new HashMap<>();
     private boolean stateChanged;
     private boolean isRunning;
     private EventBus eventBus = new EventBus();
@@ -105,9 +119,10 @@ public class JIPipeNodeRegistry implements JIPipeValidatable {
      */
     public void register(JIPipeNodeInfo info, JIPipeDependency source) {
         registeredNodeInfos.put(info.getId(), info);
+        registeredNodeClasses.put(info.getInstanceClass(), info);
         registeredNodeInfoSources.put(info.getId(), source);
         eventBus.post(new NodeInfoRegisteredEvent(info));
-       JIPipeDefaultRegistry.getInstance().getLogService().info("Registered algorithm '" + info.getName() + "' [" + info.getId() + "]");
+        JIPipe.getInstance().getLogService().info("Registered algorithm '" + info.getName() + "' [" + info.getId() + "]");
         runRegistrationTasks();
     }
 
@@ -206,7 +221,7 @@ public class JIPipeNodeRegistry implements JIPipeValidatable {
      * This method is only used internally.
      */
     public void installEvents() {
-        JIPipeDefaultRegistry.getInstance().getDatatypeRegistry().getEventBus().register(this);
+        JIPipe.getInstance().getDatatypeRegistry().getEventBus().register(this);
     }
 
     /**
@@ -258,10 +273,72 @@ public class JIPipeNodeRegistry implements JIPipeValidatable {
     }
 
     /**
-     * @return Singleton instance
+     * Registers a custom icon for a trait
+     *
+     * @param info         the trait type
+     * @param resourcePath icon url
      */
-    public static JIPipeNodeRegistry getInstance() {
-        return JIPipeDefaultRegistry.getInstance().getNodeRegistry();
+    public void registerIcon(JIPipeNodeInfo info, URL resourcePath) {
+        icons.put(info, resourcePath);
     }
 
+    /**
+     * Returns the icon resource path URL for a trait
+     *
+     * @param klass trait type
+     * @return icon url
+     */
+    public URL getIconURLFor(JIPipeNodeInfo klass) {
+        return icons.getOrDefault(klass, ResourceUtils.getPluginResource("icons/actions/configure.png"));
+    }
+
+    /**
+     * Returns the icon for a trait
+     *
+     * @param info trait type
+     * @return icon instance
+     */
+    public ImageIcon getIconFor(JIPipeNodeInfo info) {
+        URL uri = icons.getOrDefault(info, null);
+        if (uri == null) {
+            URL defaultIcon;
+            if (info.getCategory() instanceof DataSourceNodeTypeCategory) {
+                if (!info.getOutputSlots().isEmpty()) {
+                    defaultIcon = JIPipe.getDataTypes().getIconURLFor(info.getOutputSlots().get(0).value());
+                } else {
+                    defaultIcon = ResourceUtils.getPluginResource("icons/actions/configure.png");
+                }
+            } else {
+                defaultIcon = ResourceUtils.getPluginResource("icons/actions/configure.png");
+            }
+            icons.put(info, defaultIcon);
+            uri = defaultIcon;
+        }
+        return new ImageIcon(uri);
+    }
+
+    /**
+     * Returns all node infos that create a node of the specified class
+     * @param klass the class
+     * @return node infos
+     */
+    public Set<JIPipeNodeInfo> getNodeInfosFromClass(Class<? extends JIPipeGraphNode> klass) {
+        return new HashSet<>(registeredNodeClasses.get(klass));
+    }
+
+    public Multimap<Class<? extends JIPipeGraphNode>, JIPipeNodeInfo> getRegisteredNodeClasses() {
+        return ImmutableMultimap.copyOf(registeredNodeClasses);
+    }
+
+    /**
+     * Removes a node from the registry
+     * @param id the node id
+     */
+    public void unregister(String id) {
+        JIPipeNodeInfo info = registeredNodeInfos.get(id);
+        registeredNodeInfos.remove(id);
+        registeredNodeClasses.remove(info.getInstanceClass(), info);
+        registeredNodeInfoSources.remove(id);
+        icons.remove(info);
+    }
 }

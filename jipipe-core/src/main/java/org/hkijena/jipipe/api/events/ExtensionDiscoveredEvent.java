@@ -13,22 +13,22 @@
 
 package org.hkijena.jipipe.api.events;
 
-import org.hkijena.jipipe.JIPipeDefaultRegistry;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 
 /**
  * Triggered when a new extension was discovered
  */
 public class ExtensionDiscoveredEvent {
-    private final JIPipeDefaultRegistry registry;
+    private final JIPipe registry;
     private final JIPipeDependency extension;
 
-    public ExtensionDiscoveredEvent(JIPipeDefaultRegistry registry, JIPipeDependency extension) {
+    public ExtensionDiscoveredEvent(JIPipe registry, JIPipeDependency extension) {
         this.registry = registry;
         this.extension = extension;
     }
 
-    public JIPipeDefaultRegistry getRegistry() {
+    public JIPipe getRegistry() {
         return registry;
     }
 

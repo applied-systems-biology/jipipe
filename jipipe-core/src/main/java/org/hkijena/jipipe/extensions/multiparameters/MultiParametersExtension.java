@@ -13,8 +13,8 @@
 
 package org.hkijena.jipipe.extensions.multiparameters;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeJavaExtension;
-import org.hkijena.jipipe.api.registries.JIPipeNodeRegistry;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.multiparameters.datatypes.ParametersData;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
@@ -44,7 +44,7 @@ public class MultiParametersExtension extends JIPipePrepackagedDefaultJavaExtens
 
     @Override
     public void register() {
-        JIPipeNodeRegistry.getInstance().getEventBus().register(this);
+        JIPipe.getNodes().getEventBus().register(this);
 
         // Register data types
         registerDatatype("parameters", ParametersData.class,
@@ -60,6 +60,6 @@ public class MultiParametersExtension extends JIPipePrepackagedDefaultJavaExtens
 
     @Override
     public String getDependencyVersion() {
-        return "1.0.0";
+        return "2020.11";
     }
 }

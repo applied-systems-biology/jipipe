@@ -14,10 +14,10 @@
 package org.hkijena.jipipe.api.data;
 
 import com.google.common.eventbus.EventBus;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
-import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import javax.swing.event.TableModelListener;
@@ -25,8 +25,13 @@ import javax.swing.table.TableModel;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 
 /**
  * A data slot holds an {@link JIPipeData} instance.
@@ -91,7 +96,7 @@ public class JIPipeDataSlot implements TableModel {
     public boolean accepts(JIPipeData data) {
         if (data == null)
             throw new NullPointerException("Data slots cannot accept null data!");
-        return JIPipeDatatypeRegistry.getInstance().isConvertible(data.getClass(), getAcceptedDataType());
+        return JIPipe.getDataTypes().isConvertible(data.getClass(), getAcceptedDataType());
     }
 
     /**
@@ -103,7 +108,7 @@ public class JIPipeDataSlot implements TableModel {
      * @return Data at row
      */
     public <T extends JIPipeData> T getData(int row, Class<T> dataClass) {
-        return (T) JIPipeDatatypeRegistry.getInstance().convert(data.get(row), dataClass);
+        return (T) JIPipe.getDataTypes().convert(data.get(row), dataClass);
     }
 
     /**
@@ -118,6 +123,24 @@ public class JIPipeDataSlot implements TableModel {
             JIPipeAnnotation trait = getOrCreateAnnotationColumnData(info).get(row);
             if (trait != null)
                 result.add(trait);
+        }
+        return result;
+    }
+
+    /**
+     * Gets the list of annotations for specific data rows
+     *
+     * @param rows The set of rows
+     * @return Annotations at row
+     */
+    public synchronized List<JIPipeAnnotation> getAnnotations(Set<Integer> rows) {
+        List<JIPipeAnnotation> result = new ArrayList<>();
+        for (String info : annotationColumns) {
+            for (int row : rows) {
+                JIPipeAnnotation trait = getOrCreateAnnotationColumnData(info).get(row);
+                if (trait != null)
+                    result.add(trait);
+            }
         }
         return result;
     }
@@ -168,7 +191,7 @@ public class JIPipeDataSlot implements TableModel {
                 uniqueData = false;
             }
         }
-        data.add(JIPipeDatatypeRegistry.getInstance().convert(value, getAcceptedDataType()));
+        data.add(JIPipe.getDataTypes().convert(value, getAcceptedDataType()));
         for (JIPipeAnnotation trait : traits) {
             List<JIPipeAnnotation> traitArray = getOrCreateAnnotationColumnData(trait.getName());
             traitArray.set(getRowCount() - 1, trait);
@@ -318,15 +341,16 @@ public class JIPipeDataSlot implements TableModel {
      * Saves the stored data to the provided storage path and sets data to null
      * Warning: Ensure that depending input slots do not use this slot, anymore!
      *
+     * @param basePath    the base path to where all results are stored relative to. If null, there is no base path
      * @param destroyData the the containing data should be destroyed
      */
-    public void flush(boolean destroyData) {
+    public void flush(Path basePath, boolean destroyData) {
         if (getNode() instanceof JIPipeAlgorithm) {
             if (((JIPipeAlgorithm) getNode()).isSaveOutputs()) {
-                save();
+                save(basePath);
             }
         } else {
-            save();
+            save(basePath);
         }
         for (int i = 0; i < data.size(); ++i) {
             if (destroyData)
@@ -374,6 +398,15 @@ public class JIPipeDataSlot implements TableModel {
     }
 
     /**
+     * Gets the storage path of a data row from a result. This is not used during project creation.
+     * @param index row index
+     * @return path where the row's data is stored
+     */
+    public Path getRowStoragePath(int index) {
+        return storagePath.resolve("" + index);
+    }
+
+    /**
      * Sets storage path that is used during running the algorithm for saving the results
      *
      * @param storagePath Data storage paths
@@ -384,15 +417,16 @@ public class JIPipeDataSlot implements TableModel {
 
     /**
      * Saves the data to the storage path
+     *
+     * @param basePath the base path to where all results are stored relative to. If null, there is no base path
      */
-    public void save() {
+    public void save(Path basePath) {
         if (isOutput() && storagePath != null && data != null) {
 
             // Save data
-            List<Path> dataOutputPaths = new ArrayList<>();
+            List<Integer> indices = new ArrayList<>();
             for (int row = 0; row < getRowCount(); ++row) {
-                Path pathName = Paths.get(getName() + " " + row);
-                Path path = storagePath.resolve(pathName);
+                Path path = storagePath.resolve("" + row);
                 if (!Files.isDirectory(path)) {
                     try {
                         Files.createDirectories(path);
@@ -403,11 +437,11 @@ public class JIPipeDataSlot implements TableModel {
                     }
                 }
 
-                dataOutputPaths.add(pathName);
+                indices.add(row);
                 data.get(row).saveTo(path, getName(), false);
             }
 
-            JIPipeExportedDataTable dataTable = new JIPipeExportedDataTable(this, dataOutputPaths);
+            JIPipeExportedDataTable dataTable = new JIPipeExportedDataTable(this, basePath, indices);
             try {
                 dataTable.saveAsJson(storagePath.resolve("data-table.json"));
                 dataTable.saveAsCSV(storagePath.resolve("data-table.csv"));
@@ -517,5 +551,4 @@ public class JIPipeDataSlot implements TableModel {
     public String toString() {
         return String.format("%s: %s (%d rows, %d annotation columns)", getSlotType(), getName(), getRowCount(), getAnnotationColumns().size());
     }
-
 }

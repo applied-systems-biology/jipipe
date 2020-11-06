@@ -17,12 +17,14 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeTypeCategory;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.Color;
 
 public class FileSystemNodeTypeCategory implements JIPipeNodeTypeCategory {
 
     public static final Color FILL_COLOR = Color.getHSBColor(60.0f / 360.0f, 0.1f, 0.9f);
     public static final Color BORDER_COLOR = Color.getHSBColor(60.0f / 360.0f, 0.1f, 0.5f);
+    public static final Color FILL_COLOR_DARK = Color.getHSBColor(60.0f / 360.0f, 0.5f, 0.3f);
+    public static final Color BORDER_COLOR_DARK = Color.getHSBColor(60.0f / 360.0f, 0.5f, 0.9f);
 
     @Override
     public String getId() {
@@ -57,6 +59,16 @@ public class FileSystemNodeTypeCategory implements JIPipeNodeTypeCategory {
     @Override
     public Color getBorderColor() {
         return BORDER_COLOR;
+    }
+
+    @Override
+    public Color getDarkFillColor() {
+        return FILL_COLOR_DARK;
+    }
+
+    @Override
+    public Color getDarkBorderColor() {
+        return BORDER_COLOR_DARK;
     }
 
     @Override

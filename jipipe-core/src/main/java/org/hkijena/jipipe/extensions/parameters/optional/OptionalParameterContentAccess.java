@@ -16,12 +16,12 @@ package org.hkijena.jipipe.extensions.parameters.optional;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterVisibility;
-import org.hkijena.jipipe.extensions.parameters.pairs.Pair;
+import org.hkijena.jipipe.extensions.parameters.pairs.PairParameter;
 
 import java.lang.annotation.Annotation;
 
 /**
- * Parameter access for the key entry in {@link Pair}
+ * Parameter access for the key entry in {@link PairParameter}
  */
 public class OptionalParameterContentAccess<T> implements JIPipeParameterAccess {
     private JIPipeParameterAccess parent;

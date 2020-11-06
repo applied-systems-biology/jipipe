@@ -16,7 +16,7 @@ package org.hkijena.jipipe.ui;
 import org.hkijena.jipipe.ui.components.DocumentTabPane;
 import org.scijava.Context;
 
-import java.awt.*;
+import java.awt.Window;
 
 /**
  * Interface shared by all workbench UIs

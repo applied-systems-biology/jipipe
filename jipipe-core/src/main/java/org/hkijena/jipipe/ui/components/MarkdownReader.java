@@ -19,20 +19,26 @@ import com.vladsch.flexmark.ext.tables.TablesExtension;
 import com.vladsch.flexmark.ext.toc.TocExtension;
 import com.vladsch.flexmark.parser.Parser;
 import com.vladsch.flexmark.pdf.converter.PdfConverterExtension;
-import com.vladsch.flexmark.util.options.MutableDataHolder;
-import com.vladsch.flexmark.util.options.MutableDataSet;
+import com.vladsch.flexmark.util.data.MutableDataHolder;
+import com.vladsch.flexmark.util.data.MutableDataSet;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
-import org.hkijena.jipipe.utils.CustomScrollPane;
+import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import javax.swing.event.HyperlinkEvent;
-import javax.swing.text.*;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
+import javax.swing.text.Element;
+import javax.swing.text.ElementIterator;
 import javax.swing.text.html.HTML;
 import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
 import javax.swing.text.html.StyleSheet;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Desktop;
+import java.awt.Rectangle;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -46,6 +52,14 @@ public class MarkdownReader extends JPanel {
     public static final String[] CSS_RULES = {"body { font-family: \"Sans-serif\"; }",
             "pre { background-color: #f5f2f0; border: 3px #f5f2f0 solid; }",
             "code { background-color: #f5f2f0; }",
+            "h2 { padding-top: 30px; }",
+            "h3 { padding-top: 30px; }",
+            "th { border-bottom: 1px solid #c8c8c8; }",
+            ".toc-list { list-style: none; }"};
+    public static final String[] CSS_RULES_DARK = {"body { font-family: \"Sans-serif\"; color: #eeeeee; }",
+            "pre { background-color: #333333; border: 3px #333333 solid; }",
+            "code { background-color: #333333; }",
+            "a { color: #65a4e3; }",
             "h2 { padding-top: 30px; }",
             "h3 { padding-top: 30px; }",
             "th { border-bottom: 1px solid #c8c8c8; }",
@@ -99,7 +113,7 @@ public class MarkdownReader extends JPanel {
 
         content.setEditorKit(kit);
         content.setContentType("text/html");
-        scrollPane = new CustomScrollPane(content);
+        scrollPane = new JScrollPane(content);
         add(scrollPane, BorderLayout.CENTER);
 
         if (withToolbar) {
@@ -209,8 +223,15 @@ public class MarkdownReader extends JPanel {
     }
 
     private void initializeStyleSheet(StyleSheet styleSheet) {
-        for (String rule : CSS_RULES) {
-            styleSheet.addRule(rule);
+        if(GeneralUISettings.getInstance().getTheme().isDark()) {
+            for (String rule : CSS_RULES_DARK) {
+                styleSheet.addRule(rule);
+            }
+        }
+        else {
+            for (String rule : CSS_RULES) {
+                styleSheet.addRule(rule);
+            }
         }
     }
 

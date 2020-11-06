@@ -16,6 +16,10 @@ package org.hkijena.jipipe.utils;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Utilities for handling paths
@@ -28,15 +32,30 @@ public class PathUtils {
     /**
      * Finds a file in the specified folder with given extension
      *
-     * @param folder    the path
-     * @param extension Should contain the dot
+     * @param folder     the path
+     * @param extensions Should contain the dot
      * @return null if no file was found
      */
-    public static Path findFileByExtensionIn(Path folder, String extension) {
+    public static Path findFileByExtensionIn(Path folder, String... extensions) {
         try {
-            return Files.list(folder).filter(p -> Files.isRegularFile(p) && p.toString().endsWith(extension)).findFirst().orElse(null);
+            return Files.list(folder).filter(p -> Files.isRegularFile(p) && Arrays.stream(extensions).anyMatch(e -> p.toString().endsWith(e))).findFirst().orElse(null);
         } catch (IOException e) {
             return null;
+        }
+    }
+
+    /**
+     * Finds a file in the specified folder with given extension
+     *
+     * @param folder     the path
+     * @param extensions Should contain the dot
+     * @return null if no file was found
+     */
+    public static List<Path> findFilesByExtensionIn(Path folder, String... extensions) {
+        try {
+            return Files.list(folder).filter(p -> Files.isRegularFile(p) && Arrays.stream(extensions).anyMatch(e -> p.toString().endsWith(e))).collect(Collectors.toList());
+        } catch (IOException e) {
+            return new ArrayList<>();
         }
     }
 }

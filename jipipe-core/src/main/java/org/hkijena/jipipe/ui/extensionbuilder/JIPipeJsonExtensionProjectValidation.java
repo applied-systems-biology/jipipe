@@ -13,11 +13,11 @@
 
 package org.hkijena.jipipe.ui.extensionbuilder;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeJsonExtension;
 import org.hkijena.jipipe.api.JIPipeValidatable;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.grouping.JsonNodeInfo;
-import org.hkijena.jipipe.api.registries.JIPipeNodeRegistry;
 import org.hkijena.jipipe.utils.StringUtils;
 
 /**
@@ -40,7 +40,7 @@ public class JIPipeJsonExtensionProjectValidation implements JIPipeValidatable {
         extension.reportValidity(report);
         for (JsonNodeInfo info : extension.getNodeInfos()) {
             if (!StringUtils.isNullOrEmpty(info.getId())) {
-                if (JIPipeNodeRegistry.getInstance().hasNodeInfoWithId(info.getId())) {
+                if (JIPipe.getNodes().hasNodeInfoWithId(info.getId())) {
                     report.forCategory("Algorithms").forCategory(info.getName()).reportIsInvalid("Already registered: " + info.getId(),
                             "Currently there is already an algorithm with the same ID.",
                             "If this is intenional, you do not need to do something. If not, please assign an unique identifier.",

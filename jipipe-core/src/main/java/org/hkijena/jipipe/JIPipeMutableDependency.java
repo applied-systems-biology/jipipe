@@ -30,10 +30,10 @@ import java.util.List;
  * {@link JIPipeDependency} is deserialize to this type.
  */
 public class JIPipeMutableDependency implements JIPipeDependency {
+    private final EventBus eventBus = new EventBus();
     private JIPipeMetadata metadata = new JIPipeMetadata();
     private String dependencyId;
     private String dependencyVersion = "1.0.0";
-    private final EventBus eventBus = new EventBus();
     private List<JIPipeImageJUpdateSiteDependency> imageJUpdateSiteDependencies = new ArrayList<>();
     private List<JIPipeImageJUpdateSiteDependency> imageJUpdateSites = new ArrayList<>();
 

@@ -21,8 +21,8 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.events.ParameterChangedEvent;
-import org.hkijena.jipipe.api.registries.JIPipeParameterTypeRegistry;
 import org.hkijena.jipipe.utils.JsonUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.scijava.Priority;
@@ -72,7 +72,7 @@ public class JIPipeMutableParameterAccess implements JIPipeParameterAccess {
         this.visibility = other.getVisibility();
         this.fieldClass = other.getFieldClass();
         this.persistence = other.getPersistence();
-        JIPipeParameterTypeInfo info = JIPipeParameterTypeRegistry.getInstance().getInfoByFieldClass(fieldClass);
+        JIPipeParameterTypeInfo info = JIPipe.getParameterTypes().getInfoByFieldClass(fieldClass);
         this.value = info.duplicate(other.get(fieldClass)); // Deep copy
     }
 
@@ -194,12 +194,12 @@ public class JIPipeMutableParameterAccess implements JIPipeParameterAccess {
 
     @JsonGetter("field-class-id")
     public String getFieldClassInfoId() {
-        return JIPipeParameterTypeRegistry.getInstance().getInfoByFieldClass(getFieldClass()).getId();
+        return JIPipe.getParameterTypes().getInfoByFieldClass(getFieldClass()).getId();
     }
 
     @JsonSetter("field-class-id")
     public void setFieldClassInfoId(String id) {
-        setFieldClass(JIPipeParameterTypeRegistry.getInstance().getInfoById(id).getFieldClass());
+        setFieldClass(JIPipe.getParameterTypes().getInfoById(id).getFieldClass());
     }
 
     @JsonGetter("value")

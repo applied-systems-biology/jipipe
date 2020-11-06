@@ -19,6 +19,7 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import ij.macro.Variable;
 import ij.measure.ResultsTable;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeValidatable;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
@@ -28,7 +29,6 @@ import org.hkijena.jipipe.api.events.ParameterChangedEvent;
 import org.hkijena.jipipe.api.events.ParameterStructureChangedEvent;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
 import org.hkijena.jipipe.extensions.parameters.editors.JIPipeDataParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.references.JIPipeDataInfoRef;
 import org.hkijena.jipipe.extensions.plots.datatypes.PlotData;
@@ -50,11 +50,15 @@ import org.scijava.Priority;
 
 import javax.swing.*;
 import javax.swing.table.TableModel;
-import java.awt.*;
+import java.awt.BorderLayout;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
-import java.util.*;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * User interface for displaying and creating plots
@@ -118,7 +122,7 @@ public class JIPipePlotBuilderUI extends JIPipeWorkbenchPanel implements JIPipeP
     }
 
     private void installDefaultDataSources() {
-        for (Class<? extends JIPipeData> klass : JIPipeDatatypeRegistry.getInstance().getRegisteredDataTypes().values()) {
+        for (Class<? extends JIPipeData> klass : JIPipe.getDataTypes().getRegisteredDataTypes().values()) {
             if (TableColumn.isGeneratingTableColumn(klass)) {
                 TableColumn dataSource = (TableColumn) ReflectionUtils.newInstance(klass);
                 availableData.put(dataSource.getLabel(), dataSource);
@@ -166,7 +170,7 @@ public class JIPipePlotBuilderUI extends JIPipeWorkbenchPanel implements JIPipeP
         if (currentPlot == null || (plotType.getInfo() != null &&
                 !Objects.equals(plotType.getInfo().getDataClass(), currentPlot.getClass()))) {
             if (plotType.getInfo() != null) {
-                currentPlot = (PlotData) JIPipeData.createInstance(plotType.getInfo().getDataClass());
+                currentPlot = (PlotData) JIPipe.createData(plotType.getInfo().getDataClass());
                 changedPlot = true;
                 currentPlot.getEventBus().register(this);
             }

@@ -16,13 +16,13 @@ package org.hkijena.jipipe.extensions.tables.parameters.enums;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.google.common.html.HtmlEscapers;
-import org.hkijena.jipipe.api.registries.JIPipeTableRegistry;
+import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.registries.JIPipeExpressionRegistry;
 import org.hkijena.jipipe.extensions.parameters.primitives.DynamicEnumParameter;
 import org.hkijena.jipipe.extensions.tables.IntegratingColumnOperation;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -31,14 +31,14 @@ import java.util.stream.Collectors;
  * Enum-like parameter that allows the selection of a {@link IntegratingColumnOperation}.
  * Contains JIPipeTableRegistry.ColumnOperationEntry
  */
-public class TableColumnIntegrationParameter extends DynamicEnumParameter {
+public class TableColumnIntegrationParameter extends DynamicEnumParameter<Object> {
 
     /**
      * Creates a new instance
      */
     public TableColumnIntegrationParameter() {
-        List<Object> allowedValues = new ArrayList<>(JIPipeTableRegistry.getInstance().getOperationsOfType(IntegratingColumnOperation.class).values()
-                .stream().sorted(Comparator.comparing(JIPipeTableRegistry.ColumnOperationEntry::getName)).collect(Collectors.toList()));
+        List<Object> allowedValues = JIPipe.getTableOperations().getTableColumnOperationsOfType(IntegratingColumnOperation.class).values()
+                .stream().sorted(Comparator.comparing(JIPipeExpressionRegistry.ColumnOperationEntry::getName)).collect(Collectors.toList());
         setAllowedValues(allowedValues);
         setValue(allowedValues.get(0));
     }
@@ -54,8 +54,8 @@ public class TableColumnIntegrationParameter extends DynamicEnumParameter {
 
     @Override
     public String renderLabel(Object value) {
-        if (value instanceof JIPipeTableRegistry.ColumnOperationEntry) {
-            JIPipeTableRegistry.ColumnOperationEntry entry = (JIPipeTableRegistry.ColumnOperationEntry) value;
+        if (value instanceof JIPipeExpressionRegistry.ColumnOperationEntry) {
+            JIPipeExpressionRegistry.ColumnOperationEntry entry = (JIPipeExpressionRegistry.ColumnOperationEntry) value;
             return entry.getName();
         } else {
             return "[None selected]";
@@ -71,7 +71,7 @@ public class TableColumnIntegrationParameter extends DynamicEnumParameter {
     public String getId() {
         if (getValue() == null)
             return null;
-        return ((JIPipeTableRegistry.ColumnOperationEntry) getValue()).getId();
+        return ((JIPipeExpressionRegistry.ColumnOperationEntry) getValue()).getId();
     }
 
     /**
@@ -82,14 +82,14 @@ public class TableColumnIntegrationParameter extends DynamicEnumParameter {
     @JsonSetter("id")
     public void setId(String id) {
         if (id != null) {
-            setValue(JIPipeTableRegistry.getInstance().getColumnOperationById(id));
+            setValue(JIPipe.getTableOperations().getColumnOperationById(id));
         }
     }
 
     @Override
     public String renderTooltip(Object value) {
-        if (value instanceof JIPipeTableRegistry.ColumnOperationEntry) {
-            JIPipeTableRegistry.ColumnOperationEntry entry = (JIPipeTableRegistry.ColumnOperationEntry) value;
+        if (value instanceof JIPipeExpressionRegistry.ColumnOperationEntry) {
+            JIPipeExpressionRegistry.ColumnOperationEntry entry = (JIPipeExpressionRegistry.ColumnOperationEntry) value;
             return "<html><strong>" + HtmlEscapers.htmlEscaper().escape(entry.getName()) + "</strong><br/>" + HtmlEscapers.htmlEscaper().escape(entry.getDescription()) + "</html>";
         } else {
             return null;

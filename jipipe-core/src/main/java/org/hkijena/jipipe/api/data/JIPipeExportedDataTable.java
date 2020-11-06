@@ -16,8 +16,8 @@ package org.hkijena.jipipe.api.data;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import ij.measure.ResultsTable;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
-import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
 import org.hkijena.jipipe.utils.JsonUtils;
 
 import javax.swing.event.TableModelListener;
@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
 public class JIPipeExportedDataTable implements TableModel {
     private String algorithmId;
     private String slotName;
-    private Path internalPath;
+    private String internalPath;
     private Class<? extends JIPipeData> acceptedDataType;
     private List<Row> rowList;
     private List<String> traitColumns;
@@ -44,28 +44,28 @@ public class JIPipeExportedDataTable implements TableModel {
     /**
      * Initializes a new table from a slot
      *
-     * @param slot            The slot
-     * @param dataOutputPaths output path for each slot row
+     * @param slot    The slot
+     * @param indices output path index for each slot row
      */
-    public JIPipeExportedDataTable(JIPipeDataSlot slot, List<Path> dataOutputPaths) {
+    public JIPipeExportedDataTable(JIPipeDataSlot slot, Path basePath, List<Integer> indices) {
         this.algorithmId = slot.getNode().getInfo().getId();
         this.slotName = slot.getName();
-        this.internalPath = slot.getStoragePath();
+        if (basePath != null) {
+            this.internalPath = basePath.relativize(slot.getStoragePath()).toString();
+        } else {
+            this.internalPath = slot.getStoragePath().toString();
+        }
         this.acceptedDataType = slot.getAcceptedDataType();
         this.rowList = new ArrayList<>();
         for (int row = 0; row < slot.getRowCount(); ++row) {
             Row rowInstance = new Row();
-            rowInstance.location = dataOutputPaths.get(row);
+            rowInstance.index = indices.get(row);
             rowInstance.traits = slot.getAnnotations(row);
             rowList.add(rowInstance);
         }
     }
 
-    /**
-     * Creates an empty instance
-     */
     public JIPipeExportedDataTable() {
-
     }
 
     /**
@@ -108,7 +108,7 @@ public class JIPipeExportedDataTable implements TableModel {
      * @return The internal path
      */
     @JsonGetter("internal-path")
-    public Path getInternalPath() {
+    public String getInternalPath() {
         return internalPath;
     }
 
@@ -118,7 +118,7 @@ public class JIPipeExportedDataTable implements TableModel {
      * @param internalPath The internal path
      */
     @JsonSetter("internal-path")
-    public void setInternalPath(Path internalPath) {
+    public void setInternalPath(String internalPath) {
         this.internalPath = internalPath;
     }
 
@@ -127,7 +127,7 @@ public class JIPipeExportedDataTable implements TableModel {
      */
     @JsonGetter("data-type")
     public String getAcceptedDataTypeId() {
-        return JIPipeDatatypeRegistry.getInstance().getIdOf(acceptedDataType);
+        return JIPipe.getDataTypes().getIdOf(acceptedDataType);
     }
 
     /**
@@ -137,7 +137,7 @@ public class JIPipeExportedDataTable implements TableModel {
      */
     @JsonSetter("data-type")
     public void setAcceptedDataTypeId(String id) {
-        this.acceptedDataType = JIPipeDatatypeRegistry.getInstance().getById(id);
+        this.acceptedDataType = JIPipe.getDataTypes().getById(id);
     }
 
     /**
@@ -180,9 +180,9 @@ public class JIPipeExportedDataTable implements TableModel {
             table.incrementCounter();
             table.addValue("jipipe:algorithm-id", algorithmId);
             table.addValue("jipipe:slot", slotName);
-            table.addValue("jipipe:data-type", JIPipeDatatypeRegistry.getInstance().getIdOf(acceptedDataType));
+            table.addValue("jipipe:data-type", JIPipe.getDataTypes().getIdOf(acceptedDataType));
             table.addValue("jipipe:internal-path", internalPath.toString());
-            table.addValue("jipipe:location", row.location.toString());
+            table.addValue("jipipe:index", row.index);
             for (String traitColumn : getTraitColumns()) {
                 JIPipeAnnotation existing = row.traits.stream().filter(t -> t.nameEquals(traitColumn)).findFirst().orElse(null);
                 if (existing != null)
@@ -221,13 +221,12 @@ public class JIPipeExportedDataTable implements TableModel {
     @Override
     public String getColumnName(int columnIndex) {
         if (columnIndex == 0)
-            return "Location";
+            return "Index";
         else if (columnIndex == 1)
             return "Data type";
-        else if(columnIndex == 2) {
+        else if (columnIndex == 2) {
             return "Preview";
-        }
-        else
+        } else
             return traitColumns.get(columnIndex - 3);
     }
 
@@ -251,7 +250,7 @@ public class JIPipeExportedDataTable implements TableModel {
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
         if (columnIndex == 0)
-            return rowList.get(rowIndex).getLocation();
+            return rowList.get(rowIndex).getIndex();
         else if (columnIndex == 1)
             return JIPipeDataInfo.getInstance(acceptedDataType);
         else if (columnIndex == 2)
@@ -297,7 +296,7 @@ public class JIPipeExportedDataTable implements TableModel {
      * A row in the table
      */
     public static class Row {
-        private Path location;
+        private int index;
         private List<JIPipeAnnotation> traits;
 
         /**
@@ -309,19 +308,19 @@ public class JIPipeExportedDataTable implements TableModel {
         /**
          * @return Internal location relative to the output folder
          */
-        @JsonGetter("location")
-        public Path getLocation() {
-            return location;
+        @JsonGetter("index")
+        public int getIndex() {
+            return index;
         }
 
         /**
          * Sets the location
          *
-         * @param location Internal location relative to the output folder
+         * @param index Internal location relative to the output folder
          */
-        @JsonSetter("location")
-        public void setLocation(Path location) {
-            this.location = location;
+        @JsonSetter("index")
+        public void setIndex(int index) {
+            this.index = index;
         }
 
         /**

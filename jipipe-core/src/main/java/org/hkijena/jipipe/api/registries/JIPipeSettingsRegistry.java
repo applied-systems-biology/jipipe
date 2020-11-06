@@ -23,7 +23,6 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import ij.IJ;
 import ij.Prefs;
-import org.hkijena.jipipe.JIPipeDefaultRegistry;
 import org.hkijena.jipipe.api.events.ParameterChangedEvent;
 import org.hkijena.jipipe.api.parameters.JIPipeCustomParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
@@ -56,18 +55,22 @@ public class JIPipeSettingsRegistry implements JIPipeParameterCollection, JIPipe
      *
      * @param id                  unique ID of the sheet
      * @param name                sheet name
+     * @param icon                sheet icon
      * @param category            sheet category. If left null or empty, it will default to "General"
      * @param categoryIcon        optional icon. If null, a wrench icon is used.
      * @param parameterCollection the object that holds the parameters
      */
-    public void register(String id, String name, String category, Icon categoryIcon, JIPipeParameterCollection parameterCollection) {
+    public void register(String id, String name, Icon icon, String category, Icon categoryIcon, JIPipeParameterCollection parameterCollection) {
         if (StringUtils.isNullOrEmpty(category)) {
             category = "General";
+        }
+        if (icon == null) {
+            icon = UIUtils.getIconFromResources("actions/view-paged.png");
         }
         if (categoryIcon == null) {
             categoryIcon = UIUtils.getIconFromResources("actions/wrench.png");
         }
-        Sheet sheet = new Sheet(name, category, categoryIcon, parameterCollection);
+        Sheet sheet = new Sheet(name, icon, category, categoryIcon, parameterCollection);
         parameterCollection.getEventBus().register(this);
         registeredSheets.put(id, sheet);
     }
@@ -82,10 +85,9 @@ public class JIPipeSettingsRegistry implements JIPipeParameterCollection, JIPipe
      */
     public <T extends JIPipeParameterCollection> T getSettings(String id, Class<T> settingsClass) {
         Sheet sheet = registeredSheets.getOrDefault(id, null);
-        if(sheet != null) {
+        if (sheet != null) {
             return (T) sheet.getParameterCollection();
-        }
-        else {
+        } else {
             return null;
         }
     }
@@ -180,10 +182,6 @@ public class JIPipeSettingsRegistry implements JIPipeParameterCollection, JIPipe
         load(getPropertyFile());
     }
 
-    public static JIPipeSettingsRegistry getInstance() {
-        return JIPipeDefaultRegistry.getInstance().getSettingsRegistry();
-    }
-
     /**
      * Gets the raw property files Json node
      *
@@ -222,6 +220,7 @@ public class JIPipeSettingsRegistry implements JIPipeParameterCollection, JIPipe
     public static class Sheet {
         private String name;
         private String category;
+        private Icon icon;
         private Icon categoryIcon;
         private JIPipeParameterCollection parameterCollection;
 
@@ -229,15 +228,21 @@ public class JIPipeSettingsRegistry implements JIPipeParameterCollection, JIPipe
          * Creates a new instance
          *
          * @param name                name shown in UI
+         * @param icon                icon for this sheet
          * @param category            category shown in UI
          * @param categoryIcon        category icon
          * @param parameterCollection object that holds the parameter
          */
-        public Sheet(String name, String category, Icon categoryIcon, JIPipeParameterCollection parameterCollection) {
+        public Sheet(String name, Icon icon, String category, Icon categoryIcon, JIPipeParameterCollection parameterCollection) {
             this.name = name;
+            this.icon = icon;
             this.category = category;
             this.categoryIcon = categoryIcon;
             this.parameterCollection = parameterCollection;
+        }
+
+        public Icon getIcon() {
+            return icon;
         }
 
         public String getName() {

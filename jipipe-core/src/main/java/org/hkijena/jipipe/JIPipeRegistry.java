@@ -15,8 +15,13 @@ package org.hkijena.jipipe;
 
 import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.JIPipeValidatable;
-import org.hkijena.jipipe.api.registries.*;
-import org.hkijena.jipipe.ui.registries.*;
+import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
+import org.hkijena.jipipe.api.registries.JIPipeExpressionRegistry;
+import org.hkijena.jipipe.api.registries.JIPipeImageJAdapterRegistry;
+import org.hkijena.jipipe.api.registries.JIPipeNodeRegistry;
+import org.hkijena.jipipe.api.registries.JIPipeParameterTypeRegistry;
+import org.hkijena.jipipe.api.registries.JIPipeSettingsRegistry;
+import org.hkijena.jipipe.ui.registries.JIPipeCustomMenuRegistry;
 import org.scijava.service.Service;
 
 import java.util.List;
@@ -27,73 +32,25 @@ import java.util.Set;
  */
 public interface JIPipeRegistry extends Service, JIPipeValidatable {
 
-    /**
-     * @return The event bus
-     */
     EventBus getEventBus();
 
-    /**
-     * @return Adapters between JIPipe and ImageJ
-     */
     JIPipeImageJAdapterRegistry getImageJDataAdapterRegistry();
 
-    /**
-     * @return Registered extensions
-     */
     List<JIPipeDependency> getRegisteredExtensions();
 
-    /**
-     * @return Registered algorithms
-     */
     JIPipeNodeRegistry getNodeRegistry();
 
-    /**
-     * @return Registered data types
-     */
     JIPipeDatatypeRegistry getDatatypeRegistry();
 
-    /**
-     * @return Registered data type UIs
-     */
-    JIPipeUIDatatypeRegistry getUIDatatypeRegistry();
-
-    /**
-     * @return Registered parameters
-     */
     JIPipeParameterTypeRegistry getParameterTypeRegistry();
 
-    /**
-     * @return Registered parameter UIs
-     */
-    JIPipeUIParameterTypeRegistry getUIParameterTypeRegistry();
-
-    /**
-     * @return Registered ImageJ adapter UIs
-     */
-    JIPipeUIImageJDatatypeAdapterRegistry getUIImageJDatatypeAdapterRegistry();
-
-    /**
-     * @return Registered menus
-     */
-    JIPipeUIMenuServiceRegistry getUIMenuServiceRegistry();
-
+    JIPipeCustomMenuRegistry getCustomMenuRegistry();
 
     JIPipeSettingsRegistry getSettingsRegistry();
 
-    JIPipeTableRegistry getTableRegistry();
+    JIPipeExpressionRegistry getExpressionRegistry();
 
-    JIPipeUINodeRegistry getUIAlgorithmRegistry();
-
-    /**
-     * @return Registered extension IDs
-     */
     Set<String> getRegisteredExtensionIds();
 
-    /**
-     * Finds an extension by its ID
-     *
-     * @param dependencyId The extension ID
-     * @return The extension. Null if its not found.
-     */
     JIPipeDependency findExtensionById(String dependencyId);
 }

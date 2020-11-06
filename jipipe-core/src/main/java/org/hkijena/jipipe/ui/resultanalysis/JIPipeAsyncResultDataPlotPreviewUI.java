@@ -16,7 +16,7 @@ package org.hkijena.jipipe.ui.resultanalysis;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeExportedDataTable;
-import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
+import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jdesktop.swingx.JXTable;
@@ -52,16 +52,15 @@ public abstract class JIPipeAsyncResultDataPlotPreviewUI extends JIPipeResultDat
 
     private void setPreview(Component component) {
         removeAll();
-        if(component == null) {
+        if (component == null) {
             add(new JLabel("N/A"), BorderLayout.CENTER);
-        }
-        else {
+        } else {
             add(component, BorderLayout.WEST);
         }
         revalidate();
         repaint();
-        if(getTable() != null) {
-            if(getTable() instanceof JXTable)
+        if (getTable() != null) {
+            if (getTable() instanceof JXTable)
                 ((JXTable) getTable()).packAll();
             getTable().repaint();
         }
@@ -70,6 +69,7 @@ public abstract class JIPipeAsyncResultDataPlotPreviewUI extends JIPipeResultDat
     /**
      * Run in a different thread.
      * Should return the data
+     *
      * @param storageFolder the folder where the data is stored
      * @return the data. if null, the widget will display "error"
      */
@@ -82,8 +82,7 @@ public abstract class JIPipeAsyncResultDataPlotPreviewUI extends JIPipeResultDat
 
         private final JIPipeAsyncResultDataPlotPreviewUI parent;
         private final Path storageFolder;
-        private final int width = GeneralUISettings.getInstance().getPreviewWidth();
-        private final int height = GeneralUISettings.getInstance().getPreviewHeight();
+        private final int width = GeneralDataSettings.getInstance().getPreviewSize();
 
         private Worker(JIPipeAsyncResultDataPlotPreviewUI parent, Path storageFolder) {
             this.parent = parent;
@@ -93,8 +92,8 @@ public abstract class JIPipeAsyncResultDataPlotPreviewUI extends JIPipeResultDat
         @Override
         protected Component doInBackground() throws Exception {
             JIPipeData data = parent.loadData(storageFolder);
-            if(data != null)
-                return data.preview(width, height);
+            if (data != null)
+                return data.preview(width, width);
             else
                 return null;
         }

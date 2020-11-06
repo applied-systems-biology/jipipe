@@ -14,7 +14,8 @@
 package org.hkijena.jipipe.ui.components;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 
 public class BackgroundPanel extends JPanel {
@@ -39,7 +40,7 @@ public class BackgroundPanel extends JPanel {
 
     @Override
     public void paint(Graphics g) {
-        g.setColor(Color.WHITE);
+        g.setColor(UIManager.getColor("Panel.background"));
         g.fillRect(0, 0, getWidth(), getHeight());
         if (backgroundImage != null) {
             double factorh = 1.0 * getHeight() / backgroundImage.getHeight();

@@ -14,11 +14,15 @@
 package org.hkijena.jipipe;
 
 import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
+import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeMetadata;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.compat.ImageJDatatypeAdapter;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataConverter;
+import org.hkijena.jipipe.api.data.JIPipeDataDisplayOperation;
+import org.hkijena.jipipe.api.data.JIPipeDataImportOperation;
+import org.hkijena.jipipe.api.data.JIPipeDataOperation;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeJavaNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -28,7 +32,10 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
 import org.hkijena.jipipe.api.registries.JIPipeJavaNodeRegistrationTask;
 import org.hkijena.jipipe.api.registries.JIPipeNodeRegistrationTask;
+import org.hkijena.jipipe.api.registries.JIPipeParameterTypeRegistry;
 import org.hkijena.jipipe.extensions.parameters.collections.ListParameter;
+import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionFunction;
+import org.hkijena.jipipe.extensions.parameters.expressions.functions.ColumnOperationAdapterFunction;
 import org.hkijena.jipipe.extensions.parameters.primitives.EnumParameterTypeInfo;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
 import org.hkijena.jipipe.extensions.tables.ColumnOperation;
@@ -36,7 +43,6 @@ import org.hkijena.jipipe.ui.compat.ImageJDatatypeImporterUI;
 import org.hkijena.jipipe.ui.extension.MenuExtension;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterGeneratorUI;
-import org.hkijena.jipipe.ui.registries.JIPipeUIParameterTypeRegistry;
 import org.hkijena.jipipe.ui.resultanalysis.JIPipeResultDataSlotPreviewUI;
 import org.hkijena.jipipe.ui.resultanalysis.JIPipeResultDataSlotRowUI;
 import org.hkijena.jipipe.utils.ReflectionUtils;
@@ -57,7 +63,7 @@ import java.util.function.Supplier;
 public abstract class JIPipeDefaultJavaExtension extends AbstractService implements JIPipeJavaExtension {
 
     private JIPipeMetadata metadata;
-    private JIPipeDefaultRegistry registry;
+    private JIPipe registry;
 
     /**
      * Creates a new instance
@@ -126,12 +132,12 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
     }
 
     @Override
-    public JIPipeDefaultRegistry getRegistry() {
+    public JIPipe getRegistry() {
         return registry;
     }
 
     @Override
-    public void setRegistry(JIPipeDefaultRegistry registry) {
+    public void setRegistry(JIPipe registry) {
         this.registry = registry;
     }
 
@@ -141,7 +147,7 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
      * @param klass The menu entry
      */
     public void registerMenuExtension(Class<? extends MenuExtension> klass) {
-        registry.getUIMenuServiceRegistry().register(klass);
+        registry.getCustomMenuRegistry().register(klass);
     }
 
     /**
@@ -156,23 +162,65 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
 
     /**
      * Registers a new data type
-     *  @param id        Data type id
-     * @param dataClass Data class
-     * @param icon      Icon for the data type. Can be null.
-     * @param rowUI     Results analyzer row UI for the data type. Can be null.
-     * @param cellUI    Results table cell UI. Can be null.
+     *
+     * @param id         Data type id
+     * @param dataClass  Data class
+     * @param icon       Icon for the data type. Can be null.
+     * @param rowUI      Results analyzer row UI for the data type. Can be null. If null, it will use the default row UI that manages {@link org.hkijena.jipipe.api.data.JIPipeDataImportOperation} instances.
+     * @param cellUI     Results table cell UI. Can be null.
+     * @param operations list of operations to register. passed to registerDatatypeOperation.
      */
-    public void registerDatatype(String id, Class<? extends JIPipeData> dataClass, URL icon, Class<? extends JIPipeResultDataSlotRowUI> rowUI, Class<? extends JIPipeResultDataSlotPreviewUI> cellUI) {
+    public void registerDatatype(String id, Class<? extends JIPipeData> dataClass, URL icon, Class<? extends JIPipeResultDataSlotRowUI> rowUI, Class<? extends JIPipeResultDataSlotPreviewUI> cellUI, JIPipeDataOperation... operations) {
         registry.getDatatypeRegistry().register(id, dataClass, this);
         if (icon != null) {
-            registry.getUIDatatypeRegistry().registerIcon(dataClass, icon);
+            registry.getDatatypeRegistry().registerIcon(dataClass, icon);
         }
         if (rowUI != null) {
-            registry.getUIDatatypeRegistry().registerResultSlotUI(dataClass, rowUI);
+            registry.getDatatypeRegistry().registerResultSlotUI(dataClass, rowUI);
         }
         if (cellUI != null) {
-            registry.getUIDatatypeRegistry().registerResultTableCellUI(dataClass, cellUI);
+            registry.getDatatypeRegistry().registerResultTableCellUI(dataClass, cellUI);
         }
+        registerDatatypeOperation(id, operations);
+    }
+
+    /**
+     * Shortcut for registering import and display operations.
+     * If an instance is both, it is registered for both.
+     *
+     * @param dataTypeId the data type id. it is not required that the data type is registered, yet. If empty, the operations are applying to all data.
+     * @param operations operations
+     */
+    public void registerDatatypeOperation(String dataTypeId, JIPipeDataOperation... operations) {
+        for (JIPipeDataOperation operation : operations) {
+            if (operation instanceof JIPipeDataImportOperation) {
+                registerDatatypeImportOperation(dataTypeId, (JIPipeDataImportOperation) operation);
+            }
+            if (operation instanceof JIPipeDataDisplayOperation) {
+                registerDatatypeDisplayOperation(dataTypeId, (JIPipeDataDisplayOperation) operation);
+            }
+        }
+    }
+
+    /**
+     * Registers an import operation for the data type.
+     * This is not used if the data type is assigned a non-default row UI
+     *
+     * @param dataTypeId the data type id. it is not required that the data type is registered, yet. If empty, the operations are applying to all data.
+     * @param operation  the operation
+     */
+    public void registerDatatypeImportOperation(String dataTypeId, JIPipeDataImportOperation operation) {
+        registry.getDatatypeRegistry().registerImportOperation(dataTypeId, operation);
+    }
+
+    /**
+     * Registers an additional non-default display operation for the data type. Used in the cache browser.
+     *
+     * @param dataTypeId the data type id. it is not required that the data type is registered, yet. If empty, the operations are applying to all data.
+     * @param operation  the operation
+     */
+    public void registerDatatypeDisplayOperation(String dataTypeId, JIPipeDataDisplayOperation operation) {
+        registry.getDatatypeRegistry().registerDisplayOperation(dataTypeId, operation);
     }
 
     /**
@@ -224,7 +272,7 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
      */
     public void registerNodeType(JIPipeNodeInfo info, URL icon) {
         registry.getNodeRegistry().register(info, this);
-        registry.getUIAlgorithmRegistry().registerIcon(info, icon);
+        registry.getNodeRegistry().registerIcon(info, icon);
     }
 
     /**
@@ -343,7 +391,7 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
      * @param uiClass        the editor class
      */
     public void registerParameterEditor(Class<?> parameterClass, Class<? extends JIPipeParameterEditorUI> uiClass) {
-        registry.getUIParameterTypeRegistry().registerParameterEditor(parameterClass, uiClass);
+        registry.getParameterTypeRegistry().registerParameterEditor(parameterClass, uiClass);
     }
 
     /**
@@ -355,7 +403,7 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
      * @param description    Description for the generator
      */
     public void registerParameterGenerator(Class<?> parameterClass, Class<? extends JIPipeParameterGeneratorUI> uiClass, String name, String description) {
-        JIPipeUIParameterTypeRegistry parametertypeRegistry = registry.getUIParameterTypeRegistry();
+        JIPipeParameterTypeRegistry parametertypeRegistry = registry.getParameterTypeRegistry();
         parametertypeRegistry.registerGenerator(parameterClass, uiClass, name, description);
     }
 
@@ -369,7 +417,41 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
      * @param description a description
      */
     public void registerTableColumnOperation(String id, ColumnOperation operation, String name, String shortName, String description) {
-        registry.getTableRegistry().registerColumnOperation(id, operation, name, shortName, description);
+        registry.getExpressionRegistry().registerColumnOperation(id, operation, name, shortName, description);
+    }
+
+    /**
+     * Registers a table column operation. Those operations are used in various places that handle tabular data.
+     * Also registers an expression function that is generated via an adapter class (its ID will be the upper-case of the the short name with spaces replaced by underscores)
+     *
+     * @param id          operation id
+     * @param operation   the operation instance
+     * @param name        the name
+     * @param shortName   a short name (like min, max, avg, ...)
+     * @param description a description
+     */
+    public void registerTableColumnOperationAndExpressionFunction(String id, ColumnOperation operation, String name, String shortName, String description) {
+        registry.getExpressionRegistry().registerColumnOperation(id, operation, name, shortName, description);
+        registerExpressionFunction(new ColumnOperationAdapterFunction(operation, shortName.toUpperCase().replace(' ', '_')), name, description);
+    }
+
+    /**
+     * Registers a function that can be used within expressions.
+     * @param function the function. its internal name property must be unique
+     * @param name human-readable name
+     * @param description the description
+     */
+    public void registerExpressionFunction(ExpressionFunction function, String name, String description) {
+        registry.getExpressionRegistry().registerExpressionFunction(function, name, description);
+    }
+
+    /**
+     * Registers a function that can be used within expressions. The name and description are taken from {@link org.hkijena.jipipe.api.JIPipeDocumentation} annotations.
+     * @param function the function. its internal name property must be unique
+     */
+    public void registerExpressionFunction(ExpressionFunction function) {
+        JIPipeDocumentation documentation = function.getClass().getAnnotation(JIPipeDocumentation.class);
+        registry.getExpressionRegistry().registerExpressionFunction(function, documentation.name(), documentation.description());
     }
 
     /**
@@ -380,7 +462,7 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
      */
     public void registerImageJDataAdapter(ImageJDatatypeAdapter adapter, Class<? extends ImageJDatatypeImporterUI> importerUIClass) {
         registry.getImageJDataAdapterRegistry().register(adapter);
-        registry.getUIImageJDatatypeAdapterRegistry().registerImporterFor(adapter.getImageJDatatype(), importerUIClass);
+        registry.getImageJDataAdapterRegistry().registerImporterFor(adapter.getImageJDatatype(), importerUIClass);
     }
 
     /**
@@ -388,12 +470,13 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
      *
      * @param id                  unique ID
      * @param name                sheet name
+     * @param icon                sheet icon
      * @param category            sheet category (if null defaults to "General")
      * @param categoryIcon        category icon (if null defaults to a predefined icon)
      * @param parameterCollection the settings
      */
-    public void registerSettingsSheet(String id, String name, String category, Icon categoryIcon, JIPipeParameterCollection parameterCollection) {
-        registry.getSettingsRegistry().register(id, name, category, categoryIcon, parameterCollection);
+    public void registerSettingsSheet(String id, String name, Icon icon, String category, Icon categoryIcon, JIPipeParameterCollection parameterCollection) {
+        registry.getSettingsRegistry().register(id, name, icon, category, categoryIcon, parameterCollection);
     }
 
     @Override

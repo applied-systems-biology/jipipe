@@ -24,27 +24,43 @@ import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeRun;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidatable;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
-import org.hkijena.jipipe.api.data.*;
-import org.hkijena.jipipe.api.events.*;
+import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.data.JIPipeDataSlot;
+import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
+import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
+import org.hkijena.jipipe.api.data.JIPipeSlotConfiguration;
+import org.hkijena.jipipe.api.data.JIPipeSlotType;
+import org.hkijena.jipipe.api.events.NodeConnectedEvent;
+import org.hkijena.jipipe.api.events.NodeDisconnectedEvent;
+import org.hkijena.jipipe.api.events.NodeSlotsChangedEvent;
+import org.hkijena.jipipe.api.events.ParameterChangedEvent;
+import org.hkijena.jipipe.api.events.ParameterStructureChangedEvent;
+import org.hkijena.jipipe.api.events.SlotsChangedEvent;
+import org.hkijena.jipipe.api.events.WorkDirectoryChangedEvent;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterVisibility;
-import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
-import org.hkijena.jipipe.api.registries.JIPipeNodeRegistry;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
 import org.hkijena.jipipe.utils.StringUtils;
 
-import java.awt.*;
+import java.awt.Point;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
-import java.util.*;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -332,6 +348,15 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
     }
 
     /**
+     * Method that can be overwritten by child classes.
+     * Should return slots that are actually used as input.
+     * @return Input slots
+     */
+    public List<JIPipeDataSlot> getEffectiveInputSlots() {
+        return getInputSlots();
+    }
+
+    /**
      * Returns all output slots ordered by the slot order
      *
      * @return List of slots
@@ -444,7 +469,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
     /**
      * Loads this algorithm from JSON
      *
-     * @param node The JSON data to load from
+     * @param node   The JSON data to load from
      * @param issues issues during deserializing
      */
     public void fromJson(JsonNode node, JIPipeValidityReport issues) {
@@ -828,14 +853,14 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
      */
     public Set<JIPipeDependency> getDependencies() {
         Set<JIPipeDependency> result = new HashSet<>();
-        result.add(JIPipeNodeRegistry.getInstance().getSourceOf(getInfo().getId()));
+        result.add(JIPipe.getNodes().getSourceOf(getInfo().getId()));
 
         // Add data slots
         for (JIPipeDataSlot slot : inputSlots) {
-            result.add(JIPipeDatatypeRegistry.getInstance().getSourceOf(slot.getAcceptedDataType()));
+            result.add(JIPipe.getDataTypes().getSourceOf(slot.getAcceptedDataType()));
         }
         for (JIPipeDataSlot slot : outputSlots) {
-            result.add(JIPipeDatatypeRegistry.getInstance().getSourceOf(slot.getAcceptedDataType()));
+            result.add(JIPipe.getDataTypes().getSourceOf(slot.getAcceptedDataType()));
         }
 
         return result;
@@ -879,7 +904,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
      * @return the copy
      */
     public JIPipeGraphNode duplicate() {
-        return getInfo().clone(this);
+        return getInfo().duplicate(this);
     }
 
     /**
@@ -933,17 +958,6 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
      */
     public boolean renderOutputSlots() {
         return true;
-    }
-
-    /**
-     * Utility function to create an algorithm instance from its id
-     *
-     * @param id  Algorithm ID
-     * @param <T> Algorithm class
-     * @return Algorithm instance
-     */
-    public static <T extends JIPipeGraphNode> T newInstance(String id) {
-        return (T) JIPipeNodeRegistry.getInstance().getInfoById(id).newInstance();
     }
 
     /**

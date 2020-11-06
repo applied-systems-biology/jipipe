@@ -17,7 +17,7 @@ import org.hkijena.jipipe.api.testbench.JIPipeTestbenchSnapshot;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.Component;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -59,9 +59,9 @@ public class JIPipeDataSlotBackupListCellRenderer extends JLabel implements List
         // Update status
         // Update status
         if (selected) {
-            setBackground(new Color(184, 207, 229));
+            setBackground(UIManager.getColor("List.selectionBackground"));
         } else {
-            setBackground(new Color(255, 255, 255));
+            setBackground(UIManager.getColor("List.background"));
         }
         return this;
     }

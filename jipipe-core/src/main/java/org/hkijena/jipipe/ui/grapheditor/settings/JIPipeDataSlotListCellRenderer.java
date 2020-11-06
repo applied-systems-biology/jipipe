@@ -13,11 +13,11 @@
 
 package org.hkijena.jipipe.ui.grapheditor.settings;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.ui.registries.JIPipeUIDatatypeRegistry;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.Component;
 
 /**
  * Renders a {@link JIPipeDataSlot}
@@ -41,7 +41,7 @@ public class JIPipeDataSlotListCellRenderer extends JLabel implements ListCellRe
         if (slot != null) {
             String type = slot.isInput() ? "Input:" : "Output:";
             setText(type + " " + slot.getName());
-            setIcon(JIPipeUIDatatypeRegistry.getInstance().getIconFor(slot.getAcceptedDataType()));
+            setIcon(JIPipe.getDataTypes().getIconFor(slot.getAcceptedDataType()));
         } else {
             setText("<No data slot selected>");
             setIcon(null);
@@ -50,9 +50,9 @@ public class JIPipeDataSlotListCellRenderer extends JLabel implements ListCellRe
         // Update status
         // Update status
         if (selected) {
-            setBackground(new Color(184, 207, 229));
+            setBackground(UIManager.getColor("List.selectionBackground"));
         } else {
-            setBackground(new Color(255, 255, 255));
+            setBackground(UIManager.getColor("List.background"));
         }
         return this;
     }

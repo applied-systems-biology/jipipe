@@ -14,13 +14,15 @@
 package org.hkijena.jipipe.extensions.plots;
 
 import org.hkijena.jipipe.JIPipeJavaExtension;
+import org.hkijena.jipipe.api.data.JIPipeDataOperation;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
+import org.hkijena.jipipe.extensions.core.data.OpenInNativeApplicationDataImportOperation;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
 import org.hkijena.jipipe.extensions.plots.datatypes.*;
 import org.hkijena.jipipe.extensions.plots.parameters.UIPlotDataSeriesColumnEnum;
 import org.hkijena.jipipe.extensions.plots.parameters.UIPlotDataSeriesColumnEnumParameterEditorUI;
+import org.hkijena.jipipe.extensions.plots.ui.resultanalysis.OpenPlotInJIPipeDataOperation;
 import org.hkijena.jipipe.extensions.plots.ui.resultanalysis.PlotDataSlotPreviewUI;
-import org.hkijena.jipipe.extensions.plots.ui.resultanalysis.PlotDataSlotRowUI;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.plugin.Plugin;
@@ -30,6 +32,12 @@ import org.scijava.plugin.Plugin;
  */
 @Plugin(type = JIPipeJavaExtension.class)
 public class PlotsExtension extends JIPipePrepackagedDefaultJavaExtension {
+
+    public static JIPipeDataOperation[] STANDARD_DATA_OPERATIONS = {
+            new OpenPlotInJIPipeDataOperation(),
+            new OpenInNativeApplicationDataImportOperation("Open *.png", "Opens the rendered PNG image", new String[]{".png"}),
+            new OpenInNativeApplicationDataImportOperation("Open *.svg", "Opens the rendered SVG image", new String[]{".svg"})
+    };
 
     @Override
     public StringList getDependencyCitations() {
@@ -53,7 +61,7 @@ public class PlotsExtension extends JIPipePrepackagedDefaultJavaExtension {
 
     @Override
     public String getDependencyVersion() {
-        return "1.0.0";
+        return "2020.11";
     }
 
     @Override
@@ -66,65 +74,77 @@ public class PlotsExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerDatatype("plot",
                 PlotData.class,
                 ResourceUtils.getPluginResource("icons/data-types/data-type-plot.png"),
-                PlotDataSlotRowUI.class,
-                PlotDataSlotPreviewUI.class);
+                null,
+                PlotDataSlotPreviewUI.class,
+                STANDARD_DATA_OPERATIONS);
 
         // Register
         registerDatatype("plot-histogram",
                 HistogramPlotData.class,
                 ResourceUtils.getPluginResource("icons/data-types/bar-plot.png"),
-                PlotDataSlotRowUI.class,
-                PlotDataSlotPreviewUI.class);
+                null,
+                PlotDataSlotPreviewUI.class,
+                STANDARD_DATA_OPERATIONS);
         registerDatatype("plot-category-bar",
                 BarCategoryPlotData.class,
                 ResourceUtils.getPluginResource("icons/data-types/bar-plot.png"),
-                PlotDataSlotRowUI.class,
-                PlotDataSlotPreviewUI.class);
+                null,
+                PlotDataSlotPreviewUI.class,
+                STANDARD_DATA_OPERATIONS);
         registerDatatype("plot-category-bar-stacked",
                 StackedBarCategoryPlotData.class,
                 ResourceUtils.getPluginResource("icons/data-types/bar-plot.png"),
-                PlotDataSlotRowUI.class,
-                PlotDataSlotPreviewUI.class);
+                null,
+                PlotDataSlotPreviewUI.class,
+                STANDARD_DATA_OPERATIONS);
         registerDatatype("plot-category-line",
                 LineCategoryPlotData.class,
                 ResourceUtils.getPluginResource("icons/data-types/line-plot.png"),
-                PlotDataSlotRowUI.class,
-                PlotDataSlotPreviewUI.class);
+                null,
+                PlotDataSlotPreviewUI.class,
+                STANDARD_DATA_OPERATIONS);
         registerDatatype("plot-pie-2d",
                 Pie2DPlotData.class,
                 ResourceUtils.getPluginResource("icons/data-types/pie-plot.png"),
-                PlotDataSlotRowUI.class,
-                PlotDataSlotPreviewUI.class);
+                null,
+                PlotDataSlotPreviewUI.class,
+                STANDARD_DATA_OPERATIONS);
         registerDatatype("plot-pie-3d",
                 Pie3DPlotData.class,
                 ResourceUtils.getPluginResource("icons/data-types/pie-plot.png"),
-                PlotDataSlotRowUI.class,
-                PlotDataSlotPreviewUI.class);
+                null,
+                PlotDataSlotPreviewUI.class,
+                STANDARD_DATA_OPERATIONS);
         registerDatatype("plot-xy-scatter",
                 ScatterXYPlotData.class,
                 ResourceUtils.getPluginResource("icons/data-types/scatter-plot.png"),
-                PlotDataSlotRowUI.class,
-                PlotDataSlotPreviewUI.class);
+                null,
+                PlotDataSlotPreviewUI.class,
+                STANDARD_DATA_OPERATIONS);
         registerDatatype("plot-xy-line",
                 LineXYPlotData.class,
                 ResourceUtils.getPluginResource("icons/data-types/line-plot.png"),
-                PlotDataSlotRowUI.class,
-                PlotDataSlotPreviewUI.class);
+                null,
+                PlotDataSlotPreviewUI.class,
+                STANDARD_DATA_OPERATIONS);
         registerDatatype("plot-box-and-whisker",
                 BarBoxAndWhiskerCategoryPlotData.class,
                 ResourceUtils.getPluginResource("icons/data-types/bar-plot.png"),
-                PlotDataSlotRowUI.class,
-                PlotDataSlotPreviewUI.class);
+                null,
+                PlotDataSlotPreviewUI.class,
+                STANDARD_DATA_OPERATIONS);
         registerDatatype("plot-category-statistical-bar",
                 BarStatisticalCategoryPlotData.class,
                 ResourceUtils.getPluginResource("icons/data-types/bar-plot.png"),
-                PlotDataSlotRowUI.class,
-                PlotDataSlotPreviewUI.class);
+                null,
+                PlotDataSlotPreviewUI.class,
+                STANDARD_DATA_OPERATIONS);
         registerDatatype("plot-category-statistical-line",
                 LineStatisticalCategoryPlotData.class,
                 ResourceUtils.getPluginResource("icons/data-types/line-plot.png"),
-                PlotDataSlotRowUI.class,
-                PlotDataSlotPreviewUI.class);
+                null,
+                PlotDataSlotPreviewUI.class,
+                STANDARD_DATA_OPERATIONS);
 
         // Register algorithms to create plots
         registerNodeType("plot-from-table", PlotGeneratorAlgorithm.class, UIUtils.getIconURLFromResources("actions/office-chart-area.png"));

@@ -14,12 +14,15 @@
 package org.hkijena.jipipe.ui.ijupdater;
 
 import net.imagej.updater.UpdateSite;
-import org.hkijena.jipipe.utils.ModernMetalTheme;
 import org.hkijena.jipipe.utils.RoundedLineBorder;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 
 public class UpdateSiteUI extends JPanel {
     private final UpdateSiteListUI listUI;
@@ -32,7 +35,7 @@ public class UpdateSiteUI extends JPanel {
     }
 
     private void initialize() {
-        setBorder(new RoundedLineBorder(ModernMetalTheme.MEDIUM_GRAY, 1, 2));
+        setBorder(new RoundedLineBorder(UIManager.getColor("Button.borderColor"), 1, 2));
         setLayout(new GridBagLayout());
 
         JCheckBox enabledCheckBox = new JCheckBox(updateSite.getName(), updateSite.isActive());

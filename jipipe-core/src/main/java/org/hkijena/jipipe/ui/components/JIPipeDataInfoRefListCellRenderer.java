@@ -13,12 +13,12 @@
 
 package org.hkijena.jipipe.ui.components;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.extensions.parameters.references.JIPipeDataInfoRef;
-import org.hkijena.jipipe.ui.registries.JIPipeUIDatatypeRegistry;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.Component;
 
 /**
  * Renders {@link JIPipeDataInfoRef}
@@ -40,16 +40,16 @@ public class JIPipeDataInfoRefListCellRenderer extends JLabel implements ListCel
         }
         if (value != null && value.getInfo() != null) {
             setText(value.getInfo().getName());
-            setIcon(JIPipeUIDatatypeRegistry.getInstance().getIconFor(value.getInfo().getDataClass()));
+            setIcon(JIPipe.getDataTypes().getIconFor(value.getInfo().getDataClass()));
         } else {
             setText("Nothing selected");
             setIcon(UIUtils.getIconFromResources("emblems/vcs-conflicting.png"));
         }
 
         if (isSelected) {
-            setBackground(new Color(184, 207, 229));
+            setBackground(UIManager.getColor("List.selectionBackground"));
         } else {
-            setBackground(new Color(255, 255, 255));
+            setBackground(UIManager.getColor("List.background"));
         }
         return this;
     }

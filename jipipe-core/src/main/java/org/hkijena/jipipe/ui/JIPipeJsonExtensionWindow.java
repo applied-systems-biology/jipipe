@@ -14,9 +14,10 @@
 package org.hkijena.jipipe.ui;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.google.common.eventbus.EventBus;
 import ij.IJ;
 import net.imagej.ui.swing.updater.ProgressDialog;
-import org.hkijena.jipipe.JIPipeDefaultRegistry;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeJsonExtension;
 import org.hkijena.jipipe.JIPipeRegistryIssues;
@@ -25,7 +26,10 @@ import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.extensions.jsonextensionloader.JsonExtensionLoaderExtension;
 import org.hkijena.jipipe.extensions.settings.ExtensionSettings;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
+import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
 import org.hkijena.jipipe.extensions.settings.ProjectsSettings;
+import org.hkijena.jipipe.ui.events.WindowClosedEvent;
+import org.hkijena.jipipe.ui.events.WindowOpenedEvent;
 import org.hkijena.jipipe.ui.ijupdater.MissingUpdateSiteResolver;
 import org.hkijena.jipipe.ui.project.UnsatisfiedDependenciesDialog;
 import org.hkijena.jipipe.utils.JsonUtils;
@@ -34,7 +38,8 @@ import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Context;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Frame;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -49,7 +54,8 @@ import java.util.Set;
 public class JIPipeJsonExtensionWindow extends JFrame {
 
 
-    private static Set<JIPipeJsonExtensionWindow> OPEN_WINDOWS = new HashSet<>();
+    public static final EventBus WINDOWS_EVENTS = new EventBus();
+    private static final Set<JIPipeJsonExtensionWindow> OPEN_WINDOWS = new HashSet<>();
     private Context context;
     private JIPipeJsonExtension project;
     private JIPipeJsonExtensionWorkbench projectUI;
@@ -64,6 +70,7 @@ public class JIPipeJsonExtensionWindow extends JFrame {
      */
     public JIPipeJsonExtensionWindow(Context context, JIPipeJsonExtension project, boolean showIntroduction) {
         OPEN_WINDOWS.add(this);
+        WINDOWS_EVENTS.post(new WindowOpenedEvent(this));
         this.context = context;
         initialize();
         loadProject(project, showIntroduction);
@@ -76,14 +83,19 @@ public class JIPipeJsonExtensionWindow extends JFrame {
     @Override
     public void dispose() {
         OPEN_WINDOWS.remove(this);
+        WINDOWS_EVENTS.post(new WindowClosedEvent(this));
         super.dispose();
     }
 
     private void initialize() {
         getContentPane().setLayout(new BorderLayout(8, 8));
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         super.setTitle("JIPipe extension builder");
         setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
         UIUtils.setToAskOnClose(this, "Do you really want to close this JIPipe extension builder?", "Close window");
+        if(GeneralUISettings.getInstance().isMaximizeWindows()) {
+            SwingUtilities.invokeLater(() -> setExtendedState(getExtendedState() | MAXIMIZED_BOTH));
+        }
     }
 
     @Override
@@ -280,7 +292,7 @@ public class JIPipeJsonExtensionWindow extends JFrame {
         for (Path selectedFile : files) {
             installExtensionFromFile(workbench, selectedFile, true, false);
         }
-        if(ExtensionSettings.getInstance().isValidateImageJDependencies()) {
+        if (ExtensionSettings.getInstance().isValidateImageJDependencies()) {
             checkExtensionDependencies(workbench);
         }
         if (!files.isEmpty()) {
@@ -292,9 +304,10 @@ public class JIPipeJsonExtensionWindow extends JFrame {
 
     /**
      * Loads a project and installs it
-     *  @param workbench   The parent component
-     * @param filePath The file path
-     * @param silent if not dialogs should be  shown
+     *
+     * @param workbench         The parent component
+     * @param filePath          The file path
+     * @param silent            if not dialogs should be  shown
      * @param checkDependencies whether to check dependencies
      */
     public static void installExtensionFromFile(JIPipeWorkbench workbench, Path filePath, boolean silent, boolean checkDependencies) {
@@ -321,13 +334,14 @@ public class JIPipeJsonExtensionWindow extends JFrame {
 
     /**
      * Installs a loaded project
-     *  @param workbench    The parent component
-     * @param extension The extension
-     * @param silent    whether to show a dialog confirming the installation
+     *
+     * @param workbench         The parent component
+     * @param extension         The extension
+     * @param silent            whether to show a dialog confirming the installation
      * @param checkDependencies whether to check dependencies
      */
     public static void installExtension(JIPipeWorkbench workbench, JIPipeJsonExtension extension, boolean silent, boolean checkDependencies) {
-        boolean alreadyExists = JIPipeDefaultRegistry.getInstance().getRegisteredExtensionIds().contains(extension.getDependencyId());
+        boolean alreadyExists = JIPipe.getInstance().getRegisteredExtensionIds().contains(extension.getDependencyId());
         if (alreadyExists) {
             if (JOptionPane.showConfirmDialog(workbench.getWindow(), "There already exists an extension with ID '"
                     + extension.getDependencyId() + "'. Do you want to install this extension anyways?", "Install", JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION) {
@@ -346,7 +360,7 @@ public class JIPipeJsonExtensionWindow extends JFrame {
         // Suggest a path that the user can later change
         Path suggestedPath = pluginFolder.resolve(StringUtils.makeFilesystemCompatible(extension.getDependencyId()) + ".jipipe.json");
         if (alreadyExists) {
-            JIPipeDependency dependency = JIPipeDefaultRegistry.getInstance().findExtensionById(extension.getDependencyId());
+            JIPipeDependency dependency = JIPipe.getInstance().findExtensionById(extension.getDependencyId());
             if (dependency instanceof JIPipeJsonExtension) {
                 Path jsonExtensionPath = ((JIPipeJsonExtension) dependency).getJsonFilePath();
                 if (jsonExtensionPath != null && Files.exists(jsonExtensionPath)) {
@@ -373,12 +387,12 @@ public class JIPipeJsonExtensionWindow extends JFrame {
         // Install extension by reloading (to be sure)
         try {
             JIPipeJsonExtension loadedExtension = JsonUtils.getObjectMapper().readValue(selectedPath.toFile(), JIPipeJsonExtension.class);
-            JIPipeDefaultRegistry.getInstance().register(loadedExtension);
+            JIPipe.getInstance().register(loadedExtension);
             if (!silent) {
                 JOptionPane.showMessageDialog(workbench.getWindow(), "The extension was installed. We recommend to restart ImageJ, " +
                         "especially if you updated an existing extension.", "Extension installed", JOptionPane.INFORMATION_MESSAGE);
             }
-            if(checkDependencies && ExtensionSettings.getInstance().isValidateImageJDependencies()) {
+            if (checkDependencies && ExtensionSettings.getInstance().isValidateImageJDependencies()) {
                 checkExtensionDependencies(workbench);
             }
         } catch (Exception e) {
@@ -388,10 +402,10 @@ public class JIPipeJsonExtensionWindow extends JFrame {
 
     public static void checkExtensionDependencies(JIPipeWorkbench workbench) {
         JIPipeRegistryIssues issues = new JIPipeRegistryIssues();
-        JIPipeDefaultRegistry.getInstance().checkUpdateSites(issues,
-                JIPipeDefaultRegistry.getInstance().getRegisteredExtensions(),
+        JIPipe.getInstance().checkUpdateSites(issues,
+                JIPipe.getInstance().getRegisteredExtensions(),
                 new ProgressDialog((Frame) workbench.getWindow(), "Checking dependencies ..."));
-        if(!issues.getMissingImageJSites().isEmpty()) {
+        if (!issues.getMissingImageJSites().isEmpty()) {
             MissingUpdateSiteResolver resolver = new MissingUpdateSiteResolver(workbench.getContext(), issues);
             resolver.revalidate();
             resolver.repaint();
@@ -405,5 +419,12 @@ public class JIPipeJsonExtensionWindow extends JFrame {
      */
     public static Set<JIPipeJsonExtensionWindow> getOpenWindows() {
         return Collections.unmodifiableSet(OPEN_WINDOWS);
+    }
+
+    /**
+     * @return EventBus that generate window open/close events
+     */
+    public static EventBus getWindowsEvents() {
+        return WINDOWS_EVENTS;
     }
 }

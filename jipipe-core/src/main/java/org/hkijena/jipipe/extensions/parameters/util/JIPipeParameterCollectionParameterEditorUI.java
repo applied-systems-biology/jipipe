@@ -14,15 +14,12 @@
 package org.hkijena.jipipe.extensions.parameters.util;
 
 import com.google.common.eventbus.Subscribe;
-import org.hkijena.jipipe.JIPipeImageJUpdateSiteDependency;
 import org.hkijena.jipipe.api.events.ParameterChangedEvent;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
-import org.hkijena.jipipe.utils.ModernMetalTheme;
 
 import javax.swing.*;
 import java.awt.BorderLayout;
@@ -45,7 +42,7 @@ public class JIPipeParameterCollectionParameterEditorUI extends JIPipeParameterE
 
     private void initialize() {
         setLayout(new BorderLayout());
-        setBorder(BorderFactory.createLineBorder(ModernMetalTheme.MEDIUM_GRAY));
+        setBorder(BorderFactory.createLineBorder(UIManager.getColor("Button.borderColor")));
         parameterPanel = new ParameterPanel(getWorkbench(), null, null, ParameterPanel.NO_GROUP_HEADERS);
         add(parameterPanel, BorderLayout.CENTER);
     }

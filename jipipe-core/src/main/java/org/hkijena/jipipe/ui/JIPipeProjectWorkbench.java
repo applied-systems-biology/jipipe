@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.ui;
 
 import com.google.common.eventbus.Subscribe;
-import org.hkijena.jipipe.JIPipeDefaultRegistry;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeJsonExtension;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
@@ -23,23 +23,31 @@ import org.hkijena.jipipe.api.events.CompartmentRemovedEvent;
 import org.hkijena.jipipe.api.events.ExtensionRegisteredEvent;
 import org.hkijena.jipipe.api.grouping.NodeGroup;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
+import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
 import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
 import org.hkijena.jipipe.extensions.settings.ProjectsSettings;
+import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.ui.cache.JIPipeCacheBrowserUI;
 import org.hkijena.jipipe.ui.cache.JIPipeCacheManagerUI;
 import org.hkijena.jipipe.ui.compartments.JIPipeCompartmentGraphUI;
 import org.hkijena.jipipe.ui.compartments.JIPipeCompartmentUI;
 import org.hkijena.jipipe.ui.compendium.JIPipeAlgorithmCompendiumUI;
-import org.hkijena.jipipe.ui.components.SplashScreen;
-import org.hkijena.jipipe.ui.components.*;
+import org.hkijena.jipipe.ui.components.DocumentTabPane;
+import org.hkijena.jipipe.ui.components.MarkdownDocument;
+import org.hkijena.jipipe.ui.components.MarkdownReader;
+import org.hkijena.jipipe.ui.components.MemoryStatusUI;
+import org.hkijena.jipipe.ui.components.RecentProjectsMenu;
+import org.hkijena.jipipe.ui.components.ReloadableValidityChecker;
 import org.hkijena.jipipe.ui.extension.MenuTarget;
 import org.hkijena.jipipe.ui.extensionbuilder.JIPipeJsonExporter;
 import org.hkijena.jipipe.ui.extensions.JIPipePluginManagerUIPanel;
 import org.hkijena.jipipe.ui.extensions.JIPipePluginValidityCheckerPanel;
 import org.hkijena.jipipe.ui.ijupdater.JIPipeImageJPluginManager;
 import org.hkijena.jipipe.ui.project.JIPipeProjectTabMetadata;
+import org.hkijena.jipipe.ui.running.JIPipeLogViewer;
 import org.hkijena.jipipe.ui.running.JIPipeRunSettingsUI;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueueUI;
+import org.hkijena.jipipe.ui.running.RealTimeProjectRunner;
 import org.hkijena.jipipe.ui.settings.JIPipeApplicationSettingsUI;
 import org.hkijena.jipipe.ui.settings.JIPipeProjectSettingsUI;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -48,7 +56,8 @@ import org.jdesktop.swingx.plaf.basic.BasicStatusBarUI;
 import org.scijava.Context;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Window;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
 import java.time.LocalDateTime;
@@ -62,6 +71,7 @@ import java.util.List;
 public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
 
     public static final String TAB_INTRODUCTION = "INTRODUCTION";
+    public static final String TAB_LICENSE = "LICENSE";
     public static final String TAB_COMPARTMENT_EDITOR = "COMPARTMENT_EDITOR";
     public static final String TAB_PROJECT_SETTINGS = "PROJECT_SETTINGS";
     public static final String TAB_APPLICATION_SETTINGS = "APPLICATION_SETTINGS";
@@ -69,6 +79,7 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
     public static final String TAB_VALIDITY_CHECK = "VALIDITY_CHECK";
     public static final String TAB_PLUGIN_VALIDITY_CHECK = "PLUGIN_VALIDITY_CHECK";
     private static final String TAB_PROJECT_OVERVIEW = "PROJECT_OVERVIEW";
+    private static final String TAB_LOG = "LOG";
     public DocumentTabPane documentTabPane;
     private JIPipeProjectWindow window;
     private JIPipeProject project;
@@ -76,6 +87,8 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
     private Context context;
     private ReloadableValidityChecker validityCheckerPanel;
     private JIPipePluginValidityCheckerPanel pluginValidityCheckerPanel;
+    private RealTimeProjectRunner realTimeProjectRunner;
+
 
     /**
      * @param window           Parent window
@@ -88,17 +101,21 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
         this.window = window;
         this.project = project;
         this.context = context;
+        this.realTimeProjectRunner = new RealTimeProjectRunner(this);
         initialize(showIntroduction, isNewProject);
         project.getEventBus().register(this);
-        JIPipeDefaultRegistry.getInstance().getEventBus().register(this);
+        JIPipe.getInstance().getEventBus().register(this);
 
         validatePlugins(true);
 
         restoreStandardTabs(showIntroduction, isNewProject);
-        if(ProjectsSettings.getInstance().isRestoreTabs())
+        if (ProjectsSettings.getInstance().isRestoreTabs())
             restoreTabs();
         if (GeneralUISettings.getInstance().isShowIntroduction() && showIntroduction)
             documentTabPane.selectSingletonTab(TAB_INTRODUCTION);
+        if(!isNewProject && RuntimeSettings.getInstance().isRealTimeRunEnabled()) {
+            SwingUtilities.invokeLater(() -> realTimeProjectRunner.scheduleRun());
+        }
     }
 
     public void restoreStandardTabs(boolean showIntroduction, boolean isNewProject) {
@@ -116,11 +133,10 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
     private void restoreTabs() {
         try {
             Object metadata = project.getAdditionalMetadata().getOrDefault(JIPipeProjectTabMetadata.METADATA_KEY, null);
-            if(metadata instanceof JIPipeProjectTabMetadata) {
+            if (metadata instanceof JIPipeProjectTabMetadata) {
                 ((JIPipeProjectTabMetadata) metadata).restore(this);
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -149,6 +165,11 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
                 UIUtils.getIconFromResources("actions/help-info.png"),
                 new JIPipeProjectInfoUI(this),
                 !GeneralUISettings.getInstance().isShowProjectInfo() || isNewProject);
+        documentTabPane.addSingletonTab(TAB_LICENSE,
+                "License",
+                UIUtils.getIconFromResources("actions/license.png"),
+                new MarkdownReader(true, MarkdownDocument.fromPluginResource("documentation/license.md")),
+                true);
         documentTabPane.addSingletonTab(TAB_COMPARTMENT_EDITOR,
                 "Compartments",
                 UIUtils.getIconFromResources("actions/straight-connector.png"),
@@ -180,6 +201,11 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
                 "Plugin validation",
                 UIUtils.getIconFromResources("actions/plugins.png"),
                 pluginValidityCheckerPanel,
+                true);
+        documentTabPane.addSingletonTab(TAB_LOG,
+                "Log viewer",
+                UIUtils.getIconFromResources("actions/show_log.png"),
+                new JIPipeLogViewer(this),
                 true);
         add(documentTabPane, BorderLayout.CENTER);
 
@@ -399,11 +425,21 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
         openCacheBrowserButton.addActionListener(e -> openCacheBrowser());
         toolsMenu.add(openCacheBrowserButton);
 
+        JMenuItem openLogsButton = new JMenuItem("Logs", UIUtils.getIconFromResources("actions/show_log.png"));
+        openLogsButton.addActionListener(e -> documentTabPane.selectSingletonTab(TAB_LOG));
+        toolsMenu.add(openLogsButton);
+
         UIUtils.installMenuExtension(this, toolsMenu, MenuTarget.ProjectToolsMenu, false);
         if (toolsMenu.getItemCount() > 0)
             menu.add(toolsMenu);
 
         menu.add(Box.createHorizontalGlue());
+
+        // Real-time runner control
+        JToggleButton realtimeToggleButton = realTimeProjectRunner.createToggleButton();
+        UIUtils.makeFlat(realtimeToggleButton);
+        menu.add(realtimeToggleButton);
+
         // Cache monitor
 //        menu.add(new JIPipeCacheManagerUI(this));
 
@@ -432,7 +468,7 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
         JMenu helpMenu = new JMenu();
         helpMenu.setIcon(UIUtils.getIconFromResources("actions/help.png"));
 
-        JMenuItem quickHelp = new JMenuItem("Quick introduction", UIUtils.getIconFromResources("actions/help-info.png"));
+        JMenuItem quickHelp = new JMenuItem("Getting started", UIUtils.getIconFromResources("actions/help-info.png"));
         quickHelp.addActionListener(e -> documentTabPane.selectSingletonTab(TAB_INTRODUCTION));
         helpMenu.add(quickHelp);
 
@@ -450,6 +486,10 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
             getDocumentTabPane().switchToLastTab();
         });
         helpMenu.add(algorithmCompendiumButton);
+
+        JMenuItem license = new JMenuItem("License", UIUtils.getIconFromResources("actions/license.png"));
+        license.addActionListener(e -> documentTabPane.selectSingletonTab(TAB_LICENSE));
+        helpMenu.add(license);
 
         menu.add(helpMenu);
 

@@ -16,7 +16,7 @@ package org.hkijena.jipipe.ui.components;
 import org.hkijena.jipipe.utils.ResourceUtils;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.Component;
 
 /**
  * Renders entries in {@link JIPipeIconPickerDialog}
@@ -46,9 +46,9 @@ public class PrefixedIconListCellRenderer extends JLabel implements ListCellRend
         }
 
         if (isSelected) {
-            setBackground(new Color(184, 207, 229));
+            setBackground(UIManager.getColor("List.selectionBackground"));
         } else {
-            setBackground(new Color(255, 255, 255));
+            setBackground(UIManager.getColor("List.background"));
         }
 
         return this;

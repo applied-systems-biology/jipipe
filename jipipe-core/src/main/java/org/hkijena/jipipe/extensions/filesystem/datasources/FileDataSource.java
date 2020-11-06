@@ -41,6 +41,7 @@ public class FileDataSource extends JIPipeAlgorithm {
 
     private Path currentWorkingDirectory;
     private Path fileName;
+    private boolean needsToExist = true;
 
     /**
      * Initializes the algorithm
@@ -60,6 +61,7 @@ public class FileDataSource extends JIPipeAlgorithm {
         super(other);
         this.fileName = other.fileName;
         this.currentWorkingDirectory = other.currentWorkingDirectory;
+        this.needsToExist = other.needsToExist;
     }
 
     @Override
@@ -88,6 +90,17 @@ public class FileDataSource extends JIPipeAlgorithm {
 
     }
 
+    @JIPipeDocumentation(name = "Needs to exist", description = "If true, the selected file needs to exist.")
+    @JIPipeParameter("needs-to-exist")
+    public boolean isNeedsToExist() {
+        return needsToExist;
+    }
+
+    @JIPipeParameter("needs-to-exist")
+    public void setNeedsToExist(boolean needsToExist) {
+        this.needsToExist = needsToExist;
+    }
+
     /**
      * @return The file name as absolute path
      */
@@ -102,7 +115,7 @@ public class FileDataSource extends JIPipeAlgorithm {
 
     @Override
     public void reportValidity(JIPipeValidityReport report) {
-        if (fileName == null || !Files.isRegularFile(getAbsoluteFileName()))
+        if (needsToExist && (fileName == null || !Files.isRegularFile(getAbsoluteFileName())))
             report.reportIsInvalid("Input file does not exist!",
                     "The file '" + getAbsoluteFileName() + "' does not exist.",
                     "Please provide a valid input file.",

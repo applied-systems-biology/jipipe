@@ -14,15 +14,19 @@
 package org.hkijena.jipipe.extensions.settings;
 
 import com.google.common.eventbus.EventBus;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.api.registries.JIPipeSettingsRegistry;
 import org.hkijena.jipipe.ui.components.PathEditor;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import java.awt.*;
+import java.awt.Component;
+import java.awt.Dialog;
+import java.awt.FileDialog;
+import java.awt.Frame;
+import java.awt.Window;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -154,9 +158,9 @@ public class FileChooserSettings implements JIPipeParameterCollection {
     /**
      * Lets the user choose a file
      *
-     * @param parent parent component
-     * @param key    location where the dialog is opened
-     * @param title  dialog title
+     * @param parent           parent component
+     * @param key              location where the dialog is opened
+     * @param title            dialog title
      * @param extensionFilters optional extension filters. the first one is chosen automatically
      * @return selected file or null if dialog was cancelled
      */
@@ -181,7 +185,7 @@ public class FileChooserSettings implements JIPipeParameterCollection {
             JFileChooser fileChooser = new JFileChooser(currentPath.toFile());
             fileChooser.setDialogTitle(title);
             fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-            if(extensionFilters.length > 0) {
+            if (extensionFilters.length > 0) {
                 for (FileNameExtensionFilter extensionFilter : extensionFilters) {
                     fileChooser.addChoosableFileFilter(extensionFilter);
                 }
@@ -200,9 +204,9 @@ public class FileChooserSettings implements JIPipeParameterCollection {
     /**
      * Lets the user choose a file
      *
-     * @param parent    parent component
-     * @param key       location where the dialog is opened
-     * @param title     dialog title
+     * @param parent           parent component
+     * @param key              location where the dialog is opened
+     * @param title            dialog title
      * @param extensionFilters extension filters. the first one is chosen automatically
      * @return selected file or null if dialog was cancelled
      */
@@ -222,15 +226,16 @@ public class FileChooserSettings implements JIPipeParameterCollection {
                 if (getInstance().isAddFileExtension() &&
                         extensionFilters.length > 0) {
                     boolean found = false;
-                    outer: for (FileNameExtensionFilter extensionFilter : extensionFilters) {
+                    outer:
+                    for (FileNameExtensionFilter extensionFilter : extensionFilters) {
                         for (String extension : extensionFilter.getExtensions()) {
-                            if(path.toString().toLowerCase().endsWith(extension)) {
-                               found = true;
-                               break outer;
+                            if (path.toString().toLowerCase().endsWith(extension)) {
+                                found = true;
+                                break outer;
                             }
                         }
                     }
-                    if(!found) {
+                    if (!found) {
                         String extension = extensionFilters[0].getExtensions()[0];
                         path = path.getParent().resolve(path.getFileName() + "." + extension);
                     }
@@ -243,7 +248,7 @@ public class FileChooserSettings implements JIPipeParameterCollection {
             JFileChooser fileChooser = new JFileChooser(currentPath.toFile());
             fileChooser.setDialogTitle(title);
             fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-            if(extensionFilters.length > 0) {
+            if (extensionFilters.length > 0) {
                 for (FileNameExtensionFilter extensionFilter : extensionFilters) {
                     fileChooser.addChoosableFileFilter(extensionFilter);
                 }
@@ -256,12 +261,12 @@ public class FileChooserSettings implements JIPipeParameterCollection {
                     FileNameExtensionFilter fileNameExtensionFilter = (FileNameExtensionFilter) fileChooser.getFileFilter();
                     boolean found = false;
                     for (String extension : fileNameExtensionFilter.getExtensions()) {
-                        if(path.toString().toLowerCase().endsWith(extension)) {
+                        if (path.toString().toLowerCase().endsWith(extension)) {
                             found = true;
                             break;
                         }
                     }
-                    if(!found) {
+                    if (!found) {
                         path = path.getParent().resolve(path.getFileName() + "." + fileNameExtensionFilter.getExtensions()[0]);
                     }
                 }
@@ -547,7 +552,7 @@ public class FileChooserSettings implements JIPipeParameterCollection {
     }
 
     public static FileChooserSettings getInstance() {
-        return JIPipeSettingsRegistry.getInstance().getSettings(ID, FileChooserSettings.class);
+        return JIPipe.getSettings().getSettings(ID, FileChooserSettings.class);
     }
 
 }

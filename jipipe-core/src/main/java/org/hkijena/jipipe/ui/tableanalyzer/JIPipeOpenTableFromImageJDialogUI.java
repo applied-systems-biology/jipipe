@@ -21,13 +21,13 @@ import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.DocumentTabPane;
 import org.hkijena.jipipe.ui.components.ResultsTableDataListCellRenderer;
-import org.hkijena.jipipe.utils.CustomScrollPane;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jdesktop.swingx.JXTable;
 
 import javax.swing.*;
 import javax.swing.table.TableModel;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Window;
 
 /**
  * UI that merges tables
@@ -84,7 +84,7 @@ public class JIPipeOpenTableFromImageJDialogUI extends JDialog {
         jxTable = new JXTable();
         jxTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         jxTable.setEditable(false);
-        JScrollPane scrollPane = new CustomScrollPane(jxTable);
+        JScrollPane scrollPane = new JScrollPane(jxTable);
         add(scrollPane, BorderLayout.CENTER);
 
         JPanel buttonPanel = new JPanel();

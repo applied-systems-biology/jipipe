@@ -16,25 +16,15 @@ package org.hkijena.jipipe.extensions.multiparameters.datasources;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.events.ParameterStructureChangedEvent;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterVisibility;
-import org.hkijena.jipipe.api.registries.JIPipeParameterTypeRegistry;
 import org.hkijena.jipipe.extensions.multiparameters.datatypes.ParametersData;
 import org.hkijena.jipipe.extensions.parameters.table.ParameterTable;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -46,7 +36,6 @@ import java.util.function.Supplier;
 @JIPipeOrganization(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 public class ParametersDataTableDefinition extends JIPipeAlgorithm {
 
-    private GeneratedParameters parameters;
     private ParameterTable parameterTable = new ParameterTable();
 
     /**
@@ -56,9 +45,6 @@ public class ParametersDataTableDefinition extends JIPipeAlgorithm {
      */
     public ParametersDataTableDefinition(JIPipeNodeInfo info) {
         super(info);
-        this.parameters = new GeneratedParameters(this);
-        registerSubParameter(parameters);
-        parameterTable.setRowGenerator(this::generateRow);
     }
 
     /**
@@ -68,39 +54,20 @@ public class ParametersDataTableDefinition extends JIPipeAlgorithm {
      */
     public ParametersDataTableDefinition(ParametersDataTableDefinition other) {
         super(other);
-        this.parameters = new GeneratedParameters(other.parameters);
-        this.parameters.setParent(this);
-        registerSubParameter(parameters);
         this.parameterTable = new ParameterTable(other.parameterTable);
-        parameterTable.setRowGenerator(this::generateRow);
     }
 
     @Override
     public void run(JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         JIPipeDataSlot outputSlot = getFirstOutputSlot();
-        if (parameterTable.getRowCount() > 0) {
-            for (int row = 0; row < parameterTable.getRowCount(); ++row) {
-                ParametersData data = new ParametersData();
-                for (int col = 0; col < parameterTable.getColumnCount(); ++col) {
-                    ParameterTable.ParameterColumn column = parameterTable.getColumn(col);
-                    data.getParameterData().put(column.getKey(), parameterTable.getValueAt(row, col));
-                }
-                outputSlot.addData(data);
-            }
-        } else {
-            algorithmProgress.accept(subProgress.resolve("Info: Please add rows to '" + getName() + "'. Falling back to adding the default parameters."));
+        for (int row = 0; row < parameterTable.getRowCount(); ++row) {
             ParametersData data = new ParametersData();
-            for (Map.Entry<String, JIPipeParameterAccess> entry : parameters.getParameters().entrySet()) {
-                JIPipeParameterTypeInfo info = JIPipeParameterTypeRegistry.getInstance().getInfoByFieldClass(entry.getValue().getFieldClass());
-                data.getParameterData().put(entry.getKey(), info.duplicate(entry.getValue().get(Object.class)));
+            for (int col = 0; col < parameterTable.getColumnCount(); ++col) {
+                ParameterTable.ParameterColumn column = parameterTable.getColumn(col);
+                data.getParameterData().put(column.getKey(), parameterTable.getValueAt(row, col));
             }
             outputSlot.addData(data);
         }
-    }
-
-    @Override
-    public void reportValidity(JIPipeValidityReport report) {
-        report.forCategory("Parameters").report(parameters);
     }
 
     @JIPipeParameter("parameter-table")
@@ -112,61 +79,5 @@ public class ParametersDataTableDefinition extends JIPipeAlgorithm {
     @JIPipeParameter("parameter-table")
     public void setParameterTable(ParameterTable parameterTable) {
         this.parameterTable = parameterTable;
-        parameterTable.setRowGenerator(this::generateRow);
-    }
-
-    @JIPipeDocumentation(name = "Parameters", description = "Following parameters are generated:")
-    @JIPipeParameter("parameters")
-    public GeneratedParameters getParameters() {
-        return parameters;
-    }
-
-    @Override
-    public void onParameterStructureChanged(ParameterStructureChangedEvent event) {
-        super.onParameterStructureChanged(event);
-        updateParameterTable();
-    }
-
-    private List<Object> generateRow() {
-        List<Object> row = new ArrayList<>();
-        for (int col = 0; col < parameterTable.getColumnCount(); ++col) {
-            String key = parameterTable.getColumn(col).getKey();
-            JIPipeParameterAccess access = parameters.get(key);
-            if (access != null)
-                row.add(access.get(Object.class));
-        }
-        return row;
-    }
-
-    private void updateParameterTable() {
-        if (parameterTable == null)
-            return;
-
-        for (int col = parameterTable.getColumnCount() - 1; col >= 0; col--) {
-            ParameterTable.ParameterColumn column = parameterTable.getColumn(col);
-            JIPipeParameterAccess existing = parameters.getParameters().getOrDefault(column.getKey(), null);
-            if (existing == null || existing.getFieldClass() != column.getFieldClass()) {
-                parameterTable.removeColumn(col);
-            }
-        }
-
-        outer:
-        for (Map.Entry<String, JIPipeParameterAccess> entry : parameters.getParameters().entrySet()) {
-            JIPipeParameterAccess access = entry.getValue();
-            for (int col = 0; col < parameterTable.getColumnCount(); col++) {
-                ParameterTable.ParameterColumn column = parameterTable.getColumn(col);
-                if (column.getFieldClass() == entry.getValue().getFieldClass()
-                        && Objects.equals(entry.getKey(), column.getKey())) {
-                    continue outer;
-                }
-            }
-            if (!access.getVisibility().isVisibleIn(JIPipeParameterVisibility.TransitiveVisible))
-                continue;
-            parameterTable.addColumn(new ParameterTable.ParameterColumn(
-                    access.getName(),
-                    entry.getKey(),
-                    access.getFieldClass()
-            ), JIPipeParameterTypeRegistry.getInstance().getInfoByFieldClass(access.getFieldClass()).newInstance());
-        }
     }
 }

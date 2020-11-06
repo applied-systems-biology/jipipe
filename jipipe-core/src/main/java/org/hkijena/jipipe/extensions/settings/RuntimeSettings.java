@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.extensions.settings;
 
 import com.google.common.eventbus.EventBus;
-import org.hkijena.jipipe.JIPipeDefaultRegistry;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.events.ParameterChangedEvent;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -39,6 +39,9 @@ public class RuntimeSettings implements JIPipeParameterCollection {
     private OptionalPathParameter tempDirectory = new OptionalPathParameter();
     private int defaultRunThreads = 1;
     private int defaultTestBenchThreads = 1;
+    private int realTimeRunDelay = 400;
+    private boolean realTimeRunEnabled = false;
+    private int logLimit = 15;
 
     /**
      * Creates a new instance
@@ -134,8 +137,41 @@ public class RuntimeSettings implements JIPipeParameterCollection {
         return true;
     }
 
+    @JIPipeDocumentation(name = "Real-time update delay", description = "Delay in milliseconds that is added to after the graph was changed and a real-time update is started. A higher delay decreases the required resources.")
+    @JIPipeParameter("real-time-run-delay")
+    public int getRealTimeRunDelay() {
+        return realTimeRunDelay;
+    }
+
+    @JIPipeParameter("real-time-run-delay")
+    public void setRealTimeRunDelay(int realTimeRunDelay) {
+        this.realTimeRunDelay = realTimeRunDelay;
+    }
+
+    @JIPipeDocumentation(name = "Real-time update caches", description = "If enabled, caches are automatically updated on changes in the graph or parameters. Please note that this can require a lot of resources from your machine depending on the workload.")
+    @JIPipeParameter("real-time-run-enabled")
+    public boolean isRealTimeRunEnabled() {
+        return realTimeRunEnabled;
+    }
+
+    @JIPipeParameter("real-time-run-enabled")
+    public void setRealTimeRunEnabled(boolean realTimeRunEnabled) {
+        this.realTimeRunEnabled = realTimeRunEnabled;
+    }
+
+    @JIPipeDocumentation(name = "Log limit", description = "Limits how many logs are kept")
+    @JIPipeParameter("log-limit")
+    public int getLogLimit() {
+        return logLimit;
+    }
+
+    @JIPipeParameter("log-limit")
+    public void setLogLimit(int logLimit) {
+        this.logLimit = logLimit;
+    }
+
     public static RuntimeSettings getInstance() {
-        return JIPipeDefaultRegistry.getInstance().getSettingsRegistry().getSettings(ID, RuntimeSettings.class);
+        return JIPipe.getSettings().getSettings(ID, RuntimeSettings.class);
     }
 
     /**

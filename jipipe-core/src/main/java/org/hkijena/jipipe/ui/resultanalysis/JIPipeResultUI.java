@@ -24,13 +24,16 @@ import org.hkijena.jipipe.utils.UIUtils;
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Desktop;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * UI around an {@link JIPipeRun} result
@@ -75,7 +78,7 @@ public class JIPipeResultUI extends JIPipeProjectWorkbenchPanel {
 
     private void updateSelection() {
         Set<JIPipeDataSlot> result = new LinkedHashSet<>();
-        if(algorithmTree.getTree().getSelectionPaths() != null) {
+        if (algorithmTree.getTree().getSelectionPaths() != null) {
             for (TreePath path : algorithmTree.getTree().getSelectionPaths()) {
                 Object lastPathComponent = path.getLastPathComponent();
                 if (lastPathComponent instanceof DefaultMutableTreeNode) {
@@ -92,10 +95,9 @@ public class JIPipeResultUI extends JIPipeProjectWorkbenchPanel {
                 }
             }
         }
-        if(result.size() == 1) {
+        if (result.size() == 1) {
             showDataSlot(result.iterator().next());
-        }
-        else {
+        } else {
             showDataSlots(new ArrayList<>(result));
         }
     }
@@ -109,7 +111,7 @@ public class JIPipeResultUI extends JIPipeProjectWorkbenchPanel {
                 }
             }
         }
-       return result;
+        return result;
     }
 
     private List<JIPipeDataSlot> listDataSlotsOfAlgorithm(JIPipeGraphNode algorithm) {

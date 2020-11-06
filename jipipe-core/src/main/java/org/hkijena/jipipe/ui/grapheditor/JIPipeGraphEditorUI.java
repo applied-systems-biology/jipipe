@@ -15,6 +15,7 @@ package org.hkijena.jipipe.ui.grapheditor;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.eventbus.Subscribe;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.events.GraphChangedEvent;
 import org.hkijena.jipipe.api.events.NodeInfoRegisteredEvent;
 import org.hkijena.jipipe.api.history.AddNodeGraphHistorySnapshot;
@@ -22,7 +23,6 @@ import org.hkijena.jipipe.api.history.MoveNodesGraphHistorySnapshot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.registries.JIPipeNodeRegistry;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.settings.GraphEditorUISettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
@@ -34,8 +34,6 @@ import org.hkijena.jipipe.ui.events.AlgorithmSelectedEvent;
 import org.hkijena.jipipe.ui.events.AlgorithmSelectionChangedEvent;
 import org.hkijena.jipipe.ui.events.ZoomChangedEvent;
 import org.hkijena.jipipe.ui.grapheditor.contextmenu.NodeUIContextAction;
-import org.hkijena.jipipe.ui.registries.JIPipeUINodeRegistry;
-import org.hkijena.jipipe.utils.CustomScrollPane;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jfree.graphics2d.svg.SVGGraphics2D;
@@ -45,12 +43,22 @@ import javax.imageio.ImageIO;
 import javax.swing.FocusManager;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
-import java.util.*;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -70,7 +78,6 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
     protected JMenuBar menuBar = new JMenuBar();
     private JIPipeGraphCanvasUI canvasUI;
     private JIPipeGraph algorithmGraph;
-    private String compartment;
 
     private JSplitPane splitPane;
     private JScrollPane scrollPane;
@@ -90,10 +97,10 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
     public JIPipeGraphEditorUI(JIPipeWorkbench workbenchUI, JIPipeGraph algorithmGraph, String compartment) {
         super(workbenchUI);
         this.algorithmGraph = algorithmGraph;
-        this.compartment = compartment;
+        this.canvasUI = new JIPipeGraphCanvasUI(getWorkbench(), algorithmGraph, compartment);
         initialize();
         reloadMenuBar();
-        JIPipeNodeRegistry.getInstance().getEventBus().register(this);
+        JIPipe.getNodes().getEventBus().register(this);
         algorithmGraph.getEventBus().register(this);
         updateNavigation();
         initializeHotkeys();
@@ -117,14 +124,11 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
                 } else if (Objects.equals(keyStroke, KEY_STROKE_NAVIGATE)) {
                     navigator.requestFocusInWindow();
                     return true;
-                }
-                else if(Objects.equals(keyStroke, KEY_STROKE_ZOOM_IN)) {
+                } else if (Objects.equals(keyStroke, KEY_STROKE_ZOOM_IN)) {
                     canvasUI.zoomIn();
-                }
-                else if(Objects.equals(keyStroke, KEY_STROKE_ZOOM_OUT)) {
+                } else if (Objects.equals(keyStroke, KEY_STROKE_ZOOM_OUT)) {
                     canvasUI.zoomOut();
-                }
-                else if(Objects.equals(keyStroke, KEY_STROKE_ZOOM_RESET)) {
+                } else if (Objects.equals(keyStroke, KEY_STROKE_ZOOM_RESET)) {
                     canvasUI.resetZoom();
                 }
             }
@@ -153,22 +157,33 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
             }
         });
 
-        canvasUI = new JIPipeGraphCanvasUI(getWorkbench(), algorithmGraph, compartment);
         canvasUI.fullRedraw();
         canvasUI.getEventBus().register(this);
         canvasUI.addMouseListener(this);
         canvasUI.addMouseMotionListener(this);
-        scrollPane = new CustomScrollPane(canvasUI);
+        scrollPane = new JScrollPane(canvasUI);
         scrollPane.getVerticalScrollBar().setUnitIncrement(25);
         scrollPane.getHorizontalScrollBar().setUnitIncrement(25);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        canvasUI.setScrollPane(scrollPane);
         splitPane.setLeftComponent(scrollPane);
         splitPane.setRightComponent(new JPanel());
         add(splitPane, BorderLayout.CENTER);
 
         add(menuBar, BorderLayout.NORTH);
         navigator.setModel(new DefaultComboBoxModel<>());
+        navigator.setDataToString(o -> {
+            if(o instanceof JIPipeNodeInfo) {
+                return ((JIPipeNodeInfo) o).getName();
+            }
+            else if(o instanceof JIPipeNodeUI) {
+                return ((JIPipeNodeUI) o).getNode().getName();
+            }
+            else {
+                return "" + o;
+            }
+        });
         navigator.setRenderer(new NavigationRenderer());
         navigator.getEventBus().register(this);
         navigator.setRankingFunction(JIPipeGraphEditorUI::rankNavigationEntry);
@@ -188,7 +203,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
             JIPipeNodeInfo info = (JIPipeNodeInfo) event.getValue();
             JIPipeGraphNode node = info.newInstance();
             getCanvasUI().getGraphHistory().addSnapshotBefore(new AddNodeGraphHistorySnapshot(algorithmGraph, Collections.singleton(node)));
-            algorithmGraph.insertNode(node, compartment);
+            algorithmGraph.insertNode(node, getCompartment());
             navigator.setSelectedItem(null);
         }
     }
@@ -315,18 +330,18 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         zoomOutButton.addActionListener(e -> canvasUI.zoomOut());
         menuBar.add(zoomOutButton);
 
-        JButton zoomButton = new JButton((int)(canvasUI.getZoom() * 100) + "%");
+        JButton zoomButton = new JButton((int) (canvasUI.getZoom() * 100) + "%");
         zoomButton.setToolTipText("<html>Change zoom<br>Reset zoom: <i>Ctrl-NumPad 0</i></html>");
         canvasUI.getEventBus().register(new Object() {
             @Subscribe
             public void onZoomChanged(ZoomChangedEvent event) {
-                zoomButton.setText((int)(canvasUI.getZoom() * 100) + "%");
+                zoomButton.setText((int) (canvasUI.getZoom() * 100) + "%");
             }
         });
         zoomButton.setBorder(null);
         JPopupMenu zoomMenu = UIUtils.addPopupMenuToComponent(zoomButton);
         for (double zoom = 0.5; zoom <= 2; zoom += 0.25) {
-            JMenuItem changeZoomItem = new JMenuItem((int)(zoom * 100) + "%", UIUtils.getIconFromResources("actions/zoom.png"));
+            JMenuItem changeZoomItem = new JMenuItem((int) (zoom * 100) + "%", UIUtils.getIconFromResources("actions/zoom.png"));
             double finalZoom = zoom;
             changeZoomItem.addActionListener(e -> canvasUI.setZoom(finalZoom));
             zoomMenu.add(changeZoomItem);
@@ -335,13 +350,12 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         JMenuItem changeZoomToItem = new JMenuItem("Set zoom value ...");
         changeZoomToItem.addActionListener(e -> {
             String zoomInput = JOptionPane.showInputDialog(this, "Please enter a new zoom value (in %)", (int) (canvasUI.getZoom() * 100) + "%");
-            if(!StringUtils.isNullOrEmpty(zoomInput)) {
+            if (!StringUtils.isNullOrEmpty(zoomInput)) {
                 zoomInput = zoomInput.replace("%", "");
                 try {
                     int percentage = Integer.parseInt(zoomInput);
                     canvasUI.setZoom(percentage / 100.0);
-                }
-                catch (NumberFormatException ex) {
+                } catch (NumberFormatException ex) {
                     ex.printStackTrace();
                 }
             }
@@ -600,15 +614,21 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
 
             // Infinite scroll (left, top)
             {
-                boolean ex = nx < 0;
-                boolean ey = ny < 0;
-                if (ex || ey) {
+                int ex = 0;
+                int ey = 0;
+                if (nx < 0) {
+                    ex = (int) Math.ceil(1.0 * -nx / (canvasUI.getViewMode().getGridWidth() * canvasUI.getZoom()));
+                }
+                if (ny < 0) {
+                    ey = (int) Math.ceil(1.0 * -ny / (canvasUI.getViewMode().getGridHeight() * canvasUI.getZoom()));
+                }
+                if (ex > 0 || ey > 0) {
                     canvasUI.expandLeftTop(ex, ey);
-                    if (ex) {
+                    if (ex > 0) {
                         nx = canvasUI.getViewMode().getGridWidth();
                         panningOffset.x += canvasUI.getViewMode().getGridWidth();
                     }
-                    if (ey) {
+                    if (ey > 0) {
                         ny = canvasUI.getViewMode().getGridHeight();
                         panningOffset.y += canvasUI.getViewMode().getGridHeight();
                     }
@@ -641,7 +661,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
      * @return The displayed graph compartment
      */
     public String getCompartment() {
-        return compartment;
+        return canvasUI.getCompartment();
     }
 
     protected JMenuBar getMenuBar() {
@@ -661,7 +681,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
      * Updates the navigation list
      */
     public void updateNavigation() {
-        DefaultComboBoxModel<Object> model = (DefaultComboBoxModel<Object>) navigator.getModel();
+        DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<>();
         model.removeAllElements();
         for (JIPipeNodeUI ui : canvasUI.getNodeUIs().values().stream().sorted(Comparator.comparing(ui -> ui.getNode().getName())).collect(Collectors.toList())) {
             model.addElement(ui);
@@ -670,6 +690,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
                 .sorted(Comparator.comparing(JIPipeNodeInfo::getName)).collect(Collectors.toList())) {
             model.addElement(info);
         }
+        navigator.setModel(model);
     }
 
     private static int[] rankNavigationEntry(Object value, String[] searchStrings) {
@@ -840,7 +861,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
                 actionLabel.setText("Create");
                 actionLabel.setForeground(new Color(0, 128, 0));
                 algorithmLabel.setText(info.getName());
-                algorithmLabel.setIcon(JIPipeUINodeRegistry.getInstance().getIconFor(info));
+                algorithmLabel.setIcon(JIPipe.getNodes().getIconFor(info));
                 menuLabel.setText(menuPath);
             } else if (value instanceof JIPipeNodeUI) {
                 JIPipeGraphNode node = ((JIPipeNodeUI) value).getNode();
@@ -855,14 +876,14 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
                 actionLabel.setText("Navigate");
                 actionLabel.setForeground(Color.BLUE);
                 algorithmLabel.setText(node.getName());
-                algorithmLabel.setIcon(JIPipeUINodeRegistry.getInstance().getIconFor(info));
+                algorithmLabel.setIcon(JIPipe.getNodes().getIconFor(info));
                 menuLabel.setText(menuPath);
             }
 
             if (isSelected) {
-                setBackground(new Color(184, 207, 229));
+                setBackground(UIManager.getColor("List.selectionBackground"));
             } else {
-                setBackground(new Color(255, 255, 255));
+                setBackground(UIManager.getColor("List.background"));
             }
             return this;
         }

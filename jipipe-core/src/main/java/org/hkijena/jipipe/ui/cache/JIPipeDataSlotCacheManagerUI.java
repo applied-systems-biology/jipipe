@@ -21,6 +21,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.DocumentTabPane;
+import org.hkijena.jipipe.ui.components.ZoomFlatIconButton;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphCanvasUI;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -46,7 +47,7 @@ public class JIPipeDataSlotCacheManagerUI extends JIPipeProjectWorkbenchPanel {
     /**
      * @param workbenchUI The workbench UI
      * @param dataSlot    the data slot
-     * @param graphUI the canvas
+     * @param graphUI     the canvas
      */
     public JIPipeDataSlotCacheManagerUI(JIPipeProjectWorkbench workbenchUI, JIPipeDataSlot dataSlot, JIPipeGraphCanvasUI graphUI) {
         super(workbenchUI);
@@ -63,15 +64,11 @@ public class JIPipeDataSlotCacheManagerUI extends JIPipeProjectWorkbenchPanel {
 
         contextMenu = new JPopupMenu();
 
-        annotationButton = new JButton(UIUtils.getIconFromResources("data-types/annotation-table.png"));
-        UIUtils.makeFlat25x25(annotationButton);
-        annotationButton.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
+        annotationButton = new ZoomFlatIconButton(UIUtils.getIconFromResources("data-types/annotation-table.png"), graphUI);
         UIUtils.addReloadablePopupMenuToComponent(annotationButton, contextMenu, this::reloadContextMenu);
         add(annotationButton);
 
-        cacheButton = new JButton(UIUtils.getIconFromResources("actions/database.png"));
-        UIUtils.makeFlat25x25(cacheButton);
-        cacheButton.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
+        cacheButton = new ZoomFlatIconButton(UIUtils.getIconFromResources("actions/database.png"), graphUI);
         UIUtils.addReloadablePopupMenuToComponent(cacheButton, contextMenu, this::reloadContextMenu);
         add(cacheButton);
     }

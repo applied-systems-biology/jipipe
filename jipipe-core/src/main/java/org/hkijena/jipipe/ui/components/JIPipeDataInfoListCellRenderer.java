@@ -13,11 +13,11 @@
 
 package org.hkijena.jipipe.ui.components;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
-import org.hkijena.jipipe.ui.registries.JIPipeUIDatatypeRegistry;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.Component;
 
 /**
  * Renders {@link JIPipeDataInfo}
@@ -39,16 +39,16 @@ public class JIPipeDataInfoListCellRenderer extends JLabel implements ListCellRe
         }
         if (value != null) {
             setText(value.getName());
-            setIcon(JIPipeUIDatatypeRegistry.getInstance().getIconFor(value.getDataClass()));
+            setIcon(JIPipe.getDataTypes().getIconFor(value.getDataClass()));
         } else {
             setText("<No data type>");
             setIcon(null);
         }
 
         if (isSelected) {
-            setBackground(new Color(184, 207, 229));
+            setBackground(UIManager.getColor("List.selectionBackground"));
         } else {
-            setBackground(new Color(255, 255, 255));
+            setBackground(UIManager.getColor("List.background"));
         }
         return this;
     }

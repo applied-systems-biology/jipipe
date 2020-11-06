@@ -9,8 +9,6 @@ import java.awt.Component;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.nio.file.Path;
 
 /**
  * Renders a recent project
@@ -66,13 +64,13 @@ public class TemplateProjectListCellRenderer extends JPanel implements ListCellR
 
         if (value != null) {
             nameLabel.setText(value.getMetadata().getName());
-            pathLabel.setText(value.getMetadata().getDescription());
+            pathLabel.setText(value.getMetadata().getTemplateDescription());
         }
 
         if (isSelected) {
-            setBackground(new Color(184, 207, 229));
+            setBackground(UIManager.getColor("List.selectionBackground"));
         } else {
-            setBackground(new Color(255, 255, 255));
+            setBackground(UIManager.getColor("List.background"));
         }
         return this;
     }

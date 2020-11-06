@@ -15,16 +15,13 @@ package org.hkijena.jipipe.extensions.tables.datatypes;
 
 import gnu.trove.map.TIntIntMap;
 import gnu.trove.map.hash.TIntIntHashMap;
-import ij.ImagePlus;
 import ij.macro.Variable;
 import ij.measure.ResultsTable;
-import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.extensions.tables.ConvertingColumnOperation;
 import org.hkijena.jipipe.extensions.tables.IntegratingColumnOperation;
 import org.hkijena.jipipe.extensions.tables.TableColumnReference;
-import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.DocumentTabPane;
 import org.hkijena.jipipe.ui.tableanalyzer.JIPipeTableEditor;
@@ -37,13 +34,7 @@ import javax.swing.*;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
-import java.awt.Color;
 import java.awt.Component;
-import java.awt.Font;
-import java.awt.Graphics2D;
-import java.awt.Image;
-import java.awt.Rectangle;
-import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.nio.file.Path;
@@ -176,21 +167,10 @@ public class ResultsTableData implements JIPipeData, TableModel {
 
     @Override
     public Component preview(int width, int height) {
-        if(getRowCount() == 0 || getColumnCount() == 0)
+        if (getRowCount() == 0 || getColumnCount() == 0)
             return null;
-        JTable table = new JTable(this);
-        table.setSize(table.getPreferredSize());
-        BufferedImage image = new BufferedImage(table.getPreferredSize().width, table.getPreferredSize().height, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g=(Graphics2D)image.getGraphics();
-        table.print(g);
-        double factorX = 1.0 * width / image.getWidth();
-        double factorY = 1.0 * height / image.getHeight();
-        double factor = Math.max(factorX, factorY);
-        int imageWidth = (int)(image.getWidth() * factor);
-        int imageHeight = (int)(image.getHeight() * factor);
-        Image scaledInstance = image.getScaledInstance(imageWidth, imageHeight, Image.SCALE_SMOOTH);
-        String text = String.format("<html><strong>%d rows, %d columns</strong><br/>%s</html>", getRowCount(), getColumnCount(), String.join(", ", getColumnNames()));
-        JLabel label = new JLabel(text, new ImageIcon(scaledInstance), JLabel.LEFT);
+        String text = String.format("<html><strong>%d rows<br/>%d columns</strong><br/>%s</html>", getRowCount(), getColumnCount(), String.join(", ", getColumnNames()));
+        JLabel label = new JLabel(text);
         label.setSize(label.getPreferredSize());
         return label;
     }
@@ -453,7 +433,7 @@ public class ResultsTableData implements JIPipeData, TableModel {
     @Override
     public void display(String displayName, JIPipeWorkbench workbench) {
         workbench.getDocumentTabPane().addTab(displayName, UIUtils.getIconFromResources("data-types/results-table.png"),
-                new JIPipeTableEditor((JIPipeProjectWorkbench) workbench, (ResultsTableData) duplicate()), DocumentTabPane.CloseMode.withAskOnCloseButton, true);
+                new JIPipeTableEditor(workbench, (ResultsTableData) duplicate()), DocumentTabPane.CloseMode.withAskOnCloseButton, true);
         workbench.getDocumentTabPane().switchToLastTab();
     }
 
@@ -919,6 +899,65 @@ public class ResultsTableData implements JIPipeData, TableModel {
     @Override
     public String toString() {
         return "Table (" + getRowCount() + " rows, " + getColumnCount() + " columns): " + String.join(", ", getColumnNames());
+    }
+
+    /**
+     * Sets a column from another table column.
+     * If the types do not match, the old column is deleted
+     * @param columnName the column name
+     * @param column the column data
+     */
+    public void setColumn(String columnName, TableColumn column) {
+        int columnIndex = getColumnIndex(columnName);
+        if(columnIndex != -1) {
+            if(column.isNumeric() != isNumeric(columnIndex)) {
+                removeColumnAt(columnIndex);
+                columnIndex = -1;
+            }
+        }
+        if(columnIndex == -1) {
+            columnIndex = addColumn(columnName, !column.isNumeric());
+        }
+        if(column.isNumeric()) {
+            for (int row = 0; row < getRowCount(); row++) {
+                setValueAt(column.getRowAsDouble(row), row, columnIndex);
+            }
+        }
+        else {
+            for (int row = 0; row < getRowCount(); row++) {
+                setValueAt(column.getRowAsString(row), row, columnIndex);
+            }
+        }
+    }
+
+    /**
+     * Sets a column from another table column.
+     * The column type is forced by the third parameter
+     * @param columnName the column name
+     * @param column the column data
+     * @param numeric if the table column should be numeric
+     */
+    public void setColumn(String columnName, TableColumn column, boolean numeric) {
+        int columnIndex = getColumnIndex(columnName);
+        if(columnIndex != -1) {
+            if(numeric != isNumeric(columnIndex)) {
+                removeColumnAt(columnIndex);
+                columnIndex = -1;
+            }
+        }
+        if(columnIndex == -1) {
+            columnIndex = addColumn(columnName, !column.isNumeric());
+        }
+        if(numeric) {
+            for (int row = 0; row < getRowCount(); row++) {
+                setValueAt(column.getRowAsDouble(row), row, columnIndex);
+            }
+        }
+        else {
+            for (int row = 0; row < getRowCount(); row++) {
+                setValueAt(column.getRowAsString(row), row, columnIndex);
+            }
+        }
     }
 
     /**

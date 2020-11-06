@@ -17,22 +17,39 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
-import org.hkijena.jipipe.api.data.*;
+import org.hkijena.jipipe.api.data.JIPipeAnnotation;
+import org.hkijena.jipipe.api.data.JIPipeDataSlot;
+import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
+import org.hkijena.jipipe.api.data.JIPipeMutableSlotConfiguration;
+import org.hkijena.jipipe.api.data.JIPipeSlotConfiguration;
+import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.events.ParameterChangedEvent;
-import org.hkijena.jipipe.api.parameters.*;
+import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterVisibility;
 import org.hkijena.jipipe.extensions.multiparameters.datatypes.ParametersData;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 /**
  * An {@link JIPipeAlgorithm} that has an optional slot that allows to supply parameter data sets.
  */
 public abstract class JIPipeParameterSlotAlgorithm extends JIPipeAlgorithm {
 
-    public static final String SLOT_PARAMETERS = "Parameters";
+    public static final String SLOT_PARAMETERS = "{Parameters}";
     private ParameterSlotAlgorithmSettings parameterSlotAlgorithmSettings = new ParameterSlotAlgorithmSettings();
 
     public JIPipeParameterSlotAlgorithm(JIPipeNodeInfo info, JIPipeSlotConfiguration slotConfiguration) {
@@ -73,6 +90,20 @@ public abstract class JIPipeParameterSlotAlgorithm extends JIPipeAlgorithm {
         if (parameterSlotAlgorithmSettings.isHasParameterSlot())
             --effectiveSlotSize;
         return effectiveSlotSize;
+    }
+
+    public List<JIPipeDataSlot> getNonParameterInputSlots() {
+        if(parameterSlotAlgorithmSettings.isHasParameterSlot()) {
+            return getInputSlots().stream().filter(s -> s != getParameterSlot()).collect(Collectors.toList());
+        }
+        else {
+            return getInputSlots();
+        }
+    }
+
+    @Override
+    public List<JIPipeDataSlot> getEffectiveInputSlots() {
+        return getNonParameterInputSlots();
     }
 
     @Override
@@ -256,7 +287,7 @@ public abstract class JIPipeParameterSlotAlgorithm extends JIPipeAlgorithm {
         }
 
         @JIPipeDocumentation(name = "Attach only non-default parameter annotations", description = "If multiple parameters are allowed, " +
-                "attach only parameter annotations that have different values from the current settings. Requries 'Attach parameter annotations' to be enabled.")
+                "attach only parameter annotations that have different values from the current settings. Requires 'Attach parameter annotations' to be enabled.")
         @JIPipeParameter(value = "attach-only-non-default-parameter-annotations", visibility = JIPipeParameterVisibility.Visible)
         public boolean isAttachOnlyNonDefaultParameterAnnotations() {
             return attachOnlyNonDefaultParameterAnnotations;

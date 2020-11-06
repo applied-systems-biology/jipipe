@@ -13,18 +13,20 @@
 
 package org.hkijena.jipipe.ui.resultanalysis;
 
+import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.data.JIPipeDataImportOperation;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeExportedDataTable;
+import org.hkijena.jipipe.extensions.parameters.primitives.DynamicStringEnumParameter;
+import org.hkijena.jipipe.extensions.settings.DefaultResultImporterSettings;
+import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.*;
-import java.io.IOException;
-import java.util.ArrayList;
+import java.awt.Dimension;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Consumer;
 
 /**
  * Provides a standard result slot UI that can be also further extended.
@@ -32,7 +34,7 @@ import java.util.function.Consumer;
  */
 public class JIPipeDefaultResultDataSlotRowUI extends JIPipeResultDataSlotRowUI {
 
-    private List<SlotAction> registeredSlotActions = new ArrayList<>();
+    private final List<JIPipeDataImportOperation> importOperations;
 
     /**
      * Creates a new UI
@@ -43,7 +45,8 @@ public class JIPipeDefaultResultDataSlotRowUI extends JIPipeResultDataSlotRowUI 
      */
     public JIPipeDefaultResultDataSlotRowUI(JIPipeProjectWorkbench workbenchUI, JIPipeDataSlot slot, JIPipeExportedDataTable.Row row) {
         super(workbenchUI, slot, row);
-        registerActions();
+        String datatypeId = JIPipe.getInstance().getDatatypeRegistry().getIdOf(slot.getAcceptedDataType());
+        importOperations = JIPipe.getInstance().getDatatypeRegistry().getImportOperationsFor(datatypeId);
         initialize();
     }
 
@@ -51,23 +54,26 @@ public class JIPipeDefaultResultDataSlotRowUI extends JIPipeResultDataSlotRowUI 
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
         add(Box.createHorizontalGlue());
 
-        if (!registeredSlotActions.isEmpty()) {
-            SlotAction mainSlotAction = registeredSlotActions.get(registeredSlotActions.size() - 1);
-            JButton mainActionButton = new JButton(mainSlotAction.getName(), mainSlotAction.getIcon());
-            mainActionButton.setToolTipText(mainSlotAction.getDescription());
-            mainActionButton.addActionListener(e -> mainSlotAction.action.accept(getSlot()));
+        if (!importOperations.isEmpty()) {
+            JIPipeDataImportOperation mainOperation = getMainOperation();
+            if (mainOperation == null)
+                return;
+            JButton mainActionButton = new JButton(mainOperation.getName(), mainOperation.getIcon());
+            mainActionButton.setToolTipText(mainOperation.getDescription());
+            mainActionButton.addActionListener(e -> runImportOperation(mainOperation));
             add(mainActionButton);
 
-            if (registeredSlotActions.size() > 1) {
+            if (importOperations.size() > 1) {
                 JButton menuButton = new JButton("...");
                 menuButton.setMaximumSize(new Dimension(1, (int) mainActionButton.getPreferredSize().getHeight()));
                 menuButton.setToolTipText("More actions ...");
                 JPopupMenu menu = UIUtils.addPopupMenuToComponent(menuButton);
-                for (int i = registeredSlotActions.size() - 2; i >= 0; --i) {
-                    SlotAction otherSlotAction = registeredSlotActions.get(i);
+                for (JIPipeDataImportOperation otherSlotAction : importOperations) {
+                    if (otherSlotAction == mainOperation)
+                        continue;
                     JMenuItem item = new JMenuItem(otherSlotAction.getName(), otherSlotAction.getIcon());
                     item.setToolTipText(otherSlotAction.getDescription());
-                    item.addActionListener(e -> otherSlotAction.getAction().accept(getSlot()));
+                    item.addActionListener(e -> runImportOperation(otherSlotAction));
                     menu.add(item);
                 }
                 add(menuButton);
@@ -75,74 +81,43 @@ public class JIPipeDefaultResultDataSlotRowUI extends JIPipeResultDataSlotRowUI 
         }
     }
 
-    /**
-     * Override this method to add actions
-     * The last added action is displayed as full button
-     */
-    protected void registerActions() {
-        if (getSlot().getStoragePath() != null) {
-            registerAction("Open folder", "Opens the folder that contains the data files.", UIUtils.getIconFromResources("actions/document-open-folder.png"), s -> openFolder());
+    private void runImportOperation(JIPipeDataImportOperation operation) {
+        operation.show(getSlot(), getRow(), getRowStorageFolder(), getAlgorithmCompartment(), getAlgorithmName(), getDisplayName(), getWorkbench());
+        if (GeneralDataSettings.getInstance().isAutoSaveLastImporter()) {
+            String dataTypeId = JIPipe.getDataTypes().getIdOf(getSlot().getAcceptedDataType());
+            DynamicStringEnumParameter parameter = DefaultResultImporterSettings.getInstance().getValue(dataTypeId, DynamicStringEnumParameter.class);
+            if (parameter != null && !Objects.equals(operation.getName(), parameter.getValue())) {
+                parameter.setValue(operation.getName());
+                DefaultResultImporterSettings.getInstance().setValue(dataTypeId, parameter);
+                JIPipe.getSettings().save();
+            }
         }
     }
 
-    /**
-     * Registers an action for the data slot
-     *
-     * @param name        The name of the action
-     * @param description A description of the action
-     * @param icon        An icon
-     * @param action      A method called when the action is activated
-     */
-    protected void registerAction(String name, String description, Icon icon, Consumer<JIPipeDataSlot> action) {
-        registeredSlotActions.add(new SlotAction(name, description, icon, action));
-    }
-
-    private void openFolder() {
-        try {
-            Desktop.getDesktop().open(Objects.requireNonNull(getRowStorageFolder().toFile()));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+    private JIPipeDataImportOperation getMainOperation() {
+        if (!importOperations.isEmpty()) {
+            JIPipeDataImportOperation result = importOperations.get(0);
+            String dataTypeId = JIPipe.getDataTypes().getIdOf(getSlot().getAcceptedDataType());
+            DynamicStringEnumParameter parameter = DefaultResultImporterSettings.getInstance().getValue(dataTypeId, DynamicStringEnumParameter.class);
+            if (parameter != null) {
+                String defaultName = parameter.getValue();
+                for (JIPipeDataImportOperation operation : importOperations) {
+                    if (Objects.equals(operation.getName(), defaultName)) {
+                        result = operation;
+                        break;
+                    }
+                }
+            }
+            return result;
         }
+        return null;
     }
 
     @Override
     public void handleDefaultAction() {
-        if (!registeredSlotActions.isEmpty()) {
-            SlotAction mainSlotAction = registeredSlotActions.get(registeredSlotActions.size() - 1);
-            mainSlotAction.action.accept(getSlot());
-        }
+        JIPipeDataImportOperation mainOperation = getMainOperation();
+        if (mainOperation != null)
+            runImportOperation(mainOperation);
     }
 
-    /**
-     * Encapsulates a slot action
-     */
-    private static class SlotAction {
-        private String name;
-        private String description;
-        private Icon icon;
-        private Consumer<JIPipeDataSlot> action;
-
-        private SlotAction(String name, String description, Icon icon, Consumer<JIPipeDataSlot> action) {
-            this.name = name;
-            this.description = description;
-            this.icon = icon;
-            this.action = action;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public Icon getIcon() {
-            return icon;
-        }
-
-        public Consumer<JIPipeDataSlot> getAction() {
-            return action;
-        }
-
-        public String getDescription() {
-            return description;
-        }
-    }
 }

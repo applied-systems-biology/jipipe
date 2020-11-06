@@ -17,9 +17,11 @@ import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.annotation.algorithms.*;
 import org.hkijena.jipipe.extensions.annotation.datasources.AnnotationTableFromFile;
+import org.hkijena.jipipe.extensions.core.data.OpenInNativeApplicationDataImportOperation;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
-import org.hkijena.jipipe.extensions.tables.ResultsTableDataSlotRowUI;
 import org.hkijena.jipipe.extensions.tables.datatypes.AnnotationTableData;
+import org.hkijena.jipipe.extensions.tables.datatypes.OpenResultsTableInImageJDataOperation;
+import org.hkijena.jipipe.extensions.tables.datatypes.OpenResultsTableInJIPipeDataOperation;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.plugin.Plugin;
@@ -55,17 +57,19 @@ public class AnnotationsExtension extends JIPipePrepackagedDefaultJavaExtension 
         registerDatatype("annotation-table",
                 AnnotationTableData.class,
                 ResourceUtils.getPluginResource("icons/data-types/annotation-table.png"),
-                ResultsTableDataSlotRowUI.class,
-                null);
+                null,
+                null,
+                new OpenResultsTableInImageJDataOperation(),
+                new OpenResultsTableInJIPipeDataOperation(),
+                new OpenInNativeApplicationDataImportOperation(".csv"));
         registerDatatypeConversion(new ImplicitResultsTableDataConverter());
     }
 
     private void registerAlgorithms() {
         registerNodeType("merge-slots", MergeDataSlots.class);
         registerNodeType("annotation-table-from-file", AnnotationTableFromFile.class);
-        registerNodeType("annotate-all", AnnotateAll.class, UIUtils.getIconURLFromResources("actions/tag.png"));
-        registerNodeType("annotate-remove-by-type", RemoveAnnotationByType.class, UIUtils.getIconURLFromResources("actions/entry-delete.png"));
-        registerNodeType("annotate-remove-by-value", RemoveAnnotationByValue.class, UIUtils.getIconURLFromResources("actions/entry-delete.png"));
+        registerNodeType("annotate-set", AnnotateByExpression.class, UIUtils.getIconURLFromResources("actions/tag.png"));
+        registerNodeType("annotate-remove", RemoveAnnotationAlgorithm.class, UIUtils.getIconURLFromResources("actions/entry-delete.png"));
         registerNodeType("annotate-split-by-annotation", SplitByAnnotation.class, UIUtils.getIconURLFromResources("actions/split.png"));
         registerNodeType("data-to-annotation-table", ConvertToAnnotationTable.class, UIUtils.getIconURLFromResources("data-types/annotation-table.png"));
         registerNodeType("annotate-with-data", AnnotateWithDataString.class, UIUtils.getIconURLFromResources("data-types/data-type.png"));
@@ -74,6 +78,7 @@ public class AnnotationsExtension extends JIPipePrepackagedDefaultJavaExtension 
         registerNodeType("annotate-split-by-annotation-script", SplitByAnnotationScript.class, UIUtils.getIconURLFromResources("apps/python.png"));
         registerNodeType("annotation-merge", MergeAnnotations.class, UIUtils.getIconURLFromResources("actions/merge.png"));
         registerNodeType("annotate-with-annotation-table", AnnotateWithAnnotationTable.class, UIUtils.getIconURLFromResources("data-types/annotation-table.png"));
+        registerNodeType("generate-unique-annotation", GenerateUniqueAnnotation.class, UIUtils.getIconURLFromResources("actions/tools-wizard.png"));
     }
 
     @Override
@@ -83,6 +88,6 @@ public class AnnotationsExtension extends JIPipePrepackagedDefaultJavaExtension 
 
     @Override
     public String getDependencyVersion() {
-        return "1.0.0";
+        return "2020.11";
     }
 }

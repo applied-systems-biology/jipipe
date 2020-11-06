@@ -14,7 +14,6 @@
 package org.hkijena.jipipe.ui.components;
 
 import com.google.common.eventbus.EventBus;
-import org.hkijena.jipipe.utils.CustomScrollPane;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jdesktop.swingx.JXPanel;
@@ -22,8 +21,15 @@ import org.jdesktop.swingx.ScrollableSizeHint;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.AWTEventListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.lang.ref.WeakReference;
+import java.util.ArrayDeque;
 
 import static org.hkijena.jipipe.utils.UIUtils.UI_PADDING;
 
@@ -55,11 +61,19 @@ public class FormPanel extends JXPanel {
      */
     public static final int DOCUMENTATION_BELOW = 4;
 
+    /**
+     * Flag that items should only be displayed when necessary
+     */
+    public static final int WITH_INFINITE_SCROLLING = 8;
+
     private final EventBus eventBus = new EventBus();
     private int numRows = 0;
     private JXPanel contentPanel = new JXPanel();
     private MarkdownReader parameterHelp;
     private JScrollPane scrollPane;
+    private JLabel parameterHelpDrillDown = new JLabel();
+    private ArrayDeque<FutureComponent> infiniteScrollingQueue = new ArrayDeque<>();
+    private final boolean isInfiniteScrolling;
 
     /**
      * Creates a new instance
@@ -68,6 +82,11 @@ public class FormPanel extends JXPanel {
      * @param flags    flags for this component
      */
     public FormPanel(MarkdownDocument document, int flags) {
+
+        if((flags & WITH_INFINITE_SCROLLING) == WITH_INFINITE_SCROLLING)
+            flags |= WITH_SCROLLING;
+        this.isInfiniteScrolling = (flags & WITH_INFINITE_SCROLLING) == WITH_INFINITE_SCROLLING;
+
         setLayout(new BorderLayout());
         contentPanel.setLayout(new GridBagLayout());
 
@@ -76,6 +95,18 @@ public class FormPanel extends JXPanel {
         parameterHelp.setDocument(document);
         helpPanel.add(parameterHelp, BorderLayout.CENTER);
 
+        JToolBar helpToolbar = new JToolBar();
+        helpToolbar.setFloatable(false);
+
+        JButton switchToDefaultHelpButton = new JButton(UIUtils.getIconFromResources("actions/go-home.png"));
+        UIUtils.makeFlat25x25(switchToDefaultHelpButton);
+        switchToDefaultHelpButton.addActionListener(e -> switchToDefaultHelp());
+        helpToolbar.add(switchToDefaultHelpButton);
+
+        helpToolbar.add(parameterHelpDrillDown);
+
+        helpPanel.add(helpToolbar, BorderLayout.SOUTH);
+
         setScrollableWidthHint(ScrollableSizeHint.FIT);
         setScrollableHeightHint(ScrollableSizeHint.VERTICAL_STRETCH);
         contentPanel.setScrollableWidthHint(ScrollableSizeHint.FIT);
@@ -83,7 +114,7 @@ public class FormPanel extends JXPanel {
 
         Component content;
         if ((flags & WITH_SCROLLING) == WITH_SCROLLING) {
-            scrollPane = new CustomScrollPane(contentPanel);
+            scrollPane = new JScrollPane(contentPanel);
             scrollPane.getVerticalScrollBar().setUnitIncrement(10);
             content = scrollPane;
         } else
@@ -107,6 +138,12 @@ public class FormPanel extends JXPanel {
         }
     }
 
+    private void switchToDefaultHelp() {
+        parameterHelp.setDocument(parameterHelp.getDocument());
+        parameterHelpDrillDown.setIcon(null);
+        parameterHelpDrillDown.setText("");
+    }
+
     @Override
     public void setOpaque(boolean isOpaque) {
         super.setOpaque(isOpaque);
@@ -126,7 +163,6 @@ public class FormPanel extends JXPanel {
     }
 
     private void documentComponent(Component component, MarkdownDocument componentDocument) {
-
         if (componentDocument != null) {
             Toolkit.getDefaultToolkit().addAWTEventListener(new ComponentDocumentationHandler(this, component, componentDocument),
                     AWTEvent.MOUSE_EVENT_MASK);
@@ -136,6 +172,7 @@ public class FormPanel extends JXPanel {
                     super.mouseEntered(e);
                     parameterHelp.setTemporaryDocument(componentDocument);
                     getEventBus().post(new HoverHelpEvent(componentDocument));
+                    updateParameterHelpDrillDown();
                 }
             });
             component.addFocusListener(new FocusAdapter() {
@@ -144,9 +181,30 @@ public class FormPanel extends JXPanel {
                     super.focusGained(e);
                     parameterHelp.setTemporaryDocument(componentDocument);
                     getEventBus().post(new HoverHelpEvent(componentDocument));
+                    updateParameterHelpDrillDown();
                 }
             });
         }
+    }
+
+    private void updateParameterHelpDrillDown() {
+        MarkdownDocument current = parameterHelp.getTemporaryDocument();
+        if(current == null) {
+            parameterHelpDrillDown.setIcon(null);
+            parameterHelpDrillDown.setText("");
+            return;
+        }
+        if(StringUtils.orElse(current.getMarkdown(), "").startsWith("#")) {
+            String s = current.getMarkdown().split("\n")[0];
+            s = s.substring(s.lastIndexOf('#') + 1);
+            parameterHelpDrillDown.setIcon(UIUtils.getIconFromResources("actions/arrow-right.png"));
+            parameterHelpDrillDown.setText(s);
+        }
+        else {
+            parameterHelpDrillDown.setIcon(UIUtils.getIconFromResources("actions/arrow-right.png"));
+            parameterHelpDrillDown.setText("...");
+        }
+
     }
 
     /**
@@ -158,7 +216,7 @@ public class FormPanel extends JXPanel {
      * @return The component
      */
     public <T extends Component> T addToForm(T component, MarkdownDocument documentation) {
-        contentPanel.add(component, new GridBagConstraints() {
+        GridBagConstraints contentPosition = new GridBagConstraints() {
             {
                 anchor = GridBagConstraints.WEST;
                 gridx = 0;
@@ -168,7 +226,11 @@ public class FormPanel extends JXPanel {
                 fill = GridBagConstraints.HORIZONTAL;
                 weightx = 1;
             }
-        });
+        };
+        if(!isInfiniteScrolling)
+            contentPanel.add(component, contentPosition);
+        else
+            infiniteScrollingQueue.add(new FutureComponent(null, null, component, contentPosition, false));
         ++numRows;
         if (documentation != null)
             documentComponent(component, documentation);
@@ -185,7 +247,7 @@ public class FormPanel extends JXPanel {
      * @return The component
      */
     public <T extends Component> T addToForm(T component, Component description, MarkdownDocument documentation) {
-        contentPanel.add(component, new GridBagConstraints() {
+        GridBagConstraints contentPosition = new GridBagConstraints() {
             {
                 anchor = GridBagConstraints.WEST;
                 gridx = 1;
@@ -195,20 +257,32 @@ public class FormPanel extends JXPanel {
                 fill = GridBagConstraints.HORIZONTAL;
                 weightx = 1;
             }
-        });
-        contentPanel.add(description, new GridBagConstraints() {
-            {
-                anchor = GridBagConstraints.WEST;
-                gridx = 0;
-                gridwidth = 1;
-                gridy = numRows;
-                insets = UI_PADDING;
+        };
+        if(!isInfiniteScrolling)
+            contentPanel.add(component, contentPosition);
+        if(description != null) {
+            GridBagConstraints labelPosition = new GridBagConstraints() {
+                {
+                    anchor = GridBagConstraints.WEST;
+                    gridx = 0;
+                    gridwidth = 1;
+                    gridy = numRows;
+                    insets = UI_PADDING;
+                }
+            };
+            if(!isInfiniteScrolling)
+                contentPanel.add(description, labelPosition);
+            else {
+                infiniteScrollingQueue.add(new FutureComponent(description, labelPosition, component, contentPosition, false));
             }
-        });
+        }
+        else if(isInfiniteScrolling) {
+            infiniteScrollingQueue.add(new FutureComponent(null, null, component, contentPosition, false));
+        }
         ++numRows;
         if (documentation != null)
             documentComponent(component, documentation);
-        if (documentation != null)
+        if (documentation != null && description != null)
             documentComponent(description, documentation);
         return component;
     }
@@ -222,7 +296,7 @@ public class FormPanel extends JXPanel {
      * @return The component
      */
     public <T extends Component> T addWideToForm(T component, MarkdownDocument documentation) {
-        contentPanel.add(component, new GridBagConstraints() {
+        GridBagConstraints gridBagConstraints = new GridBagConstraints() {
             {
                 anchor = GridBagConstraints.WEST;
                 gridx = 0;
@@ -232,7 +306,11 @@ public class FormPanel extends JXPanel {
                 fill = GridBagConstraints.HORIZONTAL;
                 weightx = 1;
             }
-        });
+        };
+        if(!isInfiniteScrolling)
+            contentPanel.add(component, gridBagConstraints);
+        else
+            infiniteScrollingQueue.add(new FutureComponent(null, null, component, gridBagConstraints, true));
         ++numRows;
         if (documentation != null)
             documentComponent(component, documentation);
@@ -275,7 +353,10 @@ public class FormPanel extends JXPanel {
      * Removes the last row. Silently fails if there are no rows.
      */
     public void removeLastRow() {
-        if (contentPanel.getComponentCount() > 0) {
+        if(isInfiniteScrolling && !infiniteScrollingQueue.isEmpty()) {
+            infiniteScrollingQueue.removeLast();
+        }
+        else if (contentPanel.getComponentCount() > 0) {
             contentPanel.remove(contentPanel.getComponentCount() - 1);
             --numRows;
         }
@@ -285,6 +366,7 @@ public class FormPanel extends JXPanel {
      * Removes all components
      */
     public void clear() {
+        infiniteScrollingQueue.clear();
         contentPanel.removeAll();
         numRows = 0;
         revalidate();
@@ -453,6 +535,7 @@ public class FormPanel extends JXPanel {
                         if (isInComponent && panel.parameterHelp.getTemporaryDocument() != componentDocument) {
                             panel.parameterHelp.setTemporaryDocument(componentDocument);
                             panel.getEventBus().post(new HoverHelpEvent(componentDocument));
+                            panel.updateParameterHelpDrillDown();
                         }
                     } catch (IllegalComponentStateException e) {
                         // Workaround for Java bug
@@ -460,6 +543,22 @@ public class FormPanel extends JXPanel {
                     }
                 }
             }
+        }
+    }
+
+    public static class FutureComponent {
+        private final Component label;
+        private final GridBagConstraints labelPosition;
+        private final Component content;
+        private final GridBagConstraints contentPosition;
+        private final boolean wide;
+
+        public FutureComponent(Component label, GridBagConstraints labelPosition, Component content, GridBagConstraints contentPosition, boolean wide) {
+            this.label = label;
+            this.labelPosition = labelPosition;
+            this.content = content;
+            this.contentPosition = contentPosition;
+            this.wide = wide;
         }
     }
 

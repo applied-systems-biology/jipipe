@@ -13,11 +13,11 @@
 
 package org.hkijena.jipipe.extensions.filesystem.resultanalysis;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeExportedDataTable;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.PathData;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
-import org.hkijena.jipipe.ui.registries.JIPipeUIDatatypeRegistry;
 import org.hkijena.jipipe.ui.resultanalysis.JIPipeResultDataSlotPreviewUI;
 import org.hkijena.jipipe.utils.JsonUtils;
 import org.hkijena.jipipe.utils.PathUtils;
@@ -37,6 +37,7 @@ public class FilesystemDataSlotPreviewUI extends JIPipeResultDataSlotPreviewUI {
 
     /**
      * Creates a new renderer
+     *
      * @param table the table that renders the preview
      */
     public FilesystemDataSlotPreviewUI(JTable table) {
@@ -57,7 +58,7 @@ public class FilesystemDataSlotPreviewUI extends JIPipeResultDataSlotPreviewUI {
     @Override
     public void render(JIPipeProjectWorkbench workbenchUI, JIPipeDataSlot slot, JIPipeExportedDataTable.Row row) {
 
-        label.setIcon(JIPipeUIDatatypeRegistry.getInstance().getIconFor(slot.getAcceptedDataType()));
+        label.setIcon(JIPipe.getDataTypes().getIconFor(slot.getAcceptedDataType()));
         Path listFile = findListFile(slot, row);
         if (listFile != null) {
             Path fileOrFolderPath = null;

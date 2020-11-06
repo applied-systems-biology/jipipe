@@ -28,7 +28,7 @@ import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
-import java.awt.*;
+import java.awt.BorderLayout;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.util.ArrayList;
@@ -150,6 +150,8 @@ public class JIPipeAlgorithmCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
         JButton clearAllButton = new JButton("Clear all", UIUtils.getIconFromResources("actions/clear-brush.png"));
         clearAllButton.addActionListener(e -> getProject().getCache().clear());
         toolBar.add(clearAllButton);
+
+        toolBar.add(Box.createHorizontalGlue());
 
         add(toolBar, BorderLayout.NORTH);
     }

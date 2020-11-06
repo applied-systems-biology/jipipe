@@ -44,6 +44,7 @@ public class ToolsExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerMenuExtension(ScreenshotWholeGraphToolSVG.class);
         registerMenuExtension(OpenImageJTool.class);
         registerMenuExtension(CreateLaunchersTool.class);
+        registerMenuExtension(CloseAllImageJWindowsTool.class);
     }
 
     @Override
@@ -53,6 +54,6 @@ public class ToolsExtension extends JIPipePrepackagedDefaultJavaExtension {
 
     @Override
     public String getDependencyVersion() {
-        return "1.0.0";
+        return "2020.11";
     }
 }

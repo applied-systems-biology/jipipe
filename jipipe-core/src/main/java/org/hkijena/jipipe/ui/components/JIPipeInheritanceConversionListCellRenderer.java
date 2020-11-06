@@ -13,12 +13,12 @@
 
 package org.hkijena.jipipe.ui.components;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
-import org.hkijena.jipipe.ui.registries.JIPipeUIDatatypeRegistry;
 import org.hkijena.jipipe.utils.ResourceUtils;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.Component;
 import java.util.Map;
 
 /**
@@ -44,10 +44,10 @@ public class JIPipeInheritanceConversionListCellRenderer extends JLabel implemen
             JIPipeDataInfo to = value.getValue();
             String stringBuilder = "<html>" +
                     "<table><tr>" +
-                    "<td><img src=\"" + JIPipeUIDatatypeRegistry.getInstance().getIconURLFor(from.getDataClass()) + "\" /></td>" +
+                    "<td><img src=\"" + JIPipe.getDataTypes().getIconURLFor(from.getDataClass()) + "\" /></td>" +
                     "<td>" + from.getName() + "</td>" +
                     "<td><img src=\"" + ResourceUtils.getPluginResource("icons/actions/arrow-right.png") + "\" /></td>" +
-                    "<td><img src=\"" + JIPipeUIDatatypeRegistry.getInstance().getIconURLFor(to.getDataClass()) + "\" /></td>" +
+                    "<td><img src=\"" + JIPipe.getDataTypes().getIconURLFor(to.getDataClass()) + "\" /></td>" +
                     "<td>" + to.getName() + "</td>" +
                     "</tr></table>" +
                     "</html>";
@@ -55,9 +55,9 @@ public class JIPipeInheritanceConversionListCellRenderer extends JLabel implemen
         }
 
         if (isSelected) {
-            setBackground(new Color(184, 207, 229));
+            setBackground(UIManager.getColor("List.selectionBackground"));
         } else {
-            setBackground(new Color(255, 255, 255));
+            setBackground(UIManager.getColor("List.background"));
         }
 
         return this;

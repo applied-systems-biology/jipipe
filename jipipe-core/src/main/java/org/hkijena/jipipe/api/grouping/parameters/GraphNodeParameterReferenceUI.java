@@ -13,16 +13,16 @@
 
 package org.hkijena.jipipe.api.grouping.parameters;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
-import org.hkijena.jipipe.api.registries.JIPipeParameterTypeRegistry;
 import org.hkijena.jipipe.ui.components.DocumentChangeListener;
 import org.hkijena.jipipe.ui.components.FancyTextField;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
-import java.awt.*;
+import java.awt.BorderLayout;
 
 /**
  * Editor for {@link GraphNodeParameterReference}
@@ -55,7 +55,7 @@ public class GraphNodeParameterReferenceUI extends JPanel {
                             "Type <strong>'%s'</strong><br/>" +
                             "Unique key <strong>%s</strong><br/><br/>%s</html>",
                     reference.getOriginalName(tree),
-                    JIPipeParameterTypeRegistry.getInstance().getInfoByFieldClass(referencedParameter.getFieldClass()).getName(),
+                    JIPipe.getParameterTypes().getInfoByFieldClass(referencedParameter.getFieldClass()).getName(),
                     reference.getPath(),
                     referencedParameter.getDescription()));
             FancyTextField nameEditor = new FancyTextField(new JLabel(UIUtils.getIconFromResources("actions/configure.png")),

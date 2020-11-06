@@ -31,6 +31,6 @@ public class OMEImageToImagePlusTypeConverter implements JIPipeDataConverter {
 
     @Override
     public JIPipeData convert(JIPipeData input) {
-        return new ImagePlusData(((OMEImageData)input).getImage());
+        return new ImagePlusData(((OMEImageData) input).getImage());
     }
 }

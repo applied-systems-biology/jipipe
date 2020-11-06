@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.ui.components;
 
 import com.google.common.eventbus.Subscribe;
-import org.hkijena.jipipe.JIPipeDefaultRegistry;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.api.events.ExtensionDiscoveredEvent;
 import org.hkijena.jipipe.utils.ResourceUtils;
@@ -27,7 +27,12 @@ import org.scijava.log.LogService;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
@@ -35,12 +40,12 @@ import java.io.IOException;
 
 public class SplashScreen extends JWindow implements LogListener, Contextual {
 
-    private static volatile SplashScreen instance;
     private static final Object instanceLock = new Object();
+    private static volatile SplashScreen instance;
     private Context context;
     private JPanel poweredByContainer;
     private JPanel poweredByIconContainer;
-    private JIPipeDefaultRegistry registry;
+    private JIPipe jiPipe;
     private JLabel statusLabel = new JLabel("Please wait ...",
             UIUtils.getIconFromResources("actions/hourglass-half.png"), JLabel.LEFT);
 
@@ -55,8 +60,8 @@ public class SplashScreen extends JWindow implements LogListener, Contextual {
         poweredByContainer = new JPanel(new BorderLayout());
         poweredByContainer.setOpaque(false);
         poweredByContainer.setVisible(false);
-        poweredByContainer.setLocation(20,203);
-        poweredByContainer.setSize(574,138);
+        poweredByContainer.setLocation(20, 203);
+        poweredByContainer.setSize(574, 138);
 
         statusLabel.setSize(574, 25);
         statusLabel.setLocation(20, 450);
@@ -83,12 +88,12 @@ public class SplashScreen extends JWindow implements LogListener, Contextual {
     }
 
     public void showSplash(Context context) {
-        if(context != null)
+        if (context != null)
             context.inject(this);
         setLocationRelativeTo(null);
         setVisible(true);
 
-        if(context!= null) {
+        if (context != null) {
             LogService logService = context.getService(LogService.class);
             logService.addLogListener(this);
         }
@@ -96,7 +101,7 @@ public class SplashScreen extends JWindow implements LogListener, Contextual {
 
     public void hideSplash() {
         instance = null;
-        if(context != null) {
+        if (context != null) {
             LogService logService = context.getService(LogService.class);
             logService.removeLogListener(this);
         }
@@ -105,20 +110,20 @@ public class SplashScreen extends JWindow implements LogListener, Contextual {
         SwingUtilities.invokeLater(() -> this.dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING)));
     }
 
-    public JIPipeDefaultRegistry getRegistry() {
-        return registry;
+    public JIPipe getJiPipe() {
+        return jiPipe;
     }
 
-    public void setRegistry(JIPipeDefaultRegistry registry) {
-        this.registry = registry;
-        if(registry != null) {
+    public void setJIPipe(JIPipe registry) {
+        this.jiPipe = registry;
+        if (registry != null) {
             registry.getEventBus().register(this);
         }
     }
 
     @Subscribe
     public void onExtensionDiscovered(ExtensionDiscoveredEvent event) {
-        if(event.getExtension() instanceof JIPipeJavaExtension) {
+        if (event.getExtension() instanceof JIPipeJavaExtension) {
             SwingUtilities.invokeLater(() -> {
                 for (ImageIcon icon : ((JIPipeJavaExtension) event.getExtension()).getSplashIcons()) {
                     if (icon.getIconWidth() != 32 && icon.getIconHeight() != 32) {
@@ -133,19 +138,6 @@ public class SplashScreen extends JWindow implements LogListener, Contextual {
                 poweredByContainer.setVisible(poweredByIconContainer.getComponentCount() > 0);
             });
         }
-    }
-
-    public static void main(String[] args) {
-        getInstance().showSplash(null);
-    }
-
-    public static SplashScreen getInstance() {
-        synchronized (instanceLock) {
-            if (instance == null) {
-                instance = new SplashScreen();
-            }
-        }
-        return instance;
     }
 
     @Override
@@ -168,6 +160,19 @@ public class SplashScreen extends JWindow implements LogListener, Contextual {
         this.context = context;
     }
 
+    public static void main(String[] args) {
+        getInstance().showSplash(null);
+    }
+
+    public static SplashScreen getInstance() {
+        synchronized (instanceLock) {
+            if (instance == null) {
+                instance = new SplashScreen();
+            }
+        }
+        return instance;
+    }
+
     private static class ContentPanel extends JPanel {
         private final BufferedImage backgroundImage;
 
@@ -175,7 +180,10 @@ public class SplashScreen extends JWindow implements LogListener, Contextual {
             setOpaque(false);
             setLayout(null);
             try {
-                backgroundImage = ImageIO.read(ResourceUtils.getPluginResource("splash-screen.png"));
+                if(UIUtils.getThemeFromRawSettings().isDark())
+                    backgroundImage = ImageIO.read(ResourceUtils.getPluginResource("splash-screen-dark.png"));
+                else
+                    backgroundImage = ImageIO.read(ResourceUtils.getPluginResource("splash-screen.png"));
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -183,9 +191,9 @@ public class SplashScreen extends JWindow implements LogListener, Contextual {
 
         @Override
         public void paint(Graphics g) {
-            g.drawImage(backgroundImage, 0,0,null);
+            g.drawImage(backgroundImage, 0, 0, null);
             g.setColor(Color.DARK_GRAY);
-            g.drawRect(0,0,getWidth() - 1, getHeight() - 1);
+            g.drawRect(0, 0, getWidth() - 1, getHeight() - 1);
             super.paint(g);
         }
     }

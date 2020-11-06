@@ -18,7 +18,7 @@ import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.Component;
 
 /**
  * Renders the contents of a {@link org.hkijena.jipipe.JIPipeJsonExtension}
@@ -43,9 +43,9 @@ public class JsonExtensionContentListCellRenderer extends JLabel implements List
             setIcon(UIUtils.getIconFromResources("actions/cancel.png"));
         }
         if (isSelected) {
-            setBackground(new Color(184, 207, 229));
+            setBackground(UIManager.getColor("List.selectionBackground"));
         } else {
-            setBackground(new Color(255, 255, 255));
+            setBackground(UIManager.getColor("List.background"));
         }
         return this;
     }

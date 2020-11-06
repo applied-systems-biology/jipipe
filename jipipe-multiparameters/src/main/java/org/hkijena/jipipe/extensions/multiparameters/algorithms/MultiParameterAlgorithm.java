@@ -67,7 +67,7 @@ public class MultiParameterAlgorithm extends JIPipeAlgorithm {
         this.setSlotConfiguration(slotConfiguration);
         slotConfiguration.setTo(other.getSlotConfiguration());
         if (other.algorithmInstance != null) {
-            this.algorithmInstance = other.algorithmInstance.getInfo().clone(other.algorithmInstance);
+            this.algorithmInstance = other.algorithmInstance.getInfo().duplicate(other.algorithmInstance);
             this.algorithmInstance.getEventBus().register(this);
         }
     }

@@ -1,15 +1,28 @@
 package org.hkijena.jipipe.utils;
 
+import org.hkijena.jipipe.ui.theme.ModernMetalTheme;
+
 import javax.swing.*;
 import javax.swing.plaf.UIResource;
 import javax.swing.plaf.metal.MetalLookAndFeel;
-import java.awt.*;
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.io.Serializable;
 
 /**
  * Taken from {@link javax.swing.plaf.metal.MetalIconFactory}
  */
 public class CheckBoxIcon implements Icon, UIResource, Serializable {
+
+    private final Color backgroundInactive;
+
+    public CheckBoxIcon(Color backgroundInactive) {
+        this.backgroundInactive = backgroundInactive;
+    }
 
     protected int getControlSize() {
         return 16;
@@ -25,7 +38,7 @@ public class CheckBoxIcon implements Icon, UIResource, Serializable {
                 g.setColor(ModernMetalTheme.PRIMARY5);
                 g.fillRoundRect(x, y, controlSize - 1, controlSize - 1, 2, 2);
             } else {
-                g.setColor(Color.WHITE);
+                g.setColor(backgroundInactive);
                 g.fillRoundRect(x, y, controlSize - 1, controlSize - 1, 2, 2);
                 g.setColor(ModernMetalTheme.DARK_GRAY);
                 g.drawRoundRect(x, y, controlSize - 2, controlSize - 2, 2, 2);

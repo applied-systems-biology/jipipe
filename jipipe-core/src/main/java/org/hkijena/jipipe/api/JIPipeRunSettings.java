@@ -32,6 +32,7 @@ public class JIPipeRunSettings implements JIPipeParameterCollection {
     private boolean storeToCache = false;
     private boolean saveOutputs = true;
     private int numThreads = RuntimeSettings.getInstance().getDefaultRunThreads();
+    private boolean silent = false;
 
     @JIPipeParameter(value = "output-path", uiOrder = -999)
     @JIPipeDocumentation(name = "Output folder")
@@ -97,5 +98,17 @@ public class JIPipeRunSettings implements JIPipeParameterCollection {
 
     public void setSaveOutputs(boolean saveOutputs) {
         this.saveOutputs = saveOutputs;
+    }
+
+    /**
+     * If true, exceptions are discarded
+     * @return if exceptions should be discarded
+     */
+    public boolean isSilent() {
+        return silent;
+    }
+
+    public void setSilent(boolean silent) {
+        this.silent = silent;
     }
 }

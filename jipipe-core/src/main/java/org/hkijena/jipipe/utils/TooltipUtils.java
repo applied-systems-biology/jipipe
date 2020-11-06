@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.utils;
 
 import com.google.common.html.HtmlEscapers;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
@@ -21,11 +22,12 @@ import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
-import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.registries.JIPipeNodeRegistry;
+import org.hkijena.jipipe.api.nodes.JIPipeGraph;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.ui.components.MarkdownDocument;
-import org.hkijena.jipipe.ui.registries.JIPipeUIDatatypeRegistry;
-import org.hkijena.jipipe.ui.registries.JIPipeUINodeRegistry;
 
 import java.util.Collection;
 import java.util.List;
@@ -54,7 +56,7 @@ public class TooltipUtils {
         for (JIPipeGraphNode algorithm : projectGraph.getAlgorithmsWithCompartment(compartment.getProjectCompartmentId())) {
             builder.append("<tr>");
             builder.append("<td>").append("<img src=\"")
-                    .append(JIPipeUINodeRegistry.getInstance().getIconURLFor(algorithm.getInfo()))
+                    .append(JIPipe.getNodes().getIconURLFor(algorithm.getInfo()))
                     .append("\"/>").append("</td>");
             builder.append("<td>").append(algorithm.getName()).append("</td>");
             builder.append("</tr>");
@@ -93,12 +95,12 @@ public class TooltipUtils {
                     builder.append("<tr>");
                     builder.append("<td>");
                     if (inputSlot != null) {
-                        builder.append(StringUtils.createIconTextHTMLTableElement(JIPipeData.getNameOf(inputSlot), JIPipeUIDatatypeRegistry.getInstance().getIconURLFor(inputSlot)));
+                        builder.append(StringUtils.createIconTextHTMLTableElement(JIPipeData.getNameOf(inputSlot), JIPipe.getDataTypes().getIconURLFor(inputSlot)));
                     }
                     builder.append("</td>");
                     builder.append("<td>");
                     if (outputSlot != null) {
-                        builder.append(StringUtils.createRightIconTextHTMLTableElement(JIPipeData.getNameOf(outputSlot), JIPipeUIDatatypeRegistry.getInstance().getIconURLFor(outputSlot)));
+                        builder.append(StringUtils.createRightIconTextHTMLTableElement(JIPipeData.getNameOf(outputSlot), JIPipe.getDataTypes().getIconURLFor(outputSlot)));
                     }
                     builder.append("</td>");
                     builder.append("</tr>");
@@ -114,7 +116,7 @@ public class TooltipUtils {
         builder.append("</table>\n\n");
 
         // Write author information
-        JIPipeDependency source = JIPipeNodeRegistry.getInstance().getSourceOf(info.getId());
+        JIPipeDependency source = JIPipe.getNodes().getSourceOf(info.getId());
         if (source != null) {
             builder.append("## Developer information\n\n");
             builder.append("<table>");
@@ -163,12 +165,12 @@ public class TooltipUtils {
                     builder.append("<tr>");
                     if (inputSlot != null) {
                         builder.append("<td>");
-                        builder.append(StringUtils.createIconTextHTMLTableElement(JIPipeData.getNameOf(inputSlot), JIPipeUIDatatypeRegistry.getInstance().getIconURLFor(inputSlot)));
+                        builder.append(StringUtils.createIconTextHTMLTableElement(JIPipeData.getNameOf(inputSlot), JIPipe.getDataTypes().getIconURLFor(inputSlot)));
                         builder.append("</td>");
                     }
                     if (outputSlot != null) {
                         builder.append("<td>");
-                        builder.append(StringUtils.createRightIconTextHTMLTableElement(JIPipeData.getNameOf(outputSlot), JIPipeUIDatatypeRegistry.getInstance().getIconURLFor(outputSlot)));
+                        builder.append(StringUtils.createRightIconTextHTMLTableElement(JIPipeData.getNameOf(outputSlot), JIPipe.getDataTypes().getIconURLFor(outputSlot)));
                         builder.append("</td>");
                     }
                     builder.append("</tr>");
@@ -248,7 +250,7 @@ public class TooltipUtils {
         builder.append("<table>");
         builder.append("<tr>");
         builder.append("<td>").append("<img src=\"")
-                .append(JIPipeUIDatatypeRegistry.getInstance().getIconURLFor(slot.getAcceptedDataType()))
+                .append(JIPipe.getDataTypes().getIconURLFor(slot.getAcceptedDataType()))
                 .append("\"/>").append("</td>");
         builder.append("<td>").append(slot.getName()).append("</td>");
         builder.append("</tr>");
@@ -285,7 +287,7 @@ public class TooltipUtils {
         for (JIPipeDataSlotInfo definition : slotDefinitions) {
             builder.append("<tr>");
             builder.append("<td>").append("<img src=\"")
-                    .append(JIPipeUIDatatypeRegistry.getInstance().getIconURLFor(definition.getDataClass()))
+                    .append(JIPipe.getDataTypes().getIconURLFor(definition.getDataClass()))
                     .append("\"/>").append("</td>");
             builder.append("<td>").append(!StringUtils.isNullOrEmpty(definition.getName()) ? definition.getName() : JIPipeData.getNameOf(definition.getDataClass())).append("</td>");
             builder.append("</tr>");

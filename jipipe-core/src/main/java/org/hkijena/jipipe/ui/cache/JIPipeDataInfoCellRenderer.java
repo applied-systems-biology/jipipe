@@ -13,13 +13,12 @@
 
 package org.hkijena.jipipe.ui.cache;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
-import org.hkijena.jipipe.ui.registries.JIPipeUIDatatypeRegistry;
 
 import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
-import java.awt.Color;
 import java.awt.Component;
 
 /**
@@ -39,13 +38,13 @@ public class JIPipeDataInfoCellRenderer extends JLabel implements TableCellRende
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
         if (value instanceof JIPipeDataInfo) {
             JIPipeDataInfo data = (JIPipeDataInfo) value;
-            setIcon(JIPipeUIDatatypeRegistry.getInstance().getIconFor(data.getDataClass()));
+            setIcon(JIPipe.getDataTypes().getIconFor(data.getDataClass()));
             setText(data.getName());
         }
         if (isSelected) {
-            setBackground(new Color(184, 207, 229));
+            setBackground(UIManager.getColor("List.selectionBackground"));
         } else {
-            setBackground(new Color(255, 255, 255));
+            setBackground(UIManager.getColor("List.background"));
         }
         return this;
     }

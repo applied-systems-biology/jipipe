@@ -13,8 +13,10 @@
 
 package org.hkijena.jipipe.extensions.imagejdatatypes.datatypes;
 
-import ij.*;
+import ij.IJ;
+import ij.ImagePlus;
 import ij.process.ImageProcessor;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
@@ -25,8 +27,6 @@ import org.hkijena.jipipe.utils.PathUtils;
 
 import javax.swing.*;
 import java.awt.Component;
-import java.awt.Image;
-import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.nio.file.Path;
 
@@ -59,7 +59,7 @@ public class ImagePlusData implements JIPipeData {
                     "Please contact the JIPipe developers about this issue.");
         }
         if (ImageJDataTypesSettings.getInstance().isUseBioFormats()) {
-             OMEImageData omeImageData = new OMEImageData(storageFilePath);
+            OMEImageData omeImageData = new OMEImageData(storageFilePath);
             image = omeImageData.getImage();
         } else {
             image = IJ.openImage(targetFile.toString());
@@ -107,7 +107,7 @@ public class ImagePlusData implements JIPipeData {
     public JIPipeData duplicate() {
         ImagePlus imp = image.duplicate();
         imp.setTitle(getImage().getTitle());
-        return JIPipeData.createInstance(getClass(), imp);
+        return JIPipe.createData(getClass(), imp);
     }
 
     /**
@@ -132,8 +132,8 @@ public class ImagePlusData implements JIPipeData {
         double factorY = 1.0 * height / image.getHeight();
         double factor = Math.max(factorX, factorY);
         boolean smooth = factor < 0;
-        int imageWidth = (int)(image.getWidth() * factor);
-        int imageHeight = (int)(image.getHeight() * factor);
+        int imageWidth = (int) (image.getWidth() * factor);
+        int imageHeight = (int) (image.getHeight() * factor);
         ImageProcessor resized = image.getProcessor().resize(imageWidth, imageHeight, smooth);
         BufferedImage bufferedImage = resized.getBufferedImage();
         return new JLabel(new ImageIcon(bufferedImage));

@@ -13,20 +13,21 @@
 
 package org.hkijena.jipipe.extensions.parameters.primitives;
 
-import gnu.trove.list.TIntList;
-import gnu.trove.list.array.TIntArrayList;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
-import org.hkijena.jipipe.utils.ModernMetalTheme;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
-import java.util.*;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.Supplier;
 
 /**
@@ -54,7 +55,7 @@ public class DynamicSetParameterEditorUI extends JIPipeParameterEditorUI {
     private Set<Object> getCurrentlySelected() {
         Set<Object> result = new HashSet<>();
         for (Map.Entry<Object, JCheckBox> entry : checkBoxMap.entrySet()) {
-            if(entry.getValue().isSelected()) {
+            if (entry.getValue().isSelected()) {
                 result.add(entry.getKey());
             }
         }
@@ -76,7 +77,7 @@ public class DynamicSetParameterEditorUI extends JIPipeParameterEditorUI {
 
     private void initialize() {
         setLayout(new BorderLayout());
-        setBorder(BorderFactory.createLineBorder(ModernMetalTheme.MEDIUM_GRAY));
+        setBorder(BorderFactory.createLineBorder(UIManager.getColor("Button.borderColor")));
 
         DynamicSetParameter<Object> parameter = getParameter(DynamicSetParameter.class);
         Object[] values;
@@ -96,16 +97,15 @@ public class DynamicSetParameterEditorUI extends JIPipeParameterEditorUI {
         checkBoxMap.clear();
         JPanel contentPanel = new JPanel();
         contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
-        for(Object value : values){
+        for (Object value : values) {
             JCheckBox checkBox = new JCheckBox(parameter.renderLabel(value),
                     parameter.getValues().contains(value));
             checkBox.setToolTipText(parameter.renderTooltip(value));
             checkBox.addActionListener(e -> {
-                if(checkBox.isSelected()) {
+                if (checkBox.isSelected()) {
                     parameter.getValues().add(value);
                     setParameter(parameter, false);
-                }
-                else {
+                } else {
                     parameter.getValues().remove(value);
                     setParameter(parameter, false);
                 }
@@ -115,6 +115,7 @@ public class DynamicSetParameterEditorUI extends JIPipeParameterEditorUI {
         }
 
         JToolBar toolBar = new JToolBar();
+        toolBar.add(Box.createHorizontalStrut(4));
         toolBar.add(new JLabel(getParameterAccess().getName()));
         toolBar.add(Box.createHorizontalGlue());
 

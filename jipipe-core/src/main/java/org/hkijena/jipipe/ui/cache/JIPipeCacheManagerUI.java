@@ -15,12 +15,11 @@ package org.hkijena.jipipe.ui.cache;
 
 import com.google.common.eventbus.Subscribe;
 import com.google.common.html.HtmlEscapers;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProjectCache;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
-import org.hkijena.jipipe.ui.registries.JIPipeUIDatatypeRegistry;
-import org.hkijena.jipipe.utils.ModernMetalTheme;
 import org.hkijena.jipipe.utils.RoundedLineBorder;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -52,7 +51,7 @@ public class JIPipeCacheManagerUI extends JIPipeProjectWorkbenchPanel {
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
         setOpaque(false);
         setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1),
-                BorderFactory.createCompoundBorder(new RoundedLineBorder(ModernMetalTheme.MEDIUM_GRAY, 1, 2),
+                BorderFactory.createCompoundBorder(new RoundedLineBorder(UIManager.getColor("Button.borderColor"), 1, 2),
                         BorderFactory.createEmptyBorder(5, 15, 5, 15))));
 
 
@@ -94,7 +93,7 @@ public class JIPipeCacheManagerUI extends JIPipeProjectWorkbenchPanel {
             cacheInfo.append("Currently there are ").append(getProject().getCache().getCachedRowNumber()).append(" data rows stored in the cache.<br/><br/>");
             cacheInfo.append("<table>");
             for (Map.Entry<JIPipeDataInfo, Integer> entry : getProject().getCache().getCachedDataTypes().entrySet()) {
-                cacheInfo.append("<tr><td>").append("<img src=\"").append(JIPipeUIDatatypeRegistry.getInstance().getIconURLFor(entry.getKey())).append("\"/></td>");
+                cacheInfo.append("<tr><td>").append("<img src=\"").append(JIPipe.getDataTypes().getIconURLFor(entry.getKey())).append("\"/></td>");
                 cacheInfo.append("<td>").append(HtmlEscapers.htmlEscaper().escape(entry.getKey().getName())).append("</td>");
                 cacheInfo.append("<td>").append(entry.getValue()).append(" rows").append("</td></tr>");
             }

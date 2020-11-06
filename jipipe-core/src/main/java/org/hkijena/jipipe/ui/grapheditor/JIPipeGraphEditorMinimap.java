@@ -3,11 +3,22 @@ package org.hkijena.jipipe.ui.grapheditor;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.events.GraphCanvasUpdatedEvent;
+import org.hkijena.jipipe.ui.theme.ModernMetalTheme;
 import org.hkijena.jipipe.utils.ScreenImage;
 
 import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.event.AdjustmentEvent;
+import java.awt.event.AdjustmentListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.HierarchyEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
@@ -18,6 +29,7 @@ import java.awt.image.BufferedImageOp;
  */
 public class JIPipeGraphEditorMinimap extends JIPipeWorkbenchPanel implements MouseListener, MouseMotionListener, AdjustmentListener {
 
+    private static final Color AREA_FILL_COLOR = new Color(0x3365a4e3, true);
     private final JIPipeGraphEditorUI graphEditorUI;
     private BufferedImage graphImage;
     private double scaleFactor;
@@ -127,7 +139,7 @@ public class JIPipeGraphEditorMinimap extends JIPipeWorkbenchPanel implements Mo
 
     @Override
     public void paint(Graphics g) {
-        g.setColor(Color.WHITE);
+        g.setColor(UIManager.getColor("Panel.background"));
         g.fillRect(0, 0, getWidth(), getHeight());
         if (graphImage != null) {
             if (viewBaseWidth != getWidth() || viewBaseHeight != getHeight()) {
@@ -144,7 +156,9 @@ public class JIPipeGraphEditorMinimap extends JIPipeWorkbenchPanel implements Mo
             graphics2D.drawImage(graphImage, op, viewX, viewY);
 
             // Draw current scroll position
-            g.setColor(Color.DARK_GRAY);
+            g.setColor(AREA_FILL_COLOR);
+            g.fillRect(viewX + scrollX, viewY + scrollY, scrollWidth, scrollHeight);
+            g.setColor(ModernMetalTheme.PRIMARY5);
             ((Graphics2D) g).setStroke(new BasicStroke(2));
             g.drawRect(viewX + scrollX, viewY + scrollY, scrollWidth, scrollHeight);
         }

@@ -18,16 +18,20 @@ import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableBiMap;
 import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
-import org.hkijena.jipipe.utils.CustomTabbedPaneUI;
+import org.hkijena.jipipe.ui.theme.CustomTabbedPaneUI;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
-import java.util.*;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -50,7 +54,7 @@ public class DocumentTabPane extends JPanel {
     /**
      * Contains tabs that can be closed, but opened again
      */
-    private BiMap<String, DocumentTab> singletonTabs =  HashBiMap.create();
+    private BiMap<String, DocumentTab> singletonTabs = HashBiMap.create();
 
     /**
      * Creates a new instance
@@ -82,7 +86,7 @@ public class DocumentTabPane extends JPanel {
                 }
             }
         });
-        if (GeneralUISettings.getInstance().isModernizeCrossPlatformLookAndFeel()) {
+        if (GeneralUISettings.getInstance().getTheme().isModern()) {
             tabbedPane.setUI(new CustomTabbedPaneUI());
         }
         add(tabbedPane, BorderLayout.CENTER);
@@ -187,7 +191,7 @@ public class DocumentTabPane extends JPanel {
 //            } else {
 //                closeButton.setBackground(Color.WHITE);
 //            }
-            closeButton.setBackground(Color.WHITE);
+            closeButton.setBackground(UIManager.getColor("TextArea.background"));
 
             closeButton.setOpaque(false);
             closeButton.setEnabled(closeMode != CloseMode.withDisabledCloseButton);

@@ -13,12 +13,11 @@
 
 package org.hkijena.jipipe.ui.components;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
-import org.hkijena.jipipe.ui.registries.JIPipeUINodeRegistry;
-import org.hkijena.jipipe.utils.CustomScrollPane;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -26,7 +25,8 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreePath;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Component;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -63,7 +63,7 @@ public class ParameterTreeUI extends JPanel {
         setLayout(new BorderLayout());
         treeComponent = new JTree();
         treeComponent.setCellRenderer(new Renderer());
-        treeScrollPane = new CustomScrollPane(treeComponent);
+        treeScrollPane = new JScrollPane(treeComponent);
         add(treeScrollPane, BorderLayout.CENTER);
         searchTextField = new SearchTextField();
         searchTextField.addActionListener(e -> rebuildModel());
@@ -184,7 +184,7 @@ public class ParameterTreeUI extends JPanel {
                     Icon icon = null;
                     if (node.getCollection() instanceof JIPipeGraphNode) {
                         JIPipeNodeInfo info = ((JIPipeGraphNode) node.getCollection()).getInfo();
-                        icon = JIPipeUINodeRegistry.getInstance().getIconFor(info);
+                        icon = JIPipe.getNodes().getIconFor(info);
                     }
                     if (icon == null) {
                         UIUtils.getIconFromResources("actions/object-group.png");
@@ -205,9 +205,9 @@ public class ParameterTreeUI extends JPanel {
             }
 
             if (selected) {
-                setBackground(new Color(184, 207, 229));
+                setBackground(UIManager.getColor("List.selectionBackground"));
             } else {
-                setBackground(new Color(255, 255, 255));
+                setBackground(UIManager.getColor("List.background"));
             }
 
             return this;

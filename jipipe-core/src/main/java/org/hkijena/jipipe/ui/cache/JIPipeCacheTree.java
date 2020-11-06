@@ -21,15 +21,13 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.SearchTextField;
-import org.hkijena.jipipe.utils.CustomScrollPane;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
-import java.awt.*;
-import java.util.List;
+import java.awt.BorderLayout;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -181,7 +179,7 @@ public class JIPipeCacheTree extends JIPipeProjectWorkbenchPanel {
         setLayout(new BorderLayout());
         tree = new JTree();
         tree.setCellRenderer(new JIPipeCacheStateTreeCellRenderer());
-        treeScollPane = new CustomScrollPane(tree);
+        treeScollPane = new JScrollPane(tree);
         add(treeScollPane, BorderLayout.CENTER);
 
         searchTextField = new SearchTextField();

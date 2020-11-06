@@ -26,14 +26,13 @@ import org.hkijena.jipipe.ui.components.EditAlgorithmSlotPanel;
 import org.hkijena.jipipe.ui.components.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.MarkdownReader;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphEditorUI;
-import org.hkijena.jipipe.utils.CustomScrollPane;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
-import java.awt.*;
+import java.awt.BorderLayout;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.util.HashSet;
@@ -67,7 +66,7 @@ public class JIPipeSlotEditorUI extends JPanel {
 
         MarkdownReader helpPanel = new MarkdownReader(false);
         helpPanel.setDocument(MarkdownDocument.fromPluginResource("documentation/algorithm-slots.md"));
-        JScrollPane scrollPane = new CustomScrollPane(slotTree);
+        JScrollPane scrollPane = new JScrollPane(slotTree);
         JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, scrollPane, helpPanel);
         splitPane.setDividerSize(3);
         splitPane.setResizeWeight(0.33);

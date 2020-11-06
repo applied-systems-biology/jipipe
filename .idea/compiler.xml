@@ -6,6 +6,7 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="jipipe-ij-omero" />
         <module name="jipipe-annotation" />
         <module name="jipipe-core" />
         <module name="jipipe-tables" />
@@ -14,13 +15,18 @@
         <module name="jipipe-filesystem" />
         <module name="jipipe-launcher" />
         <module name="jipipe-ij" />
+        <module name="jipipe-ij-multi-template-matching" />
         <module name="jipipe-clij" />
         <module name="jipipe-python" />
+        <module name="jipipe-installer-linux" />
+        <module name="jipipe-ij-algorithms" />
         <module name="jipipe-multiparameters" />
         <module name="jipipe-plots" />
+        <module name="ij-updater-cli" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="ij-updater-cli" target="1.8" />
       <module name="jipipe" target="1.8" />
       <module name="jipipe-annotation" target="1.8" />
       <module name="jipipe-clij" target="1.8" />
@@ -28,6 +34,10 @@
       <module name="jipipe-debug" target="1.8" />
       <module name="jipipe-filesystem" target="1.8" />
       <module name="jipipe-ij" target="1.8" />
+      <module name="jipipe-ij-algorithms" target="1.8" />
+      <module name="jipipe-ij-multi-template-matching" target="1.8" />
+      <module name="jipipe-ij-omero" target="1.8" />
+      <module name="jipipe-installer-linux" target="1.8" />
       <module name="jipipe-launcher" target="1.8" />
       <module name="jipipe-multiparameters" target="1.8" />
       <module name="jipipe-plots" target="1.8" />
