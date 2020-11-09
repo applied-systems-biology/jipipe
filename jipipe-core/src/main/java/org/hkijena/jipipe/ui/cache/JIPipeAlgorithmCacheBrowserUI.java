@@ -148,7 +148,7 @@ public class JIPipeAlgorithmCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
         toolBar.add(clearOutdatedButton);
 
         JButton clearAllButton = new JButton("Clear all", UIUtils.getIconFromResources("actions/clear-brush.png"));
-        clearAllButton.addActionListener(e -> getProject().getCache().clear());
+        clearAllButton.addActionListener(e -> getProject().getCache().clear((JIPipeAlgorithm) this.graphNode));
         toolBar.add(clearAllButton);
 
         toolBar.add(Box.createHorizontalGlue());
