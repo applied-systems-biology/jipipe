@@ -5,6 +5,7 @@ import net.haesleinhuepf.clij.clearcl.ClearCLBuffer;
 import net.haesleinhuepf.clij2.CLIJ2;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.extensions.clij2.CLIJSettings;
 import org.hkijena.jipipe.extensions.imagejdatatypes.algorithms.DisplayRangeCalibrationAlgorithm;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
@@ -69,9 +70,9 @@ public class CLIJImageData implements JIPipeData {
     }
 
     @Override
-    public void display(String displayName, JIPipeWorkbench workbench) {
+    public void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
         ImagePlusData data = pull();
-        data.display(displayName, workbench);
+        data.display(displayName, workbench, source);
     }
 
     @Override

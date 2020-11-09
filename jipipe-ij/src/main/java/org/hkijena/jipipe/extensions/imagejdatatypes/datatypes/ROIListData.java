@@ -33,6 +33,7 @@ import ij.process.ImageProcessor;
 import ij.process.LUT;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.RoiOutline;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.SliceIndex;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
@@ -193,7 +194,7 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
     }
 
     @Override
-    public void display(String displayName, JIPipeWorkbench workbench) {
+    public void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
         Map<Optional<ImagePlus>, ROIListData> byImage = groupByReferenceImage();
 
         RoiManager roiManager = null;

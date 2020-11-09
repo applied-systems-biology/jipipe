@@ -15,6 +15,7 @@ package org.hkijena.jipipe.extensions.tables.datatypes;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 
 import java.nio.file.Path;
@@ -79,7 +80,7 @@ public class ZeroTableColumn implements TableColumn {
     }
 
     @Override
-    public void display(String displayName, JIPipeWorkbench workbench) {
+    public void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
 
     }
 }

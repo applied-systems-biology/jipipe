@@ -4,6 +4,7 @@ import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataDisplayOperation;
 import org.hkijena.jipipe.api.data.JIPipeDataImportOperation;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
+import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.data.JIPipeExportedDataTable;
 import org.hkijena.jipipe.extensions.plots.datatypes.PlotData;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
@@ -16,8 +17,8 @@ import java.nio.file.Path;
 
 public class OpenPlotInJIPipeDataOperation implements JIPipeDataDisplayOperation, JIPipeDataImportOperation {
     @Override
-    public void display(JIPipeData data, String displayName, JIPipeWorkbench workbench) {
-        data.display(displayName, workbench);
+    public void display(JIPipeData data, String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
+        data.display(displayName, workbench, source);
     }
 
     @Override

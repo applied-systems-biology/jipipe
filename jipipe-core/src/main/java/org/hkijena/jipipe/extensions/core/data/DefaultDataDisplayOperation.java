@@ -2,6 +2,7 @@ package org.hkijena.jipipe.extensions.core.data;
 
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataDisplayOperation;
+import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -9,8 +10,8 @@ import javax.swing.*;
 
 public class DefaultDataDisplayOperation implements JIPipeDataDisplayOperation {
     @Override
-    public void display(JIPipeData data, String displayName, JIPipeWorkbench workbench) {
-        data.display(displayName, workbench);
+    public void display(JIPipeData data, String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
+        data.display(displayName, workbench, source);
     }
 
     @Override

@@ -56,6 +56,7 @@ import ome.xml.model.enums.PixelType;
 import ome.xml.model.primitives.PositiveInteger;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyNullPointerException;
 import org.hkijena.jipipe.extensions.imagejdatatypes.ImageJDataTypesSettings;
 import org.hkijena.jipipe.extensions.imagejdatatypes.parameters.OMEExporterSettings;
@@ -181,15 +182,15 @@ public class OMEImageData implements JIPipeData {
     }
 
     @Override
-    public void display(String displayName, JIPipeWorkbench workbench) {
+    public void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
         if (rois != null && !rois.isEmpty()) {
             ROIListData data = new ROIListData(rois);
             for (Roi roi : data) {
                 roi.setImage(image);
             }
-            data.display(displayName, workbench);
+            data.display(displayName, workbench, source);
         } else {
-            (new ImagePlusData(image)).display(displayName, workbench);
+            (new ImagePlusData(image)).display(displayName, workbench, source);
         }
     }
 

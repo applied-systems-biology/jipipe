@@ -18,6 +18,7 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.JsonUtils;
 
@@ -60,7 +61,7 @@ public class PathData implements JIPipeData {
     }
 
     @Override
-    public void display(String displayName, JIPipeWorkbench workbench) {
+    public void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
         try {
             Desktop.getDesktop().open(getPath().toFile());
         } catch (IOException e) {

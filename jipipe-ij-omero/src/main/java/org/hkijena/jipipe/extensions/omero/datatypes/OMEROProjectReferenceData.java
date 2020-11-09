@@ -15,6 +15,7 @@ package org.hkijena.jipipe.extensions.omero.datatypes;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 
 import java.nio.file.Path;
@@ -45,7 +46,7 @@ public class OMEROProjectReferenceData implements JIPipeData {
     }
 
     @Override
-    public void display(String displayName, JIPipeWorkbench workbench) {
+    public void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
 
     }
 

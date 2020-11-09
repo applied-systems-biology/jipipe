@@ -16,6 +16,7 @@ package org.hkijena.jipipe.extensions.strings;
 import org.apache.commons.lang.CharSetUtils;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.texteditor.JIPipeTextEditor;
 
@@ -54,7 +55,7 @@ public class StringData implements JIPipeData {
     }
 
     @Override
-    public void display(String displayName, JIPipeWorkbench workbench) {
+    public void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
         JIPipeTextEditor editor = JIPipeTextEditor.openInNewTab(workbench, displayName);
         editor.setMimeType(getMimeType());
         editor.setText(data);

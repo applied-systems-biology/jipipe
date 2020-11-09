@@ -19,6 +19,7 @@ import ij.macro.Variable;
 import ij.measure.ResultsTable;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.extensions.tables.ConvertingColumnOperation;
 import org.hkijena.jipipe.extensions.tables.IntegratingColumnOperation;
 import org.hkijena.jipipe.extensions.tables.TableColumnReference;
@@ -431,7 +432,7 @@ public class ResultsTableData implements JIPipeData, TableModel {
     }
 
     @Override
-    public void display(String displayName, JIPipeWorkbench workbench) {
+    public void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
         workbench.getDocumentTabPane().addTab(displayName, UIUtils.getIconFromResources("data-types/results-table.png"),
                 new JIPipeTableEditor(workbench, (ResultsTableData) duplicate()), DocumentTabPane.CloseMode.withAskOnCloseButton, true);
         workbench.getDocumentTabPane().switchToLastTab();

@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.extensions.tables;
 
 import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.extensions.tables.datatypes.TableColumn;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
@@ -100,8 +101,8 @@ public class TableColumnReference implements TableColumn {
     }
 
     @Override
-    public void display(String displayName, JIPipeWorkbench workbench) {
+    public void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
         ResultsTableData data = new ResultsTableData(Collections.singleton(this));
-        data.display(displayName, workbench);
+        data.display(displayName, workbench, source);
     }
 }

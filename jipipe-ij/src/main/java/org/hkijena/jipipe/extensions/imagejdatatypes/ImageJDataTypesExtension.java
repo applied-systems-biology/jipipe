@@ -83,6 +83,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePl
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale8UData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.display.OpenInImageJDataDisplay;
 import org.hkijena.jipipe.extensions.imagejdatatypes.parameters.OMEColorMode;
 import org.hkijena.jipipe.extensions.imagejdatatypes.parameters.OMETIFFCompression;
 import org.hkijena.jipipe.extensions.imagejdatatypes.resultanalysis.ImageDataPreviewUI;
@@ -240,7 +241,8 @@ public class ImageJDataTypesExtension extends JIPipePrepackagedDefaultJavaExtens
                 UIUtils.getIconURLFromResources("data-types/bioformats.png"),
                 null,
                 OMEImageDataPreviewUI.class,
-                new OMEImageDataImportOperation());
+                new OMEImageDataImportOperation(),
+                new OpenInImageJDataDisplay());
         registerImageJDataAdapter(new OMEImageDataImageJAdapter(), ImagePlusDataImporterUI.class);
         registerImageDataType("imagej-imgplus", ImagePlusData.class, "icons/data-types/imgplus.png");
         registerImageDataType("imagej-imgplus-greyscale", ImagePlusGreyscaleData.class, "icons/data-types/imgplus-greyscale.png");
@@ -369,7 +371,7 @@ public class ImageJDataTypesExtension extends JIPipePrepackagedDefaultJavaExtens
     }
 
     private void registerImageDataType(String id, Class<? extends ImagePlusData> dataClass, String iconResource) {
-        registerDatatype(id, dataClass, ResourceUtils.getPluginResource(iconResource), null, ImageDataPreviewUI.class, new ImagePlusDataImportOperation());
+        registerDatatype(id, dataClass, ResourceUtils.getPluginResource(iconResource), null, ImageDataPreviewUI.class, new ImagePlusDataImportOperation(), new OpenInImageJDataDisplay());
         registerImageJDataAdapter(new ImgPlusDataImageJAdapter(dataClass), ImagePlusDataImporterUI.class);
     }
 }

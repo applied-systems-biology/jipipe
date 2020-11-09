@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.JsonUtils;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -58,7 +59,7 @@ public class ParametersData implements JIPipeData {
     }
 
     @Override
-    public void display(String displayName, JIPipeWorkbench workbench) {
+    public void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
         try {
             Path outputFile = Files.createTempFile("JIPipeTempParameters-" + StringUtils.makeFilesystemCompatible(displayName), ".json");
             JsonUtils.getObjectMapper().writerWithDefaultPrettyPrinter()

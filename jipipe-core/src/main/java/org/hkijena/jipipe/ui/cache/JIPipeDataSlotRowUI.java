@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.ui.cache;
 
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.data.JIPipeCacheSlotDataSource;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataDisplayOperation;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
@@ -96,7 +97,7 @@ public class JIPipeDataSlotRowUI extends JIPipeWorkbenchPanel {
     private void runDisplayOperation(JIPipeDataDisplayOperation operation) {
         JIPipeData data = slot.getData(row, JIPipeData.class);
         String displayName = slot.getNode().getName() + "/" + slot.getName() + "/" + row;
-        operation.display(data, displayName, getWorkbench());
+        operation.display(data, displayName, getWorkbench(), new JIPipeCacheSlotDataSource(slot, row));
         if (GeneralDataSettings.getInstance().isAutoSaveLastDisplay()) {
             String dataTypeId = JIPipe.getDataTypes().getIdOf(slot.getAcceptedDataType());
             DynamicStringEnumParameter parameter = DefaultCacheDisplaySettings.getInstance().getValue(dataTypeId, DynamicStringEnumParameter.class);

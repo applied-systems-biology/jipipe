@@ -15,6 +15,7 @@ package org.hkijena.jipipe.extensions.tables.datatypes;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.extensions.tables.MutableTableColumn;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 
@@ -121,8 +122,8 @@ public class StringArrayTableColumn implements MutableTableColumn {
     }
 
     @Override
-    public void display(String displayName, JIPipeWorkbench workbench) {
+    public void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
         ResultsTableData data = new ResultsTableData(Collections.singleton(this));
-        data.display(displayName, workbench);
+        data.display(displayName, workbench, source);
     }
 }

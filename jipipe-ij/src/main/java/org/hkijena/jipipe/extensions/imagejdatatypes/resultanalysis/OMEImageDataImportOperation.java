@@ -4,6 +4,7 @@ import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataImportOperation;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeExportedDataTable;
+import org.hkijena.jipipe.api.data.JIPipeResultSlotDataSource;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.OMEImageData;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -35,7 +36,7 @@ public class OMEImageDataImportOperation implements JIPipeDataImportOperation {
     @Override
     public JIPipeData show(JIPipeDataSlot slot, JIPipeExportedDataTable.Row row, Path rowStorageFolder, String compartmentName, String algorithmName, String displayName, JIPipeWorkbench workbench) {
         OMEImageData data = new OMEImageData(rowStorageFolder);
-        data.display(displayName, workbench);
+        data.display(displayName, workbench, new JIPipeResultSlotDataSource(slot, row, rowStorageFolder));
         return data;
     }
 }
