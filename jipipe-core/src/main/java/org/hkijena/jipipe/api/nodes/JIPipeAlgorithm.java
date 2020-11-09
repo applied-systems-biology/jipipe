@@ -23,6 +23,7 @@ import org.hkijena.jipipe.api.JIPipeFixedThreadPool;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeSlotConfiguration;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
@@ -32,6 +33,7 @@ import org.hkijena.jipipe.utils.JsonUtils;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -213,8 +215,19 @@ public abstract class JIPipeAlgorithm extends JIPipeGraphNode {
     public static class StateSerializer extends JsonSerializer<JIPipeGraphNode> {
         @Override
         public void serialize(JIPipeGraphNode algorithm, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
+            Map<String, String> sources = new HashMap<>();
+            for (JIPipeDataSlot inputSlot : algorithm.getInputSlots()) {
+                JIPipeDataSlot sourceSlot = algorithm.getGraph().getSourceSlot(inputSlot);
+                if(sourceSlot != null) {
+                    sources.put(inputSlot.getName(), sourceSlot.getNode().getIdInGraph() + "/" + sourceSlot.getName());
+                }
+                else {
+                    sources.put(inputSlot.getName(), "");
+                }
+            }
             jsonGenerator.writeStartObject();
             jsonGenerator.writeStringField("jipipe:node-info-id", algorithm.getInfo().getId());
+            jsonGenerator.writeObjectField("jipipe:cache-state:source-nodes", sources);
             JIPipeParameterCollection.serializeParametersToJson(algorithm, jsonGenerator, this::serializeParameter);
             jsonGenerator.writeEndObject();
         }
