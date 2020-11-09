@@ -216,13 +216,14 @@ public abstract class JIPipeAlgorithm extends JIPipeGraphNode {
         @Override
         public void serialize(JIPipeGraphNode algorithm, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
             Map<String, String> sources = new HashMap<>();
-            for (JIPipeDataSlot inputSlot : algorithm.getInputSlots()) {
-                JIPipeDataSlot sourceSlot = algorithm.getGraph().getSourceSlot(inputSlot);
-                if(sourceSlot != null) {
-                    sources.put(inputSlot.getName(), sourceSlot.getNode().getIdInGraph() + "/" + sourceSlot.getName());
-                }
-                else {
-                    sources.put(inputSlot.getName(), "");
+            if(algorithm.getGraph() != null) {
+                for (JIPipeDataSlot inputSlot : algorithm.getInputSlots()) {
+                    JIPipeDataSlot sourceSlot = algorithm.getGraph().getSourceSlot(inputSlot);
+                    if (sourceSlot != null) {
+                        sources.put(inputSlot.getName(), sourceSlot.getNode().getIdInGraph() + "/" + sourceSlot.getName());
+                    } else {
+                        sources.put(inputSlot.getName(), "");
+                    }
                 }
             }
             jsonGenerator.writeStartObject();
