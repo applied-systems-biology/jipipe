@@ -67,7 +67,8 @@ public class PreviewControlUI extends JPanel {
 
     private void decreaseSize() {
         int current = dataSettings.getPreviewSize();
-        int newSize = Math.max(40, current - Math.max(1, current / 3));
+        int change = Math.min(100, Math.max(1, current / 3));
+        int newSize = Math.max(40, current - change);
         if(newSize != current) {
             JIPipeParameterCollection.setParameter(dataSettings, "preview-size", newSize);
         }
@@ -75,7 +76,8 @@ public class PreviewControlUI extends JPanel {
 
     private void increaseSize() {
         int current = dataSettings.getPreviewSize();
-        int newSize = current + Math.max(1, current / 3);
+        int change = Math.min(100, Math.max(1, current / 3));
+        int newSize = current + change;
         if(newSize != current) {
             JIPipeParameterCollection.setParameter(dataSettings, "preview-size", newSize);
         }
