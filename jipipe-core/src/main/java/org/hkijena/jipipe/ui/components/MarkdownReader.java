@@ -21,6 +21,7 @@ import com.vladsch.flexmark.parser.Parser;
 import com.vladsch.flexmark.pdf.converter.PdfConverterExtension;
 import com.vladsch.flexmark.util.data.MutableDataHolder;
 import com.vladsch.flexmark.util.data.MutableDataSet;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -223,7 +224,7 @@ public class MarkdownReader extends JPanel {
     }
 
     private void initializeStyleSheet(StyleSheet styleSheet) {
-        if(GeneralUISettings.getInstance().getTheme().isDark()) {
+        if(JIPipe.getInstance() != null && GeneralUISettings.getInstance().getTheme().isDark()) {
             for (String rule : CSS_RULES_DARK) {
                 styleSheet.addRule(rule);
             }

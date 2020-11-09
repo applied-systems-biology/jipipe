@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.lut;
 
+import ij.ImagePlus;
 import ij.process.LUT;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
@@ -26,6 +27,7 @@ import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.SliceIndex;
 
 import java.awt.Color;
 import java.util.function.Consumer;
@@ -38,6 +40,7 @@ import java.util.function.Supplier;
 @JIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Output", inheritedSlot = "Input", autoCreate = true)
 public class LUTInverterAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     private boolean duplicateImage = true;
+    private boolean applyToAllPlanes = true;
 
     public LUTInverterAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -46,6 +49,7 @@ public class LUTInverterAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     public LUTInverterAlgorithm(LUTInverterAlgorithm other) {
         super(other);
         this.duplicateImage = other.duplicateImage;
+        this.applyToAllPlanes = other.applyToAllPlanes;
     }
 
     @Override
@@ -53,17 +57,36 @@ public class LUTInverterAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         ImagePlusData data = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class);
         if (duplicateImage)
             data = (ImagePlusData) data.duplicate();
-        if (data.getImage().getLuts().length == 0) {
-            data.getImage().setLut(LUT.createLutFromColor(Color.WHITE).createInvertedLut());
-        } else {
-            LUT lut = data.getImage().getLuts()[0];
-            if (lut != null) {
-                data.getImage().setLut(lut.createInvertedLut());
-            } else {
-                data.getImage().setLut(LUT.createLutFromColor(Color.WHITE).createInvertedLut());
+        ImagePlus image = data.getImage();
+        if(applyToAllPlanes && image.isStack()) {
+            SliceIndex original = new SliceIndex(image.getZ(), image.getC(), image.getT());
+            for (int z = 0; z < image.getNSlices(); z++) {
+                for (int c = 0; c < image.getNChannels(); c++) {
+                    for (int t = 0; t < image.getNFrames(); t++) {
+                        image.setPosition(c, z, t);
+                        applyLUT(image);
+                    }
+                }
             }
+            image.setPosition(original.getC(), original.getZ(), original.getT());
+        }
+        else {
+            applyLUT(image);
         }
         dataBatch.addOutputData(getFirstOutputSlot(), data);
+    }
+
+    public static void applyLUT(ImagePlus image) {
+        if (image.getLuts().length == 0) {
+            image.setLut(LUT.createLutFromColor(Color.WHITE).createInvertedLut());
+        } else {
+            LUT lut = image.getLuts()[0];
+            if (lut != null) {
+                image.setLut(lut.createInvertedLut());
+            } else {
+                image.setLut(LUT.createLutFromColor(Color.WHITE).createInvertedLut());
+            }
+        }
     }
 
     @JIPipeDocumentation(name = "Duplicate image", description = "As the LUT modification does not change any image data, you can disable creating a duplicate.")
@@ -75,5 +98,16 @@ public class LUTInverterAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeParameter("duplicate-image")
     public void setDuplicateImage(boolean duplicateImage) {
         this.duplicateImage = duplicateImage;
+    }
+
+    @JIPipeDocumentation(name = "Apply to all planes", description = "If enabled, all LUT are modified, not only the one of the current plane.")
+    @JIPipeParameter("apply-to-all-planes")
+    public boolean isApplyToAllPlanes() {
+        return applyToAllPlanes;
+    }
+
+    @JIPipeParameter("apply-to-all-planes")
+    public void setApplyToAllPlanes(boolean applyToAllPlanes) {
+        this.applyToAllPlanes = applyToAllPlanes;
     }
 }

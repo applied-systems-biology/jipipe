@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.lut;
 
+import ij.ImagePlus;
 import ij.process.LUT;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
@@ -26,6 +27,7 @@ import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.SliceIndex;
 
 import java.awt.Color;
 import java.util.function.Consumer;
@@ -40,6 +42,7 @@ public class SetLUTFromColorAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     private boolean duplicateImage = true;
     private Color firstColor = Color.BLACK;
     private Color secondColor = Color.RED;
+    private boolean applyToAllPlanes = true;
 
     public SetLUTFromColorAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -50,6 +53,7 @@ public class SetLUTFromColorAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.duplicateImage = other.duplicateImage;
         this.firstColor = other.firstColor;
         this.secondColor = other.secondColor;
+        this.applyToAllPlanes = other.applyToAllPlanes;
     }
 
     @Override
@@ -57,7 +61,23 @@ public class SetLUTFromColorAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         ImagePlusData data = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class);
         if (duplicateImage)
             data = (ImagePlusData) data.duplicate();
-        data.getImage().setLut(createGradientLUT(firstColor, secondColor));
+        LUT lut = createGradientLUT(firstColor, secondColor);
+        ImagePlus image = data.getImage();
+        if(applyToAllPlanes && image.isStack()) {
+            SliceIndex original = new SliceIndex(image.getZ(), image.getC(), image.getT());
+            for (int z = 0; z < image.getNSlices(); z++) {
+                for (int c = 0; c < image.getNChannels(); c++) {
+                    for (int t = 0; t < image.getNFrames(); t++) {
+                        image.setPosition(c, z, t);
+                        image.getProcessor().setLut(lut);
+                    }
+                }
+            }
+            image.setPosition(original.getC(), original.getZ(), original.getT());
+        }
+        else {
+            image.getProcessor().setLut(lut);
+        }
         dataBatch.addOutputData(getFirstOutputSlot(), data);
     }
 
@@ -92,6 +112,17 @@ public class SetLUTFromColorAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeParameter("second-color")
     public void setSecondColor(Color secondColor) {
         this.secondColor = secondColor;
+    }
+
+    @JIPipeDocumentation(name = "Apply to all planes", description = "If enabled, all LUT are modified, not only the one of the current plane.")
+    @JIPipeParameter("apply-to-all-planes")
+    public boolean isApplyToAllPlanes() {
+        return applyToAllPlanes;
+    }
+
+    @JIPipeParameter("apply-to-all-planes")
+    public void setApplyToAllPlanes(boolean applyToAllPlanes) {
+        this.applyToAllPlanes = applyToAllPlanes;
     }
 
     public static LUT createGradientLUT(Color firstColor, Color secondColor) {

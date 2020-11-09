@@ -27,6 +27,7 @@ import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.CalibrationMode;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.SliceIndex;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -41,6 +42,7 @@ public class DisplayRangeCalibrationAlgorithm extends JIPipeSimpleIteratingAlgor
     private double customMin = 0;
     private double customMax = 1;
     private boolean duplicateImage = true;
+    private boolean applyToAllPlanes = true;
 
     public DisplayRangeCalibrationAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -52,6 +54,7 @@ public class DisplayRangeCalibrationAlgorithm extends JIPipeSimpleIteratingAlgor
         this.customMin = other.customMin;
         this.customMax = other.customMax;
         this.duplicateImage = other.duplicateImage;
+        this.applyToAllPlanes = other.applyToAllPlanes;
     }
 
     @Override
@@ -59,7 +62,22 @@ public class DisplayRangeCalibrationAlgorithm extends JIPipeSimpleIteratingAlgor
         ImagePlusData data = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class);
         if (duplicateImage)
             data = (ImagePlusData) data.duplicate();
-        calibrate(data.getImage(), calibrationMode, customMin, customMax);
+        ImagePlus image = data.getImage();
+        if(applyToAllPlanes && image.isStack()) {
+            SliceIndex original = new SliceIndex(image.getZ(), image.getC(), image.getT());
+            for (int z = 0; z < image.getNSlices(); z++) {
+                for (int c = 0; c < image.getNChannels(); c++) {
+                    for (int t = 0; t < image.getNFrames(); t++) {
+                        image.setPosition(c, z, t);
+                        calibrate(image, calibrationMode, customMin, customMax);
+                    }
+                }
+            }
+            image.setPosition(original.getC(), original.getZ(), original.getT());
+        }
+        else {
+            calibrate(image, calibrationMode, customMin, customMax);
+        }
         dataBatch.addOutputData(getFirstOutputSlot(), data);
     }
 
@@ -105,6 +123,17 @@ public class DisplayRangeCalibrationAlgorithm extends JIPipeSimpleIteratingAlgor
     @JIPipeParameter("duplicate-image")
     public void setDuplicateImage(boolean duplicateImage) {
         this.duplicateImage = duplicateImage;
+    }
+
+    @JIPipeDocumentation(name = "Apply to all planes", description = "If enabled, all image planes are recalibrated, not only the one of the current plane.")
+    @JIPipeParameter("apply-to-all-planes")
+    public boolean isApplyToAllPlanes() {
+        return applyToAllPlanes;
+    }
+
+    @JIPipeParameter("apply-to-all-planes")
+    public void setApplyToAllPlanes(boolean applyToAllPlanes) {
+        this.applyToAllPlanes = applyToAllPlanes;
     }
 
     /**
