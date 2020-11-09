@@ -13,19 +13,27 @@
 
 package org.hkijena.jipipe.extensions.parameters.primitives;
 
+import org.apache.commons.lang3.math.NumberUtils;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.extensions.parameters.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
+import org.hkijena.jipipe.ui.components.DocumentChangeListener;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
+import org.hkijena.jipipe.utils.StringUtils;
+import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 
 /**
  * Editor for a any numeric parameter
  */
 public class NumberParameterEditorUI extends JIPipeParameterEditorUI {
-    private JSpinner spinner;
+    private JTextField numberField;
 
     /**
      * @param workbench       workbench
@@ -44,10 +52,19 @@ public class NumberParameterEditorUI extends JIPipeParameterEditorUI {
 
     @Override
     public void reload() {
-        spinner.setValue(getCurrentValue());
+        numberField.setText(formatNumber(getCurrentValue()));
     }
 
-    private Number getCurrentValue() {
+    public static String formatNumber(double number) {
+        if(number % 1 == 0) {
+            return "" + (long)number;
+        }
+        else {
+            return "" + number;
+        }
+    }
+
+    private double getCurrentValue() {
         Object value = getParameterAccess().get(Object.class);
         if (getParameterAccess().getFieldClass() == byte.class || getParameterAccess().getFieldClass() == Byte.class) {
             return value != null ? (Byte) value : (byte) 0;
@@ -66,7 +83,7 @@ public class NumberParameterEditorUI extends JIPipeParameterEditorUI {
         }
     }
 
-    private Comparable<?> getMinimumValue() {
+    private double getMinimumValue() {
         NumberParameterSettings settings = getParameterAccess().getAnnotationOfType(NumberParameterSettings.class);
         if (settings != null) {
             return settings.min();
@@ -89,7 +106,7 @@ public class NumberParameterEditorUI extends JIPipeParameterEditorUI {
         }
     }
 
-    private Comparable<?> getMaximumValue() {
+    private double getMaximumValue() {
         NumberParameterSettings settings = getParameterAccess().getAnnotationOfType(NumberParameterSettings.class);
         if (settings != null) {
             return settings.max();
@@ -140,10 +157,80 @@ public class NumberParameterEditorUI extends JIPipeParameterEditorUI {
 
     private void initialize() {
         setLayout(new BorderLayout());
-        SpinnerNumberModel model = new SpinnerNumberModel(getCurrentValue(), getMinimumValue(), getMaximumValue(), getStep());
-        spinner = new JSpinner(model);
-        spinner.addChangeListener(e -> setCurrentValue(model.getNumber()));
-        spinner.setPreferredSize(new Dimension(100, 28));
-        add(spinner, BorderLayout.CENTER);
+        setBackground(UIManager.getColor("TextField.background"));
+        setBorder(BorderFactory.createEtchedBorder());
+        numberField = new JTextField();
+        numberField.setBorder(BorderFactory.createEmptyBorder(0,4,0,0));
+        numberField.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
+        numberField.getDocument().addDocumentListener(new DocumentChangeListener() {
+            @Override
+            public void changed(DocumentEvent documentEvent) {
+                String text = StringUtils.orElse(numberField.getText(), "");
+                text = text.replace(',', '.').replace(" ", ""); // Allow usage of comma as separator
+                if(NumberUtils.isCreatable(text)) {
+                    pushValue(text);
+                }
+                else {
+                    setBorder(BorderFactory.createLineBorder(Color.RED, 2));
+                }
+            }
+        });
+        numberField.addActionListener(e -> {
+            // Try using an expression
+            try {
+                Object result = DefaultExpressionParameter.EVALUATOR.evaluate(numberField.getText());
+                if(result instanceof Number) {
+                    numberField.setText(formatNumber(((Number) result).doubleValue()));
+                }
+            }
+            catch (Exception e1) {
+            }
+        });
+        add(numberField, BorderLayout.CENTER);
+
+        JPanel buttonPanel = new JPanel(new BorderLayout());
+        buttonPanel.setBackground(UIManager.getColor("TextField.background"));
+        JButton buttonUp = new JButton(UIUtils.getIconFromResources("actions/arrow-up.png"));
+        buttonUp.setBackground(UIManager.getColor("TextField.background"));
+        buttonUp.setPreferredSize(new Dimension(21, 14));
+        buttonUp.setBorder(BorderFactory.createEmptyBorder(0, 4, 0, 4));
+        buttonUp.addActionListener(e -> increase());
+        buttonPanel.add(buttonUp, BorderLayout.NORTH);
+
+        JButton buttonDown = new JButton(UIUtils.getIconFromResources("actions/arrow-down.png"));
+        buttonDown.setBackground(UIManager.getColor("TextField.background"));
+        buttonDown.setPreferredSize(new Dimension(21, 14));
+        buttonDown.setBorder(BorderFactory.createEmptyBorder(0, 4, 0, 4));
+        buttonDown.addActionListener(e -> decrease());
+        buttonPanel.add(buttonDown, BorderLayout.SOUTH);
+        add(buttonPanel, BorderLayout.EAST);
+    }
+
+    private void decrease() {
+        double step = getStep();
+        double value = getCurrentValue();
+        double newValue = Math.max(getMinimumValue(), value - step);
+        numberField.setText(formatNumber(newValue));
+    }
+
+    private void increase() {
+        double step = getStep();
+        double value = getCurrentValue();
+        double newValue = Math.min(getMaximumValue(), value + step);
+        numberField.setText(formatNumber(newValue));
+    }
+
+    private void pushValue(String text) {
+        setBorder(BorderFactory.createEtchedBorder());
+        double newValue = NumberUtils.createDouble(text);
+        double currentValue = getCurrentValue();
+        if(newValue != currentValue) {
+            if(setCurrentValue(newValue)) {
+                setBorder(BorderFactory.createEtchedBorder());
+            }
+            else {
+                setBorder(BorderFactory.createLineBorder(Color.RED, 2));
+            }
+        }
     }
 }
