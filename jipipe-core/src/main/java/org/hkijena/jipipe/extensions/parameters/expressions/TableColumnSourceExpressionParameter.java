@@ -22,6 +22,8 @@ import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.extensions.tables.datatypes.StringArrayTableColumn;
 import org.hkijena.jipipe.extensions.tables.datatypes.TableColumn;
 
+import java.util.Objects;
+
 /**
  * Parameter that acts as source (via matching a column) or a generator
  */
@@ -119,13 +121,21 @@ public class TableColumnSourceExpressionParameter extends DefaultExpressionParam
 
         }
         catch (Exception e) {
-            throw new UserFriendlyRuntimeException(e,
-                    "Could not find or generate column!",
-                    "Table column source parameter",
-                    "A node requested from you to specify a table column. You entered the expression '" + getExpression() + "', but it did not yield in a column.",
-                    "Check if the expression is correct. If you want an existing column, it should return a string. If you want to search for one, it should return a boolean value. " +
-                            "If you want to generate one, it can return a number or string.");
         }
+
+        // Option 4: Column name equals expression
+        for (int col = 0; col < table.getColumnCount(); col++) {
+            if(Objects.equals(table.getColumnName(col), getExpression())) {
+                return table.getColumnReference(col);
+            }
+        }
+
+        throw new UserFriendlyRuntimeException("Could not find column!",
+                "Could not find or generate column!",
+                "Table column source parameter",
+                "A node requested from you to specify a table column. You entered the expression '" + getExpression() + "', but it did not yield in a column.",
+                "Check if the expression is correct. If you want an existing column, it should return a string. If you want to search for one, it should return a boolean value. " +
+                        "If you want to generate one, it can return a number or string.");
     }
 
     @Override

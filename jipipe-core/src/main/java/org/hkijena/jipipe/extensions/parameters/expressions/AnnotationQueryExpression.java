@@ -58,7 +58,6 @@ public class AnnotationQueryExpression extends DefaultExpressionParameter {
                     if(Objects.equals(annotation.getName(), key))
                         return annotation;
                 }
-
             }
         }
         catch (Exception e) {

@@ -62,10 +62,16 @@ public class StringQueryExpression extends DefaultExpressionParameter {
         catch (Exception e) {
         }
         for (String string : strings) {
-            variableSet.set("value", string);
-            boolean evaluationResult = test(variableSet);
-            if(evaluationResult)
-                return string;
+            try {
+                variableSet.set("value", string);
+                Object evaluationResult = evaluate(variableSet);
+                if (evaluationResult instanceof Boolean && (boolean)evaluationResult)
+                    return string;
+            }
+            catch (Exception e) {
+                if(Objects.equals(string, getExpression()))
+                    return string;
+            }
         }
         return null;
     }
@@ -91,10 +97,16 @@ public class StringQueryExpression extends DefaultExpressionParameter {
         if(!result.isEmpty())
             return result;
         for (String string : strings) {
-            variableSet.set("value", string);
-            boolean evaluationResult = test(variableSet);
-            if(evaluationResult)
-                result.add(string);
+            try {
+                variableSet.set("value", string);
+                Object evaluationResult = evaluate(variableSet);
+                if (evaluationResult instanceof Boolean && (boolean)evaluationResult)
+                    result.add(string);
+            }
+            catch (Exception e) {
+                if(Objects.equals(string, getExpression()))
+                    result.add(string);
+            }
         }
         return result;
     }
@@ -108,6 +120,7 @@ public class StringQueryExpression extends DefaultExpressionParameter {
         if("true".equals(getExpression()) || getExpression().trim().isEmpty())
             return true;
         StaticVariableSet<Object> variableSet = new StaticVariableSet<>();
+        variableSet.set("value", string);
         try {
             Object evaluationResult = evaluate(variableSet);
             if(evaluationResult instanceof String) {
@@ -115,11 +128,13 @@ public class StringQueryExpression extends DefaultExpressionParameter {
                 if(Objects.equals(key, string))
                     return true;
             }
+            else if(evaluationResult instanceof Boolean && (boolean)evaluationResult) {
+                return true;
+            }
         }
         catch (Exception e) {
         }
-        variableSet.set("value", string);
-        return test(variableSet);
+        return Objects.equals(getExpression(), string);
     }
 
     /**
@@ -127,25 +142,28 @@ public class StringQueryExpression extends DefaultExpressionParameter {
      * @param strings the strings
      * @return if one string matches
      */
-    public boolean test(Collection<String> strings) {
+    public boolean testAnyOf(Collection<String> strings) {
         if("true".equals(getExpression()) || getExpression().trim().isEmpty())
             return true;
         StaticVariableSet<Object> variableSet = new StaticVariableSet<>();
         for (String string : strings) {
             try {
+                variableSet.set("value", string);
                 Object evaluationResult = evaluate(variableSet);
                 if(evaluationResult instanceof String) {
                     String key = (String) evaluationResult;
                     if(Objects.equals(key, string))
                         return true;
                 }
+                else if(evaluationResult instanceof Boolean && (boolean)evaluationResult) {
+                    return true;
+                }
             }
             catch (Exception e) {
             }
-            variableSet.set("value", string);
             if(test(variableSet))
                 return true;
         }
-        return false;
+        return strings.contains(getExpression());
     }
 }
