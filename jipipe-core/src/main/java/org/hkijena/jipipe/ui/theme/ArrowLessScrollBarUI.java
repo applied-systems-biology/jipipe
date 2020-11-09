@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.ui.theme;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
 
 import javax.swing.*;
@@ -23,7 +24,7 @@ import java.awt.Dimension;
 public class ArrowLessScrollBarUI extends BasicScrollBarUI {
     @Override
     protected JButton createDecreaseButton(int orientation) {
-        if (GeneralUISettings.getInstance().getTheme().isModern())
+        if (JIPipe.getInstance() == null || GeneralUISettings.getInstance().getTheme().isModern())
             return createZeroButton();
         else
             return super.createDecreaseButton(orientation);
@@ -31,7 +32,7 @@ public class ArrowLessScrollBarUI extends BasicScrollBarUI {
 
     @Override
     protected JButton createIncreaseButton(int orientation) {
-        if (GeneralUISettings.getInstance().getTheme().isModern())
+        if (JIPipe.getInstance() == null || GeneralUISettings.getInstance().getTheme().isModern())
             return createZeroButton();
         else
             return super.createIncreaseButton(orientation);

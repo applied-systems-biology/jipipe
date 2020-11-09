@@ -60,8 +60,11 @@ public enum CalibrationMode {
             case Unit:
                 name = "Unit";
                 break;
+            case AutomaticImageJ:
+                name = "Auto";
+                break;
             case UnitAroundZero:
-                name = "Unit around zero";
+                name = "Unit around zero (-1 - 1)";
                 break;
         }
         if (name == null) {
