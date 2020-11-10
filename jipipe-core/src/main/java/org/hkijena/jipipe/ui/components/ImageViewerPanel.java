@@ -391,7 +391,7 @@ public class ImageViewerPanel extends JPanel {
             this.slice = image.getProcessor();
             this.statistics = image.getStatistics();
             uploadSliceToCanvas();
-            displayRangeCalibrationControl.updateSlice();
+            displayRangeCalibrationControl.updateSliders();
         }
     }
 
@@ -421,9 +421,14 @@ public class ImageViewerPanel extends JPanel {
         return statistics;
     }
 
+    public void setSelectedCalibration(ImageJCalibrationMode mode) {
+        calibrationModes.setSelectedItem(mode);
+    }
+
     public static void main(String[] args) {
         JIPipeUITheme.ModernLight.install();
         ImagePlus image = IJ.openImage("/data/Mitochondria/data/Mic13 SNAP Deconv.lif - WT_Hela_Mic13_SNAP_Series011_10_cmle_converted.tif");
+//        ImagePlus image = IJ.openImage("/home/rgerst/dots.png");
         JFrame frame = new JFrame();
         ImageViewerPanel panel = new ImageViewerPanel();
         panel.setImage(image);

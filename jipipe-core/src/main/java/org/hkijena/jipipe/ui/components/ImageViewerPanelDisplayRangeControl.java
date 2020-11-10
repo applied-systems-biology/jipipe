@@ -16,14 +16,13 @@ package org.hkijena.jipipe.ui.components;
 import ij.process.ImageProcessor;
 import ij.process.ImageStatistics;
 import org.hkijena.jipipe.ui.theme.ModernMetalTheme;
+import org.hkijena.jipipe.utils.ImageJCalibrationMode;
 import org.hkijena.jipipe.utils.ImageJUtils;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.jdesktop.swingx.JXGradientChooser;
 import org.jdesktop.swingx.JXMultiThumbSlider;
-import org.jdesktop.swingx.color.GradientTrackRenderer;
 import org.jdesktop.swingx.multislider.DefaultMultiThumbModel;
 import org.jdesktop.swingx.multislider.Thumb;
-import org.jdesktop.swingx.multislider.ThumbRenderer;
+import org.jdesktop.swingx.multislider.ThumbListener;
 
 import javax.swing.*;
 import java.awt.BorderLayout;
@@ -32,12 +31,15 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Polygon;
+import java.awt.event.MouseEvent;
 
-public class ImageViewerPanelDisplayRangeControl extends JPanel {
+public class ImageViewerPanelDisplayRangeControl extends JPanel implements ThumbListener {
     private final ImageViewerPanel imageViewerPanel;
     private JXMultiThumbSlider<DisplayRangeStop> slider;
     private TrackRenderer trackRenderer;
     private boolean isUpdating = false;
+    private double customMin;
+    private double customMax;
 
     public ImageViewerPanelDisplayRangeControl(ImageViewerPanel imageViewerPanel) {
         this.imageViewerPanel = imageViewerPanel;
@@ -58,6 +60,8 @@ public class ImageViewerPanelDisplayRangeControl extends JPanel {
         model.addThumb(0, DisplayRangeStop.Start);
         model.addThumb(1, DisplayRangeStop.End);
         add(slider, BorderLayout.CENTER);
+
+        slider.addMultiThumbListener(this);
     }
 
     private void initializeToolbar() {
@@ -75,27 +79,63 @@ public class ImageViewerPanelDisplayRangeControl extends JPanel {
         add(toolbar, BorderLayout.NORTH);
     }
 
-    public void updateSlice() {
+    public void updateSliders() {
         isUpdating = true;
         if(imageViewerPanel.getImage() != null) {
             double displayRangeMin = imageViewerPanel.getImage().getDisplayRangeMin();
             double displayRangeMax = imageViewerPanel.getImage().getDisplayRangeMax();
             ImageStatistics statistics = imageViewerPanel.getStatistics();
-            ImageProcessor slice = imageViewerPanel.getSlice();
             double min = statistics.min;
             double max = statistics.max;
+            double positionMin = Math.min(1, Math.max(0, displayRangeMin - min) / (max - min));
+            double positionMax = Math.min(1, Math.max(0, displayRangeMax - min) / (max - min));
+            slider.getModel().getThumbAt(0).setPosition((float) positionMin);
+            slider.getModel().getThumbAt(1).setPosition((float) positionMax);
         }
         isUpdating = false;
         slider.repaint();
-        applyCalibration();
     }
 
     public void applyCalibration() {
         if(imageViewerPanel.getImage() != null) {
-            ImageJUtils.calibrate(imageViewerPanel.getImage(), imageViewerPanel.getSelectedCalibration(), 0,0);
-            updateSlice();
+            ImageJUtils.calibrate(imageViewerPanel.getImage(), imageViewerPanel.getSelectedCalibration(), customMin,customMax);
+            updateSliders();
             imageViewerPanel.uploadSliceToCanvas();
         }
+    }
+
+    @Override
+    public void thumbMoved(int thumb, float pos) {
+        applyCustomCalibration();
+    }
+
+    private void applyCustomCalibration() {
+        if(!isUpdating) {
+            ImageStatistics statistics = imageViewerPanel.getStatistics();
+            double min = statistics.min;
+            double max = statistics.max;
+            double diff = max - min;
+            float posMin = Float.POSITIVE_INFINITY;
+            float posMax = Float.NEGATIVE_INFINITY;
+            for (int i = 0; i < 2; i++) {
+                Thumb<DisplayRangeStop> thumb = slider.getModel().getThumbAt(i);
+                posMin = Math.min(posMin, thumb.getPosition());
+                posMax = Math.max(posMax, thumb.getPosition());
+            }
+            customMin = min + diff * posMin;
+            customMax = min + diff * posMax;
+            imageViewerPanel.setSelectedCalibration(ImageJCalibrationMode.Custom);
+        }
+    }
+
+    @Override
+    public void thumbSelected(int thumb) {
+
+    }
+
+    @Override
+    public void mousePressed(MouseEvent evt) {
+
     }
 
     public enum DisplayRangeStop {
