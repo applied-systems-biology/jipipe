@@ -39,6 +39,8 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.OMEImageData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.parameters.OMEColorMode;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ROIHandler;
+import org.hkijena.jipipe.extensions.parameters.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.parameters.primitives.IntegerList;
 import org.hkijena.jipipe.extensions.parameters.primitives.OptionalStringParameter;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.roi.RectangleList;
@@ -73,6 +75,8 @@ public class BioFormatsImporter extends JIPipeSimpleIteratingAlgorithm {
     private boolean extractRois = true;
     private OptionalStringParameter titleAnnotation = new OptionalStringParameter();
     private RectangleList cropRegions = new RectangleList();
+    private boolean openAllSeries = false;
+    private IntegerList seriesToImport = new IntegerList();
 
     /**
      * @param info the info
@@ -84,6 +88,7 @@ public class BioFormatsImporter extends JIPipeSimpleIteratingAlgorithm {
                 .seal()
                 .build());
         titleAnnotation.setContent("Image title");
+        seriesToImport.add(0);
     }
 
     /**
@@ -106,6 +111,8 @@ public class BioFormatsImporter extends JIPipeSimpleIteratingAlgorithm {
         this.cropRegions = new RectangleList(other.cropRegions);
         this.titleAnnotation = new OptionalStringParameter(other.titleAnnotation);
         this.extractRois = other.extractRois;
+        this.openAllSeries = other.openAllSeries;
+        this.seriesToImport = new IntegerList(other.seriesToImport);
     }
 
     @Override
@@ -135,6 +142,11 @@ public class BioFormatsImporter extends JIPipeSimpleIteratingAlgorithm {
         options.setCrop(crop);
         options.setAutoscale(autoScale);
         options.setStitchTiles(stitchTiles);
+        options.setOpenAllSeries(openAllSeries);
+        options.clearSeries();
+        for (Integer index : seriesToImport) {
+            options.setSeriesOn(index, true);
+        }
         for (int i = 0; i < cropRegions.size(); i++) {
             Rectangle rectangle = cropRegions.get(i);
             options.setCropRegion(i, new Region(rectangle.x, rectangle.y, rectangle.width, rectangle.height));
@@ -355,5 +367,28 @@ public class BioFormatsImporter extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeParameter("extract-rois")
     public void setExtractRois(boolean extractRois) {
         this.extractRois = extractRois;
+    }
+
+    @JIPipeDocumentation(name = "Open all series", description = "If enabled, all series of a multi-series file are imported. This will override the series filter.")
+    @JIPipeParameter("open-all-series")
+    public boolean isOpenAllSeries() {
+        return openAllSeries;
+    }
+
+    @JIPipeParameter("open-all-series")
+    public void setOpenAllSeries(boolean openAllSeries) {
+        this.openAllSeries = openAllSeries;
+    }
+
+    @JIPipeDocumentation(name = "Series to import", description = "Some images can contain multiple sub-images (series) that do not necessarily have the same size and other properties. " +
+            "Use this list to control which series should be imported. Overridden by 'Open all series'. The first index is zero.")
+    @JIPipeParameter("series-to-import")
+    public IntegerList getSeriesToImport() {
+        return seriesToImport;
+    }
+
+    @JIPipeParameter("series-to-import")
+    public void setSeriesToImport(IntegerList seriesToImport) {
+        this.seriesToImport = seriesToImport;
     }
 }
