@@ -53,7 +53,7 @@ import java.util.function.Supplier;
 public class FilterPaths extends JIPipeSimpleIteratingAlgorithm {
 
     //    private PathFilter filter = new PathFilter();
-    private DefaultExpressionParameter filters = new DefaultExpressionParameter("\".tif\" in name");
+    private DefaultExpressionParameter filters = new DefaultExpressionParameter("");
     private boolean outputFiles = true;
     private boolean outputFolders = true;
     private boolean outputNonExisting = true;
