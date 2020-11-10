@@ -11,9 +11,9 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.extensions.imagejdatatypes.util;
+package org.hkijena.jipipe.utils;
 
-public enum CalibrationMode {
+public enum ImageJCalibrationMode {
     AutomaticImageJ(0, 0),
     MinMax(0, 0),
     Custom(0, 0),
@@ -29,7 +29,7 @@ public enum CalibrationMode {
     private final double min;
     private final double max;
 
-    CalibrationMode(double min, double max) {
+    ImageJCalibrationMode(double min, double max) {
         this.min = min;
         this.max = max;
     }
@@ -61,10 +61,9 @@ public enum CalibrationMode {
                 name = "Unit";
                 break;
             case AutomaticImageJ:
-                name = "Auto";
-                break;
+                return "Auto";
             case UnitAroundZero:
-                name = "Unit around zero (-1 - 1)";
+                name = "Unit around zero";
                 break;
         }
         if (name == null) {

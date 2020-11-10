@@ -17,33 +17,24 @@ import ij.IJ;
 import ij.ImagePlus;
 import ij.gui.ImageWindow;
 import ij.measure.Calibration;
+import ij.process.ImageProcessor;
+import ij.process.ImageStatistics;
 import ij.util.Tools;
 import org.hkijena.jipipe.ui.theme.JIPipeUITheme;
+import org.hkijena.jipipe.utils.ImageJCalibrationMode;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.Adjustable;
-import java.awt.BorderLayout;
-import java.awt.Container;
-import java.awt.Cursor;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Point;
+import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
-import java.awt.geom.AffineTransform;
-import java.awt.image.AffineTransformOp;
-import java.awt.image.BufferedImage;
-import java.awt.image.BufferedImageOp;
 
 public class ImageViewerPanel extends JPanel {
     private ImagePlus image;
-    private Canvas canvas = new Canvas();
+    private ImageProcessor slice;
+    private ImageStatistics statistics;
+    private ImageViewerPanelCanvas canvas = new ImageViewerPanelCanvas();
     private JLabel stackSliderLabel = new JLabel("Slice (Z)");
     private JLabel channelSliderLabel = new JLabel("Channel (C)");
     private JLabel frameSliderLabel = new JLabel("Frame (T)");
@@ -61,6 +52,8 @@ public class ImageViewerPanel extends JPanel {
     private FormPanel formPanel = new FormPanel(null, FormPanel.WITH_SCROLLING);
     private JSpinner animationSpeed = new JSpinner(new SpinnerNumberModel(250, 5, 10000, 1));
     private Timer animationTimer = new Timer(250, e -> animateNextSlice());
+    private ImageViewerPanelDisplayRangeControl displayRangeCalibrationControl;
+    private JComboBox<ImageJCalibrationMode> calibrationModes;
 
     public ImageViewerPanel() {
         initialize();
@@ -71,6 +64,8 @@ public class ImageViewerPanel extends JPanel {
         setLayout(new BorderLayout());
         scrollPane = new JScrollPane(canvas);
         canvas.setScrollPane(scrollPane);
+
+        initializeCalibrationControls();
 
         initializeToolbar();
         canvas.addMouseWheelListener(e -> {
@@ -108,6 +103,20 @@ public class ImageViewerPanel extends JPanel {
         frameSlider.addAdjustmentListener(e -> refreshSlice());
 
         initializeAnimationControls();
+    }
+
+    public ImageJCalibrationMode getSelectedCalibration() {
+        return (ImageJCalibrationMode) calibrationModes.getSelectedItem();
+    }
+
+    private void initializeCalibrationControls() {
+        calibrationModes = new JComboBox<>();
+        calibrationModes.setModel(new DefaultComboBoxModel<>(ImageJCalibrationMode.values()));
+        calibrationModes.setSelectedItem(ImageJCalibrationMode.AutomaticImageJ);
+        displayRangeCalibrationControl = new ImageViewerPanelDisplayRangeControl(this);
+        calibrationModes.addActionListener(e -> {
+            displayRangeCalibrationControl.applyCalibration();
+        });
     }
 
     private void initializeAnimationControls() {
@@ -164,11 +173,17 @@ public class ImageViewerPanel extends JPanel {
         toolBar.add(Box.createHorizontalStrut(8));
         toolBar.add(imageInfoLabel);
 
+        addLeftToolbarButtons(toolBar);
+
         toolBar.add(Box.createHorizontalGlue());
 
         JButton centerImageButton = new JButton("Center image", UIUtils.getIconFromResources("actions/zoom-center-page.png"));
         centerImageButton.addActionListener(e -> canvas.centerImage());
         toolBar.add(centerImageButton);
+
+        JButton fitImageButton = new JButton("Fit image", UIUtils.getIconFromResources("actions/zoom-select-fit.png"));
+        fitImageButton.addActionListener(e -> fitImageToScreen());
+        toolBar.add(fitImageButton);
 
         JButton zoomOutButton = new JButton(UIUtils.getIconFromResources("actions/zoom-out.png"));
         UIUtils.makeFlat25x25(zoomOutButton);
@@ -187,16 +202,6 @@ public class ImageViewerPanel extends JPanel {
             zoomMenu.add(changeZoomItem);
         }
         zoomMenu.addSeparator();
-        JMenuItem fitImageItem = new JMenuItem("Fit image to window");
-        fitImageItem.addActionListener(e -> {
-            if(image != null) {
-                double zoomx = canvas.getWidth() / (1.0 * image.getWidth());
-                double zoomy = canvas.getHeight() / (1.0 * image.getHeight());
-                canvas.setZoom(Math.min(zoomx, zoomy));
-                updateZoomStatus();
-            }
-        });
-        zoomMenu.add(fitImageItem);
         JMenuItem changeZoomToItem = new JMenuItem("Set zoom value ...");
         changeZoomToItem.addActionListener(e -> {
             String zoomInput = JOptionPane.showInputDialog(this, "Please enter a new zoom value (in %)", (int) (canvas.getZoom() * 100) + "%");
@@ -204,8 +209,6 @@ public class ImageViewerPanel extends JPanel {
                 zoomInput = zoomInput.replace("%", "");
                 try {
                     int percentage = Integer.parseInt(zoomInput);
-                    canvas.contentX = 0;
-                    canvas.contentY = 0;
                     canvas.setZoom(percentage / 100.0);
                     updateZoomStatus();
                 } catch (NumberFormatException ex) {
@@ -222,6 +225,9 @@ public class ImageViewerPanel extends JPanel {
         toolBar.add(zoomInButton);
 
         add(toolBar, BorderLayout.NORTH);
+    }
+
+    protected void addLeftToolbarButtons(JToolBar toolBar) {
     }
 
     private void updateZoomStatus() {
@@ -293,10 +299,21 @@ public class ImageViewerPanel extends JPanel {
 
     private void refreshFormPanel() {
         formPanel.clear();
-        formPanel.addGroupHeader("Animation", UIUtils.getIconFromResources("actions/filmgrain.png"));
-        formPanel.addToForm(animationSpeed, new JLabel("Time between frames (ms)"), null);
+        initializeCalibrationPanel();
+        if(image.getType() == ImagePlus.COLOR_256 || image.getType() == ImagePlus.COLOR_RGB) {
+        }
+        if(image.getNChannels() > 1 || image.getNSlices() > 1 || image.getNFrames() > 1) {
+            formPanel.addGroupHeader("Animation", UIUtils.getIconFromResources("actions/filmgrain.png"));
+            formPanel.addToForm(animationSpeed, new JLabel("Time between frames (ms)"), null);
+        }
 
         formPanel.addVerticalGlue();
+    }
+
+    private void initializeCalibrationPanel() {
+        FormPanel.GroupHeaderPanel headerPanel = formPanel.addGroupHeader("Display range", UIUtils.getIconFromResources("actions/contrast.png"));
+        formPanel.addToForm(calibrationModes, new JLabel("Calibration type"), null);
+        formPanel.addWideToForm(displayRangeCalibrationControl, null);
     }
 
     public void refreshImageInfo() {
@@ -371,8 +388,37 @@ public class ImageViewerPanel extends JPanel {
             frameSliderLabel.setText(String.format("Frame (T) %d/%d", frame, image.getNFrames()));
             channelSliderLabel.setText(String.format("Channel (C) %d/%d", channel, image.getNChannels()));
             image.setPosition(channel, stack, frame);
-            canvas.setImage(image.getBufferedImage());
+            this.slice = image.getProcessor();
+            this.statistics = image.getStatistics();
+            uploadSliceToCanvas();
+            displayRangeCalibrationControl.updateSlice();
         }
+    }
+
+    public void uploadSliceToCanvas() {
+        canvas.setImage(image.getBufferedImage());
+    }
+
+    public ImageViewerPanelCanvas getCanvas() {
+        return canvas;
+    }
+
+    public void fitImageToScreen() {
+        if(image != null) {
+            double zoomx = scrollPane.getViewport().getWidth() / (1.0 * image.getWidth());
+            double zoomy = scrollPane.getViewport().getHeight() / (1.0 * image.getHeight());
+            canvas.setZoom(Math.min(zoomx, zoomy));
+            canvas.setContentXY(0, 0);
+            updateZoomStatus();
+        }
+    }
+
+    public ImageProcessor getSlice() {
+        return slice;
+    }
+
+    public ImageStatistics getStatistics() {
+        return statistics;
     }
 
     public static void main(String[] args) {
@@ -387,165 +433,4 @@ public class ImageViewerPanel extends JPanel {
         frame.setVisible(true);
     }
 
-    public static class Canvas extends JPanel implements MouseListener, MouseMotionListener {
-        private BufferedImage image;
-        private double zoom = 1.0;
-        private int contentX = 0;
-        private int contentY = 0;
-        private Point currentDragOffset = null;
-        private JScrollPane scrollPane;
-
-        public Canvas() {
-            addMouseListener(this);
-            addMouseMotionListener(this);
-        }
-
-        public BufferedImage getImage() {
-            return image;
-        }
-
-        public void setImage(BufferedImage image) {
-            this.image = image;
-            revalidate();
-            repaint();
-        }
-
-        public void centerImage() {
-            int availableWidth = 2;
-            int availableHeight = 2;
-            if(scrollPane != null) {
-                availableWidth = scrollPane.getWidth();
-                availableHeight = scrollPane.getHeight();
-            }
-            if(image.getWidth() < availableWidth) {
-                contentX = availableWidth / 2 - image.getWidth() / 2;
-            }
-            else {
-                contentX = 0;
-            }
-            if(image.getHeight() < availableHeight) {
-                contentY = availableHeight / 2 - image.getHeight() / 2;
-            }
-            else {
-                contentY = 0;
-            }
-            revalidate();
-            repaint();
-        }
-
-        @Override
-        public Dimension getPreferredSize() {
-            int width = 0;
-            int height = 0;
-            if(image != null) {
-                width = (int)(image.getWidth() * zoom) + contentX;
-                height = (int)(image.getHeight() * zoom) + contentY;
-            }
-            if(scrollPane != null) {
-                width = Math.max(scrollPane.getViewport().getWidth(), width);
-                height = Math.max(scrollPane.getViewport().getHeight(), height);
-            }
-            return new Dimension(width, height);
-        }
-
-        @Override
-        protected void paintComponent(Graphics g) {
-            super.paintComponent(g);
-            Graphics2D graphics2D = (Graphics2D) g;
-
-            if(image != null) {
-                AffineTransform transform = new AffineTransform();
-                transform.scale(zoom, zoom);
-                BufferedImageOp op = new AffineTransformOp(transform, zoom < 1 ? AffineTransformOp.TYPE_BILINEAR : AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
-                graphics2D.drawImage(image, op,contentX, contentY);
-            }
-        }
-
-        public double getZoom() {
-            return zoom;
-        }
-
-        public void setZoom(double zoom) {
-            zoom = Math.max(zoom, 10e-4);
-            double oldZoom = this.zoom;
-            Point mousePosition = getMousePosition();
-            if(mousePosition != null) {
-                int correctedMouseX = (int)((mousePosition.x / oldZoom) * zoom);
-                int correctedMouseY = (int)((mousePosition.y / oldZoom) * zoom);
-                int dx = correctedMouseX - mousePosition.x;
-                int dy = correctedMouseY - mousePosition.y;
-                contentX -= dx;
-                contentY -= dy;
-                fixNegativeOffsets();
-            }
-            this.zoom = zoom;
-            revalidate();
-            repaint();
-        }
-
-        @Override
-        public void mouseClicked(MouseEvent e) {
-
-        }
-
-        @Override
-        public void mousePressed(MouseEvent e) {
-           if(SwingUtilities.isLeftMouseButton(e)) {
-               currentDragOffset = new Point(e.getPoint().x - contentX, e.getPoint().y - contentY);
-               setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
-           }
-        }
-
-        @Override
-        public void mouseReleased(MouseEvent e) {
-            currentDragOffset = null;
-            setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-        }
-
-        @Override
-        public void mouseEntered(MouseEvent e) {
-
-        }
-
-        @Override
-        public void mouseExited(MouseEvent e) {
-        }
-
-        @Override
-        public void mouseDragged(MouseEvent e) {
-            if(currentDragOffset != null) {
-                Point newLocation = e.getPoint();
-                int withOffsetX = newLocation.x - currentDragOffset.x;
-                int withOffsetY = newLocation.y - currentDragOffset.y;
-                this.contentX = withOffsetX;
-                this.contentY = withOffsetY;
-                fixNegativeOffsets();
-                revalidate();
-                repaint();
-            }
-        }
-
-        private void fixNegativeOffsets() {
-            if(contentX < 0) {
-                int d = -contentX;
-                contentX = 0;
-                if(scrollPane != null) {
-                    scrollPane.getHorizontalScrollBar().setValue(scrollPane.getHorizontalScrollBar().getValue() + d);
-                }
-            }
-        }
-
-        @Override
-        public void mouseMoved(MouseEvent e) {
-
-        }
-
-        public JScrollPane getScrollPane() {
-            return scrollPane;
-        }
-
-        public void setScrollPane(JScrollPane scrollPane) {
-            this.scrollPane = scrollPane;
-        }
-    }
 }

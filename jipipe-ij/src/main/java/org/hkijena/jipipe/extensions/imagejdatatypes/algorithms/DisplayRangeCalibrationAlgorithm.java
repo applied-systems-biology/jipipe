@@ -14,7 +14,6 @@
 package org.hkijena.jipipe.extensions.imagejdatatypes.algorithms;
 
 import ij.ImagePlus;
-import ij.process.ImageStatistics;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
@@ -26,8 +25,9 @@ import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.CalibrationMode;
+import org.hkijena.jipipe.utils.ImageJCalibrationMode;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.SliceIndex;
+import org.hkijena.jipipe.utils.ImageJUtils;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -38,7 +38,7 @@ import java.util.function.Supplier;
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", inheritedSlot = "Input", autoCreate = true)
 public class DisplayRangeCalibrationAlgorithm extends JIPipeSimpleIteratingAlgorithm {
-    private CalibrationMode calibrationMode = CalibrationMode.AutomaticImageJ;
+    private ImageJCalibrationMode calibrationMode = ImageJCalibrationMode.AutomaticImageJ;
     private double customMin = 0;
     private double customMax = 1;
     private boolean duplicateImage = true;
@@ -69,26 +69,26 @@ public class DisplayRangeCalibrationAlgorithm extends JIPipeSimpleIteratingAlgor
                 for (int c = 0; c < image.getNChannels(); c++) {
                     for (int t = 0; t < image.getNFrames(); t++) {
                         image.setPosition(c, z, t);
-                        calibrate(image, calibrationMode, customMin, customMax);
+                        ImageJUtils.calibrate(image, calibrationMode, customMin, customMax);
                     }
                 }
             }
             image.setPosition(original.getC(), original.getZ(), original.getT());
         }
         else {
-            calibrate(image, calibrationMode, customMin, customMax);
+            ImageJUtils.calibrate(image, calibrationMode, customMin, customMax);
         }
         dataBatch.addOutputData(getFirstOutputSlot(), data);
     }
 
     @JIPipeDocumentation(name = "Calibration method", description = "The method to apply for calibration.")
     @JIPipeParameter("calibration-mode")
-    public CalibrationMode getCalibrationMode() {
+    public ImageJCalibrationMode getCalibrationMode() {
         return calibrationMode;
     }
 
     @JIPipeParameter("calibration-mode")
-    public void setCalibrationMode(CalibrationMode calibrationMode) {
+    public void setCalibrationMode(ImageJCalibrationMode calibrationMode) {
         this.calibrationMode = calibrationMode;
     }
 
@@ -134,72 +134,6 @@ public class DisplayRangeCalibrationAlgorithm extends JIPipeSimpleIteratingAlgor
     @JIPipeParameter("apply-to-all-planes")
     public void setApplyToAllPlanes(boolean applyToAllPlanes) {
         this.applyToAllPlanes = applyToAllPlanes;
-    }
-
-    /**
-     * Calibrates the image. Ported from {@link ij.plugin.frame.ContrastAdjuster}
-     *
-     * @param imp             the image
-     * @param calibrationMode the calibration mode
-     * @param customMin       custom min value (only used if calibrationMode is Custom)
-     * @param customMax       custom max value (only used if calibrationMode is Custom)
-     */
-    public static void calibrate(ImagePlus imp, CalibrationMode calibrationMode, double customMin, double customMax) {
-        double min = calibrationMode.getMin();
-        double max = calibrationMode.getMax();
-        if (calibrationMode == CalibrationMode.Custom) {
-            min = customMin;
-            max = customMax;
-        } else if (calibrationMode == CalibrationMode.AutomaticImageJ) {
-            ImageStatistics stats = imp.getRawStatistics();
-            int limit = stats.pixelCount / 10;
-            int[] histogram = stats.histogram;
-            int threshold = stats.pixelCount / 5000;
-            int i = -1;
-            boolean found = false;
-            int count;
-            do {
-                i++;
-                count = histogram[i];
-                if (count > limit) count = 0;
-                found = count > threshold;
-            } while (!found && i < 255);
-            int hmin = i;
-            i = 256;
-            do {
-                i--;
-                count = histogram[i];
-                if (count > limit) count = 0;
-                found = count > threshold;
-            } while (!found && i > 0);
-            int hmax = i;
-            if (hmax >= hmin) {
-                min = stats.histMin + hmin * stats.binSize;
-                max = stats.histMin + hmax * stats.binSize;
-                if (min == max) {
-                    min = stats.min;
-                    max = stats.max;
-                }
-            } else {
-                int bitDepth = imp.getBitDepth();
-                if (bitDepth == 16 || bitDepth == 32) {
-                    imp.resetDisplayRange();
-                    min = imp.getDisplayRangeMin();
-                    max = imp.getDisplayRangeMax();
-                }
-            }
-        } else if (calibrationMode == CalibrationMode.MinMax) {
-            ImageStatistics stats = imp.getRawStatistics();
-            min = stats.min;
-            max = stats.max;
-        }
-
-        boolean rgb = imp.getType() == ImagePlus.COLOR_RGB;
-        int channels = imp.getNChannels();
-        if (channels != 7 && rgb)
-            imp.setDisplayRange(min, max, channels);
-        else
-            imp.setDisplayRange(min, max);
     }
 
 

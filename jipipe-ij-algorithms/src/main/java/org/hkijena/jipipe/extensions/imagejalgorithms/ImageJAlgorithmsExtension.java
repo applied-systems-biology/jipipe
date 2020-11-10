@@ -133,7 +133,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePl
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale8UData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.CalibrationMode;
+import org.hkijena.jipipe.utils.ImageJCalibrationMode;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.RoiOutline;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.Measurement;
@@ -313,7 +313,7 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
                 "Measurement", "Available measurements");
         registerEnumParameterType("ij1-measurement-column", MeasurementColumn.class,
                 "Measurement column", "Available measurement columns");
-        registerEnumParameterType("ij1-calibration-mode", CalibrationMode.class,
+        registerEnumParameterType("ij1-calibration-mode", ImageJCalibrationMode.class,
                 "Contrast calibration", "Methods to apply display range calibration");
         registerParameterType("ij1-measurement-set", ImageStatisticsSetParameter.class,
                 null,

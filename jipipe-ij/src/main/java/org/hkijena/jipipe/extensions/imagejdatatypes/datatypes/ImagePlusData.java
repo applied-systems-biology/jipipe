@@ -18,11 +18,13 @@ import ij.ImagePlus;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.data.JIPipeCacheSlotDataSource;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyNullPointerException;
 import org.hkijena.jipipe.extensions.imagejdatatypes.ImageJDataTypesSettings;
+import org.hkijena.jipipe.extensions.imagejdatatypes.display.CacheAwareImagePlusDataDisplay;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.PathUtils;
 
@@ -124,7 +126,12 @@ public class ImagePlusData implements JIPipeData {
 
     @Override
     public void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
-        getDuplicateImage().show();
+        if(source instanceof JIPipeCacheSlotDataSource) {
+            CacheAwareImagePlusDataDisplay.show(workbench, (JIPipeCacheSlotDataSource) source, displayName);
+        }
+        else {
+            getDuplicateImage().show();
+        }
     }
 
     @Override

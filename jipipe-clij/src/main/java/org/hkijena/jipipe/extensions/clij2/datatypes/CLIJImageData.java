@@ -10,6 +10,7 @@ import org.hkijena.jipipe.extensions.clij2.CLIJSettings;
 import org.hkijena.jipipe.extensions.imagejdatatypes.algorithms.DisplayRangeCalibrationAlgorithm;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
+import org.hkijena.jipipe.utils.ImageJUtils;
 
 import java.awt.Component;
 import java.nio.file.Path;
@@ -91,7 +92,7 @@ public class CLIJImageData implements JIPipeData {
         ImagePlus imagePlus = clij.pull(image);
         if (CLIJSettings.getInstance().isAutoCalibrateAfterPulling()) {
             DisplayRangeCalibrationAlgorithm contrastEnhancer = CLIJSettings.getInstance().getContrastEnhancer();
-            DisplayRangeCalibrationAlgorithm.calibrate(imagePlus,
+            ImageJUtils.calibrate(imagePlus,
                     contrastEnhancer.getCalibrationMode(),
                     contrastEnhancer.getCustomMin(),
                     contrastEnhancer.getCustomMax());

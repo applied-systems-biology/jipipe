@@ -26,12 +26,12 @@ import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.imagejdatatypes.algorithms.DisplayRangeCalibrationAlgorithm;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.CalibrationMode;
+import org.hkijena.jipipe.utils.ImageJCalibrationMode;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.PixelCoordinate2DExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.parameters.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameterSettings;
+import org.hkijena.jipipe.utils.ImageJUtils;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -92,7 +92,7 @@ public class GenerateFromMathExpression2D extends JIPipeSimpleIteratingAlgorithm
             }
         }
 
-        DisplayRangeCalibrationAlgorithm.calibrate(img, CalibrationMode.AutomaticImageJ, 0, 0);
+        ImageJUtils.calibrate(img, ImageJCalibrationMode.AutomaticImageJ, 0, 0);
 
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(img));
     }

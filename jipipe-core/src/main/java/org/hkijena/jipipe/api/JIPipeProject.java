@@ -96,6 +96,15 @@ public class JIPipeProject implements JIPipeValidatable {
     }
 
     /**
+     * Returns the latest cache item for a given node. This will only return cached items for the current state of the node.
+     * @param node the node
+     * @return map of cached data slots. empty if none are found.
+     */
+    public Map<String, JIPipeDataSlot> getCurrentCache(JIPipeAlgorithm node) {
+        return cache.extract(node, getStateIdOf(node, graph.traverseAlgorithms()));
+    }
+
+    /**
      * Returns the state ID of a graph node
      * The state ID is a unique representation of how the algorithm's output was generated.
      * This is used by the data cache.
