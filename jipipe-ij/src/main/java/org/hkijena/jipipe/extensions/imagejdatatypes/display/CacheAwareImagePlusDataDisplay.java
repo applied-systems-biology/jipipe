@@ -85,7 +85,7 @@ public class CacheAwareImagePlusDataDisplay extends ImageViewerPanel {
         JFrame frame = new JFrame(displayName);
         frame.setContentPane(dataDisplay);
         frame.pack();
-        frame.setSize(800,600);
+        frame.setSize(1024,768);
         frame.setVisible(true);
         SwingUtilities.invokeLater(dataDisplay::fitImageToScreen);
     }

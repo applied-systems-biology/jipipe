@@ -52,6 +52,7 @@ public class ImageViewerPanelDisplayRangeControl extends JPanel implements Thumb
         initializeToolbar();
         slider = new JXMultiThumbSlider<>();
         slider.setPreferredSize(new Dimension(100,64));
+        slider.setMinimumSize(new Dimension(100,64));
         slider.setOpaque(true);
         slider.setTrackRenderer(trackRenderer);
         slider.setThumbRenderer(new ThumbRenderer());
@@ -96,11 +97,12 @@ public class ImageViewerPanelDisplayRangeControl extends JPanel implements Thumb
         slider.repaint();
     }
 
-    public void applyCalibration() {
+    public void applyCalibration(boolean upload) {
         if(imageViewerPanel.getImage() != null) {
             ImageJUtils.calibrate(imageViewerPanel.getImage(), imageViewerPanel.getSelectedCalibration(), customMin,customMax);
             updateSliders();
-            imageViewerPanel.uploadSliceToCanvas();
+            if(upload)
+                imageViewerPanel.uploadSliceToCanvas();
         }
     }
 
@@ -124,6 +126,7 @@ public class ImageViewerPanelDisplayRangeControl extends JPanel implements Thumb
             }
             customMin = min + diff * posMin;
             customMax = min + diff * posMax;
+            imageViewerPanel.disableAutoCalibration();
             imageViewerPanel.setSelectedCalibration(ImageJCalibrationMode.Custom);
         }
     }

@@ -49,6 +49,7 @@ public class ImageViewerPanelCanvas extends JPanel implements MouseListener, Mou
     }
 
     public void setImage(BufferedImage image) {
+//        System.out.println(image);
         this.image = image;
         revalidate();
         repaint();

@@ -24,7 +24,6 @@ import org.hkijena.jipipe.ui.theme.JIPipeUITheme;
 import org.hkijena.jipipe.utils.ImageJCalibrationMode;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.jdesktop.swingx.JXGradientChooser;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -59,6 +58,7 @@ public class ImageViewerPanel extends JPanel {
     private ImageViewerPanelDisplayRangeControl displayRangeCalibrationControl;
     private JComboBox<ImageJCalibrationMode> calibrationModes;
     private List<ImageViewerLUTEditor> lutEditors = new ArrayList<>();
+    private JToggleButton autoCalibrateButton = new JToggleButton("Keep auto-calibrating", UIUtils.getIconFromResources("actions/view-refresh.png"));
 
     public ImageViewerPanel() {
         initialize();
@@ -120,7 +120,17 @@ public class ImageViewerPanel extends JPanel {
         calibrationModes.setSelectedItem(ImageJCalibrationMode.AutomaticImageJ);
         displayRangeCalibrationControl = new ImageViewerPanelDisplayRangeControl(this);
         calibrationModes.addActionListener(e -> {
-            displayRangeCalibrationControl.applyCalibration();
+            displayRangeCalibrationControl.applyCalibration(true);
+        });
+        autoCalibrateButton.addActionListener(e -> {
+            if(autoCalibrateButton.isSelected()) {
+                if(calibrationModes.getSelectedItem() != ImageJCalibrationMode.AutomaticImageJ) {
+                    calibrationModes.setSelectedItem(ImageJCalibrationMode.AutomaticImageJ);
+                }
+                else {
+                    displayRangeCalibrationControl.applyCalibration(true);
+                }
+            }
         });
     }
 
@@ -174,11 +184,12 @@ public class ImageViewerPanel extends JPanel {
 
         JButton openInImageJButton = new JButton("Open in ImageJ", UIUtils.getIconFromResources("apps/imagej.png"));
         openInImageJButton.addActionListener(e -> openInImageJ());
+
+        addLeftToolbarButtons(toolBar);
+
         toolBar.add(openInImageJButton);
         toolBar.add(Box.createHorizontalStrut(8));
         toolBar.add(imageInfoLabel);
-
-        addLeftToolbarButtons(toolBar);
 
         toolBar.add(Box.createHorizontalGlue());
 
@@ -281,7 +292,7 @@ public class ImageViewerPanel extends JPanel {
             stackSlider.setMinimum(1);
             stackSlider.setMaximum(image.getNSlices() + 1);
             channelSlider.setMinimum(1);
-            channelSlider.setMinimum(image.getNChannels() + 1);
+            channelSlider.setMaximum(image.getNChannels() + 1);
             frameSlider.setMinimum(1);
             frameSlider.setMaximum(image.getNFrames() + 1);
         }
@@ -300,6 +311,12 @@ public class ImageViewerPanel extends JPanel {
         refreshSlice();
         refreshImageInfo();
         refreshFormPanel();
+        for (ImageViewerLUTEditor lutEditor : lutEditors) {
+            lutEditor.applyLUT();
+        }
+        displayRangeCalibrationControl.applyCalibration(true);
+        revalidate();
+        repaint();
     }
 
     private void refreshFormPanel() {
@@ -308,7 +325,7 @@ public class ImageViewerPanel extends JPanel {
         initializeLUTPanel();
         if(image.getNChannels() > 1 || image.getNSlices() > 1 || image.getNFrames() > 1) {
             formPanel.addGroupHeader("Animation", UIUtils.getIconFromResources("actions/filmgrain.png"));
-            formPanel.addToForm(animationSpeed, new JLabel("Time between frames (ms)"), null);
+            formPanel.addToForm(animationSpeed, new JLabel("Speed (ms)"), null);
         }
 
         formPanel.addVerticalGlue();
@@ -340,6 +357,7 @@ public class ImageViewerPanel extends JPanel {
 
     private void initializeCalibrationPanel() {
         FormPanel.GroupHeaderPanel headerPanel = formPanel.addGroupHeader("Display range", UIUtils.getIconFromResources("actions/contrast.png"));
+        headerPanel.addColumn(autoCalibrateButton);
         formPanel.addToForm(calibrationModes, new JLabel("Calibration type"), null);
         formPanel.addWideToForm(displayRangeCalibrationControl, null);
     }
@@ -416,6 +434,9 @@ public class ImageViewerPanel extends JPanel {
             frameSliderLabel.setText(String.format("Frame (T) %d/%d", frame, image.getNFrames()));
             channelSliderLabel.setText(String.format("Channel (C) %d/%d", channel, image.getNChannels()));
             image.setPosition(channel, stack, frame);
+            if(autoCalibrateButton.isSelected()) {
+                displayRangeCalibrationControl.applyCalibration(false);
+            }
             this.slice = image.getProcessor();
             this.statistics = image.getStatistics();
             uploadSliceToCanvas();
@@ -424,7 +445,7 @@ public class ImageViewerPanel extends JPanel {
     }
 
     public void uploadSliceToCanvas() {
-        canvas.setImage(image.getBufferedImage());
+        canvas.setImage(slice.getBufferedImage());
     }
 
     public ImageViewerPanelCanvas getCanvas() {
@@ -451,6 +472,10 @@ public class ImageViewerPanel extends JPanel {
 
     public void setSelectedCalibration(ImageJCalibrationMode mode) {
         calibrationModes.setSelectedItem(mode);
+    }
+
+    public void disableAutoCalibration() {
+        autoCalibrateButton.setSelected(false);
     }
 
     public static void main(String[] args) {
