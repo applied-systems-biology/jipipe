@@ -24,11 +24,15 @@ import org.hkijena.jipipe.ui.theme.JIPipeUITheme;
 import org.hkijena.jipipe.utils.ImageJCalibrationMode;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.jdesktop.swingx.JXGradientChooser;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ImageViewerPanel extends JPanel {
     private ImagePlus image;
@@ -54,6 +58,7 @@ public class ImageViewerPanel extends JPanel {
     private Timer animationTimer = new Timer(250, e -> animateNextSlice());
     private ImageViewerPanelDisplayRangeControl displayRangeCalibrationControl;
     private JComboBox<ImageJCalibrationMode> calibrationModes;
+    private List<ImageViewerLUTEditor> lutEditors = new ArrayList<>();
 
     public ImageViewerPanel() {
         initialize();
@@ -300,14 +305,37 @@ public class ImageViewerPanel extends JPanel {
     private void refreshFormPanel() {
         formPanel.clear();
         initializeCalibrationPanel();
-        if(image.getType() == ImagePlus.COLOR_256 || image.getType() == ImagePlus.COLOR_RGB) {
-        }
+        initializeLUTPanel();
         if(image.getNChannels() > 1 || image.getNSlices() > 1 || image.getNFrames() > 1) {
             formPanel.addGroupHeader("Animation", UIUtils.getIconFromResources("actions/filmgrain.png"));
             formPanel.addToForm(animationSpeed, new JLabel("Time between frames (ms)"), null);
         }
 
         formPanel.addVerticalGlue();
+    }
+
+    private void initializeLUTPanel() {
+        if(image.getType() == ImagePlus.COLOR_256 || image.getType() == ImagePlus.COLOR_RGB)
+            return;
+        while(lutEditors.size() < image.getNChannels()) {
+            ImageViewerLUTEditor editor = new ImageViewerLUTEditor(this, lutEditors.size());
+            editor.loadLUTFromImage();
+            lutEditors.add(editor);
+        }
+        formPanel.addGroupHeader("LUT", UIUtils.getIconFromResources("actions/color-gradient.png"));
+        for (int channel = 0; channel < image.getNChannels(); channel++) {
+            ImageViewerLUTEditor editor = lutEditors.get(channel);
+            JTextField channelNameEditor = new JTextField(editor.getChannelName());
+            channelNameEditor.setOpaque(false);
+            channelNameEditor.setBorder(null);
+            channelNameEditor.getDocument().addDocumentListener(new DocumentChangeListener() {
+                @Override
+                public void changed(DocumentEvent documentEvent) {
+                    editor.setChannelName(channelNameEditor.getText());
+                }
+            });
+            formPanel.addToForm(editor, channelNameEditor, null);
+        }
     }
 
     private void initializeCalibrationPanel() {
