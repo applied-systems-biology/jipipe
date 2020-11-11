@@ -44,7 +44,7 @@ import java.util.function.Supplier;
  */
 @JIPipeDocumentation(name = "Image from matrix", description = "Creates an image from a matrix")
 @JIPipeOrganization(menuPath = "Convolve", nodeTypeCategory = DataSourceNodeTypeCategory.class)
-@JIPipeOutputSlot(value = ImagePlus2DGreyscale32FData.class, slotName = "Output", autoCreate = true)
+@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true)
 public class ImageFromMatrix2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private Matrix2DFloat matrix = new Matrix2DFloat();
