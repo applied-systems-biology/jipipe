@@ -155,6 +155,33 @@ public class NumberParameterEditorUI extends JIPipeParameterEditorUI {
         }
     }
 
+    private boolean isValidNumber(String text) {
+        if(NumberUtils.isCreatable(text))
+            return true;
+        if (getParameterAccess().getFieldClass() == float.class || getParameterAccess().getFieldClass() == Float.class ||
+                getParameterAccess().getFieldClass() == double.class || getParameterAccess().getFieldClass() == Double.class) {
+            if(StringUtils.isNullOrEmpty(text))
+                return false;
+            return text.toLowerCase().startsWith("-inf") || text.toLowerCase().startsWith("inf");
+        }
+        return false;
+    }
+
+    private double createNumber(String text) {
+        if(NumberUtils.isCreatable(text))
+            return NumberUtils.createDouble(text);
+        if (getParameterAccess().getFieldClass() == float.class || getParameterAccess().getFieldClass() == Float.class ||
+                getParameterAccess().getFieldClass() == double.class || getParameterAccess().getFieldClass() == Double.class) {
+            if(StringUtils.isNullOrEmpty(text))
+                return 0;
+            if(text.toLowerCase().startsWith("-inf"))
+                return Double.NEGATIVE_INFINITY;
+            if(text.toLowerCase().startsWith("inf"))
+                return Double.POSITIVE_INFINITY;
+        }
+        return 0;
+    }
+
     private void initialize() {
         setLayout(new BorderLayout());
         setBackground(UIManager.getColor("TextField.background"));
@@ -167,7 +194,7 @@ public class NumberParameterEditorUI extends JIPipeParameterEditorUI {
             public void changed(DocumentEvent documentEvent) {
                 String text = StringUtils.orElse(numberField.getText(), "");
                 text = text.replace(',', '.').replace(" ", ""); // Allow usage of comma as separator
-                if(NumberUtils.isCreatable(text)) {
+                if(isValidNumber(text)) {
                     pushValue(text);
                 }
                 else {
@@ -222,7 +249,7 @@ public class NumberParameterEditorUI extends JIPipeParameterEditorUI {
 
     private void pushValue(String text) {
         setBorder(BorderFactory.createEtchedBorder());
-        double newValue = NumberUtils.createDouble(text);
+        double newValue = createNumber(text);
         double currentValue = getCurrentValue();
         if(newValue != currentValue) {
             if(setCurrentValue(newValue)) {

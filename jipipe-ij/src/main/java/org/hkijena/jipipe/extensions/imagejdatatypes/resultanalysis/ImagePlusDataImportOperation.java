@@ -22,12 +22,12 @@ public class ImagePlusDataImportOperation implements JIPipeDataImportOperation {
 
     @Override
     public String getName() {
-        return "Import into ImageJ";
+        return "Import into JIPipe";
     }
 
     @Override
     public String getDescription() {
-        return "Imports the image into ImageJ";
+        return "Imports the image into the JIPipe Image Viewer";
     }
 
     @Override

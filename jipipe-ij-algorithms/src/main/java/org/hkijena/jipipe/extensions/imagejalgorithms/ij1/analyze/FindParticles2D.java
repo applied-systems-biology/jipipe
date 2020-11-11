@@ -154,7 +154,8 @@ public class FindParticles2D extends JIPipeSimpleIteratingAlgorithm {
                         maxParticleSize,
                         minParticleCircularity,
                         maxParticleCircularity);
-                analyzer.analyze(inputData.getImage(), ip);
+                ImagePlus sliceImage = new ImagePlus(inputData.getImage().getTitle() + "_" + index, ip);
+                analyzer.analyze(sliceImage, ip);
 
                 // Override for "Slice"
                 if (statisticsParameters.getValues().contains(Measurement.StackPosition)) {
@@ -198,7 +199,8 @@ public class FindParticles2D extends JIPipeSimpleIteratingAlgorithm {
                         maxParticleSize,
                         minParticleCircularity,
                         maxParticleCircularity);
-                analyzer.analyze(inputData.getImage(), ip);
+                ImagePlus sliceImage = new ImagePlus(inputData.getImage().getTitle() + "_" + index, ip);
+                analyzer.analyze(sliceImage, ip);
 
                 // Override for "Slice"
                 if (statisticsParameters.getValues().contains(Measurement.StackPosition)) {
