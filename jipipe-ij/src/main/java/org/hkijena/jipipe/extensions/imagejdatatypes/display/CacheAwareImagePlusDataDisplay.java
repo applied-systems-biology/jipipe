@@ -29,6 +29,7 @@ import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.Component;
+import java.awt.Window;
 import java.util.Map;
 
 public class CacheAwareImagePlusDataDisplay extends ImageViewerPanel {
@@ -80,6 +81,7 @@ public class CacheAwareImagePlusDataDisplay extends ImageViewerPanel {
     public static void show(JIPipeWorkbench workbench, JIPipeCacheSlotDataSource dataSource, String displayName) {
         CacheAwareImagePlusDataDisplay dataDisplay = new CacheAwareImagePlusDataDisplay(workbench, dataSource);
         JFrame frame = new JFrame(displayName);
+        frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         frame.setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
         frame.setContentPane(dataDisplay);
         frame.pack();
@@ -90,6 +92,9 @@ public class CacheAwareImagePlusDataDisplay extends ImageViewerPanel {
 
     @Subscribe
     public void onCacheUpdated(JIPipeProjectCache.ModifiedEvent event) {
+        Window window = SwingUtilities.getWindowAncestor(this);
+        if(window == null || !window.isVisible())
+            return;
         if(!isDisplayable())
             return;
         if(!cacheAwareToggle.isSelected())

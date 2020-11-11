@@ -378,6 +378,10 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
                 TableToRectangularROIAlgorithm.Mode.class,
                 "Mode",
                 "Describes which objects are created.");
+        registerEnumParameterType("ij1-roi-split-into-connected-components:dimension-operation",
+                SplitRoiConnectedComponentsAlgorithm.DimensionOperation.class,
+                "Dimension operation",
+                "Determines how a dimension is incorporated");
     }
 
     private void registerConvolutionAlgorithms() {
