@@ -29,7 +29,7 @@ import java.util.Arrays;
  */
 public class Matrix2DParameterEditorUI extends JIPipeParameterEditorUI {
 
-    private JXTable table;
+    private JTable table;
 
     /**
      * Creates new instance
@@ -55,12 +55,17 @@ public class Matrix2DParameterEditorUI extends JIPipeParameterEditorUI {
 
         JButton addRowButton = new JButton(UIUtils.getIconFromResources("actions/edit-table-insert-row-below.png"));
         addRowButton.setToolTipText("Add row");
-        addRowButton.addActionListener(e -> getParameter(Matrix2D.class).addRow());
+        addRowButton.addActionListener(e -> {
+            getParameter(Matrix2D.class).addRow();
+            reload();
+        });
         toolBar.add(addRowButton);
 
         JButton addColumnButton = new JButton(UIUtils.getIconFromResources("actions/edit-table-insert-column-right.png"));
         addColumnButton.setToolTipText("Add column");
-        addColumnButton.addActionListener(e -> getParameter(Matrix2D.class).addColumn());
+        addColumnButton.addActionListener(e -> {
+            getParameter(Matrix2D.class).addColumn(); reload();
+        });
         toolBar.add(addColumnButton);
 
         toolBar.addSeparator();
@@ -77,7 +82,7 @@ public class Matrix2DParameterEditorUI extends JIPipeParameterEditorUI {
 
         add(toolBar, BorderLayout.NORTH);
 
-        table = new JXTable();
+        table = new JTable();
         table.setCellSelectionEnabled(true);
 
         add(table, BorderLayout.CENTER);
@@ -113,5 +118,7 @@ public class Matrix2DParameterEditorUI extends JIPipeParameterEditorUI {
         Matrix2D<?> parameter = getParameter(Matrix2D.class);
         table.setModel(new DefaultTableModel());
         table.setModel(parameter);
+        table.revalidate();
+        table.repaint();
     }
 }

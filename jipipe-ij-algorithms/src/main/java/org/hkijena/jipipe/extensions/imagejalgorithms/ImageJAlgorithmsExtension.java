@@ -57,6 +57,7 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.fft.FFT2DForwardTransf
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.fft.FFT2DInverseTransform;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.fft.FFT2DSwapQuadrants;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.generate.GenerateStructureElementAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.generate.ImageFromMatrix2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.io.ImagePlusFromGUI;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.io.ImagePlusToGUI;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.io.ROIFromGUI;
@@ -515,6 +516,7 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         registerNodeType("ij1-math-divide-by-maximum", DivideByMaximumAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
 
         registerNodeType("ij1-math-generate-from-expression", GenerateFromMathExpression2D.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
+        registerNodeType("ij-imgplus-from-matrix", ImageFromMatrix2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/table.png"));
 
         registerEnumParameterType("ij1-math-math2d:transformation", ApplyMath2DAlgorithm.Transformation.class,
                 "Transformation", "Available transformations");
