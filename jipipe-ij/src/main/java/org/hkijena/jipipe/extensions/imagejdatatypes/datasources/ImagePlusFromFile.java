@@ -128,8 +128,8 @@ public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
         try {
             Opener opener = new Opener();
             ImagePlus image;
-            if(fileName.getFileName().toString().endsWith(".ome.tiff") || fileName.getFileName().toString().endsWith(".ome.tiff") ||
-                    opener.getFileType(fileName.toString()) == Opener.CUSTOM || opener.getFileType(fileName.toString()) == Opener.UNKNOWN) {
+            String fileNameString = fileName.getFileName().toString();
+            if(fileNameString.endsWith(".ome.tiff") || fileNameString.endsWith(".ome.tif") || fileNameString.endsWith(".czi")) {
                 // Pass to bioformats
                 algorithmProgress.accept(subProgress.resolve("Using BioFormats importer. Please use the Bio-Formats importer node for more settings."));
                 BioFormatsImporter importer = JIPipe.createNode(BioFormatsImporter.class);
