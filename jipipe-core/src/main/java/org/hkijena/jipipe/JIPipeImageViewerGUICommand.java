@@ -30,6 +30,7 @@ public class JIPipeImageViewerGUICommand implements Command {
         UIUtils.loadLookAndFeelFromSettings();
         SwingUtilities.invokeLater(() -> {
             ImageViewerPanel dataDisplay = new ImageViewerPanel();
+            dataDisplay.setImage(image);
             JFrame frame = new JFrame(image.getTitle());
             frame.setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
             frame.setContentPane(dataDisplay);
