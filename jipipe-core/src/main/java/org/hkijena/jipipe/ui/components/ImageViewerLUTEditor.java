@@ -22,6 +22,7 @@ import org.jdesktop.swingx.color.GradientTrackRenderer;
 import org.jdesktop.swingx.multislider.Thumb;
 import org.jdesktop.swingx.multislider.ThumbListener;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -35,6 +36,8 @@ import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -105,11 +108,16 @@ public class ImageViewerLUTEditor extends JPanel implements ThumbListener {
             colors[i] = thumb.getObject();
             fractions[i] = thumb.getPosition();
         }
-        MultipleGradientPaint paint = new LinearGradientPaint(0, 0, 256, 256, fractions, colors);
+        MultipleGradientPaint paint = new LinearGradientPaint(0, 0, 1, 1, fractions, colors);
         BufferedImage img = new BufferedImage(256,1, BufferedImage.TYPE_INT_RGB);
         Graphics2D graphics = (Graphics2D) img.getGraphics();
         graphics.setPaint(paint);
         graphics.fillRect(0,0,256,1);
+//        try {
+//            ImageIO.write(img, "bmp", new File("lut.bmp"));
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
         byte[] reds = new byte[256];
         byte[] greens = new byte[256];
         byte[] blues = new byte[256];
