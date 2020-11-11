@@ -38,12 +38,12 @@ import java.util.function.Supplier;
 /**
  * Wrapper around {@link ij.plugin.filter.Convolver}
  */
-@JIPipeDocumentation(name = "Convolve 2D", description = "Applies a convolution with a user-defined filter kernel. " +
+@JIPipeDocumentation(name = "Convolve 2D (Parameter)", description = "Applies a convolution with a user-defined filter kernel. The kernel is defined by a parameter." +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
 @JIPipeOrganization(menuPath = "Convolve", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input")
 @JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output")
-public class Convolve2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
+public class ConvolveByParameter2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private Matrix2DFloat matrix = new Matrix2DFloat();
 
@@ -52,7 +52,7 @@ public class Convolve2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
      *
      * @param info the info
      */
-    public Convolve2DAlgorithm(JIPipeNodeInfo info) {
+    public ConvolveByParameter2DAlgorithm(JIPipeNodeInfo info) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", ImagePlusGreyscale32FData.class)
                 .addOutputSlot("Output", ImagePlusGreyscale32FData.class, null)
                 .allowOutputSlotInheritance(true)
@@ -65,7 +65,7 @@ public class Convolve2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
      *
      * @param other the original
      */
-    public Convolve2DAlgorithm(Convolve2DAlgorithm other) {
+    public ConvolveByParameter2DAlgorithm(ConvolveByParameter2DAlgorithm other) {
         super(other);
         this.matrix = new Matrix2DFloat(other.matrix);
     }

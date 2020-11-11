@@ -16,7 +16,6 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.datasources;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.io.Opener;
-import ij.plugin.DICOM;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
@@ -38,9 +37,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.OMEImageData;
 import org.hkijena.jipipe.extensions.parameters.primitives.OptionalAnnotationNameParameter;
 import org.hkijena.jipipe.extensions.parameters.primitives.OptionalStringParameter;
-import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.references.JIPipeDataInfoRef;
-import org.hkijena.jipipe.utils.ResourceUtils;
 
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Path;

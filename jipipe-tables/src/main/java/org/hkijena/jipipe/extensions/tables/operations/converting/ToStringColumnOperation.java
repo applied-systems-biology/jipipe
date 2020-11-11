@@ -13,9 +13,7 @@
 
 package org.hkijena.jipipe.extensions.tables.operations.converting;
 
-import org.apache.commons.lang3.math.NumberUtils;
 import org.hkijena.jipipe.extensions.tables.ConvertingColumnOperation;
-import org.hkijena.jipipe.extensions.tables.datatypes.DoubleArrayTableColumn;
 import org.hkijena.jipipe.extensions.tables.datatypes.StringArrayTableColumn;
 import org.hkijena.jipipe.extensions.tables.datatypes.TableColumn;
 

@@ -15,7 +15,6 @@ package org.hkijena.jipipe;
 
 import ij.IJ;
 import ij.ImagePlus;
-import ij.WindowManager;
 import org.hkijena.jipipe.ui.components.ImageViewerPanel;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.command.Command;

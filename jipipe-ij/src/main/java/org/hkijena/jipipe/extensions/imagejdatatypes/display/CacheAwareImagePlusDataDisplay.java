@@ -16,11 +16,9 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.display;
 import com.google.common.eventbus.Subscribe;
 import ij.ImagePlus;
 import ij.WindowManager;
-import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.JIPipeProjectCache;
 import org.hkijena.jipipe.api.data.JIPipeCacheSlotDataSource;
-import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
@@ -30,7 +28,6 @@ import org.hkijena.jipipe.ui.components.ImageViewerPanel;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
 import java.awt.Component;
 import java.util.Map;
 
