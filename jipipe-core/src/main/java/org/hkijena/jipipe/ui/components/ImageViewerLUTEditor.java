@@ -15,6 +15,7 @@ package org.hkijena.jipipe.ui.components;
 
 import ij.ImagePlus;
 import ij.process.LUT;
+import org.hkijena.jipipe.utils.ImageJUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jdesktop.swingx.JXMultiThumbSlider;
 import org.jdesktop.swingx.color.GradientThumbRenderer;
@@ -99,36 +100,11 @@ public class ImageViewerLUTEditor extends JPanel implements ThumbListener {
 
     private LUT generateLUT() {
         List<Thumb<Color>> stops = this.slider.getModel().getSortedThumbs();
-        int len = stops.size();
-        float[] fractions = new float[len];
-        Color[] colors = new Color[len];
-
-        for (int i = 0; i < stops.size(); i++) {
-            Thumb<Color> thumb = stops.get(i);
-            colors[i] = thumb.getObject();
-            fractions[i] = thumb.getPosition();
+        List<ImageJUtils.GradientStop> gradientStops = new ArrayList<>();
+        for (Thumb<Color> thumb : stops) {
+            gradientStops.add(new ImageJUtils.GradientStop(thumb.getObject(), thumb.getPosition()));
         }
-        MultipleGradientPaint paint = new LinearGradientPaint(0, 0, 1, 1, fractions, colors);
-        BufferedImage img = new BufferedImage(256,1, BufferedImage.TYPE_INT_RGB);
-        Graphics2D graphics = (Graphics2D) img.getGraphics();
-        graphics.setPaint(paint);
-        graphics.fillRect(0,0,256,1);
-//        try {
-//            ImageIO.write(img, "bmp", new File("lut.bmp"));
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-        byte[] reds = new byte[256];
-        byte[] greens = new byte[256];
-        byte[] blues = new byte[256];
-        for (int i = 0; i < 256; i++) {
-            int rgb = img.getRGB(i, 0);
-            Color color = new Color(rgb);
-            reds[i] = (byte)color.getRed();
-            greens[i] = (byte)color.getGreen();
-            blues[i] = (byte)color.getBlue();
-        }
-        return new LUT(reds, greens, blues);
+        return ImageJUtils.createLUTFromGradient(gradientStops);
     }
 
     private void updateFromStop(int thumb, Color color) {

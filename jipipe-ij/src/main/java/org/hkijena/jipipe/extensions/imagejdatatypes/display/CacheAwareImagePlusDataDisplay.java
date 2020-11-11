@@ -83,6 +83,7 @@ public class CacheAwareImagePlusDataDisplay extends ImageViewerPanel {
     public static void show(JIPipeWorkbench workbench, JIPipeCacheSlotDataSource dataSource, String displayName) {
         CacheAwareImagePlusDataDisplay dataDisplay = new CacheAwareImagePlusDataDisplay(workbench, dataSource);
         JFrame frame = new JFrame(displayName);
+        frame.setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
         frame.setContentPane(dataDisplay);
         frame.pack();
         frame.setSize(1024,768);
