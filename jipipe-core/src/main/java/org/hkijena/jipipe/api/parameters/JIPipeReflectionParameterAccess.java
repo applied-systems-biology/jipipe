@@ -75,10 +75,13 @@ public class JIPipeReflectionParameterAccess implements JIPipeParameterAccess {
 
     @Override
     public <T extends Annotation> T getAnnotationOfType(Class<T> klass) {
-        T getterAnnotation = getter.getAnnotation(klass);
-        if (getterAnnotation != null)
-            return getterAnnotation;
-        return setter.getAnnotation(klass);
+        T annotation = getter.getAnnotation(klass);
+        if (annotation != null)
+            return annotation;
+        annotation = setter.getAnnotation(klass);
+        if (annotation != null)
+            return annotation;
+        return getFieldClass().getAnnotation(klass);
     }
 
     @Override

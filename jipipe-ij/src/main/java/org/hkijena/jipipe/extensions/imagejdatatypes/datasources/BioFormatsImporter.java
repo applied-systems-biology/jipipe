@@ -41,6 +41,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.parameters.OMEColorMode;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ROIHandler;
 import org.hkijena.jipipe.extensions.parameters.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.parameters.primitives.IntegerList;
+import org.hkijena.jipipe.extensions.parameters.primitives.OptionalAnnotationNameParameter;
 import org.hkijena.jipipe.extensions.parameters.primitives.OptionalStringParameter;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.roi.RectangleList;
@@ -73,7 +74,7 @@ public class BioFormatsImporter extends JIPipeSimpleIteratingAlgorithm {
     private boolean stitchTiles;
     private boolean autoScale = true;
     private boolean extractRois = true;
-    private OptionalStringParameter titleAnnotation = new OptionalStringParameter();
+    private OptionalAnnotationNameParameter titleAnnotation = new OptionalAnnotationNameParameter();
     private RectangleList cropRegions = new RectangleList();
     private boolean openAllSeries = false;
     private IntegerList seriesToImport = new IntegerList();
@@ -109,7 +110,7 @@ public class BioFormatsImporter extends JIPipeSimpleIteratingAlgorithm {
         this.stitchTiles = other.stitchTiles;
         this.autoScale = other.autoScale;
         this.cropRegions = new RectangleList(other.cropRegions);
-        this.titleAnnotation = new OptionalStringParameter(other.titleAnnotation);
+        this.titleAnnotation = new OptionalAnnotationNameParameter(other.titleAnnotation);
         this.extractRois = other.extractRois;
         this.openAllSeries = other.openAllSeries;
         this.seriesToImport = new IntegerList(other.seriesToImport);
@@ -348,13 +349,12 @@ public class BioFormatsImporter extends JIPipeSimpleIteratingAlgorithm {
 
     @JIPipeDocumentation(name = "Title annotation", description = "Optional annotation type where the image title is written.")
     @JIPipeParameter("title-annotation")
-    @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/annotation.png")
-    public OptionalStringParameter getTitleAnnotation() {
+    public OptionalAnnotationNameParameter getTitleAnnotation() {
         return titleAnnotation;
     }
 
     @JIPipeParameter("title-annotation")
-    public void setTitleAnnotation(OptionalStringParameter titleAnnotation) {
+    public void setTitleAnnotation(OptionalAnnotationNameParameter titleAnnotation) {
         this.titleAnnotation = titleAnnotation;
     }
 

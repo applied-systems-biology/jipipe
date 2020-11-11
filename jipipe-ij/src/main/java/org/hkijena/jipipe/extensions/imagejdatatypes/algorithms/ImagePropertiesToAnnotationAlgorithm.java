@@ -27,7 +27,8 @@ import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.AnnotationsNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.extensions.parameters.primitives.OptionalStringParameter;
+import org.hkijena.jipipe.extensions.parameters.primitives.OptionalAnnotationNameParameter;
+import org.hkijena.jipipe.extensions.parameters.primitives.OptionalAnnotationNameParameter;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
 import org.hkijena.jipipe.utils.ResourceUtils;
 
@@ -45,15 +46,15 @@ import java.util.function.Supplier;
 @JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Annotated image", inheritedSlot = "Image", autoCreate = true)
 public class ImagePropertiesToAnnotationAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
-    private OptionalStringParameter titleAnnotation = new OptionalStringParameter();
-    private OptionalStringParameter widthAnnotation = new OptionalStringParameter();
-    private OptionalStringParameter heightAnnotation = new OptionalStringParameter();
-    private OptionalStringParameter stackSizeAnnotation = new OptionalStringParameter();
-    private OptionalStringParameter planeNumberAnnotation = new OptionalStringParameter();
-    private OptionalStringParameter channelSizeAnnotation = new OptionalStringParameter();
-    private OptionalStringParameter framesSizeAnnotation = new OptionalStringParameter();
-    private OptionalStringParameter imageTypeAnnotation = new OptionalStringParameter();
-    private OptionalStringParameter bitDepthAnnotation = new OptionalStringParameter();
+    private OptionalAnnotationNameParameter titleAnnotation = new OptionalAnnotationNameParameter();
+    private OptionalAnnotationNameParameter widthAnnotation = new OptionalAnnotationNameParameter();
+    private OptionalAnnotationNameParameter heightAnnotation = new OptionalAnnotationNameParameter();
+    private OptionalAnnotationNameParameter stackSizeAnnotation = new OptionalAnnotationNameParameter();
+    private OptionalAnnotationNameParameter planeNumberAnnotation = new OptionalAnnotationNameParameter();
+    private OptionalAnnotationNameParameter channelSizeAnnotation = new OptionalAnnotationNameParameter();
+    private OptionalAnnotationNameParameter framesSizeAnnotation = new OptionalAnnotationNameParameter();
+    private OptionalAnnotationNameParameter imageTypeAnnotation = new OptionalAnnotationNameParameter();
+    private OptionalAnnotationNameParameter bitDepthAnnotation = new OptionalAnnotationNameParameter();
 
     /**
      * Creates a new instance
@@ -80,15 +81,15 @@ public class ImagePropertiesToAnnotationAlgorithm extends JIPipeSimpleIteratingA
      */
     public ImagePropertiesToAnnotationAlgorithm(ImagePropertiesToAnnotationAlgorithm other) {
         super(other);
-        this.titleAnnotation = new OptionalStringParameter(other.titleAnnotation);
-        this.widthAnnotation = new OptionalStringParameter(other.widthAnnotation);
-        this.heightAnnotation = new OptionalStringParameter(other.heightAnnotation);
-        this.stackSizeAnnotation = new OptionalStringParameter(other.stackSizeAnnotation);
-        this.planeNumberAnnotation = new OptionalStringParameter(other.planeNumberAnnotation);
-        this.channelSizeAnnotation = new OptionalStringParameter(other.channelSizeAnnotation);
-        this.framesSizeAnnotation = new OptionalStringParameter(other.framesSizeAnnotation);
-        this.imageTypeAnnotation = new OptionalStringParameter(other.imageTypeAnnotation);
-        this.bitDepthAnnotation = new OptionalStringParameter(other.bitDepthAnnotation);
+        this.titleAnnotation = new OptionalAnnotationNameParameter(other.titleAnnotation);
+        this.widthAnnotation = new OptionalAnnotationNameParameter(other.widthAnnotation);
+        this.heightAnnotation = new OptionalAnnotationNameParameter(other.heightAnnotation);
+        this.stackSizeAnnotation = new OptionalAnnotationNameParameter(other.stackSizeAnnotation);
+        this.planeNumberAnnotation = new OptionalAnnotationNameParameter(other.planeNumberAnnotation);
+        this.channelSizeAnnotation = new OptionalAnnotationNameParameter(other.channelSizeAnnotation);
+        this.framesSizeAnnotation = new OptionalAnnotationNameParameter(other.framesSizeAnnotation);
+        this.imageTypeAnnotation = new OptionalAnnotationNameParameter(other.imageTypeAnnotation);
+        this.bitDepthAnnotation = new OptionalAnnotationNameParameter(other.bitDepthAnnotation);
     }
 
     @Override
@@ -174,104 +175,96 @@ public class ImagePropertiesToAnnotationAlgorithm extends JIPipeSimpleIteratingA
     @JIPipeDocumentation(name = "Annotate with title", description = "If enabled, an annotation with provided name is created. The annotation " +
             "contains the ImageJ image name.")
     @JIPipeParameter("title-annotation")
-    @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/annotation.png")
-    public OptionalStringParameter getTitleAnnotation() {
+    public OptionalAnnotationNameParameter getTitleAnnotation() {
         return titleAnnotation;
     }
 
     @JIPipeParameter("title-annotation")
-    public void setTitleAnnotation(OptionalStringParameter titleAnnotation) {
+    public void setTitleAnnotation(OptionalAnnotationNameParameter titleAnnotation) {
         this.titleAnnotation = titleAnnotation;
     }
 
     @JIPipeDocumentation(name = "Annotate with image width", description = "If enabled, an annotation with provided name is created. The annotation " +
             "contains image width.")
     @JIPipeParameter(value = "width-annotation")
-    @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/annotation.png")
-    public OptionalStringParameter getWidthAnnotation() {
+    public OptionalAnnotationNameParameter getWidthAnnotation() {
         return widthAnnotation;
     }
 
     @JIPipeParameter("width-annotation")
-    public void setWidthAnnotation(OptionalStringParameter widthAnnotation) {
+    public void setWidthAnnotation(OptionalAnnotationNameParameter widthAnnotation) {
         this.widthAnnotation = widthAnnotation;
     }
 
     @JIPipeDocumentation(name = "Annotate with image height", description = "If enabled, an annotation with provided name is created. The annotation " +
             "contains image height.")
     @JIPipeParameter("height-annotation")
-    @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/annotation.png")
-    public OptionalStringParameter getHeightAnnotation() {
+    public OptionalAnnotationNameParameter getHeightAnnotation() {
         return heightAnnotation;
     }
 
     @JIPipeParameter("height-annotation")
-    public void setHeightAnnotation(OptionalStringParameter heightAnnotation) {
+    public void setHeightAnnotation(OptionalAnnotationNameParameter heightAnnotation) {
         this.heightAnnotation = heightAnnotation;
     }
 
     @JIPipeDocumentation(name = "Annotate with stack size (Z)", description = "If enabled, an annotation with provided name is created. The annotation " +
             "contains the image stack size (number of Z slices).")
     @JIPipeParameter(value = "stack-size-annotation", uiOrder = 100)
-    @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/annotation.png")
-    public OptionalStringParameter getStackSizeAnnotation() {
+    public OptionalAnnotationNameParameter getStackSizeAnnotation() {
         return stackSizeAnnotation;
     }
 
     @JIPipeParameter("stack-size-annotation")
-    public void setStackSizeAnnotation(OptionalStringParameter stackSizeAnnotation) {
+    public void setStackSizeAnnotation(OptionalAnnotationNameParameter stackSizeAnnotation) {
         this.stackSizeAnnotation = stackSizeAnnotation;
     }
 
     @JIPipeDocumentation(name = "Annotate with channel size (C)", description = "If enabled, an annotation with provided name is created. The annotation " +
             "contains the composite image channel size (number of C slices). Please note that is is different from the pixel channels like RGB.")
     @JIPipeParameter(value = "channel-size-annotation", uiOrder = 101)
-    @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/annotation.png")
-    public OptionalStringParameter getChannelSizeAnnotation() {
+    public OptionalAnnotationNameParameter getChannelSizeAnnotation() {
         return channelSizeAnnotation;
     }
 
     @JIPipeParameter("channel-size-annotation")
-    public void setChannelSizeAnnotation(OptionalStringParameter channelSizeAnnotation) {
+    public void setChannelSizeAnnotation(OptionalAnnotationNameParameter channelSizeAnnotation) {
         this.channelSizeAnnotation = channelSizeAnnotation;
     }
 
     @JIPipeDocumentation(name = "Annotate with number of frames (T)", description = "If enabled, an annotation with provided name is created. The annotation " +
             "contains the number of frames (number of T slices).")
     @JIPipeParameter(value = "frames-size-annotation", uiOrder = 102)
-    @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/annotation.png")
-    public OptionalStringParameter getFramesSizeAnnotation() {
+    public OptionalAnnotationNameParameter getFramesSizeAnnotation() {
         return framesSizeAnnotation;
     }
 
     @JIPipeParameter("frames-size-annotation")
-    public void setFramesSizeAnnotation(OptionalStringParameter framesSizeAnnotation) {
+    public void setFramesSizeAnnotation(OptionalAnnotationNameParameter framesSizeAnnotation) {
         this.framesSizeAnnotation = framesSizeAnnotation;
     }
 
     @JIPipeDocumentation(name = "Annotate with image type", description = "If enabled, an annotation with provided name is created. The annotation " +
             "contains one of the following values: GRAY8, GRAY16, GRAY32, COLOR_256, COLOR_RGB, or UNKNOWN")
     @JIPipeParameter("image-type-annotation")
-    @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/annotation.png")
-    public OptionalStringParameter getImageTypeAnnotation() {
+    public OptionalAnnotationNameParameter getImageTypeAnnotation() {
         return imageTypeAnnotation;
     }
 
     @JIPipeParameter("image-type-annotation")
-    public void setImageTypeAnnotation(OptionalStringParameter imageTypeAnnotation) {
+    public void setImageTypeAnnotation(OptionalAnnotationNameParameter imageTypeAnnotation) {
         this.imageTypeAnnotation = imageTypeAnnotation;
     }
 
     @JIPipeDocumentation(name = "Annotate with bit depth", description = "If enabled, an annotation with provided name is created. The annotation " +
             "contains one of the following values: 0, 8, 16, 24 or 32")
     @JIPipeParameter("image-bit-depth-annotation")
-    @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/annotation.png")
-    public OptionalStringParameter getBitDepthAnnotation() {
+    public OptionalAnnotationNameParameter getBitDepthAnnotation() {
         return bitDepthAnnotation;
     }
 
     @JIPipeParameter("image-bit-depth-annotation")
-    public void setBitDepthAnnotation(OptionalStringParameter bitDepthAnnotation) {
+    public void setBitDepthAnnotation(OptionalAnnotationNameParameter bitDepthAnnotation) {
         this.bitDepthAnnotation = bitDepthAnnotation;
     }
 
@@ -279,13 +272,12 @@ public class ImagePropertiesToAnnotationAlgorithm extends JIPipeSimpleIteratingA
             "contains the number of 2D image planes (also referred as 'Stack size'). Please note that this value might be different from the number " +
             "of Z slices. This number is size(Z) * size(C) * size(T).")
     @JIPipeParameter("image-plane-number-annotation")
-    @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/annotation.png")
-    public OptionalStringParameter getPlaneNumberAnnotation() {
+    public OptionalAnnotationNameParameter getPlaneNumberAnnotation() {
         return planeNumberAnnotation;
     }
 
     @JIPipeParameter("image-plane-number-annotation")
-    public void setPlaneNumberAnnotation(OptionalStringParameter planeNumberAnnotation) {
+    public void setPlaneNumberAnnotation(OptionalAnnotationNameParameter planeNumberAnnotation) {
         this.planeNumberAnnotation = planeNumberAnnotation;
     }
 }

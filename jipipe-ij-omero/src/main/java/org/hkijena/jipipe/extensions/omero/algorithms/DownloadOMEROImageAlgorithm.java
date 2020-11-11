@@ -48,6 +48,7 @@ import org.hkijena.jipipe.extensions.omero.OMEROCredentials;
 import org.hkijena.jipipe.extensions.omero.datatypes.OMEROImageReferenceData;
 import org.hkijena.jipipe.extensions.omero.util.OMEROToJIPipeLogger;
 import org.hkijena.jipipe.extensions.omero.util.OMEROUtils;
+import org.hkijena.jipipe.extensions.parameters.primitives.OptionalAnnotationNameParameter;
 import org.hkijena.jipipe.extensions.parameters.primitives.OptionalStringParameter;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.roi.RectangleList;
@@ -81,7 +82,7 @@ public class DownloadOMEROImageAlgorithm extends JIPipeSimpleIteratingAlgorithm 
     private boolean stitchTiles;
     private boolean autoScale = true;
     private boolean extractRois = true;
-    private OptionalStringParameter titleAnnotation = new OptionalStringParameter();
+    private OptionalAnnotationNameParameter titleAnnotation = new OptionalAnnotationNameParameter();
     private RectangleList cropRegions = new RectangleList();
     private boolean addKeyValuePairsAsAnnotations = true;
     private OptionalStringParameter tagAnnotation = new OptionalStringParameter("Tags", true);
@@ -107,7 +108,7 @@ public class DownloadOMEROImageAlgorithm extends JIPipeSimpleIteratingAlgorithm 
         this.stitchTiles = other.stitchTiles;
         this.autoScale = other.autoScale;
         this.cropRegions = new RectangleList(other.cropRegions);
-        this.titleAnnotation = new OptionalStringParameter(other.titleAnnotation);
+        this.titleAnnotation = new OptionalAnnotationNameParameter(other.titleAnnotation);
         this.extractRois = other.extractRois;
         this.addKeyValuePairsAsAnnotations = other.addKeyValuePairsAsAnnotations;
         this.tagAnnotation = new OptionalStringParameter(other.tagAnnotation);
@@ -396,12 +397,12 @@ public class DownloadOMEROImageAlgorithm extends JIPipeSimpleIteratingAlgorithm 
     @JIPipeDocumentation(name = "Title annotation", description = "Optional annotation type where the image title is written.")
     @JIPipeParameter("title-annotation")
     @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/annotation.png")
-    public OptionalStringParameter getTitleAnnotation() {
+    public OptionalAnnotationNameParameter getTitleAnnotation() {
         return titleAnnotation;
     }
 
     @JIPipeParameter("title-annotation")
-    public void setTitleAnnotation(OptionalStringParameter titleAnnotation) {
+    public void setTitleAnnotation(OptionalAnnotationNameParameter titleAnnotation) {
         this.titleAnnotation = titleAnnotation;
     }
 

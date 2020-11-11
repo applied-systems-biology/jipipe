@@ -15,6 +15,9 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.datasources;
 
 import ij.IJ;
 import ij.ImagePlus;
+import ij.io.Opener;
+import ij.plugin.DICOM;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
@@ -32,6 +35,8 @@ import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FileData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.OMEImageData;
+import org.hkijena.jipipe.extensions.parameters.primitives.OptionalAnnotationNameParameter;
 import org.hkijena.jipipe.extensions.parameters.primitives.OptionalStringParameter;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.references.JIPipeDataInfoRef;
@@ -55,7 +60,7 @@ import java.util.function.Supplier;
 public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
 
     private JIPipeDataInfoRef generatedImageType = new JIPipeDataInfoRef("imagej-imgplus");
-    private OptionalStringParameter titleAnnotation = new OptionalStringParameter();
+    private OptionalAnnotationNameParameter titleAnnotation = new OptionalAnnotationNameParameter();
     private boolean removeLut = false;
 
     /**
@@ -79,7 +84,7 @@ public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
     public ImagePlusFromFile(ImagePlusFromFile other) {
         super(other);
         this.generatedImageType = new JIPipeDataInfoRef(other.generatedImageType);
-        this.titleAnnotation = new OptionalStringParameter(other.titleAnnotation);
+        this.titleAnnotation = new OptionalAnnotationNameParameter(other.titleAnnotation);
         this.removeLut = other.removeLut;
     }
 
@@ -97,7 +102,7 @@ public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         FileData fileData = dataBatch.getInputData(getFirstInputSlot(), FileData.class);
-        ImagePlusData data = (ImagePlusData) readImageFrom(fileData.getPath());
+        ImagePlusData data = (ImagePlusData) readImageFrom(fileData.getPath(), subProgress, algorithmProgress, isCancelled);
         List<JIPipeAnnotation> traits = new ArrayList<>();
         if (titleAnnotation.isEnabled()) {
             traits.add(new JIPipeAnnotation(titleAnnotation.getContent(), data.getImage().getTitle()));
@@ -107,13 +112,12 @@ public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
 
     @JIPipeDocumentation(name = "Title annotation", description = "Optional annotation type where the image title is written.")
     @JIPipeParameter("title-annotation")
-    @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/annotation.png")
     public OptionalStringParameter getTitleAnnotation() {
         return titleAnnotation;
     }
 
     @JIPipeParameter("title-annotation")
-    public void setTitleAnnotation(OptionalStringParameter titleAnnotation) {
+    public void setTitleAnnotation(OptionalAnnotationNameParameter titleAnnotation) {
         this.titleAnnotation = titleAnnotation;
     }
 
@@ -123,13 +127,29 @@ public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
      * @param fileName the image file name
      * @return the generated data
      */
-    protected JIPipeData readImageFrom(Path fileName) {
+    protected JIPipeData readImageFrom(Path fileName, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         try {
-            ImagePlus imagePlus = IJ.openImage(fileName.toString());
-            if (removeLut) {
-                imagePlus.getProcessor().setLut(null);
+            Opener opener = new Opener();
+            ImagePlus image;
+            if(fileName.getFileName().toString().endsWith(".ome.tiff") || fileName.getFileName().toString().endsWith(".ome.tiff") ||
+                    opener.getFileType(fileName.toString()) == Opener.CUSTOM || opener.getFileType(fileName.toString()) == Opener.UNKNOWN) {
+                // Pass to bioformats
+                algorithmProgress.accept(subProgress.resolve("Using BioFormats importer. Please use the Bio-Formats importer node for more settings."));
+                BioFormatsImporter importer = JIPipe.createNode(BioFormatsImporter.class);
+                importer.getFirstInputSlot().addData(new FileData(fileName));
+                importer.run(subProgress, algorithmProgress, isCancelled);
+                image = importer.getFirstOutputSlot().getData(0, OMEImageData.class).getImage();
             }
-            return generatedImageType.getInfo().getDataClass().getConstructor(ImagePlus.class).newInstance(imagePlus);
+            else {
+                image = IJ.openImage(fileName.toString());
+            }
+            if(image == null) {
+                throw new NullPointerException("Image could not be loaded!");
+            }
+            if (removeLut) {
+                image.getProcessor().setLut(null);
+            }
+            return generatedImageType.getInfo().getDataClass().getConstructor(ImagePlus.class).newInstance(image);
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
             throw new RuntimeException(e);
         }

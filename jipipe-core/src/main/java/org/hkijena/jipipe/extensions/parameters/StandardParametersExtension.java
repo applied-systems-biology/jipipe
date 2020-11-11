@@ -448,6 +448,13 @@ public class StandardParametersExtension extends JIPipePrepackagedDefaultJavaExt
                 "Optional integer modification",
                 "An optional integer modification",
                 null);
+        registerParameterType("optional-annotation-name",
+                OptionalAnnotationNameParameter.class,
+                null,
+                null,
+                "Optional annotation name",
+                "An optional annotation name",
+                null);
     }
 
     private void registerEnumParameters() {

@@ -39,6 +39,7 @@ import org.hkijena.jipipe.extensions.omero.util.OMEROToJIPipeLogger;
 import org.hkijena.jipipe.extensions.omero.util.OMEROUtils;
 import org.hkijena.jipipe.extensions.parameters.expressions.StringMapQueryExpression;
 import org.hkijena.jipipe.extensions.parameters.expressions.StringQueryExpression;
+import org.hkijena.jipipe.extensions.parameters.primitives.OptionalAnnotationNameParameter;
 import org.hkijena.jipipe.extensions.parameters.primitives.OptionalStringParameter;
 import org.hkijena.jipipe.utils.JsonUtils;
 
@@ -60,12 +61,12 @@ public class OMEROFindDatasetAlgorithm extends JIPipeParameterSlotAlgorithm {
 
     private OMEROCredentials credentials = new OMEROCredentials();
     private StringQueryExpression datasetNameFilters = new StringQueryExpression("");
-    private OptionalStringParameter projectNameAnnotation = new OptionalStringParameter("Project", true);
-    private OptionalStringParameter datasetNameAnnotation = new OptionalStringParameter("Dataset", true);
+    private OptionalAnnotationNameParameter projectNameAnnotation = new OptionalAnnotationNameParameter("Project", true);
+    private OptionalAnnotationNameParameter datasetNameAnnotation = new OptionalAnnotationNameParameter("Dataset", true);
     private StringMapQueryExpression keyValuePairFilters = new StringMapQueryExpression("");
     private boolean addKeyValuePairsAsAnnotations = true;
     private StringMapQueryExpression tagFilters = new StringMapQueryExpression("");
-    private OptionalStringParameter tagAnnotation = new OptionalStringParameter("Tags", true);
+    private OptionalAnnotationNameParameter tagAnnotation = new OptionalAnnotationNameParameter("Tags", true);
 
     public OMEROFindDatasetAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -127,12 +128,12 @@ public class OMEROFindDatasetAlgorithm extends JIPipeParameterSlotAlgorithm {
         super(other);
         this.credentials = new OMEROCredentials(other.credentials);
         this.datasetNameFilters = new StringQueryExpression(other.datasetNameFilters);
-        this.datasetNameAnnotation = new OptionalStringParameter(other.datasetNameAnnotation);
-        this.projectNameAnnotation = new OptionalStringParameter(other.projectNameAnnotation);
+        this.datasetNameAnnotation = new OptionalAnnotationNameParameter(other.datasetNameAnnotation);
+        this.projectNameAnnotation = new OptionalAnnotationNameParameter(other.projectNameAnnotation);
         this.keyValuePairFilters = new StringMapQueryExpression(other.keyValuePairFilters);
         this.addKeyValuePairsAsAnnotations = other.addKeyValuePairsAsAnnotations;
         this.tagFilters = new StringMapQueryExpression(other.tagFilters);
-        this.tagAnnotation = new OptionalStringParameter(other.tagAnnotation);
+        this.tagAnnotation = new OptionalAnnotationNameParameter(other.tagAnnotation);
         registerSubParameter(credentials);
     }
 
@@ -170,23 +171,23 @@ public class OMEROFindDatasetAlgorithm extends JIPipeParameterSlotAlgorithm {
 
     @JIPipeDocumentation(name = "Annotate with dataset name", description = "Creates an annotation with the dataset name")
     @JIPipeParameter("dataset-name-annotation")
-    public OptionalStringParameter getDatasetNameAnnotation() {
+    public OptionalAnnotationNameParameter getDatasetNameAnnotation() {
         return datasetNameAnnotation;
     }
 
     @JIPipeParameter("dataset-name-annotation")
-    public void setDatasetNameAnnotation(OptionalStringParameter datasetNameAnnotation) {
+    public void setDatasetNameAnnotation(OptionalAnnotationNameParameter datasetNameAnnotation) {
         this.datasetNameAnnotation = datasetNameAnnotation;
     }
 
     @JIPipeDocumentation(name = "Annotate with project name", description = "Creates an annotation with the project name")
     @JIPipeParameter("project-name-annotation")
-    public OptionalStringParameter getProjectNameAnnotation() {
+    public OptionalAnnotationNameParameter getProjectNameAnnotation() {
         return projectNameAnnotation;
     }
 
     @JIPipeParameter("project-name-annotation")
-    public void setProjectNameAnnotation(OptionalStringParameter projectNameAnnotation) {
+    public void setProjectNameAnnotation(OptionalAnnotationNameParameter projectNameAnnotation) {
         this.projectNameAnnotation = projectNameAnnotation;
     }
 
@@ -225,12 +226,12 @@ public class OMEROFindDatasetAlgorithm extends JIPipeParameterSlotAlgorithm {
 
     @JIPipeDocumentation(name = "Annotate with tags", description = "Creates an annotation with given key and writes the tags into them in JSON format.")
     @JIPipeParameter("tag-annotation")
-    public OptionalStringParameter getTagAnnotation() {
+    public OptionalAnnotationNameParameter getTagAnnotation() {
         return tagAnnotation;
     }
 
     @JIPipeParameter("tag-annotation")
-    public void setTagAnnotation(OptionalStringParameter tagAnnotation) {
+    public void setTagAnnotation(OptionalAnnotationNameParameter tagAnnotation) {
         this.tagAnnotation = tagAnnotation;
     }
 }
