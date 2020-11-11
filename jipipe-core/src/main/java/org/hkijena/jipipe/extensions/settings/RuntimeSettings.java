@@ -181,6 +181,13 @@ public class RuntimeSettings implements JIPipeParameterCollection {
      * @return a temporary directory
      */
     public static Path generateTempDirectory(String baseName) {
+        if(JIPipe.getInstance() == null || !JIPipe.getInstance().getSettingsRegistry().getRegisteredSheets().containsKey(ID)) {
+            try {
+                return Files.createTempDirectory("JIPipe" + baseName);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
         OptionalPathParameter tempDirectory = getInstance().getTempDirectory();
         if (tempDirectory.isEnabled()) {
             try {

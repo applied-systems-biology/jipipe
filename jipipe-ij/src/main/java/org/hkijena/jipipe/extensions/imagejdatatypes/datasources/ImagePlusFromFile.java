@@ -144,6 +144,15 @@ public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
                 image = IJ.openImage(fileName.toString());
             }
             if(image == null) {
+                // Try Bioformats again?
+                // Pass to bioformats
+                algorithmProgress.accept(subProgress.resolve("Using BioFormats importer. Please use the Bio-Formats importer node for more settings."));
+                BioFormatsImporter importer = JIPipe.createNode(BioFormatsImporter.class);
+                importer.getFirstInputSlot().addData(new FileData(fileName));
+                importer.run(subProgress, algorithmProgress, isCancelled);
+                image = importer.getFirstOutputSlot().getData(0, OMEImageData.class).getImage();
+            }
+            if(image == null) {
                 throw new NullPointerException("Image could not be loaded!");
             }
             if (removeLut) {

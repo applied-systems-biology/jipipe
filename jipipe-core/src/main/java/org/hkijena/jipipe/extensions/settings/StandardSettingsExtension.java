@@ -64,6 +64,12 @@ public class StandardSettingsExtension extends JIPipePrepackagedDefaultJavaExten
                 null,
                 null,
                 new ProjectsSettings());
+        registerSettingsSheet(AutoSaveSettings.ID,
+                "Auto-save",
+                UIUtils.getIconFromResources("actions/save.png"),
+                null,
+                null,
+                new AutoSaveSettings());
         registerSettingsSheet(GeneralUISettings.ID,
                 "General",
                 UIUtils.getIconFromResources("actions/settings.png"),

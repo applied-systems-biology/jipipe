@@ -32,7 +32,7 @@ import java.util.Map;
 public class ExtensionSettings implements JIPipeParameterCollection {
     public static final String ID = "extensions";
 
-    private EventBus eventBus = new EventBus();
+    private final EventBus eventBus = new EventBus();
     private boolean validateImageJDependencies = true;
     private boolean validateNodeTypes = true;
     private boolean silent = false;

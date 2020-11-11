@@ -23,6 +23,7 @@ import org.hkijena.jipipe.api.events.CompartmentRemovedEvent;
 import org.hkijena.jipipe.api.events.ExtensionRegisteredEvent;
 import org.hkijena.jipipe.api.grouping.NodeGroup;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
+import org.hkijena.jipipe.extensions.settings.AutoSaveSettings;
 import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
 import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
 import org.hkijena.jipipe.extensions.settings.ProjectsSettings;
@@ -315,6 +316,11 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
 
         // Recent projects entry
         projectMenu.add(new RecentProjectsMenu("Recent projects", UIUtils.getIconFromResources("actions/clock.png"), (JIPipeProjectWindow) getWindow()));
+
+        JMenuItem restoreMenuItem = new JMenuItem("Restore backup ...", UIUtils.getIconFromResources("actions/reload.png"));
+        restoreMenuItem.setToolTipText("Restores an automatically created backup (auto-save)");
+        restoreMenuItem.addActionListener(e -> AutoSaveSettings.getInstance().openRestoreMenu(this));
+        projectMenu.add(restoreMenuItem);
 
         projectMenu.addSeparator();
 
