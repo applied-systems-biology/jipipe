@@ -67,6 +67,7 @@ import org.scijava.service.AbstractService;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.Authenticator;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -174,6 +175,10 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
 
         // Check for errors
         logService.info("[3/3] Error-checking-phase ...");
+        for (Class<? extends JIPipeData> dataType : datatypeRegistry.getRegisteredDataTypes().values()) {
+            // Check if we can find a method "import"
+            Method method = dataType.getDeclaredMethod("import", Path.class);
+        }
         if (extensionSettings.isValidateNodeTypes()) {
             for (JIPipeNodeInfo info : ImmutableList.copyOf(nodeRegistry.getRegisteredNodeInfos().values())) {
                 try {
