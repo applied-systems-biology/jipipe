@@ -327,7 +327,7 @@ public class JIPipeExportedDataTable implements TableModel {
          * @return Annotations
          */
         @JsonGetter("traits")
-        public List<JIPipeAnnotation> getTraits() {
+        public List<JIPipeAnnotation> getAnnotations() {
             return traits;
         }
 

@@ -119,7 +119,7 @@ public class JIPipeMergedExportedDataTable implements TableModel {
             return rowList.get(rowIndex);
         else {
             String traitColumn = traitColumns.get(columnIndex - 5);
-            return rowList.get(rowIndex).getTraits().stream().filter(t -> t.nameEquals(traitColumn)).findFirst().orElse(null);
+            return rowList.get(rowIndex).getAnnotations().stream().filter(t -> t.nameEquals(traitColumn)).findFirst().orElse(null);
         }
     }
 

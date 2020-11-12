@@ -135,12 +135,15 @@ public class JIPipeDatatypeRegistry {
     /**
      * Returns true if the input data type can be converted into the output data type.
      * Returns true if both data types are the same or trivially convertible (inheritance)
+     * Returns true if the input is {@link JIPipeData}
      *
      * @param inputDataType  the input data type
      * @param outputDataType the output data type
      * @return if the types are convertible
      */
     public boolean isConvertible(Class<? extends JIPipeData> inputDataType, Class<? extends JIPipeData> outputDataType) {
+        if(inputDataType == JIPipeData.class)
+            return true;
         if (isTriviallyConvertible(inputDataType, outputDataType)) {
             return true;
         } else {
