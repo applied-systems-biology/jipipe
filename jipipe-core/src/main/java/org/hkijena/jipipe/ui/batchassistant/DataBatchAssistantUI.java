@@ -24,9 +24,11 @@ import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatchAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.FormPanel;
+import org.hkijena.jipipe.ui.grapheditor.algorithmfinder.JIPipeAlgorithmTargetFinderAlgorithmUI;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -35,6 +37,8 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,10 +54,16 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
     private JPanel errorUI;
     private Map<String, JIPipeDataSlot> currentCache = new HashMap<>();
     private JLabel errorLabel;
-    private FormPanel batchPreviewPanel = new FormPanel(null, FormPanel.WITH_SCROLLING);
+    private FormPanel formPanel = new FormPanel(null, FormPanel.WITH_SCROLLING);
     private JLabel batchPreviewNumberLabel;
     private JLabel batchPreviewMissingLabel;
     private JLabel batchPreviewDuplicateLabel;
+
+    private final Timer scrollToBeginTimer = new Timer(200, e -> scrollToBeginning());
+    private JIPipeGraphNode batchesNodeCopy;
+    private List<JIPipeMergingDataBatch> batches = new ArrayList<>();
+    private final ArrayDeque<JIPipeMergingDataBatch> infiniteScrollingQueue = new ArrayDeque<>();
+
 
     /**
      * @param workbenchUI  The workbench UI
@@ -64,6 +74,7 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
         super(workbenchUI);
         this.algorithm = (JIPipeAlgorithm) algorithm;
         this.runTestBench = runTestBench;
+        this.scrollToBeginTimer.setRepeats(false);
         initialize();
         updateStatus();
         getProject().getCache().getEventBus().register(this);
@@ -156,7 +167,7 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
         splitPane.setTopComponent(parameterPanel);
 
         JPanel bottomPanel = new JPanel(new BorderLayout());
-        bottomPanel.add(batchPreviewPanel, BorderLayout.CENTER);
+        bottomPanel.add(formPanel, BorderLayout.CENTER);
 
         JToolBar batchPreviewOverview = new JToolBar();
 
@@ -179,40 +190,46 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
     }
 
     private void refreshBatchPreview() {
-        batchPreviewPanel.clear();
-        JIPipeGraphNode copy = algorithm.getInfo().duplicate(algorithm);
+        infiniteScrollingQueue.clear();
+        formPanel.clear();
+        batchesNodeCopy = algorithm.getInfo().duplicate(algorithm);
         // Pass cache as input slots
-        for (JIPipeDataSlot inputSlot : copy.getEffectiveInputSlots()) {
+        for (JIPipeDataSlot inputSlot : batchesNodeCopy.getEffectiveInputSlots()) {
             JIPipeDataSlot cache = currentCache.getOrDefault(inputSlot.getName(), null);
             inputSlot.copyFrom(cache);
         }
         // Generate dry-run
-        JIPipeDataBatchAlgorithm batchAlgorithm = (JIPipeDataBatchAlgorithm) copy;
-        List<JIPipeMergingDataBatch> batches = batchAlgorithm.generateDataBatchesDryRun(copy.getEffectiveInputSlots());
+        JIPipeDataBatchAlgorithm batchAlgorithm = (JIPipeDataBatchAlgorithm) batchesNodeCopy;
+        batches = batchAlgorithm.generateDataBatchesDryRun(batchesNodeCopy.getEffectiveInputSlots());
 
         batchPreviewNumberLabel.setText(batches.size() + " batches");
         batchPreviewMissingLabel.setVisible(false);
         batchPreviewDuplicateLabel.setVisible(false);
         for (JIPipeMergingDataBatch batch : batches) {
-            for (JIPipeDataSlot inputSlot : copy.getInputSlots()) {
+            for (JIPipeDataSlot inputSlot : batchesNodeCopy.getInputSlots()) {
                 List<JIPipeData> data = batch.getInputData(inputSlot, JIPipeData.class);
                 if (data.isEmpty())
                     batchPreviewMissingLabel.setVisible(true);
                 if (data.size() > 1)
                     batchPreviewDuplicateLabel.setVisible(true);
             }
+            infiniteScrollingQueue.addLast(batch);
         }
-
-        for (JIPipeMergingDataBatch batch : batches) {
-            DataBatchUI ui = new DataBatchUI(getProjectWorkbench(), copy, batch);
-            batchPreviewPanel.addWideToForm(ui, null);
-        }
-        batchPreviewPanel.addVerticalGlue();
+//        for (JIPipeMergingDataBatch batch : batches) {
+//            DataBatchUI ui = new DataBatchUI(getProjectWorkbench(), copy, batch);
+//            batchPreviewPanel.addWideToForm(ui, null);
+//        }
+        formPanel.addVerticalGlue();
+        SwingUtilities.invokeLater(this::updateInfiniteScroll);
+        scrollToBeginTimer.restart();
     }
 
     private void initialize() {
         setLayout(new BorderLayout());
         initializeErrorUI();
+        formPanel.getScrollPane().getVerticalScrollBar().addAdjustmentListener(e -> {
+            updateInfiniteScroll();
+        });
     }
 
     private void initializeErrorUI() {
@@ -238,7 +255,24 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
         explanation.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
         errorContent.add(explanation, BorderLayout.CENTER);
         errorUI.add(errorContent, BorderLayout.CENTER);
+    }
 
+    private void scrollToBeginning() {
+        formPanel.getScrollPane().getVerticalScrollBar().setValue(0);
+    }
+
+    private void updateInfiniteScroll() {
+        JScrollBar scrollBar = formPanel.getScrollPane().getVerticalScrollBar();
+        if((!scrollBar.isVisible() || (scrollBar.getValue() + scrollBar.getVisibleAmount()) > (scrollBar.getMaximum() - 32)) && !infiniteScrollingQueue.isEmpty()) {
+            formPanel.removeLastRow();
+            JIPipeMergingDataBatch dataBatch = infiniteScrollingQueue.removeFirst();
+            DataBatchUI ui = new DataBatchUI(getProjectWorkbench(), batchesNodeCopy, dataBatch);
+            formPanel.addWideToForm(ui, null);
+            formPanel.addVerticalGlue();
+            formPanel.revalidate();
+            formPanel.repaint();
+            SwingUtilities.invokeLater(this::updateInfiniteScroll);
+        }
     }
 
     /**
