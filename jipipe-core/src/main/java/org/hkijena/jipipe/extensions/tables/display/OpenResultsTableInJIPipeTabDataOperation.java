@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.extensions.tables.datatypes;
+package org.hkijena.jipipe.extensions.tables.display;
 
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataDisplayOperation;
@@ -19,6 +19,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataImportOperation;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.data.JIPipeExportedDataTable;
+import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.tableanalyzer.JIPipeTableEditor;
@@ -29,7 +30,7 @@ import javax.swing.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-public class OpenResultsTableInJIPipeDataOperation implements JIPipeDataImportOperation, JIPipeDataDisplayOperation {
+public class OpenResultsTableInJIPipeTabDataOperation implements JIPipeDataImportOperation, JIPipeDataDisplayOperation {
     @Override
     public void display(JIPipeData data, String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
         data.display(displayName, workbench, source);
@@ -37,12 +38,12 @@ public class OpenResultsTableInJIPipeDataOperation implements JIPipeDataImportOp
 
     @Override
     public String getName() {
-        return "Open in JIPipe";
+        return "Open in JIPipe (new tab)";
     }
 
     @Override
     public String getDescription() {
-        return "Opens the table in JIPipe";
+        return "Opens the table in a new tab inside JIPipe";
     }
 
     @Override

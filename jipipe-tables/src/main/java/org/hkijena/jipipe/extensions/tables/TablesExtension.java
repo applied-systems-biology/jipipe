@@ -18,8 +18,8 @@ import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
 import org.hkijena.jipipe.extensions.tables.algorithms.*;
 import org.hkijena.jipipe.extensions.tables.datatypes.DoubleArrayTableColumn;
-import org.hkijena.jipipe.extensions.tables.datatypes.OpenResultsTableInImageJDataOperation;
-import org.hkijena.jipipe.extensions.tables.datatypes.OpenResultsTableInJIPipeDataOperation;
+import org.hkijena.jipipe.extensions.tables.display.OpenResultsTableInImageJDataOperation;
+import org.hkijena.jipipe.extensions.tables.display.OpenResultsTableInJIPipeTabDataOperation;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.extensions.tables.datatypes.RowIndexTableColumn;
 import org.hkijena.jipipe.extensions.tables.datatypes.StringArrayTableColumn;
@@ -114,21 +114,21 @@ public class TablesExtension extends JIPipePrepackagedDefaultJavaExtension {
                 null,
                 null,
                 new OpenResultsTableInImageJDataOperation(),
-                new OpenResultsTableInJIPipeDataOperation());
+                new OpenResultsTableInJIPipeTabDataOperation());
         registerDatatype("table-column-numeric",
                 DoubleArrayTableColumn.class,
                 ResourceUtils.getPluginResource("icons/data-types/table-column.png"),
                 null,
                 null,
                 new OpenResultsTableInImageJDataOperation(),
-                new OpenResultsTableInJIPipeDataOperation());
+                new OpenResultsTableInJIPipeTabDataOperation());
         registerDatatype("table-column-string",
                 StringArrayTableColumn.class,
                 ResourceUtils.getPluginResource("icons/data-types/table-column.png"),
                 null,
                 null,
                 new OpenResultsTableInImageJDataOperation(),
-                new OpenResultsTableInJIPipeDataOperation());
+                new OpenResultsTableInJIPipeTabDataOperation());
         registerDatatypeConversion(new DoubleArrayColumnToTableConverter());
         registerDatatypeConversion(new StringArrayColumnToTableConverter());
     }

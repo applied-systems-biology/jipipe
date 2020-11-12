@@ -37,6 +37,8 @@ import org.jdesktop.swingx.JXTable;
 import org.jdesktop.swingx.ScrollableSizeHint;
 
 import javax.swing.*;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import java.awt.BorderLayout;
@@ -73,6 +75,9 @@ public class JIPipeTableEditor extends JIPipeWorkbenchPanel {
 
     private JButton convertSelectedCellsButton;
     private JPopupMenu convertSelectedCellsMenu;
+    private FormPanel.GroupHeaderPanel rowPaletteGroup;
+    private FormPanel.GroupHeaderPanel columnPaletteGroup;
+    private FormPanel.GroupHeaderPanel selectionPaletteGroup;
 
     /**
      * @param workbench  the workbench
@@ -82,6 +87,7 @@ public class JIPipeTableEditor extends JIPipeWorkbenchPanel {
         super(workbench);
         this.tableModel = tableModel;
         initialize();
+        setTableModel(tableModel);
     }
 
     private void initialize() {
@@ -90,6 +96,8 @@ public class JIPipeTableEditor extends JIPipeWorkbenchPanel {
         // Add toolbar buttons
         JToolBar toolBar = new JToolBar();
         toolBar.setFloatable(false);
+
+        addLeftToolbarButtons(toolBar);
 
         JButton openButton = new JButton("Open", UIUtils.getIconFromResources("actions/document-open-folder.png"));
         {
@@ -141,7 +149,7 @@ public class JIPipeTableEditor extends JIPipeWorkbenchPanel {
         contentPanel.setScrollableWidthHint(ScrollableSizeHint.HORIZONTAL_STRETCH);
         contentPanel.setScrollableHeightHint(ScrollableSizeHint.VERTICAL_STRETCH);
 
-        addPaletteGroup("Rows", UIUtils.getIconFromResources("actions/stock_select-row.png"));
+        rowPaletteGroup = addPaletteGroup("Rows", UIUtils.getIconFromResources("actions/stock_select-row.png"));
         addActionToPalette("Add",
                 "Adds an empty row at the end of the table.",
                 UIUtils.getIconFromResources("actions/edit-table-insert-row-below.png"),
@@ -152,7 +160,7 @@ public class JIPipeTableEditor extends JIPipeWorkbenchPanel {
                 UIUtils.getIconFromResources("actions/edit-table-delete-row.png"),
                 this::removeSelectedRows);
 
-        addPaletteGroup("Columns", UIUtils.getIconFromResources("actions/stock_select-column.png"));
+        columnPaletteGroup = addPaletteGroup("Columns", UIUtils.getIconFromResources("actions/stock_select-column.png"));
         addActionToPalette("Add numeric",
                 "Adds an empty numeric column with a custom name to the table.",
                 UIUtils.getIconFromResources("actions/edit-table-insert-column-right.png"),
@@ -188,7 +196,7 @@ public class JIPipeTableEditor extends JIPipeWorkbenchPanel {
                 UIUtils.getIconFromResources("actions/edit-select-text.png"),
                 this::selectedColumnsToString);
 
-        addPaletteGroup("Selection", UIUtils.getIconFromResources("actions/edit-select-all.png"));
+        selectionPaletteGroup = addPaletteGroup("Selection", UIUtils.getIconFromResources("actions/edit-select-all.png"));
         addActionToPalette("Whole row",
                 "Expands the selection to the whole row",
                 UIUtils.getIconFromResources("actions/stock_select-row.png"),
@@ -260,6 +268,23 @@ public class JIPipeTableEditor extends JIPipeWorkbenchPanel {
         add(splitPane, BorderLayout.CENTER);
 
         jxTable.getSelectionModel().addListSelectionListener(listSelectionEvent -> updateConvertMenu());
+    }
+
+    public void setTableModel(ResultsTableData tableModel) {
+        this.tableModel = tableModel;
+        jxTable.setModel(new ResultsTableData());
+        jxTable.setModel(tableModel);
+        if(tableModel != null) {
+            tableModel.addTableModelListener(e -> {
+                if(e.getSource() == tableModel)
+                    updateSelectionStatistics();
+            });
+        }
+        updateSelectionStatistics();
+    }
+
+    protected void addLeftToolbarButtons(JToolBar toolBar) {
+
     }
 
     private void exportToImageJ() {
@@ -344,11 +369,12 @@ public class JIPipeTableEditor extends JIPipeWorkbenchPanel {
         return button;
     }
 
-    private void addPaletteGroup(String name, Icon icon) {
-        palettePanel.addGroupHeader(name, icon);
+    private FormPanel.GroupHeaderPanel addPaletteGroup(String name, Icon icon) {
+        FormPanel.GroupHeaderPanel groupHeaderPanel = palettePanel.addGroupHeader(name, icon);
         currentPaletteGroup = new JPanel();
         currentPaletteGroup.setLayout(new ModifiedFlowLayout(FlowLayout.LEFT));
         palettePanel.addWideToForm(currentPaletteGroup, null);
+        return groupHeaderPanel;
     }
 
     private void addSeparatorToPalette() {
@@ -599,10 +625,12 @@ public class JIPipeTableEditor extends JIPipeWorkbenchPanel {
         jxTable.setModel(new DefaultTableModel());
         jxTable.setModel(tableModel);
         jxTable.packAll();
+        updateSelectionStatistics();
     }
 
     private void addRow() {
         tableModel.addRow();
+        updateSelectionStatistics();
     }
 
     private void removeSelectedColumns() {
@@ -635,6 +663,17 @@ public class JIPipeTableEditor extends JIPipeWorkbenchPanel {
                 tableModel = tableModel.getRows(rows);
                 jxTable.packAll();
             }
+        }
+    }
+
+    private void updateSelectionStatistics() {
+        if(rowPaletteGroup != null) {
+            int count = tableModel != null ? tableModel.getRowCount() : 0;
+            rowPaletteGroup.getTitleLabel().setText(count > 0 ? "Rows (" + count + ")" : "Rows");
+        }
+        if(columnPaletteGroup != null) {
+            int count = tableModel != null ? tableModel.getColumnCount() : 0;
+            columnPaletteGroup.getTitleLabel().setText(count > 0 ? "Columns (" + count + ")" : "Columns");
         }
     }
 

@@ -28,6 +28,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.util.Objects;
 
 /**
  * Editor for a any numeric parameter
@@ -52,7 +53,9 @@ public class NumberParameterEditorUI extends JIPipeParameterEditorUI {
 
     @Override
     public void reload() {
-        numberField.setText(formatNumber(getCurrentValue()));
+        String s = formatNumber(getCurrentValue());
+        if(!Objects.equals(s, numberField.getText()))
+            numberField.setText(s);
     }
 
     public static String formatNumber(double number) {

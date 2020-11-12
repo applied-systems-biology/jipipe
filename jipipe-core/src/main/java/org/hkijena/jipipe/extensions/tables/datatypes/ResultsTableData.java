@@ -598,6 +598,8 @@ public class ResultsTableData implements JIPipeData, TableModel {
 
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
+        if(columnIndex >= getColumnCount() || rowIndex >= getRowCount())
+            return null;
         if (isNumeric(columnIndex)) {
             return table.getValueAsDouble(columnIndex, rowIndex);
         } else {

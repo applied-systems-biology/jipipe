@@ -33,7 +33,7 @@ import java.awt.Component;
 import java.awt.Window;
 import java.util.Map;
 
-public class CacheAwareImagePlusDataDisplay extends ImageViewerPanel {
+public class CacheAwareImagePlusDataViewerPanel extends ImageViewerPanel {
     private final JIPipeProject project;
     private final JIPipeWorkbench workbench;
     private JIPipeCacheSlotDataSource dataSource;
@@ -42,7 +42,7 @@ public class CacheAwareImagePlusDataDisplay extends ImageViewerPanel {
     private Component errorPanel;
     private JToggleButton cacheAwareToggle;
 
-    public CacheAwareImagePlusDataDisplay(JIPipeWorkbench workbench, JIPipeCacheSlotDataSource dataSource) {
+    public CacheAwareImagePlusDataViewerPanel(JIPipeWorkbench workbench, JIPipeCacheSlotDataSource dataSource) {
         this.project = ((JIPipeProjectWorkbench)workbench).getProject();
         this.workbench = workbench;
         this.dataSource = dataSource;
@@ -80,7 +80,7 @@ public class CacheAwareImagePlusDataDisplay extends ImageViewerPanel {
     }
 
     public static void show(JIPipeWorkbench workbench, JIPipeCacheSlotDataSource dataSource, String displayName) {
-        CacheAwareImagePlusDataDisplay dataDisplay = new CacheAwareImagePlusDataDisplay(workbench, dataSource);
+        CacheAwareImagePlusDataViewerPanel dataDisplay = new CacheAwareImagePlusDataViewerPanel(workbench, dataSource);
         JFrame frame = new JFrame(displayName);
         frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         frame.setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());

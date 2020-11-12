@@ -20,8 +20,8 @@ import org.hkijena.jipipe.extensions.annotation.datasources.AnnotationTableFromF
 import org.hkijena.jipipe.extensions.core.data.OpenInNativeApplicationDataImportOperation;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
 import org.hkijena.jipipe.extensions.tables.datatypes.AnnotationTableData;
-import org.hkijena.jipipe.extensions.tables.datatypes.OpenResultsTableInImageJDataOperation;
-import org.hkijena.jipipe.extensions.tables.datatypes.OpenResultsTableInJIPipeDataOperation;
+import org.hkijena.jipipe.extensions.tables.display.OpenResultsTableInImageJDataOperation;
+import org.hkijena.jipipe.extensions.tables.display.OpenResultsTableInJIPipeTabDataOperation;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.plugin.Plugin;
@@ -60,7 +60,7 @@ public class AnnotationsExtension extends JIPipePrepackagedDefaultJavaExtension 
                 null,
                 null,
                 new OpenResultsTableInImageJDataOperation(),
-                new OpenResultsTableInJIPipeDataOperation(),
+                new OpenResultsTableInJIPipeTabDataOperation(),
                 new OpenInNativeApplicationDataImportOperation(".csv"));
         registerDatatypeConversion(new ImplicitResultsTableDataConverter());
     }
