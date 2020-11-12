@@ -409,6 +409,10 @@ public class ImageViewerPanel extends JPanel {
     }
 
     private void animateNextSlice() {
+        if(!isDisplayable()) {
+            stopAnimations();
+            return;
+        }
         if(animationStackToggle.isSelected()) {
             int newIndex = (image.getZ() % image.getNSlices()) + 1;
             stackSlider.setValue(newIndex);

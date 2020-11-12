@@ -18,6 +18,7 @@ import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.api.nodes.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
@@ -35,8 +36,6 @@ public class DataBatchUI extends JIPipeProjectWorkbenchPanel {
 
     private final JIPipeGraphNode node;
     private final JIPipeMergingDataBatch batch;
-    private ButtonGroup dataDisplayToggle;
-    private JPanel currentDataDisplay;
 
     /**
      * @param workbenchUI The workbench UI
@@ -47,19 +46,6 @@ public class DataBatchUI extends JIPipeProjectWorkbenchPanel {
         super(workbenchUI);
         this.node = node;
         this.batch = batch;
-        dataDisplayToggle = new ButtonGroup() {
-            @Override
-            public void setSelected(ButtonModel model, boolean selected) {
-                if (selected) {
-                    super.setSelected(model, selected);
-                } else {
-                    clearSelection();
-                    DataBatchUI.this.remove(currentDataDisplay);
-                    DataBatchUI.this.revalidate();
-                    DataBatchUI.this.repaint();
-                }
-            }
-        };
         initialize();
     }
 
@@ -84,51 +70,46 @@ public class DataBatchUI extends JIPipeProjectWorkbenchPanel {
         for (JIPipeDataSlot slot : node.getInputSlots()) {
             Set<Integer> rows = batch.getInputSlotRows().getOrDefault(slot, Collections.emptySet());
             Icon dataTypeIcon = JIPipe.getDataTypes().getIconFor(slot.getAcceptedDataType());
-            JToggleButton toggleButton = new JToggleButton(slot.getName(), dataTypeIcon);
-            UIUtils.makeFlat(toggleButton);
+            JButton displayButton = new JButton(slot.getName(), dataTypeIcon);
+            UIUtils.makeFlat(displayButton);
             if (!rows.isEmpty()) {
-                toggleButton.setHorizontalAlignment(SwingConstants.LEFT);
-                toggleButton.addActionListener(e -> {
-                    if (toggleButton.isSelected())
+                displayButton.setHorizontalAlignment(SwingConstants.LEFT);
+                displayButton.addActionListener(e -> {
+                    if (displayButton.isSelected())
                         displayData(slot, batch.getInputSlotRows().get(slot));
                 });
             } else {
-                toggleButton.setEnabled(false);
+                displayButton.setEnabled(false);
             }
-            dataDisplayToggle.add(toggleButton);
+            displayButton.addActionListener(e -> displayData(slot, rows));
 
             JLabel statusLabel;
             if (rows.isEmpty()) {
                 statusLabel = new JLabel("Missing!", UIUtils.getIconFromResources("emblems/vcs-conflicting.png"), JLabel.LEFT);
             } else {
-                statusLabel = new JLabel(rows.size() == 1 ? "1 item" : rows.size() + " items", UIUtils.getIconFromResources("emblems/vcs-normal.png"), JLabel.LEFT);
+                Icon icon = (node instanceof JIPipeIteratingAlgorithm && rows.size() > 1) ? UIUtils.getIconFromResources("emblems/vcs-conflicting.png") : UIUtils.getIconFromResources("emblems/vcs-normal.png");
+                statusLabel = new JLabel(rows.size() == 1 ? "1 item" : rows.size() + " items", icon, JLabel.LEFT);
             }
 
-            dataList.addToForm(toggleButton, statusLabel, null);
+            dataList.addToForm(displayButton, statusLabel, null);
         }
         add(dataList, BorderLayout.EAST);
     }
 
     private void displayData(JIPipeDataSlot slot, Set<Integer> rows) {
-        if (currentDataDisplay != null) {
-            remove(currentDataDisplay);
-        }
-
-        currentDataDisplay = new JPanel(new BorderLayout());
-        JPanel separator = new JPanel();
-        separator.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(4, 0, 0, 0),
-                BorderFactory.createMatteBorder(1, 0, 0, 0, Color.GRAY)));
-        currentDataDisplay.add(separator, BorderLayout.NORTH);
-
         JIPipeDataSlot copySlot = new JIPipeDataSlot(slot.getDefinition(), slot.getNode());
         for (int row : rows) {
             copySlot.addData(slot.getData(row, JIPipeData.class), slot.getAnnotations(row));
         }
 
         DataSlotTableUI tableUI = new DataSlotTableUI(getProjectWorkbench(), copySlot);
-        currentDataDisplay.add(tableUI, BorderLayout.CENTER);
-        add(currentDataDisplay, BorderLayout.SOUTH);
-        revalidate();
-        repaint();
+        JFrame frame = new JFrame("Data batch contents");
+        frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        frame.setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
+        frame.setContentPane(tableUI);
+        frame.pack();
+        frame.setSize(400,300);
+        frame.setLocationRelativeTo(this);
+        frame.setVisible(true);
     }
 }

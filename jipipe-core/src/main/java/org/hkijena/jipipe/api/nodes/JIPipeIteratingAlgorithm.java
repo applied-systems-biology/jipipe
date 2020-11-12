@@ -156,6 +156,14 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
             dataBatches = JIPipeMergingDataBatchBuilder.convertMergingToSingleDataBatches(mergingDataBatches);
         }
 
+        if(dataBatches == null) {
+            throw new UserFriendlyRuntimeException("Unable to split data into batches!",
+                    "Unable to split data into batches!",
+                    "Algorithm '" + getName() + "'",
+                    "The algorithm needs to assign input a unique data set via annotations, but there are either missing elements or multiple data per slot.",
+                    "Please check the input of the algorithm by running the quick run on each input algorithm. " +
+                            "Try to switch to the 'Data batches' tab to preview how data is split into batches.");
+        }
 
         if (!supportsParallelization() || !isParallelizationEnabled() || getThreadPool() == null || getThreadPool().getMaxThreads() <= 1) {
             for (int i = 0; i < dataBatches.size(); i++) {
