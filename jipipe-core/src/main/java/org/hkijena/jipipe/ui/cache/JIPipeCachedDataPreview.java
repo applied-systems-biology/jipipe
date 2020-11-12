@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.ui.components;
+package org.hkijena.jipipe.ui.cache;
 
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
@@ -78,6 +78,10 @@ public class JIPipeCachedDataPreview extends JPanel {
         setLayout(new BorderLayout());
         JLabel label = new JLabel("Please wait ...", UIUtils.getIconFromResources("actions/hourglass-half.png"), JLabel.LEFT);
         add(label, BorderLayout.CENTER);
+    }
+
+    public JIPipeData getData() {
+        return data;
     }
 
     /**

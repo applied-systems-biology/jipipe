@@ -14,24 +14,32 @@
 package org.hkijena.jipipe.extensions.imagejdatatypes.resultanalysis;
 
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
-import org.hkijena.jipipe.ui.resultanalysis.JIPipeAsyncResultDataPlotPreviewUI;
+import org.hkijena.jipipe.api.data.JIPipeDataSlot;
+import org.hkijena.jipipe.api.data.JIPipeExportedDataTable;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
+import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
+import org.hkijena.jipipe.ui.resultanalysis.JIPipeAsyncResultDataPlotPreview;
 
 import javax.swing.*;
 import java.nio.file.Path;
 
-public class ROIDataPreviewUI extends JIPipeAsyncResultDataPlotPreviewUI {
+public class ImageDataPreview extends JIPipeAsyncResultDataPlotPreview {
+
+
     /**
      * Creates a new renderer
      *
-     * @param table the table where the data is rendered in
+     * @param workbench the workbench
+     * @param table     the table where the data is rendered in
+     * @param slot      the data slot
+     * @param row       the row
      */
-    public ROIDataPreviewUI(JTable table) {
-        super(table);
+    public ImageDataPreview(JIPipeProjectWorkbench workbench, JTable table, JIPipeDataSlot slot, JIPipeExportedDataTable.Row row) {
+        super(workbench, table, slot, row);
     }
 
     @Override
     protected JIPipeData loadData(Path storageFolder) {
-        return new ROIListData(storageFolder);
+        return new ImagePlusData(storageFolder);
     }
 }

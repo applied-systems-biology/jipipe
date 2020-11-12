@@ -60,6 +60,7 @@ public class JIPipeMergedResultDataSlotTableUI extends JIPipeProjectWorkbenchPan
     private JIPipeMergedExportedDataTable mergedDataTable;
     private FormPanel rowUIList;
     private SearchTextField searchTextField = new SearchTextField();
+    private JScrollPane scrollPane;
 
     /**
      * @param workbenchUI The workbench
@@ -97,7 +98,7 @@ public class JIPipeMergedResultDataSlotTableUI extends JIPipeProjectWorkbenchPan
         table.setDefaultRenderer(JIPipeAnnotation.class, new JIPipeTraitTableCellRenderer());
         table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
-        JScrollPane scrollPane = new JScrollPane(table);
+        scrollPane = new JScrollPane(table);
         scrollPane.getViewport().setBackground(UIManager.getColor("TextArea.background"));
         add(scrollPane, BorderLayout.CENTER);
         add(table.getTableHeader(), BorderLayout.NORTH);
@@ -180,7 +181,7 @@ public class JIPipeMergedResultDataSlotTableUI extends JIPipeProjectWorkbenchPan
             table.setRowHeight(GeneralDataSettings.getInstance().getPreviewSize());
         else
             table.setRowHeight(25);
-        table.setDefaultRenderer(JIPipeExportedDataTable.Row.class, new JIPipeRowDataMergedTableCellRenderer(getProjectWorkbench(), mergedDataTable));
+        table.setDefaultRenderer(JIPipeExportedDataTable.Row.class, new JIPipeRowDataMergedTableCellRenderer(getProjectWorkbench(), mergedDataTable, scrollPane, table));
         table.setModel(mergedDataTable);
         refreshTable();
     }

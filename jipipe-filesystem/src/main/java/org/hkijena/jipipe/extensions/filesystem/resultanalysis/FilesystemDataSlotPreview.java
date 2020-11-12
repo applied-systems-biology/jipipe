@@ -18,7 +18,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeExportedDataTable;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.PathData;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
-import org.hkijena.jipipe.ui.resultanalysis.JIPipeResultDataSlotPreviewUI;
+import org.hkijena.jipipe.ui.resultanalysis.JIPipeResultDataSlotPreview;
 import org.hkijena.jipipe.utils.JsonUtils;
 import org.hkijena.jipipe.utils.PathUtils;
 
@@ -31,21 +31,29 @@ import java.nio.file.Path;
 /**
  * Renders filesystem data as table cell
  */
-public class FilesystemDataSlotPreviewUI extends JIPipeResultDataSlotPreviewUI {
+public class FilesystemDataSlotPreview extends JIPipeResultDataSlotPreview {
 
     private final JLabel label = new JLabel();
 
     /**
      * Creates a new renderer
      *
-     * @param table the table that renders the preview
+     * @param workbench the workbench
+     * @param table     the table where the data is rendered in
+     * @param slot      the data slot
+     * @param row       the row
      */
-    public FilesystemDataSlotPreviewUI(JTable table) {
-        super(table);
+    public FilesystemDataSlotPreview(JIPipeProjectWorkbench workbench, JTable table, JIPipeDataSlot slot, JIPipeExportedDataTable.Row row) {
+        super(workbench, table, slot, row);
+        initialize();
+    }
+
+    private void initialize() {
         setOpaque(true);
         setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
         add(label, BorderLayout.CENTER);
     }
+
 
     private Path findListFile(JIPipeDataSlot slot, JIPipeExportedDataTable.Row row) {
         Path rowStorageFolder = getRowStorageFolder(slot, row);
@@ -56,10 +64,11 @@ public class FilesystemDataSlotPreviewUI extends JIPipeResultDataSlotPreviewUI {
     }
 
     @Override
-    public void render(JIPipeProjectWorkbench workbenchUI, JIPipeDataSlot slot, JIPipeExportedDataTable.Row row) {
-
-        label.setIcon(JIPipe.getDataTypes().getIconFor(slot.getAcceptedDataType()));
-        Path listFile = findListFile(slot, row);
+    public void renderPreview() {
+        if(!label.getText().isEmpty())
+            return;
+        label.setIcon(JIPipe.getDataTypes().getIconFor(getSlot().getAcceptedDataType()));
+        Path listFile = findListFile(getSlot(), getRow());
         if (listFile != null) {
             Path fileOrFolderPath = null;
             try {
@@ -75,5 +84,6 @@ public class FilesystemDataSlotPreviewUI extends JIPipeResultDataSlotPreviewUI {
         } else {
             label.setText("<Not found>");
         }
+        refreshTable();
     }
 }

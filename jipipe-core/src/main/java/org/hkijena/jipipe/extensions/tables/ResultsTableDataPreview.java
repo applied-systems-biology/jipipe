@@ -14,21 +14,28 @@
 package org.hkijena.jipipe.extensions.tables;
 
 import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.data.JIPipeDataSlot;
+import org.hkijena.jipipe.api.data.JIPipeExportedDataTable;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
-import org.hkijena.jipipe.ui.resultanalysis.JIPipeAsyncResultDataPlotPreviewUI;
+import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
+import org.hkijena.jipipe.ui.resultanalysis.JIPipeAsyncResultDataPlotPreview;
 
 import javax.swing.*;
 import java.io.IOException;
 import java.nio.file.Path;
 
-public class ResultsTableDataPreviewUI extends JIPipeAsyncResultDataPlotPreviewUI {
+public class ResultsTableDataPreview extends JIPipeAsyncResultDataPlotPreview {
+
     /**
      * Creates a new renderer
      *
-     * @param table the table where the data is rendered in
+     * @param workbench the workbench
+     * @param table     the table where the data is rendered in
+     * @param slot      the data slot
+     * @param row       the row
      */
-    public ResultsTableDataPreviewUI(JTable table) {
-        super(table);
+    public ResultsTableDataPreview(JIPipeProjectWorkbench workbench, JTable table, JIPipeDataSlot slot, JIPipeExportedDataTable.Row row) {
+        super(workbench, table, slot, row);
     }
 
     @Override

@@ -23,21 +23,28 @@ import java.awt.BorderLayout;
 /**
  * Renders a {@link JIPipeDataSlot} row as table cell
  */
-public class JIPipeDefaultResultDataSlotPreviewUI extends JIPipeResultDataSlotPreviewUI {
-
+public class JIPipeDefaultResultDataSlotPreview extends JIPipeResultDataSlotPreview {
     /**
      * Creates a new renderer
      *
-     * @param table the table that renders the preview
+     * @param workbench the workbench
+     * @param table     the table where the data is rendered in
+     * @param slot      the data slot
+     * @param row       the row
      */
-    public JIPipeDefaultResultDataSlotPreviewUI(JTable table) {
-        super(table);
+    public JIPipeDefaultResultDataSlotPreview(JIPipeProjectWorkbench workbench, JTable table, JIPipeDataSlot slot, JIPipeExportedDataTable.Row row) {
+        super(workbench, table, slot, row);
+        initialize();
+    }
+
+    private void initialize() {
         setOpaque(true);
         setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
         add(new JLabel("N/A"), BorderLayout.CENTER);
     }
 
     @Override
-    public void render(JIPipeProjectWorkbench workbenchUI, JIPipeDataSlot slot, JIPipeExportedDataTable.Row row) {
+    public void renderPreview() {
+
     }
 }

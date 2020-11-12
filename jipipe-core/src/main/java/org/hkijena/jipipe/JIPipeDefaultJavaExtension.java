@@ -43,7 +43,7 @@ import org.hkijena.jipipe.ui.compat.ImageJDatatypeImporterUI;
 import org.hkijena.jipipe.ui.extension.MenuExtension;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterGeneratorUI;
-import org.hkijena.jipipe.ui.resultanalysis.JIPipeResultDataSlotPreviewUI;
+import org.hkijena.jipipe.ui.resultanalysis.JIPipeResultDataSlotPreview;
 import org.hkijena.jipipe.ui.resultanalysis.JIPipeResultDataSlotRowUI;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.scijava.service.AbstractService;
@@ -170,7 +170,7 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
      * @param cellUI     Results table cell UI. Can be null.
      * @param operations list of operations to register. passed to registerDatatypeOperation.
      */
-    public void registerDatatype(String id, Class<? extends JIPipeData> dataClass, URL icon, Class<? extends JIPipeResultDataSlotRowUI> rowUI, Class<? extends JIPipeResultDataSlotPreviewUI> cellUI, JIPipeDataOperation... operations) {
+    public void registerDatatype(String id, Class<? extends JIPipeData> dataClass, URL icon, Class<? extends JIPipeResultDataSlotRowUI> rowUI, Class<? extends JIPipeResultDataSlotPreview> cellUI, JIPipeDataOperation... operations) {
         registry.getDatatypeRegistry().register(id, dataClass, this);
         if (icon != null) {
             registry.getDatatypeRegistry().registerIcon(dataClass, icon);

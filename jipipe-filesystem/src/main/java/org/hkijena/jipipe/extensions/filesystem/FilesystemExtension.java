@@ -30,7 +30,7 @@ import org.hkijena.jipipe.extensions.filesystem.dataypes.FileData;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FolderData;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.PathData;
 import org.hkijena.jipipe.extensions.filesystem.resultanalysis.CopyPathDataOperation;
-import org.hkijena.jipipe.extensions.filesystem.resultanalysis.FilesystemDataSlotPreviewUI;
+import org.hkijena.jipipe.extensions.filesystem.resultanalysis.FilesystemDataSlotPreview;
 import org.hkijena.jipipe.extensions.filesystem.resultanalysis.OpenPathDataOperation;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
 import org.hkijena.jipipe.utils.ResourceUtils;
@@ -72,11 +72,11 @@ public class FilesystemExtension extends JIPipePrepackagedDefaultJavaExtension {
     public void register() {
         // Register main data types
         registerDatatype("path", PathData.class, ResourceUtils.getPluginResource("icons/data-types/path.png"),
-                null, FilesystemDataSlotPreviewUI.class, new OpenPathDataOperation(), new CopyPathDataOperation());
+                null, FilesystemDataSlotPreview.class, new OpenPathDataOperation(), new CopyPathDataOperation());
         registerDatatype("file", FileData.class, ResourceUtils.getPluginResource("icons/data-types/file.png"),
-                null, FilesystemDataSlotPreviewUI.class, new OpenPathDataOperation(), new CopyPathDataOperation());
+                null, FilesystemDataSlotPreview.class, new OpenPathDataOperation(), new CopyPathDataOperation());
         registerDatatype("folder", FolderData.class, ResourceUtils.getPluginResource("icons/data-types/folder.png"),
-                null, FilesystemDataSlotPreviewUI.class, new OpenPathDataOperation(), new CopyPathDataOperation());
+                null, FilesystemDataSlotPreview.class, new OpenPathDataOperation(), new CopyPathDataOperation());
 
         // Register conversion between them
         registerDatatypeConversion(new ImplicitPathTypeConverter(PathData.class, FileData.class));

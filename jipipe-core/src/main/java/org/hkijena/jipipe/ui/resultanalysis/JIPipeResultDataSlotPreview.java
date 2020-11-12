@@ -16,43 +16,59 @@ package org.hkijena.jipipe.ui.resultanalysis;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeExportedDataTable;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
+import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
+import org.jdesktop.swingx.JXTable;
 
 import javax.swing.*;
 import java.awt.BorderLayout;
 import java.nio.file.Path;
 
 /**
- * Renders a {@link JIPipeDataSlot} row as table cell
+ * Renders a {@link JIPipeDataSlot} row as table cell.
+ * The component should default to a light render workload (e.g. a status text).
+ * Run renderPreview() to run any kind of heavy workload
  */
-public abstract class JIPipeResultDataSlotPreviewUI extends JPanel {
+public abstract class JIPipeResultDataSlotPreview extends JIPipeProjectWorkbenchPanel {
 
     private final JTable table;
+    private final JIPipeDataSlot slot;
+    private final JIPipeExportedDataTable.Row row;
 
     /**
      * Creates a new renderer
-     *
+     * @param workbench the workbench
      * @param table the table where the data is rendered in
+     * @param slot the data slot
+     * @param row the row
      */
-    public JIPipeResultDataSlotPreviewUI(JTable table) {
+    public JIPipeResultDataSlotPreview(JIPipeProjectWorkbench workbench, JTable table, JIPipeDataSlot slot, JIPipeExportedDataTable.Row row) {
+        super(workbench);
+        this.slot = slot;
+        this.row = row;
         setLayout(new BorderLayout());
         setOpaque(false);
         this.table = table;
     }
 
     /**
-     * Renders the data slot row
-     *
-     * @param workbenchUI the workbench
-     * @param slot        The data slot
-     * @param row         The data slot row
+     * This function is called from outside to render the preview.
+     * Please not that it is called everytime the cell is rendered, meaning that you should prevent reloading the data all the time.
      */
-    public abstract void render(JIPipeProjectWorkbench workbenchUI, JIPipeDataSlot slot, JIPipeExportedDataTable.Row row);
+    public abstract void renderPreview();
 
     /**
      * @return the table where the data is rendered in
      */
     public JTable getTable() {
         return table;
+    }
+
+    public JIPipeDataSlot getSlot() {
+        return slot;
+    }
+
+    public JIPipeExportedDataTable.Row getRow() {
+        return row;
     }
 
     /**
@@ -97,5 +113,16 @@ public abstract class JIPipeResultDataSlotPreviewUI extends JPanel {
      */
     public static Path getRowStorageFolder(JIPipeDataSlot slot, JIPipeExportedDataTable.Row row) {
         return slot.getStoragePath().resolve("" + row.getIndex());
+    }
+
+    /**
+     * Rebuilds the table to show the updated preview
+     */
+    public void refreshTable() {
+        if (getTable() != null) {
+            if (getTable() instanceof JXTable)
+                ((JXTable) getTable()).packAll();
+            getTable().repaint();
+        }
     }
 }

@@ -23,6 +23,8 @@ import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
 import java.awt.Component;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,16 +34,26 @@ import java.util.List;
 public class JIPipeRowDataMergedTableCellRenderer implements TableCellRenderer {
 
     private JIPipeProjectWorkbench workbenchUI;
-    private List<JIPipeResultDataSlotPreviewUI> previewCache = new ArrayList<>();
+    private final JIPipeMergedExportedDataTable mergedDataTable;
+    private final JScrollPane scrollPane;
+    private final JTable table;
+    private List<JIPipeResultDataSlotPreview> previewCache = new ArrayList<>();
     private int previewCacheSize = GeneralDataSettings.getInstance().getPreviewSize();
     private final GeneralDataSettings dataSettings =GeneralDataSettings.getInstance();
 
     /**
      * @param workbenchUI     The workbench
      * @param mergedDataTable the table to be displayed
+     * @param scrollPane the scroll pane
+     * @param table the table
      */
-    public JIPipeRowDataMergedTableCellRenderer(JIPipeProjectWorkbench workbenchUI, JIPipeMergedExportedDataTable mergedDataTable) {
+    public JIPipeRowDataMergedTableCellRenderer(JIPipeProjectWorkbench workbenchUI, JIPipeMergedExportedDataTable mergedDataTable, JScrollPane scrollPane, JTable table) {
         this.workbenchUI = workbenchUI;
+        this.mergedDataTable = mergedDataTable;
+        this.scrollPane = scrollPane;
+        this.table = table;
+        scrollPane.getVerticalScrollBar().addAdjustmentListener(e -> updateRenderedPreviews());
+        updateRenderedPreviews();
     }
 
     private void revalidatePreviewCache() {
@@ -62,10 +74,9 @@ public class JIPipeRowDataMergedTableCellRenderer implements TableCellRenderer {
                 previewCache.add(null);
             }
             revalidatePreviewCache();
-            JIPipeResultDataSlotPreviewUI preview = previewCache.get(row);
+            JIPipeResultDataSlotPreview preview = previewCache.get(row);
             if (preview == null) {
-                preview = JIPipe.getDataTypes().getCellRendererFor(slot.getAcceptedDataType(), table);
-                preview.render(workbenchUI, slot, (JIPipeExportedDataTable.Row) value);
+                preview = JIPipe.getDataTypes().getCellRendererFor(slot.getAcceptedDataType(), workbenchUI, table, slot, (JIPipeExportedDataTable.Row) value);
                 previewCache.set(row, preview);
             }
             if (isSelected) {
@@ -76,5 +87,20 @@ public class JIPipeRowDataMergedTableCellRenderer implements TableCellRenderer {
             return preview;
         }
         return null;
+    }
+
+    private void updateRenderedPreviews() {
+        JViewport viewport = scrollPane.getViewport();
+        for (int row = 0; row < previewCache.size(); row++) {
+            JIPipeResultDataSlotPreview component = previewCache.get(row);
+            // We assume view column = 0
+            Rectangle rect = table.getCellRect(row, 0, true);
+            Point pt = viewport.getViewPosition();
+            rect.setLocation(rect.x - pt.x, rect.y - pt.y);
+            boolean overlaps = new Rectangle(viewport.getExtentSize()).intersects(rect);
+            if (overlaps) {
+                component.renderPreview();
+            }
+        }
     }
 }

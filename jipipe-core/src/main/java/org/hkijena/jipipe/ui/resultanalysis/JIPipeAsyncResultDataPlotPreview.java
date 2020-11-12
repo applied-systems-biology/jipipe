@@ -28,26 +28,37 @@ import java.nio.file.Path;
 import java.util.concurrent.ExecutionException;
 
 /**
- * A {@link JIPipeResultDataSlotPreviewUI} that uses a {@link javax.swing.SwingWorker} to load previews in a separate thread.
+ * A {@link JIPipeResultDataSlotPreview} that uses a {@link javax.swing.SwingWorker} to load previews in a separate thread.
  * It will automatically update the table when finished
  */
-public abstract class JIPipeAsyncResultDataPlotPreviewUI extends JIPipeResultDataSlotPreviewUI {
+public abstract class JIPipeAsyncResultDataPlotPreview extends JIPipeResultDataSlotPreview {
+
+    private Worker worker;
 
     /**
      * Creates a new renderer
      *
-     * @param table the table where the data is rendered in
+     * @param workbench the workbench
+     * @param table     the table where the data is rendered in
+     * @param slot      the data slot
+     * @param row       the row
      */
-    public JIPipeAsyncResultDataPlotPreviewUI(JTable table) {
-        super(table);
+    public JIPipeAsyncResultDataPlotPreview(JIPipeProjectWorkbench workbench, JTable table, JIPipeDataSlot slot, JIPipeExportedDataTable.Row row) {
+        super(workbench, table, slot, row);
+        initialize();
+    }
+
+    private void initialize() {
+        JLabel label = new JLabel("Please wait ...", UIUtils.getIconFromResources("actions/hourglass-half.png"), JLabel.LEFT);
+        add(label, BorderLayout.CENTER);
     }
 
     @Override
-    public void render(JIPipeProjectWorkbench workbenchUI, JIPipeDataSlot slot, JIPipeExportedDataTable.Row row) {
-        JLabel label = new JLabel("Please wait ...", UIUtils.getIconFromResources("actions/hourglass-half.png"), JLabel.LEFT);
-        add(label, BorderLayout.CENTER);
-        Worker worker = new Worker(this, getRowStorageFolder(slot, row));
-        worker.execute();
+    public void renderPreview() {
+        if(worker == null) {
+            worker = new Worker(this, getRowStorageFolder(getSlot(), getRow()));
+            worker.execute();
+        }
     }
 
     private void setPreview(Component component) {
@@ -59,11 +70,7 @@ public abstract class JIPipeAsyncResultDataPlotPreviewUI extends JIPipeResultDat
         }
         revalidate();
         repaint();
-        if (getTable() != null) {
-            if (getTable() instanceof JXTable)
-                ((JXTable) getTable()).packAll();
-            getTable().repaint();
-        }
+        refreshTable();
     }
 
     /**
@@ -80,11 +87,11 @@ public abstract class JIPipeAsyncResultDataPlotPreviewUI extends JIPipeResultDat
      */
     private static class Worker extends SwingWorker<Component, Object> {
 
-        private final JIPipeAsyncResultDataPlotPreviewUI parent;
+        private final JIPipeAsyncResultDataPlotPreview parent;
         private final Path storageFolder;
         private final int width = GeneralDataSettings.getInstance().getPreviewSize();
 
-        private Worker(JIPipeAsyncResultDataPlotPreviewUI parent, Path storageFolder) {
+        private Worker(JIPipeAsyncResultDataPlotPreview parent, Path storageFolder) {
             this.parent = parent;
             this.storageFolder = storageFolder;
         }
