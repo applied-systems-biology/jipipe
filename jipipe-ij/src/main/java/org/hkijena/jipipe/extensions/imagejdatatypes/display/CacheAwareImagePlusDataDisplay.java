@@ -18,6 +18,7 @@ import ij.ImagePlus;
 import ij.WindowManager;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.JIPipeProjectCache;
+import org.hkijena.jipipe.api.JIPipeProjectCacheQuery;
 import org.hkijena.jipipe.api.data.JIPipeCacheSlotDataSource;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
@@ -103,7 +104,8 @@ public class CacheAwareImagePlusDataDisplay extends ImageViewerPanel {
     }
 
     private void reloadFromCurrentCache() {
-        Map<String, JIPipeDataSlot> currentCache = project.getCurrentCache(algorithm);
+        JIPipeProjectCacheQuery query = new JIPipeProjectCacheQuery(project);
+        Map<String, JIPipeDataSlot> currentCache = query.getCachedCache(algorithm);
         JIPipeDataSlot slot = currentCache.getOrDefault(slotName, null);
         if(slot != null && slot.getRowCount() > dataSource.getRow()) {
             getCanvas().setError(null);

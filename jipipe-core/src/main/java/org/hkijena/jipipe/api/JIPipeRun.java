@@ -42,9 +42,10 @@ import java.util.function.Supplier;
  */
 public class JIPipeRun implements JIPipeRunnable {
     JIPipeGraph algorithmGraph;
-    private JIPipeProject project;
-    private JIPipeRunSettings configuration;
-    private StringBuilder log = new StringBuilder();
+    private final JIPipeProject project;
+    private final JIPipeProjectCacheQuery cacheQuery;
+    private final JIPipeRunSettings configuration;
+    private final StringBuilder log = new StringBuilder();
     private JIPipeFixedThreadPool threadPool;
 
     /**
@@ -53,6 +54,7 @@ public class JIPipeRun implements JIPipeRunnable {
      */
     public JIPipeRun(JIPipeProject project, JIPipeRunSettings configuration) {
         this.project = project;
+        this.cacheQuery = new JIPipeProjectCacheQuery(project);
         this.configuration = configuration;
         this.algorithmGraph = new JIPipeGraph(project.getGraph());
         initializeRelativeDirectories();
@@ -133,8 +135,8 @@ public class JIPipeRun implements JIPipeRunnable {
         if (canFlush) {
             if (configuration.isStoreToCache()) {
                 JIPipeGraphNode runAlgorithm = outputSlot.getNode();
-                JIPipeGraphNode projectAlgorithm = project.getGraph().getNodes().get(runAlgorithm.getIdInGraph());
-                JIPipeProjectCache.State stateId = project.getStateIdOf((JIPipeAlgorithm) projectAlgorithm, traversedProjectAlgorithms);
+                JIPipeGraphNode projectAlgorithm = cacheQuery.getNode(runAlgorithm.getIdInGraph());
+                JIPipeProjectCache.State stateId = cacheQuery.getCachedId(projectAlgorithm);
                 project.getCache().store((JIPipeAlgorithm) projectAlgorithm, stateId, outputSlot);
             }
             if (configuration.isSaveOutputs()) {
@@ -331,8 +333,8 @@ public class JIPipeRun implements JIPipeRunnable {
     private boolean tryLoadFromCache(JIPipeGraphNode algorithm, Consumer<JIPipeRunnerStatus> onProgress, int progress, int maxProgress, String statusMessage, List<JIPipeGraphNode> traversedAlgorithms) {
         if (!configuration.isLoadFromCache())
             return false;
-        JIPipeGraphNode projectAlgorithm = project.getGraph().getNodes().get(algorithm.getIdInGraph());
-        JIPipeProjectCache.State stateId = project.getStateIdOf((JIPipeAlgorithm) projectAlgorithm, traversedAlgorithms);
+        JIPipeGraphNode projectAlgorithm = cacheQuery.getNode(algorithm.getIdInGraph());
+        JIPipeProjectCache.State stateId = cacheQuery.getCachedId(projectAlgorithm);
         Map<String, JIPipeDataSlot> cachedData = project.getCache().extract((JIPipeAlgorithm) projectAlgorithm, stateId);
         if (!cachedData.isEmpty()) {
             logStatus(onProgress, new JIPipeRunnerStatus(progress, maxProgress,

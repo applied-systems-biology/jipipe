@@ -16,6 +16,7 @@ package org.hkijena.jipipe.ui.cache;
 import com.google.common.eventbus.Subscribe;
 import com.google.common.html.HtmlEscapers;
 import org.hkijena.jipipe.api.JIPipeProjectCache;
+import org.hkijena.jipipe.api.JIPipeProjectCacheQuery;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
@@ -75,9 +76,10 @@ public class JIPipeDataSlotCacheManagerUI extends JIPipeProjectWorkbenchPanel {
 
     private void reloadContextMenu() {
         contextMenu.removeAll();
-        JIPipeProjectCache.State currentState = getProject().getStateIdOf((JIPipeAlgorithm) getDataSlot().getNode(), getProject().getGraph().traverseAlgorithms());
+        JIPipeProjectCacheQuery query = new JIPipeProjectCacheQuery(getProject());
+        JIPipeProjectCache.State currentState = query.getCachedId(getDataSlot().getNode());
 
-        Map<JIPipeProjectCache.State, Map<String, JIPipeDataSlot>> stateMap = getProject().getCache().extract((JIPipeAlgorithm) getDataSlot().getNode());
+        Map<JIPipeProjectCache.State, Map<String, JIPipeDataSlot>> stateMap = getProject().getCache().extract(getDataSlot().getNode());
         if (stateMap != null) {
             JMenuItem openCurrent = createOpenStateButton(stateMap, currentState, "Open current snapshot");
             if (openCurrent != null) {
@@ -151,12 +153,14 @@ public class JIPipeDataSlotCacheManagerUI extends JIPipeProjectWorkbenchPanel {
      */
     @Subscribe
     public void onCacheUpdated(JIPipeProjectCache.ModifiedEvent event) {
+        if(!isDisplayable())
+            return;
         updateStatus();
     }
 
     private void updateStatus() {
         JIPipeProjectCache cache = getProject().getCache();
-        Map<JIPipeProjectCache.State, Map<String, JIPipeDataSlot>> stateMap = cache.extract((JIPipeAlgorithm) getDataSlot().getNode());
+        Map<JIPipeProjectCache.State, Map<String, JIPipeDataSlot>> stateMap = cache.extract(getDataSlot().getNode());
         int dataRows = 0;
         Set<String> traitTypes = new HashSet<>();
         if (stateMap != null) {

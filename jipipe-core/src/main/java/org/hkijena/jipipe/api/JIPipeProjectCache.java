@@ -18,7 +18,7 @@ import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.events.GraphChangedEvent;
-import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -36,7 +36,7 @@ import java.util.Objects;
 public class JIPipeProjectCache {
     private final EventBus eventBus = new EventBus();
     private final JIPipeProject project;
-    private final Map<JIPipeAlgorithm, Map<State, Map<String, JIPipeDataSlot>>> cacheEntries = new HashMap<>();
+    private final Map<JIPipeGraphNode, Map<State, Map<String, JIPipeDataSlot>>> cacheEntries = new HashMap<>();
     private final Map<JIPipeDataInfo, Integer> cachedDataTypes = new HashMap<>();
     private int cachedRowNumber = 0;
 
@@ -61,7 +61,7 @@ public class JIPipeProjectCache {
      * @param stateId the state id
      * @param slot    the slot that contains the data
      */
-    public void store(JIPipeAlgorithm source, State stateId, JIPipeDataSlot slot) {
+    public void store(JIPipeGraphNode source, State stateId, JIPipeDataSlot slot) {
         if (!RuntimeSettings.getInstance().isAllowCache())
             return;
         if (!project.getGraph().containsNode(source))
@@ -98,7 +98,7 @@ public class JIPipeProjectCache {
      * @param source the generating algorithm
      * @return map from state ID to map of slot name to slot. Null if not found
      */
-    public Map<State, Map<String, JIPipeDataSlot>> extract(JIPipeAlgorithm source) {
+    public Map<State, Map<String, JIPipeDataSlot>> extract(JIPipeGraphNode source) {
         return cacheEntries.getOrDefault(source, null);
     }
 
@@ -109,7 +109,7 @@ public class JIPipeProjectCache {
      * @param stateId the state id
      * @return all cached slots. Please do not work directly on those. Use targetSlot.copyFrom() instead. Never null.
      */
-    public Map<String, JIPipeDataSlot> extract(JIPipeAlgorithm source, State stateId) {
+    public Map<String, JIPipeDataSlot> extract(JIPipeGraphNode source, State stateId) {
         Map<State, Map<String, JIPipeDataSlot>> stateMap = cacheEntries.getOrDefault(source, null);
         if (stateMap != null) {
             return stateMap.getOrDefault(stateId, Collections.emptyMap());
@@ -125,7 +125,7 @@ public class JIPipeProjectCache {
      * @param slotName the slot that contains the data
      * @return the cache's slot. Please do not work directly on this slot. Use targetSlot.copyFrom() instead. Null if not found
      */
-    public JIPipeDataSlot extract(JIPipeAlgorithm source, String stateId, String slotName) {
+    public JIPipeDataSlot extract(JIPipeGraphNode source, String stateId, String slotName) {
         Map<State, Map<String, JIPipeDataSlot>> stateMap = cacheEntries.getOrDefault(source, null);
         if (stateMap != null) {
             Map<String, JIPipeDataSlot> slotMap = stateMap.getOrDefault(stateId, null);
@@ -141,7 +141,7 @@ public class JIPipeProjectCache {
      *
      * @param source the algorithm
      */
-    public void clear(JIPipeAlgorithm source) {
+    public void clear(JIPipeGraphNode source) {
         Map<State, Map<String, JIPipeDataSlot>> stateMap = cacheEntries.getOrDefault(source, null);
         if (stateMap != null) {
             for (Map.Entry<State, Map<String, JIPipeDataSlot>> stateEntry : stateMap.entrySet()) {
@@ -161,7 +161,7 @@ public class JIPipeProjectCache {
      * @param source  the algorithm
      * @param stateId state id
      */
-    public void clear(JIPipeAlgorithm source, State stateId) {
+    public void clear(JIPipeGraphNode source, State stateId) {
         Map<State, Map<String, JIPipeDataSlot>> stateMap = cacheEntries.getOrDefault(source, null);
         if (stateMap != null) {
             Map<String, JIPipeDataSlot> slotMap = stateMap.getOrDefault(stateId, null);
@@ -180,7 +180,7 @@ public class JIPipeProjectCache {
      * Removes everything from the cache
      */
     public void clear() {
-        for (Map.Entry<JIPipeAlgorithm, Map<State, Map<String, JIPipeDataSlot>>> algorithmEntry : cacheEntries.entrySet()) {
+        for (Map.Entry<JIPipeGraphNode, Map<State, Map<String, JIPipeDataSlot>>> algorithmEntry : cacheEntries.entrySet()) {
             for (Map.Entry<State, Map<String, JIPipeDataSlot>> stateEntry : algorithmEntry.getValue().entrySet()) {
                 for (Map.Entry<String, JIPipeDataSlot> slotEntry : stateEntry.getValue().entrySet()) {
                     slotEntry.getValue().clearData(true);
@@ -216,14 +216,15 @@ public class JIPipeProjectCache {
      * @param compareProjectStates if true, states that are not within the project anymore are also removed
      */
     public void autoClean(boolean compareSlots, boolean compareProjectStates) {
+        JIPipeProjectCacheQuery cacheQuery = new JIPipeProjectCacheQuery(project);
         List<JIPipeGraphNode> traversedAlgorithms = null;
-        for (JIPipeAlgorithm algorithm : ImmutableList.copyOf(cacheEntries.keySet())) {
+        for (JIPipeGraphNode algorithm : ImmutableList.copyOf(cacheEntries.keySet())) {
             if (project.getGraph().containsNode(algorithm)) {
                 if (compareSlots || compareProjectStates) {
                     if (traversedAlgorithms == null) {
                         traversedAlgorithms = project.getGraph().traverseAlgorithms();
                     }
-                    State stateId = project.getStateIdOf(algorithm, traversedAlgorithms);
+                    State stateId = cacheQuery.getCachedId(algorithm);
 
                     Map<State, Map<String, JIPipeDataSlot>> stateMap = cacheEntries.getOrDefault(algorithm, null);
                     for (Map.Entry<State, Map<String, JIPipeDataSlot>> stateEntry : ImmutableList.copyOf(stateMap.entrySet())) {

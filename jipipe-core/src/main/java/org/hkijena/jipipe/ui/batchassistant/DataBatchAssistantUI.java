@@ -15,6 +15,7 @@ package org.hkijena.jipipe.ui.batchassistant;
 
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.JIPipeProjectCache;
+import org.hkijena.jipipe.api.JIPipeProjectCacheQuery;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.events.NodeDisconnectedEvent;
@@ -71,24 +72,22 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
     }
 
     private void updateCurrentCache() {
-
         currentCache.clear();
         if (algorithm.getInputSlots().isEmpty()) {
             errorLabel.setText("No input slots");
             return;
         }
-        List<JIPipeGraphNode> traversedAlgorithms = algorithm.getGraph().traverseAlgorithms();
+        JIPipeProjectCacheQuery query = new JIPipeProjectCacheQuery(getProject());
         for (JIPipeDataSlot inputSlot : algorithm.getInputSlots()) {
             JIPipeDataSlot sourceSlot = algorithm.getGraph().getSourceSlot(inputSlot);
             if (sourceSlot != null) {
-                Map<JIPipeProjectCache.State, Map<String, JIPipeDataSlot>> sourceCaches = getProject().getCache().extract((JIPipeAlgorithm) sourceSlot.getNode());
+                Map<JIPipeProjectCache.State, Map<String, JIPipeDataSlot>> sourceCaches = getProject().getCache().extract(sourceSlot.getNode());
                 if (sourceCaches == null || sourceCaches.isEmpty()) {
                     errorLabel.setText("No cached data available");
                     currentCache.clear();
                     return;
                 }
-                Map<String, JIPipeDataSlot> sourceCache = sourceCaches.getOrDefault(getProject().getStateIdOf((JIPipeAlgorithm) sourceSlot.getNode(),
-                        traversedAlgorithms), null);
+                Map<String, JIPipeDataSlot> sourceCache = sourceCaches.getOrDefault(query.getCachedId(sourceSlot.getNode()), null);
                 if (sourceCache != null) {
                     JIPipeDataSlot cache = sourceCache.getOrDefault(sourceSlot.getName(), null);
                     if (cache != null) {
@@ -249,6 +248,8 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
      */
     @Subscribe
     public void onCacheUpdated(JIPipeProjectCache.ModifiedEvent event) {
+        if(!isDisplayable())
+            return;
         updateStatus();
     }
 
@@ -259,6 +260,8 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
      */
     @Subscribe
     public void onSlotsChanged(NodeSlotsChangedEvent event) {
+        if(!isDisplayable())
+            return;
         updateStatus();
     }
 
