@@ -216,6 +216,7 @@ public class JIPipeRunSettingsUI extends JIPipeProjectWorkbenchPanel {
                             gridx = 2;
                             gridy = row;
                             insets = UIUtils.UI_PADDING;
+                            anchor = GridBagConstraints.WEST;
                         }
                     });
                     checkBoxes.add(checkBox);
