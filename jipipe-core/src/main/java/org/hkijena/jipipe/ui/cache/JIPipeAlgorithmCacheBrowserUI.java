@@ -95,7 +95,7 @@ public class JIPipeAlgorithmCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
 
     private void showDataSlotsOfState(JIPipeProjectCache.State state) {
         List<JIPipeDataSlot> result = new ArrayList<>();
-        Map<JIPipeProjectCache.State, Map<String, JIPipeDataSlot>> stateMap = getProject().getCache().extract((JIPipeAlgorithm) graphNode);
+        Map<JIPipeProjectCache.State, Map<String, JIPipeDataSlot>> stateMap = getProject().getCache().extract(graphNode);
         if (stateMap != null) {
             Map<String, JIPipeDataSlot> slotMap = stateMap.getOrDefault(state, null);
             if (slotMap != null) {
@@ -107,7 +107,7 @@ public class JIPipeAlgorithmCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
 
     private void showAllDataSlots() {
         List<JIPipeDataSlot> result = new ArrayList<>();
-        Map<JIPipeProjectCache.State, Map<String, JIPipeDataSlot>> stateMap = getProject().getCache().extract((JIPipeAlgorithm) graphNode);
+        Map<JIPipeProjectCache.State, Map<String, JIPipeDataSlot>> stateMap = getProject().getCache().extract(graphNode);
         if (stateMap != null) {
             for (Map.Entry<JIPipeProjectCache.State, Map<String, JIPipeDataSlot>> stateEntry : stateMap.entrySet()) {
                 result.addAll(stateEntry.getValue().values());
@@ -117,7 +117,7 @@ public class JIPipeAlgorithmCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
     }
 
     private void showDataSlotsOfAlgorithm(JIPipeGraphNode algorithm) {
-        Map<JIPipeProjectCache.State, Map<String, JIPipeDataSlot>> stateMap = getProject().getCache().extract((JIPipeAlgorithm) algorithm);
+        Map<JIPipeProjectCache.State, Map<String, JIPipeDataSlot>> stateMap = getProject().getCache().extract(algorithm);
         if (stateMap != null) {
             List<JIPipeDataSlot> result = new ArrayList<>();
             for (Map.Entry<JIPipeProjectCache.State, Map<String, JIPipeDataSlot>> stateEntry : stateMap.entrySet()) {
@@ -167,6 +167,8 @@ public class JIPipeAlgorithmCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
      */
     @Subscribe
     public void onCacheUpdated(JIPipeProjectCache.ModifiedEvent event) {
+        if(!isDisplayable())
+            return;
         if (JIPipeRunnerQueue.getInstance().getCurrentRun() == null) {
             tree.refreshTree();
             showAllDataSlots();
@@ -175,12 +177,16 @@ public class JIPipeAlgorithmCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
 
     @Subscribe
     public void onWorkerFinished(RunUIWorkerFinishedEvent event) {
+        if(!isDisplayable())
+            return;
         tree.refreshTree();
         showAllDataSlots();
     }
 
     @Subscribe
     public void onWorkerInterrupted(RunUIWorkerInterruptedEvent event) {
+        if(!isDisplayable())
+            return;
         tree.refreshTree();
         showAllDataSlots();
     }

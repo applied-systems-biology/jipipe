@@ -342,6 +342,7 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
         JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(this), "Find matching algorithm");
         UIUtils.addEscapeListener(dialog);
         dialog.setModal(true);
+        dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         dialog.setContentPane(algorithmFinderUI);
         dialog.pack();
         dialog.setSize(640, 480);
@@ -351,7 +352,7 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
             @Override
             @Subscribe
             public void accept(AlgorithmFinderSuccessEvent event) {
-                dialog.setVisible(false);
+                dialog.dispose();
             }
         });
 
@@ -426,6 +427,7 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
         JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(this), "Find matching algorithm");
         UIUtils.addEscapeListener(dialog);
         dialog.setModal(true);
+        dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         dialog.setContentPane(algorithmFinderUI);
         dialog.pack();
         dialog.setSize(640, 480);
@@ -435,7 +437,7 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
             @Override
             @Subscribe
             public void accept(AlgorithmFinderSuccessEvent event) {
-                dialog.setVisible(false);
+                dialog.dispose();
             }
         });
 
