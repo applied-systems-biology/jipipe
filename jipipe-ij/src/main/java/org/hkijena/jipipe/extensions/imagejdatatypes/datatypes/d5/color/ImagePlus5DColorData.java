@@ -15,6 +15,7 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d5.color;
 
 import ij.ImagePlus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.JIPipeHeavyData;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColorData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d5.ImagePlus5DData;
@@ -24,6 +25,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d5.ImagePlus5DDat
  */
 @JIPipeDocumentation(name = "5D image (color)")
 @JIPipeOrganization(menuPath = "Images\n5D\nColor")
+@JIPipeHeavyData
 public class ImagePlus5DColorData extends ImagePlus5DData {
 
     /**

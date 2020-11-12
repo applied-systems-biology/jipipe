@@ -15,6 +15,7 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.color;
 
 import ij.ImagePlus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.JIPipeHeavyData;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColorData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.ImagePlus3DData;
@@ -24,6 +25,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.ImagePlus3DDat
  */
 @JIPipeDocumentation(name = "3D image (color)")
 @JIPipeOrganization(menuPath = "Images\n3D\nColor")
+@JIPipeHeavyData
 public class ImagePlus3DColorData extends ImagePlus3DData {
 
     /**

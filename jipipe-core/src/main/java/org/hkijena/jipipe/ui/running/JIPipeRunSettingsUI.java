@@ -13,10 +13,13 @@
 
 package org.hkijena.jipipe.ui.running;
 
+import com.google.common.collect.BiMap;
 import com.google.common.eventbus.Subscribe;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeRun;
 import org.hkijena.jipipe.api.JIPipeRunSettings;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
@@ -39,11 +42,15 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.BorderLayout;
 import java.awt.Desktop;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -140,7 +147,7 @@ public class JIPipeRunSettingsUI extends JIPipeProjectWorkbenchPanel {
         Set<JIPipeGraphNode> algorithmsWithMissingInput = getProjectWorkbench().getProject().getGraph().getDeactivatedAlgorithms();
         if (!algorithmsWithMissingInput.isEmpty()) {
             formPanel.removeLastRow();
-            FormPanel.GroupHeaderPanel headerPanel = formPanel.addGroupHeader("Unexecuted algorithms", UIUtils.getIconFromResources("emblems/warning.png"));
+            FormPanel.GroupHeaderPanel headerPanel = formPanel.addGroupHeader("Skipped algorithms", UIUtils.getIconFromResources("emblems/warning.png"));
             headerPanel.getDescriptionArea().setVisible(true);
             headerPanel.getDescriptionArea().setText("There are algorithms that will not be executed, as they are missing input data or are deactivated. " +
                     "If this is not intended, please check if the listed algorithms have all input slots connected and the affected algorithms are activated.");
@@ -163,6 +170,98 @@ public class JIPipeRunSettingsUI extends JIPipeProjectWorkbenchPanel {
             panel.add(table.getTableHeader(), BorderLayout.NORTH);
             formPanel.addWideToForm(panel, null);
 
+            formPanel.addVerticalGlue();
+        }
+
+        Set<JIPipeGraphNode> heavyIntermediateAlgorithms = getProject().getHeavyIntermediateAlgorithms();
+        heavyIntermediateAlgorithms.removeAll(algorithmsWithMissingInput);
+        if(!heavyIntermediateAlgorithms.isEmpty()) {
+            formPanel.removeLastRow();
+            FormPanel.GroupHeaderPanel headerPanel = formPanel.addGroupHeader("Large intermediate results", UIUtils.getIconFromResources("emblems/warning.png"));
+            headerPanel.getDescriptionArea().setVisible(true);
+            headerPanel.getDescriptionArea().setText("There are algorithms that look like that they only generate intermediate results, but generate potentially large amounts of data that would all be saved to the hard drive. " +
+                    "You can deselect nodes in the following list to disable saving outputs for them. They will still be executed, but their results will not be saved to the hard drive.");
+            List<JCheckBox> checkBoxes = new ArrayList<>();
+            JPanel contentPanel = new JPanel(new GridBagLayout());
+            List<JIPipeGraphNode> traversed = getProject().getGraph().traverseAlgorithms();
+            for (JIPipeGraphNode node : traversed) {
+                if(!(node instanceof JIPipeAlgorithm))
+                    continue;
+                if(heavyIntermediateAlgorithms.contains(node)) {
+                    int row = checkBoxes.size();
+                    JCheckBox checkBox = new JCheckBox(node.getName(), true);
+                    checkBox.addActionListener(e -> {
+                        JIPipeGraphNode runAlgorithm = run.getGraph().getEquivalentAlgorithm(node);
+                        ((JIPipeAlgorithm)runAlgorithm).setSaveOutputs(checkBox.isSelected());
+                    });
+                    JLabel compartmentLabel = new JLabel(getProject().getCompartments().get(node.getCompartment()).getName(), UIUtils.getIconFromResources("data-types/graph-compartment.png"), JLabel.LEFT);
+                    contentPanel.add(new JLabel(JIPipe.getNodes().getIconFor(node.getInfo())), new GridBagConstraints() {
+                        {
+                            gridx = 0;
+                            gridy = row;
+                            insets = UIUtils.UI_PADDING;
+                        }
+                    });
+                    contentPanel.add(checkBox, new GridBagConstraints() {
+                        {
+                            gridx = 1;
+                            gridy = row;
+                            weightx = 1;
+                            fill = GridBagConstraints.HORIZONTAL;
+                            insets = UIUtils.UI_PADDING;
+                        }
+                    });
+                    contentPanel.add(compartmentLabel, new GridBagConstraints() {
+                        {
+                            gridx = 2;
+                            gridy = row;
+                            insets = UIUtils.UI_PADDING;
+                        }
+                    });
+                    checkBoxes.add(checkBox);
+                }
+            }
+
+            JPanel panel = new JPanel(new BorderLayout());
+
+            JToolBar toolBar = new JToolBar();
+            toolBar.add(Box.createHorizontalStrut(4));
+            toolBar.add(new JLabel("Deselect items to disable saving to HDD"));
+            toolBar.add(Box.createHorizontalGlue());
+
+            JButton selectAllButton = new JButton("Select all", UIUtils.getIconFromResources("actions/stock_select-all.png"));
+            selectAllButton.addActionListener(e -> {
+                for (JCheckBox checkBox : checkBoxes) {
+                    checkBox.setSelected(true);
+                }
+                for (JIPipeGraphNode node : heavyIntermediateAlgorithms) {
+                    if(node instanceof JIPipeAlgorithm) {
+                        JIPipeGraphNode runAlgorithm = run.getGraph().getEquivalentAlgorithm(node);
+                        ((JIPipeAlgorithm) runAlgorithm).setSaveOutputs(true);
+                    }
+                }
+            });
+            toolBar.add(selectAllButton);
+
+            JButton selectNoneButton = new JButton("Select none", UIUtils.getIconFromResources("actions/cancel.png"));
+            selectNoneButton.addActionListener(e -> {
+                for (JCheckBox checkBox : checkBoxes) {
+                    checkBox.setSelected(false);
+                }
+                for (JIPipeGraphNode node : heavyIntermediateAlgorithms) {
+                    if(node instanceof JIPipeAlgorithm) {
+                        JIPipeGraphNode runAlgorithm = run.getGraph().getEquivalentAlgorithm(node);
+                        ((JIPipeAlgorithm) runAlgorithm).setSaveOutputs(false);
+                    }
+                }
+            });
+            toolBar.add(selectNoneButton);
+
+            panel.add(toolBar, BorderLayout.NORTH);
+            panel.add(contentPanel, BorderLayout.CENTER);
+            panel.setBorder(BorderFactory.createLineBorder(UIManager.getColor("Button.borderColor")));
+
+            formPanel.addWideToForm(panel, null);
             formPanel.addVerticalGlue();
         }
 

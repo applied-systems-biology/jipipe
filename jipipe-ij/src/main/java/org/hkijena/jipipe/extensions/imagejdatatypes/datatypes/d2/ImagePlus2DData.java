@@ -15,6 +15,7 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2;
 
 import ij.ImagePlus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.JIPipeHeavyData;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
@@ -24,6 +25,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
  */
 @JIPipeDocumentation(name = "2D image")
 @JIPipeOrganization(menuPath = "Images\n2D")
+@JIPipeHeavyData
 public class ImagePlus2DData extends ImagePlusData {
 
     /**

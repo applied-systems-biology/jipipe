@@ -16,6 +16,7 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color;
 import ij.ImagePlus;
 import ij.process.ImageConverter;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.JIPipeHeavyData;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 
 /**
@@ -25,6 +26,7 @@ import org.hkijena.jipipe.api.JIPipeOrganization;
  */
 @JIPipeDocumentation(name = "Image (8-bit color)")
 @JIPipeOrganization(menuPath = "Images\nColor")
+@JIPipeHeavyData
 public class ImagePlusColor8UData extends ImagePlusColorData {
 
     /**

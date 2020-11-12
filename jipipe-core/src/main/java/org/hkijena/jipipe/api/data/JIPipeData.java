@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.api.data;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.JIPipeHeavyData;
 import org.hkijena.jipipe.api.JIPipeHidden;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
@@ -137,6 +138,16 @@ public interface JIPipeData {
      */
     static boolean isHidden(Class<? extends JIPipeData> klass) {
         return klass.getAnnotationsByType(JIPipeHidden.class).length > 0;
+    }
+
+    /**
+     * Returns true if this data is considered as having a large size
+     *
+     * @param klass Data class
+     * @return If this data is considered as having a large size
+     */
+    static boolean isHeavy(Class<? extends JIPipeData> klass) {
+        return klass.getAnnotationsByType(JIPipeHeavyData.class).length > 0;
     }
 
     /**

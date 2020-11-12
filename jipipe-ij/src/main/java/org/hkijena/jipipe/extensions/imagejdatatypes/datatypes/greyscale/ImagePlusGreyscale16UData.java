@@ -16,6 +16,7 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale;
 import ij.ImagePlus;
 import ij.process.ImageConverter;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.JIPipeHeavyData;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 
 /**
@@ -25,6 +26,7 @@ import org.hkijena.jipipe.api.JIPipeOrganization;
  */
 @JIPipeDocumentation(name = "Image (16 bit)")
 @JIPipeOrganization(menuPath = "Images\nGreyscale")
+@JIPipeHeavyData
 public class ImagePlusGreyscale16UData extends ImagePlusGreyscaleData {
 
     /**

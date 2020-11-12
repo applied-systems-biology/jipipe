@@ -15,6 +15,7 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d5.greyscale;
 
 import ij.ImagePlus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.JIPipeHeavyData;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d5.ImagePlus5DData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
@@ -24,6 +25,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePl
  */
 @JIPipeDocumentation(name = "5D image (greyscale)")
 @JIPipeOrganization(menuPath = "Images\n5D\nGreyscale")
+@JIPipeHeavyData
 public class ImagePlus5DGreyscaleData extends ImagePlus5DData {
 
     /**

@@ -15,6 +15,7 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale;
 
 import ij.ImagePlus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.JIPipeHeavyData;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 
 /**
@@ -24,6 +25,7 @@ import org.hkijena.jipipe.api.JIPipeOrganization;
  */
 @JIPipeDocumentation(name = "Image (mask)")
 @JIPipeOrganization(menuPath = "Images\nGreyscale")
+@JIPipeHeavyData
 public class ImagePlusGreyscaleMaskData extends ImagePlusGreyscale8UData {
 
     /**

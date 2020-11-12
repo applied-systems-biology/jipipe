@@ -15,6 +15,7 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.color;
 
 import ij.ImagePlus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.JIPipeHeavyData;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColorRGBData;
 
@@ -23,6 +24,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusCo
  */
 @JIPipeDocumentation(name = "2D image (RGB)")
 @JIPipeOrganization(menuPath = "Images\n2D\nColor")
+@JIPipeHeavyData
 public class ImagePlus2DColorRGBData extends ImagePlus2DColorData {
 
     /**

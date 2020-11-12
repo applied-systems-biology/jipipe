@@ -15,6 +15,7 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d4.color;
 
 import ij.ImagePlus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.JIPipeHeavyData;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColorData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d4.ImagePlus4DData;
@@ -24,6 +25,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d4.ImagePlus4DDat
  */
 @JIPipeDocumentation(name = "4D image (color)")
 @JIPipeOrganization(menuPath = "Images\n4D\nColor")
+@JIPipeHeavyData
 public class ImagePlus4DColorData extends ImagePlus4DData {
 
     /**

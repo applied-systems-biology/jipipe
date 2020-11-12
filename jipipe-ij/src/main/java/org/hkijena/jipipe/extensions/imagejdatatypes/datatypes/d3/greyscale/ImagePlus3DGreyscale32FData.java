@@ -15,6 +15,7 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale;
 
 import ij.ImagePlus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.JIPipeHeavyData;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
 
@@ -23,6 +24,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePl
  */
 @JIPipeDocumentation(name = "3D image (float)")
 @JIPipeOrganization(menuPath = "Images\n3D\nGreyscale")
+@JIPipeHeavyData
 public class ImagePlus3DGreyscale32FData extends ImagePlus3DGreyscaleData {
 
     /**

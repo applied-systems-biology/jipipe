@@ -55,6 +55,7 @@ import ome.xml.model.enums.EnumerationException;
 import ome.xml.model.enums.PixelType;
 import ome.xml.model.primitives.PositiveInteger;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.JIPipeHeavyData;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyNullPointerException;
@@ -78,6 +79,7 @@ import java.util.List;
  */
 @JIPipeDocumentation(name = "OME Image", description = "Image that contains additional OME-XML metadata. " +
         "It can be converted into an image, a ROI list, or an XML text.")
+@JIPipeHeavyData
 public class OMEImageData implements JIPipeData {
 
     private final ImagePlus image;

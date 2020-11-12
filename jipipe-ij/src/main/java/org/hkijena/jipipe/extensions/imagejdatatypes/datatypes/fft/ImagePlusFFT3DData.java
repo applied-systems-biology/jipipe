@@ -15,6 +15,7 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.fft;
 
 import ij.ImagePlus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.JIPipeHeavyData;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 
 /**
@@ -22,6 +23,7 @@ import org.hkijena.jipipe.api.JIPipeOrganization;
  */
 @JIPipeDocumentation(name = "3D FFT Image")
 @JIPipeOrganization(menuPath = "Images\nFFT")
+@JIPipeHeavyData
 public class ImagePlusFFT3DData extends ImagePlusFFT2DData {
 
     /**

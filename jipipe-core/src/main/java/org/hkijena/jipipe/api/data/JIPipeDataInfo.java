@@ -43,6 +43,7 @@ public class JIPipeDataInfo implements Comparable<JIPipeDataInfo> {
     private String description;
     private String menuPath;
     private boolean hidden;
+    private boolean heavy;
 
     private JIPipeDataInfo(Class<? extends JIPipeData> dataClass) {
         this.dataClass = dataClass;
@@ -50,6 +51,7 @@ public class JIPipeDataInfo implements Comparable<JIPipeDataInfo> {
         this.description = JIPipeData.getDescriptionOf(dataClass);
         this.menuPath = JIPipeData.getMenuPathOf(dataClass);
         this.hidden = JIPipeData.isHidden(dataClass);
+        this.heavy = JIPipeData.isHeavy(dataClass);
     }
 
     /**
@@ -85,6 +87,13 @@ public class JIPipeDataInfo implements Comparable<JIPipeDataInfo> {
      */
     public boolean isHidden() {
         return hidden;
+    }
+
+    /**
+     * @return if the data type is considered heavy
+     */
+    public boolean isHeavy() {
+        return heavy;
     }
 
     @Override

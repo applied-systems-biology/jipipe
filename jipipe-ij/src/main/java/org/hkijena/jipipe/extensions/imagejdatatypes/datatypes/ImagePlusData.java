@@ -18,6 +18,7 @@ import ij.ImagePlus;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.JIPipeHeavyData;
 import org.hkijena.jipipe.api.data.JIPipeCacheSlotDataSource;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
@@ -37,6 +38,7 @@ import java.nio.file.Path;
  * ImageJ image
  */
 @JIPipeDocumentation(name = "Image")
+@JIPipeHeavyData
 public class ImagePlusData implements JIPipeData {
 
     /**
