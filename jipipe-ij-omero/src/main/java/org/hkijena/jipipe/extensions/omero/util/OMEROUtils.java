@@ -59,16 +59,16 @@ public class OMEROUtils {
         for (int row = 0; row < tableData.getNumberOfRows(); row++) {
             resultsTableData.addRow();
             for (int col = 0; col < tableData.getColumns().length; col++) {
-               resultsTableData.setValueAt(tableData.getData()[col][row], row, col);
+                resultsTableData.setValueAt(tableData.getData()[col][row], row, col);
             }
         }
         return resultsTableData;
     }
-    
+
     public static TableData tableToOMERO(ResultsTableData resultsTableData) {
         TableDataColumn[] columns = new TableDataColumn[resultsTableData.getColumnCount()];
         for (int col = 0; col < resultsTableData.getColumnCount(); col++) {
-            if(resultsTableData.isNumeric(col))
+            if (resultsTableData.isNumeric(col))
                 columns[col] = new TableDataColumn(resultsTableData.getColumnName(col), col, Double.class);
             else
                 columns[col] = new TableDataColumn(resultsTableData.getColumnName(col), col, String.class);
@@ -76,7 +76,7 @@ public class OMEROUtils {
         Object[][] data = new Object[columns.length][resultsTableData.getRowCount()];
         for (int col = 0; col < columns.length; col++) {
             for (int row = 0; row < resultsTableData.getRowCount(); row++) {
-                if(resultsTableData.isNumeric(col))
+                if (resultsTableData.isNumeric(col))
                     data[col][row] = resultsTableData.getValueAsDouble(row, col);
                 else
                     data[col][row] = resultsTableData.getValueAsString(row, col);
@@ -88,7 +88,7 @@ public class OMEROUtils {
     public static Map<String, String> getKeyValuePairAnnotations(MetadataFacility metadata, SecurityContext context, DataObject dataObject) throws DSAccessException, DSOutOfServiceException {
         Map<String, String> keyValuePairs = new HashMap<>();
         for (AnnotationData annotation : metadata.getAnnotations(context, dataObject)) {
-            if(annotation instanceof MapAnnotationData) {
+            if (annotation instanceof MapAnnotationData) {
                 List<NamedValue> pairs = (List<NamedValue>) annotation.getContent();
                 for (NamedValue pair : pairs) {
                     keyValuePairs.put(pair.name, pair.value);
@@ -101,7 +101,7 @@ public class OMEROUtils {
     public static Set<String> getTagAnnotations(MetadataFacility metadata, SecurityContext context, DataObject dataObject) throws DSAccessException, DSOutOfServiceException {
         Set<String> result = new HashSet<>();
         for (AnnotationData annotation : metadata.getAnnotations(context, dataObject)) {
-            if(annotation instanceof TagAnnotationData) {
+            if (annotation instanceof TagAnnotationData) {
                 result.add(((TagAnnotationData) annotation).getTagValue());
             }
         }
@@ -111,12 +111,12 @@ public class OMEROUtils {
     /**
      * Copy of importCandidates in {@link ome.formats.importer.ImportLibrary} that returns the list of uploaded images.
      * This method also throws all exceptions.
+     *
      * @param config
      * @param candidates
      * @return
      */
-    public static List<Pixels> importImages(ImportLibrary library, OMEROMetadataStoreClient store, final ImportConfig config, ImportCandidates candidates)
-    {
+    public static List<Pixels> importImages(ImportLibrary library, OMEROMetadataStoreClient store, final ImportConfig config, ImportCandidates candidates) {
         List<ImportContainer> containers = candidates.getContainers();
         List<Pixels> result = new ArrayList<>();
         if (containers != null) {
@@ -169,7 +169,7 @@ public class OMEROUtils {
                         }
                     });
                 }
-                    final ExecutorCompletionService<Boolean> threadQueue = new ExecutorCompletionService<>(filesetThreadPool);
+                final ExecutorCompletionService<Boolean> threadQueue = new ExecutorCompletionService<>(filesetThreadPool);
                 final List<Future<Boolean>> outcomes = new ArrayList<>(count);
                 for (final Callable<Boolean> thread : threads) {
                     outcomes.add(threadQueue.submit(thread));

@@ -109,7 +109,7 @@ public class MarkdownDocument {
             Set<String> resourceURLs = getResourceURLs(md, "resource://");
             for (String imageURL : resourceURLs) {
                 URL url = resourceReplacementCache.getOrDefault(imageURL, null);
-                if(url == null) {
+                if (url == null) {
                     url = ResourceUtils.getPluginResource(imageURL);
                 }
                 md = md.replace("resource://" + imageURL, "" + url);

@@ -27,11 +27,11 @@ public class LengthFunction extends ExpressionFunction {
     @Override
     public Object evaluate(List<Object> parameters, StaticVariableSet<Object> variables) {
         Object value = parameters.get(0);
-        if(value instanceof Collection)
+        if (value instanceof Collection)
             return ((Collection<?>) value).size();
-        if(value instanceof Map)
+        if (value instanceof Map)
             return ((Map<?, ?>) value).size();
-        else if(value instanceof String)
+        else if (value instanceof String)
             return ((String) value).length();
         else
             throw new UnsupportedOperationException("Cannot get length of '" + value + "'");

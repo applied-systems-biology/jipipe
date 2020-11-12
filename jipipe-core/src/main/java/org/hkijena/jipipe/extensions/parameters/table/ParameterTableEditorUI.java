@@ -85,7 +85,7 @@ public class ParameterTableEditorUI extends JIPipeParameterEditorUI {
         addColumnButton.setToolTipText("Adds new columns to the table.");
         JPopupMenu addColumnMenu = UIUtils.addPopupMenuToComponent(addColumnButton);
 
-        if(getWorkbench() instanceof JIPipeProjectWorkbench) {
+        if (getWorkbench() instanceof JIPipeProjectWorkbench) {
             JMenuItem importColumnFromAlgorithmButton = new JMenuItem("Import from node", UIUtils.getIconFromResources("actions/rabbitvcs-import.png"));
             importColumnFromAlgorithmButton.addActionListener(e -> importColumnFromAlgorithm());
             importColumnFromAlgorithmButton.setToolTipText("Imports a column from an existing node.");
@@ -139,8 +139,8 @@ public class ParameterTableEditorUI extends JIPipeParameterEditorUI {
 
     private void importColumnFromAlgorithm() {
         Component content = getWorkbench().getDocumentTabPane().getCurrentContent();
-        if(getWorkbench() instanceof JIPipeProjectWorkbench) {
-            JIPipeGraph graph =((JIPipeProjectWorkbench) getWorkbench()).getProject().getGraph();
+        if (getWorkbench() instanceof JIPipeProjectWorkbench) {
+            JIPipeGraph graph = ((JIPipeProjectWorkbench) getWorkbench()).getProject().getGraph();
             JIPipeParameterTree globalTree = graph.getParameterTree();
 
             List<Object> importedParameters = ParameterTreeUI.showPickerDialog(getWorkbench().getWindow(), globalTree, "Import parameter");
@@ -157,8 +157,7 @@ public class ParameterTableEditorUI extends JIPipeParameterEditorUI {
                     }
                 }
             }
-        }
-        else {
+        } else {
             JOptionPane.showMessageDialog(this, "There is no graph editor open.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
@@ -170,7 +169,7 @@ public class ParameterTableEditorUI extends JIPipeParameterEditorUI {
 
         String uniqueKey = String.join("/", path);
         ParameterTable parameterTable = getParameter(ParameterTable.class);
-        if(parameterTable.containsColumn(uniqueKey))
+        if (parameterTable.containsColumn(uniqueKey))
             return;
         ParameterTable.ParameterColumn column = new ParameterTable.ParameterColumn();
         column.setFieldClass(importedParameter.getFieldClass());
@@ -190,7 +189,7 @@ public class ParameterTableEditorUI extends JIPipeParameterEditorUI {
                 .getRegisteredParameters().values().stream().map(JIPipeParameterTypeInfo::getFieldClass).collect(Collectors.toSet()));
         AddDynamicParameterPanel.showDialog(this, collection);
         for (Map.Entry<String, JIPipeParameterAccess> entry : collection.getParameters().entrySet()) {
-            if(parameterTable.containsColumn(entry.getKey()))
+            if (parameterTable.containsColumn(entry.getKey()))
                 continue;
             ParameterTable.ParameterColumn column = new ParameterTable.ParameterColumn();
             column.setFieldClass(entry.getValue().getFieldClass());

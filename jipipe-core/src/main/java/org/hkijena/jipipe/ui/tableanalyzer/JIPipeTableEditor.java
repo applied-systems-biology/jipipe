@@ -37,8 +37,6 @@ import org.jdesktop.swingx.JXTable;
 import org.jdesktop.swingx.ScrollableSizeHint;
 
 import javax.swing.*;
-import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import java.awt.BorderLayout;
@@ -268,19 +266,6 @@ public class JIPipeTableEditor extends JIPipeWorkbenchPanel {
         add(splitPane, BorderLayout.CENTER);
 
         jxTable.getSelectionModel().addListSelectionListener(listSelectionEvent -> updateConvertMenu());
-    }
-
-    public void setTableModel(ResultsTableData tableModel) {
-        this.tableModel = tableModel;
-        jxTable.setModel(new ResultsTableData());
-        jxTable.setModel(tableModel);
-        if(tableModel != null) {
-            tableModel.addTableModelListener(e -> {
-                if(e.getSource() == tableModel)
-                    updateSelectionStatistics();
-            });
-        }
-        updateSelectionStatistics();
     }
 
     protected void addLeftToolbarButtons(JToolBar toolBar) {
@@ -667,11 +652,11 @@ public class JIPipeTableEditor extends JIPipeWorkbenchPanel {
     }
 
     private void updateSelectionStatistics() {
-        if(rowPaletteGroup != null) {
+        if (rowPaletteGroup != null) {
             int count = tableModel != null ? tableModel.getRowCount() : 0;
             rowPaletteGroup.getTitleLabel().setText(count > 0 ? "Rows (" + count + ")" : "Rows");
         }
-        if(columnPaletteGroup != null) {
+        if (columnPaletteGroup != null) {
             int count = tableModel != null ? tableModel.getColumnCount() : 0;
             columnPaletteGroup.getTitleLabel().setText(count > 0 ? "Columns (" + count + ")" : "Columns");
         }
@@ -726,6 +711,19 @@ public class JIPipeTableEditor extends JIPipeWorkbenchPanel {
 
     public ResultsTableData getTableModel() {
         return tableModel;
+    }
+
+    public void setTableModel(ResultsTableData tableModel) {
+        this.tableModel = tableModel;
+        jxTable.setModel(new ResultsTableData());
+        jxTable.setModel(tableModel);
+        if (tableModel != null) {
+            tableModel.addTableModelListener(e -> {
+                if (e.getSource() == tableModel)
+                    updateSelectionStatistics();
+            });
+        }
+        updateSelectionStatistics();
     }
 
     /**

@@ -40,10 +40,10 @@ public class NodeContextActionWrapperUIContextAction implements NodeUIContextAct
 
     @Override
     public boolean matches(Set<JIPipeNodeUI> selection) {
-        if(selection.isEmpty())
+        if (selection.isEmpty())
             return false;
         for (JIPipeNodeUI ui : selection) {
-            if(ui.getNode().getInfo() != nodeInfo)
+            if (ui.getNode().getInfo() != nodeInfo)
                 return false;
         }
         return true;

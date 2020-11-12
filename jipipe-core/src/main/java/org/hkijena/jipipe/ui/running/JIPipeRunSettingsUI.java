@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.ui.running;
 
-import com.google.common.collect.BiMap;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeRun;
@@ -175,7 +174,7 @@ public class JIPipeRunSettingsUI extends JIPipeProjectWorkbenchPanel {
 
         Set<JIPipeGraphNode> heavyIntermediateAlgorithms = getProject().getHeavyIntermediateAlgorithms();
         heavyIntermediateAlgorithms.removeAll(algorithmsWithMissingInput);
-        if(!heavyIntermediateAlgorithms.isEmpty()) {
+        if (!heavyIntermediateAlgorithms.isEmpty()) {
             formPanel.removeLastRow();
             FormPanel.GroupHeaderPanel headerPanel = formPanel.addGroupHeader("Large intermediate results", UIUtils.getIconFromResources("emblems/warning.png"));
             headerPanel.getDescriptionArea().setVisible(true);
@@ -185,14 +184,14 @@ public class JIPipeRunSettingsUI extends JIPipeProjectWorkbenchPanel {
             JPanel contentPanel = new JPanel(new GridBagLayout());
             List<JIPipeGraphNode> traversed = getProject().getGraph().traverseAlgorithms();
             for (JIPipeGraphNode node : traversed) {
-                if(!(node instanceof JIPipeAlgorithm))
+                if (!(node instanceof JIPipeAlgorithm))
                     continue;
-                if(heavyIntermediateAlgorithms.contains(node)) {
+                if (heavyIntermediateAlgorithms.contains(node)) {
                     int row = checkBoxes.size();
                     JCheckBox checkBox = new JCheckBox(node.getName(), true);
                     checkBox.addActionListener(e -> {
                         JIPipeGraphNode runAlgorithm = run.getGraph().getEquivalentAlgorithm(node);
-                        ((JIPipeAlgorithm)runAlgorithm).setSaveOutputs(checkBox.isSelected());
+                        ((JIPipeAlgorithm) runAlgorithm).setSaveOutputs(checkBox.isSelected());
                     });
                     JLabel compartmentLabel = new JLabel(getProject().getCompartments().get(node.getCompartment()).getName(), UIUtils.getIconFromResources("data-types/graph-compartment.png"), JLabel.LEFT);
                     contentPanel.add(new JLabel(JIPipe.getNodes().getIconFor(node.getInfo())), new GridBagConstraints() {
@@ -236,7 +235,7 @@ public class JIPipeRunSettingsUI extends JIPipeProjectWorkbenchPanel {
                     checkBox.setSelected(true);
                 }
                 for (JIPipeGraphNode node : heavyIntermediateAlgorithms) {
-                    if(node instanceof JIPipeAlgorithm) {
+                    if (node instanceof JIPipeAlgorithm) {
                         JIPipeGraphNode runAlgorithm = run.getGraph().getEquivalentAlgorithm(node);
                         ((JIPipeAlgorithm) runAlgorithm).setSaveOutputs(true);
                     }
@@ -250,7 +249,7 @@ public class JIPipeRunSettingsUI extends JIPipeProjectWorkbenchPanel {
                     checkBox.setSelected(false);
                 }
                 for (JIPipeGraphNode node : heavyIntermediateAlgorithms) {
-                    if(node instanceof JIPipeAlgorithm) {
+                    if (node instanceof JIPipeAlgorithm) {
                         JIPipeGraphNode runAlgorithm = run.getGraph().getEquivalentAlgorithm(node);
                         ((JIPipeAlgorithm) runAlgorithm).setSaveOutputs(false);
                     }

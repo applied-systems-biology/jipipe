@@ -45,8 +45,7 @@ public class ExtractRegexMatchesFunction extends ExpressionFunction {
                 result.add(matcher.group(i));
             }
             return result;
-        }
-        else {
+        } else {
             return new ArrayList<>();
         }
     }

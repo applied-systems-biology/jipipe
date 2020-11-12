@@ -283,7 +283,6 @@ public class UIUtils {
     }
 
 
-
     /**
      * Returns a string from clipboard or an empty string
      *

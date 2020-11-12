@@ -33,14 +33,13 @@ public class ExpressionBuilderSyntaxChecker extends JPanel {
 
     private void updateStatus() {
         Exception exception = DefaultExpressionParameter.EVALUATOR.checkSyntax(expressionEditor.getText());
-        if(exception == null) {
+        if (exception == null) {
             statusLabel.setIcon(UIUtils.getIconFromResources("emblems/vcs-normal.png"));
-            if(expressionEditor.getText().trim().length() == 0)
+            if (expressionEditor.getText().trim().length() == 0)
                 statusLabel.setText("Evaluates to TRUE");
             else
                 statusLabel.setText("");
-        }
-        else {
+        } else {
             statusLabel.setIcon(UIUtils.getIconFromResources("emblems/vcs-conflicting.png"));
             statusLabel.setText(exception.getMessage());
         }

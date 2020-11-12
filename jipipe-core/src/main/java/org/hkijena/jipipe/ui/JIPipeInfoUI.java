@@ -81,7 +81,7 @@ public class JIPipeInfoUI extends JIPipeProjectWorkbenchPanel {
     }
 
     private void initContent() {
-        if(!GeneralUISettings.getInstance().isShowIntroductionTour())
+        if (!GeneralUISettings.getInstance().isShowIntroductionTour())
             return;
 //        MarkdownReader markdownReader = new MarkdownReader(false, MarkdownDocument.fromPluginResource("documentation/introduction.md"));
 //        markdownReader.setBorder(null);
@@ -94,9 +94,9 @@ public class JIPipeInfoUI extends JIPipeProjectWorkbenchPanel {
         tourContentPanel.setAlignmentY(JComponent.CENTER_ALIGNMENT);
         tourContentPanel.setAlignmentX(JComponent.CENTER_ALIGNMENT);
         tourContentPanel.setBorder(new RoundedLineBorder(Color.GRAY, 1, 3, true));
-        tourContentPanel.setMaximumSize(new Dimension(800,650));
+        tourContentPanel.setMaximumSize(new Dimension(800, 650));
 //        tourContentPanel.setMinimumSize(new Dimension(800,600));
-        tourContentPanel.setPreferredSize(new Dimension(800,650));
+        tourContentPanel.setPreferredSize(new Dimension(800, 650));
         tourContentPanel.setBackground(UIManager.getColor("TextArea.background"));
         tourPanel.add(Box.createVerticalGlue());
         tourPanel.add(tourContentPanel);
@@ -129,7 +129,7 @@ public class JIPipeInfoUI extends JIPipeProjectWorkbenchPanel {
         recentProjectsList.setCellRenderer(new RecentProjectListCellRenderer());
         JScrollPane scrollPane = new JScrollPane(recentProjectsList);
         scrollPane.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, Color.DARK_GRAY));
-        if(!GeneralUISettings.getInstance().isShowIntroductionTour())
+        if (!GeneralUISettings.getInstance().isShowIntroductionTour())
             add(scrollPane, BorderLayout.CENTER);
         else
             add(scrollPane, BorderLayout.WEST);

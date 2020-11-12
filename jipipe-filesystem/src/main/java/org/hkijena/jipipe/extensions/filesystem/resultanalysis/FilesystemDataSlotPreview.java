@@ -65,7 +65,7 @@ public class FilesystemDataSlotPreview extends JIPipeResultDataSlotPreview {
 
     @Override
     public void renderPreview() {
-        if(!label.getText().isEmpty())
+        if (!label.getText().isEmpty())
             return;
         label.setIcon(JIPipe.getDataTypes().getIconFor(getSlot().getAcceptedDataType()));
         Path listFile = findListFile(getSlot(), getRow());

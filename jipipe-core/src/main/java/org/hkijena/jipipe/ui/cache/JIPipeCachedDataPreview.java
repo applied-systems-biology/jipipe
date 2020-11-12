@@ -33,15 +33,16 @@ public class JIPipeCachedDataPreview extends JPanel {
 
     /**
      * Creates a new instance
+     *
      * @param parentComponent The parent component that contains the preview
-     * @param data the data
-     * @param deferRendering if true, the preview will not be immediately rendered
+     * @param data            the data
+     * @param deferRendering  if true, the preview will not be immediately rendered
      */
     public JIPipeCachedDataPreview(Component parentComponent, JIPipeData data, boolean deferRendering) {
         this.parentComponent = parentComponent;
         this.data = data;
         initialize();
-        if(!deferRendering)
+        if (!deferRendering)
             renderPreview();
     }
 
@@ -53,7 +54,7 @@ public class JIPipeCachedDataPreview extends JPanel {
      * Renders the preview if it is not already rendered
      */
     public void renderPreview() {
-        if(worker == null) {
+        if (worker == null) {
             worker = new Worker(this);
             worker.execute();
         }

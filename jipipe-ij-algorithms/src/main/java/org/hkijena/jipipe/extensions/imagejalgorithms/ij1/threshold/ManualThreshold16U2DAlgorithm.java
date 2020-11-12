@@ -87,13 +87,13 @@ public class ManualThreshold16U2DAlgorithm extends JIPipeSimpleIteratingAlgorith
         ImageJUtils.forEachSlice(img, ip -> {
             for (int i = 0; i < ip.getPixelCount(); i++) {
                 int v = ip.get(i);
-                if(v > maxThreshold)
+                if (v > maxThreshold)
                     ip.set(i, 0);
-                else if(v <= minThreshold)
+                else if (v <= minThreshold)
                     ip.set(i, 0);
                 else
                     ip.set(i, 255);
-                ((ShortProcessor)ip).findMinAndMax();
+                ((ShortProcessor) ip).findMinAndMax();
             }
         });
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleMaskData(img));
@@ -104,7 +104,7 @@ public class ManualThreshold16U2DAlgorithm extends JIPipeSimpleIteratingAlgorith
     public void reportValidity(JIPipeValidityReport report) {
         report.forCategory("Min threshold").checkIfWithin(this, minThreshold, 0, 65535, true, true);
         report.forCategory("Max threshold").checkIfWithin(this, maxThreshold, 0, 65535, true, true);
-        if(maxThreshold < minThreshold) {
+        if (maxThreshold < minThreshold) {
             report.forCategory("Thresholds").reportIsInvalid("Max threshold is smaller than min threshold!", "The maximum pixel value to keep is less than the minimum pixel value to keep.",
                     "Please update the parameters", this);
         }

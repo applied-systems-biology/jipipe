@@ -85,8 +85,8 @@ public class GenerateFromMathExpression2D extends JIPipeSimpleIteratingAlgorithm
 
         for (int y = 0; y < ip.getHeight(); y++) {
             for (int x = 0; x < ip.getWidth(); x++) {
-                variableSet.set("x", (double)x);
-                variableSet.set("y", (double)y);
+                variableSet.set("x", (double) x);
+                variableSet.set("y", (double) y);
                 float value = ((Number) function.evaluate(variableSet)).floatValue();
                 ip.setf(x, y, value);
             }

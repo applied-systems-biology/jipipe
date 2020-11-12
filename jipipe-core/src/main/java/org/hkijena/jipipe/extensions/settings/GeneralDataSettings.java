@@ -35,7 +35,7 @@ public class GeneralDataSettings implements JIPipeParameterCollection {
     }
 
     @JIPipeDocumentation(name = "Remember last cache display for type",
-    description = "If enabled, JIPipe will remember the last used cache display method as default.")
+            description = "If enabled, JIPipe will remember the last used cache display method as default.")
     @JIPipeParameter("auto-save-last-display")
     public boolean isAutoSaveLastDisplay() {
         return autoSaveLastDisplay;

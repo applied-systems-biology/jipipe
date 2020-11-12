@@ -92,7 +92,7 @@ public class PercentileThreshold8U2DAlgorithm extends JIPipeSimpleIteratingAlgor
             sum = 0;
             for (int i = 0; i < histogram.length; i++) {
                 sum += histogram[i];
-                if(sum >= percentileThresh) {
+                if (sum >= percentileThresh) {
                     thresh = i;
                     break;
                 }

@@ -34,26 +34,23 @@ public abstract class GenericPredicateOperator extends ExpressionOperator {
         Object o1 = operands.next();
         Object o2 = operands.next();
 
-        if( (o1 instanceof Number || o1 instanceof  Boolean) && (o2 instanceof Number || o2 instanceof Boolean)) {
+        if ((o1 instanceof Number || o1 instanceof Boolean) && (o2 instanceof Number || o2 instanceof Boolean)) {
             double left;
             double right;
-            if(o1 instanceof Number)
-                left = ((Number)o1).doubleValue();
+            if (o1 instanceof Number)
+                left = ((Number) o1).doubleValue();
             else
-                left = (boolean)o1 ? 1 : 0;
-            if(o2 instanceof Number)
-                right = ((Number)o2).doubleValue();
+                left = (boolean) o1 ? 1 : 0;
+            if (o2 instanceof Number)
+                right = ((Number) o2).doubleValue();
             else
-                right = (boolean)o2 ? 1 : 0;
+                right = (boolean) o2 ? 1 : 0;
             return evaluate(left, right);
-        }
-        else if(o1 instanceof Collection && o2 instanceof Collection) {
-            return evaluate((Collection<Object>)o1, (Collection<Object>)o2);
-        }
-        else if(o1 instanceof Map && o2 instanceof Map) {
-            return evaluate((Map<Object, Object>)o1, (Map<Object, Object>)o2);
-        }
-        else {
+        } else if (o1 instanceof Collection && o2 instanceof Collection) {
+            return evaluate((Collection<Object>) o1, (Collection<Object>) o2);
+        } else if (o1 instanceof Map && o2 instanceof Map) {
+            return evaluate((Map<Object, Object>) o1, (Map<Object, Object>) o2);
+        } else {
             return evaluate("" + o1, "" + o2);
         }
     }

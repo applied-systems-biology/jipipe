@@ -28,20 +28,19 @@ public abstract class NumericOrStringFunctionOperator extends ExpressionOperator
         Object o1 = operands.next();
         Object o2 = operands.next();
 
-        if( (o1 instanceof Number || o1 instanceof  Boolean) && (o2 instanceof Number || o2 instanceof Boolean)) {
+        if ((o1 instanceof Number || o1 instanceof Boolean) && (o2 instanceof Number || o2 instanceof Boolean)) {
             double left;
             double right;
-            if(o1 instanceof Number)
-                left = ((Number)o1).doubleValue();
+            if (o1 instanceof Number)
+                left = ((Number) o1).doubleValue();
             else
-                left = (boolean)o1 ? 1 : 0;
-            if(o2 instanceof Number)
-                right = ((Number)o2).doubleValue();
+                left = (boolean) o1 ? 1 : 0;
+            if (o2 instanceof Number)
+                right = ((Number) o2).doubleValue();
             else
-                right = (boolean)o2 ? 1 : 0;
+                right = (boolean) o2 ? 1 : 0;
             return evaluate(left, right);
-        }
-        else {
+        } else {
             return evaluate("" + o1, "" + o2);
         }
     }

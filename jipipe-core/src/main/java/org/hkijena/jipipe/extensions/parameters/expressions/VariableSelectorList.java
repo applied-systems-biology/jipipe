@@ -69,7 +69,7 @@ public class VariableSelectorList extends JList<ExpressionParameterVariable> {
         functionSelectorList.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if(e.getClickCount() == 2) {
+                if (e.getClickCount() == 2) {
                     confirmed.set(true);
                     dialog.setVisible(false);
                 }
@@ -83,7 +83,7 @@ public class VariableSelectorList extends JList<ExpressionParameterVariable> {
         dialog.setModal(true);
         dialog.setTitle("Select variable");
         dialog.pack();
-        dialog.setSize(640,480);
+        dialog.setSize(640, 480);
         dialog.setLocationRelativeTo(null);
         UIUtils.addEscapeListener(dialog);
         dialog.setVisible(true);

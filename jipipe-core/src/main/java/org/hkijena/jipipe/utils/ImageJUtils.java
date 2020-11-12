@@ -39,9 +39,9 @@ public class ImageJUtils {
 //            e.printStackTrace();
 //        }
         stops.sort(Comparator.naturalOrder());
-        if(stops.get(0).fraction > 0)
+        if (stops.get(0).fraction > 0)
             stops.add(0, new GradientStop(stops.get(0).getColor(), 0));
-        if(stops.get(stops.size() - 1).fraction < 1)
+        if (stops.get(stops.size() - 1).fraction < 1)
             stops.add(new GradientStop(stops.get(stops.size() - 1).getColor(), 1));
         byte[] reds = new byte[256];
         byte[] greens = new byte[256];
@@ -49,13 +49,13 @@ public class ImageJUtils {
         int currentFirstStop = 0;
         int currentLastStop = 1;
         int startIndex = 0;
-        int endIndex = (int)(255 * stops.get(currentLastStop).fraction);
+        int endIndex = (int) (255 * stops.get(currentLastStop).fraction);
         for (int i = 0; i < 256; i++) {
-            if(i != 255 && i >= endIndex) {
+            if (i != 255 && i >= endIndex) {
                 startIndex = i;
                 ++currentFirstStop;
                 ++currentLastStop;
-                endIndex = (int)(255 * stops.get(currentLastStop).fraction);
+                endIndex = (int) (255 * stops.get(currentLastStop).fraction);
             }
             Color currentStart = stops.get(currentFirstStop).getColor();
             Color currentEnd = stops.get(currentLastStop).getColor();
@@ -65,37 +65,14 @@ public class ImageJUtils {
             int r1 = currentEnd.getRed();
             int g1 = currentEnd.getGreen();
             int b1 = currentEnd.getBlue();
-            int r = (int)(r0 + (r1 - r0) * (1.0 * (i - startIndex) / (endIndex - startIndex)));
-            int g = (int)(g0 + (g1 - g0) * (1.0 * (i - startIndex) / (endIndex - startIndex)));
-            int b = (int)(b0 + (b1 - b0) * (1.0 * (i - startIndex) / (endIndex - startIndex)));
-            reds[i] = (byte)r;
-            greens[i] = (byte)g;
-            blues[i] = (byte)b;
+            int r = (int) (r0 + (r1 - r0) * (1.0 * (i - startIndex) / (endIndex - startIndex)));
+            int g = (int) (g0 + (g1 - g0) * (1.0 * (i - startIndex) / (endIndex - startIndex)));
+            int b = (int) (b0 + (b1 - b0) * (1.0 * (i - startIndex) / (endIndex - startIndex)));
+            reds[i] = (byte) r;
+            greens[i] = (byte) g;
+            blues[i] = (byte) b;
         }
         return new LUT(reds, greens, blues);
-    }
-
-    public static class GradientStop implements Comparable<GradientStop> {
-        private final Color color;
-        private final float fraction;
-
-        public GradientStop(Color color, float fraction) {
-            this.color = color;
-            this.fraction = fraction;
-        }
-
-        public Color getColor() {
-            return color;
-        }
-
-        public float getFraction() {
-            return fraction;
-        }
-
-        @Override
-        public int compareTo(@NotNull ImageJUtils.GradientStop o) {
-            return Float.compare(fraction, o.fraction);
-        }
     }
 
     /**
@@ -162,5 +139,28 @@ public class ImageJUtils {
             imp.setDisplayRange(min, max, channels);
         else
             imp.setDisplayRange(min, max);
+    }
+
+    public static class GradientStop implements Comparable<GradientStop> {
+        private final Color color;
+        private final float fraction;
+
+        public GradientStop(Color color, float fraction) {
+            this.color = color;
+            this.fraction = fraction;
+        }
+
+        public Color getColor() {
+            return color;
+        }
+
+        public float getFraction() {
+            return fraction;
+        }
+
+        @Override
+        public int compareTo(@NotNull ImageJUtils.GradientStop o) {
+            return Float.compare(fraction, o.fraction);
+        }
     }
 }

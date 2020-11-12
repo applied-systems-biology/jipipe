@@ -96,7 +96,7 @@ public class ExpressionBuilderParameterUI extends JPanel {
             expressionEditorPanel.setBackground(UIManager.getColor("TextArea.background"));
             expressionEditorPanel.add(expressionEditor, BorderLayout.CENTER);
             expressionEditorPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEtchedBorder(),
-                    BorderFactory.createEmptyBorder(5,4,0,4)));
+                    BorderFactory.createEmptyBorder(5, 4, 0, 4)));
             editorPanel.add(expressionEditorPanel, Mode.Expression.name());
         }
         add(editorPanel, BorderLayout.CENTER);
@@ -109,7 +109,7 @@ public class ExpressionBuilderParameterUI extends JPanel {
     public String getCurrentExpressionValue() {
         switch (getCurrentMode()) {
             case Number:
-                return "" + ((SpinnerNumberModel)numberEditor.getModel()).getNumber().doubleValue();
+                return "" + ((SpinnerNumberModel) numberEditor.getModel()).getNumber().doubleValue();
             case Boolean:
                 return booleanEditor.isSelected() ? "TRUE" : "FALSE";
             case Variable:

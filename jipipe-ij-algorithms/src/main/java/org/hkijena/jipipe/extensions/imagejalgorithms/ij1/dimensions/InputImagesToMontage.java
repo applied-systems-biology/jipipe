@@ -90,7 +90,7 @@ public class InputImagesToMontage extends JIPipeMergingAlgorithm {
             input.add(getFirstInputSlot().getData(row, ImagePlus2DData.class).getImage());
             labels.add(labelGenerator.generateMetadataString(getFirstInputSlot(), row, new HashSet<>()));
         }
-        if(input.isEmpty())
+        if (input.isEmpty())
             return;
 
         // Equalize canvas
@@ -141,7 +141,7 @@ public class InputImagesToMontage extends JIPipeMergingAlgorithm {
         montage.setAntialiasedText(true);
         int x = 0;
         int y = 0;
-        for(int i = 0; i < input.size(); ++i){
+        for (int i = 0; i < input.size(); ++i) {
             ImageProcessor slice = input.get(i).getProcessor();
             if (scale != 1.0) {
                 slice.setInterpolationMethod(ImageProcessor.BILINEAR);

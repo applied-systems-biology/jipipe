@@ -18,7 +18,6 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeExportedDataTable;
 import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
-import org.hkijena.jipipe.ui.cache.JIPipeCachedDataPreview;
 
 import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
@@ -33,19 +32,19 @@ import java.util.List;
  */
 public class JIPipeRowDataTableCellRenderer implements TableCellRenderer {
 
-    private JIPipeProjectWorkbench workbenchUI;
-    private JIPipeDataSlot slot;
     private final JTable table;
     private final JScrollPane scrollPane;
+    private final GeneralDataSettings dataSettings = GeneralDataSettings.getInstance();
+    private JIPipeProjectWorkbench workbenchUI;
+    private JIPipeDataSlot slot;
     private List<JIPipeResultDataSlotPreview> previewCache = new ArrayList<>();
     private int previewCacheSize = GeneralDataSettings.getInstance().getPreviewSize();
-    private final GeneralDataSettings dataSettings =GeneralDataSettings.getInstance();
 
     /**
      * @param workbenchUI the workbench
      * @param slot        the data slot
-     * @param table the table
-     * @param scrollPane thr scroll pane
+     * @param table       the table
+     * @param scrollPane  thr scroll pane
      */
     public JIPipeRowDataTableCellRenderer(JIPipeProjectWorkbench workbenchUI, JIPipeDataSlot slot, JTable table, JScrollPane scrollPane) {
         this.workbenchUI = workbenchUI;
@@ -57,7 +56,7 @@ public class JIPipeRowDataTableCellRenderer implements TableCellRenderer {
     }
 
     private void revalidatePreviewCache() {
-        if(dataSettings.getPreviewSize() != previewCacheSize) {
+        if (dataSettings.getPreviewSize() != previewCacheSize) {
             for (int i = 0; i < previewCache.size(); i++) {
                 previewCache.set(i, null);
             }
@@ -68,13 +67,13 @@ public class JIPipeRowDataTableCellRenderer implements TableCellRenderer {
     @Override
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
         if (value instanceof JIPipeExportedDataTable.Row) {
-           while(row > previewCache.size() - 1) {
-               previewCache.add(null);
-           }
-           revalidatePreviewCache();
+            while (row > previewCache.size() - 1) {
+                previewCache.add(null);
+            }
+            revalidatePreviewCache();
             JIPipeResultDataSlotPreview preview = previewCache.get(row);
             if (preview == null) {
-                preview = JIPipe.getDataTypes().getCellRendererFor(slot.getAcceptedDataType(), workbenchUI, table, slot,  (JIPipeExportedDataTable.Row) value);
+                preview = JIPipe.getDataTypes().getCellRendererFor(slot.getAcceptedDataType(), workbenchUI, table, slot, (JIPipeExportedDataTable.Row) value);
                 previewCache.set(row, preview);
             }
             if (isSelected) {

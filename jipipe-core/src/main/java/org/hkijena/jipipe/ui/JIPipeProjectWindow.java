@@ -82,7 +82,7 @@ public class JIPipeProjectWindow extends JFrame {
         super.setTitle("JIPipe");
         setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
         UIUtils.setToAskOnClose(this, "Do you really want to close JIPipe?", "Close window");
-        if(GeneralUISettings.getInstance().isMaximizeWindows()) {
+        if (GeneralUISettings.getInstance().isMaximizeWindows()) {
             SwingUtilities.invokeLater(() -> setExtendedState(getExtendedState() | MAXIMIZED_BOTH));
         }
     }

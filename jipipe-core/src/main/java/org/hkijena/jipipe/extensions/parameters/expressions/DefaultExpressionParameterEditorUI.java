@@ -34,8 +34,8 @@ import java.util.Set;
 
 public class DefaultExpressionParameterEditorUI extends JIPipeParameterEditorUI {
 
-    private RSyntaxTextArea expressionEditor;
     private final JPanel expressionEditorPanel = new JPanel(new BorderLayout());
+    private RSyntaxTextArea expressionEditor;
     private DefaultExpressionEvaluatorSyntaxTokenMaker tokenMaker = new DefaultExpressionEvaluatorSyntaxTokenMaker();
     private Set<ExpressionParameterVariable> variables = new HashSet<>();
 
@@ -88,7 +88,7 @@ public class DefaultExpressionParameterEditorUI extends JIPipeParameterEditorUI 
             @Override
             public void changed(DocumentEvent documentEvent) {
                 DefaultExpressionParameter parameter = getParameter(DefaultExpressionParameter.class);
-                if(!Objects.equals(parameter.getExpression(), expressionEditor.getText())) {
+                if (!Objects.equals(parameter.getExpression(), expressionEditor.getText())) {
                     parameter.setExpression(expressionEditor.getText());
                     setParameter(parameter, false);
                 }
@@ -99,7 +99,7 @@ public class DefaultExpressionParameterEditorUI extends JIPipeParameterEditorUI 
         expressionEditorPanel.setBackground(UIManager.getColor("TextArea.background"));
         JPanel borderPanel = new JPanel(new BorderLayout());
         borderPanel.setBackground(UIManager.getColor("TextArea.background"));
-        borderPanel.setBorder(BorderFactory.createEmptyBorder(5,4,0,4));
+        borderPanel.setBorder(BorderFactory.createEmptyBorder(5, 4, 0, 4));
         borderPanel.add(expressionEditor, BorderLayout.CENTER);
         expressionEditorPanel.add(borderPanel, BorderLayout.CENTER);
 
@@ -108,7 +108,7 @@ public class DefaultExpressionParameterEditorUI extends JIPipeParameterEditorUI 
 
     private void editInFunctionBuilder() {
         String expression = ExpressionBuilderUI.showDialog(this, expressionEditor.getText(), variables);
-        if(expression != null)
+        if (expression != null)
             expressionEditor.setText(expression);
     }
 
@@ -120,7 +120,7 @@ public class DefaultExpressionParameterEditorUI extends JIPipeParameterEditorUI 
     @Override
     public void reload() {
         DefaultExpressionParameter parameter = getParameter(DefaultExpressionParameter.class);
-        if(!Objects.equals(parameter.getExpression(), expressionEditor.getText())) {
+        if (!Objects.equals(parameter.getExpression(), expressionEditor.getText())) {
             expressionEditor.setText(parameter.getExpression());
         }
     }
@@ -128,10 +128,10 @@ public class DefaultExpressionParameterEditorUI extends JIPipeParameterEditorUI 
     private void reloadVariables() {
         variables.clear();
         ExpressionParameterSettings settings = getParameterAccess().getAnnotationOfType(ExpressionParameterSettings.class);
-        if(settings == null) {
+        if (settings == null) {
             settings = getParameterAccess().getFieldClass().getAnnotation(ExpressionParameterSettings.class);
         }
-        if(settings != null) {
+        if (settings != null) {
             ExpressionParameterVariableSource variableSource = (ExpressionParameterVariableSource) ReflectionUtils.newInstance(settings.variableSource());
             variables.addAll(variableSource.getVariables(getParameterAccess()));
         }

@@ -129,18 +129,17 @@ public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
             Opener opener = new Opener();
             ImagePlus image;
             String fileNameString = fileName.getFileName().toString();
-            if(fileNameString.endsWith(".ome.tiff") || fileNameString.endsWith(".ome.tif") || fileNameString.endsWith(".czi")) {
+            if (fileNameString.endsWith(".ome.tiff") || fileNameString.endsWith(".ome.tif") || fileNameString.endsWith(".czi")) {
                 // Pass to bioformats
                 algorithmProgress.accept(subProgress.resolve("Using BioFormats importer. Please use the Bio-Formats importer node for more settings."));
                 BioFormatsImporter importer = JIPipe.createNode(BioFormatsImporter.class);
                 importer.getFirstInputSlot().addData(new FileData(fileName));
                 importer.run(subProgress, algorithmProgress, isCancelled);
                 image = importer.getFirstOutputSlot().getData(0, OMEImageData.class).getImage();
-            }
-            else {
+            } else {
                 image = IJ.openImage(fileName.toString());
             }
-            if(image == null) {
+            if (image == null) {
                 // Try Bioformats again?
                 // Pass to bioformats
                 algorithmProgress.accept(subProgress.resolve("Using BioFormats importer. Please use the Bio-Formats importer node for more settings."));
@@ -149,7 +148,7 @@ public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
                 importer.run(subProgress, algorithmProgress, isCancelled);
                 image = importer.getFirstOutputSlot().getData(0, OMEImageData.class).getImage();
             }
-            if(image == null) {
+            if (image == null) {
                 throw new NullPointerException("Image could not be loaded!");
             }
             if (removeLut) {

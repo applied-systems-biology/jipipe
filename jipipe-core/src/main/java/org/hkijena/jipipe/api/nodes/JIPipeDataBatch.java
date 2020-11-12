@@ -98,8 +98,16 @@ public class JIPipeDataBatch {
         }
     }
 
-    public void setAnnotations(Map<String, JIPipeAnnotation> annotations) {
-        this.annotations = annotations;
+    /**
+     * Gets stored data from an input slot
+     *
+     * @param <T>       Data type
+     * @param slotName  The slot name
+     * @param dataClass The data type that should be returned
+     * @return Input data with provided name
+     */
+    public <T extends JIPipeData> T getInputData(String slotName, Class<T> dataClass) {
+        return getInputData(node.getInputSlot(slotName), dataClass);
     }
 
     //    private void initialize(List<JIPipeDataSlot> inputSlots, int referenceInputSlotRow) {
@@ -127,18 +135,6 @@ public class JIPipeDataBatch {
      * Gets stored data from an input slot
      *
      * @param <T>       Data type
-     * @param slotName  The slot name
-     * @param dataClass The data type that should be returned
-     * @return Input data with provided name
-     */
-    public <T extends JIPipeData> T getInputData(String slotName, Class<T> dataClass) {
-        return getInputData(node.getInputSlot(slotName), dataClass);
-    }
-
-    /**
-     * Gets stored data from an input slot
-     *
-     * @param <T>       Data type
      * @param slot      The slot
      * @param dataClass The data type that should be returned
      * @return Input data with provided name
@@ -159,6 +155,10 @@ public class JIPipeDataBatch {
      */
     public Map<String, JIPipeAnnotation> getAnnotations() {
         return annotations;
+    }
+
+    public void setAnnotations(Map<String, JIPipeAnnotation> annotations) {
+        this.annotations = annotations;
     }
 
     /**

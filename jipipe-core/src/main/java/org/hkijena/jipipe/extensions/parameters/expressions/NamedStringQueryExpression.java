@@ -34,6 +34,20 @@ public class NamedStringQueryExpression extends PairParameter<String, StringQuer
         super(other);
     }
 
+    /**
+     * Tests if the key value pair is queried
+     *
+     * @param key   the key
+     * @param value the value
+     * @return if queried
+     */
+    public boolean test(String key, String value) {
+        StaticVariableSet<Object> variableSet = new StaticVariableSet<>();
+        variableSet.set("key", key);
+        variableSet.set("value", value);
+        return getValue().test(variableSet);
+    }
+
     public static class List extends ListParameter<NamedStringQueryExpression> {
 
         public List() {
@@ -43,12 +57,13 @@ public class NamedStringQueryExpression extends PairParameter<String, StringQuer
         public List(List other) {
             super(NamedStringQueryExpression.class);
             for (NamedStringQueryExpression expression : other) {
-             add(new NamedStringQueryExpression(expression));
+                add(new NamedStringQueryExpression(expression));
             }
         }
 
         /**
          * Filters only the named strings where the query applies.
+         *
          * @param input the input map
          * @return map that contains only the key value pairs queried to be true
          */
@@ -63,7 +78,7 @@ public class NamedStringQueryExpression extends PairParameter<String, StringQuer
                 variableSet.set("key", entry.getKey());
                 variableSet.set("value", entry.getValue());
                 StringQueryExpression expression = expressionMap.getOrDefault(entry.getKey(), null);
-                if(expression != null) {
+                if (expression != null) {
                     if (expression.test(variableSet)) {
                         result.put(entry.getKey(), entry.getValue());
                     }
@@ -71,18 +86,5 @@ public class NamedStringQueryExpression extends PairParameter<String, StringQuer
             }
             return result;
         }
-    }
-
-    /**
-     * Tests if the key value pair is queried
-     * @param key the key
-     * @param value the value
-     * @return if queried
-     */
-    public boolean test(String key, String value) {
-        StaticVariableSet<Object> variableSet = new StaticVariableSet<>();
-        variableSet.set("key", key);
-        variableSet.set("value", value);
-        return getValue().test(variableSet);
     }
 }

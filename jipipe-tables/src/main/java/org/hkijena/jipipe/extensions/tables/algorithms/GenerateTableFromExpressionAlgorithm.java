@@ -82,14 +82,14 @@ public class GenerateTableFromExpressionAlgorithm extends JIPipeSimpleIteratingA
         for (ExpressionTableColumnGeneratorProcessor entry : columns) {
             String columnName = entry.getValue();
             int columnId = table.getColumnIndex(columnName);
-            if(columnId == -1)
+            if (columnId == -1)
                 columnId = table.getOrCreateColumnIndex(columnName);
             variableSet.set("column", columnId);
             variableSet.set("column_name", columnName);
             for (int row = 0; row < table.getRowCount(); row++) {
                 variableSet.set("row", row);
                 Object value = entry.getKey().evaluate(variableSet);
-                if(!(value instanceof Number) && !(value instanceof String))
+                if (!(value instanceof Number) && !(value instanceof String))
                     value = "" + value;
                 table.setValueAt(value, row, columnId);
             }
@@ -124,7 +124,7 @@ public class GenerateTableFromExpressionAlgorithm extends JIPipeSimpleIteratingA
 
     @JIPipeParameter("generated-rows")
     public boolean setGeneratedRows(int generatedRows) {
-        if(generatedRows < 0)
+        if (generatedRows < 0)
             return false;
         this.generatedRows = generatedRows;
         return true;
@@ -134,7 +134,7 @@ public class GenerateTableFromExpressionAlgorithm extends JIPipeSimpleIteratingA
     @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/graduation-cap.png")
     public void setToExample(JIPipeWorkbench parent) {
         if (UIUtils.confirmResetParameters(parent, "Load example")) {
-             columns.clear();
+            columns.clear();
             ExpressionTableColumnGeneratorProcessor columnX = columns.addNewInstance();
             columnX.setKey(new DefaultExpressionParameter("row / 100"));
             columnX.setValue("x");

@@ -67,7 +67,7 @@ public class AddAnnotationColumnsAlgorithm extends JIPipeSimpleIteratingAlgorith
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         ResultsTableData resultsTableData = new ResultsTableData(dataBatch.getInputData(getFirstInputSlot(), ResultsTableData.class));
         for (Map.Entry<String, JIPipeAnnotation> entry : dataBatch.getAnnotations().entrySet()) {
-            if(!annotationNameFilter.test(entry.getKey()))
+            if (!annotationNameFilter.test(entry.getKey()))
                 continue;
             int col = resultsTableData.addColumn(annotationPrefix + entry.getKey(), true);
             for (int row = 0; row < resultsTableData.getRowCount(); row++) {

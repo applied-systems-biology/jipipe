@@ -66,7 +66,10 @@ public class ExpressionTesterUI extends JIPipeWorkbenchPanel {
         centerPanel.add(resultReader, BorderLayout.CENTER);
 
         JIPipeManualParameterAccess access = JIPipeManualParameterAccess.builder().setName("Expression").setFieldClass(JIPipeParameter.class)
-                .setGetter(this::getExpression).setSetter(o -> { setExpression((DefaultExpressionParameter) o); return true; }).setSource(new JIPipeDummyParameterCollection()).build();
+                .setGetter(this::getExpression).setSetter(o -> {
+                    setExpression((DefaultExpressionParameter) o);
+                    return true;
+                }).setSource(new JIPipeDummyParameterCollection()).build();
         expressionEditor = new DefaultExpressionParameterEditorUI(getWorkbench(), access);
 
         JPanel bottomPanel = new JPanel(new BorderLayout());
@@ -83,16 +86,16 @@ public class ExpressionTesterUI extends JIPipeWorkbenchPanel {
         helpText.append("<table>");
         for (Operator operator : evaluator.getOperators()) {
             ExpressionOperatorEntry info = new ExpressionOperatorEntry(operator);
-           helpText.append("<tr><td><pre>").append(HtmlEscapers.htmlEscaper().escape(info.getSignature())).append("</pre></td>")
-                   .append("<td>").append(info.getName()).append("</td><td>").append(info.getDescription()).append("</td></tr>");
+            helpText.append("<tr><td><pre>").append(HtmlEscapers.htmlEscaper().escape(info.getSignature())).append("</pre></td>")
+                    .append("<td>").append(info.getName()).append("</td><td>").append(info.getDescription()).append("</td></tr>");
         }
         for (Function function : evaluator.getFunctions()) {
             String signature = function.getName() + "(...)";
             String name = "";
             String description = "";
-            if(function instanceof ExpressionFunction) {
+            if (function instanceof ExpressionFunction) {
                 JIPipeExpressionRegistry.ExpressionFunctionEntry functionEntry = JIPipe.getInstance().getExpressionRegistry().getRegisteredExpressionFunctions().getOrDefault(function.getName(), null);
-                if(functionEntry != null) {
+                if (functionEntry != null) {
                     signature = functionEntry.getFunction().getSignature();
                     name = functionEntry.getName();
                     description = functionEntry.getDescription();
@@ -128,22 +131,22 @@ public class ExpressionTesterUI extends JIPipeWorkbenchPanel {
         Object result;
         try {
             result = evaluator.evaluate(expressionToEvaluate, new StaticVariableSet<>());
-            if(result instanceof Collection) {
+            if (result instanceof Collection) {
                 List<Object> values = new ArrayList<>();
                 for (Object item : (Collection<?>) result) {
-                    if(item instanceof Boolean || item instanceof Number)
+                    if (item instanceof Boolean || item instanceof Number)
                         values.add(item);
                     else
                         values.add("" + item);
                 }
                 result = JsonUtils.toJsonString(values);
             }
-            if(result instanceof Map) {
+            if (result instanceof Map) {
                 Map<String, Object> values = new HashMap<>();
                 for (Map.Entry<?, ?> item : ((Map<?, ?>) result).entrySet()) {
                     String key = "" + item.getKey();
                     Object value;
-                    if(item.getValue() instanceof Boolean || item.getValue() instanceof Number)
+                    if (item.getValue() instanceof Boolean || item.getValue() instanceof Number)
                         value = item.getValue();
                     else
                         value = "" + item.getValue();
@@ -151,14 +154,13 @@ public class ExpressionTesterUI extends JIPipeWorkbenchPanel {
                 }
                 result = JsonUtils.toJsonString(values);
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             result = e;
         }
         resultOutput.append("<tr><td>Output</td><td><pre>").append(HtmlEscapers.htmlEscaper().escape("" + result)).append("</pre></td></tr></table>");
         resultOutput.append("<hr/>\n");
         resultReader.setDocument(new MarkdownDocument(resultOutput.toString()));
-        SwingUtilities.invokeLater(() ->  resultReader.getScrollPane().getVerticalScrollBar().setValue(resultReader.getScrollPane().getVerticalScrollBar().getMaximum()));
+        SwingUtilities.invokeLater(() -> resultReader.getScrollPane().getVerticalScrollBar().setValue(resultReader.getScrollPane().getVerticalScrollBar().getMaximum()));
     }
 
     public DefaultExpressionParameter getExpression() {

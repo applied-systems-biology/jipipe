@@ -87,8 +87,8 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
     private final BiMap<JIPipeGraphNode, JIPipeNodeUI> nodeUIs = HashBiMap.create();
     private final Set<JIPipeNodeUI> selection = new HashSet<>();
     private final EventBus eventBus = new EventBus();
-    private String compartment;
     private final JIPipeGraphHistory graphHistory = new JIPipeGraphHistory();
+    private String compartment;
     private boolean layoutHelperEnabled;
     private JIPipeGraphViewMode viewMode = GraphEditorUISettings.getInstance().getDefaultViewMode();
     private JIPipeGraphDragAndDropBehavior dragAndDropBehavior;
@@ -128,14 +128,14 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
         initializeHotkeys();
 
         // If there is a project, listen to compartment renames
-        if(workbench instanceof JIPipeProjectWorkbench) {
+        if (workbench instanceof JIPipeProjectWorkbench) {
             JIPipeProject project = ((JIPipeProjectWorkbench) workbench).getProject();
             JIPipeProjectCompartment compartmentInstance = project.getCompartments().get(compartment);
-            if(compartmentInstance != null) {
+            if (compartmentInstance != null) {
                 project.getEventBus().register(new Object() {
                     @Subscribe
                     public void onCompartmentRenamed(CompartmentRenamedEvent event) {
-                        if(event.getCompartment() == compartmentInstance && !Objects.equals(compartment, event.getCompartment().getProjectCompartmentId())) {
+                        if (event.getCompartment() == compartmentInstance && !Objects.equals(compartment, event.getCompartment().getProjectCompartmentId())) {
                             JIPipeGraphCanvasUI.this.compartment = event.getCompartment().getProjectCompartmentId();
                             JIPipeGraphCanvasUI.this.fullRedraw();
                         }

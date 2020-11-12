@@ -25,22 +25,22 @@ import java.util.Set;
 
 public class Main {
     public static void main(String[] args) {
-        if(args.length == 0) {
+        if (args.length == 0) {
             showHelp();
             return;
         }
 
         int firstArgIndex = 0;
-        while(firstArgIndex < args.length && args[firstArgIndex].startsWith("-")) {
+        while (firstArgIndex < args.length && args[firstArgIndex].startsWith("-")) {
             firstArgIndex += 2;
         }
 
-        if(firstArgIndex >= args.length) {
+        if (firstArgIndex >= args.length) {
             showHelp();
             return;
         }
-        if(args[firstArgIndex].contains("help")) {
-           showHelp();
+        if (args[firstArgIndex].contains("help")) {
+            showHelp();
             return;
         }
 
@@ -59,16 +59,16 @@ public class Main {
             return;
         }
 
-        if(Objects.equals(args[firstArgIndex], "activate")) {
+        if (Objects.equals(args[firstArgIndex], "activate")) {
             Set<String> toActivateNames = getUpdateSiteNames(Arrays.asList(args).subList(firstArgIndex + 1, args.length));
             Set<UpdateSite> toActivate = new HashSet<>();
             for (UpdateSite updateSite : filesCollection.getUpdateSites(true)) {
-                if(toActivateNames.contains(updateSite.getName())) {
+                if (toActivateNames.contains(updateSite.getName())) {
                     toActivate.add(updateSite);
                     toActivateNames.remove(updateSite.getName());
                 }
             }
-            if(!toActivateNames.isEmpty()) {
+            if (!toActivateNames.isEmpty()) {
                 System.err.println("Some update sites could not be found:");
                 for (String name : toActivateNames) {
                     System.err.println(name);
@@ -77,7 +77,7 @@ public class Main {
                 throw new RuntimeException("Unable to activate update sites!");
             }
             for (UpdateSite updateSite : toActivate) {
-                if(!updateSite.isActive()) {
+                if (!updateSite.isActive()) {
                     try {
                         filesCollection.activateUpdateSite(updateSite, createProgress());
                     } catch (ParserConfigurationException | IOException | SAXException e) {
@@ -86,28 +86,26 @@ public class Main {
                 }
             }
             applyUpdates(filesCollection);
-        }
-        else if(Objects.equals(args[firstArgIndex], "deactivate")) {
+        } else if (Objects.equals(args[firstArgIndex], "deactivate")) {
             Set<String> toDeactivateNames = getUpdateSiteNames(Arrays.asList(args).subList(firstArgIndex + 1, args.length));
             Set<UpdateSite> toDeactivate = new HashSet<>();
             for (UpdateSite updateSite : filesCollection.getUpdateSites(true)) {
-                if(toDeactivateNames.contains(updateSite.getName())) {
+                if (toDeactivateNames.contains(updateSite.getName())) {
                     toDeactivate.add(updateSite);
                     toDeactivateNames.remove(updateSite.getName());
                 }
             }
             for (UpdateSite updateSite : toDeactivate) {
-                if(updateSite.isActive()) {
+                if (updateSite.isActive()) {
                     filesCollection.deactivateUpdateSite(updateSite);
                 }
             }
             applyUpdates(filesCollection);
-        }
-        else if(Objects.equals(args[firstArgIndex], "add")) {
+        } else if (Objects.equals(args[firstArgIndex], "add")) {
             String name = args[firstArgIndex + 1];
             String url = args[firstArgIndex + 2];
             for (UpdateSite updateSite : filesCollection.getUpdateSites(true)) {
-                if(Objects.equals(name, updateSite.getName())) {
+                if (Objects.equals(name, updateSite.getName())) {
                     System.out.println("Update site already exists. Nothing to do.");
                     return;
                 }
@@ -115,25 +113,21 @@ public class Main {
             UpdateSite site = new UpdateSite(name, url, null, null, null, null, 0);
             filesCollection.addUpdateSite(site);
             applyUpdates(filesCollection);
-        }
-        else if(Objects.equals(args[firstArgIndex], "remove")) {
+        } else if (Objects.equals(args[firstArgIndex], "remove")) {
             String name = args[1];
             filesCollection.removeUpdateSite(name);
             applyUpdates(filesCollection);
-        }
-        else if(Objects.equals(args[firstArgIndex], "list")) {
+        } else if (Objects.equals(args[firstArgIndex], "list")) {
             boolean withActive = firstArgIndex == args.length - 1 || args[firstArgIndex + 1].equals("active");
             boolean withInactive = firstArgIndex == args.length - 1 || args[firstArgIndex + 1].equals("inactive");
             for (UpdateSite updateSite : filesCollection.getUpdateSites(true)) {
-                if(updateSite.isActive() && withActive || !updateSite.isActive() && withInactive) {
+                if (updateSite.isActive() && withActive || !updateSite.isActive() && withInactive) {
                     System.out.println(updateSite.getName() + "\t" + updateSite.getURL() + "\t" + (updateSite.isActive() ? "active" : "inactive"));
                 }
             }
-        }
-        else if(Objects.equals(args[firstArgIndex], "update")) {
+        } else if (Objects.equals(args[firstArgIndex], "update")) {
             applyUpdates(filesCollection);
-        }
-        else {
+        } else {
             throw new RuntimeException("Invalid command!");
         }
     }
@@ -145,28 +139,26 @@ public class Main {
         boolean isQuote = false;
         for (int i = 0; i < joined.length(); i++) {
             char c = joined.charAt(i);
-            if(c == '"') {
+            if (c == '"') {
                 isQuote = !isQuote;
                 continue;
             }
-            if(c == ' ' && !isQuote) {
+            if (c == ' ' && !isQuote) {
                 result.add(current.toString());
                 current.setLength(0);
-            }
-            else {
+            } else {
                 current.append(c);
             }
         }
-        if(current.length() > 0)
+        if (current.length() > 0)
             result.add(current.toString());
         return result;
     }
 
     public static Progress createProgress() {
-        if(getOperatingSystem().toLowerCase().contains("windows")) {
+        if (getOperatingSystem().toLowerCase().contains("windows")) {
             return new ProgressDialog(null, "ImageJ updater");
-        }
-        else {
+        } else {
             return new StderrProgress();
         }
     }

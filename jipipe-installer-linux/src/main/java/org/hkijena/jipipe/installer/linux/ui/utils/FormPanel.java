@@ -33,31 +33,26 @@ import java.lang.ref.WeakReference;
  */
 public class FormPanel extends JXPanel {
 
-    public static Insets UI_PADDING = new Insets(4,4,4,4);
-
     /**
      * Flag that indicates no modifications, meaning (1) No documentation, and (2) no scrolling
      */
     public static final int NONE = 0;
-
     /**
      * Flag that indicates that a documentation panel is shown. The documentation panel is
      * attached on the right-hand side. Use DOCUMENTATION_BELOW to move it below the contents.
      * The documentation panel is shown even if the documentation provided in the constructor is null.
      */
     public static final int WITH_DOCUMENTATION = 1;
-
     /**
      * Flag that makes the content be wrapped in a {@link JScrollPane}
      */
     public static final int WITH_SCROLLING = 2;
-
     /**
      * Flag that indicates that documentation should be shown below if enabled.
      * This does not enable documentation! Use WITH_DOCUMENTATION for this.
      */
     public static final int DOCUMENTATION_BELOW = 4;
-
+    public static Insets UI_PADDING = new Insets(4, 4, 4, 4);
     private final EventBus eventBus = new EventBus();
     private int numRows = 0;
     private JXPanel contentPanel = new JXPanel();
@@ -175,18 +170,17 @@ public class FormPanel extends JXPanel {
 
     private void updateParameterHelpDrillDown() {
         MarkdownDocument current = parameterHelp.getTemporaryDocument();
-        if(current == null) {
+        if (current == null) {
             parameterHelpDrillDown.setIcon(null);
             parameterHelpDrillDown.setText("");
             return;
         }
-        if(StringUtils.orElse(current.getMarkdown(), "").startsWith("#")) {
+        if (StringUtils.orElse(current.getMarkdown(), "").startsWith("#")) {
             String s = current.getMarkdown().split("\n")[0];
             s = s.substring(s.lastIndexOf('#') + 1);
             parameterHelpDrillDown.setIcon(UIUtils.getIconFromResources("actions/arrow-right.png"));
             parameterHelpDrillDown.setText(s);
-        }
-        else {
+        } else {
             parameterHelpDrillDown.setIcon(UIUtils.getIconFromResources("actions/arrow-right.png"));
             parameterHelpDrillDown.setText("...");
         }
@@ -240,7 +234,7 @@ public class FormPanel extends JXPanel {
                 weightx = 1;
             }
         });
-        if(description != null) {
+        if (description != null) {
             contentPanel.add(description, new GridBagConstraints() {
                 {
                     anchor = GridBagConstraints.WEST;

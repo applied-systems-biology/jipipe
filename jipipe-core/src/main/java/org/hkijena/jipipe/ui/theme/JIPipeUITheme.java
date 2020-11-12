@@ -48,7 +48,7 @@ public enum JIPipeUITheme {
      */
     public void install() {
         UIUtils.DARK_THEME = isDark;
-        switch(this) {
+        switch (this) {
             case Metal:
                 try {
                     UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());

@@ -67,13 +67,13 @@ public class FormPanel extends JXPanel {
     public static final int WITH_INFINITE_SCROLLING = 8;
 
     private final EventBus eventBus = new EventBus();
+    private final boolean isInfiniteScrolling;
     private int numRows = 0;
     private JXPanel contentPanel = new JXPanel();
     private MarkdownReader parameterHelp;
     private JScrollPane scrollPane;
     private JLabel parameterHelpDrillDown = new JLabel();
     private ArrayDeque<FutureComponent> infiniteScrollingQueue = new ArrayDeque<>();
-    private final boolean isInfiniteScrolling;
 
     /**
      * Creates a new instance
@@ -83,7 +83,7 @@ public class FormPanel extends JXPanel {
      */
     public FormPanel(MarkdownDocument document, int flags) {
 
-        if((flags & WITH_INFINITE_SCROLLING) == WITH_INFINITE_SCROLLING)
+        if ((flags & WITH_INFINITE_SCROLLING) == WITH_INFINITE_SCROLLING)
             flags |= WITH_SCROLLING;
         this.isInfiniteScrolling = (flags & WITH_INFINITE_SCROLLING) == WITH_INFINITE_SCROLLING;
 
@@ -189,18 +189,17 @@ public class FormPanel extends JXPanel {
 
     private void updateParameterHelpDrillDown() {
         MarkdownDocument current = parameterHelp.getTemporaryDocument();
-        if(current == null) {
+        if (current == null) {
             parameterHelpDrillDown.setIcon(null);
             parameterHelpDrillDown.setText("");
             return;
         }
-        if(StringUtils.orElse(current.getMarkdown(), "").startsWith("#")) {
+        if (StringUtils.orElse(current.getMarkdown(), "").startsWith("#")) {
             String s = current.getMarkdown().split("\n")[0];
             s = s.substring(s.lastIndexOf('#') + 1);
             parameterHelpDrillDown.setIcon(UIUtils.getIconFromResources("actions/arrow-right.png"));
             parameterHelpDrillDown.setText(s);
-        }
-        else {
+        } else {
             parameterHelpDrillDown.setIcon(UIUtils.getIconFromResources("actions/arrow-right.png"));
             parameterHelpDrillDown.setText("...");
         }
@@ -227,7 +226,7 @@ public class FormPanel extends JXPanel {
                 weightx = 1;
             }
         };
-        if(!isInfiniteScrolling)
+        if (!isInfiniteScrolling)
             contentPanel.add(component, contentPosition);
         else
             infiniteScrollingQueue.add(new FutureComponent(null, null, component, contentPosition, false));
@@ -258,9 +257,9 @@ public class FormPanel extends JXPanel {
                 weightx = 1;
             }
         };
-        if(!isInfiniteScrolling)
+        if (!isInfiniteScrolling)
             contentPanel.add(component, contentPosition);
-        if(description != null) {
+        if (description != null) {
             GridBagConstraints labelPosition = new GridBagConstraints() {
                 {
                     anchor = GridBagConstraints.WEST;
@@ -270,13 +269,12 @@ public class FormPanel extends JXPanel {
                     insets = UI_PADDING;
                 }
             };
-            if(!isInfiniteScrolling)
+            if (!isInfiniteScrolling)
                 contentPanel.add(description, labelPosition);
             else {
                 infiniteScrollingQueue.add(new FutureComponent(description, labelPosition, component, contentPosition, false));
             }
-        }
-        else if(isInfiniteScrolling) {
+        } else if (isInfiniteScrolling) {
             infiniteScrollingQueue.add(new FutureComponent(null, null, component, contentPosition, false));
         }
         ++numRows;
@@ -307,7 +305,7 @@ public class FormPanel extends JXPanel {
                 weightx = 1;
             }
         };
-        if(!isInfiniteScrolling)
+        if (!isInfiniteScrolling)
             contentPanel.add(component, gridBagConstraints);
         else
             infiniteScrollingQueue.add(new FutureComponent(null, null, component, gridBagConstraints, true));
@@ -353,10 +351,9 @@ public class FormPanel extends JXPanel {
      * Removes the last row. Silently fails if there are no rows.
      */
     public void removeLastRow() {
-        if(isInfiniteScrolling && !infiniteScrollingQueue.isEmpty()) {
+        if (isInfiniteScrolling && !infiniteScrollingQueue.isEmpty()) {
             infiniteScrollingQueue.removeLast();
-        }
-        else if (contentPanel.getComponentCount() > 0) {
+        } else if (contentPanel.getComponentCount() > 0) {
             contentPanel.remove(contentPanel.getComponentCount() - 1);
             --numRows;
         }

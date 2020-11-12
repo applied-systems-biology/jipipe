@@ -158,15 +158,14 @@ public class UploadOMEROImageAlgorithm extends JIPipeMergingAlgorithm {
             store.logout();
         } catch (Exception e) {
             throw new RuntimeException(e);
-        }
-        finally {
-            if(store != null)
+        } finally {
+            if (store != null)
                 store.logout();
         }
 
         // Connect annotations
-        if(uploadAnnotations) {
-            try(Gateway gateway = new Gateway(new OMEROToJIPipeLogger(subStatus, algorithmProgress))) {
+        if (uploadAnnotations) {
+            try (Gateway gateway = new Gateway(new OMEROToJIPipeLogger(subStatus, algorithmProgress))) {
                 ExperimenterData user = gateway.connect(credentials);
                 SecurityContext context = new SecurityContext(user.getGroupId());
                 BrowseFacility browseFacility = gateway.getFacility(BrowseFacility.class);

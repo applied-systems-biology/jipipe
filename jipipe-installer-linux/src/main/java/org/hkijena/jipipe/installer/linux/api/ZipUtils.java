@@ -31,7 +31,7 @@ public class ZipUtils {
         while (zipEntry != null) {
             File newFile = newFile(targetDir.toFile(), zipEntry);
             subStatusConsumer.accept(subStatus.resolve(newFile.toString()));
-            if(!Files.isDirectory(newFile.toPath().getParent()))
+            if (!Files.isDirectory(newFile.toPath().getParent()))
                 Files.createDirectories(newFile.toPath().getParent());
             FileOutputStream fos = new FileOutputStream(newFile);
             int len;

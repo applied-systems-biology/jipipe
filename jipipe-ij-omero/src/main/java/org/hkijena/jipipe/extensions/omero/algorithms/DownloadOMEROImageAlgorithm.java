@@ -127,7 +127,7 @@ public class DownloadOMEROImageAlgorithm extends JIPipeSimpleIteratingAlgorithm 
         }
 
         // Workaround bug where OMERO is not added to the list of available locations
-        if(!options.getStringOption(ImporterOptions.KEY_LOCATION).getPossible().contains(ImporterOptions.LOCATION_OMERO)) {
+        if (!options.getStringOption(ImporterOptions.KEY_LOCATION).getPossible().contains(ImporterOptions.LOCATION_OMERO)) {
             options.getStringOption(ImporterOptions.KEY_LOCATION).addPossible(ImporterOptions.LOCATION_OMERO);
         }
 
@@ -168,7 +168,7 @@ public class DownloadOMEROImageAlgorithm extends JIPipeSimpleIteratingAlgorithm 
 
         try {
             ImportProcess process = new ImportProcess(options);
-            algorithmProgress.accept(subProgress.resolve("Downloading image ID=" + imageReferenceData.getImageId() + " from " + lc.getUser().getUsername() + "@" + lc.getServer().getHost() + ":" + lc.getServer().getPort() ));
+            algorithmProgress.accept(subProgress.resolve("Downloading image ID=" + imageReferenceData.getImageId() + " from " + lc.getUser().getUsername() + "@" + lc.getServer().getHost() + ":" + lc.getServer().getPort()));
             if (!process.execute()) {
                 throw new NullPointerException();
             }
@@ -186,20 +186,20 @@ public class DownloadOMEROImageAlgorithm extends JIPipeSimpleIteratingAlgorithm 
             for (ImagePlus image : images) {
                 List<JIPipeAnnotation> traits = new ArrayList<>();
 
-                if(addKeyValuePairsAsAnnotations || tagAnnotation.isEnabled()) {
-                    try(Gateway gateway = new Gateway(new OMEROToJIPipeLogger(subProgress, algorithmProgress))) {
+                if (addKeyValuePairsAsAnnotations || tagAnnotation.isEnabled()) {
+                    try (Gateway gateway = new Gateway(new OMEROToJIPipeLogger(subProgress, algorithmProgress))) {
                         ExperimenterData user = gateway.connect(credentials.getCredentials());
                         SecurityContext context = new SecurityContext(user.getGroupId());
                         BrowseFacility browseFacility = gateway.getFacility(BrowseFacility.class);
                         MetadataFacility metadata = gateway.getFacility(MetadataFacility.class);
 
                         ImageData imageData = browseFacility.getImage(context, imageReferenceData.getImageId());
-                        if(addKeyValuePairsAsAnnotations) {
+                        if (addKeyValuePairsAsAnnotations) {
                             for (Map.Entry<String, String> entry : OMEROUtils.getKeyValuePairAnnotations(metadata, context, imageData).entrySet()) {
                                 traits.add(new JIPipeAnnotation(entry.getKey(), entry.getValue()));
                             }
                         }
-                        if(tagAnnotation.isEnabled()) {
+                        if (tagAnnotation.isEnabled()) {
                             List<String> sortedTags = OMEROUtils.getTagAnnotations(metadata, context, imageData).stream().sorted().collect(Collectors.toList());
                             traits.add(new JIPipeAnnotation(tagAnnotation.getContent(), JsonUtils.toJsonString(sortedTags)));
                         }

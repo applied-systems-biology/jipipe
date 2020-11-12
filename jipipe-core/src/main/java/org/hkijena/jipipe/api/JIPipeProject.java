@@ -60,8 +60,6 @@ import org.hkijena.jipipe.utils.StringUtils;
 import java.awt.Point;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -449,6 +447,7 @@ public class JIPipeProject implements JIPipeValidatable {
     /**
      * Returns a list of all nodes that cannot be executed or are deactivated by the user.
      * This method works on transitive deactivation (e.g. a dependency is deactivated).
+     *
      * @return list of deactivated nodes
      */
     public Set<JIPipeGraphNode> getDeactivatedAlgorithms() {
@@ -457,13 +456,15 @@ public class JIPipeProject implements JIPipeValidatable {
 
     /**
      * Returns all nodes that have at least one connected algorithm that uses its generated data.
+     *
      * @return Intermediate nodes
      */
     public Set<JIPipeGraphNode> getIntermediateAlgorithms() {
         Set<JIPipeGraphNode> result = new HashSet<>();
-        outer: for (JIPipeGraphNode node : graph.getNodes().values()) {
+        outer:
+        for (JIPipeGraphNode node : graph.getNodes().values()) {
             for (JIPipeDataSlot outputSlot : node.getOutputSlots()) {
-                if(graph.getTargetSlots(outputSlot).isEmpty()) {
+                if (graph.getTargetSlots(outputSlot).isEmpty()) {
                     continue outer;
                 }
             }
@@ -475,21 +476,23 @@ public class JIPipeProject implements JIPipeValidatable {
     /**
      * Returns a list of all nodes that generate heavy data ({@link JIPipeHeavyData}) and are intermediate (see getIntermediateAlgorithms()).
      * Skips all nodes that do not save outputs.
+     *
      * @return intermediate nodes with heavy data
      */
     public Set<JIPipeGraphNode> getHeavyIntermediateAlgorithms() {
         Set<JIPipeGraphNode> result = new HashSet<>();
-        outer: for (JIPipeGraphNode node : graph.getNodes().values()) {
-            if(node instanceof JIPipeAlgorithm && !((JIPipeAlgorithm) node).isSaveOutputs())
+        outer:
+        for (JIPipeGraphNode node : graph.getNodes().values()) {
+            if (node instanceof JIPipeAlgorithm && !((JIPipeAlgorithm) node).isSaveOutputs())
                 continue;
             boolean heavy = false;
             for (JIPipeDataSlot outputSlot : node.getOutputSlots()) {
                 heavy |= JIPipeData.isHeavy(outputSlot.getAcceptedDataType());
-                if(graph.getTargetSlots(outputSlot).isEmpty()) {
+                if (graph.getTargetSlots(outputSlot).isEmpty()) {
                     continue outer;
                 }
             }
-            if(heavy)
+            if (heavy)
                 result.add(node);
         }
         return result;

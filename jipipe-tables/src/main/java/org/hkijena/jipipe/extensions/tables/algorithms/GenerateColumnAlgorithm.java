@@ -85,13 +85,13 @@ public class GenerateColumnAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             variableSet.set("num_cols", table.getColumnCount());
             for (int row = 0; row < table.getRowCount(); row++) {
                 for (int col = 0; col < table.getColumnCount(); col++) {
-                    if(col != columnId) {
+                    if (col != columnId) {
                         variableSet.set(table.getColumnName(col), table.getValueAt(row, col));
                     }
                 }
                 variableSet.set("row", row);
                 Object value = entry.getKey().evaluate(variableSet);
-                if(!(value instanceof Number) && !(value instanceof String))
+                if (!(value instanceof Number) && !(value instanceof String))
                     value = "" + value;
                 table.setValueAt(value, row, columnId);
             }

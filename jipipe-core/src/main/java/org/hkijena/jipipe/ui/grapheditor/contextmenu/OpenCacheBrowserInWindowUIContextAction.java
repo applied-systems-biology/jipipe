@@ -37,7 +37,7 @@ public class OpenCacheBrowserInWindowUIContextAction implements NodeUIContextAct
             frame.setContentPane(browserUI);
             frame.setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
             frame.pack();
-            frame.setSize(640,480);
+            frame.setSize(640, 480);
             frame.setLocationRelativeTo(null);
             frame.setVisible(true);
         }

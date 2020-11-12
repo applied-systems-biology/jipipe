@@ -121,8 +121,7 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
             dataBatch.addGlobalAnnotations(parameterAnnotations, dataBatchGenerationSettings.annotationMergeStrategy);
             runIteration(dataBatch, slotProgress, algorithmProgress, isCancelled);
             return;
-        }
-        else if(getEffectiveInputSlotCount() == 1) {
+        } else if (getEffectiveInputSlotCount() == 1) {
             dataBatches = new ArrayList<>();
             for (int row = 0; row < getFirstInputSlot().getRowCount(); row++) {
                 JIPipeDataBatch dataBatch = new JIPipeDataBatch(this);
@@ -130,18 +129,16 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
                 dataBatch.addGlobalAnnotations(getFirstInputSlot().getAnnotations(row), dataBatchGenerationSettings.annotationMergeStrategy);
                 dataBatches.add(dataBatch);
             }
-        }
-        else {
+        } else {
             // First generate merging data batches
             List<JIPipeMergingDataBatch> mergingDataBatches = generateDataBatchesDryRun(getNonParameterInputSlots());
 
             // Check for incomplete batches
-            if(dataBatchGenerationSettings.skipIncompleteDataSets) {
+            if (dataBatchGenerationSettings.skipIncompleteDataSets) {
                 mergingDataBatches.removeIf(JIPipeMergingDataBatch::isIncomplete);
-            }
-            else {
+            } else {
                 for (JIPipeMergingDataBatch batch : mergingDataBatches) {
-                    if(batch.isIncomplete()) {
+                    if (batch.isIncomplete()) {
                         throw new UserFriendlyRuntimeException("Incomplete data set found!",
                                 "An incomplete data set was found!",
                                 "Algorithm '" + getName() + "'",
@@ -156,7 +153,7 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
             dataBatches = JIPipeMergingDataBatchBuilder.convertMergingToSingleDataBatches(mergingDataBatches);
         }
 
-        if(dataBatches == null) {
+        if (dataBatches == null) {
             throw new UserFriendlyRuntimeException("Unable to split data into batches!",
                     "Unable to split data into batches!",
                     "Algorithm '" + getName() + "'",

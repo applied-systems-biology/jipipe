@@ -19,22 +19,15 @@ import ij.process.FloatProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
-import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeIteratingAlgorithm;
-import org.hkijena.jipipe.api.nodes.JIPipeMergingAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.greyscale.ImagePlus2DGreyscale32FData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
-import org.hkijena.jipipe.extensions.parameters.matrix.Matrix2DFloat;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -83,11 +76,11 @@ public class ConvolveByImage2DAlgorithm extends JIPipeIteratingAlgorithm {
         float[] kernel = new float[processor.getWidth() * processor.getHeight()];
         for (int row = 0; row < processor.getHeight(); row++) {
             for (int col = 0; col < processor.getWidth(); col++) {
-                kernel[row *processor.getWidth() + col] = processor.getf(col, row);
+                kernel[row * processor.getWidth() + col] = processor.getf(col, row);
             }
         }
 
-        ImageJUtils.forEachSlice(img, imp -> convolver.convolve(imp, kernel, imgKernel.getWidth(),imgKernel.getHeight()));
+        ImageJUtils.forEachSlice(img, imp -> convolver.convolve(imp, kernel, imgKernel.getWidth(), imgKernel.getHeight()));
 
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(img));
     }

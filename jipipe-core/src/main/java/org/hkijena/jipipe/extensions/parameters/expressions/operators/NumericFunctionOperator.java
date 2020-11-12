@@ -29,21 +29,21 @@ public abstract class NumericFunctionOperator extends ExpressionOperator {
         Object o2 = operands.next();
         double left;
         double right;
-        if(o1 instanceof Number)
-            left = ((Number)o1).doubleValue();
-        else if(o1 instanceof String)
-            left = Double.parseDouble((String)o1);
-        else if(o1 instanceof Boolean)
-            left = (boolean)o1 ? 1 : 0;
+        if (o1 instanceof Number)
+            left = ((Number) o1).doubleValue();
+        else if (o1 instanceof String)
+            left = Double.parseDouble((String) o1);
+        else if (o1 instanceof Boolean)
+            left = (boolean) o1 ? 1 : 0;
         else
             throw new UnsupportedOperationException("Cannot convert " + o1.getClass() + " to a number!");
 
-        if(o2 instanceof Number)
-            right = ((Number)o2).doubleValue();
-        else if(o2 instanceof String)
-            right = Double.parseDouble((String)o2);
-        else if(o2 instanceof Boolean)
-            right = (boolean)o2 ? 1 : 0;
+        if (o2 instanceof Number)
+            right = ((Number) o2).doubleValue();
+        else if (o2 instanceof String)
+            right = Double.parseDouble((String) o2);
+        else if (o2 instanceof Boolean)
+            right = (boolean) o2 ? 1 : 0;
         else
             throw new UnsupportedOperationException("Cannot convert " + o2.getClass() + " to a number!");
         return evaluate(left, right);

@@ -28,13 +28,11 @@ public class OpenInImageJDataDisplay implements JIPipeDataDisplayOperation {
     @Override
     public void display(JIPipeData data, String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
         ImagePlus image;
-        if(data instanceof ImagePlusData) {
+        if (data instanceof ImagePlusData) {
             image = ((ImagePlusData) data).getDuplicateImage();
-        }
-        else if(data instanceof OMEImageData) {
+        } else if (data instanceof OMEImageData) {
             image = ((OMEImageData) data).getDuplicateImage();
-        }
-        else {
+        } else {
             throw new UnsupportedOperationException();
         }
         image.setTitle(displayName);

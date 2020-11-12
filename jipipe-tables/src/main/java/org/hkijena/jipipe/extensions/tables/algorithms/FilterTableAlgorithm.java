@@ -76,7 +76,7 @@ public class FilterTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             for (int col = 0; col < input.getColumnCount(); col++) {
                 variableSet.set(input.getColumnName(col), input.getValueAt(row, col));
             }
-            if(filters.test(variableSet)) {
+            if (filters.test(variableSet)) {
                 selectedRows.add(row);
             }
         }

@@ -398,21 +398,22 @@ public class JIPipeDataSlot implements TableModel {
     }
 
     /**
-     * Gets the storage path of a data row from a result. This is not used during project creation.
-     * @param index row index
-     * @return path where the row's data is stored
-     */
-    public Path getRowStoragePath(int index) {
-        return storagePath.resolve("" + index);
-    }
-
-    /**
      * Sets storage path that is used during running the algorithm for saving the results
      *
      * @param storagePath Data storage paths
      */
     public void setStoragePath(Path storagePath) {
         this.storagePath = storagePath;
+    }
+
+    /**
+     * Gets the storage path of a data row from a result. This is not used during project creation.
+     *
+     * @param index row index
+     * @return path where the row's data is stored
+     */
+    public Path getRowStoragePath(int index) {
+        return storagePath.resolve("" + index);
     }
 
     /**

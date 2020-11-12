@@ -51,7 +51,7 @@ public class RealTimeProjectRunner extends JIPipeProjectWorkbenchPanel {
         runtimeSettings.getEventBus().register(new Object() {
             @Subscribe
             public void onParameterChanged(ParameterChangedEvent event) {
-                if("real-time-run-enabled".equals(event.getKey()) && runtimeSettings.isRealTimeRunEnabled()) {
+                if ("real-time-run-enabled".equals(event.getKey()) && runtimeSettings.isRealTimeRunEnabled()) {
                     scheduleRun();
                 }
             }
@@ -63,7 +63,7 @@ public class RealTimeProjectRunner extends JIPipeProjectWorkbenchPanel {
         button.setSelected(runtimeSettings.isRealTimeRunEnabled());
         button.setToolTipText("Enable/disable real-time update. If enabled, any changes to the graph or parameters trigger a cache update.");
         button.addActionListener(e -> {
-            if(button.isSelected() != runtimeSettings.isRealTimeRunEnabled()) {
+            if (button.isSelected() != runtimeSettings.isRealTimeRunEnabled()) {
                 runtimeSettings.setRealTimeRunEnabled(button.isSelected());
                 runtimeSettings.getEventBus().post(new ParameterChangedEvent(runtimeSettings, "real-time-run-enabled"));
             }
@@ -90,24 +90,24 @@ public class RealTimeProjectRunner extends JIPipeProjectWorkbenchPanel {
 
     @Subscribe
     public void onParameterChanged(ParameterChangedEvent event) {
-        if("jipipe:node:name".equals(event.getKey()) || "jipipe:node:description".equals(event.getKey()))
+        if ("jipipe:node:name".equals(event.getKey()) || "jipipe:node:description".equals(event.getKey()))
             return;
         scheduleRunTimer();
     }
 
     private void scheduleRunTimer() {
-        if(!runtimeSettings.isRealTimeRunEnabled()) {
+        if (!runtimeSettings.isRealTimeRunEnabled()) {
             return;
         }
         timer.restart();
     }
 
     public void scheduleRun() {
-        if(!runtimeSettings.isRealTimeRunEnabled()) {
+        if (!runtimeSettings.isRealTimeRunEnabled()) {
             return;
         }
         getProject().getCache().autoClean(true, true);
-        if(currentRun != null)
+        if (currentRun != null)
             JIPipeRunnerQueue.getInstance().cancel(currentRun);
         currentRun = null;
         JIPipeRunSettings settings = new JIPipeRunSettings();
@@ -122,8 +122,8 @@ public class RealTimeProjectRunner extends JIPipeProjectWorkbenchPanel {
 
     @Subscribe
     public void onRunStarted(RunUIWorkerStartedEvent event) {
-        if(event.getRun() == currentRun) {
-            if(!runtimeSettings.isRealTimeRunEnabled()) {
+        if (event.getRun() == currentRun) {
+            if (!runtimeSettings.isRealTimeRunEnabled()) {
                 return;
             }
             getProject().getCache().autoClean(true, true);
@@ -132,14 +132,14 @@ public class RealTimeProjectRunner extends JIPipeProjectWorkbenchPanel {
 
     @Subscribe
     public void onRunFinished(RunUIWorkerFinishedEvent event) {
-        if(event.getRun() == currentRun) {
+        if (event.getRun() == currentRun) {
             getWorkbench().sendStatusBarText("Real-time: Update finished");
         }
     }
 
     @Subscribe
     public void onRunCancelled(RunUIWorkerInterruptedEvent event) {
-        if(event.getRun() == currentRun) {
+        if (event.getRun() == currentRun) {
             getWorkbench().sendStatusBarText("Real-time: Update failed");
         }
     }

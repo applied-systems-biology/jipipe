@@ -67,7 +67,7 @@ public class PasswordParameter {
         @Override
         public PasswordParameter deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
             JsonNode node = jsonParser.readValueAsTree();
-            if(node.isNull())
+            if (node.isNull())
                 return new PasswordParameter();
             else {
                 String encoded = node.asText();

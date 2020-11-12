@@ -93,7 +93,7 @@ public class JIPipeJsonExtensionWindow extends JFrame {
         super.setTitle("JIPipe extension builder");
         setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
         UIUtils.setToAskOnClose(this, "Do you really want to close this JIPipe extension builder?", "Close window");
-        if(GeneralUISettings.getInstance().isMaximizeWindows()) {
+        if (GeneralUISettings.getInstance().isMaximizeWindows()) {
             SwingUtilities.invokeLater(() -> setExtendedState(getExtendedState() | MAXIMIZED_BOTH));
         }
     }

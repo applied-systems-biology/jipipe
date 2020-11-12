@@ -216,7 +216,7 @@ public abstract class JIPipeAlgorithm extends JIPipeGraphNode {
         @Override
         public void serialize(JIPipeGraphNode algorithm, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
             Map<String, String> sources = new HashMap<>();
-            if(algorithm.getGraph() != null) {
+            if (algorithm.getGraph() != null) {
                 for (JIPipeDataSlot inputSlot : algorithm.getInputSlots()) {
                     JIPipeDataSlot sourceSlot = algorithm.getGraph().getSourceSlot(inputSlot);
                     if (sourceSlot != null) {

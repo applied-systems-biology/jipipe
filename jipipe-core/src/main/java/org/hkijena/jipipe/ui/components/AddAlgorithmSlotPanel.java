@@ -213,7 +213,7 @@ public class AddAlgorithmSlotPanel extends JPanel {
             return;
 
         String slotName = nameEditor.getText().trim();
-        if(!JIPipeDataSlotInfo.isValidName(slotName)) {
+        if (!JIPipeDataSlotInfo.isValidName(slotName)) {
             JOptionPane.showMessageDialog(this, "The name '" + slotName + "' is not a valid slot name. It can only contain alphanumeric characters and following characters: . _ , #");
             return;
         }
@@ -303,10 +303,9 @@ public class AddAlgorithmSlotPanel extends JPanel {
     }
 
     private List<JIPipeDataInfo> getFilteredAndSortedInfos() {
-        if(searchField.getSearchStrings() == null || searchField.getSearchStrings().length == 0) {
+        if (searchField.getSearchStrings() == null || searchField.getSearchStrings().length == 0) {
             return availableTypes.stream().sorted(Comparator.naturalOrder()).collect(Collectors.toList());
-        }
-        else {
+        } else {
             Predicate<JIPipeDataInfo> filterFunction = info -> searchField.test(info.getName());
             return availableTypes.stream().filter(filterFunction).sorted(Comparator.comparing((JIPipeDataInfo di) -> di.getName().length()).thenComparing(Comparator.naturalOrder())).collect(Collectors.toList());
         }

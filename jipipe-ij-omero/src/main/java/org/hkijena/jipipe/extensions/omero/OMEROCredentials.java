@@ -77,6 +77,7 @@ public class OMEROCredentials implements JIPipeParameterCollection {
 
     /**
      * Converts the credentials into a SciJava OMERO location
+     *
      * @return the location
      */
     public LoginCredentials getCredentials() {

@@ -37,12 +37,12 @@ import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-public class InstallerRun implements JIPipeRunnable{
+public class InstallerRun implements JIPipeRunnable {
     public static final URL FIJI_DOWNLOAD_URL;
     public static final String[] FIJI_UPDATE_SITES = {
             "clij", "clij2", "IJPB-plugins", "ImageScience", "IJ-OpenCV-plugins", "Multi-Template-Matching"
     };
-    public static final String[] JIPIPE_DEPENDENCY_URLS = new String[] {
+    public static final String[] JIPIPE_DEPENDENCY_URLS = new String[]{
             "https://maven.scijava.org/service/local/repositories/central/content/com/github/vatbub/mslinks/1.0.5/mslinks-1.0.5.jar",
             "https://maven.scijava.org/service/local/repositories/central/content/org/reflections/reflections/0.9.12/reflections-0.9.12.jar",
             "https://maven.scijava.org/service/local/repositories/central/content/com/vladsch/flexmark/flexmark-util/0.62.2/flexmark-util-0.62.2.jar",
@@ -86,9 +86,9 @@ public class InstallerRun implements JIPipeRunnable{
         }
     }
 
+    private final int maxProgress = 7;
     private Path installationPath;
     private boolean createLauncher = true;
-    private final int maxProgress = 7;
     private int progress = 0;
     private StringBuilder log = new StringBuilder();
 
@@ -98,7 +98,7 @@ public class InstallerRun implements JIPipeRunnable{
 
     private void setInitialInstallationPath() {
         String dataHome = System.getenv().getOrDefault("XDG_DATA_HOME", null);
-        if(StringUtils.isNullOrEmpty(dataHome)) {
+        if (StringUtils.isNullOrEmpty(dataHome)) {
             dataHome = System.getProperty("user.home") + "/.local/share/";
         }
         installationPath = Paths.get(dataHome).resolve("JIPipe-installer");
@@ -127,18 +127,17 @@ public class InstallerRun implements JIPipeRunnable{
             onProgress.accept(new JIPipeRunnerStatus(progress, maxProgress, sub.toString()));
         };
         createInstallationDirectory(new JIPipeRunnerSubStatus("Creating installation directory"), subStatusConsumer);
-        if(!Files.isDirectory(installationPath.resolve("Fiji.app"))) {
+        if (!Files.isDirectory(installationPath.resolve("Fiji.app"))) {
             downloadFiji(new JIPipeRunnerSubStatus("Downloading Fiji"), subStatusConsumer);
             extractFiji(new JIPipeRunnerSubStatus("Extracting Fiji"), subStatusConsumer);
-        }
-        else {
+        } else {
             subStatusConsumer.accept(new JIPipeRunnerSubStatus("Fiji.app already exists. Skipping download and extraction."));
             progress += 2;
         }
         installJIPipeDependencies(new JIPipeRunnerSubStatus("Installing dependencies"), subStatusConsumer);
         installJIPipe(new JIPipeRunnerSubStatus("Installing JIPipe"), subStatusConsumer);
         installImageJDependencies(new JIPipeRunnerSubStatus("Installing ImageJ dependencies"), subStatusConsumer);
-        if(createLauncher)
+        if (createLauncher)
             createLaunchers(new JIPipeRunnerSubStatus("Create launchers"), subStatusConsumer);
         else {
             progress += 1;
@@ -261,7 +260,7 @@ public class InstallerRun implements JIPipeRunnable{
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        if(executor.isFailure(result)) {
+        if (executor.isFailure(result)) {
             throw new RuntimeException("Installation failed.");
         }
         ++progress;
@@ -269,11 +268,11 @@ public class InstallerRun implements JIPipeRunnable{
     }
 
     private void installJIPipe(JIPipeRunnerSubStatus subStatus, Consumer<JIPipeRunnerSubStatus> subStatusConsumer) {
-        if(Files.isDirectory(Paths.get("jipipe-bin"))) {
+        if (Files.isDirectory(Paths.get("jipipe-bin"))) {
             try {
                 Files.list(Paths.get("jipipe-bin")).forEach(sourcePath -> {
                     Path targetPath = installationPath.resolve("Fiji.app").resolve("plugins").resolve(sourcePath.getFileName());
-                    if(!Files.exists(targetPath)) {
+                    if (!Files.exists(targetPath)) {
                         subStatusConsumer.accept(subStatus.resolve("Installing " + targetPath.getFileName()));
                         try {
                             Files.copy(sourcePath, targetPath);
@@ -294,7 +293,7 @@ public class InstallerRun implements JIPipeRunnable{
         for (String dependencyUrl : JIPIPE_DEPENDENCY_URLS) {
             String fileName = dependencyUrl.substring(dependencyUrl.lastIndexOf('/') + 1);
             Path targetFile = installationPath.resolve("Fiji.app").resolve("jars").resolve(fileName);
-            if(!Files.isRegularFile(targetFile)) {
+            if (!Files.isRegularFile(targetFile)) {
                 try {
                     String[] lastMessage = new String[]{""};
                     WebUtils.download(new URL(dependencyUrl), targetFile, total -> {
@@ -347,7 +346,7 @@ public class InstallerRun implements JIPipeRunnable{
     }
 
     private void createInstallationDirectory(JIPipeRunnerSubStatus subStatus, Consumer<JIPipeRunnerSubStatus> subStatusConsumer) {
-        if(!Files.isDirectory(installationPath)) {
+        if (!Files.isDirectory(installationPath)) {
             try {
                 Files.createDirectories(installationPath);
             } catch (IOException e) {

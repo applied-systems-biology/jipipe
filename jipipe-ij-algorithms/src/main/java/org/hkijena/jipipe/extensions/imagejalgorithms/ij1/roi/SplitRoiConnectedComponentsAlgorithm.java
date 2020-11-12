@@ -40,23 +40,14 @@ import org.jgrapht.Graphs;
 import org.jgrapht.alg.connectivity.ConnectivityInspector;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.DefaultUndirectedGraph;
-import org.jgrapht.nio.Attribute;
-import org.jgrapht.nio.AttributeType;
-import org.jgrapht.nio.DefaultAttribute;
-import org.jgrapht.nio.dot.DOTExporter;
 
-import java.io.File;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 @JIPipeDocumentation(name = "Split into connected components", description = "Algorithm that extracts connected components across one or multiple dimensions. The output consists of multiple ROI lists, one for each connected component.")
 @JIPipeOrganization(menuPath = "Split", nodeTypeCategory = RoiNodeTypeCategory.class)
@@ -64,8 +55,8 @@ import java.util.stream.Collectors;
 @JIPipeOutputSlot(value = ROIListData.class, slotName = "Components")
 public class SplitRoiConnectedComponentsAlgorithm extends ImageRoiProcessorAlgorithm {
     public static final String DIMENSION_OPERATION_DESCRIPTION = "There are three different modes: <ul><li>Followed dimensions will be tracked</li>" +
-        "<li>ROI can be split across a dimension. The components are then generated per plane in this dimension.</li>" +
-        "<li>Merging is the opposite of splitting: If a dimension is merged, it will be collapsed during the calculation, meaning that all associated ROI will be put together</li></ul>";
+            "<li>ROI can be split across a dimension. The components are then generated per plane in this dimension.</li>" +
+            "<li>Merging is the opposite of splitting: If a dimension is merged, it will be collapsed during the calculation, meaning that all associated ROI will be put together</li></ul>";
     private DimensionOperation dimensionZOperation = DimensionOperation.Split;
     private DimensionOperation dimensionCOperation = DimensionOperation.Merge;
     private DimensionOperation dimensionTOperation = DimensionOperation.Follow;
@@ -109,10 +100,10 @@ public class SplitRoiConnectedComponentsAlgorithm extends ImageRoiProcessorAlgor
         StaticVariableSet<Object> variableSet = new StaticVariableSet<>();
         ResultsTableData measurements = null;
         ImagePlus referenceImage = null;
-        if(withFiltering) {
+        if (withFiltering) {
             // Generate measurements
             Map<ImagePlusData, ROIListData> referenceImages = getReferenceImage(dataBatch, subProgress, algorithmProgress, isCancelled);
-            if(referenceImages.size() != 1) {
+            if (referenceImages.size() != 1) {
                 throw new UserFriendlyRuntimeException("Require unique reference image!",
                         "Algorithm " + getName(),
                         "Different reference images!",
@@ -134,19 +125,19 @@ public class SplitRoiConnectedComponentsAlgorithm extends ImageRoiProcessorAlgor
                 int c2 = roi2.getCPosition();
                 int t2 = roi2.getTPosition();
 
-                if(!canTestOverlap(z1, z2, dimensionZOperation))
+                if (!canTestOverlap(z1, z2, dimensionZOperation))
                     continue;
-                if(!canTestOverlap(c1, c2, dimensionCOperation))
+                if (!canTestOverlap(c1, c2, dimensionCOperation))
                     continue;
-                if(!canTestOverlap(t1, t2, dimensionTOperation))
+                if (!canTestOverlap(t1, t2, dimensionTOperation))
                     continue;
 
                 // Calculate overlap
                 Roi overlap = calculateOverlap(temp, roi1, roi2);
-                if(overlap != null) {
-                    if(withFiltering) {
+                if (overlap != null) {
+                    if (withFiltering) {
                         putMeasurementsIntoVariable(measurements, i, j, referenceImage, variableSet, overlap, temp);
-                        if(!overlapFilter.test(variableSet))
+                        if (!overlapFilter.test(variableSet))
                             continue;
                     }
                     graph.addEdge(i, j);
@@ -162,20 +153,20 @@ public class SplitRoiConnectedComponentsAlgorithm extends ImageRoiProcessorAlgor
 //        });
 //        dotExporter.exportGraph(graph, new File("graph.dot"));
 
-        if(splitAtJunctions) {
+        if (splitAtJunctions) {
             Comparator<Integer> comparator = null;
-            if(trySolveJunctions) {
+            if (trySolveJunctions) {
                 if (dimensionZOperation == DimensionOperation.Follow) {
                     comparator = Comparator.comparing(i -> input.get(i).getZPosition());
                 }
                 if (dimensionCOperation == DimensionOperation.Follow) {
-                    if(comparator == null)
+                    if (comparator == null)
                         comparator = Comparator.comparing(i -> input.get(i).getCPosition());
                     else
                         comparator = comparator.thenComparing(i -> input.get(i).getCPosition());
                 }
                 if (dimensionTOperation == DimensionOperation.Follow) {
-                    if(comparator == null)
+                    if (comparator == null)
                         comparator = Comparator.comparing(i -> input.get(i).getTPosition());
                     else
                         comparator = comparator.thenComparing(i -> input.get(i).getTPosition());
@@ -184,10 +175,10 @@ public class SplitRoiConnectedComponentsAlgorithm extends ImageRoiProcessorAlgor
             for (int roi : graph.vertexSet()) {
                 int degree = graph.degreeOf(roi);
                 // No issue here
-                if(degree <= 2)
+                if (degree <= 2)
                     continue;
 
-                if(trySolveJunctions && comparator != null) {
+                if (trySolveJunctions && comparator != null) {
                     List<Integer> neighbors = Graphs.neighborListOf(graph, roi);
                     neighbors.sort(comparator);
                     for (int i = 2; i < neighbors.size(); i++) {
@@ -196,7 +187,7 @@ public class SplitRoiConnectedComponentsAlgorithm extends ImageRoiProcessorAlgor
                 }
 
                 // No solution found: Decompose
-                if(graph.degreeOf(roi) > 2)
+                if (graph.degreeOf(roi) > 2)
                     graph.removeAllEdges(ImmutableList.copyOf(graph.edgesOf(roi)));
             }
         }
@@ -208,10 +199,9 @@ public class SplitRoiConnectedComponentsAlgorithm extends ImageRoiProcessorAlgor
             for (Integer index : set) {
                 rois.add(input.get(index));
             }
-            if(componentNameAnnotation.isEnabled()) {
+            if (componentNameAnnotation.isEnabled()) {
                 dataBatch.addOutputData(getFirstOutputSlot(), rois, Collections.singletonList(new JIPipeAnnotation(componentNameAnnotation.getContent(), outputIndex + "")));
-            }
-            else {
+            } else {
                 dataBatch.addOutputData(getFirstOutputSlot(), rois);
             }
             ++outputIndex;
@@ -234,21 +224,18 @@ public class SplitRoiConnectedComponentsAlgorithm extends ImageRoiProcessorAlgor
     }
 
     private boolean canTestOverlap(int x1, int x2, DimensionOperation operation) {
-        if(x1 > 0 && x2 > 0) {
+        if (x1 > 0 && x2 > 0) {
             // If split, they should be the same
             // If follow their distance should be 1
             // Otherwise don't care
-            if(operation == DimensionOperation.Split) {
+            if (operation == DimensionOperation.Split) {
                 return x1 == x2;
-            }
-            else if(operation == DimensionOperation.Follow) {
+            } else if (operation == DimensionOperation.Follow) {
                 return (x2 - x1) == 1;
-            }
-            else {
+            } else {
                 return true;
             }
-        }
-        else {
+        } else {
             // Undefined, so don't care
             return true;
         }
@@ -259,9 +246,9 @@ public class SplitRoiConnectedComponentsAlgorithm extends ImageRoiProcessorAlgor
         temp.add(roi1);
         temp.add(roi2);
         temp.logicalAnd();
-        if(!temp.isEmpty()) {
+        if (!temp.isEmpty()) {
             Roi roi = temp.get(0);
-            if(roi.getBounds().isEmpty())
+            if (roi.getBounds().isEmpty())
                 return null;
             return roi;
         }

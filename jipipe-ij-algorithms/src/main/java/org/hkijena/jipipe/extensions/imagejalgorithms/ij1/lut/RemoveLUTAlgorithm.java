@@ -54,7 +54,7 @@ public class RemoveLUTAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         if (duplicateImage)
             data = (ImagePlusData) data.duplicate();
         ImagePlus image = data.getImage();
-        if(applyToAllPlanes && image.isStack()) {
+        if (applyToAllPlanes && image.isStack()) {
             SliceIndex original = new SliceIndex(image.getZ(), image.getC(), image.getT());
             for (int z = 0; z < image.getNSlices(); z++) {
                 for (int c = 0; c < image.getNChannels(); c++) {
@@ -65,8 +65,7 @@ public class RemoveLUTAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                 }
             }
             image.setPosition(original.getC(), original.getZ(), original.getT());
-        }
-        else {
+        } else {
             image.getProcessor().setLut(null);
         }
         dataBatch.addOutputData(getFirstOutputSlot(), data);

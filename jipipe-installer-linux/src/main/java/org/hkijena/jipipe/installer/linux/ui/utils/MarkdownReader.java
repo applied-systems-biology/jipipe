@@ -56,13 +56,14 @@ public class MarkdownReader extends JPanel {
     private MarkdownDocument temporaryDocument;
 
     /**
+     *
      */
     public MarkdownReader() {
         initialize();
     }
 
     /**
-     * @param document    initialize with document
+     * @param document initialize with document
      */
     public MarkdownReader(MarkdownDocument document) {
         this();

@@ -167,7 +167,7 @@ public class JIPipeAlgorithmCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
      */
     @Subscribe
     public void onCacheUpdated(JIPipeProjectCache.ModifiedEvent event) {
-        if(!isDisplayable())
+        if (!isDisplayable())
             return;
         if (JIPipeRunnerQueue.getInstance().getCurrentRun() == null) {
             tree.refreshTree();
@@ -177,7 +177,7 @@ public class JIPipeAlgorithmCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
 
     @Subscribe
     public void onWorkerFinished(RunUIWorkerFinishedEvent event) {
-        if(!isDisplayable())
+        if (!isDisplayable())
             return;
         tree.refreshTree();
         showAllDataSlots();
@@ -185,7 +185,7 @@ public class JIPipeAlgorithmCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
 
     @Subscribe
     public void onWorkerInterrupted(RunUIWorkerInterruptedEvent event) {
-        if(!isDisplayable())
+        if (!isDisplayable())
             return;
         tree.refreshTree();
         showAllDataSlots();

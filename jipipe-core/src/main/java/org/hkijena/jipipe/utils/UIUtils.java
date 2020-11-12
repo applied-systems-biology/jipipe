@@ -67,7 +67,6 @@ import java.util.stream.Collectors;
  */
 public class UIUtils {
 
-    public static boolean DARK_THEME = false;
     public static final FileNameExtensionFilter EXTENSION_FILTER_CSV = new FileNameExtensionFilter("CSV table (*.csv)", "csv");
     public static final FileNameExtensionFilter EXTENSION_FILTER_PNG = new FileNameExtensionFilter("PNG image (*.png)", "png");
     public static final FileNameExtensionFilter EXTENSION_FILTER_SVG = new FileNameExtensionFilter("SVG image (*.svg)", "svg");
@@ -78,9 +77,9 @@ public class UIUtils {
     public static final FileNameExtensionFilter EXTENSION_FILTER_JIP = new FileNameExtensionFilter("JIPipe project (*.jip)", "jip");
     public static final FileNameExtensionFilter EXTENSION_FILTER_JIPE = new FileNameExtensionFilter("JIPipe extension (*.jipe)", "jipe");
     public static final FileNameExtensionFilter EXTENSION_FILTER_JIPC = new FileNameExtensionFilter("JIPipe compartment (*.jipc)", "jipc");
-
     public static final Insets UI_PADDING = new Insets(4, 4, 4, 4);
     public static final Map<String, ImageIcon> ICON_FROM_RESOURCES_CACHE = new HashMap<>();
+    public static boolean DARK_THEME = false;
 
     /**
      * Attempts to override the look & feel based on the JIPipe settings
@@ -91,7 +90,7 @@ public class UIUtils {
     }
 
     public static void applyThemeToCodeEditor(RSyntaxTextArea textArea) {
-        if(DARK_THEME) {
+        if (DARK_THEME) {
             try {
                 Theme theme = Theme.load(ResourceUtils.class.getResourceAsStream(
                         "/org/fife/ui/rsyntaxtextarea/themes/dark.xml"));
@@ -105,28 +104,27 @@ public class UIUtils {
     public static JIPipeUITheme getThemeFromRawSettings() {
         Path propertyFile = JIPipeSettingsRegistry.getPropertyFile();
         JIPipeUITheme theme = JIPipeUITheme.ModernLight;
-        if(Files.exists(propertyFile)){
-             try {
-                 JsonNode node = JsonUtils.getObjectMapper().readValue(propertyFile.toFile(), JsonNode.class);
-                 JsonNode themeNode = node.path("general-ui/theme");
-                 if (!themeNode.isMissingNode())
-                     theme = JsonUtils.getObjectMapper().readerFor(JIPipeUITheme.class).readValue(themeNode);
-             } catch (Exception e) {
-                 e.printStackTrace();
-             }
-         }
+        if (Files.exists(propertyFile)) {
+            try {
+                JsonNode node = JsonUtils.getObjectMapper().readValue(propertyFile.toFile(), JsonNode.class);
+                JsonNode themeNode = node.path("general-ui/theme");
+                if (!themeNode.isMissingNode())
+                    theme = JsonUtils.getObjectMapper().readerFor(JIPipeUITheme.class).readValue(themeNode);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
         return theme;
     }
 
     public static BufferedImage getExtensionBuilderLogo400() {
-        if(DARK_THEME) {
+        if (DARK_THEME) {
             try {
                 return ImageIO.read(ResourceUtils.getPluginResource("logo-extension-builder-400-dark.png"));
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-        }
-        else {
+        } else {
             try {
                 return ImageIO.read(ResourceUtils.getPluginResource("logo-extension-builder-400.png"));
             } catch (IOException e) {
@@ -136,14 +134,13 @@ public class UIUtils {
     }
 
     public static BufferedImage getLogo400() {
-        if(DARK_THEME) {
+        if (DARK_THEME) {
             try {
                 return ImageIO.read(ResourceUtils.getPluginResource("logo-400-dark.png"));
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-        }
-        else {
+        } else {
             try {
                 return ImageIO.read(ResourceUtils.getPluginResource("logo-400.png"));
             } catch (IOException e) {
@@ -153,14 +150,13 @@ public class UIUtils {
     }
 
     public static BufferedImage getLogo() {
-        if(DARK_THEME) {
+        if (DARK_THEME) {
             try {
                 return ImageIO.read(ResourceUtils.getPluginResource("logo-dark.png"));
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-        }
-        else {
+        } else {
             try {
                 return ImageIO.read(ResourceUtils.getPluginResource("logo.png"));
             } catch (IOException e) {
@@ -170,14 +166,13 @@ public class UIUtils {
     }
 
     public static BufferedImage getHeaderPanelBackground() {
-        if(DARK_THEME) {
+        if (DARK_THEME) {
             try {
                 return ImageIO.read(ResourceUtils.getPluginResource("infoui-background-dark.png"));
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-        }
-        else {
+        } else {
             try {
                 return ImageIO.read(ResourceUtils.getPluginResource("infoui-background.png"));
             } catch (IOException e) {
@@ -606,12 +601,13 @@ public class UIUtils {
 
     /**
      * Gets an integer by dialog
-     * @param parent parent component
-     * @param title title
-     * @param message message
+     *
+     * @param parent       parent component
+     * @param title        title
+     * @param message      message
      * @param initialValue initial value
-     * @param min minimum value
-     * @param max maximum value
+     * @param min          minimum value
+     * @param max          maximum value
      * @return the selected integer or null if cancelled
      */
     public static Integer getIntegerByDialog(Component parent, String title, String message, int initialValue, int min, int max) {
@@ -625,7 +621,7 @@ public class UIUtils {
                 null, null, null);
 
         if (result == JOptionPane.OK_OPTION) {
-            return ((SpinnerNumberModel)spinner.getModel()).getNumber().intValue();
+            return ((SpinnerNumberModel) spinner.getModel()).getNumber().intValue();
         }
         return null;
     }
@@ -661,7 +657,7 @@ public class UIUtils {
      * @return the fill color
      */
     public static Color getFillColorFor(JIPipeNodeInfo info) {
-        if(DARK_THEME)
+        if (DARK_THEME)
             return info.getCategory().getDarkFillColor();
         else
             return info.getCategory().getFillColor();
@@ -674,7 +670,7 @@ public class UIUtils {
      * @return the border color
      */
     public static Color getBorderColorFor(JIPipeNodeInfo info) {
-        if(DARK_THEME)
+        if (DARK_THEME)
             return info.getCategory().getDarkBorderColor();
         else
             return info.getCategory().getBorderColor();

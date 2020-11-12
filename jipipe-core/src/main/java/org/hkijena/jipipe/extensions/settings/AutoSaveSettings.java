@@ -50,21 +50,19 @@ public class AutoSaveSettings implements JIPipeParameterCollection {
 
     public void autoSave(JIPipeProjectWindow window) {
         String name = "untitled";
-        if(window.getProjectSavePath() != null) {
+        if (window.getProjectSavePath() != null) {
             name = window.getProjectSavePath().getFileName().toString();
         }
         Path directory = DEFAULT_SAVE_PATH;
-        if(savePath.isEnabled()) {
-            if(!Files.isDirectory(savePath.getContent())) {
+        if (savePath.isEnabled()) {
+            if (!Files.isDirectory(savePath.getContent())) {
                 try {
                     Files.createDirectories(savePath.getContent());
                     directory = savePath.getContent();
-                }
-                catch (IOException e) {
+                } catch (IOException e) {
                     e.printStackTrace();
                 }
-            }
-            else {
+            } else {
                 directory = savePath.getContent();
             }
         }
@@ -100,10 +98,9 @@ public class AutoSaveSettings implements JIPipeParameterCollection {
     @JIPipeParameter("enable-auto-save")
     public void setEnableAutoSave(boolean enableAutoSave) {
         this.enableAutoSave = enableAutoSave;
-        if(!enableAutoSave) {
+        if (!enableAutoSave) {
             autoSaveTimer.stop();
-        }
-        else {
+        } else {
             autoSaveTimer.restart();
         }
     }
@@ -116,7 +113,7 @@ public class AutoSaveSettings implements JIPipeParameterCollection {
 
     @JIPipeParameter("auto-save-delay")
     public boolean setAutoSaveDelay(int autoSaveDelay) {
-        if(autoSaveDelay <= 0)
+        if (autoSaveDelay <= 0)
             return false;
         this.autoSaveDelay = autoSaveDelay;
         this.autoSaveTimer.setDelay(autoSaveDelay * 60 * 1000);
@@ -168,7 +165,7 @@ public class AutoSaveSettings implements JIPipeParameterCollection {
                 null, null, null);
 
         if (result == JOptionPane.OK_OPTION) {
-            if(listControl.getSelectedValue() != null) {
+            if (listControl.getSelectedValue() != null) {
                 JIPipeProjectWindow window = (JIPipeProjectWindow) workbench.getWindow();
                 window.openProject(listControl.getSelectedValue());
             }

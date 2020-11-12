@@ -28,7 +28,7 @@ public class LogicalAndOperator extends ExpressionOperator {
 
     @Override
     public Object evaluate(Iterator<Object> operands, Object evaluationContext) {
-        return (boolean)operands.next() && (boolean)operands.next();
+        return (boolean) operands.next() && (boolean) operands.next();
     }
 
     @Override

@@ -30,6 +30,7 @@ public class JIPipeExpressionRegistry {
 
     /**
      * The registered column operations. Column operations can work on arrays of {@link String} or {@link Double}
+     *
      * @return all registered column operations
      */
     public Map<String, ColumnOperationEntry> getRegisteredTableColumnOperations() {
@@ -38,6 +39,7 @@ public class JIPipeExpressionRegistry {
 
     /**
      * Registered expression functions. Utilized within {@link DefaultExpressionEvaluator}.
+     *
      * @return the registered functions
      */
     public Map<String, ExpressionFunctionEntry> getRegisteredExpressionFunctions() {
@@ -60,8 +62,9 @@ public class JIPipeExpressionRegistry {
 
     /**
      * Registers an new function that will be usable within expressions.
-     * @param function the function instance. Its name will be used as identifier.
-     * @param name the human-readable name
+     *
+     * @param function    the function instance. Its name will be used as identifier.
+     * @param name        the human-readable name
      * @param description a description
      */
     public void registerExpressionFunction(ExpressionFunction function, String name, String description) {

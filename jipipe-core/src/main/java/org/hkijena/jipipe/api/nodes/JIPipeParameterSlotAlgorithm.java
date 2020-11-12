@@ -93,10 +93,9 @@ public abstract class JIPipeParameterSlotAlgorithm extends JIPipeAlgorithm {
     }
 
     public List<JIPipeDataSlot> getNonParameterInputSlots() {
-        if(parameterSlotAlgorithmSettings.isHasParameterSlot()) {
+        if (parameterSlotAlgorithmSettings.isHasParameterSlot()) {
             return getInputSlots().stream().filter(s -> s != getParameterSlot()).collect(Collectors.toList());
-        }
-        else {
+        } else {
             return getInputSlots();
         }
     }

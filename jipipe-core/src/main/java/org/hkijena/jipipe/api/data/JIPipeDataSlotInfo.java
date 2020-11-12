@@ -294,6 +294,7 @@ public class JIPipeDataSlotInfo implements JIPipeParameterCollection {
 
     /**
      * Returns true if the provided string is a valid slot name
+     *
      * @param slotName the name
      * @return if the name is valid
      */

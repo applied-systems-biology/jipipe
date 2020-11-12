@@ -32,14 +32,16 @@ public abstract class ExpressionFunction extends Function {
 
     /**
      * Runs the function on given parameters
+     *
      * @param parameters the parameters
-     * @param variables the set of current variables
+     * @param variables  the set of current variables
      * @return the result
      */
     public abstract Object evaluate(List<Object> parameters, StaticVariableSet<Object> variables);
 
     /**
      * Returns info about the parameter at index
+     *
      * @param index the parameter index
      * @return the info
      */
@@ -49,10 +51,11 @@ public abstract class ExpressionFunction extends Function {
 
     /**
      * Returns a template function that can be used to get users started
+     *
      * @return the template
      */
     public String getTemplate() {
-        if(getMaximumArgumentCount() == Integer.MAX_VALUE)
+        if (getMaximumArgumentCount() == Integer.MAX_VALUE)
             return getName() + "()";
         else
             return getSignature();
@@ -60,17 +63,17 @@ public abstract class ExpressionFunction extends Function {
 
     /**
      * Returns the signature of the function
+     *
      * @return the signature
      */
     public String getSignature() {
-        if(getMaximumArgumentCount() > 5) {
+        if (getMaximumArgumentCount() > 5) {
             return getName() + "(x1, x2, x3, x4, ...)";
-        }
-        else {
+        } else {
             StringBuilder result = new StringBuilder();
             result.append(getName()).append("(");
             for (int i = 0; i < getMaximumArgumentCount(); i++) {
-                if(i != 0)
+                if (i != 0)
                     result.append(", ");
                 result.append("x").append(i + 1);
             }

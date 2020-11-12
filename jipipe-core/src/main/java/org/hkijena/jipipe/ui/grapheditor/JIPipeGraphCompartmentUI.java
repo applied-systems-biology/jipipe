@@ -77,7 +77,7 @@ public class JIPipeGraphCompartmentUI extends JIPipeGraphEditorUI {
         // Set D&D and Copy&Paste behavior
         getCanvasUI().setDragAndDropBehavior(new JIPipeStandardDragAndDropBehavior());
         List<NodeUIContextAction> nodeSpecificContextActions = new ArrayList<>();
-        if(GeneralUISettings.getInstance().isAddContextActionsToContextMenu()) {
+        if (GeneralUISettings.getInstance().isAddContextActionsToContextMenu()) {
             for (JIPipeNodeInfo info : JIPipe.getNodes().getRegisteredNodeInfos().values()) {
                 for (Method method : info.getInstanceClass().getMethods()) {
                     JIPipeContextAction actionAnnotation = method.getAnnotation(JIPipeContextAction.class);
@@ -90,8 +90,7 @@ public class JIPipeGraphCompartmentUI extends JIPipeGraphEditorUI {
                     URL iconURL = null;
                     if (!StringUtils.isNullOrEmpty(actionAnnotation.iconURL())) {
                         iconURL = ResourceUtils.class.getResource(actionAnnotation.iconURL());
-                    }
-                    else {
+                    } else {
                         iconURL = UIUtils.getIconURLFromResources("actions/configure.png");
                     }
                     Icon icon = new ImageIcon(iconURL);
@@ -132,7 +131,7 @@ public class JIPipeGraphCompartmentUI extends JIPipeGraphEditorUI {
                 new SelectAndMoveNodeHereNodeUIContextAction()
         );
 
-        if(!nodeSpecificContextActions.isEmpty()) {
+        if (!nodeSpecificContextActions.isEmpty()) {
             actions = new ArrayList<>(actions);
             actions.add(NodeUIContextAction.SEPARATOR);
             nodeSpecificContextActions.sort(Comparator.comparing(NodeUIContextAction::getName));

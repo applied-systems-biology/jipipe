@@ -36,14 +36,14 @@ import java.util.Map;
 public class CacheAwareImagePlusDataViewerPanel extends ImageViewerPanel {
     private final JIPipeProject project;
     private final JIPipeWorkbench workbench;
-    private JIPipeCacheSlotDataSource dataSource;
     private final JIPipeAlgorithm algorithm;
     private final String slotName;
+    private JIPipeCacheSlotDataSource dataSource;
     private Component errorPanel;
     private JToggleButton cacheAwareToggle;
 
     public CacheAwareImagePlusDataViewerPanel(JIPipeWorkbench workbench, JIPipeCacheSlotDataSource dataSource) {
-        this.project = ((JIPipeProjectWorkbench)workbench).getProject();
+        this.project = ((JIPipeProjectWorkbench) workbench).getProject();
         this.workbench = workbench;
         this.dataSource = dataSource;
         this.algorithm = (JIPipeAlgorithm) project.getGraph().getEquivalentAlgorithm(dataSource.getSlot().getNode());
@@ -57,7 +57,7 @@ public class CacheAwareImagePlusDataViewerPanel extends ImageViewerPanel {
     private void initialize() {
         cacheAwareToggle.setSelected(true);
         cacheAwareToggle.addActionListener(e -> {
-            if(cacheAwareToggle.isSelected()) {
+            if (cacheAwareToggle.isSelected()) {
                 reloadFromCurrentCache();
             }
         });
@@ -79,26 +79,14 @@ public class CacheAwareImagePlusDataViewerPanel extends ImageViewerPanel {
         toolBar.add(cacheAwareToggle);
     }
 
-    public static void show(JIPipeWorkbench workbench, JIPipeCacheSlotDataSource dataSource, String displayName) {
-        CacheAwareImagePlusDataViewerPanel dataDisplay = new CacheAwareImagePlusDataViewerPanel(workbench, dataSource);
-        JFrame frame = new JFrame(displayName);
-        frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        frame.setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
-        frame.setContentPane(dataDisplay);
-        frame.pack();
-        frame.setSize(1024,768);
-        frame.setVisible(true);
-        SwingUtilities.invokeLater(dataDisplay::fitImageToScreen);
-    }
-
     @Subscribe
     public void onCacheUpdated(JIPipeProjectCache.ModifiedEvent event) {
         Window window = SwingUtilities.getWindowAncestor(this);
-        if(window == null || !window.isVisible())
+        if (window == null || !window.isVisible())
             return;
-        if(!isDisplayable())
+        if (!isDisplayable())
             return;
-        if(!cacheAwareToggle.isSelected())
+        if (!cacheAwareToggle.isSelected())
             return;
         reloadFromCurrentCache();
     }
@@ -107,13 +95,24 @@ public class CacheAwareImagePlusDataViewerPanel extends ImageViewerPanel {
         JIPipeProjectCacheQuery query = new JIPipeProjectCacheQuery(project);
         Map<String, JIPipeDataSlot> currentCache = query.getCachedCache(algorithm);
         JIPipeDataSlot slot = currentCache.getOrDefault(slotName, null);
-        if(slot != null && slot.getRowCount() > dataSource.getRow()) {
+        if (slot != null && slot.getRowCount() > dataSource.getRow()) {
             getCanvas().setError(null);
             dataSource = new JIPipeCacheSlotDataSource(slot, dataSource.getRow());
             loadImageFromDataSource();
-        }
-        else {
+        } else {
             getCanvas().setError(errorPanel);
         }
+    }
+
+    public static void show(JIPipeWorkbench workbench, JIPipeCacheSlotDataSource dataSource, String displayName) {
+        CacheAwareImagePlusDataViewerPanel dataDisplay = new CacheAwareImagePlusDataViewerPanel(workbench, dataSource);
+        JFrame frame = new JFrame(displayName);
+        frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        frame.setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
+        frame.setContentPane(dataDisplay);
+        frame.pack();
+        frame.setSize(1024, 768);
+        frame.setVisible(true);
+        SwingUtilities.invokeLater(dataDisplay::fitImageToScreen);
     }
 }

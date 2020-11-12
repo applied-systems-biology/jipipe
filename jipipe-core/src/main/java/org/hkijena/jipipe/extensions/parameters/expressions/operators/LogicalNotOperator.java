@@ -28,7 +28,7 @@ public class LogicalNotOperator extends ExpressionOperator {
 
     @Override
     public Object evaluate(Iterator<Object> operands, Object evaluationContext) {
-        return !(boolean)operands.next();
+        return !(boolean) operands.next();
     }
 
     @Override

@@ -52,9 +52,9 @@ public class JIPipeAlgorithmSourceFinderAlgorithmUI extends JPanel {
     /**
      * Creates an algorithm UI for one target algorithm
      *
-     * @param canvasUI   the canvas
+     * @param canvasUI  the canvas
      * @param inputSlot The output slot to connect
-     * @param info       The target algorithm
+     * @param info      The target algorithm
      */
     public JIPipeAlgorithmSourceFinderAlgorithmUI(JIPipeGraphCanvasUI canvasUI, JIPipeDataSlot inputSlot, JIPipeNodeInfo info) {
         this.canvasUI = canvasUI;
@@ -68,9 +68,9 @@ public class JIPipeAlgorithmSourceFinderAlgorithmUI extends JPanel {
     /**
      * Creates an algorithm UI for one target algorithm
      *
-     * @param canvasUI   the canvas
+     * @param canvasUI  the canvas
      * @param inputSlot The output slot to connect
-     * @param algorithm  The target algorithm
+     * @param algorithm The target algorithm
      */
     public JIPipeAlgorithmSourceFinderAlgorithmUI(JIPipeGraphCanvasUI canvasUI, JIPipeDataSlot inputSlot, JIPipeGraphNode algorithm) {
         this.canvasUI = canvasUI;

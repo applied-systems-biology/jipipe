@@ -32,9 +32,9 @@ import java.util.Set;
  */
 public class DefaultExpressionEvaluatorSyntaxTokenMaker extends AbstractTokenMaker {
 
+    private final List<String> knownNonAlphanumericOperatorTokens;
     private Set<ExpressionParameterVariable> dynamicVariables;
     private Set<String> operators;
-    private final List<String> knownNonAlphanumericOperatorTokens;
 
     public DefaultExpressionEvaluatorSyntaxTokenMaker() {
         knownNonAlphanumericOperatorTokens = DefaultExpressionParameter.EVALUATOR.getKnownNonAlphanumericOperatorTokens();
@@ -71,13 +71,13 @@ public class DefaultExpressionEvaluatorSyntaxTokenMaker extends AbstractTokenMak
         boolean isEscape = false;
         for (int index = 0; index < expression.length(); index++) {
             char c = expression.charAt(index);
-            if(c == '\\') {
+            if (c == '\\') {
                 isEscape = !isEscape;
             }
-            if(c == '"') {
-                if(!isEscape) {
+            if (c == '"') {
+                if (!isEscape) {
                     isQuoted = !isQuoted;
-                    if(!isQuoted) {
+                    if (!isQuoted) {
                         // Flush the builder
                         buffer.append(c);
                         addToken(text, buffer.toString(), bufferStart, offset, newStartOffset + offset);
@@ -87,14 +87,14 @@ public class DefaultExpressionEvaluatorSyntaxTokenMaker extends AbstractTokenMak
                     }
                 }
             }
-            if(!isQuoted && (c == ' ' || c == '\t' || c == '\r' || c == '\n')) {
+            if (!isQuoted && (c == ' ' || c == '\t' || c == '\r' || c == '\n')) {
                 addToken(text, buffer.toString(), bufferStart, offset, newStartOffset + offset);
                 buffer.setLength(0);
                 bufferStart = index + 1;
                 addToken(text, index + offset, index + offset, Token.WHITESPACE, newStartOffset + index + offset);
                 continue;
             }
-            if(!isQuoted && (c == '(' || c == ')')) {
+            if (!isQuoted && (c == '(' || c == ')')) {
                 addToken(text, buffer.toString(), bufferStart, offset, newStartOffset);
                 buffer.setLength(0);
                 bufferStart = index + 1;
@@ -108,26 +108,26 @@ public class DefaultExpressionEvaluatorSyntaxTokenMaker extends AbstractTokenMak
 //                builder.setLength(0);
 //                builderStart = index + 1;
 //            }
-            if(!isQuoted && buffer.length() > 0) {
+            if (!isQuoted && buffer.length() > 0) {
                 String s1 = buffer.toString();
-                if(index != expression.length() - 1) {
+                if (index != expression.length() - 1) {
                     // Workaround <= >=
-                    if(s1.endsWith("<") || s1.endsWith(">")) {
+                    if (s1.endsWith("<") || s1.endsWith(">")) {
                         char next = expression.charAt(index + 1);
-                        if(next == '=')
+                        if (next == '=')
                             continue;
                     }
                     // Workaround !=
-                    if(s1.endsWith("!")) {
+                    if (s1.endsWith("!")) {
                         char next = expression.charAt(index + 1);
-                        if(next == '=')
+                        if (next == '=')
                             continue;
                     }
                 }
                 for (String s : knownNonAlphanumericOperatorTokens) {
                     int i1 = s1.indexOf(s);
-                    if(i1 != -1) {
-                        if(i1 > 0) {
+                    if (i1 != -1) {
+                        if (i1 > 0) {
                             addToken(text, s1.substring(0, i1), bufferStart, offset, newStartOffset);
                         }
                         addToken(text, s, bufferStart + i1, offset, newStartOffset);
@@ -138,10 +138,10 @@ public class DefaultExpressionEvaluatorSyntaxTokenMaker extends AbstractTokenMak
                 }
             }
         }
-        if(buffer.length() > 0) {
+        if (buffer.length() > 0) {
             addToken(text, buffer.toString(), bufferStart, offset, newStartOffset);
         }
-        if(firstToken == null) {
+        if (firstToken == null) {
             addToken(text, 0, text.count, Token.NULL, newStartOffset);
         }
         return firstToken;
@@ -149,27 +149,27 @@ public class DefaultExpressionEvaluatorSyntaxTokenMaker extends AbstractTokenMak
 
     private void addToken(Segment segment, String text, int index, int offset, int startOffset) {
 //        System.out.println("Add " + text + " @ " + index + ":" + (index + text.length()));
-        if(text.isEmpty())
+        if (text.isEmpty())
             return;
         int tokenType = getWordsToHighlight().get(segment, index + offset, index + offset + text.length() - 1);
-        if(dynamicVariables != null && dynamicVariables.stream().anyMatch(v -> Objects.equals(v.getKey(), text)))
+        if (dynamicVariables != null && dynamicVariables.stream().anyMatch(v -> Objects.equals(v.getKey(), text)))
             tokenType = Token.VARIABLE;
-        if(text.startsWith("\""))
+        if (text.startsWith("\""))
             tokenType = Token.LITERAL_STRING_DOUBLE_QUOTE;
-        else if(NumberUtils.isCreatable(text))
+        else if (NumberUtils.isCreatable(text))
             tokenType = Token.LITERAL_NUMBER_FLOAT;
-        if(tokenType == -1)
+        if (tokenType == -1)
             tokenType = Token.VARIABLE;
         for (int i = 0; i < text.length(); i++) {
             addToken(segment, index + offset + i, index + offset + i, tokenType, startOffset + index + offset + i);
         }
     }
 
-    public void setDynamicVariables(Set<ExpressionParameterVariable> variables) {
-        this.dynamicVariables = variables;
-    }
-
     public Set<ExpressionParameterVariable> getDynamicVariables() {
         return dynamicVariables;
+    }
+
+    public void setDynamicVariables(Set<ExpressionParameterVariable> variables) {
+        this.dynamicVariables = variables;
     }
 }

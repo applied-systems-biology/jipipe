@@ -53,7 +53,7 @@ import java.util.function.Supplier;
 public class IlluminationCorrection2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private GaussianBlur2DAlgorithm gaussianAlgorithm =
-            JIPipe.createNode("ij1-blur-gaussian2d",GaussianBlur2DAlgorithm.class);
+            JIPipe.createNode("ij1-blur-gaussian2d", GaussianBlur2DAlgorithm.class);
 
     /**
      * @param info the algorithm info

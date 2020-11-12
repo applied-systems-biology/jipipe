@@ -44,7 +44,7 @@ public class DotSlideshow extends JPanel {
 
     public void showSlide(String title) {
         currentKey = title;
-        ((CardLayout)target.getLayout()).show(target, title);
+        ((CardLayout) target.getLayout()).show(target, title);
         dots.get(title).setSelected(true);
     }
 
@@ -80,11 +80,11 @@ public class DotSlideshow extends JPanel {
     }
 
     private void nextSlide() {
-        if(currentKey != null && !slideOrder.isEmpty()) {
+        if (currentKey != null && !slideOrder.isEmpty()) {
             int index = slideOrder.indexOf(currentKey);
-            if(index == -1)
+            if (index == -1)
                 return;
-            if(index + 1 <= slideOrder.size() - 1)
+            if (index + 1 <= slideOrder.size() - 1)
                 showSlide(slideOrder.get(index + 1));
             else
                 showSlide(slideOrder.get(0));
@@ -92,11 +92,11 @@ public class DotSlideshow extends JPanel {
     }
 
     public void previousSlide() {
-        if(currentKey != null && !slideOrder.isEmpty()) {
+        if (currentKey != null && !slideOrder.isEmpty()) {
             int index = slideOrder.indexOf(currentKey);
-            if(index == -1)
+            if (index == -1)
                 return;
-            if(index - 1 >= 0)
+            if (index - 1 >= 0)
                 showSlide(slideOrder.get(index - 1));
             else
                 showSlide(slideOrder.get(slideOrder.size() - 1));

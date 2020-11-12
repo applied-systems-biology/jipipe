@@ -30,6 +30,17 @@ public class NamedAnnotationGeneratorExpression extends PairParameter<Annotation
         super(other);
     }
 
+    /**
+     * Generates an annotation
+     *
+     * @param annotations existing annotations for the data
+     * @param dataString  the data as string
+     * @return the annotation
+     */
+    public JIPipeAnnotation generateAnnotation(Collection<JIPipeAnnotation> annotations, String dataString) {
+        return new JIPipeAnnotation(getValue(), getKey().generateAnnotationValue(annotations, dataString));
+    }
+
     public static class List extends ListParameter<NamedAnnotationGeneratorExpression> {
 
         public List() {
@@ -39,18 +50,8 @@ public class NamedAnnotationGeneratorExpression extends PairParameter<Annotation
         public List(List other) {
             super(NamedAnnotationGeneratorExpression.class);
             for (NamedAnnotationGeneratorExpression expression : other) {
-             add(new NamedAnnotationGeneratorExpression(expression));
+                add(new NamedAnnotationGeneratorExpression(expression));
             }
         }
-    }
-
-    /**
-     * Generates an annotation
-     * @param annotations existing annotations for the data
-     * @param dataString the data as string
-     * @return the annotation
-     */
-    public JIPipeAnnotation generateAnnotation(Collection<JIPipeAnnotation> annotations, String dataString) {
-        return new JIPipeAnnotation(getValue(), getKey().generateAnnotationValue(annotations, dataString));
     }
 }

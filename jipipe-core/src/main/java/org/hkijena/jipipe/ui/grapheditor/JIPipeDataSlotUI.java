@@ -522,7 +522,7 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
             return slot.getDefinition().getCustomName();
         }
         String name = slot.getName();
-        if(name.startsWith("{") && name.endsWith("}"))
+        if (name.startsWith("{") && name.endsWith("}"))
             return name.substring(1, name.length() - 1);
         else
             return name;

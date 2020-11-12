@@ -37,13 +37,13 @@ import java.util.List;
 public class JIPipeMergedDataSlotTable implements TableModel {
 
     private final JTable table;
+    private final GeneralDataSettings dataSettings = GeneralDataSettings.getInstance();
     private ArrayList<JIPipeProjectCompartment> compartmentList = new ArrayList<>();
     private ArrayList<JIPipeGraphNode> algorithmList = new ArrayList<>();
     private List<String> traitColumns = new ArrayList<>();
     private ArrayList<JIPipeDataSlot> slotList = new ArrayList<>();
     private ArrayList<Integer> rowList = new ArrayList<>();
     private List<Component> previewCache = new ArrayList<>();
-    private final GeneralDataSettings dataSettings =GeneralDataSettings.getInstance();
     private int previewCacheSize = GeneralDataSettings.getInstance().getPreviewSize();
     private JScrollPane scrollPane;
 
@@ -79,7 +79,7 @@ public class JIPipeMergedDataSlotTable implements TableModel {
     }
 
     private void revalidatePreviewCache() {
-        if(dataSettings.getPreviewSize() != previewCacheSize) {
+        if (dataSettings.getPreviewSize() != previewCacheSize) {
             for (int i = 0; i < previewCache.size(); i++) {
                 previewCache.set(i, null);
             }
@@ -243,8 +243,8 @@ public class JIPipeMergedDataSlotTable implements TableModel {
         JViewport viewport = scrollPane.getViewport();
         for (int row = 0; row < previewCache.size(); row++) {
             Component component = previewCache.get(row);
-            if(component instanceof  JIPipeCachedDataPreview) {
-                if(((JIPipeCachedDataPreview) component).isRenderedOrRendering())
+            if (component instanceof JIPipeCachedDataPreview) {
+                if (((JIPipeCachedDataPreview) component).isRenderedOrRendering())
                     continue;
                 // We assume view column = 0
                 Rectangle rect = table.getCellRect(row, 0, true);

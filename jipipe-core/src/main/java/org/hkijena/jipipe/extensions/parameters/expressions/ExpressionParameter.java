@@ -48,12 +48,14 @@ public abstract class ExpressionParameter {
 
     /**
      * Returns the evaluator instance that should evaluate this expression type
+     *
      * @return the evaluator
      */
     public abstract ExpressionEvaluator getEvaluator();
 
     /**
      * Runs the expression and returns the boolean result. If no boolean is returned, an error is thrown.
+     *
      * @param variables the variables
      * @return the result
      */
@@ -63,6 +65,7 @@ public abstract class ExpressionParameter {
 
     /**
      * Runs the expression and returns the boolean result. If no boolean is returned, an error is thrown.
+     *
      * @param variables the variables
      * @return the result
      */

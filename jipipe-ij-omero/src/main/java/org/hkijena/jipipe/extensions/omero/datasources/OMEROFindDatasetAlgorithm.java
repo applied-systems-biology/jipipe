@@ -72,57 +72,6 @@ public class OMEROFindDatasetAlgorithm extends JIPipeParameterSlotAlgorithm {
         registerSubParameter(credentials);
     }
 
-    @Override
-    public void runParameterSet(JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled, List<JIPipeAnnotation> parameterAnnotations) {
-        Set<Long> projectIds = new HashSet<>();
-        for (int row = 0; row < getFirstInputSlot().getRowCount(); row++) {
-            projectIds.add(getFirstInputSlot().getData(row, OMEROProjectReferenceData.class).getProjectId());
-        }
-
-        LoginCredentials credentials = this.credentials.getCredentials();
-        algorithmProgress.accept(subProgress.resolve("Connecting to " + credentials.getUser().getUsername() + "@" + credentials.getServer().getHost()));
-        try(Gateway gateway = new Gateway(new OMEROToJIPipeLogger(subProgress, algorithmProgress))) {
-            ExperimenterData user = gateway.connect(credentials);
-            SecurityContext context = new SecurityContext(user.getGroupId());
-            BrowseFacility browseFacility = gateway.getFacility(BrowseFacility.class);
-            MetadataFacility metadata = gateway.getFacility(MetadataFacility.class);
-            for (Long projectId : projectIds) {
-                algorithmProgress.accept(subProgress.resolve("Listing datasets in project ID=" + projectId));
-                ProjectData projectData = browseFacility.getProjects(context, Collections.singletonList(projectId)).iterator().next();
-                for (DatasetData dataset : projectData.getDatasets()) {
-                    if(!datasetNameFilters.test(dataset.getName())) {
-                        continue;
-                    }
-                    Map<String, String> keyValuePairs = OMEROUtils.getKeyValuePairAnnotations(metadata, context, dataset);
-                    if(!keyValuePairFilters.test(keyValuePairs))
-                        continue;
-                    Set<String> tags = OMEROUtils.getTagAnnotations(metadata, context, dataset);
-                    if(!tagFilters.test(tags)) {
-                        continue;
-                    }
-                    List<JIPipeAnnotation> annotations = new ArrayList<>();
-                    if(addKeyValuePairsAsAnnotations) {
-                        for (Map.Entry<String, String> entry : keyValuePairs.entrySet()) {
-                            annotations.add(new JIPipeAnnotation(entry.getKey(), entry.getValue()));
-                        }
-                    }
-                    if(tagAnnotation.isEnabled()) {
-                        List<String> sortedTags = tags.stream().sorted().collect(Collectors.toList());
-                        String value = JsonUtils.toJsonString(sortedTags);
-                        annotations.add(new JIPipeAnnotation(tagAnnotation.getContent(), value));
-                    }
-                    if(projectNameAnnotation.isEnabled())
-                        annotations.add(new JIPipeAnnotation(projectNameAnnotation.getContent(), projectData.getName()));
-                    if(datasetNameAnnotation.isEnabled())
-                        annotations.add(new JIPipeAnnotation(datasetNameAnnotation.getContent(), dataset.getName()));
-                    getFirstOutputSlot().addData(new OMERODatasetReferenceData(dataset.getId()), annotations);
-                }
-            }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     public OMEROFindDatasetAlgorithm(OMEROFindDatasetAlgorithm other) {
         super(other);
         this.credentials = new OMEROCredentials(other.credentials);
@@ -134,6 +83,57 @@ public class OMEROFindDatasetAlgorithm extends JIPipeParameterSlotAlgorithm {
         this.tagFilters = new StringMapQueryExpression(other.tagFilters);
         this.tagAnnotation = new OptionalAnnotationNameParameter(other.tagAnnotation);
         registerSubParameter(credentials);
+    }
+
+    @Override
+    public void runParameterSet(JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled, List<JIPipeAnnotation> parameterAnnotations) {
+        Set<Long> projectIds = new HashSet<>();
+        for (int row = 0; row < getFirstInputSlot().getRowCount(); row++) {
+            projectIds.add(getFirstInputSlot().getData(row, OMEROProjectReferenceData.class).getProjectId());
+        }
+
+        LoginCredentials credentials = this.credentials.getCredentials();
+        algorithmProgress.accept(subProgress.resolve("Connecting to " + credentials.getUser().getUsername() + "@" + credentials.getServer().getHost()));
+        try (Gateway gateway = new Gateway(new OMEROToJIPipeLogger(subProgress, algorithmProgress))) {
+            ExperimenterData user = gateway.connect(credentials);
+            SecurityContext context = new SecurityContext(user.getGroupId());
+            BrowseFacility browseFacility = gateway.getFacility(BrowseFacility.class);
+            MetadataFacility metadata = gateway.getFacility(MetadataFacility.class);
+            for (Long projectId : projectIds) {
+                algorithmProgress.accept(subProgress.resolve("Listing datasets in project ID=" + projectId));
+                ProjectData projectData = browseFacility.getProjects(context, Collections.singletonList(projectId)).iterator().next();
+                for (DatasetData dataset : projectData.getDatasets()) {
+                    if (!datasetNameFilters.test(dataset.getName())) {
+                        continue;
+                    }
+                    Map<String, String> keyValuePairs = OMEROUtils.getKeyValuePairAnnotations(metadata, context, dataset);
+                    if (!keyValuePairFilters.test(keyValuePairs))
+                        continue;
+                    Set<String> tags = OMEROUtils.getTagAnnotations(metadata, context, dataset);
+                    if (!tagFilters.test(tags)) {
+                        continue;
+                    }
+                    List<JIPipeAnnotation> annotations = new ArrayList<>();
+                    if (addKeyValuePairsAsAnnotations) {
+                        for (Map.Entry<String, String> entry : keyValuePairs.entrySet()) {
+                            annotations.add(new JIPipeAnnotation(entry.getKey(), entry.getValue()));
+                        }
+                    }
+                    if (tagAnnotation.isEnabled()) {
+                        List<String> sortedTags = tags.stream().sorted().collect(Collectors.toList());
+                        String value = JsonUtils.toJsonString(sortedTags);
+                        annotations.add(new JIPipeAnnotation(tagAnnotation.getContent(), value));
+                    }
+                    if (projectNameAnnotation.isEnabled())
+                        annotations.add(new JIPipeAnnotation(projectNameAnnotation.getContent(), projectData.getName()));
+                    if (datasetNameAnnotation.isEnabled())
+                        annotations.add(new JIPipeAnnotation(datasetNameAnnotation.getContent(), dataset.getName()));
+                    getFirstOutputSlot().addData(new OMERODatasetReferenceData(dataset.getId()), annotations);
+                }
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @JIPipeDocumentation(name = "Dataset name filters", description = "Filters for the dataset name. " + StringQueryExpression.DOCUMENTATION_DESCRIPTION)
@@ -157,13 +157,13 @@ public class OMEROFindDatasetAlgorithm extends JIPipeParameterSlotAlgorithm {
     @Override
     public void reportValidity(JIPipeValidityReport report) {
         super.reportValidity(report);
-        if(datasetNameAnnotation.isEnabled()) {
+        if (datasetNameAnnotation.isEnabled()) {
             report.forCategory("Annotate with dataset name").checkNonEmpty(datasetNameAnnotation.getContent(), this);
         }
-        if(projectNameAnnotation.isEnabled()) {
+        if (projectNameAnnotation.isEnabled()) {
             report.forCategory("Annotate with project name").checkNonEmpty(projectNameAnnotation.getContent(), this);
         }
-        if(tagAnnotation.isEnabled()) {
+        if (tagAnnotation.isEnabled()) {
             report.forCategory("Annotate with tags").checkNonEmpty(tagAnnotation.getContent(), this);
         }
     }

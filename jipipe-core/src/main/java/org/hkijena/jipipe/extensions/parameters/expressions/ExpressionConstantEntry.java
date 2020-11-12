@@ -31,11 +31,10 @@ public class ExpressionConstantEntry {
     public ExpressionConstantEntry(Constant constant) {
         this.constant = constant;
         JIPipeDocumentation documentation = constant.getClass().getAnnotation(JIPipeDocumentation.class);
-        if(documentation != null) {
+        if (documentation != null) {
             name = documentation.name();
             description = documentation.description();
-        }
-        else {
+        } else {
             name = "Undefined";
             description = "";
         }
@@ -61,14 +60,15 @@ public class ExpressionConstantEntry {
 
     /**
      * Extracts operators from an evaluator
-     * @param evaluator the evaluator
+     *
+     * @param evaluator               the evaluator
      * @param onlyExpressionOperators if true, operators must inherit from {@link ExpressionOperator}
      * @return the list
      */
     public static List<ExpressionConstantEntry> fromEvaluator(ExpressionEvaluator evaluator, boolean onlyExpressionOperators) {
         List<ExpressionConstantEntry> result = new ArrayList<>();
         for (Constant constant : evaluator.getConstants()) {
-            if(onlyExpressionOperators && !(constant instanceof ExpressionConstant))
+            if (onlyExpressionOperators && !(constant instanceof ExpressionConstant))
                 continue;
             result.add(new ExpressionConstantEntry(constant));
         }

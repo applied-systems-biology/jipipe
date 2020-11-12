@@ -58,7 +58,7 @@ public class LUTInverterAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         if (duplicateImage)
             data = (ImagePlusData) data.duplicate();
         ImagePlus image = data.getImage();
-        if(applyToAllPlanes && image.isStack()) {
+        if (applyToAllPlanes && image.isStack()) {
             SliceIndex original = new SliceIndex(image.getZ(), image.getC(), image.getT());
             for (int z = 0; z < image.getNSlices(); z++) {
                 for (int c = 0; c < image.getNChannels(); c++) {
@@ -69,24 +69,10 @@ public class LUTInverterAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                 }
             }
             image.setPosition(original.getC(), original.getZ(), original.getT());
-        }
-        else {
+        } else {
             applyLUT(image);
         }
         dataBatch.addOutputData(getFirstOutputSlot(), data);
-    }
-
-    public static void applyLUT(ImagePlus image) {
-        if (image.getLuts().length == 0) {
-            image.setLut(LUT.createLutFromColor(Color.WHITE).createInvertedLut());
-        } else {
-            LUT lut = image.getLuts()[0];
-            if (lut != null) {
-                image.setLut(lut.createInvertedLut());
-            } else {
-                image.setLut(LUT.createLutFromColor(Color.WHITE).createInvertedLut());
-            }
-        }
     }
 
     @JIPipeDocumentation(name = "Duplicate image", description = "As the LUT modification does not change any image data, you can disable creating a duplicate.")
@@ -109,5 +95,18 @@ public class LUTInverterAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeParameter("apply-to-all-planes")
     public void setApplyToAllPlanes(boolean applyToAllPlanes) {
         this.applyToAllPlanes = applyToAllPlanes;
+    }
+
+    public static void applyLUT(ImagePlus image) {
+        if (image.getLuts().length == 0) {
+            image.setLut(LUT.createLutFromColor(Color.WHITE).createInvertedLut());
+        } else {
+            LUT lut = image.getLuts()[0];
+            if (lut != null) {
+                image.setLut(lut.createInvertedLut());
+            } else {
+                image.setLut(LUT.createLutFromColor(Color.WHITE).createInvertedLut());
+            }
+        }
     }
 }

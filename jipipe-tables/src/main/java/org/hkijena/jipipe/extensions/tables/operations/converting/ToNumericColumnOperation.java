@@ -24,7 +24,7 @@ import org.hkijena.jipipe.extensions.tables.datatypes.TableColumn;
 public class ToNumericColumnOperation implements ConvertingColumnOperation {
     @Override
     public TableColumn apply(TableColumn column) {
-        if(column.isNumeric())
+        if (column.isNumeric())
             return column;
         double[] data = new double[column.getRows()];
         for (int row = 0; row < column.getRows(); row++) {

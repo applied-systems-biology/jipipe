@@ -26,6 +26,6 @@ public class RemoveDuplicatesFunction extends ExpressionFunction {
 
     @Override
     public Object evaluate(List<Object> parameters, StaticVariableSet<Object> variables) {
-        return new HashSet<>((Collection<?>)parameters.get(0));
+        return new HashSet<>((Collection<?>) parameters.get(0));
     }
 }

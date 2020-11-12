@@ -108,7 +108,7 @@ public class DataBatchUI extends JIPipeProjectWorkbenchPanel {
         frame.setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
         frame.setContentPane(tableUI);
         frame.pack();
-        frame.setSize(400,300);
+        frame.setSize(400, 300);
         frame.setLocationRelativeTo(this);
         frame.setVisible(true);
     }

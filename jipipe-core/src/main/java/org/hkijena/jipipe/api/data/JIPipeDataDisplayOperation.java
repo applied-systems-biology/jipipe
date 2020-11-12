@@ -23,10 +23,11 @@ public interface JIPipeDataDisplayOperation extends JIPipeDataOperation {
 
     /**
      * Shows the data in the UI
-     *  @param data        the data
+     *
+     * @param data        the data
      * @param displayName the display name
      * @param workbench   the workbench that issued the command
-     * @param source optional source of the data. Can by null or any kind of object (e.g. {@link JIPipeDataSlot})
+     * @param source      optional source of the data. Can by null or any kind of object (e.g. {@link JIPipeDataSlot})
      */
     void display(JIPipeData data, String displayName, JIPipeWorkbench workbench, JIPipeDataSource source);
 }

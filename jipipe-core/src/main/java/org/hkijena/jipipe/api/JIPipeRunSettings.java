@@ -102,6 +102,7 @@ public class JIPipeRunSettings implements JIPipeParameterCollection {
 
     /**
      * If true, exceptions are discarded
+     *
      * @return if exceptions should be discarded
      */
     public boolean isSilent() {

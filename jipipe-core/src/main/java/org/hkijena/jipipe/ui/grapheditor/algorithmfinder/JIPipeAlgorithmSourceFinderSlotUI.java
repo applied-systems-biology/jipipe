@@ -53,7 +53,8 @@ public class JIPipeAlgorithmSourceFinderSlotUI extends JPanel {
 
     /**
      * Creates a slot UI
-     *  @param canvasUI           the canvas
+     *
+     * @param canvasUI           the canvas
      * @param inputSlot          The slot
      * @param outputSlot         The targeted slot
      * @param isExistingInstance If true, the algorithm already exists within the graph

@@ -29,18 +29,15 @@ public class GetLastItemFunction extends ExpressionFunction {
     @Override
     public Object evaluate(List<Object> parameters, StaticVariableSet<Object> variables) {
         Object target = parameters.get(0);
-        if(target instanceof List) {
+        if (target instanceof List) {
             List<?> list = (List<?>) target;
             return (list).get(list.size() - 1);
-        }
-        else if(target instanceof Collection) {
+        } else if (target instanceof Collection) {
             ImmutableList<?> list = ImmutableList.copyOf((Collection<?>) target);
             return list.get(list.size() - 1);
-        }
-        else if(target instanceof String) {
+        } else if (target instanceof String) {
             return "" + target.toString().charAt(0);
-        }
-        else {
+        } else {
             throw new UnsupportedOperationException("Element access does not support " + target);
         }
     }

@@ -18,7 +18,7 @@ import java.nio.file.Path;
 /**
  * Data from a slot inside a result folder
  */
-public class JIPipeResultSlotDataSource implements JIPipeDataSource{
+public class JIPipeResultSlotDataSource implements JIPipeDataSource {
     private final JIPipeDataSlot slot;
     private final JIPipeExportedDataTable.Row row;
     private final Path rowStoragePath;

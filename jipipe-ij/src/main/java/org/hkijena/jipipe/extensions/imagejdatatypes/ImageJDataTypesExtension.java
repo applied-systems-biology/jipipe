@@ -95,10 +95,10 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.resultanalysis.ROIDataImpor
 import org.hkijena.jipipe.extensions.imagejdatatypes.resultanalysis.ROIDataPreview;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
 import org.hkijena.jipipe.extensions.tables.ResultsTableDataPreview;
+import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.extensions.tables.display.CacheAwareOpenResultsTableInJIPipeDataOperation;
 import org.hkijena.jipipe.extensions.tables.display.OpenResultsTableInImageJDataOperation;
 import org.hkijena.jipipe.extensions.tables.display.OpenResultsTableInJIPipeTabDataOperation;
-import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.plugin.Plugin;

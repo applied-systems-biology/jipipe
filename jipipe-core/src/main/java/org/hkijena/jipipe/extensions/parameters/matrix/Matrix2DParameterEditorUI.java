@@ -17,7 +17,6 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.jdesktop.swingx.JXTable;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -64,7 +63,8 @@ public class Matrix2DParameterEditorUI extends JIPipeParameterEditorUI {
         JButton addColumnButton = new JButton(UIUtils.getIconFromResources("actions/edit-table-insert-column-right.png"));
         addColumnButton.setToolTipText("Add column");
         addColumnButton.addActionListener(e -> {
-            getParameter(Matrix2D.class).addColumn(); reload();
+            getParameter(Matrix2D.class).addColumn();
+            reload();
         });
         toolBar.add(addColumnButton);
 

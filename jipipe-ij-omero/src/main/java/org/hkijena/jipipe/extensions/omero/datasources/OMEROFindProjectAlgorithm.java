@@ -67,11 +67,23 @@ public class OMEROFindProjectAlgorithm extends JIPipeParameterSlotAlgorithm {
         registerSubParameter(credentials);
     }
 
+    public OMEROFindProjectAlgorithm(OMEROFindProjectAlgorithm other) {
+        super(other);
+        this.credentials = new OMEROCredentials(other.credentials);
+        this.projectNameFilters = new StringQueryExpression(other.projectNameFilters);
+        this.keyValuePairFilters = new StringMapQueryExpression(other.keyValuePairFilters);
+        this.projectNameAnnotation = new OptionalAnnotationNameParameter(other.projectNameAnnotation);
+        this.addKeyValuePairsAsAnnotations = other.addKeyValuePairsAsAnnotations;
+        this.tagFilters = new StringMapQueryExpression(other.tagFilters);
+        this.tagAnnotation = new OptionalAnnotationNameParameter(other.tagAnnotation);
+        registerSubParameter(credentials);
+    }
+
     @Override
     public void runParameterSet(JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled, List<JIPipeAnnotation> parameterAnnotations) {
         LoginCredentials credentials = this.credentials.getCredentials();
         algorithmProgress.accept(subProgress.resolve("Connecting to " + credentials.getUser().getUsername() + "@" + credentials.getServer().getHost()));
-        try(Gateway gateway = new Gateway(new OMEROToJIPipeLogger(subProgress, algorithmProgress))) {
+        try (Gateway gateway = new Gateway(new OMEROToJIPipeLogger(subProgress, algorithmProgress))) {
             ExperimenterData user = gateway.connect(credentials);
             SecurityContext context = new SecurityContext(user.getGroupId());
             BrowseFacility browseFacility = gateway.getFacility(BrowseFacility.class);
@@ -79,28 +91,28 @@ public class OMEROFindProjectAlgorithm extends JIPipeParameterSlotAlgorithm {
             algorithmProgress.accept(subProgress.resolve("Listing projects"));
             try {
                 for (ProjectData project : browseFacility.getProjects(context)) {
-                    if(!projectNameFilters.test(project.getName())) {
+                    if (!projectNameFilters.test(project.getName())) {
                         continue;
                     }
                     Map<String, String> keyValuePairs = OMEROUtils.getKeyValuePairAnnotations(metadata, context, project);
-                    if(!keyValuePairFilters.test(keyValuePairs))
+                    if (!keyValuePairFilters.test(keyValuePairs))
                         continue;
                     Set<String> tags = OMEROUtils.getTagAnnotations(metadata, context, project);
-                    if(!tagFilters.test(tags)) {
+                    if (!tagFilters.test(tags)) {
                         continue;
                     }
                     List<JIPipeAnnotation> annotations = new ArrayList<>();
-                    if(addKeyValuePairsAsAnnotations) {
+                    if (addKeyValuePairsAsAnnotations) {
                         for (Map.Entry<String, String> entry : keyValuePairs.entrySet()) {
                             annotations.add(new JIPipeAnnotation(entry.getKey(), entry.getValue()));
                         }
                     }
-                    if(tagAnnotation.isEnabled()) {
+                    if (tagAnnotation.isEnabled()) {
                         List<String> sortedTags = tags.stream().sorted().collect(Collectors.toList());
                         String value = JsonUtils.toJsonString(sortedTags);
                         annotations.add(new JIPipeAnnotation(tagAnnotation.getContent(), value));
                     }
-                    if(projectNameAnnotation.isEnabled()) {
+                    if (projectNameAnnotation.isEnabled()) {
                         annotations.add(new JIPipeAnnotation(projectNameAnnotation.getContent(), project.getName()));
                     }
                     getFirstOutputSlot().addData(new OMEROProjectReferenceData(project.getId()), annotations);
@@ -111,18 +123,6 @@ public class OMEROFindProjectAlgorithm extends JIPipeParameterSlotAlgorithm {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-    }
-
-    public OMEROFindProjectAlgorithm(OMEROFindProjectAlgorithm other) {
-        super(other);
-        this.credentials = new OMEROCredentials(other.credentials);
-        this.projectNameFilters = new StringQueryExpression(other.projectNameFilters);
-        this.keyValuePairFilters = new StringMapQueryExpression(other.keyValuePairFilters);
-        this.projectNameAnnotation = new OptionalAnnotationNameParameter(other.projectNameAnnotation);
-        this.addKeyValuePairsAsAnnotations = other.addKeyValuePairsAsAnnotations;
-        this.tagFilters = new  StringMapQueryExpression(other.tagFilters);
-        this.tagAnnotation = new OptionalAnnotationNameParameter(other.tagAnnotation);
-        registerSubParameter(credentials);
     }
 
     @JIPipeDocumentation(name = "Project name filters", description = "Filters for the project name. " + StringQueryExpression.DOCUMENTATION_DESCRIPTION)
@@ -158,10 +158,10 @@ public class OMEROFindProjectAlgorithm extends JIPipeParameterSlotAlgorithm {
     @Override
     public void reportValidity(JIPipeValidityReport report) {
         super.reportValidity(report);
-        if(projectNameAnnotation.isEnabled()) {
+        if (projectNameAnnotation.isEnabled()) {
             report.forCategory("Annotate with name").checkNonEmpty(projectNameAnnotation.getContent(), this);
         }
-        if(tagAnnotation.isEnabled()) {
+        if (tagAnnotation.isEnabled()) {
             report.forCategory("Annotate with tags").checkNonEmpty(tagAnnotation.getContent(), this);
         }
     }

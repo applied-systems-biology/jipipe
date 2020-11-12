@@ -85,7 +85,7 @@ public class SetupPanel extends JPanel {
 
     private void installNow() {
         Path path = installationPath.getPath();
-        if(!Files.isDirectory(path)) {
+        if (!Files.isDirectory(path)) {
             try {
                 Files.createDirectories(path);
             } catch (IOException e) {

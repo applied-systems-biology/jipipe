@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ImageViewerPanel extends JPanel {
+    private final JButton zoomStatusButton = new JButton();
     private ImagePlus image;
     private ImageProcessor slice;
     private ImageStatistics statistics;
@@ -49,7 +50,6 @@ public class ImageViewerPanel extends JPanel {
     private JToggleButton animationChannelToggle = new JToggleButton(UIUtils.getIconFromResources("actions/player_start.png"));
     private JToggleButton animationFrameToggle = new JToggleButton(UIUtils.getIconFromResources("actions/player_start.png"));
     private FormPanel bottomPanel;
-    private final JButton zoomStatusButton = new JButton();
     private long lastTimeZoomed;
     private JLabel imageInfoLabel = new JLabel();
     private JScrollPane scrollPane;
@@ -115,6 +115,10 @@ public class ImageViewerPanel extends JPanel {
         return (ImageJCalibrationMode) calibrationModes.getSelectedItem();
     }
 
+    public void setSelectedCalibration(ImageJCalibrationMode mode) {
+        calibrationModes.setSelectedItem(mode);
+    }
+
     private void initializeCalibrationControls() {
         calibrationModes = new JComboBox<>();
         calibrationModes.setModel(new DefaultComboBoxModel<>(ImageJCalibrationMode.values()));
@@ -124,11 +128,10 @@ public class ImageViewerPanel extends JPanel {
             displayRangeCalibrationControl.applyCalibration(true);
         });
         autoCalibrateButton.addActionListener(e -> {
-            if(autoCalibrateButton.isSelected()) {
-                if(calibrationModes.getSelectedItem() != ImageJCalibrationMode.AutomaticImageJ) {
+            if (autoCalibrateButton.isSelected()) {
+                if (calibrationModes.getSelectedItem() != ImageJCalibrationMode.AutomaticImageJ) {
                     calibrationModes.setSelectedItem(ImageJCalibrationMode.AutomaticImageJ);
-                }
-                else {
+                } else {
                     displayRangeCalibrationControl.applyCalibration(true);
                 }
             }
@@ -139,24 +142,24 @@ public class ImageViewerPanel extends JPanel {
         animationTimer.setRepeats(true);
         animationSpeed.addChangeListener(e -> {
             stopAnimations();
-            animationTimer.setDelay(((SpinnerNumberModel)animationSpeed.getModel()).getNumber().intValue());
+            animationTimer.setDelay(((SpinnerNumberModel) animationSpeed.getModel()).getNumber().intValue());
         });
         animationFrameToggle.addActionListener(e -> {
-            if(animationFrameToggle.isSelected()) {
+            if (animationFrameToggle.isSelected()) {
                 animationChannelToggle.setSelected(false);
                 animationStackToggle.setSelected(false);
                 animationTimer.start();
             }
         });
         animationChannelToggle.addActionListener(e -> {
-            if(animationChannelToggle.isSelected()) {
+            if (animationChannelToggle.isSelected()) {
                 animationFrameToggle.setSelected(false);
                 animationStackToggle.setSelected(false);
                 animationTimer.start();
             }
         });
         animationStackToggle.addActionListener(e -> {
-            if(animationStackToggle.isSelected()) {
+            if (animationStackToggle.isSelected()) {
                 animationChannelToggle.setSelected(false);
                 animationFrameToggle.setSelected(false);
                 animationTimer.start();
@@ -248,7 +251,7 @@ public class ImageViewerPanel extends JPanel {
     }
 
     private void updateZoomStatus() {
-        zoomStatusButton.setText((int)Math.round(canvas.getZoom() * 100) + "%");
+        zoomStatusButton.setText((int) Math.round(canvas.getZoom() * 100) + "%");
     }
 
     private void increaseZoom() {
@@ -270,7 +273,7 @@ public class ImageViewerPanel extends JPanel {
     }
 
     private void openInImageJ() {
-        if(image != null) {
+        if (image != null) {
             String title = image.getTitle();
             ImagePlus duplicate = image.duplicate();
             duplicate.setTitle(title);
@@ -279,15 +282,15 @@ public class ImageViewerPanel extends JPanel {
     }
 
     private void refreshSliders() {
-        if(image != null) {
+        if (image != null) {
             bottomPanel.setVisible(true);
             bottomPanel.clear();
 
-            if(image.getNChannels() > 1)
+            if (image.getNChannels() > 1)
                 addSliderToForm(channelSlider, channelSliderLabel, animationChannelToggle);
-            if(image.getNSlices() > 1)
+            if (image.getNSlices() > 1)
                 addSliderToForm(stackSlider, stackSliderLabel, animationStackToggle);
-            if(image.getNFrames() > 1)
+            if (image.getNFrames() > 1)
                 addSliderToForm(frameSlider, frameSliderLabel, animationFrameToggle);
 
             stackSlider.setMinimum(1);
@@ -296,8 +299,7 @@ public class ImageViewerPanel extends JPanel {
             channelSlider.setMaximum(image.getNChannels() + 1);
             frameSlider.setMinimum(1);
             frameSlider.setMaximum(image.getNFrames() + 1);
-        }
-        else {
+        } else {
             bottomPanel.setVisible(false);
         }
     }
@@ -324,7 +326,7 @@ public class ImageViewerPanel extends JPanel {
         formPanel.clear();
         initializeCalibrationPanel();
         initializeLUTPanel();
-        if(image.getNChannels() > 1 || image.getNSlices() > 1 || image.getNFrames() > 1) {
+        if (image.getNChannels() > 1 || image.getNSlices() > 1 || image.getNFrames() > 1) {
             formPanel.addGroupHeader("Animation", UIUtils.getIconFromResources("actions/filmgrain.png"));
             formPanel.addToForm(animationSpeed, new JLabel("Speed (ms)"), null);
         }
@@ -333,9 +335,9 @@ public class ImageViewerPanel extends JPanel {
     }
 
     private void initializeLUTPanel() {
-        if(image.getType() == ImagePlus.COLOR_256 || image.getType() == ImagePlus.COLOR_RGB)
+        if (image.getType() == ImagePlus.COLOR_256 || image.getType() == ImagePlus.COLOR_RGB)
             return;
-        while(lutEditors.size() < image.getNChannels()) {
+        while (lutEditors.size() < image.getNChannels()) {
             ImageViewerLUTEditor editor = new ImageViewerLUTEditor(this, lutEditors.size());
             editor.loadLUTFromImage();
             lutEditors.add(editor);
@@ -364,8 +366,8 @@ public class ImageViewerPanel extends JPanel {
     }
 
     public void refreshImageInfo() {
-        String s="";
-        if (image==null) {
+        String s = "";
+        if (image == null) {
             imageInfoLabel.setText("");
             return;
         }
@@ -373,12 +375,12 @@ public class ImageViewerPanel extends JPanel {
         Calibration cal = image.getCalibration();
         if (cal.scaled()) {
             boolean unitsMatch = cal.getXUnit().equals(cal.getYUnit());
-            double cwidth = image.getWidth()*cal.pixelWidth;
-            double cheight = image.getHeight()*cal.pixelHeight;
+            double cwidth = image.getWidth() * cal.pixelWidth;
+            double cheight = image.getHeight() * cal.pixelHeight;
             int digits = Tools.getDecimalPlaces(cwidth, cheight);
-            if (digits>2) digits=2;
+            if (digits > 2) digits = 2;
             if (unitsMatch) {
-                s += IJ.d2s(cwidth,digits) + "x" + IJ.d2s(cheight,digits)
+                s += IJ.d2s(cwidth, digits) + "x" + IJ.d2s(cheight, digits)
                         + " " + cal.getUnits() + " (" + image.getWidth() + "x" + image.getHeight() + "); ";
             } else {
                 s += (cwidth) + " " + cal.getXUnit() + " x "
@@ -409,29 +411,26 @@ public class ImageViewerPanel extends JPanel {
     }
 
     private void animateNextSlice() {
-        if(!isDisplayable()) {
+        if (!isDisplayable()) {
             stopAnimations();
             return;
         }
-        if(animationStackToggle.isSelected()) {
+        if (animationStackToggle.isSelected()) {
             int newIndex = (image.getZ() % image.getNSlices()) + 1;
             stackSlider.setValue(newIndex);
-        }
-        else if(animationChannelToggle.isSelected()) {
+        } else if (animationChannelToggle.isSelected()) {
             int newIndex = (image.getC() % image.getNChannels()) + 1;
             channelSlider.setValue(newIndex);
-        }
-        else if(animationFrameToggle.isSelected()) {
+        } else if (animationFrameToggle.isSelected()) {
             int newIndex = (image.getT() % image.getNFrames()) + 1;
             frameSlider.setValue(newIndex);
-        }
-        else {
+        } else {
             stopAnimations();
         }
     }
 
     public void refreshSlice() {
-        if(image != null) {
+        if (image != null) {
             int stack = Math.max(1, Math.min(image.getNSlices(), stackSlider.getValue()));
             int frame = Math.max(1, Math.min(image.getNFrames(), frameSlider.getValue()));
             int channel = Math.max(1, Math.min(image.getNChannels(), channelSlider.getValue()));
@@ -439,7 +438,7 @@ public class ImageViewerPanel extends JPanel {
             frameSliderLabel.setText(String.format("Frame (T) %d/%d", frame, image.getNFrames()));
             channelSliderLabel.setText(String.format("Channel (C) %d/%d", channel, image.getNChannels()));
             image.setPosition(channel, stack, frame);
-            if(autoCalibrateButton.isSelected()) {
+            if (autoCalibrateButton.isSelected()) {
                 displayRangeCalibrationControl.applyCalibration(false);
             }
             this.slice = image.getProcessor();
@@ -458,7 +457,7 @@ public class ImageViewerPanel extends JPanel {
     }
 
     public void fitImageToScreen() {
-        if(image != null) {
+        if (image != null) {
             double zoomx = scrollPane.getViewport().getWidth() / (1.0 * image.getWidth());
             double zoomy = scrollPane.getViewport().getHeight() / (1.0 * image.getHeight());
             canvas.setZoom(Math.min(zoomx, zoomy));
@@ -475,10 +474,6 @@ public class ImageViewerPanel extends JPanel {
         return statistics;
     }
 
-    public void setSelectedCalibration(ImageJCalibrationMode mode) {
-        calibrationModes.setSelectedItem(mode);
-    }
-
     public void disableAutoCalibration() {
         autoCalibrateButton.setSelected(false);
     }
@@ -492,7 +487,7 @@ public class ImageViewerPanel extends JPanel {
         panel.setImage(image);
         frame.setContentPane(panel);
         frame.pack();
-        frame.setSize(1280,1024);
+        frame.setSize(1280, 1024);
         frame.setVisible(true);
     }
 

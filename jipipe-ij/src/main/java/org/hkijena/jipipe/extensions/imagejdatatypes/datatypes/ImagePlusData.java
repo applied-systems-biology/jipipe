@@ -128,10 +128,9 @@ public class ImagePlusData implements JIPipeData {
 
     @Override
     public void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
-        if(source instanceof JIPipeCacheSlotDataSource) {
+        if (source instanceof JIPipeCacheSlotDataSource) {
             CacheAwareImagePlusDataViewerPanel.show(workbench, (JIPipeCacheSlotDataSource) source, displayName);
-        }
-        else {
+        } else {
             getDuplicateImage().show();
         }
     }

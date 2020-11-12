@@ -129,7 +129,6 @@ public class MergeChannelsAlgorithm extends JIPipeIteratingAlgorithm {
         }
 
 
-
         int stackSize = 0;
         int width = 0;
         int height = 0;

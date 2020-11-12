@@ -68,7 +68,7 @@ public class OperatorSelectorList extends JList<ExpressionOperatorEntry> {
         functionSelectorList.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if(e.getClickCount() == 2) {
+                if (e.getClickCount() == 2) {
                     confirmed.set(true);
                     dialog.setVisible(false);
                 }
@@ -82,7 +82,7 @@ public class OperatorSelectorList extends JList<ExpressionOperatorEntry> {
         dialog.setModal(true);
         dialog.setTitle("Select operator");
         dialog.pack();
-        dialog.setSize(640,480);
+        dialog.setSize(640, 480);
         dialog.setLocationRelativeTo(null);
         UIUtils.addEscapeListener(dialog);
         dialog.setVisible(true);

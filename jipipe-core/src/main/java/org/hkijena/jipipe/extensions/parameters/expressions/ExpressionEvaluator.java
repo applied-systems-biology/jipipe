@@ -35,15 +35,15 @@ public abstract class ExpressionEvaluator extends AbstractEvaluator<Object> {
 
     /**
      * Returns the boolean evaluated expression. If the expression does not return a boolean, an exception is thrown.
+     *
      * @param expression the expression
-     * @param variables set of variables to use
+     * @param variables  set of variables to use
      */
     public boolean test(String expression, StaticVariableSet<Object> variables) {
         Object result = evaluate(expression, variables);
-        if(result instanceof Boolean) {
+        if (result instanceof Boolean) {
             return (boolean) result;
-        }
-        else {
+        } else {
             throw new UserFriendlyRuntimeException("Expression does not return a boolean value: " + expression,
                     "Expression does not return a boolean!",
                     "Expression evaluator",

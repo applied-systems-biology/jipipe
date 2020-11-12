@@ -24,11 +24,9 @@ import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatchAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.FormPanel;
-import org.hkijena.jipipe.ui.grapheditor.algorithmfinder.JIPipeAlgorithmTargetFinderAlgorithmUI;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -51,18 +49,17 @@ import java.util.Map;
 public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
     private final JIPipeAlgorithm algorithm;
     private final Runnable runTestBench;
+    private final ArrayDeque<JIPipeMergingDataBatch> infiniteScrollingQueue = new ArrayDeque<>();
     private JPanel errorUI;
     private Map<String, JIPipeDataSlot> currentCache = new HashMap<>();
     private JLabel errorLabel;
     private FormPanel formPanel = new FormPanel(null, FormPanel.WITH_SCROLLING);
+    private final Timer scrollToBeginTimer = new Timer(200, e -> scrollToBeginning());
     private JLabel batchPreviewNumberLabel;
     private JLabel batchPreviewMissingLabel;
     private JLabel batchPreviewDuplicateLabel;
-
-    private final Timer scrollToBeginTimer = new Timer(200, e -> scrollToBeginning());
     private JIPipeGraphNode batchesNodeCopy;
     private List<JIPipeMergingDataBatch> batches = new ArrayList<>();
-    private final ArrayDeque<JIPipeMergingDataBatch> infiniteScrollingQueue = new ArrayDeque<>();
 
 
     /**
@@ -263,7 +260,7 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
 
     private void updateInfiniteScroll() {
         JScrollBar scrollBar = formPanel.getScrollPane().getVerticalScrollBar();
-        if((!scrollBar.isVisible() || (scrollBar.getValue() + scrollBar.getVisibleAmount()) > (scrollBar.getMaximum() - 32)) && !infiniteScrollingQueue.isEmpty()) {
+        if ((!scrollBar.isVisible() || (scrollBar.getValue() + scrollBar.getVisibleAmount()) > (scrollBar.getMaximum() - 32)) && !infiniteScrollingQueue.isEmpty()) {
             formPanel.removeLastRow();
             JIPipeMergingDataBatch dataBatch = infiniteScrollingQueue.removeFirst();
             DataBatchUI ui = new DataBatchUI(getProjectWorkbench(), batchesNodeCopy, dataBatch);
@@ -282,7 +279,7 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
      */
     @Subscribe
     public void onCacheUpdated(JIPipeProjectCache.ModifiedEvent event) {
-        if(!isDisplayable())
+        if (!isDisplayable())
             return;
         updateStatus();
     }
@@ -294,7 +291,7 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
      */
     @Subscribe
     public void onSlotsChanged(NodeSlotsChangedEvent event) {
-        if(!isDisplayable())
+        if (!isDisplayable())
             return;
         updateStatus();
     }

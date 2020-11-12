@@ -46,6 +46,7 @@ public class ColumnOperationAdapterFunction extends ExpressionFunction {
 
     /**
      * Returns info about the parameter at index
+     *
      * @param index the parameter index
      * @return the info
      */
@@ -56,38 +57,36 @@ public class ColumnOperationAdapterFunction extends ExpressionFunction {
 
     @Override
     public Object evaluate(List<Object> parameters, StaticVariableSet<Object> variables) {
-        if(parameters.stream().anyMatch(o -> o instanceof Collection)) {
+        if (parameters.stream().anyMatch(o -> o instanceof Collection)) {
             // Requires parameter expansion
             List<Object> unExpanded = parameters;
             parameters = new ArrayList<>();
             for (Object item : unExpanded) {
-                if(item instanceof Collection) {
-                    parameters.addAll((Collection)item);
-                }
-                else {
+                if (item instanceof Collection) {
+                    parameters.addAll((Collection) item);
+                } else {
                     parameters.add(item);
                 }
             }
         }
 
         boolean isNumeric = parameters.stream().allMatch(o -> o instanceof Number);
-        if(isNumeric) {
+        if (isNumeric) {
             double[] arr = new double[parameters.size()];
             for (int i = 0; i < parameters.size(); i++) {
-                arr[i] = ((Number)parameters.get(i)).doubleValue();
+                arr[i] = ((Number) parameters.get(i)).doubleValue();
             }
             TableColumn result = columnOperation.apply(new DoubleArrayTableColumn(arr, "x"));
-            if(result.getRows() > 1)
+            if (result.getRows() > 1)
                 throw new UnsupportedOperationException("Function returned more than one row!");
             return result.getRowAsDouble(0);
-        }
-        else {
+        } else {
             String[] arr = new String[parameters.size()];
             for (int i = 0; i < parameters.size(); i++) {
                 arr[i] = "" + parameters.get(i);
-             }
+            }
             TableColumn result = columnOperation.apply(new StringArrayTableColumn(arr, "x"));
-            if(result.getRows() > 1)
+            if (result.getRows() > 1)
                 throw new UnsupportedOperationException("Function returned more than one row!");
             return result.getRowAsString(0);
         }

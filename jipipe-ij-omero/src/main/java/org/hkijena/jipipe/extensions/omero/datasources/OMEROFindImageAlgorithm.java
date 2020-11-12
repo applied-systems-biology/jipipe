@@ -73,6 +73,20 @@ public class OMEROFindImageAlgorithm extends JIPipeParameterSlotAlgorithm {
         registerSubParameter(credentials);
     }
 
+    public OMEROFindImageAlgorithm(OMEROFindImageAlgorithm other) {
+        super(other);
+        this.credentials = new OMEROCredentials(other.credentials);
+        this.imageNameFilters = new StringQueryExpression(other.imageNameFilters);
+        this.datasetNameAnnotation = new OptionalAnnotationNameParameter(other.datasetNameAnnotation);
+        this.projectNameAnnotation = new OptionalAnnotationNameParameter(other.projectNameAnnotation);
+        this.imageNameAnnotation = new OptionalAnnotationNameParameter(other.imageNameAnnotation);
+        this.keyValuePairFilters = new StringMapQueryExpression(other.keyValuePairFilters);
+        this.addKeyValuePairsAsAnnotations = other.addKeyValuePairsAsAnnotations;
+        this.tagFilters = new StringMapQueryExpression(other.tagFilters);
+        this.tagAnnotation = new OptionalAnnotationNameParameter(other.tagAnnotation);
+        registerSubParameter(credentials);
+    }
+
     @Override
     public void runParameterSet(JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled, List<JIPipeAnnotation> parameterAnnotations) {
         Set<Long> datasetIds = new HashSet<>();
@@ -93,23 +107,23 @@ public class OMEROFindImageAlgorithm extends JIPipeParameterSlotAlgorithm {
                 for (Object obj : datasetData.getImages()) {
                     if (obj instanceof ImageData) {
                         ImageData imageData = (ImageData) obj;
-                        if(!imageNameFilters.test(imageData.getName())) {
+                        if (!imageNameFilters.test(imageData.getName())) {
                             continue;
                         }
                         Map<String, String> keyValuePairs = OMEROUtils.getKeyValuePairAnnotations(metadata, context, imageData);
-                        if(!keyValuePairFilters.test(keyValuePairs))
+                        if (!keyValuePairFilters.test(keyValuePairs))
                             continue;
                         Set<String> tags = OMEROUtils.getTagAnnotations(metadata, context, imageData);
-                        if(!tagFilters.test(tags)) {
+                        if (!tagFilters.test(tags)) {
                             continue;
                         }
                         List<JIPipeAnnotation> annotations = new ArrayList<>();
-                        if(addKeyValuePairsAsAnnotations) {
+                        if (addKeyValuePairsAsAnnotations) {
                             for (Map.Entry<String, String> entry : keyValuePairs.entrySet()) {
                                 annotations.add(new JIPipeAnnotation(entry.getKey(), entry.getValue()));
                             }
                         }
-                        if(tagAnnotation.isEnabled()) {
+                        if (tagAnnotation.isEnabled()) {
                             List<String> sortedTags = tags.stream().sorted().collect(Collectors.toList());
                             String value = JsonUtils.toJsonString(sortedTags);
                             annotations.add(new JIPipeAnnotation(tagAnnotation.getContent(), value));
@@ -124,20 +138,6 @@ public class OMEROFindImageAlgorithm extends JIPipeParameterSlotAlgorithm {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-    }
-
-    public OMEROFindImageAlgorithm(OMEROFindImageAlgorithm other) {
-        super(other);
-        this.credentials = new OMEROCredentials(other.credentials);
-        this.imageNameFilters = new StringQueryExpression(other.imageNameFilters);
-        this.datasetNameAnnotation = new OptionalAnnotationNameParameter(other.datasetNameAnnotation);
-        this.projectNameAnnotation = new OptionalAnnotationNameParameter(other.projectNameAnnotation);
-        this.imageNameAnnotation = new OptionalAnnotationNameParameter(other.imageNameAnnotation);
-        this.keyValuePairFilters = new StringMapQueryExpression(other.keyValuePairFilters);
-        this.addKeyValuePairsAsAnnotations = other.addKeyValuePairsAsAnnotations;
-        this.tagFilters = new StringMapQueryExpression(other.tagFilters);
-        this.tagAnnotation = new OptionalAnnotationNameParameter(other.tagAnnotation);
-        registerSubParameter(credentials);
     }
 
     @JIPipeDocumentation(name = "Image name filters", description = "Filters for the image name. " + StringMapQueryExpression.DOCUMENTATION_DESCRIPTION)
@@ -170,7 +170,7 @@ public class OMEROFindImageAlgorithm extends JIPipeParameterSlotAlgorithm {
         if (imageNameAnnotation.isEnabled()) {
             report.forCategory("Annotate with file name").checkNonEmpty(imageNameAnnotation.getContent(), this);
         }
-        if(tagAnnotation.isEnabled()) {
+        if (tagAnnotation.isEnabled()) {
             report.forCategory("Annotate with tags").checkNonEmpty(tagAnnotation.getContent(), this);
         }
     }

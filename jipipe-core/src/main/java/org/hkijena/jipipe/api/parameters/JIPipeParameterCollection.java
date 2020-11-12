@@ -181,8 +181,8 @@ public interface JIPipeParameterCollection {
      * Sets a parameter of a {@link JIPipeParameterCollection} and triggers the associated events
      *
      * @param collection the collection
-     * @param key the parameter key
-     * @param value the parameter value
+     * @param key        the parameter key
+     * @param value      the parameter value
      * @return if the parameter could be set
      */
     static boolean setParameter(JIPipeParameterCollection collection, String key, Object value) {
@@ -192,10 +192,11 @@ public interface JIPipeParameterCollection {
 
     /**
      * Gets a parameter from a {@link JIPipeParameterCollection}
+     *
      * @param collection the collection
-     * @param key the parameter key
-     * @param klass the parameter class
-     * @param <T> the parameter class
+     * @param key        the parameter key
+     * @param klass      the parameter class
+     * @param <T>        the parameter class
      * @return the current value
      */
     static <T> T getParameter(JIPipeParameterCollection collection, String key, Class<T> klass) {

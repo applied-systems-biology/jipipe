@@ -63,7 +63,7 @@ public class DisplayRangeCalibrationAlgorithm extends JIPipeSimpleIteratingAlgor
         if (duplicateImage)
             data = (ImagePlusData) data.duplicate();
         ImagePlus image = data.getImage();
-        if(applyToAllPlanes && image.isStack()) {
+        if (applyToAllPlanes && image.isStack()) {
             SliceIndex original = new SliceIndex(image.getZ(), image.getC(), image.getT());
             for (int z = 0; z < image.getNSlices(); z++) {
                 for (int c = 0; c < image.getNChannels(); c++) {
@@ -74,8 +74,7 @@ public class DisplayRangeCalibrationAlgorithm extends JIPipeSimpleIteratingAlgor
                 }
             }
             image.setPosition(original.getC(), original.getZ(), original.getT());
-        }
-        else {
+        } else {
             ImageJUtils.calibrate(image, calibrationMode, customMin, customMax);
         }
         dataBatch.addOutputData(getFirstOutputSlot(), data);

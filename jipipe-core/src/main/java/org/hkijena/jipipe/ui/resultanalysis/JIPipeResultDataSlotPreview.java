@@ -36,10 +36,11 @@ public abstract class JIPipeResultDataSlotPreview extends JIPipeProjectWorkbench
 
     /**
      * Creates a new renderer
+     *
      * @param workbench the workbench
-     * @param table the table where the data is rendered in
-     * @param slot the data slot
-     * @param row the row
+     * @param table     the table where the data is rendered in
+     * @param slot      the data slot
+     * @param row       the row
      */
     public JIPipeResultDataSlotPreview(JIPipeProjectWorkbench workbench, JTable table, JIPipeDataSlot slot, JIPipeExportedDataTable.Row row) {
         super(workbench);
@@ -69,6 +70,17 @@ public abstract class JIPipeResultDataSlotPreview extends JIPipeProjectWorkbench
 
     public JIPipeExportedDataTable.Row getRow() {
         return row;
+    }
+
+    /**
+     * Rebuilds the table to show the updated preview
+     */
+    public void refreshTable() {
+        if (getTable() != null) {
+            if (getTable() instanceof JXTable)
+                ((JXTable) getTable()).packAll();
+            getTable().repaint();
+        }
     }
 
     /**
@@ -113,16 +125,5 @@ public abstract class JIPipeResultDataSlotPreview extends JIPipeProjectWorkbench
      */
     public static Path getRowStorageFolder(JIPipeDataSlot slot, JIPipeExportedDataTable.Row row) {
         return slot.getStoragePath().resolve("" + row.getIndex());
-    }
-
-    /**
-     * Rebuilds the table to show the updated preview
-     */
-    public void refreshTable() {
-        if (getTable() != null) {
-            if (getTable() instanceof JXTable)
-                ((JXTable) getTable()).packAll();
-            getTable().repaint();
-        }
     }
 }

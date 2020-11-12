@@ -174,13 +174,11 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         add(menuBar, BorderLayout.NORTH);
         navigator.setModel(new DefaultComboBoxModel<>());
         navigator.setDataToString(o -> {
-            if(o instanceof JIPipeNodeInfo) {
+            if (o instanceof JIPipeNodeInfo) {
                 return ((JIPipeNodeInfo) o).getName();
-            }
-            else if(o instanceof JIPipeNodeUI) {
+            } else if (o instanceof JIPipeNodeUI) {
                 return ((JIPipeNodeUI) o).getNode().getName();
-            }
-            else {
+            } else {
                 return "" + o;
             }
         });

@@ -223,11 +223,11 @@ public class SplitChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         int nFrames = image.getNFrames();
         int nChannels = 1;
         int channel = 1;
-        if (slice<1) slice = 1;
-        if (slice>nSlices) slice = nSlices;
-        if (frame<1) frame = 1;
-        if (frame>nFrames) frame = nFrames;
-        return (frame-1)*nChannels*nSlices + (slice-1)*nChannels + channel;
+        if (slice < 1) slice = 1;
+        if (slice > nSlices) slice = nSlices;
+        if (frame < 1) frame = 1;
+        if (frame > nFrames) frame = nFrames;
+        return (frame - 1) * nChannels * nSlices + (slice - 1) * nChannels + channel;
     }
 
     @Override

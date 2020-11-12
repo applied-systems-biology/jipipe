@@ -50,6 +50,7 @@ public class TableColumnSourceExpressionParameter extends DefaultExpressionParam
     /**
      * Picks or generates a table column based on selecting by name, matching one column by boolean expressions, or using a mathematical expression.
      * Operations are applied in order until a column is generated
+     *
      * @param table the table
      * @return the column
      */
@@ -67,14 +68,13 @@ public class TableColumnSourceExpressionParameter extends DefaultExpressionParam
 //                expression = "\"" + expression + "\"";
 
             Object evaluationResult = getEvaluator().evaluate(expression, variableSet);
-            if(evaluationResult instanceof String) {
+            if (evaluationResult instanceof String) {
                 int columnIndex = table.getColumnIndex((String) evaluationResult);
-                if(columnIndex != -1) {
+                if (columnIndex != -1) {
                     return table.getColumnReference(columnIndex);
                 }
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
         }
 
         // Option 2: Column matching
@@ -83,13 +83,12 @@ public class TableColumnSourceExpressionParameter extends DefaultExpressionParam
             variableSet.set("column", col);
             try {
                 Object evaluationResult = getEvaluator().evaluate(getExpression(), variableSet);
-                if(evaluationResult instanceof Boolean) {
-                    if((boolean)evaluationResult) {
+                if (evaluationResult instanceof Boolean) {
+                    if ((boolean) evaluationResult) {
                         return table.getColumnReference(col);
                     }
                 }
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
             }
         }
 
@@ -100,18 +99,17 @@ public class TableColumnSourceExpressionParameter extends DefaultExpressionParam
             for (int row = 0; row < table.getRowCount(); row++) {
                 variableSet.set("row", row);
                 rawData[row] = getEvaluator().evaluate(getExpression(), variableSet);
-                if(!(rawData[row] instanceof Number))
+                if (!(rawData[row] instanceof Number))
                     isNumeric = false;
             }
 
-            if(isNumeric) {
+            if (isNumeric) {
                 double[] data = new double[table.getRowCount()];
                 for (int row = 0; row < table.getRowCount(); row++) {
-                    data[row] = ((Number)rawData[row]).doubleValue();
+                    data[row] = ((Number) rawData[row]).doubleValue();
                 }
                 return new DoubleArrayTableColumn(data, "Generated");
-            }
-            else {
+            } else {
                 String[] data = new String[table.getRowCount()];
                 for (int row = 0; row < table.getRowCount(); row++) {
                     data[row] = "" + rawData[row];
@@ -119,13 +117,12 @@ public class TableColumnSourceExpressionParameter extends DefaultExpressionParam
                 return new StringArrayTableColumn(data, "Generated");
             }
 
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
         }
 
         // Option 4: Column name equals expression
         for (int col = 0; col < table.getColumnCount(); col++) {
-            if(Objects.equals(table.getColumnName(col), getExpression())) {
+            if (Objects.equals(table.getColumnName(col), getExpression())) {
                 return table.getColumnReference(col);
             }
         }

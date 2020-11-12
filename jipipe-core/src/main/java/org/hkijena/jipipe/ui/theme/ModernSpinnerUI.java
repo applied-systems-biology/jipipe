@@ -29,7 +29,7 @@ public class ModernSpinnerUI extends BasicSpinnerUI {
     @Override
     protected Component createPreviousButton() {
         JButton button = new JButton(UIUtils.getIconFromResources("actions/arrow-down.png"));
-        button.setBackground(UIManager.getColor( "Spinner.background"));
+        button.setBackground(UIManager.getColor("Spinner.background"));
         button.setPreferredSize(new Dimension(21, 14));
         button.setBorder(BorderFactory.createEmptyBorder(0, 4, 0, 4));
         installPreviousButtonListeners(button);
@@ -39,14 +39,14 @@ public class ModernSpinnerUI extends BasicSpinnerUI {
     @Override
     protected Component createNextButton() {
         JButton button = new JButton(UIUtils.getIconFromResources("actions/arrow-up.png"));
-        button.setBackground(UIManager.getColor( "Spinner.background"));
+        button.setBackground(UIManager.getColor("Spinner.background"));
         button.setPreferredSize(new Dimension(21, 14));
         button.setBorder(BorderFactory.createEmptyBorder(0, 4, 0, 4));
         installNextButtonListeners(button);
         return button;
     }
 
-    public static ComponentUI createUI(JComponent c)    {
+    public static ComponentUI createUI(JComponent c) {
         return new ModernSpinnerUI();
     }
 }

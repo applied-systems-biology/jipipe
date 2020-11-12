@@ -25,7 +25,8 @@ public abstract class ExpressionOperator extends Operator {
 
     /**
      * Evaluates the operator
-     * @param operands the operands (contains booleans)
+     *
+     * @param operands          the operands (contains booleans)
      * @param evaluationContext the evaluation context
      * @return the result (should be a boolean)
      */
@@ -33,6 +34,7 @@ public abstract class ExpressionOperator extends Operator {
 
     /**
      * Returns info about the parameter at index (left to right)
+     *
      * @param index the parameter index
      * @return the info
      */

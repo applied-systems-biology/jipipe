@@ -33,19 +33,19 @@ import java.util.List;
  */
 public class JIPipeRowDataMergedTableCellRenderer implements TableCellRenderer {
 
-    private JIPipeProjectWorkbench workbenchUI;
     private final JIPipeMergedExportedDataTable mergedDataTable;
     private final JScrollPane scrollPane;
     private final JTable table;
+    private final GeneralDataSettings dataSettings = GeneralDataSettings.getInstance();
+    private JIPipeProjectWorkbench workbenchUI;
     private List<JIPipeResultDataSlotPreview> previewCache = new ArrayList<>();
     private int previewCacheSize = GeneralDataSettings.getInstance().getPreviewSize();
-    private final GeneralDataSettings dataSettings =GeneralDataSettings.getInstance();
 
     /**
      * @param workbenchUI     The workbench
      * @param mergedDataTable the table to be displayed
-     * @param scrollPane the scroll pane
-     * @param table the table
+     * @param scrollPane      the scroll pane
+     * @param table           the table
      */
     public JIPipeRowDataMergedTableCellRenderer(JIPipeProjectWorkbench workbenchUI, JIPipeMergedExportedDataTable mergedDataTable, JScrollPane scrollPane, JTable table) {
         this.workbenchUI = workbenchUI;
@@ -57,7 +57,7 @@ public class JIPipeRowDataMergedTableCellRenderer implements TableCellRenderer {
     }
 
     private void revalidatePreviewCache() {
-        if(dataSettings.getPreviewSize() != previewCacheSize) {
+        if (dataSettings.getPreviewSize() != previewCacheSize) {
             for (int i = 0; i < previewCache.size(); i++) {
                 previewCache.set(i, null);
             }
@@ -70,7 +70,7 @@ public class JIPipeRowDataMergedTableCellRenderer implements TableCellRenderer {
         if (value instanceof JIPipeExportedDataTable.Row) {
             JIPipeMergedExportedDataTable model = (JIPipeMergedExportedDataTable) table.getModel();
             JIPipeDataSlot slot = model.getSlot(table.convertRowIndexToModel(row));
-            while(row > previewCache.size() - 1) {
+            while (row > previewCache.size() - 1) {
                 previewCache.add(null);
             }
             revalidatePreviewCache();

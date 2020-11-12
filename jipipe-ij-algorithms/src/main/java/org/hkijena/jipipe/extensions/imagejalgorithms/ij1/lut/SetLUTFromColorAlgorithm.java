@@ -63,7 +63,7 @@ public class SetLUTFromColorAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             data = (ImagePlusData) data.duplicate();
         LUT lut = createGradientLUT(firstColor, secondColor);
         ImagePlus image = data.getImage();
-        if(applyToAllPlanes && image.isStack()) {
+        if (applyToAllPlanes && image.isStack()) {
             SliceIndex original = new SliceIndex(image.getZ(), image.getC(), image.getT());
             for (int z = 0; z < image.getNSlices(); z++) {
                 for (int c = 0; c < image.getNChannels(); c++) {
@@ -74,8 +74,7 @@ public class SetLUTFromColorAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                 }
             }
             image.setPosition(original.getC(), original.getZ(), original.getT());
-        }
-        else {
+        } else {
             image.getProcessor().setLut(lut);
         }
         dataBatch.addOutputData(getFirstOutputSlot(), data);

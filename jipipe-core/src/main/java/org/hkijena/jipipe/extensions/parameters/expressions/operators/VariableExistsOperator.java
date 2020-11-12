@@ -29,7 +29,7 @@ public class VariableExistsOperator extends ExpressionOperator {
     @Override
     public Object evaluate(Iterator<Object> operands, Object evaluationContext) {
         String left = operands.next() + "";
-        return ((StaticVariableSet<Object>)evaluationContext).get(left) != null;
+        return ((StaticVariableSet<Object>) evaluationContext).get(left) != null;
     }
 
     @Override

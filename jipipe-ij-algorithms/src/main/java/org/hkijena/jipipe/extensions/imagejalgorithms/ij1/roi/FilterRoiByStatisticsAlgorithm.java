@@ -111,7 +111,7 @@ public class FilterRoiByStatisticsAlgorithm extends ImageRoiProcessorAlgorithm {
             for (int col = 0; col < allStatistics.getColumnCount(); col++) {
                 variableSet.set(allStatistics.getColumnName(col), allStatistics.getValueAt(row, col));
             }
-            if(filters.test(variableSet)) {
+            if (filters.test(variableSet)) {
                 outputData.add(allROIs.get(row));
             }
         }

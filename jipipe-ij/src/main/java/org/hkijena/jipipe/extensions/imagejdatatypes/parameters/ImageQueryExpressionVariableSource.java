@@ -43,7 +43,8 @@ public class ImageQueryExpressionVariableSource implements ExpressionParameterVa
 
     /**
      * Builds the proper variable set for an image
-     * @param imagePlus the image
+     *
+     * @param imagePlus   the image
      * @param variableSet the target
      */
     public static void buildVariablesSet(ImagePlus imagePlus, StaticVariableSet<Object> variableSet) {

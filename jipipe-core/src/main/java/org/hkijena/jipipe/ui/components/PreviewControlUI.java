@@ -57,9 +57,9 @@ public class PreviewControlUI extends JPanel {
     private void setSizeManually() {
         int current = dataSettings.getPreviewSize();
         Integer selected = UIUtils.getIntegerByDialog(this, "Set preview size", "Set the preview size in pixels:", current, 40, Integer.MAX_VALUE);
-        if(selected != null) {
+        if (selected != null) {
             int newSize = selected;
-            if(newSize != current) {
+            if (newSize != current) {
                 JIPipeParameterCollection.setParameter(dataSettings, "preview-size", newSize);
             }
         }
@@ -69,7 +69,7 @@ public class PreviewControlUI extends JPanel {
         int current = dataSettings.getPreviewSize();
         int change = Math.min(100, Math.max(1, current / 3));
         int newSize = Math.max(40, current - change);
-        if(newSize != current) {
+        if (newSize != current) {
             JIPipeParameterCollection.setParameter(dataSettings, "preview-size", newSize);
         }
     }
@@ -78,14 +78,14 @@ public class PreviewControlUI extends JPanel {
         int current = dataSettings.getPreviewSize();
         int change = Math.min(100, Math.max(1, current / 3));
         int newSize = current + change;
-        if(newSize != current) {
+        if (newSize != current) {
             JIPipeParameterCollection.setParameter(dataSettings, "preview-size", newSize);
         }
     }
 
     @Subscribe
     public void onSettingChanged(ParameterChangedEvent event) {
-        if("preview-size".equals(event.getKey())) {
+        if ("preview-size".equals(event.getKey())) {
             refreshZoomStatus();
         }
     }

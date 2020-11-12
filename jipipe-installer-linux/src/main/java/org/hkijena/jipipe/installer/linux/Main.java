@@ -16,7 +16,7 @@ public class Main {
 
         List<String> argsList = Arrays.asList(args);
 
-        if(argsList.contains("help") || argsList.contains("--help") || argsList.contains("-help")) {
+        if (argsList.contains("help") || argsList.contains("--help") || argsList.contains("-help")) {
             System.out.println("JIPipe installer for linux");
             System.out.println();
             System.out.println("GUI: java -jar jipipe-installer-linux.jar");
@@ -28,16 +28,15 @@ public class Main {
         boolean createLaunchers = true;
 
         for (int i = 0; i < args.length; i++) {
-            if("--noCreateLauncher".equals(args[i]))
+            if ("--noCreateLauncher".equals(args[i]))
                 createLaunchers = false;
-            else if("--installationDir".equals(args[i]) && (i + 1) < args.length)
+            else if ("--installationDir".equals(args[i]) && (i + 1) < args.length)
                 installationPath = args[i + 1];
         }
 
-        if(installationPath != null) {
+        if (installationPath != null) {
             runCLIInstaller(installationPath, createLaunchers);
-        }
-        else {
+        } else {
             try {
                 MetalLookAndFeel.setCurrentTheme(new ModernMetalTheme());
                 UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());

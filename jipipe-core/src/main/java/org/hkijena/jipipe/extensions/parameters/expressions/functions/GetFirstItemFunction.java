@@ -28,13 +28,11 @@ public class GetFirstItemFunction extends ExpressionFunction {
     @Override
     public Object evaluate(List<Object> parameters, StaticVariableSet<Object> variables) {
         Object target = parameters.get(0);
-        if(target instanceof Collection) {
-            return ((Collection<?>)target).iterator().next();
-        }
-        else if(target instanceof String) {
+        if (target instanceof Collection) {
+            return ((Collection<?>) target).iterator().next();
+        } else if (target instanceof String) {
             return "" + target.toString().charAt(0);
-        }
-        else {
+        } else {
             throw new UnsupportedOperationException("Element access does not support " + target);
         }
     }

@@ -27,6 +27,6 @@ public class SortDescendingArrayFunction extends ExpressionFunction {
 
     @Override
     public Object evaluate(List<Object> parameters, StaticVariableSet<Object> variables) {
-        return ((Collection)parameters.get(0)).stream().sorted(Comparator.naturalOrder().reversed()).collect(Collectors.toList());
+        return ((Collection) parameters.get(0)).stream().sorted(Comparator.naturalOrder().reversed()).collect(Collectors.toList());
     }
 }

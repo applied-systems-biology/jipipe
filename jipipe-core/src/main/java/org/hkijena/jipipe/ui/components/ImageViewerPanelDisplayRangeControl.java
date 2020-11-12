@@ -51,8 +51,8 @@ public class ImageViewerPanelDisplayRangeControl extends JPanel implements Thumb
         trackRenderer = new TrackRenderer(this);
         initializeToolbar();
         slider = new JXMultiThumbSlider<>();
-        slider.setPreferredSize(new Dimension(100,64));
-        slider.setMinimumSize(new Dimension(100,64));
+        slider.setPreferredSize(new Dimension(100, 64));
+        slider.setMinimumSize(new Dimension(100, 64));
         slider.setOpaque(true);
         slider.setTrackRenderer(trackRenderer);
         slider.setThumbRenderer(new ThumbRenderer());
@@ -67,7 +67,7 @@ public class ImageViewerPanelDisplayRangeControl extends JPanel implements Thumb
 
     private void initializeToolbar() {
         JPanel toolbar = new JPanel();
-        toolbar.setBorder(BorderFactory.createEmptyBorder(0,0,2,0));
+        toolbar.setBorder(BorderFactory.createEmptyBorder(0, 0, 2, 0));
         toolbar.setLayout(new BoxLayout(toolbar, BoxLayout.X_AXIS));
         toolbar.add(Box.createHorizontalGlue());
         JToggleButton logarithmicHistogramToggle = new JToggleButton(UIUtils.getIconFromResources("actions/logarithm.png"));
@@ -82,7 +82,7 @@ public class ImageViewerPanelDisplayRangeControl extends JPanel implements Thumb
 
     public void updateSliders() {
         isUpdating = true;
-        if(imageViewerPanel.getImage() != null) {
+        if (imageViewerPanel.getImage() != null) {
             double displayRangeMin = imageViewerPanel.getImage().getDisplayRangeMin();
             double displayRangeMax = imageViewerPanel.getImage().getDisplayRangeMax();
             ImageStatistics statistics = imageViewerPanel.getStatistics();
@@ -98,10 +98,10 @@ public class ImageViewerPanelDisplayRangeControl extends JPanel implements Thumb
     }
 
     public void applyCalibration(boolean upload) {
-        if(imageViewerPanel.getImage() != null) {
-            ImageJUtils.calibrate(imageViewerPanel.getImage(), imageViewerPanel.getSelectedCalibration(), customMin,customMax);
+        if (imageViewerPanel.getImage() != null) {
+            ImageJUtils.calibrate(imageViewerPanel.getImage(), imageViewerPanel.getSelectedCalibration(), customMin, customMax);
             updateSliders();
-            if(upload)
+            if (upload)
                 imageViewerPanel.uploadSliceToCanvas();
         }
     }
@@ -112,7 +112,7 @@ public class ImageViewerPanelDisplayRangeControl extends JPanel implements Thumb
     }
 
     private void applyCustomCalibration() {
-        if(!isUpdating) {
+        if (!isUpdating) {
             ImageStatistics statistics = imageViewerPanel.getStatistics();
             double min = statistics.min;
             double max = statistics.max;
@@ -141,20 +141,19 @@ public class ImageViewerPanelDisplayRangeControl extends JPanel implements Thumb
 
     }
 
+    public ImageViewerPanel getImageViewerPanel() {
+        return imageViewerPanel;
+    }
+
     public enum DisplayRangeStop {
         Start,
         End
     }
 
-    public ImageViewerPanel getImageViewerPanel() {
-        return imageViewerPanel;
-    }
-
     public static class ThumbRenderer extends JComponent implements org.jdesktop.swingx.multislider.ThumbRenderer {
 
+        public static final Polygon SHAPE = new Polygon(new int[]{5, 0, 10}, new int[]{10, 0, 0}, 3);
         public static int SIZE = 5;
-        public static final Polygon SHAPE = new Polygon(new int[] { 5,0,10 }, new int[]{10,0,0}, 3);
-
         private JXMultiThumbSlider<DisplayRangeStop> slider;
         private int index;
 
@@ -169,7 +168,7 @@ public class ImageViewerPanelDisplayRangeControl extends JPanel implements Thumb
 
         @Override
         protected void paintComponent(Graphics gfx) {
-            Graphics2D g = (Graphics2D)gfx;
+            Graphics2D g = (Graphics2D) gfx;
             g.setColor(UIManager.getColor("Label.foreground"));
             g.fill(SHAPE);
         }
@@ -202,19 +201,19 @@ public class ImageViewerPanelDisplayRangeControl extends JPanel implements Thumb
 
         @Override
         protected void paintComponent(Graphics gfx) {
-            Graphics2D g = (Graphics2D)gfx;
+            Graphics2D g = (Graphics2D) gfx;
             int w = slider.getWidth() - 2 * ThumbRenderer.SIZE;
             int h = slider.getHeight() - 16;
             g.setColor(getBackground());
-            g.fillRect(0,0,slider.getWidth(), slider.getHeight());
+            g.fillRect(0, 0, slider.getWidth(), slider.getHeight());
             g.setColor(UIManager.getColor("Button.borderColor"));
-            g.drawLine(0,h,w + 2 * ThumbRenderer.SIZE,h);
+            g.drawLine(0, h, w + 2 * ThumbRenderer.SIZE, h);
             g.setColor(COLOR_SELECTED);
             ImageProcessor slice = imageViewerPanelDisplayRangeControl.getImageViewerPanel().getSlice();
             ImageStatistics statistics = imageViewerPanelDisplayRangeControl.getImageViewerPanel().getStatistics();
-            if(statistics != null && slice != null) {
+            if (statistics != null && slice != null) {
                 long[] histogram = statistics.getHistogram();
-                if(histogram.length > 0) {
+                if (histogram.length > 0) {
                     int selectedXMin = Integer.MAX_VALUE;
                     int selectedXMax = Integer.MIN_VALUE;
                     for (int i = 0; i < 2; i++) {
@@ -234,16 +233,16 @@ public class ImageViewerPanelDisplayRangeControl extends JPanel implements Thumb
                     double lmax = Math.log(max);
                     for (int i = 0; i < histogram.length; i++) {
                         int binHeight;
-                        if(logarithmic)
-                            binHeight = (int)Math.round((Math.log(histogram[i]) / lmax) * binMaxHeight);
+                        if (logarithmic)
+                            binHeight = (int) Math.round((Math.log(histogram[i]) / lmax) * binMaxHeight);
                         else
-                            binHeight = (int)(Math.round(1.0 * histogram[i] / max) * binMaxHeight);
-                        int x = (int)(i * binSize) + ThumbRenderer.SIZE;
-                        if(x >= selectedXMin && x <= selectedXMax)
+                            binHeight = (int) (Math.round(1.0 * histogram[i] / max) * binMaxHeight);
+                        int x = (int) (i * binSize) + ThumbRenderer.SIZE;
+                        if (x >= selectedXMin && x <= selectedXMax)
                             g.setColor(COLOR_SELECTED);
                         else
                             g.setColor(COLOR_UNSELECTED);
-                        g.fillRect(x, binMaxHeight - binHeight + 8, (int)binSize + 1, binHeight);
+                        g.fillRect(x, binMaxHeight - binHeight + 8, (int) binSize + 1, binHeight);
                     }
                 }
             }
@@ -251,7 +250,7 @@ public class ImageViewerPanelDisplayRangeControl extends JPanel implements Thumb
             for (int i = 0; i < 2; i++) {
                 Thumb<DisplayRangeStop> thumb = slider.getModel().getThumbAt(i);
                 float position = Math.max(0, Math.min(thumb.getPosition(), 1));
-                int x = ThumbRenderer.SIZE - 1 + (int)(w * position);
+                int x = ThumbRenderer.SIZE - 1 + (int) (w * position);
                 g.fillRect(x, 4, 2, h + 4);
             }
         }

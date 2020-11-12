@@ -40,14 +40,13 @@ public class ToStringFunction extends ExpressionFunction {
     @Override
     public Object evaluate(List<Object> parameters, StaticVariableSet<Object> variables) {
         Object value = parameters.get(0);
-        if(value instanceof Collection) {
+        if (value instanceof Collection) {
             List<Object> result = new ArrayList<>();
             for (Object item : ((Collection<?>) value)) {
                 result.add(convert(item));
             }
             return result;
-        }
-        else {
+        } else {
             return convert(value);
         }
     }

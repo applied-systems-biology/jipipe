@@ -130,12 +130,11 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
         List<JIPipeMergingDataBatch> dataBatches = generateDataBatchesDryRun(getNonParameterInputSlots());
 
         // Check for incomplete batches
-        if(dataBatchGenerationSettings.skipIncompleteDataSets) {
+        if (dataBatchGenerationSettings.skipIncompleteDataSets) {
             dataBatches.removeIf(JIPipeMergingDataBatch::isIncomplete);
-        }
-        else {
+        } else {
             for (JIPipeMergingDataBatch batch : dataBatches) {
-                if(batch.isIncomplete()) {
+                if (batch.isIncomplete()) {
                     throw new UserFriendlyRuntimeException("Incomplete data set found!",
                             "An incomplete data set was found!",
                             "Algorithm '" + getName() + "'",

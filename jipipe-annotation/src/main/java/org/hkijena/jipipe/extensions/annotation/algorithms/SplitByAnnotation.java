@@ -77,7 +77,7 @@ public class SplitByAnnotation extends JIPipeAlgorithm {
             String dataString = inputSlot.getData(row, JIPipeData.class).toString();
             for (String outputSlotKey : outputSlotKeys) {
                 AnnotationGeneratorExpression expression = targetSlots.get(outputSlotKey).get(AnnotationGeneratorExpression.class);
-                if(expression.test(annotations, dataString)) {
+                if (expression.test(annotations, dataString)) {
                     getOutputSlot(outputSlotKey).addData(inputSlot.getData(row, JIPipeData.class), annotations);
                 }
             }

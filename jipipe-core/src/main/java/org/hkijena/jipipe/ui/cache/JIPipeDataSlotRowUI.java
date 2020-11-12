@@ -130,7 +130,7 @@ public class JIPipeDataSlotRowUI extends JIPipeWorkbenchPanel {
 
     public void handleDefaultAction() {
         JIPipeDataDisplayOperation mainOperation = getMainOperation();
-        if(mainOperation != null) {
+        if (mainOperation != null) {
             runDisplayOperation(mainOperation);
         }
     }

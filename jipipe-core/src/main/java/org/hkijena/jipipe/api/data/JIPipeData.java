@@ -60,9 +60,10 @@ public interface JIPipeData {
      * This function should display the data in the GUI.
      * The UI can handle multiple of such operations via {@link JIPipeDataDisplayOperation} that can be registered separately.
      * This item will always be shown as "Default" in the list of operations.
-     *  @param displayName a name that can be used
+     *
+     * @param displayName a name that can be used
      * @param workbench   the workbench
-     * @param source optional source of the data. Can be null or any kind of data type (e.g. {@link JIPipeDataSlot})
+     * @param source      optional source of the data. Can be null or any kind of data type (e.g. {@link JIPipeDataSlot})
      */
     void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source);
 

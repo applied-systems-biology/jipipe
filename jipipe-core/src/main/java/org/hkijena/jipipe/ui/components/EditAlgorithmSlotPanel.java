@@ -186,7 +186,7 @@ public class EditAlgorithmSlotPanel extends JPanel {
     private void editSlot() {
 
         String slotName = nameEditor.getText().trim();
-        if(!JIPipeDataSlotInfo.isValidName(slotName)) {
+        if (!JIPipeDataSlotInfo.isValidName(slotName)) {
             JOptionPane.showMessageDialog(this, "The name '" + slotName + "' is not a valid slot name. It can only contain alphanumeric characters and following characters: . _ , #");
             return;
         }

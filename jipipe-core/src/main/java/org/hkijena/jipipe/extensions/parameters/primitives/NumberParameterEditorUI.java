@@ -54,17 +54,8 @@ public class NumberParameterEditorUI extends JIPipeParameterEditorUI {
     @Override
     public void reload() {
         String s = formatNumber(getCurrentValue());
-        if(!Objects.equals(s, numberField.getText()))
+        if (!Objects.equals(s, numberField.getText()))
             numberField.setText(s);
-    }
-
-    public static String formatNumber(double number) {
-        if(number % 1 == 0) {
-            return "" + (long)number;
-        }
-        else {
-            return "" + number;
-        }
     }
 
     private double getCurrentValue() {
@@ -159,11 +150,11 @@ public class NumberParameterEditorUI extends JIPipeParameterEditorUI {
     }
 
     private boolean isValidNumber(String text) {
-        if(NumberUtils.isCreatable(text))
+        if (NumberUtils.isCreatable(text))
             return true;
         if (getParameterAccess().getFieldClass() == float.class || getParameterAccess().getFieldClass() == Float.class ||
                 getParameterAccess().getFieldClass() == double.class || getParameterAccess().getFieldClass() == Double.class) {
-            if(StringUtils.isNullOrEmpty(text))
+            if (StringUtils.isNullOrEmpty(text))
                 return false;
             return text.toLowerCase().startsWith("-inf") || text.toLowerCase().startsWith("inf");
         }
@@ -171,15 +162,15 @@ public class NumberParameterEditorUI extends JIPipeParameterEditorUI {
     }
 
     private double createNumber(String text) {
-        if(NumberUtils.isCreatable(text))
+        if (NumberUtils.isCreatable(text))
             return NumberUtils.createDouble(text);
         if (getParameterAccess().getFieldClass() == float.class || getParameterAccess().getFieldClass() == Float.class ||
                 getParameterAccess().getFieldClass() == double.class || getParameterAccess().getFieldClass() == Double.class) {
-            if(StringUtils.isNullOrEmpty(text))
+            if (StringUtils.isNullOrEmpty(text))
                 return 0;
-            if(text.toLowerCase().startsWith("-inf"))
+            if (text.toLowerCase().startsWith("-inf"))
                 return Double.NEGATIVE_INFINITY;
-            if(text.toLowerCase().startsWith("inf"))
+            if (text.toLowerCase().startsWith("inf"))
                 return Double.POSITIVE_INFINITY;
         }
         return 0;
@@ -190,17 +181,16 @@ public class NumberParameterEditorUI extends JIPipeParameterEditorUI {
         setBackground(UIManager.getColor("TextField.background"));
         setBorder(BorderFactory.createEtchedBorder());
         numberField = new JTextField();
-        numberField.setBorder(BorderFactory.createEmptyBorder(0,4,0,0));
+        numberField.setBorder(BorderFactory.createEmptyBorder(0, 4, 0, 0));
         numberField.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
         numberField.getDocument().addDocumentListener(new DocumentChangeListener() {
             @Override
             public void changed(DocumentEvent documentEvent) {
                 String text = StringUtils.orElse(numberField.getText(), "");
                 text = text.replace(',', '.').replace(" ", ""); // Allow usage of comma as separator
-                if(isValidNumber(text)) {
+                if (isValidNumber(text)) {
                     pushValue(text);
-                }
-                else {
+                } else {
                     setBorder(BorderFactory.createLineBorder(Color.RED, 2));
                 }
             }
@@ -209,11 +199,10 @@ public class NumberParameterEditorUI extends JIPipeParameterEditorUI {
             // Try using an expression
             try {
                 Object result = DefaultExpressionParameter.EVALUATOR.evaluate(numberField.getText());
-                if(result instanceof Number) {
+                if (result instanceof Number) {
                     numberField.setText(formatNumber(((Number) result).doubleValue()));
                 }
-            }
-            catch (Exception e1) {
+            } catch (Exception e1) {
             }
         });
         add(numberField, BorderLayout.CENTER);
@@ -254,13 +243,20 @@ public class NumberParameterEditorUI extends JIPipeParameterEditorUI {
         setBorder(BorderFactory.createEtchedBorder());
         double newValue = createNumber(text);
         double currentValue = getCurrentValue();
-        if(newValue != currentValue) {
-            if(setCurrentValue(newValue)) {
+        if (newValue != currentValue) {
+            if (setCurrentValue(newValue)) {
                 setBorder(BorderFactory.createEtchedBorder());
-            }
-            else {
+            } else {
                 setBorder(BorderFactory.createLineBorder(Color.RED, 2));
             }
+        }
+    }
+
+    public static String formatNumber(double number) {
+        if (number % 1 == 0) {
+            return "" + (long) number;
+        } else {
+            return "" + number;
         }
     }
 }

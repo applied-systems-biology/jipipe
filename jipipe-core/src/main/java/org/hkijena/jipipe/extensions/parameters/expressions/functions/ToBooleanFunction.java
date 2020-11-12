@@ -41,28 +41,25 @@ public class ToBooleanFunction extends ExpressionFunction {
 
     @Override
     public Object evaluate(List<Object> parameters, StaticVariableSet<Object> variables) {
-       Object value = parameters.get(0);
-       if(value instanceof Collection) {
+        Object value = parameters.get(0);
+        if (value instanceof Collection) {
             List<Object> result = new ArrayList<>();
-           for (Object item : ((Collection<?>) value)) {
+            for (Object item : ((Collection<?>) value)) {
                 result.add(convert(item));
-           }
-           return result;
-       }
-       else {
-           return convert(value);
-       }
+            }
+            return result;
+        } else {
+            return convert(value);
+        }
     }
 
     @NotNull
     public Object convert(Object value) {
-        if(value instanceof Boolean) {
+        if (value instanceof Boolean) {
             return value;
-        }
-        else if(value instanceof Number) {
+        } else if (value instanceof Number) {
             return ((Number) value).doubleValue() >= 1;
-        }
-        else {
+        } else {
             String str = ("" + value).toLowerCase();
             return str.equals("true") || str.equals("t") || str.equals("on") || str.equals("yes") || str.equals("y");
         }

@@ -59,7 +59,7 @@ public class RankedData<T> implements Comparable<RankedData<T>> {
      *
      * @param <T>             the data type
      * @param data            the data
-     * @param dataToString converts the data to string
+     * @param dataToString    converts the data to string
      * @param rankingFunction the ranking function
      * @param searchStrings   the search terms. If null or empty, all data gets an empty rank
      * @return ranked data, sorted according to the rank

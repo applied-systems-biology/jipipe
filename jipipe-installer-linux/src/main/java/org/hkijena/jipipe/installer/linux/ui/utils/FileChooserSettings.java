@@ -79,7 +79,7 @@ public class FileChooserSettings {
      * @return selected file or null if dialog was cancelled
      */
     public static Path saveFile(Component parent, String title, FileNameExtensionFilter... extensionFilters) {
-        
+
         Path currentPath = Paths.get("");
         JFileChooser fileChooser = new JFileChooser(currentPath.toFile());
         fileChooser.setDialogTitle(title);
@@ -119,14 +119,14 @@ public class FileChooserSettings {
      * @return selected file or null if dialog was cancelled
      */
     public static Path openPath(Component parent, String title) {
-        
+
         Path currentPath = Paths.get("");
         JFileChooser fileChooser = new JFileChooser(currentPath.toFile());
         fileChooser.setDialogTitle(title);
         fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
         if (fileChooser.showOpenDialog(parent) == JFileChooser.APPROVE_OPTION) {
             Path path = fileChooser.getSelectedFile().toPath();
-            
+
             return path;
         } else {
             return null;
@@ -141,14 +141,14 @@ public class FileChooserSettings {
      * @return selected file or null if dialog was cancelled
      */
     public static Path savePath(Component parent, String title) {
-        
+
         Path currentPath = Paths.get("");
         JFileChooser fileChooser = new JFileChooser(currentPath.toFile());
         fileChooser.setDialogTitle(title);
         fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
         if (fileChooser.showSaveDialog(parent) == JFileChooser.APPROVE_OPTION) {
             Path path = fileChooser.getSelectedFile().toPath();
-            
+
             return path;
         } else {
             return null;
@@ -163,14 +163,14 @@ public class FileChooserSettings {
      * @return selected directory or null if dialog was cancelled
      */
     public static Path openDirectory(Component parent, String title) {
-        
+
         Path currentPath = Paths.get("");
         JFileChooser fileChooser = new JFileChooser(currentPath.toFile());
         fileChooser.setDialogTitle(title);
         fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         if (fileChooser.showOpenDialog(parent) == JFileChooser.APPROVE_OPTION) {
             Path path = fileChooser.getSelectedFile().toPath();
-            
+
             return path;
         } else {
             return null;
@@ -185,14 +185,14 @@ public class FileChooserSettings {
      * @return selected directory or null if dialog was cancelled
      */
     public static Path saveDirectory(Component parent, String title) {
-        
+
         Path currentPath = Paths.get("");
         JFileChooser fileChooser = new JFileChooser(currentPath.toFile());
         fileChooser.setDialogTitle(title);
         fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         if (fileChooser.showSaveDialog(parent) == JFileChooser.APPROVE_OPTION) {
             Path path = fileChooser.getSelectedFile().toPath();
-            
+
             return path;
         } else {
             return null;
@@ -207,7 +207,7 @@ public class FileChooserSettings {
      * @return selected list of files. Is empty if dialog was cancelled.
      */
     public static List<Path> openFiles(Component parent, String title) {
-        
+
         Path currentPath = Paths.get("");
         JFileChooser fileChooser = new JFileChooser(currentPath.toFile());
         fileChooser.setDialogTitle(title);
@@ -227,7 +227,7 @@ public class FileChooserSettings {
      * @return selected list of files. Is empty if dialog was cancelled.
      */
     public static List<Path> openDirectories(Component parent, String title) {
-        
+
         Path currentPath = Paths.get("");
         JFileChooser fileChooser = new JFileChooser(currentPath.toFile());
         fileChooser.setDialogTitle(title);
@@ -248,7 +248,7 @@ public class FileChooserSettings {
      * @return selected list of files. Is empty if dialog was cancelled.
      */
     public static List<Path> openPaths(Component parent, String title) {
-        
+
         Path currentPath = Paths.get("");
         JFileChooser fileChooser = new JFileChooser(currentPath.toFile());
         fileChooser.setDialogTitle(title);

@@ -153,7 +153,7 @@ public class JIPipeDataSlotCacheManagerUI extends JIPipeProjectWorkbenchPanel {
      */
     @Subscribe
     public void onCacheUpdated(JIPipeProjectCache.ModifiedEvent event) {
-        if(!isDisplayable())
+        if (!isDisplayable())
             return;
         updateStatus();
     }

@@ -32,18 +32,16 @@ public class SubtractionFunctionOperator extends GenericOperator {
     @Override
     public Object evaluate(Map<Object, Object> left, Object right) {
         Map<Object, Object> result = new HashMap<>(left);
-        if(right instanceof Map) {
+        if (right instanceof Map) {
             for (Map.Entry<?, ?> entry : ((Map<?, ?>) right).entrySet()) {
                 result.remove(entry.getKey());
             }
-        }
-        else if(right instanceof Collection) {
+        } else if (right instanceof Collection) {
             Collection<?> pair = (Collection<?>) right;
             Iterator<?> iterator = pair.iterator();
             Object key = iterator.next();
             result.remove(key);
-        }
-        else {
+        } else {
             result.remove(right);
         }
         return result;
@@ -52,8 +50,8 @@ public class SubtractionFunctionOperator extends GenericOperator {
     @Override
     public Object evaluate(Collection<Object> left, Object right) {
         List<Object> result = new ArrayList<>(left);
-        if(right instanceof Collection)
-            result.removeAll((Collection<?>)right);
+        if (right instanceof Collection)
+            result.removeAll((Collection<?>) right);
         else
             result.remove(right);
         return result;

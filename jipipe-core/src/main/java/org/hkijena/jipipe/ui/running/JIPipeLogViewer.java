@@ -69,7 +69,7 @@ public class JIPipeLogViewer extends JIPipeProjectWorkbenchPanel {
 
         logEntryJList.addListSelectionListener(e -> {
             LogEntry selectedValue = logEntryJList.getSelectedValue();
-            if(selectedValue != null) {
+            if (selectedValue != null) {
                 showLog(selectedValue);
             }
         });
@@ -80,10 +80,10 @@ public class JIPipeLogViewer extends JIPipeProjectWorkbenchPanel {
     }
 
     private void pushToLog(JIPipeRun run, boolean success) {
-        if(run.getProject() != getProject())
+        if (run.getProject() != getProject())
             return;
-        if(run.getLog() != null && run.getLog().length() > 0) {
-            if(logEntries.size() + 1 > runtimeSettings.getLogLimit())
+        if (run.getLog() != null && run.getLog().length() > 0) {
+            if (logEntries.size() + 1 > runtimeSettings.getLogLimit())
                 logEntries.remove(0);
             logEntries.add(new LogEntry(LocalDateTime.now(), run.getLog().toString(), success));
             DefaultListModel<LogEntry> model = new DefaultListModel<>();
@@ -91,6 +91,20 @@ public class JIPipeLogViewer extends JIPipeProjectWorkbenchPanel {
                 model.addElement(logEntry);
             }
             logEntryJList.setModel(model);
+        }
+    }
+
+    @Subscribe
+    public void onRunFinished(RunUIWorkerFinishedEvent event) {
+        if (event.getRun() instanceof JIPipeRun) {
+            pushToLog((JIPipeRun) event.getRun(), true);
+        }
+    }
+
+    @Subscribe
+    public void onRunCancelled(RunUIWorkerInterruptedEvent event) {
+        if (event.getRun() instanceof JIPipeRun) {
+            pushToLog((JIPipeRun) event.getRun(), false);
         }
     }
 
@@ -186,20 +200,6 @@ public class JIPipeLogViewer extends JIPipeProjectWorkbenchPanel {
                 setBackground(UIManager.getColor("List.background"));
             }
             return this;
-        }
-    }
-
-    @Subscribe
-    public void onRunFinished(RunUIWorkerFinishedEvent event) {
-        if(event.getRun() instanceof JIPipeRun) {
-            pushToLog((JIPipeRun) event.getRun(), true);
-        }
-    }
-
-    @Subscribe
-    public void onRunCancelled(RunUIWorkerInterruptedEvent event) {
-        if(event.getRun() instanceof JIPipeRun) {
-            pushToLog((JIPipeRun) event.getRun(), false);
         }
     }
 }

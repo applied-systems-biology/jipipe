@@ -79,7 +79,7 @@ public class JIPipeCacheDataSlotTableUI extends JIPipeProjectWorkbenchPanel {
         GeneralDataSettings.getInstance().getEventBus().register(new Object() {
             @Subscribe
             public void onPreviewSizeChanged(ParameterChangedEvent event) {
-                if(isDisplayable() && "preview-size".equals(event.getKey())) {
+                if (isDisplayable() && "preview-size".equals(event.getKey())) {
                     reloadTable();
                 }
             }
@@ -219,9 +219,9 @@ public class JIPipeCacheDataSlotTableUI extends JIPipeProjectWorkbenchPanel {
 
         private final JTable table;
         private final JIPipeDataSlot slot;
+        private final GeneralDataSettings dataSettings = GeneralDataSettings.getInstance();
         private List<Component> previewCache = new ArrayList<>();
         private int previewCacheSize = GeneralDataSettings.getInstance().getPreviewSize();
-        private final GeneralDataSettings dataSettings =GeneralDataSettings.getInstance();
         private JScrollPane scrollPane;
 
         /**
@@ -239,7 +239,7 @@ public class JIPipeCacheDataSlotTableUI extends JIPipeProjectWorkbenchPanel {
         }
 
         private void revalidatePreviewCache() {
-            if(dataSettings.getPreviewSize() != previewCacheSize) {
+            if (dataSettings.getPreviewSize() != previewCacheSize) {
                 for (int i = 0; i < previewCache.size(); i++) {
                     previewCache.set(i, null);
                 }
@@ -351,8 +351,8 @@ public class JIPipeCacheDataSlotTableUI extends JIPipeProjectWorkbenchPanel {
             JViewport viewport = scrollPane.getViewport();
             for (int row = 0; row < previewCache.size(); row++) {
                 Component component = previewCache.get(row);
-                if(component instanceof  JIPipeCachedDataPreview) {
-                    if(((JIPipeCachedDataPreview) component).isRenderedOrRendering())
+                if (component instanceof JIPipeCachedDataPreview) {
+                    if (((JIPipeCachedDataPreview) component).isRenderedOrRendering())
                         continue;
                     // We assume view column = 0
                     Rectangle rect = table.getCellRect(row, 0, true);

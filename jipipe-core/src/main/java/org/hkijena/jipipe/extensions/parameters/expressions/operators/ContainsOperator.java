@@ -36,11 +36,10 @@ public class ContainsOperator extends ExpressionOperator {
     public Object evaluate(Iterator<Object> operands, Object evaluationContext) {
         Object left = operands.next();
         Object right = operands.next();
-        if(right instanceof Collection) {
-            return ((Collection)right).contains(left);
-        }
-        else {
-            String leftString= "" + left;
+        if (right instanceof Collection) {
+            return ((Collection) right).contains(left);
+        } else {
+            String leftString = "" + left;
             String rightString = "" + right;
             return rightString.contains(leftString);
         }

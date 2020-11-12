@@ -58,13 +58,13 @@ public class ExpressionBuilderUI extends JPanel {
     public static final Color COLOR_CONSTANT = Color.BLUE;
     public static final Color COLOR_OPERATOR = new Color(0x854745);
     public static final Color COLOR_FUNCTION = new Color(0xb38814);
+    private static final EntryRankingFunction RANKING_FUNCTION = new EntryRankingFunction();
+    private static final Function<Object, String> ENTRY_TO_STRING_FUNCTION = new EntryToStringFunction();
     private Set<ExpressionParameterVariable> variables;
     private JList<Object> commandPaletteList = new JList<>();
     private List<ExpressionOperatorEntry> operatorEntryList;
     private List<ExpressionConstantEntry> constantEntryList;
     private SearchTextField searchField = new SearchTextField();
-    private static final EntryRankingFunction RANKING_FUNCTION = new EntryRankingFunction();
-    private static final Function<Object, String> ENTRY_TO_STRING_FUNCTION = new EntryToStringFunction();
     private DefaultExpressionEvaluatorSyntaxTokenMaker tokenMaker = new DefaultExpressionEvaluatorSyntaxTokenMaker();
     private RSyntaxTextArea expressionEditor;
     private FormPanel inserterForm = new FormPanel(null, FormPanel.WITH_SCROLLING);
@@ -85,7 +85,7 @@ public class ExpressionBuilderUI extends JPanel {
 
     private void rebuildPalette() {
         List<Object> dataItems = new ArrayList<>();
-        if(!variables.isEmpty()) {
+        if (!variables.isEmpty()) {
             dataItems.addAll(variables.stream().sorted(Comparator.comparing(ExpressionParameterVariable::getName)).collect(Collectors.toList()));
         }
         dataItems.addAll(constantEntryList);
@@ -93,14 +93,13 @@ public class ExpressionBuilderUI extends JPanel {
         dataItems.addAll(JIPipe.getInstance().getExpressionRegistry().getRegisteredExpressionFunctions().values().stream()
                 .sorted(Comparator.comparing(JIPipeExpressionRegistry.ExpressionFunctionEntry::getName)).collect(Collectors.toList()));
         String[] searchStrings = searchField.getSearchStrings();
-        if(searchStrings == null || searchStrings.length == 0) {
+        if (searchStrings == null || searchStrings.length == 0) {
             DefaultListModel<Object> model = new DefaultListModel<>();
             for (Object dataItem : dataItems) {
                 model.addElement(dataItem);
             }
             commandPaletteList.setModel(model);
-        }
-        else {
+        } else {
             DefaultListModel<Object> model = new DefaultListModel<>();
             for (Object item : RankedData.getSortedAndFilteredData(dataItems, ENTRY_TO_STRING_FUNCTION, RANKING_FUNCTION, searchStrings)) {
                 model.addElement(item);
@@ -118,7 +117,7 @@ public class ExpressionBuilderUI extends JPanel {
         inserterPanel.add(inserterForm, BorderLayout.CENTER);
         inserterPanel.add(inserterButtonPanel, BorderLayout.SOUTH);
 
-        JPanel contentPanel = new JPanel(new BorderLayout(4,16));
+        JPanel contentPanel = new JPanel(new BorderLayout(4, 16));
         TokenMakerFactory tokenMakerFactory = new TokenMakerFactory() {
             @Override
             protected TokenMaker getTokenMakerImpl(String key) {
@@ -235,7 +234,7 @@ public class ExpressionBuilderUI extends JPanel {
         inserterButtonPanel.revalidate();
         inserterButtonPanel.repaint();
         Object value = commandPaletteList.getSelectedValue();
-        if(value instanceof ExpressionParameterVariable) {
+        if (value instanceof ExpressionParameterVariable) {
             ExpressionParameterVariable variable = (ExpressionParameterVariable) value;
             FormPanel.GroupHeaderPanel groupHeader = inserterForm.addGroupHeader(String.format("<html><i style=\"color: #ffdc53; \">Variable</i> %s (<code><strong>%s</strong></code>)</html>",
                     HtmlEscapers.htmlEscaper().escape(variable.getName()),
@@ -246,8 +245,7 @@ public class ExpressionBuilderUI extends JPanel {
             insertButton.addActionListener(e -> insertAtCaret(variable.getKey()));
             inserterButtonPanel.add(Box.createHorizontalGlue());
             inserterButtonPanel.add(insertButton);
-        }
-        else  if(value instanceof ExpressionConstantEntry) {
+        } else if (value instanceof ExpressionConstantEntry) {
             ExpressionConstantEntry constantEntry = (ExpressionConstantEntry) value;
             FormPanel.GroupHeaderPanel groupHeader = inserterForm.addGroupHeader(String.format("<html><i style=\"color: #0000ff; \">Constant</i> %s (<code><strong>%s</strong></code>)</html>",
                     HtmlEscapers.htmlEscaper().escape(constantEntry.getName()),
@@ -265,8 +263,7 @@ public class ExpressionBuilderUI extends JPanel {
             insertButton.setToolTipText("Inserts the constant.");
             insertButton.addActionListener(e -> insertAtCaret(constantEntry.getConstant().getName()));
             inserterButtonPanel.add(insertButton);
-        }
-        else if(value instanceof ExpressionOperatorEntry) {
+        } else if (value instanceof ExpressionOperatorEntry) {
             ExpressionOperatorEntry operatorEntry = (ExpressionOperatorEntry) value;
             FormPanel.GroupHeaderPanel groupHeader = inserterForm.addGroupHeader(String.format("<html><i style=\"color: #854745; \">Operator</i> %s (<code><strong>%s</strong></code>)</html>",
                     HtmlEscapers.htmlEscaper().escape(operatorEntry.getName()),
@@ -294,8 +291,7 @@ public class ExpressionBuilderUI extends JPanel {
             insertSymbolButton.setToolTipText("Inserts the operator symbol.");
             insertSymbolButton.addActionListener(e -> insertAtCaret(operatorEntry.getOperator().getSymbol()));
             inserterButtonPanel.add(insertSymbolButton);
-        }
-        else if(value instanceof JIPipeExpressionRegistry.ExpressionFunctionEntry) {
+        } else if (value instanceof JIPipeExpressionRegistry.ExpressionFunctionEntry) {
             JIPipeExpressionRegistry.ExpressionFunctionEntry functionEntry = (JIPipeExpressionRegistry.ExpressionFunctionEntry) value;
             FormPanel.GroupHeaderPanel groupHeader = inserterForm.addGroupHeader(String.format("<html><i style=\"color: #b38814; \">Function</i> %s (<code><strong>%s</strong></code>)</html>",
                     HtmlEscapers.htmlEscaper().escape(functionEntry.getName()),
@@ -303,10 +299,10 @@ public class ExpressionBuilderUI extends JPanel {
             groupHeader.setDescription(functionEntry.getDescription());
 
             List<ExpressionBuilderParameterUI> parameterEditorUIList = new ArrayList<>();
-            if(functionEntry.getFunction().getMinimumArgumentCount() < functionEntry.getFunction().getMaximumArgumentCount()) {
+            if (functionEntry.getFunction().getMinimumArgumentCount() < functionEntry.getFunction().getMaximumArgumentCount()) {
                 JButton addParameterButton = new JButton("Add parameter", UIUtils.getIconFromResources("actions/list-add.png"));
                 addParameterButton.addActionListener(e -> {
-                    if(parameterEditorUIList.size() < functionEntry.getFunction().getMaximumArgumentCount()) {
+                    if (parameterEditorUIList.size() < functionEntry.getFunction().getMaximumArgumentCount()) {
                         ParameterInfo info = functionEntry.getFunction().getParameterInfo(parameterEditorUIList.size());
                         ExpressionBuilderParameterUI parameterUI = new ExpressionBuilderParameterUI();
                         JLabel infoLabel = new JLabel(info.getName());
@@ -341,8 +337,7 @@ public class ExpressionBuilderUI extends JPanel {
             insertSymbolButton.setToolTipText("Inserts the function symbol.");
             insertSymbolButton.addActionListener(e -> insertAtCaret(functionEntry.getFunction().getName()));
             inserterButtonPanel.add(insertSymbolButton);
-        }
-        else {
+        } else {
             FormPanel.GroupHeaderPanel groupHeader = inserterForm.addGroupHeader("Expression builder", UIUtils.getIconFromResources("actions/insert-function.png"));
             groupHeader.setDescription("Welcome to the expression builder that simplifies the creation of expressions. On the right-hand side you will find a list of all available functions and operators. " +
                     "Please note that the list of variables can be incomplete depending on various factors.");
@@ -351,26 +346,22 @@ public class ExpressionBuilderUI extends JPanel {
     }
 
     private void appendTooltipForParameterLabel(ParameterInfo info, JLabel infoLabel) {
-        if(!StringUtils.isNullOrEmpty(info.getDescription()) && !info.getTypes().isEmpty())
+        if (!StringUtils.isNullOrEmpty(info.getDescription()) && !info.getTypes().isEmpty())
             return;
         StringBuilder tooltipBuilder = new StringBuilder();
         tooltipBuilder.append("<html>");
-        if(!StringUtils.isNullOrEmpty(info.getDescription()))
+        if (!StringUtils.isNullOrEmpty(info.getDescription()))
             tooltipBuilder.append(info.getDescription()).append("<br/><br/>");
         for (Class<?> type : info.getTypes()) {
-            if(type == String.class) {
+            if (type == String.class) {
                 tooltipBuilder.append("Accepts: Strings<br/>");
-            }
-            else if(Number.class.isAssignableFrom(type)) {
+            } else if (Number.class.isAssignableFrom(type)) {
                 tooltipBuilder.append("Accepts: Numbers<br/>");
-            }
-            else if(Collection.class.isAssignableFrom(type)) {
+            } else if (Collection.class.isAssignableFrom(type)) {
                 tooltipBuilder.append("Accepts: Arrays<br/>");
-            }
-            else if(Map.class.isAssignableFrom(type)) {
+            } else if (Map.class.isAssignableFrom(type)) {
                 tooltipBuilder.append("Accepts: Maps<br/>");
-            }
-            else {
+            } else {
                 tooltipBuilder.append("Accepts: ").append(type.getSimpleName()).append("<br/>");
             }
         }
@@ -384,53 +375,55 @@ public class ExpressionBuilderUI extends JPanel {
         result.append("(");
         boolean first = true;
         for (ExpressionBuilderParameterUI parameterUI : parameterEditorUIList) {
-           if(first)
-               first = false;
-           else
-               result.append(", ");
-           result.append(parameterUI.getCurrentExpressionValue());
+            if (first)
+                first = false;
+            else
+                result.append(", ");
+            result.append(parameterUI.getCurrentExpressionValue());
         }
         result.append(")");
         insertAtCaret(result.toString());
     }
 
     private void insertOperator(ExpressionOperatorEntry operatorEntry, List<ExpressionBuilderParameterUI> parameterEditorUIList) {
-        if(operatorEntry.getOperator().getOperandCount() == 1) {
-            if(operatorEntry.getOperator().getAssociativity() == Operator.Associativity.LEFT) {
+        if (operatorEntry.getOperator().getOperandCount() == 1) {
+            if (operatorEntry.getOperator().getAssociativity() == Operator.Associativity.LEFT) {
                 boolean symbolic = DefaultExpressionParameter.EVALUATOR.getKnownNonAlphanumericOperatorTokens().contains(operatorEntry.getOperator().getSymbol());
-                if(symbolic)
+                if (symbolic)
                     insertAtCaret(parameterEditorUIList.get(0).getCurrentExpressionValue() + operatorEntry.getOperator().getSymbol());
                 else
                     insertAtCaret(parameterEditorUIList.get(0).getCurrentExpressionValue() + " " + operatorEntry.getOperator().getSymbol());
-            }
-            else {
+            } else {
                 boolean symbolic = DefaultExpressionParameter.EVALUATOR.getKnownNonAlphanumericOperatorTokens().contains(operatorEntry.getOperator().getSymbol());
-                if(symbolic)
-                    insertAtCaret(operatorEntry.getOperator().getSymbol() + parameterEditorUIList.get(0).getCurrentExpressionValue() );
+                if (symbolic)
+                    insertAtCaret(operatorEntry.getOperator().getSymbol() + parameterEditorUIList.get(0).getCurrentExpressionValue());
                 else
                     insertAtCaret(operatorEntry.getOperator().getSymbol() + parameterEditorUIList.get(0).getCurrentExpressionValue());
             }
-        }
-        else {
+        } else {
             insertAtCaret(parameterEditorUIList.get(0).getCurrentExpressionValue() + " " + operatorEntry.getOperator().getSymbol() + " " + parameterEditorUIList.get(1).getCurrentExpressionValue());
         }
     }
 
     private void insertAtCaret(String text) {
         int caret = expressionEditor.getCaretPosition();
-        if(caret > 0) {
+        if (caret > 0) {
             try {
-                if(!Objects.equals(expressionEditor.getText(caret - 1, 1), " "))
+                if (!Objects.equals(expressionEditor.getText(caret - 1, 1), " "))
                     text = " " + text;
             } catch (BadLocationException e) {
             }
         }
         try {
-            if(!Objects.equals(expressionEditor.getText(caret, 1), " "))
+            if (!Objects.equals(expressionEditor.getText(caret, 1), " "))
                 text = text + " ";
         } catch (BadLocationException e) {
         }
         expressionEditor.insert(text, expressionEditor.getCaretPosition());
+    }
+
+    private String getExpression() {
+        return expressionEditor.getText().trim();
     }
 
     public static String showDialog(Component parent, String expression, Set<ExpressionParameterVariable> variables) {
@@ -465,37 +458,29 @@ public class ExpressionBuilderUI extends JPanel {
         dialog.setModal(true);
         dialog.setTitle("Expression builder");
         dialog.pack();
-        dialog.setSize(800,600);
+        dialog.setSize(800, 600);
         dialog.setLocationRelativeTo(null);
         dialog.setVisible(true);
         return confirmed.get() ? expressionBuilderUI.getExpression() : null;
-    }
-
-    private String getExpression() {
-        return expressionEditor.getText().trim();
     }
 
     public static class EntryToStringFunction implements Function<Object, String> {
 
         @Override
         public String apply(Object value) {
-            if(value instanceof ExpressionParameterVariable) {
+            if (value instanceof ExpressionParameterVariable) {
                 ExpressionParameterVariable variable = (ExpressionParameterVariable) value;
-              return variable.getKey() + " " + variable.getName();
-            }
-            else if(value instanceof ExpressionConstantEntry) {
+                return variable.getKey() + " " + variable.getName();
+            } else if (value instanceof ExpressionConstantEntry) {
                 ExpressionConstantEntry constantEntry = (ExpressionConstantEntry) value;
                 return constantEntry.getConstant().getName() + " " + constantEntry.getName();
-            }
-            else if(value instanceof ExpressionOperatorEntry) {
+            } else if (value instanceof ExpressionOperatorEntry) {
                 ExpressionOperatorEntry operatorEntry = (ExpressionOperatorEntry) value;
                 return operatorEntry.getOperator().getSymbol() + " " + operatorEntry.getName();
-            }
-            else if(value instanceof JIPipeExpressionRegistry.ExpressionFunctionEntry) {
+            } else if (value instanceof JIPipeExpressionRegistry.ExpressionFunctionEntry) {
                 JIPipeExpressionRegistry.ExpressionFunctionEntry functionEntry = (JIPipeExpressionRegistry.ExpressionFunctionEntry) value;
                 return functionEntry.getFunction().getName() + " " + functionEntry.getName();
-            }
-            else {
+            } else {
                 return "";
             }
         }
@@ -509,54 +494,50 @@ public class ExpressionBuilderUI extends JPanel {
             int[] result = new int[3];
             if (filterStrings.length == 0)
                 return result;
-            if(value instanceof ExpressionParameterVariable) {
+            if (value instanceof ExpressionParameterVariable) {
                 ExpressionParameterVariable variable = (ExpressionParameterVariable) value;
                 for (String string : filterStrings) {
-                    if(variable.getKey().toLowerCase().contains(string.toLowerCase()))
+                    if (variable.getKey().toLowerCase().contains(string.toLowerCase()))
                         --result[0];
-                    if(variable.getName().toLowerCase().contains(string.toLowerCase()))
+                    if (variable.getName().toLowerCase().contains(string.toLowerCase()))
                         --result[1];
-                    if(variable.getDescription().toLowerCase().contains(string.toLowerCase()))
+                    if (variable.getDescription().toLowerCase().contains(string.toLowerCase()))
                         --result[2];
                 }
-            }
-            else if(value instanceof ExpressionConstantEntry) {
+            } else if (value instanceof ExpressionConstantEntry) {
                 ExpressionConstantEntry constantEntry = (ExpressionConstantEntry) value;
                 for (String string : filterStrings) {
-                    if(constantEntry.getConstant().getName().toLowerCase().contains(string.toLowerCase()))
+                    if (constantEntry.getConstant().getName().toLowerCase().contains(string.toLowerCase()))
                         --result[0];
-                    if(constantEntry.getName().toLowerCase().contains(string.toLowerCase()))
+                    if (constantEntry.getName().toLowerCase().contains(string.toLowerCase()))
                         --result[1];
-                    if(constantEntry.getDescription().toLowerCase().contains(string.toLowerCase()))
+                    if (constantEntry.getDescription().toLowerCase().contains(string.toLowerCase()))
                         --result[2];
                 }
-            }
-            else if(value instanceof ExpressionOperatorEntry) {
+            } else if (value instanceof ExpressionOperatorEntry) {
                 ExpressionOperatorEntry operatorEntry = (ExpressionOperatorEntry) value;
                 for (String string : filterStrings) {
-                    if(operatorEntry.getOperator().getSymbol().toLowerCase().contains(string.toLowerCase()))
+                    if (operatorEntry.getOperator().getSymbol().toLowerCase().contains(string.toLowerCase()))
                         --result[0];
-                    if(operatorEntry.getName().toLowerCase().contains(string.toLowerCase()))
+                    if (operatorEntry.getName().toLowerCase().contains(string.toLowerCase()))
                         --result[1];
-                    if(operatorEntry.getDescription().toLowerCase().contains(string.toLowerCase()))
+                    if (operatorEntry.getDescription().toLowerCase().contains(string.toLowerCase()))
                         --result[2];
                 }
-            }
-            else if(value instanceof JIPipeExpressionRegistry.ExpressionFunctionEntry) {
+            } else if (value instanceof JIPipeExpressionRegistry.ExpressionFunctionEntry) {
                 JIPipeExpressionRegistry.ExpressionFunctionEntry functionEntry = (JIPipeExpressionRegistry.ExpressionFunctionEntry) value;
                 for (String string : filterStrings) {
-                    if(functionEntry.getFunction().getName().toLowerCase().contains(string.toLowerCase()))
+                    if (functionEntry.getFunction().getName().toLowerCase().contains(string.toLowerCase()))
                         --result[0];
-                    if(functionEntry.getName().toLowerCase().contains(string.toLowerCase()))
+                    if (functionEntry.getName().toLowerCase().contains(string.toLowerCase()))
                         --result[1];
-                    if(functionEntry.getDescription().toLowerCase().contains(string.toLowerCase()))
+                    if (functionEntry.getDescription().toLowerCase().contains(string.toLowerCase()))
                         --result[2];
                 }
             }
             if (result[0] == 0 && result[1] == 0 && result[2] == 0) {
                 return null;
-            }
-            else {
+            } else {
                 return result;
             }
         }
@@ -635,28 +616,25 @@ public class ExpressionBuilderUI extends JPanel {
 
         @Override
         public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-            if(value instanceof ExpressionParameterVariable) {
+            if (value instanceof ExpressionParameterVariable) {
                 typeLabel.setText("Variable");
                 typeLabel.setForeground(COLOR_VARIABLE);
                 ExpressionParameterVariable variable = (ExpressionParameterVariable) value;
                 idLabel.setText(variable.getKey());
                 nameLabel.setText(variable.getName());
-            }
-            else if(value instanceof ExpressionConstantEntry) {
+            } else if (value instanceof ExpressionConstantEntry) {
                 typeLabel.setText("Constant");
                 typeLabel.setForeground(COLOR_CONSTANT);
                 ExpressionConstantEntry constantEntry = (ExpressionConstantEntry) value;
                 idLabel.setText(constantEntry.getConstant().getName());
                 nameLabel.setText(constantEntry.getName());
-            }
-            else if(value instanceof ExpressionOperatorEntry) {
+            } else if (value instanceof ExpressionOperatorEntry) {
                 typeLabel.setText("Operator");
                 typeLabel.setForeground(COLOR_OPERATOR);
                 ExpressionOperatorEntry operatorEntry = (ExpressionOperatorEntry) value;
                 idLabel.setText(operatorEntry.getSignature());
                 nameLabel.setText(operatorEntry.getName());
-            }
-            else if(value instanceof JIPipeExpressionRegistry.ExpressionFunctionEntry) {
+            } else if (value instanceof JIPipeExpressionRegistry.ExpressionFunctionEntry) {
                 typeLabel.setText("Function");
                 typeLabel.setForeground(COLOR_FUNCTION);
                 JIPipeExpressionRegistry.ExpressionFunctionEntry functionEntry = (JIPipeExpressionRegistry.ExpressionFunctionEntry) value;

@@ -42,23 +42,22 @@ public class ToNumberFunction extends ExpressionFunction {
     @Override
     public Object evaluate(List<Object> parameters, StaticVariableSet<Object> variables) {
         Object value = parameters.get(0);
-        if(value instanceof Collection) {
+        if (value instanceof Collection) {
             List<Object> result = new ArrayList<>();
             for (Object item : ((Collection<?>) value)) {
                 result.add(convert(item));
             }
             return result;
-        }
-        else {
+        } else {
             return convert(value);
         }
     }
 
     @NotNull
     public Object convert(Object value) {
-        if(value instanceof  Number)
+        if (value instanceof Number)
             return value;
-        else if(value instanceof Boolean)
+        else if (value instanceof Boolean)
             return (boolean) value ? 1 : 0;
         else
             return NumberUtils.createDouble("" + value);

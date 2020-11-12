@@ -90,8 +90,8 @@ public class JIPipeMergingDataBatch {
     /**
      * Adds the data row of a given slot. This should not be called after the interface was generated
      *
-     * @param slot the data slot
-     * @param rowsToAdd  the rows to add
+     * @param slot      the data slot
+     * @param rowsToAdd the rows to add
      */
     public void addData(JIPipeDataSlot slot, Collection<Integer> rowsToAdd) {
         Set<Integer> rows = inputSlotRows.getOrDefault(slot, null);
@@ -116,10 +116,6 @@ public class JIPipeMergingDataBatch {
         }
         rows.clear();
         rows.add(row);
-    }
-
-    public void setAnnotations(Map<String, JIPipeAnnotation> annotations) {
-        this.annotations = annotations;
     }
 
     /**
@@ -227,6 +223,10 @@ public class JIPipeMergingDataBatch {
         return annotations;
     }
 
+    public void setAnnotations(Map<String, JIPipeAnnotation> annotations) {
+        this.annotations = annotations;
+    }
+
     /**
      * Adds an annotation to the annotation list
      *
@@ -322,11 +322,12 @@ public class JIPipeMergingDataBatch {
 
     /**
      * Returns true if there is at least one slot that has no rows attached to it
+     *
      * @return if the batch is incomplete
      */
     public boolean isIncomplete() {
         for (Set<Integer> rows : inputSlotRows.values()) {
-            if(rows.isEmpty())
+            if (rows.isEmpty())
                 return true;
         }
         return false;
@@ -334,11 +335,12 @@ public class JIPipeMergingDataBatch {
 
     /**
      * Returns true if each slot only has one row
+     *
      * @return if the batch is single
      */
     public boolean isSingle() {
         for (Set<Integer> rows : inputSlotRows.values()) {
-            if(rows.size() != 1)
+            if (rows.size() != 1)
                 return false;
         }
         return true;
@@ -346,8 +348,9 @@ public class JIPipeMergingDataBatch {
 
     /**
      * Creates a new dummy slot that contains the data of one input slot and the annotations of this batch
-     * @param info info of the new slot
-     * @param node the node that will own the new slot
+     *
+     * @param info       info of the new slot
+     * @param node       the node that will own the new slot
      * @param sourceSlot the source slot
      * @return a new dummy slot
      */

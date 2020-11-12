@@ -29,18 +29,15 @@ public class InvertFunction extends ExpressionFunction {
     @Override
     public Object evaluate(List<Object> parameters, StaticVariableSet<Object> variables) {
         Object value = parameters.get(0);
-        if(value instanceof Collection) {
+        if (value instanceof Collection) {
             ArrayList<?> list = new ArrayList<>((Collection<?>) value);
             Collections.reverse(list);
             return list;
-        }
-        else if(value instanceof Number) {
+        } else if (value instanceof Number) {
             return -((Number) value).doubleValue();
-        }
-        else if(value instanceof Boolean) {
-            return !((boolean)value);
-        }
-        else {
+        } else if (value instanceof Boolean) {
+            return !((boolean) value);
+        } else {
             return StringUtils.reverse("" + value);
         }
     }

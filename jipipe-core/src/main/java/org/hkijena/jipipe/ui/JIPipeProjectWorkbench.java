@@ -113,7 +113,7 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
             restoreTabs();
         if (GeneralUISettings.getInstance().isShowIntroduction() && showIntroduction)
             documentTabPane.selectSingletonTab(TAB_INTRODUCTION);
-        if(!isNewProject && RuntimeSettings.getInstance().isRealTimeRunEnabled()) {
+        if (!isNewProject && RuntimeSettings.getInstance().isRealTimeRunEnabled()) {
             SwingUtilities.invokeLater(() -> realTimeProjectRunner.scheduleRun());
         }
     }

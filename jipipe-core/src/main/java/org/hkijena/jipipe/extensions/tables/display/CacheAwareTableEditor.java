@@ -14,8 +14,6 @@
 package org.hkijena.jipipe.extensions.tables.display;
 
 import com.google.common.eventbus.Subscribe;
-import ij.ImagePlus;
-import ij.WindowManager;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.JIPipeProjectCache;
 import org.hkijena.jipipe.api.JIPipeProjectCacheQuery;
@@ -29,7 +27,6 @@ import org.hkijena.jipipe.ui.tableanalyzer.JIPipeTableEditor;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.Component;
 import java.awt.Window;
 import java.util.Map;
 
@@ -37,15 +34,15 @@ public class CacheAwareTableEditor extends JIPipeTableEditor {
 
     private final JIPipeProject project;
     private final JIPipeWorkbench workbench;
-    private JIPipeCacheSlotDataSource dataSource;
     private final JIPipeAlgorithm algorithm;
     private final String slotName;
+    private JIPipeCacheSlotDataSource dataSource;
     private JLabel errorPanel;
     private JToggleButton cacheAwareToggle;
 
     public CacheAwareTableEditor(JIPipeWorkbench workbench, JIPipeCacheSlotDataSource dataSource) {
         super(workbench, new ResultsTableData());
-        this.project = ((JIPipeProjectWorkbench)workbench).getProject();
+        this.project = ((JIPipeProjectWorkbench) workbench).getProject();
         this.workbench = workbench;
         this.dataSource = dataSource;
         this.algorithm = (JIPipeAlgorithm) project.getGraph().getEquivalentAlgorithm(dataSource.getSlot().getNode());
@@ -59,7 +56,7 @@ public class CacheAwareTableEditor extends JIPipeTableEditor {
     private void initialize() {
         cacheAwareToggle.setSelected(true);
         cacheAwareToggle.addActionListener(e -> {
-            if(cacheAwareToggle.isSelected()) {
+            if (cacheAwareToggle.isSelected()) {
                 reloadFromCurrentCache();
             }
         });
@@ -79,29 +76,18 @@ public class CacheAwareTableEditor extends JIPipeTableEditor {
         this.cacheAwareToggle = new JToggleButton("Refresh to cache", UIUtils.getIconFromResources("actions/view-refresh.png"));
         toolBar.add(cacheAwareToggle);
 
-        errorPanel = new JLabel("",  UIUtils.getIconFromResources("emblems/no-data.png"), JLabel.LEFT);
+        errorPanel = new JLabel("", UIUtils.getIconFromResources("emblems/no-data.png"), JLabel.LEFT);
         toolBar.add(errorPanel);
-    }
-
-    public static void show(JIPipeWorkbench workbench, JIPipeCacheSlotDataSource dataSource, String displayName) {
-        CacheAwareTableEditor dataDisplay = new CacheAwareTableEditor(workbench, dataSource);
-        JFrame frame = new JFrame(displayName);
-        frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        frame.setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
-        frame.setContentPane(dataDisplay);
-        frame.pack();
-        frame.setSize(1024,768);
-        frame.setVisible(true);
     }
 
     @Subscribe
     public void onCacheUpdated(JIPipeProjectCache.ModifiedEvent event) {
         Window window = SwingUtilities.getWindowAncestor(this);
-        if(window == null || !window.isVisible())
+        if (window == null || !window.isVisible())
             return;
-        if(!isDisplayable())
+        if (!isDisplayable())
             return;
-        if(!cacheAwareToggle.isSelected())
+        if (!cacheAwareToggle.isSelected())
             return;
         reloadFromCurrentCache();
     }
@@ -111,14 +97,24 @@ public class CacheAwareTableEditor extends JIPipeTableEditor {
         Map<String, JIPipeDataSlot> currentCache = query.getCachedCache(algorithm);
         JIPipeDataSlot slot = currentCache.getOrDefault(slotName, null);
         errorPanel.setVisible(false);
-        if(slot != null && slot.getRowCount() > dataSource.getRow()) {
+        if (slot != null && slot.getRowCount() > dataSource.getRow()) {
             setTableModel(new ResultsTableData());
             dataSource = new JIPipeCacheSlotDataSource(slot, dataSource.getRow());
             loadDataFromDataSource();
-        }
-        else {
+        } else {
             errorPanel.setVisible(true);
             setTableModel(new ResultsTableData());
         }
+    }
+
+    public static void show(JIPipeWorkbench workbench, JIPipeCacheSlotDataSource dataSource, String displayName) {
+        CacheAwareTableEditor dataDisplay = new CacheAwareTableEditor(workbench, dataSource);
+        JFrame frame = new JFrame(displayName);
+        frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        frame.setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
+        frame.setContentPane(dataDisplay);
+        frame.pack();
+        frame.setSize(1024, 768);
+        frame.setVisible(true);
     }
 }

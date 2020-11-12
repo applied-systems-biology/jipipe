@@ -53,19 +53,19 @@ public class JIPipeAlgorithmSourceFinderUI extends JPanel {
     private final String compartment;
     private final JIPipeAlgorithmSourceRanking ranking;
     private final EventBus eventBus = new EventBus();
-    private SearchTextField searchField;
     private final List<Object> availableContents = new ArrayList<>();
-    private FormPanel formPanel;
     /**
      * Contains {@link JIPipeNodeInfo} or {@link JIPipeGraphNode} instances
      */
     private final ArrayDeque<Object> infiniteScrollingQueue = new ArrayDeque<>();
+    private SearchTextField searchField;
+    private FormPanel formPanel;
     private final Timer scrollToBeginTimer = new Timer(200, e -> scrollToBeginning());
 
     /**
      * Creates a new UI
      *
-     * @param canvasUI   the canvas
+     * @param canvasUI  the canvas
      * @param inputSlot The target slot
      */
     public JIPipeAlgorithmSourceFinderUI(JIPipeGraphCanvasUI canvasUI, JIPipeDataSlot inputSlot) {
@@ -143,13 +143,11 @@ public class JIPipeAlgorithmSourceFinderUI extends JPanel {
             if (rank == null)
                 continue;
             String asString;
-            if(content instanceof JIPipeNodeInfo) {
+            if (content instanceof JIPipeNodeInfo) {
                 asString = ((JIPipeNodeInfo) content).getName();
-            }
-            else if(content instanceof JIPipeGraphNode) {
+            } else if (content instanceof JIPipeGraphNode) {
                 asString = ((JIPipeGraphNode) content).getName();
-            }
-            else {
+            } else {
                 asString = "" + content;
             }
             rankedData.add(new RankedData<>(content, asString, rank));
@@ -200,15 +198,14 @@ public class JIPipeAlgorithmSourceFinderUI extends JPanel {
 
     private void updateInfiniteScroll() {
         JScrollBar scrollBar = formPanel.getScrollPane().getVerticalScrollBar();
-        if((!scrollBar.isVisible() || (scrollBar.getValue() + scrollBar.getVisibleAmount()) > (scrollBar.getMaximum() - 32)) && !infiniteScrollingQueue.isEmpty()) {
+        if ((!scrollBar.isVisible() || (scrollBar.getValue() + scrollBar.getVisibleAmount()) > (scrollBar.getMaximum() - 32)) && !infiniteScrollingQueue.isEmpty()) {
             formPanel.removeLastRow();
             Object value = infiniteScrollingQueue.removeFirst();
-            if(value instanceof JIPipeNodeInfo) {
+            if (value instanceof JIPipeNodeInfo) {
                 JIPipeAlgorithmSourceFinderAlgorithmUI algorithmUI = new JIPipeAlgorithmSourceFinderAlgorithmUI(canvasUI, inputSlot, (JIPipeNodeInfo) value);
                 algorithmUI.getEventBus().register(this);
                 formPanel.addToForm(algorithmUI, null);
-            }
-            else {
+            } else {
                 JIPipeAlgorithmSourceFinderAlgorithmUI algorithmUI = new JIPipeAlgorithmSourceFinderAlgorithmUI(canvasUI, inputSlot, (JIPipeGraphNode) value);
                 algorithmUI.getEventBus().register(this);
                 formPanel.addToForm(algorithmUI, null);

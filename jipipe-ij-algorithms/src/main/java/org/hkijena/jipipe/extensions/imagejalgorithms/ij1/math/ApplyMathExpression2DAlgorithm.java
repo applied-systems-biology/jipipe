@@ -80,10 +80,10 @@ public class ApplyMathExpression2DAlgorithm extends JIPipeSimpleIteratingAlgorit
             for (int y = 0; y < ip.getHeight(); y++) {
                 for (int x = 0; x < ip.getWidth(); x++) {
                     double value = ip.getf(x, y);
-                    variableSet.set("x", (double)x);
-                    variableSet.set("y", (double)y);
+                    variableSet.set("x", (double) x);
+                    variableSet.set("y", (double) y);
                     variableSet.set("value", value);
-                    value = ((Number)transformation.evaluate(variableSet)).doubleValue();
+                    value = ((Number) transformation.evaluate(variableSet)).doubleValue();
                     ip.setf(x, y, (float) value);
                 }
             }

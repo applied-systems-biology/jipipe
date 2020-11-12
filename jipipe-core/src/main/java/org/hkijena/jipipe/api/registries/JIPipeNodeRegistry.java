@@ -319,6 +319,7 @@ public class JIPipeNodeRegistry implements JIPipeValidatable {
 
     /**
      * Returns all node infos that create a node of the specified class
+     *
      * @param klass the class
      * @return node infos
      */
@@ -332,6 +333,7 @@ public class JIPipeNodeRegistry implements JIPipeValidatable {
 
     /**
      * Removes a node from the registry
+     *
      * @param id the node id
      */
     public void unregister(String id) {

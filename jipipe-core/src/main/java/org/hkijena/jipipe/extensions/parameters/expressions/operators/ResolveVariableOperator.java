@@ -29,7 +29,7 @@ public class ResolveVariableOperator extends ExpressionOperator {
     @Override
     public Object evaluate(Iterator<Object> operands, Object evaluationContext) {
         String right = operands.next() + "";
-        return ((StaticVariableSet<Object>)evaluationContext).get(right);
+        return ((StaticVariableSet<Object>) evaluationContext).get(right);
     }
 
     @Override

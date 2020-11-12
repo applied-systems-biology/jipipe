@@ -42,18 +42,19 @@ public class JIPipeProjectCacheQuery {
 
     /**
      * Checks if the query is invalid.
+     *
      * @return if the cache is invalid
      */
     public boolean isInvalid() {
-        if(!Objects.equals(new ArrayList<>(project.getGraph().traverseAlgorithms()), traversedNodes))
+        if (!Objects.equals(new ArrayList<>(project.getGraph().traverseAlgorithms()), traversedNodes))
             return true;
         for (Map.Entry<JIPipeGraphNode, String> entry : cachedRawStates.entrySet()) {
             JIPipeGraphNode node = entry.getKey();
-            if(node == null)
+            if (node == null)
                 return true;
-            if(node instanceof JIPipeAlgorithm) {
+            if (node instanceof JIPipeAlgorithm) {
                 String currentState = ((JIPipeAlgorithm) node).getStateId();
-                if(!Objects.equals(currentState, entry.getValue()))
+                if (!Objects.equals(currentState, entry.getValue()))
                     return true;
             }
         }
@@ -77,7 +78,7 @@ public class JIPipeProjectCacheQuery {
         cachedRawStates.clear();
         for (JIPipeGraphNode node : traversedNodes) {
             String state = "";
-            if(node instanceof JIPipeAlgorithm) {
+            if (node instanceof JIPipeAlgorithm) {
                 state = ((JIPipeAlgorithm) node).getStateId();
             }
             cachedRawStates.put(node, state);
@@ -118,16 +119,18 @@ public class JIPipeProjectCacheQuery {
 
     /**
      * Returns the cache of the current algorithm state.
+     *
      * @param node the node
      * @return map of slot name to cache slot
      */
     public Map<String, JIPipeDataSlot> getCachedCache(JIPipeGraphNode node) {
-        return project.getCache().extract((JIPipeAlgorithm)node, getCachedId(node));
+        return project.getCache().extract((JIPipeAlgorithm) node, getCachedId(node));
     }
 
     /**
      * Returns the current cache state of an algorithm node.
      * Please note that this will not necessarily be the most current id, only the one that was extracted by the last rebuild()
+     *
      * @param node the node
      * @return the current cache state with the current local date & time
      */

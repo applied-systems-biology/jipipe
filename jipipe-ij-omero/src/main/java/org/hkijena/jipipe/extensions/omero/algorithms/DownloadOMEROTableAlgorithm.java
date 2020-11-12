@@ -76,7 +76,7 @@ public class DownloadOMEROTableAlgorithm extends JIPipeSimpleIteratingAlgorithm 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         OMEROImageReferenceData imageReferenceData = dataBatch.getInputData(getFirstInputSlot(), OMEROImageReferenceData.class);
-        try(Gateway gateway = new Gateway(new OMEROToJIPipeLogger(subProgress, algorithmProgress))) {
+        try (Gateway gateway = new Gateway(new OMEROToJIPipeLogger(subProgress, algorithmProgress))) {
             ExperimenterData user = gateway.connect(credentials.getCredentials());
             SecurityContext context = new SecurityContext(user.getGroupId());
             BrowseFacility browseFacility = gateway.getFacility(BrowseFacility.class);
@@ -88,12 +88,11 @@ public class DownloadOMEROTableAlgorithm extends JIPipeSimpleIteratingAlgorithm 
                 TableData table = tablesFacility.getTable(context, fileID);
                 ResultsTableData resultsTableData = OMEROUtils.tableFromOMERO(table);
                 List<JIPipeAnnotation> annotations = new ArrayList<>();
-                if(fileNameAnnotation.isEnabled())
+                if (fileNameAnnotation.isEnabled())
                     annotations.add(new JIPipeAnnotation(fileNameAnnotation.getContent(), fileName));
                 dataBatch.addOutputData(getFirstOutputSlot(), resultsTableData, annotations);
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
@@ -110,7 +109,7 @@ public class DownloadOMEROTableAlgorithm extends JIPipeSimpleIteratingAlgorithm 
         super.reportValidity(report);
         if (tagAnnotation.isEnabled())
             report.forCategory("Tag annotation").checkNonEmpty(getTagAnnotation().getContent(), null);
-        if(fileNameAnnotation.isEnabled())
+        if (fileNameAnnotation.isEnabled())
             report.forCategory("Annotate with file name").checkNonEmpty(getFileNameAnnotation().getContent(), null);
     }
 

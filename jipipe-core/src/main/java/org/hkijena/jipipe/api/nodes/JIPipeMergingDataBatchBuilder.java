@@ -47,7 +47,7 @@ public class JIPipeMergingDataBatchBuilder {
         this.slotList.clear();
         this.slotList.addAll(slots);
         for (JIPipeDataSlot slot : slots) {
-            this.slots.put(slot.getName(), slot);   
+            this.slots.put(slot.getName(), slot);
         }
     }
 
@@ -59,14 +59,15 @@ public class JIPipeMergingDataBatchBuilder {
      * Sets the reference columns
      * An empty list merges all data into one batch
      * Setting it to null splits all data into a separate batch
+     *
      * @param referenceColumns the reference columns
      */
     public void setReferenceColumns(Set<String> referenceColumns) {
         this.referenceColumns = referenceColumns;
     }
-    
+
     public void setReferenceColumns(JIPipeColumnGrouping columnGrouping, StringQueryExpression customColumns) {
-        if(slots.isEmpty())
+        if (slots.isEmpty())
             System.err.println("Warning: Trying to calculate reference columns with empty slot list!");
         switch (columnGrouping) {
             case Custom:
@@ -102,7 +103,7 @@ public class JIPipeMergingDataBatchBuilder {
         }
         return new HashSet<>(expression.queryAll(result));
     }
-    
+
     public Set<String> getInputAnnotationColumnIntersection(String prefix) {
         Set<String> result = new HashSet<>();
         for (JIPipeDataSlot inputSlot : slots.values()) {
@@ -128,7 +129,7 @@ public class JIPipeMergingDataBatchBuilder {
     public List<JIPipeMergingDataBatch> build() {
 
         // Special case: Merge all
-        if(getReferenceColumns().isEmpty()) {
+        if (getReferenceColumns().isEmpty()) {
             JIPipeMergingDataBatch batch = new JIPipeMergingDataBatch(this.node);
             for (JIPipeDataSlot slot : slotList) {
                 for (int row = 0; row < slot.getRowCount(); row++) {
@@ -157,11 +158,11 @@ public class JIPipeMergingDataBatchBuilder {
                     annotations.put("uid", slot.getName() + "/" + row);
                 }
                 RowNode rowNode = new RowNode(slot, row, annotations);
-                if(!applyMerging)
+                if (!applyMerging)
                     graph.addVertex(rowNode);
                 rowNodesBySlot.put(slot, rowNode);
             }
-            if(applyMerging) {
+            if (applyMerging) {
                 Map<Map<String, String>, List<RowNode>> partitions = rowNodesBySlot.get(slot).stream().collect(Collectors.groupingBy(RowNode::getAnnotations));
                 rowNodesBySlot.removeAll(slot);
                 for (Map.Entry<Map<String, String>, List<RowNode>> entry : partitions.entrySet()) {
@@ -182,7 +183,7 @@ public class JIPipeMergingDataBatchBuilder {
             JIPipeDataSlot currentSlot = slotList.get(layer);
             for (RowNode previousNode : rowNodesBySlot.get(previousSlot)) {
                 for (RowNode currentNode : rowNodesBySlot.get(currentSlot)) {
-                    if(previousNode.isCompatibleTo(currentNode)) {
+                    if (previousNode.isCompatibleTo(currentNode)) {
                         graph.addEdge(previousNode, currentNode);
                     }
                 }
@@ -190,8 +191,8 @@ public class JIPipeMergingDataBatchBuilder {
         }
 
         // Create source and sink
-        RowNode source = new RowNode(null, 0,  Collections.singletonMap("", "source"));
-        RowNode sink = new RowNode(null, 0,  Collections.singletonMap("", "sink"));
+        RowNode source = new RowNode(null, 0, Collections.singletonMap("", "source"));
+        RowNode sink = new RowNode(null, 0, Collections.singletonMap("", "sink"));
         graph.addVertex(source);
         graph.addVertex(sink);
 
@@ -207,11 +208,11 @@ public class JIPipeMergingDataBatchBuilder {
         for (int i = 0; i < slotList.size(); i++) {
 
             // Check source orphans
-            if(i != 0) {
+            if (i != 0) {
                 ShortestPathAlgorithm<RowNode, DefaultEdge> shortestPathAlgorithm = new DijkstraShortestPath<>(graph);
                 Set<RowNode> orphans = new HashSet<>();
                 for (RowNode rowNode : rowNodesBySlot.get(slotList.get(i))) {
-                    if(shortestPathAlgorithm.getPath(source, rowNode) == null) {
+                    if (shortestPathAlgorithm.getPath(source, rowNode) == null) {
                         orphans.add(rowNode);
                     }
                 }
@@ -221,11 +222,11 @@ public class JIPipeMergingDataBatchBuilder {
                 }
             }
             // Check sink orphans
-            if(i != slotList.size() - 1) {
+            if (i != slotList.size() - 1) {
                 ShortestPathAlgorithm<RowNode, DefaultEdge> shortestPathAlgorithm = new DijkstraShortestPath<>(graph);
                 Set<RowNode> orphans = new HashSet<>();
                 for (RowNode rowNode : rowNodesBySlot.get(slotList.get(i))) {
-                    if(shortestPathAlgorithm.getPath(rowNode, sink) == null) {
+                    if (shortestPathAlgorithm.getPath(rowNode, sink) == null) {
                         orphans.add(rowNode);
                     }
                 }
@@ -251,7 +252,7 @@ public class JIPipeMergingDataBatchBuilder {
         for (GraphPath<RowNode, DefaultEdge> path : directedPaths.getAllPaths(source, sink, false, Integer.MAX_VALUE)) {
             JIPipeMergingDataBatch dataBatch = new JIPipeMergingDataBatch(this.node);
             for (RowNode rowNode : path.getVertexList()) {
-                if(rowNode == source || rowNode == sink)
+                if (rowNode == source || rowNode == sink)
                     continue;
                 dataBatch.addData(rowNode.slot, rowNode.rows);
                 dataBatch.addGlobalAnnotations(rowNode.annotations, annotationMergeStrategy);
@@ -267,6 +268,22 @@ public class JIPipeMergingDataBatchBuilder {
 
     public void setApplyMerging(boolean applyMerging) {
         this.applyMerging = applyMerging;
+    }
+
+    public JIPipeGraphNode getNode() {
+        return node;
+    }
+
+    public void setNode(JIPipeGraphNode node) {
+        this.node = node;
+    }
+
+    public JIPipeAnnotationMergeStrategy getAnnotationMergeStrategy() {
+        return annotationMergeStrategy;
+    }
+
+    public void setAnnotationMergeStrategy(JIPipeAnnotationMergeStrategy annotationMergeStrategy) {
+        this.annotationMergeStrategy = annotationMergeStrategy;
     }
 
     public static void main(String[] args) {
@@ -297,6 +314,7 @@ public class JIPipeMergingDataBatchBuilder {
 
     /**
      * Builds a single data batch where each slot only can have one row
+     *
      * @return the list of batched or null if none can be generated
      */
     public static List<JIPipeDataBatch> convertMergingToSingleDataBatches(List<JIPipeMergingDataBatch> mergingDataBatches) {
@@ -304,7 +322,7 @@ public class JIPipeMergingDataBatchBuilder {
         for (JIPipeMergingDataBatch batch : mergingDataBatches) {
             JIPipeDataBatch singleBatch = new JIPipeDataBatch(batch.getNode());
             for (Map.Entry<JIPipeDataSlot, Set<Integer>> entry : batch.getInputSlotRows().entrySet()) {
-                if(entry.getValue().size() != 1)
+                if (entry.getValue().size() != 1)
                     return null;
                 int targetRow = entry.getValue().iterator().next();
                 singleBatch.setData(entry.getKey(), targetRow);
@@ -313,22 +331,6 @@ public class JIPipeMergingDataBatchBuilder {
             result.add(singleBatch);
         }
         return result;
-    }
-
-    public JIPipeGraphNode getNode() {
-        return node;
-    }
-
-    public void setNode(JIPipeGraphNode node) {
-        this.node = node;
-    }
-
-    public JIPipeAnnotationMergeStrategy getAnnotationMergeStrategy() {
-        return annotationMergeStrategy;
-    }
-
-    public void setAnnotationMergeStrategy(JIPipeAnnotationMergeStrategy annotationMergeStrategy) {
-        this.annotationMergeStrategy = annotationMergeStrategy;
     }
 
     /**
@@ -355,7 +357,7 @@ public class JIPipeMergingDataBatchBuilder {
             Set<String> annotationsToTest = new HashSet<>(annotations.keySet());
             annotationsToTest.retainAll(otherNode.annotations.keySet());
             for (String key : annotationsToTest) {
-                if(!Objects.equals(annotations.get(key), otherNode.annotations.get(key)))
+                if (!Objects.equals(annotations.get(key), otherNode.annotations.get(key)))
                     return false;
             }
             return true;
@@ -364,7 +366,7 @@ public class JIPipeMergingDataBatchBuilder {
         @Override
         public String toString() {
             StringBuilder builder = new StringBuilder();
-            if(slot != null)
+            if (slot != null)
                 builder.append(slot.getName()).append(" / ").append(rows.stream().map(s -> "" + s).collect(Collectors.joining(","))).append("\n");
             for (Map.Entry<String, String> entry : annotations.entrySet()) {
                 builder.append(entry.getKey()).append("=").append(entry.getValue()).append("\n");

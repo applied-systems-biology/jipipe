@@ -220,6 +220,13 @@ public class ImageViewerPanelCanvas extends JPanel implements MouseListener, Mou
         return error;
     }
 
+    public void setError(Component error) {
+        this.error = error;
+        this.renderedError = null;
+        revalidate();
+        repaint();
+    }
+
     private BufferedImage createImage(Component panel) {
         Dimension size = new Dimension(panel.getBounds().width, panel.getBounds().height);
         BufferedImage image = new BufferedImage(
@@ -271,13 +278,6 @@ public class ImageViewerPanelCanvas extends JPanel implements MouseListener, Mou
 
     public void setContentY(int contentY) {
         this.contentY = contentY;
-        revalidate();
-        repaint();
-    }
-
-    public void setError(Component error) {
-        this.error = error;
-        this.renderedError = null;
         revalidate();
         repaint();
     }

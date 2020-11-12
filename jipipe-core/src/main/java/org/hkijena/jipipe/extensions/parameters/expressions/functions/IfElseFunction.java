@@ -31,7 +31,7 @@ public class IfElseFunction extends ExpressionFunction {
     @Override
     public Object evaluate(List<Object> parameters, StaticVariableSet<Object> variables) {
         boolean condition = (boolean) parameters.get(0);
-        if(condition)
+        if (condition)
             return parameters.get(1);
         else
             return parameters.get(2);

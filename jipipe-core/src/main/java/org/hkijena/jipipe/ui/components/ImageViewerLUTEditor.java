@@ -45,7 +45,7 @@ public class ImageViewerLUTEditor extends JPanel implements ThumbListener {
     private JButton addThumbButton;
     private JButton changeColorButton;
     private JButton invertColorsButton;
-    private ColorIcon changeColorButtonDisplayedColor = new ColorIcon(16,16);
+    private ColorIcon changeColorButtonDisplayedColor = new ColorIcon(16, 16);
     private boolean isUpdating = false;
     private String channelName;
     private LUT cachedLUT;
@@ -59,8 +59,8 @@ public class ImageViewerLUTEditor extends JPanel implements ThumbListener {
 
     public void loadLUTFromImage() {
         ImagePlus image = imageViewerPanel.getImage();
-        if(image != null) {
-            if(targetChannel < image.getLuts().length) {
+        if (image != null) {
+            if (targetChannel < image.getLuts().length) {
                 importLUT(image.getLuts()[targetChannel]);
             }
         }
@@ -70,7 +70,7 @@ public class ImageViewerLUTEditor extends JPanel implements ThumbListener {
         isUpdating = true;
         Color black = new Color(lut.getRGB(0));
         Color white = new Color(lut.getRGB(255));
-        while(slider.getModel().getThumbCount() > 2) {
+        while (slider.getModel().getThumbCount() > 2) {
             slider.getModel().removeThumb(0);
         }
         slider.getModel().getThumbAt(0).setPosition(0);
@@ -81,7 +81,7 @@ public class ImageViewerLUTEditor extends JPanel implements ThumbListener {
     }
 
     public LUT getLUT() {
-        if(cachedLUT == null)
+        if (cachedLUT == null)
             cachedLUT = generateLUT();
         return cachedLUT;
     }
@@ -96,7 +96,7 @@ public class ImageViewerLUTEditor extends JPanel implements ThumbListener {
     }
 
     private void updateFromStop(int thumb, Color color) {
-        if(thumb == -1) {
+        if (thumb == -1) {
             changeColorButton.setEnabled(false);
             changeColorButtonDisplayedColor.setFillColor(Color.black);
             changeColorButton.repaint();
@@ -111,7 +111,7 @@ public class ImageViewerLUTEditor extends JPanel implements ThumbListener {
     }
 
     private void updateDeleteButtons() {
-        if(slider.getModel().getThumbCount() <= 2) {
+        if (slider.getModel().getThumbCount() <= 2) {
             deleteThumbButton.setEnabled(false);
         }
     }
@@ -123,7 +123,7 @@ public class ImageViewerLUTEditor extends JPanel implements ThumbListener {
         slider.getModel().addThumb(1, Color.WHITE);
         slider.setTrackRenderer(new GradientTrackRenderer());
         slider.setThumbRenderer(new GradientThumbRenderer());
-        slider.setPreferredSize(new Dimension(100,35));
+        slider.setPreferredSize(new Dimension(100, 35));
         slider.addMultiThumbListener(this);
         changeColorButton = new JButton(changeColorButtonDisplayedColor);
         addThumbButton = new JButton(UIUtils.getIconFromResources("actions/color-add.png"));
@@ -138,7 +138,7 @@ public class ImageViewerLUTEditor extends JPanel implements ThumbListener {
         add(slider, BorderLayout.CENTER);
 
         JPanel settingsPanel = new JPanel();
-        settingsPanel.setBorder(BorderFactory.createEmptyBorder(12,4,0,0));
+        settingsPanel.setBorder(BorderFactory.createEmptyBorder(12, 4, 0, 0));
         settingsPanel.setLayout(new BoxLayout(settingsPanel, BoxLayout.X_AXIS));
         settingsPanel.add(changeColorButton);
         settingsPanel.add(addThumbButton);
@@ -173,11 +173,11 @@ public class ImageViewerLUTEditor extends JPanel implements ThumbListener {
         if (index >= 0) {
             Color color = slider.getModel().getThumbAt(index).getObject();
             color = JColorChooser.showDialog(this, "Select color", color);
-            if(color != null) {
+            if (color != null) {
                 slider.getModel().getThumbAt(index).setObject(color);
                 updateFromStop(index, color);
                 cachedLUT = null;
-                if(!isUpdating) {
+                if (!isUpdating) {
                     applyLUT();
                 }
             }
@@ -185,7 +185,7 @@ public class ImageViewerLUTEditor extends JPanel implements ThumbListener {
     }
 
     private void removeColor() {
-        if(slider.getModel().getThumbCount() <= 2)
+        if (slider.getModel().getThumbCount() <= 2)
             return;
         int index = slider.getSelectedIndex();
         if (index >= 0) {
@@ -198,7 +198,7 @@ public class ImageViewerLUTEditor extends JPanel implements ThumbListener {
     private void addColor() {
         float pos = 0.2f;
         Color color = Color.black;
-        int num = slider.getModel().addThumb(pos,color);
+        int num = slider.getModel().addThumb(pos, color);
         cachedLUT = null;
     }
 
@@ -216,14 +216,14 @@ public class ImageViewerLUTEditor extends JPanel implements ThumbListener {
         updateFromStop(thumb, color);
         updateDeleteButtons();
         cachedLUT = null;
-        if(!isUpdating) {
+        if (!isUpdating) {
             applyLUT();
         }
     }
 
     @Override
     public void thumbSelected(int thumb) {
-        if(thumb == -1) {
+        if (thumb == -1) {
             updateFromStop(-1, Color.black);
             return;
         }
@@ -236,22 +236,22 @@ public class ImageViewerLUTEditor extends JPanel implements ThumbListener {
 
     @Override
     public void mousePressed(MouseEvent evt) {
-        if(evt.getClickCount() > 1) {
+        if (evt.getClickCount() > 1) {
             changeColor();
         }
     }
 
     public void applyLUT() {
         ImagePlus image = imageViewerPanel.getImage();
-        if(image != null) {
-            if(targetChannel < image.getNChannels()) {
+        if (image != null) {
+            if (targetChannel < image.getNChannels()) {
                 int z = image.getZ();
                 int c = image.getC();
                 int t = image.getT();
                 image.setPosition(targetChannel + 1, 1, 1);
                 image.setLut(getLUT());
                 image.setPosition(c, z, t);
-                if(c == targetChannel + 1) {
+                if (c == targetChannel + 1) {
                     imageViewerPanel.uploadSliceToCanvas();
                 }
             }

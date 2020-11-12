@@ -33,7 +33,7 @@ public class MainWindow extends JFrame {
     private final InstallerRun installerRun = new InstallerRun();
 
     public MainWindow() {
-     initialize();
+        initialize();
         JIPipeRunnerQueue.getInstance().getEventBus().register(this);
     }
 

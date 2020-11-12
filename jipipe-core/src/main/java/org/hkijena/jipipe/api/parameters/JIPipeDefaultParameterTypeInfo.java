@@ -53,7 +53,7 @@ public class JIPipeDefaultParameterTypeInfo implements JIPipeParameterTypeInfo {
 
     @Override
     public Object duplicate(Object original) {
-        if(original == null)
+        if (original == null)
             return newInstance();
         return duplicateFunction.apply(original);
     }

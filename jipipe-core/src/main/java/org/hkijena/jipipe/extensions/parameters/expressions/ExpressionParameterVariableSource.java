@@ -23,6 +23,7 @@ import java.util.Set;
 public interface ExpressionParameterVariableSource {
     /**
      * Returns the list of known variables for the user interface.
+     *
      * @param parameterAccess the parameter access that holds the {@link ExpressionParameter} instance.
      * @return the list of variables
      */

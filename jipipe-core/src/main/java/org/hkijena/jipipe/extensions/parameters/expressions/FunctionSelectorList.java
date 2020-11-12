@@ -43,7 +43,7 @@ public class FunctionSelectorList extends JList<JIPipeExpressionRegistry.Express
         DefaultListModel<JIPipeExpressionRegistry.ExpressionFunctionEntry> model = new DefaultListModel<>();
         for (JIPipeExpressionRegistry.ExpressionFunctionEntry functionEntry : JIPipe.getInstance().getExpressionRegistry().getRegisteredExpressionFunctions().values().stream()
                 .sorted(Comparator.comparing(JIPipeExpressionRegistry.ExpressionFunctionEntry::getName)).collect(Collectors.toList())) {
-               model.addElement(functionEntry);
+            model.addElement(functionEntry);
         }
         setCellRenderer(new ExpressionFunctionRenderer());
         setModel(model);
@@ -74,7 +74,7 @@ public class FunctionSelectorList extends JList<JIPipeExpressionRegistry.Express
         functionSelectorList.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if(e.getClickCount() == 2) {
+                if (e.getClickCount() == 2) {
                     confirmed.set(true);
                     dialog.setVisible(false);
                 }
@@ -88,7 +88,7 @@ public class FunctionSelectorList extends JList<JIPipeExpressionRegistry.Express
         dialog.setModal(true);
         dialog.setTitle("Select expression function");
         dialog.pack();
-        dialog.setSize(640,480);
+        dialog.setSize(640, 480);
         dialog.setLocationRelativeTo(null);
         UIUtils.addEscapeListener(dialog);
         dialog.setVisible(true);

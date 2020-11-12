@@ -371,18 +371,6 @@ public class JIPipeDatatypeRegistry {
     }
 
     /**
-     * Returns true if the input data type can be trivially converted into the output data type.
-     * A trivial conversion is applied when the input data is the same as the output data type or inherits from it.
-     *
-     * @param inputDataType  the input data type
-     * @param outputDataType the output data type
-     * @return if the output data type can be assigned from the input data type without any explicit conversion rules
-     */
-    public static boolean isTriviallyConvertible(Class<? extends JIPipeData> inputDataType, Class<? extends JIPipeData> outputDataType) {
-        return outputDataType.isAssignableFrom(inputDataType);
-    }
-
-    /**
      * Registers a custom icon for a datatype
      *
      * @param klass        data class
@@ -448,11 +436,11 @@ public class JIPipeDatatypeRegistry {
     /**
      * Returns a cell renderer for dataslot result table
      *
-     * @param klass data class
+     * @param klass     data class
      * @param workbench the workbench
-     * @param table the table that owns the renderer
-     * @param slot the slot
-     * @param row the data row
+     * @param table     the table that owns the renderer
+     * @param slot      the slot
+     * @param row       the data row
      * @return cell renderer
      */
     public JIPipeResultDataSlotPreview getCellRendererFor(Class<? extends JIPipeData> klass, JIPipeProjectWorkbench workbench, JTable table, JIPipeDataSlot slot, JIPipeExportedDataTable.Row row) {
@@ -482,6 +470,18 @@ public class JIPipeDatatypeRegistry {
      */
     public URL getIconURLFor(JIPipeDataInfo info) {
         return getIconURLFor(info.getDataClass());
+    }
+
+    /**
+     * Returns true if the input data type can be trivially converted into the output data type.
+     * A trivial conversion is applied when the input data is the same as the output data type or inherits from it.
+     *
+     * @param inputDataType  the input data type
+     * @param outputDataType the output data type
+     * @return if the output data type can be assigned from the input data type without any explicit conversion rules
+     */
+    public static boolean isTriviallyConvertible(Class<? extends JIPipeData> inputDataType, Class<? extends JIPipeData> outputDataType) {
+        return outputDataType.isAssignableFrom(inputDataType);
     }
 
     /**

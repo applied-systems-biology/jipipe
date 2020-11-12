@@ -598,7 +598,7 @@ public class ResultsTableData implements JIPipeData, TableModel {
 
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
-        if(columnIndex >= getColumnCount() || rowIndex >= getRowCount())
+        if (columnIndex >= getColumnCount() || rowIndex >= getRowCount())
             return null;
         if (isNumeric(columnIndex)) {
             return table.getValueAsDouble(columnIndex, rowIndex);
@@ -907,26 +907,26 @@ public class ResultsTableData implements JIPipeData, TableModel {
     /**
      * Sets a column from another table column.
      * If the types do not match, the old column is deleted
+     *
      * @param columnName the column name
-     * @param column the column data
+     * @param column     the column data
      */
     public void setColumn(String columnName, TableColumn column) {
         int columnIndex = getColumnIndex(columnName);
-        if(columnIndex != -1) {
-            if(column.isNumeric() != isNumeric(columnIndex)) {
+        if (columnIndex != -1) {
+            if (column.isNumeric() != isNumeric(columnIndex)) {
                 removeColumnAt(columnIndex);
                 columnIndex = -1;
             }
         }
-        if(columnIndex == -1) {
+        if (columnIndex == -1) {
             columnIndex = addColumn(columnName, !column.isNumeric());
         }
-        if(column.isNumeric()) {
+        if (column.isNumeric()) {
             for (int row = 0; row < getRowCount(); row++) {
                 setValueAt(column.getRowAsDouble(row), row, columnIndex);
             }
-        }
-        else {
+        } else {
             for (int row = 0; row < getRowCount(); row++) {
                 setValueAt(column.getRowAsString(row), row, columnIndex);
             }
@@ -936,27 +936,27 @@ public class ResultsTableData implements JIPipeData, TableModel {
     /**
      * Sets a column from another table column.
      * The column type is forced by the third parameter
+     *
      * @param columnName the column name
-     * @param column the column data
-     * @param numeric if the table column should be numeric
+     * @param column     the column data
+     * @param numeric    if the table column should be numeric
      */
     public void setColumn(String columnName, TableColumn column, boolean numeric) {
         int columnIndex = getColumnIndex(columnName);
-        if(columnIndex != -1) {
-            if(numeric != isNumeric(columnIndex)) {
+        if (columnIndex != -1) {
+            if (numeric != isNumeric(columnIndex)) {
                 removeColumnAt(columnIndex);
                 columnIndex = -1;
             }
         }
-        if(columnIndex == -1) {
+        if (columnIndex == -1) {
             columnIndex = addColumn(columnName, !column.isNumeric());
         }
-        if(numeric) {
+        if (numeric) {
             for (int row = 0; row < getRowCount(); row++) {
                 setValueAt(column.getRowAsDouble(row), row, columnIndex);
             }
-        }
-        else {
+        } else {
             for (int row = 0; row < getRowCount(); row++) {
                 setValueAt(column.getRowAsString(row), row, columnIndex);
             }

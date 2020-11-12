@@ -41,11 +41,11 @@ import java.util.function.Supplier;
  * Runnable instance of an {@link JIPipeProject}
  */
 public class JIPipeRun implements JIPipeRunnable {
-    JIPipeGraph algorithmGraph;
     private final JIPipeProject project;
     private final JIPipeProjectCacheQuery cacheQuery;
     private final JIPipeRunSettings configuration;
     private final StringBuilder log = new StringBuilder();
+    JIPipeGraph algorithmGraph;
     private JIPipeFixedThreadPool threadPool;
 
     /**
@@ -166,7 +166,7 @@ public class JIPipeRun implements JIPipeRunnable {
                 if (configuration.getOutputPath() != null)
                     Files.write(configuration.getOutputPath().resolve("log.txt"), log.toString().getBytes(Charsets.UTF_8));
             } catch (IOException ex) {
-                if(!configuration.isSilent())
+                if (!configuration.isSilent())
                     IJ.handleException(ex);
             }
             throw e;
@@ -250,7 +250,7 @@ public class JIPipeRun implements JIPipeRunnable {
         // There might be some algorithms missing (ones that do not have an output)
         List<JIPipeGraphNode> additionalAlgorithms = new ArrayList<>();
         for (JIPipeGraphNode node : algorithmGraph.getNodes().values()) {
-            if(!executedAlgorithms.contains(node) && !unExecutableAlgorithms.contains(node)) {
+            if (!executedAlgorithms.contains(node) && !unExecutableAlgorithms.contains(node)) {
                 additionalAlgorithms.add(node);
             }
         }

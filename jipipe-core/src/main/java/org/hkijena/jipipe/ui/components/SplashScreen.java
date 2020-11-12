@@ -180,7 +180,7 @@ public class SplashScreen extends JWindow implements LogListener, Contextual {
             setOpaque(false);
             setLayout(null);
             try {
-                if(UIUtils.getThemeFromRawSettings().isDark())
+                if (UIUtils.getThemeFromRawSettings().isDark())
                     backgroundImage = ImageIO.read(ResourceUtils.getPluginResource("splash-screen-dark.png"));
                 else
                     backgroundImage = ImageIO.read(ResourceUtils.getPluginResource("splash-screen.png"));

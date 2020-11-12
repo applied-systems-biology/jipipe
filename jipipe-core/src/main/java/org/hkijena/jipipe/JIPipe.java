@@ -103,32 +103,6 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
     @Parameter
     private PluginService pluginService;
 
-    public static JIPipeParameterTypeRegistry getParameterTypes() {
-        return instance.parameterTypeRegistry;
-    }
-
-    public static JIPipeExpressionRegistry getTableOperations() {
-        return instance.tableOperationRegistry;
-    }
-
-    public static JIPipeCustomMenuRegistry getCustomMenus() {
-        return instance.customMenuRegistry;
-    }
-
-    public static JIPipeImageJAdapterRegistry getImageJAdapters() { return instance.imageJDataAdapterRegistry; }
-
-    public static JIPipeSettingsRegistry getSettings() {
-        return instance.settingsRegistry;
-    }
-
-    public static JIPipeNodeRegistry getNodes() {
-        return instance.nodeRegistry;
-    }
-
-    public static JIPipeDatatypeRegistry getDataTypes() {
-        return instance.datatypeRegistry;
-    }
-
     public JIPipe() {
     }
 
@@ -222,8 +196,7 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
                     // Test duplication
                     try {
                         algorithm.duplicate();
-                    }
-                    catch (Exception e1) {
+                    } catch (Exception e1) {
                         throw new UserFriendlyRuntimeException(e1,
                                 "A plugin is invalid!",
                                 "JIPipe plugin checker",
@@ -234,8 +207,7 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
                     // Test serialization
                     try {
                         JsonUtils.toJsonString(algorithm);
-                    }
-                    catch (Exception e1) {
+                    } catch (Exception e1) {
                         throw new UserFriendlyRuntimeException(e1,
                                 "A plugin is invalid!",
                                 "JIPipe plugin checker",
@@ -248,8 +220,7 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
                         if (algorithm instanceof JIPipeAlgorithm) {
                             ((JIPipeAlgorithm) algorithm).getStateId();
                         }
-                    }
-                    catch (Exception e1) {
+                    } catch (Exception e1) {
                         throw new UserFriendlyRuntimeException(e1,
                                 "A plugin is invalid!",
                                 "JIPipe plugin checker",
@@ -312,7 +283,6 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
         }
     }
 
-
     private void updateDefaultImporterSettings() {
         DefaultResultImporterSettings settings = settingsRegistry.getSettings(DefaultResultImporterSettings.ID, DefaultResultImporterSettings.class);
         for (String id : datatypeRegistry.getRegisteredDataTypes().keySet()) {
@@ -328,7 +298,7 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
             for (JIPipeDataImportOperation operation : operations) {
                 parameter.getAllowedValues().add(operation.getName());
             }
-            if(parameter.getValue() == null) {
+            if (parameter.getValue() == null) {
                 if (!operations.isEmpty()) {
                     parameter.setValue(operations.get(0).getName());
                 }
@@ -352,7 +322,7 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
             for (JIPipeDataDisplayOperation operation : operations) {
                 parameter.getAllowedValues().add(operation.getName());
             }
-            if(parameter.getValue() == null) {
+            if (parameter.getValue() == null) {
                 if (!operations.isEmpty()) {
                     parameter.setValue(operations.get(0).getName());
                 }
@@ -514,6 +484,34 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
         return logService;
     }
 
+    public static JIPipeParameterTypeRegistry getParameterTypes() {
+        return instance.parameterTypeRegistry;
+    }
+
+    public static JIPipeExpressionRegistry getTableOperations() {
+        return instance.tableOperationRegistry;
+    }
+
+    public static JIPipeCustomMenuRegistry getCustomMenus() {
+        return instance.customMenuRegistry;
+    }
+
+    public static JIPipeImageJAdapterRegistry getImageJAdapters() {
+        return instance.imageJDataAdapterRegistry;
+    }
+
+    public static JIPipeSettingsRegistry getSettings() {
+        return instance.settingsRegistry;
+    }
+
+    public static JIPipeNodeRegistry getNodes() {
+        return instance.nodeRegistry;
+    }
+
+    public static JIPipeDatatypeRegistry getDataTypes() {
+        return instance.datatypeRegistry;
+    }
+
     /**
      * @return Singleton instance
      */
@@ -523,6 +521,7 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
 
     /**
      * Helper to create JIPipe from a context
+     *
      * @param context the context
      */
     public static JIPipe createInstance(Context context) {
@@ -554,6 +553,7 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
 
     /**
      * Loads a project
+     *
      * @param fileName Project file
      * @return the project
      * @throws IOException thrown if the file could not be read or the file is corrupt
@@ -564,8 +564,9 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
 
     /**
      * Loads a project
+     *
      * @param fileName Project file
-     * @param report Report whether the project is valid
+     * @param report   Report whether the project is valid
      * @return the project
      * @throws IOException thrown if the file could not be read or the file is corrupt
      */
@@ -577,15 +578,16 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
      * Runs a project in the current thread.
      * The progress will be put into the stdout
      * This will block the current thread.
-     * @param project the project
+     *
+     * @param project      the project
      * @param outputFolder the output folder
-     * @param threads the number of threads (set to zero for using the default value)
+     * @param threads      the number of threads (set to zero for using the default value)
      * @return the result
      */
     public static JIPipeRun runProject(JIPipeProject project, Path outputFolder, int threads) {
         JIPipeRunSettings settings = new JIPipeRunSettings();
         settings.setOutputPath(outputFolder);
-        if(threads > 0)
+        if (threads > 0)
             settings.setNumThreads(threads);
         JIPipeRun run = new JIPipeRun(project, settings);
         run.run(status -> System.out.println(status.getProgress() + "/" + status.getMaxProgress()), () -> false);
@@ -596,7 +598,8 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
      * Runs a project in the current thread.
      * The progress will be put into the stdout
      * This will block the current thread.
-     * @param project the project
+     *
+     * @param project  the project
      * @param settings settings for the run
      * @return the result
      */
@@ -609,15 +612,16 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
     /**
      * Runs a project in a different thread.
      * The progress will be put into the stdout
-     * @param project the project
+     *
+     * @param project      the project
      * @param outputFolder the output folder
-     * @param threads the number of threads (set to zero for using the default value)
+     * @param threads      the number of threads (set to zero for using the default value)
      * @return the future result. You have to check the {@link JIPipeRunnerQueue} to see if the run is finished.
      */
     public static JIPipeRun enqueueProject(JIPipeProject project, Path outputFolder, int threads) {
         JIPipeRunSettings settings = new JIPipeRunSettings();
         settings.setOutputPath(outputFolder);
-        if(threads > 0)
+        if (threads > 0)
             settings.setNumThreads(threads);
         JIPipeRun run = new JIPipeRun(project, settings);
         JIPipeRunnerQueue.getInstance().enqueue(run);
@@ -627,7 +631,8 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
     /**
      * Runs a project in the current thread.
      * The progress will be put into the stdout
-     * @param project the project
+     *
+     * @param project  the project
      * @param settings settings for the run
      * @return the future result. You have to check the {@link JIPipeRunnerQueue} to see if the run is finished.
      */
@@ -640,9 +645,9 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
     /**
      * Creates a new node instance from its id
      *
-     * @param id  Algorithm ID
+     * @param id    Algorithm ID
      * @param klass the node type
-     * @param <T> Algorithm class
+     * @param <T>   Algorithm class
      * @return Algorithm instance
      */
     public static <T extends JIPipeGraphNode> T createNode(String id, Class<T> klass) {
@@ -652,35 +657,36 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
     /**
      * Creates a new node instance from its class.
      * Please note that this might not work for all node types, as there is no 1:1 relation between node classes and their Ids
+     *
      * @param klass node class
-     * @param <T> node class
+     * @param <T>   node class
      * @return the node
      */
     public static <T extends JIPipeGraphNode> T createNode(Class<T> klass) {
         Set<JIPipeNodeInfo> nodeInfos = getNodes().getNodeInfosFromClass(klass);
-        if(nodeInfos.size() > 1)
+        if (nodeInfos.size() > 1)
             throw new RuntimeException("There are multiple node infos registered for " + klass);
-        if(nodeInfos.isEmpty())
+        if (nodeInfos.isEmpty())
             throw new IndexOutOfBoundsException("No node infos registered for " + klass);
         return (T) nodeInfos.iterator().next().newInstance();
     }
 
     /**
      * Duplicates a {@link JIPipeGraphNode}
+     *
      * @param node the node
-     * @param <T> the node class
+     * @param <T>  the node class
      * @return a deep copy
      */
     public static <T extends JIPipeGraphNode> T duplicateNode(T node) {
-        if(node.getInfo() == null) {
+        if (node.getInfo() == null) {
             System.err.println("Warning: Node " + node + " has no info attached. Create nodes via the static JIPipe method!");
             try {
                 return (T) node.getClass().getConstructor(node.getClass()).newInstance(node);
             } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
                 throw new RuntimeException(e);
             }
-        }
-        else {
+        } else {
             return (T) node.getInfo().duplicate(node);
         }
     }

@@ -34,12 +34,11 @@ public class ElementAccessOperator extends ExpressionOperator {
     public Object evaluate(Iterator<Object> operands, Object evaluationContext) {
         Object array = operands.next();
         Object indices = operands.next();
-        if(indices instanceof Number) {
+        if (indices instanceof Number) {
             int index = ((Number) indices).intValue();
-            if(array instanceof Map) {
-                return ((Map<?,?>)array).get(index);
-            }
-            else if (array instanceof List) {
+            if (array instanceof Map) {
+                return ((Map<?, ?>) array).get(index);
+            } else if (array instanceof List) {
                 return ((List<?>) array).get(index);
             } else if (array instanceof Collection) {
                 return ImmutableList.copyOf((Collection<?>) array).get(index);
@@ -48,42 +47,38 @@ public class ElementAccessOperator extends ExpressionOperator {
             } else {
                 throw new UnsupportedOperationException("Element access does not support target " + indices);
             }
-        }
-        else if(indices instanceof Collection) {
+        } else if (indices instanceof Collection) {
             List<Object> result = new ArrayList<>();
-            if(array instanceof Map) {
+            if (array instanceof Map) {
                 Map<?, ?> targetMap = (Map<?, ?>) array;
                 for (Object indexItem : (Collection<?>) indices) {
                     result.add(targetMap.get(indexItem));
                 }
-            }
-            else if (array instanceof List) {
+            } else if (array instanceof List) {
                 List<?> targetList = (List<?>) array;
                 for (Object indexItem : (Collection<?>) indices) {
-                    int index = ((Number)indexItem).intValue();
+                    int index = ((Number) indexItem).intValue();
                     result.add(targetList.get(index));
                 }
             } else if (array instanceof Collection) {
-                List<?> targetList = ImmutableList.copyOf((Collection<?>)array);
+                List<?> targetList = ImmutableList.copyOf((Collection<?>) array);
                 for (Object indexItem : (Collection<?>) indices) {
-                    int index = ((Number)indexItem).intValue();
+                    int index = ((Number) indexItem).intValue();
                     result.add(targetList.get(index));
                 }
             } else if (array instanceof String) {
                 String s = array.toString();
                 for (Object indexItem : (Collection<?>) indices) {
-                    int index = ((Number)indexItem).intValue();
+                    int index = ((Number) indexItem).intValue();
                     result.add("" + s.charAt(index));
                 }
             } else {
                 throw new UnsupportedOperationException("Element access does not support array " + array);
             }
             return result;
-        }
-        else if(array instanceof Map) {
-            return ((Map<?,?>)array).get(indices);
-        }
-        else {
+        } else if (array instanceof Map) {
+            return ((Map<?, ?>) array).get(indices);
+        } else {
             throw new UnsupportedOperationException("Element access does not support indices " + indices);
         }
     }

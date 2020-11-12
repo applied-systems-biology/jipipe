@@ -40,8 +40,9 @@ public class AnnotationGeneratorExpression extends DefaultExpressionParameter {
 
     /**
      * Generates an annotation value
+     *
      * @param annotations existing annotations for the data
-     * @param dataString the data as string
+     * @param dataString  the data as string
      * @return the annotation value
      */
     public String generateAnnotationValue(Collection<JIPipeAnnotation> annotations, String dataString) {
@@ -55,6 +56,7 @@ public class AnnotationGeneratorExpression extends DefaultExpressionParameter {
 
     /**
      * Evaluates the expression as boolean
+     *
      * @param annotations existing annotations for the data
      * @param dataString  the data as string
      * @return the test results.
@@ -65,6 +67,6 @@ public class AnnotationGeneratorExpression extends DefaultExpressionParameter {
             variableSet.set(annotation.getName(), annotation.getValue());
         }
         variableSet.set("data_string", dataString);
-        return (boolean)evaluate(variableSet);
+        return (boolean) evaluate(variableSet);
     }
 }

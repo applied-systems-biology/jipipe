@@ -35,7 +35,7 @@ public class OptionalAnnotationNameParameter extends OptionalStringParameter imp
 
     @Override
     public void reportValidity(JIPipeValidityReport report) {
-        if(isEnabled()) {
+        if (isEnabled()) {
             report.forCategory("Value").checkNonEmpty(getContent(), this);
         }
     }

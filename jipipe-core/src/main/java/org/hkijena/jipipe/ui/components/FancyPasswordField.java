@@ -33,7 +33,7 @@ public class FancyPasswordField extends JPanel {
     /**
      * Creates a new instance
      *
-     * @param icon   Optional icon displayed to the left
+     * @param icon Optional icon displayed to the left
      */
     public FancyPasswordField(JLabel icon) {
         setLayout(new BorderLayout(4, 0));

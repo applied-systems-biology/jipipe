@@ -19,7 +19,6 @@ import org.hkijena.jipipe.api.data.JIPipeExportedDataTable;
 import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.jdesktop.swingx.JXTable;
 
 import javax.swing.*;
 import java.awt.BorderLayout;
@@ -55,7 +54,7 @@ public abstract class JIPipeAsyncResultDataPlotPreview extends JIPipeResultDataS
 
     @Override
     public void renderPreview() {
-        if(worker == null) {
+        if (worker == null) {
             worker = new Worker(this, getRowStorageFolder(getSlot(), getRow()));
             worker.execute();
         }

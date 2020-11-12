@@ -87,7 +87,7 @@ public class SplitTableByColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm
             for (Map.Entry<String, List<Integer>> entry : groupedByCondition.entrySet()) {
                 ResultsTableData output = input.getRows(entry.getValue());
                 List<JIPipeAnnotation> traits = new ArrayList<>();
-                if(addAsAnnotations && output.getRowCount() > 0) {
+                if (addAsAnnotations && output.getRowCount() > 0) {
                     for (String column : interestingColumns) {
                         traits.add(new JIPipeAnnotation(column, output.getValueAsString(0, column)));
                     }

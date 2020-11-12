@@ -437,8 +437,9 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
 
     /**
      * Registers a function that can be used within expressions.
-     * @param function the function. its internal name property must be unique
-     * @param name human-readable name
+     *
+     * @param function    the function. its internal name property must be unique
+     * @param name        human-readable name
      * @param description the description
      */
     public void registerExpressionFunction(ExpressionFunction function, String name, String description) {
@@ -447,6 +448,7 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
 
     /**
      * Registers a function that can be used within expressions. The name and description are taken from {@link org.hkijena.jipipe.api.JIPipeDocumentation} annotations.
+     *
      * @param function the function. its internal name property must be unique
      */
     public void registerExpressionFunction(ExpressionFunction function) {

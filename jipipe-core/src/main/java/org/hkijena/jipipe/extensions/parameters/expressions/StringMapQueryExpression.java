@@ -35,6 +35,7 @@ public class StringMapQueryExpression extends DefaultExpressionParameter {
 
     /**
      * Tests if the query matches the key value pairs
+     *
      * @param map the key value pairs
      * @return if matches
      */
@@ -48,6 +49,7 @@ public class StringMapQueryExpression extends DefaultExpressionParameter {
 
     /**
      * Tests if the query matches the keys=values. A map where key=value is true is generated.
+     *
      * @param values the key=values
      * @return if matches
      */

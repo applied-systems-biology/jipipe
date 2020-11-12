@@ -174,11 +174,12 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
 
     /**
      * Writes data to the specified folder
-     * @param dataSlotList list of data slots the will be exported
-     * @param outputPath the path where the files will be put
-     * @param subProgress sub progress
+     *
+     * @param dataSlotList      list of data slots the will be exported
+     * @param outputPath        the path where the files will be put
+     * @param subProgress       sub progress
      * @param algorithmProgress progress consumer
-     * @param isCancelled cancellation callback
+     * @param isCancelled       cancellation callback
      */
     public void writeToFolder(List<JIPipeDataSlot> dataSlotList, Path outputPath, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         if (!Files.isDirectory(outputPath)) {
@@ -198,11 +199,12 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
 
     /**
      * Writes data to the specified folder
-     * @param dataSlot the data slot
-     * @param outputPath the path where the files will be put
-     * @param subProgress sub progress
+     *
+     * @param dataSlot          the data slot
+     * @param outputPath        the path where the files will be put
+     * @param subProgress       sub progress
      * @param algorithmProgress progress consumer
-     * @param isCancelled cancellation callback
+     * @param isCancelled       cancellation callback
      */
     public void writeToFolder(JIPipeDataSlot dataSlot, Path outputPath, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         writeToFolder(dataSlot, outputPath, subProgress, algorithmProgress, isCancelled, new HashSet<>());
@@ -210,12 +212,13 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
 
     /**
      * Writes data to the specified folder
-     * @param dataSlot the data slot
-     * @param outputPath the path where the files will be put
-     * @param subProgress sub progress
+     *
+     * @param dataSlot          the data slot
+     * @param outputPath        the path where the files will be put
+     * @param subProgress       sub progress
      * @param algorithmProgress progress consumer
-     * @param isCancelled cancellation callback
-     * @param existingMetadata list of existing entries. used to avoid duplicates.
+     * @param isCancelled       cancellation callback
+     * @param existingMetadata  list of existing entries. used to avoid duplicates.
      */
     public void writeToFolder(JIPipeDataSlot dataSlot, Path outputPath, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled, Set<String> existingMetadata) {
         for (int row = 0; row < dataSlot.getRowCount(); row++) {
@@ -227,11 +230,12 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
 
     /**
      * Writes data to the specified folder
-     * @param dataSlot the data slot
-     * @param row the data row
-     * @param outputPath the path where the files will be put
-     * @param subProgress sub progress
-     * @param algorithmProgress  progress consumer
+     *
+     * @param dataSlot          the data slot
+     * @param row               the data row
+     * @param outputPath        the path where the files will be put
+     * @param subProgress       sub progress
+     * @param algorithmProgress progress consumer
      */
     public void writeToFolder(JIPipeDataSlot dataSlot, int row, Path outputPath, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress) {
         writeToFolder(dataSlot, row, outputPath, subProgress, algorithmProgress, new HashSet<>());
@@ -239,12 +243,13 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
 
     /**
      * Writes data to the specified folder
-     * @param dataSlot the data slot
-     * @param row the data row
-     * @param outputPath the path where the files will be put
-     * @param subProgress sub progress
-     * @param algorithmProgress  progress consumer
-     * @param existingMetadata list of existing entries. used to avoid duplicates
+     *
+     * @param dataSlot          the data slot
+     * @param row               the data row
+     * @param outputPath        the path where the files will be put
+     * @param subProgress       sub progress
+     * @param algorithmProgress progress consumer
+     * @param existingMetadata  list of existing entries. used to avoid duplicates
      */
     public void writeToFolder(JIPipeDataSlot dataSlot, int row, Path outputPath, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Set<String> existingMetadata) {
         String metadataString = generateMetadataString(dataSlot, row, existingMetadata);
@@ -255,8 +260,9 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
 
     /**
      * Generates a unique string based on metadata for the selected row
-     * @param dataSlot the slot
-     * @param row the row
+     *
+     * @param dataSlot         the slot
+     * @param row              the row
      * @param existingMetadata existing strings
      * @return the string
      */
@@ -277,7 +283,7 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
         }
         for (int col = 0; col < dataSlot.getAnnotationColumns().size(); col++) {
             String metadataKey = dataSlot.getAnnotationColumns().get(col);
-            if(!metadataKeyFilter.test(metadataKey))
+            if (!metadataKeyFilter.test(metadataKey))
                 continue;
             JIPipeAnnotation metadataValue;
             if (ignoreMissingMetadata) {

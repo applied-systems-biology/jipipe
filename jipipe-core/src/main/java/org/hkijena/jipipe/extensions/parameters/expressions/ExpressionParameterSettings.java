@@ -30,6 +30,7 @@ public @interface ExpressionParameterSettings {
     /**
      * Allows to give hints to the editor UI which variables are available.
      * The variable source instance has access to the {@link org.hkijena.jipipe.api.parameters.JIPipeParameterAccess}.
+     *
      * @return the variable source class
      */
     Class<? extends ExpressionParameterVariableSource> variableSource() default UndefinedExpressionParameterVariableSource.class;

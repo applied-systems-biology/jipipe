@@ -46,7 +46,7 @@ public class ArrowLessScrollBarUI extends BasicScrollBarUI {
         return jbutton;
     }
 
-    public static ComponentUI createUI(JComponent c)    {
+    public static ComponentUI createUI(JComponent c) {
         return new ArrowLessScrollBarUI();
     }
 

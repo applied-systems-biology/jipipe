@@ -69,8 +69,8 @@ public class DefaultExpressionEvaluator extends ExpressionEvaluator {
     public static final ExpressionOperator OPERATOR_NUMERIC_DIVIDE = new NumericDivideFunctionOperator();
     public static final ExpressionOperator OPERATOR_NUMERIC_MODULO = new NumericModuloFunctionOperator();
     public static final ExpressionOperator OPERATOR_NUMERIC_EXPONENT = new NumericExponentFunctionOperator();
-    public static final Operator OPERATOR_NUMERIC_NEGATE = new Operator("-", 1,Operator.Associativity.RIGHT, 8);
-    public static final Operator OPERATOR_NUMERIC_NEGATE_HIGH = new Operator("-", 1,Operator.Associativity.RIGHT, 10);
+    public static final Operator OPERATOR_NUMERIC_NEGATE = new Operator("-", 1, Operator.Associativity.RIGHT, 8);
+    public static final Operator OPERATOR_NUMERIC_NEGATE_HIGH = new Operator("-", 1, Operator.Associativity.RIGHT, 10);
     public static final ExpressionOperator OPERATOR_STRING_CONTAINS = new ContainsOperator();
     public static final ExpressionOperator OPERATOR_STRING_CONTAINS2 = new ContainsOperator2();
     public static final ExpressionOperator OPERATOR_VARIABLE_EXISTS = new VariableExistsOperator();
@@ -80,6 +80,219 @@ public class DefaultExpressionEvaluator extends ExpressionEvaluator {
 
     private final Set<String> knownOperatorTokens = new HashSet<>();
     private final List<String> knownNonAlphanumericOperatorTokens = new ArrayList<>();
+
+    public DefaultExpressionEvaluator() {
+        super(createParameters());
+        for (Operator operator : getOperators()) {
+            knownOperatorTokens.add(operator.getSymbol());
+            if (!operator.getSymbol().matches("[A-Za-z0-9_]+")) {
+                knownNonAlphanumericOperatorTokens.add(operator.getSymbol());
+            }
+        }
+        knownNonAlphanumericOperatorTokens.sort(Comparator.comparing(String::length).reversed());
+    }
+
+    public List<String> tokenize(String expression, boolean includeQuotesAsToken, boolean includeQuotesIntoToken) {
+        StringBuilder buffer = new StringBuilder();
+        boolean isQuoted = false;
+        boolean escape = false;
+        AtomicBoolean resolveVariable = new AtomicBoolean(false);
+        List<String> tokens = new ArrayList<>();
+
+        for (int i = 0; i < expression.length(); i++) {
+            char c = expression.charAt(i);
+            if (c == '"' && !escape) {
+                if (!isQuoted) {
+                    // Process buffer up until now
+                    flushBufferToToken(buffer, tokens, resolveVariable);
+                    isQuoted = true;
+                } else {
+                    // Add buffer as whole token
+                    if (includeQuotesIntoToken) {
+                        buffer.insert(0, '"');
+                        buffer.append("\"");
+                    }
+                    flushBufferToToken(buffer, tokens, resolveVariable);
+                    isQuoted = false;
+                }
+                if (includeQuotesAsToken) {
+                    tokens.add("\"");
+                }
+            } else if (!isQuoted && (c == ')' || c == '(' || c == ',')) {
+                flushBufferToToken(buffer, tokens, resolveVariable);
+                tokens.add("" + c);
+            } else if (!isQuoted && (c == ' ' || c == '\t' || c == '\n' || c == '\r')) {
+                flushBufferToToken(buffer, tokens, resolveVariable);
+            } else if (c == '\\') {
+                if (escape)
+                    buffer.append(c);
+                escape = !escape;
+            } else if (c == '"') {
+                buffer.append(c);
+                escape = false;
+            } else if (!isQuoted && c == '$') {
+                flushBufferToToken(buffer, tokens, resolveVariable);
+                resolveVariable.set(true);
+                tokens.add("" + c);
+            } else {
+                buffer.append(c);
+            }
+            if (!isQuoted && buffer.length() > 0) {
+                String s1 = buffer.toString();
+                if (i != expression.length() - 1) {
+                    // Workaround <= >=
+                    if (s1.endsWith("<") || s1.endsWith(">")) {
+                        char next = expression.charAt(i + 1);
+                        if (next == '=')
+                            continue;
+                    }
+                    // Workaround !=
+                    if (s1.endsWith("!")) {
+                        char next = expression.charAt(i + 1);
+                        if (next == '=')
+                            continue;
+                    }
+                }
+                for (String s : knownNonAlphanumericOperatorTokens) {
+                    int i1 = s1.indexOf(s);
+                    if (i1 != -1) {
+                        if (i1 > 0)
+                            tokens.add(s1.substring(0, i1));
+                        tokens.add(s);
+                        buffer.setLength(0);
+                        break;
+                    }
+                }
+            }
+        }
+
+        flushBufferToToken(buffer, tokens, resolveVariable);
+        return tokens;
+    }
+
+    private void flushBufferToToken(StringBuilder buffer, List<String> tokens, AtomicBoolean resolveVariable) {
+        if (buffer.length() > 0) {
+            if (resolveVariable.get()) {
+                // Escape on resolving a variable
+                if (buffer.charAt(0) != '"' && buffer.charAt(buffer.length() - 1) != '"') {
+                    buffer.insert(0, '"');
+                    buffer.append('"');
+                }
+            }
+            tokens.add(buffer.toString());
+            buffer.setLength(0);
+        }
+        resolveVariable.set(false);
+    }
+
+    @Override
+    protected Iterator<String> tokenize(String expression) {
+        return tokenize(expression, false, true).iterator();
+    }
+
+    @Override
+    public Object evaluate(String expression, Object evaluationContext) {
+        if (expression.trim().isEmpty())
+            return true;
+        return super.evaluate(expression, evaluationContext);
+    }
+
+    @Override
+    protected Object evaluate(Function function, Iterator<Object> arguments, Object evaluationContext) {
+        if (function instanceof ExpressionFunction) {
+            return ((ExpressionFunction) function).evaluate(ImmutableList.copyOf(arguments), (StaticVariableSet<Object>) evaluationContext);
+        } else {
+            throw new UnsupportedOperationException();
+        }
+    }
+
+    @Override
+    protected Object evaluate(Constant constant, Object evaluationContext) {
+        if (constant instanceof ExpressionConstant) {
+            return ((ExpressionConstant) constant).getValue();
+        } else {
+            throw new UnsupportedOperationException("Unsupported constant: " + constant.getName());
+        }
+    }
+
+    @Override
+    protected Object evaluate(Operator operator, Iterator<Object> operands, Object evaluationContext) {
+        if (operator instanceof ExpressionOperator) {
+            return ((ExpressionOperator) operator).evaluate(operands, evaluationContext);
+        } else if (operator == OPERATOR_NUMERIC_NEGATE || operator == OPERATOR_NUMERIC_NEGATE_HIGH) {
+            return -(double) operands.next();
+        }
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Checks the syntax of an expression.
+     *
+     * @return the exception that was thrown if some error was returned. Null if syntax is correct.
+     */
+    public Exception checkSyntax(String expression) {
+        int quoteStack = 0;
+        int paraStack = 0;
+        boolean canLiteral = true;
+        List<String> tokens = tokenize(expression, true, true);
+        for (String token : tokens) {
+            switch (token) {
+                case "(":
+                    ++paraStack;
+                    break;
+                case ")":
+                    if (paraStack <= 0)
+                        return new IllegalArgumentException("Unmatched parentheses!");
+                    --paraStack;
+                    break;
+                case "\"":
+                    if (quoteStack == 0)
+                        ++quoteStack;
+                    else if (quoteStack == 1)
+                        --quoteStack;
+                    else
+                        return new IllegalArgumentException("Unmatched double quotes!");
+                    break;
+                default: {
+                    if (knownOperatorTokens.contains(token))
+                        canLiteral = true;
+                    else if (!canLiteral) {
+                        return new IllegalArgumentException("Literal follows another literal!");
+                    } else {
+                        canLiteral = false;
+                    }
+                }
+            }
+        }
+        if (quoteStack != 0)
+            return new IllegalArgumentException("Unmatched double quotes!");
+        if (paraStack != 0)
+            return new IllegalArgumentException("Unmatched parentheses!");
+        return null;
+    }
+
+    @Override
+    protected Object toValue(String literal, Object evaluationContext) {
+        StaticVariableSet<Object> variableSet = (StaticVariableSet<Object>) evaluationContext;
+        if (NumberUtils.isCreatable(literal))
+            return NumberUtils.createDouble(literal);
+        else if (literal.length() >= 2 && literal.startsWith("\"") && literal.endsWith("\""))
+            return literal.substring(1, literal.length() - 1);
+        else {
+            Object variable = variableSet.get(literal);
+            if (variable == null) {
+                throw new UserFriendlyRuntimeException(new NullPointerException(), "Unable to find variable '" + literal + "' in expression",
+                        "Expression parser",
+                        "Your expression has a variable '" + literal + "', but it does not exist",
+                        "Check if the variable exists. If you intended to create a string, put double quotes around it.");
+            }
+            return variable;
+        }
+    }
+
+    public List<String> getKnownNonAlphanumericOperatorTokens() {
+        return knownNonAlphanumericOperatorTokens;
+    }
 
     public static Parameters createParameters() {
         Parameters parameters = new Parameters();
@@ -129,7 +342,7 @@ public class DefaultExpressionEvaluator extends ExpressionEvaluator {
         parameters.add(OPERATOR_ELEMENT_ACCESS_SYMBOL);
 
         // Add operators from JIPipe (if available)
-        if(JIPipe.getInstance() != null) {
+        if (JIPipe.getInstance() != null) {
             for (JIPipeExpressionRegistry.ExpressionFunctionEntry functionEntry : JIPipe.getInstance().getExpressionRegistry().getRegisteredExpressionFunctions().values()) {
                 parameters.add(functionEntry.getFunction());
             }
@@ -138,231 +351,9 @@ public class DefaultExpressionEvaluator extends ExpressionEvaluator {
         return parameters;
     }
 
-    public DefaultExpressionEvaluator() {
-        super(createParameters());
-        for (Operator operator : getOperators()) {
-            knownOperatorTokens.add(operator.getSymbol());
-            if(!operator.getSymbol().matches("[A-Za-z0-9_]+")) {
-                knownNonAlphanumericOperatorTokens.add(operator.getSymbol());
-            }
-        }
-        knownNonAlphanumericOperatorTokens.sort(Comparator.comparing(String::length).reversed());
-    }
-
-    public List<String> tokenize(String expression, boolean includeQuotesAsToken, boolean includeQuotesIntoToken) {
-        StringBuilder buffer = new StringBuilder();
-        boolean isQuoted = false;
-        boolean escape = false;
-        AtomicBoolean resolveVariable = new AtomicBoolean(false);
-        List<String> tokens = new ArrayList<>();
-
-        for (int i = 0; i < expression.length(); i++) {
-            char c = expression.charAt(i);
-            if(c == '"' && !escape) {
-                if(!isQuoted) {
-                    // Process buffer up until now
-                    flushBufferToToken(buffer, tokens, resolveVariable);
-                    isQuoted = true;
-                }
-                else {
-                    // Add buffer as whole token
-                    if(includeQuotesIntoToken) {
-                        buffer.insert(0, '"');
-                        buffer.append("\"");
-                    }
-                    flushBufferToToken(buffer, tokens, resolveVariable);
-                    isQuoted = false;
-                }
-                if(includeQuotesAsToken) {
-                    tokens.add("\"");
-                }
-            }
-            else if(!isQuoted && (c == ')' || c == '(' || c == ',')) {
-                flushBufferToToken(buffer, tokens, resolveVariable);
-                tokens.add(""  + c);
-            }
-            else if(!isQuoted && (c == ' ' || c == '\t' || c == '\n' || c == '\r')) {
-                flushBufferToToken(buffer, tokens, resolveVariable);
-            }
-            else if(c == '\\') {
-                if(escape)
-                    buffer.append(c);
-                escape = !escape;
-            }
-            else if(c == '"') {
-                buffer.append(c);
-                escape = false;
-            }
-            else if (!isQuoted && c == '$') {
-                flushBufferToToken(buffer, tokens, resolveVariable);
-                resolveVariable.set(true);
-                tokens.add("" + c);
-            }
-            else {
-                buffer.append(c);
-            }
-            if(!isQuoted && buffer.length() > 0) {
-                String s1 = buffer.toString();
-                if(i != expression.length() - 1) {
-                    // Workaround <= >=
-                    if(s1.endsWith("<") || s1.endsWith(">")) {
-                        char next = expression.charAt(i + 1);
-                        if(next == '=')
-                            continue;
-                    }
-                    // Workaround !=
-                    if(s1.endsWith("!")) {
-                        char next = expression.charAt(i + 1);
-                        if(next == '=')
-                            continue;
-                    }
-                }
-                for (String s : knownNonAlphanumericOperatorTokens) {
-                    int i1 = s1.indexOf(s);
-                    if(i1 != -1) {
-                        if(i1 > 0)
-                            tokens.add(s1.substring(0, i1));
-                        tokens.add(s);
-                        buffer.setLength(0);
-                        break;
-                    }
-                }
-            }
-        }
-
-        flushBufferToToken(buffer, tokens, resolveVariable);
-        return tokens;
-    }
-
-    private void flushBufferToToken(StringBuilder buffer, List<String> tokens, AtomicBoolean resolveVariable) {
-        if(buffer.length() > 0) {
-            if(resolveVariable.get()) {
-                // Escape on resolving a variable
-                if(buffer.charAt(0) != '"' && buffer.charAt(buffer.length() - 1) != '"') {
-                    buffer.insert(0, '"');
-                    buffer.append('"');
-                }
-            }
-            tokens.add(buffer.toString());
-            buffer.setLength(0);
-        }
-        resolveVariable.set(false);
-    }
-
-    @Override
-    protected Iterator<String> tokenize(String expression) {
-        return tokenize(expression, false, true).iterator();
-    }
-
-    @Override
-    public Object evaluate(String expression, Object evaluationContext) {
-        if(expression.trim().isEmpty())
-            return true;
-        return super.evaluate(expression, evaluationContext);
-    }
-
-    @Override
-    protected Object evaluate(Function function, Iterator<Object> arguments, Object evaluationContext) {
-        if(function instanceof ExpressionFunction) {
-            return ((ExpressionFunction) function).evaluate(ImmutableList.copyOf(arguments), (StaticVariableSet<Object>) evaluationContext);
-        }
-        else {
-            throw new UnsupportedOperationException();
-        }
-    }
-
-    @Override
-    protected Object evaluate(Constant constant, Object evaluationContext) {
-        if(constant instanceof ExpressionConstant) {
-            return ((ExpressionConstant) constant).getValue();
-        }
-        else {
-            throw new UnsupportedOperationException("Unsupported constant: " + constant.getName());
-        }
-    }
-
-    @Override
-    protected Object evaluate(Operator operator, Iterator<Object> operands, Object evaluationContext) {
-        if(operator instanceof ExpressionOperator) {
-            return ((ExpressionOperator) operator).evaluate(operands, evaluationContext);
-        }
-        else if(operator == OPERATOR_NUMERIC_NEGATE || operator == OPERATOR_NUMERIC_NEGATE_HIGH) {
-            return -(double)operands.next();
-        }
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * Checks the syntax of an expression.
-     * @return the exception that was thrown if some error was returned. Null if syntax is correct.
-     */
-    public Exception checkSyntax(String expression) {
-        int quoteStack = 0;
-        int paraStack = 0;
-        boolean canLiteral = true;
-        List<String> tokens = tokenize(expression, true, true);
-        for (String token : tokens) {
-            switch (token) {
-                case "(":
-                    ++paraStack;
-                    break;
-                case ")":
-                    if (paraStack <= 0)
-                        return new IllegalArgumentException("Unmatched parentheses!");
-                    --paraStack;
-                    break;
-                case "\"":
-                    if (quoteStack == 0)
-                        ++quoteStack;
-                    else if (quoteStack == 1)
-                        --quoteStack;
-                    else
-                        return new IllegalArgumentException("Unmatched double quotes!");
-                    break;
-                default: {
-                    if(knownOperatorTokens.contains(token))
-                        canLiteral = true;
-                    else if(!canLiteral) {
-                        return new IllegalArgumentException("Literal follows another literal!");
-                    }
-                    else {
-                        canLiteral = false;
-                    }
-                }
-            }
-        }
-        if(quoteStack != 0)
-            return new IllegalArgumentException("Unmatched double quotes!");
-        if(paraStack != 0)
-            return new IllegalArgumentException("Unmatched parentheses!");
-        return null;
-    }
-
-    @Override
-    protected Object toValue(String literal, Object evaluationContext) {
-        StaticVariableSet<Object> variableSet = (StaticVariableSet<Object>) evaluationContext;
-        if(NumberUtils.isCreatable(literal))
-            return NumberUtils.createDouble(literal);
-        else if(literal.length() >= 2 && literal.startsWith("\"") && literal.endsWith("\""))
-            return literal.substring(1, literal.length() - 1);
-        else {
-            Object variable = variableSet.get(literal);
-            if(variable == null) {
-                throw new UserFriendlyRuntimeException(new NullPointerException(), "Unable to find variable '" + literal + "' in expression",
-                        "Expression parser",
-                        "Your expression has a variable '" + literal + "', but it does not exist",
-                        "Check if the variable exists. If you intended to create a string, put double quotes around it.");
-            }
-            return variable;
-        }
-    }
-
-    public List<String> getKnownNonAlphanumericOperatorTokens() {
-        return knownNonAlphanumericOperatorTokens;
-    }
-
     /**
      * Escapes a variable name into a valid expression
+     *
      * @param variableName the variable name
      * @return an expression that evaluates the variable
      */
@@ -403,6 +394,7 @@ public class DefaultExpressionEvaluator extends ExpressionEvaluator {
 
     /**
      * Escapes a string, so it can be used within quotes
+     *
      * @param string the string
      * @return string with quotes and backslashes escaped
      */

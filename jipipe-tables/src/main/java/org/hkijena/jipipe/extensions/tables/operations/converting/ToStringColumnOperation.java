@@ -23,7 +23,7 @@ import org.hkijena.jipipe.extensions.tables.datatypes.TableColumn;
 public class ToStringColumnOperation implements ConvertingColumnOperation {
     @Override
     public TableColumn apply(TableColumn column) {
-        if(!column.isNumeric())
+        if (!column.isNumeric())
             return column;
         String[] data = new String[column.getRows()];
         for (int row = 0; row < column.getRows(); row++) {
