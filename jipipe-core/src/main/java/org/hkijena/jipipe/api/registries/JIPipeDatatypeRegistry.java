@@ -36,6 +36,7 @@ import org.hkijena.jipipe.ui.resultanalysis.JIPipeResultDataSlotPreview;
 import org.hkijena.jipipe.ui.resultanalysis.JIPipeResultDataSlotRowUI;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.ResourceUtils;
+import org.hkijena.jipipe.utils.UIUtils;
 import org.jgrapht.Graph;
 import org.jgrapht.GraphPath;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
@@ -61,7 +62,8 @@ public class JIPipeDatatypeRegistry {
     private BiMap<String, Class<? extends JIPipeData>> registeredDataTypes = HashBiMap.create();
     private Map<String, List<JIPipeDataDisplayOperation>> registeredDisplayOperations = new HashMap<>();
     private Map<String, List<JIPipeDataImportOperation>> registeredImportOperations = new HashMap<>();
-    private Map<Class<? extends JIPipeData>, URL> icons = new HashMap<>();
+    private Map<Class<? extends JIPipeData>, URL> iconsURLs = new HashMap<>();
+    private Map<Class<? extends JIPipeData>, ImageIcon> iconInstances = new HashMap<>();
     private Map<Class<? extends JIPipeData>, Class<? extends JIPipeResultDataSlotRowUI>> resultUIs = new HashMap<>();
     private Map<Class<? extends JIPipeData>, Class<? extends JIPipeResultDataSlotPreview>> resultTableCellUIs = new HashMap<>();
     private Set<String> hiddenDataTypeIds = new HashSet<>();
@@ -377,7 +379,8 @@ public class JIPipeDatatypeRegistry {
      * @param resourcePath icon resource
      */
     public void registerIcon(Class<? extends JIPipeData> klass, URL resourcePath) {
-        icons.put(klass, resourcePath);
+        iconsURLs.put(klass, resourcePath);
+        iconInstances.put(klass, new ImageIcon(resourcePath));
     }
 
     /**
@@ -407,8 +410,7 @@ public class JIPipeDatatypeRegistry {
      * @return icon instance
      */
     public ImageIcon getIconFor(Class<? extends JIPipeData> klass) {
-        URL uri = icons.getOrDefault(klass, ResourceUtils.getPluginResource("icons/data-types/data-type.png"));
-        return new ImageIcon(uri);
+        return iconInstances.getOrDefault(klass, UIUtils.getIconFromResources("data-types/data-type.png"));
     }
 
     /**
@@ -461,7 +463,7 @@ public class JIPipeDatatypeRegistry {
      * @return icon resource
      */
     public URL getIconURLFor(Class<? extends JIPipeData> klass) {
-        return icons.getOrDefault(klass, ResourceUtils.getPluginResource("icons/data-types/data-type.png"));
+        return iconsURLs.getOrDefault(klass, ResourceUtils.getPluginResource("icons/data-types/data-type.png"));
     }
 
     /**

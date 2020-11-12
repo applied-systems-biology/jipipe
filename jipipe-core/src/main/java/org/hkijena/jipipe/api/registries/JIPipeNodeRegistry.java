@@ -35,6 +35,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.utils.ResourceUtils;
+import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.net.URL;
@@ -55,7 +56,8 @@ public class JIPipeNodeRegistry implements JIPipeValidatable {
     private Set<JIPipeNodeRegistrationTask> registrationTasks = new HashSet<>();
     private Map<String, JIPipeDependency> registeredNodeInfoSources = new HashMap<>();
     private BiMap<String, JIPipeNodeTypeCategory> registeredCategories = HashBiMap.create();
-    private Map<JIPipeNodeInfo, URL> icons = new HashMap<>();
+    private Map<JIPipeNodeInfo, URL> iconURLs = new HashMap<>();
+    private Map<JIPipeNodeInfo, ImageIcon> iconInstances = new HashMap<>();
     private boolean stateChanged;
     private boolean isRunning;
     private EventBus eventBus = new EventBus();
@@ -279,7 +281,8 @@ public class JIPipeNodeRegistry implements JIPipeValidatable {
      * @param resourcePath icon url
      */
     public void registerIcon(JIPipeNodeInfo info, URL resourcePath) {
-        icons.put(info, resourcePath);
+        iconURLs.put(info, resourcePath);
+        iconInstances.put(info, new ImageIcon(resourcePath));
     }
 
     /**
@@ -289,7 +292,7 @@ public class JIPipeNodeRegistry implements JIPipeValidatable {
      * @return icon url
      */
     public URL getIconURLFor(JIPipeNodeInfo klass) {
-        return icons.getOrDefault(klass, ResourceUtils.getPluginResource("icons/actions/configure.png"));
+        return iconURLs.getOrDefault(klass, ResourceUtils.getPluginResource("icons/actions/configure.png"));
     }
 
     /**
@@ -299,22 +302,22 @@ public class JIPipeNodeRegistry implements JIPipeValidatable {
      * @return icon instance
      */
     public ImageIcon getIconFor(JIPipeNodeInfo info) {
-        URL uri = icons.getOrDefault(info, null);
-        if (uri == null) {
-            URL defaultIcon;
+        ImageIcon icon = iconInstances.getOrDefault(info, null);
+        if (icon == null) {
+            ImageIcon defaultIcon;
             if (info.getCategory() instanceof DataSourceNodeTypeCategory) {
                 if (!info.getOutputSlots().isEmpty()) {
-                    defaultIcon = JIPipe.getDataTypes().getIconURLFor(info.getOutputSlots().get(0).value());
+                    defaultIcon = JIPipe.getDataTypes().getIconFor(info.getOutputSlots().get(0).value());
                 } else {
-                    defaultIcon = ResourceUtils.getPluginResource("icons/actions/configure.png");
+                    defaultIcon = UIUtils.getIconFromResources("actions/configure.png");
                 }
             } else {
-                defaultIcon = ResourceUtils.getPluginResource("icons/actions/configure.png");
+                defaultIcon = UIUtils.getIconFromResources("actions/configure.png");
             }
-            icons.put(info, defaultIcon);
-            uri = defaultIcon;
+            iconInstances.put(info, defaultIcon);
+            icon = defaultIcon;
         }
-        return new ImageIcon(uri);
+        return icon;
     }
 
     /**
@@ -341,6 +344,6 @@ public class JIPipeNodeRegistry implements JIPipeValidatable {
         registeredNodeInfos.remove(id);
         registeredNodeClasses.remove(info.getInstanceClass(), info);
         registeredNodeInfoSources.remove(id);
-        icons.remove(info);
+        iconURLs.remove(info);
     }
 }
