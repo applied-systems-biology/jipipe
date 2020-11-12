@@ -24,11 +24,15 @@ import javax.swing.*;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
 import java.awt.Component;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Merges multiple {@link JIPipeDataSlot}
+ * Please not the previews are initialized with deferred rendering.
+ * You will need to set a scroll pane to. Then the rendering will work.
  */
 public class JIPipeMergedDataSlotTable implements TableModel {
 
@@ -41,6 +45,7 @@ public class JIPipeMergedDataSlotTable implements TableModel {
     private List<Component> previewCache = new ArrayList<>();
     private final GeneralDataSettings dataSettings =GeneralDataSettings.getInstance();
     private int previewCacheSize = GeneralDataSettings.getInstance().getPreviewSize();
+    private JScrollPane scrollPane;
 
     public JIPipeMergedDataSlotTable(JTable table) {
         this.table = table;
@@ -149,7 +154,7 @@ public class JIPipeMergedDataSlotTable implements TableModel {
             if (preview == null) {
                 if (GeneralDataSettings.getInstance().isGenerateCachePreviews()) {
                     JIPipeData data = slotList.get(rowIndex).getData(rowList.get(rowIndex), JIPipeData.class);
-                    preview = new JIPipeCachedDataPreview(table, data);
+                    preview = new JIPipeCachedDataPreview(table, data, true);
                     previewCache.set(rowIndex, preview);
                 } else {
                     preview = new JLabel("N/A");
@@ -213,5 +218,43 @@ public class JIPipeMergedDataSlotTable implements TableModel {
      */
     public int getRow(int multiRow) {
         return rowList.get(multiRow);
+    }
+
+    public JScrollPane getScrollPane() {
+        return scrollPane;
+    }
+
+    public void setScrollPane(JScrollPane scrollPane) {
+        this.scrollPane = scrollPane;
+        initializeDeferredPreviewRendering();
+    }
+
+    /**
+     * Adds some listeners to the scroll pane so we can
+     */
+    private void initializeDeferredPreviewRendering() {
+        this.scrollPane.getVerticalScrollBar().addAdjustmentListener(e -> {
+            updateRenderedPreviews();
+        });
+        updateRenderedPreviews();
+    }
+
+    private void updateRenderedPreviews() {
+        JViewport viewport = scrollPane.getViewport();
+        for (int row = 0; row < previewCache.size(); row++) {
+            Component component = previewCache.get(row);
+            if(component instanceof  JIPipeCachedDataPreview) {
+                if(((JIPipeCachedDataPreview) component).isRenderedOrRendering())
+                    continue;
+                // We assume view column = 0
+                Rectangle rect = table.getCellRect(row, 0, true);
+                Point pt = viewport.getViewPosition();
+                rect.setLocation(rect.x - pt.x, rect.y - pt.y);
+                boolean overlaps = new Rectangle(viewport.getExtentSize()).intersects(rect);
+                if (overlaps) {
+                    ((JIPipeCachedDataPreview) component).renderPreview();
+                }
+            }
+        }
     }
 }

@@ -45,6 +45,8 @@ import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.nio.file.Path;
@@ -61,6 +63,7 @@ public class JIPipeCacheDataSlotTableUI extends JIPipeProjectWorkbenchPanel {
     private FormPanel rowUIList;
     private SearchTextField searchTextField = new SearchTextField();
     private WrapperTableModel dataTable;
+    private JScrollPane scrollPane;
 
     /**
      * @param workbenchUI the workbench UI
@@ -87,6 +90,7 @@ public class JIPipeCacheDataSlotTableUI extends JIPipeProjectWorkbenchPanel {
     private void reloadTable() {
         dataTable = new WrapperTableModel(table, slot);
         table.setModel(dataTable);
+        dataTable.setScrollPane(scrollPane);
         if (GeneralDataSettings.getInstance().isGenerateCachePreviews())
             table.setRowHeight(GeneralDataSettings.getInstance().getPreviewSize());
         else
@@ -114,7 +118,7 @@ public class JIPipeCacheDataSlotTableUI extends JIPipeProjectWorkbenchPanel {
         table.setDefaultRenderer(JIPipeAnnotation.class, new JIPipeTraitTableCellRenderer());
         table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
-        JScrollPane scrollPane = new JScrollPane(table);
+        scrollPane = new JScrollPane(table);
         scrollPane.getViewport().setBackground(UIManager.getColor("TextArea.background"));
         add(scrollPane, BorderLayout.CENTER);
         add(table.getTableHeader(), BorderLayout.NORTH);
@@ -219,6 +223,7 @@ public class JIPipeCacheDataSlotTableUI extends JIPipeProjectWorkbenchPanel {
         private List<Component> previewCache = new ArrayList<>();
         private int previewCacheSize = GeneralDataSettings.getInstance().getPreviewSize();
         private final GeneralDataSettings dataSettings =GeneralDataSettings.getInstance();
+        private JScrollPane scrollPane;
 
         /**
          * Creates a new instance
@@ -294,7 +299,7 @@ public class JIPipeCacheDataSlotTableUI extends JIPipeProjectWorkbenchPanel {
                 if (preview == null) {
                     if (GeneralDataSettings.getInstance().isGenerateCachePreviews()) {
                         JIPipeData data = slot.getData(rowIndex, JIPipeData.class);
-                        preview = new JIPipeCachedDataPreview(table, data);
+                        preview = new JIPipeCachedDataPreview(table, data, true);
                         previewCache.set(rowIndex, preview);
                     } else {
                         preview = new JLabel("N/A");
@@ -322,6 +327,44 @@ public class JIPipeCacheDataSlotTableUI extends JIPipeProjectWorkbenchPanel {
         @Override
         public void removeTableModelListener(TableModelListener l) {
 
+        }
+
+        public JScrollPane getScrollPane() {
+            return scrollPane;
+        }
+
+        public void setScrollPane(JScrollPane scrollPane) {
+            this.scrollPane = scrollPane;
+            initializeDeferredPreviewRendering();
+        }
+
+        /**
+         * Adds some listeners to the scroll pane so we can
+         */
+        private void initializeDeferredPreviewRendering() {
+            this.scrollPane.getVerticalScrollBar().addAdjustmentListener(e -> {
+                updateRenderedPreviews();
+            });
+            updateRenderedPreviews();
+        }
+
+        private void updateRenderedPreviews() {
+            JViewport viewport = scrollPane.getViewport();
+            for (int row = 0; row < previewCache.size(); row++) {
+                Component component = previewCache.get(row);
+                if(component instanceof  JIPipeCachedDataPreview) {
+                    if(((JIPipeCachedDataPreview) component).isRenderedOrRendering())
+                        continue;
+                    // We assume view column = 0
+                    Rectangle rect = table.getCellRect(row, 0, true);
+                    Point pt = viewport.getViewPosition();
+                    rect.setLocation(rect.x - pt.x, rect.y - pt.y);
+                    boolean overlaps = new Rectangle(viewport.getExtentSize()).intersects(rect);
+                    if (overlaps) {
+                        ((JIPipeCachedDataPreview) component).renderPreview();
+                    }
+                }
+            }
         }
     }
 

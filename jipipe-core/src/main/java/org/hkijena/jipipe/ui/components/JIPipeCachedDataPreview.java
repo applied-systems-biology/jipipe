@@ -29,17 +29,34 @@ import java.util.concurrent.ExecutionException;
 public class JIPipeCachedDataPreview extends JPanel {
     private Component parentComponent;
     private JIPipeData data;
+    private Worker worker;
 
-    public JIPipeCachedDataPreview(Component parentComponent, JIPipeData data) {
+    /**
+     * Creates a new instance
+     * @param parentComponent The parent component that contains the preview
+     * @param data the data
+     * @param deferRendering if true, the preview will not be immediately rendered
+     */
+    public JIPipeCachedDataPreview(Component parentComponent, JIPipeData data, boolean deferRendering) {
         this.parentComponent = parentComponent;
         this.data = data;
         initialize();
-        renderPreview();
+        if(!deferRendering)
+            renderPreview();
     }
 
-    private void renderPreview() {
-        Worker worker = new Worker(this);
-        worker.execute();
+    public boolean isRenderedOrRendering() {
+        return worker != null;
+    }
+
+    /**
+     * Renders the preview if it is not already rendered
+     */
+    public void renderPreview() {
+        if(worker == null) {
+            worker = new Worker(this);
+            worker.execute();
+        }
     }
 
     private void setPreview(Component component) {

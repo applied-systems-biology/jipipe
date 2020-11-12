@@ -123,6 +123,7 @@ public class JIPipeCacheMultiDataSlotTableUI extends JIPipeProjectWorkbenchPanel
         table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
         JScrollPane scrollPane = new JScrollPane(table);
+        multiSlotTable.setScrollPane(scrollPane);
         scrollPane.getViewport().setBackground(UIManager.getColor("TextArea.background"));
         add(scrollPane, BorderLayout.CENTER);
         add(table.getTableHeader(), BorderLayout.NORTH);
