@@ -40,13 +40,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeMutableParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
-import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
-import org.hkijena.jipipe.api.registries.JIPipeExpressionRegistry;
-import org.hkijena.jipipe.api.registries.JIPipeImageJAdapterRegistry;
-import org.hkijena.jipipe.api.registries.JIPipeNodeRegistrationTask;
-import org.hkijena.jipipe.api.registries.JIPipeNodeRegistry;
-import org.hkijena.jipipe.api.registries.JIPipeParameterTypeRegistry;
-import org.hkijena.jipipe.api.registries.JIPipeSettingsRegistry;
+import org.hkijena.jipipe.api.registries.*;
 import org.hkijena.jipipe.extensions.parameters.primitives.DynamicStringEnumParameter;
 import org.hkijena.jipipe.extensions.settings.DefaultCacheDisplaySettings;
 import org.hkijena.jipipe.extensions.settings.DefaultResultImporterSettings;
@@ -68,15 +62,10 @@ import org.scijava.service.AbstractService;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.net.Authenticator;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -177,7 +166,18 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
         logService.info("[3/3] Error-checking-phase ...");
         for (Class<? extends JIPipeData> dataType : datatypeRegistry.getRegisteredDataTypes().values()) {
             // Check if we can find a method "import"
-            Method method = dataType.getDeclaredMethod("import", Path.class);
+            try {
+                Method method = dataType.getDeclaredMethod("import", Path.class);
+                if (!Modifier.isStatic(method.getModifiers())) {
+                    throw new IllegalArgumentException("Import method is not static!");
+                }
+                if(!JIPipeData.class.isAssignableFrom(method.getReturnType())) {
+                    throw new IllegalArgumentException("Import method does not return JIPipeData!");
+                }
+            }
+            catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         }
         if (extensionSettings.isValidateNodeTypes()) {
             for (JIPipeNodeInfo info : ImmutableList.copyOf(nodeRegistry.getRegisteredNodeInfos().values())) {
