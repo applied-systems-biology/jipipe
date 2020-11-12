@@ -35,7 +35,7 @@ import java.util.function.Supplier;
  */
 @JIPipeDocumentation(name = "ROI from file")
 @JIPipeInputSlot(value = FileData.class, slotName = "Files", autoCreate = true)
-@JIPipeOutputSlot(value = ROIListData.class, slotName = "Mask", autoCreate = true)
+@JIPipeOutputSlot(value = ROIListData.class, slotName = "Output", autoCreate = true)
 @JIPipeOrganization(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 public class ROIDataFromFile extends JIPipeSimpleIteratingAlgorithm {
 
