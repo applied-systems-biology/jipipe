@@ -24,7 +24,7 @@ import imagescience.image.FloatImage;
 import imagescience.image.Image;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
-import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
+import org.hkijena.jipipe.api.JIPipeRunnableInfo;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
@@ -41,8 +41,6 @@ import org.hkijena.jipipe.extensions.parameters.primitives.DoubleList;
 import org.hkijena.jipipe.extensions.parameters.primitives.NumberParameterSettings;
 
 import java.util.Vector;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 import static org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExtension.REMOVE_MASK_QUALIFIER;
 
@@ -96,7 +94,7 @@ public class MeijeringVesselness2DFeatures extends JIPipeSimpleIteratingAlgorith
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnableInfo progress) {
         ImagePlusGreyscale32FData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscale32FData.class);
         ImagePlus img = inputData.getImage();
 
@@ -108,7 +106,7 @@ public class MeijeringVesselness2DFeatures extends JIPipeSimpleIteratingAlgorith
         ImageStack stack = new ImageStack(img.getWidth(), img.getHeight(), img.getProcessor().getColorModel());
         ImagePlus finalImg = img;
         ImageJUtils.forEachIndexedSlice(img, (imp, index) -> {
-            algorithmProgress.accept(subProgress.resolve("Slice " + index + "/" + finalImg.getStackSize()));
+            progress.log("Slice " + index + "/" + finalImg.getStackSize());
             ImagePlus slice = new ImagePlus("slice", imp);
             ImagePlus processedSlice = processSlice(slice);
             stack.addSlice("slice" + index, processedSlice.getProcessor());

@@ -614,7 +614,7 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
         if (threads > 0)
             settings.setNumThreads(threads);
         JIPipeRun run = new JIPipeRun(project, settings);
-        run.run(status -> System.out.println(status.getProgress() + "/" + status.getMaxProgress()), () -> false);
+        run.run();
         return run;
     }
 
@@ -629,7 +629,7 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
      */
     public static JIPipeRun runProject(JIPipeProject project, JIPipeRunSettings settings) {
         JIPipeRun run = new JIPipeRun(project, settings);
-        run.run(status -> System.out.println(status.getProgress() + "/" + status.getMaxProgress()), () -> false);
+        run.run();
         return run;
     }
 

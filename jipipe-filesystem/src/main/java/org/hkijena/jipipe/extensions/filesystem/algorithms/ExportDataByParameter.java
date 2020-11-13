@@ -15,7 +15,7 @@ package org.hkijena.jipipe.extensions.filesystem.algorithms;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
-import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
+import org.hkijena.jipipe.api.JIPipeRunnableInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataByMetadataExporter;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
@@ -32,8 +32,6 @@ import org.hkijena.jipipe.ui.components.PathEditor;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 @JIPipeDocumentation(name = "Export data by parameter", description = "Collects all incoming data into one or multiple folders that contain the raw output files. " +
         "The output files are named according to the metadata columns and can be easily processed by humans or third-party scripts. " +
@@ -62,7 +60,7 @@ public class ExportDataByParameter extends JIPipeAlgorithm {
     }
 
     @Override
-    public void run(JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+    public void run(JIPipeRunnableInfo progress) {
         Path outputPath;
         if (outputDirectory == null || outputDirectory.toString().isEmpty() || !outputDirectory.isAbsolute()) {
             outputPath = getFirstOutputSlot().getStoragePath().resolve(outputDirectory);
@@ -70,20 +68,20 @@ public class ExportDataByParameter extends JIPipeAlgorithm {
             outputPath = outputDirectory;
         }
         if (isPassThrough()) {
-            algorithmProgress.accept(subProgress.resolve("Data passed through to output"));
+             progress.log("Data passed through to output");
             getFirstOutputSlot().addData(new FolderData(outputPath));
             return;
         }
 
         if (splitByInputSlots) {
             for (JIPipeDataSlot inputSlot : getInputSlots()) {
-                if (isCancelled.get())
+                if (progress.isCancelled().get())
                     return;
-                exporter.writeToFolder(Collections.singletonList(inputSlot), outputPath.resolve(inputSlot.getName()), subProgress.resolve("Slot '" + inputSlot.getName() + "'"), algorithmProgress, isCancelled);
+                exporter.writeToFolder(Collections.singletonList(inputSlot), outputPath.resolve(inputSlot.getName()), progress.resolve("Slot '" + inputSlot.getName() + "'"));
                 getFirstOutputSlot().addData(new FolderData(outputPath.resolve(inputSlot.getName())));
             }
         } else {
-            exporter.writeToFolder(getInputSlots(), outputPath, subProgress, algorithmProgress, isCancelled);
+            exporter.writeToFolder(getInputSlots(), outputPath, progress);
             getFirstOutputSlot().addData(new FolderData(outputPath));
         }
     }

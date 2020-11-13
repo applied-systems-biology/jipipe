@@ -15,6 +15,7 @@ package org.hkijena.jipipe.ui.cache;
 
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.JIPipeRunnable;
+import org.hkijena.jipipe.api.JIPipeRunnableInfo;
 import org.hkijena.jipipe.api.JIPipeRunnerStatus;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.data.JIPipeDataByMetadataExporter;
@@ -31,20 +32,16 @@ import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 public class JIPipeCachedSlotToFilesByMetadataExporterRun extends JIPipeWorkbenchPanel implements JIPipeRunnable {
 
+    private JIPipeRunnableInfo info = new JIPipeRunnableInfo();
     private Path outputPath;
     private final List<JIPipeDataSlot> slots;
     private final boolean splitBySlot;
@@ -109,13 +106,12 @@ public class JIPipeCachedSlotToFilesByMetadataExporterRun extends JIPipeWorkbenc
     }
 
     @Override
-    public void run(Consumer<JIPipeRunnerStatus> onProgress, Supplier<Boolean> isCancelled) {
+    public void run() {
         Set<String> existing = new HashSet<>();
-        JIPipeRunnerSubStatus.DefaultConsumer consumer = new JIPipeRunnerSubStatus.DefaultConsumer(onProgress);
-        consumer.setMaxProgress(slots.size());
+        info.setMaxProgress(slots.size());
         for (int i = 0; i < slots.size(); i++) {
-            consumer.setProgress(i + 1);
-            onProgress.accept(new JIPipeRunnerStatus(i + 1, slots.size(), "Slot " + (i + 1) + "/" + slots.size()));
+            info.setProgress(i + 1);
+            JIPipeRunnableInfo subProgress = info.resolveAndLog("Slot", i, slots.size());
             JIPipeDataSlot slot = slots.get(i);
             Path targetPath = outputPath;
             if(splitBySlot) {
@@ -124,7 +120,7 @@ public class JIPipeCachedSlotToFilesByMetadataExporterRun extends JIPipeWorkbenc
             try {
                 if(!Files.isDirectory(targetPath))
                     Files.createDirectories(targetPath);
-                exporter.writeToFolder(slot, targetPath, new JIPipeRunnerSubStatus().resolve("Slot " + slot.getName()), consumer, isCancelled);
+                exporter.writeToFolder(slot, targetPath, info.resolve("Slot " + slot.getName()));
             }
             catch (Exception e) {
                 throw new RuntimeException(e);
@@ -154,5 +150,14 @@ public class JIPipeCachedSlotToFilesByMetadataExporterRun extends JIPipeWorkbenc
 
     public List<JIPipeDataSlot> getSlots() {
         return slots;
+    }
+
+    @Override
+    public JIPipeRunnableInfo getInfo() {
+        return info;
+    }
+
+    public void setInfo(JIPipeRunnableInfo info) {
+        this.info = info;
     }
 }

@@ -16,7 +16,7 @@ package org.hkijena.jipipe.extensions.python;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
-import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
+import org.hkijena.jipipe.api.JIPipeRunnableInfo;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
@@ -42,8 +42,6 @@ import org.python.util.PythonInterpreter;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 /**
  * An algorithm that allows to run Python code
@@ -113,8 +111,7 @@ public class ParameterSlotPythonScriptAlgorithm extends JIPipeParameterSlotAlgor
     }
 
     @Override
-    public void runParameterSet(JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress,
-                                Supplier<Boolean> isCancelled, List<JIPipeAnnotation> parameterAnnotations) {
+    public void runParameterSet(JIPipeRunnableInfo progress, List<JIPipeAnnotation> parameterAnnotations) {
         PythonInterpreter pythonInterpreter = new PythonInterpreter();
         PythonUtils.passParametersToPython(pythonInterpreter, scriptParameters);
         pythonInterpreter.set("parameter_annotations", parameterAnnotations);

@@ -16,7 +16,7 @@ package org.hkijena.jipipe.extensions.filesystem.algorithms;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
-import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
+import org.hkijena.jipipe.api.JIPipeRunnableInfo;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.data.JIPipeData;
@@ -37,8 +37,6 @@ import java.nio.file.Path;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 @JIPipeDocumentation(name = "Import data from slot", description = "Imports data from a slot folder back into JIPipe. The folder contains a data-table.json file and multiple folders with numeric names.")
 @JIPipeOrganization(nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
@@ -62,7 +60,7 @@ public class ImportData extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnableInfo progress) {
         if(ignoreInputAnnotations)
             dataBatch.setAnnotations(new HashMap<>());
         Path dataFolder = dataBatch.getInputData(getFirstInputSlot(), FolderData.class).getPath();
@@ -84,7 +82,7 @@ public class ImportData extends JIPipeSimpleIteratingAlgorithm {
         }
 
         for (JIPipeExportedDataTable.Row row : exportedDataTable.getRowList()) {
-            algorithmProgress.accept(subProgress.resolve("Importing data row " + row.getIndex()));
+           progress.log("Importing data row " + row.getIndex());
             Path storageFolder = dataFolder.resolve("" + row.getIndex());
             List<JIPipeAnnotation> annotationList = ignoreImportedDataAnnotations ? Collections.emptyList() : row.getAnnotations();
             JIPipeDataInfo trueDataType = exportedDataTable.getDataTypeOf(row.getIndex());

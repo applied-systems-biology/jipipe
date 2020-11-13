@@ -19,7 +19,7 @@ import ij.io.Opener;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
-import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
+import org.hkijena.jipipe.api.JIPipeRunnableInfo;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
@@ -44,8 +44,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 /**
  * Loads an image data from a file via IJ.openFile()
@@ -98,9 +96,9 @@ public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnableInfo progress) {
         FileData fileData = dataBatch.getInputData(getFirstInputSlot(), FileData.class);
-        ImagePlusData data = (ImagePlusData) readImageFrom(fileData.getPath(), subProgress, algorithmProgress, isCancelled);
+        ImagePlusData data = (ImagePlusData) readImageFrom(fileData.getPath(), progress);
         List<JIPipeAnnotation> traits = new ArrayList<>();
         if (titleAnnotation.isEnabled()) {
             traits.add(new JIPipeAnnotation(titleAnnotation.getContent(), data.getImage().getTitle()));
@@ -123,19 +121,20 @@ public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
      * Loads an image from a file path
      *
      * @param fileName the image file name
+     * @param progress progress
      * @return the generated data
      */
-    protected JIPipeData readImageFrom(Path fileName, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+    protected JIPipeData readImageFrom(Path fileName, JIPipeRunnableInfo progress) {
         try {
             Opener opener = new Opener();
             ImagePlus image;
             String fileNameString = fileName.getFileName().toString();
             if (fileNameString.endsWith(".ome.tiff") || fileNameString.endsWith(".ome.tif") || fileNameString.endsWith(".czi")) {
                 // Pass to bioformats
-                algorithmProgress.accept(subProgress.resolve("Using BioFormats importer. Please use the Bio-Formats importer node for more settings."));
+               progress.log("Using BioFormats importer. Please use the Bio-Formats importer node for more settings.");
                 BioFormatsImporter importer = JIPipe.createNode(BioFormatsImporter.class);
                 importer.getFirstInputSlot().addData(new FileData(fileName));
-                importer.run(subProgress, algorithmProgress, isCancelled);
+                importer.run(progress);
                 image = importer.getFirstOutputSlot().getData(0, OMEImageData.class).getImage();
             } else {
                 image = IJ.openImage(fileName.toString());
@@ -143,10 +142,10 @@ public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
             if (image == null) {
                 // Try Bioformats again?
                 // Pass to bioformats
-                algorithmProgress.accept(subProgress.resolve("Using BioFormats importer. Please use the Bio-Formats importer node for more settings."));
+                progress.log("Using BioFormats importer. Please use the Bio-Formats importer node for more settings.");
                 BioFormatsImporter importer = JIPipe.createNode(BioFormatsImporter.class);
                 importer.getFirstInputSlot().addData(new FileData(fileName));
-                importer.run(subProgress, algorithmProgress, isCancelled);
+                importer.run(progress);
                 image = importer.getFirstOutputSlot().getData(0, OMEImageData.class).getImage();
             }
             if (image == null) {

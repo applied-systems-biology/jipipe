@@ -18,24 +18,23 @@ import net.imagej.updater.FilesCollection;
 import net.imagej.updater.util.AvailableSites;
 import net.imagej.updater.util.UpdaterUtil;
 import org.hkijena.jipipe.api.JIPipeRunnable;
-import org.hkijena.jipipe.api.JIPipeRunnerStatus;
+import org.hkijena.jipipe.api.JIPipeRunnableInfo;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;
 import java.net.Authenticator;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 /**
  * A run that is used for the updater
  */
 public class RefreshRepositoryRun implements JIPipeRunnable {
 
+    private JIPipeRunnableInfo info = new JIPipeRunnableInfo();
     private FilesCollection filesCollection;
     private String conflictWarnings;
 
     @Override
-    public void run(Consumer<JIPipeRunnerStatus> onProgress, Supplier<Boolean> isCancelled) {
+    public void run() {
         UpdaterUtil.useSystemProxies();
         Authenticator.setDefault(new SwingAuthenticator());
 
@@ -44,7 +43,7 @@ public class RefreshRepositoryRun implements JIPipeRunnable {
 
         // Look for conflicts
         try {
-            conflictWarnings = filesCollection.downloadIndexAndChecksum(new ProgressAdapter(onProgress));
+            conflictWarnings = filesCollection.downloadIndexAndChecksum(new ProgressAdapter(info));
         } catch (ParserConfigurationException | SAXException e) {
             throw new RuntimeException(e);
         }
@@ -58,5 +57,14 @@ public class RefreshRepositoryRun implements JIPipeRunnable {
 
     public String getConflictWarnings() {
         return conflictWarnings;
+    }
+
+    @Override
+    public JIPipeRunnableInfo getInfo() {
+        return info;
+    }
+
+    public void setInfo(JIPipeRunnableInfo info) {
+        this.info = info;
     }
 }

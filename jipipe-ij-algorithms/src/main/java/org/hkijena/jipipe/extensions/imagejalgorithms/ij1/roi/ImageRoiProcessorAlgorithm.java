@@ -16,7 +16,7 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi;
 import ij.ImagePlus;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
+import org.hkijena.jipipe.api.JIPipeRunnableInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
@@ -32,8 +32,6 @@ import org.scijava.Priority;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 /**
  * An algorithm that processes {@link org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData} to
@@ -84,12 +82,10 @@ public abstract class ImageRoiProcessorAlgorithm extends JIPipeIteratingAlgorith
      * Please note that the reference is not safe to modify
      *
      * @param dataBatch         the input data
-     * @param subProgress       progress
-     * @param algorithmProgress progress
-     * @param isCancelled       if cancelled
+     * @param progress progress
      * @return reference image
      */
-    protected Map<ImagePlusData, ROIListData> getReferenceImage(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+    protected Map<ImagePlusData, ROIListData> getReferenceImage(JIPipeDataBatch dataBatch, JIPipeRunnableInfo progress) {
         if (overrideReferenceImage) {
             ImagePlusData reference = dataBatch.getInputData("Reference", ImagePlusData.class);
             Map<ImagePlusData, ROIListData> result = new HashMap<>();
@@ -105,7 +101,7 @@ public abstract class ImageRoiProcessorAlgorithm extends JIPipeIteratingAlgorith
                     } else {
                         toMaskAlgorithm.clearSlotData();
                         toMaskAlgorithm.getFirstInputSlot().addData(entry.getValue());
-                        toMaskAlgorithm.run(subProgress.resolve("Generate reference image"), algorithmProgress, isCancelled);
+                        toMaskAlgorithm.run(progress);
                         ImagePlusData reference = toMaskAlgorithm.getFirstOutputSlot().getData(0, ImagePlusData.class);
                         result.put(reference, entry.getValue());
                     }
@@ -114,7 +110,7 @@ public abstract class ImageRoiProcessorAlgorithm extends JIPipeIteratingAlgorith
                 ROIListData inputRois = dataBatch.getInputData("ROI", ROIListData.class);
                 toMaskAlgorithm.clearSlotData();
                 toMaskAlgorithm.getFirstInputSlot().addData(inputRois);
-                toMaskAlgorithm.run(subProgress.resolve("Generate reference image"), algorithmProgress, isCancelled);
+                toMaskAlgorithm.run(progress);
                 ImagePlusData reference = toMaskAlgorithm.getFirstOutputSlot().getData(0, ImagePlusData.class);
                 result.put(reference, inputRois);
             }

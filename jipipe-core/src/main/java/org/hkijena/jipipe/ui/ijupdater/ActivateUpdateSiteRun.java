@@ -16,17 +16,16 @@ package org.hkijena.jipipe.ui.ijupdater;
 import net.imagej.updater.FilesCollection;
 import net.imagej.updater.UpdateSite;
 import org.hkijena.jipipe.api.JIPipeRunnable;
-import org.hkijena.jipipe.api.JIPipeRunnerStatus;
+import org.hkijena.jipipe.api.JIPipeRunnableInfo;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.util.List;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 public class ActivateUpdateSiteRun implements JIPipeRunnable {
 
+    private JIPipeRunnableInfo info = new JIPipeRunnableInfo();
     private final FilesCollection filesCollection;
     private final List<UpdateSite> updateSites;
 
@@ -36,13 +35,22 @@ public class ActivateUpdateSiteRun implements JIPipeRunnable {
     }
 
     @Override
-    public void run(Consumer<JIPipeRunnerStatus> onProgress, Supplier<Boolean> isCancelled) {
+    public void run() {
         try {
             for (UpdateSite updateSite : updateSites) {
-                filesCollection.activateUpdateSite(updateSite, new ProgressAdapter(onProgress));
+                filesCollection.activateUpdateSite(updateSite, new ProgressAdapter(info));
             }
         } catch (ParserConfigurationException | IOException | SAXException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public JIPipeRunnableInfo getInfo() {
+        return info;
+    }
+
+    public void setInfo(JIPipeRunnableInfo info) {
+        this.info = info;
     }
 }

@@ -21,7 +21,7 @@ import ij.ImagePlus;
 import ij.plugin.ChannelArranger;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
-import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
+import org.hkijena.jipipe.api.JIPipeRunnableInfo;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
@@ -35,8 +35,6 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusCo
 import org.hkijena.jipipe.extensions.parameters.pairs.IntegerAndIntegerPairParameter;
 
 import java.util.Comparator;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 /**
  * Wrapper around {@link ij.plugin.ChannelArranger}
@@ -76,7 +74,7 @@ public class ArrangeChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnableInfo progress) {
         ImagePlus image = dataBatch.getInputData(getFirstInputSlot(), ImagePlusColorData.class).getImage();
 
         // First determine the number of output channels and generate the order array

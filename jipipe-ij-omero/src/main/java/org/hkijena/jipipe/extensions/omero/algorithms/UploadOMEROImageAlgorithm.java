@@ -34,7 +34,7 @@ import omero.model.Pixels;
 import org.apache.commons.io.FileUtils;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
-import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
+import org.hkijena.jipipe.api.JIPipeRunnableInfo;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.data.JIPipeDataByMetadataExporter;
@@ -65,8 +65,6 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 @JIPipeDocumentation(name = "Upload to OMERO", description = "Uploads an image to OMERO.")
@@ -102,14 +100,14 @@ public class UploadOMEROImageAlgorithm extends JIPipeMergingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeMergingDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+    protected void runIteration(JIPipeMergingDataBatch dataBatch, JIPipeRunnableInfo progress) {
         List<OMEImageData> images = dataBatch.getInputData("Image", OMEImageData.class);
         ArrayList<JIPipeAnnotation> annotations = new ArrayList<>(dataBatch.getAnnotations().values());
         for (int index = 0; index < images.size(); index++) {
             Path targetPath = RuntimeSettings.generateTempDirectory("OMERO-Upload");
-            exportImages(images.get(index), annotations, targetPath, subProgress.resolve("Exporting images"), algorithmProgress, isCancelled);
+            exportImages(images.get(index), annotations, targetPath, progress);
             for (OMERODatasetReferenceData dataset : dataBatch.getInputData("Dataset", OMERODatasetReferenceData.class)) {
-                uploadImages(targetPath, annotations, dataset.getDatasetId(), subProgress.resolve("Uploading"), algorithmProgress, isCancelled);
+                uploadImages(targetPath, annotations, dataset.getDatasetId(), progress);
             }
             try {
                 FileUtils.deleteDirectory(targetPath.toFile());
@@ -120,9 +118,9 @@ public class UploadOMEROImageAlgorithm extends JIPipeMergingAlgorithm {
     }
 
 
-    private void uploadImages(Path targetPath, List<JIPipeAnnotation> annotations, long datasetId, JIPipeRunnerSubStatus subStatus, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+    private void uploadImages(Path targetPath, List<JIPipeAnnotation> annotations, long datasetId, JIPipeRunnableInfo progress) {
         List<String> filePaths = PathUtils.findFilesByExtensionIn(targetPath, ".ome.tif").stream().map(Path::toString).collect(Collectors.toList());
-        algorithmProgress.accept(subStatus.resolve("Uploading " + filePaths.size() + " files"));
+       progress.log("Uploading " + filePaths.size() + " files");
         LoginCredentials credentials = this.credentials.getCredentials();
         ImportConfig config = new ome.formats.importer.ImportConfig();
 
@@ -148,7 +146,7 @@ public class UploadOMEROImageAlgorithm extends JIPipeMergingAlgorithm {
             ImportLibrary library = new ImportLibrary(store, reader);
 
             ErrorHandler handler = new ErrorHandler(config);
-            library.addObserver(new OMEROUploadToJIPipeLogger(subStatus, algorithmProgress));
+            library.addObserver(new OMEROUploadToJIPipeLogger(progress));
 
             ImportCandidates candidates = new ImportCandidates(reader, filePaths.toArray(new String[0]), handler);
             reader.setMetadataOptions(new DefaultMetadataOptions(MetadataLevel.ALL));
@@ -166,7 +164,7 @@ public class UploadOMEROImageAlgorithm extends JIPipeMergingAlgorithm {
 
         // Connect annotations
         if (uploadAnnotations) {
-            try (Gateway gateway = new Gateway(new OMEROToJIPipeLogger(subStatus, algorithmProgress))) {
+            try (Gateway gateway = new Gateway(new OMEROToJIPipeLogger(progress))) {
                 ExperimenterData user = gateway.connect(credentials);
                 SecurityContext context = new SecurityContext(user.getGroupId());
                 BrowseFacility browseFacility = gateway.getFacility(BrowseFacility.class);
@@ -193,14 +191,14 @@ public class UploadOMEROImageAlgorithm extends JIPipeMergingAlgorithm {
         }
     }
 
-    private void exportImages(OMEImageData image, List<JIPipeAnnotation> annotations, Path targetPath, JIPipeRunnerSubStatus subStatus, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+    private void exportImages(OMEImageData image, List<JIPipeAnnotation> annotations, Path targetPath, JIPipeRunnableInfo progress) {
         JIPipeDataSlot dummy = new JIPipeDataSlot(new JIPipeDataSlotInfo(OMEImageData.class, JIPipeSlotType.Input, null), this);
         dummy.addData(image, annotations, JIPipeAnnotationMergeStrategy.Merge);
         image.setExporterSettings(exporterSettings);
 
         // Export to BioFormats
-        algorithmProgress.accept(subStatus.resolve("Image files will be written into " + targetPath));
-        exporter.writeToFolder(dummy, targetPath, subStatus.resolve("Export images"), algorithmProgress, isCancelled);
+        progress.log("Image files will be written into " + targetPath);
+        exporter.writeToFolder(dummy, targetPath, progress);
     }
 
     @JIPipeDocumentation(name = "OMERO Server credentials", description = "The following credentials will be used to connect to the OMERO server. If you leave items empty, they will be " +

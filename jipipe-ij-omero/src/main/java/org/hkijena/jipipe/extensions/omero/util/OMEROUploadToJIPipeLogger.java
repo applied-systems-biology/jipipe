@@ -16,22 +16,18 @@ package org.hkijena.jipipe.extensions.omero.util;
 import ome.formats.importer.IObservable;
 import ome.formats.importer.IObserver;
 import ome.formats.importer.ImportEvent;
-import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
-
-import java.util.function.Consumer;
+import org.hkijena.jipipe.api.JIPipeRunnableInfo;
 
 public class OMEROUploadToJIPipeLogger implements IObserver {
 
-    private final JIPipeRunnerSubStatus subProgress;
-    private final Consumer<JIPipeRunnerSubStatus> algorithmProgress;
+    private final JIPipeRunnableInfo info;
 
-    public OMEROUploadToJIPipeLogger(JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress) {
-        this.subProgress = subProgress;
-        this.algorithmProgress = algorithmProgress;
+    public OMEROUploadToJIPipeLogger(JIPipeRunnableInfo info) {
+        this.info = info;
     }
 
     @Override
     public void update(IObservable observable, ImportEvent event) {
-        algorithmProgress.accept(subProgress.resolve(event.toLog()));
+      info.log(event.toLog());
     }
 }

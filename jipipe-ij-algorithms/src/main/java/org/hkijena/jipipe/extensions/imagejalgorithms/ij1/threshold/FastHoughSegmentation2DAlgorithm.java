@@ -24,7 +24,7 @@ import ij.process.ByteProcessor;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
-import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
+import org.hkijena.jipipe.api.JIPipeRunnableInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
@@ -45,8 +45,6 @@ import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 import static org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExtension.ADD_MASK_QUALIFIER;
 
@@ -176,15 +174,15 @@ public class FastHoughSegmentation2DAlgorithm extends JIPipeSimpleIteratingAlgor
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnableInfo progress) {
         ImagePlus img = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class).getImage();
         ImageStack maskStack = new ImageStack(img.getWidth(), img.getHeight(), img.getProcessor().getColorModel());
         ImageStack houghStack = new ImageStack(img.getWidth(), img.getHeight(), img.getProcessor().getColorModel());
         ResultsTableData measurements = new ResultsTableData();
 
         ImageJUtils.forEachIndexedSlice(img, (imp, index) -> {
-            algorithmProgress.accept(subProgress.resolve("Slice " + index + "/" + img.getStackSize()));
-            applyHough(imp, maskStack, houghStack, measurements, subProgress.resolve("Slice " + index), algorithmProgress);
+            progress.log("Slice " + index + "/" + img.getStackSize());
+            applyHough(imp, maskStack, houghStack, measurements, progress);
         });
 
         ImagePlus mask = new ImagePlus("Segmented Image", maskStack);
@@ -201,7 +199,7 @@ public class FastHoughSegmentation2DAlgorithm extends JIPipeSimpleIteratingAlgor
         dataBatch.addOutputData("Measurements", measurements);
     }
 
-    private void applyHough(ImageProcessor imp, ImageStack maskStack, ImageStack houghStack, ResultsTableData measurements, JIPipeRunnerSubStatus subStatus, Consumer<JIPipeRunnerSubStatus> algorithmProgress) {
+    private void applyHough(ImageProcessor imp, ImageStack maskStack, ImageStack houghStack, ResultsTableData measurements, JIPipeRunnableInfo progress) {
         final int W = imp.getWidth();
         final int H = imp.getHeight();
         ResultsTable rt = new ResultsTable();
@@ -218,7 +216,7 @@ public class FastHoughSegmentation2DAlgorithm extends JIPipeSimpleIteratingAlgor
         double[][] Z;
 
         for (int R = minRadius; R <= maxRadius; R++) {
-            algorithmProgress.accept(subStatus.resolve("R=" + R));
+            progress.log("R=" + R);
             Z = new double[imp.getWidth()][imp.getHeight()];
 
             /* traverse the image and update the accumulator. */

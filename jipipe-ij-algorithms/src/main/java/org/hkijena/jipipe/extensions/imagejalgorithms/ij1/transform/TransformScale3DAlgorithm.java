@@ -19,7 +19,7 @@ import ij.process.ImageProcessor;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
-import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
+import org.hkijena.jipipe.api.JIPipeRunnableInfo;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
@@ -32,9 +32,6 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.InterpolationMethod;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.parameters.roi.OptionalIntModificationParameter;
-
-import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 /**
  * Wrapper around {@link ImageProcessor}
@@ -89,7 +86,7 @@ public class TransformScale3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnableInfo progress) {
         ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class);
         ImagePlus img = inputData.getImage();
 
@@ -114,7 +111,7 @@ public class TransformScale3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             scale2DAlgorithm.setxAxis(xAxis);
             scale2DAlgorithm.setyAxis(yAxis);
             scale2DAlgorithm.getFirstInputSlot().addData(new ImagePlusData(img));
-            scale2DAlgorithm.run(subProgress.resolve("Rescale 2D"), algorithmProgress, isCancelled);
+            scale2DAlgorithm.run(progress);
             img = scale2DAlgorithm.getFirstOutputSlot().getData(0, ImagePlusData.class).getImage();
         }
 

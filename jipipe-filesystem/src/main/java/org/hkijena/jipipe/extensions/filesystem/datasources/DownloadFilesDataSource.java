@@ -3,7 +3,7 @@ package org.hkijena.jipipe.extensions.filesystem.datasources;
 import org.apache.commons.lang.StringUtils;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
-import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
+import org.hkijena.jipipe.api.JIPipeRunnableInfo;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -25,8 +25,6 @@ import java.net.URL;
 import java.nio.file.Path;
 import java.text.DecimalFormat;
 import java.util.Objects;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 @JIPipeDocumentation(name = "Download files", description = "Downloads one or multiple files from web resources. This node will download the files and places each one of them into a temporary folder. The output of this node is the path to the downloaded file.")
 @JIPipeOrganization(nodeTypeCategory = DataSourceNodeTypeCategory.class)
@@ -45,7 +43,7 @@ public class DownloadFilesDataSource extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnableInfo progress) {
         for (String urlString : urls) {
             try {
                 if (urlString.isEmpty()) {
@@ -63,7 +61,7 @@ public class DownloadFilesDataSource extends JIPipeSimpleIteratingAlgorithm {
                     WebUtils.download(url, targetFile, total -> {
                         String message = "Downloaded " + df.format(total / 1024.0 / 1024.0) + " MB";
                         if (!Objects.equals(message, lastMessage[0])) {
-                            algorithmProgress.accept(subProgress.resolve(message));
+                            progress.log(message);
                             lastMessage[0] = message;
                         }
                     });

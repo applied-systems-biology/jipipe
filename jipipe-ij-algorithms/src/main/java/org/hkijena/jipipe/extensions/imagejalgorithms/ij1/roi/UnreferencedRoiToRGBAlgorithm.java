@@ -21,7 +21,7 @@ import ij.process.ImageProcessor;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
-import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
+import org.hkijena.jipipe.api.JIPipeRunnableInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
@@ -45,8 +45,6 @@ import java.awt.Rectangle;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 /**
  * Wrapper around {@link ij.plugin.frame.RoiManager}
@@ -117,20 +115,20 @@ public class UnreferencedRoiToRGBAlgorithm extends JIPipeSimpleIteratingAlgorith
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnableInfo progress) {
         if (preferAssociatedImage) {
             for (Map.Entry<Optional<ImagePlus>, ROIListData> referenceEntry : dataBatch.getInputData(getFirstInputSlot(), ROIListData.class).groupByReferenceImage().entrySet()) {
                 ROIListData inputData = (ROIListData) referenceEntry.getValue().duplicate();
-                processROILIst(dataBatch, subProgress, algorithmProgress, isCancelled, inputData, referenceEntry.getKey().orElse(null));
+                processROIList(dataBatch, inputData, referenceEntry.getKey().orElse(null), progress);
             }
         } else {
             ROIListData inputData = (ROIListData) dataBatch.getInputData(getFirstInputSlot(), ROIListData.class).duplicate();
-            processROILIst(dataBatch, subProgress, algorithmProgress, isCancelled, inputData, null);
+            processROIList(dataBatch, inputData, null, progress);
         }
 
     }
 
-    private void processROILIst(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled, ROIListData inputData, ImagePlus reference) {
+    private void processROIList(JIPipeDataBatch dataBatch, ROIListData inputData, ImagePlus reference, JIPipeRunnableInfo progress) {
         // Find the bounds and future stack position
         Rectangle bounds = imageArea.apply(inputData.getBounds());
         int sx = bounds.width + bounds.x;
@@ -157,7 +155,7 @@ public class UnreferencedRoiToRGBAlgorithm extends JIPipeSimpleIteratingAlgorith
             statisticsAlgorithm.setOverrideReferenceImage(false);
             statisticsAlgorithm.getMeasurements().setNativeValue(Measurement.Centroid.getNativeValue());
             statisticsAlgorithm.getInputSlot("ROI").addData(inputData);
-            statisticsAlgorithm.run(subProgress.resolve("ROI statistics"), algorithmProgress, isCancelled);
+            statisticsAlgorithm.run(progress);
             ResultsTableData centroids = statisticsAlgorithm.getFirstOutputSlot().getData(0, ResultsTableData.class);
             for (int row = 0; row < centroids.getRowCount(); row++) {
                 Point centroid = new Point((int) centroids.getValueAsDouble(row, "X"),

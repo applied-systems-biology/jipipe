@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.ui.ijupdater;
 
 import net.imagej.updater.util.Progress;
+import org.hkijena.jipipe.api.JIPipeRunnableInfo;
 import org.hkijena.jipipe.api.JIPipeRunnerStatus;
 
 import java.util.function.Consumer;
@@ -23,13 +24,13 @@ import java.util.function.Consumer;
  */
 public class ProgressAdapter implements Progress {
 
-    private final Consumer<JIPipeRunnerStatus> onProgress;
+    private final JIPipeRunnableInfo onProgress;
     private int progress;
     private int maxProgress;
     private String title;
     private String item;
 
-    public ProgressAdapter(Consumer<JIPipeRunnerStatus> onProgress) {
+    public ProgressAdapter(JIPipeRunnableInfo onProgress) {
         this.onProgress = onProgress;
     }
 
@@ -69,6 +70,7 @@ public class ProgressAdapter implements Progress {
     }
 
     private void postProgress() {
-        onProgress.accept(new JIPipeRunnerStatus(progress, maxProgress, title + " | " + item));
+        onProgress.setProgress(progress, maxProgress);
+        onProgress.log(title + " | " + item);
     }
 }

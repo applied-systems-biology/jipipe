@@ -24,7 +24,7 @@ import ij.process.ColorProcessor;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
-import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
+import org.hkijena.jipipe.api.JIPipeRunnableInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeIteratingAlgorithm;
@@ -39,8 +39,6 @@ import org.hkijena.jipipe.extensions.parameters.primitives.OptionalIntegerParame
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Image;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 /**
  * Implementation of {@link ij.plugin.MontageMaker}
@@ -83,7 +81,7 @@ public class StackToMontageAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnableInfo progress) {
         ImagePlus imp = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class).getImage();
         if (!imp.isStack() || imp.getStackSize() <= 1) {
             dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(imp));

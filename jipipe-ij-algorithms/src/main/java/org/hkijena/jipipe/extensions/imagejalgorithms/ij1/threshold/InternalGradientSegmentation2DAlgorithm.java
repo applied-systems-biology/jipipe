@@ -22,7 +22,7 @@ import ij.plugin.filter.RankFilters;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
-import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
+import org.hkijena.jipipe.api.JIPipeRunnableInfo;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
@@ -38,9 +38,6 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale8UData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
-
-import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 import static org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExtension.ADD_MASK_QUALIFIER;
 
@@ -117,7 +114,7 @@ public class InternalGradientSegmentation2DAlgorithm extends JIPipeSimpleIterati
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnableInfo progress) {
 
         ImagePlus img = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class).getImage();
         ImageStack stack = new ImageStack(img.getWidth(), img.getHeight(), img.getProcessor().getColorModel());
@@ -133,7 +130,7 @@ public class InternalGradientSegmentation2DAlgorithm extends JIPipeSimpleIterati
             if (applyFirstCLAHE) {
                 contrastEnhancerCopy.clearSlotData();
                 contrastEnhancerCopy.getFirstInputSlot().addData(new ImagePlusGreyscaleData(processedSlice));
-                contrastEnhancerCopy.run(subProgress.resolve("Slice " + index + "/" + img.getStackSize()).resolve("CLAHE Enhancer (1/2)"), algorithmProgress, isCancelled);
+                contrastEnhancerCopy.run(progress);
                 processedSlice = contrastEnhancerCopy.getFirstOutputSlot().getData(0, ImagePlusData.class).getImage();
             }
 
@@ -146,14 +143,14 @@ public class InternalGradientSegmentation2DAlgorithm extends JIPipeSimpleIterati
             if (applySecondCLAHE) {
                 contrastEnhancerCopy.clearSlotData();
                 contrastEnhancerCopy.getFirstInputSlot().addData(new ImagePlusGreyscaleData(processedSlice));
-                contrastEnhancerCopy.run(subProgress.resolve("Slice " + index + "/" + img.getStackSize()).resolve("CLAHE Enhancer (2/2)"), algorithmProgress, isCancelled);
+                contrastEnhancerCopy.run(progress);
                 processedSlice = contrastEnhancerCopy.getFirstOutputSlot().getData(0, ImagePlusData.class).getImage();
             }
 
             // Convert image to mask and threshold with given auto threshold method
             autoThresholdingCopy.clearSlotData();
             autoThresholdingCopy.getFirstInputSlot().addData(new ImagePlusGreyscaleData(processedSlice));
-            autoThresholdingCopy.run(subProgress.resolve("Slice " + index + "/" + img.getStackSize()).resolve("Auto-thresholding"), algorithmProgress, isCancelled);
+            autoThresholdingCopy.run(progress);
             processedSlice = autoThresholdingCopy.getFirstOutputSlot().getData(0, ImagePlusData.class).getImage();
 
             // Apply set of rank filters

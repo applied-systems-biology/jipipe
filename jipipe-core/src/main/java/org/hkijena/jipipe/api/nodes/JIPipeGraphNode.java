@@ -28,7 +28,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeRun;
-import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
+import org.hkijena.jipipe.api.JIPipeRunnableInfo;
 import org.hkijena.jipipe.api.JIPipeValidatable;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeData;
@@ -61,8 +61,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 /**
  * An algorithm is is a set of input and output data slots, and a run() function
@@ -255,11 +253,9 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
     /**
      * Runs the workload
      *
-     * @param subProgress       allows algorithms to report sub-progress
-     * @param algorithmProgress call to provide sub-progress
-     * @param isCancelled       returns if cancellation was requested
+     * @param progress progress passed from the runner
      */
-    public abstract void run(JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled);
+    public abstract void run(JIPipeRunnableInfo progress);
 
     public EventBus getEventBus() {
         return eventBus;

@@ -22,7 +22,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 /**
  * Executes an {@link JIPipeGraph}.
@@ -32,6 +31,7 @@ import java.util.function.Supplier;
  */
 public class JIPipeGraphRunner implements JIPipeRunnable {
 
+    private JIPipeRunnableInfo info = new JIPipeRunnableInfo();
     private final JIPipeGraph algorithmGraph;
     private Set<JIPipeGraphNode> algorithmsWithExternalInput = new HashSet<>();
 
@@ -44,30 +44,29 @@ public class JIPipeGraphRunner implements JIPipeRunnable {
         this.algorithmGraph = algorithmGraph;
     }
 
+    public void setInfo(JIPipeRunnableInfo info) {
+        this.info = info;
+    }
+
     @Override
-    public void run(Consumer<JIPipeRunnerStatus> onProgress, Supplier<Boolean> isCancelled) {
+    public void run() {
         Set<JIPipeGraphNode> unExecutableAlgorithms = algorithmGraph.getDeactivatedAlgorithms(algorithmsWithExternalInput);
         Set<JIPipeGraphNode> executedAlgorithms = new HashSet<>();
         List<JIPipeDataSlot> traversedSlots = algorithmGraph.traverseSlots();
-
+        info.setMaxProgress(traversedSlots.size());
         for (int index = 0; index < traversedSlots.size(); ++index) {
-            if (isCancelled.get())
+            if (info.isCancelled().get())
                 throw new UserFriendlyRuntimeException("Execution was cancelled",
                         "You cancelled the execution of the algorithm pipeline.",
                         "Pipeline run", "You clicked 'Cancel'.",
                         "Do not click 'Cancel' if you do not want to cancel the execution.");
             JIPipeDataSlot slot = traversedSlots.get(index);
-            logStatus(onProgress, new JIPipeRunnerStatus(index, algorithmGraph.getSlotCount(), slot.getDisplayName()));
+            info.setProgress(index);
+            JIPipeRunnableInfo subInfo = info.resolveAndLog( "Algorithm: " + slot.getNode().getName());
 
             // If an algorithm cannot be executed, skip it automatically
             if (unExecutableAlgorithms.contains(slot.getNode()))
                 continue;
-
-            // Let algorithms provide sub-progress
-            String statusMessage = "Algorithm: " + slot.getNode().getName();
-            int traversingIndex = index;
-            Consumer<JIPipeRunnerSubStatus> algorithmProgress = s -> logStatus(onProgress, new JIPipeRunnerStatus(traversingIndex, traversedSlots.size(),
-                    statusMessage + " | " + s));
 
             if (slot.isInput()) {
                 if (!algorithmsWithExternalInput.contains(slot.getNode())) {
@@ -78,10 +77,8 @@ public class JIPipeGraphRunner implements JIPipeRunnable {
             } else if (slot.isOutput()) {
                 // Ensure the algorithm has run
                 if (!executedAlgorithms.contains(slot.getNode())) {
-                    onProgress.accept(new JIPipeRunnerStatus(index, traversedSlots.size(), statusMessage));
-
                     try {
-                        slot.getNode().run(new JIPipeRunnerSubStatus(), algorithmProgress, isCancelled);
+                        slot.getNode().run(info);
                     } catch (Exception e) {
                         throw new UserFriendlyRuntimeException("Algorithm " + slot.getNode() + " raised an exception!",
                                 e,
@@ -97,10 +94,6 @@ public class JIPipeGraphRunner implements JIPipeRunnable {
         }
     }
 
-    private void logStatus(Consumer<JIPipeRunnerStatus> onProgress, JIPipeRunnerStatus status) {
-        onProgress.accept(status);
-    }
-
     public JIPipeGraph getAlgorithmGraph() {
         return algorithmGraph;
     }
@@ -114,5 +107,10 @@ public class JIPipeGraphRunner implements JIPipeRunnable {
 
     public void setAlgorithmsWithExternalInput(Set<JIPipeGraphNode> algorithmsWithExternalInput) {
         this.algorithmsWithExternalInput = algorithmsWithExternalInput;
+    }
+
+    @Override
+    public JIPipeRunnableInfo getInfo() {
+        return info;
     }
 }

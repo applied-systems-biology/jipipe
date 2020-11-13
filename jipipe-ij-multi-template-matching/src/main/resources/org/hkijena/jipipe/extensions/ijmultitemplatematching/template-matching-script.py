@@ -45,7 +45,7 @@ Hits_BeforeNMS = []
 
 for index, ImpTemplate in enumerate(List_Template):
 
-    algorithmProgress.accept(subProgress.resolve("Template " + str(index + 1) + " / " + str(len(List_Template))))
+    progress.log("Template " + str(index + 1) + " / " + str(len(List_Template)))
 
     # Check that template is smaller than the searched image or ROI
     if Bool_SearchRoi and (
@@ -70,7 +70,7 @@ for index, ImpTemplate in enumerate(List_Template):
 # for hit in Hits_BeforeNMS: print hit
 
 # InterHit NMS if more than one hit
-algorithmProgress.accept(subProgress.resolve("Non-Maxima-Suppression"))
+progress.log("Non-Maxima-Suppression")
 
 if Method in [0, 1]:
     Hits_AfterNMS = NMS(Hits_BeforeNMS, N=n_hit, maxOverlap=max_overlap,

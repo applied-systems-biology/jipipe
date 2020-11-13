@@ -30,7 +30,7 @@ import omero.gateway.model.ExperimenterData;
 import omero.gateway.model.ImageData;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
-import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
+import org.hkijena.jipipe.api.JIPipeRunnableInfo;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
@@ -61,8 +61,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 @JIPipeDocumentation(name = "Download from OMERO", description = "Imports an image from OMERO into ImageJ")
@@ -117,7 +115,7 @@ public class DownloadOMEROImageAlgorithm extends JIPipeSimpleIteratingAlgorithm 
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnableInfo progress) {
         OMEROImageReferenceData imageReferenceData = dataBatch.getInputData(getFirstInputSlot(), OMEROImageReferenceData.class);
         LoginCredentials lc = credentials.getCredentials();
         ImporterOptions options;
@@ -169,7 +167,7 @@ public class DownloadOMEROImageAlgorithm extends JIPipeSimpleIteratingAlgorithm 
 
         try {
             ImportProcess process = new ImportProcess(options);
-            algorithmProgress.accept(subProgress.resolve("Downloading image ID=" + imageReferenceData.getImageId() + " from " + lc.getUser().getUsername() + "@" + lc.getServer().getHost() + ":" + lc.getServer().getPort()));
+           progress.log("Downloading image ID=" + imageReferenceData.getImageId() + " from " + lc.getUser().getUsername() + "@" + lc.getServer().getHost() + ":" + lc.getServer().getPort());
             if (!process.execute()) {
                 throw new NullPointerException();
             }
@@ -188,7 +186,7 @@ public class DownloadOMEROImageAlgorithm extends JIPipeSimpleIteratingAlgorithm 
                 List<JIPipeAnnotation> traits = new ArrayList<>();
 
                 if (addKeyValuePairsAsAnnotations || tagAnnotation.isEnabled()) {
-                    try (Gateway gateway = new Gateway(new OMEROToJIPipeLogger(subProgress, algorithmProgress))) {
+                    try (Gateway gateway = new Gateway(new OMEROToJIPipeLogger(progress))) {
                         ExperimenterData user = gateway.connect(credentials.getCredentials());
                         SecurityContext context = new SecurityContext(user.getGroupId());
                         BrowseFacility browseFacility = gateway.getFacility(BrowseFacility.class);

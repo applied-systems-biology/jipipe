@@ -21,7 +21,7 @@ import ij.process.ImageProcessor;
 import mpicbg.imglib.type.numeric.real.FloatType;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
-import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
+import org.hkijena.jipipe.api.JIPipeRunnableInfo;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
@@ -34,9 +34,6 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
-
-import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 import static org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExtension.REMOVE_MASK_QUALIFIER;
 
@@ -94,7 +91,7 @@ public class FrangiVesselnessFeatures extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnableInfo progress) {
         ImagePlusGreyscale32FData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscale32FData.class);
         ImagePlus img = inputData.getImage();
 
@@ -107,7 +104,7 @@ public class FrangiVesselnessFeatures extends JIPipeSimpleIteratingAlgorithm {
         MultiTaskProgress multiTaskProgress = new MultiTaskProgress() {
             @Override
             public void updateProgress(double proportionDone, int taskIndex) {
-                algorithmProgress.accept(subProgress.resolve("Frangi vesselness " + (int) (proportionDone * 100) + "%"));
+                progress.log("Frangi vesselness " + (int) (proportionDone * 100) + "%");
             }
 
             @Override

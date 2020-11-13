@@ -22,7 +22,7 @@ import omero.gateway.model.ImageData;
 import omero.gateway.model.TableData;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
-import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
+import org.hkijena.jipipe.api.JIPipeRunnableInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataByMetadataExporter;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
@@ -43,8 +43,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 @JIPipeDocumentation(name = "Upload to OMERO", description = "Uploads tables to OMERO. The table is attached to an image.")
 @JIPipeOrganization(nodeTypeCategory = TableNodeTypeCategory.class)
@@ -69,12 +67,12 @@ public class UploadOMEROTableAlgorithm extends JIPipeMergingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeMergingDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+    protected void runIteration(JIPipeMergingDataBatch dataBatch, JIPipeRunnableInfo progress) {
         List<OMEROImageReferenceData> images = dataBatch.getInputData("Image", OMEROImageReferenceData.class);
         List<ResultsTableData> tables = dataBatch.getInputData("Table", ResultsTableData.class);
         JIPipeDataSlot dummy = dataBatch.toDummySlot(new JIPipeDataSlotInfo(ResultsTableData.class, JIPipeSlotType.Input, null), null, getInputSlot("Table"));
 
-        try (Gateway gateway = new Gateway(new OMEROToJIPipeLogger(subProgress, algorithmProgress))) {
+        try (Gateway gateway = new Gateway(new OMEROToJIPipeLogger(progress))) {
             ExperimenterData user = gateway.connect(credentials.getCredentials());
             SecurityContext context = new SecurityContext(user.getGroupId());
             BrowseFacility browseFacility = gateway.getFacility(BrowseFacility.class);
@@ -86,15 +84,15 @@ public class UploadOMEROTableAlgorithm extends JIPipeMergingAlgorithm {
             for (int i = 0; i < dummy.getRowCount(); i++) {
                 String fileName = exporter.generateMetadataString(dummy, i, existingFileNames);
                 fileNames.add(fileName + ".csv");
-                algorithmProgress.accept(subProgress.resolve("Will add table: " + fileName + ".csv"));
+               progress.log("Will add table: " + fileName + ".csv");
             }
 
             // Attach tables for each image
             for (OMEROImageReferenceData image : images) {
-                algorithmProgress.accept(subProgress.resolve("Attaching tables to Image ID=" + image.getImageId()));
+               progress.log("Attaching tables to Image ID=" + image.getImageId());
                 ImageData imageData = browseFacility.getImage(context, image.getImageId());
                 for (int i = 0; i < tables.size(); i++) {
-                    algorithmProgress.accept(subProgress.resolve("Attaching tables to Image ID=" + image.getImageId()).resolve((i + 1) + "/" + tables.size()));
+                    progress.resolve("Attaching tables to Image ID=" + image.getImageId()).resolveAndLog((i + 1) + "/" + tables.size());
                     ResultsTableData resultsTableData = tables.get(i);
                     TableData tableData = OMEROUtils.tableToOMERO(resultsTableData);
                     String fileName = fileNames.get(i);

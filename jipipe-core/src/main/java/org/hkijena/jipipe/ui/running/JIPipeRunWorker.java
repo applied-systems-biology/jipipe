@@ -47,7 +47,7 @@ public class JIPipeRunWorker extends SwingWorker<Exception, Object> {
     @Override
     protected Exception doInBackground() throws Exception {
         try {
-            run.run(this::onStatus, this::isCancelled);
+            run.run();
         } catch (Exception e) {
             e.printStackTrace();
             return e;

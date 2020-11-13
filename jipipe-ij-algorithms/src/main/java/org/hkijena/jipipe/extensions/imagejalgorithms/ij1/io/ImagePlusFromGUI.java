@@ -18,7 +18,7 @@ import ij.ImagePlus;
 import ij.WindowManager;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
-import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
+import org.hkijena.jipipe.api.JIPipeRunnableInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
@@ -33,8 +33,6 @@ import org.hkijena.jipipe.extensions.parameters.util.LogicalOperation;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 /**
  * Imports {@link org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData} from the GUI
@@ -60,7 +58,7 @@ public class ImagePlusFromGUI extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnableInfo progress) {
         List<ImagePlus> rawImages = new ArrayList<>();
         if (onlyActiveImage) {
             ImagePlus img = WindowManager.getCurrentImage();

@@ -23,7 +23,7 @@ import omero.gateway.model.ExperimenterData;
 import omero.gateway.model.ProjectData;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
-import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
+import org.hkijena.jipipe.api.JIPipeRunnableInfo;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
@@ -49,8 +49,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 @JIPipeDocumentation(name = "List datasets", description = "Returns the ID(s) of dataset(s) according to search criteria. Requires project IDs as input.")
@@ -87,21 +85,21 @@ public class OMEROFindDatasetAlgorithm extends JIPipeParameterSlotAlgorithm {
     }
 
     @Override
-    public void runParameterSet(JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled, List<JIPipeAnnotation> parameterAnnotations) {
+    public void runParameterSet(JIPipeRunnableInfo progress, List<JIPipeAnnotation> parameterAnnotations) {
         Set<Long> projectIds = new HashSet<>();
         for (int row = 0; row < getFirstInputSlot().getRowCount(); row++) {
             projectIds.add(getFirstInputSlot().getData(row, OMEROProjectReferenceData.class).getProjectId());
         }
 
         LoginCredentials credentials = this.credentials.getCredentials();
-        algorithmProgress.accept(subProgress.resolve("Connecting to " + credentials.getUser().getUsername() + "@" + credentials.getServer().getHost()));
-        try (Gateway gateway = new Gateway(new OMEROToJIPipeLogger(subProgress, algorithmProgress))) {
+        progress.log("Connecting to " + credentials.getUser().getUsername() + "@" + credentials.getServer().getHost());
+        try (Gateway gateway = new Gateway(new OMEROToJIPipeLogger(progress))) {
             ExperimenterData user = gateway.connect(credentials);
             SecurityContext context = new SecurityContext(user.getGroupId());
             BrowseFacility browseFacility = gateway.getFacility(BrowseFacility.class);
             MetadataFacility metadata = gateway.getFacility(MetadataFacility.class);
             for (Long projectId : projectIds) {
-                algorithmProgress.accept(subProgress.resolve("Listing datasets in project ID=" + projectId));
+                progress.log("Listing datasets in project ID=" + projectId);
                 ProjectData projectData = browseFacility.getProjects(context, Collections.singletonList(projectId)).iterator().next();
                 for (DatasetData dataset : projectData.getDatasets()) {
                     if (!datasetNameFilters.test(dataset.getName())) {

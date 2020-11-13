@@ -15,6 +15,7 @@ package org.hkijena.jipipe.ui.cache;
 
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.JIPipeRunnable;
+import org.hkijena.jipipe.api.JIPipeRunnableInfo;
 import org.hkijena.jipipe.api.JIPipeRunnerStatus;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
@@ -31,11 +32,10 @@ import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 public class JIPipeCachedSlotToOutputExporterRun extends JIPipeWorkbenchPanel implements JIPipeRunnable {
 
+    private JIPipeRunnableInfo info = new JIPipeRunnableInfo();
     private final Path outputPath;
     private final List<JIPipeDataSlot> slots;
     private final boolean splitBySlot;
@@ -55,10 +55,12 @@ public class JIPipeCachedSlotToOutputExporterRun extends JIPipeWorkbenchPanel im
     }
 
     @Override
-    public void run(Consumer<JIPipeRunnerStatus> onProgress, Supplier<Boolean> isCancelled) {
+    public void run() {
         Set<String> existing = new HashSet<>();
+        info.setMaxProgress(slots.size());
         for (int i = 0; i < slots.size(); i++) {
-            onProgress.accept(new JIPipeRunnerStatus(i + 1, slots.size(), "Slot " + (i + 1) + "/" + slots.size()));
+            info.setProgress(i);
+            info.resolveAndLog("Slot", i, slots.size());
             JIPipeDataSlot slot = slots.get(i);
             Path targetPath = outputPath;
             if(splitBySlot) {
@@ -102,5 +104,14 @@ public class JIPipeCachedSlotToOutputExporterRun extends JIPipeWorkbenchPanel im
 
     public List<JIPipeDataSlot> getSlots() {
         return slots;
+    }
+
+    @Override
+    public JIPipeRunnableInfo getInfo() {
+        return info;
+    }
+
+    public void setInfo(JIPipeRunnableInfo info) {
+        this.info = info;
     }
 }

@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.api.nodes;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.JIPipeRunnableInfo;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
@@ -27,8 +28,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 /**
  * An {@link JIPipeAlgorithm} that iterates through each data row.
@@ -69,7 +68,7 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
     }
 
     @Override
-    public void runParameterSet(JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled, List<JIPipeAnnotation> parameterAnnotations) {
+    public void runParameterSet(JIPipeRunnableInfo progress, List<JIPipeAnnotation> parameterAnnotations) {
         if (getEffectiveInputSlotCount() > 1)
             throw new UserFriendlyRuntimeException("Too many input slots for JIPipeSimpleIteratingAlgorithm!",
                     "Error in source code detected!",
@@ -77,48 +76,45 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
                     "The developer of this algorithm chose the wrong node type. The one that was selected only supports at most one input.",
                     "Please contact the plugin developers and tell them to let algorithm '" + getInfo().getId() + "' inherit from 'JIPipeIteratingAlgorithm' instead.");
         if (isPassThrough() && canPassThrough()) {
-            algorithmProgress.accept(subProgress.resolve("Data passed through to output"));
+            progress.log("Data passed through to output");
             runPassThrough();
             return;
         }
 
         if (getInputSlots().isEmpty()) {
             final int row = 0;
-            JIPipeRunnerSubStatus slotProgress = subProgress.resolve("Data row " + (row + 1) + " / " + 1);
-            algorithmProgress.accept(slotProgress);
+            JIPipeRunnableInfo slotProgress = progress.resolveAndLog("Data row", row, 1);
             JIPipeDataBatch dataBatch = new JIPipeDataBatch(this);
             dataBatch.addGlobalAnnotations(parameterAnnotations, JIPipeAnnotationMergeStrategy.Merge);
-            runIteration(dataBatch, slotProgress, algorithmProgress, isCancelled);
+            runIteration(dataBatch, slotProgress);
         } else {
             if (!supportsParallelization() || !isParallelizationEnabled() || getThreadPool() == null || getThreadPool().getMaxThreads() <= 1) {
                 for (int i = 0; i < getFirstInputSlot().getRowCount(); i++) {
-                    if (isCancelled.get())
+                    if (progress.isCancelled().get())
                         return;
-                    JIPipeRunnerSubStatus slotProgress = subProgress.resolve("Data row " + (i + 1) + " / " + getFirstInputSlot().getRowCount());
-                    algorithmProgress.accept(slotProgress);
+                    JIPipeRunnableInfo slotProgress = progress.resolveAndLog("Data row", i, getFirstInputSlot().getRowCount());
                     JIPipeDataBatch dataBatch = new JIPipeDataBatch(this);
                     dataBatch.setData(getFirstInputSlot(), i);
                     dataBatch.addGlobalAnnotations(getFirstInputSlot().getAnnotations(i), JIPipeAnnotationMergeStrategy.Merge);
                     dataBatch.addGlobalAnnotations(parameterAnnotations, JIPipeAnnotationMergeStrategy.Merge);
-                    runIteration(dataBatch, slotProgress, algorithmProgress, isCancelled);
+                    runIteration(dataBatch, slotProgress);
                 }
             } else {
                 List<Runnable> tasks = new ArrayList<>();
                 for (int i = 0; i < getFirstInputSlot().getRowCount(); i++) {
                     int rowIndex = i;
                     tasks.add(() -> {
-                        if (isCancelled.get())
+                        if (progress.isCancelled().get())
                             return;
-                        JIPipeRunnerSubStatus slotProgress = subProgress.resolve("Data row " + (rowIndex + 1) + " / " + getFirstInputSlot().getRowCount());
-                        algorithmProgress.accept(slotProgress);
+                        JIPipeRunnableInfo slotProgress = progress.resolveAndLog("Data row", rowIndex, getFirstInputSlot().getRowCount());
                         JIPipeDataBatch dataBatch = new JIPipeDataBatch(this);
                         dataBatch.setData(getFirstInputSlot(), rowIndex);
                         dataBatch.addGlobalAnnotations(getFirstInputSlot().getAnnotations(rowIndex), JIPipeAnnotationMergeStrategy.Merge);
                         dataBatch.addGlobalAnnotations(parameterAnnotations, JIPipeAnnotationMergeStrategy.Merge);
-                        runIteration(dataBatch, slotProgress, algorithmProgress, isCancelled);
+                        runIteration(dataBatch, slotProgress);
                     });
                 }
-                algorithmProgress.accept(subProgress.resolve(String.format("Running %d batches (batch size %d) in parallel. Available threads = %d", tasks.size(), getParallelizationBatchSize(), getThreadPool().getMaxThreads())));
+                progress.log(String.format("Running %d batches (batch size %d) in parallel. Available threads = %d", tasks.size(), getParallelizationBatchSize(), getThreadPool().getMaxThreads()));
                 for (Future<Exception> batch : getThreadPool().scheduleBatches(tasks, getParallelizationBatchSize())) {
                     try {
                         Exception exception = batch.get();
@@ -145,13 +141,10 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
 
     /**
      * Runs code on one data row
-     *
-     * @param dataBatch         The data interface
-     * @param subProgress       The current sub-progress this algorithm is scheduled in
-     * @param algorithmProgress Consumer to publish a new sub-progress
-     * @param isCancelled       Supplier that informs if the current task was canceled
+     *  @param dataBatch         The data interface
+     * @param progress the progress info from the run
      */
-    protected abstract void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled);
+    protected abstract void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnableInfo progress);
 
     @Override
     public boolean supportsParallelization() {

@@ -15,7 +15,7 @@ package org.hkijena.jipipe.extensions.filesystem.algorithms;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
-import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
+import org.hkijena.jipipe.api.JIPipeRunnableInfo;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
@@ -31,8 +31,6 @@ import java.io.IOException;
 import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
@@ -81,7 +79,7 @@ public class CopyPath extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnableInfo progress) {
         Path input = dataBatch.getInputData("Source", PathData.class).getPath();
         Path destination = dataBatch.getInputData("Destination", PathData.class).getPath();
 
@@ -112,7 +110,7 @@ public class CopyPath extends JIPipeIteratingAlgorithm {
                     if (Files.exists(targetPath)) {
                         Files.delete(targetPath);
                     }
-                    algorithmProgress.accept(subProgress.resolve(String.format("Copying '%s' to '%s'", source, targetPath)));
+                   progress.log(String.format("Copying '%s' to '%s'", source, targetPath));
                     Files.copy(source, targetPath);
                 }
 
@@ -126,7 +124,7 @@ public class CopyPath extends JIPipeIteratingAlgorithm {
                     Files.createDirectories(destination);
                     destination = destination.resolve(input.getFileName());
                 }
-                algorithmProgress.accept(subProgress.resolve(String.format("Copying '%s' to '%s'", input, destination)));
+                progress.log(String.format("Copying '%s' to '%s'", input, destination));
                 Files.copy(input, destination);
             } else {
                 if (!skipInvalid)

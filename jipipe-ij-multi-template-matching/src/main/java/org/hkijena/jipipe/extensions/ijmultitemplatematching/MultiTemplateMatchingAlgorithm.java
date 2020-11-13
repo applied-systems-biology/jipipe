@@ -19,7 +19,7 @@ import ij.gui.ShapeRoi;
 import ij.plugin.frame.RoiManager;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
-import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
+import org.hkijena.jipipe.api.JIPipeRunnableInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
@@ -41,8 +41,6 @@ import org.python.util.PythonInterpreter;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 @JIPipeDocumentation(name = "Multi-Template matching", description = "Template matching is an algorithm that can be used for object-detections in grayscale images. " +
@@ -92,7 +90,7 @@ public class MultiTemplateMatchingAlgorithm extends JIPipeMergingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeMergingDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+    protected void runIteration(JIPipeMergingDataBatch dataBatch, JIPipeRunnableInfo progress) {
         List<ImagePlus> images = new ArrayList<>();
         List<ImagePlus> templates = new ArrayList<>();
         ROIListData mergedRois = new ROIListData();
@@ -122,7 +120,7 @@ public class MultiTemplateMatchingAlgorithm extends JIPipeMergingAlgorithm {
         pythonInterpreter.set("List_Template", new PyList(templates));
         pythonInterpreter.set("Bool_SearchRoi", restrictToROI && searchRoi != null);
         pythonInterpreter.set("searchRoi", searchRoi);
-        pythonInterpreter.set("algorithmProgress", algorithmProgress);
+        pythonInterpreter.set("progress", progress);
 
         for (int i = 0; i < images.size(); i++) {
             ImagePlus image = images.get(i);
@@ -131,7 +129,7 @@ public class MultiTemplateMatchingAlgorithm extends JIPipeMergingAlgorithm {
             pythonInterpreter.set("ImpImage", image);
             pythonInterpreter.set("rm", roiManager);
             pythonInterpreter.set("Table", measurements.getTable());
-            pythonInterpreter.set("subProgress", subProgress.resolve("Image " + (i + 1) + " / " + images.size()));
+            pythonInterpreter.set("progress", progress.resolve("Image", i, images.size()));
             pythonInterpreter.exec(SCRIPT);
 
             dataBatch.addOutputData("ROI", new ROIListData(roiManager));

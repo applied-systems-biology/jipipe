@@ -17,7 +17,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import ij.IJ;
 import net.imagej.ImageJ;
 import org.hkijena.jipipe.api.JIPipeFixedThreadPool;
-import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
+import org.hkijena.jipipe.api.JIPipeRunnableInfo;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.compat.SingleImageJAlgorithmRun;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
@@ -148,7 +148,8 @@ public class JIPipeRunAlgorithmCommand extends DynamicCommand implements Initial
         try {
             if (algorithm instanceof JIPipeAlgorithm)
                 ((JIPipeAlgorithm) algorithm).setThreadPool(threadPool);
-            algorithm.run(new JIPipeRunnerSubStatus(), s -> IJ.showStatus("Running JIPipe algorithm ... " + s), () -> false);
+            JIPipeRunnableInfo progress = new JIPipeRunnableInfo();
+            algorithm.run(progress);
         } catch (Exception e) {
             throw new RuntimeException(e);
         } finally {

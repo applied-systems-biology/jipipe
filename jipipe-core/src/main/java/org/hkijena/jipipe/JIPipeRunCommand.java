@@ -99,7 +99,7 @@ public class JIPipeRunCommand implements Command {
         configuration.setNumThreads(threads);
         RuntimeSettings.getInstance().setDefaultRunThreads(threads);
         JIPipeRun run = new JIPipeRun(project, configuration);
-        run.run(this::onProgress, () -> false);
+        run.run();
         logService.info("JIPipe run finished. Outputs are stored in: " + outputDirectory);
         status.showProgress(0, 0);
     }

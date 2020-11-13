@@ -17,6 +17,7 @@ import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * This object is available inside a {@link JIPipeRunnable} and contains methods to report progress, logs, and request cancellation.
@@ -24,8 +25,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class JIPipeRunnableInfo {
     private EventBus eventBus = new EventBus();
     private AtomicBoolean cancelled = new AtomicBoolean();
-    private int progress = 0;
-    private int maxProgress = 1;
+    private AtomicInteger progress = new AtomicInteger(0);
+    private AtomicInteger maxProgress = new AtomicInteger(1);
     private StringBuilder log = new StringBuilder();
     private String logPrepend = "";
 
@@ -41,24 +42,28 @@ public class JIPipeRunnableInfo {
         this.logPrepend = other.logPrepend;
     }
 
+    public synchronized void clearLog() {
+        log.setLength(0);
+    }
+
     public synchronized void incrementProgress() {
-        progress += 1;
+        progress.getAndIncrement();
     }
 
-    public synchronized int getProgress() {
-        return progress;
+    public int getProgress() {
+        return progress.get();
     }
 
-    public synchronized void setProgress(int progress) {
-        this.progress = progress;
+    public void setProgress(int progress) {
+        this.progress.set(progress);
     }
 
-    public synchronized int getMaxProgress() {
-        return maxProgress;
+    public int getMaxProgress() {
+        return maxProgress.get();
     }
 
-    public synchronized void setMaxProgress(int maxProgress) {
-        this.maxProgress = maxProgress;
+    public void setMaxProgress(int maxProgress) {
+        this.maxProgress.set(maxProgress);
     }
 
     public AtomicBoolean isCancelled() {
@@ -80,5 +85,24 @@ public class JIPipeRunnableInfo {
         else
             result.logPrepend = result.logPrepend + " | " + logPrepend;
         return result;
+    }
+
+    public synchronized JIPipeRunnableInfo resolve(String text, int index, int size) {
+        return resolve(text + " " + (index + 1) + "/" + size);
+    }
+
+    public synchronized JIPipeRunnableInfo resolveAndLog(String logPrepend) {
+        JIPipeRunnableInfo resolve = resolve(logPrepend);
+        resolve.log("");
+        return resolve;
+    }
+
+    public synchronized JIPipeRunnableInfo resolveAndLog(String text, int index, int size) {
+        return resolveAndLog(text + " " + (index + 1) + "/" + size);
+    }
+
+    public void setProgress(int count, int total) {
+        setProgress(count);
+        setMaxProgress(total);
     }
 }

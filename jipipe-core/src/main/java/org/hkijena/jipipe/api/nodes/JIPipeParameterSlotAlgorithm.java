@@ -16,7 +16,7 @@ package org.hkijena.jipipe.api.nodes;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
+import org.hkijena.jipipe.api.JIPipeRunnableInfo;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
@@ -40,8 +40,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
@@ -135,17 +133,17 @@ public abstract class JIPipeParameterSlotAlgorithm extends JIPipeAlgorithm {
     }
 
     @Override
-    public void run(JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+    public void run(JIPipeRunnableInfo progress) {
         if (isPassThrough() && canPassThrough()) {
-            algorithmProgress.accept(subProgress.resolve("Data passed through to output"));
+            progress.log("Data passed through to output");
             runPassThrough();
             return;
         }
         if (parameterSlotAlgorithmSettings.hasParameterSlot) {
             JIPipeDataSlot parameterSlot = getInputSlot(SLOT_PARAMETERS);
             if (parameterSlot.getRowCount() == 0) {
-                algorithmProgress.accept(subProgress.resolve("No parameters were passed with enabled parameter slot. Applying default parameters, only."));
-                runParameterSet(subProgress, algorithmProgress, isCancelled, Collections.emptyList());
+                progress.log("No parameters were passed with enabled parameter slot. Applying default parameters, only.");
+                runParameterSet(progress, Collections.emptyList());
             } else {
                 // Create backups
                 Map<String, Object> parameterBackups = new HashMap<>();
@@ -177,7 +175,7 @@ public abstract class JIPipeParameterSlotAlgorithm extends JIPipeAlgorithm {
                     for (Map.Entry<String, Object> entry : data.getParameterData().entrySet()) {
                         JIPipeParameterAccess target = tree.getParameters().getOrDefault(entry.getKey(), null);
                         if (target == null) {
-                            algorithmProgress.accept(subProgress.resolve("Unable to find parameter '" + entry.getKey() + "' in " + getName() + "! Ignoring."));
+                            progress.log("Unable to find parameter '" + entry.getKey() + "' in " + getName() + "! Ignoring.");
                             continue;
                         }
                         target.set(entry.getValue());
@@ -195,9 +193,7 @@ public abstract class JIPipeParameterSlotAlgorithm extends JIPipeAlgorithm {
                             annotations.add(new JIPipeAnnotation(annotationName, "" + target.get(Object.class)));
                         }
                     }
-
-
-                    runParameterSet(subProgress.resolve("Parameter set " + (row + 1) + " / " + parameterSlot.getRowCount()), algorithmProgress, isCancelled, annotations);
+                    runParameterSet(progress.resolve("Parameter set", row, parameterSlot.getRowCount()), annotations);
                 }
 
                 // Restore backup
@@ -206,19 +202,17 @@ public abstract class JIPipeParameterSlotAlgorithm extends JIPipeAlgorithm {
                 }
             }
         } else {
-            runParameterSet(subProgress, algorithmProgress, isCancelled, Collections.emptyList());
+            runParameterSet(progress, Collections.emptyList());
         }
     }
 
     /**
      * Runs a parameter set iteration
      *
-     * @param subProgress          the progress
-     * @param algorithmProgress    the progress consumer
-     * @param isCancelled          if the user requested cancellation
+     * @param progress progress info from the run
      * @param parameterAnnotations parameter annotations
      */
-    public abstract void runParameterSet(JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled, List<JIPipeAnnotation> parameterAnnotations);
+    public abstract void runParameterSet(JIPipeRunnableInfo progress, List<JIPipeAnnotation> parameterAnnotations);
 
     private void updateParameterSlot() {
         if (getSlotConfiguration() instanceof JIPipeMutableSlotConfiguration) {

@@ -15,68 +15,64 @@ package org.hkijena.jipipe.extensions.omero.util;
 
 import omero.log.LogMessage;
 import omero.log.Logger;
-import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
-
-import java.util.function.Consumer;
+import org.hkijena.jipipe.api.JIPipeRunnableInfo;
 
 public class OMEROToJIPipeLogger implements Logger {
 
-    private final JIPipeRunnerSubStatus subProgress;
-    private final Consumer<JIPipeRunnerSubStatus> algorithmProgress;
+    private final JIPipeRunnableInfo progress;
 
-    public OMEROToJIPipeLogger(JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress) {
-        this.subProgress = subProgress;
-        this.algorithmProgress = algorithmProgress;
+    public OMEROToJIPipeLogger(JIPipeRunnableInfo progress) {
+        this.progress = progress;
     }
 
     @Override
     public void debug(Object o, String s) {
-        algorithmProgress.accept(subProgress.resolve(s));
+        progress.log(s);
     }
 
     @Override
     public void debug(Object o, LogMessage logMessage) {
-        algorithmProgress.accept(subProgress.resolve(logMessage.toString()));
+        progress.log(logMessage.toString());
     }
 
     @Override
     public void info(Object o, String s) {
-        algorithmProgress.accept(subProgress.resolve(s));
+        progress.log(s);
     }
 
     @Override
     public void info(Object o, LogMessage logMessage) {
-        algorithmProgress.accept(subProgress.resolve(logMessage.toString()));
+        progress.log(logMessage.toString());
     }
 
     @Override
     public void warn(Object o, String s) {
-        algorithmProgress.accept(subProgress.resolve(s));
+        progress.log(s);
     }
 
     @Override
     public void warn(Object o, LogMessage logMessage) {
-        algorithmProgress.accept(subProgress.resolve(logMessage.toString()));
+        progress.log(logMessage.toString());
     }
 
     @Override
     public void error(Object o, String s) {
-        algorithmProgress.accept(subProgress.resolve(s));
+        progress.log(s);
     }
 
     @Override
     public void error(Object o, LogMessage logMessage) {
-        algorithmProgress.accept(subProgress.resolve(logMessage.toString()));
+        progress.log(logMessage.toString());
     }
 
     @Override
     public void fatal(Object o, String s) {
-        algorithmProgress.accept(subProgress.resolve(s));
+        progress.log(s);
     }
 
     @Override
     public void fatal(Object o, LogMessage logMessage) {
-        algorithmProgress.accept(subProgress.resolve(logMessage.toString()));
+        progress.log(logMessage.toString());
     }
 
     @Override

@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.extensions.multiparameters.algorithms;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.JIPipeRunnableInfo;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
@@ -36,8 +37,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
@@ -74,7 +73,7 @@ public class MultiParameterAlgorithm extends JIPipeAlgorithm {
     }
 
     @Override
-    public void run(JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+    public void run(JIPipeRunnableInfo progress) {
         checkInputSlots();
 
         // Backup default parameters
@@ -84,7 +83,7 @@ public class MultiParameterAlgorithm extends JIPipeAlgorithm {
         Map<String, String> changedParameterTraits = new HashMap<>();
 
         for (int row = 0; row < parameterSlot.getRowCount(); ++row) {
-            if (isCancelled.get())
+            if (progress.isCancelled().get())
                 return;
             ParametersData parametersData = parameterSlot.getData(row, ParametersData.class);
             for (Map.Entry<String, Object> entry : parametersData.getParameterData().entrySet()) {
@@ -105,14 +104,14 @@ public class MultiParameterAlgorithm extends JIPipeAlgorithm {
 
         // Run algorithm for each parameter
         for (int row = 0; row < parameterSlot.getRowCount(); ++row) {
-            if (isCancelled.get())
+            if (progress.isCancelled().get())
                 return;
-            JIPipeRunnerSubStatus parameterProgress = subProgress.resolve("Parameter set " + (row + 1) + " / " + parameterSlot.getRowCount());
+            JIPipeRunnableInfo parameterProgress = progress.resolveAndLog("Parameter set", row,parameterSlot.getRowCount());
             ParametersData parametersData = parameterSlot.getData(row, ParametersData.class);
 
             passParameters(parametersData, parameters);
             passInputData();
-            algorithmInstance.run(parameterProgress, algorithmProgress, isCancelled);
+            algorithmInstance.run(parameterProgress);
             passOutputData(parameters, changedParameterTraits);
 
             // Restore backup

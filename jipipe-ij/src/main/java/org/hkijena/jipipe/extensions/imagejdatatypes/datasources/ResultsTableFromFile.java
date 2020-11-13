@@ -16,7 +16,7 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.datasources;
 import ij.measure.ResultsTable;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
-import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
+import org.hkijena.jipipe.api.JIPipeRunnableInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -27,8 +27,6 @@ import org.hkijena.jipipe.extensions.filesystem.dataypes.FileData;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 
 import java.io.IOException;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 /**
  * Imports {@link ResultsTableData} from a file
@@ -56,7 +54,7 @@ public class ResultsTableFromFile extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnableInfo progress) {
         FileData fileData = dataBatch.getInputData(getFirstInputSlot(), FileData.class);
         try {
             ResultsTable resultsTable = ResultsTable.open(fileData.getPath().toString());

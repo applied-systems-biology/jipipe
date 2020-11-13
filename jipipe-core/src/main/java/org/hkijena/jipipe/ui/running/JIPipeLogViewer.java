@@ -15,6 +15,7 @@ package org.hkijena.jipipe.ui.running;
 
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.JIPipeRun;
+import org.hkijena.jipipe.api.JIPipeRunnable;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
@@ -79,13 +80,14 @@ public class JIPipeLogViewer extends JIPipeProjectWorkbenchPanel {
         logReader.setDocument(new MarkdownDocument(entry.getLog().replace("\n", "\n\n")));
     }
 
-    private void pushToLog(JIPipeRun run, boolean success) {
-        if (run.getProject() != getProject())
+    private void pushToLog(JIPipeRunnable run, boolean success) {
+        if ( run instanceof JIPipeRun && ((JIPipeRun)run).getProject() != getProject())
             return;
-        if (run.getLog() != null && run.getLog().length() > 0) {
+        StringBuilder log = run.getInfo().getLog();
+        if (log != null && log.length() > 0) {
             if (logEntries.size() + 1 > runtimeSettings.getLogLimit())
                 logEntries.remove(0);
-            logEntries.add(new LogEntry(LocalDateTime.now(), run.getLog().toString(), success));
+            logEntries.add(new LogEntry(LocalDateTime.now(),log.toString(), success));
             DefaultListModel<LogEntry> model = new DefaultListModel<>();
             for (LogEntry logEntry : logEntries) {
                 model.addElement(logEntry);
@@ -97,14 +99,14 @@ public class JIPipeLogViewer extends JIPipeProjectWorkbenchPanel {
     @Subscribe
     public void onRunFinished(RunUIWorkerFinishedEvent event) {
         if (event.getRun() instanceof JIPipeRun) {
-            pushToLog((JIPipeRun) event.getRun(), true);
+            pushToLog(event.getRun(), true);
         }
     }
 
     @Subscribe
     public void onRunCancelled(RunUIWorkerInterruptedEvent event) {
         if (event.getRun() instanceof JIPipeRun) {
-            pushToLog((JIPipeRun) event.getRun(), false);
+            pushToLog(event.getRun(), false);
         }
     }
 

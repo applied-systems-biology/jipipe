@@ -17,8 +17,8 @@ import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.JIPipeGraphRunner;
+import org.hkijena.jipipe.api.JIPipeRunnableInfo;
 import org.hkijena.jipipe.api.JIPipeRunnerStatus;
-import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
@@ -34,7 +34,6 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 /**
  * An algorithm that wraps another algorithm graph
@@ -147,7 +146,7 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm {
     }
 
     @Override
-    public void run(JIPipeRunnerSubStatus subProgress, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
+    public void run(JIPipeRunnableInfo progress) {
         // Iterate through own input slots and pass them to the equivalents in group input
         for (JIPipeDataSlot inputSlot : getInputSlots()) {
             JIPipeDataSlot groupInputSlot = getGroupInput().getInputSlot(inputSlot.getName());
@@ -155,10 +154,6 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm {
         }
 
         // Run the graph
-        Consumer<JIPipeRunnerStatus> subGraphStatus = runnerStatus -> algorithmProgress.accept(subProgress.resolve(String.format("Sub-graph %d/%d: %s",
-                runnerStatus.getProgress(),
-                runnerStatus.getMaxProgress(),
-                runnerStatus.getMessage())));
         try {
             for (JIPipeGraphNode value : wrappedGraph.getNodes().values()) {
                 if (value instanceof JIPipeAlgorithm) {
@@ -166,8 +161,9 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm {
                 }
             }
             JIPipeGraphRunner runner = new JIPipeGraphRunner(wrappedGraph);
+            runner.setInfo(progress.resolve("Sub-graph"));
             runner.setAlgorithmsWithExternalInput(Collections.singleton(getGroupInput()));
-            runner.run(subGraphStatus, isCancelled);
+            runner.run();
         } finally {
             for (JIPipeGraphNode value : wrappedGraph.getNodes().values()) {
                 if (value instanceof JIPipeAlgorithm) {

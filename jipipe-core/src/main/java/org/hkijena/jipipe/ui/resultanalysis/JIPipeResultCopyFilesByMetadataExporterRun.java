@@ -15,7 +15,7 @@ package org.hkijena.jipipe.ui.resultanalysis;
 
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.JIPipeRunnable;
-import org.hkijena.jipipe.api.JIPipeRunnerStatus;
+import org.hkijena.jipipe.api.JIPipeRunnableInfo;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.data.JIPipeDataByMetadataExporter;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
@@ -44,11 +44,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 public class JIPipeResultCopyFilesByMetadataExporterRun extends JIPipeWorkbenchPanel implements JIPipeRunnable {
 
+    private JIPipeRunnableInfo info = new JIPipeRunnableInfo();
     private Path outputPath;
     private final List<JIPipeDataSlot> slots;
     private final boolean splitBySlot;
@@ -113,16 +112,14 @@ public class JIPipeResultCopyFilesByMetadataExporterRun extends JIPipeWorkbenchP
     }
 
     @Override
-    public void run(Consumer<JIPipeRunnerStatus> onProgress, Supplier<Boolean> isCancelled) {
+    public void run() {
         Set<String> existingSlots = new HashSet<>();
         Set<String> existingFiles = new HashSet<>();
         Set<String> existingMetadata = new HashSet<>();
-        JIPipeRunnerSubStatus.DefaultConsumer consumer = new JIPipeRunnerSubStatus.DefaultConsumer(onProgress);
-        consumer.setMaxProgress(slots.size());
+        info.setMaxProgress(slots.size());
         for (int i = 0; i < slots.size(); i++) {
-            consumer.setProgress(i + 1);
-            JIPipeRunnerSubStatus subStatus = new JIPipeRunnerSubStatus().resolve("Slot " + (i + 1) + "/" + slots.size());
-            consumer.accept(subStatus);
+            info.setProgress(i + 1);
+            JIPipeRunnableInfo subStatus = info.resolveAndLog("Slot", i,slots.size());
             JIPipeDataSlot slot = slots.get(i);
             Path targetPath = outputPath;
             if(splitBySlot) {
@@ -137,8 +134,7 @@ public class JIPipeResultCopyFilesByMetadataExporterRun extends JIPipeWorkbenchP
                 // Load the data table
                 JIPipeExportedDataTable dataTable = JIPipeExportedDataTable.loadFromJson(slot.getStoragePath().resolve("data-table.json"));
                 for (int row = 0; row < dataTable.getRowCount(); row++) {
-                    JIPipeRunnerSubStatus rowSubStatus = subStatus.resolve("Row " + row + "/" + dataTable.getRowCount());
-                    consumer.accept(rowSubStatus);
+                    JIPipeRunnableInfo rowSubStatus = subStatus.resolveAndLog("Row" , row,dataTable.getRowCount());
                     String metadataString = exporter.generateMetadataString(dataTable, row, existingMetadata);
 
                     Path rowStoragePath = slot.getRowStoragePath(row);
@@ -162,7 +158,7 @@ public class JIPipeResultCopyFilesByMetadataExporterRun extends JIPipeWorkbenchP
                                 Files.createDirectories(newTargetPath);
 
                             Path copyTarget = newTargetPath.resolve(Paths.get(uniqueMetadataPath).getFileName());
-                            consumer.accept(rowSubStatus.resolve("Copying " + file + " to " + copyTarget));
+                            rowSubStatus.log("Copying " + file + " to " + copyTarget);
                             Files.copy(file, copyTarget, StandardCopyOption.REPLACE_EXISTING);
 
                             return FileVisitResult.CONTINUE;
@@ -208,5 +204,14 @@ public class JIPipeResultCopyFilesByMetadataExporterRun extends JIPipeWorkbenchP
 
     public List<JIPipeDataSlot> getSlots() {
         return slots;
+    }
+
+    @Override
+    public JIPipeRunnableInfo getInfo() {
+        return info;
+    }
+
+    public void setInfo(JIPipeRunnableInfo info) {
+        this.info = info;
     }
 }

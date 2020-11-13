@@ -17,7 +17,7 @@ import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.JIPipeRun;
 import org.hkijena.jipipe.api.JIPipeRunSettings;
 import org.hkijena.jipipe.api.JIPipeRunnable;
-import org.hkijena.jipipe.api.JIPipeRunnerStatus;
+import org.hkijena.jipipe.api.JIPipeRunnableInfo;
 import org.hkijena.jipipe.api.JIPipeValidatable;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
@@ -28,13 +28,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 /**
  * Allows to test one algorithm with multiple parameters
  */
 public class JIPipeTestBench implements JIPipeRunnable, JIPipeValidatable {
+    private JIPipeRunnableInfo info = new JIPipeRunnableInfo();
     private JIPipeProject project;
     private JIPipeGraphNode projectAlgorithm;
     private JIPipeTestBenchSettings settings;
@@ -67,6 +66,7 @@ public class JIPipeTestBench implements JIPipeRunnable, JIPipeValidatable {
         configuration.setSaveOutputs(settings.isSaveOutputs());
 
         testBenchRun = new JIPipeRun(project, configuration);
+        testBenchRun.setInfo(info);
         benchedAlgorithm = testBenchRun.getGraph().getNodes().get(projectAlgorithm.getIdInGraph());
         ((JIPipeAlgorithm) benchedAlgorithm).setEnabled(true);
 
@@ -86,14 +86,14 @@ public class JIPipeTestBench implements JIPipeRunnable, JIPipeValidatable {
     }
 
     @Override
-    public void run(Consumer<JIPipeRunnerStatus> onProgress, Supplier<Boolean> isCancelled) {
+    public void run() {
         // Remove the benched algorithm from cache. This is a workaround.
         if (settings.isLoadFromCache()) {
-            getProject().getCache().clear((JIPipeAlgorithm) projectAlgorithm);
+            getProject().getCache().clear(projectAlgorithm);
         }
 
         // Run the internal graph runner
-        testBenchRun.run(onProgress, isCancelled);
+        testBenchRun.run();
 
         // Create initial backup
         if (initialBackup == null) {
@@ -182,5 +182,14 @@ public class JIPipeTestBench implements JIPipeRunnable, JIPipeValidatable {
      */
     public JIPipeTestbenchSnapshot getInitialBackup() {
         return initialBackup;
+    }
+
+    @Override
+    public JIPipeRunnableInfo getInfo() {
+        return info;
+    }
+
+    public void setInfo(JIPipeRunnableInfo info) {
+        this.info = info;
     }
 }
