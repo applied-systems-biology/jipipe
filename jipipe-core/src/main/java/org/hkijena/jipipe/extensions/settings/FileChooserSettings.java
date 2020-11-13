@@ -49,6 +49,11 @@ public class FileChooserSettings implements JIPipeParameterCollection {
     public static String KEY_PROJECT = "Projects";
 
     /**
+     * Path key for data
+     */
+    public static String KEY_DATA = "Data";
+
+    /**
      * Path key for any parameter
      */
     public static String KEY_PARAMETER = "Parameters";
@@ -57,6 +62,7 @@ public class FileChooserSettings implements JIPipeParameterCollection {
     private boolean useNativeChooser = false;
     private Path lastProjectsDirectory;
     private Path lastParametersDirectory;
+    private Path lastDataDirectory;
     private boolean addFileExtension = true;
 
     @Override
@@ -86,6 +92,8 @@ public class FileChooserSettings implements JIPipeParameterCollection {
     public Path getLastDirectoryBy(String key) {
         if (KEY_PROJECT.equals(key))
             return getLastProjectsDirectory();
+        else if(KEY_DATA.equals(key))
+            return getLastDataDirectory();
         else
             return getLastParametersDirectory();
     }
@@ -101,6 +109,8 @@ public class FileChooserSettings implements JIPipeParameterCollection {
             lastDirectory = lastDirectory.getParent();
         if (KEY_PROJECT.equals(key))
             setLastProjectsDirectory(lastDirectory);
+        else if(KEY_DATA.equals(key))
+            setLastDataDirectory(lastDirectory);
         else
             setLastParametersDirectory(lastDirectory);
     }
@@ -130,6 +140,20 @@ public class FileChooserSettings implements JIPipeParameterCollection {
     @JIPipeParameter("last-parameters-directory")
     public void setLastParametersDirectory(Path lastParametersDirectory) {
         this.lastParametersDirectory = lastParametersDirectory;
+
+    }
+
+    @JIPipeDocumentation(name = "Last data directory", description = "The file chooser will open in this folder when asking for data.")
+    @JIPipeParameter("last-data-directory")
+    public Path getLastDataDirectory() {
+        if (lastDataDirectory == null)
+            lastDataDirectory = Paths.get("").toAbsolutePath();
+        return lastDataDirectory;
+    }
+
+    @JIPipeParameter("last-data-directory")
+    public void setLastDataDirectory(Path lastParametersDirectory) {
+        this.lastDataDirectory = lastParametersDirectory;
 
     }
 

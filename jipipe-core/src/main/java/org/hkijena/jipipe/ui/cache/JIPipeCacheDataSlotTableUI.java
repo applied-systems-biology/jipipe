@@ -16,8 +16,11 @@ package org.hkijena.jipipe.ui.cache;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProjectCache;
+import org.hkijena.jipipe.api.JIPipeRunnable;
+import org.hkijena.jipipe.api.JIPipeRunnerStatus;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.data.JIPipeDataByMetadataExporter;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.events.ParameterChangedEvent;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
@@ -30,8 +33,11 @@ import org.hkijena.jipipe.ui.components.JIPipeComponentCellRenderer;
 import org.hkijena.jipipe.ui.components.PreviewControlUI;
 import org.hkijena.jipipe.ui.components.SearchTextField;
 import org.hkijena.jipipe.ui.components.SearchTextFieldTableRowFilter;
+import org.hkijena.jipipe.ui.events.RunUIWorkerFinishedEvent;
+import org.hkijena.jipipe.ui.events.RunUIWorkerInterruptedEvent;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.ui.resultanalysis.JIPipeTraitTableCellRenderer;
+import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
 import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jdesktop.swingx.JXTable;
@@ -46,11 +52,16 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
  * UI that displays a {@link JIPipeDataSlot} that is cached
@@ -149,17 +160,40 @@ public class JIPipeCacheDataSlotTableUI extends JIPipeProjectWorkbenchPanel {
         searchTextField.addActionListener(e -> reloadTable());
         toolBar.add(searchTextField);
 
-        JButton exportButton = new JButton(UIUtils.getIconFromResources("actions/document-export.png"));
+        JButton exportButton = new JButton("Export", UIUtils.getIconFromResources("actions/document-export.png"));
         toolBar.add(exportButton);
-        exportButton.setToolTipText("Export");
         JPopupMenu exportMenu = UIUtils.addPopupMenuToComponent(exportButton);
 
-        JMenuItem exportAsCsvItem = new JMenuItem("as *.csv", UIUtils.getIconFromResources("data-types/results-table.png"));
+        JMenuItem exportAsCsvItem = new JMenuItem("Metadata as *.csv", UIUtils.getIconFromResources("data-types/results-table.png"));
         exportAsCsvItem.addActionListener(e -> exportAsCSV());
         exportMenu.add(exportAsCsvItem);
 
+        JMenuItem exportStandardizedSlotItem = new JMenuItem("Data as JIPipe slot output", UIUtils.getIconFromResources("apps/jipipe.png"));
+        exportStandardizedSlotItem.addActionListener(e -> exportAsJIPipeSlot());
+        exportMenu.add(exportStandardizedSlotItem);
+
+        JMenuItem exportByMetadataExporterItem = new JMenuItem("Data as files", UIUtils.getIconFromResources("actions/save.png"));
+        exportByMetadataExporterItem.addActionListener(e -> exportByMetadataExporter());
+        exportMenu.add(exportByMetadataExporterItem);
+
+
         PreviewControlUI previewControlUI = new PreviewControlUI();
         toolBar.add(previewControlUI);
+    }
+
+    private void exportByMetadataExporter() {
+        JIPipeCachedSlotToFilesByMetadataExporterRun run = new JIPipeCachedSlotToFilesByMetadataExporterRun(getWorkbench(), Collections.singletonList(slot), false);
+        if(run.setup()) {
+            JIPipeRunnerQueue.getInstance().enqueue(run);
+        }
+    }
+
+    private void exportAsJIPipeSlot() {
+        Path path = FileChooserSettings.openDirectory(this, FileChooserSettings.KEY_DATA, "Export data as JIPipe output slot");
+        if(path != null) {
+            JIPipeCachedSlotToOutputExporterRun run = new JIPipeCachedSlotToOutputExporterRun(getWorkbench(), path, Collections.singletonList(slot), false);
+            JIPipeRunnerQueue.getInstance().enqueue(run);
+        }
     }
 
     private void exportAsCSV() {

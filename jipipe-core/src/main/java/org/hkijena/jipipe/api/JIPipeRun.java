@@ -16,6 +16,7 @@ package org.hkijena.jipipe.api;
 import com.google.common.base.Charsets;
 import ij.IJ;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
@@ -118,7 +119,7 @@ public class JIPipeRun implements JIPipeRunnable {
         }
     }
 
-    private void flushFinishedSlots(List<JIPipeDataSlot> traversedSlots, List<JIPipeGraphNode> traversedProjectAlgorithms, Set<JIPipeGraphNode> executedAlgorithms, int currentIndex, JIPipeDataSlot outputSlot, Set<JIPipeDataSlot> flushedSlots) {
+    private void flushFinishedSlots(List<JIPipeDataSlot> traversedSlots, Set<JIPipeGraphNode> executedAlgorithms, int currentIndex, JIPipeDataSlot outputSlot, Set<JIPipeDataSlot> flushedSlots, Consumer<JIPipeRunnerSubStatus> subStatus, Consumer<JIPipeRunnerStatus> onProgress) {
         if (!executedAlgorithms.contains(outputSlot.getNode()))
             return;
         if (flushedSlots.contains(outputSlot))
@@ -137,9 +138,10 @@ public class JIPipeRun implements JIPipeRunnable {
                 JIPipeGraphNode runAlgorithm = outputSlot.getNode();
                 JIPipeGraphNode projectAlgorithm = cacheQuery.getNode(runAlgorithm.getIdInGraph());
                 JIPipeProjectCache.State stateId = cacheQuery.getCachedId(projectAlgorithm);
-                project.getCache().store((JIPipeAlgorithm) projectAlgorithm, stateId, outputSlot);
+                project.getCache().store(projectAlgorithm, stateId, outputSlot);
             }
             if (configuration.isSaveOutputs()) {
+                subStatus.accept(new JIPipeRunnerSubStatus().resolve(String.format("Saving data in slot %s (contains %d rows of type %s)", outputSlot.getDisplayName(), outputSlot.getRowCount(), JIPipeDataInfo.getInstance(outputSlot.getAcceptedDataType()).getName())));
                 outputSlot.flush(configuration.getOutputPath(), !configuration.isStoreToCache());
             } else {
                 outputSlot.clearData(false);
@@ -225,7 +227,7 @@ public class JIPipeRun implements JIPipeRunnable {
             // Let algorithms provide sub-progress
             String statusMessage = "Algorithm: " + slot.getNode().getName();
             int traversingIndex = index;
-            Consumer<JIPipeRunnerSubStatus> algorithmProgress = s -> logStatus(onProgress, new JIPipeRunnerStatus(traversingIndex, traversedSlots.size(),
+            Consumer<JIPipeRunnerSubStatus> subStatus = s -> logStatus(onProgress, new JIPipeRunnerStatus(traversingIndex, traversedSlots.size(),
                     statusMessage + " | " + s));
 
             if (slot.isInput()) {
@@ -234,16 +236,16 @@ public class JIPipeRun implements JIPipeRunnable {
                 slot.copyFrom(sourceSlot);
 
                 // Check if we can flush the output
-                flushFinishedSlots(traversedSlots, traversedProjectAlgorithms, executedAlgorithms, index, sourceSlot, flushedSlots);
+                flushFinishedSlots(traversedSlots, executedAlgorithms, index, sourceSlot, flushedSlots, subStatus, onProgress);
             } else if (slot.isOutput()) {
                 JIPipeGraphNode node = slot.getNode();
                 // Ensure the algorithm has run
                 if (!executedAlgorithms.contains(node)) {
-                    runNode(onProgress, isCancelled, executedAlgorithms, traversedSlots, traversedProjectAlgorithms, index, statusMessage, traversingIndex, algorithmProgress, node);
+                    runNode(onProgress, isCancelled, executedAlgorithms, traversedSlots, traversedProjectAlgorithms, index, statusMessage, traversingIndex, subStatus, node);
                 }
 
                 // Check if we can flush the output
-                flushFinishedSlots(traversedSlots, traversedProjectAlgorithms, executedAlgorithms, index, slot, flushedSlots);
+                flushFinishedSlots(traversedSlots, executedAlgorithms, index, slot, flushedSlots, subStatus, onProgress);
             }
         }
 

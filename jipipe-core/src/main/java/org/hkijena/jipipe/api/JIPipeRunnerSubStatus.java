@@ -15,6 +15,7 @@ package org.hkijena.jipipe.api;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * A nestable
@@ -39,5 +40,40 @@ public class JIPipeRunnerSubStatus {
     @Override
     public String toString() {
         return String.join(" | ", categories);
+    }
+
+    /**
+     * A default implementation for a consumer
+     */
+    public static class DefaultConsumer implements Consumer<JIPipeRunnerSubStatus> {
+
+        private final Consumer<JIPipeRunnerStatus> onProgress;
+        private int progress;
+        private int maxProgress = 1;
+
+        public DefaultConsumer(Consumer<JIPipeRunnerStatus> onProgress) {
+            this.onProgress = onProgress;
+        }
+
+        @Override
+        public void accept(JIPipeRunnerSubStatus subStatus) {
+            onProgress.accept(new JIPipeRunnerStatus(progress, maxProgress, String.join(" | ", subStatus.categories)));
+        }
+
+        public int getProgress() {
+            return progress;
+        }
+
+        public void setProgress(int progress) {
+            this.progress = progress;
+        }
+
+        public int getMaxProgress() {
+            return maxProgress;
+        }
+
+        public void setMaxProgress(int maxProgress) {
+            this.maxProgress = maxProgress;
+        }
     }
 }
