@@ -21,6 +21,7 @@ import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
+import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
@@ -151,7 +152,7 @@ public class StackSplitterAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                 String index = "slice=" + sliceIndices.stream().map(i -> "" + i).collect(Collectors.joining(","));
                 annotations.add(new JIPipeAnnotation(annotationType, index));
             }
-            dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(result), annotations);
+            dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(result), annotations, JIPipeAnnotationMergeStrategy.Merge);
         }
     }
 

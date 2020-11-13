@@ -36,6 +36,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
+import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.data.JIPipeDataByMetadataExporter;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
@@ -188,13 +189,13 @@ public class UploadOMEROImageAlgorithm extends JIPipeMergingAlgorithm {
 
         // Write to output
         for (Long uploadedImage : uploadedImages) {
-            getFirstOutputSlot().addData(new OMEROImageReferenceData(uploadedImage), annotations);
+            getFirstOutputSlot().addData(new OMEROImageReferenceData(uploadedImage), annotations, JIPipeAnnotationMergeStrategy.Merge);
         }
     }
 
     private void exportImages(OMEImageData image, List<JIPipeAnnotation> annotations, Path targetPath, JIPipeRunnerSubStatus subStatus, Consumer<JIPipeRunnerSubStatus> algorithmProgress, Supplier<Boolean> isCancelled) {
         JIPipeDataSlot dummy = new JIPipeDataSlot(new JIPipeDataSlotInfo(OMEImageData.class, JIPipeSlotType.Input, null), this);
-        dummy.addData(image, annotations);
+        dummy.addData(image, annotations, JIPipeAnnotationMergeStrategy.Merge);
         image.setExporterSettings(exporterSettings);
 
         // Export to BioFormats

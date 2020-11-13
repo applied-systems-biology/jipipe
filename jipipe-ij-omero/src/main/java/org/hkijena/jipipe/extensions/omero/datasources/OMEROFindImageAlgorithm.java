@@ -26,6 +26,7 @@ import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
+import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
@@ -130,7 +131,7 @@ public class OMEROFindImageAlgorithm extends JIPipeParameterSlotAlgorithm {
                         }
                         if (datasetNameAnnotation.isEnabled())
                             annotations.add(new JIPipeAnnotation(datasetNameAnnotation.getContent(), datasetData.getName()));
-                        getFirstOutputSlot().addData(new OMEROImageReferenceData(imageData.getId()), annotations);
+                        getFirstOutputSlot().addData(new OMEROImageReferenceData(imageData.getId()), annotations, JIPipeAnnotationMergeStrategy.Merge);
                     }
 
                 }

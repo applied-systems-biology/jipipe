@@ -19,6 +19,7 @@ import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeExportedDataTable;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
@@ -78,11 +79,14 @@ public class ImportData extends JIPipeSimpleIteratingAlgorithm {
                     "You tried to import data from a JIPipe output slot folder located at " + dataFolder + ". The data contained in this folder is identified by a type id '" + exportedDataTable.getAcceptedDataTypeId() + "', but it could not be found.",
                     "Check if you installed the necessary plugins and extensions.");
         }
-        // TODO: Implement this
+
         for (JIPipeExportedDataTable.Row row : exportedDataTable.getRowList()) {
+            algorithmProgress.accept(subProgress.resolve("Importing data row " + row.getIndex()));
             Path storageFolder = dataFolder.resolve("" + row.getIndex());
             List<JIPipeAnnotation> annotationList = ignoreImportedDataAnnotations ? Collections.emptyList() : row.getAnnotations();
-
+            JIPipeDataInfo trueDataType = exportedDataTable.getDataTypeOf(row.getIndex());
+            JIPipeData data = JIPipe.importData(storageFolder, trueDataType.getDataClass());
+            dataBatch.addOutputData(getFirstOutputSlot(), data, annotationList, JIPipeAnnotationMergeStrategy.Merge);
         }
     }
 

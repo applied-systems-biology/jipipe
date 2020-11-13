@@ -17,6 +17,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
+import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
@@ -94,7 +95,7 @@ public class AnnotationTableToPaths extends JIPipeSimpleIteratingAlgorithm {
             }
 
             String data = tableColumn.getRowAsString(row);
-            dataBatch.addOutputData(getFirstOutputSlot(), new PathData(Paths.get(data)), annotations);
+            dataBatch.addOutputData(getFirstOutputSlot(), new PathData(Paths.get(data)), annotations, JIPipeAnnotationMergeStrategy.Merge);
         }
     }
 

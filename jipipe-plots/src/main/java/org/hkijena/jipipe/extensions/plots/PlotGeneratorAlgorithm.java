@@ -18,6 +18,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.events.NodeSlotsChangedEvent;
 import org.hkijena.jipipe.api.events.ParameterStructureChangedEvent;
@@ -117,7 +118,7 @@ public class PlotGeneratorAlgorithm extends JIPipeAlgorithm {
             }
 
             plot.addSeries(new PlotDataSeries(seriesTable.getTable()));
-            getFirstOutputSlot().addData(plot, getFirstInputSlot().getAnnotations(row));
+            getFirstOutputSlot().addData(plot, getFirstInputSlot().getAnnotations(row), JIPipeAnnotationMergeStrategy.Merge);
         }
     }
 

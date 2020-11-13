@@ -26,6 +26,7 @@ import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
+import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
@@ -128,7 +129,7 @@ public class OMEROFindDatasetAlgorithm extends JIPipeParameterSlotAlgorithm {
                         annotations.add(new JIPipeAnnotation(projectNameAnnotation.getContent(), projectData.getName()));
                     if (datasetNameAnnotation.isEnabled())
                         annotations.add(new JIPipeAnnotation(datasetNameAnnotation.getContent(), dataset.getName()));
-                    getFirstOutputSlot().addData(new OMERODatasetReferenceData(dataset.getId()), annotations);
+                    getFirstOutputSlot().addData(new OMERODatasetReferenceData(dataset.getId()), annotations, JIPipeAnnotationMergeStrategy.Merge);
                 }
             }
         } catch (Exception e) {

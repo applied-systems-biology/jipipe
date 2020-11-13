@@ -4,6 +4,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
+import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
@@ -75,7 +76,7 @@ public class AnnotateWithAnnotationTable extends JIPipeIteratingAlgorithm {
             AnnotationTableData data = annotationSlot.getData(i, AnnotationTableData.class);
             for (int j = 0; j < data.getRowCount(); j++) {
                 List<JIPipeAnnotation> annotations = data.getAnnotations(j);
-                dummy.addData(data, annotations);
+                dummy.addData(data, annotations, JIPipeAnnotationMergeStrategy.Merge);
             }
         }
 
@@ -124,7 +125,7 @@ public class AnnotateWithAnnotationTable extends JIPipeIteratingAlgorithm {
                 }
 
                 // Add data to output
-                getFirstOutputSlot().addData(dataInputSlot.getData(row, JIPipeData.class), new ArrayList<>(annotationMap.values()));
+                getFirstOutputSlot().addData(dataInputSlot.getData(row, JIPipeData.class), new ArrayList<>(annotationMap.values()), JIPipeAnnotationMergeStrategy.Merge);
             }
         }
     }

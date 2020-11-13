@@ -20,6 +20,7 @@ import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
+import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.events.ParameterChangedEvent;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
@@ -129,7 +130,7 @@ public class FilterAndMergeRoiByStatisticsScriptAlgorithm extends ImageRoiProces
                 listData.add(roi);
             }
             List<JIPipeAnnotation> annotations = JIPipeAnnotation.extractAnnotationsFromPython((PyDictionary) row.getOrDefault("annotations", new PyDictionary()));
-            getFirstOutputSlot().addData(listData, annotations);
+            getFirstOutputSlot().addData(listData, annotations, JIPipeAnnotationMergeStrategy.Merge);
         }
 
         this.pythonInterpreter = null;

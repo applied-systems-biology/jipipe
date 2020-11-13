@@ -20,6 +20,7 @@ import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
+import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
@@ -88,7 +89,7 @@ public class StackTo2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         ImageJUtils.forEachIndexedSlice(img, (ip, index) -> {
             if (annotateSlices) {
                 JIPipeAnnotation trait = new JIPipeAnnotation(annotationType, "slice=" + index);
-                dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlus2DData(new ImagePlus("slice=" + index, ip)), Collections.singletonList(trait));
+                dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlus2DData(new ImagePlus("slice=" + index, ip)), Collections.singletonList(trait), JIPipeAnnotationMergeStrategy.Merge);
             } else {
                 dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlus2DData(new ImagePlus("slice=" + index, ip)));
             }

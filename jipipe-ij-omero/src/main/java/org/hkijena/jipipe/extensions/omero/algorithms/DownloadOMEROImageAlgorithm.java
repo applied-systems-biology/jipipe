@@ -33,6 +33,7 @@ import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
+import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -218,7 +219,7 @@ public class DownloadOMEROImageAlgorithm extends JIPipeSimpleIteratingAlgorithm 
                     rois = ROIHandler.openROIs(process.getOMEMetadata(), new ImagePlus[]{image});
                 }
 
-                dataBatch.addOutputData(getFirstOutputSlot(), new OMEImageData(image, rois, omexmlMetadata), traits);
+                dataBatch.addOutputData(getFirstOutputSlot(), new OMEImageData(image, rois, omexmlMetadata), traits, JIPipeAnnotationMergeStrategy.Merge);
             }
         } catch (FormatException | IOException e) {
             throw new RuntimeException(e);

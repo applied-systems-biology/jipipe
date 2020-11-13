@@ -22,6 +22,7 @@ import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
+import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.events.NodeSlotsChangedEvent;
@@ -104,7 +105,7 @@ public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
         if (titleAnnotation.isEnabled()) {
             traits.add(new JIPipeAnnotation(titleAnnotation.getContent(), data.getImage().getTitle()));
         }
-        dataBatch.addOutputData(getFirstOutputSlot(), data, traits);
+        dataBatch.addOutputData(getFirstOutputSlot(), data, traits, JIPipeAnnotationMergeStrategy.Merge);
     }
 
     @JIPipeDocumentation(name = "Title annotation", description = "Optional annotation type where the image title is written.")

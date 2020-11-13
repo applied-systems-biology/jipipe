@@ -19,6 +19,7 @@ import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
+import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.events.ParameterChangedEvent;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -114,7 +115,7 @@ public class TablesFromScript extends JIPipeAlgorithm {
         for (PyDictionary row : rows) {
             ResultsTableData data = ResultsTableData.fromPython((PyDictionary) row.get("data"));
             List<JIPipeAnnotation> annotations = JIPipeAnnotation.extractAnnotationsFromPython((PyDictionary) row.getOrDefault("annotations", new PyDictionary()));
-            getFirstOutputSlot().addData(data, annotations);
+            getFirstOutputSlot().addData(data, annotations, JIPipeAnnotationMergeStrategy.Merge);
         }
 
         this.pythonInterpreter = null;

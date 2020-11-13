@@ -27,6 +27,7 @@ import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
+import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeParameterSlotAlgorithm;
@@ -115,7 +116,7 @@ public class OMEROFindProjectAlgorithm extends JIPipeParameterSlotAlgorithm {
                     if (projectNameAnnotation.isEnabled()) {
                         annotations.add(new JIPipeAnnotation(projectNameAnnotation.getContent(), project.getName()));
                     }
-                    getFirstOutputSlot().addData(new OMEROProjectReferenceData(project.getId()), annotations);
+                    getFirstOutputSlot().addData(new OMEROProjectReferenceData(project.getId()), annotations, JIPipeAnnotationMergeStrategy.Merge);
                 }
             } catch (DSOutOfServiceException | DSAccessException e) {
                 throw new RuntimeException(e);

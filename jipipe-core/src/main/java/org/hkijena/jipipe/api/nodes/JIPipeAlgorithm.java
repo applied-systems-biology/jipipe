@@ -22,6 +22,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeFixedThreadPool;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeSlotConfiguration;
@@ -113,7 +114,7 @@ public abstract class JIPipeAlgorithm extends JIPipeGraphNode {
         if (getOutputSlots().isEmpty())
             return;
         for (int row = 0; row < getFirstInputSlot().getRowCount(); row++) {
-            getFirstOutputSlot().addData(getFirstInputSlot().getData(row, JIPipeData.class), getFirstInputSlot().getAnnotations(row));
+            getFirstOutputSlot().addData(getFirstInputSlot().getData(row, JIPipeData.class), getFirstInputSlot().getAnnotations(row), JIPipeAnnotationMergeStrategy.Merge);
         }
     }
 

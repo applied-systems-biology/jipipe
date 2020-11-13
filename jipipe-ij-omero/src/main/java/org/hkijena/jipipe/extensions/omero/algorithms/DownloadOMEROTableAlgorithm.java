@@ -26,6 +26,7 @@ import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
+import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -90,7 +91,7 @@ public class DownloadOMEROTableAlgorithm extends JIPipeSimpleIteratingAlgorithm 
                 List<JIPipeAnnotation> annotations = new ArrayList<>();
                 if (fileNameAnnotation.isEnabled())
                     annotations.add(new JIPipeAnnotation(fileNameAnnotation.getContent(), fileName));
-                dataBatch.addOutputData(getFirstOutputSlot(), resultsTableData, annotations);
+                dataBatch.addOutputData(getFirstOutputSlot(), resultsTableData, annotations, JIPipeAnnotationMergeStrategy.Merge);
             }
         } catch (Exception e) {
             throw new RuntimeException(e);

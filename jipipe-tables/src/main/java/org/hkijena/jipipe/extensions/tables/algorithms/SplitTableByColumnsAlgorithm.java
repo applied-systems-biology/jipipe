@@ -17,6 +17,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
+import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -92,7 +93,7 @@ public class SplitTableByColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm
                         traits.add(new JIPipeAnnotation(column, output.getValueAsString(0, column)));
                     }
                 }
-                dataBatch.addOutputData(getFirstOutputSlot(), output, traits);
+                dataBatch.addOutputData(getFirstOutputSlot(), output, traits, JIPipeAnnotationMergeStrategy.Merge);
             }
         }
     }

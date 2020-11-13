@@ -17,6 +17,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
+import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.events.ParameterStructureChangedEvent;
@@ -139,7 +140,7 @@ public class MultiParameterAlgorithm extends JIPipeAlgorithm {
                 for (Map.Entry<String, String> entry : newParameters.entrySet()) {
                     traits.add(new JIPipeAnnotation(entry.getKey(), "" + parameters.get(entry.getKey()).get(Object.class)));
                 }
-                outputSlot.addData(data, traits);
+                outputSlot.addData(data, traits, JIPipeAnnotationMergeStrategy.Merge);
             }
             wrappedOutputSlot.clearData(false);
         }

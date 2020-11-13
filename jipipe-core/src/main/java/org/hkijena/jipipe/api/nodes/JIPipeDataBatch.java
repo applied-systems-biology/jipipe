@@ -211,13 +211,13 @@ public class JIPipeDataBatch {
     /**
      * Writes output data into the provided slot
      * Please note that annotations should be set up till this point
-     *
-     * @param slotName              Slot name
+     *  @param slotName              Slot name
      * @param data                  Added data
      * @param additionalAnnotations Annotations that are added additionally to the global ones
+     * @param mergeStrategy how annotations should be merged
      */
-    public void addOutputData(String slotName, JIPipeData data, List<JIPipeAnnotation> additionalAnnotations) {
-        addOutputData(node.getOutputSlot(slotName), data, additionalAnnotations);
+    public void addOutputData(String slotName, JIPipeData data, List<JIPipeAnnotation> additionalAnnotations, JIPipeAnnotationMergeStrategy mergeStrategy) {
+        addOutputData(node.getOutputSlot(slotName), data, additionalAnnotations, mergeStrategy);
     }
 
     /**
@@ -232,24 +232,24 @@ public class JIPipeDataBatch {
             throw new IllegalArgumentException("The provided slot does not belong to the data interface algorithm!");
         if (!slot.isOutput())
             throw new IllegalArgumentException("Slot is not an output slot!");
-        slot.addData(data, new ArrayList<>(annotations.values()));
+        slot.addData(data, new ArrayList<>(annotations.values()), JIPipeAnnotationMergeStrategy.Merge);
     }
 
     /**
      * Writes output data into the provided slot
      * Please note that annotations that are added to all traits should be set up till this point
-     *
-     * @param slot                  Slot instance
+     *  @param slot                  Slot instance
      * @param data                  Added data
      * @param additionalAnnotations Annotations that are added additionally to the global ones
+     * @param mergeStrategy how annotations should be merged
      */
-    public void addOutputData(JIPipeDataSlot slot, JIPipeData data, List<JIPipeAnnotation> additionalAnnotations) {
+    public void addOutputData(JIPipeDataSlot slot, JIPipeData data, List<JIPipeAnnotation> additionalAnnotations, JIPipeAnnotationMergeStrategy mergeStrategy) {
         if (slot.getNode() != node)
             throw new IllegalArgumentException("The provided slot does not belong to the data interface algorithm!");
         if (!slot.isOutput())
             throw new IllegalArgumentException("Slot is not an output slot!");
         List<JIPipeAnnotation> finalAnnotations = new ArrayList<>(annotations.values());
         finalAnnotations.addAll(additionalAnnotations);
-        slot.addData(data, finalAnnotations);
+        slot.addData(data, finalAnnotations, mergeStrategy);
     }
 }

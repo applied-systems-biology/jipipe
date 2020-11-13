@@ -7,7 +7,9 @@ import org.hkijena.jipipe.utils.StringUtils;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Determines how annotations are merged
@@ -16,6 +18,23 @@ public enum JIPipeAnnotationMergeStrategy {
     SkipExisting,
     OverwriteExisting,
     Merge;
+
+    /**
+     * Ensures that a list of annotations has unique names. Merges according to the strategy if needed.
+     * @param annotations input annotations. can have duplicate names.
+     * @return annotations without duplicate names.
+     */
+    public List<JIPipeAnnotation> merge(List<JIPipeAnnotation> annotations) {
+        Map<String, String> map = new HashMap<>();
+        for (JIPipeAnnotation annotation : annotations) {
+            map.put(annotation.getName(), merge(map.getOrDefault(annotation.getName(), ""), annotation.getValue()));
+        }
+        List<JIPipeAnnotation> result = new ArrayList<>();
+        for (Map.Entry<String, String> entry : map.entrySet()) {
+            result.add(new JIPipeAnnotation(entry.getKey(), entry.getValue()));
+        }
+        return result;
+    }
 
     /**
      * Merges the new annotation value into the existing one according to the strategy

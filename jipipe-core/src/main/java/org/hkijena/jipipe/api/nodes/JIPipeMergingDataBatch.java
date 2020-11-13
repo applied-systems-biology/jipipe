@@ -283,7 +283,7 @@ public class JIPipeMergingDataBatch {
      * @param additionalAnnotations Annotations that are added additionally to the global ones
      */
     public void addOutputData(String slotName, JIPipeData data, List<JIPipeAnnotation> additionalAnnotations) {
-        addOutputData(node.getOutputSlot(slotName), data, additionalAnnotations);
+        addOutputData(node.getOutputSlot(slotName), data, additionalAnnotations, JIPipeAnnotationMergeStrategy.Merge);
     }
 
     /**
@@ -298,25 +298,25 @@ public class JIPipeMergingDataBatch {
             throw new IllegalArgumentException("The provided slot does not belong to the data interface algorithm!");
         if (!slot.isOutput())
             throw new IllegalArgumentException("Slot is not an output slot!");
-        slot.addData(data, new ArrayList<>(annotations.values()));
+        slot.addData(data, new ArrayList<>(annotations.values()), JIPipeAnnotationMergeStrategy.Merge);
     }
 
     /**
      * Writes output data into the provided slot
      * Please note that annotations that are added to all traits should be set up till this point
-     *
-     * @param slot                  Slot instance
+     *  @param slot                  Slot instance
      * @param data                  Added data
      * @param additionalAnnotations Annotations that are added additionally to the global ones
+     * @param mergeStrategy how annotations should be merged
      */
-    public void addOutputData(JIPipeDataSlot slot, JIPipeData data, List<JIPipeAnnotation> additionalAnnotations) {
+    public void addOutputData(JIPipeDataSlot slot, JIPipeData data, List<JIPipeAnnotation> additionalAnnotations, JIPipeAnnotationMergeStrategy mergeStrategy) {
         if (slot.getNode() != node)
             throw new IllegalArgumentException("The provided slot does not belong to the data interface algorithm!");
         if (!slot.isOutput())
             throw new IllegalArgumentException("Slot is not an output slot!");
         List<JIPipeAnnotation> finalAnnotations = new ArrayList<>(annotations.values());
         finalAnnotations.addAll(additionalAnnotations);
-        slot.addData(data, finalAnnotations);
+        slot.addData(data, finalAnnotations, mergeStrategy);
     }
 
 
@@ -358,7 +358,7 @@ public class JIPipeMergingDataBatch {
         JIPipeDataSlot dummy = new JIPipeDataSlot(info, node);
         ArrayList<JIPipeAnnotation> annotations = new ArrayList<>(getAnnotations().values());
         for (JIPipeData data : getInputData(sourceSlot, JIPipeData.class)) {
-            dummy.addData(data, annotations);
+            dummy.addData(data, annotations, JIPipeAnnotationMergeStrategy.Merge);
         }
         return dummy;
     }

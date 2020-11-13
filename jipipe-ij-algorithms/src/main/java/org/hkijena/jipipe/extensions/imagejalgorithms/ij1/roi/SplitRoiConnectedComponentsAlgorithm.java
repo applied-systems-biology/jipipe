@@ -22,6 +22,7 @@ import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
+import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
@@ -200,7 +201,7 @@ public class SplitRoiConnectedComponentsAlgorithm extends ImageRoiProcessorAlgor
                 rois.add(input.get(index));
             }
             if (componentNameAnnotation.isEnabled()) {
-                dataBatch.addOutputData(getFirstOutputSlot(), rois, Collections.singletonList(new JIPipeAnnotation(componentNameAnnotation.getContent(), outputIndex + "")));
+                dataBatch.addOutputData(getFirstOutputSlot(), rois, Collections.singletonList(new JIPipeAnnotation(componentNameAnnotation.getContent(), outputIndex + "")), JIPipeAnnotationMergeStrategy.Merge);
             } else {
                 dataBatch.addOutputData(getFirstOutputSlot(), rois);
             }

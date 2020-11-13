@@ -19,6 +19,7 @@ import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
+import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -166,7 +167,7 @@ public class ImagePropertiesToAnnotationAlgorithm extends JIPipeSimpleIteratingA
             annotations.add(new JIPipeAnnotation(getBitDepthAnnotation().getContent(), "" + inputData.getImage().getBitDepth()));
         }
 
-        dataBatch.addOutputData(getFirstOutputSlot(), inputData, annotations);
+        dataBatch.addOutputData(getFirstOutputSlot(), inputData, annotations, JIPipeAnnotationMergeStrategy.Merge);
     }
 
     @JIPipeDocumentation(name = "Annotate with title", description = "If enabled, an annotation with provided name is created. The annotation " +

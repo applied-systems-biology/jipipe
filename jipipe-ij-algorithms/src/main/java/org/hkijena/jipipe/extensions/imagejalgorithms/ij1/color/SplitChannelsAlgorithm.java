@@ -24,6 +24,7 @@ import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
+import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
@@ -144,7 +145,7 @@ public class SplitChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                 if (annotateWithChannelIndex) {
                     annotations.add(new JIPipeAnnotation(annotationColumnChannelIndex, "" + channelIndex));
                 }
-                dataBatch.addOutputData(slotName, new ImagePlusGreyscaleData(image), annotations);
+                dataBatch.addOutputData(slotName, new ImagePlusGreyscaleData(image), annotations, JIPipeAnnotationMergeStrategy.Merge);
             }
             return;
         }
@@ -214,7 +215,7 @@ public class SplitChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             }
 
             ImagePlus output = new ImagePlus(image.getTitle() + " C=" + channelIndex, stack);
-            dataBatch.addOutputData(slotName, new ImagePlusGreyscaleData(output), annotations);
+            dataBatch.addOutputData(slotName, new ImagePlusGreyscaleData(output), annotations, JIPipeAnnotationMergeStrategy.Merge);
         }
     }
 

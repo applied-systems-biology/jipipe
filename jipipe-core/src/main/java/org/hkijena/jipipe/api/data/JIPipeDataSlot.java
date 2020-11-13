@@ -181,18 +181,21 @@ public class JIPipeDataSlot implements TableModel {
      * Adds a data row
      *
      * @param value  The data
-     * @param traits Optional traits
+     * @param annotations Optional traits
      */
-    public synchronized void addData(JIPipeData value, List<JIPipeAnnotation> traits) {
+    public synchronized void addData(JIPipeData value, List<JIPipeAnnotation> annotations, JIPipeAnnotationMergeStrategy mergeStrategy) {
         if (!accepts(value))
             throw new IllegalArgumentException("Tried to add data of type " + value.getClass() + ", but slot only accepts " + acceptedDataType + ". A converter could not be found.");
         if (uniqueData) {
-            if (findRowWithTraits(traits) != -1) {
+            if (findRowWithAnnotations(annotations) != -1) {
                 uniqueData = false;
             }
         }
+        if(!annotations.isEmpty()) {
+            annotations = mergeStrategy.merge(annotations);
+        }
         data.add(JIPipe.getDataTypes().convert(value, getAcceptedDataType()));
-        for (JIPipeAnnotation trait : traits) {
+        for (JIPipeAnnotation trait : annotations) {
             List<JIPipeAnnotation> traitArray = getOrCreateAnnotationColumnData(trait.getName());
             traitArray.set(getRowCount() - 1, trait);
         }
@@ -201,15 +204,15 @@ public class JIPipeDataSlot implements TableModel {
     /**
      * Adds an annotation to all existing data
      *
-     * @param trait     The trait instance
+     * @param annotation     The annotation instance
      * @param overwrite If false, existing annotations of the same type are not overwritten
      */
-    public synchronized void addAnnotationToAllData(JIPipeAnnotation trait, boolean overwrite) {
-        List<JIPipeAnnotation> traitArray = getOrCreateAnnotationColumnData(trait.getName());
+    public synchronized void addAnnotationToAllData(JIPipeAnnotation annotation, boolean overwrite) {
+        List<JIPipeAnnotation> traitArray = getOrCreateAnnotationColumnData(annotation.getName());
         for (int i = 0; i < getRowCount(); ++i) {
             if (!overwrite && traitArray.get(i) != null)
                 continue;
-            traitArray.set(i, trait);
+            traitArray.set(i, annotation);
         }
     }
 
@@ -232,7 +235,7 @@ public class JIPipeDataSlot implements TableModel {
      * @param value Data
      */
     public synchronized void addData(JIPipeData value) {
-        addData(value, Collections.emptyList());
+        addData(value, Collections.emptyList(), JIPipeAnnotationMergeStrategy.Merge);
     }
 
     /**
@@ -241,7 +244,7 @@ public class JIPipeDataSlot implements TableModel {
      * @param traits A valid annotation list with size equals to getRowCount()
      * @return row index >= 0 if found, otherwise -1
      */
-    public int findRowWithTraits(List<JIPipeAnnotation> traits) {
+    public int findRowWithAnnotations(List<JIPipeAnnotation> traits) {
         String[] infoMap = new String[traits.size()];
         for (int i = 0; i < traits.size(); ++i) {
             int infoIndex = annotationColumns.indexOf(traits.get(i).getName());
@@ -262,36 +265,6 @@ public class JIPipeDataSlot implements TableModel {
                 return row;
         }
         return -1;
-    }
-
-    /**
-     * Finds rows that match the given traits
-     *
-     * @param traits A valid annotation list with size equals to getRowCount()
-     * @return list of rows
-     */
-    public List<Integer> findRowsWithTraits(List<JIPipeAnnotation> traits) {
-        String[] infoMap = new String[traits.size()];
-        for (int i = 0; i < traits.size(); ++i) {
-            int infoIndex = annotationColumns.indexOf(traits.get(i).getName());
-            if (infoIndex == -1)
-                return new ArrayList<>();
-            infoMap[i] = annotationColumns.get(infoIndex);
-        }
-        List<Integer> result = new ArrayList<>();
-        for (int row = 0; row < data.size(); ++row) {
-            boolean equal = true;
-            for (int i = 0; i < traits.size(); ++i) {
-                String info = infoMap[i];
-                JIPipeAnnotation rowTrait = annotations.get(info).get(row);
-                if (!JIPipeAnnotation.nameEquals(traits.get(i), rowTrait)) {
-                    equal = false;
-                }
-            }
-            if (equal)
-                result.add(row);
-        }
-        return result;
     }
 
     /**
@@ -461,7 +434,7 @@ public class JIPipeDataSlot implements TableModel {
      */
     public void copyFrom(JIPipeDataSlot sourceSlot) {
         for (int row = 0; row < sourceSlot.getRowCount(); ++row) {
-            addData(sourceSlot.getData(row, JIPipeData.class), sourceSlot.getAnnotations(row));
+            addData(sourceSlot.getData(row, JIPipeData.class), sourceSlot.getAnnotations(row), JIPipeAnnotationMergeStrategy.Merge);
         }
     }
 
