@@ -19,6 +19,7 @@ import ij.measure.ResultsTable;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.utils.JsonUtils;
+import org.hkijena.jipipe.utils.StringUtils;
 
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
@@ -60,7 +61,8 @@ public class JIPipeExportedDataTable implements TableModel {
         for (int row = 0; row < slot.getRowCount(); ++row) {
             Row rowInstance = new Row();
             rowInstance.index = indices.get(row);
-            rowInstance.traits = slot.getAnnotations(row);
+            rowInstance.annotations = slot.getAnnotations(row);
+            rowInstance.trueDataType = JIPipeDataInfo.getInstance(slot.getData(row, JIPipeData.class).getClass()).getId();
             rowList.add(rowInstance);
         }
     }
@@ -181,10 +183,11 @@ public class JIPipeExportedDataTable implements TableModel {
             table.addValue("jipipe:algorithm-id", algorithmId);
             table.addValue("jipipe:slot", slotName);
             table.addValue("jipipe:data-type", JIPipe.getDataTypes().getIdOf(acceptedDataType));
-            table.addValue("jipipe:internal-path", internalPath.toString());
+            table.addValue("jipipe:true-data-type", row.trueDataType);
+            table.addValue("jipipe:internal-path", internalPath);
             table.addValue("jipipe:index", row.index);
             for (String traitColumn : getTraitColumns()) {
-                JIPipeAnnotation existing = row.traits.stream().filter(t -> t.nameEquals(traitColumn)).findFirst().orElse(null);
+                JIPipeAnnotation existing = row.annotations.stream().filter(t -> t.nameEquals(traitColumn)).findFirst().orElse(null);
                 if (existing != null)
                     table.addValue(traitColumn, existing.getValue());
                 else
@@ -201,7 +204,7 @@ public class JIPipeExportedDataTable implements TableModel {
         if (traitColumns == null) {
             Set<String> registeredTraits = new HashSet<>();
             for (Row row : rowList) {
-                registeredTraits.addAll(row.traits.stream().map(JIPipeAnnotation::getName).collect(Collectors.toSet()));
+                registeredTraits.addAll(row.annotations.stream().map(JIPipeAnnotation::getName).collect(Collectors.toSet()));
             }
             traitColumns = new ArrayList<>(registeredTraits);
         }
@@ -251,14 +254,28 @@ public class JIPipeExportedDataTable implements TableModel {
     public Object getValueAt(int rowIndex, int columnIndex) {
         if (columnIndex == 0)
             return rowList.get(rowIndex).getIndex();
-        else if (columnIndex == 1)
-            return JIPipeDataInfo.getInstance(acceptedDataType);
+        else if (columnIndex == 1) {
+            return getDataTypeOf(rowIndex);
+        }
         else if (columnIndex == 2)
             return rowList.get(rowIndex);
         else {
             String traitColumn = traitColumns.get(columnIndex - 3);
-            return rowList.get(rowIndex).traits.stream().filter(t -> t.nameEquals(traitColumn)).findFirst().orElse(null);
+            return rowList.get(rowIndex).annotations.stream().filter(t -> t.nameEquals(traitColumn)).findFirst().orElse(null);
         }
+    }
+
+    /**
+     * Returns the true data type (if available) or the accepted data type of the given row
+     * @param rowIndex the row
+     * @return the data type
+     */
+    public JIPipeDataInfo getDataTypeOf(int rowIndex) {
+        String trueDataType = rowList.get(rowIndex).getTrueDataType();
+        if(!StringUtils.isNullOrEmpty(trueDataType))
+            return JIPipeDataInfo.getInstance(trueDataType);
+        else
+            return JIPipeDataInfo.getInstance(acceptedDataType);
     }
 
     @Override
@@ -297,7 +314,8 @@ public class JIPipeExportedDataTable implements TableModel {
      */
     public static class Row {
         private int index;
-        private List<JIPipeAnnotation> traits;
+        private List<JIPipeAnnotation> annotations;
+        private String trueDataType;
 
         /**
          * Creates new instance
@@ -328,17 +346,27 @@ public class JIPipeExportedDataTable implements TableModel {
          */
         @JsonGetter("traits")
         public List<JIPipeAnnotation> getAnnotations() {
-            return traits;
+            return annotations;
         }
 
         /**
          * Sets annotations
          *
-         * @param traits List of annotations
+         * @param annotations List of annotations
          */
         @JsonSetter("traits")
-        public void setTraits(List<JIPipeAnnotation> traits) {
-            this.traits = traits;
+        public void setAnnotations(List<JIPipeAnnotation> annotations) {
+            this.annotations = annotations;
+        }
+
+        @JsonGetter("true-data-type")
+        public String getTrueDataType() {
+            return trueDataType;
+        }
+
+        @JsonSetter("true-data-type")
+        public void setTrueDataType(String trueDataType) {
+            this.trueDataType = trueDataType;
         }
     }
 }
