@@ -20,6 +20,8 @@ import org.jfree.chart.renderer.category.BarRenderer;
 import org.jfree.chart.renderer.category.StandardBarPainter;
 import org.jfree.chart.renderer.category.StatisticalBarRenderer;
 
+import java.nio.file.Path;
+
 /**
  * Generates a bar category plot
  */
@@ -43,6 +45,10 @@ public class BarStatisticalCategoryPlotData extends CategoryPlotData {
      */
     public BarStatisticalCategoryPlotData(BarStatisticalCategoryPlotData other) {
         super(other);
+    }
+
+    public static BarStatisticalCategoryPlotData importFrom(Path storagePath) {
+        return PlotData.importFrom(storagePath, BarStatisticalCategoryPlotData.class);
     }
 
     @Override

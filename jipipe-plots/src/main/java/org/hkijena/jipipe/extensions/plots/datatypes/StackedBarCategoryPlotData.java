@@ -19,6 +19,8 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.renderer.category.BarRenderer;
 import org.jfree.chart.renderer.category.StandardBarPainter;
 
+import java.nio.file.Path;
+
 /**
  * Generates a bar category plot
  */
@@ -42,6 +44,10 @@ public class StackedBarCategoryPlotData extends CategoryPlotData {
      */
     public StackedBarCategoryPlotData(StackedBarCategoryPlotData other) {
         super(other);
+    }
+
+    public static StackedBarCategoryPlotData importFrom(Path storagePath) {
+        return PlotData.importFrom(storagePath, StackedBarCategoryPlotData.class);
     }
 
     @Override

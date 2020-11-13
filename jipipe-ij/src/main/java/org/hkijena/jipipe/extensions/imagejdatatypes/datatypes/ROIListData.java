@@ -82,16 +82,18 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
      *
      * @param storageFilePath path that contains a zip/roi file
      */
-    public ROIListData(Path storageFilePath) {
+    public static ROIListData importFrom(Path storageFilePath) {
+        ROIListData result = new ROIListData();
         Path zipFile = PathUtils.findFileByExtensionIn(storageFilePath, ".zip");
         Path roiFile = PathUtils.findFileByExtensionIn(storageFilePath, ".roi");
         if (zipFile != null) {
-            addAll(loadRoiListFromFile(zipFile));
+            result.addAll(loadRoiListFromFile(zipFile));
         } else if (roiFile != null) {
-            addAll(loadRoiListFromFile(roiFile));
+            result.addAll(loadRoiListFromFile(roiFile));
         } else {
             throw new RuntimeException(new FileNotFoundException("Could not find a .roi or .zip file in " + storageFilePath));
         }
+        return result;
     }
 
     /**

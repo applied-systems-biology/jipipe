@@ -17,8 +17,11 @@ import ij.ImagePlus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeHeavyData;
 import org.hkijena.jipipe.api.JIPipeOrganization;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.ImagePlus3DData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
+
+import java.nio.file.Path;
 
 /**
  * Greyscale 3D image
@@ -38,5 +41,9 @@ public class ImagePlus3DGreyscaleData extends ImagePlus3DData {
      */
     public ImagePlus3DGreyscaleData(ImagePlus image) {
         super(ImagePlusGreyscaleData.convertIfNeeded(image));
+    }
+
+    public static ImagePlusData importFrom(Path storageFolder) {
+        return new ImagePlus3DGreyscaleData(ImagePlusData.importImagePlusFrom(storageFolder));
     }
 }

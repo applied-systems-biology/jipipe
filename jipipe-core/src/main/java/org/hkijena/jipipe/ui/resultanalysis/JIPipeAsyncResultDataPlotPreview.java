@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.ui.resultanalysis;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeExportedDataTable;
@@ -79,7 +80,9 @@ public abstract class JIPipeAsyncResultDataPlotPreview extends JIPipeResultDataS
      * @param storageFolder the folder where the data is stored
      * @return the data. if null, the widget will display "error"
      */
-    protected abstract JIPipeData loadData(Path storageFolder);
+    protected JIPipeData loadData(Path storageFolder) {
+        return JIPipe.importData(storageFolder, getSlot().getAcceptedDataType());
+    }
 
     /**
      * The worker that generates the component

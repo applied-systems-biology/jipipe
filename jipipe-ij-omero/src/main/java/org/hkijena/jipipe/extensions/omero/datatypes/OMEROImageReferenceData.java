@@ -13,28 +13,53 @@
 
 package org.hkijena.jipipe.extensions.omero.datatypes;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonSetter;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
+import org.hkijena.jipipe.utils.JsonUtils;
+import org.hkijena.jipipe.utils.PathUtils;
 
+import java.io.IOException;
 import java.nio.file.Path;
 
 @JIPipeDocumentation(name = "OMERO Image", description = "An OMERO image ID")
 public class OMEROImageReferenceData implements JIPipeData {
-    private final long imageId;
+    private long imageId;
 
     public OMEROImageReferenceData(long imageId) {
         this.imageId = imageId;
     }
 
+    @JsonGetter("image-id")
     public long getImageId() {
         return imageId;
     }
 
+    @JsonSetter("image-id")
+    public void setImageId(long imageId) {
+        this.imageId = imageId;
+    }
+
     @Override
     public void saveTo(Path storageFilePath, String name, boolean forceName) {
+        Path jsonFile = storageFilePath.resolve(name + ".json");
+        try {
+            JsonUtils.getObjectMapper().writerWithDefaultPrettyPrinter().writeValue(jsonFile.toFile(), this);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
+    public static OMEROImageReferenceData importFrom(Path storageFilePath) {
+        Path targetFile = PathUtils.findFileByExtensionIn(storageFilePath, ".json");
+        try {
+            return JsonUtils.getObjectMapper().readerFor(OMEROImageReferenceData.class).readValue(targetFile.toFile());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override

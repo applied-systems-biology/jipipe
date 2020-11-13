@@ -23,6 +23,7 @@ import org.jfree.chart.renderer.xy.XYBarRenderer;
 import org.jfree.data.statistics.HistogramDataset;
 import org.jfree.data.statistics.HistogramType;
 
+import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -55,6 +56,10 @@ public class HistogramPlotData extends PlotData {
         super(other);
         this.binAxisLabel = other.binAxisLabel;
         this.valueAxisLabel = other.valueAxisLabel;
+    }
+
+    public static HistogramPlotData importFrom(Path storagePath) {
+        return PlotData.importFrom(storagePath, HistogramPlotData.class);
     }
 
     @Override

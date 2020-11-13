@@ -116,6 +116,12 @@ public class StringArrayTableColumn implements MutableTableColumn {
         resultsTableData.saveTo(storageFilePath, name, forceName);
     }
 
+    public static StringArrayTableColumn importFrom(Path storagePath) {
+        ResultsTableData resultsTableData = ResultsTableData.importFrom(storagePath);
+        TableColumn source = resultsTableData.getColumnReference(0);
+        return new StringArrayTableColumn(source.getDataAsString(source.getRows()), source.getLabel());
+    }
+
     @Override
     public JIPipeData duplicate() {
         return new StringArrayTableColumn(Arrays.copyOf(data, data.length), label);

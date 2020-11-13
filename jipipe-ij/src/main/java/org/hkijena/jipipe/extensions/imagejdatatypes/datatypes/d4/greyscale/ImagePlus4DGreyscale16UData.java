@@ -17,7 +17,10 @@ import ij.ImagePlus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeHeavyData;
 import org.hkijena.jipipe.api.JIPipeOrganization;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale16UData;
+
+import java.nio.file.Path;
 
 /**
  * 16-bit greyscale 4D image
@@ -37,5 +40,9 @@ public class ImagePlus4DGreyscale16UData extends ImagePlus4DGreyscaleData {
      */
     public ImagePlus4DGreyscale16UData(ImagePlus image) {
         super(ImagePlusGreyscale16UData.convertIfNeeded(image));
+    }
+
+    public static ImagePlusData importFrom(Path storageFolder) {
+        return new ImagePlus4DGreyscale16UData(ImagePlusData.importImagePlusFrom(storageFolder));
     }
 }

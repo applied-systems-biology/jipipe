@@ -165,9 +165,11 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
         // Check for errors
         logService.info("[3/3] Error-checking-phase ...");
         for (Class<? extends JIPipeData> dataType : datatypeRegistry.getRegisteredDataTypes().values()) {
+            if(dataType.isInterface() || Modifier.isAbstract(dataType.getModifiers()))
+                continue;
             // Check if we can find a method "import"
             try {
-                Method method = dataType.getDeclaredMethod("import", Path.class);
+                Method method = dataType.getDeclaredMethod("importFrom", Path.class);
                 if (!Modifier.isStatic(method.getModifiers())) {
                     throw new IllegalArgumentException("Import method is not static!");
                 }
@@ -260,6 +262,23 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
         updateDefaultImporterSettings();
         updateDefaultCacheDisplaySettings();
         logService.info("JIPipe loading finished");
+    }
+
+    /**
+     * Imports data of given data type from its output folder.
+     * Generally, the output folder should conform to the data type's saveTo() function without 'forceName' enabled
+     * @param outputFolder the folder that contains the data
+     * @param klass the data type
+     * @param <T> the data type
+     * @return imported data
+     */
+    public static <T extends JIPipeData> T importData(Path outputFolder, Class<T> klass) {
+        try {
+            Method method = klass.getDeclaredMethod("importFrom", Path.class);
+            return (T) method.invoke(null, outputFolder);
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**

@@ -21,6 +21,8 @@ import org.hkijena.jipipe.api.JIPipeHeavyData;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 
+import java.nio.file.Path;
+
 /**
  * Greyscale image without dimension.
  * These image data types exist to address general processing solely based on bit-depth (e.g. process all 2D image planes).
@@ -61,5 +63,9 @@ public class ImagePlusGreyscaleData extends ImagePlusData {
             ic.convertToGray32();
         }
         return image;
+    }
+
+    public static ImagePlusData importFrom(Path storageFolder) {
+        return new ImagePlusGreyscaleData(ImagePlusData.importImagePlusFrom(storageFolder));
     }
 }

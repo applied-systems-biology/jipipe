@@ -58,13 +58,6 @@ public class AnnotationTableData extends ResultsTableData {
     /**
      * {@inheritDoc}
      */
-    public AnnotationTableData(Path storageFilePath) throws IOException {
-        super(storageFilePath);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     public AnnotationTableData(ResultsTable table) {
         super(table);
     }
@@ -85,6 +78,10 @@ public class AnnotationTableData extends ResultsTableData {
      */
     public int addAnnotationColumn(String traitInfo) {
         return addColumn(getAnnotationColumnName(traitInfo), true);
+    }
+
+    public static AnnotationTableData importFrom(Path storageFolder) {
+        return new AnnotationTableData(ResultsTableData.importFrom(storageFolder));
     }
 
     /**

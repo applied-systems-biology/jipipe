@@ -22,6 +22,8 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 
+import java.nio.file.Path;
+
 /**
  * A data series (table) that is rendered as plot series
  */
@@ -44,6 +46,10 @@ public class PlotDataSeries extends ResultsTableData implements JIPipeParameterC
      */
     public PlotDataSeries(ResultsTable table) {
         super(table);
+    }
+
+    public static PlotDataSeries importFrom(Path storageFolder) {
+        return new PlotDataSeries(ResultsTableData.importFrom(storageFolder).getTable());
     }
 
     /**

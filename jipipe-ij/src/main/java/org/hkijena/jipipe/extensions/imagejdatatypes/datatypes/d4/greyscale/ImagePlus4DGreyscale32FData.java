@@ -17,7 +17,10 @@ import ij.ImagePlus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeHeavyData;
 import org.hkijena.jipipe.api.JIPipeOrganization;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
+
+import java.nio.file.Path;
 
 /**
  * 32-bit floating point greyscale 4D image
@@ -37,5 +40,9 @@ public class ImagePlus4DGreyscale32FData extends ImagePlus4DGreyscaleData {
      */
     public ImagePlus4DGreyscale32FData(ImagePlus image) {
         super(ImagePlusGreyscale32FData.convertIfNeeded(image));
+    }
+
+    public static ImagePlusData importFrom(Path storageFolder) {
+        return new ImagePlus4DGreyscale32FData(ImagePlusData.importImagePlusFrom(storageFolder));
     }
 }

@@ -13,15 +13,18 @@
 
 package org.hkijena.jipipe.extensions.strings;
 
+import com.google.common.base.Charsets;
 import org.apache.commons.lang.CharSetUtils;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.texteditor.JIPipeTextEditor;
+import org.hkijena.jipipe.utils.PathUtils;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 
 /**
@@ -38,6 +41,15 @@ public class StringData implements JIPipeData {
 
     public StringData(StringData other) {
         this.data = other.data;
+    }
+
+    public static StringData importFrom(Path path) {
+        Path file = PathUtils.findFileByExtensionIn(path, ".txt");
+        try {
+            return new StringData(new String(Files.readAllBytes(file), Charsets.UTF_8));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override

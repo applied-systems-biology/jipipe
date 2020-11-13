@@ -17,6 +17,8 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 
+import java.nio.file.Path;
+
 /**
  * Generates a bar category plot
  */
@@ -39,6 +41,10 @@ public class LineCategoryPlotData extends CategoryPlotData {
      */
     public LineCategoryPlotData(LineCategoryPlotData other) {
         super(other);
+    }
+
+    public static LineCategoryPlotData importFrom(Path storagePath) {
+        return PlotData.importFrom(storagePath, LineCategoryPlotData.class);
     }
 
     @Override

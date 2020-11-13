@@ -19,6 +19,9 @@ import org.hkijena.jipipe.api.JIPipeHeavyData;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscale8UData;
+
+import java.nio.file.Path;
 
 /**
  * 3D image
@@ -50,5 +53,9 @@ public class ImagePlus3DData extends ImagePlusData {
                             "the quick run to see if they fit the assumptions. If you cannot find the reason behind this error," +
                             " try to contact the JIPipe or plugin developers.");
         }
+    }
+
+    public static ImagePlusData importFrom(Path storageFolder) {
+        return new ImagePlus3DData(ImagePlusData.importImagePlusFrom(storageFolder));
     }
 }

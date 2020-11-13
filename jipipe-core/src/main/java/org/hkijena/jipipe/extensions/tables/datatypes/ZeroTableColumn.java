@@ -83,4 +83,8 @@ public class ZeroTableColumn implements TableColumn {
     public void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
 
     }
+
+    public static ZeroTableColumn importFrom(Path storagePath) {
+        return new ZeroTableColumn();
+    }
 }

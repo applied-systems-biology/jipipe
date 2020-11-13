@@ -37,9 +37,4 @@ public class OMEImageDataPreview extends JIPipeAsyncResultDataPlotPreview {
     public OMEImageDataPreview(JIPipeProjectWorkbench workbench, JTable table, JIPipeDataSlot slot, JIPipeExportedDataTable.Row row) {
         super(workbench, table, slot, row);
     }
-
-    @Override
-    protected JIPipeData loadData(Path storageFolder) {
-        return new OMEImageData(storageFolder);
-    }
 }

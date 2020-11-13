@@ -17,7 +17,10 @@ import ij.ImagePlus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeHeavyData;
 import org.hkijena.jipipe.api.JIPipeOrganization;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColorRGBData;
+
+import java.nio.file.Path;
 
 /**
  * RGB color 4D image
@@ -37,5 +40,9 @@ public class ImagePlus4DColorRGBData extends ImagePlus4DColorData {
      */
     public ImagePlus4DColorRGBData(ImagePlus image) {
         super(ImagePlusColorRGBData.convertIfNeeded(image));
+    }
+
+    public static ImagePlusData importFrom(Path storageFolder) {
+        return new ImagePlus4DColorRGBData(ImagePlusData.importImagePlusFrom(storageFolder));
     }
 }

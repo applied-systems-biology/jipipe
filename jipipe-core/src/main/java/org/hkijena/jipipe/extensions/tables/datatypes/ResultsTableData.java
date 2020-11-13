@@ -82,16 +82,6 @@ public class ResultsTableData implements JIPipeData, TableModel {
     }
 
     /**
-     * Loads a results table from a folder containing CSV file
-     *
-     * @param storageFilePath storage folder
-     * @throws IOException triggered by {@link ResultsTable}
-     */
-    public ResultsTableData(Path storageFilePath) throws IOException {
-        table = ResultsTable.open(PathUtils.findFileByExtensionIn(storageFilePath, ".csv").toString());
-    }
-
-    /**
      * Wraps a results table
      *
      * @param table wrapped table
@@ -101,7 +91,6 @@ public class ResultsTableData implements JIPipeData, TableModel {
         cleanupTable();
     }
 
-
     /**
      * Creates a copy
      *
@@ -109,6 +98,14 @@ public class ResultsTableData implements JIPipeData, TableModel {
      */
     public ResultsTableData(ResultsTableData other) {
         this.table = (ResultsTable) other.table.clone();
+    }
+
+    public static ResultsTableData importFrom(Path storagePath) {
+        try {
+            return new ResultsTableData(ResultsTable.open(PathUtils.findFileByExtensionIn(storagePath, ".csv").toString()));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void importFromColumns(Map<String, TableColumn> columns) {

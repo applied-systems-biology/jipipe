@@ -53,6 +53,10 @@ public class CLIJImageData implements JIPipeData {
         other.image.copyTo(this.image, true);
     }
 
+    public static CLIJImageData importFrom(Path storageFilePath) {
+        return new CLIJImageData(ImagePlusData.importFrom(storageFilePath));
+    }
+
     @Override
     public void saveTo(Path storageFilePath, String name, boolean forceName) {
         ImagePlusData data = pull();

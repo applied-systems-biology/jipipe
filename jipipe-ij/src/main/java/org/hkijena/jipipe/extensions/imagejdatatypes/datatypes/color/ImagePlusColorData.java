@@ -21,6 +21,8 @@ import org.hkijena.jipipe.api.JIPipeHeavyData;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 
+import java.nio.file.Path;
+
 /**
  * Colored image without dimension.
  * These image data types exist to address general processing solely based on bit-depth (e.g. process all 2D image planes).
@@ -59,5 +61,9 @@ public class ImagePlusColorData extends ImagePlusData {
             ic.convertToRGB();
         }
         return image;
+    }
+
+    public static ImagePlusData importFrom(Path storageFolder) {
+        return new ImagePlusColorData(ImagePlusData.importImagePlusFrom(storageFolder));
     }
 }

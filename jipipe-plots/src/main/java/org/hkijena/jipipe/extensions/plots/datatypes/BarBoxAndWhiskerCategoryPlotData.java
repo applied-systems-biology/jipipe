@@ -18,6 +18,8 @@ import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.data.statistics.BoxAndWhiskerCategoryDataset;
 
+import java.nio.file.Path;
+
 /**
  * Generates a bar category plot
  */
@@ -40,6 +42,10 @@ public class BarBoxAndWhiskerCategoryPlotData extends BoxAndWhiskerCategoryPlotD
      */
     public BarBoxAndWhiskerCategoryPlotData(BarBoxAndWhiskerCategoryPlotData other) {
         super(other);
+    }
+
+    public static BarBoxAndWhiskerCategoryPlotData importFrom(Path storagePath) {
+        return PlotData.importFrom(storagePath, BarBoxAndWhiskerCategoryPlotData.class);
     }
 
     @Override

@@ -39,6 +39,7 @@ import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.DocumentTabPane;
 import org.hkijena.jipipe.ui.plotbuilder.JIPipePlotBuilderUI;
 import org.hkijena.jipipe.utils.JsonUtils;
+import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jfree.chart.ChartUtils;
 import org.jfree.chart.JFreeChart;
@@ -54,7 +55,9 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Contains all necessary data to generate a plot
@@ -109,6 +112,20 @@ public abstract class PlotData implements JIPipeData, JIPipeParameterCollection,
         int imageWidth = (int) (image.getWidth() * factor);
         int imageHeight = (int) (image.getHeight() * factor);
         return new JLabel(new ImageIcon(image.getScaledInstance(imageWidth, imageHeight, Image.SCALE_SMOOTH)));
+    }
+
+    public static <T extends PlotData> T importFrom(Path storageFilePath, Class<T> klass) {
+        try {
+            PlotData plotData = JsonUtils.getObjectMapper().readerFor(klass).readValue(storageFilePath.resolve("plot-metadata.json").toFile());
+            List<Path> seriesFiles = PathUtils.findFilesByExtensionIn(storageFilePath, ".csv").stream()
+                    .filter(p -> p.getFileName().toString().matches("series\\d+.csv")).sorted(Comparator.comparing(p -> p.getFileName().toString())).collect(Collectors.toList());
+            for (Path seriesFile : seriesFiles) {
+                plotData.addSeries(new PlotDataSeries(ResultsTable.open(seriesFile.toString())));
+            }
+            return (T) plotData;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override

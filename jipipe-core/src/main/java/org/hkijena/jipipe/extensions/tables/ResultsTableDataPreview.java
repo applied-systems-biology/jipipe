@@ -37,14 +37,4 @@ public class ResultsTableDataPreview extends JIPipeAsyncResultDataPlotPreview {
     public ResultsTableDataPreview(JIPipeProjectWorkbench workbench, JTable table, JIPipeDataSlot slot, JIPipeExportedDataTable.Row row) {
         super(workbench, table, slot, row);
     }
-
-    @Override
-    protected JIPipeData loadData(Path storageFolder) {
-        try {
-            return new ResultsTableData(storageFolder);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
 }

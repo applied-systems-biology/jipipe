@@ -18,6 +18,9 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeHeavyData;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d5.greyscale.ImagePlus5DGreyscale8UData;
+
+import java.nio.file.Path;
 
 /**
  * 2D image in frequency space
@@ -45,4 +48,7 @@ public class ImagePlusFFT2DData extends ImagePlusData {
         }
     }
 
+    public static ImagePlusData importFrom(Path storageFolder) {
+        return new ImagePlusFFT2DData(ImagePlusData.importImagePlusFrom(storageFolder));
+    }
 }

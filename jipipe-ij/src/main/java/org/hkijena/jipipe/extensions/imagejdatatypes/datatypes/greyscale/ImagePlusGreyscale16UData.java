@@ -18,6 +18,9 @@ import ij.process.ImageConverter;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeHeavyData;
 import org.hkijena.jipipe.api.JIPipeOrganization;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
+
+import java.nio.file.Path;
 
 /**
  * 16-bit greyscale image without dimension.
@@ -55,5 +58,9 @@ public class ImagePlusGreyscale16UData extends ImagePlusGreyscaleData {
             ic.convertToGray16();
         }
         return image;
+    }
+
+    public static ImagePlusData importFrom(Path storageFolder) {
+        return new ImagePlusGreyscale16UData(ImagePlusData.importImagePlusFrom(storageFolder));
     }
 }

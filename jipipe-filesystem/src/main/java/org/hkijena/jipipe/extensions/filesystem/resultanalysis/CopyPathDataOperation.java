@@ -49,17 +49,11 @@ public class CopyPathDataOperation implements JIPipeDataImportOperation, JIPipeD
     public JIPipeData show(JIPipeDataSlot slot, JIPipeExportedDataTable.Row row, Path rowStorageFolder, String compartmentName, String algorithmName, String displayName, JIPipeWorkbench workbench) {
         Path listFile = PathUtils.findFileByExtensionIn(rowStorageFolder, ".json");
         if (listFile != null) {
-            Path fileOrFolderPath;
-            try {
-                PathData pathData = JsonUtils.getObjectMapper().readerFor(PathData.class).readValue(listFile.toFile());
-                fileOrFolderPath = pathData.getPath();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-            StringSelection selection = new StringSelection(fileOrFolderPath.toString());
+            PathData pathData = PathData.importFrom(rowStorageFolder);
+            StringSelection selection = new StringSelection(pathData.getPath().toString());
             Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
             clipboard.setContents(selection, selection);
-            return new PathData(fileOrFolderPath);
+            return pathData;
         }
         return null;
     }

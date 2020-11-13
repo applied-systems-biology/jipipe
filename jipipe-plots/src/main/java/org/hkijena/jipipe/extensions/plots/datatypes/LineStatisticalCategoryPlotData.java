@@ -18,6 +18,8 @@ import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.renderer.category.StatisticalLineAndShapeRenderer;
 
+import java.nio.file.Path;
+
 /**
  * Generates a bar category plot
  */
@@ -41,6 +43,10 @@ public class LineStatisticalCategoryPlotData extends CategoryPlotData {
      */
     public LineStatisticalCategoryPlotData(LineStatisticalCategoryPlotData other) {
         super(other);
+    }
+
+    public static LineStatisticalCategoryPlotData importFrom(Path storagePath) {
+        return PlotData.importFrom(storagePath, LineStatisticalCategoryPlotData.class);
     }
 
     @Override

@@ -17,7 +17,11 @@ import ij.ImagePlus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeHeavyData;
 import org.hkijena.jipipe.api.JIPipeOrganization;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColor8UData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d4.greyscale.ImagePlus4DGreyscale8UData;
+
+import java.nio.file.Path;
 
 /**
  * 8-bit color 5D image
@@ -37,5 +41,9 @@ public class ImagePlus5DColor8UData extends ImagePlus5DColorData {
      */
     public ImagePlus5DColor8UData(ImagePlus image) {
         super(ImagePlusColor8UData.convertIfNeeded(image));
+    }
+
+    public static ImagePlusData importFrom(Path storageFolder) {
+        return new ImagePlus5DColor8UData(ImagePlusData.importImagePlusFrom(storageFolder));
     }
 }

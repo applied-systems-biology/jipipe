@@ -17,6 +17,9 @@ import ij.ImagePlus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeHeavyData;
 import org.hkijena.jipipe.api.JIPipeOrganization;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
+
+import java.nio.file.Path;
 
 /**
  * 5D image in frequency space
@@ -44,4 +47,7 @@ public class ImagePlusFFT5DData extends ImagePlusFFT2DData {
         }
     }
 
+    public static ImagePlusData importFrom(Path storageFolder) {
+        return new ImagePlusFFT5DData(ImagePlusData.importImagePlusFrom(storageFolder));
+    }
 }

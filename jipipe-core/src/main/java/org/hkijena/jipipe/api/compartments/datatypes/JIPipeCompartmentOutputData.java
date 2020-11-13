@@ -33,6 +33,10 @@ public class JIPipeCompartmentOutputData implements JIPipeData {
 
     }
 
+    public static JIPipeCompartmentOutputData importFrom(Path path) {
+        return new JIPipeCompartmentOutputData();
+    }
+
     @Override
     public JIPipeData duplicate() {
         return new JIPipeCompartmentOutputData();

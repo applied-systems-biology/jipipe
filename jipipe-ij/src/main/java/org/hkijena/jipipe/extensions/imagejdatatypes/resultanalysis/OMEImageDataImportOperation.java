@@ -35,7 +35,7 @@ public class OMEImageDataImportOperation implements JIPipeDataImportOperation {
 
     @Override
     public JIPipeData show(JIPipeDataSlot slot, JIPipeExportedDataTable.Row row, Path rowStorageFolder, String compartmentName, String algorithmName, String displayName, JIPipeWorkbench workbench) {
-        OMEImageData data = new OMEImageData(rowStorageFolder);
+        OMEImageData data = OMEImageData.importFrom(rowStorageFolder);
         data.display(displayName, workbench, new JIPipeResultSlotDataSource(slot, row, rowStorageFolder));
         return data;
     }

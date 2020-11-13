@@ -17,6 +17,8 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 
+import java.nio.file.Path;
+
 /**
  * Generates a bar category plot
  */
@@ -38,6 +40,10 @@ public class Pie2DPlotData extends PiePlotData {
      */
     public Pie2DPlotData(Pie2DPlotData other) {
         super(other);
+    }
+
+    public static Pie2DPlotData importFrom(Path storagePath) {
+        return PlotData.importFrom(storagePath, Pie2DPlotData.class);
     }
 
     @Override

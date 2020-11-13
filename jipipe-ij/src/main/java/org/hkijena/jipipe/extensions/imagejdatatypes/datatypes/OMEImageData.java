@@ -87,7 +87,7 @@ public class OMEImageData implements JIPipeData {
     private OMEXMLMetadata metadata;
     private OMEExporterSettings exporterSettings = new OMEExporterSettings();
 
-    public OMEImageData(Path storageFilePath) {
+    public static OMEImageData importFrom(Path storageFilePath) {
         Path targetFile = PathUtils.findFileByExtensionIn(storageFilePath, ".tif");
         if (targetFile == null) {
             throw new UserFriendlyNullPointerException("Could not find TIFF file in '" + storageFilePath + "'!",
@@ -132,7 +132,13 @@ public class OMEImageData implements JIPipeData {
             if (images.length > 1) {
                 System.err.println("[JIPipe][ImagePlusData from OME] Encountered multiple images! This should not happen. File=" + targetFile);
             }
-            image = images[0];
+            ImagePlus image = images[0];
+            OMEXMLMetadata omexmlMetadata = null;
+            if (process.getOMEMetadata() instanceof OMEXMLMetadata) {
+                omexmlMetadata = (OMEXMLMetadata) process.getOMEMetadata();
+            }
+            ROIListData rois = ROIHandler.openROIs(process.getOMEMetadata(), new ImagePlus[]{image});
+            return new OMEImageData(image, rois, omexmlMetadata);
         } catch (IOException | FormatException e) {
             throw new RuntimeException(e);
         }

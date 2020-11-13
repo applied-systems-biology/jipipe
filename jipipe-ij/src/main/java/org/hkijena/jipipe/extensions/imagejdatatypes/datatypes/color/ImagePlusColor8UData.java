@@ -18,6 +18,9 @@ import ij.process.ImageConverter;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeHeavyData;
 import org.hkijena.jipipe.api.JIPipeOrganization;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
+
+import java.nio.file.Path;
 
 /**
  * 8-bit color image without dimension.
@@ -56,5 +59,9 @@ public class ImagePlusColor8UData extends ImagePlusColorData {
             ic.convertRGBtoIndexedColor(256);
         }
         return image;
+    }
+
+    public static ImagePlusData importFrom(Path storageFolder) {
+        return new ImagePlusColor8UData(ImagePlusData.importImagePlusFrom(storageFolder));
     }
 }

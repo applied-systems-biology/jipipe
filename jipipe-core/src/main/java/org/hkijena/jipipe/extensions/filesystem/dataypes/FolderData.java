@@ -34,4 +34,8 @@ public class FolderData extends PathData {
 
     private FolderData() {
     }
+
+    public static FolderData importFrom(Path storageFilePath) {
+        return new FolderData(PathData.importFrom(storageFilePath).getPath());
+    }
 }

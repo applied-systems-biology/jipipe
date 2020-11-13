@@ -17,7 +17,10 @@ import ij.ImagePlus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeHeavyData;
 import org.hkijena.jipipe.api.JIPipeOrganization;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColorRGBData;
+
+import java.nio.file.Path;
 
 /**
  * RGB color 3D image
@@ -37,5 +40,9 @@ public class ImagePlus3DColorRGBData extends ImagePlus3DColorData {
      */
     public ImagePlus3DColorRGBData(ImagePlus image) {
         super(ImagePlusColorRGBData.convertIfNeeded(image));
+    }
+
+    public static ImagePlusData importFrom(Path storageFolder) {
+        return new ImagePlus3DColorRGBData(ImagePlusData.importImagePlusFrom(storageFolder));
     }
 }

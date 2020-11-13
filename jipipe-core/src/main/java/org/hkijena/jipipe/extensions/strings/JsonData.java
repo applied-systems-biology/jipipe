@@ -13,7 +13,13 @@
 
 package org.hkijena.jipipe.extensions.strings;
 
+import com.google.common.base.Charsets;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.utils.PathUtils;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 @JIPipeDocumentation(name = "Json", description = "Text in JSON format")
 public class JsonData extends StringData {
@@ -33,5 +39,14 @@ public class JsonData extends StringData {
     @Override
     public String getMimeType() {
         return "application-json";
+    }
+
+    public static JsonData importFrom(Path path) {
+        Path file = PathUtils.findFileByExtensionIn(path, ".json");
+        try {
+            return new JsonData(new String(Files.readAllBytes(file), Charsets.UTF_8));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

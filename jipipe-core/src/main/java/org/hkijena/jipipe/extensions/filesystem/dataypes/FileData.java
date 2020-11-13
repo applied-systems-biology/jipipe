@@ -14,7 +14,10 @@
 package org.hkijena.jipipe.extensions.filesystem.dataypes;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.utils.JsonUtils;
+import org.hkijena.jipipe.utils.PathUtils;
 
+import java.io.IOException;
 import java.nio.file.Path;
 
 /**
@@ -33,5 +36,9 @@ public class FileData extends PathData {
     }
 
     private FileData() {
+    }
+
+    public static FileData importFrom(Path storageFilePath) {
+       return new FileData(PathData.importFrom(storageFilePath).getPath());
     }
 }

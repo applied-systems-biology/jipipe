@@ -13,7 +13,13 @@
 
 package org.hkijena.jipipe.extensions.strings;
 
+import com.google.common.base.Charsets;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.utils.PathUtils;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 @JIPipeDocumentation(name = "XML", description = "Text in extended markup language (XML)")
 public class XMLData extends StringData {
@@ -33,5 +39,14 @@ public class XMLData extends StringData {
     @Override
     public String getMimeType() {
         return "text-xml";
+    }
+
+    public static XMLData importFrom(Path path) {
+        Path file = PathUtils.findFileByExtensionIn(path, ".xml");
+        try {
+            return new XMLData(new String(Files.readAllBytes(file), Charsets.UTF_8));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

@@ -50,28 +50,6 @@ public class ImagePlusData implements JIPipeData {
     private final ImagePlus image;
 
     /**
-     * Initializes the data from a folder containing a TIFF file
-     *
-     * @param storageFilePath folder that contains a *.tif file
-     */
-    public ImagePlusData(Path storageFilePath) {
-        Path targetFile = PathUtils.findFileByExtensionIn(storageFilePath, ".tif");
-        if (targetFile == null) {
-            throw new UserFriendlyNullPointerException("Could not find TIFF file in '" + storageFilePath + "'!",
-                    "Unable to find file in location '" + storageFilePath + "'",
-                    "ImagePlusData loading",
-                    "JIPipe needs to load the image from a folder, but it could not find any matching file.",
-                    "Please contact the JIPipe developers about this issue.");
-        }
-        if (ImageJDataTypesSettings.getInstance().isUseBioFormats()) {
-            OMEImageData omeImageData = new OMEImageData(storageFilePath);
-            image = omeImageData.getImage();
-        } else {
-            image = IJ.openImage(targetFile.toString());
-        }
-    }
-
-    /**
      * @param image wrapped image
      */
     public ImagePlusData(ImagePlus image) {
@@ -86,11 +64,25 @@ public class ImagePlusData implements JIPipeData {
         this.image = image;
     }
 
-    @Override
-    public void flush() {
-//        // Completely remove all references
-//        image.flush();
-//        image = null;
+    public static ImagePlus importImagePlusFrom(Path storageFilePath) {
+        Path targetFile = PathUtils.findFileByExtensionIn(storageFilePath, ".tif");
+        if (targetFile == null) {
+            throw new UserFriendlyNullPointerException("Could not find TIFF file in '" + storageFilePath + "'!",
+                    "Unable to find file in location '" + storageFilePath + "'",
+                    "ImagePlusData loading",
+                    "JIPipe needs to load the image from a folder, but it could not find any matching file.",
+                    "Please contact the JIPipe developers about this issue.");
+        }
+        if (ImageJDataTypesSettings.getInstance().isUseBioFormats()) {
+            OMEImageData omeImageData = OMEImageData.importFrom(storageFilePath);
+            return omeImageData.getImage();
+        } else {
+            return IJ.openImage(targetFile.toString());
+        }
+    }
+
+    public static ImagePlusData importFrom(Path storageFilePath) {
+        return new ImagePlusData(importImagePlusFrom(storageFilePath));
     }
 
     public ImagePlus getImage() {

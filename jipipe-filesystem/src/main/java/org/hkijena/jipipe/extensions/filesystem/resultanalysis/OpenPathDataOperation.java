@@ -44,18 +44,8 @@ public class OpenPathDataOperation implements JIPipeDataImportOperation, JIPipeD
 
     @Override
     public JIPipeData show(JIPipeDataSlot slot, JIPipeExportedDataTable.Row row, Path rowStorageFolder, String compartmentName, String algorithmName, String displayName, JIPipeWorkbench workbench) {
-        Path listFile = PathUtils.findFileByExtensionIn(rowStorageFolder, ".json");
-        if (listFile != null) {
-            Path fileOrFolderPath;
-            try {
-                PathData pathData = JsonUtils.getObjectMapper().readerFor(PathData.class).readValue(listFile.toFile());
-                fileOrFolderPath = pathData.getPath();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-            UIUtils.openFileInNative(fileOrFolderPath);
-            return new PathData(fileOrFolderPath);
-        }
+        PathData pathData = PathData.importFrom(rowStorageFolder);
+        UIUtils.openFileInNative(pathData.getPath());
         return null;
     }
 }

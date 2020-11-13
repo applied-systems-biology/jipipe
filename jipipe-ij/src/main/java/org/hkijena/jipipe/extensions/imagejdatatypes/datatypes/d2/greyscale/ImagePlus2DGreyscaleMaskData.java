@@ -17,7 +17,10 @@ import ij.ImagePlus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeHeavyData;
 import org.hkijena.jipipe.api.JIPipeOrganization;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale8UData;
+
+import java.nio.file.Path;
 
 /**
  * 8-bit mask 2D image
@@ -37,5 +40,9 @@ public class ImagePlus2DGreyscaleMaskData extends ImagePlus2DGreyscale8UData {
      */
     public ImagePlus2DGreyscaleMaskData(ImagePlus image) {
         super(ImagePlusGreyscale8UData.convertIfNeeded(image));
+    }
+
+    public static ImagePlusData importFrom(Path storageFolder) {
+        return new ImagePlus2DGreyscaleMaskData(ImagePlusData.importImagePlusFrom(storageFolder));
     }
 }
