@@ -20,6 +20,13 @@ import java.util.function.Supplier;
  * Runnable that can be scheduled, canceled, and reports progress
  */
 public interface JIPipeRunnable {
+
+    /**
+     * The info object that allows communication with the run
+     * @return the info object
+     */
+    JIPipeRunnableInfo getInfo();
+
     /**
      * Runs the runnable
      *
