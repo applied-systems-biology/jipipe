@@ -16,7 +16,6 @@ package org.hkijena.jipipe.ui.cache;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.JIPipeRunnable;
 import org.hkijena.jipipe.api.JIPipeRunnableInfo;
-import org.hkijena.jipipe.api.JIPipeRunnerStatus;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;

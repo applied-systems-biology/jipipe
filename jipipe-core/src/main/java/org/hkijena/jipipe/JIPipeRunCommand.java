@@ -16,7 +16,6 @@ package org.hkijena.jipipe;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.JIPipeRun;
 import org.hkijena.jipipe.api.JIPipeRunSettings;
-import org.hkijena.jipipe.api.JIPipeRunnerStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.extensions.settings.ExtensionSettings;
@@ -102,11 +101,5 @@ public class JIPipeRunCommand implements Command {
         run.run();
         logService.info("JIPipe run finished. Outputs are stored in: " + outputDirectory);
         status.showProgress(0, 0);
-    }
-
-    private void onProgress(JIPipeRunnerStatus runStatus) {
-        status.showProgress(runStatus.getProgress(), runStatus.getMaxProgress());
-        status.showStatus("JIPipe: " + runStatus.getMessage());
-        logService.info("[" + runStatus.getProgress() + "/" + runStatus.getMaxProgress() + "] " + runStatus.getMessage());
     }
 }

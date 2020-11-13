@@ -16,11 +16,8 @@ package org.hkijena.jipipe.ui.cache;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProjectCache;
-import org.hkijena.jipipe.api.JIPipeRunnable;
-import org.hkijena.jipipe.api.JIPipeRunnerStatus;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.JIPipeDataByMetadataExporter;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.events.ParameterChangedEvent;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
@@ -33,8 +30,6 @@ import org.hkijena.jipipe.ui.components.JIPipeComponentCellRenderer;
 import org.hkijena.jipipe.ui.components.PreviewControlUI;
 import org.hkijena.jipipe.ui.components.SearchTextField;
 import org.hkijena.jipipe.ui.components.SearchTextFieldTableRowFilter;
-import org.hkijena.jipipe.ui.events.RunUIWorkerFinishedEvent;
-import org.hkijena.jipipe.ui.events.RunUIWorkerInterruptedEvent;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.ui.resultanalysis.JIPipeTraitTableCellRenderer;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
@@ -52,16 +47,12 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Point;
 import java.awt.Rectangle;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 /**
  * UI that displays a {@link JIPipeDataSlot} that is cached

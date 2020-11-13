@@ -15,7 +15,6 @@ package org.hkijena.jipipe.ui.running;
 
 import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.JIPipeRunnable;
-import org.hkijena.jipipe.api.JIPipeRunnerStatus;
 import org.hkijena.jipipe.ui.events.RunUIWorkerFinishedEvent;
 import org.hkijena.jipipe.ui.events.RunUIWorkerInterruptedEvent;
 import org.hkijena.jipipe.ui.events.RunUIWorkerProgressEvent;
@@ -61,7 +60,7 @@ public class JIPipeRunWorker extends SwingWorker<Exception, Object> {
         super.process(chunks);
         for (Object chunk : chunks) {
             if (chunk instanceof JIPipeRunnerStatus) {
-                eventBus.post(new RunUIWorkerProgressEvent(this, (JIPipeRunnerStatus) chunk));
+                eventBus.post(new RunUIWorkerProgressEvent(this));
             }
         }
     }

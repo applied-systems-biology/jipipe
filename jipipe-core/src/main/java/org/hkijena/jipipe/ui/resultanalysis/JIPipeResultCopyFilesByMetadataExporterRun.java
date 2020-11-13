@@ -16,7 +16,6 @@ package org.hkijena.jipipe.ui.resultanalysis;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.JIPipeRunnable;
 import org.hkijena.jipipe.api.JIPipeRunnableInfo;
-import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.data.JIPipeDataByMetadataExporter;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeExportedDataTable;

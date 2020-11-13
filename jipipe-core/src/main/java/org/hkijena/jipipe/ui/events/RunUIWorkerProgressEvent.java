@@ -14,7 +14,6 @@
 package org.hkijena.jipipe.ui.events;
 
 import org.hkijena.jipipe.api.JIPipeRunnable;
-import org.hkijena.jipipe.api.JIPipeRunnerStatus;
 import org.hkijena.jipipe.ui.running.JIPipeRunWorker;
 
 /**
@@ -22,15 +21,12 @@ import org.hkijena.jipipe.ui.running.JIPipeRunWorker;
  */
 public class RunUIWorkerProgressEvent {
     private JIPipeRunWorker worker;
-    private JIPipeRunnerStatus status;
 
     /**
      * @param worker the worker
-     * @param status the progress status
      */
-    public RunUIWorkerProgressEvent(JIPipeRunWorker worker, JIPipeRunnerStatus status) {
+    public RunUIWorkerProgressEvent(JIPipeRunWorker worker) {
         this.worker = worker;
-        this.status = status;
     }
 
     public JIPipeRunWorker getWorker() {
@@ -41,7 +37,4 @@ public class RunUIWorkerProgressEvent {
         return worker.getRun();
     }
 
-    public JIPipeRunnerStatus getStatus() {
-        return status;
-    }
 }

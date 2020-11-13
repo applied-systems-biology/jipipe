@@ -4,7 +4,6 @@ import net.imagej.updater.FilesCollection;
 import net.imagej.updater.Installer;
 import org.hkijena.jipipe.api.JIPipeRunnable;
 import org.hkijena.jipipe.api.JIPipeRunnableInfo;
-import org.hkijena.jipipe.api.JIPipeRunnerStatus;
 
 public class ApplyRun implements JIPipeRunnable {
 

@@ -16,7 +16,6 @@ package org.hkijena.jipipe.api.data;
 import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeRunnableInfo;
-import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.parameters.expressions.StringQueryExpression;
@@ -31,8 +30,6 @@ import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 /**
  * Class that exports data based on metadata

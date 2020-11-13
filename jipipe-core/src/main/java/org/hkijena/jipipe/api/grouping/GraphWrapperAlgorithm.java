@@ -18,7 +18,6 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.JIPipeGraphRunner;
 import org.hkijena.jipipe.api.JIPipeRunnableInfo;
-import org.hkijena.jipipe.api.JIPipeRunnerStatus;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
@@ -33,7 +32,6 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Consumer;
 
 /**
  * An algorithm that wraps another algorithm graph

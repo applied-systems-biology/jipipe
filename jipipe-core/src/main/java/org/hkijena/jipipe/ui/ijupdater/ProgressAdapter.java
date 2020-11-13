@@ -15,9 +15,6 @@ package org.hkijena.jipipe.ui.ijupdater;
 
 import net.imagej.updater.util.Progress;
 import org.hkijena.jipipe.api.JIPipeRunnableInfo;
-import org.hkijena.jipipe.api.JIPipeRunnerStatus;
-
-import java.util.function.Consumer;
 
 /**
  * Adapter between JIPipe and ImageJ progress implementations
