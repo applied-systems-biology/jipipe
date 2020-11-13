@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.ui.cache;
+package org.hkijena.jipipe.ui.resultanalysis;
 
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.JIPipeRunnable;
@@ -19,6 +19,7 @@ import org.hkijena.jipipe.api.JIPipeRunnerStatus;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.data.JIPipeDataByMetadataExporter;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
+import org.hkijena.jipipe.api.data.JIPipeExportedDataTable;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
@@ -31,11 +32,14 @@ import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
+import java.io.IOException;
+import java.nio.file.FileVisitResult;
+import java.nio.file.FileVisitor;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -43,7 +47,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-public class JIPipeCachedSlotToFilesByMetadataExporterRun extends JIPipeWorkbenchPanel implements JIPipeRunnable {
+public class JIPipeResultCopyFilesByMetadataExporterRun extends JIPipeWorkbenchPanel implements JIPipeRunnable {
 
     private Path outputPath;
     private final List<JIPipeDataSlot> slots;
@@ -55,7 +59,7 @@ public class JIPipeCachedSlotToFilesByMetadataExporterRun extends JIPipeWorkbenc
      * @param slots the slots to save
      * @param splitBySlot if slots should be split
      */
-    public JIPipeCachedSlotToFilesByMetadataExporterRun(JIPipeWorkbench workbench,  List<JIPipeDataSlot> slots, boolean splitBySlot) {
+    public JIPipeResultCopyFilesByMetadataExporterRun(JIPipeWorkbench workbench, List<JIPipeDataSlot> slots, boolean splitBySlot) {
         super(workbench);
         this.slots = slots;
         this.splitBySlot = splitBySlot;
@@ -110,21 +114,71 @@ public class JIPipeCachedSlotToFilesByMetadataExporterRun extends JIPipeWorkbenc
 
     @Override
     public void run(Consumer<JIPipeRunnerStatus> onProgress, Supplier<Boolean> isCancelled) {
-        Set<String> existing = new HashSet<>();
+        Set<String> existingSlots = new HashSet<>();
+        Set<String> existingFiles = new HashSet<>();
+        Set<String> existingMetadata = new HashSet<>();
         JIPipeRunnerSubStatus.DefaultConsumer consumer = new JIPipeRunnerSubStatus.DefaultConsumer(onProgress);
         consumer.setMaxProgress(slots.size());
         for (int i = 0; i < slots.size(); i++) {
             consumer.setProgress(i + 1);
-            onProgress.accept(new JIPipeRunnerStatus(i + 1, slots.size(), "Slot " + (i + 1) + "/" + slots.size()));
+            JIPipeRunnerSubStatus subStatus = new JIPipeRunnerSubStatus().resolve("Slot " + (i + 1) + "/" + slots.size());
+            consumer.accept(subStatus);
             JIPipeDataSlot slot = slots.get(i);
             Path targetPath = outputPath;
             if(splitBySlot) {
-                targetPath = outputPath.resolve(StringUtils.makeUniqueString(slot.getName(), " ", existing));
+                targetPath = outputPath.resolve(StringUtils.makeUniqueString(slot.getNode().getIdInGraph() + "-" + slot.getName(), " ", existingSlots));
+                existingFiles.clear();
             }
+            existingMetadata.clear();
             try {
                 if(!Files.isDirectory(targetPath))
                     Files.createDirectories(targetPath);
-                exporter.writeToFolder(slot, targetPath, new JIPipeRunnerSubStatus().resolve("Slot " + slot.getName()), consumer, isCancelled);
+
+                // Load the data table
+                JIPipeExportedDataTable dataTable = JIPipeExportedDataTable.loadFromJson(slot.getStoragePath().resolve("data-table.json"));
+                for (int row = 0; row < dataTable.getRowCount(); row++) {
+                    JIPipeRunnerSubStatus rowSubStatus = subStatus.resolve("Row " + row + "/" + dataTable.getRowCount());
+                    consumer.accept(rowSubStatus);
+                    String metadataString = exporter.generateMetadataString(dataTable, row, existingMetadata);
+
+                    Path rowStoragePath = slot.getRowStoragePath(row);
+                    Path finalTargetPath = targetPath;
+                    Files.walkFileTree(rowStoragePath, new FileVisitor<Path>() {
+                        @Override
+                        public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+                            return FileVisitResult.CONTINUE;
+                        }
+
+                        @Override
+                        public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                            String newFileName = metadataString + exporter.getSeparatorString() + file.getFileName().toString();
+                            String uniqueMetadataPath = file.getParent().resolve(newFileName).toString();
+                            uniqueMetadataPath = StringUtils.makeUniqueString(uniqueMetadataPath, exporter.getSeparatorString(), existingFiles);
+
+                            Path rowInternalPath = rowStoragePath.relativize(file.getParent());
+                            Path newTargetPath = finalTargetPath.resolve(rowInternalPath);
+
+                            if(!Files.isDirectory(newTargetPath))
+                                Files.createDirectories(newTargetPath);
+
+                            Path copyTarget = newTargetPath.resolve(Paths.get(uniqueMetadataPath).getFileName());
+                            consumer.accept(rowSubStatus.resolve("Copying " + file + " to " + copyTarget));
+                            Files.copy(file, copyTarget, StandardCopyOption.REPLACE_EXISTING);
+
+                            return FileVisitResult.CONTINUE;
+                        }
+
+                        @Override
+                        public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
+                            return FileVisitResult.CONTINUE;
+                        }
+
+                        @Override
+                        public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+                            return FileVisitResult.CONTINUE;
+                        }
+                    });
+                }
             }
             catch (Exception e) {
                 throw new RuntimeException(e);

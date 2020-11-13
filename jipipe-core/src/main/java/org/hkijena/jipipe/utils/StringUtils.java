@@ -216,6 +216,7 @@ public class StringUtils {
     /**
      * Replaces all characters invalid for filesystems with spaces
      * Assumes that the string is a filename, so path operators are not allowed.
+     * Applies the limits for file / path names
      *
      * @param input filename
      * @return string compatible with file systems
@@ -226,6 +227,8 @@ public class StringUtils {
         for (char c : INVALID_FILESYSTEM_CHARACTERS) {
             input = input.replace(c, ' ');
         }
+        if(input.length() >= 255)
+            input = input.substring(0, 255);
         return input;
     }
 

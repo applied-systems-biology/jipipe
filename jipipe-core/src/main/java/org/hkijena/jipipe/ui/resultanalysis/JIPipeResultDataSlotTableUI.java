@@ -32,6 +32,7 @@ import org.hkijena.jipipe.ui.components.PreviewControlUI;
 import org.hkijena.jipipe.ui.components.SearchTextField;
 import org.hkijena.jipipe.ui.components.SearchTextFieldTableRowFilter;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
+import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
 import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jdesktop.swingx.JXTable;
@@ -44,6 +45,7 @@ import java.awt.BorderLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.nio.file.Path;
+import java.util.Collections;
 
 /**
  * UI that displays the {@link JIPipeExportedDataTable} of an {@link JIPipeDataSlot}
@@ -124,17 +126,27 @@ public class JIPipeResultDataSlotTableUI extends JIPipeProjectWorkbenchPanel {
         searchTextField.addActionListener(e -> refreshTable());
         toolBar.add(searchTextField);
 
-        JButton exportButton = new JButton(UIUtils.getIconFromResources("actions/document-export.png"));
+        JButton exportButton = new JButton("Export", UIUtils.getIconFromResources("actions/document-export.png"));
         toolBar.add(exportButton);
-        exportButton.setToolTipText("Export");
         JPopupMenu exportMenu = UIUtils.addPopupMenuToComponent(exportButton);
 
-        JMenuItem exportAsCsvItem = new JMenuItem("as *.csv", UIUtils.getIconFromResources("data-types/results-table.png"));
+        JMenuItem exportAsCsvItem = new JMenuItem("Metadata as *.csv", UIUtils.getIconFromResources("data-types/results-table.png"));
         exportAsCsvItem.addActionListener(e -> exportAsCSV());
         exportMenu.add(exportAsCsvItem);
 
+        JMenuItem exportFilesByMetadataItem = new JMenuItem("Data as files", UIUtils.getIconFromResources("actions/save.png"));
+        exportFilesByMetadataItem.addActionListener(e -> exportFilesByMetadata());
+        exportMenu.add(exportFilesByMetadataItem);
+
         PreviewControlUI previewControlUI = new PreviewControlUI();
         toolBar.add(previewControlUI);
+    }
+
+    private void exportFilesByMetadata() {
+        JIPipeResultCopyFilesByMetadataExporterRun run = new JIPipeResultCopyFilesByMetadataExporterRun(getWorkbench(), Collections.singletonList(slot), false);
+        if(run.setup()) {
+            JIPipeRunnerQueue.getInstance().enqueue(run);
+        }
     }
 
     private void exportAsCSV() {

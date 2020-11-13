@@ -47,6 +47,7 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
     private String equalsString = "=";
     private String missingString = "NA";
     private StringQueryExpression metadataKeyFilter = new StringQueryExpression("");
+    private int metadataValueLengthLimit = 80;
 
     public JIPipeDataByMetadataExporter() {
     }
@@ -61,6 +62,7 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
         this.equalsString = other.equalsString;
         this.missingString = other.missingString;
         this.metadataKeyFilter = new StringQueryExpression(other.metadataKeyFilter);
+        this.metadataValueLengthLimit = other.metadataValueLengthLimit;
     }
 
     @JIPipeDocumentation(name = "Metadata key filters", description = "Only includes the metadata keys that match the filter. " + StringQueryExpression.DOCUMENTATION_DESCRIPTION)
@@ -165,6 +167,17 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
     @JIPipeParameter("append-data-type-metadata-key")
     public void setAppendDataTypeMetadataKey(String appendDataTypeMetadataKey) {
         this.appendDataTypeMetadataKey = appendDataTypeMetadataKey;
+    }
+
+    @JIPipeDocumentation(name = "Value length limit", description = "All values with a length greater than this value are omitted. This is due to limitations of file systems. Generally, a file name cannot be longer than 255 characters. On Windows there are additional constraints on the full path length.")
+    @JIPipeParameter("metadata-value-length-limit")
+    public int getMetadataValueLengthLimit() {
+        return metadataValueLengthLimit;
+    }
+
+    @JIPipeParameter("metadata-value-length-limit")
+    public void setMetadataValueLengthLimit(int metadataValueLengthLimit) {
+        this.metadataValueLengthLimit = metadataValueLengthLimit;
     }
 
     @Override
@@ -292,6 +305,8 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
                 metadataValue = dataSlot.getAnnotationOr(row, metadataKey, new JIPipeAnnotation(metadataKey, missingString));
             }
             if (metadataValue != null) {
+                if(metadataValue.getValue().length() > metadataValueLengthLimit)
+                    continue;
                 if (metadataStringBuilder.length() > 0)
                     metadataStringBuilder.append(separatorString);
                 if (withMetadataKeys)
@@ -300,11 +315,47 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
             }
         }
 
-        if(metadataStringBuilder.length() == 0)
+        if(metadataStringBuilder.length() == 0) {
             metadataStringBuilder.append("unnamed");
-        String metadataString = StringUtils.makeFilesystemCompatible(StringUtils.makeUniqueString(metadataStringBuilder.toString(), separatorString, existingMetadata));
+        }
+        String metadataString = StringUtils.makeFilesystemCompatible(metadataStringBuilder.toString());
+        metadataString = StringUtils.makeUniqueString(metadataString, separatorString, existingMetadata);
         existingMetadata.add(metadataString);
         return metadataString;
     }
 
+    public String generateMetadataString(JIPipeExportedDataTable exportedDataTable, int row, Set<String> existingMetadata) {
+        JIPipeExportedDataTable.Row dataRow = exportedDataTable.getRowList().get(row);
+        StringBuilder metadataStringBuilder = new StringBuilder();
+        if (appendDataTypeAsMetadata) {
+            String dataTypeName;
+            if (appendDataTypeUsesRealDataType) {
+                dataTypeName = dataRow.getTrueDataType();
+            } else {
+                dataTypeName = exportedDataTable.getAcceptedDataTypeId();
+            }
+            if (withMetadataKeys && !StringUtils.isNullOrEmpty(appendDataTypeMetadataKey))
+                metadataStringBuilder.append(appendDataTypeMetadataKey).append(equalsString);
+            metadataStringBuilder.append(dataTypeName);
+        }
+        for (JIPipeAnnotation metadataValue : dataRow.getAnnotations()) {
+            if(metadataValue.getValue().length() > metadataValueLengthLimit)
+                continue;
+            if (!metadataKeyFilter.test(metadataValue.getName()))
+                continue;
+            if (metadataStringBuilder.length() > 0)
+                metadataStringBuilder.append(separatorString);
+            if (withMetadataKeys)
+                metadataStringBuilder.append(metadataValue.getName()).append(equalsString);
+            metadataStringBuilder.append(metadataValue.getValue());
+        }
+
+        if(metadataStringBuilder.length() == 0) {
+            metadataStringBuilder.append("unnamed");
+        }
+        String metadataString = StringUtils.makeFilesystemCompatible(metadataStringBuilder.toString());
+        metadataString = StringUtils.makeUniqueString(metadataString, separatorString, existingMetadata);
+        existingMetadata.add(metadataString);
+        return metadataString;
+    }
 }
