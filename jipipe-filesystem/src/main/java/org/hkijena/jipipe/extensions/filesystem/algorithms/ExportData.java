@@ -25,6 +25,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.PathData;
+import org.hkijena.jipipe.utils.StringUtils;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -67,6 +68,9 @@ public class ExportData extends JIPipeIteratingAlgorithm {
                 throw new RuntimeException(e);
             }
         }
+
+        if(StringUtils.isNullOrEmpty(name))
+            name = "unnamed";
 
         dataBatch.getInputData("Data", JIPipeData.class).saveTo(outputFolder, name, true);
     }

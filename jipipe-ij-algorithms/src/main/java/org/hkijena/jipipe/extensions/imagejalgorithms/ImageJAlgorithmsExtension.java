@@ -41,6 +41,7 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.blur.MedianBlurFilter3
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.blur.MedianBlurGreyscale8U2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.blur.MedianBlurRGB2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.color.ArrangeChannelsAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.color.CombineChannelsToRGBAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.color.InvertColorsAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.color.MergeChannelsAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.color.SplitChannelsAlgorithm;
@@ -555,6 +556,7 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         registerNodeType("ij1-color-merge-channels", MergeChannelsAlgorithm.class, UIUtils.getIconURLFromResources("actions/merge.png"));
         registerNodeType("ij1-color-arrange-channels", ArrangeChannelsAlgorithm.class);
         registerNodeType("ij1-color-split-channels", SplitChannelsAlgorithm.class, UIUtils.getIconURLFromResources("actions/split.png"));
+        registerNodeType("ij1-color-combine-rgb", CombineChannelsToRGBAlgorithm.class, UIUtils.getIconURLFromResources("actions/colors-rgb.png"));
 
         registerEnumParameterType("ij1-color-merge-channels:channel-color", MergeChannelsAlgorithm.ChannelColor.class,
                 "Channel color", "Available channel colors");

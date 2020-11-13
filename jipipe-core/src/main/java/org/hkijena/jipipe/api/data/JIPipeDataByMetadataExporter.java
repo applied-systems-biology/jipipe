@@ -300,6 +300,8 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
             }
         }
 
+        if(metadataStringBuilder.length() == 0)
+            metadataStringBuilder.append("unnamed");
         String metadataString = StringUtils.makeFilesystemCompatible(StringUtils.makeUniqueString(metadataStringBuilder.toString(), separatorString, existingMetadata));
         existingMetadata.add(metadataString);
         return metadataString;

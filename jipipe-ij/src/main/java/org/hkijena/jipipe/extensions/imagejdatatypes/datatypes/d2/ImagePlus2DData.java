@@ -14,12 +14,15 @@
 package org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2;
 
 import ij.ImagePlus;
+import ij.plugin.RGBStackMerge;
+import ij.process.ImageConverter;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeHeavyData;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.greyscale.ImagePlus2DGreyscale8UData;
+import org.hkijena.jipipe.utils.ImageJUtils;
 
 import java.nio.file.Path;
 
@@ -40,9 +43,8 @@ public class ImagePlus2DData extends ImagePlusData {
      * @param image wrapped image
      */
     public ImagePlus2DData(ImagePlus image) {
-        super(image);
-
-        if (image.getNDimensions() > 2) {
+        super(convertIfNeeded(image));
+        if (this.getImage().getNDimensions() > 2) {
             throw new UserFriendlyRuntimeException(new IllegalArgumentException("Trying to fit higher-dimensional data into " + DIMENSIONALITY + "D data!"),
                     "Trying to fit higher-dimensional data into " + DIMENSIONALITY + "D data!",
                     "ImageJ integration internals",
@@ -53,6 +55,19 @@ public class ImagePlus2DData extends ImagePlusData {
                             "the quick run to see if they fit the assumptions. If you cannot find the reason behind this error," +
                             " try to contact the JIPipe or plugin developers.");
         }
+    }
+
+    /**
+     * Converts an {@link ImagePlus} to the color space of this data.
+     * If this function encounters a 3-channel 3D image, it will assume that it is an RGB image and convert it
+     * Does not guarantee that the input image is copied.
+     *
+     * @param image the image
+     * @return converted image.
+     */
+    public static ImagePlus convertIfNeeded(ImagePlus image) {
+        image = ImageJUtils.channelsToRGB(image);
+        return image;
     }
 
     public static ImagePlusData importFrom(Path storageFolder) {

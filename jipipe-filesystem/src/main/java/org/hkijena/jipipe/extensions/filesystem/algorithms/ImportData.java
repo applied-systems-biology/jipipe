@@ -15,6 +15,7 @@ package org.hkijena.jipipe.extensions.filesystem.algorithms;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeRunnerSubStatus;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
@@ -27,6 +28,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
+import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FolderData;
 
@@ -39,6 +41,7 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 @JIPipeDocumentation(name = "Import data from slot", description = "Imports data from a slot folder back into JIPipe. The folder contains a data-table.json file and multiple folders with numeric names.")
+@JIPipeOrganization(nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
 @JIPipeInputSlot(value = FolderData.class, slotName = "Slot folder", autoCreate = true)
 @JIPipeOutputSlot(value = JIPipeData.class, slotName = "Slot data", autoCreate = true)
 public class ImportData extends JIPipeSimpleIteratingAlgorithm {
@@ -86,7 +89,7 @@ public class ImportData extends JIPipeSimpleIteratingAlgorithm {
             List<JIPipeAnnotation> annotationList = ignoreImportedDataAnnotations ? Collections.emptyList() : row.getAnnotations();
             JIPipeDataInfo trueDataType = exportedDataTable.getDataTypeOf(row.getIndex());
             JIPipeData data = JIPipe.importData(storageFolder, trueDataType.getDataClass());
-            dataBatch.addOutputData(getFirstOutputSlot(), data, annotationList, JIPipeAnnotationMergeStrategy.Merge);
+            dataBatch.addOutputData(getFirstOutputSlot(), data, annotationList, annotationMergeStrategy);
         }
     }
 

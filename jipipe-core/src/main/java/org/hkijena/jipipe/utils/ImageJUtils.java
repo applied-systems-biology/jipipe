@@ -14,6 +14,11 @@
 package org.hkijena.jipipe.utils;
 
 import ij.ImagePlus;
+import ij.ImageStack;
+import ij.plugin.RGBStackMerge;
+import ij.process.ColorProcessor;
+import ij.process.ImageConverter;
+import ij.process.ImageProcessor;
 import ij.process.ImageStatistics;
 import ij.process.LUT;
 import org.jetbrains.annotations.NotNull;
@@ -25,6 +30,49 @@ import java.util.List;
 public class ImageJUtils {
     private ImageJUtils() {
 
+    }
+
+    /**
+     * Converted a 3-channel image into RGB (reducing the dimensionality)
+     * @param image the image
+     * @return RGB image if needed
+     */
+    public static ImagePlus channelsToRGB(ImagePlus image) {
+        if(image.getType() == ImagePlus.COLOR_RGB || image.getType() == ImagePlus.COLOR_256)
+            return image;
+        if(image.getNDimensions() == 3 && image.getNChannels() == 3) {
+            return new ImagePlus(image.getTitle() + "_RGB", image.getBufferedImage());
+        }
+        else if(image.getNChannels() == 3) {
+            if(image.getType() != ImagePlus.GRAY8) {
+                ImageConverter ic = new ImageConverter(image);
+                ic.convertToGray8();
+            }
+            ImageStack stack = new ImageStack(image.getWidth(), image.getHeight(), image.getNFrames() * image.getNSlices());
+            for (int z = 0; z < image.getNSlices(); z++) {
+                for (int t = 0; t < image.getNFrames(); t++) {
+                    ImageProcessor r = image.getStack().getProcessor(image.getStackIndex(1, z + 1, t + 1));
+                    ImageProcessor g = image.getStack().getProcessor(image.getStackIndex(2, z + 1, t + 1));
+                    ImageProcessor b = image.getStack().getProcessor(image.getStackIndex(3, z + 1, t + 1));
+
+                    int newPosition = t * image.getNSlices() + z;
+                    ColorProcessor processor = new ColorProcessor(r.getWidth(), r.getHeight());
+                    for (int y = 0; y < r.getHeight(); y++) {
+                        for (int x = 0; x < r.getWidth(); x++) {
+                            int rxy = r.get(x,y) << 16;
+                            int gxy = g.get(x,y) << 8;
+                            int bxy = b.get(x,y);
+                            int rgb = rxy + gxy + bxy;
+                            processor.set(x,y, rgb);
+                        }
+                    }
+
+                    stack.setProcessor(processor, newPosition + 1);
+                }
+            }
+            return new ImagePlus(image.getTitle() + "_RGB", stack);
+        }
+        return image;
     }
 
     public static LUT createLUTFromGradient(List<GradientStop> stops) {
