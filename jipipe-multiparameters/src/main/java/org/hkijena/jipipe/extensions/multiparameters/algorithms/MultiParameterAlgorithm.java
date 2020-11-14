@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.extensions.multiparameters.algorithms;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeRunnableInfo;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
@@ -72,7 +72,7 @@ public class MultiParameterAlgorithm extends JIPipeAlgorithm {
     }
 
     @Override
-    public void run(JIPipeRunnableInfo progress) {
+    public void run(JIPipeProgressInfo progress) {
         checkInputSlots();
 
         // Backup default parameters
@@ -105,7 +105,7 @@ public class MultiParameterAlgorithm extends JIPipeAlgorithm {
         for (int row = 0; row < parameterSlot.getRowCount(); ++row) {
             if (progress.isCancelled().get())
                 return;
-            JIPipeRunnableInfo parameterProgress = progress.resolveAndLog("Parameter set", row,parameterSlot.getRowCount());
+            JIPipeProgressInfo parameterProgress = progress.resolveAndLog("Parameter set", row,parameterSlot.getRowCount());
             ParametersData parametersData = parameterSlot.getData(row, ParametersData.class);
 
             passParameters(parametersData, parameters);

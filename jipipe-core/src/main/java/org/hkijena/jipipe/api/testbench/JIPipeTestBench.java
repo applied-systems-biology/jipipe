@@ -17,7 +17,7 @@ import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.JIPipeRun;
 import org.hkijena.jipipe.api.JIPipeRunSettings;
 import org.hkijena.jipipe.api.JIPipeRunnable;
-import org.hkijena.jipipe.api.JIPipeRunnableInfo;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeValidatable;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
@@ -33,7 +33,7 @@ import java.util.List;
  * Allows to test one algorithm with multiple parameters
  */
 public class JIPipeTestBench implements JIPipeRunnable, JIPipeValidatable {
-    private JIPipeRunnableInfo info = new JIPipeRunnableInfo();
+    private JIPipeProgressInfo info = new JIPipeProgressInfo();
     private JIPipeProject project;
     private JIPipeGraphNode projectAlgorithm;
     private JIPipeTestBenchSettings settings;
@@ -185,11 +185,16 @@ public class JIPipeTestBench implements JIPipeRunnable, JIPipeValidatable {
     }
 
     @Override
-    public JIPipeRunnableInfo getInfo() {
+    public JIPipeProgressInfo getProgressInfo() {
         return info;
     }
 
-    public void setInfo(JIPipeRunnableInfo info) {
+    @Override
+    public String getTaskLabel() {
+        return "Quick run / Update cache";
+    }
+
+    public void setInfo(JIPipeProgressInfo info) {
         this.info = info;
     }
 }

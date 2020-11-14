@@ -15,13 +15,13 @@ package org.hkijena.jipipe.extensions.omero.util;
 
 import omero.log.LogMessage;
 import omero.log.Logger;
-import org.hkijena.jipipe.api.JIPipeRunnableInfo;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 
 public class OMEROToJIPipeLogger implements Logger {
 
-    private final JIPipeRunnableInfo progress;
+    private final JIPipeProgressInfo progress;
 
-    public OMEROToJIPipeLogger(JIPipeRunnableInfo progress) {
+    public OMEROToJIPipeLogger(JIPipeProgressInfo progress) {
         this.progress = progress;
     }
 

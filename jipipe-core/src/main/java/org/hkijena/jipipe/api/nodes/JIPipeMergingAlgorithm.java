@@ -15,7 +15,7 @@ package org.hkijena.jipipe.api.nodes;
 
 import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeRunnableInfo;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
@@ -111,13 +111,13 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
     }
 
     @Override
-    public void runParameterSet(JIPipeRunnableInfo progress, List<JIPipeAnnotation> parameterAnnotations) {
+    public void runParameterSet(JIPipeProgressInfo progress, List<JIPipeAnnotation> parameterAnnotations) {
         // Special case: No input slots
         if (getEffectiveInputSlotCount() == 0) {
             if (progress.isCancelled().get())
                 return;
             final int row = 0;
-            JIPipeRunnableInfo slotProgress = progress.resolveAndLog("Data row", row, 1);
+            JIPipeProgressInfo slotProgress = progress.resolveAndLog("Data row", row, 1);
             JIPipeMergingDataBatch dataBatch = new JIPipeMergingDataBatch(this);
             dataBatch.addGlobalAnnotations(parameterAnnotations, dataBatchGenerationSettings.annotationMergeStrategy);
             runIteration(dataBatch, slotProgress);
@@ -147,7 +147,7 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
             for (int i = 0; i < dataBatches.size(); i++) {
                 if (progress.isCancelled().get())
                     return;
-                JIPipeRunnableInfo slotProgress = progress.resolveAndLog("Data row", i, dataBatches.size());
+                JIPipeProgressInfo slotProgress = progress.resolveAndLog("Data row", i, dataBatches.size());
                 runIteration(dataBatches.get(i), slotProgress);
             }
         } else {
@@ -157,7 +157,7 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
                 tasks.add(() -> {
                     if (progress.isCancelled().get())
                         return;
-                    JIPipeRunnableInfo slotProgress = progress.resolveAndLog("Data row", rowIndex, dataBatches.size());
+                    JIPipeProgressInfo slotProgress = progress.resolveAndLog("Data row", rowIndex, dataBatches.size());
                     JIPipeMergingDataBatch dataBatch = dataBatches.get(rowIndex);
                     runIteration(dataBatch, progress);
                 });
@@ -180,7 +180,7 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
      *  @param dataBatch         The data interface
      * @param progress the progress from the run
      */
-    protected abstract void runIteration(JIPipeMergingDataBatch dataBatch, JIPipeRunnableInfo progress);
+    protected abstract void runIteration(JIPipeMergingDataBatch dataBatch, JIPipeProgressInfo progress);
 
     @Override
     public boolean supportsParallelization() {

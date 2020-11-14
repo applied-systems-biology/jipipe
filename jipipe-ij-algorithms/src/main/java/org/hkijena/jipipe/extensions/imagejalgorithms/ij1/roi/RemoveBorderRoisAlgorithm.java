@@ -17,7 +17,7 @@ import ij.ImagePlus;
 import ij.process.FloatPolygon;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
-import org.hkijena.jipipe.api.JIPipeRunnableInfo;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
@@ -76,7 +76,7 @@ public class RemoveBorderRoisAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnableInfo progress) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
         ROIListData data = (ROIListData) dataBatch.getInputData("ROI", ROIListData.class).duplicate();
         data.outline(outline);
         ImagePlus reference = dataBatch.getInputData("Image", ImagePlusData.class).getImage();

@@ -24,7 +24,7 @@ import omero.gateway.model.ExperimenterData;
 import omero.gateway.model.ProjectData;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
-import org.hkijena.jipipe.api.JIPipeRunnableInfo;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
@@ -79,7 +79,7 @@ public class OMEROFindProjectAlgorithm extends JIPipeParameterSlotAlgorithm {
     }
 
     @Override
-    public void runParameterSet(JIPipeRunnableInfo progress, List<JIPipeAnnotation> parameterAnnotations) {
+    public void runParameterSet(JIPipeProgressInfo progress, List<JIPipeAnnotation> parameterAnnotations) {
         LoginCredentials credentials = this.credentials.getCredentials();
        progress.log("Connecting to " + credentials.getUser().getUsername() + "@" + credentials.getServer().getHost());
         try (Gateway gateway = new Gateway(new OMEROToJIPipeLogger(progress))) {

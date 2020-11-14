@@ -18,7 +18,7 @@ import ij.plugin.filter.Convolver;
 import ij.process.FloatProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
-import org.hkijena.jipipe.api.JIPipeRunnableInfo;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeIteratingAlgorithm;
@@ -64,7 +64,7 @@ public class ConvolveByImage2DAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnableInfo progress) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
         ImagePlus img = dataBatch.getInputData("Image", ImagePlusData.class).getDuplicateImage();
         ImagePlus imgKernel = dataBatch.getInputData("Kernel", ImagePlus2DGreyscale32FData.class).getDuplicateImage();
         FloatProcessor processor = (FloatProcessor) imgKernel.getProcessor();

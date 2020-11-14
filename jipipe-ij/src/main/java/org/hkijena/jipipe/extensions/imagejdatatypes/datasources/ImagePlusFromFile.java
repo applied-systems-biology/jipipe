@@ -19,7 +19,7 @@ import ij.io.Opener;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
-import org.hkijena.jipipe.api.JIPipeRunnableInfo;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
@@ -96,7 +96,7 @@ public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnableInfo progress) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
         FileData fileData = dataBatch.getInputData(getFirstInputSlot(), FileData.class);
         ImagePlusData data = (ImagePlusData) readImageFrom(fileData.getPath(), progress);
         List<JIPipeAnnotation> traits = new ArrayList<>();
@@ -124,7 +124,7 @@ public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
      * @param progress progress
      * @return the generated data
      */
-    protected JIPipeData readImageFrom(Path fileName, JIPipeRunnableInfo progress) {
+    protected JIPipeData readImageFrom(Path fileName, JIPipeProgressInfo progress) {
         try {
             Opener opener = new Opener();
             ImagePlus image;

@@ -15,7 +15,7 @@ package org.hkijena.jipipe.extensions.annotation.algorithms;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
-import org.hkijena.jipipe.api.JIPipeRunnableInfo;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
@@ -52,7 +52,7 @@ public class MergeDataSlots extends JIPipeAlgorithm {
     }
 
     @Override
-    public void run(JIPipeRunnableInfo progress) {
+    public void run(JIPipeProgressInfo progress) {
         JIPipeDataSlot outputSlot = getFirstOutputSlot();
         for (JIPipeDataSlot inputSlot : getInputSlots()) {
             outputSlot.copyFrom(inputSlot);

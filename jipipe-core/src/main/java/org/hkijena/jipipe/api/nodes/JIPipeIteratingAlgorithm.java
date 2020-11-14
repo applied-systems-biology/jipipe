@@ -15,7 +15,7 @@ package org.hkijena.jipipe.api.nodes;
 
 import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeRunnableInfo;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
@@ -98,7 +98,7 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
     }
 
     @Override
-    public void runParameterSet(JIPipeRunnableInfo progress, List<JIPipeAnnotation> parameterAnnotations) {
+    public void runParameterSet(JIPipeProgressInfo progress, List<JIPipeAnnotation> parameterAnnotations) {
 
         if (isPassThrough() && canPassThrough()) {
             progress.log("Data passed through to output");
@@ -113,7 +113,7 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
             if (progress.isCancelled().get())
                 return;
             final int row = 0;
-            JIPipeRunnableInfo slotProgress = progress.resolveAndLog("Data row" , row, 1);
+            JIPipeProgressInfo slotProgress = progress.resolveAndLog("Data row" , row, 1);
             JIPipeDataBatch dataBatch = new JIPipeDataBatch(this);
             dataBatch.addGlobalAnnotations(parameterAnnotations, dataBatchGenerationSettings.annotationMergeStrategy);
             runIteration(dataBatch, slotProgress);
@@ -163,7 +163,7 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
             for (int i = 0; i < dataBatches.size(); i++) {
                 if (progress.isCancelled().get())
                     return;
-                JIPipeRunnableInfo slotProgress = progress.resolveAndLog("Data row", i, dataBatches.size());
+                JIPipeProgressInfo slotProgress = progress.resolveAndLog("Data row", i, dataBatches.size());
                 runIteration(dataBatches.get(i), slotProgress);
             }
         } else {
@@ -173,7 +173,7 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
                 tasks.add(() -> {
                     if (progress.isCancelled().get())
                         return;
-                    JIPipeRunnableInfo slotProgress = progress.resolveAndLog("Data row", rowIndex, dataBatches.size());
+                    JIPipeProgressInfo slotProgress = progress.resolveAndLog("Data row", rowIndex, dataBatches.size());
                     runIteration(dataBatches.get(rowIndex), slotProgress);
                 });
             }
@@ -227,7 +227,7 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
      *  @param dataBatch         The data interface
      * @param progress the progress info from the run
      */
-    protected abstract void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnableInfo progress);
+    protected abstract void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress);
 
     /**
      * Groups data batch generation settings

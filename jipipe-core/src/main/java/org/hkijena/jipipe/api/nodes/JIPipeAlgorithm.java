@@ -20,7 +20,7 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeFixedThreadPool;
-import org.hkijena.jipipe.api.JIPipeRunnableInfo;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.data.JIPipeData;
@@ -82,7 +82,7 @@ public abstract class JIPipeAlgorithm extends JIPipeGraphNode {
     }
 
     @Override
-    public void run(JIPipeRunnableInfo progress) {
+    public void run(JIPipeProgressInfo progress) {
         if (passThrough && canAutoPassThrough()) {
             progress.log("Data passed through to output");
             runPassThrough();

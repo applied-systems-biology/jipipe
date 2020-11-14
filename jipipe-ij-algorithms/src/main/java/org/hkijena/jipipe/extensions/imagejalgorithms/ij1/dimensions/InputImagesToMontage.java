@@ -18,7 +18,7 @@ import ij.measure.Calibration;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
-import org.hkijena.jipipe.api.JIPipeRunnableInfo;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataByMetadataExporter;
 import org.hkijena.jipipe.api.nodes.JIPipeColumnGrouping;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
@@ -81,7 +81,7 @@ public class InputImagesToMontage extends JIPipeMergingAlgorithm {
 
 
     @Override
-    protected void runIteration(JIPipeMergingDataBatch dataBatch, JIPipeRunnableInfo progress) {
+    protected void runIteration(JIPipeMergingDataBatch dataBatch, JIPipeProgressInfo progress) {
         List<ImagePlus> input = new ArrayList<>();
         List<String> labels = new ArrayList<>();
         for (int row : dataBatch.getInputRows(getFirstInputSlot())) {

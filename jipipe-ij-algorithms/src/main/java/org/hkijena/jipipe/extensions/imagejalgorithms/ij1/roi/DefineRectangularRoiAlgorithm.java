@@ -16,7 +16,7 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi;
 import ij.gui.ShapeRoi;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
-import org.hkijena.jipipe.api.JIPipeRunnableInfo;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -64,7 +64,7 @@ public class DefineRectangularRoiAlgorithm extends JIPipeAlgorithm {
     }
 
     @Override
-    public void run(JIPipeRunnableInfo progress) {
+    public void run(JIPipeProgressInfo progress) {
         ROIListData currentData = new ROIListData();
         for (Rectangle rectangle : rectangles) {
             currentData.add(new ShapeRoi(rectangle));

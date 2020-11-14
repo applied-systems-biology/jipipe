@@ -15,7 +15,7 @@ package org.hkijena.jipipe.ui.cache;
 
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.JIPipeRunnable;
-import org.hkijena.jipipe.api.JIPipeRunnableInfo;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataByMetadataExporter;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
@@ -39,7 +39,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class JIPipeCachedSlotToFilesByMetadataExporterRun extends JIPipeWorkbenchPanel implements JIPipeRunnable {
 
-    private JIPipeRunnableInfo info = new JIPipeRunnableInfo();
+    private JIPipeProgressInfo info = new JIPipeProgressInfo();
     private Path outputPath;
     private final List<JIPipeDataSlot> slots;
     private final boolean splitBySlot;
@@ -109,7 +109,7 @@ public class JIPipeCachedSlotToFilesByMetadataExporterRun extends JIPipeWorkbenc
         info.setMaxProgress(slots.size());
         for (int i = 0; i < slots.size(); i++) {
             info.setProgress(i + 1);
-            JIPipeRunnableInfo subProgress = info.resolveAndLog("Slot", i, slots.size());
+            JIPipeProgressInfo subProgress = info.resolveAndLog("Slot", i, slots.size());
             JIPipeDataSlot slot = slots.get(i);
             Path targetPath = outputPath;
             if(splitBySlot) {
@@ -151,11 +151,16 @@ public class JIPipeCachedSlotToFilesByMetadataExporterRun extends JIPipeWorkbenc
     }
 
     @Override
-    public JIPipeRunnableInfo getInfo() {
+    public JIPipeProgressInfo getProgressInfo() {
         return info;
     }
 
-    public void setInfo(JIPipeRunnableInfo info) {
+    @Override
+    public String getTaskLabel() {
+        return "Export cached data to files";
+    }
+
+    public void setInfo(JIPipeProgressInfo info) {
         this.info = info;
     }
 }

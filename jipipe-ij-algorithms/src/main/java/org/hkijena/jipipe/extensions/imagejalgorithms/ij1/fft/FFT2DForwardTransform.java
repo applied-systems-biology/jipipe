@@ -17,7 +17,7 @@ import ij.ImagePlus;
 import ij.plugin.FFT;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
-import org.hkijena.jipipe.api.JIPipeRunnableInfo;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
@@ -65,7 +65,7 @@ public class FFT2DForwardTransform extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnableInfo progress) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
         ImagePlus img = dataBatch.getInputData(getFirstInputSlot(), ImagePlus2DData.class).getImage();
         ImagePlus fft = FFT.forward(img);
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusFFT2DData(fft));

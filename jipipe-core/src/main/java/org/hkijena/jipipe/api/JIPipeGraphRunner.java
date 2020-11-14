@@ -21,7 +21,6 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.function.Consumer;
 
 /**
  * Executes an {@link JIPipeGraph}.
@@ -31,7 +30,7 @@ import java.util.function.Consumer;
  */
 public class JIPipeGraphRunner implements JIPipeRunnable {
 
-    private JIPipeRunnableInfo info = new JIPipeRunnableInfo();
+    private JIPipeProgressInfo info = new JIPipeProgressInfo();
     private final JIPipeGraph algorithmGraph;
     private Set<JIPipeGraphNode> algorithmsWithExternalInput = new HashSet<>();
 
@@ -44,7 +43,7 @@ public class JIPipeGraphRunner implements JIPipeRunnable {
         this.algorithmGraph = algorithmGraph;
     }
 
-    public void setInfo(JIPipeRunnableInfo info) {
+    public void setInfo(JIPipeProgressInfo info) {
         this.info = info;
     }
 
@@ -62,7 +61,7 @@ public class JIPipeGraphRunner implements JIPipeRunnable {
                         "Do not click 'Cancel' if you do not want to cancel the execution.");
             JIPipeDataSlot slot = traversedSlots.get(index);
             info.setProgress(index);
-            JIPipeRunnableInfo subInfo = info.resolveAndLog( "Algorithm: " + slot.getNode().getName());
+            JIPipeProgressInfo subInfo = info.resolveAndLog( "Algorithm: " + slot.getNode().getName());
 
             // If an algorithm cannot be executed, skip it automatically
             if (unExecutableAlgorithms.contains(slot.getNode()))
@@ -110,7 +109,12 @@ public class JIPipeGraphRunner implements JIPipeRunnable {
     }
 
     @Override
-    public JIPipeRunnableInfo getInfo() {
+    public JIPipeProgressInfo getProgressInfo() {
         return info;
+    }
+
+    @Override
+    public String getTaskLabel() {
+        return "Run graph";
     }
 }

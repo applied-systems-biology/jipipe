@@ -17,7 +17,7 @@ import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.JIPipeGraphRunner;
-import org.hkijena.jipipe.api.JIPipeRunnableInfo;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
@@ -144,7 +144,7 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm {
     }
 
     @Override
-    public void run(JIPipeRunnableInfo progress) {
+    public void run(JIPipeProgressInfo progress) {
         // Iterate through own input slots and pass them to the equivalents in group input
         for (JIPipeDataSlot inputSlot : getInputSlots()) {
             JIPipeDataSlot groupInputSlot = getGroupInput().getInputSlot(inputSlot.getName());

@@ -21,7 +21,7 @@ import ij.process.ImageProcessor;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
-import org.hkijena.jipipe.api.JIPipeRunnableInfo;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
@@ -115,7 +115,7 @@ public class UnreferencedRoiToRGBAlgorithm extends JIPipeSimpleIteratingAlgorith
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnableInfo progress) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
         if (preferAssociatedImage) {
             for (Map.Entry<Optional<ImagePlus>, ROIListData> referenceEntry : dataBatch.getInputData(getFirstInputSlot(), ROIListData.class).groupByReferenceImage().entrySet()) {
                 ROIListData inputData = (ROIListData) referenceEntry.getValue().duplicate();
@@ -128,7 +128,7 @@ public class UnreferencedRoiToRGBAlgorithm extends JIPipeSimpleIteratingAlgorith
 
     }
 
-    private void processROIList(JIPipeDataBatch dataBatch, ROIListData inputData, ImagePlus reference, JIPipeRunnableInfo progress) {
+    private void processROIList(JIPipeDataBatch dataBatch, ROIListData inputData, ImagePlus reference, JIPipeProgressInfo progress) {
         // Find the bounds and future stack position
         Rectangle bounds = imageArea.apply(inputData.getBounds());
         int sx = bounds.width + bounds.x;

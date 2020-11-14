@@ -16,13 +16,13 @@ package org.hkijena.jipipe.extensions.omero.util;
 import ome.formats.importer.IObservable;
 import ome.formats.importer.IObserver;
 import ome.formats.importer.ImportEvent;
-import org.hkijena.jipipe.api.JIPipeRunnableInfo;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 
 public class OMEROUploadToJIPipeLogger implements IObserver {
 
-    private final JIPipeRunnableInfo info;
+    private final JIPipeProgressInfo info;
 
-    public OMEROUploadToJIPipeLogger(JIPipeRunnableInfo info) {
+    public OMEROUploadToJIPipeLogger(JIPipeProgressInfo info) {
         this.info = info;
     }
 

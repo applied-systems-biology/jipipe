@@ -18,7 +18,7 @@ import net.imagej.updater.FilesCollection;
 import net.imagej.updater.util.AvailableSites;
 import net.imagej.updater.util.UpdaterUtil;
 import org.hkijena.jipipe.api.JIPipeRunnable;
-import org.hkijena.jipipe.api.JIPipeRunnableInfo;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -29,7 +29,7 @@ import java.net.Authenticator;
  */
 public class RefreshRepositoryRun implements JIPipeRunnable {
 
-    private JIPipeRunnableInfo info = new JIPipeRunnableInfo();
+    private JIPipeProgressInfo info = new JIPipeProgressInfo();
     private FilesCollection filesCollection;
     private String conflictWarnings;
 
@@ -60,11 +60,16 @@ public class RefreshRepositoryRun implements JIPipeRunnable {
     }
 
     @Override
-    public JIPipeRunnableInfo getInfo() {
+    public JIPipeProgressInfo getProgressInfo() {
         return info;
     }
 
-    public void setInfo(JIPipeRunnableInfo info) {
+    @Override
+    public String getTaskLabel() {
+        return "ImageJ updater: Refresh";
+    }
+
+    public void setInfo(JIPipeProgressInfo info) {
         this.info = info;
     }
 }

@@ -34,7 +34,7 @@ import omero.model.Pixels;
 import org.apache.commons.io.FileUtils;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
-import org.hkijena.jipipe.api.JIPipeRunnableInfo;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.data.JIPipeDataByMetadataExporter;
@@ -100,7 +100,7 @@ public class UploadOMEROImageAlgorithm extends JIPipeMergingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeMergingDataBatch dataBatch, JIPipeRunnableInfo progress) {
+    protected void runIteration(JIPipeMergingDataBatch dataBatch, JIPipeProgressInfo progress) {
         List<OMEImageData> images = dataBatch.getInputData("Image", OMEImageData.class);
         ArrayList<JIPipeAnnotation> annotations = new ArrayList<>(dataBatch.getAnnotations().values());
         for (int index = 0; index < images.size(); index++) {
@@ -118,7 +118,7 @@ public class UploadOMEROImageAlgorithm extends JIPipeMergingAlgorithm {
     }
 
 
-    private void uploadImages(Path targetPath, List<JIPipeAnnotation> annotations, long datasetId, JIPipeRunnableInfo progress) {
+    private void uploadImages(Path targetPath, List<JIPipeAnnotation> annotations, long datasetId, JIPipeProgressInfo progress) {
         List<String> filePaths = PathUtils.findFilesByExtensionIn(targetPath, ".ome.tif").stream().map(Path::toString).collect(Collectors.toList());
        progress.log("Uploading " + filePaths.size() + " files");
         LoginCredentials credentials = this.credentials.getCredentials();
@@ -191,7 +191,7 @@ public class UploadOMEROImageAlgorithm extends JIPipeMergingAlgorithm {
         }
     }
 
-    private void exportImages(OMEImageData image, List<JIPipeAnnotation> annotations, Path targetPath, JIPipeRunnableInfo progress) {
+    private void exportImages(OMEImageData image, List<JIPipeAnnotation> annotations, Path targetPath, JIPipeProgressInfo progress) {
         JIPipeDataSlot dummy = new JIPipeDataSlot(new JIPipeDataSlotInfo(OMEImageData.class, JIPipeSlotType.Input, null), this);
         dummy.addData(image, annotations, JIPipeAnnotationMergeStrategy.Merge);
         image.setExporterSettings(exporterSettings);

@@ -83,14 +83,14 @@ public class JIPipeLogViewer extends JIPipeProjectWorkbenchPanel {
     private void pushToLog(JIPipeRunnable run, boolean success) {
         if ( run instanceof JIPipeRun && ((JIPipeRun)run).getProject() != getProject())
             return;
-        StringBuilder log = run.getInfo().getLog();
+        StringBuilder log = run.getProgressInfo().getLog();
         if (log != null && log.length() > 0) {
             if (logEntries.size() + 1 > runtimeSettings.getLogLimit())
                 logEntries.remove(0);
-            logEntries.add(new LogEntry(LocalDateTime.now(),log.toString(), success));
+            logEntries.add(new LogEntry(run.getTaskLabel(), LocalDateTime.now(),log.toString(), success));
             DefaultListModel<LogEntry> model = new DefaultListModel<>();
             for (LogEntry logEntry : logEntries) {
-                model.addElement(logEntry);
+                model.add(0, logEntry);
             }
             logEntryJList.setModel(model);
         }
@@ -98,24 +98,22 @@ public class JIPipeLogViewer extends JIPipeProjectWorkbenchPanel {
 
     @Subscribe
     public void onRunFinished(RunUIWorkerFinishedEvent event) {
-        if (event.getRun() instanceof JIPipeRun) {
-            pushToLog(event.getRun(), true);
-        }
+        pushToLog(event.getRun(), true);
     }
 
     @Subscribe
     public void onRunCancelled(RunUIWorkerInterruptedEvent event) {
-        if (event.getRun() instanceof JIPipeRun) {
-            pushToLog(event.getRun(), false);
-        }
+        pushToLog(event.getRun(), false);
     }
 
     public static class LogEntry {
+        private final String name;
         private final LocalDateTime dateTime;
         private final String log;
         private final boolean success;
 
-        public LogEntry(LocalDateTime dateTime, String log, boolean success) {
+        public LogEntry(String name, LocalDateTime dateTime, String log, boolean success) {
+            this.name = name;
             this.dateTime = dateTime;
             this.log = log;
             this.success = success;
@@ -132,10 +130,15 @@ public class JIPipeLogViewer extends JIPipeProjectWorkbenchPanel {
         public boolean isSuccess() {
             return success;
         }
+
+        public String getName() {
+            return name;
+        }
     }
 
     public static class LogEntryRenderer extends JPanel implements ListCellRenderer<LogEntry> {
 
+        private JLabel nameLabel;
         private JLabel timeLabel;
         private JLabel successLabel;
 
@@ -151,8 +154,8 @@ public class JIPipeLogViewer extends JIPipeProjectWorkbenchPanel {
 
             Insets border = new Insets(2, 4, 2, 2);
 
-            JLabel iconLabel = new JLabel(UIUtils.getIconFromResources("actions/show_log.png"));
-            add(iconLabel, new GridBagConstraints() {
+            nameLabel = new JLabel(UIUtils.getIconFromResources("actions/show_log.png"));
+            add(nameLabel, new GridBagConstraints() {
                 {
                     gridx = 0;
                     gridy = 0;
@@ -165,8 +168,8 @@ public class JIPipeLogViewer extends JIPipeProjectWorkbenchPanel {
             timeLabel.setFont(new Font(Font.MONOSPACED, Font.BOLD, 12));
             add(timeLabel, new GridBagConstraints() {
                 {
-                    gridx = 1;
-                    gridy = 0;
+                    gridx = 0;
+                    gridy = 1;
                     anchor = WEST;
                     insets = border;
                 }
@@ -175,8 +178,8 @@ public class JIPipeLogViewer extends JIPipeProjectWorkbenchPanel {
             successLabel = new JLabel();
             add(successLabel, new GridBagConstraints() {
                 {
-                    gridx = 1;
-                    gridy = 1;
+                    gridx = 0;
+                    gridy = 2;
                     anchor = WEST;
                     insets = border;
                 }
@@ -194,6 +197,7 @@ public class JIPipeLogViewer extends JIPipeProjectWorkbenchPanel {
 
         @Override
         public Component getListCellRendererComponent(JList<? extends LogEntry> list, LogEntry value, int index, boolean isSelected, boolean cellHasFocus) {
+            nameLabel.setText(value.getName());
             timeLabel.setText(StringUtils.formatDateTime(value.dateTime));
             successLabel.setText(value.success ? "Successful" : "<html><span style=\"color: red;\">Failed</span></html>");
             if (isSelected) {

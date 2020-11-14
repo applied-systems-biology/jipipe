@@ -40,7 +40,7 @@ import java.util.Set;
  * Runnable instance of an {@link JIPipeProject}
  */
 public class JIPipeRun implements JIPipeRunnable {
-    private JIPipeRunnableInfo info = new JIPipeRunnableInfo();
+    private JIPipeProgressInfo info = new JIPipeProgressInfo();
     private final JIPipeProject project;
     private final JIPipeProjectCacheQuery cacheQuery;
     private final JIPipeRunSettings configuration;
@@ -117,7 +117,7 @@ public class JIPipeRun implements JIPipeRunnable {
         }
     }
 
-    private void flushFinishedSlots(List<JIPipeDataSlot> traversedSlots, Set<JIPipeGraphNode> executedAlgorithms, int currentIndex, JIPipeDataSlot outputSlot, Set<JIPipeDataSlot> flushedSlots, JIPipeRunnableInfo progress) {
+    private void flushFinishedSlots(List<JIPipeDataSlot> traversedSlots, Set<JIPipeGraphNode> executedAlgorithms, int currentIndex, JIPipeDataSlot outputSlot, Set<JIPipeDataSlot> flushedSlots, JIPipeProgressInfo progress) {
         if (!executedAlgorithms.contains(outputSlot.getNode()))
             return;
         if (flushedSlots.contains(outputSlot))
@@ -201,7 +201,7 @@ public class JIPipeRun implements JIPipeRunnable {
         }
     }
 
-    private void runAnalysis(JIPipeRunnableInfo progress) {
+    private void runAnalysis(JIPipeProgressInfo progress) {
         Set<JIPipeGraphNode> unExecutableAlgorithms = algorithmGraph.getDeactivatedAlgorithms();
         Set<JIPipeGraphNode> executedAlgorithms = new HashSet<>();
         Set<JIPipeDataSlot> flushedSlots = new HashSet<>();
@@ -222,7 +222,7 @@ public class JIPipeRun implements JIPipeRunnable {
                 continue;
 
             // Let algorithms provide sub-progress
-            JIPipeRunnableInfo subProgress = progress.resolve("Algorithm: " + slot.getNode().getName());
+            JIPipeProgressInfo subProgress = progress.resolve("Algorithm: " + slot.getNode().getName());
 
             if (slot.isInput()) {
                 // Copy data from source
@@ -255,12 +255,12 @@ public class JIPipeRun implements JIPipeRunnable {
             JIPipeGraphNode node = additionalAlgorithms.get(index);
             int absoluteIndex = index + traversedSlots.size() - 1;
             progress.setProgress(absoluteIndex);
-            JIPipeRunnableInfo subProgress = progress.resolve("Algorithm: " + node.getName());
+            JIPipeProgressInfo subProgress = progress.resolve("Algorithm: " + node.getName());
             runNode(executedAlgorithms, node, subProgress);
         }
     }
 
-    private void runNode(Set<JIPipeGraphNode> executedAlgorithms, JIPipeGraphNode node, JIPipeRunnableInfo progress) {
+    private void runNode(Set<JIPipeGraphNode> executedAlgorithms, JIPipeGraphNode node, JIPipeProgressInfo progress) {
         progress.log("");
 
         // If enabled try to extract outputs from cache
@@ -307,7 +307,7 @@ public class JIPipeRun implements JIPipeRunnable {
      * @param algorithm           the target algorithm
      * @return if successful. This means all output slots were restored.
      */
-    private boolean tryLoadFromCache(JIPipeGraphNode algorithm, JIPipeRunnableInfo progress) {
+    private boolean tryLoadFromCache(JIPipeGraphNode algorithm, JIPipeProgressInfo progress) {
         if (!configuration.isLoadFromCache())
             return false;
         JIPipeGraphNode projectAlgorithm = cacheQuery.getNode(algorithm.getIdInGraph());
@@ -347,11 +347,16 @@ public class JIPipeRun implements JIPipeRunnable {
     }
 
     @Override
-    public JIPipeRunnableInfo getInfo() {
+    public JIPipeProgressInfo getProgressInfo() {
         return info;
     }
 
-    public void setInfo(JIPipeRunnableInfo info) {
+    @Override
+    public String getTaskLabel() {
+        return "Run";
+    }
+
+    public void setInfo(JIPipeProgressInfo info) {
         this.info = info;
     }
 

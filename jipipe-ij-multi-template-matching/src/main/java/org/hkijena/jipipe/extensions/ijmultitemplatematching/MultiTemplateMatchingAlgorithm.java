@@ -19,7 +19,7 @@ import ij.gui.ShapeRoi;
 import ij.plugin.frame.RoiManager;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
-import org.hkijena.jipipe.api.JIPipeRunnableInfo;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
@@ -90,7 +90,7 @@ public class MultiTemplateMatchingAlgorithm extends JIPipeMergingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeMergingDataBatch dataBatch, JIPipeRunnableInfo progress) {
+    protected void runIteration(JIPipeMergingDataBatch dataBatch, JIPipeProgressInfo progress) {
         List<ImagePlus> images = new ArrayList<>();
         List<ImagePlus> templates = new ArrayList<>();
         ROIListData mergedRois = new ROIListData();

@@ -16,7 +16,7 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.color;
 import ij.ImagePlus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
-import org.hkijena.jipipe.api.JIPipeRunnableInfo;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -41,7 +41,7 @@ public class CombineChannelsToRGBAlgorithm extends JIPipeSimpleIteratingAlgorith
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnableInfo progress) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
         ImagePlusData image = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class);
         ImagePlus toRGB = ImageJUtils.channelsToRGB(image.getImage());
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(toRGB));

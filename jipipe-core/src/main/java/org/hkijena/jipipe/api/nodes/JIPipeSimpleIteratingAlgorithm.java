@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.api.nodes;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeRunnableInfo;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
@@ -67,7 +67,7 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
     }
 
     @Override
-    public void runParameterSet(JIPipeRunnableInfo progress, List<JIPipeAnnotation> parameterAnnotations) {
+    public void runParameterSet(JIPipeProgressInfo progress, List<JIPipeAnnotation> parameterAnnotations) {
         if (getEffectiveInputSlotCount() > 1)
             throw new UserFriendlyRuntimeException("Too many input slots for JIPipeSimpleIteratingAlgorithm!",
                     "Error in source code detected!",
@@ -82,7 +82,7 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
 
         if (getInputSlots().isEmpty()) {
             final int row = 0;
-            JIPipeRunnableInfo slotProgress = progress.resolveAndLog("Data row", row, 1);
+            JIPipeProgressInfo slotProgress = progress.resolveAndLog("Data row", row, 1);
             JIPipeDataBatch dataBatch = new JIPipeDataBatch(this);
             dataBatch.addGlobalAnnotations(parameterAnnotations, JIPipeAnnotationMergeStrategy.Merge);
             runIteration(dataBatch, slotProgress);
@@ -91,7 +91,7 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
                 for (int i = 0; i < getFirstInputSlot().getRowCount(); i++) {
                     if (progress.isCancelled().get())
                         return;
-                    JIPipeRunnableInfo slotProgress = progress.resolveAndLog("Data row", i, getFirstInputSlot().getRowCount());
+                    JIPipeProgressInfo slotProgress = progress.resolveAndLog("Data row", i, getFirstInputSlot().getRowCount());
                     JIPipeDataBatch dataBatch = new JIPipeDataBatch(this);
                     dataBatch.setData(getFirstInputSlot(), i);
                     dataBatch.addGlobalAnnotations(getFirstInputSlot().getAnnotations(i), JIPipeAnnotationMergeStrategy.Merge);
@@ -105,7 +105,7 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
                     tasks.add(() -> {
                         if (progress.isCancelled().get())
                             return;
-                        JIPipeRunnableInfo slotProgress = progress.resolveAndLog("Data row", rowIndex, getFirstInputSlot().getRowCount());
+                        JIPipeProgressInfo slotProgress = progress.resolveAndLog("Data row", rowIndex, getFirstInputSlot().getRowCount());
                         JIPipeDataBatch dataBatch = new JIPipeDataBatch(this);
                         dataBatch.setData(getFirstInputSlot(), rowIndex);
                         dataBatch.addGlobalAnnotations(getFirstInputSlot().getAnnotations(rowIndex), JIPipeAnnotationMergeStrategy.Merge);
@@ -143,7 +143,7 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
      *  @param dataBatch         The data interface
      * @param progress the progress info from the run
      */
-    protected abstract void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnableInfo progress);
+    protected abstract void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress);
 
     @Override
     public boolean supportsParallelization() {

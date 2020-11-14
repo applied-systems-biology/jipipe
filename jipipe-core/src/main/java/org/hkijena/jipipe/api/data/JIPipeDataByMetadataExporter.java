@@ -15,7 +15,7 @@ package org.hkijena.jipipe.api.data;
 
 import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeRunnableInfo;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.parameters.expressions.StringQueryExpression;
@@ -189,7 +189,7 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
      * @param dataSlotList      list of data slots the will be exported
      * @param outputPath        the path where the files will be put
      */
-    public void writeToFolder(List<JIPipeDataSlot> dataSlotList, Path outputPath, JIPipeRunnableInfo progress) {
+    public void writeToFolder(List<JIPipeDataSlot> dataSlotList, Path outputPath, JIPipeProgressInfo progress) {
         if (!Files.isDirectory(outputPath)) {
             try {
                 Files.createDirectories(outputPath);
@@ -211,7 +211,7 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
      * @param dataSlot          the data slot
      * @param outputPath        the path where the files will be put
      */
-    public void writeToFolder(JIPipeDataSlot dataSlot, Path outputPath, JIPipeRunnableInfo progress) {
+    public void writeToFolder(JIPipeDataSlot dataSlot, Path outputPath, JIPipeProgressInfo progress) {
         writeToFolder(dataSlot, outputPath, progress, new HashSet<>());
     }
 
@@ -222,7 +222,7 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
      * @param outputPath        the path where the files will be put
      * @param existingMetadata  list of existing entries. used to avoid duplicates.
      */
-    public void writeToFolder(JIPipeDataSlot dataSlot, Path outputPath, JIPipeRunnableInfo progress, Set<String> existingMetadata) {
+    public void writeToFolder(JIPipeDataSlot dataSlot, Path outputPath, JIPipeProgressInfo progress, Set<String> existingMetadata) {
         for (int row = 0; row < dataSlot.getRowCount(); row++) {
             if (progress.isCancelled().get())
                 return;
@@ -237,7 +237,7 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
      * @param row               the data row
      * @param outputPath        the path where the files will be put
      */
-    public void writeToFolder(JIPipeDataSlot dataSlot, int row, Path outputPath, JIPipeRunnableInfo progress) {
+    public void writeToFolder(JIPipeDataSlot dataSlot, int row, Path outputPath, JIPipeProgressInfo progress) {
         writeToFolder(dataSlot, row, outputPath, progress, new HashSet<>());
     }
 
@@ -249,7 +249,7 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
      * @param outputPath        the path where the files will be put
      * @param existingMetadata  list of existing entries. used to avoid duplicates
      */
-    public void writeToFolder(JIPipeDataSlot dataSlot, int row, Path outputPath, JIPipeRunnableInfo progress, Set<String> existingMetadata) {
+    public void writeToFolder(JIPipeDataSlot dataSlot, int row, Path outputPath, JIPipeProgressInfo progress, Set<String> existingMetadata) {
         String metadataString = generateMetadataString(dataSlot, row, existingMetadata);
         JIPipeData data = dataSlot.getData(row, JIPipeData.class);
         progress.log("Saving " + data + " as " + metadataString + " into " + outputPath);

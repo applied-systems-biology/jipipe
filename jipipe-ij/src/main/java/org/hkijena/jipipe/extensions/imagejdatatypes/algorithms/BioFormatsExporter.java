@@ -15,7 +15,7 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.algorithms;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
-import org.hkijena.jipipe.api.JIPipeRunnableInfo;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -46,7 +46,7 @@ public class BioFormatsExporter extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeRunnableInfo progress) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
         OMEImageData input = dataBatch.getInputData(getFirstInputSlot(), OMEImageData.class);
         OMEImageData output = (OMEImageData) input.duplicate();
         output.setExporterSettings(new OMEExporterSettings(exporterSettings));

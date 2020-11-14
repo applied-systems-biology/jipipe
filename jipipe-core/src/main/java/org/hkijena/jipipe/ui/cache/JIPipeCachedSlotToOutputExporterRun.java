@@ -15,7 +15,7 @@ package org.hkijena.jipipe.ui.cache;
 
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.JIPipeRunnable;
-import org.hkijena.jipipe.api.JIPipeRunnableInfo;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
@@ -34,7 +34,7 @@ import java.util.Set;
 
 public class JIPipeCachedSlotToOutputExporterRun extends JIPipeWorkbenchPanel implements JIPipeRunnable {
 
-    private JIPipeRunnableInfo info = new JIPipeRunnableInfo();
+    private JIPipeProgressInfo info = new JIPipeProgressInfo();
     private final Path outputPath;
     private final List<JIPipeDataSlot> slots;
     private final boolean splitBySlot;
@@ -106,11 +106,16 @@ public class JIPipeCachedSlotToOutputExporterRun extends JIPipeWorkbenchPanel im
     }
 
     @Override
-    public JIPipeRunnableInfo getInfo() {
+    public JIPipeProgressInfo getProgressInfo() {
         return info;
     }
 
-    public void setInfo(JIPipeRunnableInfo info) {
+    @Override
+    public String getTaskLabel() {
+        return "Export cached data";
+    }
+
+    public void setInfo(JIPipeProgressInfo info) {
         this.info = info;
     }
 }

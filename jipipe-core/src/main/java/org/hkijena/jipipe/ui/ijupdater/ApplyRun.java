@@ -3,11 +3,11 @@ package org.hkijena.jipipe.ui.ijupdater;
 import net.imagej.updater.FilesCollection;
 import net.imagej.updater.Installer;
 import org.hkijena.jipipe.api.JIPipeRunnable;
-import org.hkijena.jipipe.api.JIPipeRunnableInfo;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 
 public class ApplyRun implements JIPipeRunnable {
 
-    private JIPipeRunnableInfo info = new JIPipeRunnableInfo();
+    private JIPipeProgressInfo info = new JIPipeProgressInfo();
     private final FilesCollection filesCollection;
 
     public ApplyRun(FilesCollection filesCollection) {
@@ -30,11 +30,16 @@ public class ApplyRun implements JIPipeRunnable {
     }
 
     @Override
-    public JIPipeRunnableInfo getInfo() {
+    public JIPipeProgressInfo getProgressInfo() {
         return info;
     }
 
-    public void setInfo(JIPipeRunnableInfo info) {
+    @Override
+    public String getTaskLabel() {
+        return "ImageJ updater: Apply";
+    }
+
+    public void setInfo(JIPipeProgressInfo info) {
         this.info = info;
     }
 }

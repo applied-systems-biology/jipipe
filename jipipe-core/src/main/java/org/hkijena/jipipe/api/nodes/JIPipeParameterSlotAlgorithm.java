@@ -16,7 +16,7 @@ package org.hkijena.jipipe.api.nodes;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeRunnableInfo;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
@@ -133,7 +133,7 @@ public abstract class JIPipeParameterSlotAlgorithm extends JIPipeAlgorithm {
     }
 
     @Override
-    public void run(JIPipeRunnableInfo progress) {
+    public void run(JIPipeProgressInfo progress) {
         if (isPassThrough() && canPassThrough()) {
             progress.log("Data passed through to output");
             runPassThrough();
@@ -212,7 +212,7 @@ public abstract class JIPipeParameterSlotAlgorithm extends JIPipeAlgorithm {
      * @param progress progress info from the run
      * @param parameterAnnotations parameter annotations
      */
-    public abstract void runParameterSet(JIPipeRunnableInfo progress, List<JIPipeAnnotation> parameterAnnotations);
+    public abstract void runParameterSet(JIPipeProgressInfo progress, List<JIPipeAnnotation> parameterAnnotations);
 
     private void updateParameterSlot() {
         if (getSlotConfiguration() instanceof JIPipeMutableSlotConfiguration) {

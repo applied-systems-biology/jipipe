@@ -16,7 +16,7 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi;
 import ij.ImagePlus;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeRunnableInfo;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
@@ -85,7 +85,7 @@ public abstract class ImageRoiProcessorAlgorithm extends JIPipeIteratingAlgorith
      * @param progress progress
      * @return reference image
      */
-    protected Map<ImagePlusData, ROIListData> getReferenceImage(JIPipeDataBatch dataBatch, JIPipeRunnableInfo progress) {
+    protected Map<ImagePlusData, ROIListData> getReferenceImage(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
         if (overrideReferenceImage) {
             ImagePlusData reference = dataBatch.getInputData("Reference", ImagePlusData.class);
             Map<ImagePlusData, ROIListData> result = new HashMap<>();

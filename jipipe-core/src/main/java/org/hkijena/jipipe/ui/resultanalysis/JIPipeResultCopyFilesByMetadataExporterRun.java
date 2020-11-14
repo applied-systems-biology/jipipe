@@ -15,7 +15,7 @@ package org.hkijena.jipipe.ui.resultanalysis;
 
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.JIPipeRunnable;
-import org.hkijena.jipipe.api.JIPipeRunnableInfo;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataByMetadataExporter;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeExportedDataTable;
@@ -46,7 +46,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class JIPipeResultCopyFilesByMetadataExporterRun extends JIPipeWorkbenchPanel implements JIPipeRunnable {
 
-    private JIPipeRunnableInfo info = new JIPipeRunnableInfo();
+    private JIPipeProgressInfo info = new JIPipeProgressInfo();
     private Path outputPath;
     private final List<JIPipeDataSlot> slots;
     private final boolean splitBySlot;
@@ -118,7 +118,7 @@ public class JIPipeResultCopyFilesByMetadataExporterRun extends JIPipeWorkbenchP
         info.setMaxProgress(slots.size());
         for (int i = 0; i < slots.size(); i++) {
             info.setProgress(i + 1);
-            JIPipeRunnableInfo subStatus = info.resolveAndLog("Slot", i,slots.size());
+            JIPipeProgressInfo subStatus = info.resolveAndLog("Slot", i,slots.size());
             JIPipeDataSlot slot = slots.get(i);
             Path targetPath = outputPath;
             if(splitBySlot) {
@@ -133,7 +133,7 @@ public class JIPipeResultCopyFilesByMetadataExporterRun extends JIPipeWorkbenchP
                 // Load the data table
                 JIPipeExportedDataTable dataTable = JIPipeExportedDataTable.loadFromJson(slot.getStoragePath().resolve("data-table.json"));
                 for (int row = 0; row < dataTable.getRowCount(); row++) {
-                    JIPipeRunnableInfo rowSubStatus = subStatus.resolveAndLog("Row" , row,dataTable.getRowCount());
+                    JIPipeProgressInfo rowSubStatus = subStatus.resolveAndLog("Row" , row,dataTable.getRowCount());
                     String metadataString = exporter.generateMetadataString(dataTable, row, existingMetadata);
 
                     Path rowStoragePath = slot.getRowStoragePath(row);
@@ -206,11 +206,16 @@ public class JIPipeResultCopyFilesByMetadataExporterRun extends JIPipeWorkbenchP
     }
 
     @Override
-    public JIPipeRunnableInfo getInfo() {
+    public JIPipeProgressInfo getProgressInfo() {
         return info;
     }
 
-    public void setInfo(JIPipeRunnableInfo info) {
+    @Override
+    public String getTaskLabel() {
+        return "Export result data as files";
+    }
+
+    public void setInfo(JIPipeProgressInfo info) {
         this.info = info;
     }
 }

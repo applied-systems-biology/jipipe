@@ -14,20 +14,20 @@
 package org.hkijena.jipipe.ui.ijupdater;
 
 import net.imagej.updater.util.Progress;
-import org.hkijena.jipipe.api.JIPipeRunnableInfo;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 
 /**
  * Adapter between JIPipe and ImageJ progress implementations
  */
 public class ProgressAdapter implements Progress {
 
-    private final JIPipeRunnableInfo onProgress;
+    private final JIPipeProgressInfo onProgress;
     private int progress;
     private int maxProgress;
     private String title;
     private String item;
 
-    public ProgressAdapter(JIPipeRunnableInfo onProgress) {
+    public ProgressAdapter(JIPipeProgressInfo onProgress) {
         this.onProgress = onProgress;
     }
 

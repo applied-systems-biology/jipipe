@@ -16,7 +16,7 @@ package org.hkijena.jipipe.ui.ijupdater;
 import net.imagej.updater.FilesCollection;
 import net.imagej.updater.UpdateSite;
 import org.hkijena.jipipe.api.JIPipeRunnable;
-import org.hkijena.jipipe.api.JIPipeRunnableInfo;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -25,7 +25,7 @@ import java.util.List;
 
 public class ActivateUpdateSiteRun implements JIPipeRunnable {
 
-    private JIPipeRunnableInfo info = new JIPipeRunnableInfo();
+    private JIPipeProgressInfo info = new JIPipeProgressInfo();
     private final FilesCollection filesCollection;
     private final List<UpdateSite> updateSites;
 
@@ -46,11 +46,16 @@ public class ActivateUpdateSiteRun implements JIPipeRunnable {
     }
 
     @Override
-    public JIPipeRunnableInfo getInfo() {
+    public JIPipeProgressInfo getProgressInfo() {
         return info;
     }
 
-    public void setInfo(JIPipeRunnableInfo info) {
+    @Override
+    public String getTaskLabel() {
+        return "ImageJ updater: Activate site";
+    }
+
+    public void setInfo(JIPipeProgressInfo info) {
         this.info = info;
     }
 }

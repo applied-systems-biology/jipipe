@@ -14,6 +14,8 @@
 package org.hkijena.jipipe.ui.running;
 
 import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeRunnable;
 import org.hkijena.jipipe.ui.events.RunUIWorkerFinishedEvent;
 import org.hkijena.jipipe.ui.events.RunUIWorkerInterruptedEvent;
@@ -29,17 +31,19 @@ import java.util.concurrent.ExecutionException;
  */
 public class JIPipeRunWorker extends SwingWorker<Exception, Object> {
 
-    private EventBus eventBus = new EventBus();
-    private JIPipeRunnable run;
+    private final EventBus eventBus = new EventBus();
+    private final JIPipeRunnable run;
 
     /**
      * @param run The executed run
      */
     public JIPipeRunWorker(JIPipeRunnable run) {
         this.run = run;
+        this.run.getProgressInfo().getEventBus().register(this);
     }
 
-    private void onStatus(JIPipeRunnerStatus status) {
+    @Subscribe
+    public void onStatus(JIPipeProgressInfo.StatusUpdatedEvent status) {
         publish(status);
     }
 
@@ -59,8 +63,8 @@ public class JIPipeRunWorker extends SwingWorker<Exception, Object> {
     protected void process(List<Object> chunks) {
         super.process(chunks);
         for (Object chunk : chunks) {
-            if (chunk instanceof JIPipeRunnerStatus) {
-                eventBus.post(new RunUIWorkerProgressEvent(this));
+            if (chunk instanceof JIPipeProgressInfo.StatusUpdatedEvent) {
+                eventBus.post(new RunUIWorkerProgressEvent(this, (JIPipeProgressInfo.StatusUpdatedEvent) chunk));
             }
         }
     }
