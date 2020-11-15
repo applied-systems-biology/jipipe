@@ -13,6 +13,15 @@
 
 package org.hkijena.jipipe.extensions.tables.datatypes;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonSetter;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import gnu.trove.map.TIntIntMap;
 import gnu.trove.map.hash.TIntIntHashMap;
 import ij.macro.Variable;
@@ -26,6 +35,7 @@ import org.hkijena.jipipe.extensions.tables.TableColumnReference;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.DocumentTabPane;
 import org.hkijena.jipipe.ui.tableanalyzer.JIPipeTableEditor;
+import org.hkijena.jipipe.utils.JsonUtils;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -46,6 +56,8 @@ import java.util.stream.Collectors;
  * Data containing a {@link ResultsTable}
  */
 @JIPipeDocumentation(name = "Results table")
+@JsonSerialize(using = ResultsTableData.Serializer.class)
+@JsonDeserialize(using = ResultsTableData.Deserializer.class)
 public class ResultsTableData implements JIPipeData, TableModel {
 
     private ResultsTable table;
@@ -1087,6 +1099,87 @@ public class ResultsTableData implements JIPipeData, TableModel {
 
         public int getColumn() {
             return column;
+        }
+    }
+
+    public static class Serializer extends JsonSerializer<ResultsTableData> {
+        @Override
+        public void serialize(ResultsTableData resultsTableData, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
+            List<SerializedColumn> columns = new ArrayList<>();
+            List<Map<String, Object>> rows = new ArrayList<>();
+            for (int col = 0; col < resultsTableData.getColumnCount(); col++) {
+                SerializedColumn column = new SerializedColumn();
+                column.setName(resultsTableData.getColumnName(col));
+                column.setNumeric(resultsTableData.isNumeric(col));
+                columns.add(column);
+            }
+            for (int row = 0; row < resultsTableData.getRowCount(); row++) {
+                Map<String, Object> rowData = new HashMap<>();
+                for (int col = 0; col < resultsTableData.getColumnCount(); col++) {
+                    rowData.put(resultsTableData.getColumnName(col), resultsTableData.getValueAt(row, col));
+                }
+                rows.add(rowData);
+            }
+            jsonGenerator.writeStartObject();
+            jsonGenerator.writeObjectField("columns", columns);
+            jsonGenerator.writeObjectField("rows", rows);
+            jsonGenerator.writeEndObject();
+        }
+    }
+
+    public static class Deserializer extends JsonDeserializer<ResultsTableData> {
+        @Override
+        public ResultsTableData deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
+            JsonNode node = jsonParser.readValueAsTree();
+            ResultsTableData resultsTableData = new ResultsTableData();
+
+            {
+                TypeReference<List<SerializedColumn>> typeReference = new TypeReference<List<SerializedColumn>>() {};
+                List<SerializedColumn> columns = JsonUtils.getObjectMapper().readerFor(typeReference).readValue(node.get("columns"));
+                for (SerializedColumn column : columns) {
+                    resultsTableData.addColumn(column.getName(), !column.isNumeric());
+                }
+            }
+            {
+                TypeReference< List<Map<String, Object>>> typeReference = new TypeReference<List<Map<String, Object>>>() {};
+                List<Map<String, Object>> rows = JsonUtils.getObjectMapper().readerFor(typeReference).readValue(node.get("rows"));
+                int rowIndex = 0;
+                for (Map<String, Object> rowData : rows) {
+                    resultsTableData.addRow();
+                    for (int col = 0; col < resultsTableData.getColumnCount(); col++) {
+                        Object value = rowData.get(resultsTableData.getColumnName(col));
+                        resultsTableData.setValueAt(value, rowIndex, col);
+                    }
+                    ++rowIndex;
+                }
+            }
+
+            return resultsTableData;
+        }
+    }
+
+    private static class SerializedColumn {
+        private String name;
+        private boolean numeric;
+
+        @JsonGetter("name")
+        public String getName() {
+            return name;
+        }
+
+        @JsonSetter("name")
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        @JsonGetter("is-numeric")
+        public boolean isNumeric() {
+            return numeric;
+        }
+
+        @JsonSetter("is-numeric")
+        public void setNumeric(boolean numeric) {
+            this.numeric = numeric;
         }
     }
 }

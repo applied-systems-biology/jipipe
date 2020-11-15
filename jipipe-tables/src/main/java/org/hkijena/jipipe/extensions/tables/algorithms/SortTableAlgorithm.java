@@ -30,6 +30,7 @@ import org.hkijena.jipipe.extensions.parameters.pairs.PairParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.pairs.StringQueryExpressionAndSortOrderPairParameter;
 import org.hkijena.jipipe.extensions.parameters.util.SortOrder;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
+import org.hkijena.jipipe.utils.NaturalOrderComparator;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -44,6 +45,7 @@ import java.util.Comparator;
 public class SortTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private StringQueryExpressionAndSortOrderPairParameter.List sortOrderList = new StringQueryExpressionAndSortOrderPairParameter.List();
+    private boolean useNaturalSortOrder = true;
 
     /**
      * Creates a new instance
@@ -62,6 +64,7 @@ public class SortTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
      */
     public SortTableAlgorithm(SortTableAlgorithm other) {
         super(other);
+        this.useNaturalSortOrder = other.useNaturalSortOrder;
         this.sortOrderList = new StringQueryExpressionAndSortOrderPairParameter.List(other.sortOrderList);
     }
 
@@ -105,10 +108,14 @@ public class SortTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                     } else {
                         String v1 = input.getValueAsString(r1, columnName);
                         String v2 = input.getValueAsString(r2, columnName);
+//                        if (pair.getValue() == SortOrder.Ascending)
+//                            return v1.compareTo(v2);
+//                        else
+//                            return -v1.compareTo(v2);
                         if (pair.getValue() == SortOrder.Ascending)
-                            return v1.compareTo(v2);
+                            return NaturalOrderComparator.INSTANCE.compare(v1, v2);
                         else
-                            return -v1.compareTo(v2);
+                            return -NaturalOrderComparator.INSTANCE.compare(v1, v2);
                     }
                 };
                 if (result == null)
@@ -145,5 +152,17 @@ public class SortTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeParameter("sort-order")
     public void setSortOrderList(StringQueryExpressionAndSortOrderPairParameter.List sortOrderList) {
         this.sortOrderList = sortOrderList;
+    }
+
+    @JIPipeDocumentation(name = "Sort strings by natural order", description = "If enabled, strings are sorted by natural order (e.g. 1, 2, 15 100, ...). If disabled, " +
+            "strings are sorted lexicographically (e.g. 1, 15, 100, 2)")
+    @JIPipeParameter("use-natural-sort-order")
+    public boolean isUseNaturalSortOrder() {
+        return useNaturalSortOrder;
+    }
+
+    @JIPipeParameter("use-natural-sort-order")
+    public void setUseNaturalSortOrder(boolean useNaturalSortOrder) {
+        this.useNaturalSortOrder = useNaturalSortOrder;
     }
 }

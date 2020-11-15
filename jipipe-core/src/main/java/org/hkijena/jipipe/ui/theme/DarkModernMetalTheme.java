@@ -41,7 +41,7 @@ public class DarkModernMetalTheme extends DefaultMetalTheme {
     public static final ColorUIResource SECONDARY2 =
             new ColorUIResource(0x313131);
     public static final ColorUIResource SECONDARY3 =
-            new ColorUIResource(0x2f2f2f);
+            new ColorUIResource(0x333333);
     public static final ColorUIResource PRIMARY4 =
             new ColorUIResource(0x2f2f2f);
     public static final ColorUIResource PRIMARY5 =

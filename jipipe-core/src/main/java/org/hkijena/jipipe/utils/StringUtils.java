@@ -302,8 +302,8 @@ public class StringUtils {
      * @param s the string
      * @return an empty string if s is null otherwise returns s
      */
-    public static String nullToEmpty(String s) {
-        return s == null ? "" : s;
+    public static String nullToEmpty(Object s) {
+        return s == null ? "" : "" + s;
     }
 
     /**
