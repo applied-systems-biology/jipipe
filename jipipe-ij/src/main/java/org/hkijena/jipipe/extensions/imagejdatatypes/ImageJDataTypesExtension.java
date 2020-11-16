@@ -86,13 +86,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePl
 import org.hkijena.jipipe.extensions.imagejdatatypes.display.OpenInImageJDataDisplay;
 import org.hkijena.jipipe.extensions.imagejdatatypes.parameters.OMEColorMode;
 import org.hkijena.jipipe.extensions.imagejdatatypes.parameters.OMETIFFCompression;
-import org.hkijena.jipipe.extensions.imagejdatatypes.resultanalysis.ImageDataPreview;
-import org.hkijena.jipipe.extensions.imagejdatatypes.resultanalysis.ImagePlusDataImportOperation;
-import org.hkijena.jipipe.extensions.imagejdatatypes.resultanalysis.ImportImageJPathDataOperation;
-import org.hkijena.jipipe.extensions.imagejdatatypes.resultanalysis.OMEImageDataImportOperation;
-import org.hkijena.jipipe.extensions.imagejdatatypes.resultanalysis.OMEImageDataPreview;
-import org.hkijena.jipipe.extensions.imagejdatatypes.resultanalysis.ROIDataImportIntoImageOperation;
-import org.hkijena.jipipe.extensions.imagejdatatypes.resultanalysis.ROIDataPreview;
+import org.hkijena.jipipe.extensions.imagejdatatypes.resultanalysis.*;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
 import org.hkijena.jipipe.extensions.tables.ResultsTableDataPreview;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
@@ -242,8 +236,10 @@ public class ImageJDataTypesExtension extends JIPipePrepackagedDefaultJavaExtens
                 UIUtils.getIconURLFromResources("data-types/bioformats.png"),
                 null,
                 OMEImageDataPreview.class,
-                new OMEImageDataImportOperation(),
-                new OpenInImageJDataDisplay());
+                new OMEImageDataImportIntoImageJOperation(),
+                new OpenInImageJDataDisplay(),
+                new OMEImageDataImportViaBioFormatsOperation(),
+                new OMEImageDataImportIntoJIPipeOperation());
         registerImageJDataAdapter(new OMEImageDataImageJAdapter(), ImagePlusDataImporterUI.class);
         registerImageDataType("imagej-imgplus", ImagePlusData.class, "icons/data-types/imgplus.png");
         registerImageDataType("imagej-imgplus-greyscale", ImagePlusGreyscaleData.class, "icons/data-types/imgplus-greyscale.png");
@@ -373,7 +369,15 @@ public class ImageJDataTypesExtension extends JIPipePrepackagedDefaultJavaExtens
     }
 
     private void registerImageDataType(String id, Class<? extends ImagePlusData> dataClass, String iconResource) {
-        registerDatatype(id, dataClass, ResourceUtils.getPluginResource(iconResource), null, ImageDataPreview.class, new ImagePlusDataImportOperation(), new OpenInImageJDataDisplay());
+        registerDatatype(id,
+                dataClass,
+                ResourceUtils.getPluginResource(iconResource),
+                null,
+                ImageDataPreview.class,
+                new ImagePlusDataImportIntoJIPipeOperation(),
+                new ImagePlusDataImportIntoImageJOperation(),
+                new OpenInImageJDataDisplay(),
+                new OMEImageDataImportViaBioFormatsOperation());
         registerImageJDataAdapter(new ImgPlusDataImageJAdapter(dataClass), ImagePlusDataImporterUI.class);
     }
 }

@@ -7,16 +7,17 @@ import org.hkijena.jipipe.api.data.JIPipeExportedDataTable;
 import org.hkijena.jipipe.api.data.JIPipeResultSlotDataSource;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
+import org.hkijena.jipipe.ui.components.ImageViewerPanel;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.nio.file.Path;
 
-public class ImagePlusDataImportOperation implements JIPipeDataImportOperation {
+public class ImagePlusDataImportIntoJIPipeOperation implements JIPipeDataImportOperation {
     @Override
     public JIPipeData show(JIPipeDataSlot slot, JIPipeExportedDataTable.Row row, Path rowStorageFolder, String compartmentName, String algorithmName, String displayName, JIPipeWorkbench workbench) {
         ImagePlusData data = ImagePlusData.importFrom(rowStorageFolder);
-        data.display(displayName, workbench, new JIPipeResultSlotDataSource(slot, row, rowStorageFolder));
+        ImageViewerPanel.showImage(data.getImage(), displayName);
         return data;
     }
 
@@ -27,7 +28,7 @@ public class ImagePlusDataImportOperation implements JIPipeDataImportOperation {
 
     @Override
     public String getDescription() {
-        return "Imports the image into the JIPipe Image Viewer";
+        return "Imports the image into the JIPipe image viewer";
     }
 
     @Override
@@ -37,6 +38,6 @@ public class ImagePlusDataImportOperation implements JIPipeDataImportOperation {
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("apps/imagej.png");
+        return UIUtils.getIconFromResources("apps/jipipe.png");
     }
 }

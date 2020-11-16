@@ -22,6 +22,7 @@ import ij.process.ImageStatistics;
 import ij.util.Tools;
 import org.hkijena.jipipe.ui.theme.JIPipeUITheme;
 import org.hkijena.jipipe.utils.ImageJCalibrationMode;
+import org.hkijena.jipipe.utils.ImageJUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -309,6 +310,7 @@ public class ImageViewerPanel extends JPanel {
     }
 
     public void setImage(ImagePlus image) {
+        this.lutEditors.clear();
         this.image = image;
         refreshSliders();
         refreshSlice();
@@ -342,7 +344,12 @@ public class ImageViewerPanel extends JPanel {
             editor.loadLUTFromImage();
             lutEditors.add(editor);
         }
-        formPanel.addGroupHeader("LUT", UIUtils.getIconFromResources("actions/color-gradient.png"));
+        FormPanel.GroupHeaderPanel headerPanel = formPanel.addGroupHeader("LUT", UIUtils.getIconFromResources("actions/color-gradient.png"));
+        if(image.getNChannels() == 3) {
+            JButton toRGBButton = new JButton("Convert to RGB", UIUtils.getIconFromResources("actions/colors-rgb.png"));
+            headerPanel.add(toRGBButton);
+            toRGBButton.addActionListener(e -> convertImageToRGB());
+        }
         for (int channel = 0; channel < image.getNChannels(); channel++) {
             ImageViewerLUTEditor editor = lutEditors.get(channel);
             JTextField channelNameEditor = new JTextField(editor.getChannelName());
@@ -355,6 +362,12 @@ public class ImageViewerPanel extends JPanel {
                 }
             });
             formPanel.addToForm(editor, channelNameEditor, null);
+        }
+    }
+
+    private void convertImageToRGB() {
+        if(image != null) {
+            setImage(ImageJUtils.channelsToRGB(image));
         }
     }
 
@@ -489,6 +502,25 @@ public class ImageViewerPanel extends JPanel {
         frame.pack();
         frame.setSize(1280, 1024);
         frame.setVisible(true);
+    }
+
+    /**
+     * Opens the image in a new frame
+     * @param image the image
+     * @param title the title
+     * @return the panel
+     */
+    public static ImageViewerPanel showImage(ImagePlus image, String title) {
+        ImageViewerPanel dataDisplay = new ImageViewerPanel();
+        dataDisplay.setImage(image);
+        JFrame frame = new JFrame(title);
+        frame.setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
+        frame.setContentPane(dataDisplay);
+        frame.pack();
+        frame.setSize(1024, 768);
+        frame.setVisible(true);
+        SwingUtilities.invokeLater(dataDisplay::fitImageToScreen);
+        return dataDisplay;
     }
 
 }
