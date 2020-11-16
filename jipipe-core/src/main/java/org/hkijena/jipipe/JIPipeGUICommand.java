@@ -27,6 +27,8 @@ import org.scijava.plugin.Plugin;
 import org.scijava.plugin.PluginService;
 
 import javax.swing.*;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Command that runs the GUI
@@ -45,6 +47,18 @@ public class JIPipeGUICommand implements Command {
         // Update look & feel
         UIUtils.loadLookAndFeelFromSettings();
         if (!JIPipe.isInstantiated()) {
+            SwingUtilities.invokeLater(() -> SplashScreen.getInstance().showSplash(context));
+        }
+
+        // Check java dependencies
+        if (!checkJavaDependencies()) {
+            SwingUtilities.invokeLater(() -> SplashScreen.getInstance().hideSplash());
+            if(JOptionPane.showConfirmDialog(null,
+                    "JIPipe has detected that you might miss some essential files. Please " +
+                            "ensure that you installed following dependencies:\nGuava\nFlexMark\nJackson\nJGraphT\nOpenHTMLToPDF\nMSLinks\nApache Commons\nFontBox\nPDFBox\nAutoLink \n\n" +
+                            "Do you want to continue anyways?", "Missing dependencies", JOptionPane.YES_NO_OPTION, JOptionPane.ERROR_MESSAGE) == JOptionPane.NO_OPTION) {
+                return;
+            }
             SwingUtilities.invokeLater(() -> SplashScreen.getInstance().showSplash(context));
         }
 
@@ -87,6 +101,60 @@ public class JIPipeGUICommand implements Command {
                     true);
             window.setTitle("New project");
         });
+    }
+
+    private boolean checkJavaDependencies() {
+        List<String> classesToTest = Arrays.asList("com.google.common.base.Charsets",
+                "com.google.common.io.Resources",
+                "com.google.common.collect.BiMap",
+                "com.google.common.collect.HashBiMap",
+                "com.google.common.collect.ImmutableBiMap",
+                "com.google.common.collect.ImmutableList",
+                "com.google.common.collect.ImmutableSet",
+                "com.google.common.eventbus.EventBus",
+                "com.google.common.eventbus.Subscribe",
+                "com.vladsch.flexmark.ext.autolink.AutolinkExtension",
+                "com.vladsch.flexmark.ext.tables.TablesExtension",
+                "com.vladsch.flexmark.ext.toc.TocExtension",
+                "com.vladsch.flexmark.html.HtmlRenderer",
+                "com.vladsch.flexmark.parser.Parser",
+                "com.vladsch.flexmark.util.ast.Node",
+                "com.vladsch.flexmark.util.data.MutableDataHolder",
+                "com.vladsch.flexmark.util.data.MutableDataSet",
+                "com.fasterxml.jackson.core.JsonGenerator",
+                "com.fasterxml.jackson.core.JsonParser",
+                "com.fasterxml.jackson.core.JsonProcessingException",
+                "com.fasterxml.jackson.databind.DeserializationContext",
+                "com.fasterxml.jackson.databind.JsonDeserializer",
+                "com.fasterxml.jackson.databind.JsonNode",
+                "com.fasterxml.jackson.databind.JsonSerializer",
+                "com.fasterxml.jackson.databind.SerializerProvider",
+                "com.fasterxml.jackson.databind.annotation.JsonDeserialize",
+                "com.fasterxml.jackson.databind.annotation.JsonSerialize",
+                "org.jgrapht.Graph",
+                "org.jgrapht.alg.cycle.CycleDetector",
+                "org.jgrapht.graph.DefaultDirectedGraph",
+                "org.jgrapht.traverse.GraphIterator",
+                "org.jgrapht.traverse.TopologicalOrderIterator",
+                "com.openhtmltopdf.pdfboxout.PdfBoxImage",
+                "com.openhtmltopdf.bidi.support.ICUBreakers",
+                "mslinks.ShellLink",
+                "org.apache.commons.io.FileUtils",
+                "org.apache.commons.lang.SystemUtils",
+                "org.apache.fontbox.FontBoxFont",
+                "org.apache.pdfbox.rendering.PDFRenderer",
+                "org.nibor.autolink.Autolink");
+        boolean success = true;
+        for (String klass : classesToTest) {
+            try {
+                Class.forName(klass);
+            } catch (NoClassDefFoundError | ClassNotFoundException e) {
+                e.printStackTrace();
+                System.err.println("Failed to find class: " + klass + ". Are all dependencies installed?");
+                success = false;
+            }
+        }
+        return success;
     }
 
     private void resolveMissingImageJDependencies(JIPipeRegistryIssues issues) {

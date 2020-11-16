@@ -142,7 +142,7 @@ public class JIPipeDatatypeRegistry {
      * @return if the types are convertible
      */
     public boolean isConvertible(Class<? extends JIPipeData> inputDataType, Class<? extends JIPipeData> outputDataType) {
-        if(inputDataType == JIPipeData.class)
+        if (inputDataType == JIPipeData.class)
             return true;
         if (isTriviallyConvertible(inputDataType, outputDataType)) {
             return true;

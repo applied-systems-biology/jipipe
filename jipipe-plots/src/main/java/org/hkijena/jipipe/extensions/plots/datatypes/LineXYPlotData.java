@@ -42,12 +42,12 @@ public class LineXYPlotData extends XYPlotData {
         super(other);
     }
 
-    public static LineXYPlotData importFrom(Path storagePath) {
-        return PlotData.importFrom(storagePath, LineXYPlotData.class);
-    }
-
     @Override
     public JFreeChart getChart() {
         return ChartFactory.createXYLineChart(getTitle(), getxAxisLabel(), getyAxisLabel(), createDataSet());
+    }
+
+    public static LineXYPlotData importFrom(Path storagePath) {
+        return PlotData.importFrom(storagePath, LineXYPlotData.class);
     }
 }

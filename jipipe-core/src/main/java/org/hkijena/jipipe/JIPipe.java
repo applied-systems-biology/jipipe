@@ -40,7 +40,13 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeMutableParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
-import org.hkijena.jipipe.api.registries.*;
+import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
+import org.hkijena.jipipe.api.registries.JIPipeExpressionRegistry;
+import org.hkijena.jipipe.api.registries.JIPipeImageJAdapterRegistry;
+import org.hkijena.jipipe.api.registries.JIPipeNodeRegistrationTask;
+import org.hkijena.jipipe.api.registries.JIPipeNodeRegistry;
+import org.hkijena.jipipe.api.registries.JIPipeParameterTypeRegistry;
+import org.hkijena.jipipe.api.registries.JIPipeSettingsRegistry;
 import org.hkijena.jipipe.extensions.parameters.primitives.DynamicStringEnumParameter;
 import org.hkijena.jipipe.extensions.settings.DefaultCacheDisplaySettings;
 import org.hkijena.jipipe.extensions.settings.DefaultResultImporterSettings;
@@ -65,7 +71,13 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.net.Authenticator;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -165,7 +177,7 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
         // Check for errors
         logService.info("[3/3] Error-checking-phase ...");
         for (Class<? extends JIPipeData> dataType : datatypeRegistry.getRegisteredDataTypes().values()) {
-            if(dataType.isInterface() || Modifier.isAbstract(dataType.getModifiers()))
+            if (dataType.isInterface() || Modifier.isAbstract(dataType.getModifiers()))
                 continue;
             // Check if we can find a method "import"
             try {
@@ -173,11 +185,10 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
                 if (!Modifier.isStatic(method.getModifiers())) {
                     throw new IllegalArgumentException("Import method is not static!");
                 }
-                if(!JIPipeData.class.isAssignableFrom(method.getReturnType())) {
+                if (!JIPipeData.class.isAssignableFrom(method.getReturnType())) {
                     throw new IllegalArgumentException("Import method does not return JIPipeData!");
                 }
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         }
@@ -262,23 +273,6 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
         updateDefaultImporterSettings();
         updateDefaultCacheDisplaySettings();
         logService.info("JIPipe loading finished");
-    }
-
-    /**
-     * Imports data of given data type from its output folder.
-     * Generally, the output folder should conform to the data type's saveTo() function without 'forceName' enabled
-     * @param outputFolder the folder that contains the data
-     * @param klass the data type
-     * @param <T> the data type
-     * @return imported data
-     */
-    public static <T extends JIPipeData> T importData(Path outputFolder, Class<T> klass) {
-        try {
-            Method method = klass.getDeclaredMethod("importFrom", Path.class);
-            return (T) method.invoke(null, outputFolder);
-        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     /**
@@ -506,6 +500,24 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
 
     public LogService getLogService() {
         return logService;
+    }
+
+    /**
+     * Imports data of given data type from its output folder.
+     * Generally, the output folder should conform to the data type's saveTo() function without 'forceName' enabled
+     *
+     * @param outputFolder the folder that contains the data
+     * @param klass        the data type
+     * @param <T>          the data type
+     * @return imported data
+     */
+    public static <T extends JIPipeData> T importData(Path outputFolder, Class<T> klass) {
+        try {
+            Method method = klass.getDeclaredMethod("importFrom", Path.class);
+            return (T) method.invoke(null, outputFolder);
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public static JIPipeParameterTypeRegistry getParameterTypes() {

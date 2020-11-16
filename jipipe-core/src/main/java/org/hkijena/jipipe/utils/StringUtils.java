@@ -227,7 +227,7 @@ public class StringUtils {
         for (char c : INVALID_FILESYSTEM_CHARACTERS) {
             input = input.replace(c, ' ');
         }
-        if(input.length() >= 255)
+        if (input.length() >= 255)
             input = input.substring(0, 255);
         return input;
     }

@@ -105,7 +105,7 @@ public class MultiParameterAlgorithm extends JIPipeAlgorithm {
         for (int row = 0; row < parameterSlot.getRowCount(); ++row) {
             if (progress.isCancelled().get())
                 return;
-            JIPipeProgressInfo parameterProgress = progress.resolveAndLog("Parameter set", row,parameterSlot.getRowCount());
+            JIPipeProgressInfo parameterProgress = progress.resolveAndLog("Parameter set", row, parameterSlot.getRowCount());
             ParametersData parametersData = parameterSlot.getData(row, ParametersData.class);
 
             passParameters(parametersData, parameters);

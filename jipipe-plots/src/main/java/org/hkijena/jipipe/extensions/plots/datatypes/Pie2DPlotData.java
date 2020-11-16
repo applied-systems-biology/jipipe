@@ -42,12 +42,12 @@ public class Pie2DPlotData extends PiePlotData {
         super(other);
     }
 
-    public static Pie2DPlotData importFrom(Path storagePath) {
-        return PlotData.importFrom(storagePath, Pie2DPlotData.class);
-    }
-
     @Override
     public JFreeChart getChart() {
         return ChartFactory.createPieChart(getTitle(), createDataSet(), true, true, false);
+    }
+
+    public static Pie2DPlotData importFrom(Path storagePath) {
+        return PlotData.importFrom(storagePath, Pie2DPlotData.class);
     }
 }

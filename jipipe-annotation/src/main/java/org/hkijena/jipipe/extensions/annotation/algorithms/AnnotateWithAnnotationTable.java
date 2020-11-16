@@ -60,7 +60,7 @@ public class AnnotateWithAnnotationTable extends JIPipeIteratingAlgorithm {
     @Override
     public void runParameterSet(JIPipeProgressInfo progress, List<JIPipeAnnotation> parameterAnnotations) {
         if (isPassThrough() && canPassThrough()) {
-             progress.log("Data passed through to output");
+            progress.log("Data passed through to output");
             runPassThrough();
             return;
         }

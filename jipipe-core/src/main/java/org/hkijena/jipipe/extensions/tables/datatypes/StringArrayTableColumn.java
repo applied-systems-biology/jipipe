@@ -116,12 +116,6 @@ public class StringArrayTableColumn implements MutableTableColumn {
         resultsTableData.saveTo(storageFilePath, name, forceName);
     }
 
-    public static StringArrayTableColumn importFrom(Path storagePath) {
-        ResultsTableData resultsTableData = ResultsTableData.importFrom(storagePath);
-        TableColumn source = resultsTableData.getColumnReference(0);
-        return new StringArrayTableColumn(source.getDataAsString(source.getRows()), source.getLabel());
-    }
-
     @Override
     public JIPipeData duplicate() {
         return new StringArrayTableColumn(Arrays.copyOf(data, data.length), label);
@@ -131,5 +125,11 @@ public class StringArrayTableColumn implements MutableTableColumn {
     public void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
         ResultsTableData data = new ResultsTableData(Collections.singleton(this));
         data.display(displayName, workbench, source);
+    }
+
+    public static StringArrayTableColumn importFrom(Path storagePath) {
+        ResultsTableData resultsTableData = ResultsTableData.importFrom(storagePath);
+        TableColumn source = resultsTableData.getColumnReference(0);
+        return new StringArrayTableColumn(source.getDataAsString(source.getRows()), source.getLabel());
     }
 }

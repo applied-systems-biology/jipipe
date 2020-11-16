@@ -186,8 +186,8 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
     /**
      * Writes data to the specified folder
      *
-     * @param dataSlotList      list of data slots the will be exported
-     * @param outputPath        the path where the files will be put
+     * @param dataSlotList list of data slots the will be exported
+     * @param outputPath   the path where the files will be put
      */
     public void writeToFolder(List<JIPipeDataSlot> dataSlotList, Path outputPath, JIPipeProgressInfo progress) {
         if (!Files.isDirectory(outputPath)) {
@@ -208,8 +208,8 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
     /**
      * Writes data to the specified folder
      *
-     * @param dataSlot          the data slot
-     * @param outputPath        the path where the files will be put
+     * @param dataSlot   the data slot
+     * @param outputPath the path where the files will be put
      */
     public void writeToFolder(JIPipeDataSlot dataSlot, Path outputPath, JIPipeProgressInfo progress) {
         writeToFolder(dataSlot, outputPath, progress, new HashSet<>());
@@ -218,9 +218,9 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
     /**
      * Writes data to the specified folder
      *
-     * @param dataSlot          the data slot
-     * @param outputPath        the path where the files will be put
-     * @param existingMetadata  list of existing entries. used to avoid duplicates.
+     * @param dataSlot         the data slot
+     * @param outputPath       the path where the files will be put
+     * @param existingMetadata list of existing entries. used to avoid duplicates.
      */
     public void writeToFolder(JIPipeDataSlot dataSlot, Path outputPath, JIPipeProgressInfo progress, Set<String> existingMetadata) {
         for (int row = 0; row < dataSlot.getRowCount(); row++) {
@@ -233,9 +233,9 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
     /**
      * Writes data to the specified folder
      *
-     * @param dataSlot          the data slot
-     * @param row               the data row
-     * @param outputPath        the path where the files will be put
+     * @param dataSlot   the data slot
+     * @param row        the data row
+     * @param outputPath the path where the files will be put
      */
     public void writeToFolder(JIPipeDataSlot dataSlot, int row, Path outputPath, JIPipeProgressInfo progress) {
         writeToFolder(dataSlot, row, outputPath, progress, new HashSet<>());
@@ -244,10 +244,10 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
     /**
      * Writes data to the specified folder
      *
-     * @param dataSlot          the data slot
-     * @param row               the data row
-     * @param outputPath        the path where the files will be put
-     * @param existingMetadata  list of existing entries. used to avoid duplicates
+     * @param dataSlot         the data slot
+     * @param row              the data row
+     * @param outputPath       the path where the files will be put
+     * @param existingMetadata list of existing entries. used to avoid duplicates
      */
     public void writeToFolder(JIPipeDataSlot dataSlot, int row, Path outputPath, JIPipeProgressInfo progress, Set<String> existingMetadata) {
         String metadataString = generateMetadataString(dataSlot, row, existingMetadata);
@@ -290,7 +290,7 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
                 metadataValue = dataSlot.getAnnotationOr(row, metadataKey, new JIPipeAnnotation(metadataKey, missingString));
             }
             if (metadataValue != null) {
-                if(metadataValue.getValue().length() > metadataValueLengthLimit)
+                if (metadataValue.getValue().length() > metadataValueLengthLimit)
                     continue;
                 if (metadataStringBuilder.length() > 0)
                     metadataStringBuilder.append(separatorString);
@@ -300,7 +300,7 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
             }
         }
 
-        if(metadataStringBuilder.length() == 0) {
+        if (metadataStringBuilder.length() == 0) {
             metadataStringBuilder.append("unnamed");
         }
         String metadataString = StringUtils.makeFilesystemCompatible(metadataStringBuilder.toString());
@@ -324,7 +324,7 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
             metadataStringBuilder.append(dataTypeName);
         }
         for (JIPipeAnnotation metadataValue : dataRow.getAnnotations()) {
-            if(metadataValue.getValue().length() > metadataValueLengthLimit)
+            if (metadataValue.getValue().length() > metadataValueLengthLimit)
                 continue;
             if (!metadataKeyFilter.test(metadataValue.getName()))
                 continue;
@@ -335,7 +335,7 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
             metadataStringBuilder.append(metadataValue.getValue());
         }
 
-        if(metadataStringBuilder.length() == 0) {
+        if (metadataStringBuilder.length() == 0) {
             metadataStringBuilder.append("unnamed");
         }
         String metadataString = StringUtils.makeFilesystemCompatible(metadataStringBuilder.toString());

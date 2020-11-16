@@ -107,7 +107,7 @@ public class PythonScriptAlgorithm extends JIPipeAlgorithm {
     @Override
     public void run(JIPipeProgressInfo progress) {
         if (isPassThrough() && canAutoPassThrough()) {
-             progress.log("Data passed through to output");
+            progress.log("Data passed through to output");
             runPassThrough();
             return;
         }

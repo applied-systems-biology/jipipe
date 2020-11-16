@@ -52,7 +52,6 @@ import java.awt.Component;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.nio.file.Path;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -178,14 +177,14 @@ public class JIPipeCacheMultiDataSlotTableUI extends JIPipeProjectWorkbenchPanel
 
     private void exportByMetadataExporter() {
         JIPipeCachedSlotToFilesByMetadataExporterRun run = new JIPipeCachedSlotToFilesByMetadataExporterRun(getWorkbench(), slots, true);
-        if(run.setup()) {
+        if (run.setup()) {
             JIPipeRunnerQueue.getInstance().enqueue(run);
         }
     }
 
     private void exportAsJIPipeSlot() {
         Path path = FileChooserSettings.openDirectory(this, FileChooserSettings.KEY_DATA, "Export data as JIPipe output slot");
-        if(path != null) {
+        if (path != null) {
             JIPipeCachedSlotToOutputExporterRun run = new JIPipeCachedSlotToOutputExporterRun(getWorkbench(), path, slots, true);
             JIPipeRunnerQueue.getInstance().enqueue(run);
         }

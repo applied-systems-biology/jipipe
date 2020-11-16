@@ -81,7 +81,7 @@ public class JIPipeProgressInfo {
 
     public synchronized JIPipeProgressInfo resolve(String logPrepend) {
         JIPipeProgressInfo result = new JIPipeProgressInfo(this);
-        if(StringUtils.isNullOrEmpty(result.logPrepend))
+        if (StringUtils.isNullOrEmpty(result.logPrepend))
             result.logPrepend = logPrepend;
         else
             result.logPrepend = result.logPrepend + " | " + logPrepend;

@@ -46,15 +46,6 @@ public class PathData implements JIPipeData {
     protected PathData() {
     }
 
-    public static PathData importFrom(Path storageFilePath) {
-        Path targetFile = PathUtils.findFileByExtensionIn(storageFilePath, ".json");
-        try {
-            return JsonUtils.getObjectMapper().readerFor(PathData.class).readValue(targetFile.toFile());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     @Override
     public void saveTo(Path storageFilePath, String name, boolean forceName) {
         Path jsonFile = storageFilePath.resolve(name + ".json");
@@ -110,5 +101,14 @@ public class PathData implements JIPipeData {
     @Override
     public String toString() {
         return "" + path;
+    }
+
+    public static PathData importFrom(Path storageFilePath) {
+        Path targetFile = PathUtils.findFileByExtensionIn(storageFilePath, ".json");
+        try {
+            return JsonUtils.getObjectMapper().readerFor(PathData.class).readValue(targetFile.toFile());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

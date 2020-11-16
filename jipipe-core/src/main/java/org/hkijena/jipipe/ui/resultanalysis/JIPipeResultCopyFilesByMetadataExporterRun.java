@@ -14,8 +14,8 @@
 package org.hkijena.jipipe.ui.resultanalysis;
 
 import com.google.common.eventbus.Subscribe;
-import org.hkijena.jipipe.api.JIPipeRunnable;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.JIPipeRunnable;
 import org.hkijena.jipipe.api.data.JIPipeDataByMetadataExporter;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeExportedDataTable;
@@ -46,15 +46,15 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class JIPipeResultCopyFilesByMetadataExporterRun extends JIPipeWorkbenchPanel implements JIPipeRunnable {
 
-    private JIPipeProgressInfo info = new JIPipeProgressInfo();
-    private Path outputPath;
     private final List<JIPipeDataSlot> slots;
     private final boolean splitBySlot;
     private final JIPipeDataByMetadataExporter exporter = new JIPipeDataByMetadataExporter();
+    private JIPipeProgressInfo info = new JIPipeProgressInfo();
+    private Path outputPath;
 
     /**
-     * @param workbench the workbench
-     * @param slots the slots to save
+     * @param workbench   the workbench
+     * @param slots       the slots to save
      * @param splitBySlot if slots should be split
      */
     public JIPipeResultCopyFilesByMetadataExporterRun(JIPipeWorkbench workbench, List<JIPipeDataSlot> slots, boolean splitBySlot) {
@@ -66,11 +66,12 @@ public class JIPipeResultCopyFilesByMetadataExporterRun extends JIPipeWorkbenchP
 
     /**
      * Opens the necessary dialogs
+     *
      * @return if setup was confirmed
      */
     public boolean setup() {
         outputPath = FileChooserSettings.openDirectory(this, FileChooserSettings.KEY_DATA, "Export data as files");
-        if(outputPath == null)
+        if (outputPath == null)
             return false;
 
         JDialog editorDialog = new JDialog();
@@ -104,7 +105,7 @@ public class JIPipeResultCopyFilesByMetadataExporterRun extends JIPipeWorkbenchP
         editorDialog.setContentPane(mainPanel);
         editorDialog.setModal(true);
         editorDialog.pack();
-        editorDialog.setSize(800,600);
+        editorDialog.setSize(800, 600);
         editorDialog.setLocationRelativeTo(null);
         editorDialog.setVisible(true);
         return confirmation.get();
@@ -118,22 +119,22 @@ public class JIPipeResultCopyFilesByMetadataExporterRun extends JIPipeWorkbenchP
         info.setMaxProgress(slots.size());
         for (int i = 0; i < slots.size(); i++) {
             info.setProgress(i + 1);
-            JIPipeProgressInfo subStatus = info.resolveAndLog("Slot", i,slots.size());
+            JIPipeProgressInfo subStatus = info.resolveAndLog("Slot", i, slots.size());
             JIPipeDataSlot slot = slots.get(i);
             Path targetPath = outputPath;
-            if(splitBySlot) {
+            if (splitBySlot) {
                 targetPath = outputPath.resolve(StringUtils.makeUniqueString(slot.getNode().getIdInGraph() + "-" + slot.getName(), " ", existingSlots));
                 existingFiles.clear();
             }
             existingMetadata.clear();
             try {
-                if(!Files.isDirectory(targetPath))
+                if (!Files.isDirectory(targetPath))
                     Files.createDirectories(targetPath);
 
                 // Load the data table
                 JIPipeExportedDataTable dataTable = JIPipeExportedDataTable.loadFromJson(slot.getStoragePath().resolve("data-table.json"));
                 for (int row = 0; row < dataTable.getRowCount(); row++) {
-                    JIPipeProgressInfo rowSubStatus = subStatus.resolveAndLog("Row" , row,dataTable.getRowCount());
+                    JIPipeProgressInfo rowSubStatus = subStatus.resolveAndLog("Row", row, dataTable.getRowCount());
                     String metadataString = exporter.generateMetadataString(dataTable, row, existingMetadata);
 
                     Path rowStoragePath = slot.getRowStoragePath(row);
@@ -153,7 +154,7 @@ public class JIPipeResultCopyFilesByMetadataExporterRun extends JIPipeWorkbenchP
                             Path rowInternalPath = rowStoragePath.relativize(file.getParent());
                             Path newTargetPath = finalTargetPath.resolve(rowInternalPath);
 
-                            if(!Files.isDirectory(newTargetPath))
+                            if (!Files.isDirectory(newTargetPath))
                                 Files.createDirectories(newTargetPath);
 
                             Path copyTarget = newTargetPath.resolve(Paths.get(uniqueMetadataPath).getFileName());
@@ -174,8 +175,7 @@ public class JIPipeResultCopyFilesByMetadataExporterRun extends JIPipeWorkbenchP
                         }
                     });
                 }
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         }
@@ -183,8 +183,8 @@ public class JIPipeResultCopyFilesByMetadataExporterRun extends JIPipeWorkbenchP
 
     @Subscribe
     public void onFinished(RunUIWorkerFinishedEvent event) {
-        if(event.getRun() == this) {
-            if(JOptionPane.showConfirmDialog(getWorkbench().getWindow(),
+        if (event.getRun() == this) {
+            if (JOptionPane.showConfirmDialog(getWorkbench().getWindow(),
                     "The data was successfully exported to " + outputPath + ". Do you want to open the folder?",
                     "Export slot data",
                     JOptionPane.YES_NO_OPTION,
@@ -196,7 +196,7 @@ public class JIPipeResultCopyFilesByMetadataExporterRun extends JIPipeWorkbenchP
 
     @Subscribe
     public void onInterrupted(RunUIWorkerInterruptedEvent event) {
-        if(event.getRun() == this) {
+        if (event.getRun() == this) {
             JOptionPane.showMessageDialog(getWorkbench().getWindow(), "Could not export slot data to " + outputPath + ". Please take a look at the log (Tools > Logs) to find out more.", "Export slot data", JOptionPane.ERROR_MESSAGE);
         }
     }

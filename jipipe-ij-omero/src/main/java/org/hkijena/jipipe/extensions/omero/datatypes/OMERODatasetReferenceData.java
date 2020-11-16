@@ -18,7 +18,6 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
-import org.hkijena.jipipe.extensions.filesystem.dataypes.PathData;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.JsonUtils;
 import org.hkijena.jipipe.utils.PathUtils;
@@ -39,20 +38,16 @@ public class OMERODatasetReferenceData implements JIPipeData {
         return datasetId;
     }
 
+    @JsonSetter("dataset-id")
+    public void setDatasetId(long datasetId) {
+        this.datasetId = datasetId;
+    }
+
     @Override
     public void saveTo(Path storageFilePath, String name, boolean forceName) {
         Path jsonFile = storageFilePath.resolve(name + ".json");
         try {
             JsonUtils.getObjectMapper().writerWithDefaultPrettyPrinter().writeValue(jsonFile.toFile(), this);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public static OMERODatasetReferenceData importFrom(Path storageFilePath) {
-        Path targetFile = PathUtils.findFileByExtensionIn(storageFilePath, ".json");
-        try {
-            return JsonUtils.getObjectMapper().readerFor(OMERODatasetReferenceData.class).readValue(targetFile.toFile());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -73,8 +68,12 @@ public class OMERODatasetReferenceData implements JIPipeData {
         return "OMERO dataset ID=" + datasetId;
     }
 
-    @JsonSetter("dataset-id")
-    public void setDatasetId(long datasetId) {
-        this.datasetId = datasetId;
+    public static OMERODatasetReferenceData importFrom(Path storageFilePath) {
+        Path targetFile = PathUtils.findFileByExtensionIn(storageFilePath, ".json");
+        try {
+            return JsonUtils.getObjectMapper().readerFor(OMERODatasetReferenceData.class).readValue(targetFile.toFile());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

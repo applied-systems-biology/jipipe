@@ -18,7 +18,6 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.utils.StringUtils;
 
-import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -80,10 +79,6 @@ public class AnnotationTableData extends ResultsTableData {
         return addColumn(getAnnotationColumnName(traitInfo), true);
     }
 
-    public static AnnotationTableData importFrom(Path storageFolder) {
-        return new AnnotationTableData(ResultsTableData.importFrom(storageFolder));
-    }
-
     /**
      * Returns all columns that do not identify as annotation (via 'annotation:' prefix)
      *
@@ -136,6 +131,10 @@ public class AnnotationTableData extends ResultsTableData {
     @Override
     public String toString() {
         return "Annotation table (" + getRowCount() + "x" + getColumnCount() + ")";
+    }
+
+    public static AnnotationTableData importFrom(Path storageFolder) {
+        return new AnnotationTableData(ResultsTableData.importFrom(storageFolder));
     }
 
     /**

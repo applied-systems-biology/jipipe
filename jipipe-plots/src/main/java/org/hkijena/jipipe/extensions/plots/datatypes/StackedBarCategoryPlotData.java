@@ -46,14 +46,14 @@ public class StackedBarCategoryPlotData extends CategoryPlotData {
         super(other);
     }
 
-    public static StackedBarCategoryPlotData importFrom(Path storagePath) {
-        return PlotData.importFrom(storagePath, StackedBarCategoryPlotData.class);
-    }
-
     @Override
     public JFreeChart getChart() {
         JFreeChart chart = ChartFactory.createStackedBarChart(getTitle(), getCategoryAxisLabel(), getValueAxisLabel(), createDataSet());
         ((BarRenderer) chart.getCategoryPlot().getRenderer()).setBarPainter(new StandardBarPainter());
         return chart;
+    }
+
+    public static StackedBarCategoryPlotData importFrom(Path storagePath) {
+        return PlotData.importFrom(storagePath, StackedBarCategoryPlotData.class);
     }
 }

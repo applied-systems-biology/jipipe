@@ -13,15 +13,12 @@
 
 package org.hkijena.jipipe.extensions.imagejdatatypes.resultanalysis;
 
-import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeExportedDataTable;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.resultanalysis.JIPipeAsyncResultDataPlotPreview;
 
 import javax.swing.*;
-import java.nio.file.Path;
 
 public class ROIDataPreview extends JIPipeAsyncResultDataPlotPreview {
 

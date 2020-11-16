@@ -108,7 +108,7 @@ public class ModifyAndMergeTablesScript extends JIPipeAlgorithm {
     @Override
     public void run(JIPipeProgressInfo progress) {
         if (isPassThrough() && canPassThrough()) {
-             progress.log("Data passed through to output");
+            progress.log("Data passed through to output");
             runPassThrough();
             return;
         }

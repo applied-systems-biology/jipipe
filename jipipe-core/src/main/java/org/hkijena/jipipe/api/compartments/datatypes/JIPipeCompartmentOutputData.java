@@ -33,10 +33,6 @@ public class JIPipeCompartmentOutputData implements JIPipeData {
 
     }
 
-    public static JIPipeCompartmentOutputData importFrom(Path path) {
-        return new JIPipeCompartmentOutputData();
-    }
-
     @Override
     public JIPipeData duplicate() {
         return new JIPipeCompartmentOutputData();
@@ -45,5 +41,9 @@ public class JIPipeCompartmentOutputData implements JIPipeData {
     @Override
     public void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
 
+    }
+
+    public static JIPipeCompartmentOutputData importFrom(Path path) {
+        return new JIPipeCompartmentOutputData();
     }
 }

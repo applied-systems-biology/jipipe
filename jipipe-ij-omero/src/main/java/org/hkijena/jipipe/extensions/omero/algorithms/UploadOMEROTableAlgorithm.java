@@ -84,12 +84,12 @@ public class UploadOMEROTableAlgorithm extends JIPipeMergingAlgorithm {
             for (int i = 0; i < dummy.getRowCount(); i++) {
                 String fileName = exporter.generateMetadataString(dummy, i, existingFileNames);
                 fileNames.add(fileName + ".csv");
-               progress.log("Will add table: " + fileName + ".csv");
+                progress.log("Will add table: " + fileName + ".csv");
             }
 
             // Attach tables for each image
             for (OMEROImageReferenceData image : images) {
-               progress.log("Attaching tables to Image ID=" + image.getImageId());
+                progress.log("Attaching tables to Image ID=" + image.getImageId());
                 ImageData imageData = browseFacility.getImage(context, image.getImageId());
                 for (int i = 0; i < tables.size(); i++) {
                     progress.resolve("Attaching tables to Image ID=" + image.getImageId()).resolveAndLog((i + 1) + "/" + tables.size());

@@ -58,10 +58,6 @@ public class HistogramPlotData extends PlotData {
         this.valueAxisLabel = other.valueAxisLabel;
     }
 
-    public static HistogramPlotData importFrom(Path storagePath) {
-        return PlotData.importFrom(storagePath, HistogramPlotData.class);
-    }
-
     @Override
     public JFreeChart getChart() {
         Set<String> existingSeriesNames = new HashSet<>();
@@ -135,6 +131,10 @@ public class HistogramPlotData extends PlotData {
     public void setHistogramType(HistogramType_ histogramType) {
         this.histogramType = histogramType;
 
+    }
+
+    public static HistogramPlotData importFrom(Path storagePath) {
+        return PlotData.importFrom(storagePath, HistogramPlotData.class);
     }
 
     /**

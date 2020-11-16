@@ -68,7 +68,7 @@ public class ExportDataByParameter extends JIPipeAlgorithm {
             outputPath = outputDirectory;
         }
         if (isPassThrough()) {
-             progress.log("Data passed through to output");
+            progress.log("Data passed through to output");
             getFirstOutputSlot().addData(new FolderData(outputPath));
             return;
         }

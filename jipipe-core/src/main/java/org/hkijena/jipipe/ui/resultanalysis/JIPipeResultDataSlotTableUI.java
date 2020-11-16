@@ -144,7 +144,7 @@ public class JIPipeResultDataSlotTableUI extends JIPipeProjectWorkbenchPanel {
 
     private void exportFilesByMetadata() {
         JIPipeResultCopyFilesByMetadataExporterRun run = new JIPipeResultCopyFilesByMetadataExporterRun(getWorkbench(), Collections.singletonList(slot), false);
-        if(run.setup()) {
+        if (run.setup()) {
             JIPipeRunnerQueue.getInstance().enqueue(run);
         }
     }

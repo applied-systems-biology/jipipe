@@ -15,7 +15,7 @@ import java.nio.file.Path;
 public class ImagePlusDataImportOperation implements JIPipeDataImportOperation {
     @Override
     public JIPipeData show(JIPipeDataSlot slot, JIPipeExportedDataTable.Row row, Path rowStorageFolder, String compartmentName, String algorithmName, String displayName, JIPipeWorkbench workbench) {
-        ImagePlusData data =  ImagePlusData.importFrom(rowStorageFolder);
+        ImagePlusData data = ImagePlusData.importFrom(rowStorageFolder);
         data.display(displayName, workbench, new JIPipeResultSlotDataSource(slot, row, rowStorageFolder));
         return data;
     }

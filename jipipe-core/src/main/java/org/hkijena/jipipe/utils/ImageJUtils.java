@@ -15,7 +15,6 @@ package org.hkijena.jipipe.utils;
 
 import ij.ImagePlus;
 import ij.ImageStack;
-import ij.plugin.RGBStackMerge;
 import ij.process.ColorProcessor;
 import ij.process.ImageConverter;
 import ij.process.ImageProcessor;
@@ -34,17 +33,17 @@ public class ImageJUtils {
 
     /**
      * Converted a 3-channel image into RGB (reducing the dimensionality)
+     *
      * @param image the image
      * @return RGB image if needed
      */
     public static ImagePlus channelsToRGB(ImagePlus image) {
-        if(image.getType() == ImagePlus.COLOR_RGB || image.getType() == ImagePlus.COLOR_256)
+        if (image.getType() == ImagePlus.COLOR_RGB || image.getType() == ImagePlus.COLOR_256)
             return image;
-        if(image.getNDimensions() == 3 && image.getNChannels() == 3) {
+        if (image.getNDimensions() == 3 && image.getNChannels() == 3) {
             return new ImagePlus(image.getTitle() + "_RGB", image.getBufferedImage());
-        }
-        else if(image.getNChannels() == 3) {
-            if(image.getType() != ImagePlus.GRAY8) {
+        } else if (image.getNChannels() == 3) {
+            if (image.getType() != ImagePlus.GRAY8) {
                 ImageConverter ic = new ImageConverter(image);
                 ic.convertToGray8();
             }
@@ -59,11 +58,11 @@ public class ImageJUtils {
                     ColorProcessor processor = new ColorProcessor(r.getWidth(), r.getHeight());
                     for (int y = 0; y < r.getHeight(); y++) {
                         for (int x = 0; x < r.getWidth(); x++) {
-                            int rxy = r.get(x,y) << 16;
-                            int gxy = g.get(x,y) << 8;
-                            int bxy = b.get(x,y);
+                            int rxy = r.get(x, y) << 16;
+                            int gxy = g.get(x, y) << 8;
+                            int bxy = b.get(x, y);
                             int rgb = rxy + gxy + bxy;
-                            processor.set(x,y, rgb);
+                            processor.set(x, y, rgb);
                         }
                     }
 

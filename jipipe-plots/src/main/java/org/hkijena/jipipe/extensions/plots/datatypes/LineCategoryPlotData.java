@@ -43,12 +43,12 @@ public class LineCategoryPlotData extends CategoryPlotData {
         super(other);
     }
 
-    public static LineCategoryPlotData importFrom(Path storagePath) {
-        return PlotData.importFrom(storagePath, LineCategoryPlotData.class);
-    }
-
     @Override
     public JFreeChart getChart() {
         return ChartFactory.createLineChart(getTitle(), getCategoryAxisLabel(), getValueAxisLabel(), createDataSet());
+    }
+
+    public static LineCategoryPlotData importFrom(Path storagePath) {
+        return PlotData.importFrom(storagePath, LineCategoryPlotData.class);
     }
 }

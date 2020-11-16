@@ -256,8 +256,7 @@ public class JIPipeExportedDataTable implements TableModel {
             return rowList.get(rowIndex).getIndex();
         else if (columnIndex == 1) {
             return getDataTypeOf(rowIndex);
-        }
-        else if (columnIndex == 2)
+        } else if (columnIndex == 2)
             return rowList.get(rowIndex);
         else {
             String traitColumn = traitColumns.get(columnIndex - 3);
@@ -267,12 +266,13 @@ public class JIPipeExportedDataTable implements TableModel {
 
     /**
      * Returns the true data type (if available) or the accepted data type of the given row
+     *
      * @param rowIndex the row
      * @return the data type
      */
     public JIPipeDataInfo getDataTypeOf(int rowIndex) {
         String trueDataType = rowList.get(rowIndex).getTrueDataType();
-        if(!StringUtils.isNullOrEmpty(trueDataType))
+        if (!StringUtils.isNullOrEmpty(trueDataType))
             return JIPipeDataInfo.getInstance(trueDataType);
         else
             return JIPipeDataInfo.getInstance(acceptedDataType);

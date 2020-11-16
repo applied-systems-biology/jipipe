@@ -211,10 +211,11 @@ public class JIPipeDataBatch {
     /**
      * Writes output data into the provided slot
      * Please note that annotations should be set up till this point
-     *  @param slotName              Slot name
+     *
+     * @param slotName              Slot name
      * @param data                  Added data
      * @param additionalAnnotations Annotations that are added additionally to the global ones
-     * @param mergeStrategy how annotations should be merged
+     * @param mergeStrategy         how annotations should be merged
      */
     public void addOutputData(String slotName, JIPipeData data, List<JIPipeAnnotation> additionalAnnotations, JIPipeAnnotationMergeStrategy mergeStrategy) {
         addOutputData(node.getOutputSlot(slotName), data, additionalAnnotations, mergeStrategy);
@@ -238,10 +239,11 @@ public class JIPipeDataBatch {
     /**
      * Writes output data into the provided slot
      * Please note that annotations that are added to all traits should be set up till this point
-     *  @param slot                  Slot instance
+     *
+     * @param slot                  Slot instance
      * @param data                  Added data
      * @param additionalAnnotations Annotations that are added additionally to the global ones
-     * @param mergeStrategy how annotations should be merged
+     * @param mergeStrategy         how annotations should be merged
      */
     public void addOutputData(JIPipeDataSlot slot, JIPipeData data, List<JIPipeAnnotation> additionalAnnotations, JIPipeAnnotationMergeStrategy mergeStrategy) {
         if (slot.getNode() != node)

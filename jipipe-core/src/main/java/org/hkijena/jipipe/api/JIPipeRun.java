@@ -40,11 +40,11 @@ import java.util.Set;
  * Runnable instance of an {@link JIPipeProject}
  */
 public class JIPipeRun implements JIPipeRunnable {
-    private JIPipeProgressInfo info = new JIPipeProgressInfo();
     private final JIPipeProject project;
     private final JIPipeProjectCacheQuery cacheQuery;
     private final JIPipeRunSettings configuration;
     JIPipeGraph algorithmGraph;
+    private JIPipeProgressInfo info = new JIPipeProgressInfo();
     private JIPipeFixedThreadPool threadPool;
 
     /**
@@ -304,7 +304,7 @@ public class JIPipeRun implements JIPipeRunnable {
     /**
      * Attempts to load data from cache
      *
-     * @param algorithm           the target algorithm
+     * @param algorithm the target algorithm
      * @return if successful. This means all output slots were restored.
      */
     private boolean tryLoadFromCache(JIPipeGraphNode algorithm, JIPipeProgressInfo progress) {

@@ -45,14 +45,14 @@ public class BarCategoryPlotData extends CategoryPlotData {
         super(other);
     }
 
-    public static BarCategoryPlotData importFrom(Path storagePath) {
-        return PlotData.importFrom(storagePath, BarCategoryPlotData.class);
-    }
-
     @Override
     public JFreeChart getChart() {
         JFreeChart chart = ChartFactory.createBarChart(getTitle(), getCategoryAxisLabel(), getValueAxisLabel(), createDataSet());
         ((BarRenderer) chart.getCategoryPlot().getRenderer()).setBarPainter(new StandardBarPainter());
         return chart;
+    }
+
+    public static BarCategoryPlotData importFrom(Path storagePath) {
+        return PlotData.importFrom(storagePath, BarCategoryPlotData.class);
     }
 }

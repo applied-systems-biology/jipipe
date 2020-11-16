@@ -113,7 +113,7 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
             if (progress.isCancelled().get())
                 return;
             final int row = 0;
-            JIPipeProgressInfo slotProgress = progress.resolveAndLog("Data row" , row, 1);
+            JIPipeProgressInfo slotProgress = progress.resolveAndLog("Data row", row, 1);
             JIPipeDataBatch dataBatch = new JIPipeDataBatch(this);
             dataBatch.addGlobalAnnotations(parameterAnnotations, dataBatchGenerationSettings.annotationMergeStrategy);
             runIteration(dataBatch, slotProgress);
@@ -224,8 +224,9 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
 
     /**
      * Runs code on one data row
-     *  @param dataBatch         The data interface
-     * @param progress the progress info from the run
+     *
+     * @param dataBatch The data interface
+     * @param progress  the progress info from the run
      */
     protected abstract void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress);
 

@@ -20,12 +20,14 @@ public interface JIPipeRunnable extends Runnable {
 
     /**
      * The info object that allows communication with the run
+     *
      * @return the info object
      */
     JIPipeProgressInfo getProgressInfo();
 
     /**
      * A name for the runnable
+     *
      * @return the name
      */
     String getTaskLabel();

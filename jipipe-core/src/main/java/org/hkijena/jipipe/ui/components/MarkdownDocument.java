@@ -24,7 +24,6 @@ import com.vladsch.flexmark.util.ast.Node;
 import com.vladsch.flexmark.util.data.MutableDataHolder;
 import com.vladsch.flexmark.util.data.MutableDataSet;
 import org.hkijena.jipipe.utils.ResourceUtils;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.net.URL;
@@ -123,7 +122,6 @@ public class MarkdownDocument {
         }
     }
 
-    @NotNull
     private static Set<String> getResourceURLs(String md, String protocol) {
         Set<String> imageURLs = new HashSet<>();
         int index = md.indexOf(protocol);

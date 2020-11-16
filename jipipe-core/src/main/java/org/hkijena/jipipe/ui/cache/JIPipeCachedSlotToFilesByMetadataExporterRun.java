@@ -14,8 +14,8 @@
 package org.hkijena.jipipe.ui.cache;
 
 import com.google.common.eventbus.Subscribe;
-import org.hkijena.jipipe.api.JIPipeRunnable;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.JIPipeRunnable;
 import org.hkijena.jipipe.api.data.JIPipeDataByMetadataExporter;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
@@ -39,18 +39,18 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class JIPipeCachedSlotToFilesByMetadataExporterRun extends JIPipeWorkbenchPanel implements JIPipeRunnable {
 
-    private JIPipeProgressInfo info = new JIPipeProgressInfo();
-    private Path outputPath;
     private final List<JIPipeDataSlot> slots;
     private final boolean splitBySlot;
     private final JIPipeDataByMetadataExporter exporter = new JIPipeDataByMetadataExporter();
+    private JIPipeProgressInfo info = new JIPipeProgressInfo();
+    private Path outputPath;
 
     /**
-     * @param workbench the workbench
-     * @param slots the slots to save
+     * @param workbench   the workbench
+     * @param slots       the slots to save
      * @param splitBySlot if slots should be split
      */
-    public JIPipeCachedSlotToFilesByMetadataExporterRun(JIPipeWorkbench workbench,  List<JIPipeDataSlot> slots, boolean splitBySlot) {
+    public JIPipeCachedSlotToFilesByMetadataExporterRun(JIPipeWorkbench workbench, List<JIPipeDataSlot> slots, boolean splitBySlot) {
         super(workbench);
         this.slots = slots;
         this.splitBySlot = splitBySlot;
@@ -59,11 +59,12 @@ public class JIPipeCachedSlotToFilesByMetadataExporterRun extends JIPipeWorkbenc
 
     /**
      * Opens the necessary dialogs
+     *
      * @return if setup was confirmed
      */
     public boolean setup() {
         outputPath = FileChooserSettings.openDirectory(this, FileChooserSettings.KEY_DATA, "Export data as files");
-        if(outputPath == null)
+        if (outputPath == null)
             return false;
 
         JDialog editorDialog = new JDialog();
@@ -97,7 +98,7 @@ public class JIPipeCachedSlotToFilesByMetadataExporterRun extends JIPipeWorkbenc
         editorDialog.setContentPane(mainPanel);
         editorDialog.setModal(true);
         editorDialog.pack();
-        editorDialog.setSize(800,600);
+        editorDialog.setSize(800, 600);
         editorDialog.setLocationRelativeTo(null);
         editorDialog.setVisible(true);
         return confirmation.get();
@@ -112,15 +113,14 @@ public class JIPipeCachedSlotToFilesByMetadataExporterRun extends JIPipeWorkbenc
             JIPipeProgressInfo subProgress = info.resolveAndLog("Slot", i, slots.size());
             JIPipeDataSlot slot = slots.get(i);
             Path targetPath = outputPath;
-            if(splitBySlot) {
+            if (splitBySlot) {
                 targetPath = outputPath.resolve(StringUtils.makeUniqueString(slot.getName(), " ", existing));
             }
             try {
-                if(!Files.isDirectory(targetPath))
+                if (!Files.isDirectory(targetPath))
                     Files.createDirectories(targetPath);
                 exporter.writeToFolder(slot, targetPath, info.resolve("Slot " + slot.getName()));
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         }
@@ -128,8 +128,8 @@ public class JIPipeCachedSlotToFilesByMetadataExporterRun extends JIPipeWorkbenc
 
     @Subscribe
     public void onFinished(RunUIWorkerFinishedEvent event) {
-        if(event.getRun() == this) {
-            if(JOptionPane.showConfirmDialog(getWorkbench().getWindow(),
+        if (event.getRun() == this) {
+            if (JOptionPane.showConfirmDialog(getWorkbench().getWindow(),
                     "The data was successfully exported to " + outputPath + ". Do you want to open the folder?",
                     "Export slot data",
                     JOptionPane.YES_NO_OPTION,
@@ -141,7 +141,7 @@ public class JIPipeCachedSlotToFilesByMetadataExporterRun extends JIPipeWorkbenc
 
     @Subscribe
     public void onInterrupted(RunUIWorkerInterruptedEvent event) {
-        if(event.getRun() == this) {
+        if (event.getRun() == this) {
             JOptionPane.showMessageDialog(getWorkbench().getWindow(), "Could not export slot data to " + outputPath + ". Please take a look at the log (Tools > Logs) to find out more.", "Export slot data", JOptionPane.ERROR_MESSAGE);
         }
     }

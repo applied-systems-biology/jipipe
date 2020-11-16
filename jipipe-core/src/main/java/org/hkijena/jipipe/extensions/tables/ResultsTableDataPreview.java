@@ -13,16 +13,12 @@
 
 package org.hkijena.jipipe.extensions.tables;
 
-import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeExportedDataTable;
-import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.resultanalysis.JIPipeAsyncResultDataPlotPreview;
 
 import javax.swing.*;
-import java.io.IOException;
-import java.nio.file.Path;
 
 public class ResultsTableDataPreview extends JIPipeAsyncResultDataPlotPreview {
 

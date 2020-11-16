@@ -42,12 +42,12 @@ public class ScatterXYPlotData extends XYPlotData {
         super(other);
     }
 
-    public static ScatterXYPlotData importFrom(Path storagePath) {
-        return PlotData.importFrom(storagePath, ScatterXYPlotData.class);
-    }
-
     @Override
     public JFreeChart getChart() {
         return ChartFactory.createScatterPlot(getTitle(), getxAxisLabel(), getyAxisLabel(), createDataSet());
+    }
+
+    public static ScatterXYPlotData importFrom(Path storagePath) {
+        return PlotData.importFrom(storagePath, ScatterXYPlotData.class);
     }
 }

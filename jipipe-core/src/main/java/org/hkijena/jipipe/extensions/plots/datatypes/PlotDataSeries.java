@@ -48,10 +48,6 @@ public class PlotDataSeries extends ResultsTableData implements JIPipeParameterC
         super(table);
     }
 
-    public static PlotDataSeries importFrom(Path storageFolder) {
-        return new PlotDataSeries(ResultsTableData.importFrom(storageFolder).getTable());
-    }
-
     /**
      * Creates a copy
      *
@@ -109,5 +105,9 @@ public class PlotDataSeries extends ResultsTableData implements JIPipeParameterC
     @Override
     public String toString() {
         return getName() + " (" + getTable().getCounter() + " rows)";
+    }
+
+    public static PlotDataSeries importFrom(Path storageFolder) {
+        return new PlotDataSeries(ResultsTableData.importFrom(storageFolder).getTable());
     }
 }

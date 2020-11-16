@@ -92,7 +92,7 @@ public class FileChooserSettings implements JIPipeParameterCollection {
     public Path getLastDirectoryBy(String key) {
         if (KEY_PROJECT.equals(key))
             return getLastProjectsDirectory();
-        else if(KEY_DATA.equals(key))
+        else if (KEY_DATA.equals(key))
             return getLastDataDirectory();
         else
             return getLastParametersDirectory();
@@ -109,7 +109,7 @@ public class FileChooserSettings implements JIPipeParameterCollection {
             lastDirectory = lastDirectory.getParent();
         if (KEY_PROJECT.equals(key))
             setLastProjectsDirectory(lastDirectory);
-        else if(KEY_DATA.equals(key))
+        else if (KEY_DATA.equals(key))
             setLastDataDirectory(lastDirectory);
         else
             setLastParametersDirectory(lastDirectory);

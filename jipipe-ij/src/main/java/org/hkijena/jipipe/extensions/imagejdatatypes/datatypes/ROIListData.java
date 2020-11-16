@@ -78,25 +78,6 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
     }
 
     /**
-     * Loads {@link Roi} from a path that contains a zip/roi file
-     *
-     * @param storageFilePath path that contains a zip/roi file
-     */
-    public static ROIListData importFrom(Path storageFilePath) {
-        ROIListData result = new ROIListData();
-        Path zipFile = PathUtils.findFileByExtensionIn(storageFilePath, ".zip");
-        Path roiFile = PathUtils.findFileByExtensionIn(storageFilePath, ".roi");
-        if (zipFile != null) {
-            result.addAll(loadRoiListFromFile(zipFile));
-        } else if (roiFile != null) {
-            result.addAll(loadRoiListFromFile(roiFile));
-        } else {
-            throw new RuntimeException(new FileNotFoundException("Could not find a .roi or .zip file in " + storageFilePath));
-        }
-        return result;
-    }
-
-    /**
      * Creates a deep copy
      *
      * @param other the original
@@ -663,6 +644,25 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
 //                result.mergeWith(forRoi);
 //            }
 //        }
+        return result;
+    }
+
+    /**
+     * Loads {@link Roi} from a path that contains a zip/roi file
+     *
+     * @param storageFilePath path that contains a zip/roi file
+     */
+    public static ROIListData importFrom(Path storageFilePath) {
+        ROIListData result = new ROIListData();
+        Path zipFile = PathUtils.findFileByExtensionIn(storageFilePath, ".zip");
+        Path roiFile = PathUtils.findFileByExtensionIn(storageFilePath, ".roi");
+        if (zipFile != null) {
+            result.addAll(loadRoiListFromFile(zipFile));
+        } else if (roiFile != null) {
+            result.addAll(loadRoiListFromFile(roiFile));
+        } else {
+            throw new RuntimeException(new FileNotFoundException("Could not find a .roi or .zip file in " + storageFilePath));
+        }
         return result;
     }
 

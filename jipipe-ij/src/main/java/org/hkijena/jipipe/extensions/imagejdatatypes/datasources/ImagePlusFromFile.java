@@ -131,7 +131,7 @@ public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
             String fileNameString = fileName.getFileName().toString();
             if (fileNameString.endsWith(".ome.tiff") || fileNameString.endsWith(".ome.tif") || fileNameString.endsWith(".czi")) {
                 // Pass to bioformats
-               progress.log("Using BioFormats importer. Please use the Bio-Formats importer node for more settings.");
+                progress.log("Using BioFormats importer. Please use the Bio-Formats importer node for more settings.");
                 BioFormatsImporter importer = JIPipe.createNode(BioFormatsImporter.class);
                 importer.getFirstInputSlot().addData(new FileData(fileName));
                 importer.run(progress);

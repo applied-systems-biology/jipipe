@@ -110,7 +110,7 @@ public class CopyPath extends JIPipeIteratingAlgorithm {
                     if (Files.exists(targetPath)) {
                         Files.delete(targetPath);
                     }
-                   progress.log(String.format("Copying '%s' to '%s'", source, targetPath));
+                    progress.log(String.format("Copying '%s' to '%s'", source, targetPath));
                     Files.copy(source, targetPath);
                 }
 

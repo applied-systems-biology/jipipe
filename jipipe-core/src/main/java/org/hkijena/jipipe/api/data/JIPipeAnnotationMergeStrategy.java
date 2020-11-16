@@ -21,6 +21,7 @@ public enum JIPipeAnnotationMergeStrategy {
 
     /**
      * Ensures that a list of annotations has unique names. Merges according to the strategy if needed.
+     *
      * @param annotations input annotations. can have duplicate names.
      * @return annotations without duplicate names.
      */

@@ -17,8 +17,8 @@ import net.imagej.ui.swing.updater.SwingAuthenticator;
 import net.imagej.updater.FilesCollection;
 import net.imagej.updater.util.AvailableSites;
 import net.imagej.updater.util.UpdaterUtil;
-import org.hkijena.jipipe.api.JIPipeRunnable;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.JIPipeRunnable;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;

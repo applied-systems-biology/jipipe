@@ -100,14 +100,6 @@ public class ResultsTableData implements JIPipeData, TableModel {
         this.table = (ResultsTable) other.table.clone();
     }
 
-    public static ResultsTableData importFrom(Path storagePath) {
-        try {
-            return new ResultsTableData(ResultsTable.open(PathUtils.findFileByExtensionIn(storagePath, ".csv").toString()));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     private void importFromColumns(Map<String, TableColumn> columns) {
         this.table = new ResultsTable();
 
@@ -957,6 +949,14 @@ public class ResultsTableData implements JIPipeData, TableModel {
             for (int row = 0; row < getRowCount(); row++) {
                 setValueAt(column.getRowAsString(row), row, columnIndex);
             }
+        }
+    }
+
+    public static ResultsTableData importFrom(Path storagePath) {
+        try {
+            return new ResultsTableData(ResultsTable.open(PathUtils.findFileByExtensionIn(storagePath, ".csv").toString()));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 

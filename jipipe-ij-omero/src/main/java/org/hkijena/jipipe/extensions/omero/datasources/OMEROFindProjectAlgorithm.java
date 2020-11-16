@@ -81,13 +81,13 @@ public class OMEROFindProjectAlgorithm extends JIPipeParameterSlotAlgorithm {
     @Override
     public void runParameterSet(JIPipeProgressInfo progress, List<JIPipeAnnotation> parameterAnnotations) {
         LoginCredentials credentials = this.credentials.getCredentials();
-       progress.log("Connecting to " + credentials.getUser().getUsername() + "@" + credentials.getServer().getHost());
+        progress.log("Connecting to " + credentials.getUser().getUsername() + "@" + credentials.getServer().getHost());
         try (Gateway gateway = new Gateway(new OMEROToJIPipeLogger(progress))) {
             ExperimenterData user = gateway.connect(credentials);
             SecurityContext context = new SecurityContext(user.getGroupId());
             BrowseFacility browseFacility = gateway.getFacility(BrowseFacility.class);
             MetadataFacility metadata = gateway.getFacility(MetadataFacility.class);
-           progress.log("Listing projects");
+            progress.log("Listing projects");
             try {
                 for (ProjectData project : browseFacility.getProjects(context)) {
                     if (!projectNameFilters.test(project.getName())) {

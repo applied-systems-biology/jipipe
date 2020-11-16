@@ -87,63 +87,6 @@ public class OMEImageData implements JIPipeData {
     private OMEXMLMetadata metadata;
     private OMEExporterSettings exporterSettings = new OMEExporterSettings();
 
-    public static OMEImageData importFrom(Path storageFilePath) {
-        Path targetFile = PathUtils.findFileByExtensionIn(storageFilePath, ".tif");
-        if (targetFile == null) {
-            throw new UserFriendlyNullPointerException("Could not find TIFF file in '" + storageFilePath + "'!",
-                    "Unable to find file in location '" + storageFilePath + "'",
-                    "ImagePlusData loading",
-                    "JIPipe needs to load the image from a folder, but it could not find any matching file.",
-                    "Please contact the JIPipe developers about this issue.");
-        }
-        try {
-            ImporterOptions importerOptions = new ImporterOptions();
-            importerOptions.setId(targetFile.toString());
-            importerOptions.setAutoscale(true);
-            importerOptions.setColorMode(ImporterOptions.COLOR_MODE_DEFAULT);
-            importerOptions.setQuiet(true);
-            importerOptions.setShowMetadata(false);
-            importerOptions.setShowOMEXML(false);
-            importerOptions.setShowROIs(false);
-            importerOptions.setSplitChannels(false);
-            importerOptions.setSplitFocalPlanes(false);
-            importerOptions.setSplitTimepoints(false);
-            importerOptions.setStackOrder(ImporterOptions.ORDER_XYCZT);
-            importerOptions.setVirtual(false);
-            importerOptions.setSwapDimensions(false);
-            importerOptions.setWindowless(true);
-            ImportProcess process = new ImportProcess(importerOptions);
-            if (!process.execute()) {
-                throw new NullPointerException();
-            }
-            ImagePlusReader reader = new ImagePlusReader(process);
-            ImagePlus[] images = reader.openImagePlus();
-            if (!importerOptions.isVirtual()) {
-                process.getReader().close();
-            }
-
-            if (images.length == 0) {
-                throw new UserFriendlyNullPointerException("OME loaded empty array!",
-                        "Could not load image from '" + targetFile + "'",
-                        "ImagePlusData loading",
-                        "JIPipe used Bio-Formats to load an image from '" + targetFile + "'. Something went wrong.",
-                        "Please contact the JIPipe developers about this issue.");
-            }
-            if (images.length > 1) {
-                System.err.println("[JIPipe][ImagePlusData from OME] Encountered multiple images! This should not happen. File=" + targetFile);
-            }
-            ImagePlus image = images[0];
-            OMEXMLMetadata omexmlMetadata = null;
-            if (process.getOMEMetadata() instanceof OMEXMLMetadata) {
-                omexmlMetadata = (OMEXMLMetadata) process.getOMEMetadata();
-            }
-            ROIListData rois = ROIHandler.openROIs(process.getOMEMetadata(), new ImagePlus[]{image});
-            return new OMEImageData(image, rois, omexmlMetadata);
-        } catch (IOException | FormatException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     public OMEImageData(ImagePlus image, ROIListData rois, OMEXMLMetadata metadata) {
         this.image = image;
         this.rois = rois;
@@ -221,6 +164,63 @@ public class OMEImageData implements JIPipeData {
         ImagePlus imp = image.duplicate();
         imp.setTitle(getImage().getTitle());
         return imp;
+    }
+
+    public static OMEImageData importFrom(Path storageFilePath) {
+        Path targetFile = PathUtils.findFileByExtensionIn(storageFilePath, ".tif");
+        if (targetFile == null) {
+            throw new UserFriendlyNullPointerException("Could not find TIFF file in '" + storageFilePath + "'!",
+                    "Unable to find file in location '" + storageFilePath + "'",
+                    "ImagePlusData loading",
+                    "JIPipe needs to load the image from a folder, but it could not find any matching file.",
+                    "Please contact the JIPipe developers about this issue.");
+        }
+        try {
+            ImporterOptions importerOptions = new ImporterOptions();
+            importerOptions.setId(targetFile.toString());
+            importerOptions.setAutoscale(true);
+            importerOptions.setColorMode(ImporterOptions.COLOR_MODE_DEFAULT);
+            importerOptions.setQuiet(true);
+            importerOptions.setShowMetadata(false);
+            importerOptions.setShowOMEXML(false);
+            importerOptions.setShowROIs(false);
+            importerOptions.setSplitChannels(false);
+            importerOptions.setSplitFocalPlanes(false);
+            importerOptions.setSplitTimepoints(false);
+            importerOptions.setStackOrder(ImporterOptions.ORDER_XYCZT);
+            importerOptions.setVirtual(false);
+            importerOptions.setSwapDimensions(false);
+            importerOptions.setWindowless(true);
+            ImportProcess process = new ImportProcess(importerOptions);
+            if (!process.execute()) {
+                throw new NullPointerException();
+            }
+            ImagePlusReader reader = new ImagePlusReader(process);
+            ImagePlus[] images = reader.openImagePlus();
+            if (!importerOptions.isVirtual()) {
+                process.getReader().close();
+            }
+
+            if (images.length == 0) {
+                throw new UserFriendlyNullPointerException("OME loaded empty array!",
+                        "Could not load image from '" + targetFile + "'",
+                        "ImagePlusData loading",
+                        "JIPipe used Bio-Formats to load an image from '" + targetFile + "'. Something went wrong.",
+                        "Please contact the JIPipe developers about this issue.");
+            }
+            if (images.length > 1) {
+                System.err.println("[JIPipe][ImagePlusData from OME] Encountered multiple images! This should not happen. File=" + targetFile);
+            }
+            ImagePlus image = images[0];
+            OMEXMLMetadata omexmlMetadata = null;
+            if (process.getOMEMetadata() instanceof OMEXMLMetadata) {
+                omexmlMetadata = (OMEXMLMetadata) process.getOMEMetadata();
+            }
+            ROIListData rois = ROIHandler.openROIs(process.getOMEMetadata(), new ImagePlus[]{image});
+            return new OMEImageData(image, rois, omexmlMetadata);
+        } catch (IOException | FormatException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**

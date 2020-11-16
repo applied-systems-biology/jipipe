@@ -21,7 +21,6 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
-import org.hkijena.jipipe.extensions.filesystem.dataypes.PathData;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.JsonUtils;
 import org.hkijena.jipipe.utils.PathUtils;
@@ -42,15 +41,6 @@ import java.util.Map;
 public class ParametersData implements JIPipeData {
 
     private Map<String, Object> parameterData = new HashMap<>();
-
-    public static ParametersData importFrom(Path storageFilePath) {
-        Path targetFile = PathUtils.findFileByExtensionIn(storageFilePath, ".json");
-        try {
-            return JsonUtils.getObjectMapper().readerFor(ParametersData.class).readValue(targetFile.toFile());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
 
     @Override
     public void saveTo(Path storageFilePath, String name, boolean forceName) {
@@ -92,6 +82,15 @@ public class ParametersData implements JIPipeData {
     @Override
     public String toString() {
         return "Parameters (" + String.join(", ", parameterData.keySet()) + ")";
+    }
+
+    public static ParametersData importFrom(Path storageFilePath) {
+        Path targetFile = PathUtils.findFileByExtensionIn(storageFilePath, ".json");
+        try {
+            return JsonUtils.getObjectMapper().readerFor(ParametersData.class).readValue(targetFile.toFile());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**

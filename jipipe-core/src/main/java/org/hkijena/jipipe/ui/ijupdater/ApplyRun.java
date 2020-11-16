@@ -2,13 +2,13 @@ package org.hkijena.jipipe.ui.ijupdater;
 
 import net.imagej.updater.FilesCollection;
 import net.imagej.updater.Installer;
-import org.hkijena.jipipe.api.JIPipeRunnable;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.JIPipeRunnable;
 
 public class ApplyRun implements JIPipeRunnable {
 
-    private JIPipeProgressInfo info = new JIPipeProgressInfo();
     private final FilesCollection filesCollection;
+    private JIPipeProgressInfo info = new JIPipeProgressInfo();
 
     public ApplyRun(FilesCollection filesCollection) {
         this.filesCollection = filesCollection;

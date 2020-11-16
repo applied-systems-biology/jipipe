@@ -174,14 +174,14 @@ public class JIPipeCacheDataSlotTableUI extends JIPipeProjectWorkbenchPanel {
 
     private void exportByMetadataExporter() {
         JIPipeCachedSlotToFilesByMetadataExporterRun run = new JIPipeCachedSlotToFilesByMetadataExporterRun(getWorkbench(), Collections.singletonList(slot), false);
-        if(run.setup()) {
+        if (run.setup()) {
             JIPipeRunnerQueue.getInstance().enqueue(run);
         }
     }
 
     private void exportAsJIPipeSlot() {
         Path path = FileChooserSettings.openDirectory(this, FileChooserSettings.KEY_DATA, "Export data as JIPipe output slot");
-        if(path != null) {
+        if (path != null) {
             JIPipeCachedSlotToOutputExporterRun run = new JIPipeCachedSlotToOutputExporterRun(getWorkbench(), path, Collections.singletonList(slot), false);
             JIPipeRunnerQueue.getInstance().enqueue(run);
         }

@@ -30,8 +30,8 @@ import java.util.Set;
  */
 public class JIPipeGraphRunner implements JIPipeRunnable {
 
-    private JIPipeProgressInfo info = new JIPipeProgressInfo();
     private final JIPipeGraph algorithmGraph;
+    private JIPipeProgressInfo info = new JIPipeProgressInfo();
     private Set<JIPipeGraphNode> algorithmsWithExternalInput = new HashSet<>();
 
     /**
@@ -61,7 +61,7 @@ public class JIPipeGraphRunner implements JIPipeRunnable {
                         "Do not click 'Cancel' if you do not want to cancel the execution.");
             JIPipeDataSlot slot = traversedSlots.get(index);
             info.setProgress(index, traversedSlots.size());
-            JIPipeProgressInfo subInfo = info.resolveAndLog( "Algorithm: " + slot.getNode().getName());
+            JIPipeProgressInfo subInfo = info.resolveAndLog("Algorithm: " + slot.getNode().getName());
 
             // If an algorithm cannot be executed, skip it automatically
             if (unExecutableAlgorithms.contains(slot.getNode()))

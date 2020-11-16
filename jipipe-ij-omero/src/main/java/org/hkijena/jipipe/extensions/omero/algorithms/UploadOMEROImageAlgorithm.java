@@ -120,7 +120,7 @@ public class UploadOMEROImageAlgorithm extends JIPipeMergingAlgorithm {
 
     private void uploadImages(Path targetPath, List<JIPipeAnnotation> annotations, long datasetId, JIPipeProgressInfo progress) {
         List<String> filePaths = PathUtils.findFilesByExtensionIn(targetPath, ".ome.tif").stream().map(Path::toString).collect(Collectors.toList());
-       progress.log("Uploading " + filePaths.size() + " files");
+        progress.log("Uploading " + filePaths.size() + " files");
         LoginCredentials credentials = this.credentials.getCredentials();
         ImportConfig config = new ome.formats.importer.ImportConfig();
 

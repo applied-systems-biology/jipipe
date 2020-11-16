@@ -19,12 +19,10 @@ import org.hkijena.jipipe.api.data.JIPipeExportedDataTable;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.PathData;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.resultanalysis.JIPipeResultDataSlotPreview;
-import org.hkijena.jipipe.utils.JsonUtils;
 import org.hkijena.jipipe.utils.PathUtils;
 
 import javax.swing.*;
 import java.awt.BorderLayout;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 

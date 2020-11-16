@@ -180,7 +180,7 @@ public class JIPipeDataSlot implements TableModel {
     /**
      * Adds a data row
      *
-     * @param value  The data
+     * @param value       The data
      * @param annotations Optional traits
      */
     public synchronized void addData(JIPipeData value, List<JIPipeAnnotation> annotations, JIPipeAnnotationMergeStrategy mergeStrategy) {
@@ -191,7 +191,7 @@ public class JIPipeDataSlot implements TableModel {
                 uniqueData = false;
             }
         }
-        if(!annotations.isEmpty()) {
+        if (!annotations.isEmpty()) {
             annotations = mergeStrategy.merge(annotations);
         }
         data.add(JIPipe.getDataTypes().convert(value, getAcceptedDataType()));
@@ -204,8 +204,8 @@ public class JIPipeDataSlot implements TableModel {
     /**
      * Adds an annotation to all existing data
      *
-     * @param annotation     The annotation instance
-     * @param overwrite If false, existing annotations of the same type are not overwritten
+     * @param annotation The annotation instance
+     * @param overwrite  If false, existing annotations of the same type are not overwritten
      */
     public synchronized void addAnnotationToAllData(JIPipeAnnotation annotation, boolean overwrite) {
         List<JIPipeAnnotation> traitArray = getOrCreateAnnotationColumnData(annotation.getName());

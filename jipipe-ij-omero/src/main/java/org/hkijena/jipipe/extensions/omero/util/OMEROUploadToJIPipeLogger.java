@@ -28,6 +28,6 @@ public class OMEROUploadToJIPipeLogger implements IObserver {
 
     @Override
     public void update(IObservable observable, ImportEvent event) {
-      info.log(event.toLog());
+        info.log(event.toLog());
     }
 }

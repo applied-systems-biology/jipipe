@@ -61,10 +61,10 @@ public class ImportData extends JIPipeSimpleIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
-        if(ignoreInputAnnotations)
+        if (ignoreInputAnnotations)
             dataBatch.setAnnotations(new HashMap<>());
         Path dataFolder = dataBatch.getInputData(getFirstInputSlot(), FolderData.class).getPath();
-        if(!Files.exists(dataFolder.resolve("data-table.json"))) {
+        if (!Files.exists(dataFolder.resolve("data-table.json"))) {
             throw new UserFriendlyRuntimeException("Missing data-table.json!",
                     "Wrong input folder!",
                     "Algorithm " + getName(),
@@ -73,7 +73,7 @@ public class ImportData extends JIPipeSimpleIteratingAlgorithm {
         }
         JIPipeExportedDataTable exportedDataTable = JIPipeExportedDataTable.loadFromJson(dataFolder.resolve("data-table.json"));
         Class<? extends JIPipeData> dataType = JIPipe.getDataTypes().getById(exportedDataTable.getAcceptedDataTypeId());
-        if(dataType == null) {
+        if (dataType == null) {
             throw new UserFriendlyRuntimeException("Unknown data type id: " + exportedDataTable.getAcceptedDataTypeId(),
                     "Unknown data type",
                     "Algorithm " + getName(),
@@ -82,7 +82,7 @@ public class ImportData extends JIPipeSimpleIteratingAlgorithm {
         }
 
         for (JIPipeExportedDataTable.Row row : exportedDataTable.getRowList()) {
-           progress.log("Importing data row " + row.getIndex());
+            progress.log("Importing data row " + row.getIndex());
             Path storageFolder = dataFolder.resolve("" + row.getIndex());
             List<JIPipeAnnotation> annotationList = ignoreImportedDataAnnotations ? Collections.emptyList() : row.getAnnotations();
             JIPipeDataInfo trueDataType = exportedDataTable.getDataTypeOf(row.getIndex());

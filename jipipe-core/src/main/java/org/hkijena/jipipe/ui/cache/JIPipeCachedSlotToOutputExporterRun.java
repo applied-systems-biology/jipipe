@@ -14,8 +14,8 @@
 package org.hkijena.jipipe.ui.cache;
 
 import com.google.common.eventbus.Subscribe;
-import org.hkijena.jipipe.api.JIPipeRunnable;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.JIPipeRunnable;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
@@ -34,15 +34,15 @@ import java.util.Set;
 
 public class JIPipeCachedSlotToOutputExporterRun extends JIPipeWorkbenchPanel implements JIPipeRunnable {
 
-    private JIPipeProgressInfo info = new JIPipeProgressInfo();
     private final Path outputPath;
     private final List<JIPipeDataSlot> slots;
     private final boolean splitBySlot;
+    private JIPipeProgressInfo info = new JIPipeProgressInfo();
 
     /**
-     * @param workbench the workbench
-     * @param outputPath the output folder
-     * @param slots the slots to save
+     * @param workbench   the workbench
+     * @param outputPath  the output folder
+     * @param slots       the slots to save
      * @param splitBySlot if slots should be split
      */
     public JIPipeCachedSlotToOutputExporterRun(JIPipeWorkbench workbench, Path outputPath, List<JIPipeDataSlot> slots, boolean splitBySlot) {
@@ -62,20 +62,18 @@ public class JIPipeCachedSlotToOutputExporterRun extends JIPipeWorkbenchPanel im
             info.resolveAndLog("Slot", i, slots.size());
             JIPipeDataSlot slot = slots.get(i);
             Path targetPath = outputPath;
-            if(splitBySlot) {
+            if (splitBySlot) {
                 targetPath = outputPath.resolve(StringUtils.makeUniqueString(slot.getName(), " ", existing));
             }
             Path storagePath = slot.getStoragePath();
             try {
-                if(!Files.isDirectory(targetPath))
+                if (!Files.isDirectory(targetPath))
                     Files.createDirectories(targetPath);
                 slot.setStoragePath(targetPath);
                 slot.save(null);
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 throw new RuntimeException(e);
-            }
-            finally {
+            } finally {
                 slot.setStoragePath(storagePath);
             }
         }
@@ -83,8 +81,8 @@ public class JIPipeCachedSlotToOutputExporterRun extends JIPipeWorkbenchPanel im
 
     @Subscribe
     public void onFinished(RunUIWorkerFinishedEvent event) {
-        if(event.getRun() == this) {
-            if(JOptionPane.showConfirmDialog(getWorkbench().getWindow(),
+        if (event.getRun() == this) {
+            if (JOptionPane.showConfirmDialog(getWorkbench().getWindow(),
                     "The data was successfully exported to " + outputPath + ". Do you want to open the folder?",
                     "Export slot data",
                     JOptionPane.YES_NO_OPTION,
@@ -96,7 +94,7 @@ public class JIPipeCachedSlotToOutputExporterRun extends JIPipeWorkbenchPanel im
 
     @Subscribe
     public void onInterrupted(RunUIWorkerInterruptedEvent event) {
-        if(event.getRun() == this) {
+        if (event.getRun() == this) {
             JOptionPane.showMessageDialog(getWorkbench().getWindow(), "Could not export slot data to " + outputPath + ". Please take a look at the log (Tools > Logs) to find out more.", "Export slot data", JOptionPane.ERROR_MESSAGE);
         }
     }

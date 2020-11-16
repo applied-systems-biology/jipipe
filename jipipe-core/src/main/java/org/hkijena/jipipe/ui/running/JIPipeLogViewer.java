@@ -81,13 +81,13 @@ public class JIPipeLogViewer extends JIPipeProjectWorkbenchPanel {
     }
 
     private void pushToLog(JIPipeRunnable run, boolean success) {
-        if ( run instanceof JIPipeRun && ((JIPipeRun)run).getProject() != getProject())
+        if (run instanceof JIPipeRun && ((JIPipeRun) run).getProject() != getProject())
             return;
         StringBuilder log = run.getProgressInfo().getLog();
         if (log != null && log.length() > 0) {
             if (logEntries.size() + 1 > runtimeSettings.getLogLimit())
                 logEntries.remove(0);
-            logEntries.add(new LogEntry(run.getTaskLabel(), LocalDateTime.now(),log.toString(), success));
+            logEntries.add(new LogEntry(run.getTaskLabel(), LocalDateTime.now(), log.toString(), success));
             DefaultListModel<LogEntry> model = new DefaultListModel<>();
             for (LogEntry logEntry : logEntries) {
                 model.add(0, logEntry);

@@ -114,20 +114,6 @@ public abstract class PlotData implements JIPipeData, JIPipeParameterCollection,
         return new JLabel(new ImageIcon(image.getScaledInstance(imageWidth, imageHeight, Image.SCALE_SMOOTH)));
     }
 
-    public static <T extends PlotData> T importFrom(Path storageFilePath, Class<T> klass) {
-        try {
-            PlotData plotData = JsonUtils.getObjectMapper().readerFor(klass).readValue(storageFilePath.resolve("plot-metadata.json").toFile());
-            List<Path> seriesFiles = PathUtils.findFilesByExtensionIn(storageFilePath, ".csv").stream()
-                    .filter(p -> p.getFileName().toString().matches("series\\d+.csv")).sorted(Comparator.comparing(p -> p.getFileName().toString())).collect(Collectors.toList());
-            for (Path seriesFile : seriesFiles) {
-                plotData.addSeries(new PlotDataSeries(ResultsTable.open(seriesFile.toString())));
-            }
-            return (T) plotData;
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     @Override
     public void saveTo(Path storageFilePath, String name, boolean forceName) {
         // Export metadata
@@ -285,6 +271,20 @@ public abstract class PlotData implements JIPipeData, JIPipeParameterCollection,
      */
     public void fromJson(JsonNode node) {
         JIPipeParameterCollection.deserializeParametersFromJson(this, node, new JIPipeValidityReport());
+    }
+
+    public static <T extends PlotData> T importFrom(Path storageFilePath, Class<T> klass) {
+        try {
+            PlotData plotData = JsonUtils.getObjectMapper().readerFor(klass).readValue(storageFilePath.resolve("plot-metadata.json").toFile());
+            List<Path> seriesFiles = PathUtils.findFilesByExtensionIn(storageFilePath, ".csv").stream()
+                    .filter(p -> p.getFileName().toString().matches("series\\d+.csv")).sorted(Comparator.comparing(p -> p.getFileName().toString())).collect(Collectors.toList());
+            for (Path seriesFile : seriesFiles) {
+                plotData.addSeries(new PlotDataSeries(ResultsTable.open(seriesFile.toString())));
+            }
+            return (T) plotData;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**

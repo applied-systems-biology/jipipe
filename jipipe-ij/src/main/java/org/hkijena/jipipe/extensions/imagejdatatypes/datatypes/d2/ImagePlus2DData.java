@@ -14,14 +14,11 @@
 package org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2;
 
 import ij.ImagePlus;
-import ij.plugin.RGBStackMerge;
-import ij.process.ImageConverter;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeHeavyData;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.greyscale.ImagePlus2DGreyscale8UData;
 import org.hkijena.jipipe.utils.ImageJUtils;
 
 import java.nio.file.Path;
