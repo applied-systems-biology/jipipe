@@ -192,14 +192,14 @@ public class SplitRoiConnectedComponentsAlgorithm extends ImageRoiProcessorAlgor
             }
         }
 
-        DOTExporter<Integer, DefaultEdge> dotExporter = new DOTExporter<>();
-        dotExporter.setVertexAttributeProvider(index -> {
-            Map<String, Attribute> result = new HashMap<>();
-            Roi points = input.get(index);
-            result.put("label", new DefaultAttribute<>(points.getXBase() + "," + points.getYBase() + " z=" + points.getZPosition(), AttributeType.STRING));
-            return result;
-        });
-        dotExporter.exportGraph(graph, new File("graph.dot"));
+//        DOTExporter<Integer, DefaultEdge> dotExporter = new DOTExporter<>();
+//        dotExporter.setVertexAttributeProvider(index -> {
+//            Map<String, Attribute> result = new HashMap<>();
+//            Roi points = input.get(index);
+//            result.put("label", new DefaultAttribute<>(points.getXBase() + "," + points.getYBase() + " z=" + points.getZPosition(), AttributeType.STRING));
+//            return result;
+//        });
+//        dotExporter.exportGraph(graph, new File("graph.dot"));
 
         ConnectivityInspector<Integer, DefaultEdge> connectivityInspector = new ConnectivityInspector<>(graph);
         int outputIndex = 0;
