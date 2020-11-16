@@ -29,6 +29,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.SliceIndex;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.Measurement;
 import org.hkijena.jipipe.extensions.parameters.primitives.OptionalStringParameter;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
@@ -91,6 +92,16 @@ public class RoiStatisticsAlgorithm extends ImageRoiProcessorAlgorithm {
                 ROIListData data = new ROIListData(entry.getValue());
 
                 ResultsTableData result = data.measure(referenceEntry.getKey().getImage(), measurements);
+                if(measurements.getValues().contains(Measurement.StackPosition)) {
+                    int columnChannel = result.getOrCreateColumnIndex("Ch", false);
+                    int columnStack = result.getOrCreateColumnIndex("Slice", false);
+                    int columnFrame = result.getOrCreateColumnIndex("Frame", false);
+                    for (int row = 0; row < result.getRowCount(); row++) {
+                        result.setValueAt(data.getChannelPosition(), row, columnChannel);
+                        result.setValueAt(data.getStackPosition(), row, columnStack);
+                        result.setValueAt(data.getFramePosition(), row, columnFrame);
+                    }
+                }
                 List<JIPipeAnnotation> annotations = new ArrayList<>();
                 if (indexAnnotation.isEnabled() && !StringUtils.isNullOrEmpty(indexAnnotation.getContent())) {
                     annotations.add(new JIPipeAnnotation(indexAnnotation.getContent(), entry.getKey().toString()));

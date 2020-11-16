@@ -473,12 +473,18 @@ public class ResultsTableData implements JIPipeData, TableModel {
      * Returns the index of an existing column or creates a new column if it does not exist
      *
      * @param id the column ID
+     * @param stringColumn if a new column is a string column
      * @return the column index
      */
-    public int getOrCreateColumnIndex(String id) {
+    public int getOrCreateColumnIndex(String id, boolean stringColumn) {
         int existing = getColumnIndex(id);
         if (existing == -1) {
             existing = table.getFreeColumn(id);
+            if (stringColumn) {
+                for (int row = 0; row < getRowCount(); row++) {
+                    table.setValue(existing, row, "");
+                }
+            }
         }
         return existing;
     }

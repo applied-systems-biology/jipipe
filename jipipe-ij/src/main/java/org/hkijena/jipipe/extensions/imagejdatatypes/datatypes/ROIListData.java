@@ -730,4 +730,61 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
 
         return result;
     }
+
+    /**
+     * The overall channel position of the ROIs.
+     * If the position is not exactly defined, this function returns 0
+     * Returns 0 if no ROIs are in the list
+     * @return the overall channel position. 1-based index. 0 equals that the ROIs are at multiple locations
+     */
+    public int getChannelPosition() {
+        int result = -1;
+        for (Roi roi : this) {
+            if(result == -1)
+                result = roi.getCPosition();
+            else if(result != 0 && result != roi.getCPosition()) {
+                result = 0;
+                break;
+            }
+        }
+        return Math.max(0, result);
+    }
+
+    /**
+     * The overall stack position of the ROIs.
+     * If the position is not exactly defined, this function returns 0
+     * Returns 0 if no ROIs are in the list
+     * @return the overall stack position. 1-based index. 0 equals that the ROIs are at multiple locations
+     */
+    public int getStackPosition() {
+        int result = -1;
+        for (Roi roi : this) {
+            if(result == -1)
+                result = roi.getZPosition();
+            else if(result != 0 && result != roi.getZPosition()) {
+                result = 0;
+                break;
+            }
+        }
+        return Math.max(0, result);
+    }
+
+    /**
+     * The overall frame position of the ROIs.
+     * If the position is not exactly defined, this function returns 0
+     * Returns 0 if no ROIs are in the list
+     * @return the overall frame position. 1-based index. 0 equals that the ROIs are at multiple locations
+     */
+    public int getFramePosition() {
+        int result = -1;
+        for (Roi roi : this) {
+            if(result == -1)
+                result = roi.getTPosition();
+            else if(result != 0 && result != roi.getTPosition()) {
+                result = 0;
+                break;
+            }
+        }
+        return Math.max(0, result);
+    }
 }

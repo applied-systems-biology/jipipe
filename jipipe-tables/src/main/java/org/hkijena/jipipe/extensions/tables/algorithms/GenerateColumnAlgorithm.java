@@ -76,7 +76,7 @@ public class GenerateColumnAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             if (table.getColumnIndex(columnName) != -1 && !replaceIfExists)
                 continue;
 
-            int columnId = table.getOrCreateColumnIndex(columnName);
+            int columnId = table.getOrCreateColumnIndex(columnName, false);
             variableSet.set("column", columnId);
             variableSet.set("column_name", columnName);
             variableSet.set("num_cols", table.getColumnCount());
