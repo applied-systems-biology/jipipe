@@ -60,7 +60,7 @@ public class JIPipeGraphRunner implements JIPipeRunnable {
                         "Pipeline run", "You clicked 'Cancel'.",
                         "Do not click 'Cancel' if you do not want to cancel the execution.");
             JIPipeDataSlot slot = traversedSlots.get(index);
-            info.setProgress(index);
+            info.setProgress(index, traversedSlots.size());
             JIPipeProgressInfo subInfo = info.resolveAndLog( "Algorithm: " + slot.getNode().getName());
 
             // If an algorithm cannot be executed, skip it automatically
@@ -77,7 +77,7 @@ public class JIPipeGraphRunner implements JIPipeRunnable {
                 // Ensure the algorithm has run
                 if (!executedAlgorithms.contains(slot.getNode())) {
                     try {
-                        slot.getNode().run(info);
+                        slot.getNode().run(subInfo);
                     } catch (Exception e) {
                         throw new UserFriendlyRuntimeException("Algorithm " + slot.getNode() + " raised an exception!",
                                 e,
