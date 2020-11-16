@@ -15,6 +15,7 @@ package org.hkijena.jipipe.utils;
 
 import ij.ImagePlus;
 import ij.ImageStack;
+import ij.process.ByteProcessor;
 import ij.process.ColorProcessor;
 import ij.process.ImageConverter;
 import ij.process.ImageProcessor;
@@ -29,6 +30,48 @@ import java.util.List;
 public class ImageJUtils {
     private ImageJUtils() {
 
+    }
+
+    /**
+     * Convert a RGB image to a grayscale image where the RGB channels are split into individual planes
+     * @param image the image
+     * @return split image
+     */
+    public static ImagePlus rgbToChannels(ImagePlus image) {
+        if (image.getType() != ImagePlus.COLOR_RGB)
+            return image;
+        int nChannels = (image.getNChannels() + 2);
+        ImageStack stack = new ImageStack(image.getWidth(), image.getHeight(), image.getNFrames() * image.getNSlices() * nChannels);
+        for (int z = 0; z < image.getNSlices(); z++) {
+            for (int t = 0; t < image.getNFrames(); t++) {
+                for (int c = 0; c < image.getNChannels(); c++) {
+                    ColorProcessor rgbProcessor = (ColorProcessor) image.getStack().getProcessor(image.getStackIndex(c, z, t));
+                    ImageProcessor rProcessor = new ByteProcessor(image.getWidth(), image.getHeight());
+                    ImageProcessor gProcessor = new ByteProcessor(image.getWidth(), image.getHeight());
+                    ImageProcessor bProcessor = new ByteProcessor(image.getWidth(), image.getHeight());
+                    for (int y = 0; y < rgbProcessor.getHeight(); y++) {
+                        for (int x = 0; x < rgbProcessor.getWidth(); x++) {
+                            int rgb = rgbProcessor.get(x, y);
+                            int r = (rgb >> 16) & 0xFF;
+                            int g = (rgb >> 8) & 0xFF;
+                            int b = rgb & 0xFF;
+                            rProcessor.set(x,y,r);
+                            gProcessor.set(x,y,g);
+                            bProcessor.set(x,y,b);
+                        }
+                    }
+                    int rProcessorIndex = t * nChannels * image.getNSlices() + z * nChannels + c + 1;
+                    int gProcessorIndex = t * nChannels * image.getNSlices() + z * nChannels + c + 2;
+                    int bProcessorIndex = t * nChannels * image.getNSlices() + z * nChannels + c + 3;
+                    stack.setProcessor(rProcessor, rProcessorIndex);
+                    stack.setProcessor(gProcessor, gProcessorIndex);
+                    stack.setProcessor(bProcessor, bProcessorIndex);
+                }
+            }
+        }
+        ImagePlus result = new ImagePlus(image.getTitle() + "_split", stack);
+        result.setDimensions(nChannels, image.getNSlices(), image.getNFrames());
+        return result;
     }
 
     /**

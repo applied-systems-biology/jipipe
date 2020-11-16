@@ -337,31 +337,43 @@ public class ImageViewerPanel extends JPanel {
     }
 
     private void initializeLUTPanel() {
-        if (image.getType() == ImagePlus.COLOR_256 || image.getType() == ImagePlus.COLOR_RGB)
-            return;
-        while (lutEditors.size() < image.getNChannels()) {
-            ImageViewerLUTEditor editor = new ImageViewerLUTEditor(this, lutEditors.size());
-            editor.loadLUTFromImage();
-            lutEditors.add(editor);
-        }
-        FormPanel.GroupHeaderPanel headerPanel = formPanel.addGroupHeader("LUT", UIUtils.getIconFromResources("actions/color-gradient.png"));
-        if(image.getNChannels() == 3) {
-            JButton toRGBButton = new JButton("Convert to RGB", UIUtils.getIconFromResources("actions/colors-rgb.png"));
+        if (image.getType() == ImagePlus.COLOR_256 || image.getType() == ImagePlus.COLOR_RGB) {
+            FormPanel.GroupHeaderPanel headerPanel = formPanel.addGroupHeader("LUT", UIUtils.getIconFromResources("actions/color-gradient.png"));
+            JButton toRGBButton = new JButton("Split channels", UIUtils.getIconFromResources("actions/channelmixer.png"));
             headerPanel.add(toRGBButton);
-            toRGBButton.addActionListener(e -> convertImageToRGB());
+            toRGBButton.addActionListener(e -> splitChannels());
         }
-        for (int channel = 0; channel < image.getNChannels(); channel++) {
-            ImageViewerLUTEditor editor = lutEditors.get(channel);
-            JTextField channelNameEditor = new JTextField(editor.getChannelName());
-            channelNameEditor.setOpaque(false);
-            channelNameEditor.setBorder(null);
-            channelNameEditor.getDocument().addDocumentListener(new DocumentChangeListener() {
-                @Override
-                public void changed(DocumentEvent documentEvent) {
-                    editor.setChannelName(channelNameEditor.getText());
-                }
-            });
-            formPanel.addToForm(editor, channelNameEditor, null);
+        else {
+            while (lutEditors.size() < image.getNChannels()) {
+                ImageViewerLUTEditor editor = new ImageViewerLUTEditor(this, lutEditors.size());
+                editor.loadLUTFromImage();
+                lutEditors.add(editor);
+            }
+            FormPanel.GroupHeaderPanel headerPanel = formPanel.addGroupHeader("LUT", UIUtils.getIconFromResources("actions/color-gradient.png"));
+            if (image.getNChannels() == 3) {
+                JButton toRGBButton = new JButton("Convert to RGB", UIUtils.getIconFromResources("actions/colors-rgb.png"));
+                headerPanel.add(toRGBButton);
+                toRGBButton.addActionListener(e -> convertImageToRGB());
+            }
+            for (int channel = 0; channel < image.getNChannels(); channel++) {
+                ImageViewerLUTEditor editor = lutEditors.get(channel);
+                JTextField channelNameEditor = new JTextField(editor.getChannelName());
+                channelNameEditor.setOpaque(false);
+                channelNameEditor.setBorder(null);
+                channelNameEditor.getDocument().addDocumentListener(new DocumentChangeListener() {
+                    @Override
+                    public void changed(DocumentEvent documentEvent) {
+                        editor.setChannelName(channelNameEditor.getText());
+                    }
+                });
+                formPanel.addToForm(editor, channelNameEditor, null);
+            }
+        }
+    }
+
+    private void splitChannels() {
+        if(image != null) {
+            setImage(ImageJUtils.rgbToChannels(image));
         }
     }
 
