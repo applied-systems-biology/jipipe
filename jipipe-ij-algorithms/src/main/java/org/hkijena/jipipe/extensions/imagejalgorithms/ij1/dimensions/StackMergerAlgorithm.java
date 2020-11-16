@@ -101,7 +101,7 @@ public class StackMergerAlgorithm extends JIPipeMergingAlgorithm {
         if (!StringUtils.isNullOrEmpty(counterAnnotation)) {
             JIPipeAnnotation defaultCounter = new JIPipeAnnotation(counterAnnotation, "");
             sortedInputRows = inputRows.stream().sorted(Comparator.comparing(row ->
-                    (JIPipeAnnotation) (getFirstInputSlot().getAnnotationOr(row, counterAnnotation, defaultCounter)))).collect(Collectors.toList());
+                    getFirstInputSlot().getAnnotationOr(row, counterAnnotation, defaultCounter))).collect(Collectors.toList());
             dataBatch.removeGlobalAnnotation(counterAnnotation);
         } else {
             sortedInputRows = new ArrayList<>(inputRows);

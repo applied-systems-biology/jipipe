@@ -29,6 +29,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.SliceIndex;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.Measurement;
 import org.hkijena.jipipe.extensions.parameters.primitives.OptionalStringParameter;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
@@ -55,6 +56,7 @@ public class RoiStatisticsAlgorithm extends ImageRoiProcessorAlgorithm {
     private boolean applyPerSlice = false;
     private boolean applyPerChannel = false;
     private boolean applyPerFrame = false;
+    private boolean addNameToTable = true;
     private OptionalStringParameter indexAnnotation = new OptionalStringParameter();
 
     /**
@@ -79,7 +81,7 @@ public class RoiStatisticsAlgorithm extends ImageRoiProcessorAlgorithm {
         this.applyPerFrame = other.applyPerFrame;
         this.applyPerSlice = other.applyPerSlice;
         this.indexAnnotation = other.indexAnnotation;
-
+        this.addNameToTable = other.addNameToTable;
     }
 
     @Override
@@ -91,6 +93,22 @@ public class RoiStatisticsAlgorithm extends ImageRoiProcessorAlgorithm {
                 ROIListData data = new ROIListData(entry.getValue());
 
                 ResultsTableData result = data.measure(referenceEntry.getKey().getImage(), measurements);
+                if(measurements.getValues().contains(Measurement.StackPosition)) {
+                    int columnChannel = result.getOrCreateColumnIndex("Ch", false);
+                    int columnStack = result.getOrCreateColumnIndex("Slice", false);
+                    int columnFrame = result.getOrCreateColumnIndex("Frame", false);
+                    for (int row = 0; row < result.getRowCount(); row++) {
+                        result.setValueAt(data.get(row).getCPosition(), row, columnChannel);
+                        result.setValueAt(data.get(row).getZPosition(), row, columnStack);
+                        result.setValueAt(data.get(row).getTPosition(), row, columnFrame);
+                    }
+                }
+                if(addNameToTable) {
+                    int columnName = result.getOrCreateColumnIndex("Name", true);
+                    for (int row = 0; row < result.getRowCount(); row++) {
+                        result.setValueAt(data.get(row).getName(), row, columnName);
+                    }
+                }
                 List<JIPipeAnnotation> annotations = new ArrayList<>();
                 if (indexAnnotation.isEnabled() && !StringUtils.isNullOrEmpty(indexAnnotation.getContent())) {
                     annotations.add(new JIPipeAnnotation(indexAnnotation.getContent(), entry.getKey().toString()));
@@ -158,5 +176,17 @@ public class RoiStatisticsAlgorithm extends ImageRoiProcessorAlgorithm {
     @JIPipeParameter("apply-per-frame")
     public void setApplyPerFrame(boolean applyPerFrame) {
         this.applyPerFrame = applyPerFrame;
+    }
+
+    @JIPipeDocumentation(name = "Add ROI name as column", description = "If enabled, a column 'Name' containing the ROI name is created. " +
+            "You can modify this name via the 'Change ROI properties' node.")
+    @JIPipeParameter("add-name")
+    public boolean isAddNameToTable() {
+        return addNameToTable;
+    }
+
+    @JIPipeParameter("add-name")
+    public void setAddNameToTable(boolean addNameToTable) {
+        this.addNameToTable = addNameToTable;
     }
 }

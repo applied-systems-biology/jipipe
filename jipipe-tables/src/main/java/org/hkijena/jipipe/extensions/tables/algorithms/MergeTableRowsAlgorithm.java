@@ -29,19 +29,19 @@ import static org.hkijena.jipipe.api.nodes.JIPipeMergingAlgorithm.MERGING_ALGORI
 /**
  * Algorithm that integrates columns
  */
-@JIPipeDocumentation(name = "Merge tables", description = "Merges multiple tables into one table. Columns are automatically created if they do not exist."
+@JIPipeDocumentation(name = "Merge table rows", description = "Merges multiple tables into one table by merging the list of rows. Columns are automatically created if they do not exist."
         + "\n\n" + MERGING_ALGORITHM_DESCRIPTION)
 @JIPipeOrganization(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Merge")
 @JIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
-public class MergeTablesAlgorithm extends JIPipeMergingAlgorithm {
+public class MergeTableRowsAlgorithm extends JIPipeMergingAlgorithm {
 
     /**
      * Creates a new instance
      *
      * @param info algorithm info
      */
-    public MergeTablesAlgorithm(JIPipeNodeInfo info) {
+    public MergeTableRowsAlgorithm(JIPipeNodeInfo info) {
         super(info);
     }
 
@@ -50,7 +50,7 @@ public class MergeTablesAlgorithm extends JIPipeMergingAlgorithm {
      *
      * @param other the original
      */
-    public MergeTablesAlgorithm(MergeTablesAlgorithm other) {
+    public MergeTableRowsAlgorithm(MergeTableRowsAlgorithm other) {
         super(other);
     }
 

@@ -15,6 +15,7 @@ package org.hkijena.jipipe.api.data;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
+import org.hkijena.jipipe.utils.NaturalOrderComparator;
 import org.python.core.PyDictionary;
 import org.python.core.PyString;
 
@@ -74,7 +75,7 @@ public class JIPipeAnnotation implements Comparable<JIPipeAnnotation> {
 
     @Override
     public int compareTo(JIPipeAnnotation o) {
-        return getValue().compareTo(o.getValue());
+        return NaturalOrderComparator.INSTANCE.compare(getValue(), o.getValue());
     }
 
     /**

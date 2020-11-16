@@ -42,6 +42,7 @@ import org.hkijena.jipipe.extensions.tables.parameters.processors.TableColumnGen
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.plugin.Plugin;
+import org.scijava.table.Column;
 
 /**
  * Standard set of table operations
@@ -142,7 +143,7 @@ public class TablesExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerNodeType("table-convert-columns", ConvertColumnsAlgorithm.class, UIUtils.getIconURLFromResources("actions/formula.png"));
         registerNodeType("table-split-into-columns", SplitTableIntoColumnsAlgorithm.class, UIUtils.getIconURLFromResources("actions/split.png"));
         registerNodeType("table-merge-from-columns", MergeColumnsAlgorithm.class, UIUtils.getIconURLFromResources("actions/merge.png"));
-        registerNodeType("table-merge-tables", MergeTablesAlgorithm.class, UIUtils.getIconURLFromResources("actions/merge.png"));
+        registerNodeType("table-merge-tables", MergeTableRowsAlgorithm.class, UIUtils.getIconURLFromResources("actions/merge.png"));
         registerNodeType("table-split-by-columns", SplitTableByColumnsAlgorithm.class, UIUtils.getIconURLFromResources("actions/split.png"));
         registerNodeType("table-filter", FilterTableAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
         registerNodeType("table-sort", SortTableAlgorithm.class, UIUtils.getIconURLFromResources("actions/view-sort.png"));
@@ -153,6 +154,8 @@ public class TablesExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerNodeType("tables-from-script", TablesFromScript.class, UIUtils.getIconURLFromResources("apps/python.png"));
         registerNodeType("tables-from-expression", GenerateTableFromExpressionAlgorithm.class, UIUtils.getIconURLFromResources("apps/insert-math-expression.png"));
         registerNodeType("define-tables", DefineTablesAlgorithm.class, UIUtils.getIconURLFromResources("data-types/results-table.png"));
+        registerNodeType("table-rename-columns-expression", ModifyTableColumnNamesAlgorithm.class, UIUtils.getIconURLFromResources("actions/document-edit.png"));
+        registerNodeType("table-merge-columns", MergeTableColumnsAlgorithm.class, UIUtils.getIconURLFromResources("actions/merge.png"));
     }
 
     private void registerParameters() {
@@ -228,6 +231,11 @@ public class TablesExtension extends JIPipePrepackagedDefaultJavaExtension {
                 "Column generator (expression)",
                 "Generates a column via an expression",
                 null);
+
+        registerEnumParameterType("table-column-row-normalization",
+                ColumnRowNormalization.class,
+                "Column normalization",
+                "Operations for normalizing the number of rows in columns");
     }
 
     private void registerColumnOperations() {

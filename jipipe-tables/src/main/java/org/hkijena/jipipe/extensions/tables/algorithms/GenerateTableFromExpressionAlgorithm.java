@@ -80,7 +80,7 @@ public class GenerateTableFromExpressionAlgorithm extends JIPipeSimpleIteratingA
             String columnName = entry.getValue();
             int columnId = table.getColumnIndex(columnName);
             if (columnId == -1)
-                columnId = table.getOrCreateColumnIndex(columnName);
+                columnId = table.getOrCreateColumnIndex(columnName, false);
             variableSet.set("column", columnId);
             variableSet.set("column_name", columnName);
             for (int row = 0; row < table.getRowCount(); row++) {
