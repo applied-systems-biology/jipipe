@@ -239,7 +239,7 @@ public class JIPipeMergedDataSlotTable implements TableModel {
         updateRenderedPreviews();
     }
 
-    private void updateRenderedPreviews() {
+    public void updateRenderedPreviews() {
         JViewport viewport = scrollPane.getViewport();
         for (int row = 0; row < previewCache.size(); row++) {
             Component component = previewCache.get(row);

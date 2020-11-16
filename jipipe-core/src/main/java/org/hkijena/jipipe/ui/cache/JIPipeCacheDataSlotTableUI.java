@@ -105,6 +105,7 @@ public class JIPipeCacheDataSlotTableUI extends JIPipeProjectWorkbenchPanel {
         table.setAutoCreateRowSorter(true);
         table.packAll();
         columnModel.getColumn(1).setPreferredWidth(GeneralDataSettings.getInstance().getPreviewSize());
+        SwingUtilities.invokeLater(dataTable::updateRenderedPreviews);
     }
 
     private void initialize() {
@@ -372,7 +373,7 @@ public class JIPipeCacheDataSlotTableUI extends JIPipeProjectWorkbenchPanel {
             updateRenderedPreviews();
         }
 
-        private void updateRenderedPreviews() {
+        public void updateRenderedPreviews() {
             JViewport viewport = scrollPane.getViewport();
             for (int row = 0; row < previewCache.size(); row++) {
                 Component component = previewCache.get(row);

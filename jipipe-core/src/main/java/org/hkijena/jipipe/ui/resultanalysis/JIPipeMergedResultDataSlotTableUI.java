@@ -62,6 +62,7 @@ public class JIPipeMergedResultDataSlotTableUI extends JIPipeProjectWorkbenchPan
     private FormPanel rowUIList;
     private SearchTextField searchTextField = new SearchTextField();
     private JScrollPane scrollPane;
+    private JIPipeRowDataMergedTableCellRenderer previewRenderer;
 
     /**
      * @param workbenchUI The workbench
@@ -192,7 +193,8 @@ public class JIPipeMergedResultDataSlotTableUI extends JIPipeProjectWorkbenchPan
             table.setRowHeight(GeneralDataSettings.getInstance().getPreviewSize());
         else
             table.setRowHeight(25);
-        table.setDefaultRenderer(JIPipeExportedDataTable.Row.class, new JIPipeRowDataMergedTableCellRenderer(getProjectWorkbench(), mergedDataTable, scrollPane, table));
+        previewRenderer = new JIPipeRowDataMergedTableCellRenderer(getProjectWorkbench(), mergedDataTable, scrollPane, table);
+        table.setDefaultRenderer(JIPipeExportedDataTable.Row.class, previewRenderer);
         table.setModel(mergedDataTable);
         refreshTable();
     }
@@ -212,6 +214,8 @@ public class JIPipeMergedResultDataSlotTableUI extends JIPipeProjectWorkbenchPan
         if (mergedDataTable.getRowCount() == 1) {
             table.setRowSelectionInterval(0, 0);
         }
+
+        SwingUtilities.invokeLater(previewRenderer::updateRenderedPreviews);
     }
 
 }

@@ -58,6 +58,7 @@ public class JIPipeResultDataSlotTableUI extends JIPipeProjectWorkbenchPanel {
     private JIPipeExportedDataTable dataTable;
     private FormPanel rowUIList;
     private SearchTextField searchTextField = new SearchTextField();
+    private JIPipeRowDataTableCellRenderer previewRenderer;
 
     /**
      * @param workbenchUI the workbench UI
@@ -74,9 +75,9 @@ public class JIPipeResultDataSlotTableUI extends JIPipeProjectWorkbenchPanel {
         GeneralDataSettings.getInstance().getEventBus().register(new Object() {
             @Subscribe
             public void onPreviewSizeChanged(ParameterChangedEvent event) {
-                if (isDisplayable() && "preview-size".equals(event.getKey())) {
-                    reloadTable();
-                }
+            if (isDisplayable() && "preview-size".equals(event.getKey())) {
+                reloadTable();
+            }
             }
         });
     }
@@ -92,7 +93,8 @@ public class JIPipeResultDataSlotTableUI extends JIPipeProjectWorkbenchPanel {
 
         table.setDefaultRenderer(Path.class, new JIPipeRowIndexTableCellRenderer());
         table.setDefaultRenderer(JIPipeDataInfo.class, new JIPipeDataInfoCellRenderer());
-        table.setDefaultRenderer(JIPipeExportedDataTable.Row.class, new JIPipeRowDataTableCellRenderer(getProjectWorkbench(), slot, table, scrollPane));
+        previewRenderer = new JIPipeRowDataTableCellRenderer(getProjectWorkbench(), slot, table, scrollPane);
+        table.setDefaultRenderer(JIPipeExportedDataTable.Row.class, previewRenderer);
         table.setDefaultRenderer(JIPipeAnnotation.class, new JIPipeTraitTableCellRenderer());
         table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
@@ -201,5 +203,7 @@ public class JIPipeResultDataSlotTableUI extends JIPipeProjectWorkbenchPanel {
         if (dataTable.getRowCount() == 1) {
             table.setRowSelectionInterval(0, 0);
         }
+
+        SwingUtilities.invokeLater(previewRenderer::updateRenderedPreviews);
     }
 }

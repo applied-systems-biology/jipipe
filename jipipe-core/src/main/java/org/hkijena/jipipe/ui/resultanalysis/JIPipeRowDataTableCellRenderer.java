@@ -86,7 +86,7 @@ public class JIPipeRowDataTableCellRenderer implements TableCellRenderer {
         return null;
     }
 
-    private void updateRenderedPreviews() {
+    public void updateRenderedPreviews() {
         JViewport viewport = scrollPane.getViewport();
         for (int row = 0; row < previewCache.size(); row++) {
             JIPipeResultDataSlotPreview component = previewCache.get(row);

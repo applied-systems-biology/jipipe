@@ -85,9 +85,9 @@ public class JIPipeCacheMultiDataSlotTableUI extends JIPipeProjectWorkbenchPanel
         GeneralDataSettings.getInstance().getEventBus().register(new Object() {
             @Subscribe
             public void onPreviewSizeChanged(ParameterChangedEvent event) {
-                if (isDisplayable() && "preview-size".equals(event.getKey())) {
-                    reloadTable();
-                }
+            if (isDisplayable() && "preview-size".equals(event.getKey())) {
+                reloadTable();
+            }
             }
         });
     }
@@ -108,6 +108,7 @@ public class JIPipeCacheMultiDataSlotTableUI extends JIPipeProjectWorkbenchPanel
         table.setRowFilter(new SearchTextFieldTableRowFilter(searchTextField));
         table.packAll();
         columnModel.getColumn(4).setPreferredWidth(GeneralDataSettings.getInstance().getPreviewSize());
+        SwingUtilities.invokeLater(multiSlotTable::updateRenderedPreviews);
     }
 
     private void initialize() {
