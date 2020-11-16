@@ -56,6 +56,7 @@ public class RoiStatisticsAlgorithm extends ImageRoiProcessorAlgorithm {
     private boolean applyPerSlice = false;
     private boolean applyPerChannel = false;
     private boolean applyPerFrame = false;
+    private boolean addNameToTable = true;
     private OptionalStringParameter indexAnnotation = new OptionalStringParameter();
 
     /**
@@ -80,7 +81,7 @@ public class RoiStatisticsAlgorithm extends ImageRoiProcessorAlgorithm {
         this.applyPerFrame = other.applyPerFrame;
         this.applyPerSlice = other.applyPerSlice;
         this.indexAnnotation = other.indexAnnotation;
-
+        this.addNameToTable = other.addNameToTable;
     }
 
     @Override
@@ -97,9 +98,15 @@ public class RoiStatisticsAlgorithm extends ImageRoiProcessorAlgorithm {
                     int columnStack = result.getOrCreateColumnIndex("Slice", false);
                     int columnFrame = result.getOrCreateColumnIndex("Frame", false);
                     for (int row = 0; row < result.getRowCount(); row++) {
-                        result.setValueAt(data.getChannelPosition(), row, columnChannel);
-                        result.setValueAt(data.getStackPosition(), row, columnStack);
-                        result.setValueAt(data.getFramePosition(), row, columnFrame);
+                        result.setValueAt(data.get(row).getCPosition(), row, columnChannel);
+                        result.setValueAt(data.get(row).getZPosition(), row, columnStack);
+                        result.setValueAt(data.get(row).getTPosition(), row, columnFrame);
+                    }
+                }
+                if(addNameToTable) {
+                    int columnName = result.getOrCreateColumnIndex("Name", true);
+                    for (int row = 0; row < result.getRowCount(); row++) {
+                        result.setValueAt(data.get(row).getName(), row, columnName);
                     }
                 }
                 List<JIPipeAnnotation> annotations = new ArrayList<>();
@@ -169,5 +176,17 @@ public class RoiStatisticsAlgorithm extends ImageRoiProcessorAlgorithm {
     @JIPipeParameter("apply-per-frame")
     public void setApplyPerFrame(boolean applyPerFrame) {
         this.applyPerFrame = applyPerFrame;
+    }
+
+    @JIPipeDocumentation(name = "Add ROI name as column", description = "If enabled, a column 'Name' containing the ROI name is created. " +
+            "You can modify this name via the 'Change ROI properties' node.")
+    @JIPipeParameter("add-name")
+    public boolean isAddNameToTable() {
+        return addNameToTable;
+    }
+
+    @JIPipeParameter("add-name")
+    public void setAddNameToTable(boolean addNameToTable) {
+        this.addNameToTable = addNameToTable;
     }
 }

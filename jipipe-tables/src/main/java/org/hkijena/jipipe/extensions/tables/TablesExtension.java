@@ -153,6 +153,7 @@ public class TablesExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerNodeType("tables-from-script", TablesFromScript.class, UIUtils.getIconURLFromResources("apps/python.png"));
         registerNodeType("tables-from-expression", GenerateTableFromExpressionAlgorithm.class, UIUtils.getIconURLFromResources("apps/insert-math-expression.png"));
         registerNodeType("define-tables", DefineTablesAlgorithm.class, UIUtils.getIconURLFromResources("data-types/results-table.png"));
+        registerNodeType("table-rename-columns-expression", ModifyTableColumnNamesAlgorithm.class, UIUtils.getIconURLFromResources("actions/document-edit.png"));
     }
 
     private void registerParameters() {

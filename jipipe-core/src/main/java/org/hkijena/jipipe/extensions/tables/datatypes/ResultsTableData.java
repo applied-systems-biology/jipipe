@@ -838,6 +838,27 @@ public class ResultsTableData implements JIPipeData, TableModel {
     }
 
     /**
+     * Adds a column with the given name.
+     * If the column already exists, the method returns the existing index
+     *
+     * @param name         column name. cannot be empty.
+     * @param data the data
+     * @return the column index (this includes any existing column) or -1 if the creation was not possible
+     */
+    public int addColumn(String name, TableColumn data) {
+        int id = addColumn(name, !data.isNumeric());
+        for (int row = 0; row < getRowCount(); row++) {
+            if(data.isNumeric()) {
+                setValueAt(data.getRowAsDouble(row), row, id);
+            }
+            else {
+                setValueAt(data.getRowAsString(row), row, id);
+            }
+        }
+        return id;
+    }
+
+    /**
      * Converts the column into a string column. Silently ignores columns that are already string columns.
      *
      * @param column column index
