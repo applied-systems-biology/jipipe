@@ -343,6 +343,15 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
                     processor.setColor(255);
 
                     for (Roi roi : this) {
+                        int rz = roi.getZPosition();
+                        int rc = roi.getCPosition();
+                        int rt = roi.getTPosition();
+                        if (rz != 0 && rz != (z + 1))
+                            continue;
+                        if (rc != 0 && rc != (c + 1))
+                            continue;
+                        if (rt != 0 && rt != (t + 1))
+                            continue;
                         if (drawFilledOutline)
                             processor.fill(roi);
                         if (drawOutline)
