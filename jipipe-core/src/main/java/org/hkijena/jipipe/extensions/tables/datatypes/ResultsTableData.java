@@ -846,16 +846,17 @@ public class ResultsTableData implements JIPipeData, TableModel {
      * @return the column index (this includes any existing column) or -1 if the creation was not possible
      */
     public int addColumn(String name, TableColumn data) {
-        int id = addColumn(name, !data.isNumeric());
+        int col = addColumn(name, !data.isNumeric());
+//        System.out.println(name + ": " + col + " / " + getColumnCount());
         for (int row = 0; row < getRowCount(); row++) {
             if(data.isNumeric()) {
-                setValueAt(data.getRowAsDouble(row), row, id);
+                setValueAt(data.getRowAsDouble(row), row, col);
             }
             else {
-                setValueAt(data.getRowAsString(row), row, id);
+                setValueAt(data.getRowAsString(row), row, col);
             }
         }
-        return id;
+        return col;
     }
 
     /**

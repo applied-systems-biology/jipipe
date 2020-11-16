@@ -29,10 +29,12 @@ public class TableColumnReference implements TableColumn {
 
     private ResultsTableData source;
     private int sourceColumn;
+    private String label;
 
     public TableColumnReference(ResultsTableData source, int sourceColumn) {
         this.source = source;
         this.sourceColumn = sourceColumn;
+        this.label = source.getColumnName(sourceColumn);
     }
 
     @Override
@@ -86,7 +88,7 @@ public class TableColumnReference implements TableColumn {
 
     @Override
     public String getLabel() {
-        return null;
+        return label;
     }
 
     @Override
