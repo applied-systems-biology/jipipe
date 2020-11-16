@@ -41,12 +41,13 @@ import org.jgrapht.Graphs;
 import org.jgrapht.alg.connectivity.ConnectivityInspector;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.DefaultUndirectedGraph;
+import org.jgrapht.nio.Attribute;
+import org.jgrapht.nio.AttributeType;
+import org.jgrapht.nio.DefaultAttribute;
+import org.jgrapht.nio.dot.DOTExporter;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.io.File;
+import java.util.*;
 
 @JIPipeDocumentation(name = "Split into connected components", description = "Algorithm that extracts connected components across one or multiple dimensions. The output consists of multiple ROI lists, one for each connected component.")
 @JIPipeOrganization(menuPath = "Split", nodeTypeCategory = RoiNodeTypeCategory.class)
@@ -112,8 +113,18 @@ public class SplitRoiConnectedComponentsAlgorithm extends ImageRoiProcessorAlgor
             referenceImage = referenceImages.keySet().iterator().next().getImage();
             measurements = input.measure(referenceImage, overlapFilterMeasurements);
         }
+        int currentProgress = 0;
+        int currentProgressPercentage = 0;
+        int maxProgress = (input.size() * input.size()) / 2;
+        JIPipeProgressInfo subProgress = progress.resolve("Overlap tests");
         for (int i = 0; i < input.size(); i++) {
             for (int j = i + 1; j < input.size(); j++) {
+                ++currentProgress;
+                int newProgressPercentage = (int)(1.0 * currentProgress / maxProgress * 100);
+                if(newProgressPercentage != currentProgressPercentage) {
+                    subProgress.log(newProgressPercentage + "%");
+                    currentProgressPercentage = newProgressPercentage;
+                }
                 Roi roi1 = input.get(i);
                 Roi roi2 = input.get(j);
 
@@ -144,14 +155,6 @@ public class SplitRoiConnectedComponentsAlgorithm extends ImageRoiProcessorAlgor
             }
         }
 
-//        DOTExporter<Roi, DefaultEdge> dotExporter = new DOTExporter<>();
-//        dotExporter.setVertexAttributeProvider(points -> {
-//            Map<String, Attribute> result = new HashMap<>();
-//            result.put("label", new DefaultAttribute<>(points.getXBase() + "," + points.getYBase() + " z=" + points.getZPosition(), AttributeType.STRING));
-//            return result;
-//        });
-//        dotExporter.exportGraph(graph, new File("graph.dot"));
-
         if (splitAtJunctions) {
             Comparator<Integer> comparator = null;
             if (trySolveJunctions) {
@@ -172,24 +175,31 @@ public class SplitRoiConnectedComponentsAlgorithm extends ImageRoiProcessorAlgor
                 }
             }
             for (int roi : graph.vertexSet()) {
-                int degree = graph.degreeOf(roi);
-                // No issue here
-                if (degree <= 2)
-                    continue;
-
-                if (trySolveJunctions && comparator != null) {
-                    List<Integer> neighbors = Graphs.neighborListOf(graph, roi);
-                    neighbors.sort(comparator);
-                    for (int i = 2; i < neighbors.size(); i++) {
-                        graph.removeEdge(roi, neighbors.get(i));
+                if(isJunction(roi, input, graph)) {
+                    if (trySolveJunctions && comparator != null) {
+                        List<Integer> neighbors = Graphs.neighborListOf(graph, roi);
+                        neighbors.sort(comparator);
+                        while (isJunction(roi, input, graph)) {
+                            graph.removeEdge(roi, neighbors.get(0));
+                            neighbors.remove(0);
+                        }
                     }
                 }
-
+               
                 // No solution found: Decompose
-                if (graph.degreeOf(roi) > 2)
+                if (isJunction(roi, input, graph))
                     graph.removeAllEdges(ImmutableList.copyOf(graph.edgesOf(roi)));
             }
         }
+
+        DOTExporter<Integer, DefaultEdge> dotExporter = new DOTExporter<>();
+        dotExporter.setVertexAttributeProvider(index -> {
+            Map<String, Attribute> result = new HashMap<>();
+            Roi points = input.get(index);
+            result.put("label", new DefaultAttribute<>(points.getXBase() + "," + points.getYBase() + " z=" + points.getZPosition(), AttributeType.STRING));
+            return result;
+        });
+        dotExporter.exportGraph(graph, new File("graph.dot"));
 
         ConnectivityInspector<Integer, DefaultEdge> connectivityInspector = new ConnectivityInspector<>(graph);
         int outputIndex = 0;
@@ -205,6 +215,56 @@ public class SplitRoiConnectedComponentsAlgorithm extends ImageRoiProcessorAlgor
             }
             ++outputIndex;
         }
+    }
+
+    /**
+     * Determines if the roi is a junction ROI
+     * @param index the roi index
+     * @param list list
+     * @param graph the roi graph
+     * @return if is a junction
+     */
+    private boolean isJunction(int index, ROIListData list, DefaultUndirectedGraph<Integer, DefaultEdge> graph) {
+        List<Integer> neighbors = Graphs.neighborListOf(graph, index);
+        
+        // Only one or no neighbor -> No junction
+        if(neighbors.size() <= 1)
+            return false;
+        for (int i = 0; i < neighbors.size(); i++) {
+            for (int j = i + 1; j < neighbors.size(); j++) {
+                Roi r0 = list.get(neighbors.get(i));
+                Roi r1 = list.get(neighbors.get(j));
+                
+                int z0 = r0.getZPosition();
+                int z1 = r1.getZPosition();
+                int c0 = r0.getCPosition();
+                int c1 = r1.getCPosition();
+                int t0 = r0.getTPosition();
+                int t1 = r1.getTPosition();
+                
+                // Resolve non-zero vs zero. Consider zero as "is on this plane"
+                if(z0 == 0 && z1 != 0)
+                    z0 = z1;
+                if(z0 != 0 && z1 == 0)
+                    z1 = z0;
+                if(c0 == 0 && c1 != 0)
+                    c0 = c1;
+                if(c0 != 0 && c1 == 0)
+                    c1 = c0;
+                if(t0 == 0 && t1 != 0)
+                    t0 = t1;
+                if(t0 != 0 && t1 == 0)
+                    t1 = t0;
+
+                if(dimensionZOperation == DimensionOperation.Follow && z0 == z1)
+                    return true;
+                if(dimensionCOperation == DimensionOperation.Follow && c0 == c1)
+                    return true;
+                if(dimensionTOperation == DimensionOperation.Follow && t0 == t1)
+                    return true;
+            }
+        }
+        return false;
     }
 
     private void putMeasurementsIntoVariable(ResultsTableData inputMeasurements, int first, int second, ImagePlus referenceImage, StaticVariableSet<Object> variableSet, Roi overlap, ROIListData temp) {
