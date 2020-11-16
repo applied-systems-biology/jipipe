@@ -39,9 +39,9 @@ public class FunctionParameterEditorUI extends JIPipeParameterEditorUI {
         super(workbench, parameterAccess);
         setLayout(new BorderLayout());
         setBorder(BorderFactory.createEtchedBorder());
-        JToolBar toolBar = new JToolBar();
-        toolBar.setFloatable(false);
-        toolBar.add(new JLabel(getParameterAccess().getName()));
+//        JToolBar toolBar = new JToolBar();
+//        toolBar.setFloatable(false);
+//        toolBar.add(new JLabel(getParameterAccess().getName()));
         formPanel = new FormPanel(null, FormPanel.NONE);
         add(formPanel, BorderLayout.CENTER);
         reload();
@@ -49,7 +49,7 @@ public class FunctionParameterEditorUI extends JIPipeParameterEditorUI {
 
     @Override
     public boolean isUILabelEnabled() {
-        return false;
+        return true;
     }
 
     @Override
