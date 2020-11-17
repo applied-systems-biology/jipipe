@@ -52,6 +52,8 @@ public class JIPipeRun implements JIPipeRunnable {
      * @param configuration Run configuration
      */
     public JIPipeRun(JIPipeProject project, JIPipeRunSettings configuration) {
+        // First clean up the graph
+        project.cleanupGraph();
         this.project = project;
         this.cacheQuery = new JIPipeProjectCacheQuery(project);
         this.configuration = configuration;

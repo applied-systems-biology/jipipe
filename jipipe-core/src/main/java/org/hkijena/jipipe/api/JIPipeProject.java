@@ -345,6 +345,7 @@ public class JIPipeProject implements JIPipeValidatable {
         }
 
         graph.cleanupIds();
+        cache.autoClean(true, true);
     }
 
     public Map<String, Object> getAdditionalMetadata() {
@@ -362,7 +363,7 @@ public class JIPipeProject implements JIPipeValidatable {
      * @throws IOException thrown by {@link JsonGenerator}
      */
     public void toJson(JsonGenerator generator) throws IOException {
-        cleanupGraph();
+//        cleanupGraph();
         generator.writeStartObject();
         generator.writeStringField("jipipe:project-type", "project");
         generator.writeObjectField("metadata", metadata);
