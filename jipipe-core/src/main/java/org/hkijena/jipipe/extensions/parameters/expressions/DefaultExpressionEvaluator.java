@@ -239,11 +239,15 @@ public class DefaultExpressionEvaluator extends ExpressionEvaluator {
             switch (token) {
                 case "(":
                     ++paraStack;
+                    canLiteral = true;
                     break;
                 case ")":
                     if (paraStack <= 0)
                         return new IllegalArgumentException("Unmatched parentheses!");
                     --paraStack;
+                    break;
+                case ",":
+                    canLiteral = true;
                     break;
                 case "\"":
                     if (quoteStack == 0)

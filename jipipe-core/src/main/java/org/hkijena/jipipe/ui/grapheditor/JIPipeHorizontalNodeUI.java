@@ -66,6 +66,7 @@ public class JIPipeHorizontalNodeUI extends JIPipeNodeUI {
         super(workbench, graphUI, algorithm, JIPipeGraphViewMode.Horizontal);
         initialize();
         updateAlgorithmSlotUIs();
+        updateActivationStatus();
     }
 
     private void initialize() {
@@ -322,24 +323,25 @@ public class JIPipeHorizontalNodeUI extends JIPipeNodeUI {
             JIPipeAlgorithm algorithm = (JIPipeAlgorithm) getNode();
             if (algorithm.isEnabled()) {
                 if (!algorithm.isPassThrough()) {
-                    setBackground(getFillColor());
+//                    setBackground(getFillColor());
                     nameLabel.setForeground(UIManager.getColor("Label.foreground"));
                     openSettingsButton.setIcon(UIUtils.getIconFromResources("actions/wrench.png"));
                 } else {
-                    setBackground(Color.WHITE);
+//                    setBackground(Color.WHITE);
                     nameLabel.setForeground(UIManager.getColor("Label.foreground"));
                     openSettingsButton.setIcon(UIUtils.getIconFromResources("emblems/pass-through-h.png"));
                 }
             } else {
-                setBackground(new Color(227, 86, 86));
+//                setBackground(new Color(227, 86, 86));
                 nameLabel.setForeground(Color.WHITE);
                 openSettingsButton.setIcon(UIUtils.getIconFromResources("emblems/block.png"));
             }
         } else {
-            setBackground(getFillColor());
+//            setBackground(getFillColor());
             nameLabel.setForeground(UIManager.getColor("Label.foreground"));
             openSettingsButton.setIcon(UIUtils.getIconFromResources("actions/wrench.png"));
         }
+        repaint();
     }
 
     @Override

@@ -19,6 +19,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.events.NodeSlotsChangedEvent;
 import org.hkijena.jipipe.api.events.ParameterChangedEvent;
+import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
@@ -28,13 +29,7 @@ import org.hkijena.jipipe.utils.PointRange;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.util.Map;
 
 /**
@@ -54,6 +49,9 @@ public abstract class JIPipeNodeUI extends JIPipeWorkbenchPanel {
     private Color fillColor;
     private Color borderColor;
 
+    private LinearGradientPaint disabledPaint;
+    private LinearGradientPaint passThroughPaint;
+
     /**
      * Creates a new UI
      *
@@ -70,6 +68,16 @@ public abstract class JIPipeNodeUI extends JIPipeWorkbenchPanel {
         this.node.getEventBus().register(this);
         this.fillColor = UIUtils.getFillColorFor(node.getInfo());
         this.borderColor = UIUtils.getBorderColorFor(node.getInfo());
+        Color disabledRed1 = new Color(227, 86, 86);
+        Color disabledRed2 = new Color(0xc36262);
+        this.disabledPaint = new LinearGradientPaint(
+                (float) 0, (float) 0, (float) (8), (float) (8),
+                new float[] {0,0.5f,0.5001f,1}, new Color[] {disabledRed1, disabledRed1,disabledRed2, disabledRed2}, MultipleGradientPaint.CycleMethod.REPEAT);
+        float[] hsb = Color.RGBtoHSB(fillColor.getRed(), fillColor.getGreen(), fillColor.getBlue(), null);
+        Color desaturatedFillColor = Color.getHSBColor(hsb[0], hsb[1] / 4, hsb[2] * 0.8f);
+        this.passThroughPaint = new LinearGradientPaint(
+                (float) 0, (float) 0, (float) (8), (float) (8),
+                new float[] {0,0.5f,0.5001f,1}, new Color[] {desaturatedFillColor, desaturatedFillColor,fillColor, fillColor}, MultipleGradientPaint.CycleMethod.REPEAT);
     }
 
     /**
@@ -273,6 +281,23 @@ public abstract class JIPipeNodeUI extends JIPipeWorkbenchPanel {
 
     public abstract Map<String, JIPipeDataSlotUI> getOutputSlotUIs();
 
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        if(node instanceof JIPipeAlgorithm) {
+            JIPipeAlgorithm algorithm = (JIPipeAlgorithm) node;
+            if(!algorithm.isEnabled()) {
+                Graphics2D g2 = (Graphics2D) g;
+                g2.setPaint(disabledPaint);
+                g2.fillRect(0, 0, getWidth(), getHeight());
+            }
+            else if(algorithm.isPassThrough()) {
+                Graphics2D g2 = (Graphics2D) g;
+                g2.setPaint(passThroughPaint);
+                g2.fillRect(0, 0, getWidth(), getHeight());
+            }
+        }
+    }
 
     /**
      * Moves the node to the next grid location, given a real location
