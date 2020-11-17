@@ -102,6 +102,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
     private JIPipeDataSlotUI currentConnectionDragSource;
     private JIPipeDataSlotUI currentConnectionDragTarget;
     private JIPipeDataSlotUI currentHighlightedForDisconnect;
+    private Set<JIPipeDataSlot> currentHighlightedForDisconnectSourceSlots;
     private double zoom = 1.0;
     private JScrollPane scrollPane;
 
@@ -899,8 +900,8 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
             g.setStroke(STROKE_HIGHLIGHT);
             g.setColor(Color.RED);
             if (currentHighlightedForDisconnect.getSlot().isInput()) {
-                JIPipeDataSlot source = getGraph().getSourceSlot(currentHighlightedForDisconnect.getSlot());
-                if (source != null) {
+                Set<JIPipeDataSlot> sources = currentHighlightedForDisconnectSourceSlots;
+                for (JIPipeDataSlot source : sources) {
                     JIPipeDataSlot target = currentHighlightedForDisconnect.getSlot();
                     JIPipeNodeUI sourceUI = nodeUIs.getOrDefault(source.getNode(), null);
                     JIPipeNodeUI targetUI = nodeUIs.getOrDefault(target.getNode(), null);
@@ -1450,8 +1451,9 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
         return currentHighlightedForDisconnect;
     }
 
-    public void setCurrentHighlightedForDisconnect(JIPipeDataSlotUI currentHighlightedForDisconnect) {
+    public void setCurrentHighlightedForDisconnect(JIPipeDataSlotUI currentHighlightedForDisconnect, Set<JIPipeDataSlot> sourceSlots) {
         this.currentHighlightedForDisconnect = currentHighlightedForDisconnect;
+        currentHighlightedForDisconnectSourceSlots = sourceSlots;
     }
 
     public void setGraphEditCursor(Point graphEditCursor) {

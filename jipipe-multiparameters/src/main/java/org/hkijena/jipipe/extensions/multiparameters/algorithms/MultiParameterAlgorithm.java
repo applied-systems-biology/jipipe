@@ -148,7 +148,7 @@ public class MultiParameterAlgorithm extends JIPipeAlgorithm {
         for (JIPipeDataSlot wrappedInputSlot : algorithmInstance.getInputSlots()) {
             JIPipeDataSlot inputSlot = getInputSlot("Data " + wrappedInputSlot.getName());
             wrappedInputSlot.clearData(false);
-            wrappedInputSlot.copyFrom(inputSlot);
+            wrappedInputSlot.addData(inputSlot);
         }
     }
 

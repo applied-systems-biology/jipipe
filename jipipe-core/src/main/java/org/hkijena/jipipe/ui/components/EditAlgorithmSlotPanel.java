@@ -219,11 +219,11 @@ public class EditAlgorithmSlotPanel extends JPanel {
         // Remember connections to the existing slot
         // Remember the slot order
         JIPipeGraph graph = algorithm.getGraph();
-        JIPipeDataSlot sourceSlot = null;
+        Set<JIPipeDataSlot> sourceSlots = null;
         Set<JIPipeDataSlot> targetSlots = null;
         List<String> slotOrder;
         if (slotType == JIPipeSlotType.Input) {
-            sourceSlot = graph.getSourceSlot(existingSlot);
+            sourceSlots = graph.getSourceSlots(existingSlot);
             slotOrder = new ArrayList<>(slotConfiguration.getInputSlotOrder());
         } else {
             targetSlots = graph.getTargetSlots(existingSlot);
@@ -255,9 +255,10 @@ public class EditAlgorithmSlotPanel extends JPanel {
 
         // Reconnect the graph
         if (slotType == JIPipeSlotType.Input) {
-            if (sourceSlot != null) {
+            for (JIPipeDataSlot sourceSlot : sourceSlots) {
                 graph.connect(sourceSlot, newSlot);
             }
+
         } else {
             for (JIPipeDataSlot targetSlot : targetSlots) {
                 graph.connect(newSlot, targetSlot);

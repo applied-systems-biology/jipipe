@@ -13,6 +13,8 @@
 
 package org.hkijena.jipipe.ui.batchassistant;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.JIPipeProjectCache;
 import org.hkijena.jipipe.api.JIPipeProjectCacheQuery;
@@ -37,9 +39,9 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * A tool that assists the user in configuring batch generation for
@@ -51,7 +53,7 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
     private final Runnable runTestBench;
     private final ArrayDeque<JIPipeMergingDataBatch> infiniteScrollingQueue = new ArrayDeque<>();
     private JPanel errorUI;
-    private Map<String, JIPipeDataSlot> currentCache = new HashMap<>();
+    private Multimap<String, JIPipeDataSlot> currentCache = HashMultimap.create();
     private JLabel errorLabel;
     private FormPanel formPanel = new FormPanel(null, FormPanel.WITH_SCROLLING);
     private final Timer scrollToBeginTimer = new Timer(200, e -> scrollToBeginning());
@@ -87,28 +89,30 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
         }
         JIPipeProjectCacheQuery query = new JIPipeProjectCacheQuery(getProject());
         for (JIPipeDataSlot inputSlot : algorithm.getInputSlots()) {
-            JIPipeDataSlot sourceSlot = algorithm.getGraph().getSourceSlot(inputSlot);
-            if (sourceSlot != null) {
-                Map<JIPipeProjectCache.State, Map<String, JIPipeDataSlot>> sourceCaches = getProject().getCache().extract(sourceSlot.getNode());
-                if (sourceCaches == null || sourceCaches.isEmpty()) {
-                    errorLabel.setText("No cached data available");
-                    currentCache.clear();
-                    return;
-                }
-                Map<String, JIPipeDataSlot> sourceCache = sourceCaches.getOrDefault(query.getCachedId(sourceSlot.getNode()), null);
-                if (sourceCache != null) {
-                    JIPipeDataSlot cache = sourceCache.getOrDefault(sourceSlot.getName(), null);
-                    if (cache != null) {
-                        currentCache.put(inputSlot.getName(), cache);
+            Set<JIPipeDataSlot> sourceSlots = algorithm.getGraph().getSourceSlots(inputSlot);
+            if (!sourceSlots.isEmpty()) {
+                for (JIPipeDataSlot sourceSlot : sourceSlots) {
+                    Map<JIPipeProjectCache.State, Map<String, JIPipeDataSlot>> sourceCaches = getProject().getCache().extract(sourceSlot.getNode());
+                    if (sourceCaches == null || sourceCaches.isEmpty()) {
+                        errorLabel.setText("No cached data available");
+                        currentCache.clear();
+                        return;
+                    }
+                    Map<String, JIPipeDataSlot> sourceCache = sourceCaches.getOrDefault(query.getCachedId(sourceSlot.getNode()), null);
+                    if (sourceCache != null) {
+                        JIPipeDataSlot cache = sourceCache.getOrDefault(sourceSlot.getName(), null);
+                        if (cache != null) {
+                            currentCache.put(inputSlot.getName(), cache);
+                        } else {
+                            currentCache.clear();
+                            errorLabel.setText("No up-to-date cached data available");
+                            return;
+                        }
                     } else {
                         currentCache.clear();
                         errorLabel.setText("No up-to-date cached data available");
                         return;
                     }
-                } else {
-                    currentCache.clear();
-                    errorLabel.setText("No up-to-date cached data available");
-                    return;
                 }
             } else {
                 currentCache.clear();
@@ -192,8 +196,9 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
         batchesNodeCopy = algorithm.getInfo().duplicate(algorithm);
         // Pass cache as input slots
         for (JIPipeDataSlot inputSlot : batchesNodeCopy.getEffectiveInputSlots()) {
-            JIPipeDataSlot cache = currentCache.getOrDefault(inputSlot.getName(), null);
-            inputSlot.copyFrom(cache);
+            for (JIPipeDataSlot cacheSlot : currentCache.get(inputSlot.getName())) {
+                inputSlot.addData(cacheSlot);
+            }
         }
         // Generate dry-run
         JIPipeDataBatchAlgorithm batchAlgorithm = (JIPipeDataBatchAlgorithm) batchesNodeCopy;

@@ -47,14 +47,7 @@ import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -128,7 +121,7 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
             public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
                 getGraphUI().setCurrentConnectionDragSource(null);
                 getGraphUI().setCurrentConnectionDragTarget(null);
-                getGraphUI().setCurrentHighlightedForDisconnect(null);
+                getGraphUI().setCurrentHighlightedForDisconnect(null, Collections.emptySet());
                 getGraphUI().repaint();
             }
 
@@ -136,38 +129,50 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
             public void popupMenuCanceled(PopupMenuEvent e) {
                 getGraphUI().setCurrentConnectionDragSource(null);
                 getGraphUI().setCurrentConnectionDragTarget(null);
-                getGraphUI().setCurrentHighlightedForDisconnect(null);
+                getGraphUI().setCurrentHighlightedForDisconnect(null, Collections.emptySet());
                 getGraphUI().repaint();
             }
         });
 
         if (slot.isInput()) {
-            JIPipeDataSlot sourceSlot = getGraph().getSourceSlot(slot);
-            if (sourceSlot == null) {
-                Set<JIPipeDataSlot> availableSources = getGraph().getAvailableSources(slot, true, false);
-                availableSources.removeIf(slot -> !slot.getNode().isVisibleIn(compartment));
 
-                JMenuItem findAlgorithmButton = new JMenuItem("Find matching algorithm ...", UIUtils.getIconFromResources("actions/find.png"));
-                findAlgorithmButton.setToolTipText("Opens a tool to find a matching algorithm based on the data");
-                findAlgorithmButton.addActionListener(e -> findSourceAlgorithm(slot));
-                assignButtonMenu.add(findAlgorithmButton);
-                if (!availableSources.isEmpty())
-                    assignButtonMenu.addSeparator();
 
-                for (JIPipeDataSlot source : sortSlotsByDistance(availableSources)) {
-                    if (!source.getNode().isVisibleIn(compartment))
-                        continue;
-                    JMenuItem connectButton = new JMenuItem(source.getDisplayName(),
-                            JIPipe.getDataTypes().getIconFor(source.getAcceptedDataType()));
-                    connectButton.addActionListener(e -> connectSlot(source, slot));
-                    installHighlightForConnect(source, connectButton);
-                    assignButtonMenu.add(connectButton);
-                }
-            } else {
-                JMenuItem disconnectButton = new JMenuItem("Disconnect", UIUtils.getIconFromResources("actions/cancel.png"));
-                disconnectButton.addActionListener(e -> disconnectSlot());
-                installHighlightForDisconnect(disconnectButton);
+            JMenuItem findAlgorithmButton = new JMenuItem("Find matching algorithm ...", UIUtils.getIconFromResources("actions/find.png"));
+            findAlgorithmButton.setToolTipText("Opens a tool to find a matching algorithm based on the data");
+            findAlgorithmButton.addActionListener(e -> findSourceAlgorithm(slot));
+            assignButtonMenu.add(findAlgorithmButton);
+
+            Set<JIPipeDataSlot> availableSources = getGraph().getAvailableSources(slot, true, false);
+            availableSources.removeIf(slot -> !slot.getNode().isVisibleIn(compartment));
+
+            for (JIPipeDataSlot source : sortSlotsByDistance(availableSources)) {
+                if (!source.getNode().isVisibleIn(compartment))
+                    continue;
+                JMenuItem connectButton = new JMenuItem("Connect to " + source.getDisplayName(),
+                        JIPipe.getDataTypes().getIconFor(source.getAcceptedDataType()));
+                connectButton.addActionListener(e -> connectSlot(source, slot));
+                installHighlightForConnect(source, connectButton);
+                assignButtonMenu.add(connectButton);
+            }
+
+            Set<JIPipeDataSlot> sourceSlots = getGraph().getSourceSlots(slot);
+            if(!sourceSlots.isEmpty() && !availableSources.isEmpty()) {
+              assignButtonMenu.addSeparator();
+            }
+            if(!sourceSlots.isEmpty()) {
+                JMenuItem disconnectButton = new JMenuItem("Disconnect all", UIUtils.getIconFromResources("actions/cancel.png"));
+                disconnectButton.addActionListener(e -> disconnectSlot(sourceSlots));
+                installHighlightForDisconnect(disconnectButton, sourceSlots);
                 assignButtonMenu.add(disconnectButton);
+                assignButtonMenu.addSeparator();
+            }
+            for (JIPipeDataSlot sourceSlot : sortSlotsByDistance(sourceSlots)) {
+                JMenu sourceSlotMenu = new JMenu(sourceSlot.getDisplayName());
+                sourceSlotMenu.setIcon(JIPipe.getDataTypes().getIconFor(sourceSlot.getAcceptedDataType()));
+
+                JMenuItem disconnectButton = new JMenuItem("Disconnect", UIUtils.getIconFromResources("actions/cancel.png"));
+                disconnectButton.addActionListener(e -> disconnectSlot(Collections.singleton(sourceSlot)));
+                sourceSlotMenu.add(disconnectButton);
 
                 JIPipeGraphEdge edge = nodeUI.getGraphUI().getGraph().getGraph().getEdge(sourceSlot, slot);
                 if (edge.isUiHidden()) {
@@ -179,7 +184,7 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
                         nodeUI.getGraphUI().repaint();
                     });
                     installHighlightForConnect(sourceSlot, showButton);
-                    assignButtonMenu.add(showButton);
+                    sourceSlotMenu.add(showButton);
                 } else {
                     JMenuItem hideButton = new JMenuItem("Hide incoming edge", UIUtils.getIconFromResources("actions/eye-slash.png"));
                     hideButton.setToolTipText("Hides the incoming edge");
@@ -188,10 +193,17 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
                         edge.setUiHidden(true);
                         nodeUI.getGraphUI().repaint();
                     });
-                    installHighlightForDisconnect(hideButton);
-                    assignButtonMenu.add(hideButton);
+                    installHighlightForDisconnect(hideButton, Collections.singleton(sourceSlot));
+                    sourceSlotMenu.add(hideButton);
                 }
+
+                assignButtonMenu.add(sourceSlotMenu);
             }
+
+            if(!sourceSlots.isEmpty()) {
+                assignButtonMenu.addSeparator();
+            }
+
             if (slot.getNode().getSlotConfiguration() instanceof JIPipeMutableSlotConfiguration) {
                 JIPipeMutableSlotConfiguration slotConfiguration = (JIPipeMutableSlotConfiguration) slot.getNode().getSlotConfiguration();
                 if (slotConfiguration.canModifyInputSlots()) {
@@ -199,7 +211,7 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
                         assignButtonMenu.addSeparator();
                     JMenuItem deleteButton = new JMenuItem("Delete this slot", UIUtils.getIconFromResources("actions/delete.png"));
                     deleteButton.addActionListener(e -> deleteSlot());
-                    installHighlightForDisconnect(deleteButton);
+                    installHighlightForDisconnect(deleteButton, sourceSlots);
                     assignButtonMenu.add(deleteButton);
 
                     JMenuItem editButton = new JMenuItem("Edit this slot", UIUtils.getIconFromResources("actions/edit.png"));
@@ -228,8 +240,8 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
 
                 if (allowDisconnect) {
                     JMenuItem disconnectButton = new JMenuItem("Disconnect all", UIUtils.getIconFromResources("actions/cancel.png"));
-                    disconnectButton.addActionListener(e -> disconnectSlot());
-                    installHighlightForDisconnect(disconnectButton);
+                    disconnectButton.addActionListener(e -> disconnectSlot(Collections.emptySet()));
+                    installHighlightForDisconnect(disconnectButton, Collections.emptySet());
                     assignButtonMenu.add(disconnectButton);
 
                     assignButtonMenu.addSeparator();
@@ -385,17 +397,17 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
         });
     }
 
-    private void installHighlightForDisconnect(JMenuItem disconnectButton) {
+    private void installHighlightForDisconnect(JMenuItem disconnectButton, Set<JIPipeDataSlot> sourceSlots) {
         disconnectButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent e) {
-                getGraphUI().setCurrentHighlightedForDisconnect(JIPipeDataSlotUI.this);
+                getGraphUI().setCurrentHighlightedForDisconnect(JIPipeDataSlotUI.this, sourceSlots);
                 getGraphUI().repaint();
             }
 
             @Override
             public void mouseExited(MouseEvent e) {
-                getGraphUI().setCurrentHighlightedForDisconnect(null);
+                getGraphUI().setCurrentHighlightedForDisconnect(null, Collections.emptySet());
                 getGraphUI().repaint();
             }
         });
@@ -483,12 +495,11 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
         }
     }
 
-    private void disconnectSlot() {
+    private void disconnectSlot(Set<JIPipeDataSlot> sourceSlots) {
         JIPipeGraph graph = slot.getNode().getGraph();
         JIPipeGraphHistory graphHistory = nodeUI.getGraphUI().getGraphHistory();
         if (slot.isInput()) {
-            JIPipeDataSlot sourceSlot = graph.getSourceSlot(slot);
-            if (sourceSlot != null) {
+            for (JIPipeDataSlot sourceSlot : sourceSlots) {
                 graphHistory.addSnapshotBefore(new EdgeDisconnectGraphHistorySnapshot(graph, sourceSlot, slot));
             }
         } else {
@@ -505,9 +516,9 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
     protected Class<? extends JIPipeData> getSlotDataType() {
         if (getGraph() != null) {
             if (getGraph().containsNode(slot)) {
-                JIPipeDataSlot sourceSlot = getGraph().getSourceSlot(slot);
-                if (sourceSlot != null)
-                    return sourceSlot.getAcceptedDataType();
+                Set<JIPipeDataSlot> sourceSlots = getGraph().getSourceSlots(slot);
+                if (!sourceSlots.isEmpty())
+                    return sourceSlots.iterator().next().getAcceptedDataType();
             }
         }
         return slot.getAcceptedDataType();

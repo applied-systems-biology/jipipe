@@ -64,7 +64,7 @@ public class JIPipeHorizontalDataSlotUI extends JIPipeDataSlotUI {
     @Override
     protected void reloadButtonStatus() {
         if (getSlot().isInput()) {
-            if (getGraph().getSourceSlot(getSlot()) == null) {
+            if (getGraph().getSourceSlots(getSlot()).isEmpty()) {
                 assignButton.setIcon(new ZoomIcon(UIUtils.getIconFromResources("emblems/slot-unconnected-input-horizontal.png"), getGraphUI()));
             } else {
                 assignButton.setIcon(new ZoomIcon(UIUtils.getIconFromResources("emblems/slot-connected-horizontal.png"), getGraphUI()));

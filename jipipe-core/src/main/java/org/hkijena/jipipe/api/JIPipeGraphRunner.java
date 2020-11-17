@@ -69,9 +69,11 @@ public class JIPipeGraphRunner implements JIPipeRunnable {
 
             if (slot.isInput()) {
                 if (!algorithmsWithExternalInput.contains(slot.getNode())) {
-                    // Copy data from source
-                    JIPipeDataSlot sourceSlot = algorithmGraph.getSourceSlot(slot);
-                    slot.copyFrom(sourceSlot);
+                    // Copy data from source (merging rows)
+                    Set<JIPipeDataSlot> sourceSlots = algorithmGraph.getSourceSlots(slot);
+                    for (JIPipeDataSlot sourceSlot : sourceSlots) {
+                        slot.addData(sourceSlot);
+                    }
                 }
             } else if (slot.isOutput()) {
                 // Ensure the algorithm has run

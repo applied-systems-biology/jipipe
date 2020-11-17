@@ -126,7 +126,7 @@ public class JIPipeRun implements JIPipeRunnable {
         for (int j = currentIndex + 1; j < traversedSlots.size(); ++j) {
             JIPipeDataSlot futureSlot = traversedSlots.get(j);
             boolean isDeactivated = (futureSlot.getNode() instanceof JIPipeAlgorithm) && (!((JIPipeAlgorithm) futureSlot.getNode()).isEnabled());
-            if (!isDeactivated && futureSlot.isInput() && algorithmGraph.getSourceSlot(futureSlot) == outputSlot) {
+            if (!isDeactivated && futureSlot.isInput() && algorithmGraph.getSourceSlots(futureSlot).contains(outputSlot)) {
                 canFlush = false;
                 break;
             }
@@ -226,11 +226,14 @@ public class JIPipeRun implements JIPipeRunnable {
 
             if (slot.isInput()) {
                 // Copy data from source
-                JIPipeDataSlot sourceSlot = algorithmGraph.getSourceSlot(slot);
-                slot.copyFrom(sourceSlot);
+                for (JIPipeDataSlot sourceSlot : algorithmGraph.getSourceSlots(slot)) {
+                    slot.addData(sourceSlot);
+                }
 
                 // Check if we can flush the output
-                flushFinishedSlots(traversedSlots, executedAlgorithms, index, sourceSlot, flushedSlots, subProgress);
+                for (JIPipeDataSlot sourceSlot : algorithmGraph.getSourceSlots(slot)) {
+                    flushFinishedSlots(traversedSlots, executedAlgorithms, index, sourceSlot, flushedSlots, subProgress);
+                }
             } else if (slot.isOutput()) {
                 JIPipeGraphNode node = slot.getNode();
                 // Ensure the algorithm has run
@@ -324,7 +327,7 @@ public class JIPipeRun implements JIPipeRunnable {
             }
             for (JIPipeDataSlot outputSlot : algorithm.getOutputSlots()) {
                 outputSlot.clearData(false);
-                outputSlot.copyFrom(cachedData.get(outputSlot.getName()));
+                outputSlot.addData(cachedData.get(outputSlot.getName()));
             }
             progress.log("Cache data access successful.");
             return true;

@@ -428,11 +428,13 @@ public class JIPipeDataSlot implements TableModel {
     }
 
     /**
-     * Copies the source slot into this slot
+     * Copies the source slot into this slot.
+     * This will only add data and not clear it beforehand.
+     * Data is copied without duplication.
      *
      * @param sourceSlot The other slot
      */
-    public void copyFrom(JIPipeDataSlot sourceSlot) {
+    public void addData(JIPipeDataSlot sourceSlot) {
         for (int row = 0; row < sourceSlot.getRowCount(); ++row) {
             addData(sourceSlot.getData(row, JIPipeData.class), sourceSlot.getAnnotations(row), JIPipeAnnotationMergeStrategy.Merge);
         }

@@ -13,6 +13,8 @@
 
 package org.hkijena.jipipe.api.compartments.algorithms;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
@@ -25,6 +27,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeIOSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -60,7 +63,7 @@ public class IOInterfaceAlgorithm extends JIPipeAlgorithm {
     public void run(JIPipeProgressInfo progress) {
         for (JIPipeDataSlot inputSlot : getInputSlots()) {
             JIPipeDataSlot outputSlot = getOutputSlot(inputSlot.getName());
-            outputSlot.copyFrom(inputSlot);
+            outputSlot.addData(inputSlot);
         }
     }
 
@@ -71,11 +74,11 @@ public class IOInterfaceAlgorithm extends JIPipeAlgorithm {
      */
     public static void collapse(IOInterfaceAlgorithm algorithm) {
         JIPipeGraph graph = algorithm.getGraph();
-        Map<String, JIPipeDataSlot> inputSourceMap = new HashMap<>();
+        Multimap<String, JIPipeDataSlot> inputSourceMap = HashMultimap.create();
         Map<String, Set<JIPipeDataSlot>> outputTargetMap = new HashMap<>();
         for (JIPipeDataSlot inputSlot : algorithm.getInputSlots()) {
-            JIPipeDataSlot sourceSlot = graph.getSourceSlot(inputSlot);
-            if (sourceSlot != null) {
+            Set<JIPipeDataSlot> sourceSlots = graph.getSourceSlots(inputSlot);
+            for (JIPipeDataSlot sourceSlot : sourceSlots) {
                 inputSourceMap.put(inputSlot.getName(), sourceSlot);
             }
         }
@@ -85,13 +88,13 @@ public class IOInterfaceAlgorithm extends JIPipeAlgorithm {
 
         graph.removeNode(algorithm, false);
 
-        for (Map.Entry<String, JIPipeDataSlot> entry : inputSourceMap.entrySet()) {
-            JIPipeDataSlot source = entry.getValue();
-            for (JIPipeDataSlot target : outputTargetMap.getOrDefault(entry.getKey(), Collections.emptySet())) {
-                graph.connect(source, target);
+        for (Map.Entry<String, Collection<JIPipeDataSlot>> entry : inputSourceMap.asMap().entrySet()) {
+            for (JIPipeDataSlot source : entry.getValue()) {
+                for (JIPipeDataSlot target : outputTargetMap.getOrDefault(entry.getKey(), Collections.emptySet())) {
+                    graph.connect(source, target);
+                }
             }
         }
-
     }
 
     /**
@@ -107,11 +110,11 @@ public class IOInterfaceAlgorithm extends JIPipeAlgorithm {
         ioInterfaceAlgorithm.setCustomDescription(compartmentOutput.getCustomDescription());
         ioInterfaceAlgorithm.getSlotConfiguration().setTo(compartmentOutput.getSlotConfiguration());
 
-        Map<String, JIPipeDataSlot> inputSourceMap = new HashMap<>();
+        Multimap<String, JIPipeDataSlot> inputSourceMap = HashMultimap.create();
         Map<String, Set<JIPipeDataSlot>> outputTargetMap = new HashMap<>();
         for (JIPipeDataSlot inputSlot : compartmentOutput.getInputSlots()) {
-            JIPipeDataSlot sourceSlot = graph.getSourceSlot(inputSlot);
-            if (sourceSlot != null) {
+            Set<JIPipeDataSlot> sourceSlots = graph.getSourceSlots(inputSlot);
+            for (JIPipeDataSlot sourceSlot : sourceSlots) {
                 inputSourceMap.put(inputSlot.getName(), sourceSlot);
             }
         }
@@ -120,9 +123,11 @@ public class IOInterfaceAlgorithm extends JIPipeAlgorithm {
         }
         graph.removeNode(compartmentOutput, false);
         graph.insertNode(id, ioInterfaceAlgorithm, compartmentOutput.getCompartment());
-        for (Map.Entry<String, JIPipeDataSlot> entry : inputSourceMap.entrySet()) {
+        for (Map.Entry<String, Collection<JIPipeDataSlot>> entry : inputSourceMap.asMap().entrySet()) {
             JIPipeDataSlot target = ioInterfaceAlgorithm.getInputSlot(entry.getKey());
-            graph.connect(entry.getValue(), target);
+            for (JIPipeDataSlot source : entry.getValue()) {
+                graph.connect(source, target);
+            }
         }
         for (Map.Entry<String, Set<JIPipeDataSlot>> entry : outputTargetMap.entrySet()) {
             JIPipeDataSlot source = ioInterfaceAlgorithm.getOutputSlot(entry.getKey());

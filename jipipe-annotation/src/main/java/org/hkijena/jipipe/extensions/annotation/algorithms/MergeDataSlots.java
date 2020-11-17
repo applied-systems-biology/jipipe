@@ -55,7 +55,7 @@ public class MergeDataSlots extends JIPipeAlgorithm {
     public void run(JIPipeProgressInfo progress) {
         JIPipeDataSlot outputSlot = getFirstOutputSlot();
         for (JIPipeDataSlot inputSlot : getInputSlots()) {
-            outputSlot.copyFrom(inputSlot);
+            outputSlot.addData(inputSlot);
         }
     }
 

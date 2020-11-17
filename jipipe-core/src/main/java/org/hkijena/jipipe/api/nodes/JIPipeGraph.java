@@ -315,7 +315,7 @@ public class JIPipeGraph implements JIPipeValidatable {
             return false;
         if (user && !JIPipe.getDataTypes().isConvertible(source.getAcceptedDataType(), target.getAcceptedDataType()))
             return false;
-        if (graph.inDegreeOf(target) > 0)
+        if (graph.containsEdge(source, target))
             return false;
         return true;
     }
@@ -422,25 +422,22 @@ public class JIPipeGraph implements JIPipeValidatable {
     }
 
     /**
-     * If exists, returns the output slot that provides data for the input slot
-     * Returns null if target is an output or no slot exists
+     * If exists, returns the output slots that provide data for the input slot
+     * Returns and empty list if there are none
      *
      * @param target The input slot
      * @return The output slot that generates data for the input. Null if no source exists.
      */
-    public JIPipeDataSlot getSourceSlot(JIPipeDataSlot target) {
+    public Set<JIPipeDataSlot> getSourceSlots(JIPipeDataSlot target) {
         if (target.isInput()) {
             Set<JIPipeGraphEdge> edges = graph.incomingEdgesOf(target);
-            if (edges.isEmpty())
-                return null;
-            if (edges.size() > 1)
-                throw new UserFriendlyRuntimeException("Graph is illegal!", "The algorithm graph is invalid!",
-                        "Algorithm graph", "There is at least one input slot with multiple inputs.",
-                        "Open the project or JSON extension file and look for a section 'edges'. Ensure that each slot is only at most once on the right-hand side of ':'. " +
-                                "You can also contact the JIPipe developers - after checking if you use the newest version - , as this should done automatically for you.");
-            return graph.getEdgeSource(edges.iterator().next());
+            Set<JIPipeDataSlot> result = new HashSet<>();
+            for (JIPipeGraphEdge edge : edges) {
+                result.add(graph.getEdgeTarget(edge));
+            }
+            return result;
         }
-        return null;
+        return Collections.emptySet();
     }
 
     /**
@@ -472,8 +469,6 @@ public class JIPipeGraph implements JIPipeValidatable {
      * @return Set of potential sources
      */
     public Set<JIPipeDataSlot> getAvailableSources(JIPipeDataSlot target, boolean user, boolean fast) {
-        if (getSourceSlot(target) != null)
-            return Collections.emptySet();
         Set<JIPipeDataSlot> result = new HashSet<>();
         for (JIPipeDataSlot source : graph.vertexSet()) {
             if (source == target)
@@ -490,6 +485,7 @@ public class JIPipeGraph implements JIPipeValidatable {
                 continue;
             result.add(source);
         }
+        result.removeAll(getSourceSlots(target));
         return result;
     }
 
@@ -501,8 +497,7 @@ public class JIPipeGraph implements JIPipeValidatable {
      */
     public void disconnectAll(JIPipeDataSlot slot, boolean user) {
         if (slot.isInput()) {
-            JIPipeDataSlot source = getSourceSlot(slot);
-            if (source != null) {
+            for (JIPipeDataSlot source : getSourceSlots(slot)) {
                 disconnect(source, slot, user);
             }
         } else if (slot.isOutput()) {
@@ -555,8 +550,6 @@ public class JIPipeGraph implements JIPipeValidatable {
             if (target.getNode() == source.getNode())
                 continue;
             if (graph.containsEdge(source, target))
-                continue;
-            if (getSourceSlot(target) != null)
                 continue;
             if (fast && !canConnectFast(source, target, user))
                 continue;
@@ -872,14 +865,16 @@ public class JIPipeGraph implements JIPipeValidatable {
                 }
             }
             for (JIPipeDataSlot inputSlot : algorithm.getInputSlots()) {
-                JIPipeDataSlot sourceSlot = getSourceSlot(inputSlot);
-                if (sourceSlot == null) {
+                Set<JIPipeDataSlot> sourceSlots = getSourceSlots(inputSlot);
+                if (sourceSlots.isEmpty()) {
                     missing.add(algorithm);
                     break;
                 }
-                if (missing.contains(sourceSlot.getNode())) {
-                    missing.add(algorithm);
-                    break;
+                for (JIPipeDataSlot sourceSlot : sourceSlots) {
+                    if (missing.contains(sourceSlot.getNode())) {
+                        missing.add(algorithm);
+                        break;
+                    }
                 }
             }
         }
@@ -904,14 +899,16 @@ public class JIPipeGraph implements JIPipeValidatable {
                 }
             }
             for (JIPipeDataSlot inputSlot : algorithm.getInputSlots()) {
-                JIPipeDataSlot sourceSlot = getSourceSlot(inputSlot);
-                if (sourceSlot == null) {
+                Set<JIPipeDataSlot> sourceSlots = getSourceSlots(inputSlot);
+                if (sourceSlots.isEmpty()) {
                     missing.add(algorithm);
                     break;
                 }
-                if (missing.contains(sourceSlot.getNode())) {
-                    missing.add(algorithm);
-                    break;
+                for (JIPipeDataSlot sourceSlot : sourceSlots) {
+                    if (missing.contains(sourceSlot.getNode())) {
+                        missing.add(algorithm);
+                        break;
+                    }
                 }
             }
         }
@@ -1121,7 +1118,7 @@ public class JIPipeGraph implements JIPipeValidatable {
         List<JIPipeDataSlot> result = new ArrayList<>();
         for (JIPipeDataSlot slot : traverseSlots()) {
             if (slot.isInput()) {
-                if (getSourceSlot(slot) == null)
+                if (getSourceSlots(slot).isEmpty())
                     result.add(slot);
             } else if (slot.isOutput()) {
                 if (getTargetSlots(slot).isEmpty())

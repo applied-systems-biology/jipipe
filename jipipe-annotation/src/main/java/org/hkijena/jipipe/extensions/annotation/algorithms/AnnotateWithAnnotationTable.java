@@ -140,7 +140,7 @@ public class AnnotateWithAnnotationTable extends JIPipeIteratingAlgorithm {
 
     @Override
     protected void runPassThrough() {
-        getFirstOutputSlot().copyFrom(getInputSlot("Data"));
+        getFirstOutputSlot().addData(getInputSlot("Data"));
     }
 
     @JIPipeDocumentation(name = "Replace all existing annotations", description = "If enabled, existing annotations will not be carried over into the output.")

@@ -36,6 +36,7 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * An {@link JIPipeGraphNode} that contains a non-empty workload.
@@ -214,20 +215,21 @@ public abstract class JIPipeAlgorithm extends JIPipeGraphNode {
     public static class StateSerializer extends JsonSerializer<JIPipeGraphNode> {
         @Override
         public void serialize(JIPipeGraphNode algorithm, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
-            Map<String, String> sources = new HashMap<>();
-            if (algorithm.getGraph() != null) {
-                for (JIPipeDataSlot inputSlot : algorithm.getInputSlots()) {
-                    JIPipeDataSlot sourceSlot = algorithm.getGraph().getSourceSlot(inputSlot);
-                    if (sourceSlot != null) {
-                        sources.put(inputSlot.getName(), sourceSlot.getNode().getIdInGraph() + "/" + sourceSlot.getName());
-                    } else {
-                        sources.put(inputSlot.getName(), "");
-                    }
-                }
-            }
+            // Causes many cache misses
+//            Map<String, String> sources = new HashMap<>();
+//            if (algorithm.getGraph() != null) {
+//                for (JIPipeDataSlot inputSlot : algorithm.getInputSlots()) {
+//                    Set<JIPipeDataSlot> sourceSlots = algorithm.getGraph().getSourceSlots(inputSlot);
+//                    if (!sourceSlots.isEmpty()) {
+//                        sources.put(inputSlot.getName(), sourceSlots.getNode().getIdInGraph() + "/" + sourceSlots.getName());
+//                    } else {
+//                        sources.put(inputSlot.getName(), "");
+//                    }
+//                }
+//            }
             jsonGenerator.writeStartObject();
             jsonGenerator.writeStringField("jipipe:node-info-id", algorithm.getInfo().getId());
-            jsonGenerator.writeObjectField("jipipe:cache-state:source-nodes", sources);
+//            jsonGenerator.writeObjectField("jipipe:cache-state:source-nodes", sources);
             JIPipeParameterCollection.serializeParametersToJson(algorithm, jsonGenerator, this::serializeParameter);
             jsonGenerator.writeEndObject();
         }

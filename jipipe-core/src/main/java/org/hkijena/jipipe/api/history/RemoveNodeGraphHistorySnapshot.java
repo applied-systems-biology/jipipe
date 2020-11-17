@@ -36,8 +36,8 @@ public class RemoveNodeGraphHistorySnapshot implements JIPipeAlgorithmGraphHisto
         for (JIPipeGraphNode node : nodes) {
             this.nodes.put(node.getIdInGraph(), node);
             for (JIPipeDataSlot target : node.getInputSlots()) {
-                JIPipeDataSlot source = graph.getSourceSlot(target);
-                if (source != null) {
+                Set<JIPipeDataSlot> sources = graph.getSourceSlots(target);
+                for (JIPipeDataSlot source : sources) {
                     connections.add(new AbstractMap.SimpleEntry<>(source, target));
                 }
             }

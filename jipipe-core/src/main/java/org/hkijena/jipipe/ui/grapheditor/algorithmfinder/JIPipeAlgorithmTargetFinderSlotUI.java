@@ -74,7 +74,7 @@ public class JIPipeAlgorithmTargetFinderSlotUI extends JPanel {
         setLayout(new BorderLayout());
 
         Icon icon;
-        if (inputSlot.getNode().getGraph() == null || inputSlot.getNode().getGraph().getSourceSlot(inputSlot) == null)
+        if (inputSlot.getNode().getGraph() == null || inputSlot.getNode().getGraph().getSourceSlots(inputSlot).isEmpty())
             icon = UIUtils.getIconFromResources("emblems/slot-free-horizontal.png");
         else
             icon = UIUtils.getIconFromResources("emblems/slot-connected-horizontal.png");
@@ -103,15 +103,9 @@ public class JIPipeAlgorithmTargetFinderSlotUI extends JPanel {
         assignButtonMenu.removeAll();
 
         if (isExistingInstance) {
-            if (graph.getSourceSlot(inputSlot) != null) {
-                JMenuItem disconnectExistingButton = new JMenuItem("Disconnect existing: " + graph.getSourceSlot(inputSlot).getDisplayName(), UIUtils.getIconFromResources("actions/cancel.png"));
-                disconnectExistingButton.addActionListener(e -> disconnectAllExistingInstance());
-                assignButtonMenu.add(disconnectExistingButton);
-            } else {
-                JMenuItem connectButton = new JMenuItem(inputSlot.getDisplayName(), JIPipe.getDataTypes().getIconFor(inputSlot.getAcceptedDataType()));
-                connectButton.addActionListener(e -> connectToExistingInstance());
-                assignButtonMenu.add(connectButton);
-            }
+            JMenuItem connectButton = new JMenuItem(inputSlot.getDisplayName(), JIPipe.getDataTypes().getIconFor(inputSlot.getAcceptedDataType()));
+            connectButton.addActionListener(e -> connectToExistingInstance());
+            assignButtonMenu.add(connectButton);
         } else {
             JMenuItem connectButton = new JMenuItem(inputSlot.getDisplayName(), JIPipe.getDataTypes().getIconFor(inputSlot.getAcceptedDataType()));
             connectButton.addActionListener(e -> connectToNewInstance());
@@ -145,15 +139,6 @@ public class JIPipeAlgorithmTargetFinderSlotUI extends JPanel {
         graph.insertNode(inputSlot.getNode(), compartment);
         graph.connect(outputSlot, inputSlot);
         eventBus.post(new AlgorithmFinderSuccessEvent(outputSlot, inputSlot));
-    }
-
-    private void disconnectAllExistingInstance() {
-        JIPipeDataSlot sourceSlot = graph.getSourceSlot(inputSlot);
-        if (sourceSlot != null) {
-            canvasUI.getGraphHistory().addSnapshotBefore(new EdgeDisconnectGraphHistorySnapshot(graph, sourceSlot, inputSlot));
-        }
-        graph.disconnectAll(inputSlot, true);
-        reloadAssignMenu();
     }
 
     private void connectToExistingInstance() {

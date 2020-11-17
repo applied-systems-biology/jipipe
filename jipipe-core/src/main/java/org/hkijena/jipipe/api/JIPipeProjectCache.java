@@ -84,7 +84,7 @@ public class JIPipeProjectCache {
         }
 
         JIPipeDataSlot slotCopy = new JIPipeDataSlot(slot.getDefinition(), source);
-        slotCopy.copyFrom(slot);
+        slotCopy.addData(slot);
         slotMap.put(slot.getName(), slotCopy);
         addToStatistics(slotCopy);
 

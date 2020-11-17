@@ -91,11 +91,17 @@ public class JIPipeDataSlotTreeCellRenderer extends JPanel implements TreeCellRe
                 slotLabel.setText(null);
             }
             if (slot.isInput()) {
-                JIPipeDataSlot sourceSlot = slot.getNode().getGraph().getSourceSlot(slot);
-                if (sourceSlot != null) {
-                    slotEdges.setText("<html>Receives data from '<i>" + sourceSlot.getDisplayName() + "</i>'</html>");
-                } else {
+                Set<JIPipeDataSlot> sourceSlots = slot.getNode().getGraph().getSourceSlots(slot);
+                if (sourceSlots.isEmpty()) {
                     slotEdges.setText("No connections");
+                } else {
+                    StringBuilder stringBuilder = new StringBuilder();
+                    stringBuilder.append("<html>");
+                    for (JIPipeDataSlot targetSlot : sourceSlots) {
+                        stringBuilder.append("Receives data from '<i>").append(HtmlEscapers.htmlEscaper().escape(targetSlot.getDisplayName())).append("</i>'<br/>");
+                    }
+                    stringBuilder.append("</html>");
+                    slotEdges.setText(stringBuilder.toString());
                 }
             } else {
                 Set<JIPipeDataSlot> targetSlots = slot.getNode().getGraph().getTargetSlots(slot);

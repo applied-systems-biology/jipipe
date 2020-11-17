@@ -148,7 +148,7 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm {
         // Iterate through own input slots and pass them to the equivalents in group input
         for (JIPipeDataSlot inputSlot : getInputSlots()) {
             JIPipeDataSlot groupInputSlot = getGroupInput().getInputSlot(inputSlot.getName());
-            groupInputSlot.copyFrom(inputSlot);
+            groupInputSlot.addData(inputSlot);
         }
 
         // Run the graph
@@ -173,7 +173,7 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm {
         // Copy into output
         for (JIPipeDataSlot outputSlot : getOutputSlots()) {
             JIPipeDataSlot groupOutputSlot = getGroupOutput().getOutputSlot(outputSlot.getName());
-            outputSlot.copyFrom(groupOutputSlot);
+            outputSlot.addData(groupOutputSlot);
         }
 
         // Clear all data in the wrapped graph

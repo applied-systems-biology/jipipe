@@ -52,7 +52,7 @@ public class MergeAnnotations extends JIPipeIteratingAlgorithm {
     protected void runPassThrough() {
         for (JIPipeDataSlot inputSlot : getInputSlots()) {
             JIPipeDataSlot outputSlot = getOutputSlot(inputSlot.getName());
-            outputSlot.copyFrom(inputSlot);
+            outputSlot.addData(inputSlot);
         }
     }
 }
