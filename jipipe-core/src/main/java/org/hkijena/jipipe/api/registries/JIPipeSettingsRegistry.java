@@ -23,6 +23,7 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import ij.IJ;
 import ij.Prefs;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.events.ParameterChangedEvent;
 import org.hkijena.jipipe.api.parameters.JIPipeCustomParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
@@ -171,6 +172,8 @@ public class JIPipeSettingsRegistry implements JIPipeParameterCollection, JIPipe
     @Subscribe
     public void onSettingChanged(ParameterChangedEvent event) {
         if (!isLoading) {
+            if(JIPipe.getInstance() != null && JIPipe.getInstance().isInitializing())
+                return;
             save();
         }
     }

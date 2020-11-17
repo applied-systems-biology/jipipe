@@ -98,6 +98,7 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
     private JIPipeSettingsRegistry settingsRegistry = new JIPipeSettingsRegistry();
     private JIPipeExpressionRegistry tableOperationRegistry = new JIPipeExpressionRegistry();
     private FilesCollection imageJPlugins = null;
+    private boolean initializing = false;
 
     @Parameter
     private LogService logService;
@@ -126,6 +127,7 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
      * @param issues            if no windows should be opened
      */
     public void initialize(ExtensionSettings extensionSettings, JIPipeRegistryIssues issues) {
+        initializing = true;
         IJ.showStatus("Initializing JIPipe ...");
         nodeRegistry.installEvents();
         List<PluginInfo<JIPipeJavaExtension>> pluginList = pluginService.getPluginsOfType(JIPipeJavaExtension.class).stream()
@@ -273,6 +275,11 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
         updateDefaultImporterSettings();
         updateDefaultCacheDisplaySettings();
         logService.info("JIPipe loading finished");
+        initializing = false;
+    }
+
+    public boolean isInitializing() {
+        return initializing;
     }
 
     /**
