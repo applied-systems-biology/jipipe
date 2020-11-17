@@ -433,7 +433,7 @@ public class JIPipeGraph implements JIPipeValidatable {
             Set<JIPipeGraphEdge> edges = graph.incomingEdgesOf(target);
             Set<JIPipeDataSlot> result = new HashSet<>();
             for (JIPipeGraphEdge edge : edges) {
-                result.add(graph.getEdgeTarget(edge));
+                result.add(graph.getEdgeSource(edge));
             }
             return result;
         }

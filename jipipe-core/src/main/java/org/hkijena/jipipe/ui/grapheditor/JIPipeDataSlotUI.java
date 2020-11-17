@@ -135,8 +135,6 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
         });
 
         if (slot.isInput()) {
-
-
             JMenuItem findAlgorithmButton = new JMenuItem("Find matching algorithm ...", UIUtils.getIconFromResources("actions/find.png"));
             findAlgorithmButton.setToolTipText("Opens a tool to find a matching algorithm based on the data");
             findAlgorithmButton.addActionListener(e -> findSourceAlgorithm(slot));
@@ -156,22 +154,24 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
             }
 
             Set<JIPipeDataSlot> sourceSlots = getGraph().getSourceSlots(slot);
-            if(!sourceSlots.isEmpty() && !availableSources.isEmpty()) {
-              assignButtonMenu.addSeparator();
-            }
+
             if(!sourceSlots.isEmpty()) {
                 JMenuItem disconnectButton = new JMenuItem("Disconnect all", UIUtils.getIconFromResources("actions/cancel.png"));
                 disconnectButton.addActionListener(e -> disconnectSlot(sourceSlots));
                 installHighlightForDisconnect(disconnectButton, sourceSlots);
                 assignButtonMenu.add(disconnectButton);
-                assignButtonMenu.addSeparator();
             }
+
+            if(!sourceSlots.isEmpty())
+                assignButtonMenu.addSeparator();
+
             for (JIPipeDataSlot sourceSlot : sortSlotsByDistance(sourceSlots)) {
                 JMenu sourceSlotMenu = new JMenu(sourceSlot.getDisplayName());
                 sourceSlotMenu.setIcon(JIPipe.getDataTypes().getIconFor(sourceSlot.getAcceptedDataType()));
 
                 JMenuItem disconnectButton = new JMenuItem("Disconnect", UIUtils.getIconFromResources("actions/cancel.png"));
                 disconnectButton.addActionListener(e -> disconnectSlot(Collections.singleton(sourceSlot)));
+                installHighlightForDisconnect(disconnectButton, Collections.singleton(sourceSlot));
                 sourceSlotMenu.add(disconnectButton);
 
                 JIPipeGraphEdge edge = nodeUI.getGraphUI().getGraph().getGraph().getEdge(sourceSlot, slot);
@@ -200,9 +200,8 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
                 assignButtonMenu.add(sourceSlotMenu);
             }
 
-            if(!sourceSlots.isEmpty()) {
+            if(!sourceSlots.isEmpty())
                 assignButtonMenu.addSeparator();
-            }
 
             if (slot.getNode().getSlotConfiguration() instanceof JIPipeMutableSlotConfiguration) {
                 JIPipeMutableSlotConfiguration slotConfiguration = (JIPipeMutableSlotConfiguration) slot.getNode().getSlotConfiguration();
@@ -219,8 +218,7 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
                     assignButtonMenu.add(editButton);
                 }
             }
-            if (assignButtonMenu.getComponentCount() > 0)
-                assignButtonMenu.addSeparator();
+
             JMenuItem relabelButton = new JMenuItem("Label this slot", UIUtils.getIconFromResources("actions/tag.png"));
             relabelButton.setToolTipText("Sets a custom name for this slot without deleting it");
             relabelButton.addActionListener(e -> relabelSlot());
