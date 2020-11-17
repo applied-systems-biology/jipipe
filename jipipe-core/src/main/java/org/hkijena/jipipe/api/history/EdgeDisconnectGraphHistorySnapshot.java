@@ -16,39 +16,47 @@ package org.hkijena.jipipe.api.history;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 
+import java.util.Set;
+import java.util.stream.Collectors;
+
 public class EdgeDisconnectGraphHistorySnapshot implements JIPipeAlgorithmGraphHistorySnapshot {
 
     private final JIPipeGraph graph;
-    private final JIPipeDataSlot source;
+    private final Set<JIPipeDataSlot> sources;
     private final JIPipeDataSlot target;
 
-    public EdgeDisconnectGraphHistorySnapshot(JIPipeGraph graph, JIPipeDataSlot source, JIPipeDataSlot target) {
+    public EdgeDisconnectGraphHistorySnapshot(JIPipeGraph graph, Set<JIPipeDataSlot> sources, JIPipeDataSlot target) {
         this.graph = graph;
-        this.source = source;
+        this.sources = sources;
         this.target = target;
     }
 
     @Override
     public String getName() {
-        return "Disconnect " + source.getDisplayName() + " and " + target.getDisplayName();
+
+        return "Disconnect " + sources.stream().map(JIPipeDataSlot::getDisplayName).collect(Collectors.joining(", ")) + " and " + target.getDisplayName();
     }
 
     @Override
     public void undo() {
-        graph.connect(source, target, true);
+        for (JIPipeDataSlot source : sources) {
+            graph.connect(source, target, true);
+        }
     }
 
     @Override
     public void redo() {
-        graph.disconnect(source, target, false);
+        for (JIPipeDataSlot source : sources) {
+            graph.disconnect(source, target, false);
+        }
     }
 
     public JIPipeGraph getGraph() {
         return graph;
     }
 
-    public JIPipeDataSlot getSource() {
-        return source;
+    public Set<JIPipeDataSlot> getSources() {
+        return sources;
     }
 
     public JIPipeDataSlot getTarget() {

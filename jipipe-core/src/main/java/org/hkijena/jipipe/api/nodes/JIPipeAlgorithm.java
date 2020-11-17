@@ -229,7 +229,8 @@ public abstract class JIPipeAlgorithm extends JIPipeGraphNode {
 //            }
             jsonGenerator.writeStartObject();
             jsonGenerator.writeStringField("jipipe:node-info-id", algorithm.getInfo().getId());
-            jsonGenerator.writeStringField("jipipe:node-id", algorithm.getIdInGraph());
+            if(algorithm.getGraph() != null)
+                jsonGenerator.writeStringField("jipipe:node-id", algorithm.getIdInGraph());
 //            jsonGenerator.writeObjectField("jipipe:cache-state:source-nodes", sources);
             JIPipeParameterCollection.serializeParametersToJson(algorithm, jsonGenerator, this::serializeParameter);
             jsonGenerator.writeEndObject();

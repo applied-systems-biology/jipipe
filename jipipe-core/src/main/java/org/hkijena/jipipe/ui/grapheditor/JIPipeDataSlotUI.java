@@ -157,7 +157,7 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
 
             if(!sourceSlots.isEmpty()) {
                 JMenuItem disconnectButton = new JMenuItem("Disconnect all", UIUtils.getIconFromResources("actions/cancel.png"));
-                disconnectButton.addActionListener(e -> disconnectSlot(sourceSlots));
+                disconnectButton.addActionListener(e -> disconnectAll(sourceSlots));
                 installHighlightForDisconnect(disconnectButton, sourceSlots);
                 assignButtonMenu.add(disconnectButton);
             }
@@ -170,7 +170,7 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
                 sourceSlotMenu.setIcon(JIPipe.getDataTypes().getIconFor(sourceSlot.getAcceptedDataType()));
 
                 JMenuItem disconnectButton = new JMenuItem("Disconnect", UIUtils.getIconFromResources("actions/cancel.png"));
-                disconnectButton.addActionListener(e -> disconnectSlot(Collections.singleton(sourceSlot)));
+                disconnectButton.addActionListener(e -> disconnectAll(Collections.singleton(sourceSlot)));
                 installHighlightForDisconnect(disconnectButton, Collections.singleton(sourceSlot));
                 sourceSlotMenu.add(disconnectButton);
 
@@ -238,7 +238,7 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
 
                 if (allowDisconnect) {
                     JMenuItem disconnectButton = new JMenuItem("Disconnect all", UIUtils.getIconFromResources("actions/cancel.png"));
-                    disconnectButton.addActionListener(e -> disconnectSlot(Collections.emptySet()));
+                    disconnectButton.addActionListener(e -> disconnectAll(Collections.emptySet()));
                     installHighlightForDisconnect(disconnectButton, Collections.emptySet());
                     assignButtonMenu.add(disconnectButton);
 
@@ -493,17 +493,19 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
         }
     }
 
-    private void disconnectSlot(Set<JIPipeDataSlot> sourceSlots) {
+    private void disconnectAll(Set<JIPipeDataSlot> sourceSlots) {
         JIPipeGraph graph = slot.getNode().getGraph();
         JIPipeGraphHistory graphHistory = nodeUI.getGraphUI().getGraphHistory();
         if (slot.isInput()) {
+            graphHistory.addSnapshotBefore(new EdgeDisconnectGraphHistorySnapshot(graph, sourceSlots, slot));
             for (JIPipeDataSlot sourceSlot : sourceSlots) {
-                graphHistory.addSnapshotBefore(new EdgeDisconnectGraphHistorySnapshot(graph, sourceSlot, slot));
+                getGraph().disconnect(sourceSlot, slot, true);
             }
         } else {
             graphHistory.addSnapshotBefore(new EdgeDisconnectAllTargetsGraphHistorySnapshot(graph, slot));
+            getGraph().disconnectAll(slot, true);
         }
-        getGraph().disconnectAll(slot, true);
+
     }
 
     /**
