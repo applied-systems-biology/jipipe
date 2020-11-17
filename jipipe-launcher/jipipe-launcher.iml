@@ -24,10 +24,6 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: fr.inra.ijpb:MorphoLibJ_:1.4.2.1" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: mpicbg:mpicbg:1.4.0" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: fr.inra.ijpb:MorphoLibJ_:1.4.2.1" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: mpicbg:mpicbg:1.4.0" level="project" />
     <orderEntry type="module" module-name="jipipe-core" />
     <orderEntry type="library" name="Maven: net.imagej:imagej:2.1.0" level="project" />
     <orderEntry type="library" name="Maven: net.imagej:imagej-common:0.33.0" level="project" />
