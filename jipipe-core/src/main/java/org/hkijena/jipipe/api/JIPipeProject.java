@@ -53,6 +53,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphEdge;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.ui.components.MarkdownDocument;
+import org.hkijena.jipipe.ui.settings.JIPipeProjectInfoParameters;
 import org.hkijena.jipipe.utils.JsonUtils;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -496,6 +497,23 @@ public class JIPipeProject implements JIPipeValidatable {
             if (heavy)
                 result.add(node);
         }
+        return result;
+    }
+
+    /**
+     * Returns the global parameters for this pipeline
+     * @return global parameters
+     */
+    public JIPipeProjectInfoParameters getPipelineParameters() {
+        Object existing = getAdditionalMetadata().getOrDefault(JIPipeProjectInfoParameters.METADATA_KEY, null);
+        JIPipeProjectInfoParameters result;
+        if (existing instanceof JIPipeProjectInfoParameters) {
+            result = (JIPipeProjectInfoParameters) existing;
+        } else {
+            result = new JIPipeProjectInfoParameters();
+            getAdditionalMetadata().put(JIPipeProjectInfoParameters.METADATA_KEY, result);
+        }
+        result.setProject(this);
         return result;
     }
 

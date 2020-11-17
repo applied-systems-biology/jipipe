@@ -73,7 +73,7 @@ public class JIPipeProjectInfoUI extends JIPipeProjectWorkbenchPanel {
         super(workbenchUI);
         descriptionReader = new MarkdownReader(false);
         parameterPanel = new ParameterPanel(getWorkbench(),
-                getPipelineParameters(),
+                getProject().getPipelineParameters(),
                 MarkdownDocument.fromPluginResource("documentation/project-info-parameters.md"),
                 ParameterPanel.WITH_SEARCH_BAR | ParameterPanel.WITH_SCROLLING
                         | ParameterPanel.NO_EMPTY_GROUP_HEADERS | ParameterPanel.WITH_DOCUMENTATION |
@@ -298,19 +298,6 @@ public class JIPipeProjectInfoUI extends JIPipeProjectWorkbenchPanel {
         toolBar.add(openSettingsButton);
 
         topPanel.add(toolBar, BorderLayout.SOUTH);
-    }
-
-    private JIPipeProjectInfoParameters getPipelineParameters() {
-        Object existing = getProject().getAdditionalMetadata().getOrDefault(JIPipeProjectInfoParameters.METADATA_KEY, null);
-        JIPipeProjectInfoParameters result;
-        if (existing instanceof JIPipeProjectInfoParameters) {
-            result = (JIPipeProjectInfoParameters) existing;
-        } else {
-            result = new JIPipeProjectInfoParameters();
-            getProject().getAdditionalMetadata().put(JIPipeProjectInfoParameters.METADATA_KEY, result);
-        }
-        result.setProject(getProject());
-        return result;
     }
 
     private static class BackgroundImageGenerator extends SwingWorker<BufferedImage, Object> {

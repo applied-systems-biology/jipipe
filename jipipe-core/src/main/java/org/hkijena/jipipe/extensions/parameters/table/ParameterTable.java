@@ -239,6 +239,23 @@ public class ParameterTable implements TableModel {
         return columns.stream().anyMatch(c -> Objects.equals(column, c.getKey()));
     }
 
+    public int getColumnIndex(String column) {
+        for (int i = 0; i < columns.size(); i++) {
+            if(columns.get(i).getKey().equals(column))
+                return i;
+        }
+        return -1;
+    }
+
+    /**
+     * Clears the table
+     */
+    public void clear() {
+        rows.clear();
+        columns.clear();
+        postTableModelChangedEvent();
+    }
+
     /**
      * Column in the parameter table
      */

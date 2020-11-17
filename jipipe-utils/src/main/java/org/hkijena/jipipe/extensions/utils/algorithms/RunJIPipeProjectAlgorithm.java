@@ -23,18 +23,22 @@ import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeDataByMetadataExporter;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.multiparameters.datatypes.ParametersData;
 import org.hkijena.jipipe.extensions.parameters.primitives.FilePathParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.primitives.OptionalIntegerParameter;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.extensions.utils.datatypes.JIPipeOutputData;
 import org.hkijena.jipipe.ui.components.PathEditor;
+import org.hkijena.jipipe.ui.settings.JIPipeProjectInfoParameters;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -93,7 +97,30 @@ public class RunJIPipeProjectAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             }
         }
 
-        // TODO: Set parameters
+        // Set parameters
+        ParametersData parameters = dataBatch.getInputData(getFirstInputSlot(), ParametersData.class);
+        {
+            JIPipeProjectInfoParameters pipelineParameters = project.getPipelineParameters();
+            JIPipeParameterTree infoParameterTree = new JIPipeParameterTree(pipelineParameters);
+            for (Map.Entry<String, Object> entry : parameters.getParameterData().entrySet()) {
+                JIPipeParameterAccess access = infoParameterTree.getParameters().getOrDefault(entry.getKey(), null);
+                if(access != null) {
+                    access.set(entry.getValue());
+                }
+                else if(entry.getKey().contains("/")) {
+                    String nodeId = entry.getKey().substring(0, entry.getKey().indexOf("/"));
+                    String key = entry.getKey().substring(entry.getKey().indexOf("/") + 1);
+                    JIPipeGraphNode node = project.getGraph().getNodes().getOrDefault(nodeId, null);
+                    if(node == null )
+                        continue;
+                    JIPipeParameterTree nodeTree = new JIPipeParameterTree(node);
+                    JIPipeParameterAccess nodeAccess = nodeTree.getParameters().getOrDefault(key, null);
+                    if(nodeAccess == null)
+                        continue;
+                    nodeAccess.set(entry.getValue());
+                }
+            }
+        }
 
         // Main validation
         if(!ignoreValidation) {
