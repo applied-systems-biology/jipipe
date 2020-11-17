@@ -226,6 +226,7 @@ public class JIPipeProjectWindow extends JFrame {
                         new JIPipeResultUI(window.projectUI, run),
                         DocumentTabPane.CloseMode.withAskOnCloseButton,
                         true);
+                window.getProjectUI().getDocumentTabPane().switchToLastTab();
                 ProjectsSettings.getInstance().addRecentProject(path);
             } catch (IOException e) {
                 throw new RuntimeException(e);

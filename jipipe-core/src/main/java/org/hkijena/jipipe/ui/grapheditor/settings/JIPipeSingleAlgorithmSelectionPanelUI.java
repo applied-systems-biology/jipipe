@@ -67,7 +67,7 @@ public class JIPipeSingleAlgorithmSelectionPanelUI extends JIPipeProjectWorkbenc
 
         ParameterPanel parametersUI = new ParameterPanel(getProjectWorkbench(),
                 algorithm,
-                TooltipUtils.getAlgorithmDocumentation(algorithm.getInfo()),
+                TooltipUtils.getAlgorithmDocumentation(algorithm),
                 ParameterPanel.WITH_SCROLLING | ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.DOCUMENTATION_BELOW | ParameterPanel.WITH_SEARCH_BAR);
         tabbedPane.addSingletonTab("PARAMETERS", "Parameters", UIUtils.getIconFromResources("actions/configure.png"),
                 parametersUI, DocumentTabPane.CloseMode.withoutCloseButton, false);

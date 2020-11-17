@@ -80,6 +80,16 @@
                 <artifactId>jipipe-core</artifactId>
                 <version>2020.11</version>
             </dependency>
+            <dependency>
+                <groupId>org.hkijena</groupId>
+                <artifactId>jipipe-filesystem</artifactId>
+                <version>2020.11</version>
+            </dependency>
+            <dependency>
+                <groupId>org.hkijena</groupId>
+                <artifactId>jipipe-multiparameters</artifactId>
+                <version>2020.11</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -87,6 +97,14 @@
         <dependency>
             <groupId>org.hkijena</groupId>
             <artifactId>jipipe-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.hkijena</groupId>
+            <artifactId>jipipe-filesystem</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.hkijena</groupId>
+            <artifactId>jipipe-multiparameters</artifactId>
         </dependency>
     </dependencies>
 

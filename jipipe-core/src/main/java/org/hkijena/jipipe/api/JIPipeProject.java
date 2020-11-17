@@ -511,6 +511,7 @@ public class JIPipeProject implements JIPipeValidatable {
         JsonNode jsonData = JsonUtils.getObjectMapper().readValue(fileName.toFile(), JsonNode.class);
         JIPipeProject project = new JIPipeProject();
         project.fromJson(jsonData, report);
+        project.setWorkDirectory(fileName.getParent());
         return project;
     }
 

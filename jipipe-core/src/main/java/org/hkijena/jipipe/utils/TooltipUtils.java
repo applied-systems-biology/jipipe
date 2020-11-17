@@ -120,6 +120,72 @@ public class TooltipUtils {
         if (source != null) {
             builder.append("## Developer information\n\n");
             builder.append("<table>");
+            builder.append("<tr><td><strong>Node type ID</strong></td><td><code>").append(HtmlEscapers.htmlEscaper().escape(info.getId())).append("</code></td></tr>");
+            builder.append("<tr><td><strong>Node ID</strong></td><td><code>").append(HtmlEscapers.htmlEscaper().escape(info.getId())).append("</code></td></tr>");
+            builder.append("<tr><td><strong>Plugin name</strong></td><td>").append(HtmlEscapers.htmlEscaper().escape(source.getMetadata().getName())).append("</td></tr>");
+            for (JIPipeAuthorMetadata author : source.getMetadata().getAuthors()) {
+                builder.append("<tr><td><strong>Plugin author</strong></td><td>").append(HtmlEscapers.htmlEscaper().escape(author.getFirstName() + " " + author.getLastName())).append("</td></tr>");
+            }
+            builder.append("<tr><td><strong>Plugin website</strong></td><td><a href=\"").append(source.getMetadata().getWebsite()).append("\">")
+                    .append(HtmlEscapers.htmlEscaper().escape(source.getMetadata().getWebsite())).append("</a></td></tr>");
+            builder.append("<tr><td><strong>Plugin citation</strong></td><td>").append(HtmlEscapers.htmlEscaper().escape(source.getMetadata().getCitation())).append("</td></tr>");
+            builder.append("<tr><td><strong>Plugin license</strong></td><td>").append(HtmlEscapers.htmlEscaper().escape(source.getMetadata().getLicense())).append("</td></tr>");
+            for (String dependencyCitation : source.getMetadata().getDependencyCitations()) {
+                builder.append("<tr><td><strong>Additional citation</strong></td><td>").append(HtmlEscapers.htmlEscaper().escape(dependencyCitation)).append("</td></tr>");
+            }
+            builder.append("</table>");
+        }
+
+        return new MarkdownDocument(builder.toString());
+    }
+
+    public static MarkdownDocument getAlgorithmDocumentation(JIPipeGraphNode node) {
+        JIPipeNodeInfo info = node.getInfo();
+        StringBuilder builder = new StringBuilder();
+        builder.append("# ").append(info.getName()).append("\n\n");
+        // Write algorithm slot info
+        builder.append("<table>");
+        {
+            List<JIPipeInputSlot> inputSlots = info.getInputSlots();
+            List<JIPipeOutputSlot> outputSlots = info.getOutputSlots();
+
+            int displayedSlots = Math.max(inputSlots.size(), outputSlots.size());
+            if (displayedSlots > 0) {
+                builder.append("<tr><td><i>Input</i></td><td><i>Output</i></td></tr>");
+                for (int i = 0; i < displayedSlots; ++i) {
+                    Class<? extends JIPipeData> inputSlot = i < inputSlots.size() ? inputSlots.get(i).value() : null;
+                    Class<? extends JIPipeData> outputSlot = i < outputSlots.size() ? outputSlots.get(i).value() : null;
+                    builder.append("<tr>");
+                    builder.append("<td>");
+                    if (inputSlot != null) {
+                        builder.append(StringUtils.createIconTextHTMLTableElement(JIPipeData.getNameOf(inputSlot), JIPipe.getDataTypes().getIconURLFor(inputSlot)));
+                    }
+                    builder.append("</td>");
+                    builder.append("<td>");
+                    if (outputSlot != null) {
+                        builder.append(StringUtils.createRightIconTextHTMLTableElement(JIPipeData.getNameOf(outputSlot), JIPipe.getDataTypes().getIconURLFor(outputSlot)));
+                    }
+                    builder.append("</td>");
+                    builder.append("</tr>");
+                }
+            }
+        }
+
+        // Write description
+        String description = info.getDescription();
+        if (description != null && !description.isEmpty())
+            builder.append(HtmlEscapers.htmlEscaper().escape(description)).append("</br>");
+
+        builder.append("</table>\n\n");
+
+        // Write author information
+        JIPipeDependency source = JIPipe.getNodes().getSourceOf(info.getId());
+        if (source != null) {
+            builder.append("## Developer information\n\n");
+            builder.append("<table>");
+            builder.append("<tr><td><strong>Node type ID</strong></td><td><code>").append(HtmlEscapers.htmlEscaper().escape(info.getId())).append("</code></td></tr>");
+            if(node.getGraph() != null)
+                builder.append("<tr><td><strong>Node ID</strong></td><td><code>").append(HtmlEscapers.htmlEscaper().escape(node.getIdInGraph())).append("</code></td></tr>");
             builder.append("<tr><td><strong>Plugin name</strong></td><td>").append(HtmlEscapers.htmlEscaper().escape(source.getMetadata().getName())).append("</td></tr>");
             for (JIPipeAuthorMetadata author : source.getMetadata().getAuthors()) {
                 builder.append("<tr><td><strong>Plugin author</strong></td><td>").append(HtmlEscapers.htmlEscaper().escape(author.getFirstName() + " " + author.getLastName())).append("</td></tr>");

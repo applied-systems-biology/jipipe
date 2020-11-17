@@ -17,9 +17,15 @@ import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.api.compartments.algorithms.IOInterfaceAlgorithm;
 import org.hkijena.jipipe.api.grouping.NodeGroup;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
+import org.hkijena.jipipe.extensions.filesystem.resultanalysis.CopyPathDataOperation;
+import org.hkijena.jipipe.extensions.filesystem.resultanalysis.OpenPathDataOperation;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
 import org.hkijena.jipipe.extensions.utils.algorithms.ConverterAlgorithm;
+import org.hkijena.jipipe.extensions.utils.algorithms.JIPipeProjectParameterDefinition;
+import org.hkijena.jipipe.extensions.utils.algorithms.RunJIPipeProjectAlgorithm;
 import org.hkijena.jipipe.extensions.utils.algorithms.SortRowsAlgorithm;
+import org.hkijena.jipipe.extensions.utils.datatypes.JIPipeOutputData;
+import org.hkijena.jipipe.extensions.utils.display.ImportJIPipeProjectDataOperation;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.plugin.Plugin;
 
@@ -42,10 +48,14 @@ public class UtilitiesExtension extends JIPipePrepackagedDefaultJavaExtension {
 
     @Override
     public void register() {
+        registerDatatype("jipipe-run-output", JIPipeOutputData.class, UIUtils.getIconURLFromResources("apps/jipipe.png"), null, null, new OpenPathDataOperation(), new CopyPathDataOperation(), new ImportJIPipeProjectDataOperation());
+
         registerNodeType("io-interface", IOInterfaceAlgorithm.class, UIUtils.getIconURLFromResources("devices/knemo-wireless-transmit-receive.png"));
         registerNodeType("node-group", NodeGroup.class, UIUtils.getIconURLFromResources("actions/object-group.png"));
         registerNodeType("converter", ConverterAlgorithm.class, UIUtils.getIconURLFromResources("actions/view-refresh.png"));
         registerNodeType("sort-rows-by-annotation", SortRowsAlgorithm.class, UIUtils.getIconURLFromResources("actions/sort-name.png"));
+        registerNodeType("jipipe-run-project", RunJIPipeProjectAlgorithm.class, UIUtils.getIconURLFromResources("actions/run-build.png"));
+        registerNodeType("jipipe-project-parameters", JIPipeProjectParameterDefinition.class, UIUtils.getIconURLFromResources("apps/jipipe.png"));
     }
 
     @Override
