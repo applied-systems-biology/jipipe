@@ -587,3 +587,7 @@ New landing page
 code {
   background-color: #e3dfe7;
 }
+
+pre code {
+  background: none;
+}

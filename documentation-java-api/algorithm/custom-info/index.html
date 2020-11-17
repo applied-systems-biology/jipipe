@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2020-11-06T10:41:47 CET">
+<meta name="revised" content="2020-11-17T15:39:46 CET">
 <title>Custom algorithm info :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../../images/favicon.png" type="image/x-icon" />
 <link href="../../../css/font-awesome.min.css" rel="stylesheet">
@@ -531,12 +531,12 @@ such as a name, description, or annotation preferences.</p>
 <span style="color:#f92672">}</span>
 </code></pre></div><p>The code generates a task that just checks if all algorithm dependencies are loaded.
 If all dependencies are available, the task runs:</p>
-<div class="highlight"><pre style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#111">JIPipeAlgorithmRegistry</span><span style="color:#f92672">.</span><span style="color:#75af00">getInstance</span><span style="color:#f92672">().</span><span style="color:#75af00">register</span><span style="color:#f92672">(</span><span style="color:#00a8c8">new</span> <span style="color:#111">JIPipeJavaAlgorithmDeclaration</span><span style="color:#f92672">(</span><span style="color:#111">id</span><span style="color:#f92672">,</span> <span style="color:#111">algorithmClass</span><span style="color:#f92672">),</span> <span style="color:#111">source</span><span style="color:#f92672">);</span>
-</code></pre></div><p>The important bit is <a href="../../../apidocs/org/hkijena/jipipe/api/nodes/JIPipeJavaAlgorithmDeclaration.html">JIPipeJavaAlgorithmDeclaration</a>. In the end an algorithm info is created
+<div class="highlight"><pre style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#111">JIPipeAlgorithmRegistry</span><span style="color:#f92672">.</span><span style="color:#75af00">getInstance</span><span style="color:#f92672">().</span><span style="color:#75af00">register</span><span style="color:#f92672">(</span><span style="color:#00a8c8">new</span> <span style="color:#111">JIPipeNodeInfo</span><span style="color:#f92672">(</span><span style="color:#111">id</span><span style="color:#f92672">,</span> <span style="color:#111">algorithmClass</span><span style="color:#f92672">),</span> <span style="color:#111">source</span><span style="color:#f92672">);</span>
+</code></pre></div><p>The important bit is <a href="../../../apidocs/org/hkijena/jipipe/api/nodes/JIPipeNodeInfo.html">JIPipeNodeInfo</a>. In the end an algorithm info is created
 that extract algorithm information from the class annotations.</p>
 <h1 id="creating-a-custom-info">Creating a custom info</h1>
 <p>To create a custom info, inherit from <a href="../../../apidocs/org/hkijena/jipipe/api/nodes/JIPipeNodeInfo.html">JIPipeNodeInfo</a>. The most important functions are <code>clone()</code> and <code>newInstance()</code>.</p>
-<p>Register the info either via a direct call to <code>registerNodeType(JIPipeNodeInfo)</code> or (recommended) via a task that inherits from <a href="../../../apidocs/org/hkijena/jipipe/api/registries/JIPipeAlgorithmRegistrationTask.html">JIPipeAlgorithmRegistrationTask</a>. You can inherit from the default implementation <a href="../../../apidocs/org/hkijena/jipipe/api/registries/JIPipeDefaultAlgorithmRegistrationTask.html">JIPipeDefaultAlgorithmRegistrationTask</a> that comes with pre-made functionality to check for common dependencies.
+<p>Register the info either via a direct call to <code>registerNodeType(JIPipeNodeInfo)</code> or (recommended) via a task that inherits from <a href="../../../apidocs/org/hkijena/jipipe/api/registries/JIPipeNodeRegistrationTask.html">JIPipeNodeRegistrationTask</a>. You can inherit from the default implementation <a href="../../../apidocs/org/hkijena/jipipe/api/registries/JIPipeDefaultNodeRegistrationTask.html">JIPipeDefaultNodeRegistrationTask</a> that comes with pre-made functionality to check for common dependencies.
 The reason behind using a task is that some algorithm-internal classes might require that data types or annotation types are already registered.</p>
 
 

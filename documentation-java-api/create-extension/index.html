@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2020-11-06T10:41:47 CET">
+<meta name="revised" content="2020-11-17T15:39:46 CET">
 <title>Creating an extension project :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../images/favicon.png" type="image/x-icon" />
 <link href="../../css/font-awesome.min.css" rel="stylesheet">
@@ -587,9 +587,9 @@ by the <a href="https://maven.scijava.org/">SciJava Maven repository</a>.</p>
     <span style="color:#f92672">&lt;/ciManagement&gt;</span>
 
     <span style="color:#f92672">&lt;parent&gt;</span>
-        <span style="color:#f92672">&lt;groupId&gt;</span>org.scijava<span style="color:#f92672">&lt;/groupId&gt;</span>
-        <span style="color:#f92672">&lt;artifactId&gt;</span>pom-scijava<span style="color:#f92672">&lt;/artifactId&gt;</span>
-        <span style="color:#f92672">&lt;version&gt;</span>28.0.0<span style="color:#f92672">&lt;/version&gt;</span>
+        <span style="color:#f92672">&lt;groupId&gt;</span>org.hkijena<span style="color:#f92672">&lt;/groupId&gt;</span>
+        <span style="color:#f92672">&lt;artifactId&gt;</span>pom-jipipe<span style="color:#f92672">&lt;/artifactId&gt;</span>
+        <span style="color:#f92672">&lt;version&gt;</span>2020.11<span style="color:#f92672">&lt;/version&gt;</span> <span style="color:#75715e">&lt;!-- Update the version accordingly --&gt;</span>
         <span style="color:#f92672">&lt;relativePath/&gt;</span>
     <span style="color:#f92672">&lt;/parent&gt;</span>
 
@@ -597,11 +597,6 @@ by the <a href="https://maven.scijava.org/">SciJava Maven repository</a>.</p>
         <span style="color:#f92672">&lt;repository&gt;</span>
             <span style="color:#f92672">&lt;id&gt;</span>imagej.public<span style="color:#f92672">&lt;/id&gt;</span>
             <span style="color:#f92672">&lt;url&gt;</span>http://maven.imagej.net/content/groups/public<span style="color:#f92672">&lt;/url&gt;</span>
-        <span style="color:#f92672">&lt;/repository&gt;</span>
-        <span style="color:#f92672">&lt;repository&gt;</span>
-            <span style="color:#f92672">&lt;id&gt;</span>external-jars<span style="color:#f92672">&lt;/id&gt;</span>
-            <span style="color:#f92672">&lt;name&gt;</span>External JAR files<span style="color:#f92672">&lt;/name&gt;</span>
-            <span style="color:#f92672">&lt;url&gt;</span>file://${project.basedir}/external-dependencies<span style="color:#f92672">&lt;/url&gt;</span>
         <span style="color:#f92672">&lt;/repository&gt;</span>
     <span style="color:#f92672">&lt;/repositories&gt;</span>
 

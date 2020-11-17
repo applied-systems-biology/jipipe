@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2020-11-06T10:41:47 CET">
+<meta name="revised" content="2020-11-17T15:39:46 CET">
 <title>Merging input data :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../../images/favicon.png" type="image/x-icon" />
 <link href="../../../css/font-awesome.min.css" rel="stylesheet">
@@ -561,7 +561,7 @@ JIPipe comes with <a href="../../../apidocs/org/hkijena/jipipe/api/nodes/JIPipeM
 </span><span style="color:#75715e">    Please read and write only via the data interface.
 </span><span style="color:#75715e">    */</span>
     <span style="color:#75af00">@Override</span>
-    <span style="color:#00a8c8">public</span> <span style="color:#75af00">runIteration</span><span style="color:#f92672">(</span><span style="color:#111">JIPipeMergingDataBatch</span> <span style="color:#111">dataBatch</span><span style="color:#f92672">,</span> <span style="color:#111">JIPipeRunnerSubStatus</span> <span style="color:#111">subProgress</span><span style="color:#f92672">,</span> <span style="color:#111">Consumer</span><span style="color:#f92672">&lt;</span><span style="color:#111">JIPipeRunnerSubStatus</span><span style="color:#f92672">&gt;</span> <span style="color:#111">algorithmProgress</span><span style="color:#f92672">,</span> <span style="color:#111">Supplier</span><span style="color:#f92672">&lt;</span><span style="color:#111">Boolean</span><span style="color:#f92672">&gt;</span> <span style="color:#111">isCancelled</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    <span style="color:#00a8c8">public</span> <span style="color:#75af00">runIteration</span><span style="color:#f92672">(</span><span style="color:#111">JIPipeMergingDataBatch</span> <span style="color:#111">dataBatch</span><span style="color:#f92672">,</span> <span style="color:#111">JIPipeProgressInfo</span> <span style="color:#111">progress</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
         <span style="color:#75715e">// Run your workload here
 </span><span style="color:#75715e"></span>    <span style="color:#f92672">}</span>
 <span style="color:#f92672">}</span>

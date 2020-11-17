@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2020-11-06T10:41:47 CET">
+<meta name="revised" content="2020-11-17T15:39:46 CET">
 <title>Usage in Java :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../images/favicon.png" type="image/x-icon" />
 <link href="../../css/font-awesome.min.css" rel="stylesheet">
@@ -548,8 +548,8 @@ The run has a multitude of <a href="../../apidocs/org/hkijena/jipipe/api/JIPipeR
 </span><span style="color:#75715e"></span>  <span style="color:#111">JIPipeRunnerQueue</span><span style="color:#f92672">.</span><span style="color:#75af00">getInstance</span><span style="color:#f92672">().</span><span style="color:#75af00">enqueue</span><span style="color:#f92672">(</span><span style="color:#111">run</span><span style="color:#f92672">);</span>
 
   <span style="color:#75715e">// Option 2: Run it on the current thread
-</span><span style="color:#75715e"></span>  <span style="color:#75715e">// You need to supply callbacks for progress and cancelling
-</span><span style="color:#75715e"></span>  <span style="color:#111">run</span><span style="color:#f92672">.</span><span style="color:#75af00">run</span><span style="color:#f92672">(</span><span style="color:#111">status</span> <span style="color:#f92672">-&gt;</span> <span style="color:#111">System</span><span style="color:#f92672">.</span><span style="color:#75af00">out</span><span style="color:#f92672">.</span><span style="color:#75af00">println</span><span style="color:#f92672">(</span><span style="color:#111">status</span><span style="color:#f92672">.</span><span style="color:#75af00">getProgress</span><span style="color:#f92672">()</span> <span style="color:#f92672">+</span> <span style="color:#d88200">&#34;/&#34;</span> <span style="color:#f92672">+</span> <span style="color:#111">status</span><span style="color:#f92672">.</span><span style="color:#75af00">getMaxProgress</span><span style="color:#f92672">()),</span> <span style="color:#f92672">()</span> <span style="color:#f92672">-&gt;</span> <span style="color:#00a8c8">false</span><span style="color:#f92672">);</span>
+</span><span style="color:#75715e"></span>  <span style="color:#75715e">// The run itself has a property getProgressInfo() that allows access to the progress &amp; log
+</span><span style="color:#75715e"></span>  <span style="color:#111">run</span><span style="color:#f92672">.</span><span style="color:#75af00">run</span><span style="color:#f92672">();</span>
 <span style="color:#f92672">}</span>
 </code></pre></div><h1 id="loading-a-result">Loading a result</h1>
 <p>To load an existing result folder, the <a href="../../apidocs/org/hkijena/jipipe/api/JIPipeRun.html">run</a> is imported back into JIPipe.
@@ -569,14 +569,11 @@ This table contains all metadata and the relative storage location of each row.<
     <span style="color:#75715e">// You can now access the run&#39;s graph and access the data slots
 </span><span style="color:#75715e"></span>    <span style="color:#111">JIPipeDataSlot</span> <span style="color:#111">slot</span> <span style="color:#f92672">=</span> <span style="color:#111">run</span><span style="color:#f92672">.</span><span style="color:#75af00">getGraph</span><span style="color:#f92672">().</span><span style="color:#75af00">getNodes</span><span style="color:#f92672">().</span><span style="color:#75af00">get</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;some-node&#34;</span><span style="color:#f92672">).</span><span style="color:#75af00">getOutputSlot</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;Output&#34;</span><span style="color:#f92672">);</span>
 
-    <span style="color:#75715e">// Get the slot data path
-</span><span style="color:#75715e"></span>    <span style="color:#111">Path</span> <span style="color:#111">slotDataPath</span> <span style="color:#f92672">=</span> <span style="color:#111">slot</span><span style="color:#f92672">.</span><span style="color:#75af00">getStoragePath</span><span style="color:#f92672">();</span>
-
     <span style="color:#75715e">// Load the slot&#39;s data table
-</span><span style="color:#75715e"></span>    <span style="color:#111">JIPipeExportedDataTable</span> <span style="color:#111">table</span> <span style="color:#f92672">=</span> <span style="color:#111">JIPipeExportedDataTable</span><span style="color:#f92672">.</span><span style="color:#75af00">loadFromJson</span><span style="color:#f92672">(</span><span style="color:#111">slotDataPath</span><span style="color:#f92672">.</span><span style="color:#75af00">resolve</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;data-table.json&#34;</span><span style="color:#f92672">));</span>
+</span><span style="color:#75715e"></span>    <span style="color:#111">JIPipeExportedDataTable</span> <span style="color:#111">table</span> <span style="color:#f92672">=</span> <span style="color:#111">slot</span><span style="color:#f92672">.</span><span style="color:#75af00">getStorageDataTable</span><span style="color:#f92672">();</span>
 
     <span style="color:#75715e">// Example: Get the folder where the first row stores its data
-</span><span style="color:#75715e"></span>    <span style="color:#111">Path</span> <span style="color:#111">firstRowStorage</span> <span style="color:#f92672">=</span> <span style="color:#111">slotDataPath</span><span style="color:#f92672">.</span><span style="color:#75af00">resolve</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;0&#34;</span><span style="color:#f92672">);</span>
+</span><span style="color:#75715e"></span>    <span style="color:#111">Path</span> <span style="color:#111">firstRowStorage</span> <span style="color:#f92672">=</span> <span style="color:#111">slot</span><span style="color:#f92672">.</span><span style="color:#75af00">getRowStoragePath</span><span style="color:#f92672">(</span><span style="color:#111">0</span><span style="color:#f92672">);</span>
   <span style="color:#f92672">}</span>
 </code></pre></div><h1 id="building-and-running-a-graph">Building and running a graph</h1>
 <p>JIPipe allows to create and run <a href="../../apidocs/org/hkijena/jipipe/api/nodes/JIPipeGraph.html">graphs</a> without involving a project.
@@ -609,8 +606,8 @@ A simple <a href="../../apidocs/org/hkijena/jipipe/api/JIPipeGraphRunner.html">g
 </span><span style="color:#75715e"></span>    <span style="color:#111">JIPipeRunnerQueue</span><span style="color:#f92672">.</span><span style="color:#75af00">getInstance</span><span style="color:#f92672">().</span><span style="color:#75af00">enqueue</span><span style="color:#f92672">(</span><span style="color:#111">run</span><span style="color:#f92672">);</span>
 
     <span style="color:#75715e">// Option 2: Run it on the current thread
-</span><span style="color:#75715e"></span>    <span style="color:#75715e">// You need to supply callbacks for progress and cancelling
-</span><span style="color:#75715e"></span>    <span style="color:#111">run</span><span style="color:#f92672">.</span><span style="color:#75af00">run</span><span style="color:#f92672">(</span><span style="color:#111">status</span> <span style="color:#f92672">-&gt;</span> <span style="color:#111">System</span><span style="color:#f92672">.</span><span style="color:#75af00">out</span><span style="color:#f92672">.</span><span style="color:#75af00">println</span><span style="color:#f92672">(</span><span style="color:#111">status</span><span style="color:#f92672">.</span><span style="color:#75af00">getProgress</span><span style="color:#f92672">()</span> <span style="color:#f92672">+</span> <span style="color:#d88200">&#34;/&#34;</span> <span style="color:#f92672">+</span> <span style="color:#111">status</span><span style="color:#f92672">.</span><span style="color:#75af00">getMaxProgress</span><span style="color:#f92672">()),</span> <span style="color:#f92672">()</span> <span style="color:#f92672">-&gt;</span> <span style="color:#00a8c8">false</span><span style="color:#f92672">);</span>
+</span><span style="color:#75715e"></span>    <span style="color:#75715e">// The run itself has a property getProgressInfo() that allows access to the progress &amp; log
+</span><span style="color:#75715e"></span>    <span style="color:#111">run</span><span style="color:#f92672">.</span><span style="color:#75af00">run</span><span style="color:#f92672">();</span>
   <span style="color:#f92672">}</span>
 </code></pre></div><h1 id="running-a-single-node">Running a single node</h1>
 <p>You can run single algorithm nodes without involving a project or a graph:</p>
@@ -625,8 +622,11 @@ A simple <a href="../../apidocs/org/hkijena/jipipe/api/JIPipeGraphRunner.html">g
   <span style="color:#75715e">// Add inputs
 </span><span style="color:#75715e"></span>  <span style="color:#111">node</span><span style="color:#f92672">.</span><span style="color:#75af00">getFirstInputSlot</span><span style="color:#f92672">().</span><span style="color:#75af00">addData</span><span style="color:#f92672">(</span><span style="color:#00a8c8">new</span> <span style="color:#111">FileData</span><span style="color:#f92672">(</span><span style="color:#111">Paths</span><span style="color:#f92672">.</span><span style="color:#75af00">get</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;/data/image.tif&#34;</span><span style="color:#f92672">)));</span>
 
+  <span style="color:#75715e">// The node requires a progress info 
+</span><span style="color:#75715e"></span>  <span style="color:#111">JIPipeProgressInfo</span> <span style="color:#111">progress</span> <span style="color:#f92672">=</span> <span style="color:#00a8c8">new</span> <span style="color:#111">JIPipeProgressInfo</span><span style="color:#f92672">();</span>
+
   <span style="color:#75715e">// Run the node
-</span><span style="color:#75715e"></span>  <span style="color:#111">node</span><span style="color:#f92672">.</span><span style="color:#75af00">run</span><span style="color:#f92672">(</span><span style="color:#00a8c8">new</span> <span style="color:#111">JIPipeRunnerSubStatus</span><span style="color:#f92672">(),</span> <span style="color:#111">status</span> <span style="color:#f92672">-&gt;</span> <span style="color:#111">System</span><span style="color:#f92672">.</span><span style="color:#75af00">out</span><span style="color:#f92672">.</span><span style="color:#75af00">println</span><span style="color:#f92672">(</span><span style="color:#111">status</span><span style="color:#f92672">.</span><span style="color:#75af00">getProgress</span><span style="color:#f92672">()</span> <span style="color:#f92672">+</span> <span style="color:#d88200">&#34;/&#34;</span> <span style="color:#f92672">+</span> <span style="color:#111">status</span><span style="color:#f92672">.</span><span style="color:#75af00">getMaxProgress</span><span style="color:#f92672">()),</span> <span style="color:#f92672">()</span> <span style="color:#f92672">-&gt;</span> <span style="color:#00a8c8">false</span><span style="color:#f92672">);</span>
+</span><span style="color:#75715e"></span>  <span style="color:#111">node</span><span style="color:#f92672">.</span><span style="color:#75af00">run</span><span style="color:#f92672">(</span><span style="color:#111">progress</span><span style="color:#f92672">);</span>
 
   <span style="color:#75715e">// Extract the output
 </span><span style="color:#75715e"></span>  <span style="color:#111">ImagePlusData</span> <span style="color:#111">image</span> <span style="color:#f92672">=</span> <span style="color:#111">node</span><span style="color:#f92672">.</span><span style="color:#75af00">getFirstOutputSlot</span><span style="color:#f92672">().</span><span style="color:#75af00">getData</span><span style="color:#f92672">(</span><span style="color:#111">0</span><span style="color:#f92672">,</span> <span style="color:#111">ImagePlusData</span><span style="color:#f92672">.</span><span style="color:#75af00">class</span><span style="color:#f92672">);</span>
