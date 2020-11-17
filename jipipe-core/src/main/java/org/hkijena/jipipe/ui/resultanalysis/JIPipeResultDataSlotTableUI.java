@@ -128,6 +128,10 @@ public class JIPipeResultDataSlotTableUI extends JIPipeProjectWorkbenchPanel {
         searchTextField.addActionListener(e -> refreshTable());
         toolBar.add(searchTextField);
 
+        JButton openFolderButton = new JButton("Open folder", UIUtils.getIconFromResources("actions/folder-open.png"));
+        openFolderButton.addActionListener(e -> openResultsFolder());
+        toolBar.add(openFolderButton);
+
         JButton exportButton = new JButton("Export", UIUtils.getIconFromResources("actions/document-export.png"));
         toolBar.add(exportButton);
         JPopupMenu exportMenu = UIUtils.addPopupMenuToComponent(exportButton);
@@ -142,6 +146,10 @@ public class JIPipeResultDataSlotTableUI extends JIPipeProjectWorkbenchPanel {
 
         PreviewControlUI previewControlUI = new PreviewControlUI();
         toolBar.add(previewControlUI);
+    }
+
+    private void openResultsFolder() {
+        UIUtils.openFileInNative(slot.getStoragePath());
     }
 
     private void exportFilesByMetadata() {

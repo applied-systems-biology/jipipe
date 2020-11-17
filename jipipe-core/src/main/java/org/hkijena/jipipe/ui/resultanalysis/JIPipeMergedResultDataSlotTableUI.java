@@ -131,6 +131,10 @@ public class JIPipeMergedResultDataSlotTableUI extends JIPipeProjectWorkbenchPan
         searchTextField.addActionListener(e -> refreshTable());
         toolBar.add(searchTextField);
 
+        JButton openFolderButton = new JButton("Open folder", UIUtils.getIconFromResources("actions/folder-open.png"));
+        openFolderButton.addActionListener(e -> openResultsFolder());
+        toolBar.add(openFolderButton);
+
         JButton exportButton = new JButton("Export", UIUtils.getIconFromResources("actions/document-export.png"));
         toolBar.add(exportButton);
         JPopupMenu exportMenu = UIUtils.addPopupMenuToComponent(exportButton);
@@ -145,6 +149,18 @@ public class JIPipeMergedResultDataSlotTableUI extends JIPipeProjectWorkbenchPan
 
         PreviewControlUI previewControlUI = new PreviewControlUI();
         toolBar.add(previewControlUI);
+    }
+
+    private void openResultsFolder() {
+        if(slots.size() == 1) {
+            UIUtils.openFileInNative(slots.get(0).getStoragePath());
+        }
+        else if(slots.stream().map(JIPipeDataSlot::getNode).distinct().count() == 1) {
+            UIUtils.openFileInNative(slots.get(0).getStoragePath().getParent());
+        }
+        else {
+            UIUtils.openFileInNative(run.getConfiguration().getOutputPath());
+        }
     }
 
     private void exportFilesByMetadata() {
