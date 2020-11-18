@@ -21,6 +21,7 @@ import ij.process.ImageProcessor;
 import ij.process.ImageStatistics;
 import ij.util.Tools;
 import org.hkijena.jipipe.ui.theme.JIPipeUITheme;
+import org.hkijena.jipipe.utils.BusyCursor;
 import org.hkijena.jipipe.utils.ImageJCalibrationMode;
 import org.hkijena.jipipe.utils.ImageJUtils;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -373,13 +374,17 @@ public class ImageViewerPanel extends JPanel {
 
     private void splitChannels() {
         if(image != null) {
-            setImage(ImageJUtils.rgbToChannels(image));
+            try(BusyCursor cursor = new BusyCursor(this)) {
+                setImage(ImageJUtils.rgbToChannels(image));
+            }
         }
     }
 
     private void convertImageToRGB() {
         if(image != null) {
-            setImage(ImageJUtils.channelsToRGB(image));
+            try(BusyCursor cursor = new BusyCursor(this)) {
+                setImage(ImageJUtils.channelsToRGB(image));
+            }
         }
     }
 

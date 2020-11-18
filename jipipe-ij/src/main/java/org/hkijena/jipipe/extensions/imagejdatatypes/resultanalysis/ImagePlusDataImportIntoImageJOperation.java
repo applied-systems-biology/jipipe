@@ -1,23 +1,37 @@
 package org.hkijena.jipipe.extensions.imagejdatatypes.resultanalysis;
 
+import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataImportOperation;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeExportedDataTable;
 import org.hkijena.jipipe.api.data.JIPipeResultSlotDataSource;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColor8UData;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
+import org.hkijena.jipipe.ui.events.RunUIWorkerFinishedEvent;
+import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.nio.file.Path;
+import java.util.HashSet;
+import java.util.Set;
 
 public class ImagePlusDataImportIntoImageJOperation implements JIPipeDataImportOperation {
+
+    private Set<ImagePlusResultImportRun> knownRuns = new HashSet<>();
+
+    public ImagePlusDataImportIntoImageJOperation() {
+        JIPipeRunnerQueue.getInstance().getEventBus().register(this);
+    }
+
     @Override
     public JIPipeData show(JIPipeDataSlot slot, JIPipeExportedDataTable.Row row, Path rowStorageFolder, String compartmentName, String algorithmName, String displayName, JIPipeWorkbench workbench) {
-        ImagePlusData data = ImagePlusData.importFrom(rowStorageFolder);
-        data.display(displayName, workbench, new JIPipeResultSlotDataSource(slot, row, rowStorageFolder));
-        return data;
+        ImagePlusResultImportRun run = new ImagePlusResultImportRun(slot, row, rowStorageFolder, compartmentName, algorithmName, displayName, workbench);
+        knownRuns.add(run);
+        JIPipeRunnerQueue.getInstance().enqueue(run);
+        return null;
     }
 
     @Override
@@ -38,5 +52,16 @@ public class ImagePlusDataImportIntoImageJOperation implements JIPipeDataImportO
     @Override
     public Icon getIcon() {
         return UIUtils.getIconFromResources("apps/imagej.png");
+    }
+
+    @Subscribe
+    public void onRunFinished(RunUIWorkerFinishedEvent event) {
+        if(event.getRun() instanceof ImagePlusResultImportRun) {
+            ImagePlusResultImportRun run = (ImagePlusResultImportRun) event.getRun();
+            if(!knownRuns.contains(run))
+                return;
+            ImagePlusData data = new ImagePlusData(run.getImage());
+            data.display(run.getDisplayName(), run.getWorkbench(), new JIPipeResultSlotDataSource(run.getSlot(), run.getRow(), run.getRowStorageFolder()));
+        }
     }
 }

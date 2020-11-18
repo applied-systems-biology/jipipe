@@ -83,9 +83,7 @@ public class ImageJUtils {
     public static ImagePlus channelsToRGB(ImagePlus image) {
         if (image.getType() == ImagePlus.COLOR_RGB || image.getType() == ImagePlus.COLOR_256)
             return image;
-        if (image.getNDimensions() == 3 && image.getNChannels() == 3) {
-            return new ImagePlus(image.getTitle() + "_RGB", image.getBufferedImage());
-        } else if (image.getNChannels() == 3) {
+        if (image.getNChannels() == 3) {
             if (image.getType() != ImagePlus.GRAY8) {
                 ImageConverter ic = new ImageConverter(image);
                 ic.convertToGray8();

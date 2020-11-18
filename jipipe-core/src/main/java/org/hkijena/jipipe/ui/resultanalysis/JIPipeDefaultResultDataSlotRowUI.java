@@ -21,6 +21,7 @@ import org.hkijena.jipipe.extensions.parameters.primitives.DynamicStringEnumPara
 import org.hkijena.jipipe.extensions.settings.DefaultResultImporterSettings;
 import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
+import org.hkijena.jipipe.utils.BusyCursor;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -82,14 +83,16 @@ public class JIPipeDefaultResultDataSlotRowUI extends JIPipeResultDataSlotRowUI 
     }
 
     private void runImportOperation(JIPipeDataImportOperation operation) {
-        operation.show(getSlot(), getRow(), getRowStorageFolder(), getAlgorithmCompartment(), getAlgorithmName(), getDisplayName(), getWorkbench());
-        if (GeneralDataSettings.getInstance().isAutoSaveLastImporter()) {
-            String dataTypeId = JIPipe.getDataTypes().getIdOf(getSlot().getAcceptedDataType());
-            DynamicStringEnumParameter parameter = DefaultResultImporterSettings.getInstance().getValue(dataTypeId, DynamicStringEnumParameter.class);
-            if (parameter != null && !Objects.equals(operation.getName(), parameter.getValue())) {
-                parameter.setValue(operation.getName());
-                DefaultResultImporterSettings.getInstance().setValue(dataTypeId, parameter);
-                JIPipe.getSettings().save();
+        try(BusyCursor cursor = new BusyCursor(this)) {
+            operation.show(getSlot(), getRow(), getRowStorageFolder(), getAlgorithmCompartment(), getAlgorithmName(), getDisplayName(), getWorkbench());
+            if (GeneralDataSettings.getInstance().isAutoSaveLastImporter()) {
+                String dataTypeId = JIPipe.getDataTypes().getIdOf(getSlot().getAcceptedDataType());
+                DynamicStringEnumParameter parameter = DefaultResultImporterSettings.getInstance().getValue(dataTypeId, DynamicStringEnumParameter.class);
+                if (parameter != null && !Objects.equals(operation.getName(), parameter.getValue())) {
+                    parameter.setValue(operation.getName());
+                    DefaultResultImporterSettings.getInstance().setValue(dataTypeId, parameter);
+                    JIPipe.getSettings().save();
+                }
             }
         }
     }
@@ -117,7 +120,7 @@ public class JIPipeDefaultResultDataSlotRowUI extends JIPipeResultDataSlotRowUI 
     public void handleDefaultAction() {
         JIPipeDataImportOperation mainOperation = getMainOperation();
         if (mainOperation != null)
-            runImportOperation(mainOperation);
+            SwingUtilities.invokeLater(() -> runImportOperation(mainOperation));
     }
 
 }
