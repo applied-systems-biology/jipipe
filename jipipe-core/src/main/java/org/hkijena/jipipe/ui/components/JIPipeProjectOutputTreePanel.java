@@ -11,15 +11,13 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.ui.resultanalysis;
+package org.hkijena.jipipe.ui.components;
 
-import org.hkijena.jipipe.api.JIPipeRun;
+import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
-import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
-import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
-import org.hkijena.jipipe.ui.components.SearchTextField;
+import org.hkijena.jipipe.ui.resultanalysis.JIPipeResultTreeCellRenderer;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -27,25 +25,20 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import java.awt.BorderLayout;
-import java.nio.file.Files;
 import java.util.stream.Collectors;
 
 /**
  * Displays a tree where the user can select data slots
  */
-public class JIPipeResultAlgorithmTree extends JIPipeProjectWorkbenchPanel {
-    private JIPipeRun run;
+public class JIPipeProjectOutputTreePanel extends JPanel {
+    private JIPipeProject project;
     private JScrollPane treeScrollPane;
     private JTree tree;
     private SearchTextField searchTextField;
 
-    /**
-     * @param workbenchUI Workbench ui
-     * @param run         The run
-     */
-    public JIPipeResultAlgorithmTree(JIPipeProjectWorkbench workbenchUI, JIPipeRun run) {
-        super(workbenchUI);
-        this.run = run;
+
+    public JIPipeProjectOutputTreePanel(JIPipeProject project) {
+        this.project = project;
         initialize();
         refreshTree();
     }
@@ -54,13 +47,13 @@ public class JIPipeResultAlgorithmTree extends JIPipeProjectWorkbenchPanel {
         int scrollPosition = treeScrollPane.getVerticalScrollBar().getValue();
 
         DefaultMutableTreeNode root = new DefaultMutableTreeNode(null);
-        for (JIPipeProjectCompartment compartment : run.getProject().getCompartmentGraph().traverseAlgorithms()
+        for (JIPipeProjectCompartment compartment : project.getCompartmentGraph().traverseAlgorithms()
                 .stream().map(a -> (JIPipeProjectCompartment) a).collect(Collectors.toList())) {
             DefaultMutableTreeNode compartmentNode = new DefaultMutableTreeNode(compartment);
             boolean compartmentMatches = searchTextField.test(compartment.getName());
             boolean compartmentHasMatchedChildren = false;
 
-            for (JIPipeGraphNode algorithm : run.getGraph().traverseAlgorithms()) {
+            for (JIPipeGraphNode algorithm : project.getGraph().traverseAlgorithms()) {
                 if (algorithm.getCompartment().equals(compartment.getProjectCompartmentId())) {
                     DefaultMutableTreeNode algorithmNode = new DefaultMutableTreeNode(algorithm);
 
@@ -69,8 +62,6 @@ public class JIPipeResultAlgorithmTree extends JIPipeProjectWorkbenchPanel {
                     compartmentHasMatchedChildren |= algorithmMatches;
 
                     for (JIPipeDataSlot outputSlot : algorithm.getOutputSlots()) {
-                        if (!Files.exists(outputSlot.getStoragePath().resolve("data-table.json")))
-                            continue;
                         DefaultMutableTreeNode slotNode = new DefaultMutableTreeNode(outputSlot);
 
                         if (algorithmMatches || searchTextField.test(outputSlot.getName())) {

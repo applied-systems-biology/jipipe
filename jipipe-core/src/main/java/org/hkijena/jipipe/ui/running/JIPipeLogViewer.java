@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.ui.running;
 
 import com.google.common.eventbus.Subscribe;
+import com.google.common.html.HtmlEscapers;
 import org.hkijena.jipipe.api.JIPipeRun;
 import org.hkijena.jipipe.api.JIPipeRunnable;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
@@ -27,6 +28,7 @@ import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
+import javax.swing.text.html.HTMLEditorKit;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Font;
@@ -77,7 +79,7 @@ public class JIPipeLogViewer extends JIPipeProjectWorkbenchPanel {
     }
 
     private void showLog(LogEntry entry) {
-        logReader.setDocument(new MarkdownDocument(entry.getLog().replace("\n", "\n\n")));
+        logReader.setDocument(new MarkdownDocument("<code>" + HtmlEscapers.htmlEscaper().escape(entry.getLog()).replace("\n", "<br/>") + "</code>"));
     }
 
     private void pushToLog(JIPipeRunnable run, boolean success) {
