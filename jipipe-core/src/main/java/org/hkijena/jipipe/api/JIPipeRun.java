@@ -210,10 +210,17 @@ public class JIPipeRun implements JIPipeRunnable {
         List<JIPipeDataSlot> traversedSlots = algorithmGraph.traverseSlots();
 
         List<JIPipeGraphNode> preprocessorNodes = new ArrayList<>();
+        List<JIPipeGraphNode> postprocessorNodes = new ArrayList<>();
         for (JIPipeGraphNode node : algorithmGraph.getNodes().values()) {
-            if(!unExecutableAlgorithms.contains(node) && node.getInputSlots().isEmpty() && node.getOpenInputSlots().isEmpty() &&
+            if(!unExecutableAlgorithms.contains(node) && node.getInputSlots().isEmpty() &&
                     node instanceof JIPipeAlgorithm && ((JIPipeAlgorithm) node).isPreprocessor()) {
                 preprocessorNodes.add(node);
+            }
+            else if(!unExecutableAlgorithms.contains(node) &&
+                    node instanceof JIPipeAlgorithm && ((JIPipeAlgorithm) node).isPreprocessor()) {
+                if(node.getOpenInputSlots().stream().allMatch(nd -> algorithmGraph.getTargetSlots(nd).isEmpty())) {
+                    postprocessorNodes.add(node);
+                }
             }
         }
         if(!preprocessorNodes.isEmpty()) {
@@ -223,7 +230,9 @@ public class JIPipeRun implements JIPipeRunnable {
                 JIPipeGraphNode node = preprocessorNodes.get(i);
                 progress.setProgress(i);
                 JIPipeProgressInfo subProgress = progress.resolve("Algorithm: " + node.getName());
-                runNode(executedAlgorithms, node, subProgress);
+                if (!executedAlgorithms.contains(node)) {
+                    runNode(executedAlgorithms, node, subProgress);
+                }
             }
         }
 
@@ -257,6 +266,12 @@ public class JIPipeRun implements JIPipeRunnable {
                 }
             } else if (slot.isOutput()) {
                 JIPipeGraphNode node = slot.getNode();
+
+                // Check if this is a postprocessor
+                if(!executedAlgorithms.contains(node) && postprocessorNodes.contains(node)) {
+                    subProgress.resolveAndLog("Node is postprocessor. Deferring the run.");
+                }
+
                 // Ensure the algorithm has run
                 if (!executedAlgorithms.contains(node)) {
                     runNode(executedAlgorithms, node, subProgress);
@@ -268,6 +283,7 @@ public class JIPipeRun implements JIPipeRunnable {
         }
 
         // There might be some algorithms missing (ones that do not have an output)
+        // Will also run any postprocessor
         List<JIPipeGraphNode> additionalAlgorithms = new ArrayList<>();
         for (JIPipeGraphNode node : algorithmGraph.getNodes().values()) {
             if (!executedAlgorithms.contains(node) && !unExecutableAlgorithms.contains(node)) {

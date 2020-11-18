@@ -15,9 +15,11 @@ package org.hkijena.jipipe.api;
 
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
+import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -52,6 +54,33 @@ public class JIPipeGraphRunner implements JIPipeRunnable {
         Set<JIPipeGraphNode> unExecutableAlgorithms = algorithmGraph.getDeactivatedAlgorithms(algorithmsWithExternalInput);
         Set<JIPipeGraphNode> executedAlgorithms = new HashSet<>();
         List<JIPipeDataSlot> traversedSlots = algorithmGraph.traverseSlots();
+
+        List<JIPipeGraphNode> preprocessorNodes = new ArrayList<>();
+        List<JIPipeGraphNode> postprocessorNodes = new ArrayList<>();
+        for (JIPipeGraphNode node : algorithmGraph.getNodes().values()) {
+            if(!unExecutableAlgorithms.contains(node) && node.getInputSlots().isEmpty() &&
+                    node instanceof JIPipeAlgorithm && ((JIPipeAlgorithm) node).isPreprocessor()) {
+                preprocessorNodes.add(node);
+            }
+            else if(!unExecutableAlgorithms.contains(node) &&
+                    node instanceof JIPipeAlgorithm && ((JIPipeAlgorithm) node).isPreprocessor()) {
+                if(node.getOpenInputSlots().stream().allMatch(nd -> algorithmGraph.getTargetSlots(nd).isEmpty())) {
+                    postprocessorNodes.add(node);
+                }
+            }
+        }
+        if(!preprocessorNodes.isEmpty()) {
+            info.setProgress(0, preprocessorNodes.size() + traversedSlots.size());
+            info.resolveAndLog("Preprocessing algorithms");
+            for (int i = 0; i < preprocessorNodes.size(); i++) {
+                JIPipeGraphNode node = preprocessorNodes.get(i);
+                info.setProgress(i);
+                JIPipeProgressInfo subProgress = info.resolve("Algorithm: " + node.getName());
+                node.run(subProgress);
+                executedAlgorithms.add(node);
+            }
+        }
+
         info.setMaxProgress(traversedSlots.size());
         for (int index = 0; index < traversedSlots.size(); ++index) {
             if (info.isCancelled().get())
@@ -76,20 +105,28 @@ public class JIPipeGraphRunner implements JIPipeRunnable {
                     }
                 }
             } else if (slot.isOutput()) {
+
+                JIPipeGraphNode node = slot.getNode();
+
+                // Check if this is a postprocessor
+                if(!executedAlgorithms.contains(node) && postprocessorNodes.contains(node)) {
+                    subInfo.resolveAndLog("Node is postprocessor. Deferring the run.");
+                }
+
                 // Ensure the algorithm has run
-                if (!executedAlgorithms.contains(slot.getNode())) {
+                if (!executedAlgorithms.contains(node)) {
                     try {
-                        slot.getNode().run(subInfo);
+                        node.run(subInfo);
                     } catch (Exception e) {
-                        throw new UserFriendlyRuntimeException("Algorithm " + slot.getNode() + " raised an exception!",
+                        throw new UserFriendlyRuntimeException("Algorithm " + node + " raised an exception!",
                                 e,
                                 "An error occurred during processing",
-                                "On running the algorithm '" + slot.getNode().getName() + "', within graph '" + algorithmGraph + "'",
+                                "On running the algorithm '" + node.getName() + "', within graph '" + algorithmGraph + "'",
                                 "Please refer to the other error messages.",
                                 "Please follow the instructions for the other error messages.");
                     }
 
-                    executedAlgorithms.add(slot.getNode());
+                    executedAlgorithms.add(node);
                 }
             }
         }
