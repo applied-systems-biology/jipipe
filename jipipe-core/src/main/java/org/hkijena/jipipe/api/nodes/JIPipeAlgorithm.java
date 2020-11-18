@@ -183,6 +183,16 @@ public abstract class JIPipeAlgorithm extends JIPipeGraphNode {
         }
     }
 
+    /**
+     * Indicates if the node should be run before all other nodes or after all other nodes.
+     * Only applies if there is no input and output.
+     * Defaults to false.
+     * @return If the node should behave like a preprocessor.
+     */
+    public boolean isPreprocessor() {
+        return false;
+    }
+
     public JIPipeFixedThreadPool getThreadPool() {
         return threadPool;
     }

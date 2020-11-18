@@ -208,6 +208,25 @@ public class JIPipeRun implements JIPipeRunnable {
         Set<JIPipeGraphNode> executedAlgorithms = new HashSet<>();
         Set<JIPipeDataSlot> flushedSlots = new HashSet<>();
         List<JIPipeDataSlot> traversedSlots = algorithmGraph.traverseSlots();
+
+        List<JIPipeGraphNode> preprocessorNodes = new ArrayList<>();
+        for (JIPipeGraphNode node : algorithmGraph.getNodes().values()) {
+            if(!unExecutableAlgorithms.contains(node) && node.getInputSlots().isEmpty() && node.getOpenInputSlots().isEmpty() &&
+                    node instanceof JIPipeAlgorithm && ((JIPipeAlgorithm) node).isPreprocessor()) {
+                preprocessorNodes.add(node);
+            }
+        }
+        if(!preprocessorNodes.isEmpty()) {
+            progress.setProgress(0, preprocessorNodes.size() + traversedSlots.size());
+            progress.resolveAndLog("Preprocessing algorithms");
+            for (int i = 0; i < preprocessorNodes.size(); i++) {
+                JIPipeGraphNode node = preprocessorNodes.get(i);
+                progress.setProgress(i);
+                JIPipeProgressInfo subProgress = progress.resolve("Algorithm: " + node.getName());
+                runNode(executedAlgorithms, node, subProgress);
+            }
+        }
+
         progress.setMaxProgress(traversedSlots.size());
         for (int index = 0; index < traversedSlots.size(); ++index) {
             if (progress.isCancelled().get())
@@ -216,7 +235,7 @@ public class JIPipeRun implements JIPipeRunnable {
                         "Pipeline run", "You clicked 'Cancel'.",
                         "Do not click 'Cancel' if you do not want to cancel the execution.");
             JIPipeDataSlot slot = traversedSlots.get(index);
-            progress.setProgress(index, traversedSlots.size());
+            progress.setProgress(index + preprocessorNodes.size(), traversedSlots.size());
             progress.log(slot.getDisplayName());
 
             // If an algorithm cannot be executed, skip it automatically
@@ -258,7 +277,7 @@ public class JIPipeRun implements JIPipeRunnable {
         progress.setMaxProgress(progress.getProgress() + additionalAlgorithms.size());
         for (int index = 0; index < additionalAlgorithms.size(); index++) {
             JIPipeGraphNode node = additionalAlgorithms.get(index);
-            int absoluteIndex = index + traversedSlots.size() - 1;
+            int absoluteIndex = index + preprocessorNodes.size() + traversedSlots.size() - 1;
             progress.setProgress(absoluteIndex);
             JIPipeProgressInfo subProgress = progress.resolve("Algorithm: " + node.getName());
             runNode(executedAlgorithms, node, subProgress);
