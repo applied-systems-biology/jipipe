@@ -15,18 +15,37 @@ package org.hkijena.jipipe.extensions.plots.datatypes;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.eventbus.EventBus;
 import ij.measure.ResultsTable;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
+import org.hkijena.jipipe.utils.JsonUtils;
 
+import java.io.IOException;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * A data series (table) that is rendered as plot series
  */
+@JsonSerialize(using = PlotDataSeries.Serializer.class)
+@JsonDeserialize(using = PlotDataSeries.Deserializer.class)
 public class PlotDataSeries extends ResultsTableData implements JIPipeParameterCollection {
 
     private EventBus eventBus = new EventBus();
@@ -109,5 +128,24 @@ public class PlotDataSeries extends ResultsTableData implements JIPipeParameterC
 
     public static PlotDataSeries importFrom(Path storageFolder) {
         return new PlotDataSeries(ResultsTableData.importFrom(storageFolder).getTable());
+    }
+
+    public static class Serializer extends JsonSerializer<PlotDataSeries> {
+        @Override
+        public void serialize(PlotDataSeries resultsTableData, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
+            jsonGenerator.writeStartObject();
+            jsonGenerator.writeObjectField("name", resultsTableData.name);
+            jsonGenerator.writeEndObject();
+        }
+    }
+
+    public static class Deserializer extends JsonDeserializer<PlotDataSeries> {
+        @Override
+        public PlotDataSeries deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
+            JsonNode node = jsonParser.readValueAsTree();
+            PlotDataSeries resultsTableData = new PlotDataSeries();
+            resultsTableData.name = node.get("name").asText();
+            return resultsTableData;
+        }
     }
 }

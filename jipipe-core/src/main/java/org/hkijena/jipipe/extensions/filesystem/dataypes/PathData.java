@@ -17,6 +17,7 @@ import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
@@ -47,7 +48,7 @@ public class PathData implements JIPipeData {
     }
 
     @Override
-    public void saveTo(Path storageFilePath, String name, boolean forceName) {
+    public void saveTo(Path storageFilePath, String name, boolean forceName, JIPipeProgressInfo progress) {
         Path jsonFile = storageFilePath.resolve(name + ".json");
         try {
             JsonUtils.getObjectMapper().writerWithDefaultPrettyPrinter().writeValue(jsonFile.toFile(), this);
@@ -94,7 +95,7 @@ public class PathData implements JIPipeData {
      * @param path The path
      */
     @JsonSetter("path")
-    private void setPath(Path path) {
+    public void setPath(Path path) {
         this.path = path;
     }
 

@@ -56,6 +56,7 @@ import ome.xml.model.enums.PixelType;
 import ome.xml.model.primitives.PositiveInteger;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeHeavyData;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyNullPointerException;
@@ -119,7 +120,7 @@ public class OMEImageData implements JIPipeData {
     }
 
     @Override
-    public void saveTo(Path storageFilePath, String name, boolean forceName) {
+    public void saveTo(Path storageFilePath, String name, boolean forceName, JIPipeProgressInfo progress) {
         OMEExport(this, storageFilePath.resolve(name + ".ome.tif"), exporterSettings);
     }
 

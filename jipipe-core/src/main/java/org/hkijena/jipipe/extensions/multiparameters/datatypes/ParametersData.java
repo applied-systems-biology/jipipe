@@ -19,6 +19,7 @@ import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
@@ -43,7 +44,7 @@ public class ParametersData implements JIPipeData {
     private Map<String, Object> parameterData = new HashMap<>();
 
     @Override
-    public void saveTo(Path storageFilePath, String name, boolean forceName) {
+    public void saveTo(Path storageFilePath, String name, boolean forceName, JIPipeProgressInfo progress) {
         try {
             JsonUtils.getObjectMapper().writerWithDefaultPrettyPrinter()
                     .writeValue(storageFilePath.resolve(name + ".json").toFile(), this);

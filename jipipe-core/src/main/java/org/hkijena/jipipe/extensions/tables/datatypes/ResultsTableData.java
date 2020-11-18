@@ -27,6 +27,7 @@ import gnu.trove.map.hash.TIntIntHashMap;
 import ij.macro.Variable;
 import ij.measure.ResultsTable;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.extensions.tables.ConvertingColumnOperation;
@@ -383,7 +384,7 @@ public class ResultsTableData implements JIPipeData, TableModel {
     }
 
     @Override
-    public void saveTo(Path storageFilePath, String name, boolean forceName) {
+    public void saveTo(Path storageFilePath, String name, boolean forceName, JIPipeProgressInfo progress) {
         try {
             table.saveAs(storageFilePath.resolve(name + ".csv").toString());
         } catch (IOException e) {

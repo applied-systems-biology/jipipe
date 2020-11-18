@@ -32,6 +32,7 @@ import ij.process.FloatPolygon;
 import ij.process.ImageProcessor;
 import ij.process.LUT;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.RoiOutline;
@@ -122,7 +123,7 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
     }
 
     @Override
-    public void saveTo(Path storageFilePath, String name, boolean forceName) {
+    public void saveTo(Path storageFilePath, String name, boolean forceName, JIPipeProgressInfo progress) {
         // Code adapted from ImageJ RoiManager class
         if (size() == 1) {
             try {

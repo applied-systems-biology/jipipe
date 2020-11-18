@@ -70,7 +70,7 @@ public class ExportData extends JIPipeIteratingAlgorithm {
         if (StringUtils.isNullOrEmpty(name))
             name = "unnamed";
 
-        dataBatch.getInputData("Data", JIPipeData.class).saveTo(outputFolder, name, true);
+        dataBatch.getInputData("Data", JIPipeData.class).saveTo(outputFolder, name, true, progress);
     }
 }
 

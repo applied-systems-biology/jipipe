@@ -25,6 +25,7 @@ import ij.measure.ResultsTable;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeHidden;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeValidatable;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeData;
@@ -115,7 +116,7 @@ public abstract class PlotData implements JIPipeData, JIPipeParameterCollection,
     }
 
     @Override
-    public void saveTo(Path storageFilePath, String name, boolean forceName) {
+    public void saveTo(Path storageFilePath, String name, boolean forceName, JIPipeProgressInfo progress) {
         // Export metadata
         try {
             if (!forceName) {
@@ -134,9 +135,9 @@ public abstract class PlotData implements JIPipeData, JIPipeParameterCollection,
         // Export series
         for (int i = 0; i < series.size(); ++i) {
             if (forceName) {
-                series.get(i).saveTo(storageFilePath, name + "_" + "series" + i, forceName);
+                series.get(i).saveTo(storageFilePath, name + "_" + "series" + i, forceName, progress);
             } else {
-                series.get(i).saveTo(storageFilePath, "series" + i, forceName);
+                series.get(i).saveTo(storageFilePath, "series" + i, forceName, progress);
             }
         }
 

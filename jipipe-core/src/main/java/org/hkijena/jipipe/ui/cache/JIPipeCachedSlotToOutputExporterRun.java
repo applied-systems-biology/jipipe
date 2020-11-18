@@ -59,7 +59,7 @@ public class JIPipeCachedSlotToOutputExporterRun extends JIPipeWorkbenchPanel im
         info.setMaxProgress(slots.size());
         for (int i = 0; i < slots.size(); i++) {
             info.setProgress(i);
-            info.resolveAndLog("Slot", i, slots.size());
+            JIPipeProgressInfo slotProgress = info.resolveAndLog("Slot", i, slots.size());
             JIPipeDataSlot slot = slots.get(i);
             Path targetPath = outputPath;
             if (splitBySlot) {
@@ -70,7 +70,7 @@ public class JIPipeCachedSlotToOutputExporterRun extends JIPipeWorkbenchPanel im
                 if (!Files.isDirectory(targetPath))
                     Files.createDirectories(targetPath);
                 slot.setStoragePath(targetPath);
-                slot.save(null);
+                slot.save(null, slotProgress);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             } finally {

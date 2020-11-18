@@ -253,7 +253,7 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
         String metadataString = generateMetadataString(dataSlot, row, existingMetadata);
         JIPipeData data = dataSlot.getData(row, JIPipeData.class);
         progress.log("Saving " + data + " as " + metadataString + " into " + outputPath);
-        data.saveTo(outputPath, metadataString, true);
+        data.saveTo(outputPath, metadataString, true, progress);
     }
 
     /**

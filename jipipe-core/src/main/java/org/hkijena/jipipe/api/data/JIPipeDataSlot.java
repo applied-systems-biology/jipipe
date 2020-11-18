@@ -15,6 +15,7 @@ package org.hkijena.jipipe.api.data;
 
 import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
@@ -313,17 +314,17 @@ public class JIPipeDataSlot implements TableModel {
     /**
      * Saves the stored data to the provided storage path and sets data to null
      * Warning: Ensure that depending input slots do not use this slot, anymore!
-     *
-     * @param basePath    the base path to where all results are stored relative to. If null, there is no base path
+     *  @param basePath    the base path to where all results are stored relative to. If null, there is no base path
      * @param destroyData the the containing data should be destroyed
+     * @param saveProgress progress that reports the saving
      */
-    public void flush(Path basePath, boolean destroyData) {
+    public void flush(Path basePath, boolean destroyData, JIPipeProgressInfo saveProgress) {
         if (getNode() instanceof JIPipeAlgorithm) {
             if (((JIPipeAlgorithm) getNode()).isSaveOutputs()) {
-                save(basePath);
+                save(basePath, saveProgress);
             }
         } else {
-            save(basePath);
+            save(basePath, saveProgress);
         }
         for (int i = 0; i < data.size(); ++i) {
             if (destroyData)
@@ -393,13 +394,15 @@ public class JIPipeDataSlot implements TableModel {
      * Saves the data to the storage path
      *
      * @param basePath the base path to where all results are stored relative to. If null, there is no base path
+     * @param saveProgress the progress for saving
      */
-    public void save(Path basePath) {
+    public void save(Path basePath, JIPipeProgressInfo saveProgress) {
         if (isOutput() && storagePath != null && data != null) {
 
             // Save data
             List<Integer> indices = new ArrayList<>();
             for (int row = 0; row < getRowCount(); ++row) {
+                JIPipeProgressInfo rowProgress = saveProgress.resolveAndLog("Row", row, getRowCount());
                 Path path = storagePath.resolve("" + row);
                 if (!Files.isDirectory(path)) {
                     try {
@@ -412,7 +415,7 @@ public class JIPipeDataSlot implements TableModel {
                 }
 
                 indices.add(row);
-                data.get(row).saveTo(path, getName(), false);
+                data.get(row).saveTo(path, getName(), false, rowProgress);
             }
 
             JIPipeExportedDataTable dataTable = new JIPipeExportedDataTable(this, basePath, indices);

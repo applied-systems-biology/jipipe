@@ -141,8 +141,8 @@ public class JIPipeRun implements JIPipeRunnable {
                 project.getCache().store(projectAlgorithm, stateId, outputSlot);
             }
             if (configuration.isSaveOutputs()) {
-                progress.log(String.format("Saving data in slot %s (contains %d rows of type %s)", outputSlot.getDisplayName(), outputSlot.getRowCount(), JIPipeDataInfo.getInstance(outputSlot.getAcceptedDataType()).getName()));
-                outputSlot.flush(configuration.getOutputPath(), !configuration.isStoreToCache());
+                JIPipeProgressInfo saveProgress = progress.resolveAndLog(String.format("Saving data in slot '%s' (data type %s)", outputSlot.getDisplayName(), JIPipeDataInfo.getInstance(outputSlot.getAcceptedDataType()).getName()));
+                outputSlot.flush(configuration.getOutputPath(), !configuration.isStoreToCache(), saveProgress);
             } else {
                 outputSlot.clearData(false);
             }

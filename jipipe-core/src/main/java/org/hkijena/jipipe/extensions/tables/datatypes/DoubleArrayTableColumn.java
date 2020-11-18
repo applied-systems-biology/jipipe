@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.extensions.tables.datatypes;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.extensions.tables.MutableTableColumn;
@@ -93,9 +94,9 @@ public class DoubleArrayTableColumn implements MutableTableColumn {
     }
 
     @Override
-    public void saveTo(Path storageFilePath, String name, boolean forceName) {
+    public void saveTo(Path storageFilePath, String name, boolean forceName, JIPipeProgressInfo progress) {
         ResultsTableData resultsTableData = new ResultsTableData(Collections.singletonList(this));
-        resultsTableData.saveTo(storageFilePath, name, forceName);
+        resultsTableData.saveTo(storageFilePath, name, forceName, progress);
     }
 
     @Override

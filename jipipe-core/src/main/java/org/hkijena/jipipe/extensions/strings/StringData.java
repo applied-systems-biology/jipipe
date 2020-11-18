@@ -16,6 +16,7 @@ package org.hkijena.jipipe.extensions.strings;
 import com.google.common.base.Charsets;
 import org.apache.commons.lang.CharSetUtils;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
@@ -44,7 +45,7 @@ public class StringData implements JIPipeData {
     }
 
     @Override
-    public void saveTo(Path storageFilePath, String name, boolean forceName) {
+    public void saveTo(Path storageFilePath, String name, boolean forceName, JIPipeProgressInfo progress) {
         try (FileWriter writer = new FileWriter(storageFilePath.resolve(name + getOutputExtension()).toFile())) {
             writer.write(data);
         } catch (IOException e) {
