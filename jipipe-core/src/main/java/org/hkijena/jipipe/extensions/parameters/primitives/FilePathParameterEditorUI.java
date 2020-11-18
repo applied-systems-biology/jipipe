@@ -55,6 +55,7 @@ public class FilePathParameterEditorUI extends JIPipeParameterEditorUI {
         if (settings != null) {
             pathEditor.setIoMode(settings.ioMode());
             pathEditor.setPathMode(settings.pathMode());
+            pathEditor.setExtensionFilters(settings.extensions());
         }
 
         pathEditor.setPath(getParameterAccess().get(Path.class));

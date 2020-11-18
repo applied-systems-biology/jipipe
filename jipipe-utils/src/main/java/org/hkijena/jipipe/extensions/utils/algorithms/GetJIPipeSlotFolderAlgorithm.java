@@ -101,7 +101,7 @@ public class GetJIPipeSlotFolderAlgorithm extends JIPipeSimpleIteratingAlgorithm
         this.slotName = slotName;
     }
 
-    @JIPipeContextAction(iconURL =  ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/folder-open.png")
+    @JIPipeContextAction(iconURL =  ResourceUtils.RESOURCE_BASE_PATH + "/icons/apps/jipipe.png")
     @JIPipeDocumentation(name = "Set output slot", description = "Loads parameters from a project file")
     public void importParametersFromProject(JIPipeWorkbench workbench) {
         Path projectFile = FileChooserSettings.openFile(workbench.getWindow(), FileChooserSettings.KEY_PROJECT, "Import JIPipe project", UIUtils.EXTENSION_FILTER_JIP);

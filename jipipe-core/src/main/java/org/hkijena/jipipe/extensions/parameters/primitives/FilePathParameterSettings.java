@@ -35,4 +35,10 @@ public @interface FilePathParameterSettings {
      * @return If the path should be a file, directory or anything
      */
     PathEditor.PathMode pathMode();
+
+    /**
+     *
+     * @return File extensions that should be preferred
+     */
+    String[] extensions() default {};
 }

@@ -472,6 +472,20 @@ public class JIPipeParameterTree implements JIPipeParameterCollection, JIPipeCus
     }
 
     /**
+     * Removes a parameter by key
+     * @param key the key
+     */
+    public void removeParameterByKey(String key) {
+        JIPipeParameterAccess access = parameters.getOrDefault(key, null);
+        if(access != null) {
+            parameters.remove(key);
+            for (Node node : nodeMap.values()) {
+                node.getParameters().inverse().remove(access);
+            }
+        }
+    }
+
+    /**
      * Accesses the parameters of a collection
      *
      * @param collection the collection

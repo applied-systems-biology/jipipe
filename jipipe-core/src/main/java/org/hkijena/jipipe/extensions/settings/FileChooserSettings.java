@@ -488,14 +488,15 @@ public class FileChooserSettings implements JIPipeParameterCollection {
      * @param title    dialog title
      * @param ioMode   whether to load or save
      * @param pathMode which types of paths are returned
+     * @param  extensionFilters passed if a file is opened/saved
      * @return selected path of provided pathMode or null if dialog was cancelled
      */
-    public static Path selectSingle(Component parent, String key, String title, PathEditor.IOMode ioMode, PathEditor.PathMode pathMode) {
+    public static Path selectSingle(Component parent, String key, String title, PathEditor.IOMode ioMode, PathEditor.PathMode pathMode, FileNameExtensionFilter... extensionFilters) {
         Path selected;
         if (ioMode == PathEditor.IOMode.Open) {
             switch (pathMode) {
                 case FilesOnly:
-                    selected = FileChooserSettings.openFile(parent, key, title);
+                    selected = FileChooserSettings.openFile(parent, key, title, extensionFilters);
                     break;
                 case DirectoriesOnly:
                     selected = FileChooserSettings.openDirectory(parent, key, title);
@@ -509,7 +510,7 @@ public class FileChooserSettings implements JIPipeParameterCollection {
         } else {
             switch (pathMode) {
                 case FilesOnly:
-                    selected = FileChooserSettings.saveFile(parent, key, title);
+                    selected = FileChooserSettings.saveFile(parent, key, title, extensionFilters);
                     break;
                 case DirectoriesOnly:
                     selected = FileChooserSettings.saveDirectory(parent, key, title);

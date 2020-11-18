@@ -24,6 +24,7 @@ import org.hkijena.jipipe.extensions.utils.algorithms.ConverterAlgorithm;
 import org.hkijena.jipipe.extensions.utils.algorithms.GetJIPipeSlotFolderAlgorithm;
 import org.hkijena.jipipe.extensions.utils.algorithms.ImportJIPipeSlotFolderAlgorithm;
 import org.hkijena.jipipe.extensions.utils.algorithms.JIPipeProjectParameterDefinition;
+import org.hkijena.jipipe.extensions.utils.algorithms.PathsToJIPipeProjectParametersAlgorithm;
 import org.hkijena.jipipe.extensions.utils.algorithms.RunJIPipeProjectAlgorithm;
 import org.hkijena.jipipe.extensions.utils.algorithms.SortRowsAlgorithm;
 import org.hkijena.jipipe.extensions.utils.datatypes.JIPipeOutputData;
@@ -58,6 +59,7 @@ public class UtilitiesExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerNodeType("sort-rows-by-annotation", SortRowsAlgorithm.class, UIUtils.getIconURLFromResources("actions/sort-name.png"));
         registerNodeType("jipipe-run-project", RunJIPipeProjectAlgorithm.class, UIUtils.getIconURLFromResources("actions/run-build.png"));
         registerNodeType("jipipe-project-parameters", JIPipeProjectParameterDefinition.class, UIUtils.getIconURLFromResources("apps/jipipe.png"));
+        registerNodeType("jipipe-project-parameters-from-paths", PathsToJIPipeProjectParametersAlgorithm.class, UIUtils.getIconURLFromResources("apps/jipipe.png"));
         registerNodeType("jipipe-output-get-slot-folder", GetJIPipeSlotFolderAlgorithm.class, UIUtils.getIconURLFromResources("actions/find.png"));
         registerNodeType("jipipe-output-import-slot-folder", ImportJIPipeSlotFolderAlgorithm.class, UIUtils.getIconURLFromResources("actions/document-import.png"));
     }

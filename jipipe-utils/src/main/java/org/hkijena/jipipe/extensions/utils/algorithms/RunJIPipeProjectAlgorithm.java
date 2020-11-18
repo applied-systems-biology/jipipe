@@ -161,7 +161,7 @@ public class RunJIPipeProjectAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @JIPipeDocumentation(name = "Project file", description = "The project file")
-    @FilePathParameterSettings(pathMode = PathEditor.PathMode.FilesOnly, ioMode = PathEditor.IOMode.Open)
+    @FilePathParameterSettings(pathMode = PathEditor.PathMode.FilesOnly, ioMode = PathEditor.IOMode.Open, extensions = { "jip" })
     @JIPipeParameter("project-file")
     public Path getProjectFile() {
         return projectFile;

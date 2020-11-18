@@ -20,6 +20,7 @@ import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -27,7 +28,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -41,6 +44,7 @@ public class PathEditor extends JPanel {
     private PathMode pathMode;
     private Set<ActionListener> listeners = new HashSet<>();
     private JButton generateRandomButton;
+    private List<FileNameExtensionFilter> extensionFilters = new ArrayList<>();
 
     /**
      * Creates a new file selection that opens a file
@@ -125,7 +129,8 @@ public class PathEditor extends JPanel {
                 FileChooserSettings.KEY_PARAMETER,
                 "Change current value",
                 ioMode,
-                pathMode);
+                pathMode,
+                extensionFilters.toArray(new FileNameExtensionFilter[0]));
         if (selected != null)
             pathEdit.setText(selected.toString());
     }
@@ -139,7 +144,13 @@ public class PathEditor extends JPanel {
     }
 
     public Path getPath() {
-        return Paths.get(pathEdit.getText());
+        try {
+            return Paths.get(pathEdit.getText());
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            return Paths.get("");
+        }
     }
 
     public void setPath(Path path) {
@@ -189,6 +200,43 @@ public class PathEditor extends JPanel {
 
     public void setPathMode(PathMode pathMode) {
         this.pathMode = pathMode;
+    }
+
+    public List<FileNameExtensionFilter> getExtensionFilters() {
+        return extensionFilters;
+    }
+
+    public void setExtensionFilters(List<FileNameExtensionFilter> extensionFilters) {
+        this.extensionFilters = extensionFilters;
+    }
+
+
+    public void setExtensionFilters(String[] extensions) {
+        extensionFilters.clear();
+        for (String extension : extensions) {
+            if("csv".equals(extension))
+                extensionFilters.add(UIUtils.EXTENSION_FILTER_CSV);
+            else if ("png".equals(extension))
+                extensionFilters.add(UIUtils.EXTENSION_FILTER_PNG);
+            else if ("svg".equals(extension))
+                extensionFilters.add(UIUtils.EXTENSION_FILTER_SVG);
+            else if ("md".equals(extension))
+                extensionFilters.add(UIUtils.EXTENSION_FILTER_MD);
+            else if ("pdf".equals(extension))
+                extensionFilters.add(UIUtils.EXTENSION_FILTER_PDF);
+            else if ("html".equals(extension))
+                extensionFilters.add(UIUtils.EXTENSION_FILTER_HTML);
+            else if ("jpeg".equals(extension))
+                extensionFilters.add(UIUtils.EXTENSION_FILTER_JPEG);
+            else if ("jip".equals(extension))
+                extensionFilters.add(UIUtils.EXTENSION_FILTER_JIP);
+            else if ("jipe".equals(extension))
+                extensionFilters.add(UIUtils.EXTENSION_FILTER_JIPE);
+            else if ("jipc".equals(extension))
+                extensionFilters.add(UIUtils.EXTENSION_FILTER_JIPC);
+            else
+                extensionFilters.add(new FileNameExtensionFilter(extension.toUpperCase() + " file (*." + extension + ")", extension ));
+        }
     }
 
     /**

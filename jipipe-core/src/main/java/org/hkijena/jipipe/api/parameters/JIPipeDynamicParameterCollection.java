@@ -116,12 +116,16 @@ public class JIPipeDynamicParameterCollection implements JIPipeCustomParameterCo
      * The parameterHolder attribute is changed
      *
      * @param parameterAccess the parameter
-     * @return the parameter access
+     * @return the parameter access or null if it was cancelled
      */
     public JIPipeMutableParameterAccess addParameter(JIPipeMutableParameterAccess parameterAccess) {
         if (dynamicParameters.containsKey(parameterAccess.getKey()))
             throw new IllegalArgumentException("Parameter with key " + parameterAccess.getKey() + " already exists!");
         parameterAccess.setParameterHolder(this);
+        ParameterAddingEvent event = new ParameterAddingEvent(this, parameterAccess);
+        eventBus.post(event);
+        if(event.isCancel())
+            return null;
         dynamicParameters.put(parameterAccess.getKey(), parameterAccess);
         if (!delayEvents)
             getEventBus().post(new ParameterStructureChangedEvent(this));
@@ -365,6 +369,33 @@ public class JIPipeDynamicParameterCollection implements JIPipeCustomParameterCo
 
         public Class<?> getFieldClass() {
             return fieldClass;
+        }
+    }
+
+    public static class ParameterAddingEvent {
+        private final JIPipeDynamicParameterCollection parameterCollection;
+        private final JIPipeMutableParameterAccess access;
+        private boolean cancel;
+
+        public ParameterAddingEvent(JIPipeDynamicParameterCollection parameterCollection, JIPipeMutableParameterAccess access) {
+            this.parameterCollection = parameterCollection;
+            this.access = access;
+        }
+
+        public JIPipeDynamicParameterCollection getParameterCollection() {
+            return parameterCollection;
+        }
+
+        public JIPipeMutableParameterAccess getAccess() {
+            return access;
+        }
+
+        public boolean isCancel() {
+            return cancel;
+        }
+
+        public void setCancel(boolean cancel) {
+            this.cancel = cancel;
         }
     }
 }
