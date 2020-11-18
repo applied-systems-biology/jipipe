@@ -179,7 +179,7 @@ To define parameters, use the algorithms found in Add data &amp;gt; Parameters. 
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://www.jipipe.org/documentation-java-api/data-type/result-preview/</guid>
-      <description>While JIPipeData allows you to define a function for previewing, this only works for data already present in memory. To allow previewing of data stored in a results folder, you need to suppy a JIPipeResultDataSlotPreviewUI that loads the data from disk and generates a preview. We recommend to use JIPipeAsyncResultDataPlotPreviewUI, which only requires you to supply a method for loading the data from disk. This class will offload the loading and preview generation into a separate thread to prevent the UI from freezing.</description>
+      <description>While JIPipeData allows you to define a custom function for previewing, this only works for data already present in memory. To allow previewing of data stored in a results folder, you need to suppy a JIPipeResultDataSlotPreviewUI that loads the data from disk and generates a preview. We recommend to use JIPipeAsyncResultDataPlotPreviewUI This class will offload the loading and preview generation into a separate thread to prevent the UI from freezing. By default it will use the already defined importFrom(Path) method present in the JIPipeData class and use its already defined preview function.</description>
     </item>
     
     <item>

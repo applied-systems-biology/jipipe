@@ -139,6 +139,8 @@ org.hkijena.jipipe.extensions.tables.parameters.processors
 org.hkijena.jipipe.extensions.tools
 org.hkijena.jipipe.extensions.utils
 org.hkijena.jipipe.extensions.utils.algorithms
+org.hkijena.jipipe.extensions.utils.datatypes
+org.hkijena.jipipe.extensions.utils.display
 org.hkijena.jipipe.installer.linux
 org.hkijena.jipipe.installer.linux.api
 org.hkijena.jipipe.installer.linux.ui

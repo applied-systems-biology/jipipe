@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2020-11-17T15:39:46 CET">
+<meta name="revised" content="2020-11-18T11:03:20 CET">
 <title>Creating a data type :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../images/favicon.png" type="image/x-icon" />
 <link href="../../css/font-awesome.min.css" rel="stylesheet">
@@ -514,9 +514,12 @@
 <p>Custom JIPipe data types must inherit from <a href="../../apidocs/org/hkijena/jipipe/api/data/JIPipeData.html">JIPipeData</a>. It is required to add an <a href="../../apidocs/org/hkijena/jipipe/api/JIPipeDocumentation.html">@JIPipeDocumentation</a> annotation that provides a name and brief description of the data type.</p>
 <p>JIPipe requires that data can be saved to a folder within the output directory. We also
 recommend that you include code that can load the data back into JIPipe or ImageJ in some form.</p>
-<p>There are no requirements on the constructor of the data type.</p>
+<p>There are no requirements on the constructor of the data type.
+The only requirement is that there is a function <code>importFrom(Path)</code> that imports <code>JIPipeData</code> from a row storage folder.</p>
 <p>The folder that is provided in <code>storageFilePath</code> is unique to the data and empty.
-The name parameter in <code>storageFilePath</code> is usually the data slot name and can be used as template for file names or ignored.</p>
+The name parameter in <code>storageFilePath</code> is usually the data slot name and can be used as template for file names. It can be ignored <strong>undless</strong> <code>forceName</code> is true.
+The reason behind this is that then the name is pre-generated in a unique way for saving the data at a non-standard location (e.g. exporting the data).
+In such cases <strong>all file or folder names</strong> within the storage path should contain the name in some way, <strong>even if the import function cannot load the exported data anymore</strong>.</p>
 <p>There are two optional functions that you can override:</p>
 <ul>
 <li><code>display()</code> shows the data in ImageJ, JIPipe, or any other GUI</li>
@@ -572,7 +575,7 @@ The name parameter in <code>storageFilePath</code> is usually the data slot name
    <span style="color:#f92672">}</span>
 
     <span style="color:#75af00">@Override</span>
-    <span style="color:#00a8c8">public</span> <span style="color:#00a8c8">void</span> <span style="color:#75af00">saveTo</span><span style="color:#f92672">(</span><span style="color:#111">Path</span> <span style="color:#111">storageFilePath</span><span style="color:#f92672">,</span> <span style="color:#111">String</span> <span style="color:#111">name</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    <span style="color:#00a8c8">public</span> <span style="color:#00a8c8">void</span> <span style="color:#75af00">saveTo</span><span style="color:#f92672">(</span><span style="color:#111">Path</span> <span style="color:#111">storageFilePath</span><span style="color:#f92672">,</span> <span style="color:#111">String</span> <span style="color:#111">name</span><span style="color:#f92672">,</span> <span style="color:#00a8c8">boolean</span> <span style="color:#111">forceName</span><span style="color:#f92672">,</span> <span style="color:#111">JIPipeProgressInfo</span> <span style="color:#111">progress</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
         <span style="color:#00a8c8">try</span> <span style="color:#f92672">{</span>
             <span style="color:#111">JsonUtils</span><span style="color:#f92672">.</span><span style="color:#75af00">getObjectMapper</span><span style="color:#f92672">().</span><span style="color:#75af00">writeValue</span><span style="color:#f92672">(</span><span style="color:#111">storageFilePath</span><span style="color:#f92672">.</span><span style="color:#75af00">resolve</span><span style="color:#f92672">(</span><span style="color:#111">name</span> <span style="color:#f92672">+</span> <span style="color:#d88200">&#34;.json&#34;</span><span style="color:#f92672">).</span><span style="color:#75af00">toFile</span><span style="color:#f92672">(),</span> <span style="color:#00a8c8">this</span><span style="color:#f92672">);</span>
         <span style="color:#f92672">}</span>
@@ -591,6 +594,12 @@ The name parameter in <code>storageFilePath</code> is usually the data slot name
       <span style="color:#f92672">}</span>
     <span style="color:#f92672">}</span>
 
+    <span style="color:#75715e">// Do not forget to add this method or JIPipe will refuse to start
+</span><span style="color:#75715e"></span>    <span style="color:#00a8c8">public</span> <span style="color:#00a8c8">static</span> <span style="color:#111">MyData</span> <span style="color:#75af00">importFrom</span><span style="color:#f92672">(</span><span style="color:#111">Path</span> <span style="color:#111">rowStorageFolder</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#75715e">// You can use the PathUtils
+</span><span style="color:#75715e"></span>        <span style="color:#111">Path</span> <span style="color:#111">targetFile</span> <span style="color:#f92672">=</span> <span style="color:#111">PathUtils</span><span style="color:#f92672">.</span><span style="color:#75af00">findFileByExtensionIn</span><span style="color:#f92672">(</span><span style="color:#111">storageFilePath</span><span style="color:#f92672">,</span> <span style="color:#d88200">&#34;.json&#34;</span><span style="color:#f92672">);</span>
+        <span style="color:#00a8c8">return</span> <span style="color:#111">fromJson</span><span style="color:#f92672">(</span><span style="color:#111">targetFile</span><span style="color:#f92672">);</span>
+    <span style="color:#f92672">}</span>
 <span style="color:#f92672">}</span>
 </code></pre></div>
 <div class="notices tip" ><p><p>You can use JIPipe&rsquo;s JsonUtils class to get access to a Jackson JSON ObjectMapper.</p>
