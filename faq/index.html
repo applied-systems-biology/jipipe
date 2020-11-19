@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2020-11-18T11:03:20 CET">
+<meta name="revised" content="2020-11-19T11:18:53 CET">
 <title>Frequently asked questions :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../images/favicon.png" type="image/x-icon" />
 <link href="../css/font-awesome.min.css" rel="stylesheet">
@@ -515,6 +515,81 @@ all dependency nodes via <em>Update cache</em> or <em>Quick run</em>.
 Groups are independent pipelines that are not aware where they are used. You can only extract the
 final outputs, not intermediate steps.</p>
 <h1 id="data-processing">Data processing</h1>
+<h2 id="what-happens-if-i-put-multiple-inputs-into-a-slot">What happens if I put multiple inputs into a slot?</h2>
+<p>Because each slot holds a table of data and metadata, those tables are merged row-wise.</p>
+<div class="expand">
+    <div class="expand-label" style="cursor: pointer;" onclick="$h = $(this);$h.next('div').slideToggle(100,function () {$h.children('i').attr('class',function () {return $h.next('div').is(':visible') ? 'fa fa-chevron-down' : 'fa fa-chevron-right';});});">
+        <i style="font-size:x-small;" class="fa fa-chevron-right"></i>
+        Show example
+    </div>
+    <div class="expand-content" style="display: none;">
+      <table>
+        <thead>
+          <tr>
+            <th>Data</th>
+          </tr>
+        </thead>
+        <tbody>
+        <tr>
+          <td>C1_1</td>
+        </tr>
+        <tr>
+          <td>C1_2</td>
+        </tr>
+        <tr>
+          <td>C1_3</td>
+        </tr>
+        </tbody>
+      </table>
+      <div>and</div>
+      <table>
+        <thead>
+          <tr>
+            <th>Data</th>
+          </tr>
+        </thead>
+        <tbody>
+        <tr>
+          <td>C1_4</td>
+        </tr>
+        <tr>
+          <td>C1_5</td>
+        </tr>
+        <tr>
+          <td>C1_6</td>
+        </tr>
+        </tbody>
+      </table>
+      <div>are merged into</div>
+      <table>
+        <thead>
+          <tr>
+            <th>Data</th>
+          </tr>
+        </thead>
+        <tbody>
+        <tr>
+          <td>C1_1</td>
+        </tr>
+        <tr>
+          <td>C1_2</td>
+        </tr>
+        <tr>
+          <td>C1_3</td>
+        </tr>
+        <tr>
+          <td>C1_4</td>
+        </tr>
+        <tr>
+          <td>C1_5</td>
+        </tr>
+        <tr>
+          <td>C1_6</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+</div>
 <h2 id="why-should-i-care-to-add-those-annotations">Why should I care to add those annotations?</h2>
 <p>Annotations are optional for single data analyses or pipelines without multi-input nodes, but helpful anyways.
 They will allow you to quickly find out from which data set your data was generated.</p>
@@ -723,6 +798,18 @@ macros and the GUI.</p>
 <p>JIPipe has a very general data model that makes it possible to develop pipelines for processing <strong>any</strong> kind of data.
 The communication between JIPipe&rsquo;s data types and ImageJ is handled by adaptors that will handle the &ldquo;translation&rdquo; back &amp; forth.
 For some of such data types, there is no adaptor. The reason behind this is that ImageJ might not have an equivalent data type or feature.</p>
+<h1 id="performance">Performance</h1>
+<h2 id="how-does-jipipe-store-its-data-during-the-analysis">How does JIPipe store its data during the analysis?</h2>
+<p>JIPipe stores all necessary inputs and the outputs of each processing step. This means that any kind of large data set will be loaded into the memory at the
+same time if you set up an iteration.</p>
+<p>For example, an <code>Import image</code> step will load <strong>all</strong> the images and then continue with the next steps.</p>
+<h2 id="i-have-a-very-large-data-set-how-can-i-prevent-loading-it-at-the-same-time">I have a very large data set. How can I prevent loading it at the same time?</h2>
+<p>You can run JIPipe projects within other JIPipe projects. This will separate them and into individual runs that are iterated one-by-one.
+JIPipe comes with nodes to extract specific results from those outputs.</p>
+<p>Create the analysis for only one data set and export project-wide parameters via its project settings. Those parameters will be later modified and should contain anything you need for the project setup.
+Save it into a <code>*.jip</code> project.</p>
+<p>Then create a separate project and add the nodes <code>Run JIPipe project</code> and <code>Define JIPipe project parameters</code>.
+In both nodes, you load the main analysis projects.</p>
 <h1 id="result-analysis">Result analysis</h1>
 <h2 id="can-i-open-a-table-in-imagej-instead-of-jipipe-or-vice-versa">Can I open a table in ImageJ instead of JIPipe or vice versa?</h2>
 <p>Yes, and even more: Depending on the data type there are multiple options on displaying data available.
