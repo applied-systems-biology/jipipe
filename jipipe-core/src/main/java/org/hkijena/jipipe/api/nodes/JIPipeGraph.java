@@ -714,15 +714,15 @@ public class JIPipeGraph implements JIPipeValidatable {
                 System.err.println("Unable to find data slot '" + targetSlotName + "' in algorithm '" + targetAlgorithmName + "'. Skipping this instruction.");
                 continue;
             }
-            if (!graph.containsEdge(source, target) && graph.inDegreeOf(target) > 0) {
-                issues.forCategory("Edges").forCategory("Validation").forCategory(sourceAlgorithmName).reportIsInvalid("Invalid edge found!",
-                        "The JSON data requested to create an edge between the nodes '" + sourceAlgorithmName + "' and '" + targetAlgorithmName + "', but the edge is invalid.",
-                        "Please check the JSON data manually or ignore this error.",
-                        node);
-                System.err.println("Detected invalid edge from " + source.getNode().getIdInGraph() + "/" + source.getName() + " -> "
-                        + target.getNode().getIdInGraph() + "/" + target.getName() + "! Input slot already has a source. Skipping this instruction.");
-                continue;
-            }
+//            if (!graph.containsEdge(source, target) && graph.inDegreeOf(target) > 0) {
+//                issues.forCategory("Edges").forCategory("Validation").forCategory(sourceAlgorithmName).reportIsInvalid("Invalid edge found!",
+//                        "The JSON data requested to create an edge between the nodes '" + sourceAlgorithmName + "' and '" + targetAlgorithmName + "', but the edge is invalid.",
+//                        "Please check the JSON data manually or ignore this error.",
+//                        node);
+//                System.err.println("Detected invalid edge from " + source.getNode().getIdInGraph() + "/" + source.getName() + " -> "
+//                        + target.getNode().getIdInGraph() + "/" + target.getName() + "! Input slot already has a source. Skipping this instruction.");
+//                continue;
+//            }
             if (!graph.containsEdge(source, target))
                 connect(source, target);
             JsonNode metadataNode = edgeNode.path("metadata");
