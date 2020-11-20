@@ -41,12 +41,10 @@ public class PathFilterExpressionParameterVariableSource implements ExpressionPa
         return VARIABLES;
     }
 
-    public static StaticVariableSet<Object> buildFor(Path path) {
-        StaticVariableSet<Object> result = new StaticVariableSet<>();
+    public static void buildFor(Path path, StaticVariableSet<Object> result) {
         result.set("path", path.toString());
         result.set("absolute_path", path.toAbsolutePath().toString());
         result.set("name", path.getFileName().toString());
         result.set("parent", path.getParent().toString());
-        return result;
     }
 }

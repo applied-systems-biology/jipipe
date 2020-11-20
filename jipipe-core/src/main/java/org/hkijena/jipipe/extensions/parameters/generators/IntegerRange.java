@@ -36,6 +36,9 @@ import java.util.List;
  * Spaces are ignored. Negative values must be enclosed in brackets
  */
 public class IntegerRange {
+
+    public static final String DOCUMENTATION_DESCRIPTION = "The format is the following: [range];[range];... with [range] either being a single integer or a range [from]-[to] (both inclusive). Negative values must be enclosed in parentheses. Example: 0-5;1;(-1)-10";
+
     private String value;
 
     /**

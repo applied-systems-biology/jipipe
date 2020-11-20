@@ -19,12 +19,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Predicate;
 
 /**
  * Expression for querying strings
  */
 @ExpressionParameterSettings(variableSource = StringQueryExpressionVariableSource.class)
-public class StringQueryExpression extends DefaultExpressionParameter {
+public class StringQueryExpression extends DefaultExpressionParameter implements Predicate<String> {
 
     public static final String DOCUMENTATION_DESCRIPTION = "This parameter is an expression that has two modes: " +
             "(1) Selecting an existing string, and (2) Matching an existing strings by boolean operators<br/>" +
@@ -115,6 +116,7 @@ public class StringQueryExpression extends DefaultExpressionParameter {
      * @param string the string
      * @return if the query matches
      */
+    @Override
     public boolean test(String string) {
         if ("true".equals(getExpression()) || getExpression().trim().isEmpty())
             return true;

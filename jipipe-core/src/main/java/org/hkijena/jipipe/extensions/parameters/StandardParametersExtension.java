@@ -185,6 +185,13 @@ public class StandardParametersExtension extends JIPipePrepackagedDefaultJavaExt
                 "String query expression",
                 "An expression that is used to filter strings",
                 DefaultExpressionParameterEditorUI.class);
+        registerParameterType("path-query-expression",
+                PathQueryExpression.class,
+                null,
+                null,
+                "Path query expression",
+                "An expression that is used to filter paths",
+                DefaultExpressionParameterEditorUI.class);
         registerParameterType("named-string-query-expression",
                 NamedStringQueryExpression.class,
                 NamedStringQueryExpression.List.class,

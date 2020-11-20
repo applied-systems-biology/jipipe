@@ -29,6 +29,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.PathData;
 import org.hkijena.jipipe.extensions.parameters.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameterSettings;
+import org.hkijena.jipipe.extensions.parameters.expressions.PathQueryExpression;
 import org.hkijena.jipipe.extensions.parameters.expressions.variables.PathFilterExpressionParameterVariableSource;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.ResourceUtils;
@@ -51,7 +52,7 @@ import java.nio.file.Path;
 public class FilterPaths extends JIPipeSimpleIteratingAlgorithm {
 
     //    private PathFilter filter = new PathFilter();
-    private DefaultExpressionParameter filters = new DefaultExpressionParameter("");
+    private PathQueryExpression filters = new PathQueryExpression("");
     private boolean outputFiles = true;
     private boolean outputFolders = true;
     private boolean outputNonExisting = true;
@@ -75,7 +76,7 @@ public class FilterPaths extends JIPipeSimpleIteratingAlgorithm {
         this.outputFiles = other.outputFiles;
         this.outputFolders = other.outputFolders;
         this.outputNonExisting = other.outputNonExisting;
-        this.filters = new DefaultExpressionParameter(other.filters);
+        this.filters = new PathQueryExpression(other.filters);
     }
 
     @Override
@@ -85,7 +86,7 @@ public class FilterPaths extends JIPipeSimpleIteratingAlgorithm {
         Path inputPath = inputData.getPath();
         if (!canOutput(inputPath))
             return;
-        if (filters.test(PathFilterExpressionParameterVariableSource.buildFor(inputPath))) {
+        if (filters.test(inputPath)) {
             dataBatch.addOutputData(firstOutputSlot, inputData);
         }
     }
@@ -103,13 +104,12 @@ public class FilterPaths extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeParameter("filters")
     @JIPipeDocumentation(name = "Filters", description = "Filter expression that is used to filter the paths. Click [X] to see all available variables. " +
             "An example for an expression would be '\".tif\" IN name', which would test if there is '.tif' inside the file name.")
-    @ExpressionParameterSettings(variableSource = PathFilterExpressionParameterVariableSource.class)
-    public DefaultExpressionParameter getFilters() {
+    public PathQueryExpression getFilters() {
         return filters;
     }
 
     @JIPipeParameter("filters")
-    public void setFilters(DefaultExpressionParameter filters) {
+    public void setFilters(PathQueryExpression filters) {
         this.filters = filters;
     }
 
@@ -150,7 +150,7 @@ public class FilterPaths extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/graduation-cap.png")
     public void setToExample(JIPipeWorkbench parent) {
         if (UIUtils.confirmResetParameters(parent, "Load example")) {
-            setFilters(new DefaultExpressionParameter("STRING_MATCHES_GLOB(name, \"*.tif\")"));
+            setFilters(new PathQueryExpression("STRING_MATCHES_GLOB(name, \"*.tif\")"));
             getEventBus().post(new ParameterChangedEvent(this, "filters"));
         }
     }

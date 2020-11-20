@@ -64,7 +64,7 @@ public abstract class ExpressionParameter {
     }
 
     /**
-     * Runs the expression and returns the boolean result. If no boolean is returned, an error is thrown.
+     * Runs the expression and returns the result.
      *
      * @param variables the variables
      * @return the result

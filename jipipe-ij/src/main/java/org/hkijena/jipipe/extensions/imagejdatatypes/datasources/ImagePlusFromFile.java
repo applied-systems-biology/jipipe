@@ -48,8 +48,7 @@ import java.util.List;
 /**
  * Loads an image data from a file via IJ.openFile()
  */
-@JIPipeDocumentation(name = "Import image", description = "Loads an image via the native ImageJ functions. Please note that you might run into issues " +
-        "if you open a file that is imported via Bio-Formats (for example .czi files). In such cases, please use the Bio-Formats importer algorithm.")
+@JIPipeDocumentation(name = "Import image", description = "Loads an image via the native ImageJ functions.")
 @JIPipeOrganization(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 @JIPipeInputSlot(FileData.class)
 @JIPipeOutputSlot(ImagePlusData.class)
@@ -98,12 +97,17 @@ public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
         FileData fileData = dataBatch.getInputData(getFirstInputSlot(), FileData.class);
-        ImagePlusData data = (ImagePlusData) readImageFrom(fileData.getPath(), progress);
+        ImagePlusData outputData;
+        ImagePlus image = readImageFrom(fileData.getPath(), progress);
+        if (removeLut) {
+            image.getProcessor().setLut(null);
+        }
+        outputData = (ImagePlusData) JIPipe.createData(generatedImageType.getInfo().getDataClass(), image);
         List<JIPipeAnnotation> traits = new ArrayList<>();
         if (titleAnnotation.isEnabled()) {
-            traits.add(new JIPipeAnnotation(titleAnnotation.getContent(), data.getImage().getTitle()));
+            traits.add(new JIPipeAnnotation(titleAnnotation.getContent(), outputData.getImage().getTitle()));
         }
-        dataBatch.addOutputData(getFirstOutputSlot(), data, traits, JIPipeAnnotationMergeStrategy.Merge);
+        dataBatch.addOutputData(getFirstOutputSlot(), outputData, traits, JIPipeAnnotationMergeStrategy.Merge);
     }
 
     @JIPipeDocumentation(name = "Title annotation", description = "Optional annotation type where the image title is written.")
@@ -124,40 +128,33 @@ public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
      * @param progress progress
      * @return the generated data
      */
-    protected JIPipeData readImageFrom(Path fileName, JIPipeProgressInfo progress) {
-        try {
-            Opener opener = new Opener();
-            ImagePlus image;
-            String fileNameString = fileName.getFileName().toString();
-            if (fileNameString.endsWith(".ome.tiff") || fileNameString.endsWith(".ome.tif") || fileNameString.endsWith(".czi")) {
-                // Pass to bioformats
-                progress.log("Using BioFormats importer. Please use the Bio-Formats importer node for more settings.");
-                BioFormatsImporter importer = JIPipe.createNode(BioFormatsImporter.class);
-                importer.getFirstInputSlot().addData(new FileData(fileName));
-                importer.run(progress);
-                image = importer.getFirstOutputSlot().getData(0, OMEImageData.class).getImage();
-            } else {
-                image = IJ.openImage(fileName.toString());
-            }
-            if (image == null) {
-                // Try Bioformats again?
-                // Pass to bioformats
-                progress.log("Using BioFormats importer. Please use the Bio-Formats importer node for more settings.");
-                BioFormatsImporter importer = JIPipe.createNode(BioFormatsImporter.class);
-                importer.getFirstInputSlot().addData(new FileData(fileName));
-                importer.run(progress);
-                image = importer.getFirstOutputSlot().getData(0, OMEImageData.class).getImage();
-            }
-            if (image == null) {
-                throw new NullPointerException("Image could not be loaded!");
-            }
-            if (removeLut) {
-                image.getProcessor().setLut(null);
-            }
-            return generatedImageType.getInfo().getDataClass().getConstructor(ImagePlus.class).newInstance(image);
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-            throw new RuntimeException(e);
+    public static ImagePlus readImageFrom(Path fileName, JIPipeProgressInfo progress) {
+        Opener opener = new Opener();
+        ImagePlus image;
+        String fileNameString = fileName.getFileName().toString();
+        if (fileNameString.endsWith(".ome.tiff") || fileNameString.endsWith(".ome.tif") || fileNameString.endsWith(".czi")) {
+            // Pass to bioformats
+            progress.log("Using BioFormats importer. Please use the Bio-Formats importer node for more settings.");
+            BioFormatsImporter importer = JIPipe.createNode(BioFormatsImporter.class);
+            importer.getFirstInputSlot().addData(new FileData(fileName));
+            importer.run(progress);
+            image = importer.getFirstOutputSlot().getData(0, OMEImageData.class).getImage();
+        } else {
+            image = IJ.openImage(fileName.toString());
         }
+        if (image == null) {
+            // Try Bioformats again?
+            // Pass to bioformats
+            progress.log("Using BioFormats importer. Please use the Bio-Formats importer node for more settings.");
+            BioFormatsImporter importer = JIPipe.createNode(BioFormatsImporter.class);
+            importer.getFirstInputSlot().addData(new FileData(fileName));
+            importer.run(progress);
+            image = importer.getFirstOutputSlot().getData(0, OMEImageData.class).getImage();
+        }
+        if (image == null) {
+            throw new NullPointerException("Image could not be loaded!");
+        }
+        return image;
     }
 
     @Override

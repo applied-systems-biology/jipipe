@@ -27,6 +27,7 @@ import org.hkijena.jipipe.extensions.filesystem.dataypes.FileData;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FolderData;
 import org.hkijena.jipipe.extensions.parameters.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionParameterSettings;
+import org.hkijena.jipipe.extensions.parameters.expressions.PathQueryExpression;
 import org.hkijena.jipipe.extensions.parameters.expressions.variables.PathFilterExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
 import org.hkijena.jipipe.utils.ResourceUtils;
@@ -52,7 +53,7 @@ import java.util.stream.Stream;
 // Traits
 public class ListSubfolders extends JIPipeSimpleIteratingAlgorithm {
 
-    private DefaultExpressionParameter filters = new DefaultExpressionParameter("");
+    private PathQueryExpression filters = new PathQueryExpression("");
     private String subFolder;
     private boolean recursive = false;
     private boolean recursiveFollowsLinks = true;
@@ -76,7 +77,7 @@ public class ListSubfolders extends JIPipeSimpleIteratingAlgorithm {
         this.subFolder = other.subFolder;
         this.recursive = other.recursive;
         this.recursiveFollowsLinks = other.recursiveFollowsLinks;
-        this.filters = new DefaultExpressionParameter(other.filters);
+        this.filters = new PathQueryExpression(other.filters);
     }
 
     @Override
@@ -98,7 +99,7 @@ public class ListSubfolders extends JIPipeSimpleIteratingAlgorithm {
             } else
                 stream = Files.list(inputPath).filter(Files::isDirectory);
             for (Path file : stream.collect(Collectors.toList())) {
-                if (filters.test(PathFilterExpressionParameterVariableSource.buildFor(file))) {
+                if (filters.test(file)) {
                     dataBatch.addOutputData(getFirstOutputSlot(), new FileData(file));
                 }
             }
@@ -110,13 +111,12 @@ public class ListSubfolders extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeDocumentation(name = "Filters", description = "You can optionally filter the result folders. " +
             "The filters are connected via a logical OR operation. An empty list disables filtering")
     @JIPipeParameter("filters")
-    @ExpressionParameterSettings(variableSource = PathFilterExpressionParameterVariableSource.class)
-    public DefaultExpressionParameter getFilters() {
+    public PathQueryExpression getFilters() {
         return filters;
     }
 
     @JIPipeParameter("filters")
-    public void setFilters(DefaultExpressionParameter filters) {
+    public void setFilters(PathQueryExpression filters) {
         this.filters = filters;
     }
 

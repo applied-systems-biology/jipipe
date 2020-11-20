@@ -28,6 +28,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.HyperstackDimension;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.ImagePlus2DData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.ImagePlus3DData;
@@ -57,6 +58,7 @@ import static org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExt
 public class StackMergerAlgorithm extends JIPipeMergingAlgorithm {
 
     private String counterAnnotation = "Slice";
+    private HyperstackDimension outputDimension = HyperstackDimension.Depth;
 
     /**
      * Instantiates a new node type.
@@ -79,6 +81,7 @@ public class StackMergerAlgorithm extends JIPipeMergingAlgorithm {
     public StackMergerAlgorithm(StackMergerAlgorithm other) {
         super(other);
         this.counterAnnotation = other.counterAnnotation;
+        this.outputDimension = other.outputDimension;
     }
 
     @Override
@@ -117,8 +120,14 @@ public class StackMergerAlgorithm extends JIPipeMergingAlgorithm {
             stack.setProcessor(copy.getProcessor(), i + 1);
             stack.setSliceLabel("slice=" + i, i + 1);
         }
-
-        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(new ImagePlus("Stack", stack)));
+        ImagePlus resultImage = new ImagePlus("Stack", stack);
+        if(outputDimension == HyperstackDimension.Channel) {
+            resultImage.setDimensions(resultImage.getNSlices(), 1, 1);
+        }
+        else if(outputDimension == HyperstackDimension.Frame) {
+            resultImage.setDimensions(1, 1, resultImage.getNSlices());
+        }
+        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(resultImage));
     }
 
     @JIPipeDocumentation(name = "Slice index annotation",
@@ -132,5 +141,16 @@ public class StackMergerAlgorithm extends JIPipeMergingAlgorithm {
     @JIPipeParameter("counter-annotation-type")
     public void setCounterAnnotation(String counterAnnotation) {
         this.counterAnnotation = counterAnnotation;
+    }
+
+    @JIPipeDocumentation(name = "Output dimension", description = "Determines in which dimension the stack grows. You can choose between Z (default), channel, and time")
+    @JIPipeParameter("output-dimension")
+    public HyperstackDimension getOutputDimension() {
+        return outputDimension;
+    }
+
+    @JIPipeParameter("output-dimension")
+    public void setOutputDimension(HyperstackDimension outputDimension) {
+        this.outputDimension = outputDimension;
     }
 }
