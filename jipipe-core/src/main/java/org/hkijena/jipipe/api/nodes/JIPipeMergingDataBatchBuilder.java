@@ -2,6 +2,7 @@ package org.hkijena.jipipe.api.nodes;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.Sets;
 import net.imagej.ImageJ;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeRegistryIssues;
@@ -27,6 +28,10 @@ import java.util.stream.Collectors;
  * Class that generates a {@link JIPipeMergingDataBatch} or {@link JIPipeDataBatch} instance.
  */
 public class JIPipeMergingDataBatchBuilder {
+
+    private static final Set<String> REFERENCE_COLUMN_MERGE_ALL = Sets.newHashSet("{{}}MERGE_ALL");
+    private static final Set<String> REFERENCE_COLUMN_SPLIT_ALL = Sets.newHashSet("{{}}SPLIT_ALL");
+
     private JIPipeGraphNode node;
     private List<JIPipeDataSlot> slotList = new ArrayList<>();
     private Map<String, JIPipeDataSlot> slots = new HashMap<>();
@@ -86,10 +91,10 @@ public class JIPipeMergingDataBatchBuilder {
                 referenceColumns = getInputAnnotationColumnIntersection("#");
                 break;
             case MergeAll:
-                referenceColumns = Collections.emptySet();
+                referenceColumns = REFERENCE_COLUMN_MERGE_ALL;
                 break;
             case SplitAll:
-                referenceColumns = null;
+                referenceColumns = REFERENCE_COLUMN_SPLIT_ALL;
                 break;
             default:
                 throw new UnsupportedOperationException("Unknown column matching strategy: " + columnGrouping);
@@ -129,7 +134,7 @@ public class JIPipeMergingDataBatchBuilder {
     public List<JIPipeMergingDataBatch> build() {
 
         // Special case: Merge all
-        if (getReferenceColumns().isEmpty()) {
+        if (getReferenceColumns() == REFERENCE_COLUMN_MERGE_ALL) {
             JIPipeMergingDataBatch batch = new JIPipeMergingDataBatch(this.node);
             for (JIPipeDataSlot slot : slotList) {
                 for (int row = 0; row < slot.getRowCount(); row++) {
@@ -138,6 +143,18 @@ public class JIPipeMergingDataBatchBuilder {
                 }
             }
             return Arrays.asList(batch);
+        }
+        if (getReferenceColumns() == REFERENCE_COLUMN_SPLIT_ALL) {
+            List<JIPipeMergingDataBatch> split = new ArrayList<>();
+            for (JIPipeDataSlot slot : slotList) {
+                for (int row = 0; row < slot.getRowCount(); row++) {
+                    JIPipeMergingDataBatch batch = new JIPipeMergingDataBatch(this.node);
+                    batch.addData(slot, row);
+                    batch.addGlobalAnnotations(slot.getAnnotations(row), getAnnotationMergeStrategy());
+                    split.add(batch);
+                }
+            }
+            return split;
         }
 
         DefaultDirectedGraph<RowNode, DefaultEdge> graph = new DefaultDirectedGraph<>(DefaultEdge.class);
