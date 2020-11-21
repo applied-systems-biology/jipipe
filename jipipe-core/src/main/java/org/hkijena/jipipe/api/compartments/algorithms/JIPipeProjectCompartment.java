@@ -31,8 +31,8 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
  * Its node functionality is structural.
  */
 @JIPipeDocumentation(name = "Graph compartment", description = "A compartment in the analysis graph")
-@JIPipeInputSlot(JIPipeCompartmentOutputData.class)
-@JIPipeOutputSlot(JIPipeCompartmentOutputData.class)
+@JIPipeInputSlot(value = JIPipeCompartmentOutputData.class, slotName = "Input", autoCreate = true)
+@JIPipeOutputSlot(value = JIPipeCompartmentOutputData.class, slotName = "Output", autoCreate = true)
 public class JIPipeProjectCompartment extends JIPipeGraphNode {
 
     private JIPipeProject project;
@@ -44,7 +44,7 @@ public class JIPipeProjectCompartment extends JIPipeGraphNode {
      * @param info Algorithm info
      */
     public JIPipeProjectCompartment(JIPipeNodeInfo info) {
-        super(info, createSlotConfiguration());
+        super(info);
     }
 
     /**
@@ -119,17 +119,5 @@ public class JIPipeProjectCompartment extends JIPipeGraphNode {
     @Override
     public void reportValidity(JIPipeValidityReport report) {
 
-    }
-
-    /**
-     * @return Slot configuration for {@link JIPipeProjectCompartment}
-     */
-    public static JIPipeSlotConfiguration createSlotConfiguration() {
-        return JIPipeDefaultMutableSlotConfiguration.builder()
-                .restrictInputTo(JIPipeCompartmentOutputData.class)
-                .restrictOutputTo(JIPipeCompartmentOutputData.class)
-                .addOutputSlot("Output", JIPipeCompartmentOutputData.class, "")
-                .sealOutput()
-                .build();
     }
 }
