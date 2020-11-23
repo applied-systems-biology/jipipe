@@ -385,6 +385,7 @@ public class ExpressionBuilderUI extends JPanel {
         }
         result.append(")");
         insertAtCaret(result.toString());
+        expressionEditor.requestFocusInWindow();
     }
 
     private void insertOperator(ExpressionOperatorEntry operatorEntry, List<ExpressionBuilderParameterUI> parameterEditorUIList) {
@@ -405,6 +406,7 @@ public class ExpressionBuilderUI extends JPanel {
         } else {
             insertAtCaret(parameterEditorUIList.get(0).getCurrentExpressionValue() + " " + operatorEntry.getOperator().getSymbol() + " " + parameterEditorUIList.get(1).getCurrentExpressionValue());
         }
+        expressionEditor.requestFocusInWindow();
     }
 
     private void insertAtCaret(String text) {
@@ -422,6 +424,7 @@ public class ExpressionBuilderUI extends JPanel {
         } catch (BadLocationException e) {
         }
         expressionEditor.insert(text, expressionEditor.getCaretPosition());
+        expressionEditor.requestFocusInWindow();
     }
 
     private String getExpression() {

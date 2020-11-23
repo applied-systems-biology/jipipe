@@ -272,7 +272,11 @@ public class JIPipeMergingDataBatchBuilder {
                 if (rowNode == source || rowNode == sink)
                     continue;
                 dataBatch.addData(rowNode.slot, rowNode.rows);
-                dataBatch.addGlobalAnnotations(rowNode.annotations, annotationMergeStrategy);
+                for (Integer row : rowNode.rows) {
+                    dataBatch.addGlobalAnnotations(rowNode.slot.getAnnotations(row), annotationMergeStrategy);
+                }
+
+//                dataBatch.addGlobalAnnotations(rowNode.annotations, annotationMergeStrategy);
             }
             result.add(dataBatch);
         }

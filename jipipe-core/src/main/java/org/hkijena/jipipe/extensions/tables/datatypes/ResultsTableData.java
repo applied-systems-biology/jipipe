@@ -769,16 +769,15 @@ public class ResultsTableData implements JIPipeData, TableModel {
                 group = "";
             ResultsTableData target = result.getOrDefault(group, null);
             if (target == null) {
-                target = new ResultsTableData(new ResultsTable());
+                target = new ResultsTableData();
                 result.put(group, target);
             }
-
+            target.addRow();
             for (int col = 0; col < getColumnCount(); col++) {
-                target.getTable().incrementCounter();
                 if (isNumeric(col)) {
-                    target.getTable().setValue(getColumnName(col), row, table.getStringValue(col, row));
-                } else {
                     target.getTable().setValue(getColumnName(col), row, table.getValueAsDouble(col, row));
+                } else {
+                    target.getTable().setValue(getColumnName(col), row, table.getStringValue(col, row));
                 }
             }
         }

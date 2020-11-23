@@ -280,7 +280,7 @@ public class JIPipeCacheDataSlotTableUI extends JIPipeProjectWorkbenchPanel {
 
         @Override
         public int getColumnCount() {
-            return slot.getColumnCount() + 1;
+            return slot.getColumnCount() + 2;
         }
 
         @Override
