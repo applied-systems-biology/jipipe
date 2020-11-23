@@ -185,6 +185,13 @@ public class StandardParametersExtension extends JIPipePrepackagedDefaultJavaExt
                 "String query expression",
                 "An expression that is used to filter strings",
                 DefaultExpressionParameterEditorUI.class);
+        registerParameterType("table-cell-value-query-expression",
+                TableCellValueQueryExpression.class,
+                null,
+                null,
+                "Table cell value query expression",
+                "An expression that tests for table cells",
+                DefaultExpressionParameterEditorUI.class);
         registerParameterType("path-query-expression",
                 PathQueryExpression.class,
                 null,
