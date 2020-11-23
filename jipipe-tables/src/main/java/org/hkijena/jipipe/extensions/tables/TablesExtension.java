@@ -457,5 +457,10 @@ public class TablesExtension extends JIPipePrepackagedDefaultJavaExtension {
                 "Weighted sum",
                 "wsum",
                 "Calculates the weighted sum of all values. The weight is the row index (beginning with 1). String values are converted to numbers or zero.");
+        registerTableColumnOperationAndExpressionFunction("statistics-sum",
+                new SumIntegratingColumnOperation(),
+                "Sum",
+                "sum",
+                "Calculates the sum of all values. String values are converted to numbers or zero.");
     }
 }
