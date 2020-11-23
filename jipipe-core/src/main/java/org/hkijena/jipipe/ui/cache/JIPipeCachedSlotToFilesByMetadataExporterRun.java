@@ -68,7 +68,6 @@ public class JIPipeCachedSlotToFilesByMetadataExporterRun extends JIPipeWorkbenc
             return false;
 
         JDialog editorDialog = new JDialog();
-        JIPipeDataByMetadataExporter exporter = new JIPipeDataByMetadataExporter();
         JPanel mainPanel = new JPanel(new BorderLayout());
         ParameterPanel parameterPanel = new ParameterPanel(getWorkbench(), exporter, null, ParameterPanel.WITH_SCROLLING | ParameterPanel.WITH_DOCUMENTATION);
         mainPanel.add(parameterPanel, BorderLayout.CENTER);
