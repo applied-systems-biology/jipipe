@@ -28,6 +28,7 @@ import org.hkijena.jipipe.extensions.utils.algorithms.PathsToJIPipeProjectParame
 import org.hkijena.jipipe.extensions.utils.algorithms.RunJIPipeProjectAlgorithm;
 import org.hkijena.jipipe.extensions.utils.algorithms.SortRowsAlgorithm;
 import org.hkijena.jipipe.extensions.utils.datatypes.JIPipeOutputData;
+import org.hkijena.jipipe.extensions.utils.datatypes.PathDataToJIPipeOutputConverter;
 import org.hkijena.jipipe.extensions.utils.display.ImportJIPipeProjectDataOperation;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.plugin.Plugin;
@@ -52,7 +53,8 @@ public class UtilitiesExtension extends JIPipePrepackagedDefaultJavaExtension {
     @Override
     public void register() {
         registerDatatype("jipipe-run-output", JIPipeOutputData.class, UIUtils.getIconURLFromResources("apps/jipipe.png"), null, null, new OpenPathDataOperation(), new CopyPathDataOperation(), new ImportJIPipeProjectDataOperation());
-
+        registerDatatypeConversion(new PathDataToJIPipeOutputConverter());
+            
         registerNodeType("io-interface", IOInterfaceAlgorithm.class, UIUtils.getIconURLFromResources("devices/knemo-wireless-transmit-receive.png"));
         registerNodeType("node-group", NodeGroup.class, UIUtils.getIconURLFromResources("actions/object-group.png"));
         registerNodeType("converter", ConverterAlgorithm.class, UIUtils.getIconURLFromResources("actions/view-refresh.png"));
