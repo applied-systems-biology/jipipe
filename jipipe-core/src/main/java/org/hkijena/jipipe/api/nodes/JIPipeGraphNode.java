@@ -253,7 +253,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
     /**
      * Runs the workload
      *
-     * @param progress progress passed from the runner
+     * @param progressInfo progress passed from the runner
      */
     public abstract void run(JIPipeProgressInfo progressInfo);
 

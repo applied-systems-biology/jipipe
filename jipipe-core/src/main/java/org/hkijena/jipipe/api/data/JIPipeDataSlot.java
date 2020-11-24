@@ -46,7 +46,7 @@ public class JIPipeDataSlot implements TableModel {
     private JIPipeSlotType slotType;
     private Path storagePath;
     private boolean uniqueData = true;
-    private boolean virtual = true;
+    private boolean virtual;
     private EventBus eventBus = new EventBus();
 
     private ArrayList<JIPipeVirtualData> data = new ArrayList<>();
@@ -65,6 +65,7 @@ public class JIPipeDataSlot implements TableModel {
         this.name = definition.getName();
         this.slotType = definition.getSlotType();
         this.acceptedDataType = definition.getDataClass();
+        this.virtual = definition.isVirtual();
     }
 
     public List<String> getAnnotationColumns() {
@@ -356,8 +357,9 @@ public class JIPipeDataSlot implements TableModel {
             save(basePath, saveProgress);
         }
         for (int i = 0; i < data.size(); ++i) {
-            if (destroyData)
+            if (destroyData && !data.get(i).isVirtual()) {
                 data.get(i).getData(saveProgress.resolve("Load virtual data")).flush();
+            }
             data.set(i, null);
         }
     }
@@ -636,8 +638,10 @@ public class JIPipeDataSlot implements TableModel {
     public void makeDataNonVirtual(JIPipeProgressInfo progressInfo) {
         JIPipeProgressInfo subProgress = progressInfo.resolveAndLog("Loading virtual data to memory");
         for (int row = 0; row < getRowCount(); row++) {
-            subProgress.resolveAndLog("Row", row, getRowCount());
-
+            JIPipeVirtualData virtualData = getVirtualData(row);
+            if(virtualData.isVirtual()) {
+                virtualData.makeNonVirtual(subProgress.resolveAndLog("Row", row, getRowCount()));
+            }
         }
     }
 
@@ -648,8 +652,24 @@ public class JIPipeDataSlot implements TableModel {
     public void makeDataVirtual(JIPipeProgressInfo progressInfo) {
         JIPipeProgressInfo subProgress = progressInfo.resolveAndLog("Unloading data to virtual cache");
         for (int row = 0; row < getRowCount(); row++) {
-            subProgress.resolveAndLog("Row", row, getRowCount());
+            JIPipeVirtualData virtualData = getVirtualData(row);
+            if(virtualData.isVirtual()) {
+                virtualData.makeVirtual(subProgress.resolveAndLog("Row", row, getRowCount()));
+            }
+        }
+    }
 
+    /**
+     * If virtual, put all data into the virtual storage
+     * If not, fetch all virtual data from storage
+     * @param progressInfo the progress
+     */
+    public void applyVirtualState(JIPipeProgressInfo progressInfo) {
+        if(virtual) {
+            makeDataVirtual(progressInfo);
+        }
+        else {
+            makeDataNonVirtual(progressInfo);
         }
     }
 }

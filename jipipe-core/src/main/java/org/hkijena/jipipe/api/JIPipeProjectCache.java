@@ -20,6 +20,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.events.GraphChangedEvent;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
+import org.hkijena.jipipe.extensions.settings.VirtualDataSettings;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.time.LocalDateTime;
@@ -55,12 +56,12 @@ public class JIPipeProjectCache {
 
     /**
      * Stores data into the cache
-     *
-     * @param source  the generating algorithm
+     *  @param source  the generating algorithm
      * @param stateId the state id
      * @param slot    the slot that contains the data
+     * @param progressInfo data storage progress
      */
-    public void store(JIPipeGraphNode source, State stateId, JIPipeDataSlot slot) {
+    public void store(JIPipeGraphNode source, State stateId, JIPipeDataSlot slot, JIPipeProgressInfo progressInfo) {
         if (!RuntimeSettings.getInstance().isAllowCache())
             return;
         if (!project.getGraph().containsNode(source))
@@ -84,7 +85,9 @@ public class JIPipeProjectCache {
         }
 
         JIPipeDataSlot slotCopy = new JIPipeDataSlot(slot.getDefinition(), source);
+        slotCopy.setVirtual(VirtualDataSettings.getInstance().isVirtualCache());
         slotCopy.addData(slot);
+        slotCopy.applyVirtualState(progressInfo);
         slotMap.put(slot.getName(), slotCopy);
         addToStatistics(slotCopy);
 

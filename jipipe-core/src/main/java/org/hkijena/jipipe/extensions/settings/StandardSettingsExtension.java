@@ -112,6 +112,12 @@ public class StandardSettingsExtension extends JIPipePrepackagedDefaultJavaExten
                 "Data",
                 null,
                 new GeneralDataSettings());
+        registerSettingsSheet(VirtualDataSettings.ID,
+                "Virtual data",
+                UIUtils.getIconFromResources("actions/rabbitvcs-drive.png"),
+                "Data",
+                null,
+                new VirtualDataSettings());
 
         registerParameterType("jipipe:settings:projects:new-project-template",
                 ProjectsSettings.ProjectTemplateEnum.class,

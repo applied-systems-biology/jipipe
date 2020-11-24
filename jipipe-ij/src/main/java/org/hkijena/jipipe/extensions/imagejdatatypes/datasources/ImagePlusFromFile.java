@@ -16,6 +16,7 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.datasources;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.io.Opener;
+import org.apache.commons.lang3.SystemUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
@@ -24,6 +25,7 @@ import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
+import org.hkijena.jipipe.api.data.JIPipeVirtualData;
 import org.hkijena.jipipe.api.events.NodeSlotsChangedEvent;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
@@ -38,8 +40,12 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.OMEImageData;
 import org.hkijena.jipipe.extensions.parameters.primitives.OptionalAnnotationNameParameter;
 import org.hkijena.jipipe.extensions.parameters.primitives.OptionalStringParameter;
 import org.hkijena.jipipe.extensions.parameters.references.JIPipeDataInfoRef;
+import org.hkijena.jipipe.extensions.settings.VirtualDataSettings;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -95,17 +101,46 @@ public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         FileData fileData = dataBatch.getInputData(getFirstInputSlot(), FileData.class, progressInfo);
-        ImagePlusData outputData;
-        ImagePlus image = readImageFrom(fileData.getPath(), progressInfo);
-        if (removeLut) {
-            image.getProcessor().setLut(null);
+        if(!removeLut && fileData.getPath().toString().endsWith(".tif") && getFirstOutputSlot().isVirtual()) {
+            // Alternative path for virtual data to get rid of load-saving-load
+            // Only works for something that is directly compatible to the row storage format (TIFF)
+            List<JIPipeAnnotation> traits = new ArrayList<>(dataBatch.getAnnotations().values());
+            if (titleAnnotation.isEnabled()) {
+                traits.add(new JIPipeAnnotation(titleAnnotation.getContent(), fileData.getPath().getFileName().toString()));
+            }
+            Path targetPath = VirtualDataSettings.generateTempDirectory("virtual");
+            if(!SystemUtils.IS_OS_WINDOWS) {
+                // Create a symlink
+                try {
+                    Files.createSymbolicLink(targetPath.resolve("image.tif"), fileData.getPath());
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            else {
+                // Make a copy
+                try {
+                    Files.copy(fileData.getPath(), targetPath.resolve("imag.tif"), StandardCopyOption.REPLACE_EXISTING);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            JIPipeVirtualData virtualData = new JIPipeVirtualData(generatedImageType.getInfo().getDataClass(), targetPath, "VIRTUAL: " + fileData.getPath().getFileName());
+            getFirstOutputSlot().addData(virtualData, traits, JIPipeAnnotationMergeStrategy.Merge);
         }
-        outputData = (ImagePlusData) JIPipe.createData(generatedImageType.getInfo().getDataClass(), image);
-        List<JIPipeAnnotation> traits = new ArrayList<>();
-        if (titleAnnotation.isEnabled()) {
-            traits.add(new JIPipeAnnotation(titleAnnotation.getContent(), outputData.getImage().getTitle()));
+        else {
+            ImagePlusData outputData;
+            ImagePlus image = readImageFrom(fileData.getPath(), progressInfo);
+            if (removeLut) {
+                image.getProcessor().setLut(null);
+            }
+            outputData = (ImagePlusData) JIPipe.createData(generatedImageType.getInfo().getDataClass(), image);
+            List<JIPipeAnnotation> traits = new ArrayList<>();
+            if (titleAnnotation.isEnabled()) {
+                traits.add(new JIPipeAnnotation(titleAnnotation.getContent(), outputData.getImage().getTitle()));
+            }
+            dataBatch.addOutputData(getFirstOutputSlot(), outputData, traits, JIPipeAnnotationMergeStrategy.Merge, progressInfo);
         }
-        dataBatch.addOutputData(getFirstOutputSlot(), outputData, traits, JIPipeAnnotationMergeStrategy.Merge, progressInfo);
     }
 
     @JIPipeDocumentation(name = "Title annotation", description = "Optional annotation type where the image title is written.")

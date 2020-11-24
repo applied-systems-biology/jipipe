@@ -27,12 +27,14 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.JIPipeHeavyData;
 import org.hkijena.jipipe.api.events.ParameterChangedEvent;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
+import org.hkijena.jipipe.extensions.settings.VirtualDataSettings;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -55,6 +57,7 @@ public class JIPipeDataSlotInfo implements JIPipeParameterCollection {
     private String inheritedSlot;
     private Map<JIPipeDataInfo, JIPipeDataInfo> inheritanceConversions = new HashMap<>();
     private String customName;
+    private boolean virtual;
 
     /**
      * @param dataClass     slot data class
@@ -67,7 +70,9 @@ public class JIPipeDataSlotInfo implements JIPipeParameterCollection {
         this.slotType = slotType;
         this.name = name;
         this.inheritedSlot = inheritedSlot;
+        setVirtualByDataType();
     }
+
 
     /**
      * Creates an unnamed slot.
@@ -81,7 +86,18 @@ public class JIPipeDataSlotInfo implements JIPipeParameterCollection {
         this.dataClass = dataClass;
         this.slotType = slotType;
         this.inheritedSlot = inheritedSlot;
+        setVirtualByDataType();
     }
+
+    private void setVirtualByDataType() {
+        if(JIPipe.getInstance() != null && JIPipe.getSettings().getRegisteredSheets().containsKey(VirtualDataSettings.ID)
+                && VirtualDataSettings.getInstance().isLargeVirtualDataTypesByDefault()) {
+            if(dataClass.getAnnotation(JIPipeHeavyData.class) != null) {
+                this.virtual = true;
+            }
+        }
+    }
+
 
     /**
      * @param slot Imported annotation
@@ -109,6 +125,7 @@ public class JIPipeDataSlotInfo implements JIPipeParameterCollection {
         this.inheritedSlot = other.inheritedSlot;
         this.inheritanceConversions = new HashMap<>(other.inheritanceConversions);
         this.customName = other.customName;
+        this.virtual = other.virtual;
     }
 
     /**
@@ -212,6 +229,17 @@ public class JIPipeDataSlotInfo implements JIPipeParameterCollection {
     public void setCustomName(String customName) {
         this.customName = customName;
         eventBus.post(new ParameterChangedEvent(this, "custom-name"));
+    }
+
+    @JIPipeDocumentation(name = "Is virtual", description = "Determines if the slot should be virtual.")
+    @JIPipeParameter("is-virtual")
+    public boolean isVirtual() {
+        return virtual;
+    }
+
+    @JIPipeParameter("is-virtual")
+    public void setVirtual(boolean virtual) {
+        this.virtual = virtual;
     }
 
     /**

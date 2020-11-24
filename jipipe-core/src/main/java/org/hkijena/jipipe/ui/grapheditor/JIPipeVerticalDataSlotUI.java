@@ -43,6 +43,7 @@ public class JIPipeVerticalDataSlotUI extends JIPipeDataSlotUI {
     private JButton assignButton;
     private JLabel nameLabel;
     private JLabel noSaveLabel;
+    private JLabel virtualLabel;
     private JIPipeDataSlotCacheManagerUI cacheManagerUI;
 
     /**
@@ -81,6 +82,13 @@ public class JIPipeVerticalDataSlotUI extends JIPipeDataSlotUI {
                     noSaveLabel.setVisible(false);
                 }
             }
+            if(virtualLabel != null) {
+                if (getSlot().getNode() instanceof JIPipeAlgorithm) {
+                    virtualLabel.setVisible(getSlot().isVirtual());
+                } else {
+                    virtualLabel.setVisible(false);
+                }
+            }
         }
     }
 
@@ -117,7 +125,13 @@ public class JIPipeVerticalDataSlotUI extends JIPipeDataSlotUI {
         centerPanel.add(Box.createHorizontalGlue());
 
         if (getSlot().isOutput() && getSlot().getNode() instanceof JIPipeAlgorithm) {
+            virtualLabel = new ZoomLabel("", new ZoomIcon(UIUtils.getIconFromResources("actions/rabbitvcs-drive.png"), getGraphUI()), getGraphUI());
+            virtualLabel.setToolTipText("Data is stored on hard drive when not in use (virtual data)");
+            virtualLabel.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
+            centerPanel.add(virtualLabel);
+
             noSaveLabel = new ZoomLabel("", new ZoomIcon(UIUtils.getIconFromResources("actions/no-save.png"), getGraphUI()), getGraphUI());
+            noSaveLabel.setToolTipText("Data is not saved to hard drive during full run");
             noSaveLabel.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
             centerPanel.add(noSaveLabel);
         }
