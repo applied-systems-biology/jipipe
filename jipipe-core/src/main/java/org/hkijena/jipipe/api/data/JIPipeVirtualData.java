@@ -70,6 +70,8 @@ public class JIPipeVirtualData {
 
     public synchronized void makeVirtual(JIPipeProgressInfo progressInfo) {
         if(!isVirtual()) {
+            if(JIPipe.getInstance() != null && !VirtualDataSettings.getInstance().isVirtualMode())
+                return;
             if(virtualStoragePath.getPath() == null) {
                 virtualStoragePath.setPath(VirtualDataSettings.generateTempDirectory("virtual"));
             }

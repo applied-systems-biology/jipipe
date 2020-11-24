@@ -38,6 +38,7 @@ import org.hkijena.jipipe.ui.components.MarkdownReader;
 import org.hkijena.jipipe.ui.components.MemoryStatusUI;
 import org.hkijena.jipipe.ui.components.RecentProjectsMenu;
 import org.hkijena.jipipe.ui.components.ReloadableValidityChecker;
+import org.hkijena.jipipe.ui.components.VirtualDataControl;
 import org.hkijena.jipipe.ui.extension.MenuTarget;
 import org.hkijena.jipipe.ui.extensionbuilder.JIPipeJsonExporter;
 import org.hkijena.jipipe.ui.extensions.JIPipePluginManagerUIPanel;
@@ -88,6 +89,7 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
     private ReloadableValidityChecker validityCheckerPanel;
     private JIPipePluginValidityCheckerPanel pluginValidityCheckerPanel;
     private RealTimeProjectRunner realTimeProjectRunner;
+    private VirtualDataControl virtualDataControl;
 
 
     /**
@@ -102,6 +104,7 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
         this.project = project;
         this.context = context;
         this.realTimeProjectRunner = new RealTimeProjectRunner(this);
+        this.virtualDataControl = new VirtualDataControl(this);
         initialize(showIntroduction, isNewProject);
         project.getEventBus().register(this);
         JIPipe.getInstance().getEventBus().register(this);
@@ -263,7 +266,15 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
         statusText = new JLabel("Ready ...");
         statusBar.add(statusText);
         statusBar.add(Box.createHorizontalGlue(), new JXStatusBar.Constraint(JXStatusBar.Constraint.ResizeBehavior.FILL));
+
+        // Virtual control
+        JToggleButton virtualControlToggle = virtualDataControl.createToggleButton();
+        UIUtils.makeFlatH25(virtualControlToggle);
+
+        statusBar.add(virtualControlToggle);
+        statusBar.add(Box.createHorizontalStrut(4));
         statusBar.add(new MemoryStatusUI());
+
         add(statusBar, BorderLayout.SOUTH);
     }
 
@@ -439,6 +450,11 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
             menu.add(toolsMenu);
 
         menu.add(Box.createHorizontalGlue());
+
+//        // Virtual control
+//        JToggleButton virtualControlToggle = virtualDataControl.createToggleButton();
+//        UIUtils.makeFlat(virtualControlToggle);
+//        menu.add(virtualControlToggle);
 
         // Real-time runner control
         JToggleButton realtimeToggleButton = realTimeProjectRunner.createToggleButton();

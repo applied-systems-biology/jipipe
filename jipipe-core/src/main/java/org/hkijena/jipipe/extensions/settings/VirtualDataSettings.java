@@ -18,6 +18,7 @@ public class VirtualDataSettings implements JIPipeParameterCollection {
     public static String ID = "virtual-data";
     private final EventBus eventBus = new EventBus();
 
+    private boolean virtualMode = false;
     private boolean largeVirtualDataTypesByDefault = true;
     private boolean virtualCache = true;
     private OptionalPathParameter tempDirectory = new OptionalPathParameter();
@@ -62,6 +63,17 @@ public class VirtualDataSettings implements JIPipeParameterCollection {
     @JIPipeParameter("temp-directory")
     public void setTempDirectory(OptionalPathParameter tempDirectory) {
         this.tempDirectory = tempDirectory;
+    }
+
+    @JIPipeDocumentation(name = "Enable virtual storage", description = "If enabled, data will be temporarily stored to the HDD until required. This reduces memory consumption, but requires disk space and increases the run time.")
+    @JIPipeParameter("virtual-mode")
+    public boolean isVirtualMode() {
+        return virtualMode;
+    }
+
+    @JIPipeParameter("virtual-mode")
+    public void setVirtualMode(boolean virtualMode) {
+        this.virtualMode = virtualMode;
     }
 
     public static VirtualDataSettings getInstance() {
