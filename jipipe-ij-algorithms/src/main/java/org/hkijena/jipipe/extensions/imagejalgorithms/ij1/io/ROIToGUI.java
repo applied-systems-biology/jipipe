@@ -45,9 +45,9 @@ public class ROIToGUI extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
-        ROIListData inputData = dataBatch.getInputData(getFirstInputSlot(), ROIListData.class);
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+        ROIListData inputData = dataBatch.getInputData(getFirstInputSlot(), ROIListData.class, progressInfo);
         inputData.addToRoiManager(RoiManager.getRoiManager());
-        dataBatch.addOutputData(getFirstOutputSlot(), inputData);
+        dataBatch.addOutputData(getFirstOutputSlot(), inputData, progressInfo);
     }
 }

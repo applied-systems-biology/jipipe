@@ -78,8 +78,8 @@ public class RemoveOutliersFilter2DAlgorithm extends JIPipeSimpleIteratingAlgori
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
-        ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class);
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+        ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo);
         ImagePlus img = inputData.getDuplicateImage();
         RankFilters rankFilters = new RankFilters();
         ImageJUtils.forEachSlice(img, ip -> rankFilters.rank(ip,
@@ -87,7 +87,7 @@ public class RemoveOutliersFilter2DAlgorithm extends JIPipeSimpleIteratingAlgori
                 RankFilters.OUTLIERS,
                 mode == Mode.RemoveLargerThanMedian ? RankFilters.BRIGHT_OUTLIERS : RankFilters.DARK_OUTLIERS,
                 threshold));
-        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(img));
+        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(img), progressInfo);
     }
 
 

@@ -87,22 +87,22 @@ public class OMEROFindImageAlgorithm extends JIPipeParameterSlotAlgorithm {
     }
 
     @Override
-    public void runParameterSet(JIPipeProgressInfo progress, List<JIPipeAnnotation> parameterAnnotations) {
+    public void runParameterSet(JIPipeProgressInfo progressInfo, List<JIPipeAnnotation> parameterAnnotations) {
         Set<Long> datasetIds = new HashSet<>();
         for (int row = 0; row < getFirstInputSlot().getRowCount(); row++) {
-            datasetIds.add(getFirstInputSlot().getData(row, OMERODatasetReferenceData.class).getDatasetId());
+            datasetIds.add(getFirstInputSlot().getData(row, OMERODatasetReferenceData.class, progressInfo).getDatasetId());
         }
 
         LoginCredentials credentials = this.credentials.getCredentials();
-        progress.log("Connecting to " + credentials.getUser().getUsername() + "@" + credentials.getServer().getHost());
-        try (Gateway gateway = new Gateway(new OMEROToJIPipeLogger(progress))) {
+        progressInfo.log("Connecting to " + credentials.getUser().getUsername() + "@" + credentials.getServer().getHost());
+        try (Gateway gateway = new Gateway(new OMEROToJIPipeLogger(progressInfo))) {
             ExperimenterData user = gateway.connect(credentials);
             SecurityContext context = new SecurityContext(user.getGroupId());
             BrowseFacility browseFacility = gateway.getFacility(BrowseFacility.class);
             MetadataFacility metadata = gateway.getFacility(MetadataFacility.class);
             for (Long datasetId : datasetIds) {
                 DatasetData datasetData = browseFacility.getDatasets(context, Collections.singletonList(datasetId)).iterator().next();
-                progress.log("Listing datasets in dataset ID=" + datasetData.getId());
+                progressInfo.log("Listing datasets in dataset ID=" + datasetData.getId());
                 for (Object obj : datasetData.getImages()) {
                     if (obj instanceof ImageData) {
                         ImageData imageData = (ImageData) obj;
@@ -129,7 +129,7 @@ public class OMEROFindImageAlgorithm extends JIPipeParameterSlotAlgorithm {
                         }
                         if (datasetNameAnnotation.isEnabled())
                             annotations.add(new JIPipeAnnotation(datasetNameAnnotation.getContent(), datasetData.getName()));
-                        getFirstOutputSlot().addData(new OMEROImageReferenceData(imageData.getId()), annotations, JIPipeAnnotationMergeStrategy.Merge);
+                        getFirstOutputSlot().addData(new OMEROImageReferenceData(imageData.getId()), annotations, JIPipeAnnotationMergeStrategy.Merge, progressInfo);
                     }
 
                 }

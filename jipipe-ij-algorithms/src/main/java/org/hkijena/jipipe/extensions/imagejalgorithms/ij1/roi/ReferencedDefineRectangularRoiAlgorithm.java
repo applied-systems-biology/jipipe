@@ -73,8 +73,8 @@ public class ReferencedDefineRectangularRoiAlgorithm extends JIPipeIteratingAlgo
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
-        ImagePlus reference = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class).getImage();
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+        ImagePlus reference = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo).getImage();
         Rectangle boundaries = new Rectangle(0, 0, reference.getWidth(), reference.getHeight());
 
         ROIListData currentData = new ROIListData();
@@ -82,12 +82,12 @@ public class ReferencedDefineRectangularRoiAlgorithm extends JIPipeIteratingAlgo
             Rectangle rectangle = margin.apply(boundaries);
             currentData.add(new ShapeRoi(rectangle));
             if (split) {
-                getFirstOutputSlot().addData(currentData);
+                getFirstOutputSlot().addData(currentData, progressInfo);
                 currentData = new ROIListData();
             }
         }
         if (!currentData.isEmpty()) {
-            getFirstOutputSlot().addData(currentData);
+            getFirstOutputSlot().addData(currentData, progressInfo);
         }
     }
 

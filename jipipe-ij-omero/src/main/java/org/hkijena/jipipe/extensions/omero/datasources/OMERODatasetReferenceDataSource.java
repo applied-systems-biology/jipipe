@@ -42,9 +42,9 @@ public class OMERODatasetReferenceDataSource extends JIPipeSimpleIteratingAlgori
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         for (Long datasetId : datasetIds) {
-            dataBatch.addOutputData(getFirstOutputSlot(), new OMERODatasetReferenceData(datasetId));
+            dataBatch.addOutputData(getFirstOutputSlot(), new OMERODatasetReferenceData(datasetId), progressInfo);
         }
     }
 

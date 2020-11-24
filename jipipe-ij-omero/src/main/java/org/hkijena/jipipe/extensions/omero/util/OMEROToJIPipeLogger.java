@@ -19,60 +19,60 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 
 public class OMEROToJIPipeLogger implements Logger {
 
-    private final JIPipeProgressInfo progress;
+    private final JIPipeProgressInfo progressInfo;
 
-    public OMEROToJIPipeLogger(JIPipeProgressInfo progress) {
-        this.progress = progress;
+    public OMEROToJIPipeLogger(JIPipeProgressInfo progressInfo) {
+        this.progressInfo = progressInfo;
     }
 
     @Override
     public void debug(Object o, String s) {
-        progress.log(s);
+        progressInfo.log(s);
     }
 
     @Override
     public void debug(Object o, LogMessage logMessage) {
-        progress.log(logMessage.toString());
+        progressInfo.log(logMessage.toString());
     }
 
     @Override
     public void info(Object o, String s) {
-        progress.log(s);
+        progressInfo.log(s);
     }
 
     @Override
     public void info(Object o, LogMessage logMessage) {
-        progress.log(logMessage.toString());
+        progressInfo.log(logMessage.toString());
     }
 
     @Override
     public void warn(Object o, String s) {
-        progress.log(s);
+        progressInfo.log(s);
     }
 
     @Override
     public void warn(Object o, LogMessage logMessage) {
-        progress.log(logMessage.toString());
+        progressInfo.log(logMessage.toString());
     }
 
     @Override
     public void error(Object o, String s) {
-        progress.log(s);
+        progressInfo.log(s);
     }
 
     @Override
     public void error(Object o, LogMessage logMessage) {
-        progress.log(logMessage.toString());
+        progressInfo.log(logMessage.toString());
     }
 
     @Override
     public void fatal(Object o, String s) {
-        progress.log(s);
+        progressInfo.log(s);
     }
 
     @Override
     public void fatal(Object o, LogMessage logMessage) {
-        progress.log(logMessage.toString());
+        progressInfo.log(logMessage.toString());
     }
 
     @Override

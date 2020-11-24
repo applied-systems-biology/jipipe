@@ -41,9 +41,9 @@ public class SplitRGBChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
-        ImagePlusData image = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class);
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+        ImagePlusData image = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo);
         ImagePlus toRGB = ImageJUtils.channelsToRGB(image.getImage());
-        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(toRGB));
+        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(toRGB), progressInfo);
     }
 }

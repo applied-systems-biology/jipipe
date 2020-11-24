@@ -16,6 +16,7 @@ package org.hkijena.jipipe.ui.batchassistant;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.eventbus.Subscribe;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeProjectCache;
 import org.hkijena.jipipe.api.JIPipeProjectCacheQuery;
 import org.hkijena.jipipe.api.data.JIPipeData;
@@ -209,7 +210,7 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
         batchPreviewDuplicateLabel.setVisible(false);
         for (JIPipeMergingDataBatch batch : batches) {
             for (JIPipeDataSlot inputSlot : batchesNodeCopy.getInputSlots()) {
-                List<JIPipeData> data = batch.getInputData(inputSlot, JIPipeData.class);
+                List<JIPipeData> data = batch.getInputData(inputSlot, JIPipeData.class, new JIPipeProgressInfo());
                 if (data.isEmpty())
                     batchPreviewMissingLabel.setVisible(true);
                 if (data.size() > 1)

@@ -70,7 +70,7 @@ public class GenerateTableFromExpressionAlgorithm extends JIPipeSimpleIteratingA
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ResultsTableData table = new ResultsTableData();
         table.addRows(generatedRows);
         StaticVariableSet<Object> variableSet = new StaticVariableSet<>();
@@ -91,7 +91,7 @@ public class GenerateTableFromExpressionAlgorithm extends JIPipeSimpleIteratingA
                 table.setValueAt(value, row, columnId);
             }
         }
-        dataBatch.addOutputData(getFirstOutputSlot(), table);
+        dataBatch.addOutputData(getFirstOutputSlot(), table, progressInfo);
     }
 
     @Override

@@ -45,14 +45,14 @@ public class Clij2MeanOfMaskedPixels extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         CLIJ2 clij2 = CLIJ2.getInstance();
         CLIJ clij = clij2.getCLIJ();
-        ClearCLBuffer clImage = dataBatch.getInputData(getInputSlot("clImage"), CLIJImageData.class).getImage();
+        ClearCLBuffer clImage = dataBatch.getInputData(getInputSlot("clImage"), CLIJImageData.class, progressInfo).getImage();
         ClearCLBuffer mask = clij2.create(clImage);
         MeanOfMaskedPixels.meanOfMaskedPixels(clij2, clImage, mask);
 
-        dataBatch.addOutputData(getOutputSlot("mask"), new CLIJImageData(mask));
+        dataBatch.addOutputData(getOutputSlot("mask"), new CLIJImageData(mask), progressInfo);
     }
 
 }

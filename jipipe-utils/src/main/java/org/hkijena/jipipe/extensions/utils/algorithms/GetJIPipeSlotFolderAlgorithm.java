@@ -28,7 +28,6 @@ import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FolderData;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
@@ -63,10 +62,10 @@ public class GetJIPipeSlotFolderAlgorithm extends JIPipeSimpleIteratingAlgorithm
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
-        JIPipeOutputData outputData = dataBatch.getInputData(getFirstInputSlot(), JIPipeOutputData.class);
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+        JIPipeOutputData outputData = dataBatch.getInputData(getFirstInputSlot(), JIPipeOutputData.class, progressInfo);
         Path slotPath = outputData.getPath().resolve("analysis").resolve(nodeId).resolve(slotName);
-        dataBatch.addOutputData(getFirstOutputSlot(), new FolderData(slotPath));
+        dataBatch.addOutputData(getFirstOutputSlot(), new FolderData(slotPath), progressInfo);
     }
 
     @Override

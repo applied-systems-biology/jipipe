@@ -66,8 +66,8 @@ public class FilterTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
-        ResultsTableData input = dataBatch.getInputData(getFirstInputSlot(), ResultsTableData.class);
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+        ResultsTableData input = dataBatch.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo);
         List<Integer> selectedRows = new ArrayList<>();
         StaticVariableSet<Object> variableSet = new StaticVariableSet<>();
         for (int row = 0; row < input.getRowCount(); row++) {
@@ -80,7 +80,7 @@ public class FilterTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         }
 
         ResultsTableData output = input.getRows(selectedRows);
-        dataBatch.addOutputData(getFirstOutputSlot(), output);
+        dataBatch.addOutputData(getFirstOutputSlot(), output, progressInfo);
     }
 
     @JIPipeDocumentation(name = "Filters", description = "Allows you to select how to filter the values. " +

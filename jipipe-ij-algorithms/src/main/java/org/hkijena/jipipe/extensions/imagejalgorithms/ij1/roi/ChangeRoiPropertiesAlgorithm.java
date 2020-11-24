@@ -82,8 +82,8 @@ public class ChangeRoiPropertiesAlgorithm extends JIPipeSimpleIteratingAlgorithm
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
-        ROIListData data = (ROIListData) dataBatch.getInputData(getFirstInputSlot(), ROIListData.class).duplicate();
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+        ROIListData data = (ROIListData) dataBatch.getInputData(getFirstInputSlot(), ROIListData.class, progressInfo).duplicate();
         for (Roi roi : data) {
             double x;
             double y;
@@ -118,7 +118,7 @@ public class ChangeRoiPropertiesAlgorithm extends JIPipeSimpleIteratingAlgorithm
                 roi.setName(roiName.getContent());
         }
 
-        dataBatch.addOutputData(getFirstOutputSlot(), data);
+        dataBatch.addOutputData(getFirstOutputSlot(), data, progressInfo);
     }
 
     @JIPipeDocumentation(name = "Location (X)", description = "The X location")

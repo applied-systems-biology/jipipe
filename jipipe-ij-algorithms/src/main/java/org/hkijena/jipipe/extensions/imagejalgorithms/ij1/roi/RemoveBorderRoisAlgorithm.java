@@ -76,10 +76,10 @@ public class RemoveBorderRoisAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
-        ROIListData data = (ROIListData) dataBatch.getInputData("ROI", ROIListData.class).duplicate();
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+        ROIListData data = (ROIListData) dataBatch.getInputData("ROI", ROIListData.class, progressInfo).duplicate();
         data.outline(outline);
-        ImagePlus reference = dataBatch.getInputData("Image", ImagePlusData.class).getImage();
+        ImagePlus reference = dataBatch.getInputData("Image", ImagePlusData.class, progressInfo).getImage();
         Rectangle inside = borderDefinition.apply(new Rectangle(0, 0, reference.getWidth(), reference.getHeight()));
 
         data.removeIf(roi -> {
@@ -92,7 +92,7 @@ public class RemoveBorderRoisAlgorithm extends JIPipeIteratingAlgorithm {
             return false;
         });
 
-        dataBatch.addOutputData(getFirstOutputSlot(), data);
+        dataBatch.addOutputData(getFirstOutputSlot(), data, progressInfo);
     }
 
     @JIPipeDocumentation(name = "Border", description = "Defines the rectangle that is created within the image boundaries separate inside and outside. " +

@@ -60,7 +60,7 @@ public class IOInterfaceAlgorithm extends JIPipeAlgorithm {
     }
 
     @Override
-    public void run(JIPipeProgressInfo progress) {
+    public void run(JIPipeProgressInfo progressInfo) {
         for (JIPipeDataSlot inputSlot : getInputSlots()) {
             JIPipeDataSlot outputSlot = getOutputSlot(inputSlot.getName());
             outputSlot.addData(inputSlot);

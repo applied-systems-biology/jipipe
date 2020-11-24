@@ -174,15 +174,15 @@ public class FastHoughSegmentation2DAlgorithm extends JIPipeSimpleIteratingAlgor
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
-        ImagePlus img = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class).getImage();
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+        ImagePlus img = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class, progressInfo).getImage();
         ImageStack maskStack = new ImageStack(img.getWidth(), img.getHeight(), img.getProcessor().getColorModel());
         ImageStack houghStack = new ImageStack(img.getWidth(), img.getHeight(), img.getProcessor().getColorModel());
         ResultsTableData measurements = new ResultsTableData();
 
         ImageJUtils.forEachIndexedSlice(img, (imp, index) -> {
-            progress.log("Slice " + index + "/" + img.getStackSize());
-            applyHough(imp, maskStack, houghStack, measurements, progress);
+            progressInfo.log("Slice " + index + "/" + img.getStackSize());
+            applyHough(imp, maskStack, houghStack, measurements, progressInfo);
         });
 
         ImagePlus mask = new ImagePlus("Segmented Image", maskStack);
@@ -194,12 +194,12 @@ public class FastHoughSegmentation2DAlgorithm extends JIPipeSimpleIteratingAlgor
 //        DisplayRangeCalibrationAlgorithm.calibrate(mask, CalibrationMode.AutomaticImageJ, 0,0);
 //        DisplayRangeCalibrationAlgorithm.calibrate(hough, CalibrationMode.AutomaticImageJ, 0,0);
 
-        dataBatch.addOutputData("Mask", new ImagePlusGreyscaleMaskData(mask));
-        dataBatch.addOutputData("Accumulator", new ImagePlusGreyscaleData(hough));
-        dataBatch.addOutputData("Measurements", measurements);
+        dataBatch.addOutputData("Mask", new ImagePlusGreyscaleMaskData(mask), progressInfo);
+        dataBatch.addOutputData("Accumulator", new ImagePlusGreyscaleData(hough), progressInfo);
+        dataBatch.addOutputData("Measurements", measurements, progressInfo);
     }
 
-    private void applyHough(ImageProcessor imp, ImageStack maskStack, ImageStack houghStack, ResultsTableData measurements, JIPipeProgressInfo progress) {
+    private void applyHough(ImageProcessor imp, ImageStack maskStack, ImageStack houghStack, ResultsTableData measurements, JIPipeProgressInfo progressInfo) {
         final int W = imp.getWidth();
         final int H = imp.getHeight();
         ResultsTable rt = new ResultsTable();
@@ -216,7 +216,7 @@ public class FastHoughSegmentation2DAlgorithm extends JIPipeSimpleIteratingAlgor
         double[][] Z;
 
         for (int R = minRadius; R <= maxRadius; R++) {
-            progress.log("R=" + R);
+            progressInfo.log("R=" + R);
             Z = new double[imp.getWidth()][imp.getHeight()];
 
             /* traverse the image and update the accumulator. */

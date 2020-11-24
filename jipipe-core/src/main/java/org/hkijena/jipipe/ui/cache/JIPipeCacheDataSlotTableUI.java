@@ -15,6 +15,7 @@ package org.hkijena.jipipe.ui.cache;
 
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeProjectCache;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeData;
@@ -323,7 +324,7 @@ public class JIPipeCacheDataSlotTableUI extends JIPipeProjectWorkbenchPanel {
                 Component preview = previewCache.get(rowIndex);
                 if (preview == null) {
                     if (GeneralDataSettings.getInstance().isGenerateCachePreviews()) {
-                        JIPipeData data = slot.getData(rowIndex, JIPipeData.class);
+                        JIPipeData data = slot.getData(rowIndex, JIPipeData.class, new JIPipeProgressInfo());
                         preview = new JIPipeCachedDataPreview(table, data, true);
                         previewCache.set(rowIndex, preview);
                     } else {
@@ -333,7 +334,7 @@ public class JIPipeCacheDataSlotTableUI extends JIPipeProjectWorkbenchPanel {
                 }
                 return preview;
             } else if (columnIndex == 2)
-                return "" + slot.getData(rowIndex, JIPipeData.class);
+                return "" + slot.getVirtualData(rowIndex).getStringRepresentation();
             else {
                 return slot.getValueAt(rowIndex, columnIndex - 2);
             }

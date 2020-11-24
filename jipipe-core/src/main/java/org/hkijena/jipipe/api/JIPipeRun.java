@@ -119,7 +119,7 @@ public class JIPipeRun implements JIPipeRunnable {
         }
     }
 
-    private void flushFinishedSlots(List<JIPipeDataSlot> traversedSlots, Set<JIPipeGraphNode> executedAlgorithms, int currentIndex, JIPipeDataSlot outputSlot, Set<JIPipeDataSlot> flushedSlots, JIPipeProgressInfo progress) {
+    private void flushFinishedSlots(List<JIPipeDataSlot> traversedSlots, Set<JIPipeGraphNode> executedAlgorithms, int currentIndex, JIPipeDataSlot outputSlot, Set<JIPipeDataSlot> flushedSlots, JIPipeProgressInfo progressInfo) {
         if (!executedAlgorithms.contains(outputSlot.getNode()))
             return;
         if (flushedSlots.contains(outputSlot))
@@ -141,7 +141,7 @@ public class JIPipeRun implements JIPipeRunnable {
                 project.getCache().store(projectAlgorithm, stateId, outputSlot);
             }
             if (configuration.isSaveOutputs()) {
-                JIPipeProgressInfo saveProgress = progress.resolveAndLog(String.format("Saving data in slot '%s' (data type %s)", outputSlot.getDisplayName(), JIPipeDataInfo.getInstance(outputSlot.getAcceptedDataType()).getName()));
+                JIPipeProgressInfo saveProgress = progressInfo.resolveAndLog(String.format("Saving data in slot '%s' (data type %s)", outputSlot.getDisplayName(), JIPipeDataInfo.getInstance(outputSlot.getAcceptedDataType()).getName()));
                 outputSlot.flush(configuration.getOutputPath(), !configuration.isStoreToCache(), saveProgress);
             } else {
                 outputSlot.clearData(false);
@@ -203,7 +203,7 @@ public class JIPipeRun implements JIPipeRunnable {
         }
     }
 
-    private void runAnalysis(JIPipeProgressInfo progress) {
+    private void runAnalysis(JIPipeProgressInfo progressInfo) {
         Set<JIPipeGraphNode> unExecutableAlgorithms = algorithmGraph.getDeactivatedAlgorithms();
         Set<JIPipeGraphNode> executedAlgorithms = new HashSet<>();
         Set<JIPipeDataSlot> flushedSlots = new HashSet<>();
@@ -224,35 +224,35 @@ public class JIPipeRun implements JIPipeRunnable {
             }
         }
         if(!preprocessorNodes.isEmpty()) {
-            progress.setProgress(0, preprocessorNodes.size() + traversedSlots.size());
-            progress.resolveAndLog("Preprocessing algorithms");
+            progressInfo.setProgress(0, preprocessorNodes.size() + traversedSlots.size());
+            progressInfo.resolveAndLog("Preprocessing algorithms");
             for (int i = 0; i < preprocessorNodes.size(); i++) {
                 JIPipeGraphNode node = preprocessorNodes.get(i);
-                progress.setProgress(i);
-                JIPipeProgressInfo subProgress = progress.resolve("Algorithm: " + node.getName());
+                progressInfo.setProgress(i);
+                JIPipeProgressInfo subProgress = progressInfo.resolve("Algorithm: " + node.getName());
                 if (!executedAlgorithms.contains(node)) {
                     runNode(executedAlgorithms, node, subProgress);
                 }
             }
         }
 
-        progress.setMaxProgress(traversedSlots.size());
+        progressInfo.setMaxProgress(traversedSlots.size());
         for (int index = 0; index < traversedSlots.size(); ++index) {
-            if (progress.isCancelled().get())
+            if (progressInfo.isCancelled().get())
                 throw new UserFriendlyRuntimeException("Execution was cancelled",
                         "You cancelled the execution of the algorithm pipeline.",
                         "Pipeline run", "You clicked 'Cancel'.",
                         "Do not click 'Cancel' if you do not want to cancel the execution.");
             JIPipeDataSlot slot = traversedSlots.get(index);
-            progress.setProgress(index + preprocessorNodes.size(), traversedSlots.size());
-            progress.log(slot.getDisplayName());
+            progressInfo.setProgress(index + preprocessorNodes.size(), traversedSlots.size());
+            progressInfo.log(slot.getDisplayName());
 
             // If an algorithm cannot be executed, skip it automatically
             if (unExecutableAlgorithms.contains(slot.getNode()))
                 continue;
 
             // Let algorithms provide sub-progress
-            JIPipeProgressInfo subProgress = progress.resolve("Algorithm: " + slot.getNode().getName());
+            JIPipeProgressInfo subProgress = progressInfo.resolve("Algorithm: " + slot.getNode().getName());
 
             if (slot.isInput()) {
                 // Copy data from source
@@ -290,23 +290,23 @@ public class JIPipeRun implements JIPipeRunnable {
                 additionalAlgorithms.add(node);
             }
         }
-        progress.setMaxProgress(progress.getProgress() + additionalAlgorithms.size());
+        progressInfo.setMaxProgress(progressInfo.getProgress() + additionalAlgorithms.size());
         for (int index = 0; index < additionalAlgorithms.size(); index++) {
             JIPipeGraphNode node = additionalAlgorithms.get(index);
             int absoluteIndex = index + preprocessorNodes.size() + traversedSlots.size() - 1;
-            progress.setProgress(absoluteIndex);
-            JIPipeProgressInfo subProgress = progress.resolve("Algorithm: " + node.getName());
+            progressInfo.setProgress(absoluteIndex);
+            JIPipeProgressInfo subProgress = progressInfo.resolve("Algorithm: " + node.getName());
             runNode(executedAlgorithms, node, subProgress);
         }
     }
 
-    private void runNode(Set<JIPipeGraphNode> executedAlgorithms, JIPipeGraphNode node, JIPipeProgressInfo progress) {
-        progress.log("");
+    private void runNode(Set<JIPipeGraphNode> executedAlgorithms, JIPipeGraphNode node, JIPipeProgressInfo progressInfo) {
+        progressInfo.log("");
 
         // If enabled try to extract outputs from cache
         boolean dataLoadedFromCache = false;
         if (configuration.isLoadFromCache()) {
-            dataLoadedFromCache = tryLoadFromCache(node, progress);
+            dataLoadedFromCache = tryLoadFromCache(node, progressInfo);
         }
 
         if (!dataLoadedFromCache) {
@@ -314,7 +314,7 @@ public class JIPipeRun implements JIPipeRunnable {
                 if (node instanceof JIPipeAlgorithm) {
                     ((JIPipeAlgorithm) node).setThreadPool(threadPool);
                 }
-                node.run(progress);
+                node.run(progressInfo);
             } catch (HeadlessException e) {
                 throw new UserFriendlyRuntimeException("Algorithm " + node + " does not work in a headless environment!",
                         e,
@@ -335,7 +335,7 @@ public class JIPipeRun implements JIPipeRunnable {
                 }
             }
         } else {
-            progress.log("Output data was loaded from cache. Not executing.");
+            progressInfo.log("Output data was loaded from cache. Not executing.");
         }
 
         executedAlgorithms.add(node);
@@ -347,18 +347,18 @@ public class JIPipeRun implements JIPipeRunnable {
      * @param algorithm the target algorithm
      * @return if successful. This means all output slots were restored.
      */
-    private boolean tryLoadFromCache(JIPipeGraphNode algorithm, JIPipeProgressInfo progress) {
+    private boolean tryLoadFromCache(JIPipeGraphNode algorithm, JIPipeProgressInfo progressInfo) {
         if (!configuration.isLoadFromCache())
             return false;
         JIPipeGraphNode projectAlgorithm = cacheQuery.getNode(algorithm.getIdInGraph());
         JIPipeProjectCache.State stateId = cacheQuery.getCachedId(projectAlgorithm);
         Map<String, JIPipeDataSlot> cachedData = project.getCache().extract((JIPipeAlgorithm) projectAlgorithm, stateId);
         if (!cachedData.isEmpty()) {
-            progress.log(String.format("Accessing cache with slots %s via state id %s", String.join(", ",
+            progressInfo.log(String.format("Accessing cache with slots %s via state id %s", String.join(", ",
                     cachedData.keySet()), stateId));
             for (JIPipeDataSlot outputSlot : algorithm.getOutputSlots()) {
                 if (!cachedData.containsKey(outputSlot.getName())) {
-                    progress.log(String.format("Cache access failed. Missing output slot %s", outputSlot.getName()));
+                    progressInfo.log(String.format("Cache access failed. Missing output slot %s", outputSlot.getName()));
                     return false;
                 }
             }
@@ -366,7 +366,7 @@ public class JIPipeRun implements JIPipeRunnable {
                 outputSlot.clearData(false);
                 outputSlot.addData(cachedData.get(outputSlot.getName()));
             }
-            progress.log("Cache data access successful.");
+            progressInfo.log("Cache data access successful.");
             return true;
         }
         return false;

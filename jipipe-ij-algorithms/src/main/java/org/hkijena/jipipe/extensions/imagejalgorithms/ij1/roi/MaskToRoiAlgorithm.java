@@ -51,8 +51,8 @@ public class MaskToRoiAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
-        ImagePlusGreyscaleMaskData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscaleMaskData.class);
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+        ImagePlusGreyscaleMaskData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscaleMaskData.class, progressInfo);
         ROIListData result = new ROIListData();
         ImageJUtils.forEachIndexedZCTSlice(inputData.getImage(), (ip, index) -> {
             int threshold = ip.isInvertedLut() ? 255 : 0;
@@ -63,7 +63,7 @@ public class MaskToRoiAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             roi.setPosition(index.getC() + 1, index.getZ() + 1, index.getT() + 1);
             result.add(roi);
         });
-        dataBatch.addOutputData(getFirstOutputSlot(), result);
+        dataBatch.addOutputData(getFirstOutputSlot(), result, progressInfo);
     }
 
     @JIPipeDocumentation(name = "Threshold", description = "Pixel values equal or higher to this value are added to the ROI.")

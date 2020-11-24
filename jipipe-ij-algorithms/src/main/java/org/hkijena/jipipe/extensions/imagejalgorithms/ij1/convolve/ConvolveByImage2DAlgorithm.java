@@ -64,9 +64,9 @@ public class ConvolveByImage2DAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
-        ImagePlus img = dataBatch.getInputData("Image", ImagePlusData.class).getDuplicateImage();
-        ImagePlus imgKernel = dataBatch.getInputData("Kernel", ImagePlus2DGreyscale32FData.class).getDuplicateImage();
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+        ImagePlus img = dataBatch.getInputData("Image", ImagePlusData.class, progressInfo).getDuplicateImage();
+        ImagePlus imgKernel = dataBatch.getInputData("Kernel", ImagePlus2DGreyscale32FData.class, progressInfo).getDuplicateImage();
         FloatProcessor processor = (FloatProcessor) imgKernel.getProcessor();
 
         Convolver convolver = new Convolver();
@@ -79,6 +79,6 @@ public class ConvolveByImage2DAlgorithm extends JIPipeIteratingAlgorithm {
 
         ImageJUtils.forEachSlice(img, imp -> convolver.convolve(imp, kernel, imgKernel.getWidth(), imgKernel.getHeight()));
 
-        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(img));
+        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(img), progressInfo);
     }
 }

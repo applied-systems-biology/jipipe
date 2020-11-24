@@ -116,7 +116,7 @@ public abstract class PlotData implements JIPipeData, JIPipeParameterCollection,
     }
 
     @Override
-    public void saveTo(Path storageFilePath, String name, boolean forceName, JIPipeProgressInfo progress) {
+    public void saveTo(Path storageFilePath, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
         // Export metadata
         try {
             if (!forceName) {
@@ -135,9 +135,9 @@ public abstract class PlotData implements JIPipeData, JIPipeParameterCollection,
         // Export series
         for (int i = 0; i < series.size(); ++i) {
             if (forceName) {
-                series.get(i).saveTo(storageFilePath, name + "_" + "series" + i, forceName, progress);
+                series.get(i).saveTo(storageFilePath, name + "_" + "series" + i, forceName, progressInfo);
             } else {
-                series.get(i).saveTo(storageFilePath, "series" + i, forceName, progress);
+                series.get(i).saveTo(storageFilePath, "series" + i, forceName, progressInfo);
             }
         }
 

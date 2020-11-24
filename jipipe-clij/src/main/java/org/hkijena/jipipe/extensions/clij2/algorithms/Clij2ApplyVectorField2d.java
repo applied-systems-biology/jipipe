@@ -47,16 +47,16 @@ public class Clij2ApplyVectorField2d extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         CLIJ2 clij2 = CLIJ2.getInstance();
         CLIJ clij = clij2.getCLIJ();
-        ClearCLBuffer src = dataBatch.getInputData(getInputSlot("src"), CLIJImageData.class).getImage();
-        ClearCLBuffer vectorX = dataBatch.getInputData(getInputSlot("vectorX"), CLIJImageData.class).getImage();
-        ClearCLBuffer vectorY = dataBatch.getInputData(getInputSlot("vectorY"), CLIJImageData.class).getImage();
+        ClearCLBuffer src = dataBatch.getInputData(getInputSlot("src"), CLIJImageData.class, progressInfo).getImage();
+        ClearCLBuffer vectorX = dataBatch.getInputData(getInputSlot("vectorX"), CLIJImageData.class, progressInfo).getImage();
+        ClearCLBuffer vectorY = dataBatch.getInputData(getInputSlot("vectorY"), CLIJImageData.class, progressInfo).getImage();
         ClearCLBuffer dst = clij2.create(src);
         ApplyVectorField2D.applyVectorField(clij2, src, vectorX, vectorY, dst);
 
-        dataBatch.addOutputData(getOutputSlot("dst"), new CLIJImageData(dst));
+        dataBatch.addOutputData(getOutputSlot("dst"), new CLIJImageData(dst), progressInfo);
     }
 
 }

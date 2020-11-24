@@ -41,12 +41,7 @@ import org.jgrapht.Graphs;
 import org.jgrapht.alg.connectivity.ConnectivityInspector;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.DefaultUndirectedGraph;
-import org.jgrapht.nio.Attribute;
-import org.jgrapht.nio.AttributeType;
-import org.jgrapht.nio.DefaultAttribute;
-import org.jgrapht.nio.dot.DOTExporter;
 
-import java.io.File;
 import java.util.*;
 
 @JIPipeDocumentation(name = "Split into connected components", description = "Algorithm that extracts connected components across one or multiple dimensions. The output consists of multiple ROI lists, one for each connected component.")
@@ -84,8 +79,8 @@ public class SplitRoiConnectedComponentsAlgorithm extends ImageRoiProcessorAlgor
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
-        ROIListData input = (ROIListData) dataBatch.getInputData("ROI", ROIListData.class).duplicate();
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+        ROIListData input = (ROIListData) dataBatch.getInputData("ROI", ROIListData.class, progressInfo).duplicate();
         DefaultUndirectedGraph<Integer, DefaultEdge> graph = new DefaultUndirectedGraph<>(DefaultEdge.class);
         for (int i = 0; i < input.size(); i++) {
             // Add to graph
@@ -102,7 +97,7 @@ public class SplitRoiConnectedComponentsAlgorithm extends ImageRoiProcessorAlgor
         ImagePlus referenceImage = null;
         if (withFiltering) {
             // Generate measurements
-            Map<ImagePlusData, ROIListData> referenceImages = getReferenceImage(dataBatch, progress);
+            Map<ImagePlusData, ROIListData> referenceImages = getReferenceImage(dataBatch, progressInfo);
             if (referenceImages.size() != 1) {
                 throw new UserFriendlyRuntimeException("Require unique reference image!",
                         "Algorithm " + getName(),
@@ -116,7 +111,7 @@ public class SplitRoiConnectedComponentsAlgorithm extends ImageRoiProcessorAlgor
         int currentProgress = 0;
         int currentProgressPercentage = 0;
         int maxProgress = (input.size() * input.size()) / 2;
-        JIPipeProgressInfo subProgress = progress.resolve("Overlap tests");
+        JIPipeProgressInfo subProgress = progressInfo.resolve("Overlap tests");
         for (int i = 0; i < input.size(); i++) {
             for (int j = i + 1; j < input.size(); j++) {
                 ++currentProgress;
@@ -209,9 +204,9 @@ public class SplitRoiConnectedComponentsAlgorithm extends ImageRoiProcessorAlgor
                 rois.add(input.get(index));
             }
             if (componentNameAnnotation.isEnabled()) {
-                dataBatch.addOutputData(getFirstOutputSlot(), rois, Collections.singletonList(new JIPipeAnnotation(componentNameAnnotation.getContent(), outputIndex + "")), JIPipeAnnotationMergeStrategy.Merge);
+                dataBatch.addOutputData(getFirstOutputSlot(), rois, Collections.singletonList(new JIPipeAnnotation(componentNameAnnotation.getContent(), outputIndex + "")), JIPipeAnnotationMergeStrategy.Merge, progressInfo);
             } else {
-                dataBatch.addOutputData(getFirstOutputSlot(), rois);
+                dataBatch.addOutputData(getFirstOutputSlot(), rois, progressInfo);
             }
             ++outputIndex;
         }

@@ -71,8 +71,8 @@ public class AnnotationTableToPaths extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
-        AnnotationTableData tableData = dataBatch.getInputData(getFirstInputSlot(), AnnotationTableData.class);
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+        AnnotationTableData tableData = dataBatch.getInputData(getFirstInputSlot(), AnnotationTableData.class, progressInfo);
         TableColumn tableColumn = column.pickColumn(tableData);
         if (tableColumn == null) {
             throw new UserFriendlyRuntimeException("Could not find column that matches '" + column.toString() + "'!",
@@ -93,7 +93,7 @@ public class AnnotationTableToPaths extends JIPipeSimpleIteratingAlgorithm {
             }
 
             String data = tableColumn.getRowAsString(row);
-            dataBatch.addOutputData(getFirstOutputSlot(), new PathData(Paths.get(data)), annotations, JIPipeAnnotationMergeStrategy.Merge);
+            dataBatch.addOutputData(getFirstOutputSlot(), new PathData(Paths.get(data)), annotations, JIPipeAnnotationMergeStrategy.Merge, progressInfo);
         }
     }
 

@@ -75,8 +75,8 @@ public class PercentileThreshold8U2DAlgorithm extends JIPipeSimpleIteratingAlgor
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
-        ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscale8UData.class);
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+        ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscale8UData.class, progressInfo);
         ImagePlus img = inputData.getDuplicateImage();
         ImageJUtils.forEachSlice(img, ip -> {
             int[] histogram = ip.getHistogram(256);
@@ -96,7 +96,7 @@ public class PercentileThreshold8U2DAlgorithm extends JIPipeSimpleIteratingAlgor
             }
             ip.threshold(thresh);
         });
-        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleMaskData(img));
+        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleMaskData(img), progressInfo);
     }
 
 

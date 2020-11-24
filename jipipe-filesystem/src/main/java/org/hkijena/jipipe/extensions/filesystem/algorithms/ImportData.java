@@ -60,10 +60,10 @@ public class ImportData extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         if (ignoreInputAnnotations)
             dataBatch.setAnnotations(new HashMap<>());
-        Path dataFolder = dataBatch.getInputData(getFirstInputSlot(), FolderData.class).getPath();
+        Path dataFolder = dataBatch.getInputData(getFirstInputSlot(), FolderData.class, progressInfo).getPath();
         if (!Files.exists(dataFolder.resolve("data-table.json"))) {
             throw new UserFriendlyRuntimeException("Missing data-table.json!",
                     "Wrong input folder!",
@@ -82,12 +82,12 @@ public class ImportData extends JIPipeSimpleIteratingAlgorithm {
         }
 
         for (JIPipeExportedDataTable.Row row : exportedDataTable.getRowList()) {
-            progress.log("Importing data row " + row.getIndex());
+            progressInfo.log("Importing data row " + row.getIndex());
             Path storageFolder = dataFolder.resolve("" + row.getIndex());
             List<JIPipeAnnotation> annotationList = ignoreImportedDataAnnotations ? Collections.emptyList() : row.getAnnotations();
             JIPipeDataInfo trueDataType = exportedDataTable.getDataTypeOf(row.getIndex());
             JIPipeData data = JIPipe.importData(storageFolder, trueDataType.getDataClass());
-            dataBatch.addOutputData(getFirstOutputSlot(), data, annotationList, annotationMergeStrategy);
+            dataBatch.addOutputData(getFirstOutputSlot(), data, annotationList, annotationMergeStrategy, progressInfo);
         }
     }
 

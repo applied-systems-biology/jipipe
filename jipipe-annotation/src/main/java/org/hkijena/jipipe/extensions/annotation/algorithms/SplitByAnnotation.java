@@ -68,16 +68,16 @@ public class SplitByAnnotation extends JIPipeAlgorithm {
     }
 
     @Override
-    public void run(JIPipeProgressInfo progress) {
+    public void run(JIPipeProgressInfo progressInfo) {
         JIPipeDataSlot inputSlot = getFirstInputSlot();
         List<String> outputSlotKeys = getOutputSlotMap().keySet().stream().sorted().collect(Collectors.toList());
         for (int row = 0; row < inputSlot.getRowCount(); ++row) {
             List<JIPipeAnnotation> annotations = inputSlot.getAnnotations(row);
-            String dataString = inputSlot.getData(row, JIPipeData.class).toString();
+            String dataString = inputSlot.getData(row, JIPipeData.class, progressInfo).toString();
             for (String outputSlotKey : outputSlotKeys) {
                 AnnotationGeneratorExpression expression = targetSlots.get(outputSlotKey).get(AnnotationGeneratorExpression.class);
                 if (expression.test(annotations, dataString)) {
-                    getOutputSlot(outputSlotKey).addData(inputSlot.getData(row, JIPipeData.class), annotations, JIPipeAnnotationMergeStrategy.Merge);
+                    getOutputSlot(outputSlotKey).addData(inputSlot.getData(row, JIPipeData.class, progressInfo), annotations, JIPipeAnnotationMergeStrategy.Merge, progressInfo);
                 }
             }
         }

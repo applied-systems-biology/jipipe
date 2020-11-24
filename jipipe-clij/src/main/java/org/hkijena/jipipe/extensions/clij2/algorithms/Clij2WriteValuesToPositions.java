@@ -45,14 +45,14 @@ public class Clij2WriteValuesToPositions extends JIPipeSimpleIteratingAlgorithm 
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         CLIJ2 clij2 = CLIJ2.getInstance();
         CLIJ clij = clij2.getCLIJ();
-        ClearCLBuffer positionsAndValues = dataBatch.getInputData(getInputSlot("positionsAndValues"), CLIJImageData.class).getImage();
+        ClearCLBuffer positionsAndValues = dataBatch.getInputData(getInputSlot("positionsAndValues"), CLIJImageData.class, progressInfo).getImage();
         ClearCLBuffer dst = clij2.create(positionsAndValues);
         WriteValuesToPositions.writeValuesToPositions(clij2, positionsAndValues, dst);
 
-        dataBatch.addOutputData(getOutputSlot("dst"), new CLIJImageData(dst));
+        dataBatch.addOutputData(getOutputSlot("dst"), new CLIJImageData(dst), progressInfo);
     }
 
 }

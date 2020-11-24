@@ -51,15 +51,15 @@ public class Clij2ExcludeLabelsWithValuesWithinRange extends JIPipeIteratingAlgo
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         CLIJ2 clij2 = CLIJ2.getInstance();
         CLIJ clij = clij2.getCLIJ();
-        ClearCLBuffer values = dataBatch.getInputData(getInputSlot("values"), CLIJImageData.class).getImage();
-        ClearCLBuffer label_map_in = dataBatch.getInputData(getInputSlot("label_map_in"), CLIJImageData.class).getImage();
+        ClearCLBuffer values = dataBatch.getInputData(getInputSlot("values"), CLIJImageData.class, progressInfo).getImage();
+        ClearCLBuffer label_map_in = dataBatch.getInputData(getInputSlot("label_map_in"), CLIJImageData.class, progressInfo).getImage();
         ClearCLBuffer label_map_out = clij2.create(values);
         ExcludeLabelsWithValuesWithinRange.excludeLabelsWithValuesWithinRange(clij2, values, label_map_in, label_map_out, min, max);
 
-        dataBatch.addOutputData(getOutputSlot("label_map_out"), new CLIJImageData(label_map_out));
+        dataBatch.addOutputData(getOutputSlot("label_map_out"), new CLIJImageData(label_map_out), progressInfo);
     }
 
     @JIPipeParameter("min")

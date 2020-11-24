@@ -62,8 +62,8 @@ public class AddAnnotationColumnsAlgorithm extends JIPipeSimpleIteratingAlgorith
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
-        ResultsTableData resultsTableData = new ResultsTableData(dataBatch.getInputData(getFirstInputSlot(), ResultsTableData.class));
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+        ResultsTableData resultsTableData = new ResultsTableData(dataBatch.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo));
         for (Map.Entry<String, JIPipeAnnotation> entry : dataBatch.getAnnotations().entrySet()) {
             if (!annotationNameFilter.test(entry.getKey()))
                 continue;
@@ -72,7 +72,7 @@ public class AddAnnotationColumnsAlgorithm extends JIPipeSimpleIteratingAlgorith
                 resultsTableData.setValueAt(entry.getValue() != null ? "" + entry.getValue().getValue() : "", row, col);
             }
         }
-        dataBatch.addOutputData(getFirstOutputSlot(), resultsTableData);
+        dataBatch.addOutputData(getFirstOutputSlot(), resultsTableData, progressInfo);
     }
 
     @JIPipeDocumentation(name = "Annotation prefix", description = "Prefix added to columns generated from data annotations.")

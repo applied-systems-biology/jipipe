@@ -6,6 +6,7 @@ import com.google.common.collect.Sets;
 import net.imagej.ImageJ;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeRegistryIssues;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
@@ -313,16 +314,16 @@ public class JIPipeMergingDataBatchBuilder {
         ExtensionSettings settings = new ExtensionSettings();
         JIPipeRegistryIssues issues = new JIPipeRegistryIssues();
         jiPipe.initialize(settings, issues);
-
+        JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
         JIPipeDataSlot slot1 = new JIPipeDataSlot(new JIPipeDataSlotInfo(StringData.class, JIPipeSlotType.Input, "slot1", null), null);
-        slot1.addData(new StringData("A"), Arrays.asList(new JIPipeAnnotation("C1", "A"), new JIPipeAnnotation("C2", "X")), JIPipeAnnotationMergeStrategy.Merge);
-        slot1.addData(new StringData("B"), Arrays.asList(new JIPipeAnnotation("C1", "B"), new JIPipeAnnotation("C2", "Y")), JIPipeAnnotationMergeStrategy.Merge);
-        slot1.addData(new StringData("C"), Arrays.asList(new JIPipeAnnotation("C1", "C"), new JIPipeAnnotation("C3", "Z")), JIPipeAnnotationMergeStrategy.Merge);
+        slot1.addData(new StringData("A"), Arrays.asList(new JIPipeAnnotation("C1", "A"), new JIPipeAnnotation("C2", "X")), JIPipeAnnotationMergeStrategy.Merge, progressInfo);
+        slot1.addData(new StringData("B"), Arrays.asList(new JIPipeAnnotation("C1", "B"), new JIPipeAnnotation("C2", "Y")), JIPipeAnnotationMergeStrategy.Merge, progressInfo);
+        slot1.addData(new StringData("C"), Arrays.asList(new JIPipeAnnotation("C1", "C"), new JIPipeAnnotation("C3", "Z")), JIPipeAnnotationMergeStrategy.Merge, progressInfo);
 
         JIPipeDataSlot slot2 = new JIPipeDataSlot(new JIPipeDataSlotInfo(StringData.class, JIPipeSlotType.Input, "slot2", null), null);
-        slot2.addData(new StringData("A"), Arrays.asList(new JIPipeAnnotation("C1", "A"), new JIPipeAnnotation("C2", "X")), JIPipeAnnotationMergeStrategy.Merge);
-        slot2.addData(new StringData("B"), Arrays.asList(new JIPipeAnnotation("C1", "B"), new JIPipeAnnotation("C2", "Y")), JIPipeAnnotationMergeStrategy.Merge);
-        slot2.addData(new StringData("C"), Arrays.asList(new JIPipeAnnotation("C1", "C"), new JIPipeAnnotation("C3", "Z")), JIPipeAnnotationMergeStrategy.Merge);
+        slot2.addData(new StringData("A"), Arrays.asList(new JIPipeAnnotation("C1", "A"), new JIPipeAnnotation("C2", "X")), JIPipeAnnotationMergeStrategy.Merge, progressInfo);
+        slot2.addData(new StringData("B"), Arrays.asList(new JIPipeAnnotation("C1", "B"), new JIPipeAnnotation("C2", "Y")), JIPipeAnnotationMergeStrategy.Merge, progressInfo);
+        slot2.addData(new StringData("C"), Arrays.asList(new JIPipeAnnotation("C1", "C"), new JIPipeAnnotation("C3", "Z")), JIPipeAnnotationMergeStrategy.Merge, progressInfo);
 
         JIPipeMergingDataBatchBuilder builder = new JIPipeMergingDataBatchBuilder();
         builder.setAnnotationMergeStrategy(JIPipeAnnotationMergeStrategy.Merge);

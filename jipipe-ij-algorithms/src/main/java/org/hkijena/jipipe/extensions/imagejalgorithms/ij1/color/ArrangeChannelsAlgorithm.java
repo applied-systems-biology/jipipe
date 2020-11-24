@@ -74,8 +74,8 @@ public class ArrangeChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
-        ImagePlus image = dataBatch.getInputData(getFirstInputSlot(), ImagePlusColorData.class).getImage();
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+        ImagePlus image = dataBatch.getInputData(getFirstInputSlot(), ImagePlusColorData.class, progressInfo).getImage();
 
         // First determine the number of output channels and generate the order array
         int nChannels;
@@ -110,7 +110,7 @@ public class ArrangeChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         }
 
         ImagePlus result = ChannelArranger.run(image, order);
-        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusColorData(result));
+        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusColorData(result), progressInfo);
     }
 
     @Override

@@ -46,11 +46,11 @@ public class BioFormatsExporter extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
-        OMEImageData input = dataBatch.getInputData(getFirstInputSlot(), OMEImageData.class);
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+        OMEImageData input = dataBatch.getInputData(getFirstInputSlot(), OMEImageData.class, progressInfo);
         OMEImageData output = (OMEImageData) input.duplicate();
         output.setExporterSettings(new OMEExporterSettings(exporterSettings));
-        dataBatch.addOutputData(getFirstOutputSlot(), output);
+        dataBatch.addOutputData(getFirstOutputSlot(), output, progressInfo);
     }
 
     @JIPipeDocumentation(name = "Exporter settings", description = "The following settings control how files are exported:")

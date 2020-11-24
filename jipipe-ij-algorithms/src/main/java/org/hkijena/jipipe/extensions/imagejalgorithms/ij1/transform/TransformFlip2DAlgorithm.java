@@ -73,8 +73,8 @@ public class TransformFlip2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
-        ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class);
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+        ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo);
         ImagePlus img = inputData.getDuplicateImage();
         boolean fliph = flipMode == FlipMode.Horizontal || flipMode == FlipMode.Both;
         boolean flipv = flipMode == FlipMode.Vertical || flipMode == FlipMode.Both;
@@ -94,7 +94,7 @@ public class TransformFlip2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                     cal.yOrigin = img.getHeight() - 1 - cal.yOrigin;
             }
         });
-        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(img));
+        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(img), progressInfo);
     }
 
     @JIPipeDocumentation(name = "Flip direction", description = "The direction to flip")

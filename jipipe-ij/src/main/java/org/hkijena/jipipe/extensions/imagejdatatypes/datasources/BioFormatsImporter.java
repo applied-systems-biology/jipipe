@@ -112,8 +112,8 @@ public class BioFormatsImporter extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
-        FileData inputFile = dataBatch.getInputData(getFirstInputSlot(), FileData.class);
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+        FileData inputFile = dataBatch.getInputData(getFirstInputSlot(), FileData.class, progressInfo);
         ImporterOptions options;
         try {
             options = new ImporterOptions();
@@ -175,7 +175,7 @@ public class BioFormatsImporter extends JIPipeSimpleIteratingAlgorithm {
                     rois = ROIHandler.openROIs(process.getOMEMetadata(), new ImagePlus[]{image});
                 }
 
-                dataBatch.addOutputData(getFirstOutputSlot(), new OMEImageData(image, rois, omexmlMetadata), traits, JIPipeAnnotationMergeStrategy.Merge);
+                dataBatch.addOutputData(getFirstOutputSlot(), new OMEImageData(image, rois, omexmlMetadata), traits, JIPipeAnnotationMergeStrategy.Merge, progressInfo);
             }
         } catch (FormatException | IOException e) {
             throw new RuntimeException(e);

@@ -45,14 +45,14 @@ public class Clij2StatisticsOfLabelledPixels extends JIPipeSimpleIteratingAlgori
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         CLIJ2 clij2 = CLIJ2.getInstance();
         CLIJ clij = clij2.getCLIJ();
-        ClearCLBuffer inputImage = dataBatch.getInputData(getInputSlot("inputImage"), CLIJImageData.class).getImage();
+        ClearCLBuffer inputImage = dataBatch.getInputData(getInputSlot("inputImage"), CLIJImageData.class, progressInfo).getImage();
         ClearCLBuffer inputLabelMap = clij2.create(inputImage);
         StatisticsOfLabelledPixels.statisticsOfLabelledPixels(clij2, inputImage, inputLabelMap);
 
-        dataBatch.addOutputData(getOutputSlot("inputLabelMap"), new CLIJImageData(inputLabelMap));
+        dataBatch.addOutputData(getOutputSlot("inputLabelMap"), new CLIJImageData(inputLabelMap), progressInfo);
     }
 
 }

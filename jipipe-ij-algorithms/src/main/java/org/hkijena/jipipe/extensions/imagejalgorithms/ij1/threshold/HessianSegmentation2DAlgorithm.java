@@ -129,13 +129,13 @@ public class HessianSegmentation2DAlgorithm extends JIPipeSimpleIteratingAlgorit
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
-        ImagePlus img = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class).getImage();
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+        ImagePlus img = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class, progressInfo).getImage();
         ImageStack stack = new ImageStack(img.getWidth(), img.getHeight(), img.getProcessor().getColorModel());
         AutoThreshold2DAlgorithm autoThresholdingCopy = new AutoThreshold2DAlgorithm(autoThresholding);
 
         ImageJUtils.forEachIndexedSlice(img, (imp, index) -> {
-            progress.log("Slice " + index + "/" + img.getStackSize());
+            progressInfo.log("Slice " + index + "/" + img.getStackSize());
             ImagePlus slice = new ImagePlus("slice", imp.duplicate());
             // Apply hessian
             ImagePlus processedSlice = applyHessian(slice);
@@ -146,9 +146,9 @@ public class HessianSegmentation2DAlgorithm extends JIPipeSimpleIteratingAlgorit
 
             // Convert to mask
             autoThresholdingCopy.clearSlotData();
-            autoThresholdingCopy.getFirstInputSlot().addData(new ImagePlus2DGreyscaleData(processedSlice));
-            autoThresholdingCopy.run(progress);
-            processedSlice = autoThresholdingCopy.getFirstOutputSlot().getData(0, ImagePlusData.class).getImage();
+            autoThresholdingCopy.getFirstInputSlot().addData(new ImagePlus2DGreyscaleData(processedSlice), progressInfo);
+            autoThresholdingCopy.run(progressInfo);
+            processedSlice = autoThresholdingCopy.getFirstOutputSlot().getData(0, ImagePlusData.class, progressInfo).getImage();
 
             // Despeckle x2
             if (applyDespeckle)
@@ -158,7 +158,7 @@ public class HessianSegmentation2DAlgorithm extends JIPipeSimpleIteratingAlgorit
         ImagePlus result = new ImagePlus("Segmented Image", stack);
         result.setDimensions(img.getNChannels(), img.getNSlices(), img.getNFrames());
 
-        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleMaskData(result));
+        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleMaskData(result), progressInfo);
     }
 
     @JIPipeParameter("smoothing")

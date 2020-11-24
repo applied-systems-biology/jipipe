@@ -62,9 +62,9 @@ public class FileListDataSource extends JIPipeAlgorithm {
     }
 
     @Override
-    public void run(JIPipeProgressInfo progress) {
+    public void run(JIPipeProgressInfo progressInfo) {
         for (Path path : fileNames) {
-            getFirstOutputSlot().addData(new FileData(path));
+            getFirstOutputSlot().addData(new FileData(path), progressInfo);
         }
     }
 

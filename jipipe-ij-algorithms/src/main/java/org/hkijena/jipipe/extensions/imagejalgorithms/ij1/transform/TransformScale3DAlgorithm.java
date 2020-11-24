@@ -86,8 +86,8 @@ public class TransformScale3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
-        ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class);
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+        ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo);
         ImagePlus img = inputData.getImage();
 
         // Scale in 2D if needed
@@ -110,9 +110,9 @@ public class TransformScale3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             scale2DAlgorithm.clearSlotData();
             scale2DAlgorithm.setxAxis(xAxis);
             scale2DAlgorithm.setyAxis(yAxis);
-            scale2DAlgorithm.getFirstInputSlot().addData(new ImagePlusData(img));
-            scale2DAlgorithm.run(progress);
-            img = scale2DAlgorithm.getFirstOutputSlot().getData(0, ImagePlusData.class).getImage();
+            scale2DAlgorithm.getFirstInputSlot().addData(new ImagePlusData(img), progressInfo);
+            scale2DAlgorithm.run(progressInfo);
+            img = scale2DAlgorithm.getFirstOutputSlot().getData(0, ImagePlusData.class, progressInfo).getImage();
         }
 
         // Scale in 3D
@@ -129,7 +129,7 @@ public class TransformScale3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             img = resizer.zScale(img, sz, interpolationMethod.getNativeValue());
         }
 
-        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(img));
+        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(img), progressInfo);
     }
 
 

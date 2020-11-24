@@ -58,9 +58,9 @@ public class CropToRoiAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
-        ImagePlus input = dataBatch.getInputData("Image", ImagePlusData.class).getImage();
-        ROIListData rois = dataBatch.getInputData("ROI", ROIListData.class);
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+        ImagePlus input = dataBatch.getInputData("Image", ImagePlusData.class, progressInfo).getImage();
+        ROIListData rois = dataBatch.getInputData("ROI", ROIListData.class, progressInfo);
         Rectangle bounds = rois.getBounds();
 
         if (input.getStackSize() <= 1) {
@@ -69,9 +69,9 @@ public class CropToRoiAlgorithm extends JIPipeIteratingAlgorithm {
                 ip.setRoi(bounds);
                 ImageProcessor cropped = ip.crop();
                 ip.resetRoi();
-                dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(new ImagePlus("Cropped " + bounds, cropped)));
+                dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(new ImagePlus("Cropped " + bounds, cropped)), progressInfo);
             } else {
-                dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(input));
+                dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(input), progressInfo);
             }
             return;
         }
@@ -140,7 +140,7 @@ public class CropToRoiAlgorithm extends JIPipeIteratingAlgorithm {
                 stack.addSlice(cropped);
             }
         });
-        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(new ImagePlus("Cropped", stack)));
+        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(new ImagePlus("Cropped", stack)), progressInfo);
     }
 
     @JIPipeDocumentation(name = "Crop XY plane", description = "If enabled, images are cropped according to the boundaries in the XY plane.")

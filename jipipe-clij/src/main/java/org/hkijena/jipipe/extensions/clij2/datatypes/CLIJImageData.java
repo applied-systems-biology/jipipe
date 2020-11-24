@@ -55,9 +55,9 @@ public class CLIJImageData implements JIPipeData {
     }
 
     @Override
-    public void saveTo(Path storageFilePath, String name, boolean forceName, JIPipeProgressInfo progress) {
+    public void saveTo(Path storageFilePath, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
         ImagePlusData data = pull();
-        data.saveTo(storageFilePath, name, forceName, progress);
+        data.saveTo(storageFilePath, name, forceName, progressInfo);
     }
 
     @Override

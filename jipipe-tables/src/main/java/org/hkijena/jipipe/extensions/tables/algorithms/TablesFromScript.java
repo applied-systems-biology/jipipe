@@ -103,7 +103,7 @@ public class TablesFromScript extends JIPipeAlgorithm {
     }
 
     @Override
-    public void run(JIPipeProgressInfo progress) {
+    public void run(JIPipeProgressInfo progressInfo) {
         this.pythonInterpreter = new PythonInterpreter();
         PythonUtils.passParametersToPython(pythonInterpreter, scriptParameters);
 
@@ -113,7 +113,7 @@ public class TablesFromScript extends JIPipeAlgorithm {
         for (PyDictionary row : rows) {
             ResultsTableData data = ResultsTableData.fromPython((PyDictionary) row.get("data"));
             List<JIPipeAnnotation> annotations = JIPipeAnnotation.extractAnnotationsFromPython((PyDictionary) row.getOrDefault("annotations", new PyDictionary()));
-            getFirstOutputSlot().addData(data, annotations, JIPipeAnnotationMergeStrategy.Merge);
+            getFirstOutputSlot().addData(data, annotations, JIPipeAnnotationMergeStrategy.Merge, progressInfo);
         }
 
         this.pythonInterpreter = null;

@@ -45,14 +45,14 @@ public class Clij2Watershed extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         CLIJ2 clij2 = CLIJ2.getInstance();
         CLIJ clij = clij2.getCLIJ();
-        ClearCLBuffer thresholded = dataBatch.getInputData(getInputSlot("thresholded"), CLIJImageData.class).getImage();
+        ClearCLBuffer thresholded = dataBatch.getInputData(getInputSlot("thresholded"), CLIJImageData.class, progressInfo).getImage();
         ClearCLBuffer output = clij2.create(thresholded);
         Watershed.watershed(clij2, thresholded, output);
 
-        dataBatch.addOutputData(getOutputSlot("output"), new CLIJImageData(output));
+        dataBatch.addOutputData(getOutputSlot("output"), new CLIJImageData(output), progressInfo);
     }
 
 }

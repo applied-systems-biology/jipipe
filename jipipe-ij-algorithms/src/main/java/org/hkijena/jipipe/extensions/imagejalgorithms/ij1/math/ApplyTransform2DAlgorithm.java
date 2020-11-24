@@ -65,8 +65,8 @@ public class ApplyTransform2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
-        ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class);
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+        ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo);
         ImagePlus img = inputData.getDuplicateImage();
         ImageJUtils.forEachSlice(img, ip -> {
             switch (transformation) {
@@ -90,7 +90,7 @@ public class ApplyTransform2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                     break;
             }
         });
-        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(img));
+        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(img), progressInfo);
     }
 
     @JIPipeDocumentation(name = "Function", description = "The function that is applied to each pixel.")

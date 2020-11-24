@@ -52,7 +52,7 @@ public class MergeDataSlots extends JIPipeAlgorithm {
     }
 
     @Override
-    public void run(JIPipeProgressInfo progress) {
+    public void run(JIPipeProgressInfo progressInfo) {
         JIPipeDataSlot outputSlot = getFirstOutputSlot();
         for (JIPipeDataSlot inputSlot : getInputSlots()) {
             outputSlot.addData(inputSlot);

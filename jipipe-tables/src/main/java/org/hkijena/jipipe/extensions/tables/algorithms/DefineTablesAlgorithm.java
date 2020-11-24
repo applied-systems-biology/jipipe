@@ -53,9 +53,9 @@ public class DefineTablesAlgorithm extends JIPipeAlgorithm {
     }
 
     @Override
-    public void run(JIPipeProgressInfo progress) {
+    public void run(JIPipeProgressInfo progressInfo) {
         for (ResultsTableData table : tables) {
-            getFirstOutputSlot().addData(new ResultsTableData(table));
+            getFirstOutputSlot().addData(new ResultsTableData(table), progressInfo);
         }
     }
 

@@ -99,8 +99,8 @@ public class TableToRectangularROIAlgorithm extends JIPipeSimpleIteratingAlgorit
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
-        ResultsTableData table = dataBatch.getInputData(getFirstInputSlot(), ResultsTableData.class);
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+        ResultsTableData table = dataBatch.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo);
         ROIListData rois = new ROIListData();
 
         TableColumn colX1 = columnX1.pickColumn(table);
@@ -187,7 +187,7 @@ public class TableToRectangularROIAlgorithm extends JIPipeSimpleIteratingAlgorit
             }
         }
 
-        dataBatch.addOutputData(getFirstOutputSlot(), rois);
+        dataBatch.addOutputData(getFirstOutputSlot(), rois, progressInfo);
     }
 
     private void createROI(ROIListData rois, int w, int h, int x, int y) {

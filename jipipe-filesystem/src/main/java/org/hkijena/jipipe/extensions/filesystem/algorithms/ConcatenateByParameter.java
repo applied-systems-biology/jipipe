@@ -62,9 +62,9 @@ public class ConcatenateByParameter extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
-        FolderData inputFolder = dataBatch.getInputData(getFirstInputSlot(), FolderData.class);
-        dataBatch.addOutputData(getFirstOutputSlot(), new FolderData(inputFolder.getPath().resolve(subPath)));
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+        FolderData inputFolder = dataBatch.getInputData(getFirstInputSlot(), FolderData.class, progressInfo);
+        dataBatch.addOutputData(getFirstOutputSlot(), new FolderData(inputFolder.getPath().resolve(subPath)), progressInfo);
     }
 
     /**

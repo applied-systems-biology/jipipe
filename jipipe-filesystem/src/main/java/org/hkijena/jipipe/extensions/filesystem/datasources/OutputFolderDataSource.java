@@ -27,8 +27,8 @@ public class OutputFolderDataSource extends JIPipeAlgorithm {
     }
 
     @Override
-    public void run(JIPipeProgressInfo progress) {
+    public void run(JIPipeProgressInfo progressInfo) {
         Path storagePath = getFirstOutputSlot().getStoragePath().getParent().getParent().getParent();
-        getFirstOutputSlot().addData(new PathData(storagePath));
+        getFirstOutputSlot().addData(new PathData(storagePath), progressInfo);
     }
 }

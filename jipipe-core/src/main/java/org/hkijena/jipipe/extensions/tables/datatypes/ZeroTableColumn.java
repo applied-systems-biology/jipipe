@@ -71,7 +71,7 @@ public class ZeroTableColumn implements TableColumn {
     }
 
     @Override
-    public void saveTo(Path storageFilePath, String name, boolean forceName, JIPipeProgressInfo progress) {
+    public void saveTo(Path storageFilePath, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
 
     }
 

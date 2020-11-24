@@ -45,14 +45,14 @@ public class Clij2NeighborsOfNeighbors extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         CLIJ2 clij2 = CLIJ2.getInstance();
         CLIJ clij = clij2.getCLIJ();
-        ClearCLBuffer touch_matrix = dataBatch.getInputData(getInputSlot("touch_matrix"), CLIJImageData.class).getImage();
+        ClearCLBuffer touch_matrix = dataBatch.getInputData(getInputSlot("touch_matrix"), CLIJImageData.class, progressInfo).getImage();
         ClearCLBuffer neighbor_matrix = clij2.create(touch_matrix);
         NeighborsOfNeighbors.neighborsOfNeighbors(clij2, touch_matrix, neighbor_matrix);
 
-        dataBatch.addOutputData(getOutputSlot("neighbor_matrix"), new CLIJImageData(neighbor_matrix));
+        dataBatch.addOutputData(getOutputSlot("neighbor_matrix"), new CLIJImageData(neighbor_matrix), progressInfo);
     }
 
 }

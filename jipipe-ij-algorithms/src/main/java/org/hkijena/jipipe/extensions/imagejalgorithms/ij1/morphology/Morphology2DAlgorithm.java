@@ -81,8 +81,8 @@ public class Morphology2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
-        ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscaleMaskData.class);
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+        ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscaleMaskData.class, progressInfo);
         ImagePlus img = inputData.getDuplicateImage();
         Strel strel = element.fromRadius(radius);
         ImageStack outputStack = new ImageStack(img.getWidth(), img.getHeight(), img.getProcessor().getColorModel());
@@ -97,7 +97,7 @@ public class Morphology2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         });
         ImagePlus result = new ImagePlus(operation.toString(), outputStack);
         result.setDimensions(img.getNChannels(), img.getNSlices(), img.getNFrames());
-        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(result));
+        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(result), progressInfo);
     }
 
 

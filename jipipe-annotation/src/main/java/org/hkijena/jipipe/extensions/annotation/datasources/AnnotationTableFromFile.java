@@ -54,11 +54,11 @@ public class AnnotationTableFromFile extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
-        FileData fileData = dataBatch.getInputData(getFirstInputSlot(), FileData.class);
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+        FileData fileData = dataBatch.getInputData(getFirstInputSlot(), FileData.class, progressInfo);
         try {
             ResultsTable resultsTable = ResultsTable.open(fileData.getPath().toString());
-            dataBatch.addOutputData(getFirstOutputSlot(), new AnnotationTableData(resultsTable));
+            dataBatch.addOutputData(getFirstOutputSlot(), new AnnotationTableData(resultsTable), progressInfo);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

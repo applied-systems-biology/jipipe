@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.api.data;
 
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.nodes.JIPipeEmptyNodeInfo;
@@ -147,13 +148,13 @@ public class JIPipeMergedDataSlotTable implements TableModel {
         else if (columnIndex == 2)
             return rowList.get(rowIndex);
         else if (columnIndex == 3)
-            return slotList.get(rowIndex).getData(rowList.get(rowIndex), JIPipeData.class);
+            return slotList.get(rowIndex).getData(rowList.get(rowIndex), JIPipeData.class, new JIPipeProgressInfo());
         else if (columnIndex == 4) {
             revalidatePreviewCache();
             Component preview = previewCache.get(rowIndex);
             if (preview == null) {
                 if (GeneralDataSettings.getInstance().isGenerateCachePreviews()) {
-                    JIPipeData data = slotList.get(rowIndex).getData(rowList.get(rowIndex), JIPipeData.class);
+                    JIPipeData data = slotList.get(rowIndex).getData(rowList.get(rowIndex), JIPipeData.class, new JIPipeProgressInfo());
                     preview = new JIPipeCachedDataPreview(table, data, true);
                     previewCache.set(rowIndex, preview);
                 } else {
@@ -163,7 +164,7 @@ public class JIPipeMergedDataSlotTable implements TableModel {
             }
             return preview;
         } else if (columnIndex == 5)
-            return "" + slotList.get(rowIndex).getData(rowList.get(rowIndex), JIPipeData.class);
+            return "" + slotList.get(rowIndex).getVirtualData(rowList.get(rowIndex)).getStringRepresentation();
         else {
             String traitColumn = traitColumns.get(columnIndex - 6);
             JIPipeDataSlot slot = slotList.get(rowIndex);

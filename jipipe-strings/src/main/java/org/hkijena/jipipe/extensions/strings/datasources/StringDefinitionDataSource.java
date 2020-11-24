@@ -42,8 +42,8 @@ public class StringDefinitionDataSource extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
-        dataBatch.addOutputData(getFirstOutputSlot(), new StringData(value));
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+        dataBatch.addOutputData(getFirstOutputSlot(), new StringData(value), progressInfo);
     }
 
     @JIPipeDocumentation(name = "Value", description = "The value that will be generated")

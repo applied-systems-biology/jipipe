@@ -78,9 +78,9 @@ public class RoiToMaskAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
-        ROIListData inputData = (ROIListData) dataBatch.getInputData("ROI", ROIListData.class).duplicate();
-        ImagePlus reference = dataBatch.getInputData("Image", ImagePlusData.class).getImage();
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+        ROIListData inputData = (ROIListData) dataBatch.getInputData("ROI", ROIListData.class, progressInfo).duplicate();
+        ImagePlus reference = dataBatch.getInputData("Image", ImagePlusData.class, progressInfo).getImage();
 
         // Find the bounds and future stack position
         int sx = reference.getWidth();
@@ -123,7 +123,7 @@ public class RoiToMaskAlgorithm extends JIPipeIteratingAlgorithm {
             }
         }
 
-        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(result));
+        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(result), progressInfo);
     }
 
     @JIPipeDocumentation(name = "Draw outline", description = "If enabled, draw a white outline of the ROI")

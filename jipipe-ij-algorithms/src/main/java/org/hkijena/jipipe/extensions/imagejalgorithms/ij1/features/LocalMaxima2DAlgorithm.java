@@ -84,8 +84,8 @@ public class LocalMaxima2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
-        ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class);
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+        ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo);
         ImagePlus img = inputData.getDuplicateImage();
 
         ImageStack resultStack = new ImageStack(img.getWidth(), img.getHeight(), img.getStackSize());
@@ -105,7 +105,7 @@ public class LocalMaxima2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         ImagePlus resultImage = new ImagePlus("Output", resultStack);
         resultImage.setDimensions(img.getNChannels(), img.getNSlices(), img.getNFrames());
 
-        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(resultImage));
+        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(resultImage), progressInfo);
     }
 
     @JIPipeDocumentation(name = "Height tolerance", description = "Maxima are accepted only if protruding more than this value from the ridge to a higher maximum")

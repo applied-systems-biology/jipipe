@@ -76,8 +76,8 @@ public class TransformRotate2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
-        ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class);
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+        ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo);
         ImagePlus imp = inputData.getDuplicateImage();
         for (int i = 0; i < rotations; ++i) {
             ImageJUtils.forEachSlice(imp, ip -> {
@@ -113,7 +113,7 @@ public class TransformRotate2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                 }
             });
         }
-        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(imp));
+        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(imp), progressInfo);
     }
 
 

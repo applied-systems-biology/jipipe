@@ -91,8 +91,8 @@ public class FrangiVesselnessFeatures extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
-        ImagePlusGreyscale32FData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscale32FData.class);
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+        ImagePlusGreyscale32FData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscale32FData.class, progressInfo);
         ImagePlus img = inputData.getImage();
 
         if (invert) {
@@ -104,7 +104,7 @@ public class FrangiVesselnessFeatures extends JIPipeSimpleIteratingAlgorithm {
         MultiTaskProgress multiTaskProgress = new MultiTaskProgress() {
             @Override
             public void updateProgress(double proportionDone, int taskIndex) {
-                progress.log("Frangi vesselness " + (int) (proportionDone * 100) + "%");
+                progressInfo.log("Frangi vesselness " + (int) (proportionDone * 100) + "%");
             }
 
             @Override
@@ -143,7 +143,7 @@ public class FrangiVesselnessFeatures extends JIPipeSimpleIteratingAlgorithm {
             throw new UnsupportedOperationException("Not implemented: " + slicingMode);
         }
 
-        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(result));
+        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(result), progressInfo);
     }
 
     @JIPipeParameter("num-scales")

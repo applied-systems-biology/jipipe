@@ -72,7 +72,7 @@ public class MultiParameterAlgorithm extends JIPipeAlgorithm {
     }
 
     @Override
-    public void run(JIPipeProgressInfo progress) {
+    public void run(JIPipeProgressInfo progressInfo) {
         checkInputSlots();
 
         // Backup default parameters
@@ -82,9 +82,9 @@ public class MultiParameterAlgorithm extends JIPipeAlgorithm {
         Map<String, String> changedParameterTraits = new HashMap<>();
 
         for (int row = 0; row < parameterSlot.getRowCount(); ++row) {
-            if (progress.isCancelled().get())
+            if (progressInfo.isCancelled().get())
                 return;
-            ParametersData parametersData = parameterSlot.getData(row, ParametersData.class);
+            ParametersData parametersData = parameterSlot.getData(row, ParametersData.class, progressInfo);
             for (Map.Entry<String, Object> entry : parametersData.getParameterData().entrySet()) {
                 JIPipeParameterAccess parameterAccess = parameters.getOrDefault(entry.getKey(), null);
                 if (parameterAccess == null) {
@@ -103,15 +103,15 @@ public class MultiParameterAlgorithm extends JIPipeAlgorithm {
 
         // Run algorithm for each parameter
         for (int row = 0; row < parameterSlot.getRowCount(); ++row) {
-            if (progress.isCancelled().get())
+            if (progressInfo.isCancelled().get())
                 return;
-            JIPipeProgressInfo parameterProgress = progress.resolveAndLog("Parameter set", row, parameterSlot.getRowCount());
-            ParametersData parametersData = parameterSlot.getData(row, ParametersData.class);
+            JIPipeProgressInfo parameterProgress = progressInfo.resolveAndLog("Parameter set", row, parameterSlot.getRowCount());
+            ParametersData parametersData = parameterSlot.getData(row, ParametersData.class, progressInfo);
 
             passParameters(parametersData, parameters);
             passInputData();
             algorithmInstance.run(parameterProgress);
-            passOutputData(parameters, changedParameterTraits);
+            passOutputData(parameters, changedParameterTraits, progressInfo);
 
             // Restore backup
             for (Map.Entry<String, Object> entry : defaultParameterSnapshot.entrySet()) {
@@ -129,16 +129,16 @@ public class MultiParameterAlgorithm extends JIPipeAlgorithm {
         return result;
     }
 
-    private void passOutputData(Map<String, JIPipeParameterAccess> parameters, Map<String, String> newParameters) {
+    private void passOutputData(Map<String, JIPipeParameterAccess> parameters, Map<String, String> newParameters, JIPipeProgressInfo progressInfo) {
         for (JIPipeDataSlot wrappedOutputSlot : algorithmInstance.getOutputSlots()) {
             JIPipeDataSlot outputSlot = getOutputSlot("Data " + wrappedOutputSlot.getName());
             for (int row = 0; row < wrappedOutputSlot.getRowCount(); ++row) {
-                JIPipeData data = wrappedOutputSlot.getData(row, JIPipeData.class);
+                JIPipeData data = wrappedOutputSlot.getData(row, JIPipeData.class, progressInfo);
                 List<JIPipeAnnotation> traits = wrappedOutputSlot.getAnnotations(row);
                 for (Map.Entry<String, String> entry : newParameters.entrySet()) {
                     traits.add(new JIPipeAnnotation(entry.getKey(), "" + parameters.get(entry.getKey()).get(Object.class)));
                 }
-                outputSlot.addData(data, traits, JIPipeAnnotationMergeStrategy.Merge);
+                outputSlot.addData(data, traits, JIPipeAnnotationMergeStrategy.Merge, progressInfo);
             }
             wrappedOutputSlot.clearData(false);
         }

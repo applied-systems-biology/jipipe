@@ -70,8 +70,8 @@ public class DivideByMaximumAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
-        ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class);
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+        ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo);
         ImagePlus img = inputData.getDuplicateImage();
         double[] max = new double[]{Double.NEGATIVE_INFINITY};
         ImageJUtils.forEachSlice(img, ip -> max[0] = Math.max(ip.getStatistics().max, max[0]));
@@ -79,7 +79,7 @@ public class DivideByMaximumAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         if (recalibrate) {
             org.hkijena.jipipe.utils.ImageJUtils.calibrate(img, ImageJCalibrationMode.AutomaticImageJ, 0, 1);
         }
-        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(img));
+        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(img), progressInfo);
     }
 
     @JIPipeDocumentation(name = "Recalibrate afterwards", description = "Without this setting enabled, the generated image might only be shown as black in ImageJ.")

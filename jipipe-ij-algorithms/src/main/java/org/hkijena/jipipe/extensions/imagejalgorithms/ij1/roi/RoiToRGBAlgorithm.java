@@ -99,9 +99,9 @@ public class RoiToRGBAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
-        ROIListData inputData = (ROIListData) dataBatch.getInputData("ROI", ROIListData.class).duplicate();
-        ImagePlus reference = dataBatch.getInputData("Image", ImagePlusData.class).getImage();
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+        ROIListData inputData = (ROIListData) dataBatch.getInputData("ROI", ROIListData.class, progressInfo).duplicate();
+        ImagePlus reference = dataBatch.getInputData("Image", ImagePlusData.class, progressInfo).getImage();
 
         // Find the bounds and future stack position
         int sx = reference.getWidth();
@@ -119,10 +119,10 @@ public class RoiToRGBAlgorithm extends JIPipeIteratingAlgorithm {
                     JIPipe.createNode("ij1-roi-statistics", RoiStatisticsAlgorithm.class);
             statisticsAlgorithm.setOverrideReferenceImage(true);
             statisticsAlgorithm.getMeasurements().setNativeValue(Measurement.Centroid.getNativeValue());
-            statisticsAlgorithm.getInputSlot("ROI").addData(inputData);
-            statisticsAlgorithm.getInputSlot("Reference").addData(new ImagePlusData(reference));
-            statisticsAlgorithm.run(progress);
-            ResultsTableData centroids = statisticsAlgorithm.getFirstOutputSlot().getData(0, ResultsTableData.class);
+            statisticsAlgorithm.getInputSlot("ROI").addData(inputData, progressInfo);
+            statisticsAlgorithm.getInputSlot("Reference").addData(new ImagePlusData(reference), progressInfo);
+            statisticsAlgorithm.run(progressInfo);
+            ResultsTableData centroids = statisticsAlgorithm.getFirstOutputSlot().getData(0, ResultsTableData.class, progressInfo);
             for (int row = 0; row < centroids.getRowCount(); row++) {
                 Point centroid = new Point((int) centroids.getValueAsDouble(row, "X"),
                         (int) centroids.getValueAsDouble(row, "Y"));
@@ -176,7 +176,7 @@ public class RoiToRGBAlgorithm extends JIPipeIteratingAlgorithm {
             }
         }
 
-        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(result));
+        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(result), progressInfo);
     }
 
     @JIPipeDocumentation(name = "Draw outline", description = "If enabled, draw a white outline of the ROI")

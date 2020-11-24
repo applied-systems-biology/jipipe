@@ -70,7 +70,7 @@ public class GenerateStructureElementAlgorithm extends JIPipeSimpleIteratingAlgo
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         // Size of the strel image (little bit larger than strel)
         Strel strel = element.fromRadius(radius);
         int[] dim = strel.getSize();
@@ -84,7 +84,7 @@ public class GenerateStructureElementAlgorithm extends JIPipeSimpleIteratingAlgo
 
         // Display strel image
         ImagePlus strelDisplay = new ImagePlus("Structuring Element", strelImage);
-        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlus2DGreyscaleMaskData(strelDisplay));
+        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlus2DGreyscaleMaskData(strelDisplay), progressInfo);
     }
 
 

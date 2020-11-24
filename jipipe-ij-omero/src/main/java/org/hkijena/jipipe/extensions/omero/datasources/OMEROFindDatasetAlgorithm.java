@@ -85,21 +85,21 @@ public class OMEROFindDatasetAlgorithm extends JIPipeParameterSlotAlgorithm {
     }
 
     @Override
-    public void runParameterSet(JIPipeProgressInfo progress, List<JIPipeAnnotation> parameterAnnotations) {
+    public void runParameterSet(JIPipeProgressInfo progressInfo, List<JIPipeAnnotation> parameterAnnotations) {
         Set<Long> projectIds = new HashSet<>();
         for (int row = 0; row < getFirstInputSlot().getRowCount(); row++) {
-            projectIds.add(getFirstInputSlot().getData(row, OMEROProjectReferenceData.class).getProjectId());
+            projectIds.add(getFirstInputSlot().getData(row, OMEROProjectReferenceData.class, progressInfo).getProjectId());
         }
 
         LoginCredentials credentials = this.credentials.getCredentials();
-        progress.log("Connecting to " + credentials.getUser().getUsername() + "@" + credentials.getServer().getHost());
-        try (Gateway gateway = new Gateway(new OMEROToJIPipeLogger(progress))) {
+        progressInfo.log("Connecting to " + credentials.getUser().getUsername() + "@" + credentials.getServer().getHost());
+        try (Gateway gateway = new Gateway(new OMEROToJIPipeLogger(progressInfo))) {
             ExperimenterData user = gateway.connect(credentials);
             SecurityContext context = new SecurityContext(user.getGroupId());
             BrowseFacility browseFacility = gateway.getFacility(BrowseFacility.class);
             MetadataFacility metadata = gateway.getFacility(MetadataFacility.class);
             for (Long projectId : projectIds) {
-                progress.log("Listing datasets in project ID=" + projectId);
+                progressInfo.log("Listing datasets in project ID=" + projectId);
                 ProjectData projectData = browseFacility.getProjects(context, Collections.singletonList(projectId)).iterator().next();
                 for (DatasetData dataset : projectData.getDatasets()) {
                     if (!datasetNameFilters.test(dataset.getName())) {
@@ -127,7 +127,7 @@ public class OMEROFindDatasetAlgorithm extends JIPipeParameterSlotAlgorithm {
                         annotations.add(new JIPipeAnnotation(projectNameAnnotation.getContent(), projectData.getName()));
                     if (datasetNameAnnotation.isEnabled())
                         annotations.add(new JIPipeAnnotation(datasetNameAnnotation.getContent(), dataset.getName()));
-                    getFirstOutputSlot().addData(new OMERODatasetReferenceData(dataset.getId()), annotations, JIPipeAnnotationMergeStrategy.Merge);
+                    getFirstOutputSlot().addData(new OMERODatasetReferenceData(dataset.getId()), annotations, JIPipeAnnotationMergeStrategy.Merge, progressInfo);
                 }
             }
         } catch (Exception e) {

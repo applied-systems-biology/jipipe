@@ -45,14 +45,14 @@ public class Clij2DetectLabelEdges extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         CLIJ2 clij2 = CLIJ2.getInstance();
         CLIJ clij = clij2.getCLIJ();
-        ClearCLBuffer src_label_map = dataBatch.getInputData(getInputSlot("src_label_map"), CLIJImageData.class).getImage();
+        ClearCLBuffer src_label_map = dataBatch.getInputData(getInputSlot("src_label_map"), CLIJImageData.class, progressInfo).getImage();
         ClearCLBuffer dst_edge_image = clij2.create(src_label_map);
         DetectLabelEdges.detectLabelEdges(clij2, src_label_map, dst_edge_image);
 
-        dataBatch.addOutputData(getOutputSlot("dst_edge_image"), new CLIJImageData(dst_edge_image));
+        dataBatch.addOutputData(getOutputSlot("dst_edge_image"), new CLIJImageData(dst_edge_image), progressInfo);
     }
 
 }

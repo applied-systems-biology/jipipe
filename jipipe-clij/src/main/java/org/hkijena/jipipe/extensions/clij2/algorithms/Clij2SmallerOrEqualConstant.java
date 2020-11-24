@@ -48,14 +48,14 @@ public class Clij2SmallerOrEqualConstant extends JIPipeSimpleIteratingAlgorithm 
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         CLIJ2 clij2 = CLIJ2.getInstance();
         CLIJ clij = clij2.getCLIJ();
-        ClearCLBuffer src1 = dataBatch.getInputData(getInputSlot("src1"), CLIJImageData.class).getImage();
+        ClearCLBuffer src1 = dataBatch.getInputData(getInputSlot("src1"), CLIJImageData.class, progressInfo).getImage();
         ClearCLBuffer dst = clij2.create(src1);
         SmallerOrEqualConstant.smallerOrEqualConstant(clij2, src1, dst, scalar);
 
-        dataBatch.addOutputData(getOutputSlot("dst"), new CLIJImageData(dst));
+        dataBatch.addOutputData(getOutputSlot("dst"), new CLIJImageData(dst), progressInfo);
     }
 
     @JIPipeParameter("scalar")

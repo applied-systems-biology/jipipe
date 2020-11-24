@@ -45,11 +45,11 @@ public class ReorderDimensionsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
-        ImagePlus image = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class).getImage();
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+        ImagePlus image = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo).getImage();
 
         if (!image.isStack() && !image.isHyperStack()) {
-            dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(image));
+            dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(image), progressInfo);
             return;
         }
 
@@ -99,7 +99,7 @@ public class ReorderDimensionsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         }
 
         reorganized.setDimensions(newChannels, newDepth, newFrames);
-        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(reorganized));
+        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(reorganized), progressInfo);
     }
 
     @JIPipeDocumentation(name = "Reassignments", description = "Determines which channel is assigned to which other channel. To switch two channels, add two entries " +

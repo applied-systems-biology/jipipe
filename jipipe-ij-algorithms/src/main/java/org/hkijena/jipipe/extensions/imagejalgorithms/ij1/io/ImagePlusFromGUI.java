@@ -58,7 +58,7 @@ public class ImagePlusFromGUI extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         List<ImagePlus> rawImages = new ArrayList<>();
         if (onlyActiveImage) {
             ImagePlus img = WindowManager.getCurrentImage();
@@ -78,7 +78,7 @@ public class ImagePlusFromGUI extends JIPipeSimpleIteratingAlgorithm {
         for (ImagePlus rawImage : rawImages) {
             ImageQueryExpressionVariableSource.buildVariablesSet(rawImage, variableSet);
             if (imageFilters.test(variableSet)) {
-                dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(rawImage).duplicate());
+                dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(rawImage).duplicate(), progressInfo);
             }
         }
     }

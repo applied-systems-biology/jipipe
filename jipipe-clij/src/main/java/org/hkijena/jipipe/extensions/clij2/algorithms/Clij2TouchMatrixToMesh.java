@@ -46,15 +46,15 @@ public class Clij2TouchMatrixToMesh extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         CLIJ2 clij2 = CLIJ2.getInstance();
         CLIJ clij = clij2.getCLIJ();
-        ClearCLBuffer pointlist = dataBatch.getInputData(getInputSlot("pointlist"), CLIJImageData.class).getImage();
-        ClearCLBuffer touch_matrix = dataBatch.getInputData(getInputSlot("touch_matrix"), CLIJImageData.class).getImage();
+        ClearCLBuffer pointlist = dataBatch.getInputData(getInputSlot("pointlist"), CLIJImageData.class, progressInfo).getImage();
+        ClearCLBuffer touch_matrix = dataBatch.getInputData(getInputSlot("touch_matrix"), CLIJImageData.class, progressInfo).getImage();
         ClearCLBuffer mesh = clij2.create(pointlist);
         TouchMatrixToMesh.touchMatrixToMesh(clij2, pointlist, touch_matrix, mesh);
 
-        dataBatch.addOutputData(getOutputSlot("mesh"), new CLIJImageData(mesh));
+        dataBatch.addOutputData(getOutputSlot("mesh"), new CLIJImageData(mesh), progressInfo);
     }
 
 }

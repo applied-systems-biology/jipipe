@@ -123,7 +123,7 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
     }
 
     @Override
-    public void saveTo(Path storageFilePath, String name, boolean forceName, JIPipeProgressInfo progress) {
+    public void saveTo(Path storageFilePath, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
         // Code adapted from ImageJ RoiManager class
         if (size() == 1) {
             try {

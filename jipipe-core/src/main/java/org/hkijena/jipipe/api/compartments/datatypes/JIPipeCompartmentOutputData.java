@@ -30,7 +30,7 @@ import java.nio.file.Path;
 @JIPipeHidden
 public class JIPipeCompartmentOutputData implements JIPipeData {
     @Override
-    public void saveTo(Path storageFilePath, String name, boolean forceName, JIPipeProgressInfo progress) {
+    public void saveTo(Path storageFilePath, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
 
     }
 

@@ -69,7 +69,7 @@ public class ImageFromMatrix2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ImagePlus img = IJ.createImage("Matrix", "32-bit", matrix.getColumnCount(), matrix.getRowCount(), 1);
         ImageProcessor processor = img.getProcessor();
         for (int row = 0; row < matrix.getRowCount(); row++) {
@@ -78,7 +78,7 @@ public class ImageFromMatrix2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             }
         }
 
-        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(img));
+        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(img), progressInfo);
     }
 
 

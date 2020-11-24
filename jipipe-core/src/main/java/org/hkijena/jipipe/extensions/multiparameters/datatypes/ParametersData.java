@@ -44,7 +44,7 @@ public class ParametersData implements JIPipeData {
     private Map<String, Object> parameterData = new HashMap<>();
 
     @Override
-    public void saveTo(Path storageFilePath, String name, boolean forceName, JIPipeProgressInfo progress) {
+    public void saveTo(Path storageFilePath, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
         try {
             JsonUtils.getObjectMapper().writerWithDefaultPrettyPrinter()
                     .writeValue(storageFilePath.resolve(name + ".json").toFile(), this);

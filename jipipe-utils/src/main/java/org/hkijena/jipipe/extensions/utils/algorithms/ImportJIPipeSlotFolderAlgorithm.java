@@ -29,7 +29,6 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.filesystem.dataypes.FolderData;
 import org.hkijena.jipipe.extensions.utils.datatypes.JIPipeOutputData;
 
 import java.nio.file.Files;
@@ -59,8 +58,8 @@ public class ImportJIPipeSlotFolderAlgorithm extends GetJIPipeSlotFolderAlgorith
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
-        JIPipeOutputData outputData = dataBatch.getInputData(getFirstInputSlot(), JIPipeOutputData.class);
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+        JIPipeOutputData outputData = dataBatch.getInputData(getFirstInputSlot(), JIPipeOutputData.class, progressInfo);
         Path dataFolder = outputData.getPath().resolve("analysis").resolve(getNodeId()).resolve(getSlotName());
         if (!Files.exists(dataFolder.resolve("data-table.json"))) {
             throw new UserFriendlyRuntimeException("Missing data-table.json!",
@@ -80,12 +79,12 @@ public class ImportJIPipeSlotFolderAlgorithm extends GetJIPipeSlotFolderAlgorith
         }
 
         for (JIPipeExportedDataTable.Row row : exportedDataTable.getRowList()) {
-            progress.log("Importing data row " + row.getIndex());
+            progressInfo.log("Importing data row " + row.getIndex());
             Path storageFolder = dataFolder.resolve("" + row.getIndex());
             List<JIPipeAnnotation> annotationList = ignoreImportedDataAnnotations ? Collections.emptyList() : row.getAnnotations();
             JIPipeDataInfo trueDataType = exportedDataTable.getDataTypeOf(row.getIndex());
             JIPipeData data = JIPipe.importData(storageFolder, trueDataType.getDataClass());
-            dataBatch.addOutputData(getFirstOutputSlot(), data, annotationList, annotationMergeStrategy);
+            dataBatch.addOutputData(getFirstOutputSlot(), data, annotationList, annotationMergeStrategy, progressInfo);
         }
     }
 

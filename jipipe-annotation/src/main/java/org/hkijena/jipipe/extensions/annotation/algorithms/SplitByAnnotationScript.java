@@ -91,15 +91,15 @@ public class SplitByAnnotationScript extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    public void run(JIPipeProgressInfo progress) {
+    public void run(JIPipeProgressInfo progressInfo) {
         this.pythonInterpreter = new PythonInterpreter();
         PythonUtils.passParametersToPython(pythonInterpreter, scriptParameters);
-        super.run(progress);
+        super.run(progressInfo);
         this.pythonInterpreter = null;
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         PyDictionary annotationDict = JIPipeAnnotation.annotationMapToPython(dataBatch.getAnnotations());
         pythonInterpreter.set("annotations", annotationDict);
         pythonInterpreter.exec(code.getCode());
@@ -117,7 +117,7 @@ public class SplitByAnnotationScript extends JIPipeSimpleIteratingAlgorithm {
         }
 
         if (!StringUtils.isNullOrEmpty(outputSlotName)) {
-            dataBatch.addOutputData(getOutputSlot(outputSlotName), dataBatch.getInputData(getFirstInputSlot(), JIPipeData.class));
+            dataBatch.addOutputData(getOutputSlot(outputSlotName), dataBatch.getInputData(getFirstInputSlot(), JIPipeData.class, progressInfo), progressInfo);
         }
     }
 

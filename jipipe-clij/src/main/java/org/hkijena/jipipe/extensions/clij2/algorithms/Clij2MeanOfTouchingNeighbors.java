@@ -46,15 +46,15 @@ public class Clij2MeanOfTouchingNeighbors extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         CLIJ2 clij2 = CLIJ2.getInstance();
         CLIJ clij = clij2.getCLIJ();
-        ClearCLBuffer src_values = dataBatch.getInputData(getInputSlot("src_values"), CLIJImageData.class).getImage();
-        ClearCLBuffer touch_matrix = dataBatch.getInputData(getInputSlot("touch_matrix"), CLIJImageData.class).getImage();
+        ClearCLBuffer src_values = dataBatch.getInputData(getInputSlot("src_values"), CLIJImageData.class, progressInfo).getImage();
+        ClearCLBuffer touch_matrix = dataBatch.getInputData(getInputSlot("touch_matrix"), CLIJImageData.class, progressInfo).getImage();
         ClearCLBuffer dst_values = clij2.create(src_values);
         MeanOfTouchingNeighbors.meanOfTouchingNeighbors(clij2, src_values, touch_matrix, dst_values);
 
-        dataBatch.addOutputData(getOutputSlot("dst_values"), new CLIJImageData(dst_values));
+        dataBatch.addOutputData(getOutputSlot("dst_values"), new CLIJImageData(dst_values), progressInfo);
     }
 
 }

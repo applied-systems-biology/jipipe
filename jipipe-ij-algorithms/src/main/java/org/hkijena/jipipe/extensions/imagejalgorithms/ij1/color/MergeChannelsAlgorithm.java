@@ -111,7 +111,7 @@ public class MergeChannelsAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ImagePlus[] images = new ImagePlus[ChannelColor.values().length];
         ImagePlus firstImage = null;
         for (int i = 0; i < ChannelColor.values().length; ++i) {
@@ -119,7 +119,7 @@ public class MergeChannelsAlgorithm extends JIPipeIteratingAlgorithm {
             for (Map.Entry<String, JIPipeParameterAccess> entry : channelColorAssignment.getParameters().entrySet()) {
                 ChannelColor entryColor = entry.getValue().get(ChannelColor.class);
                 if (entryColor == color) {
-                    images[i] = new ImagePlusGreyscale8UData(dataBatch.getInputData(entry.getKey(), ImagePlusGreyscaleData.class).getDuplicateImage()).getImage();
+                    images[i] = new ImagePlusGreyscale8UData(dataBatch.getInputData(entry.getKey(), ImagePlusGreyscaleData.class, progressInfo).getDuplicateImage()).getImage();
                     if (firstImage == null)
                         firstImage = images[i];
                 }
@@ -233,7 +233,7 @@ public class MergeChannelsAlgorithm extends JIPipeIteratingAlgorithm {
             }
         }
 
-        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(imp2));
+        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(imp2), progressInfo);
     }
 
     private ImagePlus mergeUsingRGBProjection(ImagePlus imp, ImagePlus[] images, boolean createComposite) {

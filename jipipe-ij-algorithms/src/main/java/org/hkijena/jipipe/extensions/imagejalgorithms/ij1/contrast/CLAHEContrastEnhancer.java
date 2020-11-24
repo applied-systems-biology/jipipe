@@ -81,8 +81,8 @@ public class CLAHEContrastEnhancer extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
-        ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class);
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+        ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo);
         Flat clahe = fastMode ? Flat.getFastInstance() : Flat.getInstance();
 
         if (inputData.getImage().isStack()) {
@@ -94,11 +94,11 @@ public class CLAHEContrastEnhancer extends JIPipeSimpleIteratingAlgorithm {
             });
             ImagePlus result = new ImagePlus("CLAHE", stack);
             result.setDimensions(inputData.getImage().getNChannels(), inputData.getImage().getNSlices(), inputData.getImage().getNFrames());
-            dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(result));
+            dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(result), progressInfo);
         } else {
             ImagePlus result = inputData.getDuplicateImage();
             clahe.run(result, blockRadius, bins, maxSlope, null, true);
-            dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(result));
+            dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(result), progressInfo);
         }
     }
 

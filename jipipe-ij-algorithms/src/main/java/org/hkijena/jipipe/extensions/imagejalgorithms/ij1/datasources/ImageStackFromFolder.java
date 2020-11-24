@@ -13,18 +13,12 @@
 
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.datasources;
 
-import ij.IJ;
 import ij.ImagePlus;
 import ij.ImageStack;
-import ij.io.Opener;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
-import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
-import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.events.NodeSlotsChangedEvent;
 import org.hkijena.jipipe.api.events.ParameterChangedEvent;
@@ -39,16 +33,10 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FileData;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FolderData;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.HyperstackDimension;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datasources.BioFormatsImporter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datasources.ImagePlusFromFile;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.OMEImageData;
-import org.hkijena.jipipe.extensions.parameters.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.parameters.expressions.PathQueryExpression;
-import org.hkijena.jipipe.extensions.parameters.expressions.StringQueryExpression;
 import org.hkijena.jipipe.extensions.parameters.generators.IntegerRange;
-import org.hkijena.jipipe.extensions.parameters.primitives.OptionalAnnotationNameParameter;
-import org.hkijena.jipipe.extensions.parameters.primitives.OptionalStringParameter;
 import org.hkijena.jipipe.extensions.parameters.references.JIPipeDataInfoRef;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.NaturalOrderComparator;
@@ -57,7 +45,6 @@ import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -122,10 +109,10 @@ public class ImageStackFromFolder extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
-        Path inputFolder = dataBatch.getInputData(getFirstInputSlot(), FolderData.class).getPath();
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+        Path inputFolder = dataBatch.getInputData(getFirstInputSlot(), FolderData.class, progressInfo).getPath();
         try {
-            progress.log("Looking for files in " + inputFolder);
+            progressInfo.log("Looking for files in " + inputFolder);
             List<Path> inputFiles = Files.list(inputFolder).filter(filterExpression).collect(Collectors.toList());
             Comparator<Path> comparator;
             if(sortFilesNumerically) {
@@ -148,11 +135,11 @@ public class ImageStackFromFolder extends JIPipeSimpleIteratingAlgorithm {
                 inputFiles = inputFilesSliced;
             }
 
-            progress.log("Found " + inputFiles.size() + " files to import.");
+            progressInfo.log("Found " + inputFiles.size() + " files to import.");
             List<ImagePlus> images = new ArrayList<>();
             for (int i = 0; i < inputFiles.size(); i++) {
                 Path file = inputFiles.get(i);
-                JIPipeProgressInfo fileProgress = progress.resolveAndLog(file.getFileName().toString(), i, inputFiles.size());
+                JIPipeProgressInfo fileProgress = progressInfo.resolveAndLog(file.getFileName().toString(), i, inputFiles.size());
                 ImagePlus image = ImagePlusFromFile.readImageFrom(file, fileProgress);
                 images.add(image);
             }
@@ -181,7 +168,7 @@ public class ImageStackFromFolder extends JIPipeSimpleIteratingAlgorithm {
             else if(outputDimension == HyperstackDimension.Frame) {
                 merged.setDimensions(1, 1, merged.getNSlices());
             }
-            dataBatch.addOutputData(getFirstOutputSlot(), JIPipe.createData(generatedImageType.getInfo().getDataClass(), merged));
+            dataBatch.addOutputData(getFirstOutputSlot(), JIPipe.createData(generatedImageType.getInfo().getDataClass(), merged), progressInfo);
 
         } catch (IOException e) {
             throw new RuntimeException(e);

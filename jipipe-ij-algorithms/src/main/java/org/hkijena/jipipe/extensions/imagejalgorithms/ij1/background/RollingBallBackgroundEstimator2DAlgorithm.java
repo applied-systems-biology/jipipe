@@ -82,8 +82,8 @@ public class RollingBallBackgroundEstimator2DAlgorithm extends JIPipeSimpleItera
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
-        ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class);
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+        ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo);
         ImagePlus img = inputData.getDuplicateImage();
         BackgroundSubtracter backgroundSubtracter = new BackgroundSubtracter();
         ImageJUtils.forEachSlice(img, ip -> {
@@ -105,7 +105,7 @@ public class RollingBallBackgroundEstimator2DAlgorithm extends JIPipeSimpleItera
                         correctCorners);
             }
         });
-        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(img));
+        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(img), progressInfo);
     }
 
 

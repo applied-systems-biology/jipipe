@@ -75,11 +75,11 @@ public class AnnotateByExpression extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         for (NamedAnnotationGeneratorExpression expression : annotations) {
-            dataBatch.addGlobalAnnotation(expression.generateAnnotation(dataBatch.getAnnotations().values(), dataBatch.getInputData(getFirstInputSlot(), JIPipeData.class).toString()), annotationMergeStrategy);
+            dataBatch.addGlobalAnnotation(expression.generateAnnotation(dataBatch.getAnnotations().values(), dataBatch.getInputData(getFirstInputSlot(), JIPipeData.class, progressInfo).toString()), annotationMergeStrategy);
         }
-        dataBatch.addOutputData(getFirstOutputSlot(), dataBatch.getInputData(getFirstInputSlot(), JIPipeData.class));
+        dataBatch.addOutputData(getFirstOutputSlot(), dataBatch.getInputData(getFirstInputSlot(), JIPipeData.class, progressInfo), progressInfo);
     }
 
     @JIPipeDocumentation(name = "Annotations", description = "Allows you to set the annotation to add/modify. " + AnnotationGeneratorExpression.DOCUMENTATION_DESCRIPTION)

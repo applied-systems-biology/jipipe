@@ -10,7 +10,6 @@ import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.AnnotationsNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.parameters.expressions.StringQueryExpression;
 import org.hkijena.jipipe.extensions.parameters.expressions.TableCellValueQueryExpression;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 
@@ -38,8 +37,8 @@ public class ColumnsToAnnotationsAlgorithm extends JIPipeSimpleIteratingAlgorith
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
-        ResultsTableData tableData = dataBatch.getInputData(getFirstInputSlot(), ResultsTableData.class);
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+        ResultsTableData tableData = dataBatch.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo);
         Multimap<String, String> annotationsToGenerate = HashMultimap.create();
         for (int row = 0; row < tableData.getRowCount(); row++) {
             for (int col = 0; col < tableData.getColumnCount(); col++) {
@@ -57,7 +56,7 @@ public class ColumnsToAnnotationsAlgorithm extends JIPipeSimpleIteratingAlgorith
             }
             annotationList.addAll(rowMergingStrategy.merge(forName));
         }
-        dataBatch.addOutputData(getFirstOutputSlot(), tableData, annotationList, annotationMergeStrategy);
+        dataBatch.addOutputData(getFirstOutputSlot(), tableData, annotationList, annotationMergeStrategy, progressInfo);
     }
 
     @JIPipeDocumentation(name = "Row merging strategy", description = "Important if the rows of the selected columns have different values. Determines how they are merged. " +

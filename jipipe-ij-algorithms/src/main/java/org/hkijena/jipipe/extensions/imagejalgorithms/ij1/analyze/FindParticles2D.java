@@ -119,8 +119,8 @@ public class FindParticles2D extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
-        ImagePlusGreyscaleMaskData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscaleMaskData.class);
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+        ImagePlusGreyscaleMaskData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscaleMaskData.class, progressInfo);
 
         // Update the analyzer to extract the measurements we want
         statisticsParameters.updateAnalyzer();
@@ -177,8 +177,8 @@ public class FindParticles2D extends JIPipeSimpleIteratingAlgorithm {
                     roi.setImage(roiReferenceImage);
                 }
 
-                dataBatch.addOutputData("ROI", rois, traits, JIPipeAnnotationMergeStrategy.Merge);
-                dataBatch.addOutputData("Measurements", new ResultsTableData(table), traits, JIPipeAnnotationMergeStrategy.Merge);
+                dataBatch.addOutputData("ROI", rois, traits, JIPipeAnnotationMergeStrategy.Merge, progressInfo);
+                dataBatch.addOutputData("Measurements", new ResultsTableData(table), traits, JIPipeAnnotationMergeStrategy.Merge, progressInfo);
             });
         } else {
             ResultsTableData mergedResultsTable = new ResultsTableData(new ResultsTable());
@@ -221,8 +221,8 @@ public class FindParticles2D extends JIPipeSimpleIteratingAlgorithm {
                 mergedROI.mergeWith(rois);
             });
 
-            dataBatch.addOutputData("ROI", mergedROI);
-            dataBatch.addOutputData("Measurements", mergedResultsTable);
+            dataBatch.addOutputData("ROI", mergedROI, progressInfo);
+            dataBatch.addOutputData("Measurements", mergedResultsTable, progressInfo);
         }
     }
 

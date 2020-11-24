@@ -57,11 +57,11 @@ public class GetRoiImageAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
-        ROIListData data = dataBatch.getInputData("ROI", ROIListData.class);
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+        ROIListData data = dataBatch.getInputData("ROI", ROIListData.class, progressInfo);
         for (Map.Entry<Optional<ImagePlus>, ROIListData> entry : data.groupByReferenceImage().entrySet()) {
             if (entry.getKey().isPresent()) {
-                dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(entry.getKey().get()).duplicate());
+                dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(entry.getKey().get()).duplicate(), progressInfo);
             }
         }
     }

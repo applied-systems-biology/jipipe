@@ -45,14 +45,14 @@ public class Clij2MeanClosestSpotDistance extends JIPipeSimpleIteratingAlgorithm
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         CLIJ2 clij2 = CLIJ2.getInstance();
         CLIJ clij = clij2.getCLIJ();
-        ClearCLBuffer spotsA = dataBatch.getInputData(getInputSlot("spotsA"), CLIJImageData.class).getImage();
+        ClearCLBuffer spotsA = dataBatch.getInputData(getInputSlot("spotsA"), CLIJImageData.class, progressInfo).getImage();
         ClearCLBuffer spotsB = clij2.create(spotsA);
         MeanClosestSpotDistance.meanClosestSpotDistance(clij2, spotsA, spotsB);
 
-        dataBatch.addOutputData(getOutputSlot("spotsB"), new CLIJImageData(spotsB));
+        dataBatch.addOutputData(getOutputSlot("spotsB"), new CLIJImageData(spotsB), progressInfo);
     }
 
 }

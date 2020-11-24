@@ -55,8 +55,8 @@ public class ExtractFileName extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
-        PathData inputFolder = dataBatch.getInputData(getFirstInputSlot(), PathData.class);
-        dataBatch.addOutputData(getFirstOutputSlot(), new PathData(inputFolder.getPath().getFileName()));
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+        PathData inputFolder = dataBatch.getInputData(getFirstInputSlot(), PathData.class, progressInfo);
+        dataBatch.addOutputData(getFirstOutputSlot(), new PathData(inputFolder.getPath().getFileName()), progressInfo);
     }
 }

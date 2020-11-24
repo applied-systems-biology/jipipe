@@ -114,9 +114,9 @@ public class InternalGradientSegmentation2DAlgorithm extends JIPipeSimpleIterati
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
 
-        ImagePlus img = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class).getImage();
+        ImagePlus img = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class, progressInfo).getImage();
         ImageStack stack = new ImageStack(img.getWidth(), img.getHeight(), img.getProcessor().getColorModel());
 
         CLAHEContrastEnhancer contrastEnhancerCopy = new CLAHEContrastEnhancer(contrastEnhancer);
@@ -129,9 +129,9 @@ public class InternalGradientSegmentation2DAlgorithm extends JIPipeSimpleIterati
             // Apply CLAHE enhancer
             if (applyFirstCLAHE) {
                 contrastEnhancerCopy.clearSlotData();
-                contrastEnhancerCopy.getFirstInputSlot().addData(new ImagePlusGreyscaleData(processedSlice));
-                contrastEnhancerCopy.run(progress);
-                processedSlice = contrastEnhancerCopy.getFirstOutputSlot().getData(0, ImagePlusData.class).getImage();
+                contrastEnhancerCopy.getFirstInputSlot().addData(new ImagePlusGreyscaleData(processedSlice), progressInfo);
+                contrastEnhancerCopy.run(progressInfo);
+                processedSlice = contrastEnhancerCopy.getFirstOutputSlot().getData(0, ImagePlusData.class, progressInfo).getImage();
             }
 
             if (applyGaussian) {
@@ -142,16 +142,16 @@ public class InternalGradientSegmentation2DAlgorithm extends JIPipeSimpleIterati
 
             if (applySecondCLAHE) {
                 contrastEnhancerCopy.clearSlotData();
-                contrastEnhancerCopy.getFirstInputSlot().addData(new ImagePlusGreyscaleData(processedSlice));
-                contrastEnhancerCopy.run(progress);
-                processedSlice = contrastEnhancerCopy.getFirstOutputSlot().getData(0, ImagePlusData.class).getImage();
+                contrastEnhancerCopy.getFirstInputSlot().addData(new ImagePlusGreyscaleData(processedSlice), progressInfo);
+                contrastEnhancerCopy.run(progressInfo);
+                processedSlice = contrastEnhancerCopy.getFirstOutputSlot().getData(0, ImagePlusData.class, progressInfo).getImage();
             }
 
             // Convert image to mask and threshold with given auto threshold method
             autoThresholdingCopy.clearSlotData();
-            autoThresholdingCopy.getFirstInputSlot().addData(new ImagePlusGreyscaleData(processedSlice));
-            autoThresholdingCopy.run(progress);
-            processedSlice = autoThresholdingCopy.getFirstOutputSlot().getData(0, ImagePlusData.class).getImage();
+            autoThresholdingCopy.getFirstInputSlot().addData(new ImagePlusGreyscaleData(processedSlice), progressInfo);
+            autoThresholdingCopy.run(progressInfo);
+            processedSlice = autoThresholdingCopy.getFirstOutputSlot().getData(0, ImagePlusData.class, progressInfo).getImage();
 
             // Apply set of rank filters
             Binary binaryFilter = new Binary();
@@ -179,7 +179,7 @@ public class InternalGradientSegmentation2DAlgorithm extends JIPipeSimpleIterati
         ImagePlus result = new ImagePlus("Segmented Image", stack);
         result.setDimensions(img.getNChannels(), img.getNSlices(), img.getNFrames());
 
-        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleMaskData(result));
+        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleMaskData(result), progressInfo);
     }
 
     @JIPipeParameter("gauss-sigma")

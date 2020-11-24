@@ -100,7 +100,7 @@ public class DataBatchUI extends JIPipeProjectWorkbenchPanel {
     private void displayData(JIPipeDataSlot slot, Set<Integer> rows) {
         JIPipeDataSlot copySlot = new JIPipeDataSlot(slot.getDefinition(), slot.getNode());
         for (int row : rows) {
-            copySlot.addData(slot.getData(row, JIPipeData.class), slot.getAnnotations(row), JIPipeAnnotationMergeStrategy.Merge);
+            copySlot.addData(slot.getVirtualData(row), slot.getAnnotations(row), JIPipeAnnotationMergeStrategy.Merge);
         }
 
         DataSlotTableUI tableUI = new DataSlotTableUI(getProjectWorkbench(), copySlot);

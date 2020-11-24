@@ -67,8 +67,8 @@ public class ApplyMathExpression2DAlgorithm extends JIPipeSimpleIteratingAlgorit
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
-        ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class);
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+        ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo);
         ImagePlus img = inputData.getDuplicateImage();
         StaticVariableSet<Object> variableSet = new StaticVariableSet<>();
         variableSet.set("width", img.getWidth());
@@ -85,7 +85,7 @@ public class ApplyMathExpression2DAlgorithm extends JIPipeSimpleIteratingAlgorit
                 }
             }
         });
-        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(img));
+        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(img), progressInfo);
     }
 
     @JIPipeDocumentation(name = "Function", description = "The function that is applied to each pixel. The expression should return a number.")

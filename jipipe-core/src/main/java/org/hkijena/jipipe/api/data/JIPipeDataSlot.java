@@ -46,9 +46,10 @@ public class JIPipeDataSlot implements TableModel {
     private JIPipeSlotType slotType;
     private Path storagePath;
     private boolean uniqueData = true;
+    private boolean virtual = true;
     private EventBus eventBus = new EventBus();
 
-    private ArrayList<JIPipeData> data = new ArrayList<>();
+    private ArrayList<JIPipeVirtualData> data = new ArrayList<>();
     private List<String> annotationColumns = new ArrayList<>();
     private Map<String, ArrayList<JIPipeAnnotation>> annotations = new HashMap<>();
 
@@ -101,15 +102,39 @@ public class JIPipeDataSlot implements TableModel {
     }
 
     /**
-     * Gets the data stored in a specific row
+     * Returns true if the slot can carry the provided data.
+     * This will also look up if the data can be converted
+     *
+     * @param klass Data class
+     * @return True if the slot accepts the data
+     */
+    public boolean accepts(Class<? extends JIPipeData> klass) {
+        if (data == null)
+            throw new NullPointerException("Data slots cannot accept null data!");
+        return JIPipe.getDataTypes().isConvertible(klass, getAcceptedDataType());
+    }
+
+    /**
+     * Gets the virtual data container at given row
+     * @param row the row
+     * @return the virtual data container
+     */
+    public JIPipeVirtualData getVirtualData(int row) {
+        return data.get(row);
+    }
+
+    /**
+     * Gets the data stored in a specific row.
+     * Please note that this will allocate virtual data
      *
      * @param <T>       Data type
      * @param row       The row
      * @param dataClass the class to return
+     * @param progressInfo progress for data loading
      * @return Data at row
      */
-    public <T extends JIPipeData> T getData(int row, Class<T> dataClass) {
-        return (T) JIPipe.getDataTypes().convert(data.get(row), dataClass);
+    public <T extends JIPipeData> T getData(int row, Class<T> dataClass, JIPipeProgressInfo progressInfo) {
+        return (T) JIPipe.getDataTypes().convert(data.get(row).getData(progressInfo), dataClass);
     }
 
     /**
@@ -180,11 +205,11 @@ public class JIPipeDataSlot implements TableModel {
 
     /**
      * Adds a data row
-     *
-     * @param value       The data
+     *  @param value       The data
      * @param annotations Optional traits
+     * @param progressInfo progress for data storage
      */
-    public synchronized void addData(JIPipeData value, List<JIPipeAnnotation> annotations, JIPipeAnnotationMergeStrategy mergeStrategy) {
+    public synchronized void addData(JIPipeData value, List<JIPipeAnnotation> annotations, JIPipeAnnotationMergeStrategy mergeStrategy, JIPipeProgressInfo progressInfo) {
         if (!accepts(value))
             throw new IllegalArgumentException("Tried to add data of type " + value.getClass() + ", but slot only accepts " + acceptedDataType + ". A converter could not be found.");
         if (uniqueData) {
@@ -195,11 +220,14 @@ public class JIPipeDataSlot implements TableModel {
         if (!annotations.isEmpty()) {
             annotations = mergeStrategy.merge(annotations);
         }
-        data.add(JIPipe.getDataTypes().convert(value, getAcceptedDataType()));
+        JIPipeVirtualData virtualData = new JIPipeVirtualData(JIPipe.getDataTypes().convert(value, getAcceptedDataType()));
+        data.add(virtualData);
         for (JIPipeAnnotation trait : annotations) {
             List<JIPipeAnnotation> traitArray = getOrCreateAnnotationColumnData(trait.getName());
             traitArray.set(getRowCount() - 1, trait);
         }
+        if(virtual)
+            virtualData.makeVirtual(progressInfo);
     }
 
     /**
@@ -234,9 +262,10 @@ public class JIPipeDataSlot implements TableModel {
      * Adds a data row
      *
      * @param value Data
+     * @param progressInfo progress for data storage
      */
-    public synchronized void addData(JIPipeData value) {
-        addData(value, Collections.emptyList(), JIPipeAnnotationMergeStrategy.Merge);
+    public synchronized void addData(JIPipeData value, JIPipeProgressInfo progressInfo) {
+        addData(value, Collections.emptyList(), JIPipeAnnotationMergeStrategy.Merge, progressInfo);
     }
 
     /**
@@ -328,7 +357,7 @@ public class JIPipeDataSlot implements TableModel {
         }
         for (int i = 0; i < data.size(); ++i) {
             if (destroyData)
-                data.get(i).flush();
+                data.get(i).getData(saveProgress.resolve("Load virtual data")).flush();
             data.set(i, null);
         }
     }
@@ -415,7 +444,7 @@ public class JIPipeDataSlot implements TableModel {
                 }
 
                 indices.add(row);
-                data.get(row).saveTo(path, getName(), false, rowProgress);
+                data.get(row).getData(saveProgress.resolve("Load virtual data")).saveTo(path, getName(), false, rowProgress);
             }
 
             JIPipeExportedDataTable dataTable = new JIPipeExportedDataTable(this, basePath, indices);
@@ -439,8 +468,41 @@ public class JIPipeDataSlot implements TableModel {
      */
     public void addData(JIPipeDataSlot sourceSlot) {
         for (int row = 0; row < sourceSlot.getRowCount(); ++row) {
-            addData(sourceSlot.getData(row, JIPipeData.class), sourceSlot.getAnnotations(row), JIPipeAnnotationMergeStrategy.Merge);
+            addData(sourceSlot.getVirtualData(row), sourceSlot.getAnnotations(row), JIPipeAnnotationMergeStrategy.Merge);
         }
+    }
+
+    /**
+     * Adds data as virtual data reference
+     * @param virtualData the virtual data
+     * @param annotations the annotations
+     * @param mergeStrategy merge strategy
+     */
+    public void addData(JIPipeVirtualData virtualData, List<JIPipeAnnotation> annotations, JIPipeAnnotationMergeStrategy mergeStrategy) {
+        if (!accepts(virtualData.getDataClass()))
+            throw new IllegalArgumentException("Tried to add data of type " + virtualData.getDataClass() + ", but slot only accepts " + acceptedDataType + ". A converter could not be found.");
+        if (uniqueData) {
+            if (findRowWithAnnotations(annotations) != -1) {
+                uniqueData = false;
+            }
+        }
+        if (!annotations.isEmpty()) {
+            annotations = mergeStrategy.merge(annotations);
+        }
+        data.add(virtualData);
+        for (JIPipeAnnotation trait : annotations) {
+            List<JIPipeAnnotation> traitArray = getOrCreateAnnotationColumnData(trait.getName());
+            traitArray.set(getRowCount() - 1, trait);
+        }
+    }
+
+    /**
+     * Gets the true type of the data at given row
+     * @param row the row
+     * @return the true data type
+     */
+    public Class<? extends JIPipeData> getDataClass(int row) {
+        return data.get(row).getDataClass();
     }
 
     @Override
@@ -513,8 +575,9 @@ public class JIPipeDataSlot implements TableModel {
      */
     public void clearData(boolean destroyData) {
         if (destroyData) {
-            for (JIPipeData item : data) {
-                item.flush();
+            for (JIPipeVirtualData item : data) {
+                if(!item.isVirtual())
+                    item.getData(new JIPipeProgressInfo()).flush();
             }
         }
         data.clear();
@@ -547,5 +610,46 @@ public class JIPipeDataSlot implements TableModel {
     @Override
     public String toString() {
         return String.format("%s: %s (%d rows, %d annotation columns)", getSlotType(), getName(), getRowCount(), getAnnotationColumns().size());
+    }
+
+    public boolean isVirtual() {
+        return virtual;
+    }
+
+    public void setVirtual(boolean virtual) {
+        this.virtual = virtual;
+    }
+
+    /**
+     * Returns whether a row is virtual (unloaded) or non-virtual (present in memory)
+     * @param row the row
+     * @return if the data at given row is virtual
+     */
+    public boolean rowIsVirtual(int row) {
+        return data.get(row) == null;
+    }
+
+    /**
+     * Loads all virtual data into memory
+     * @param progressInfo the progress
+     */
+    public void makeDataNonVirtual(JIPipeProgressInfo progressInfo) {
+        JIPipeProgressInfo subProgress = progressInfo.resolveAndLog("Loading virtual data to memory");
+        for (int row = 0; row < getRowCount(); row++) {
+            subProgress.resolveAndLog("Row", row, getRowCount());
+
+        }
+    }
+
+    /**
+     * Unloads all data into the virtual cache
+     * @param progressInfo the progress
+     */
+    public void makeDataVirtual(JIPipeProgressInfo progressInfo) {
+        JIPipeProgressInfo subProgress = progressInfo.resolveAndLog("Unloading data to virtual cache");
+        for (int row = 0; row < getRowCount(); row++) {
+            subProgress.resolveAndLog("Row", row, getRowCount());
+
+        }
     }
 }

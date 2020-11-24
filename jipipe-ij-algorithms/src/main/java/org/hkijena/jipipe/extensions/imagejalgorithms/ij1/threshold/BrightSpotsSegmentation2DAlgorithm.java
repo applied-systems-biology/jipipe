@@ -89,8 +89,8 @@ public class BrightSpotsSegmentation2DAlgorithm extends JIPipeSimpleIteratingAlg
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
-        ImagePlus img = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class).getImage();
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+        ImagePlus img = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class, progressInfo).getImage();
         ImageStack stack = new ImageStack(img.getWidth(), img.getHeight(), img.getProcessor().getColorModel());
         AutoThreshold2DAlgorithm autoThresholdingCopy = new AutoThreshold2DAlgorithm(autoThresholding);
 
@@ -110,9 +110,9 @@ public class BrightSpotsSegmentation2DAlgorithm extends JIPipeSimpleIteratingAlg
 
             // Apply auto threshold
             autoThresholdingCopy.clearSlotData();
-            autoThresholdingCopy.getFirstOutputSlot().addData(new ImagePlus2DGreyscaleData(processedSlice));
-            autoThresholdingCopy.run(progress);
-            processedSlice = autoThresholdingCopy.getFirstOutputSlot().getData(0, ImagePlusData.class).getImage();
+            autoThresholdingCopy.getFirstOutputSlot().addData(new ImagePlus2DGreyscaleData(processedSlice), progressInfo);
+            autoThresholdingCopy.run(progressInfo);
+            processedSlice = autoThresholdingCopy.getFirstOutputSlot().getData(0, ImagePlusData.class, progressInfo).getImage();
 
             // Apply morphologial operations
             Binary binaryFilter = new Binary();
@@ -136,16 +136,16 @@ public class BrightSpotsSegmentation2DAlgorithm extends JIPipeSimpleIteratingAlg
                 gaussianBlur.blurGaussian(processedSlice.getProcessor(), gaussianSigma);
 
                 autoThresholdingCopy.clearSlotData();
-                autoThresholdingCopy.getFirstInputSlot().addData(new ImagePlusGreyscaleData(processedSlice));
-                autoThresholdingCopy.run(progress);
-                processedSlice = autoThresholdingCopy.getFirstOutputSlot().getData(0, ImagePlusData.class).getImage();
+                autoThresholdingCopy.getFirstInputSlot().addData(new ImagePlusGreyscaleData(processedSlice), progressInfo);
+                autoThresholdingCopy.run(progressInfo);
+                processedSlice = autoThresholdingCopy.getFirstOutputSlot().getData(0, ImagePlusData.class, progressInfo).getImage();
             }
             stack.addSlice("slice" + index, processedSlice.getProcessor());
         });
         ImagePlus result = new ImagePlus("Segmented Image", stack);
         result.setDimensions(img.getNChannels(), img.getNSlices(), img.getNFrames());
 
-        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleMaskData(result));
+        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleMaskData(result), progressInfo);
     }
 
     @JIPipeParameter("rolling-ball-radius")

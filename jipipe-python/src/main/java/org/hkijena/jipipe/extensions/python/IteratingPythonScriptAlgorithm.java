@@ -119,7 +119,7 @@ public class IteratingPythonScriptAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         PythonInterpreter pythonInterpreter = new PythonInterpreter();
         PythonUtils.passParametersToPython(pythonInterpreter, scriptParameters);
         pythonInterpreter.set("data_batch", dataBatch);

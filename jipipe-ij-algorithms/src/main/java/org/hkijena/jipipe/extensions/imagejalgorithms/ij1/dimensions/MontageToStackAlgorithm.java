@@ -56,10 +56,10 @@ public class MontageToStackAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
-        ImagePlus imp = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class).getImage();
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+        ImagePlus imp = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo).getImage();
         ImageStack stack = new StackMaker().makeStack(imp.getProcessor(), rows, columns, borderWidth);
-        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(new ImagePlus("Montage to Stack", stack)));
+        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(new ImagePlus("Montage to Stack", stack)), progressInfo);
     }
 
     @JIPipeDocumentation(name = "Rows", description = "The number of rows.")

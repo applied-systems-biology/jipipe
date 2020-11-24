@@ -76,8 +76,8 @@ public class RoiCalculatorAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
-        ROIListData inputData = dataBatch.getInputData(getFirstInputSlot(), ROIListData.class);
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+        ROIListData inputData = dataBatch.getInputData(getFirstInputSlot(), ROIListData.class, progressInfo);
         Map<SliceIndex, List<Roi>> grouped = inputData.groupByPosition(applyPerSlice, applyPerChannel, applyPerFrame);
         ROIListData outputData = new ROIListData();
         for (Map.Entry<SliceIndex, List<Roi>> entry : grouped.entrySet()) {
@@ -104,7 +104,7 @@ public class RoiCalculatorAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             }
             outputData.addAll(data);
         }
-        dataBatch.addOutputData(getFirstOutputSlot(), outputData);
+        dataBatch.addOutputData(getFirstOutputSlot(), outputData, progressInfo);
     }
 
     @JIPipeDocumentation(name = "Operation", description = "The operation to apply on the list of ROI")

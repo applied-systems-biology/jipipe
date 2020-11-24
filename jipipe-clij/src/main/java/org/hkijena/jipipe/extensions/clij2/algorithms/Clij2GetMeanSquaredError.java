@@ -45,14 +45,14 @@ public class Clij2GetMeanSquaredError extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         CLIJ2 clij2 = CLIJ2.getInstance();
         CLIJ clij = clij2.getCLIJ();
-        ClearCLBuffer buffer1 = dataBatch.getInputData(getInputSlot("buffer1"), CLIJImageData.class).getImage();
+        ClearCLBuffer buffer1 = dataBatch.getInputData(getInputSlot("buffer1"), CLIJImageData.class, progressInfo).getImage();
         ClearCLBuffer buffer2 = clij2.create(buffer1);
         GetMeanSquaredError.getMeanSquaredError(clij2, buffer1, buffer2);
 
-        dataBatch.addOutputData(getOutputSlot("buffer2"), new CLIJImageData(buffer2));
+        dataBatch.addOutputData(getOutputSlot("buffer2"), new CLIJImageData(buffer2), progressInfo);
     }
 
 }

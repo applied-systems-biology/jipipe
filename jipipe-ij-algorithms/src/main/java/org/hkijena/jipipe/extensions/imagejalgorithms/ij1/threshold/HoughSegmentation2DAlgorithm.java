@@ -154,13 +154,13 @@ public class HoughSegmentation2DAlgorithm extends JIPipeSimpleIteratingAlgorithm
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
-        ImagePlus img = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class).getImage();
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+        ImagePlus img = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class, progressInfo).getImage();
         ImageStack stack = new ImageStack(img.getWidth(), img.getHeight(), img.getProcessor().getColorModel());
         ResultsTableData measurements = new ResultsTableData();
 
         ImageJUtils.forEachIndexedSlice(img, (imp, index) -> {
-            progress.log("Slice " + index + "/" + img.getStackSize());
+            progressInfo.log("Slice " + index + "/" + img.getStackSize());
             ImagePlus slice = new ImagePlus("slice", imp);
             // Apply Hough circle transform
             Hough_Circle hough_circle = new Hough_Circle();
@@ -195,8 +195,8 @@ public class HoughSegmentation2DAlgorithm extends JIPipeSimpleIteratingAlgorithm
         ImagePlus result = new ImagePlus("Segmented Image", stack);
         result.setDimensions(img.getNChannels(), img.getNSlices(), img.getNFrames());
 
-        dataBatch.addOutputData("Mask", new ImagePlusGreyscaleMaskData(result));
-        dataBatch.addOutputData("Measurements", measurements);
+        dataBatch.addOutputData("Mask", new ImagePlusGreyscaleMaskData(result), progressInfo);
+        dataBatch.addOutputData("Measurements", measurements, progressInfo);
     }
 
     @JIPipeParameter("min-radius")

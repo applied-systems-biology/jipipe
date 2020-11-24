@@ -63,12 +63,12 @@ public class RelativizeByParameter extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
-        FolderData inputFolder = dataBatch.getInputData(getFirstInputSlot(), FolderData.class);
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+        FolderData inputFolder = dataBatch.getInputData(getFirstInputSlot(), FolderData.class, progressInfo);
         if (parentPath == null || parentPath.toString().isEmpty())
-            dataBatch.addOutputData(getFirstOutputSlot(), inputFolder);
+            dataBatch.addOutputData(getFirstOutputSlot(), inputFolder, progressInfo);
         else
-            dataBatch.addOutputData(getFirstOutputSlot(), new PathData(parentPath.relativize(inputFolder.getPath())));
+            dataBatch.addOutputData(getFirstOutputSlot(), new PathData(parentPath.relativize(inputFolder.getPath())), progressInfo);
     }
 
     /**

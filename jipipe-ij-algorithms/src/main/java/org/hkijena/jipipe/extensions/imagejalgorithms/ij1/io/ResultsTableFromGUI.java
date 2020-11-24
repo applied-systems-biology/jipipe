@@ -52,7 +52,7 @@ public class ResultsTableFromGUI extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         StaticVariableSet<Object> variableSet = new StaticVariableSet<>();
         for (Window window : WindowManager.getAllNonImageWindows()) {
             if (window instanceof TextWindow) {
@@ -62,7 +62,7 @@ public class ResultsTableFromGUI extends JIPipeSimpleIteratingAlgorithm {
                     variableSet.set("title", title);
                     if (titleFilterExpression.test(variableSet)) {
                         ResultsTableData tableData = new ResultsTableData(resultsTable);
-                        dataBatch.addOutputData(getFirstOutputSlot(), tableData.duplicate());
+                        dataBatch.addOutputData(getFirstOutputSlot(), tableData.duplicate(), progressInfo);
                     }
                 }
             }

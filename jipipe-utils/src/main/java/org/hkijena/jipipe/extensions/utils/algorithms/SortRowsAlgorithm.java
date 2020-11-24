@@ -38,7 +38,7 @@ public class SortRowsAlgorithm extends JIPipeParameterSlotAlgorithm {
     }
 
     @Override
-    public void runParameterSet(JIPipeProgressInfo progress, List<JIPipeAnnotation> parameterAnnotations) {
+    public void runParameterSet(JIPipeProgressInfo progressInfo, List<JIPipeAnnotation> parameterAnnotations) {
         Set<String> unMatchedAnnotationNames = new HashSet<>(getFirstInputSlot().getAnnotationColumns());
         List<String> annotationOrder = new ArrayList<>();
         Map<String, SortOrder> annotationOrderSortOrder = new HashMap<>();
@@ -93,7 +93,7 @@ public class SortRowsAlgorithm extends JIPipeParameterSlotAlgorithm {
             annotations.clear();
             annotations.addAll(getFirstInputSlot().getAnnotations(row));
             annotations.addAll(parameterAnnotations);
-            getFirstOutputSlot().addData(getFirstInputSlot().getData(row, JIPipeData.class), annotations, JIPipeAnnotationMergeStrategy.Merge);
+            getFirstOutputSlot().addData(getFirstInputSlot().getData(row, JIPipeData.class, progressInfo), annotations, JIPipeAnnotationMergeStrategy.Merge, progressInfo);
         }
     }
 

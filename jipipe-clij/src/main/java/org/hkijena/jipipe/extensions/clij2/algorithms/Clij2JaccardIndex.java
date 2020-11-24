@@ -45,14 +45,14 @@ public class Clij2JaccardIndex extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         CLIJ2 clij2 = CLIJ2.getInstance();
         CLIJ clij = clij2.getCLIJ();
-        ClearCLBuffer input1 = dataBatch.getInputData(getInputSlot("input1"), CLIJImageData.class).getImage();
+        ClearCLBuffer input1 = dataBatch.getInputData(getInputSlot("input1"), CLIJImageData.class, progressInfo).getImage();
         ClearCLBuffer input2 = clij2.create(input1);
         JaccardIndex.jaccardIndex(clij2, input1, input2);
 
-        dataBatch.addOutputData(getOutputSlot("input2"), new CLIJImageData(input2));
+        dataBatch.addOutputData(getOutputSlot("input2"), new CLIJImageData(input2), progressInfo);
     }
 
 }

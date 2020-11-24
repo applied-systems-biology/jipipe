@@ -52,14 +52,14 @@ public class Clij2Translate3d extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         CLIJ2 clij2 = CLIJ2.getInstance();
         CLIJ clij = clij2.getCLIJ();
-        ClearCLBuffer input = dataBatch.getInputData(getInputSlot("input"), CLIJImageData.class).getImage();
+        ClearCLBuffer input = dataBatch.getInputData(getInputSlot("input"), CLIJImageData.class, progressInfo).getImage();
         ClearCLBuffer output = clij2.create(input);
         Translate3D.translate3D(clij2, input, output, translateX, translateY, translateZ);
 
-        dataBatch.addOutputData(getOutputSlot("output"), new CLIJImageData(output));
+        dataBatch.addOutputData(getOutputSlot("output"), new CLIJImageData(output), progressInfo);
     }
 
     @JIPipeParameter("translate-x")

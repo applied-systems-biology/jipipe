@@ -74,8 +74,8 @@ public class AutoThreshold2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
-        ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscale8UData.class);
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+        ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscale8UData.class, progressInfo);
         ImagePlus img = inputData.getDuplicateImage();
         AutoThresholder autoThresholder = new AutoThresholder();
         ImageJUtils.forEachSlice(img, ip -> {
@@ -84,7 +84,7 @@ public class AutoThreshold2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             int threshold = autoThresholder.getThreshold(method, ip.getHistogram());
             ip.threshold(threshold);
         });
-        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleMaskData(img));
+        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleMaskData(img), progressInfo);
     }
 
     @JIPipeParameter("method")

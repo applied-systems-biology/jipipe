@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.ui.cache;
 
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeCacheSlotDataSource;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataDisplayOperation;
@@ -97,7 +98,7 @@ public class JIPipeDataSlotRowUI extends JIPipeWorkbenchPanel {
 
     private void runDisplayOperation(JIPipeDataDisplayOperation operation) {
         try(BusyCursor cursor = new BusyCursor(this)) {
-            JIPipeData data = slot.getData(row, JIPipeData.class);
+            JIPipeData data = slot.getData(row, JIPipeData.class, new JIPipeProgressInfo());
             String displayName = slot.getNode().getName() + "/" + slot.getName() + "/" + row;
             operation.display(data, displayName, getWorkbench(), new JIPipeCacheSlotDataSource(slot, row));
             if (GeneralDataSettings.getInstance().isAutoSaveLastDisplay()) {
@@ -139,7 +140,7 @@ public class JIPipeDataSlotRowUI extends JIPipeWorkbenchPanel {
     }
 
     private void copyString() {
-        String string = "" + slot.getData(row, JIPipeData.class);
+        String string = "" + slot.getData(row, JIPipeData.class, new JIPipeProgressInfo());
         StringSelection selection = new StringSelection(string);
         Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
         clipboard.setContents(selection, selection);

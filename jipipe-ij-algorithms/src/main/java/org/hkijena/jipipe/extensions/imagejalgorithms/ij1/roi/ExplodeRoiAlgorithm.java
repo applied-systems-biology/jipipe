@@ -71,8 +71,8 @@ public class ExplodeRoiAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
-        ROIListData data = dataBatch.getInputData(getFirstInputSlot(), ROIListData.class);
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+        ROIListData data = dataBatch.getInputData(getFirstInputSlot(), ROIListData.class, progressInfo);
         for (int i = 0; i < data.size(); i++) {
             Roi roi = data.get(i);
             List<JIPipeAnnotation> traits = new ArrayList<>();
@@ -81,7 +81,7 @@ public class ExplodeRoiAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             }
             ROIListData output = new ROIListData();
             output.add(roi);
-            dataBatch.addOutputData(getFirstOutputSlot(), output, traits, JIPipeAnnotationMergeStrategy.Merge);
+            dataBatch.addOutputData(getFirstOutputSlot(), output, traits, JIPipeAnnotationMergeStrategy.Merge, progressInfo);
         }
     }
 

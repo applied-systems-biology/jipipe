@@ -73,14 +73,14 @@ public class ReferencedAppendRectangularRoiAlgorithm extends JIPipeIteratingAlgo
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
-        ROIListData currentData = (ROIListData) dataBatch.getInputData("ROI", ROIListData.class).duplicate();
-        ImagePlus reference = dataBatch.getInputData("Reference", ImagePlusData.class).getImage();
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+        ROIListData currentData = (ROIListData) dataBatch.getInputData("ROI", ROIListData.class, progressInfo).duplicate();
+        ImagePlus reference = dataBatch.getInputData("Reference", ImagePlusData.class, progressInfo).getImage();
         Rectangle bounds = new Rectangle(0, 0, reference.getWidth(), reference.getHeight());
         for (Margin margin : rectangles) {
             currentData.add(new ShapeRoi(margin.apply(bounds)));
         }
-        dataBatch.addOutputData(getFirstOutputSlot(), currentData);
+        dataBatch.addOutputData(getFirstOutputSlot(), currentData, progressInfo);
     }
 
     @JIPipeDocumentation(name = "Rectangles", description = "List of rectangles")

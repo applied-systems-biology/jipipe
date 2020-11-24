@@ -111,7 +111,7 @@ public class ParameterSlotPythonScriptAlgorithm extends JIPipeParameterSlotAlgor
     }
 
     @Override
-    public void runParameterSet(JIPipeProgressInfo progress, List<JIPipeAnnotation> parameterAnnotations) {
+    public void runParameterSet(JIPipeProgressInfo progressInfo, List<JIPipeAnnotation> parameterAnnotations) {
         PythonInterpreter pythonInterpreter = new PythonInterpreter();
         PythonUtils.passParametersToPython(pythonInterpreter, scriptParameters);
         pythonInterpreter.set("parameter_annotations", parameterAnnotations);

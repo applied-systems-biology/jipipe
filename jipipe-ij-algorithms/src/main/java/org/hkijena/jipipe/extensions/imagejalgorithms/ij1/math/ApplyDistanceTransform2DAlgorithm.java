@@ -68,11 +68,11 @@ public class ApplyDistanceTransform2DAlgorithm extends JIPipeSimpleIteratingAlgo
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
-        ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscaleMaskData.class);
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+        ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscaleMaskData.class, progressInfo);
         ImagePlus img = inputData.getDuplicateImage();
         EDM edm = new EDM();
         ImageJUtils.forEachSlice(img, edm::toEDM);
-        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscale8UData(img));
+        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscale8UData(img), progressInfo);
     }
 }

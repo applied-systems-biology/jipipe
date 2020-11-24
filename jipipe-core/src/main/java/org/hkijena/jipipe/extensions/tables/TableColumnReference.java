@@ -93,9 +93,9 @@ public class TableColumnReference implements TableColumn {
     }
 
     @Override
-    public void saveTo(Path storageFilePath, String name, boolean forceName, JIPipeProgressInfo progress) {
+    public void saveTo(Path storageFilePath, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
         ResultsTableData resultsTableData = new ResultsTableData(Collections.singletonList(this));
-        resultsTableData.saveTo(storageFilePath, name, forceName, progress);
+        resultsTableData.saveTo(storageFilePath, name, forceName, progressInfo);
     }
 
     @Override

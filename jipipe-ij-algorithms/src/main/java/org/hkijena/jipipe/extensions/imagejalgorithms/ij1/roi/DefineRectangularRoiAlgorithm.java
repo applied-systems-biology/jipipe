@@ -64,17 +64,17 @@ public class DefineRectangularRoiAlgorithm extends JIPipeAlgorithm {
     }
 
     @Override
-    public void run(JIPipeProgressInfo progress) {
+    public void run(JIPipeProgressInfo progressInfo) {
         ROIListData currentData = new ROIListData();
         for (Rectangle rectangle : rectangles) {
             currentData.add(new ShapeRoi(rectangle));
             if (split) {
-                getFirstOutputSlot().addData(currentData);
+                getFirstOutputSlot().addData(currentData, progressInfo);
                 currentData = new ROIListData();
             }
         }
         if (!currentData.isEmpty()) {
-            getFirstOutputSlot().addData(currentData);
+            getFirstOutputSlot().addData(currentData, progressInfo);
         }
     }
 

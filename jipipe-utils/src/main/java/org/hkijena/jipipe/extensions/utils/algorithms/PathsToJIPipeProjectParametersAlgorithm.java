@@ -24,15 +24,11 @@ import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
-import org.hkijena.jipipe.api.events.ParameterChangedEvent;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeIteratingAlgorithm;
-import org.hkijena.jipipe.api.nodes.JIPipeMergingAlgorithm;
-import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
-import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
@@ -43,7 +39,6 @@ import org.hkijena.jipipe.extensions.filesystem.dataypes.PathData;
 import org.hkijena.jipipe.extensions.multiparameters.datatypes.ParametersData;
 import org.hkijena.jipipe.extensions.parameters.collections.InputSlotMapParameterCollection;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
-import org.hkijena.jipipe.extensions.parameters.table.ParameterTable;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.ParameterTreeUI;
@@ -90,15 +85,15 @@ public class PathsToJIPipeProjectParametersAlgorithm extends JIPipeIteratingAlgo
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ParametersData data = new ParametersData();
         for (Map.Entry<String, JIPipeParameterAccess> entry : parameterKeyAssignments.getParameters().entrySet()) {
-            PathData pathData = dataBatch.getInputData(entry.getKey(), PathData.class);
+            PathData pathData = dataBatch.getInputData(entry.getKey(), PathData.class, progressInfo);
             JIPipeParameterAccess access = entry.getValue();
             String targetKey = access.get(String.class);
             data.getParameterData().put(targetKey, pathData.getPath());
         }
-        dataBatch.addOutputData(getFirstOutputSlot(), data);
+        dataBatch.addOutputData(getFirstOutputSlot(), data, progressInfo);
     }
 
     @JIPipeDocumentation(name = "Parameter assignments", description = "The value from each input slot is stored into a parameter with given unique ID. You can look up this unique ID inside the project parameters or " +

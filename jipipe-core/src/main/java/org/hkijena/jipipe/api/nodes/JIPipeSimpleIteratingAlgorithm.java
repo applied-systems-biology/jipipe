@@ -67,7 +67,7 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
     }
 
     @Override
-    public void runParameterSet(JIPipeProgressInfo progress, List<JIPipeAnnotation> parameterAnnotations) {
+    public void runParameterSet(JIPipeProgressInfo progressInfo, List<JIPipeAnnotation> parameterAnnotations) {
         if (getEffectiveInputSlotCount() > 1)
             throw new UserFriendlyRuntimeException("Too many input slots for JIPipeSimpleIteratingAlgorithm!",
                     "Error in source code detected!",
@@ -75,23 +75,23 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
                     "The developer of this algorithm chose the wrong node type. The one that was selected only supports at most one input.",
                     "Please contact the plugin developers and tell them to let algorithm '" + getInfo().getId() + "' inherit from 'JIPipeIteratingAlgorithm' instead.");
         if (isPassThrough() && canPassThrough()) {
-            progress.log("Data passed through to output");
+            progressInfo.log("Data passed through to output");
             runPassThrough();
             return;
         }
 
         if (getInputSlots().isEmpty()) {
             final int row = 0;
-            JIPipeProgressInfo slotProgress = progress.resolveAndLog("Data row", row, 1);
+            JIPipeProgressInfo slotProgress = progressInfo.resolveAndLog("Data row", row, 1);
             JIPipeDataBatch dataBatch = new JIPipeDataBatch(this);
             dataBatch.addGlobalAnnotations(parameterAnnotations, JIPipeAnnotationMergeStrategy.Merge);
             runIteration(dataBatch, slotProgress);
         } else {
             if (!supportsParallelization() || !isParallelizationEnabled() || getThreadPool() == null || getThreadPool().getMaxThreads() <= 1) {
                 for (int i = 0; i < getFirstInputSlot().getRowCount(); i++) {
-                    if (progress.isCancelled().get())
+                    if (progressInfo.isCancelled().get())
                         return;
-                    JIPipeProgressInfo slotProgress = progress.resolveAndLog("Data row", i, getFirstInputSlot().getRowCount());
+                    JIPipeProgressInfo slotProgress = progressInfo.resolveAndLog("Data row", i, getFirstInputSlot().getRowCount());
                     JIPipeDataBatch dataBatch = new JIPipeDataBatch(this);
                     dataBatch.setData(getFirstInputSlot(), i);
                     dataBatch.addGlobalAnnotations(getFirstInputSlot().getAnnotations(i), JIPipeAnnotationMergeStrategy.Merge);
@@ -103,9 +103,9 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
                 for (int i = 0; i < getFirstInputSlot().getRowCount(); i++) {
                     int rowIndex = i;
                     tasks.add(() -> {
-                        if (progress.isCancelled().get())
+                        if (progressInfo.isCancelled().get())
                             return;
-                        JIPipeProgressInfo slotProgress = progress.resolveAndLog("Data row", rowIndex, getFirstInputSlot().getRowCount());
+                        JIPipeProgressInfo slotProgress = progressInfo.resolveAndLog("Data row", rowIndex, getFirstInputSlot().getRowCount());
                         JIPipeDataBatch dataBatch = new JIPipeDataBatch(this);
                         dataBatch.setData(getFirstInputSlot(), rowIndex);
                         dataBatch.addGlobalAnnotations(getFirstInputSlot().getAnnotations(rowIndex), JIPipeAnnotationMergeStrategy.Merge);
@@ -113,7 +113,7 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
                         runIteration(dataBatch, slotProgress);
                     });
                 }
-                progress.log(String.format("Running %d batches (batch size %d) in parallel. Available threads = %d", tasks.size(), getParallelizationBatchSize(), getThreadPool().getMaxThreads()));
+                progressInfo.log(String.format("Running %d batches (batch size %d) in parallel. Available threads = %d", tasks.size(), getParallelizationBatchSize(), getThreadPool().getMaxThreads()));
                 for (Future<Exception> batch : getThreadPool().scheduleBatches(tasks, getParallelizationBatchSize())) {
                     try {
                         Exception exception = batch.get();
@@ -144,7 +144,7 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
      * @param dataBatch The data interface
      * @param progress  the progress info from the run
      */
-    protected abstract void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress);
+    protected abstract void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo);
 
     @Override
     public boolean supportsParallelization() {

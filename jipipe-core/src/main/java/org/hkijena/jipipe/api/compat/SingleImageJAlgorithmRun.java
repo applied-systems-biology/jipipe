@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeValidatable;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeData;
@@ -107,7 +108,7 @@ public class SingleImageJAlgorithmRun implements JIPipeValidatable {
         for (Map.Entry<String, ImageJDatatypeImporter> entry : inputSlotImporters.entrySet()) {
             JIPipeDataSlot slot = algorithm.getInputSlot(entry.getKey());
             slot.clearData(false);
-            slot.addData(entry.getValue().get());
+            slot.addData(entry.getValue().get(), new JIPipeProgressInfo());
         }
     }
 
@@ -120,7 +121,7 @@ public class SingleImageJAlgorithmRun implements JIPipeValidatable {
             ImageJDatatypeAdapter adapter = JIPipe.getImageJAdapters().getAdapterForJIPipeData(outputSlot.getAcceptedDataType());
             List<JIPipeData> jipipeData = new ArrayList<>();
             for (int i = 0; i < outputSlot.getRowCount(); ++i) {
-                JIPipeData data = outputSlot.getData(i, JIPipeData.class);
+                JIPipeData data = outputSlot.getData(i, JIPipeData.class, new JIPipeProgressInfo());
                 jipipeData.add(data);
             }
             adapter.convertMultipleJIPipeToImageJ(jipipeData, true, false, outputSlot.getName());

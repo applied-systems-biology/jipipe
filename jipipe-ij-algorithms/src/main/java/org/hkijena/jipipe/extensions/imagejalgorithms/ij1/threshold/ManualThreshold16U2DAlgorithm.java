@@ -78,8 +78,8 @@ public class ManualThreshold16U2DAlgorithm extends JIPipeSimpleIteratingAlgorith
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
-        ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscale16UData.class);
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+        ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscale16UData.class, progressInfo);
         ImagePlus img = inputData.getDuplicateImage();
         ImageJUtils.forEachSlice(img, ip -> {
             for (int i = 0; i < ip.getPixelCount(); i++) {
@@ -93,7 +93,7 @@ public class ManualThreshold16U2DAlgorithm extends JIPipeSimpleIteratingAlgorith
                 ((ShortProcessor) ip).findMinAndMax();
             }
         });
-        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleMaskData(img));
+        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleMaskData(img), progressInfo);
     }
 
 

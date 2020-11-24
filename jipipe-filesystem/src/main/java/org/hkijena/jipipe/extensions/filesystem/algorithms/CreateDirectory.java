@@ -64,8 +64,8 @@ public class CreateDirectory extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
-        FolderData inputFolder = dataBatch.getInputData(getFirstInputSlot(), FolderData.class);
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+        FolderData inputFolder = dataBatch.getInputData(getFirstInputSlot(), FolderData.class, progressInfo);
         if (!Files.exists(inputFolder.getPath())) {
             try {
                 if (withParents) {
@@ -80,7 +80,7 @@ public class CreateDirectory extends JIPipeSimpleIteratingAlgorithm {
                         "Please check if the path is correct and you have sufficient rights to create such path.");
             }
         }
-        dataBatch.addOutputData("Subfolders", inputFolder);
+        dataBatch.addOutputData("Subfolders", inputFolder, progressInfo);
     }
 
     /**

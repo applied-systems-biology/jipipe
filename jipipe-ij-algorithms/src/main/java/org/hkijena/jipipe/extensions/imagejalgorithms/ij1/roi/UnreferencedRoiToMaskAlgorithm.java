@@ -92,8 +92,8 @@ public class UnreferencedRoiToMaskAlgorithm extends JIPipeSimpleIteratingAlgorit
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
-        ROIListData inputData = (ROIListData) dataBatch.getInputData(getFirstInputSlot(), ROIListData.class).duplicate();
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+        ROIListData inputData = (ROIListData) dataBatch.getInputData(getFirstInputSlot(), ROIListData.class, progressInfo).duplicate();
         if (preferAssociatedImage) {
             for (Map.Entry<Optional<ImagePlus>, ROIListData> entry : inputData.groupByReferenceImage().entrySet()) {
                 if (entry.getKey().isPresent()) {
@@ -106,15 +106,15 @@ public class UnreferencedRoiToMaskAlgorithm extends JIPipeSimpleIteratingAlgorit
                             reference.getNSlices(),
                             reference.getNFrames());
                     entry.getValue().drawMask(drawOutline, drawFilledOutline, lineThickness, target);
-                    dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(target));
+                    dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(target), progressInfo);
                 } else {
                     ImagePlus result = entry.getValue().toMask(imageArea, drawOutline, drawFilledOutline, lineThickness);
-                    dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(result));
+                    dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(result), progressInfo);
                 }
             }
         } else {
             ImagePlus result = inputData.toMask(imageArea, drawOutline, drawFilledOutline, lineThickness);
-            dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(result));
+            dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(result), progressInfo);
         }
     }
 

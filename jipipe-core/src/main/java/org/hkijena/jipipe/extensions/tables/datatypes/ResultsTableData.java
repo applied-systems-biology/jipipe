@@ -384,7 +384,7 @@ public class ResultsTableData implements JIPipeData, TableModel {
     }
 
     @Override
-    public void saveTo(Path storageFilePath, String name, boolean forceName, JIPipeProgressInfo progress) {
+    public void saveTo(Path storageFilePath, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
         try {
             table.saveAs(storageFilePath.resolve(name + ".csv").toString());
         } catch (IOException e) {

@@ -82,8 +82,8 @@ public class TransformScale2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
-        ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class);
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+        ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo);
         ImagePlus img = inputData.getImage();
 
         int sx = img.getWidth();
@@ -110,12 +110,12 @@ public class TransformScale2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                 ImageProcessor resized = imp.resize(finalSx, finalSy, useAveraging);
                 result.addSlice("" + index, resized);
             });
-            dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(new ImagePlus("Resized", result)));
+            dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(new ImagePlus("Resized", result)), progressInfo);
         } else {
             img.getProcessor().setInterpolationMethod(interpolationMethod.getNativeValue());
             ImageProcessor resized = img.getProcessor().resize(sx, sy, useAveraging);
             ImagePlus result = new ImagePlus("Resized", resized);
-            dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(result));
+            dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(result), progressInfo);
         }
 
     }

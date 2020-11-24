@@ -57,15 +57,15 @@ public class RemoveColumnAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
-        ResultsTableData table = (ResultsTableData) dataBatch.getInputData(getFirstInputSlot(), ResultsTableData.class).duplicate();
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+        ResultsTableData table = (ResultsTableData) dataBatch.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo).duplicate();
         for (int col = 0; col < table.getColumnCount(); col++) {
             if (filters.test(table.getColumnName(col))) {
                 table.removeColumnAt(col);
                 --col;
             }
         }
-        dataBatch.addOutputData(getFirstOutputSlot(), table);
+        dataBatch.addOutputData(getFirstOutputSlot(), table, progressInfo);
     }
 
     @JIPipeDocumentation(name = "Filters", description = "Filter expression that is used to find columns to be removed. " + StringQueryExpression.DOCUMENTATION_DESCRIPTION)

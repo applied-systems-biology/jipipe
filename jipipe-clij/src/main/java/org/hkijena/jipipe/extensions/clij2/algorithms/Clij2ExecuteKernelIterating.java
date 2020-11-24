@@ -145,12 +145,12 @@ public class Clij2ExecuteKernelIterating extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    public void runParameterSet(JIPipeProgressInfo progress, List<JIPipeAnnotation> parameterAnnotations) {
-        super.runParameterSet(progress, parameterAnnotations);
+    public void runParameterSet(JIPipeProgressInfo progressInfo, List<JIPipeAnnotation> parameterAnnotations) {
+        super.runParameterSet(progressInfo, parameterAnnotations);
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         CLIJ2 clij2 = CLIJ2.getInstance();
         PythonInterpreter pythonInterpreter = new PythonInterpreter();
         pythonInterpreter.set("clij2", clij2);
@@ -187,7 +187,7 @@ public class Clij2ExecuteKernelIterating extends JIPipeIteratingAlgorithm {
 
         // Fetch parameters (data)
         for (Map.Entry<String, JIPipeDataSlot> entry : getInputSlotMap().entrySet()) {
-            clParameters.put(entry.getKey(), dataBatch.getInputData(entry.getValue(), CLIJImageData.class).getImage());
+            clParameters.put(entry.getKey(), dataBatch.getInputData(entry.getValue(), CLIJImageData.class, progressInfo).getImage());
         }
         PyDictionary clOutputBuffersDict = pythonInterpreter.get("cl_output_buffers", PyDictionary.class);
         for (Object key : clOutputBuffersDict.keySet()) {
@@ -210,7 +210,7 @@ public class Clij2ExecuteKernelIterating extends JIPipeIteratingAlgorithm {
 
         // Extract outputs
         for (Map.Entry<String, JIPipeDataSlot> entry : getOutputSlotMap().entrySet()) {
-            dataBatch.addOutputData(entry.getKey(), new CLIJImageData((ClearCLBuffer) clParameters.get(entry.getKey())));
+            dataBatch.addOutputData(entry.getKey(), new CLIJImageData((ClearCLBuffer) clParameters.get(entry.getKey())), progressInfo);
         }
     }
 

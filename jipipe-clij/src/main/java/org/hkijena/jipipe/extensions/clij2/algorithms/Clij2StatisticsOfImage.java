@@ -47,14 +47,14 @@ public class Clij2StatisticsOfImage extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         CLIJ2 clij2 = CLIJ2.getInstance();
         CLIJ clij = clij2.getCLIJ();
-        ClearCLBuffer inputImage = dataBatch.getInputData(getInputSlot("inputImage"), CLIJImageData.class).getImage();
+        ClearCLBuffer inputImage = dataBatch.getInputData(getInputSlot("inputImage"), CLIJImageData.class, progressInfo).getImage();
         ResultsTable resultsTable = new ResultsTable();
         StatisticsOfImage.statisticsOfImage(clij2, inputImage, resultsTable);
 
-        dataBatch.addOutputData(getOutputSlot("resultsTable"), new ResultsTableData(resultsTable));
+        dataBatch.addOutputData(getOutputSlot("resultsTable"), new ResultsTableData(resultsTable), progressInfo);
     }
 
 }

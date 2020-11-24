@@ -107,8 +107,8 @@ public class StackSplitterAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
-        ImagePlus img = dataBatch.getInputData(getFirstInputSlot(), ImagePlusColorData.class).getImage();
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+        ImagePlus img = dataBatch.getInputData(getFirstInputSlot(), ImagePlusColorData.class, progressInfo).getImage();
         for (Map.Entry<String, JIPipeParameterAccess> entry : stackAssignments.getParameters().entrySet()) {
             IntegerRange sliceSelection = entry.getValue().get(IntegerRange.class);
             List<Integer> sliceIndices = sliceSelection.getIntegers();
@@ -150,7 +150,7 @@ public class StackSplitterAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                 String index = "slice=" + sliceIndices.stream().map(i -> "" + i).collect(Collectors.joining(","));
                 annotations.add(new JIPipeAnnotation(annotationType, index));
             }
-            dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(result), annotations, JIPipeAnnotationMergeStrategy.Merge);
+            dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(result), annotations, JIPipeAnnotationMergeStrategy.Merge, progressInfo);
         }
     }
 

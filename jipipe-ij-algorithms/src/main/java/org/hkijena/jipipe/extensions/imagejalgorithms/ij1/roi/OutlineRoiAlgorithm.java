@@ -61,10 +61,10 @@ public class OutlineRoiAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
-        ROIListData data = (ROIListData) dataBatch.getInputData(getFirstInputSlot(), ROIListData.class).duplicate();
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+        ROIListData data = (ROIListData) dataBatch.getInputData(getFirstInputSlot(), ROIListData.class, progressInfo).duplicate();
         data.outline(outline);
-        dataBatch.addOutputData(getFirstOutputSlot(), data);
+        dataBatch.addOutputData(getFirstOutputSlot(), data, progressInfo);
     }
 
     @JIPipeDocumentation(name = "Outline method", description = "The outlining method that should be applied.")

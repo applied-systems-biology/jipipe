@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.ui.batchassistant;
 
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
@@ -215,7 +216,7 @@ public class DataSlotTableUI extends JIPipeProjectWorkbenchPanel {
             if (columnIndex == 0)
                 return slot.getValueAt(rowIndex, 0);
             else if (columnIndex == 1)
-                return "" + slot.getData(rowIndex, JIPipeData.class);
+                return "" + slot.getData(rowIndex, JIPipeData.class, new JIPipeProgressInfo());
             else {
                 return slot.getValueAt(rowIndex, columnIndex - 1);
             }

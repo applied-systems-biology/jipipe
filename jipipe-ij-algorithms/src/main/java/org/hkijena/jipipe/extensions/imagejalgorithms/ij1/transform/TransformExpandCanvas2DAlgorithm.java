@@ -57,8 +57,8 @@ public class TransformExpandCanvas2DAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
-        ImagePlus imp = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class).getImage();
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+        ImagePlus imp = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo).getImage();
         int wOld = imp.getWidth();
         int hOld = imp.getHeight();
         int wNew = xAxis.apply(wOld);
@@ -114,9 +114,9 @@ public class TransformExpandCanvas2DAlgorithm extends JIPipeIteratingAlgorithm {
         }
 
         if (imp.isStack()) {
-            dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(new ImagePlus("Expanded", expandStack(imp.getStack(), wNew, hNew, xOff, yOff))));
+            dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(new ImagePlus("Expanded", expandStack(imp.getStack(), wNew, hNew, xOff, yOff))), progressInfo);
         } else {
-            dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(new ImagePlus("Expanded", expandImage(imp.getProcessor(), wNew, hNew, xOff, yOff))));
+            dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(new ImagePlus("Expanded", expandImage(imp.getProcessor(), wNew, hNew, xOff, yOff))), progressInfo);
         }
     }
 

@@ -60,7 +60,7 @@ public class ExportDataByParameter extends JIPipeAlgorithm {
     }
 
     @Override
-    public void run(JIPipeProgressInfo progress) {
+    public void run(JIPipeProgressInfo progressInfo) {
         Path outputPath;
         if (outputDirectory == null || outputDirectory.toString().isEmpty() || !outputDirectory.isAbsolute()) {
             outputPath = getFirstOutputSlot().getStoragePath().resolve(outputDirectory);
@@ -68,21 +68,21 @@ public class ExportDataByParameter extends JIPipeAlgorithm {
             outputPath = outputDirectory;
         }
         if (isPassThrough()) {
-            progress.log("Data passed through to output");
-            getFirstOutputSlot().addData(new FolderData(outputPath));
+            progressInfo.log("Data passed through to output");
+            getFirstOutputSlot().addData(new FolderData(outputPath), progressInfo);
             return;
         }
 
         if (splitByInputSlots) {
             for (JIPipeDataSlot inputSlot : getInputSlots()) {
-                if (progress.isCancelled().get())
+                if (progressInfo.isCancelled().get())
                     return;
-                exporter.writeToFolder(Collections.singletonList(inputSlot), outputPath.resolve(inputSlot.getName()), progress.resolve("Slot '" + inputSlot.getName() + "'"));
-                getFirstOutputSlot().addData(new FolderData(outputPath.resolve(inputSlot.getName())));
+                exporter.writeToFolder(Collections.singletonList(inputSlot), outputPath.resolve(inputSlot.getName()), progressInfo.resolve("Slot '" + inputSlot.getName() + "'"));
+                getFirstOutputSlot().addData(new FolderData(outputPath.resolve(inputSlot.getName())), progressInfo);
             }
         } else {
-            exporter.writeToFolder(getInputSlots(), outputPath, progress);
-            getFirstOutputSlot().addData(new FolderData(outputPath));
+            exporter.writeToFolder(getInputSlots(), outputPath, progressInfo);
+            getFirstOutputSlot().addData(new FolderData(outputPath), progressInfo);
         }
     }
 

@@ -67,12 +67,12 @@ public class UploadOMEROTableAlgorithm extends JIPipeMergingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeMergingDataBatch dataBatch, JIPipeProgressInfo progress) {
-        List<OMEROImageReferenceData> images = dataBatch.getInputData("Image", OMEROImageReferenceData.class);
-        List<ResultsTableData> tables = dataBatch.getInputData("Table", ResultsTableData.class);
+    protected void runIteration(JIPipeMergingDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+        List<OMEROImageReferenceData> images = dataBatch.getInputData("Image", OMEROImageReferenceData.class, progressInfo);
+        List<ResultsTableData> tables = dataBatch.getInputData("Table", ResultsTableData.class, progressInfo);
         JIPipeDataSlot dummy = dataBatch.toDummySlot(new JIPipeDataSlotInfo(ResultsTableData.class, JIPipeSlotType.Input, null), null, getInputSlot("Table"));
 
-        try (Gateway gateway = new Gateway(new OMEROToJIPipeLogger(progress))) {
+        try (Gateway gateway = new Gateway(new OMEROToJIPipeLogger(progressInfo))) {
             ExperimenterData user = gateway.connect(credentials.getCredentials());
             SecurityContext context = new SecurityContext(user.getGroupId());
             BrowseFacility browseFacility = gateway.getFacility(BrowseFacility.class);
@@ -84,15 +84,15 @@ public class UploadOMEROTableAlgorithm extends JIPipeMergingAlgorithm {
             for (int i = 0; i < dummy.getRowCount(); i++) {
                 String fileName = exporter.generateMetadataString(dummy, i, existingFileNames);
                 fileNames.add(fileName + ".csv");
-                progress.log("Will add table: " + fileName + ".csv");
+                progressInfo.log("Will add table: " + fileName + ".csv");
             }
 
             // Attach tables for each image
             for (OMEROImageReferenceData image : images) {
-                progress.log("Attaching tables to Image ID=" + image.getImageId());
+                progressInfo.log("Attaching tables to Image ID=" + image.getImageId());
                 ImageData imageData = browseFacility.getImage(context, image.getImageId());
                 for (int i = 0; i < tables.size(); i++) {
-                    progress.resolve("Attaching tables to Image ID=" + image.getImageId()).resolveAndLog((i + 1) + "/" + tables.size());
+                    progressInfo.resolve("Attaching tables to Image ID=" + image.getImageId()).resolveAndLog((i + 1) + "/" + tables.size());
                     ResultsTableData resultsTableData = tables.get(i);
                     TableData tableData = OMEROUtils.tableToOMERO(resultsTableData);
                     String fileName = fileNames.get(i);

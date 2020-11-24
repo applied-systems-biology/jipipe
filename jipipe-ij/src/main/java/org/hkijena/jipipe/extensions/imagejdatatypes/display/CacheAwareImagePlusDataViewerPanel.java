@@ -16,6 +16,7 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.display;
 import com.google.common.eventbus.Subscribe;
 import ij.ImagePlus;
 import ij.WindowManager;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.JIPipeProjectCache;
 import org.hkijena.jipipe.api.JIPipeProjectCacheQuery;
@@ -66,7 +67,7 @@ public class CacheAwareImagePlusDataViewerPanel extends ImageViewerPanel {
     }
 
     private void loadImageFromDataSource() {
-        ImagePlusData data = dataSource.getSlot().getData(dataSource.getRow(), ImagePlusData.class);
+        ImagePlusData data = dataSource.getSlot().getData(dataSource.getRow(), ImagePlusData.class, new JIPipeProgressInfo());
         ImagePlus image = data.getDuplicateImage();
         setImage(image);
         WindowManager.setTempCurrentImage(image);

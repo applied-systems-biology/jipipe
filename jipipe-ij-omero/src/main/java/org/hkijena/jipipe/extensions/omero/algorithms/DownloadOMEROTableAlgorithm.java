@@ -73,9 +73,9 @@ public class DownloadOMEROTableAlgorithm extends JIPipeSimpleIteratingAlgorithm 
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
-        OMEROImageReferenceData imageReferenceData = dataBatch.getInputData(getFirstInputSlot(), OMEROImageReferenceData.class);
-        try (Gateway gateway = new Gateway(new OMEROToJIPipeLogger(progress))) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+        OMEROImageReferenceData imageReferenceData = dataBatch.getInputData(getFirstInputSlot(), OMEROImageReferenceData.class, progressInfo);
+        try (Gateway gateway = new Gateway(new OMEROToJIPipeLogger(progressInfo))) {
             ExperimenterData user = gateway.connect(credentials.getCredentials());
             SecurityContext context = new SecurityContext(user.getGroupId());
             BrowseFacility browseFacility = gateway.getFacility(BrowseFacility.class);
@@ -89,7 +89,7 @@ public class DownloadOMEROTableAlgorithm extends JIPipeSimpleIteratingAlgorithm 
                 List<JIPipeAnnotation> annotations = new ArrayList<>();
                 if (fileNameAnnotation.isEnabled())
                     annotations.add(new JIPipeAnnotation(fileNameAnnotation.getContent(), fileName));
-                dataBatch.addOutputData(getFirstOutputSlot(), resultsTableData, annotations, JIPipeAnnotationMergeStrategy.Merge);
+                dataBatch.addOutputData(getFirstOutputSlot(), resultsTableData, annotations, JIPipeAnnotationMergeStrategy.Merge, progressInfo);
             }
         } catch (Exception e) {
             throw new RuntimeException(e);

@@ -54,8 +54,8 @@ public class ExportData extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
-        Path basePath = dataBatch.getInputData("Path", PathData.class).getPath();
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+        Path basePath = dataBatch.getInputData("Path", PathData.class, progressInfo).getPath();
         Path outputFolder = basePath.getParent();
         String name = basePath.getFileName().toString();
 
@@ -70,7 +70,7 @@ public class ExportData extends JIPipeIteratingAlgorithm {
         if (StringUtils.isNullOrEmpty(name))
             name = "unnamed";
 
-        dataBatch.getInputData("Data", JIPipeData.class).saveTo(outputFolder, name, true, progress);
+        dataBatch.getInputData("Data", JIPipeData.class, progressInfo).saveTo(outputFolder, name, true, progressInfo);
     }
 }
 

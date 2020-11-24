@@ -106,9 +106,9 @@ public class ModifyAndMergeTablesScript extends JIPipeAlgorithm {
     }
 
     @Override
-    public void run(JIPipeProgressInfo progress) {
+    public void run(JIPipeProgressInfo progressInfo) {
         if (isPassThrough() && canPassThrough()) {
-            progress.log("Data passed through to output");
+            progressInfo.log("Data passed through to output");
             runPassThrough();
             return;
         }
@@ -118,7 +118,7 @@ public class ModifyAndMergeTablesScript extends JIPipeAlgorithm {
         List<PyDictionary> rows = new ArrayList<>();
         for (int row = 0; row < getFirstInputSlot().getRowCount(); row++) {
             PyDictionary rowDictionary = new PyDictionary();
-            ResultsTableData tableData = getFirstInputSlot().getData(row, ResultsTableData.class);
+            ResultsTableData tableData = getFirstInputSlot().getData(row, ResultsTableData.class, progressInfo);
 
             rowDictionary.put("data", tableData.toPython());
             rowDictionary.put("nrow", tableData.getRowCount());
@@ -134,7 +134,7 @@ public class ModifyAndMergeTablesScript extends JIPipeAlgorithm {
         for (PyDictionary row : rows) {
             ResultsTableData data = ResultsTableData.fromPython((PyDictionary) row.get("data"));
             List<JIPipeAnnotation> annotations = JIPipeAnnotation.extractAnnotationsFromPython((PyDictionary) row.getOrDefault("annotations", new PyDictionary()));
-            getFirstOutputSlot().addData(data, annotations, JIPipeAnnotationMergeStrategy.Merge);
+            getFirstOutputSlot().addData(data, annotations, JIPipeAnnotationMergeStrategy.Merge, progressInfo);
         }
 
         this.pythonInterpreter = null;

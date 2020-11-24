@@ -41,8 +41,8 @@ public class DataToPreviewAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
-        JIPipeData data = dataBatch.getInputData(getFirstInputSlot(), JIPipeData.class);
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+        JIPipeData data = dataBatch.getInputData(getFirstInputSlot(), JIPipeData.class, progressInfo);
         Component preview = data.preview(previewWidth, previewHeight);
         if (preview != null) {
             try {
@@ -51,7 +51,7 @@ public class DataToPreviewAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                     BufferedImage image = new BufferedImage(previewWidth, previewHeight, BufferedImage.TYPE_INT_ARGB);
                     Graphics2D g = (Graphics2D) image.getGraphics();
                     preview.print(g);
-                    dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlus2DColorRGBData(new ImagePlus("Preview of " + data, image)));
+                    dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlus2DColorRGBData(new ImagePlus("Preview of " + data, image)), progressInfo);
                 });
             } catch (InterruptedException | InvocationTargetException e) {
                 throw new RuntimeException(e);

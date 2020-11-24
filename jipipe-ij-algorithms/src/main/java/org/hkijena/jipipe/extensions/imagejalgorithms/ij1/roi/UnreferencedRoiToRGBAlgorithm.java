@@ -115,20 +115,20 @@ public class UnreferencedRoiToRGBAlgorithm extends JIPipeSimpleIteratingAlgorith
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         if (preferAssociatedImage) {
-            for (Map.Entry<Optional<ImagePlus>, ROIListData> referenceEntry : dataBatch.getInputData(getFirstInputSlot(), ROIListData.class).groupByReferenceImage().entrySet()) {
+            for (Map.Entry<Optional<ImagePlus>, ROIListData> referenceEntry : dataBatch.getInputData(getFirstInputSlot(), ROIListData.class, progressInfo).groupByReferenceImage().entrySet()) {
                 ROIListData inputData = (ROIListData) referenceEntry.getValue().duplicate();
-                processROIList(dataBatch, inputData, referenceEntry.getKey().orElse(null), progress);
+                processROIList(dataBatch, inputData, referenceEntry.getKey().orElse(null), progressInfo);
             }
         } else {
-            ROIListData inputData = (ROIListData) dataBatch.getInputData(getFirstInputSlot(), ROIListData.class).duplicate();
-            processROIList(dataBatch, inputData, null, progress);
+            ROIListData inputData = (ROIListData) dataBatch.getInputData(getFirstInputSlot(), ROIListData.class, progressInfo).duplicate();
+            processROIList(dataBatch, inputData, null, progressInfo);
         }
 
     }
 
-    private void processROIList(JIPipeDataBatch dataBatch, ROIListData inputData, ImagePlus reference, JIPipeProgressInfo progress) {
+    private void processROIList(JIPipeDataBatch dataBatch, ROIListData inputData, ImagePlus reference, JIPipeProgressInfo progressInfo) {
         // Find the bounds and future stack position
         Rectangle bounds = imageArea.apply(inputData.getBounds());
         int sx = bounds.width + bounds.x;
@@ -154,9 +154,9 @@ public class UnreferencedRoiToRGBAlgorithm extends JIPipeSimpleIteratingAlgorith
                     JIPipe.createNode("ij1-roi-statistics", RoiStatisticsAlgorithm.class);
             statisticsAlgorithm.setOverrideReferenceImage(false);
             statisticsAlgorithm.getMeasurements().setNativeValue(Measurement.Centroid.getNativeValue());
-            statisticsAlgorithm.getInputSlot("ROI").addData(inputData);
-            statisticsAlgorithm.run(progress);
-            ResultsTableData centroids = statisticsAlgorithm.getFirstOutputSlot().getData(0, ResultsTableData.class);
+            statisticsAlgorithm.getInputSlot("ROI").addData(inputData, progressInfo);
+            statisticsAlgorithm.run(progressInfo);
+            ResultsTableData centroids = statisticsAlgorithm.getFirstOutputSlot().getData(0, ResultsTableData.class, progressInfo);
             for (int row = 0; row < centroids.getRowCount(); row++) {
                 Point centroid = new Point((int) centroids.getValueAsDouble(row, "X"),
                         (int) centroids.getValueAsDouble(row, "Y"));
@@ -219,7 +219,7 @@ public class UnreferencedRoiToRGBAlgorithm extends JIPipeSimpleIteratingAlgorith
             }
         }
 
-        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(result));
+        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(result), progressInfo);
     }
 
     @JIPipeDocumentation(name = "Image area", description = "Allows modification of the output image width and height.")

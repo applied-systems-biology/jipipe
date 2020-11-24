@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.extensions.tables.display;
 
 import com.google.common.eventbus.Subscribe;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.JIPipeProjectCache;
 import org.hkijena.jipipe.api.JIPipeProjectCacheQuery;
@@ -64,7 +65,7 @@ public class CacheAwareTableEditor extends JIPipeTableEditor {
     }
 
     private void loadDataFromDataSource() {
-        ResultsTableData data = dataSource.getSlot().getData(dataSource.getRow(), ResultsTableData.class);
+        ResultsTableData data = dataSource.getSlot().getData(dataSource.getRow(), ResultsTableData.class, new JIPipeProgressInfo());
         ResultsTableData duplicate = (ResultsTableData) data.duplicate();
         setTableModel(duplicate);
         errorPanel.setVisible(false);

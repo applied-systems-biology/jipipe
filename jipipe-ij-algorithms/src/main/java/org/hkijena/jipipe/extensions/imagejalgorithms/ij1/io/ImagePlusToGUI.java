@@ -42,9 +42,9 @@ public class ImagePlusToGUI extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
-        ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class);
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+        ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo);
         inputData.getDuplicateImage().show();
-        dataBatch.addOutputData(getFirstOutputSlot(), inputData);
+        dataBatch.addOutputData(getFirstOutputSlot(), inputData, progressInfo);
     }
 }

@@ -98,10 +98,10 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
     }
 
     @Override
-    public void runParameterSet(JIPipeProgressInfo progress, List<JIPipeAnnotation> parameterAnnotations) {
+    public void runParameterSet(JIPipeProgressInfo progressInfo, List<JIPipeAnnotation> parameterAnnotations) {
 
         if (isPassThrough() && canPassThrough()) {
-            progress.log("Data passed through to output");
+            progressInfo.log("Data passed through to output");
             runPassThrough();
             return;
         }
@@ -110,10 +110,10 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
 
         // Special case: No input slots
         if (getEffectiveInputSlotCount() == 0) {
-            if (progress.isCancelled().get())
+            if (progressInfo.isCancelled().get())
                 return;
             final int row = 0;
-            JIPipeProgressInfo slotProgress = progress.resolveAndLog("Data row", row, 1);
+            JIPipeProgressInfo slotProgress = progressInfo.resolveAndLog("Data row", row, 1);
             JIPipeDataBatch dataBatch = new JIPipeDataBatch(this);
             dataBatch.addGlobalAnnotations(parameterAnnotations, dataBatchGenerationSettings.annotationMergeStrategy);
             runIteration(dataBatch, slotProgress);
@@ -161,9 +161,9 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
 
         if (!supportsParallelization() || !isParallelizationEnabled() || getThreadPool() == null || getThreadPool().getMaxThreads() <= 1) {
             for (int i = 0; i < dataBatches.size(); i++) {
-                if (progress.isCancelled().get())
+                if (progressInfo.isCancelled().get())
                     return;
-                JIPipeProgressInfo slotProgress = progress.resolveAndLog("Data row", i, dataBatches.size());
+                JIPipeProgressInfo slotProgress = progressInfo.resolveAndLog("Data row", i, dataBatches.size());
                 runIteration(dataBatches.get(i), slotProgress);
             }
         } else {
@@ -171,13 +171,13 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
             for (int i = 0; i < getFirstInputSlot().getRowCount(); i++) {
                 int rowIndex = i;
                 tasks.add(() -> {
-                    if (progress.isCancelled().get())
+                    if (progressInfo.isCancelled().get())
                         return;
-                    JIPipeProgressInfo slotProgress = progress.resolveAndLog("Data row", rowIndex, dataBatches.size());
+                    JIPipeProgressInfo slotProgress = progressInfo.resolveAndLog("Data row", rowIndex, dataBatches.size());
                     runIteration(dataBatches.get(rowIndex), slotProgress);
                 });
             }
-            progress.log(String.format("Running %d batches (batch size %d) in parallel. Available threads = %d", tasks.size(), getParallelizationBatchSize(), getThreadPool().getMaxThreads()));
+            progressInfo.log(String.format("Running %d batches (batch size %d) in parallel. Available threads = %d", tasks.size(), getParallelizationBatchSize(), getThreadPool().getMaxThreads()));
             for (Future<Exception> batch : getThreadPool().scheduleBatches(tasks, getParallelizationBatchSize())) {
                 try {
                     Exception exception = batch.get();
@@ -226,9 +226,9 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
      * Runs code on one data row
      *
      * @param dataBatch The data interface
-     * @param progress  the progress info from the run
+     * @param progressInfo  the progress info from the run
      */
-    protected abstract void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress);
+    protected abstract void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo);
 
     /**
      * Groups data batch generation settings

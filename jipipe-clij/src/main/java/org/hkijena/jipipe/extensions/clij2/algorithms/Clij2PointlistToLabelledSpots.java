@@ -45,14 +45,14 @@ public class Clij2PointlistToLabelledSpots extends JIPipeSimpleIteratingAlgorith
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         CLIJ2 clij2 = CLIJ2.getInstance();
         CLIJ clij = clij2.getCLIJ();
-        ClearCLBuffer pointlist = dataBatch.getInputData(getInputSlot("pointlist"), CLIJImageData.class).getImage();
+        ClearCLBuffer pointlist = dataBatch.getInputData(getInputSlot("pointlist"), CLIJImageData.class, progressInfo).getImage();
         ClearCLBuffer labelledSpots = clij2.create(pointlist);
         PointlistToLabelledSpots.pointlistToLabelledSpots(clij2, pointlist, labelledSpots);
 
-        dataBatch.addOutputData(getOutputSlot("labelledSpots"), new CLIJImageData(labelledSpots));
+        dataBatch.addOutputData(getOutputSlot("labelledSpots"), new CLIJImageData(labelledSpots), progressInfo);
     }
 
 }

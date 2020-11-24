@@ -45,7 +45,7 @@ public class StringData implements JIPipeData {
     }
 
     @Override
-    public void saveTo(Path storageFilePath, String name, boolean forceName, JIPipeProgressInfo progress) {
+    public void saveTo(Path storageFilePath, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
         try (FileWriter writer = new FileWriter(storageFilePath.resolve(name + getOutputExtension()).toFile())) {
             writer.write(data);
         } catch (IOException e) {

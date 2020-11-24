@@ -55,8 +55,8 @@ public class SetLUTFromColorAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
-        ImagePlusData data = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class);
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+        ImagePlusData data = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo);
         if (duplicateImage)
             data = (ImagePlusData) data.duplicate();
         LUT lut = createGradientLUT(firstColor, secondColor);
@@ -75,7 +75,7 @@ public class SetLUTFromColorAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         } else {
             image.getProcessor().setLut(lut);
         }
-        dataBatch.addOutputData(getFirstOutputSlot(), data);
+        dataBatch.addOutputData(getFirstOutputSlot(), data, progressInfo);
     }
 
     @JIPipeDocumentation(name = "Duplicate image", description = "As the LUT modification does not change any image data, you can disable creating a duplicate.")

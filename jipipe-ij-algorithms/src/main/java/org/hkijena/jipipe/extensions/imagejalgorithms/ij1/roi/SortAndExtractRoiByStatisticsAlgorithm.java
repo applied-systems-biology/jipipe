@@ -85,30 +85,30 @@ public class SortAndExtractRoiByStatisticsAlgorithm extends ImageRoiProcessorAlg
     }
 
     @Override
-    public void run(JIPipeProgressInfo progress) {
+    public void run(JIPipeProgressInfo progressInfo) {
         // Set parameters of ROI statistics algorithm
         roiStatisticsAlgorithm.getMeasurements().setNativeValue(sortOrderList.getNativeMeasurementEnumValue());
 
         // Continue with run
-        super.run(progress);
+        super.run(progressInfo);
     }
 
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
 
         ROIListData outputData = new ROIListData();
 
         roiStatisticsAlgorithm.setOverrideReferenceImage(true);
 
-        for (Map.Entry<ImagePlusData, ROIListData> entry : getReferenceImage(dataBatch, progress).entrySet()) {
+        for (Map.Entry<ImagePlusData, ROIListData> entry : getReferenceImage(dataBatch, progressInfo).entrySet()) {
             ROIListData data = entry.getValue();
             // Obtain statistics
             roiStatisticsAlgorithm.clearSlotData();
-            roiStatisticsAlgorithm.getInputSlot("ROI").addData(data);
-            roiStatisticsAlgorithm.getInputSlot("Reference").addData(entry.getKey());
-            roiStatisticsAlgorithm.run(progress);
-            ResultsTableData statistics = roiStatisticsAlgorithm.getFirstOutputSlot().getData(0, ResultsTableData.class);
+            roiStatisticsAlgorithm.getInputSlot("ROI").addData(data, progressInfo);
+            roiStatisticsAlgorithm.getInputSlot("Reference").addData(entry.getKey(), progressInfo);
+            roiStatisticsAlgorithm.run(progressInfo);
+            ResultsTableData statistics = roiStatisticsAlgorithm.getFirstOutputSlot().getData(0, ResultsTableData.class, progressInfo);
 
             // Apply sorting
             if (!sortOrderList.isEmpty()) {
@@ -149,7 +149,7 @@ public class SortAndExtractRoiByStatisticsAlgorithm extends ImageRoiProcessorAlg
             }
         }
 
-        dataBatch.addOutputData(getFirstOutputSlot(), outputData);
+        dataBatch.addOutputData(getFirstOutputSlot(), outputData, progressInfo);
     }
 
     @JIPipeDocumentation(name = "Sort order", description = "Allows you to determine by which measurement columns to sort by. You can order by multiple columns " +

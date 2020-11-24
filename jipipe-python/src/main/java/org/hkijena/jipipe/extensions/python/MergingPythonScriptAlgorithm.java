@@ -113,7 +113,7 @@ public class MergingPythonScriptAlgorithm extends JIPipeMergingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeMergingDataBatch dataBatch, JIPipeProgressInfo progress) {
+    protected void runIteration(JIPipeMergingDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         PythonInterpreter pythonInterpreter = new PythonInterpreter();
         PythonUtils.passParametersToPython(pythonInterpreter, scriptParameters);
         pythonInterpreter.set("data_batch", dataBatch);

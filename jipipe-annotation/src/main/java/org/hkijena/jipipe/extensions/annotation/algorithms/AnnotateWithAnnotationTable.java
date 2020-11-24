@@ -58,9 +58,9 @@ public class AnnotateWithAnnotationTable extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    public void runParameterSet(JIPipeProgressInfo progress, List<JIPipeAnnotation> parameterAnnotations) {
+    public void runParameterSet(JIPipeProgressInfo progressInfo, List<JIPipeAnnotation> parameterAnnotations) {
         if (isPassThrough() && canPassThrough()) {
-            progress.log("Data passed through to output");
+            progressInfo.log("Data passed through to output");
             runPassThrough();
             return;
         }
@@ -71,10 +71,10 @@ public class AnnotateWithAnnotationTable extends JIPipeIteratingAlgorithm {
         JIPipeDataSlot dummy = new JIPipeDataSlot(new JIPipeDataSlotInfo(JIPipeData.class, JIPipeSlotType.Input, "dummy", null), this);
         JIPipeDataSlot annotationSlot = getInputSlot("Annotations");
         for (int i = 0; i < annotationSlot.getRowCount(); i++) {
-            AnnotationTableData data = annotationSlot.getData(i, AnnotationTableData.class);
+            AnnotationTableData data = annotationSlot.getData(i, AnnotationTableData.class, progressInfo);
             for (int j = 0; j < data.getRowCount(); j++) {
                 List<JIPipeAnnotation> annotations = data.getAnnotations(j);
-                dummy.addData(data, annotations, JIPipeAnnotationMergeStrategy.Merge);
+                dummy.addData(data, annotations, JIPipeAnnotationMergeStrategy.Merge, progressInfo);
             }
         }
 
@@ -123,13 +123,13 @@ public class AnnotateWithAnnotationTable extends JIPipeIteratingAlgorithm {
                 }
 
                 // Add data to output
-                getFirstOutputSlot().addData(dataInputSlot.getData(row, JIPipeData.class), new ArrayList<>(annotationMap.values()), JIPipeAnnotationMergeStrategy.Merge);
+                getFirstOutputSlot().addData(dataInputSlot.getData(row, JIPipeData.class, progressInfo), new ArrayList<>(annotationMap.values()), JIPipeAnnotationMergeStrategy.Merge, progressInfo);
             }
         }
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         // Non-functional
     }
 

@@ -55,7 +55,7 @@ public class ParametersDataTableDefinition extends JIPipeAlgorithm {
     }
 
     @Override
-    public void run(JIPipeProgressInfo progress) {
+    public void run(JIPipeProgressInfo progressInfo) {
         JIPipeDataSlot outputSlot = getFirstOutputSlot();
         for (int row = 0; row < parameterTable.getRowCount(); ++row) {
             ParametersData data = new ParametersData();
@@ -63,7 +63,7 @@ public class ParametersDataTableDefinition extends JIPipeAlgorithm {
                 ParameterTable.ParameterColumn column = parameterTable.getColumn(col);
                 data.getParameterData().put(column.getKey(), parameterTable.getValueAt(row, col));
             }
-            outputSlot.addData(data);
+            outputSlot.addData(data, progressInfo);
         }
     }
 

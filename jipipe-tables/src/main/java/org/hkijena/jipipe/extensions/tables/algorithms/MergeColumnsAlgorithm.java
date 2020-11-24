@@ -59,14 +59,14 @@ public class MergeColumnsAlgorithm extends JIPipeMergingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeMergingDataBatch dataBatch, JIPipeProgressInfo progress) {
+    protected void runIteration(JIPipeMergingDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         Map<String, TableColumn> columnMap = new HashMap<>();
-        for (TableColumn tableColumn : dataBatch.getInputData(getFirstInputSlot(), TableColumn.class)) {
+        for (TableColumn tableColumn : dataBatch.getInputData(getFirstInputSlot(), TableColumn.class, progressInfo)) {
             String name = StringUtils.isNullOrEmpty(tableColumn.getLabel()) ? "Column" : tableColumn.getLabel();
             name = StringUtils.makeUniqueString(name, " ", columnMap.keySet());
             columnMap.put(name, tableColumn);
         }
         ResultsTableData resultsTableData = new ResultsTableData(columnMap);
-        dataBatch.addOutputData(getFirstOutputSlot(), resultsTableData);
+        dataBatch.addOutputData(getFirstOutputSlot(), resultsTableData, progressInfo);
     }
 }

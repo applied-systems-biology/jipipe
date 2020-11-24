@@ -87,7 +87,7 @@ public class PlotGeneratorAlgorithm extends JIPipeAlgorithm {
     }
 
     @Override
-    public void run(JIPipeProgressInfo progress) {
+    public void run(JIPipeProgressInfo progressInfo) {
         PlotMetadata plotMetadata = plotType.getInfo().getDataClass().getAnnotation(PlotMetadata.class);
         Map<String, PlotColumn> plotColumns = new HashMap<>();
         for (PlotColumn column : plotMetadata.columns()) {
@@ -95,7 +95,7 @@ public class PlotGeneratorAlgorithm extends JIPipeAlgorithm {
         }
 
         for (int row = 0; row < getFirstInputSlot().getRowCount(); ++row) {
-            ResultsTableData inputData = getFirstInputSlot().getData(row, ResultsTableData.class);
+            ResultsTableData inputData = getFirstInputSlot().getData(row, ResultsTableData.class, progressInfo);
             PlotData plot = (PlotData) plotTypeParameters.duplicate();
 
             ResultsTableData seriesTable = new ResultsTableData();
@@ -116,7 +116,7 @@ public class PlotGeneratorAlgorithm extends JIPipeAlgorithm {
             }
 
             plot.addSeries(new PlotDataSeries(seriesTable.getTable()));
-            getFirstOutputSlot().addData(plot, getFirstInputSlot().getAnnotations(row), JIPipeAnnotationMergeStrategy.Merge);
+            getFirstOutputSlot().addData(plot, getFirstInputSlot().getAnnotations(row), JIPipeAnnotationMergeStrategy.Merge, progressInfo);
         }
     }
 

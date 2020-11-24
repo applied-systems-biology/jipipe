@@ -16,7 +16,6 @@ package org.hkijena.jipipe.extensions.tables.algorithms;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
@@ -29,8 +28,6 @@ import org.hkijena.jipipe.extensions.tables.datatypes.AnnotationTableData;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.extensions.tables.datatypes.TableColumn;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -65,8 +62,8 @@ public class ConvertAnnotationTableToAnnotatedTables extends JIPipeSimpleIterati
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
-        AnnotationTableData inputData = dataBatch.getInputData(getFirstInputSlot(), AnnotationTableData.class);
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+        AnnotationTableData inputData = dataBatch.getInputData(getFirstInputSlot(), AnnotationTableData.class, progressInfo);
         TableColumn mergedColumn = inputData.getMergedColumn(inputData.getAnnotationColumns(), ", ", "=");
         for (Map.Entry<String, ResultsTableData> entry : inputData.splitBy(mergedColumn).entrySet()) {
             ResultsTableData data = entry.getValue();
@@ -74,7 +71,7 @@ public class ConvertAnnotationTableToAnnotatedTables extends JIPipeSimpleIterati
             if (!keepAnnotationColumns) {
                 data.removeColumns(inputData.getAnnotationColumns());
             }
-            dataBatch.addOutputData(getFirstOutputSlot(), data, annotationTableData.getAnnotations(0), JIPipeAnnotationMergeStrategy.Merge);
+            dataBatch.addOutputData(getFirstOutputSlot(), data, annotationTableData.getAnnotations(0), JIPipeAnnotationMergeStrategy.Merge, progressInfo);
         }
     }
 

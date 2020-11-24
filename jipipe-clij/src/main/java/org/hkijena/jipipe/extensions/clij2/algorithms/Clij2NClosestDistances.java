@@ -46,16 +46,16 @@ public class Clij2NClosestDistances extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         CLIJ2 clij2 = CLIJ2.getInstance();
         CLIJ clij = clij2.getCLIJ();
-        ClearCLBuffer distance_matrix = dataBatch.getInputData(getInputSlot("distance_matrix"), CLIJImageData.class).getImage();
+        ClearCLBuffer distance_matrix = dataBatch.getInputData(getInputSlot("distance_matrix"), CLIJImageData.class, progressInfo).getImage();
         ClearCLBuffer distancelist_destination = clij2.create(distance_matrix);
         ClearCLBuffer indexlist_destination = clij2.create(distance_matrix);
         NClosestDistances.nClosestDistances(clij2, distance_matrix, distancelist_destination, indexlist_destination);
 
-        dataBatch.addOutputData(getOutputSlot("distancelist_destination"), new CLIJImageData(distancelist_destination));
-        dataBatch.addOutputData(getOutputSlot("indexlist_destination"), new CLIJImageData(indexlist_destination));
+        dataBatch.addOutputData(getOutputSlot("distancelist_destination"), new CLIJImageData(distancelist_destination), progressInfo);
+        dataBatch.addOutputData(getOutputSlot("indexlist_destination"), new CLIJImageData(indexlist_destination), progressInfo);
     }
 
 }

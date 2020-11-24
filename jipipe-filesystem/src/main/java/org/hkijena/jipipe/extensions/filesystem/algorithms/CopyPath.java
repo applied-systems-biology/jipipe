@@ -79,9 +79,9 @@ public class CopyPath extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
-        Path input = dataBatch.getInputData("Source", PathData.class).getPath();
-        Path destination = dataBatch.getInputData("Destination", PathData.class).getPath();
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+        Path input = dataBatch.getInputData("Source", PathData.class, progressInfo).getPath();
+        Path destination = dataBatch.getInputData("Destination", PathData.class, progressInfo).getPath();
 
         try {
             if (Files.isDirectory(input)) {
@@ -110,7 +110,7 @@ public class CopyPath extends JIPipeIteratingAlgorithm {
                     if (Files.exists(targetPath)) {
                         Files.delete(targetPath);
                     }
-                    progress.log(String.format("Copying '%s' to '%s'", source, targetPath));
+                    progressInfo.log(String.format("Copying '%s' to '%s'", source, targetPath));
                     Files.copy(source, targetPath);
                 }
 
@@ -124,7 +124,7 @@ public class CopyPath extends JIPipeIteratingAlgorithm {
                     Files.createDirectories(destination);
                     destination = destination.resolve(input.getFileName());
                 }
-                progress.log(String.format("Copying '%s' to '%s'", input, destination));
+                progressInfo.log(String.format("Copying '%s' to '%s'", input, destination));
                 Files.copy(input, destination);
             } else {
                 if (!skipInvalid)
@@ -143,7 +143,7 @@ public class CopyPath extends JIPipeIteratingAlgorithm {
                         "Please check if the paths is correct.");
         }
 
-        dataBatch.addOutputData(getFirstOutputSlot(), new PathData(destination));
+        dataBatch.addOutputData(getFirstOutputSlot(), new PathData(destination), progressInfo);
     }
 
     @JIPipeDocumentation(name = "Skip invalid paths", description = "If enabled, invalid copy instructions are skipped.")

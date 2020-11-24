@@ -62,7 +62,7 @@ public class JIPipeExportedDataTable implements TableModel {
             Row rowInstance = new Row();
             rowInstance.index = indices.get(row);
             rowInstance.annotations = slot.getAnnotations(row);
-            rowInstance.trueDataType = JIPipeDataInfo.getInstance(slot.getData(row, JIPipeData.class).getClass()).getId();
+            rowInstance.trueDataType = JIPipeDataInfo.getInstance(slot.getDataClass(row)).getId();
             rowList.add(rowInstance);
         }
     }

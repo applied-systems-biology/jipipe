@@ -48,7 +48,7 @@ public interface JIPipeData {
      * @param forceName       If enabled, the data is saved potentially destructively. Generated files must always contain the name parameter. This is used to collect results for humans or other algorithms.
      * @param progress
      */
-    void saveTo(Path storageFilePath, String name, boolean forceName, JIPipeProgressInfo progress);
+    void saveTo(Path storageFilePath, String name, boolean forceName, JIPipeProgressInfo progressInfo);
 
     /**
      * Duplicates the data

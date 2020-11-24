@@ -63,8 +63,8 @@ public class FileDataSource extends JIPipeAlgorithm {
     }
 
     @Override
-    public void run(JIPipeProgressInfo progress) {
-        getFirstOutputSlot().addData(new FileData(fileName));
+    public void run(JIPipeProgressInfo progressInfo) {
+        getFirstOutputSlot().addData(new FileData(fileName), progressInfo);
     }
 
     /**

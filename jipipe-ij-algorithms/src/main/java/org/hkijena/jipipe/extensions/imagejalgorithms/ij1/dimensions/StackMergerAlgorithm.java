@@ -98,7 +98,7 @@ public class StackMergerAlgorithm extends JIPipeMergingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeMergingDataBatch dataBatch, JIPipeProgressInfo progress) {
+    protected void runIteration(JIPipeMergingDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         Set<Integer> inputRows = dataBatch.getInputRows(getFirstInputSlot());
         List<Integer> sortedInputRows;
         if (!StringUtils.isNullOrEmpty(counterAnnotation)) {
@@ -113,10 +113,10 @@ public class StackMergerAlgorithm extends JIPipeMergingAlgorithm {
         if (sortedInputRows.isEmpty())
             return;
 
-        ImagePlus firstSlice = getFirstInputSlot().getData(sortedInputRows.get(0), ImagePlus2DData.class).getImage();
+        ImagePlus firstSlice = getFirstInputSlot().getData(sortedInputRows.get(0), ImagePlus2DData.class, progressInfo).getImage();
         ImageStack stack = new ImageStack(firstSlice.getWidth(), firstSlice.getHeight(), sortedInputRows.size());
         for (int i = 0; i < sortedInputRows.size(); ++i) {
-            ImagePlus copy = getFirstInputSlot().getData(sortedInputRows.get(i), ImagePlus2DData.class).getImage();
+            ImagePlus copy = getFirstInputSlot().getData(sortedInputRows.get(i), ImagePlus2DData.class, progressInfo).getImage();
             stack.setProcessor(copy.getProcessor(), i + 1);
             stack.setSliceLabel("slice=" + i, i + 1);
         }
@@ -127,7 +127,7 @@ public class StackMergerAlgorithm extends JIPipeMergingAlgorithm {
         else if(outputDimension == HyperstackDimension.Frame) {
             resultImage.setDimensions(1, 1, resultImage.getNSlices());
         }
-        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(resultImage));
+        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(resultImage), progressInfo);
     }
 
     @JIPipeDocumentation(name = "Slice index annotation",

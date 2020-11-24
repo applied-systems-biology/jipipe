@@ -81,10 +81,10 @@ public class StackToMontageAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
-        ImagePlus imp = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class).getImage();
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+        ImagePlus imp = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo).getImage();
         if (!imp.isStack() || imp.getStackSize() <= 1) {
-            dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(imp));
+            dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(imp), progressInfo);
             return;
         }
         imp = imp.duplicate();
@@ -114,7 +114,7 @@ public class StackToMontageAlgorithm extends JIPipeIteratingAlgorithm {
             imp.setCalibration(cal);
         }
         ImagePlus montage = makeMontage(imp);
-        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(montage));
+        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(montage), progressInfo);
     }
 
     private ImagePlus makeMontage(ImagePlus imp) {

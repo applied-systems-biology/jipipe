@@ -43,7 +43,7 @@ public class DownloadFilesDataSource extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         for (String urlString : urls) {
             try {
                 if (urlString.isEmpty()) {
@@ -61,7 +61,7 @@ public class DownloadFilesDataSource extends JIPipeSimpleIteratingAlgorithm {
                     WebUtils.download(url, targetFile, total -> {
                         String message = "Downloaded " + df.format(total / 1024.0 / 1024.0) + " MB";
                         if (!Objects.equals(message, lastMessage[0])) {
-                            progress.log(message);
+                            progressInfo.log(message);
                             lastMessage[0] = message;
                         }
                     });
@@ -69,7 +69,7 @@ public class DownloadFilesDataSource extends JIPipeSimpleIteratingAlgorithm {
                     throw new UserFriendlyRuntimeException(e, "Error while downloading!", "Algorithm '" + getName() + "'", "There was an error downloading URL '" + url + "' to " + targetFile, "Please check if the URL is valid, an internet connection is available, and the target device has enough space.");
                 }
 
-                dataBatch.addOutputData(getFirstOutputSlot(), new FileData(targetFile));
+                dataBatch.addOutputData(getFirstOutputSlot(), new FileData(targetFile), progressInfo);
             } catch (MalformedURLException e) {
                 throw new UserFriendlyRuntimeException(e, "Invalid URL!", "Algorithm '" + getName() + "'", "You provided a URL '" + urlString + "', but it is invalid.", "Please fix the URL.");
             }

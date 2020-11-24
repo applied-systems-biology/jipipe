@@ -80,7 +80,7 @@ public class JIPipeProjectCompartment extends JIPipeGraphNode {
     }
 
     @Override
-    public void run(JIPipeProgressInfo progress) {
+    public void run(JIPipeProgressInfo progressInfo) {
 
     }
 

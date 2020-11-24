@@ -20,7 +20,6 @@ import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.JIPipeRun;
 import org.hkijena.jipipe.api.JIPipeRunSettings;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
-import org.hkijena.jipipe.api.data.JIPipeDataByMetadataExporter;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
@@ -72,7 +71,7 @@ public class RunJIPipeProjectAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         JIPipeValidityReport report = new JIPipeValidityReport();
         JIPipeProject project;
         try {
@@ -98,7 +97,7 @@ public class RunJIPipeProjectAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         }
 
         // Set parameters
-        ParametersData parameters = dataBatch.getInputData(getFirstInputSlot(), ParametersData.class);
+        ParametersData parameters = dataBatch.getInputData(getFirstInputSlot(), ParametersData.class, progressInfo);
         {
             JIPipeProjectInfoParameters pipelineParameters = project.getPipelineParameters();
             JIPipeParameterTree infoParameterTree = new JIPipeParameterTree(pipelineParameters);
@@ -147,12 +146,12 @@ public class RunJIPipeProjectAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         settings.setLoadFromCache(false);
         settings.setNumThreads(threads.isEnabled() ? threads.getContent() : RuntimeSettings.getInstance().getDefaultRunThreads());
         JIPipeRun run = new JIPipeRun(project, settings);
-        run.setInfo(progress.resolve("Project " + projectFile.getFileName().toString()));
+        run.setInfo(progressInfo.resolve("Project " + projectFile.getFileName().toString()));
 
         run.run();
 
         // Add output data
-        dataBatch.addOutputData(getFirstOutputSlot(), new JIPipeOutputData(rowStoragePath));
+        dataBatch.addOutputData(getFirstOutputSlot(), new JIPipeOutputData(rowStoragePath), progressInfo);
     }
 
     @Override

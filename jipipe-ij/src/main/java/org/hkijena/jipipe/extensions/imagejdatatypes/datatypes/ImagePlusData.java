@@ -70,7 +70,7 @@ public class ImagePlusData implements JIPipeData {
     }
 
     @Override
-    public void saveTo(Path storageFilePath, String name, boolean forceName, JIPipeProgressInfo progress) {
+    public void saveTo(Path storageFilePath, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
         if (ImageJDataTypesSettings.getInstance().isUseBioFormats()) {
             Path outputPath = storageFilePath.resolve(name + ".ome.tif");
             OMEImageData.simpleOMEExport(image, outputPath);

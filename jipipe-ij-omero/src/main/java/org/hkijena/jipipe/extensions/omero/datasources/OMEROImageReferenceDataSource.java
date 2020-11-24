@@ -42,9 +42,9 @@ public class OMEROImageReferenceDataSource extends JIPipeSimpleIteratingAlgorith
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         for (Long imageId : imageIds) {
-            dataBatch.addOutputData(getFirstOutputSlot(), new OMEROImageReferenceData(imageId));
+            dataBatch.addOutputData(getFirstOutputSlot(), new OMEROImageReferenceData(imageId), progressInfo);
         }
     }
 

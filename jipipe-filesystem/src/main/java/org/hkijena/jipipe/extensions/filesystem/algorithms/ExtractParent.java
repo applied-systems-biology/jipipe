@@ -61,13 +61,13 @@ public class ExtractParent extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
-        PathData inputFolder = dataBatch.getInputData(getFirstInputSlot(), PathData.class);
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+        PathData inputFolder = dataBatch.getInputData(getFirstInputSlot(), PathData.class, progressInfo);
         Path result = inputFolder.getPath();
         for (int i = 0; i < order; i++) {
             result = result.getParent();
         }
-        dataBatch.addOutputData(getFirstOutputSlot(), new FolderData(result));
+        dataBatch.addOutputData(getFirstOutputSlot(), new FolderData(result), progressInfo);
     }
 
     @Override

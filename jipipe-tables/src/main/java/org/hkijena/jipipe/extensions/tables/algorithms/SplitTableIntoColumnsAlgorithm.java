@@ -70,8 +70,8 @@ public class SplitTableIntoColumnsAlgorithm extends JIPipeSimpleIteratingAlgorit
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
-        ResultsTableData input = dataBatch.getInputData(getFirstInputSlot(), ResultsTableData.class);
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+        ResultsTableData input = dataBatch.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo);
         for (String columnName : input.getColumnNames()) {
             if (columnFilter.test(columnName)) {
                 TableColumn column = input.getColumnCopy(input.getColumnIndex(columnName));
@@ -79,7 +79,7 @@ public class SplitTableIntoColumnsAlgorithm extends JIPipeSimpleIteratingAlgorit
                 if (generatedAnnotation.isEnabled() && !StringUtils.isNullOrEmpty(generatedAnnotation.getContent())) {
                     traitList.add(new JIPipeAnnotation(generatedAnnotation.getContent(), columnName));
                 }
-                dataBatch.addOutputData(getFirstOutputSlot(), column, traitList, JIPipeAnnotationMergeStrategy.Merge);
+                dataBatch.addOutputData(getFirstOutputSlot(), column, traitList, JIPipeAnnotationMergeStrategy.Merge, progressInfo);
             }
         }
     }

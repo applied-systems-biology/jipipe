@@ -61,8 +61,8 @@ public class RenameColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
-        TableColumn input = dataBatch.getInputData(getFirstInputSlot(), TableColumn.class);
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+        TableColumn input = dataBatch.getInputData(getFirstInputSlot(), TableColumn.class, progressInfo);
         String name = input.getLabel();
         for (StringQueryExpressionAndStringPairParameter renamingEntry : renamingEntries) {
             if (renamingEntry.getKey().test(name)) {
@@ -72,9 +72,9 @@ public class RenameColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         }
 
         if (input.isNumeric()) {
-            dataBatch.addOutputData(getFirstOutputSlot(), new DoubleArrayTableColumn(input.getDataAsDouble(input.getRows()), name));
+            dataBatch.addOutputData(getFirstOutputSlot(), new DoubleArrayTableColumn(input.getDataAsDouble(input.getRows()), name), progressInfo);
         } else {
-            dataBatch.addOutputData(getFirstOutputSlot(), new StringArrayTableColumn(input.getDataAsString(input.getRows()), name));
+            dataBatch.addOutputData(getFirstOutputSlot(), new StringArrayTableColumn(input.getDataAsString(input.getRows()), name), progressInfo);
         }
     }
 

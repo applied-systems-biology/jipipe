@@ -61,11 +61,11 @@ public class MergeRoiListsAlgorithm extends JIPipeMergingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeMergingDataBatch dataBatch, JIPipeProgressInfo progress) {
+    protected void runIteration(JIPipeMergingDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ROIListData result = new ROIListData();
-        for (ROIListData rois : dataBatch.getInputData(getFirstInputSlot(), ROIListData.class)) {
+        for (ROIListData rois : dataBatch.getInputData(getFirstInputSlot(), ROIListData.class, progressInfo)) {
             result.mergeWith(rois);
         }
-        dataBatch.addOutputData(getFirstOutputSlot(), result);
+        dataBatch.addOutputData(getFirstOutputSlot(), result, progressInfo);
     }
 }

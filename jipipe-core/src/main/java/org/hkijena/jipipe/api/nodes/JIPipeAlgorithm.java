@@ -24,7 +24,6 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeSlotConfiguration;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
@@ -34,9 +33,7 @@ import org.hkijena.jipipe.utils.JsonUtils;
 
 import java.io.IOException;
 import java.io.StringWriter;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * An {@link JIPipeGraphNode} that contains a non-empty workload.
@@ -83,9 +80,9 @@ public abstract class JIPipeAlgorithm extends JIPipeGraphNode {
     }
 
     @Override
-    public void run(JIPipeProgressInfo progress) {
+    public void run(JIPipeProgressInfo progressInfo) {
         if (passThrough && canAutoPassThrough()) {
-            progress.log("Data passed through to output");
+            progressInfo.log("Data passed through to output");
             runPassThrough();
         }
     }
@@ -113,7 +110,7 @@ public abstract class JIPipeAlgorithm extends JIPipeGraphNode {
         if (getOutputSlots().isEmpty())
             return;
         for (int row = 0; row < getFirstInputSlot().getRowCount(); row++) {
-            getFirstOutputSlot().addData(getFirstInputSlot().getData(row, JIPipeData.class), getFirstInputSlot().getAnnotations(row), JIPipeAnnotationMergeStrategy.Merge);
+            getFirstOutputSlot().addData(getFirstInputSlot());
         }
     }
 

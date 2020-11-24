@@ -51,15 +51,15 @@ public class Clij2DepthColorProjection extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         CLIJ2 clij2 = CLIJ2.getInstance();
         CLIJ clij = clij2.getCLIJ();
-        ClearCLBuffer src = dataBatch.getInputData(getInputSlot("src"), CLIJImageData.class).getImage();
-        ClearCLBuffer lut = dataBatch.getInputData(getInputSlot("lut"), CLIJImageData.class).getImage();
+        ClearCLBuffer src = dataBatch.getInputData(getInputSlot("src"), CLIJImageData.class, progressInfo).getImage();
+        ClearCLBuffer lut = dataBatch.getInputData(getInputSlot("lut"), CLIJImageData.class, progressInfo).getImage();
         ClearCLBuffer dst_depth = clij2.create(src);
         DepthColorProjection.depthColorProjection(clij2, src, lut, dst_depth, min_display_intensity, max_display_intensity);
 
-        dataBatch.addOutputData(getOutputSlot("dst_depth"), new CLIJImageData(dst_depth));
+        dataBatch.addOutputData(getOutputSlot("dst_depth"), new CLIJImageData(dst_depth), progressInfo);
     }
 
     @JIPipeParameter("min-display-intensity")

@@ -46,15 +46,15 @@ public class Clij2MaskStackWithPlane extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         CLIJ2 clij2 = CLIJ2.getInstance();
         CLIJ clij = clij2.getCLIJ();
-        ClearCLBuffer src = dataBatch.getInputData(getInputSlot("src"), CLIJImageData.class).getImage();
-        ClearCLBuffer mask = dataBatch.getInputData(getInputSlot("mask"), CLIJImageData.class).getImage();
+        ClearCLBuffer src = dataBatch.getInputData(getInputSlot("src"), CLIJImageData.class, progressInfo).getImage();
+        ClearCLBuffer mask = dataBatch.getInputData(getInputSlot("mask"), CLIJImageData.class, progressInfo).getImage();
         ClearCLBuffer dst = clij2.create(src);
         MaskStackWithPlane.maskStackWithPlane(clij2, src, mask, dst);
 
-        dataBatch.addOutputData(getOutputSlot("dst"), new CLIJImageData(dst));
+        dataBatch.addOutputData(getOutputSlot("dst"), new CLIJImageData(dst), progressInfo);
     }
 
 }

@@ -48,14 +48,14 @@ public class Clij2MinimumImageAndScalar extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         CLIJ2 clij2 = CLIJ2.getInstance();
         CLIJ clij = clij2.getCLIJ();
-        ClearCLBuffer src = dataBatch.getInputData(getInputSlot("src"), CLIJImageData.class).getImage();
+        ClearCLBuffer src = dataBatch.getInputData(getInputSlot("src"), CLIJImageData.class, progressInfo).getImage();
         ClearCLBuffer dst = clij2.create(src);
         MinimumImageAndScalar.minimumImageAndScalar(clij2, src, dst, valueB);
 
-        dataBatch.addOutputData(getOutputSlot("dst"), new CLIJImageData(dst));
+        dataBatch.addOutputData(getOutputSlot("dst"), new CLIJImageData(dst), progressInfo);
     }
 
     @JIPipeParameter("value-b")

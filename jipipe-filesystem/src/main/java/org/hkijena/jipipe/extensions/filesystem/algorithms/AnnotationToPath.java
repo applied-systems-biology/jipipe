@@ -63,13 +63,13 @@ public class AnnotationToPath extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         JIPipeAnnotation matchingAnnotation = annotationExpression.queryFirst(dataBatch.getAnnotations().values());
         if (matchingAnnotation == null || StringUtils.isNullOrEmpty(matchingAnnotation.getValue())) {
-            dataBatch.addOutputData(getFirstOutputSlot(), new PathData(Paths.get("")));
+            dataBatch.addOutputData(getFirstOutputSlot(), new PathData(Paths.get("")), progressInfo);
             return;
         }
-        dataBatch.addOutputData(getFirstOutputSlot(), new PathData(Paths.get(StringUtils.orElse(matchingAnnotation.getValue(), ""))));
+        dataBatch.addOutputData(getFirstOutputSlot(), new PathData(Paths.get(StringUtils.orElse(matchingAnnotation.getValue(), ""))), progressInfo);
     }
 
     @JIPipeDocumentation(name = "Annotation", description = "An expression that determines which annotation is used. " + AnnotationQueryExpression.DOCUMENTATION_DESCRIPTION)

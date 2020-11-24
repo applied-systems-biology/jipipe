@@ -107,26 +107,26 @@ public class FilterRoiByStatisticsScriptAlgorithm extends ImageRoiProcessorAlgor
     }
 
     @Override
-    public void run(JIPipeProgressInfo progress) {
+    public void run(JIPipeProgressInfo progressInfo) {
         this.pythonInterpreter = new PythonInterpreter();
         PythonUtils.passParametersToPython(pythonInterpreter, scriptParameters);
-        super.run(progress);
+        super.run(progressInfo);
         this.pythonInterpreter = null;
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ROIListData allROIs = new ROIListData();
         ResultsTableData allStatistics = new ResultsTableData();
         roiStatisticsAlgorithm.setOverrideReferenceImage(true);
 
-        for (Map.Entry<ImagePlusData, ROIListData> entry : getReferenceImage(dataBatch, progress).entrySet()) {
+        for (Map.Entry<ImagePlusData, ROIListData> entry : getReferenceImage(dataBatch, progressInfo).entrySet()) {
             // Obtain statistics
             roiStatisticsAlgorithm.clearSlotData();
-            roiStatisticsAlgorithm.getInputSlot("ROI").addData(entry.getValue());
-            roiStatisticsAlgorithm.getInputSlot("Reference").addData(entry.getKey());
-            roiStatisticsAlgorithm.run(progress);
-            ResultsTableData statistics = roiStatisticsAlgorithm.getFirstOutputSlot().getData(0, ResultsTableData.class);
+            roiStatisticsAlgorithm.getInputSlot("ROI").addData(entry.getValue(), progressInfo);
+            roiStatisticsAlgorithm.getInputSlot("Reference").addData(entry.getKey(), progressInfo);
+            roiStatisticsAlgorithm.run(progressInfo);
+            ResultsTableData statistics = roiStatisticsAlgorithm.getFirstOutputSlot().getData(0, ResultsTableData.class, progressInfo);
             allROIs.addAll(entry.getValue());
             allStatistics.mergeWith(statistics);
         }
@@ -158,7 +158,7 @@ public class FilterRoiByStatisticsScriptAlgorithm extends ImageRoiProcessorAlgor
         dataBatch.getAnnotations().clear();
         JIPipeAnnotation.setAnnotationsFromPython(annotationDict, dataBatch.getAnnotations());
 
-        dataBatch.addOutputData(getFirstOutputSlot(), outputData);
+        dataBatch.addOutputData(getFirstOutputSlot(), outputData, progressInfo);
     }
 
     @Override

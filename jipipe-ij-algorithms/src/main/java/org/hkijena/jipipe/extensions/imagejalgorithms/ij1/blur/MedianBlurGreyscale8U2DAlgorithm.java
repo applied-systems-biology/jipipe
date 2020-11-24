@@ -65,11 +65,11 @@ public class MedianBlurGreyscale8U2DAlgorithm extends JIPipeSimpleIteratingAlgor
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
-        ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscale8UData.class);
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+        ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscale8UData.class, progressInfo);
         ImagePlus img = inputData.getDuplicateImage();
         ImageJUtils.forEachSlice(img, ImageProcessor::medianFilter);
-        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscale8UData(img));
+        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscale8UData(img), progressInfo);
     }
 
     @Override

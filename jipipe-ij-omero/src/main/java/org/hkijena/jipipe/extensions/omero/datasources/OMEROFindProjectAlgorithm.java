@@ -79,15 +79,15 @@ public class OMEROFindProjectAlgorithm extends JIPipeParameterSlotAlgorithm {
     }
 
     @Override
-    public void runParameterSet(JIPipeProgressInfo progress, List<JIPipeAnnotation> parameterAnnotations) {
+    public void runParameterSet(JIPipeProgressInfo progressInfo, List<JIPipeAnnotation> parameterAnnotations) {
         LoginCredentials credentials = this.credentials.getCredentials();
-        progress.log("Connecting to " + credentials.getUser().getUsername() + "@" + credentials.getServer().getHost());
-        try (Gateway gateway = new Gateway(new OMEROToJIPipeLogger(progress))) {
+        progressInfo.log("Connecting to " + credentials.getUser().getUsername() + "@" + credentials.getServer().getHost());
+        try (Gateway gateway = new Gateway(new OMEROToJIPipeLogger(progressInfo))) {
             ExperimenterData user = gateway.connect(credentials);
             SecurityContext context = new SecurityContext(user.getGroupId());
             BrowseFacility browseFacility = gateway.getFacility(BrowseFacility.class);
             MetadataFacility metadata = gateway.getFacility(MetadataFacility.class);
-            progress.log("Listing projects");
+            progressInfo.log("Listing projects");
             try {
                 for (ProjectData project : browseFacility.getProjects(context)) {
                     if (!projectNameFilters.test(project.getName())) {
@@ -114,7 +114,7 @@ public class OMEROFindProjectAlgorithm extends JIPipeParameterSlotAlgorithm {
                     if (projectNameAnnotation.isEnabled()) {
                         annotations.add(new JIPipeAnnotation(projectNameAnnotation.getContent(), project.getName()));
                     }
-                    getFirstOutputSlot().addData(new OMEROProjectReferenceData(project.getId()), annotations, JIPipeAnnotationMergeStrategy.Merge);
+                    getFirstOutputSlot().addData(new OMEROProjectReferenceData(project.getId()), annotations, JIPipeAnnotationMergeStrategy.Merge, progressInfo);
                 }
             } catch (DSOutOfServiceException | DSAccessException e) {
                 throw new RuntimeException(e);

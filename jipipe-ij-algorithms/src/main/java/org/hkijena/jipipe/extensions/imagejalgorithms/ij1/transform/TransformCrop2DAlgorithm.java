@@ -75,8 +75,8 @@ public class TransformCrop2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
-        ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class);
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+        ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo);
         ImagePlus img = inputData.getImage();
 
         Rectangle imageArea = new Rectangle(0, 0, img.getWidth(), img.getHeight());
@@ -105,14 +105,14 @@ public class TransformCrop2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                 imp.resetRoi();
                 result.addSlice("" + index, croppedImage);
             });
-            dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(new ImagePlus("Cropped", result)));
+            dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(new ImagePlus("Cropped", result)), progressInfo);
         } else {
             ImageProcessor imp = img.getProcessor();
             imp.setRoi(cropped);
             ImageProcessor croppedImage = imp.crop();
             imp.resetRoi();
             ImagePlus result = new ImagePlus("Cropped", croppedImage);
-            dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(result));
+            dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(result), progressInfo);
         }
     }
 

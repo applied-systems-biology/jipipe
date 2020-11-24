@@ -63,8 +63,8 @@ public class RenameTableColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm 
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
-        ResultsTableData table = (ResultsTableData) dataBatch.getInputData(getFirstInputSlot(), ResultsTableData.class).duplicate();
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+        ResultsTableData table = (ResultsTableData) dataBatch.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo).duplicate();
         for (StringQueryExpressionAndStringPairParameter renamingEntry : renamingEntries) {
             for (int col = 0; col < table.getColumnCount(); col++) {
                 String oldName = table.getColumnName(col);
@@ -74,7 +74,7 @@ public class RenameTableColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm 
                 }
             }
         }
-        dataBatch.addOutputData(getFirstOutputSlot(), table);
+        dataBatch.addOutputData(getFirstOutputSlot(), table, progressInfo);
     }
 
     @Override

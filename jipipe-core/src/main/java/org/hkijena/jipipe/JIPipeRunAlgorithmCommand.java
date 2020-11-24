@@ -148,8 +148,8 @@ public class JIPipeRunAlgorithmCommand extends DynamicCommand implements Initial
         try {
             if (algorithm instanceof JIPipeAlgorithm)
                 ((JIPipeAlgorithm) algorithm).setThreadPool(threadPool);
-            JIPipeProgressInfo progress = new JIPipeProgressInfo();
-            algorithm.run(progress);
+            JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
+            algorithm.run(progressInfo);
         } catch (Exception e) {
             throw new RuntimeException(e);
         } finally {

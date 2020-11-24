@@ -46,15 +46,15 @@ public class Clij2MultiplyStackWithPlane extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         CLIJ2 clij2 = CLIJ2.getInstance();
         CLIJ clij = clij2.getCLIJ();
-        ClearCLBuffer input3d = dataBatch.getInputData(getInputSlot("input3d"), CLIJImageData.class).getImage();
-        ClearCLBuffer input2d = dataBatch.getInputData(getInputSlot("input2d"), CLIJImageData.class).getImage();
+        ClearCLBuffer input3d = dataBatch.getInputData(getInputSlot("input3d"), CLIJImageData.class, progressInfo).getImage();
+        ClearCLBuffer input2d = dataBatch.getInputData(getInputSlot("input2d"), CLIJImageData.class, progressInfo).getImage();
         ClearCLBuffer output3d = clij2.create(input3d);
         MultiplyStackWithPlane.multiplyStackWithPlane(clij2, input3d, input2d, output3d);
 
-        dataBatch.addOutputData(getOutputSlot("output3d"), new CLIJImageData(output3d));
+        dataBatch.addOutputData(getOutputSlot("output3d"), new CLIJImageData(output3d), progressInfo);
     }
 
 }

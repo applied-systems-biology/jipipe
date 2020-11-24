@@ -72,8 +72,8 @@ public class ConvertColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
-        ResultsTableData input = dataBatch.getInputData(getFirstInputSlot(), ResultsTableData.class);
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+        ResultsTableData input = dataBatch.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo);
         Map<String, TableColumn> resultColumns = new HashMap<>();
         for (ConvertingTableColumnProcessorParameter processor : processorParameters) {
             String sourceColumn = processor.getInput().queryFirst(input.getColumnNames());
@@ -99,7 +99,7 @@ public class ConvertColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
         // Combine into one table
         ResultsTableData output = new ResultsTableData(resultColumns);
-        dataBatch.addOutputData(getFirstOutputSlot(), output);
+        dataBatch.addOutputData(getFirstOutputSlot(), output, progressInfo);
     }
 
     @Override

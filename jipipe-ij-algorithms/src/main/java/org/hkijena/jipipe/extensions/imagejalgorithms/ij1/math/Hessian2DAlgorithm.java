@@ -83,12 +83,12 @@ public class Hessian2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
-        ImagePlus img = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class).getImage();
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+        ImagePlus img = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class, progressInfo).getImage();
         ImageStack stack = new ImageStack(img.getWidth(), img.getHeight(), img.getProcessor().getColorModel());
 
         ImageJUtils.forEachIndexedSlice(img, (imp, index) -> {
-            progress.log("Slice " + index + "/" + img.getStackSize());
+            progressInfo.log("Slice " + index + "/" + img.getStackSize());
             ImagePlus slice = new ImagePlus("slice", imp.duplicate());
             ImagePlus processedSlice = applyHessian(slice);
             stack.addSlice("slice" + index, processedSlice.getProcessor());
@@ -96,7 +96,7 @@ public class Hessian2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         ImagePlus result = new ImagePlus("Segmented Image", stack);
         result.setDimensions(img.getNChannels(), img.getNSlices(), img.getNFrames());
 
-        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleData(result));
+        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleData(result), progressInfo);
     }
 
     private ImagePlus applyHessian(ImagePlus input) {

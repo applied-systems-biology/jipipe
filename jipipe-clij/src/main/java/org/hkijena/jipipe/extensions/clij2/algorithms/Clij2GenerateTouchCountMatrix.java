@@ -45,14 +45,14 @@ public class Clij2GenerateTouchCountMatrix extends JIPipeSimpleIteratingAlgorith
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         CLIJ2 clij2 = CLIJ2.getInstance();
         CLIJ clij = clij2.getCLIJ();
-        ClearCLBuffer src_label_map1 = dataBatch.getInputData(getInputSlot("src_label_map1"), CLIJImageData.class).getImage();
+        ClearCLBuffer src_label_map1 = dataBatch.getInputData(getInputSlot("src_label_map1"), CLIJImageData.class, progressInfo).getImage();
         ClearCLBuffer dst_touch_count_matrix = clij2.create(src_label_map1);
         GenerateTouchCountMatrix.generateTouchCountMatrix(clij2, src_label_map1, dst_touch_count_matrix);
 
-        dataBatch.addOutputData(getOutputSlot("dst_touch_count_matrix"), new CLIJImageData(dst_touch_count_matrix));
+        dataBatch.addOutputData(getOutputSlot("dst_touch_count_matrix"), new CLIJImageData(dst_touch_count_matrix), progressInfo);
     }
 
 }

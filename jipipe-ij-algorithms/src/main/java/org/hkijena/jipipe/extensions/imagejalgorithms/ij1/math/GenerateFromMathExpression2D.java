@@ -73,7 +73,7 @@ public class GenerateFromMathExpression2D extends JIPipeSimpleIteratingAlgorithm
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ImagePlus img = IJ.createImage("Generated", "32-bit", width, height, 1);
         ImageProcessor ip = img.getProcessor();
         StaticVariableSet<Object> variableSet = new StaticVariableSet<>();
@@ -91,7 +91,7 @@ public class GenerateFromMathExpression2D extends JIPipeSimpleIteratingAlgorithm
 
         ImageJUtils.calibrate(img, ImageJCalibrationMode.AutomaticImageJ, 0, 0);
 
-        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(img));
+        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(img), progressInfo);
     }
 
     @JIPipeDocumentation(name = "Function", description = "The function that is applied to each pixel. The expression should return a number.")

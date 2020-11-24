@@ -95,15 +95,15 @@ public class ModifyAnnotationScript extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    public void run(JIPipeProgressInfo progress) {
+    public void run(JIPipeProgressInfo progressInfo) {
         this.pythonInterpreter = new PythonInterpreter();
         PythonUtils.passParametersToPython(pythonInterpreter, scriptParameters);
-        super.run(progress);
+        super.run(progressInfo);
         this.pythonInterpreter = null;
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         PyDictionary annotationDict = JIPipeAnnotation.annotationMapToPython(dataBatch.getAnnotations());
         pythonInterpreter.set("annotations", annotationDict);
         pythonInterpreter.exec(code.getCode());
@@ -113,7 +113,7 @@ public class ModifyAnnotationScript extends JIPipeSimpleIteratingAlgorithm {
         dataBatch.getAnnotations().clear();
         JIPipeAnnotation.setAnnotationsFromPython(annotationDict, dataBatch.getAnnotations());
 
-        dataBatch.addOutputData(getFirstOutputSlot(), dataBatch.getInputData(getFirstInputSlot(), JIPipeData.class));
+        dataBatch.addOutputData(getFirstOutputSlot(), dataBatch.getInputData(getFirstInputSlot(), JIPipeData.class, progressInfo), progressInfo);
     }
 
     @JIPipeDocumentation(name = "Script", description = "All annotations are passed as dictionary 'annotations' that can be modified using Python functions. The values are then extracted and " +

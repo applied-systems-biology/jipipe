@@ -90,19 +90,19 @@ public class MultiTemplateMatchingAlgorithm extends JIPipeMergingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeMergingDataBatch dataBatch, JIPipeProgressInfo progress) {
+    protected void runIteration(JIPipeMergingDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         List<ImagePlus> images = new ArrayList<>();
         List<ImagePlus> templates = new ArrayList<>();
         ROIListData mergedRois = new ROIListData();
 
-        for (ImagePlusData image : dataBatch.getInputData("Image", ImagePlusData.class)) {
+        for (ImagePlusData image : dataBatch.getInputData("Image", ImagePlusData.class, progressInfo)) {
             images.add(image.getImage());
         }
-        for (ImagePlusData template : dataBatch.getInputData("Template", ImagePlusData.class)) {
+        for (ImagePlusData template : dataBatch.getInputData("Template", ImagePlusData.class, progressInfo)) {
             templates.add(template.getImage());
         }
         if (restrictToROI) {
-            for (ROIListData roi : dataBatch.getInputData("ROI", ROIListData.class)) {
+            for (ROIListData roi : dataBatch.getInputData("ROI", ROIListData.class, progressInfo)) {
                 mergedRois.addAll(roi);
             }
         }
@@ -120,7 +120,7 @@ public class MultiTemplateMatchingAlgorithm extends JIPipeMergingAlgorithm {
         pythonInterpreter.set("List_Template", new PyList(templates));
         pythonInterpreter.set("Bool_SearchRoi", restrictToROI && searchRoi != null);
         pythonInterpreter.set("searchRoi", searchRoi);
-        pythonInterpreter.set("progress", progress);
+        pythonInterpreter.set("progress", progressInfo);
 
         for (int i = 0; i < images.size(); i++) {
             ImagePlus image = images.get(i);
@@ -129,11 +129,11 @@ public class MultiTemplateMatchingAlgorithm extends JIPipeMergingAlgorithm {
             pythonInterpreter.set("ImpImage", image);
             pythonInterpreter.set("rm", roiManager);
             pythonInterpreter.set("Table", measurements.getTable());
-            pythonInterpreter.set("progress", progress.resolve("Image", i, images.size()));
+            pythonInterpreter.set("progress", progressInfo.resolve("Image", i, images.size()));
             pythonInterpreter.exec(SCRIPT);
 
-            dataBatch.addOutputData("ROI", new ROIListData(roiManager));
-            dataBatch.addOutputData("Measurements", measurements);
+            dataBatch.addOutputData("ROI", new ROIListData(roiManager), progressInfo);
+            dataBatch.addOutputData("Measurements", measurements, progressInfo);
         }
 
     }

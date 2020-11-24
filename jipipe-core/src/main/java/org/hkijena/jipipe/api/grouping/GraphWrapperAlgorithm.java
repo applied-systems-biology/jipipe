@@ -144,7 +144,7 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm {
     }
 
     @Override
-    public void run(JIPipeProgressInfo progress) {
+    public void run(JIPipeProgressInfo progressInfo) {
         // Iterate through own input slots and pass them to the equivalents in group input
         for (JIPipeDataSlot inputSlot : getInputSlots()) {
             JIPipeDataSlot groupInputSlot = getGroupInput().getInputSlot(inputSlot.getName());
@@ -159,7 +159,7 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm {
                 }
             }
             JIPipeGraphRunner runner = new JIPipeGraphRunner(wrappedGraph);
-            runner.setInfo(progress.resolve("Sub-graph"));
+            runner.setInfo(progressInfo.resolve("Sub-graph"));
             runner.setAlgorithmsWithExternalInput(Collections.singleton(getGroupInput()));
             runner.run();
         } finally {

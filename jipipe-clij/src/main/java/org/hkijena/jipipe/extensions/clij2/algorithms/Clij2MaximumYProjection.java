@@ -45,14 +45,14 @@ public class Clij2MaximumYProjection extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         CLIJ2 clij2 = CLIJ2.getInstance();
         CLIJ clij = clij2.getCLIJ();
-        ClearCLBuffer src = dataBatch.getInputData(getInputSlot("src"), CLIJImageData.class).getImage();
+        ClearCLBuffer src = dataBatch.getInputData(getInputSlot("src"), CLIJImageData.class, progressInfo).getImage();
         ClearCLBuffer dst_max = clij2.create(src);
         MaximumYProjection.maximumYProjection(clij2, src, dst_max);
 
-        dataBatch.addOutputData(getOutputSlot("dst_max"), new CLIJImageData(dst_max));
+        dataBatch.addOutputData(getOutputSlot("dst_max"), new CLIJImageData(dst_max), progressInfo);
     }
 
 }

@@ -81,11 +81,11 @@ public class InputImagesToMontage extends JIPipeMergingAlgorithm {
 
 
     @Override
-    protected void runIteration(JIPipeMergingDataBatch dataBatch, JIPipeProgressInfo progress) {
+    protected void runIteration(JIPipeMergingDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         List<ImagePlus> input = new ArrayList<>();
         List<String> labels = new ArrayList<>();
         for (int row : dataBatch.getInputRows(getFirstInputSlot())) {
-            input.add(getFirstInputSlot().getData(row, ImagePlus2DData.class).getImage());
+            input.add(getFirstInputSlot().getData(row, ImagePlus2DData.class, progressInfo).getImage());
             labels.add(labelGenerator.generateMetadataString(getFirstInputSlot(), row, new HashSet<>()));
         }
         if (input.isEmpty())
@@ -112,7 +112,7 @@ public class InputImagesToMontage extends JIPipeMergingAlgorithm {
         }
 
         ImagePlus result = makeMontage2(input, labels, columns, rows, scale, borderWidth);
-        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(result));
+        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(result), progressInfo);
     }
 
     /**

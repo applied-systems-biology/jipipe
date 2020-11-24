@@ -72,26 +72,26 @@ public class GreyscalePixelsGenerator extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         if (applyPerSlice) {
-            ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class);
+            ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo);
             ImageJUtils.forEachIndexedSlice(inputData.getImage(), (imp, index) -> {
                 TDoubleList pixels = new TDoubleArrayList(imp.getPixelCount());
                 getPixels(imp, pixels);
                 ResultsTableData resultsTable = toResultsTable(pixels);
                 if (!StringUtils.isNullOrEmpty(sliceAnnotation)) {
                     dataBatch.addOutputData(getFirstOutputSlot(), resultsTable,
-                            Collections.singletonList(new JIPipeAnnotation(sliceAnnotation, "slice=" + index)), JIPipeAnnotationMergeStrategy.Merge);
+                            Collections.singletonList(new JIPipeAnnotation(sliceAnnotation, "slice=" + index)), JIPipeAnnotationMergeStrategy.Merge, progressInfo);
                 } else {
-                    dataBatch.addOutputData(getFirstOutputSlot(), resultsTable);
+                    dataBatch.addOutputData(getFirstOutputSlot(), resultsTable, progressInfo);
                 }
             });
         } else {
-            ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class);
+            ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo);
             final TDoubleList pixels = new TDoubleArrayList();
             ImageJUtils.forEachSlice(inputData.getImage(), imp -> getPixels(imp, pixels));
             ResultsTableData resultsTable = toResultsTable(pixels);
-            dataBatch.addOutputData(getFirstOutputSlot(), resultsTable);
+            dataBatch.addOutputData(getFirstOutputSlot(), resultsTable, progressInfo);
         }
     }
 

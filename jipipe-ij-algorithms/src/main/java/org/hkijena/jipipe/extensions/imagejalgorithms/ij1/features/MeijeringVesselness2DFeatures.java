@@ -94,8 +94,8 @@ public class MeijeringVesselness2DFeatures extends JIPipeSimpleIteratingAlgorith
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
-        ImagePlusGreyscale32FData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscale32FData.class);
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+        ImagePlusGreyscale32FData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscale32FData.class, progressInfo);
         ImagePlus img = inputData.getImage();
 
         if (invert) {
@@ -106,7 +106,7 @@ public class MeijeringVesselness2DFeatures extends JIPipeSimpleIteratingAlgorith
         ImageStack stack = new ImageStack(img.getWidth(), img.getHeight(), img.getProcessor().getColorModel());
         ImagePlus finalImg = img;
         ImageJUtils.forEachIndexedSlice(img, (imp, index) -> {
-            progress.log("Slice " + index + "/" + finalImg.getStackSize());
+            progressInfo.log("Slice " + index + "/" + finalImg.getStackSize());
             ImagePlus slice = new ImagePlus("slice", imp);
             ImagePlus processedSlice = processSlice(slice);
             stack.addSlice("slice" + index, processedSlice.getProcessor());
@@ -114,7 +114,7 @@ public class MeijeringVesselness2DFeatures extends JIPipeSimpleIteratingAlgorith
         ImagePlus result = new ImagePlus("Vesselness", stack);
         result.setDimensions(img.getNChannels(), img.getNSlices(), img.getNFrames());
 
-        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(result));
+        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(result), progressInfo);
     }
 
     private ImagePlus processSlice(ImagePlus slice) {

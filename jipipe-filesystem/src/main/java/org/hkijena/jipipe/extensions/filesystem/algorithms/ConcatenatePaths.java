@@ -55,10 +55,10 @@ public class ConcatenatePaths extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
-        PathData left = dataBatch.getInputData("Left", PathData.class);
-        PathData right = dataBatch.getInputData("Right", PathData.class);
-        dataBatch.addOutputData(getFirstOutputSlot(), new PathData(left.getPath().resolve(right.getPath())));
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+        PathData left = dataBatch.getInputData("Left", PathData.class, progressInfo);
+        PathData right = dataBatch.getInputData("Right", PathData.class, progressInfo);
+        dataBatch.addOutputData(getFirstOutputSlot(), new PathData(left.getPath().resolve(right.getPath())), progressInfo);
     }
 
 }

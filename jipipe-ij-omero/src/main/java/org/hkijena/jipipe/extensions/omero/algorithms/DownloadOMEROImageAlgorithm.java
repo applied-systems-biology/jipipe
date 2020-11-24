@@ -115,8 +115,8 @@ public class DownloadOMEROImageAlgorithm extends JIPipeSimpleIteratingAlgorithm 
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
-        OMEROImageReferenceData imageReferenceData = dataBatch.getInputData(getFirstInputSlot(), OMEROImageReferenceData.class);
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+        OMEROImageReferenceData imageReferenceData = dataBatch.getInputData(getFirstInputSlot(), OMEROImageReferenceData.class, progressInfo);
         LoginCredentials lc = credentials.getCredentials();
         ImporterOptions options;
         try {
@@ -167,7 +167,7 @@ public class DownloadOMEROImageAlgorithm extends JIPipeSimpleIteratingAlgorithm 
 
         try {
             ImportProcess process = new ImportProcess(options);
-            progress.log("Downloading image ID=" + imageReferenceData.getImageId() + " from " + lc.getUser().getUsername() + "@" + lc.getServer().getHost() + ":" + lc.getServer().getPort());
+            progressInfo.log("Downloading image ID=" + imageReferenceData.getImageId() + " from " + lc.getUser().getUsername() + "@" + lc.getServer().getHost() + ":" + lc.getServer().getPort());
             if (!process.execute()) {
                 throw new NullPointerException();
             }
@@ -186,7 +186,7 @@ public class DownloadOMEROImageAlgorithm extends JIPipeSimpleIteratingAlgorithm 
                 List<JIPipeAnnotation> traits = new ArrayList<>();
 
                 if (addKeyValuePairsAsAnnotations || tagAnnotation.isEnabled()) {
-                    try (Gateway gateway = new Gateway(new OMEROToJIPipeLogger(progress))) {
+                    try (Gateway gateway = new Gateway(new OMEROToJIPipeLogger(progressInfo))) {
                         ExperimenterData user = gateway.connect(credentials.getCredentials());
                         SecurityContext context = new SecurityContext(user.getGroupId());
                         BrowseFacility browseFacility = gateway.getFacility(BrowseFacility.class);
@@ -217,7 +217,7 @@ public class DownloadOMEROImageAlgorithm extends JIPipeSimpleIteratingAlgorithm 
                     rois = ROIHandler.openROIs(process.getOMEMetadata(), new ImagePlus[]{image});
                 }
 
-                dataBatch.addOutputData(getFirstOutputSlot(), new OMEImageData(image, rois, omexmlMetadata), traits, JIPipeAnnotationMergeStrategy.Merge);
+                dataBatch.addOutputData(getFirstOutputSlot(), new OMEImageData(image, rois, omexmlMetadata), traits, JIPipeAnnotationMergeStrategy.Merge, progressInfo);
             }
         } catch (FormatException | IOException e) {
             throw new RuntimeException(e);

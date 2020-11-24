@@ -106,15 +106,15 @@ public class ImageCalculator2DAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ImagePlusData leftOperand = null;
         ImagePlusData rightOperand = null;
         for (Map.Entry<String, JIPipeParameterAccess> entry : operands.getParameters().entrySet()) {
             Operand operand = entry.getValue().get(Operand.class);
             if (operand == Operand.LeftOperand) {
-                leftOperand = dataBatch.getInputData(entry.getKey(), ImagePlusData.class);
+                leftOperand = dataBatch.getInputData(entry.getKey(), ImagePlusData.class, progressInfo);
             } else if (operand == Operand.RightOperand) {
-                rightOperand = dataBatch.getInputData(entry.getKey(), ImagePlusData.class);
+                rightOperand = dataBatch.getInputData(entry.getKey(), ImagePlusData.class, progressInfo);
             }
         }
 
@@ -130,7 +130,7 @@ public class ImageCalculator2DAlgorithm extends JIPipeIteratingAlgorithm {
 
         ImageCalculator calculator = new ImageCalculator();
         ImagePlus img = calculator.run(operation.getId() + " stack create", leftOperand.getImage(), rightOperand.getImage());
-        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(img));
+        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(img), progressInfo);
     }
 
 

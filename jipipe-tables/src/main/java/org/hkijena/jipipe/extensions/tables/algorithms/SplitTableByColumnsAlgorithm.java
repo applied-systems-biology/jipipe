@@ -67,11 +67,11 @@ public class SplitTableByColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
-        ResultsTableData input = dataBatch.getInputData(getFirstInputSlot(), ResultsTableData.class);
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+        ResultsTableData input = dataBatch.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo);
         List<String> interestingColumns = columns.queryAll(input.getColumnNames());
         if (interestingColumns.isEmpty()) {
-            dataBatch.addOutputData(getFirstOutputSlot(), input.duplicate());
+            dataBatch.addOutputData(getFirstOutputSlot(), input.duplicate(), progressInfo);
         } else {
             List<String> rowConditions = new ArrayList<>();
             for (int row = 0; row < input.getRowCount(); row++) {
@@ -91,7 +91,7 @@ public class SplitTableByColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm
                         traits.add(new JIPipeAnnotation(column, output.getValueAsString(0, column)));
                     }
                 }
-                dataBatch.addOutputData(getFirstOutputSlot(), output, traits, JIPipeAnnotationMergeStrategy.Merge);
+                dataBatch.addOutputData(getFirstOutputSlot(), output, traits, JIPipeAnnotationMergeStrategy.Merge, progressInfo);
             }
         }
     }

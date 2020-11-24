@@ -4,7 +4,6 @@ import com.fathzer.soft.javaluator.StaticVariableSet;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.events.ParameterChangedEvent;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
@@ -39,8 +38,8 @@ public class ModifyTableColumnNamesAlgorithm extends JIPipeSimpleIteratingAlgori
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
-        ResultsTableData input = dataBatch.getInputData(getFirstInputSlot(), ResultsTableData.class);
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+        ResultsTableData input = dataBatch.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo);
         ResultsTableData output = new ResultsTableData();
         output.addRows(input.getRowCount());
         StaticVariableSet<Object> variableSet = new StaticVariableSet<>();
@@ -55,7 +54,7 @@ public class ModifyTableColumnNamesAlgorithm extends JIPipeSimpleIteratingAlgori
             }
         }
 
-        dataBatch.addOutputData(getFirstOutputSlot(), output);
+        dataBatch.addOutputData(getFirstOutputSlot(), output, progressInfo);
     }
 
     @JIPipeDocumentation(name = "Renaming expression", description = "Determines how each column should be renamed. There is a variable 'value' available " +

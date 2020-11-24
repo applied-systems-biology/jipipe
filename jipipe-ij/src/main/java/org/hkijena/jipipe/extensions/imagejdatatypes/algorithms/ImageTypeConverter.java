@@ -63,13 +63,13 @@ public class ImageTypeConverter extends JIPipeAlgorithm {
     }
 
     @Override
-    public void run(JIPipeProgressInfo progress) {
+    public void run(JIPipeProgressInfo progressInfo) {
         JIPipeDataSlot inputSlot = getFirstInputSlot();
         JIPipeDataSlot outputSlot = getFirstOutputSlot();
         for (int i = 0; i < inputSlot.getRowCount(); ++i) {
-            ImagePlusData data = inputSlot.getData(i, ImagePlusData.class);
+            ImagePlusData data = inputSlot.getData(i, ImagePlusData.class, progressInfo);
             JIPipeData converted = JIPipe.createData(outputSlot.getAcceptedDataType(), data.getImage());
-            outputSlot.addData(converted, outputSlot.getAnnotations(i), JIPipeAnnotationMergeStrategy.Merge);
+            outputSlot.addData(converted, outputSlot.getAnnotations(i), JIPipeAnnotationMergeStrategy.Merge, progressInfo);
         }
     }
 

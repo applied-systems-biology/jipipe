@@ -3,7 +3,6 @@ package org.hkijena.jipipe.extensions.annotation.algorithms;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
@@ -11,9 +10,6 @@ import org.hkijena.jipipe.api.nodes.JIPipeIOSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.categories.AnnotationsNodeTypeCategory;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Algorithm that merges the annotations of all inputs and outputs the data with the shared annotations
@@ -40,10 +36,10 @@ public class MergeAnnotations extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         for (JIPipeDataSlot inputSlot : getInputSlots()) {
             JIPipeDataSlot outputSlot = getOutputSlot(inputSlot.getName());
-            dataBatch.addOutputData(outputSlot, dataBatch.getInputData(inputSlot, JIPipeData.class));
+            dataBatch.addOutputData(outputSlot, dataBatch.getInputData(inputSlot, JIPipeData.class, progressInfo), progressInfo);
         }
     }
 

@@ -82,17 +82,17 @@ public abstract class ImageRoiProcessorAlgorithm extends JIPipeIteratingAlgorith
      * Please note that the reference is not safe to modify
      *
      * @param dataBatch the input data
-     * @param progress  progress
+     * @param progressInfo  progress
      * @return reference image
      */
-    protected Map<ImagePlusData, ROIListData> getReferenceImage(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
+    protected Map<ImagePlusData, ROIListData> getReferenceImage(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         if (overrideReferenceImage) {
-            ImagePlusData reference = dataBatch.getInputData("Reference", ImagePlusData.class);
+            ImagePlusData reference = dataBatch.getInputData("Reference", ImagePlusData.class, progressInfo);
             Map<ImagePlusData, ROIListData> result = new HashMap<>();
-            result.put(reference, dataBatch.getInputData("ROI", ROIListData.class));
+            result.put(reference, dataBatch.getInputData("ROI", ROIListData.class, progressInfo));
             return result;
         } else {
-            Map<Optional<ImagePlus>, ROIListData> byReferenceImage = dataBatch.getInputData("ROI", ROIListData.class).groupByReferenceImage();
+            Map<Optional<ImagePlus>, ROIListData> byReferenceImage = dataBatch.getInputData("ROI", ROIListData.class, progressInfo).groupByReferenceImage();
             Map<ImagePlusData, ROIListData> result = new HashMap<>();
             if (preferAssociatedImage) {
                 for (Map.Entry<Optional<ImagePlus>, ROIListData> entry : byReferenceImage.entrySet()) {
@@ -100,18 +100,18 @@ public abstract class ImageRoiProcessorAlgorithm extends JIPipeIteratingAlgorith
                         result.put(new ImagePlusData(entry.getKey().get()), entry.getValue());
                     } else {
                         toMaskAlgorithm.clearSlotData();
-                        toMaskAlgorithm.getFirstInputSlot().addData(entry.getValue());
-                        toMaskAlgorithm.run(progress);
-                        ImagePlusData reference = toMaskAlgorithm.getFirstOutputSlot().getData(0, ImagePlusData.class);
+                        toMaskAlgorithm.getFirstInputSlot().addData(entry.getValue(), progressInfo);
+                        toMaskAlgorithm.run(progressInfo);
+                        ImagePlusData reference = toMaskAlgorithm.getFirstOutputSlot().getData(0, ImagePlusData.class, progressInfo);
                         result.put(reference, entry.getValue());
                     }
                 }
             } else {
-                ROIListData inputRois = dataBatch.getInputData("ROI", ROIListData.class);
+                ROIListData inputRois = dataBatch.getInputData("ROI", ROIListData.class, progressInfo);
                 toMaskAlgorithm.clearSlotData();
-                toMaskAlgorithm.getFirstInputSlot().addData(inputRois);
-                toMaskAlgorithm.run(progress);
-                ImagePlusData reference = toMaskAlgorithm.getFirstOutputSlot().getData(0, ImagePlusData.class);
+                toMaskAlgorithm.getFirstInputSlot().addData(inputRois, progressInfo);
+                toMaskAlgorithm.run(progressInfo);
+                ImagePlusData reference = toMaskAlgorithm.getFirstOutputSlot().getData(0, ImagePlusData.class, progressInfo);
                 result.put(reference, inputRois);
             }
             return result;

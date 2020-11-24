@@ -97,16 +97,16 @@ public class ModifyTablesScript extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    public void run(JIPipeProgressInfo progress) {
+    public void run(JIPipeProgressInfo progressInfo) {
         this.pythonInterpreter = new PythonInterpreter();
         PythonUtils.passParametersToPython(pythonInterpreter, scriptParameters);
-        super.run(progress);
+        super.run(progressInfo);
         this.pythonInterpreter = null;
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
-        ResultsTableData inputData = dataBatch.getInputData(getFirstInputSlot(), ResultsTableData.class);
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+        ResultsTableData inputData = dataBatch.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo);
         PyDictionary tableDict = inputData.toPython();
 
         PyDictionary annotationDict = JIPipeAnnotation.annotationMapToPython(dataBatch.getAnnotations());
@@ -120,7 +120,7 @@ public class ModifyTablesScript extends JIPipeSimpleIteratingAlgorithm {
         dataBatch.getAnnotations().clear();
         JIPipeAnnotation.setAnnotationsFromPython(annotationDict, dataBatch.getAnnotations());
 
-        dataBatch.addOutputData(getFirstOutputSlot(), ResultsTableData.fromPython(tableDict));
+        dataBatch.addOutputData(getFirstOutputSlot(), ResultsTableData.fromPython(tableDict), progressInfo);
     }
 
     @JIPipeDocumentation(name = "Script", description = "Each table is passed as dictionary 'table' " +

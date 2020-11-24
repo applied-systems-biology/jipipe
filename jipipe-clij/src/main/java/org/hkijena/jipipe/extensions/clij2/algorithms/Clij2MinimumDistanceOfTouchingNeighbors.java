@@ -46,15 +46,15 @@ public class Clij2MinimumDistanceOfTouchingNeighbors extends JIPipeIteratingAlgo
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         CLIJ2 clij2 = CLIJ2.getInstance();
         CLIJ clij = clij2.getCLIJ();
-        ClearCLBuffer distance_matrix = dataBatch.getInputData(getInputSlot("distance_matrix"), CLIJImageData.class).getImage();
-        ClearCLBuffer touch_matrix = dataBatch.getInputData(getInputSlot("touch_matrix"), CLIJImageData.class).getImage();
+        ClearCLBuffer distance_matrix = dataBatch.getInputData(getInputSlot("distance_matrix"), CLIJImageData.class, progressInfo).getImage();
+        ClearCLBuffer touch_matrix = dataBatch.getInputData(getInputSlot("touch_matrix"), CLIJImageData.class, progressInfo).getImage();
         ClearCLBuffer minimum_distancelist_destination = clij2.create(distance_matrix);
         MinimumDistanceOfTouchingNeighbors.minimumDistanceOfTouchingNeighbors(clij2, distance_matrix, touch_matrix, minimum_distancelist_destination);
 
-        dataBatch.addOutputData(getOutputSlot("minimum_distancelist_destination"), new CLIJImageData(minimum_distancelist_destination));
+        dataBatch.addOutputData(getOutputSlot("minimum_distancelist_destination"), new CLIJImageData(minimum_distancelist_destination), progressInfo);
     }
 
 }

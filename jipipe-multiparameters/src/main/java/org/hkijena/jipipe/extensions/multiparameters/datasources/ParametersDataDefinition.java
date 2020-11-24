@@ -63,14 +63,14 @@ public class ParametersDataDefinition extends JIPipeAlgorithm {
     }
 
     @Override
-    public void run(JIPipeProgressInfo progress) {
+    public void run(JIPipeProgressInfo progressInfo) {
         ParametersData result = new ParametersData();
         for (Map.Entry<String, JIPipeParameterAccess> entry : parameters.getParameters().entrySet()) {
             if (entry.getValue().getVisibility().isVisibleIn(JIPipeParameterVisibility.TransitiveVisible)) {
                 result.getParameterData().put(entry.getKey(), entry.getValue().get(Object.class));
             }
         }
-        getFirstOutputSlot().addData(result);
+        getFirstOutputSlot().addData(result, progressInfo);
     }
 
     @Override

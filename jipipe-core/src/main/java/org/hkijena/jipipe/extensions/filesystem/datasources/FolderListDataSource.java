@@ -62,9 +62,9 @@ public class FolderListDataSource extends JIPipeAlgorithm {
     }
 
     @Override
-    public void run(JIPipeProgressInfo progress) {
+    public void run(JIPipeProgressInfo progressInfo) {
         for (Path folderPath : folderPaths) {
-            getFirstOutputSlot().addData(new FolderData(folderPath));
+            getFirstOutputSlot().addData(new FolderData(folderPath), progressInfo);
         }
     }
 

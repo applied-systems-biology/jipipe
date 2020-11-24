@@ -66,10 +66,10 @@ public class MergeTableColumnsAlgorithm extends JIPipeMergingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeMergingDataBatch dataBatch, JIPipeProgressInfo progress) {
+    protected void runIteration(JIPipeMergingDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         List<TableColumn> columnList = new ArrayList<>();
         int nRow = 0;
-        for (ResultsTableData tableData : dataBatch.getInputData(getFirstInputSlot(), ResultsTableData.class)) {
+        for (ResultsTableData tableData : dataBatch.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo)) {
             nRow = Math.max(nRow, tableData.getRowCount());
             for (int col = 0; col < tableData.getColumnCount(); col++) {
                 if(columnFilter.test(tableData.getColumnName(col))) {
@@ -88,7 +88,7 @@ public class MergeTableColumnsAlgorithm extends JIPipeMergingAlgorithm {
             String name = StringUtils.makeUniqueString(column.getLabel(), ".", existing);
             outputData.addColumn(name, column);
         }
-        dataBatch.addOutputData(getFirstOutputSlot(), outputData);
+        dataBatch.addOutputData(getFirstOutputSlot(), outputData, progressInfo);
     }
 
     @JIPipeDocumentation(name = "Row normalization", description = "Determines how missing column values are handled if the input tables have different numbers of rows. " +

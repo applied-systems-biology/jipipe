@@ -51,15 +51,15 @@ public class Clij2GenerateParametricImageFromResultsTableColumn extends JIPipeIt
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         CLIJ2 clij2 = CLIJ2.getInstance();
         CLIJ clij = clij2.getCLIJ();
-        ClearCLBuffer label_map = dataBatch.getInputData(getInputSlot("label_map"), CLIJImageData.class).getImage();
-        ResultsTable table = dataBatch.getInputData(getInputSlot("table"), ResultsTableData.class).getTable();
+        ClearCLBuffer label_map = dataBatch.getInputData(getInputSlot("label_map"), CLIJImageData.class, progressInfo).getImage();
+        ResultsTable table = dataBatch.getInputData(getInputSlot("table"), ResultsTableData.class, progressInfo).getTable();
         ClearCLBuffer parametric_image_destination = clij2.create(label_map);
         GenerateParametricImageFromResultsTableColumn.generateParametricImageFromResultsTableColumn(clij2, label_map, parametric_image_destination, table, columnName);
 
-        dataBatch.addOutputData(getOutputSlot("parametric_image_destination"), new CLIJImageData(parametric_image_destination));
+        dataBatch.addOutputData(getOutputSlot("parametric_image_destination"), new CLIJImageData(parametric_image_destination), progressInfo);
     }
 
     @JIPipeParameter("column-name")

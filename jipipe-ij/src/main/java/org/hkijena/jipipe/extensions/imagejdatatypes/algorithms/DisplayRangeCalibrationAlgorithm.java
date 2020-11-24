@@ -55,8 +55,8 @@ public class DisplayRangeCalibrationAlgorithm extends JIPipeSimpleIteratingAlgor
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
-        ImagePlusData data = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class);
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+        ImagePlusData data = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo);
         if (duplicateImage)
             data = (ImagePlusData) data.duplicate();
         ImagePlus image = data.getImage();
@@ -74,7 +74,7 @@ public class DisplayRangeCalibrationAlgorithm extends JIPipeSimpleIteratingAlgor
         } else {
             ImageJUtils.calibrate(image, calibrationMode, customMin, customMax);
         }
-        dataBatch.addOutputData(getFirstOutputSlot(), data);
+        dataBatch.addOutputData(getFirstOutputSlot(), data, progressInfo);
     }
 
     @JIPipeDocumentation(name = "Calibration method", description = "The method to apply for calibration.")

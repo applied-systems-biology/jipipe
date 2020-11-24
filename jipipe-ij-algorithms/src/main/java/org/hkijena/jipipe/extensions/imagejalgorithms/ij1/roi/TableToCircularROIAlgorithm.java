@@ -75,8 +75,8 @@ public class TableToCircularROIAlgorithm extends JIPipeSimpleIteratingAlgorithm 
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
-        ResultsTableData table = dataBatch.getInputData(getFirstInputSlot(), ResultsTableData.class);
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+        ResultsTableData table = dataBatch.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo);
         ROIListData rois = new ROIListData();
 
         TableColumn colX1 = columnX1.pickColumn(table);
@@ -113,7 +113,7 @@ public class TableToCircularROIAlgorithm extends JIPipeSimpleIteratingAlgorithm 
             rois.add(new OvalRoi(x, y, r * 2, r * 2));
         }
 
-        dataBatch.addOutputData(getFirstOutputSlot(), rois);
+        dataBatch.addOutputData(getFirstOutputSlot(), rois, progressInfo);
     }
 
     @JIPipeDocumentation(name = "Column 'X1'", description = "The table column that is used for the X1 coordinate. " + TableColumnSourceExpressionParameter.DOCUMENTATION_DESCRIPTION)

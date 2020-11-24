@@ -48,14 +48,14 @@ public class Clij2EqualizeMeanIntensitiesOfSlices extends JIPipeSimpleIteratingA
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         CLIJ2 clij2 = CLIJ2.getInstance();
         CLIJ clij = clij2.getCLIJ();
-        ClearCLBuffer input = dataBatch.getInputData(getInputSlot("input"), CLIJImageData.class).getImage();
+        ClearCLBuffer input = dataBatch.getInputData(getInputSlot("input"), CLIJImageData.class, progressInfo).getImage();
         ClearCLBuffer output = clij2.create(input);
         EqualizeMeanIntensitiesOfSlices.equalizeMeanIntensitiesOfSlices(clij2, input, output, referenceSlice);
 
-        dataBatch.addOutputData(getOutputSlot("output"), new CLIJImageData(output));
+        dataBatch.addOutputData(getOutputSlot("output"), new CLIJImageData(output), progressInfo);
     }
 
     @JIPipeParameter("reference-slice")

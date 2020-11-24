@@ -46,15 +46,15 @@ public class Clij2GenerateBinaryOverlapMatrix extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progress) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         CLIJ2 clij2 = CLIJ2.getInstance();
         CLIJ clij = clij2.getCLIJ();
-        ClearCLBuffer src_label_map1 = dataBatch.getInputData(getInputSlot("src_label_map1"), CLIJImageData.class).getImage();
-        ClearCLBuffer src_label_map2 = dataBatch.getInputData(getInputSlot("src_label_map2"), CLIJImageData.class).getImage();
+        ClearCLBuffer src_label_map1 = dataBatch.getInputData(getInputSlot("src_label_map1"), CLIJImageData.class, progressInfo).getImage();
+        ClearCLBuffer src_label_map2 = dataBatch.getInputData(getInputSlot("src_label_map2"), CLIJImageData.class, progressInfo).getImage();
         ClearCLBuffer dst_touch_matrix = clij2.create(src_label_map1);
         GenerateBinaryOverlapMatrix.generateBinaryOverlapMatrix(clij2, src_label_map1, src_label_map2, dst_touch_matrix);
 
-        dataBatch.addOutputData(getOutputSlot("dst_touch_matrix"), new CLIJImageData(dst_touch_matrix));
+        dataBatch.addOutputData(getOutputSlot("dst_touch_matrix"), new CLIJImageData(dst_touch_matrix), progressInfo);
     }
 
 }

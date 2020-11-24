@@ -133,17 +133,17 @@ public abstract class JIPipeParameterSlotAlgorithm extends JIPipeAlgorithm {
     }
 
     @Override
-    public void run(JIPipeProgressInfo progress) {
+    public void run(JIPipeProgressInfo progressInfo) {
         if (isPassThrough() && canPassThrough()) {
-            progress.log("Data passed through to output");
+            progressInfo.log("Data passed through to output");
             runPassThrough();
             return;
         }
         if (parameterSlotAlgorithmSettings.hasParameterSlot) {
             JIPipeDataSlot parameterSlot = getInputSlot(SLOT_PARAMETERS);
             if (parameterSlot.getRowCount() == 0) {
-                progress.log("No parameters were passed with enabled parameter slot. Applying default parameters, only.");
-                runParameterSet(progress, Collections.emptyList());
+                progressInfo.log("No parameters were passed with enabled parameter slot. Applying default parameters, only.");
+                runParameterSet(progressInfo, Collections.emptyList());
             } else {
                 // Create backups
                 Map<String, Object> parameterBackups = new HashMap<>();
@@ -155,7 +155,7 @@ public abstract class JIPipeParameterSlotAlgorithm extends JIPipeAlgorithm {
                 // Collect different parameters
                 Set<String> nonDefaultParameters = new HashSet<>();
                 for (int row = 0; row < parameterSlot.getRowCount(); row++) {
-                    ParametersData data = parameterSlot.getData(row, ParametersData.class);
+                    ParametersData data = parameterSlot.getData(row, ParametersData.class, progressInfo);
                     for (Map.Entry<String, Object> entry : data.getParameterData().entrySet()) {
                         JIPipeParameterAccess target = tree.getParameters().getOrDefault(entry.getKey(), null);
                         if (target != null) {
@@ -170,12 +170,12 @@ public abstract class JIPipeParameterSlotAlgorithm extends JIPipeAlgorithm {
 
                 // Create run
                 for (int row = 0; row < parameterSlot.getRowCount(); row++) {
-                    ParametersData data = parameterSlot.getData(row, ParametersData.class);
+                    ParametersData data = parameterSlot.getData(row, ParametersData.class, progressInfo);
                     List<JIPipeAnnotation> annotations = new ArrayList<>();
                     for (Map.Entry<String, Object> entry : data.getParameterData().entrySet()) {
                         JIPipeParameterAccess target = tree.getParameters().getOrDefault(entry.getKey(), null);
                         if (target == null) {
-                            progress.log("Unable to find parameter '" + entry.getKey() + "' in " + getName() + "! Ignoring.");
+                            progressInfo.log("Unable to find parameter '" + entry.getKey() + "' in " + getName() + "! Ignoring.");
                             continue;
                         }
                         target.set(entry.getValue());
@@ -193,7 +193,7 @@ public abstract class JIPipeParameterSlotAlgorithm extends JIPipeAlgorithm {
                             annotations.add(new JIPipeAnnotation(annotationName, "" + target.get(Object.class)));
                         }
                     }
-                    runParameterSet(progress.resolve("Parameter set", row, parameterSlot.getRowCount()), annotations);
+                    runParameterSet(progressInfo.resolve("Parameter set", row, parameterSlot.getRowCount()), annotations);
                 }
 
                 // Restore backup
@@ -202,17 +202,17 @@ public abstract class JIPipeParameterSlotAlgorithm extends JIPipeAlgorithm {
                 }
             }
         } else {
-            runParameterSet(progress, Collections.emptyList());
+            runParameterSet(progressInfo, Collections.emptyList());
         }
     }
 
     /**
      * Runs a parameter set iteration
      *
-     * @param progress             progress info from the run
+     * @param progressInfo             progress info from the run
      * @param parameterAnnotations parameter annotations
      */
-    public abstract void runParameterSet(JIPipeProgressInfo progress, List<JIPipeAnnotation> parameterAnnotations);
+    public abstract void runParameterSet(JIPipeProgressInfo progressInfo, List<JIPipeAnnotation> parameterAnnotations);
 
     private void updateParameterSlot() {
         if (getSlotConfiguration() instanceof JIPipeMutableSlotConfiguration) {
