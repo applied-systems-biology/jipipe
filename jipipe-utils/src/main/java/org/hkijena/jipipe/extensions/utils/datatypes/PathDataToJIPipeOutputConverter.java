@@ -17,6 +17,6 @@ public class PathDataToJIPipeOutputConverter implements JIPipeDataConverter {
 
     @Override
     public JIPipeData convert(JIPipeData input) {
-        return new JIPipeOutputData(((PathData)input).getPath());
+        return new JIPipeOutputData(((PathData) input).getPath());
     }
 }

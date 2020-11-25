@@ -32,7 +32,11 @@
 package org.hkijena.jipipe.utils;
 
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Random;
 
 public class NaturalOrderComparator implements Comparator<Object> {
 
@@ -75,7 +79,7 @@ public class NaturalOrderComparator implements Comparator<Object> {
     public int compare(Object o1, Object o2) {
 
         // Allow direct comparison with numbers
-        if(o1 instanceof Number && o2 instanceof Number) {
+        if (o1 instanceof Number && o2 instanceof Number) {
             return Double.compare(((Number) o1).doubleValue(), ((Number) o2).doubleValue());
         }
 

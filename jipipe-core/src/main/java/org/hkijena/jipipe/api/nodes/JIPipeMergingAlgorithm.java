@@ -178,8 +178,8 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
     /**
      * Runs code on one data row
      *
-     * @param dataBatch The data interface
-     * @param progressInfo  the progress from the run
+     * @param dataBatch    The data interface
+     * @param progressInfo the progress from the run
      */
     protected abstract void runIteration(JIPipeMergingDataBatch dataBatch, JIPipeProgressInfo progressInfo);
 

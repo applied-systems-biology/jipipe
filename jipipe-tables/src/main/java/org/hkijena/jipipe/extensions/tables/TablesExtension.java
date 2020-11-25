@@ -42,7 +42,6 @@ import org.hkijena.jipipe.extensions.tables.parameters.processors.TableColumnGen
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.plugin.Plugin;
-import org.scijava.table.Column;
 
 /**
  * Standard set of table operations

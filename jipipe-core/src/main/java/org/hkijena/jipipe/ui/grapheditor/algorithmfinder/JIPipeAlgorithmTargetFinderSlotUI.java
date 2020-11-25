@@ -22,7 +22,6 @@ import org.hkijena.jipipe.api.data.JIPipeMutableSlotConfiguration;
 import org.hkijena.jipipe.api.history.AddNodeGraphHistorySnapshot;
 import org.hkijena.jipipe.api.history.CompoundGraphHistorySnapshot;
 import org.hkijena.jipipe.api.history.EdgeConnectGraphHistorySnapshot;
-import org.hkijena.jipipe.api.history.EdgeDisconnectGraphHistorySnapshot;
 import org.hkijena.jipipe.api.history.SlotConfigurationHistorySnapshot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.ui.events.AlgorithmFinderSuccessEvent;

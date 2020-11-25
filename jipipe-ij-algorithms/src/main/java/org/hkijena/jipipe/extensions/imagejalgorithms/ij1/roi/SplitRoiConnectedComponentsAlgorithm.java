@@ -42,7 +42,11 @@ import org.jgrapht.alg.connectivity.ConnectivityInspector;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.DefaultUndirectedGraph;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @JIPipeDocumentation(name = "Split into connected components", description = "Algorithm that extracts connected components across one or multiple dimensions. The output consists of multiple ROI lists, one for each connected component.")
 @JIPipeOrganization(menuPath = "Split", nodeTypeCategory = RoiNodeTypeCategory.class)
@@ -115,8 +119,8 @@ public class SplitRoiConnectedComponentsAlgorithm extends ImageRoiProcessorAlgor
         for (int i = 0; i < input.size(); i++) {
             for (int j = i + 1; j < input.size(); j++) {
                 ++currentProgress;
-                int newProgressPercentage = (int)(1.0 * currentProgress / maxProgress * 100);
-                if(newProgressPercentage != currentProgressPercentage) {
+                int newProgressPercentage = (int) (1.0 * currentProgress / maxProgress * 100);
+                if (newProgressPercentage != currentProgressPercentage) {
                     subProgress.log(newProgressPercentage + "%");
                     currentProgressPercentage = newProgressPercentage;
                 }
@@ -170,7 +174,7 @@ public class SplitRoiConnectedComponentsAlgorithm extends ImageRoiProcessorAlgor
                 }
             }
             for (int roi : graph.vertexSet()) {
-                if(isJunction(roi, input, graph)) {
+                if (isJunction(roi, input, graph)) {
                     if (trySolveJunctions && comparator != null) {
                         List<Integer> neighbors = Graphs.neighborListOf(graph, roi);
                         neighbors.sort(comparator);
@@ -180,7 +184,7 @@ public class SplitRoiConnectedComponentsAlgorithm extends ImageRoiProcessorAlgor
                         }
                     }
                 }
-               
+
                 // No solution found: Decompose
                 if (isJunction(roi, input, graph))
                     graph.removeAllEdges(ImmutableList.copyOf(graph.edgesOf(roi)));
@@ -214,48 +218,49 @@ public class SplitRoiConnectedComponentsAlgorithm extends ImageRoiProcessorAlgor
 
     /**
      * Determines if the roi is a junction ROI
+     *
      * @param index the roi index
-     * @param list list
+     * @param list  list
      * @param graph the roi graph
      * @return if is a junction
      */
     private boolean isJunction(int index, ROIListData list, DefaultUndirectedGraph<Integer, DefaultEdge> graph) {
         List<Integer> neighbors = Graphs.neighborListOf(graph, index);
-        
+
         // Only one or no neighbor -> No junction
-        if(neighbors.size() <= 1)
+        if (neighbors.size() <= 1)
             return false;
         for (int i = 0; i < neighbors.size(); i++) {
             for (int j = i + 1; j < neighbors.size(); j++) {
                 Roi r0 = list.get(neighbors.get(i));
                 Roi r1 = list.get(neighbors.get(j));
-                
+
                 int z0 = r0.getZPosition();
                 int z1 = r1.getZPosition();
                 int c0 = r0.getCPosition();
                 int c1 = r1.getCPosition();
                 int t0 = r0.getTPosition();
                 int t1 = r1.getTPosition();
-                
+
                 // Resolve non-zero vs zero. Consider zero as "is on this plane"
-                if(z0 == 0 && z1 != 0)
+                if (z0 == 0 && z1 != 0)
                     z0 = z1;
-                if(z0 != 0 && z1 == 0)
+                if (z0 != 0 && z1 == 0)
                     z1 = z0;
-                if(c0 == 0 && c1 != 0)
+                if (c0 == 0 && c1 != 0)
                     c0 = c1;
-                if(c0 != 0 && c1 == 0)
+                if (c0 != 0 && c1 == 0)
                     c1 = c0;
-                if(t0 == 0 && t1 != 0)
+                if (t0 == 0 && t1 != 0)
                     t0 = t1;
-                if(t0 != 0 && t1 == 0)
+                if (t0 != 0 && t1 == 0)
                     t1 = t0;
 
-                if(dimensionZOperation == DimensionOperation.Follow && z0 == z1)
+                if (dimensionZOperation == DimensionOperation.Follow && z0 == z1)
                     return true;
-                if(dimensionCOperation == DimensionOperation.Follow && c0 == c1)
+                if (dimensionCOperation == DimensionOperation.Follow && c0 == c1)
                     return true;
-                if(dimensionTOperation == DimensionOperation.Follow && t0 == t1)
+                if (dimensionTOperation == DimensionOperation.Follow && t0 == t1)
                     return true;
             }
         }

@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.api.data;
 
-import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.nodes.JIPipeEmptyNodeInfo;

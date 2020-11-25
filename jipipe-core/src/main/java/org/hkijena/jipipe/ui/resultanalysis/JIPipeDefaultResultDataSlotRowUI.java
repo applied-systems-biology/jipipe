@@ -83,7 +83,7 @@ public class JIPipeDefaultResultDataSlotRowUI extends JIPipeResultDataSlotRowUI 
     }
 
     private void runImportOperation(JIPipeDataImportOperation operation) {
-        try(BusyCursor cursor = new BusyCursor(this)) {
+        try (BusyCursor cursor = new BusyCursor(this)) {
             operation.show(getSlot(), getRow(), getRowStorageFolder(), getAlgorithmCompartment(), getAlgorithmName(), getDisplayName(), getWorkbench());
             if (GeneralDataSettings.getInstance().isAutoSaveLastImporter()) {
                 String dataTypeId = JIPipe.getDataTypes().getIdOf(getSlot().getAcceptedDataType());

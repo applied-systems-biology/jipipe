@@ -115,19 +115,18 @@ public class ImageStackFromFolder extends JIPipeSimpleIteratingAlgorithm {
             progressInfo.log("Looking for files in " + inputFolder);
             List<Path> inputFiles = Files.list(inputFolder).filter(filterExpression).collect(Collectors.toList());
             Comparator<Path> comparator;
-            if(sortFilesNumerically) {
+            if (sortFilesNumerically) {
                 comparator = (o1, o2) -> NaturalOrderComparator.INSTANCE.compare(o1.getFileName().toString(), o2.getFileName().toString());
-            }
-            else {
+            } else {
                 comparator = Comparator.naturalOrder();
             }
             inputFiles.sort(comparator);
 
             // Slicing
-            if(!StringUtils.isNullOrEmpty(slicesToImport.getValue())) {
+            if (!StringUtils.isNullOrEmpty(slicesToImport.getValue())) {
                 List<Path> inputFilesSliced = new ArrayList<>();
                 for (Integer index : slicesToImport.getIntegers()) {
-                    if(ignoreInvalidSlices && index < 0 || index >= inputFiles.size()) {
+                    if (ignoreInvalidSlices && index < 0 || index >= inputFiles.size()) {
                         continue;
                     }
                     inputFilesSliced.add(inputFiles.get(index));
@@ -150,10 +149,10 @@ public class ImageStackFromFolder extends JIPipeSimpleIteratingAlgorithm {
                 dimensions = Math.max(image.getNDimensions(), dimensions);
             }
 
-            if(dimensions > 2)
+            if (dimensions > 2)
                 throw new RuntimeException("Only 2D planes are supported in the current implementation.");
 
-            if(images.isEmpty())
+            if (images.isEmpty())
                 return;
 
             ImageStack stack = new ImageStack(images.get(0).getWidth(), images.get(0).getHeight(), inputFiles.size());
@@ -162,10 +161,9 @@ public class ImageStackFromFolder extends JIPipeSimpleIteratingAlgorithm {
             }
 
             ImagePlus merged = new ImagePlus("Stack", stack);
-            if(outputDimension == HyperstackDimension.Channel) {
+            if (outputDimension == HyperstackDimension.Channel) {
                 merged.setDimensions(merged.getNSlices(), 1, 1);
-            }
-            else if(outputDimension == HyperstackDimension.Frame) {
+            } else if (outputDimension == HyperstackDimension.Frame) {
                 merged.setDimensions(1, 1, merged.getNSlices());
             }
             dataBatch.addOutputData(getFirstOutputSlot(), JIPipe.createData(generatedImageType.getInfo().getDataClass(), merged), progressInfo);

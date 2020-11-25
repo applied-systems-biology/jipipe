@@ -343,8 +343,7 @@ public class ImageViewerPanel extends JPanel {
             JButton toRGBButton = new JButton("Split channels", UIUtils.getIconFromResources("actions/channelmixer.png"));
             headerPanel.add(toRGBButton);
             toRGBButton.addActionListener(e -> splitChannels());
-        }
-        else {
+        } else {
             while (lutEditors.size() < image.getNChannels()) {
                 ImageViewerLUTEditor editor = new ImageViewerLUTEditor(this, lutEditors.size());
                 editor.loadLUTFromImage();
@@ -373,16 +372,16 @@ public class ImageViewerPanel extends JPanel {
     }
 
     private void splitChannels() {
-        if(image != null) {
-            try(BusyCursor cursor = new BusyCursor(this)) {
+        if (image != null) {
+            try (BusyCursor cursor = new BusyCursor(this)) {
                 setImage(ImageJUtils.rgbToChannels(image));
             }
         }
     }
 
     private void convertImageToRGB() {
-        if(image != null) {
-            try(BusyCursor cursor = new BusyCursor(this)) {
+        if (image != null) {
+            try (BusyCursor cursor = new BusyCursor(this)) {
                 setImage(ImageJUtils.channelsToRGB(image));
             }
         }
@@ -523,6 +522,7 @@ public class ImageViewerPanel extends JPanel {
 
     /**
      * Opens the image in a new frame
+     *
      * @param image the image
      * @param title the title
      * @return the panel

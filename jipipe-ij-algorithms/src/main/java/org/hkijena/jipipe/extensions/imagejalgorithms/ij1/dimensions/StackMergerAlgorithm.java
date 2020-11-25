@@ -121,10 +121,9 @@ public class StackMergerAlgorithm extends JIPipeMergingAlgorithm {
             stack.setSliceLabel("slice=" + i, i + 1);
         }
         ImagePlus resultImage = new ImagePlus("Stack", stack);
-        if(outputDimension == HyperstackDimension.Channel) {
+        if (outputDimension == HyperstackDimension.Channel) {
             resultImage.setDimensions(resultImage.getNSlices(), 1, 1);
-        }
-        else if(outputDimension == HyperstackDimension.Frame) {
+        } else if (outputDimension == HyperstackDimension.Frame) {
             resultImage.setDimensions(1, 1, resultImage.getNSlices());
         }
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(resultImage), progressInfo);

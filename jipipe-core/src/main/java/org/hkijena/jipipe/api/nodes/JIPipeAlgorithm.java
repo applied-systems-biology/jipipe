@@ -22,8 +22,6 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeFixedThreadPool;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
-import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
-import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeSlotConfiguration;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
@@ -182,6 +180,7 @@ public abstract class JIPipeAlgorithm extends JIPipeGraphNode {
      * Indicates if the node should be run before all other nodes.
      * Only applies if there is no input.
      * Defaults to false.
+     *
      * @return If the node should behave like a preprocessor.
      */
     public boolean isPreprocessor() {
@@ -192,9 +191,12 @@ public abstract class JIPipeAlgorithm extends JIPipeGraphNode {
      * Indicates if the node should be run after all other nodes.
      * Only applies if the output is not used or there is no output.
      * Defaults to false
+     *
      * @return If the node should behave like a postprocessor.
      */
-    public boolean isPostprocessor() { return false; }
+    public boolean isPostprocessor() {
+        return false;
+    }
 
     public JIPipeFixedThreadPool getThreadPool() {
         return threadPool;
@@ -231,7 +233,7 @@ public abstract class JIPipeAlgorithm extends JIPipeGraphNode {
 //            }
             jsonGenerator.writeStartObject();
             jsonGenerator.writeStringField("jipipe:node-info-id", algorithm.getInfo().getId());
-            if(algorithm.getGraph() != null)
+            if (algorithm.getGraph() != null)
                 jsonGenerator.writeStringField("jipipe:node-id", algorithm.getIdInGraph());
 //            jsonGenerator.writeObjectField("jipipe:cache-state:source-nodes", sources);
             JIPipeParameterCollection.serializeParametersToJson(algorithm, jsonGenerator, this::serializeParameter);

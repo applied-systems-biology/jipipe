@@ -90,22 +90,13 @@ public class JIPipeDataSlotInfo implements JIPipeParameterCollection {
         setVirtualByDataType();
     }
 
-    private void setVirtualByDataType() {
-        if(JIPipe.getInstance() != null && JIPipe.getSettings().getRegisteredSheets().containsKey(VirtualDataSettings.ID)
-                && VirtualDataSettings.getInstance().isLargeVirtualDataTypesByDefault()) {
-            if(dataClass.getAnnotation(JIPipeHeavyData.class) != null) {
-                this.virtual = true;
-            }
-        }
-    }
-
-
     /**
      * @param slot Imported annotation
      */
     public JIPipeDataSlotInfo(JIPipeInputSlot slot) {
         this(slot.value(), JIPipeSlotType.Input, slot.slotName(), null);
     }
+
 
     /**
      * @param slot Imported annotation
@@ -138,6 +129,15 @@ public class JIPipeDataSlotInfo implements JIPipeParameterCollection {
      */
     public JIPipeDataSlotInfo(Class<? extends JIPipeData> dataClass, JIPipeSlotType slotType) {
         this(dataClass, slotType, null);
+    }
+
+    private void setVirtualByDataType() {
+        if (JIPipe.getInstance() != null && JIPipe.getSettings().getRegisteredSheets().containsKey(VirtualDataSettings.ID)
+                && VirtualDataSettings.getInstance().isLargeVirtualDataTypesByDefault()) {
+            if (dataClass.getAnnotation(JIPipeHeavyData.class) != null) {
+                this.virtual = true;
+            }
+        }
     }
 
     @Override

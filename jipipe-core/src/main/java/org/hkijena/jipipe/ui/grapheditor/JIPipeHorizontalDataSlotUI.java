@@ -80,7 +80,7 @@ public class JIPipeHorizontalDataSlotUI extends JIPipeDataSlotUI {
                     noSaveLabel.setVisible(false);
                 }
             }
-            if(virtualLabel != null) {
+            if (virtualLabel != null) {
                 if (getSlot().getNode() instanceof JIPipeAlgorithm) {
                     virtualLabel.setVisible(getSlot().isVirtual());
                 } else {

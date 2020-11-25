@@ -124,7 +124,7 @@ public class JIPipeDynamicParameterCollection implements JIPipeCustomParameterCo
         parameterAccess.setParameterHolder(this);
         ParameterAddingEvent event = new ParameterAddingEvent(this, parameterAccess);
         eventBus.post(event);
-        if(event.isCancel())
+        if (event.isCancel())
             return null;
         dynamicParameters.put(parameterAccess.getKey(), parameterAccess);
         if (!delayEvents)

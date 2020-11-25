@@ -483,12 +483,12 @@ public class FileChooserSettings implements JIPipeParameterCollection {
     /**
      * Generic open/save method for single paths
      *
-     * @param parent   parent component
-     * @param key      location where the dialog is opened
-     * @param title    dialog title
-     * @param ioMode   whether to load or save
-     * @param pathMode which types of paths are returned
-     * @param  extensionFilters passed if a file is opened/saved
+     * @param parent           parent component
+     * @param key              location where the dialog is opened
+     * @param title            dialog title
+     * @param ioMode           whether to load or save
+     * @param pathMode         which types of paths are returned
+     * @param extensionFilters passed if a file is opened/saved
      * @return selected path of provided pathMode or null if dialog was cancelled
      */
     public static Path selectSingle(Component parent, String key, String title, PathEditor.IOMode ioMode, PathEditor.PathMode pathMode, FileNameExtensionFilter... extensionFilters) {

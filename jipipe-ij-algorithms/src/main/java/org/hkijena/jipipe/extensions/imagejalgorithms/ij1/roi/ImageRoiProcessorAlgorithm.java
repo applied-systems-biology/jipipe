@@ -83,8 +83,8 @@ public abstract class ImageRoiProcessorAlgorithm extends JIPipeIteratingAlgorith
      * Extracts or generates the reference image.
      * Please note that the reference is not safe to modify
      *
-     * @param dataBatch the input data
-     * @param progressInfo  progress
+     * @param dataBatch    the input data
+     * @param progressInfo progress
      * @return reference image
      */
     protected Map<ImagePlusData, ROIListData> getReferenceImage(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {

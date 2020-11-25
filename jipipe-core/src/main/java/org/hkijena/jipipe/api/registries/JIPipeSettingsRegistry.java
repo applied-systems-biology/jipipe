@@ -172,7 +172,7 @@ public class JIPipeSettingsRegistry implements JIPipeParameterCollection, JIPipe
     @Subscribe
     public void onSettingChanged(ParameterChangedEvent event) {
         if (!isLoading) {
-            if(JIPipe.getInstance() != null && JIPipe.getInstance().isInitializing())
+            if (JIPipe.getInstance() != null && JIPipe.getInstance().isInitializing())
                 return;
             save();
         }

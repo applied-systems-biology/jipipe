@@ -67,10 +67,10 @@ public class PathsToJIPipeProjectParametersAlgorithm extends JIPipeIteratingAlgo
 
     public PathsToJIPipeProjectParametersAlgorithm(JIPipeNodeInfo info) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder()
-        .restrictInputTo(PathData.class)
-        .addOutputSlot("Parameters", ParametersData.class, null)
-        .sealOutput()
-        .build());
+                .restrictInputTo(PathData.class)
+                .addOutputSlot("Parameters", ParametersData.class, null)
+                .sealOutput()
+                .build());
         this.parameterKeyAssignments = new InputSlotMapParameterCollection(String.class, this, () -> "", false);
         parameterKeyAssignments.getEventBus().register(new ParameterWatcher());
         registerSubParameter(parameterKeyAssignments);
@@ -103,28 +103,28 @@ public class PathsToJIPipeProjectParametersAlgorithm extends JIPipeIteratingAlgo
         return parameterKeyAssignments;
     }
 
-    @JIPipeContextAction(iconURL =  ResourceUtils.RESOURCE_BASE_PATH + "/icons/apps/jipipe.png")
+    @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/apps/jipipe.png")
     @JIPipeDocumentation(name = "Load parameters from project", description = "Loads parameters from a project file")
     public void importParametersFromProject(JIPipeWorkbench workbench) {
         Path projectFile = FileChooserSettings.openFile(workbench.getWindow(), FileChooserSettings.KEY_PROJECT, "Import JIPipe project", UIUtils.EXTENSION_FILTER_JIP);
-        if(projectFile != null) {
+        if (projectFile != null) {
             try {
                 JIPipeProject project = JIPipeProject.loadProject(projectFile, new JIPipeValidityReport());
                 JIPipeProjectInfoParameters infoParameters = project.getPipelineParameters();
                 JIPipeParameterTree tree = new JIPipeParameterTree(infoParameters);
                 for (Map.Entry<String, JIPipeParameterAccess> entry : ImmutableList.copyOf(tree.getParameters().entrySet())) {
                     Class<?> fieldClass = entry.getValue().getFieldClass();
-                    if(!fieldClass.isAssignableFrom(Path.class)) {
+                    if (!fieldClass.isAssignableFrom(Path.class)) {
                         tree.removeParameterByKey(entry.getKey());
                     }
                 }
                 tree.removeParameterByKey("exported-parameters");
-                if(tree.getParameters().isEmpty()) {
+                if (tree.getParameters().isEmpty()) {
                     JOptionPane.showMessageDialog(workbench.getWindow(), "No compatible parameters found. Please add string or path parameters to the list of project-wide parameters.", "Import parameters", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
                 List<Object> objects = ParameterTreeUI.showPickerDialog(workbench.getWindow(), tree, "Select parameters to import");
-                if(objects.isEmpty())
+                if (objects.isEmpty())
                     return;
                 JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) getSlotConfiguration();
                 slotConfiguration.clearInputSlots(true);
@@ -136,7 +136,7 @@ public class PathsToJIPipeProjectParametersAlgorithm extends JIPipeIteratingAlgo
                 for (JIPipeParameterAccess access : toAdd) {
                     String key = tree.getUniqueKey(access);
                     String slotName = access.getName();
-                    if(StringUtils.isNullOrEmpty(slotName))
+                    if (StringUtils.isNullOrEmpty(slotName))
                         slotName = key;
                     slotName = StringUtils.makeUniqueString(StringUtils.makeFilesystemCompatible(slotName), " ", existing);
                     slotConfiguration.addSlot(slotName, new JIPipeDataSlotInfo(PathData.class, JIPipeSlotType.Input, null), true);

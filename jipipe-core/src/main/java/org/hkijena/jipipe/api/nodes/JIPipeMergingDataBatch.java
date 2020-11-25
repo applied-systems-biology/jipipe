@@ -162,9 +162,9 @@ public class JIPipeMergingDataBatch {
     /**
      * Gets stored data from an input slot
      *
-     * @param <T>       Data type
-     * @param slotName  The slot name
-     * @param dataClass The data type that should be returned
+     * @param <T>          Data type
+     * @param slotName     The slot name
+     * @param dataClass    The data type that should be returned
      * @param progressInfo data access progress
      * @return Input data with provided name
      */
@@ -175,9 +175,9 @@ public class JIPipeMergingDataBatch {
     /**
      * Gets stored data from an input slot
      *
-     * @param <T>       Data type
-     * @param slot      The slot
-     * @param dataClass The data type that should be returned
+     * @param <T>          Data type
+     * @param slot         The slot
+     * @param dataClass    The data type that should be returned
      * @param progressInfo data access progress
      * @return Input data with provided name
      */
@@ -269,8 +269,9 @@ public class JIPipeMergingDataBatch {
     /**
      * Writes output data into the provided slot
      * Please note that annotations should be set up till this point
-     *  @param slotName Slot name
-     * @param data     Added data
+     *
+     * @param slotName     Slot name
+     * @param data         Added data
      * @param progressInfo data storage progress
      */
     public void addOutputData(String slotName, JIPipeData data, JIPipeProgressInfo progressInfo) {
@@ -280,10 +281,11 @@ public class JIPipeMergingDataBatch {
     /**
      * Writes output data into the provided slot
      * Please note that annotations should be set up till this point
-     *  @param slotName              Slot name
+     *
+     * @param slotName              Slot name
      * @param data                  Added data
      * @param additionalAnnotations Annotations that are added additionally to the global ones
-     * @param progressInfo data storage progress
+     * @param progressInfo          data storage progress
      */
     public void addOutputData(String slotName, JIPipeData data, List<JIPipeAnnotation> additionalAnnotations, JIPipeProgressInfo progressInfo) {
         addOutputData(node.getOutputSlot(slotName), data, additionalAnnotations, JIPipeAnnotationMergeStrategy.Merge, progressInfo);
@@ -292,8 +294,9 @@ public class JIPipeMergingDataBatch {
     /**
      * Writes output data into the provided slot
      * Please note that annotations that are added to all traits should be set up till this point
-     *  @param slot Slot instance
-     * @param data Added data
+     *
+     * @param slot         Slot instance
+     * @param data         Added data
      * @param progressInfo data storage progress
      */
     public void addOutputData(JIPipeDataSlot slot, JIPipeData data, JIPipeProgressInfo progressInfo) {
@@ -307,11 +310,12 @@ public class JIPipeMergingDataBatch {
     /**
      * Writes output data into the provided slot
      * Please note that annotations that are added to all traits should be set up till this point
-     *  @param slot                  Slot instance
+     *
+     * @param slot                  Slot instance
      * @param data                  Added data
      * @param additionalAnnotations Annotations that are added additionally to the global ones
      * @param mergeStrategy         how annotations should be merged
-     * @param progressInfo data storage progress
+     * @param progressInfo          data storage progress
      */
     public void addOutputData(JIPipeDataSlot slot, JIPipeData data, List<JIPipeAnnotation> additionalAnnotations, JIPipeAnnotationMergeStrategy mergeStrategy, JIPipeProgressInfo progressInfo) {
         if (slot.getNode() != node)

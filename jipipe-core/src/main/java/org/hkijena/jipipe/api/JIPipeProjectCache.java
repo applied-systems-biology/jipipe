@@ -56,9 +56,10 @@ public class JIPipeProjectCache {
 
     /**
      * Stores data into the cache
-     *  @param source  the generating algorithm
-     * @param stateId the state id
-     * @param slot    the slot that contains the data
+     *
+     * @param source       the generating algorithm
+     * @param stateId      the state id
+     * @param slot         the slot that contains the data
      * @param progressInfo data storage progress
      */
     public void store(JIPipeGraphNode source, State stateId, JIPipeDataSlot slot, JIPipeProgressInfo progressInfo) {

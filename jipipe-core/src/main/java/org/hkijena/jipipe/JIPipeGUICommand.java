@@ -53,7 +53,7 @@ public class JIPipeGUICommand implements Command {
         // Check java dependencies
         if (!checkJavaDependencies()) {
             SwingUtilities.invokeLater(() -> SplashScreen.getInstance().hideSplash());
-            if(JOptionPane.showConfirmDialog(null,
+            if (JOptionPane.showConfirmDialog(null,
                     "JIPipe has detected that you might miss some essential files. Please " +
                             "ensure that you installed following dependencies:\nGuava\nFlexMark\nJackson\nJGraphT\nOpenHTMLToPDF\nMSLinks\nApache Commons\nFontBox\nPDFBox\nAutoLink \n\n" +
                             "Do you want to continue anyways?", "Missing dependencies", JOptionPane.YES_NO_OPTION, JOptionPane.ERROR_MESSAGE) == JOptionPane.NO_OPTION) {

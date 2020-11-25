@@ -47,7 +47,6 @@ import org.hkijena.jipipe.api.events.CompartmentRenamedEvent;
 import org.hkijena.jipipe.api.events.GraphChangedEvent;
 import org.hkijena.jipipe.api.events.WorkDirectoryChangedEvent;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
-import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphEdge;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
@@ -496,6 +495,7 @@ public class JIPipeProject implements JIPipeValidatable {
 
     /**
      * Returns the global parameters for this pipeline
+     *
      * @return global parameters
      */
     public JIPipeProjectInfoParameters getPipelineParameters() {

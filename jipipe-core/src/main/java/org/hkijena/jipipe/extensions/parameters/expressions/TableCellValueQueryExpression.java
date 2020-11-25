@@ -16,12 +16,6 @@ package org.hkijena.jipipe.extensions.parameters.expressions;
 import com.fathzer.soft.javaluator.StaticVariableSet;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
-import java.util.function.Predicate;
-
 /**
  * Expression for querying strings
  */
@@ -44,9 +38,10 @@ public class TableCellValueQueryExpression extends DefaultExpressionParameter {
 
     /**
      * Returns true if the table cell is accepted by the expression
+     *
      * @param tableData the table
-     * @param row the row
-     * @param col the column
+     * @param row       the row
+     * @param col       the column
      * @return if the expression accepts this cell
      */
     public boolean test(ResultsTableData tableData, int row, int col) {

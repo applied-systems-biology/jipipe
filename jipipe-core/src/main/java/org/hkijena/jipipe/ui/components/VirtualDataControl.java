@@ -13,24 +13,13 @@
 
 package org.hkijena.jipipe.ui.components;
 
-import com.google.common.eventbus.Subscribe;
-import org.hkijena.jipipe.api.JIPipeRun;
-import org.hkijena.jipipe.api.JIPipeRunSettings;
-import org.hkijena.jipipe.api.events.GraphChangedEvent;
 import org.hkijena.jipipe.api.events.ParameterChangedEvent;
-import org.hkijena.jipipe.api.events.SlotsChangedEvent;
-import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
-import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.extensions.settings.VirtualDataSettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
-import org.hkijena.jipipe.ui.events.RunUIWorkerFinishedEvent;
-import org.hkijena.jipipe.ui.events.RunUIWorkerInterruptedEvent;
-import org.hkijena.jipipe.ui.events.RunUIWorkerStartedEvent;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
 
 /**
  * A tool that automatically runs 'update cache' when any parameter or graph property is changed

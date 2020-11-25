@@ -212,18 +212,17 @@ public class JIPipeRun implements JIPipeRunnable {
         List<JIPipeGraphNode> preprocessorNodes = new ArrayList<>();
         List<JIPipeGraphNode> postprocessorNodes = new ArrayList<>();
         for (JIPipeGraphNode node : algorithmGraph.getNodes().values()) {
-            if(!unExecutableAlgorithms.contains(node) && node.getInputSlots().isEmpty() &&
+            if (!unExecutableAlgorithms.contains(node) && node.getInputSlots().isEmpty() &&
                     node instanceof JIPipeAlgorithm && ((JIPipeAlgorithm) node).isPreprocessor()) {
                 preprocessorNodes.add(node);
-            }
-            else if(!unExecutableAlgorithms.contains(node) &&
+            } else if (!unExecutableAlgorithms.contains(node) &&
                     node instanceof JIPipeAlgorithm && ((JIPipeAlgorithm) node).isPreprocessor()) {
-                if(node.getOpenInputSlots().stream().allMatch(nd -> algorithmGraph.getTargetSlots(nd).isEmpty())) {
+                if (node.getOpenInputSlots().stream().allMatch(nd -> algorithmGraph.getTargetSlots(nd).isEmpty())) {
                     postprocessorNodes.add(node);
                 }
             }
         }
-        if(!preprocessorNodes.isEmpty()) {
+        if (!preprocessorNodes.isEmpty()) {
             progressInfo.setProgress(0, preprocessorNodes.size() + traversedSlots.size());
             progressInfo.resolveAndLog("Preprocessing algorithms");
             for (int i = 0; i < preprocessorNodes.size(); i++) {
@@ -268,7 +267,7 @@ public class JIPipeRun implements JIPipeRunnable {
                 JIPipeGraphNode node = slot.getNode();
 
                 // Check if this is a postprocessor
-                if(!executedAlgorithms.contains(node) && postprocessorNodes.contains(node)) {
+                if (!executedAlgorithms.contains(node) && postprocessorNodes.contains(node)) {
                     subProgress.resolveAndLog("Node is postprocessor. Deferring the run.");
                 }
 
@@ -306,14 +305,14 @@ public class JIPipeRun implements JIPipeRunnable {
     }
 
     private void tryFlushInputSlot(JIPipeDataSlot inputSlot, Set<JIPipeGraphNode> executedAlgorithms, Set<JIPipeDataSlot> flushedSlots) {
-        if(flushedSlots.contains(inputSlot))
+        if (flushedSlots.contains(inputSlot))
             return;
         Set<JIPipeGraphNode> sourceAlgorithms = new HashSet<>();
         for (JIPipeDataSlot sourceSlot : algorithmGraph.getSourceSlots(inputSlot)) {
             sourceAlgorithms.add(sourceSlot.getNode());
         }
         sourceAlgorithms.removeAll(executedAlgorithms);
-        if(sourceAlgorithms.isEmpty()) {
+        if (sourceAlgorithms.isEmpty()) {
             // Flush the data and destroy it
             inputSlot.destroy();
             flushedSlots.add(inputSlot);

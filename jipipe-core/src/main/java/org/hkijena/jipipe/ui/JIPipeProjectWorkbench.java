@@ -270,7 +270,7 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
         // Virtual control
         JToggleButton virtualControlToggle = virtualDataControl.createToggleButton();
         UIUtils.makeFlatH25(virtualControlToggle);
-        virtualControlToggle.setBorder(BorderFactory.createEmptyBorder(0,3,0,3));
+        virtualControlToggle.setBorder(BorderFactory.createEmptyBorder(0, 3, 0, 3));
 
         statusBar.add(virtualControlToggle);
         statusBar.add(Box.createHorizontalStrut(4));

@@ -40,12 +40,12 @@ public class JIPipeOutputData extends FolderData {
     @Override
     public void saveTo(Path storageFilePath, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
         // Copy if we copy it to a different folder
-        if(getPath() != null && !storageFilePath.equals(getPath()) && Files.isDirectory(getPath()) && Files.exists(getPath().resolve("project.jip")) && Files.isDirectory(getPath().resolve("analysis"))) {
+        if (getPath() != null && !storageFilePath.equals(getPath()) && Files.isDirectory(getPath()) && Files.exists(getPath().resolve("project.jip")) && Files.isDirectory(getPath().resolve("analysis"))) {
             Path outputPath = storageFilePath;
-            if(forceName)
+            if (forceName)
                 outputPath = outputPath.resolve(StringUtils.makeFilesystemCompatible(name));
             try {
-                if(!Files.isDirectory(outputPath))
+                if (!Files.isDirectory(outputPath))
                     Files.createDirectories(outputPath);
                 // Copy the project file
                 Files.copy(getPath().resolve("project.jip"), outputPath.resolve("project.jip"), StandardCopyOption.REPLACE_EXISTING);
@@ -57,7 +57,7 @@ public class JIPipeOutputData extends FolderData {
                     public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
                         Path internalPath = getPath().resolve("analysis").relativize(dir);
                         Path absolutePath = finalOutputPath.resolve(internalPath);
-                        if(!Files.isDirectory(absolutePath))
+                        if (!Files.isDirectory(absolutePath))
                             Files.createDirectories(absolutePath);
                         return FileVisitResult.CONTINUE;
                     }
@@ -81,8 +81,7 @@ public class JIPipeOutputData extends FolderData {
                         return FileVisitResult.CONTINUE;
                     }
                 });
-            }
-            catch (IOException e) {
+            } catch (IOException e) {
                 throw new RuntimeException(e);
             }
             this.setPath(outputPath);

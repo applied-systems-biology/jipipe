@@ -28,10 +28,10 @@ import org.hkijena.jipipe.utils.UIUtils;
 import javax.swing.*;
 import java.nio.file.Path;
 
-public class ImportJIPipeProjectDataOperation  implements JIPipeDataImportOperation, JIPipeDataDisplayOperation {
+public class ImportJIPipeProjectDataOperation implements JIPipeDataImportOperation, JIPipeDataDisplayOperation {
     @Override
     public void display(JIPipeData data, String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
-        Path folderPath = ((PathData)data).getPath();
+        Path folderPath = ((PathData) data).getPath();
         JIPipeProjectWindow window = (JIPipeProjectWindow) workbench.getWindow();
         window.openProject(folderPath);
     }

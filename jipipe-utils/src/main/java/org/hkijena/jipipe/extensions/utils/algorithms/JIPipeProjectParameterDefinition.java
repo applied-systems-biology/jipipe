@@ -34,8 +34,6 @@ import org.hkijena.jipipe.ui.settings.JIPipeProjectInfoParameters;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
-import javax.swing.*;
-import javax.swing.filechooser.FileNameExtensionFilter;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Map;
@@ -54,26 +52,26 @@ public class JIPipeProjectParameterDefinition extends ParametersDataTableDefinit
         super(other);
     }
 
-    @JIPipeContextAction(iconURL =  ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/folder-open.png")
+    @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/folder-open.png")
     @JIPipeDocumentation(name = "Load parameters from project", description = "Loads parameters from a project file")
     public void importParametersFromProject(JIPipeWorkbench workbench) {
         Path projectFile = FileChooserSettings.openFile(workbench.getWindow(), FileChooserSettings.KEY_PROJECT, "Import JIPipe project", UIUtils.EXTENSION_FILTER_JIP);
-        if(projectFile != null) {
+        if (projectFile != null) {
             try {
                 JIPipeProject project = JIPipeProject.loadProject(projectFile, new JIPipeValidityReport());
                 JIPipeProjectInfoParameters infoParameters = project.getPipelineParameters();
                 getParameterTable().clear();
                 JIPipeParameterTree tree = new JIPipeParameterTree(infoParameters);
                 for (Map.Entry<String, JIPipeParameterAccess> entry : tree.getParameters().entrySet()) {
-                    if(entry.getKey().equals("exported-parameters"))
+                    if (entry.getKey().equals("exported-parameters"))
                         continue;
                     getParameterTable().addColumn(new ParameterTable.ParameterColumn(entry.getValue().getName(), entry.getKey(), entry.getValue().getFieldClass()), null);
                 }
                 getParameterTable().addRow();
                 for (Map.Entry<String, JIPipeParameterAccess> entry : tree.getParameters().entrySet()) {
-                    if(entry.getKey().equals("exported-parameters"))
+                    if (entry.getKey().equals("exported-parameters"))
                         continue;
-                    getParameterTable().setValueAt(entry.getValue().get(Object.class), 0,getParameterTable().getColumnIndex(entry.getKey()));
+                    getParameterTable().setValueAt(entry.getValue().get(Object.class), 0, getParameterTable().getColumnIndex(entry.getKey()));
                 }
                 getEventBus().post(new ParameterChangedEvent(this, "parameter-table"));
             } catch (IOException e) {

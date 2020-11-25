@@ -5,7 +5,6 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionFunction;
 import org.hkijena.jipipe.extensions.parameters.expressions.ParameterInfo;
 
-import java.util.Arrays;
 import java.util.List;
 
 @JIPipeDocumentation(name = "Replace in string", description = "Replaces one string in another")

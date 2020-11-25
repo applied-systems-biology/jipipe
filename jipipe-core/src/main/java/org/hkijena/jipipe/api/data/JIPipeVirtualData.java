@@ -13,12 +13,10 @@
 
 package org.hkijena.jipipe.api.data;
 
-import org.apache.commons.io.FileSystemUtils;
 import org.apache.commons.io.FileUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.extensions.settings.VirtualDataSettings;
-import org.hkijena.jipipe.utils.PathUtils;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
@@ -36,6 +34,7 @@ public class JIPipeVirtualData {
 
     /**
      * Create virtual data from data
+     *
      * @param data data
      */
     public JIPipeVirtualData(JIPipeData data) {
@@ -46,8 +45,9 @@ public class JIPipeVirtualData {
 
     /**
      * Creates a custom virtual data. You have to ensure that everything inside here is correct!
-     * @param dataClass the data class
-     * @param virtualStoragePath path for virtual storage (to create a new one use VirtualDataSettings.generateTempDirectory). Must be a valid row storage folder for the data type!
+     *
+     * @param dataClass            the data class
+     * @param virtualStoragePath   path for virtual storage (to create a new one use VirtualDataSettings.generateTempDirectory). Must be a valid row storage folder for the data type!
      * @param stringRepresentation string representation of the data
      */
     public JIPipeVirtualData(Class<? extends JIPipeData> dataClass, Path virtualStoragePath, String stringRepresentation) {
@@ -63,7 +63,7 @@ public class JIPipeVirtualData {
     @Override
     protected void finalize() throws Throwable {
 
-        if(virtualStoragePath != null && virtualStoragePath.getPath() != null) {
+        if (virtualStoragePath != null && virtualStoragePath.getPath() != null) {
             try {
                 FileUtils.deleteDirectory(virtualStoragePath.getPath().toFile());
             } catch (IOException e) {
@@ -72,7 +72,7 @@ public class JIPipeVirtualData {
         }
         data = null;
         dataReference = null;
-        if(virtualStoragePath != null) {
+        if (virtualStoragePath != null) {
             virtualStoragePath.setPath(null);
             virtualStoragePath = null;
         }
@@ -82,21 +82,21 @@ public class JIPipeVirtualData {
 
     /**
      * Makes the data virtual if not already
+     *
      * @param progressInfo progress
-     * @param discard if existing data should be saved or discarded. Discard has no effect if data was not saved, yet.
+     * @param discard      if existing data should be saved or discarded. Discard has no effect if data was not saved, yet.
      */
     public synchronized void makeVirtual(JIPipeProgressInfo progressInfo, boolean discard) {
-        if(!isVirtual()) {
-            if(JIPipe.getInstance() != null && !VirtualDataSettings.getInstance().isVirtualMode())
+        if (!isVirtual()) {
+            if (JIPipe.getInstance() != null && !VirtualDataSettings.getInstance().isVirtualMode())
                 return;
             boolean canDiscard = virtualStoragePath.getPath() != null;
-            if(virtualStoragePath.getPath() == null) {
+            if (virtualStoragePath.getPath() == null) {
                 virtualStoragePath.setPath(VirtualDataSettings.generateTempDirectory("virtual"));
             }
-            if(canDiscard && discard) {
+            if (canDiscard && discard) {
                 progressInfo.log("Unloading data of type " + JIPipeDataInfo.getInstance(dataClass).getName());
-            }
-            else {
+            } else {
                 progressInfo.log("Saving data of type " + JIPipeDataInfo.getInstance(dataClass).getName() + " to virtual path " + virtualStoragePath.getPath());
                 data.saveTo(virtualStoragePath.getPath(), "virtual", false, progressInfo);
             }
@@ -107,8 +107,8 @@ public class JIPipeVirtualData {
     }
 
     public synchronized void makeNonVirtual(JIPipeProgressInfo progressInfo) {
-        if(isVirtual()) {
-            if(virtualStoragePath.getPath() == null) {
+        if (isVirtual()) {
+            if (virtualStoragePath.getPath() == null) {
                 throw new UnsupportedOperationException("Tried to load virtual data, but no path is set. This should not be possible.");
             }
             progressInfo.log("Loading data of type " + JIPipeDataInfo.getInstance(dataClass).getName() + " from virtual path " + virtualStoragePath.getPath());
@@ -120,14 +120,14 @@ public class JIPipeVirtualData {
 
     public synchronized JIPipeData getData(JIPipeProgressInfo progressInfo) {
         boolean shouldBeVirtual = isVirtual();
-        if(dataReference != null) {
+        if (dataReference != null) {
             JIPipeData existing = dataReference.get();
-            if(existing != null)
+            if (existing != null)
                 return existing;
         }
         makeNonVirtual(progressInfo);
         JIPipeData cachedData = data;
-        if(shouldBeVirtual && !isVirtual()) {
+        if (shouldBeVirtual && !isVirtual()) {
             makeVirtual(progressInfo, true);
         }
         return cachedData;

@@ -52,7 +52,8 @@ public class SugiyamaGraphAutoLayoutMethod implements GraphAutoLayoutMethod {
         for (JIPipeNodeUI ui : canvasUI.getNodeUIs().values()) {
             // Ignore all free-floating nodes (no inputs, no outputs within this compartment)
             boolean isFreeFloating = true;
-            outer: for (JIPipeDataSlot inputSlot : ui.getNode().getInputSlots()) {
+            outer:
+            for (JIPipeDataSlot inputSlot : ui.getNode().getInputSlots()) {
                 Set<JIPipeDataSlot> sourceSlots = graph.getSourceSlots(inputSlot);
                 for (JIPipeDataSlot sourceSlot : sourceSlots) {
                     if (Objects.equals(sourceSlot.getNode().getCompartment(), inputSlot.getNode().getCompartment())) {

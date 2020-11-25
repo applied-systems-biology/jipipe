@@ -29,7 +29,7 @@ public class EnableVirtualOutputsNodeUIContextAction implements NodeUIContextAct
             if (ui.getNode() instanceof JIPipeAlgorithm) {
                 JIPipeAlgorithm algorithm = (JIPipeAlgorithm) ui.getNode();
                 for (JIPipeDataSlot outputSlot : algorithm.getOutputSlots()) {
-                    if(!outputSlot.getInfo().isVirtual())
+                    if (!outputSlot.getInfo().isVirtual())
                         return true;
                 }
             }

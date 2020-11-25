@@ -1,19 +1,14 @@
 package org.hkijena.jipipe.extensions.imagejdatatypes.resultanalysis;
 
 import com.google.common.eventbus.Subscribe;
-import ij.ImagePlus;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataImportOperation;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeExportedDataTable;
 import org.hkijena.jipipe.api.data.JIPipeResultSlotDataSource;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.OMEImageData;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.components.ImageViewerPanel;
 import org.hkijena.jipipe.ui.events.RunUIWorkerFinishedEvent;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
-import org.hkijena.jipipe.utils.ImageJUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -59,11 +54,11 @@ public class OMEImageDataImportIntoImageJOperation implements JIPipeDataImportOp
 
     @Subscribe
     public void onRunFinished(RunUIWorkerFinishedEvent event) {
-        if(event.getRun() instanceof OMEImageResultImportRun) {
+        if (event.getRun() instanceof OMEImageResultImportRun) {
             OMEImageResultImportRun run = (OMEImageResultImportRun) event.getRun();
-            if(!knownRuns.contains(run))
+            if (!knownRuns.contains(run))
                 return;
-           run.getImage().display(run.getDisplayName(), run.getWorkbench(), new JIPipeResultSlotDataSource(run.getSlot(), run.getRow(), run.getRowStorageFolder()));
+            run.getImage().display(run.getDisplayName(), run.getWorkbench(), new JIPipeResultSlotDataSource(run.getSlot(), run.getRow(), run.getRowStorageFolder()));
         }
     }
 }

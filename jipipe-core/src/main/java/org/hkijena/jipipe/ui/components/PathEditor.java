@@ -146,8 +146,7 @@ public class PathEditor extends JPanel {
     public Path getPath() {
         try {
             return Paths.get(pathEdit.getText());
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return Paths.get("");
         }
@@ -214,7 +213,7 @@ public class PathEditor extends JPanel {
     public void setExtensionFilters(String[] extensions) {
         extensionFilters.clear();
         for (String extension : extensions) {
-            if("csv".equals(extension))
+            if ("csv".equals(extension))
                 extensionFilters.add(UIUtils.EXTENSION_FILTER_CSV);
             else if ("png".equals(extension))
                 extensionFilters.add(UIUtils.EXTENSION_FILTER_PNG);
@@ -235,7 +234,7 @@ public class PathEditor extends JPanel {
             else if ("jipc".equals(extension))
                 extensionFilters.add(UIUtils.EXTENSION_FILTER_JIPC);
             else
-                extensionFilters.add(new FileNameExtensionFilter(extension.toUpperCase() + " file (*." + extension + ")", extension ));
+                extensionFilters.add(new FileNameExtensionFilter(extension.toUpperCase() + " file (*." + extension + ")", extension));
         }
     }
 

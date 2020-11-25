@@ -34,6 +34,7 @@ public class ImageJUtils {
 
     /**
      * Convert a RGB image to a grayscale image where the RGB channels are split into individual planes
+     *
      * @param image the image
      * @return split image
      */
@@ -55,9 +56,9 @@ public class ImageJUtils {
                             int r = (rgb >> 16) & 0xFF;
                             int g = (rgb >> 8) & 0xFF;
                             int b = rgb & 0xFF;
-                            rProcessor.set(x,y,r);
-                            gProcessor.set(x,y,g);
-                            bProcessor.set(x,y,b);
+                            rProcessor.set(x, y, r);
+                            gProcessor.set(x, y, g);
+                            bProcessor.set(x, y, b);
                         }
                     }
                     int rProcessorIndex = t * nChannels * image.getNSlices() + z * nChannels + c + 1;

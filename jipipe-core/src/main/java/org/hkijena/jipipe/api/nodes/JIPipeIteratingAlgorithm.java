@@ -225,8 +225,8 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
     /**
      * Runs code on one data row
      *
-     * @param dataBatch The data interface
-     * @param progressInfo  the progress info from the run
+     * @param dataBatch    The data interface
+     * @param progressInfo the progress info from the run
      */
     protected abstract void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo);
 

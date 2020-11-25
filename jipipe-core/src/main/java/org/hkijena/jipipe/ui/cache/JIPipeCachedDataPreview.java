@@ -14,7 +14,6 @@
 package org.hkijena.jipipe.ui.cache;
 
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeVirtualData;
 import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -35,7 +34,8 @@ public class JIPipeCachedDataPreview extends JPanel {
 
     /**
      * Creates a new instance
-     *  @param parentComponent The parent component that contains the preview
+     *
+     * @param parentComponent The parent component that contains the preview
      * @param data            the data
      * @param deferRendering  if true, the preview will not be immediately rendered
      */

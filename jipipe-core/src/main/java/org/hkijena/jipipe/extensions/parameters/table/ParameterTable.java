@@ -241,7 +241,7 @@ public class ParameterTable implements TableModel {
 
     public int getColumnIndex(String column) {
         for (int i = 0; i < columns.size(); i++) {
-            if(columns.get(i).getKey().equals(column))
+            if (columns.get(i).getKey().equals(column))
                 return i;
         }
         return -1;

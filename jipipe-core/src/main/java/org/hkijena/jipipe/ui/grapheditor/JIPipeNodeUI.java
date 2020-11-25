@@ -72,12 +72,12 @@ public abstract class JIPipeNodeUI extends JIPipeWorkbenchPanel {
         Color disabledRed2 = new Color(0xc36262);
         this.disabledPaint = new LinearGradientPaint(
                 (float) 0, (float) 0, (float) (8), (float) (8),
-                new float[] {0,0.5f,0.5001f,1}, new Color[] {disabledRed1, disabledRed1,disabledRed2, disabledRed2}, MultipleGradientPaint.CycleMethod.REPEAT);
+                new float[]{0, 0.5f, 0.5001f, 1}, new Color[]{disabledRed1, disabledRed1, disabledRed2, disabledRed2}, MultipleGradientPaint.CycleMethod.REPEAT);
         float[] hsb = Color.RGBtoHSB(fillColor.getRed(), fillColor.getGreen(), fillColor.getBlue(), null);
         Color desaturatedFillColor = Color.getHSBColor(hsb[0], hsb[1] / 4, hsb[2] * 0.8f);
         this.passThroughPaint = new LinearGradientPaint(
                 (float) 0, (float) 0, (float) (8), (float) (8),
-                new float[] {0,0.5f,0.5001f,1}, new Color[] {desaturatedFillColor, desaturatedFillColor,fillColor, fillColor}, MultipleGradientPaint.CycleMethod.REPEAT);
+                new float[]{0, 0.5f, 0.5001f, 1}, new Color[]{desaturatedFillColor, desaturatedFillColor, fillColor, fillColor}, MultipleGradientPaint.CycleMethod.REPEAT);
     }
 
     /**
@@ -284,14 +284,13 @@ public abstract class JIPipeNodeUI extends JIPipeWorkbenchPanel {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        if(node instanceof JIPipeAlgorithm) {
+        if (node instanceof JIPipeAlgorithm) {
             JIPipeAlgorithm algorithm = (JIPipeAlgorithm) node;
-            if(!algorithm.isEnabled()) {
+            if (!algorithm.isEnabled()) {
                 Graphics2D g2 = (Graphics2D) g;
                 g2.setPaint(disabledPaint);
                 g2.fillRect(0, 0, getWidth(), getHeight());
-            }
-            else if(algorithm.isPassThrough()) {
+            } else if (algorithm.isPassThrough()) {
                 Graphics2D g2 = (Graphics2D) g;
                 g2.setPaint(passThroughPaint);
                 g2.fillRect(0, 0, getWidth(), getHeight());

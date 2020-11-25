@@ -13,12 +13,10 @@
 
 package org.hkijena.jipipe.extensions.imagejdatatypes.resultanalysis;
 
-import ij.ImagePlus;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeRunnable;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeExportedDataTable;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.OMEImageData;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 
@@ -26,7 +24,6 @@ import java.nio.file.Path;
 
 public class OMEImageResultImportRun implements JIPipeRunnable {
 
-    private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
     private final JIPipeDataSlot slot;
     private final JIPipeExportedDataTable.Row row;
     private final Path rowStorageFolder;
@@ -34,6 +31,7 @@ public class OMEImageResultImportRun implements JIPipeRunnable {
     private final String algorithmName;
     private final String displayName;
     private final JIPipeWorkbench workbench;
+    private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
     private OMEImageData image;
 
     public OMEImageResultImportRun(JIPipeDataSlot slot, JIPipeExportedDataTable.Row row, Path rowStorageFolder, String compartmentName, String algorithmName, String displayName, JIPipeWorkbench workbench) {
@@ -62,10 +60,10 @@ public class OMEImageResultImportRun implements JIPipeRunnable {
 
     @Override
     public void run() {
-        progressInfo.setProgress(1,3);
+        progressInfo.setProgress(1, 3);
         progressInfo.log("Importing image from " + rowStorageFolder);
         image = OMEImageData.importFrom(rowStorageFolder);
-        progressInfo.setProgress(3,3);
+        progressInfo.setProgress(3, 3);
     }
 
     public OMEImageData getImage() {

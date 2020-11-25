@@ -959,19 +959,20 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
 
     /**
      * Sets/unsets virtual mode for all output slots
-     * @param virtual virtual mode
-     * @param apply apply the setting
+     *
+     * @param virtual      virtual mode
+     * @param apply        apply the setting
      * @param progressInfo progress for applying. Can be null if apply is false.
      */
     public void setAllSlotsVirtual(boolean virtual, boolean apply, JIPipeProgressInfo progressInfo) {
         for (JIPipeDataSlot slot : getInputSlots()) {
             slot.getInfo().setVirtual(virtual);
-            if(apply)
+            if (apply)
                 slot.applyVirtualState(progressInfo);
         }
         for (JIPipeDataSlot slot : getOutputSlots()) {
             slot.getInfo().setVirtual(virtual);
-            if(apply)
+            if (apply)
                 slot.applyVirtualState(progressInfo);
         }
     }

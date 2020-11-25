@@ -19,7 +19,11 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import gnu.trove.map.TIntIntMap;
@@ -465,7 +469,7 @@ public class ResultsTableData implements JIPipeData, TableModel {
     /**
      * Returns the index of an existing column or creates a new column if it does not exist
      *
-     * @param id the column ID
+     * @param id           the column ID
      * @param stringColumn if a new column is a string column
      * @return the column index
      */
@@ -833,7 +837,7 @@ public class ResultsTableData implements JIPipeData, TableModel {
      * Adds a column with the given name.
      * If the column already exists, the method returns the existing index
      *
-     * @param name         column name. cannot be empty.
+     * @param name column name. cannot be empty.
      * @param data the data
      * @return the column index (this includes any existing column) or -1 if the creation was not possible
      */
@@ -841,10 +845,9 @@ public class ResultsTableData implements JIPipeData, TableModel {
         int col = addColumn(name, !data.isNumeric());
 //        System.out.println(name + ": " + col + " / " + getColumnCount());
         for (int row = 0; row < getRowCount(); row++) {
-            if(data.isNumeric()) {
+            if (data.isNumeric()) {
                 setValueAt(data.getRowAsDouble(row), row, col);
-            }
-            else {
+            } else {
                 setValueAt(data.getRowAsString(row), row, col);
             }
         }
@@ -1162,14 +1165,16 @@ public class ResultsTableData implements JIPipeData, TableModel {
             ResultsTableData resultsTableData = new ResultsTableData();
 
             {
-                TypeReference<List<SerializedColumn>> typeReference = new TypeReference<List<SerializedColumn>>() {};
+                TypeReference<List<SerializedColumn>> typeReference = new TypeReference<List<SerializedColumn>>() {
+                };
                 List<SerializedColumn> columns = JsonUtils.getObjectMapper().readerFor(typeReference).readValue(node.get("columns"));
                 for (SerializedColumn column : columns) {
                     resultsTableData.addColumn(column.getName(), !column.isNumeric());
                 }
             }
             {
-                TypeReference< List<Map<String, Object>>> typeReference = new TypeReference<List<Map<String, Object>>>() {};
+                TypeReference<List<Map<String, Object>>> typeReference = new TypeReference<List<Map<String, Object>>>() {
+                };
                 List<Map<String, Object>> rows = JsonUtils.getObjectMapper().readerFor(typeReference).readValue(node.get("rows"));
                 int rowIndex = 0;
                 for (Map<String, Object> rowData : rows) {

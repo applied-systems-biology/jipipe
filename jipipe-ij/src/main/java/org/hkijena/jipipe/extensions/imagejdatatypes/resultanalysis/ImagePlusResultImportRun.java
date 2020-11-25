@@ -25,7 +25,6 @@ import java.nio.file.Path;
 
 public class ImagePlusResultImportRun implements JIPipeRunnable {
 
-    private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
     private final JIPipeDataSlot slot;
     private final JIPipeExportedDataTable.Row row;
     private final Path rowStorageFolder;
@@ -33,6 +32,7 @@ public class ImagePlusResultImportRun implements JIPipeRunnable {
     private final String algorithmName;
     private final String displayName;
     private final JIPipeWorkbench workbench;
+    private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
     private ImagePlus image;
 
     public ImagePlusResultImportRun(JIPipeDataSlot slot, JIPipeExportedDataTable.Row row, Path rowStorageFolder, String compartmentName, String algorithmName, String displayName, JIPipeWorkbench workbench) {
@@ -61,11 +61,11 @@ public class ImagePlusResultImportRun implements JIPipeRunnable {
 
     @Override
     public void run() {
-        progressInfo.setProgress(1,3);
+        progressInfo.setProgress(1, 3);
         progressInfo.log("Importing image from " + rowStorageFolder);
         ImagePlusData data = ImagePlusData.importFrom(rowStorageFolder);
         image = data.getImage();
-        progressInfo.setProgress(3,3);
+        progressInfo.setProgress(3, 3);
     }
 
     public ImagePlus getImage() {

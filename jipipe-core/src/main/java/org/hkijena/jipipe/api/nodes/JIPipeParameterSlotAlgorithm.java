@@ -209,7 +209,7 @@ public abstract class JIPipeParameterSlotAlgorithm extends JIPipeAlgorithm {
     /**
      * Runs a parameter set iteration
      *
-     * @param progressInfo             progress info from the run
+     * @param progressInfo         progress info from the run
      * @param parameterAnnotations parameter annotations
      */
     public abstract void runParameterSet(JIPipeProgressInfo progressInfo, List<JIPipeAnnotation> parameterAnnotations);

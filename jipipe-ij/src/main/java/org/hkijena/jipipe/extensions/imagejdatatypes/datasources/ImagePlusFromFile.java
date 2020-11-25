@@ -15,7 +15,6 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.datasources;
 
 import ij.IJ;
 import ij.ImagePlus;
-import ij.io.Opener;
 import org.apache.commons.lang3.SystemUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
@@ -102,7 +101,7 @@ public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         FileData fileData = dataBatch.getInputData(getFirstInputSlot(), FileData.class, progressInfo);
         boolean enableVirtual = VirtualDataSettings.getInstance().isVirtualMode();
-        if(enableVirtual && !removeLut && fileData.getPath().toString().endsWith(".tif") && getFirstOutputSlot().isVirtual()) {
+        if (enableVirtual && !removeLut && fileData.getPath().toString().endsWith(".tif") && getFirstOutputSlot().isVirtual()) {
             // Alternative path for virtual data to get rid of load-saving-load
             // Only works for something that is directly compatible to the row storage format (TIFF)
             List<JIPipeAnnotation> traits = new ArrayList<>(dataBatch.getAnnotations().values());
@@ -110,15 +109,14 @@ public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
                 traits.add(new JIPipeAnnotation(titleAnnotation.getContent(), fileData.getPath().getFileName().toString()));
             }
             Path targetPath = VirtualDataSettings.generateTempDirectory("virtual");
-            if(!SystemUtils.IS_OS_WINDOWS) {
+            if (!SystemUtils.IS_OS_WINDOWS) {
                 // Create a symlink
                 try {
                     Files.createSymbolicLink(targetPath.resolve("image.tif"), fileData.getPath());
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
-            }
-            else {
+            } else {
                 // Make a copy
                 try {
                     Files.copy(fileData.getPath(), targetPath.resolve("imag.tif"), StandardCopyOption.REPLACE_EXISTING);
@@ -128,8 +126,7 @@ public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
             }
             JIPipeVirtualData virtualData = new JIPipeVirtualData(generatedImageType.getInfo().getDataClass(), targetPath, "VIRTUAL: " + fileData.getPath().getFileName());
             getFirstOutputSlot().addData(virtualData, traits, JIPipeAnnotationMergeStrategy.Merge);
-        }
-        else {
+        } else {
             ImagePlusData outputData;
             ImagePlus image = readImageFrom(fileData.getPath(), progressInfo);
             if (removeLut) {
@@ -155,10 +152,30 @@ public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
         this.titleAnnotation = titleAnnotation;
     }
 
+    @Override
+    public void reportValidity(JIPipeValidityReport report) {
+        if (titleAnnotation.isEnabled()) {
+            report.forCategory("Title annotation").checkNonEmpty(titleAnnotation.getContent(), this);
+        }
+    }
+
+    @JIPipeDocumentation(name = "Generated image type", description = "The image type that is generated.")
+    @JIPipeParameter("generated-image-type")
+    public JIPipeDataInfoRef getGeneratedImageType() {
+        return generatedImageType;
+    }
+
+    @JIPipeParameter("generated-image-type")
+    public void setGeneratedImageType(JIPipeDataInfoRef generatedImageType) {
+        this.generatedImageType = generatedImageType;
+        getFirstOutputSlot().setAcceptedDataType(generatedImageType.getInfo().getDataClass());
+        getEventBus().post(new NodeSlotsChangedEvent(this));
+    }
+
     /**
      * Loads an image from a file path
      *
-     * @param fileName the image file name
+     * @param fileName     the image file name
      * @param progressInfo progress
      * @return the generated data
      */
@@ -190,25 +207,5 @@ public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
             throw new NullPointerException("Image could not be loaded!");
         }
         return image;
-    }
-
-    @Override
-    public void reportValidity(JIPipeValidityReport report) {
-        if (titleAnnotation.isEnabled()) {
-            report.forCategory("Title annotation").checkNonEmpty(titleAnnotation.getContent(), this);
-        }
-    }
-
-    @JIPipeDocumentation(name = "Generated image type", description = "The image type that is generated.")
-    @JIPipeParameter("generated-image-type")
-    public JIPipeDataInfoRef getGeneratedImageType() {
-        return generatedImageType;
-    }
-
-    @JIPipeParameter("generated-image-type")
-    public void setGeneratedImageType(JIPipeDataInfoRef generatedImageType) {
-        this.generatedImageType = generatedImageType;
-        getFirstOutputSlot().setAcceptedDataType(generatedImageType.getInfo().getDataClass());
-        getEventBus().post(new NodeSlotsChangedEvent(this));
     }
 }

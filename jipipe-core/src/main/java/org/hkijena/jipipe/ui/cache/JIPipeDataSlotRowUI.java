@@ -97,7 +97,7 @@ public class JIPipeDataSlotRowUI extends JIPipeWorkbenchPanel {
     }
 
     private void runDisplayOperation(JIPipeDataDisplayOperation operation) {
-        try(BusyCursor cursor = new BusyCursor(this)) {
+        try (BusyCursor cursor = new BusyCursor(this)) {
             JIPipeData data = slot.getData(row, JIPipeData.class, new JIPipeProgressInfo());
             String displayName = slot.getNode().getName() + "/" + slot.getName() + "/" + row;
             operation.display(data, displayName, getWorkbench(), new JIPipeCacheSlotDataSource(slot, row));

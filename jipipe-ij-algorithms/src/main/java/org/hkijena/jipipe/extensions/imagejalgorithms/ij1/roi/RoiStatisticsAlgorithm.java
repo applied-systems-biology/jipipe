@@ -93,7 +93,7 @@ public class RoiStatisticsAlgorithm extends ImageRoiProcessorAlgorithm {
                 ROIListData data = new ROIListData(entry.getValue());
 
                 ResultsTableData result = data.measure(referenceEntry.getKey().getImage(), measurements);
-                if(measurements.getValues().contains(Measurement.StackPosition)) {
+                if (measurements.getValues().contains(Measurement.StackPosition)) {
                     int columnChannel = result.getOrCreateColumnIndex("Ch", false);
                     int columnStack = result.getOrCreateColumnIndex("Slice", false);
                     int columnFrame = result.getOrCreateColumnIndex("Frame", false);
@@ -103,7 +103,7 @@ public class RoiStatisticsAlgorithm extends ImageRoiProcessorAlgorithm {
                         result.setValueAt(data.get(row).getTPosition(), row, columnFrame);
                     }
                 }
-                if(addNameToTable) {
+                if (addNameToTable) {
                     int columnName = result.getOrCreateColumnIndex("Name", true);
                     for (int row = 0; row < result.getRowCount(); row++) {
                         result.setValueAt(data.get(row).getName(), row, columnName);

@@ -43,7 +43,8 @@ public interface JIPipeData {
 
     /**
      * Saves the data to a folder
-     *  @param storageFilePath A folder that already exists
+     *
+     * @param storageFilePath A folder that already exists
      * @param name            A name reference that can be used to generate filename(s)
      * @param forceName       If enabled, the data is saved potentially destructively. Generated files must always contain the name parameter. This is used to collect results for humans or other algorithms.
      * @param progress

@@ -152,13 +152,11 @@ public class JIPipeMergedResultDataSlotTableUI extends JIPipeProjectWorkbenchPan
     }
 
     private void openResultsFolder() {
-        if(slots.size() == 1) {
+        if (slots.size() == 1) {
             UIUtils.openFileInNative(slots.get(0).getStoragePath());
-        }
-        else if(slots.stream().map(JIPipeDataSlot::getNode).distinct().count() == 1) {
+        } else if (slots.stream().map(JIPipeDataSlot::getNode).distinct().count() == 1) {
             UIUtils.openFileInNative(slots.get(0).getStoragePath().getParent());
-        }
-        else {
+        } else {
             UIUtils.openFileInNative(run.getConfiguration().getOutputPath());
         }
     }

@@ -184,7 +184,7 @@ public class TooltipUtils {
             builder.append("## Developer information\n\n");
             builder.append("<table>");
             builder.append("<tr><td><strong>Node type ID</strong></td><td><code>").append(HtmlEscapers.htmlEscaper().escape(info.getId())).append("</code></td></tr>");
-            if(node.getGraph() != null)
+            if (node.getGraph() != null)
                 builder.append("<tr><td><strong>Node ID</strong></td><td><code>").append(HtmlEscapers.htmlEscaper().escape(node.getIdInGraph())).append("</code></td></tr>");
             builder.append("<tr><td><strong>Plugin name</strong></td><td>").append(HtmlEscapers.htmlEscaper().escape(source.getMetadata().getName())).append("</td></tr>");
             for (JIPipeAuthorMetadata author : source.getMetadata().getAuthors()) {

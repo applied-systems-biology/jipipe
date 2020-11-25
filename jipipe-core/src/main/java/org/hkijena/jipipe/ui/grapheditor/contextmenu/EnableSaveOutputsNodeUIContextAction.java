@@ -29,7 +29,7 @@ public class EnableSaveOutputsNodeUIContextAction implements NodeUIContextAction
             if (ui.getNode() instanceof JIPipeAlgorithm) {
                 JIPipeAlgorithm algorithm = (JIPipeAlgorithm) ui.getNode();
                 for (JIPipeDataSlot outputSlot : algorithm.getOutputSlots()) {
-                    if(!outputSlot.getInfo().isSaveOutputs())
+                    if (!outputSlot.getInfo().isSaveOutputs())
                         return true;
                 }
             }

@@ -58,18 +58,17 @@ public class JIPipeGraphRunner implements JIPipeRunnable {
         List<JIPipeGraphNode> preprocessorNodes = new ArrayList<>();
         List<JIPipeGraphNode> postprocessorNodes = new ArrayList<>();
         for (JIPipeGraphNode node : algorithmGraph.getNodes().values()) {
-            if(!unExecutableAlgorithms.contains(node) && node.getInputSlots().isEmpty() &&
+            if (!unExecutableAlgorithms.contains(node) && node.getInputSlots().isEmpty() &&
                     node instanceof JIPipeAlgorithm && ((JIPipeAlgorithm) node).isPreprocessor()) {
                 preprocessorNodes.add(node);
-            }
-            else if(!unExecutableAlgorithms.contains(node) &&
+            } else if (!unExecutableAlgorithms.contains(node) &&
                     node instanceof JIPipeAlgorithm && ((JIPipeAlgorithm) node).isPreprocessor()) {
-                if(node.getOpenInputSlots().stream().allMatch(nd -> algorithmGraph.getTargetSlots(nd).isEmpty())) {
+                if (node.getOpenInputSlots().stream().allMatch(nd -> algorithmGraph.getTargetSlots(nd).isEmpty())) {
                     postprocessorNodes.add(node);
                 }
             }
         }
-        if(!preprocessorNodes.isEmpty()) {
+        if (!preprocessorNodes.isEmpty()) {
             info.setProgress(0, preprocessorNodes.size() + traversedSlots.size());
             info.resolveAndLog("Preprocessing algorithms");
             for (int i = 0; i < preprocessorNodes.size(); i++) {
@@ -109,7 +108,7 @@ public class JIPipeGraphRunner implements JIPipeRunnable {
                 JIPipeGraphNode node = slot.getNode();
 
                 // Check if this is a postprocessor
-                if(!executedAlgorithms.contains(node) && postprocessorNodes.contains(node)) {
+                if (!executedAlgorithms.contains(node) && postprocessorNodes.contains(node)) {
                     subInfo.resolveAndLog("Node is postprocessor. Deferring the run.");
                 }
 

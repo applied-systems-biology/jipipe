@@ -83,8 +83,8 @@ public class RunJIPipeProjectAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                     "The node tried to load a JIPipe project from " + projectFile + ", but could not load it.",
                     "Please check if the file exists and is a valid JIPipe project.");
         }
-        if(!ignoreValidation) {
-            if(!report.isValid()) {
+        if (!ignoreValidation) {
+            if (!report.isValid()) {
                 report.print();
                 for (Map.Entry<String, JIPipeValidityReport.Message> entry : report.getMessages().entrySet()) {
                     throw new UserFriendlyRuntimeException(entry.getValue().getDetails(),
@@ -103,18 +103,17 @@ public class RunJIPipeProjectAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             JIPipeParameterTree infoParameterTree = new JIPipeParameterTree(pipelineParameters);
             for (Map.Entry<String, Object> entry : parameters.getParameterData().entrySet()) {
                 JIPipeParameterAccess access = infoParameterTree.getParameters().getOrDefault(entry.getKey(), null);
-                if(access != null) {
+                if (access != null) {
                     access.set(entry.getValue());
-                }
-                else if(entry.getKey().contains("/")) {
+                } else if (entry.getKey().contains("/")) {
                     String nodeId = entry.getKey().substring(0, entry.getKey().indexOf("/"));
                     String key = entry.getKey().substring(entry.getKey().indexOf("/") + 1);
                     JIPipeGraphNode node = project.getGraph().getNodes().getOrDefault(nodeId, null);
-                    if(node == null )
+                    if (node == null)
                         continue;
                     JIPipeParameterTree nodeTree = new JIPipeParameterTree(node);
                     JIPipeParameterAccess nodeAccess = nodeTree.getParameters().getOrDefault(key, null);
-                    if(nodeAccess == null)
+                    if (nodeAccess == null)
                         continue;
                     nodeAccess.set(entry.getValue());
                 }
@@ -122,9 +121,9 @@ public class RunJIPipeProjectAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         }
 
         // Main validation
-        if(!ignoreValidation) {
+        if (!ignoreValidation) {
             project.reportValidity(report);
-            if(!report.isValid()) {
+            if (!report.isValid()) {
                 report.print();
                 for (Map.Entry<String, JIPipeValidityReport.Message> entry : report.getMessages().entrySet()) {
                     throw new UserFriendlyRuntimeException(entry.getValue().getDetails(),
@@ -160,7 +159,7 @@ public class RunJIPipeProjectAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @JIPipeDocumentation(name = "Project file", description = "The project file")
-    @FilePathParameterSettings(pathMode = PathEditor.PathMode.FilesOnly, ioMode = PathEditor.IOMode.Open, extensions = { "jip" })
+    @FilePathParameterSettings(pathMode = PathEditor.PathMode.FilesOnly, ioMode = PathEditor.IOMode.Open, extensions = {"jip"})
     @JIPipeParameter("project-file")
     public Path getProjectFile() {
         return projectFile;

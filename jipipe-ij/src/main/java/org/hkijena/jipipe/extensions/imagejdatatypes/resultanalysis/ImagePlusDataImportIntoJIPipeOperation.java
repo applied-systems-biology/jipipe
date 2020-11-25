@@ -5,8 +5,6 @@ import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataImportOperation;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeExportedDataTable;
-import org.hkijena.jipipe.api.data.JIPipeResultSlotDataSource;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.ImageViewerPanel;
 import org.hkijena.jipipe.ui.events.RunUIWorkerFinishedEvent;
@@ -56,9 +54,9 @@ public class ImagePlusDataImportIntoJIPipeOperation implements JIPipeDataImportO
 
     @Subscribe
     public void onRunFinished(RunUIWorkerFinishedEvent event) {
-        if(event.getRun() instanceof ImagePlusResultImportRun) {
+        if (event.getRun() instanceof ImagePlusResultImportRun) {
             ImagePlusResultImportRun run = (ImagePlusResultImportRun) event.getRun();
-            if(!knownRuns.contains(run))
+            if (!knownRuns.contains(run))
                 return;
             ImageViewerPanel.showImage(run.getImage(), run.getDisplayName());
         }

@@ -16,7 +16,11 @@ package org.hkijena.jipipe.extensions.tables.algorithms;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeMergingAlgorithm;
+import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.parameters.expressions.StringQueryExpression;
@@ -72,7 +76,7 @@ public class MergeTableColumnsAlgorithm extends JIPipeMergingAlgorithm {
         for (ResultsTableData tableData : dataBatch.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo)) {
             nRow = Math.max(nRow, tableData.getRowCount());
             for (int col = 0; col < tableData.getColumnCount(); col++) {
-                if(columnFilter.test(tableData.getColumnName(col))) {
+                if (columnFilter.test(tableData.getColumnName(col))) {
                     TableColumn column = tableData.getColumnReference(col);
                     columnList.add(column);
                 }

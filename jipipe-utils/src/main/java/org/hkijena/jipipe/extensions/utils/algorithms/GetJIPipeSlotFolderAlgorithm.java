@@ -100,7 +100,7 @@ public class GetJIPipeSlotFolderAlgorithm extends JIPipeSimpleIteratingAlgorithm
         this.slotName = slotName;
     }
 
-    @JIPipeContextAction(iconURL =  ResourceUtils.RESOURCE_BASE_PATH + "/icons/apps/jipipe.png")
+    @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/apps/jipipe.png")
     @JIPipeDocumentation(name = "Set output slot", description = "Loads parameters from a project file")
     public void importParametersFromProject(JIPipeWorkbench workbench) {
         Path projectFile = FileChooserSettings.openFile(workbench.getWindow(), FileChooserSettings.KEY_PROJECT, "Import JIPipe project", UIUtils.EXTENSION_FILTER_JIP);
@@ -119,18 +119,16 @@ public class GetJIPipeSlotFolderAlgorithm extends JIPipeSimpleIteratingAlgorithm
 
                 if (result == JOptionPane.OK_OPTION) {
                     Object component = panel.getTree().getLastSelectedPathComponent();
-                    if(component instanceof DefaultMutableTreeNode) {
+                    if (component instanceof DefaultMutableTreeNode) {
                         DefaultMutableTreeNode node = (DefaultMutableTreeNode) component;
-                        if(node.getUserObject() instanceof JIPipeDataSlot) {
+                        if (node.getUserObject() instanceof JIPipeDataSlot) {
                             JIPipeDataSlot slot = (JIPipeDataSlot) node.getUserObject();
                             JIPipeParameterCollection.setParameter(this, "node-id", slot.getNode().getIdInGraph());
                             JIPipeParameterCollection.setParameter(this, "slot-name", slot.getName());
-                        }
-                        else {
+                        } else {
                             JOptionPane.showMessageDialog(workbench.getWindow(), "Please select a slot", "Error", JOptionPane.ERROR_MESSAGE);
                         }
-                    }
-                    else {
+                    } else {
                         JOptionPane.showMessageDialog(workbench.getWindow(), "Please select a slot", "Error", JOptionPane.ERROR_MESSAGE);
                     }
                 }
