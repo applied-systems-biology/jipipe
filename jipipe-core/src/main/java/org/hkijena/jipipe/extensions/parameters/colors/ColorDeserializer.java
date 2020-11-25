@@ -18,7 +18,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
-import org.hkijena.jipipe.utils.StringUtils;
+import org.hkijena.jipipe.utils.ColorUtils;
 
 import java.awt.Color;
 import java.io.IOException;
@@ -34,7 +34,7 @@ public class ColorDeserializer extends JsonDeserializer<Color> {
             // User provided Hex string #RRGGBB or #RRGGBBAA
             String s = node.textValue();
             if (s.startsWith("#")) {
-                return StringUtils.hexStringToColor(s);
+                return ColorUtils.hexStringToColor(s);
             } else {
                 return Color.decode(s);
             }

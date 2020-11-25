@@ -17,7 +17,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.ColorIcon;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
-import org.hkijena.jipipe.utils.StringUtils;
+import org.hkijena.jipipe.utils.ColorUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -81,7 +81,7 @@ public class ColorParameterEditorUI extends JIPipeParameterEditorUI {
             value = Color.WHITE;
         }
         icon.setFillColor(value);
-        currentlyDisplayed.setText(StringUtils.colorToHexString(value));
+        currentlyDisplayed.setText(ColorUtils.colorToHexString(value));
         isReloading = false;
     }
 }

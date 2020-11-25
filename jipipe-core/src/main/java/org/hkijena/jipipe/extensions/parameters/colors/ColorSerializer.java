@@ -17,7 +17,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
-import org.hkijena.jipipe.utils.StringUtils;
+import org.hkijena.jipipe.utils.ColorUtils;
 
 import java.awt.Color;
 import java.io.IOException;
@@ -28,6 +28,6 @@ import java.io.IOException;
 public class ColorSerializer extends JsonSerializer<Color> {
     @Override
     public void serialize(Color value, JsonGenerator gen, SerializerProvider serializers) throws IOException, JsonProcessingException {
-        gen.writeString(StringUtils.colorToHexString(value));
+        gen.writeString(ColorUtils.colorToHexString(value));
     }
 }

@@ -22,6 +22,8 @@ import java.net.URL;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Predicate;
 
 /**
@@ -55,37 +57,6 @@ public class StringUtils {
     public static String formatDateTime(LocalDateTime dateTime) {
         return dateTime.format(DateTimeFormatter.ISO_LOCAL_DATE) + " " +
                 dateTime.format(DateTimeFormatter.ofPattern("HH:mm:ss"));
-    }
-
-    /**
-     * Converts a color to a Hex string
-     *
-     * @param color the color
-     * @return A hex string #RRGGBB or #RRGGBBAA (only if alpha is not 255)
-     */
-    public static String colorToHexString(Color color) {
-        if (color.getAlpha() == 255) {
-            return String.format("#%02X%02X%02X", color.getRed(), color.getGreen(), color.getBlue());
-        } else {
-            return String.format("#%02X%02X%02X%02X", color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
-        }
-    }
-
-    /**
-     * Converts a hex color string #RRGGBB or #RRGGBBAA to a color
-     *
-     * @param s the string
-     * @return the color
-     */
-    public static Color hexStringToColor(String s) {
-        if (s.length() == 9) {
-            // This is #RRGGBBAA
-            Color rgb = Color.decode(s.substring(0, 7));
-            int alpha = Integer.parseInt(s.substring(7));
-            return new Color(rgb.getRed(), rgb.getGreen(), rgb.getBlue(), alpha);
-        } else {
-            return Color.decode(s);
-        }
     }
 
     /**
