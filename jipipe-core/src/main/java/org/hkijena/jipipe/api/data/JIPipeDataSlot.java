@@ -19,6 +19,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.extensions.settings.VirtualDataSettings;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.io.IOException;
@@ -572,7 +573,7 @@ public class JIPipeDataSlot {
      * @param progressInfo the progress
      */
     public void makeDataNonVirtual(JIPipeProgressInfo progressInfo) {
-        JIPipeProgressInfo subProgress = progressInfo.resolveAndLog("Loading virtual data to memory");
+        JIPipeProgressInfo subProgress = progressInfo.resolve("Loading virtual data to memory");
         for (int row = 0; row < getRowCount(); row++) {
             JIPipeVirtualData virtualData = getVirtualData(row);
             if (virtualData.isVirtual()) {
@@ -587,10 +588,10 @@ public class JIPipeDataSlot {
      * @param progressInfo the progress
      */
     public void makeDataVirtual(JIPipeProgressInfo progressInfo) {
-        JIPipeProgressInfo subProgress = progressInfo.resolveAndLog("Unloading data to virtual cache");
+        JIPipeProgressInfo subProgress = progressInfo.resolve("Unloading data to virtual cache");
         for (int row = 0; row < getRowCount(); row++) {
             JIPipeVirtualData virtualData = getVirtualData(row);
-            if (virtualData.isVirtual()) {
+            if (!virtualData.isVirtual()) {
                 virtualData.makeVirtual(subProgress.resolveAndLog("Row", row, getRowCount()), false);
             }
         }
@@ -599,11 +600,12 @@ public class JIPipeDataSlot {
     /**
      * If virtual, put all data into the virtual storage
      * If not, fetch all virtual data from storage
+     * This function reacts to the virtual mode setting in {@link VirtualDataSettings} and will refuse to make data virtual
      *
      * @param progressInfo the progress
      */
     public void applyVirtualState(JIPipeProgressInfo progressInfo) {
-        if (info.isVirtual()) {
+        if (info.isVirtual() && VirtualDataSettings.getInstance().isVirtualMode()) {
             makeDataVirtual(progressInfo);
         } else {
             makeDataNonVirtual(progressInfo);
