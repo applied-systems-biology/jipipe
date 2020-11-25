@@ -13,11 +13,9 @@
 
 package org.hkijena.jipipe.ui.grapheditor;
 
-import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeCompartmentOutput;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.events.ParameterChangedEvent;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
@@ -77,7 +75,7 @@ public class JIPipeHorizontalDataSlotUI extends JIPipeDataSlotUI {
             }
             if (noSaveLabel != null) {
                 if (getSlot().getNode() instanceof JIPipeAlgorithm) {
-                    noSaveLabel.setVisible(!getSlot().getDefinition().isSaveOutputs());
+                    noSaveLabel.setVisible(!getSlot().getInfo().isSaveOutputs());
                 } else {
                     noSaveLabel.setVisible(false);
                 }
@@ -165,7 +163,7 @@ public class JIPipeHorizontalDataSlotUI extends JIPipeDataSlotUI {
 
     @Override
     protected void reloadName() {
-        if (!StringUtils.isNullOrEmpty(getSlot().getDefinition().getCustomName())) {
+        if (!StringUtils.isNullOrEmpty(getSlot().getInfo().getCustomName())) {
             nameLabel.setText(getDisplayedName());
             nameLabel.setFont(nameLabel.getFont().deriveFont(Font.ITALIC));
         } else {

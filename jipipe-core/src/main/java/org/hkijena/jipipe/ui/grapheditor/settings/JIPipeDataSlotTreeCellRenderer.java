@@ -85,8 +85,8 @@ public class JIPipeDataSlotTreeCellRenderer extends JPanel implements TreeCellRe
 
             slotName.setText(slot.getName());
             slotName.setIcon(JIPipe.getDataTypes().getIconFor(slot.getAcceptedDataType()));
-            if (!StringUtils.isNullOrEmpty(slot.getDefinition().getCustomName())) {
-                slotLabel.setText(slot.getDefinition().getCustomName());
+            if (!StringUtils.isNullOrEmpty(slot.getInfo().getCustomName())) {
+                slotLabel.setText(slot.getInfo().getCustomName());
             } else {
                 slotLabel.setText(null);
             }

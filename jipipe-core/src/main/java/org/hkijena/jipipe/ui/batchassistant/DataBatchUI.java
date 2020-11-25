@@ -16,7 +16,6 @@ package org.hkijena.jipipe.ui.batchassistant;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
-import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeIteratingAlgorithm;
@@ -98,7 +97,7 @@ public class DataBatchUI extends JIPipeProjectWorkbenchPanel {
     }
 
     private void displayData(JIPipeDataSlot slot, Set<Integer> rows) {
-        JIPipeDataSlot copySlot = new JIPipeDataSlot(slot.getDefinition(), slot.getNode());
+        JIPipeDataSlot copySlot = new JIPipeDataSlot(slot.getInfo(), slot.getNode());
         for (int row : rows) {
             copySlot.addData(slot.getVirtualData(row), slot.getAnnotations(row), JIPipeAnnotationMergeStrategy.Merge);
         }

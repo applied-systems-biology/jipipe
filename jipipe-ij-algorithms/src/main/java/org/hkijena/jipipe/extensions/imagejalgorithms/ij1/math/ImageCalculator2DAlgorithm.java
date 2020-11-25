@@ -179,7 +179,7 @@ public class ImageCalculator2DAlgorithm extends JIPipeIteratingAlgorithm {
     public void setFloatingPointOutput(boolean floatingPointOutput) {
         this.floatingPointOutput = floatingPointOutput;
 
-        JIPipeDataSlotInfo definition = getFirstOutputSlot().getDefinition();
+        JIPipeDataSlotInfo definition = getFirstOutputSlot().getInfo();
         if (floatingPointOutput) {
             getFirstOutputSlot().setAcceptedDataType(ImagePlusGreyscale32FData.class);
             definition.setInheritanceConversionsFromRaw(TO_GRAYSCALE32F_CONVERSION);

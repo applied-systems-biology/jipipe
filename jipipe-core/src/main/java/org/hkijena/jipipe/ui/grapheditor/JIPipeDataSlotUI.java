@@ -75,7 +75,7 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
         this.slot = slot;
 
         getGraph().getEventBus().register(this);
-        slot.getDefinition().getEventBus().register(this);
+        slot.getInfo().getEventBus().register(this);
     }
 
     public JIPipeNodeUI getNodeUI() {
@@ -341,7 +341,7 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
             if (assignButtonMenu.getComponentCount() > 0)
                 assignButtonMenu.addSeparator();
 
-            if(getSlot().getDefinition().isSaveOutputs()) {
+            if(getSlot().getInfo().isSaveOutputs()) {
                 JMenuItem toggleSaveOutputsButton = new JMenuItem("Disable saving outputs", UIUtils.getIconFromResources("actions/no-save.png"));
                 toggleSaveOutputsButton.setToolTipText("Makes that the data stored in this slot are not saved in a full analysis. Does not have an effect when updating the cache.");
                 toggleSaveOutputsButton.addActionListener(e -> setSaveOutputs(false));
@@ -375,19 +375,17 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
     }
 
     private void setSaveOutputs(boolean saveOutputs) {
-        slot.getDefinition().setSaveOutputs(saveOutputs);
+        slot.getInfo().setSaveOutputs(saveOutputs);
         reloadButtonStatus();
     }
 
     private void makeVirtual() {
-        slot.getDefinition().setVirtual(true);
-        slot.setVirtual(true);
+        slot.getInfo().setVirtual(true);
         reloadButtonStatus();
     }
 
     private void makeNonVirtual() {
-        slot.getDefinition().setVirtual(false);
-        slot.setVirtual(false);
+        slot.getInfo().setVirtual(false);
         reloadButtonStatus();
     }
 
@@ -462,9 +460,9 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
     private void relabelSlot() {
         String newLabel = JOptionPane.showInputDialog(this,
                 "Please enter a new label for the slot.\nLeave the text empty to remove an existing label.",
-                slot.getDefinition().getCustomName());
+                slot.getInfo().getCustomName());
         getGraphUI().getGraphHistory().addSnapshotBefore(new SlotConfigurationHistorySnapshot(slot.getNode(), "Relabel slot '" + slot.getDisplayName() + "'"));
-        slot.getDefinition().setCustomName(newLabel);
+        slot.getInfo().setCustomName(newLabel);
     }
 
     private void deleteSlot() {
@@ -572,9 +570,9 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
      * @return The name that should be displayed
      */
     public String getDisplayedName() {
-        boolean hasCustomName = !StringUtils.isNullOrEmpty(slot.getDefinition().getCustomName());
+        boolean hasCustomName = !StringUtils.isNullOrEmpty(slot.getInfo().getCustomName());
         if (hasCustomName) {
-            return slot.getDefinition().getCustomName();
+            return slot.getInfo().getCustomName();
         }
         String name = slot.getName();
         if (name.startsWith("{") && name.endsWith("}"))

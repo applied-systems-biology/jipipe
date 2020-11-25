@@ -154,10 +154,10 @@ public class JIPipeSlotEditorUI extends JPanel {
         if (slot != null) {
             String newLabel = JOptionPane.showInputDialog(this,
                     "Please enter a new label for the slot.\nLeave the text empty to remove an existing label.",
-                    slot.getDefinition().getCustomName());
+                    slot.getInfo().getCustomName());
             editorUI.getCanvasUI().getGraphHistory().addSnapshotBefore(new SlotConfigurationHistorySnapshot(slot.getNode(),
                     "Relabel slot '" + slot.getDisplayName() + "'"));
-            slot.getDefinition().setCustomName(newLabel);
+            slot.getInfo().setCustomName(newLabel);
         }
     }
 
@@ -248,14 +248,14 @@ public class JIPipeSlotEditorUI extends JPanel {
 
         for (JIPipeDataSlot slot : algorithm.getInputSlots()) {
             DefaultMutableTreeNode node = new DefaultMutableTreeNode(slot);
-            slot.getDefinition().getEventBus().register(this);
+            slot.getInfo().getEventBus().register(this);
             if (slot == selectedSlot)
                 toSelect = node;
             inputNode.add(node);
         }
         for (JIPipeDataSlot slot : algorithm.getOutputSlots()) {
             DefaultMutableTreeNode node = new DefaultMutableTreeNode(slot);
-            slot.getDefinition().getEventBus().register(this);
+            slot.getInfo().getEventBus().register(this);
             if (slot == selectedSlot)
                 toSelect = node;
             outputNode.add(node);

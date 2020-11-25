@@ -222,7 +222,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
     private boolean updateAddAndModifySlots(boolean changed, Map.Entry<String, JIPipeDataSlotInfo> entry, BiMap<String, JIPipeDataSlot> slotMap, List<JIPipeDataSlot> slots) {
         JIPipeDataSlot existing = slotMap.getOrDefault(entry.getKey(), null);
         if (existing != null) {
-            if (!Objects.equals(existing.getDefinition(), entry.getValue())) {
+            if (!Objects.equals(existing.getInfo(), entry.getValue())) {
                 slotMap.remove(entry.getKey());
                 slots.remove(existing);
                 existing = null;
@@ -965,12 +965,12 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
      */
     public void setAllSlotsVirtual(boolean virtual, boolean apply, JIPipeProgressInfo progressInfo) {
         for (JIPipeDataSlot slot : getInputSlots()) {
-            slot.setVirtual(virtual);
+            slot.getInfo().setVirtual(virtual);
             if(apply)
                 slot.applyVirtualState(progressInfo);
         }
         for (JIPipeDataSlot slot : getOutputSlots()) {
-            slot.setVirtual(virtual);
+            slot.getInfo().setVirtual(virtual);
             if(apply)
                 slot.applyVirtualState(progressInfo);
         }

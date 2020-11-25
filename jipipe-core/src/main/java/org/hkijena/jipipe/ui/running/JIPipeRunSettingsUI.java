@@ -195,7 +195,7 @@ public class JIPipeRunSettingsUI extends JIPipeProjectWorkbenchPanel {
                         JCheckBox checkBox = new JCheckBox(outputSlot.getDisplayName(), true);
                         checkBox.addActionListener(e -> {
                             JIPipeGraphNode runAlgorithm = run.getGraph().getEquivalentAlgorithm(node);
-                            runAlgorithm.getOutputSlot(outputSlot.getName()).getDefinition().setSaveOutputs(checkBox.isSelected());
+                            runAlgorithm.getOutputSlot(outputSlot.getName()).getInfo().setSaveOutputs(checkBox.isSelected());
                         });
                         JLabel compartmentLabel = new JLabel(getProject().getCompartments().get(node.getCompartment()).getName(), UIUtils.getIconFromResources("data-types/graph-compartment.png"), JLabel.LEFT);
                         contentPanel.add(new JLabel(JIPipe.getNodes().getIconFor(node.getInfo())), new GridBagConstraints() {
@@ -242,7 +242,7 @@ public class JIPipeRunSettingsUI extends JIPipeProjectWorkbenchPanel {
                 for (JIPipeDataSlot slot : heavyIntermediateOutputs) {
                     JIPipeGraphNode node = slot.getNode();
                     JIPipeGraphNode runAlgorithm = run.getGraph().getEquivalentAlgorithm(node);
-                    runAlgorithm.getOutputSlot(slot.getName()).getDefinition().setSaveOutputs(true);
+                    runAlgorithm.getOutputSlot(slot.getName()).getInfo().setSaveOutputs(true);
                 }
             });
             toolBar.add(selectAllButton);
@@ -255,7 +255,7 @@ public class JIPipeRunSettingsUI extends JIPipeProjectWorkbenchPanel {
                 for (JIPipeDataSlot slot : heavyIntermediateOutputs) {
                     JIPipeGraphNode node = slot.getNode();
                     JIPipeGraphNode runAlgorithm = run.getGraph().getEquivalentAlgorithm(node);
-                    runAlgorithm.getOutputSlot(slot.getName()).getDefinition().setSaveOutputs(false);
+                    runAlgorithm.getOutputSlot(slot.getName()).getInfo().setSaveOutputs(false);
                 }
             });
             toolBar.add(selectNoneButton);

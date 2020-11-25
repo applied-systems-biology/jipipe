@@ -119,11 +119,11 @@ public class NodeGroup extends GraphWrapperAlgorithm implements JIPipeCustomPara
             for (JIPipeDataSlot slot : getWrappedGraph().getUnconnectedSlots()) {
                 if (slot.isInput()) {
                     String uniqueName = StringUtils.makeUniqueString(slot.getName(), " ", exportedInputSlotNames::containsValue);
-                    inputSlotConfiguration.addSlot(uniqueName, slot.getDefinition(), false);
+                    inputSlotConfiguration.addSlot(uniqueName, slot.getInfo(), false);
                     exportedInputSlotNames.put(slot, uniqueName);
                 } else if (slot.isOutput()) {
                     String uniqueName = StringUtils.makeUniqueString(slot.getName(), " ", exportedOutputSlotNames::containsValue);
-                    outputSlotConfiguration.addSlot(uniqueName, slot.getDefinition(), false);
+                    outputSlotConfiguration.addSlot(uniqueName, slot.getInfo(), false);
                     exportedOutputSlotNames.put(slot, uniqueName);
                 }
             }

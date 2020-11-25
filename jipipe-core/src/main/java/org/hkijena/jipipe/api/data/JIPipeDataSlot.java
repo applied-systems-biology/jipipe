@@ -38,13 +38,12 @@ import java.util.Set;
  */
 public class JIPipeDataSlot {
     private JIPipeGraphNode node;
-    private JIPipeDataSlotInfo definition;
+    private JIPipeDataSlotInfo info;
     private String name;
     private Class<? extends JIPipeData> acceptedDataType;
     private JIPipeSlotType slotType;
     private Path storagePath;
     private boolean uniqueData = true;
-    private boolean virtual;
     private EventBus eventBus = new EventBus();
 
     private ArrayList<JIPipeVirtualData> data = new ArrayList<>();
@@ -54,16 +53,15 @@ public class JIPipeDataSlot {
     /**
      * Creates a new slot
      *
-     * @param definition the slot definition
+     * @param info the slot definition
      * @param node       The algorithm that contains the slot
      */
-    public JIPipeDataSlot(JIPipeDataSlotInfo definition, JIPipeGraphNode node) {
-        this.definition = definition;
+    public JIPipeDataSlot(JIPipeDataSlotInfo info, JIPipeGraphNode node) {
+        this.info = info;
         this.node = node;
-        this.name = definition.getName();
-        this.slotType = definition.getSlotType();
-        this.acceptedDataType = definition.getDataClass();
-        this.virtual = definition.isVirtual();
+        this.name = info.getName();
+        this.slotType = info.getSlotType();
+        this.acceptedDataType = info.getDataClass();
     }
 
     public List<String> getAnnotationColumns() {
@@ -225,7 +223,7 @@ public class JIPipeDataSlot {
             List<JIPipeAnnotation> traitArray = getOrCreateAnnotationColumnData(trait.getName());
             traitArray.set(getRowCount() - 1, trait);
         }
-        if(virtual)
+        if(info.isVirtual())
             virtualData.makeVirtual(progressInfo, false);
     }
 
@@ -319,8 +317,8 @@ public class JIPipeDataSlot {
      * @return Display name that includes the algorithm name, as well as the slot name.
      */
     public String getDisplayName() {
-        if (!StringUtils.isNullOrEmpty(definition.getCustomName()))
-            return definition.getCustomName() + " [" + getName() + "] " + " (" + node.getName() + ")";
+        if (!StringUtils.isNullOrEmpty(info.getCustomName()))
+            return info.getCustomName() + " [" + getName() + "] " + " (" + node.getName() + ")";
         else
             return getName() + " (" + node.getName() + ")";
     }
@@ -347,7 +345,7 @@ public class JIPipeDataSlot {
      */
     public void flush(Path basePath, JIPipeProgressInfo saveProgress) {
         if (getNode() instanceof JIPipeAlgorithm) {
-            if (getDefinition().isSaveOutputs()) {
+            if (getInfo().isSaveOutputs()) {
                 save(basePath, saveProgress);
             }
         } else {
@@ -521,8 +519,8 @@ public class JIPipeDataSlot {
         System.gc();
     }
 
-    public JIPipeDataSlotInfo getDefinition() {
-        return definition;
+    public JIPipeDataSlotInfo getInfo() {
+        return info;
     }
 
     /**
@@ -549,11 +547,7 @@ public class JIPipeDataSlot {
     }
 
     public boolean isVirtual() {
-        return virtual;
-    }
-
-    public void setVirtual(boolean virtual) {
-        this.virtual = virtual;
+        return info.isVirtual();
     }
 
     /**
@@ -599,7 +593,7 @@ public class JIPipeDataSlot {
      * @param progressInfo the progress
      */
     public void applyVirtualState(JIPipeProgressInfo progressInfo) {
-        if(virtual) {
+        if(info.isVirtual()) {
             makeDataVirtual(progressInfo);
         }
         else {
