@@ -521,7 +521,7 @@ public class JIPipeDataSlot {
         data.clear();
         annotationColumns.clear();
         annotations.clear();
-        System.gc();
+//        System.gc();
     }
 
     public JIPipeDataSlotInfo getInfo() {
@@ -625,6 +625,6 @@ public class JIPipeDataSlot {
         for (int i = 0; i < data.size(); ++i) {
             data.set(i, null);
         }
-        System.gc();
+//        System.gc();
     }
 }

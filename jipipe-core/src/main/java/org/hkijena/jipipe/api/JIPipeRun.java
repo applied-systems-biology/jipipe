@@ -316,7 +316,7 @@ public class JIPipeRun implements JIPipeRunnable {
             // Flush the data and destroy it
             inputSlot.destroy();
             flushedSlots.add(inputSlot);
-            System.gc();
+//            System.gc();
         }
     }
 

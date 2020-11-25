@@ -102,7 +102,7 @@ public class JIPipeVirtualData {
             }
             dataReference = new WeakReference<>(data);
             data = null;
-            System.gc();
+//            System.gc();
         }
     }
 
