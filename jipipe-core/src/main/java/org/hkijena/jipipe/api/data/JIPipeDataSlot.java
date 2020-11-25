@@ -347,7 +347,7 @@ public class JIPipeDataSlot {
      */
     public void flush(Path basePath, JIPipeProgressInfo saveProgress) {
         if (getNode() instanceof JIPipeAlgorithm) {
-            if (((JIPipeAlgorithm) getNode()).isSaveOutputs()) {
+            if (getDefinition().isSaveOutputs()) {
                 save(basePath, saveProgress);
             }
         } else {

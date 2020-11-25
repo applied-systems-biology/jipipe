@@ -58,6 +58,7 @@ public class JIPipeDataSlotInfo implements JIPipeParameterCollection {
     private Map<JIPipeDataInfo, JIPipeDataInfo> inheritanceConversions = new HashMap<>();
     private String customName;
     private boolean virtual;
+    private boolean saveOutputs = true;
 
     /**
      * @param dataClass     slot data class
@@ -126,6 +127,7 @@ public class JIPipeDataSlotInfo implements JIPipeParameterCollection {
         this.inheritanceConversions = new HashMap<>(other.inheritanceConversions);
         this.customName = other.customName;
         this.virtual = other.virtual;
+        this.saveOutputs = other.saveOutputs;
     }
 
     /**
@@ -240,6 +242,17 @@ public class JIPipeDataSlotInfo implements JIPipeParameterCollection {
     @JIPipeParameter("is-virtual")
     public void setVirtual(boolean virtual) {
         this.virtual = virtual;
+    }
+
+    @JIPipeDocumentation(name = "Save outputs", description = "Determines if this slot's output should be saved. Only valid for output slots.")
+    @JIPipeParameter("save-outputs")
+    public boolean isSaveOutputs() {
+        return saveOutputs;
+    }
+
+    @JIPipeParameter("save-outputs")
+    public void setSaveOutputs(boolean saveOutputs) {
+        this.saveOutputs = saveOutputs;
     }
 
     /**

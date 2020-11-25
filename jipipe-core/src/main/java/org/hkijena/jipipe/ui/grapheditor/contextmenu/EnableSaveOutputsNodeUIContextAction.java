@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.ui.grapheditor.contextmenu;
 
+import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.events.ParameterChangedEvent;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphCanvasUI;
@@ -28,8 +29,10 @@ public class EnableSaveOutputsNodeUIContextAction implements NodeUIContextAction
         for (JIPipeNodeUI ui : selection) {
             if (ui.getNode() instanceof JIPipeAlgorithm) {
                 JIPipeAlgorithm algorithm = (JIPipeAlgorithm) ui.getNode();
-                if (!algorithm.isSaveOutputs())
-                    return true;
+                for (JIPipeDataSlot outputSlot : algorithm.getOutputSlots()) {
+                    if(!outputSlot.getDefinition().isSaveOutputs())
+                        return true;
+                }
             }
         }
         return false;
@@ -40,8 +43,10 @@ public class EnableSaveOutputsNodeUIContextAction implements NodeUIContextAction
         for (JIPipeNodeUI ui : selection) {
             if (ui.getNode() instanceof JIPipeAlgorithm) {
                 JIPipeAlgorithm algorithm = (JIPipeAlgorithm) ui.getNode();
-                algorithm.setSaveOutputs(true);
-                algorithm.getEventBus().post(new ParameterChangedEvent(algorithm, "jipipe:algorithm:save-outputs"));
+                for (JIPipeDataSlot outputSlot : algorithm.getOutputSlots()) {
+                    outputSlot.getDefinition().setSaveOutputs(true);
+                }
+                ui.refreshSlots();
             }
         }
     }

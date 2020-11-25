@@ -311,4 +311,9 @@ public abstract class JIPipeNodeUI extends JIPipeWorkbenchPanel {
         Point gridPoint = graphUI.getViewMode().realLocationToGrid(location, graphUI.getZoom());
         return moveToGridLocation(gridPoint, force, save);
     }
+
+    /**
+     * Updates the UIs for slots
+     */
+    public abstract void refreshSlots();
 }

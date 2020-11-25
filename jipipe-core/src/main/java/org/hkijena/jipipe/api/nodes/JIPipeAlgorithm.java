@@ -45,7 +45,6 @@ public abstract class JIPipeAlgorithm extends JIPipeGraphNode {
     private static final StateSerializer STATE_SERIALIZER = new StateSerializer();
     private boolean enabled = true;
     private boolean passThrough = false;
-    private boolean saveOutputs = true;
     private JIPipeFixedThreadPool threadPool;
 
     /**
@@ -76,7 +75,6 @@ public abstract class JIPipeAlgorithm extends JIPipeGraphNode {
         super(other);
         this.enabled = other.enabled;
         this.passThrough = other.passThrough;
-        this.saveOutputs = other.saveOutputs;
     }
 
     @Override
@@ -212,17 +210,6 @@ public abstract class JIPipeAlgorithm extends JIPipeGraphNode {
         this.threadPool = threadPool;
     }
 
-    @JIPipeDocumentation(name = "Save outputs", description = "If disabled, the output data is not written into the output folder.")
-    @JIPipeParameter(value = "jipipe:algorithm:save-outputs", visibility = JIPipeParameterVisibility.Visible)
-    public boolean isSaveOutputs() {
-        return saveOutputs;
-    }
-
-    @JIPipeParameter("jipipe:algorithm:save-outputs")
-    public void setSaveOutputs(boolean saveOutputs) {
-        this.saveOutputs = saveOutputs;
-    }
-
     /**
      * Serializer used by getStateId()
      * It automatically skips name, compartment, description, slot configuration, and UI parameters that are not relevant to the state
@@ -259,8 +246,7 @@ public abstract class JIPipeAlgorithm extends JIPipeGraphNode {
          */
         protected boolean serializeParameter(Map.Entry<String, JIPipeParameterAccess> entry) {
             return !entry.getKey().equals("jipipe:node:name")
-                    && !entry.getKey().equals("jipipe:node:description")
-                    && !entry.getKey().equals("jipipe:algorithm:save-outputs");
+                    && !entry.getKey().equals("jipipe:node:description");
         }
     }
 }

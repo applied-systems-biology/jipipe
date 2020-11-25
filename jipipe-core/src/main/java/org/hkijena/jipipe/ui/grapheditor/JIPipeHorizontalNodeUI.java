@@ -371,6 +371,13 @@ public class JIPipeHorizontalNodeUI extends JIPipeNodeUI {
     }
 
     @Override
+    public void refreshSlots() {
+        for (JIPipeDataSlotUI ui : slotUIList) {
+            ui.reloadButtonStatus();
+        }
+    }
+
+    @Override
     public Map<String, JIPipeDataSlotUI> getInputSlotUIs() {
         return Collections.unmodifiableMap(inputSlotUIs);
     }

@@ -401,4 +401,11 @@ public class JIPipeVerticalNodeUI extends JIPipeNodeUI {
     public Map<String, JIPipeDataSlotUI> getOutputSlotUIs() {
         return Collections.unmodifiableMap(outputSlotUIs);
     }
+
+    @Override
+    public void refreshSlots() {
+        for (JIPipeDataSlotUI ui : slotUIList) {
+            ui.reloadButtonStatus();
+        }
+    }
 }

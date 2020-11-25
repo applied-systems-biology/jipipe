@@ -481,21 +481,15 @@ public class JIPipeProject implements JIPipeValidatable {
      *
      * @return intermediate nodes with heavy data
      */
-    public Set<JIPipeGraphNode> getHeavyIntermediateAlgorithms() {
-        Set<JIPipeGraphNode> result = new HashSet<>();
-        outer:
+    public Set<JIPipeDataSlot> getHeavyIntermediateAlgorithmOutputSlots() {
+        Set<JIPipeDataSlot> result = new HashSet<>();
         for (JIPipeGraphNode node : graph.getNodes().values()) {
-            if (node instanceof JIPipeAlgorithm && !((JIPipeAlgorithm) node).isSaveOutputs())
-                continue;
-            boolean heavy = false;
             for (JIPipeDataSlot outputSlot : node.getOutputSlots()) {
-                heavy |= JIPipeData.isHeavy(outputSlot.getAcceptedDataType());
-                if (graph.getTargetSlots(outputSlot).isEmpty()) {
-                    continue outer;
+                boolean heavy = JIPipeData.isHeavy(outputSlot.getAcceptedDataType());
+                if (heavy && !graph.getTargetSlots(outputSlot).isEmpty()) {
+                    result.add(outputSlot);
                 }
             }
-            if (heavy)
-                result.add(node);
         }
         return result;
     }

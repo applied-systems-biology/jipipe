@@ -18,6 +18,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeRun;
 import org.hkijena.jipipe.api.JIPipeRunSettings;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
@@ -172,53 +173,57 @@ public class JIPipeRunSettingsUI extends JIPipeProjectWorkbenchPanel {
             formPanel.addVerticalGlue();
         }
 
-        Set<JIPipeGraphNode> heavyIntermediateAlgorithms = getProject().getHeavyIntermediateAlgorithms();
-        heavyIntermediateAlgorithms.removeAll(algorithmsWithMissingInput);
-        if (!heavyIntermediateAlgorithms.isEmpty()) {
+        Set<JIPipeDataSlot> heavyIntermediateOutputs = getProject().getHeavyIntermediateAlgorithmOutputSlots();
+        for (JIPipeGraphNode node : algorithmsWithMissingInput) {
+            heavyIntermediateOutputs.removeAll(node.getOutputSlots());
+        }
+        if (!heavyIntermediateOutputs.isEmpty()) {
             formPanel.removeLastRow();
             FormPanel.GroupHeaderPanel headerPanel = formPanel.addGroupHeader("Large intermediate results", UIUtils.getIconFromResources("emblems/warning.png"));
             headerPanel.getDescriptionArea().setVisible(true);
             headerPanel.getDescriptionArea().setText("There are algorithms that look like that they only generate intermediate results, but generate potentially large amounts of data that would all be saved to the hard drive. " +
-                    "You can deselect nodes in the following list to disable saving outputs for them. They will still be executed, but their results will not be saved to the hard drive.");
+                    "You can deselect these outputs in the following list to disable saving outputs for them. They will still be executed, but their results will not be saved to the hard drive.");
             List<JCheckBox> checkBoxes = new ArrayList<>();
             JPanel contentPanel = new JPanel(new GridBagLayout());
             List<JIPipeGraphNode> traversed = getProject().getGraph().traverseAlgorithms();
             for (JIPipeGraphNode node : traversed) {
                 if (!(node instanceof JIPipeAlgorithm))
                     continue;
-                if (heavyIntermediateAlgorithms.contains(node)) {
-                    int row = checkBoxes.size();
-                    JCheckBox checkBox = new JCheckBox(node.getName(), true);
-                    checkBox.addActionListener(e -> {
-                        JIPipeGraphNode runAlgorithm = run.getGraph().getEquivalentAlgorithm(node);
-                        ((JIPipeAlgorithm) runAlgorithm).setSaveOutputs(checkBox.isSelected());
-                    });
-                    JLabel compartmentLabel = new JLabel(getProject().getCompartments().get(node.getCompartment()).getName(), UIUtils.getIconFromResources("data-types/graph-compartment.png"), JLabel.LEFT);
-                    contentPanel.add(new JLabel(JIPipe.getNodes().getIconFor(node.getInfo())), new GridBagConstraints() {
-                        {
-                            gridx = 0;
-                            gridy = row;
-                            insets = UIUtils.UI_PADDING;
-                        }
-                    });
-                    contentPanel.add(checkBox, new GridBagConstraints() {
-                        {
-                            gridx = 1;
-                            gridy = row;
-                            weightx = 1;
-                            fill = GridBagConstraints.HORIZONTAL;
-                            insets = UIUtils.UI_PADDING;
-                        }
-                    });
-                    contentPanel.add(compartmentLabel, new GridBagConstraints() {
-                        {
-                            gridx = 2;
-                            gridy = row;
-                            insets = UIUtils.UI_PADDING;
-                            anchor = GridBagConstraints.WEST;
-                        }
-                    });
-                    checkBoxes.add(checkBox);
+                for (JIPipeDataSlot outputSlot : node.getOutputSlots()) {
+                    if (heavyIntermediateOutputs.contains(outputSlot)) {
+                        int row = checkBoxes.size();
+                        JCheckBox checkBox = new JCheckBox(outputSlot.getDisplayName(), true);
+                        checkBox.addActionListener(e -> {
+                            JIPipeGraphNode runAlgorithm = run.getGraph().getEquivalentAlgorithm(node);
+                            runAlgorithm.getOutputSlot(outputSlot.getName()).getDefinition().setSaveOutputs(checkBox.isSelected());
+                        });
+                        JLabel compartmentLabel = new JLabel(getProject().getCompartments().get(node.getCompartment()).getName(), UIUtils.getIconFromResources("data-types/graph-compartment.png"), JLabel.LEFT);
+                        contentPanel.add(new JLabel(JIPipe.getNodes().getIconFor(node.getInfo())), new GridBagConstraints() {
+                            {
+                                gridx = 0;
+                                gridy = row;
+                                insets = UIUtils.UI_PADDING;
+                            }
+                        });
+                        contentPanel.add(checkBox, new GridBagConstraints() {
+                            {
+                                gridx = 1;
+                                gridy = row;
+                                weightx = 1;
+                                fill = GridBagConstraints.HORIZONTAL;
+                                insets = UIUtils.UI_PADDING;
+                            }
+                        });
+                        contentPanel.add(compartmentLabel, new GridBagConstraints() {
+                            {
+                                gridx = 2;
+                                gridy = row;
+                                insets = UIUtils.UI_PADDING;
+                                anchor = GridBagConstraints.WEST;
+                            }
+                        });
+                        checkBoxes.add(checkBox);
+                    }
                 }
             }
 
@@ -234,11 +239,10 @@ public class JIPipeRunSettingsUI extends JIPipeProjectWorkbenchPanel {
                 for (JCheckBox checkBox : checkBoxes) {
                     checkBox.setSelected(true);
                 }
-                for (JIPipeGraphNode node : heavyIntermediateAlgorithms) {
-                    if (node instanceof JIPipeAlgorithm) {
-                        JIPipeGraphNode runAlgorithm = run.getGraph().getEquivalentAlgorithm(node);
-                        ((JIPipeAlgorithm) runAlgorithm).setSaveOutputs(true);
-                    }
+                for (JIPipeDataSlot slot : heavyIntermediateOutputs) {
+                    JIPipeGraphNode node = slot.getNode();
+                    JIPipeGraphNode runAlgorithm = run.getGraph().getEquivalentAlgorithm(node);
+                    runAlgorithm.getOutputSlot(slot.getName()).getDefinition().setSaveOutputs(true);
                 }
             });
             toolBar.add(selectAllButton);
@@ -248,11 +252,10 @@ public class JIPipeRunSettingsUI extends JIPipeProjectWorkbenchPanel {
                 for (JCheckBox checkBox : checkBoxes) {
                     checkBox.setSelected(false);
                 }
-                for (JIPipeGraphNode node : heavyIntermediateAlgorithms) {
-                    if (node instanceof JIPipeAlgorithm) {
-                        JIPipeGraphNode runAlgorithm = run.getGraph().getEquivalentAlgorithm(node);
-                        ((JIPipeAlgorithm) runAlgorithm).setSaveOutputs(false);
-                    }
+                for (JIPipeDataSlot slot : heavyIntermediateOutputs) {
+                    JIPipeGraphNode node = slot.getNode();
+                    JIPipeGraphNode runAlgorithm = run.getGraph().getEquivalentAlgorithm(node);
+                    runAlgorithm.getOutputSlot(slot.getName()).getDefinition().setSaveOutputs(false);
                 }
             });
             toolBar.add(selectNoneButton);

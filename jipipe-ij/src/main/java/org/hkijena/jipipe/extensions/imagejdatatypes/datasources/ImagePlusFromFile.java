@@ -101,7 +101,8 @@ public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         FileData fileData = dataBatch.getInputData(getFirstInputSlot(), FileData.class, progressInfo);
-        if(!removeLut && fileData.getPath().toString().endsWith(".tif") && getFirstOutputSlot().isVirtual()) {
+        boolean enableVirtual = VirtualDataSettings.getInstance().isVirtualMode();
+        if(enableVirtual && !removeLut && fileData.getPath().toString().endsWith(".tif") && getFirstOutputSlot().isVirtual()) {
             // Alternative path for virtual data to get rid of load-saving-load
             // Only works for something that is directly compatible to the row storage format (TIFF)
             List<JIPipeAnnotation> traits = new ArrayList<>(dataBatch.getAnnotations().values());
@@ -162,7 +163,6 @@ public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
      * @return the generated data
      */
     public static ImagePlus readImageFrom(Path fileName, JIPipeProgressInfo progressInfo) {
-        Opener opener = new Opener();
         ImagePlus image;
         String fileNameString = fileName.getFileName().toString();
         if (fileNameString.endsWith(".ome.tiff") || fileNameString.endsWith(".ome.tif") || fileNameString.endsWith(".czi")) {

@@ -59,7 +59,6 @@ public class JIPipeHorizontalDataSlotUI extends JIPipeDataSlotUI {
         super(workbench, algorithmUI, compartment, slot);
         initialize();
         reloadButtonStatus();
-        slot.getNode().getEventBus().register(this);
     }
 
     @Override
@@ -78,7 +77,7 @@ public class JIPipeHorizontalDataSlotUI extends JIPipeDataSlotUI {
             }
             if (noSaveLabel != null) {
                 if (getSlot().getNode() instanceof JIPipeAlgorithm) {
-                    noSaveLabel.setVisible(!((JIPipeAlgorithm) getSlot().getNode()).isSaveOutputs());
+                    noSaveLabel.setVisible(!getSlot().getDefinition().isSaveOutputs());
                 } else {
                     noSaveLabel.setVisible(false);
                 }
@@ -187,12 +186,4 @@ public class JIPipeHorizontalDataSlotUI extends JIPipeDataSlotUI {
         Point inGrid = JIPipeGraphViewMode.Vertical.realLocationToGrid(new Point(width, JIPipeGraphViewMode.Vertical.getGridHeight()), 1.0);
         return new Dimension(inGrid.x, inGrid.y);
     }
-
-    @Subscribe
-    public void onNodeParameterChanged(ParameterChangedEvent event) {
-        if (event.getSource() == getSlot().getNode() && "jipipe:algorithm:save-outputs".equals(event.getKey())) {
-            reloadButtonStatus();
-        }
-    }
-
 }
