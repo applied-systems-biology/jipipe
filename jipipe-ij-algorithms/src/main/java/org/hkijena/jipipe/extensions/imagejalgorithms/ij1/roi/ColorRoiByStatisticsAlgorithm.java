@@ -63,6 +63,7 @@ public class ColorRoiByStatisticsAlgorithm extends ImageRoiProcessorAlgorithm {
     public ColorRoiByStatisticsAlgorithm(JIPipeNodeInfo info) {
         super(info, ROIListData.class, "Output");
         this.mapFillColor.setEnabled(true);
+        roiStatisticsAlgorithm.setAllSlotsVirtual(false, false, null);
     }
 
     /**
@@ -72,6 +73,7 @@ public class ColorRoiByStatisticsAlgorithm extends ImageRoiProcessorAlgorithm {
      */
     public ColorRoiByStatisticsAlgorithm(ColorRoiByStatisticsAlgorithm other) {
         super(other);
+        roiStatisticsAlgorithm.setAllSlotsVirtual(false, false, null);
         this.fillMeasurement = other.fillMeasurement;
         this.lineMeasurement = other.lineMeasurement;
         this.mapFillColor = new OptionalColorMapParameter(other.mapFillColor);

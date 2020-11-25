@@ -169,6 +169,7 @@ public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
             // Pass to bioformats
             progressInfo.log("Using BioFormats importer. Please use the Bio-Formats importer node for more settings.");
             BioFormatsImporter importer = JIPipe.createNode(BioFormatsImporter.class);
+            importer.setAllSlotsVirtual(false, false, null);
             importer.getFirstInputSlot().addData(new FileData(fileName), progressInfo);
             importer.run(progressInfo);
             image = importer.getFirstOutputSlot().getData(0, OMEImageData.class, progressInfo).getImage();
@@ -180,6 +181,7 @@ public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
             // Pass to bioformats
             progressInfo.log("Using BioFormats importer. Please use the Bio-Formats importer node for more settings.");
             BioFormatsImporter importer = JIPipe.createNode(BioFormatsImporter.class);
+            importer.setAllSlotsVirtual(false, false, null);
             importer.getFirstInputSlot().addData(new FileData(fileName), progressInfo);
             importer.run(progressInfo);
             image = importer.getFirstOutputSlot().getData(0, OMEImageData.class, progressInfo).getImage();

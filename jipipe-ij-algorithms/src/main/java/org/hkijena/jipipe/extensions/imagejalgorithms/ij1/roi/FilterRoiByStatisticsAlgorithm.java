@@ -71,12 +71,14 @@ public class FilterRoiByStatisticsAlgorithm extends ImageRoiProcessorAlgorithm {
      */
     public FilterRoiByStatisticsAlgorithm(FilterRoiByStatisticsAlgorithm other) {
         super(other);
+        roiStatisticsAlgorithm.setAllSlotsVirtual(false, false, null);
         this.filters = new DefaultExpressionParameter(other.filters);
         this.measurements = new ImageStatisticsSetParameter(other.measurements);
     }
 
     @Override
     public void run(JIPipeProgressInfo progressInfo) {
+        roiStatisticsAlgorithm.setAllSlotsVirtual(false, false, null);
         // Set parameters of ROI statistics algorithm
         roiStatisticsAlgorithm.setMeasurements(measurements);
 

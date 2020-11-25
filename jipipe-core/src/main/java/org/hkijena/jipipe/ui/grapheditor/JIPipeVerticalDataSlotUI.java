@@ -126,7 +126,7 @@ public class JIPipeVerticalDataSlotUI extends JIPipeDataSlotUI {
 
         if (getSlot().isOutput() && getSlot().getNode() instanceof JIPipeAlgorithm) {
             virtualLabel = new ZoomLabel("", new ZoomIcon(UIUtils.getIconFromResources("actions/rabbitvcs-drive.png"), getGraphUI()), getGraphUI());
-            virtualLabel.setToolTipText("Data is stored on hard drive when not in use (virtual data)");
+            virtualLabel.setToolTipText("Data is stored on hard drive when not in use (reduced memory mode). Enable 'Reduce memory' at the bottom of the window for this to take effect.");
             virtualLabel.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
             centerPanel.add(virtualLabel);
 

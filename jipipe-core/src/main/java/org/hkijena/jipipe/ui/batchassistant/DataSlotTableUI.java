@@ -14,15 +14,14 @@
 package org.hkijena.jipipe.ui.batchassistant;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
-import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
-import org.hkijena.jipipe.ui.cache.JIPipeDataCellRenderer;
+import org.hkijena.jipipe.ui.cache.JIPipeDataInfoCellRenderer;
 import org.hkijena.jipipe.ui.cache.JIPipeDataSlotRowUI;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.SearchTextField;
@@ -54,7 +53,7 @@ public class DataSlotTableUI extends JIPipeProjectWorkbenchPanel {
     private JXTable table;
     private FormPanel rowUIList;
     private SearchTextField searchTextField = new SearchTextField();
-    private WrapperTableModel dataTable;
+    private DataSlotTableModel dataTable;
 
     /**
      * @param workbenchUI the workbench UI
@@ -69,7 +68,7 @@ public class DataSlotTableUI extends JIPipeProjectWorkbenchPanel {
     }
 
     private void reloadTable() {
-        dataTable = new WrapperTableModel(slot);
+        dataTable = new DataSlotTableModel(slot);
         table.setModel(dataTable);
         table.setRowFilter(new SearchTextFieldTableRowFilter(searchTextField));
         TableColumnModel columnModel = table.getColumnModel();
@@ -86,7 +85,7 @@ public class DataSlotTableUI extends JIPipeProjectWorkbenchPanel {
         setLayout(new BorderLayout());
         table = new JXTable();
         table.setRowHeight(25);
-        table.setDefaultRenderer(JIPipeData.class, new JIPipeDataCellRenderer());
+        table.setDefaultRenderer(JIPipeDataInfo.class, new JIPipeDataInfoCellRenderer());
         table.setDefaultRenderer(JIPipeAnnotation.class, new JIPipeTraitTableCellRenderer());
         table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
@@ -161,7 +160,7 @@ public class DataSlotTableUI extends JIPipeProjectWorkbenchPanel {
     /**
      * Wraps around a {@link JIPipeDataSlot} to display a "toString" column
      */
-    public static class WrapperTableModel implements TableModel {
+    public static class DataSlotTableModel implements TableModel {
 
         private final JIPipeDataSlot slot;
 
@@ -170,7 +169,7 @@ public class DataSlotTableUI extends JIPipeProjectWorkbenchPanel {
          *
          * @param slot the wrapped slot
          */
-        public WrapperTableModel(JIPipeDataSlot slot) {
+        public DataSlotTableModel(JIPipeDataSlot slot) {
             this.slot = slot;
         }
 
@@ -181,28 +180,28 @@ public class DataSlotTableUI extends JIPipeProjectWorkbenchPanel {
 
         @Override
         public int getColumnCount() {
-            return slot.getColumnCount() + 1;
+            return slot.getAnnotationColumns().size() + 1;
         }
 
         @Override
         public String getColumnName(int columnIndex) {
             if (columnIndex == 0)
-                return slot.getColumnName(0);
+                return "Type";
             else if (columnIndex == 1)
                 return "String representation";
             else {
-                return slot.getColumnName(columnIndex - 1);
+                return slot.getAnnotationColumns().get(columnIndex - 1);
             }
         }
 
         @Override
         public Class<?> getColumnClass(int columnIndex) {
             if (columnIndex == 0)
-                return slot.getColumnClass(0);
+                return JIPipeDataInfo.class;
             else if (columnIndex == 1)
                 return String.class;
             else {
-                return slot.getColumnClass(columnIndex - 1);
+                return JIPipeAnnotation.class;
             }
         }
 
@@ -214,11 +213,11 @@ public class DataSlotTableUI extends JIPipeProjectWorkbenchPanel {
         @Override
         public Object getValueAt(int rowIndex, int columnIndex) {
             if (columnIndex == 0)
-                return slot.getValueAt(rowIndex, 0);
+                return JIPipeDataInfo.getInstance(slot.getDataClass(rowIndex));
             else if (columnIndex == 1)
-                return "" + slot.getData(rowIndex, JIPipeData.class, new JIPipeProgressInfo());
+                return "" + slot.getVirtualData(rowIndex).getStringRepresentation();
             else {
-                return slot.getValueAt(rowIndex, columnIndex - 1);
+                return slot.getAnnotation(rowIndex, columnIndex - 1);
             }
         }
 
@@ -239,7 +238,7 @@ public class DataSlotTableUI extends JIPipeProjectWorkbenchPanel {
     }
 
     /**
-     * Renders the column header of {@link WrapperTableModel}
+     * Renders the column header of {@link DataSlotTableModel}
      */
     public static class WrapperColumnHeaderRenderer implements TableCellRenderer {
         private final JIPipeDataSlot dataTable;

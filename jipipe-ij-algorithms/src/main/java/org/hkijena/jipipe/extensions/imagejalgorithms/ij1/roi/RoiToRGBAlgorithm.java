@@ -117,6 +117,7 @@ public class RoiToRGBAlgorithm extends JIPipeIteratingAlgorithm {
         if (drawLabel) {
             RoiStatisticsAlgorithm statisticsAlgorithm =
                     JIPipe.createNode("ij1-roi-statistics", RoiStatisticsAlgorithm.class);
+            statisticsAlgorithm.setAllSlotsVirtual(false, false, null);
             statisticsAlgorithm.setOverrideReferenceImage(true);
             statisticsAlgorithm.getMeasurements().setNativeValue(Measurement.Centroid.getNativeValue());
             statisticsAlgorithm.getInputSlot("ROI").addData(inputData, progressInfo);

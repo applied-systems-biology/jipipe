@@ -62,6 +62,7 @@ public abstract class ImageRoiProcessorAlgorithm extends JIPipeIteratingAlgorith
                 .build());
         toMaskAlgorithm = JIPipe.createNode("ij1-roi-to-mask-unreferenced", UnreferencedRoiToMaskAlgorithm.class);
         registerSubParameter(toMaskAlgorithm);
+        toMaskAlgorithm.setAllSlotsVirtual(false, false, null);
     }
 
     /**
@@ -75,6 +76,7 @@ public abstract class ImageRoiProcessorAlgorithm extends JIPipeIteratingAlgorith
         this.toMaskAlgorithm = new UnreferencedRoiToMaskAlgorithm(other.toMaskAlgorithm);
         this.preferAssociatedImage = other.preferAssociatedImage;
         registerSubParameter(toMaskAlgorithm);
+        toMaskAlgorithm.setAllSlotsVirtual(false, false, null);
     }
 
     /**

@@ -125,7 +125,7 @@ public class JIPipeMergedDataSlotTable implements TableModel {
         else if (columnIndex == 2)
             return Integer.class;
         else if (columnIndex == 3)
-            return JIPipeData.class;
+            return JIPipeDataInfo.class;
         else if (columnIndex == 4)
             return Component.class;
         else if (columnIndex == 5)
@@ -148,14 +148,13 @@ public class JIPipeMergedDataSlotTable implements TableModel {
         else if (columnIndex == 2)
             return rowList.get(rowIndex);
         else if (columnIndex == 3)
-            return slotList.get(rowIndex).getData(rowList.get(rowIndex), JIPipeData.class, new JIPipeProgressInfo());
+            return JIPipeDataInfo.getInstance(slotList.get(rowIndex).getDataClass(rowList.get(rowIndex)));
         else if (columnIndex == 4) {
             revalidatePreviewCache();
             Component preview = previewCache.get(rowIndex);
             if (preview == null) {
                 if (GeneralDataSettings.getInstance().isGenerateCachePreviews()) {
-                    JIPipeData data = slotList.get(rowIndex).getData(rowList.get(rowIndex), JIPipeData.class, new JIPipeProgressInfo());
-                    preview = new JIPipeCachedDataPreview(table, data, true);
+                    preview = new JIPipeCachedDataPreview(table, slotList.get(rowIndex).getVirtualData(rowList.get(rowIndex)), true);
                     previewCache.set(rowIndex, preview);
                 } else {
                     preview = new JLabel("N/A");

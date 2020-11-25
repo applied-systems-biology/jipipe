@@ -61,6 +61,7 @@ public class IlluminationCorrection2DAlgorithm extends JIPipeSimpleIteratingAlgo
                 .allowOutputSlotInheritance(true)
                 .seal()
                 .build());
+        gaussianAlgorithm.setAllSlotsVirtual(false, false, null);
         gaussianAlgorithm.setSigmaX(20);
         gaussianAlgorithm.setSigmaY(20);
     }
@@ -73,6 +74,7 @@ public class IlluminationCorrection2DAlgorithm extends JIPipeSimpleIteratingAlgo
     public IlluminationCorrection2DAlgorithm(IlluminationCorrection2DAlgorithm other) {
         super(other);
         this.gaussianAlgorithm = (GaussianBlur2DAlgorithm) other.gaussianAlgorithm.duplicate();
+        gaussianAlgorithm.setAllSlotsVirtual(false, false, null);
     }
 
     @Override

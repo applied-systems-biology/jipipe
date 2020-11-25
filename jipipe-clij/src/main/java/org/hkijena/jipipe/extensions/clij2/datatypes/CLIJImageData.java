@@ -66,7 +66,7 @@ public class CLIJImageData implements JIPipeData {
     }
 
     @Override
-    public void flush() {
+    public void destroy() {
         image.close();
         image = null;
     }

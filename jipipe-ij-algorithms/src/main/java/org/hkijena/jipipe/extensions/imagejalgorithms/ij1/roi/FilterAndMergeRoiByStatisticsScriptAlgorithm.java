@@ -76,6 +76,7 @@ public class FilterAndMergeRoiByStatisticsScriptAlgorithm extends ImageRoiProces
     public FilterAndMergeRoiByStatisticsScriptAlgorithm(JIPipeNodeInfo info) {
         super(info, ROIListData.class, "Output");
         registerSubParameter(scriptParameters);
+        roiStatisticsAlgorithm.setAllSlotsVirtual(false, false, null);
     }
 
     /**
@@ -88,6 +89,7 @@ public class FilterAndMergeRoiByStatisticsScriptAlgorithm extends ImageRoiProces
         this.code = new PythonScript(other.code);
         this.scriptParameters = new JIPipeDynamicParameterCollection(other.scriptParameters);
         registerSubParameter(scriptParameters);
+        roiStatisticsAlgorithm.setAllSlotsVirtual(false, false, null);
     }
 
     @JIPipeDocumentation(name = "Load example", description = "Loads example parameters that showcase how to use this algorithm.")

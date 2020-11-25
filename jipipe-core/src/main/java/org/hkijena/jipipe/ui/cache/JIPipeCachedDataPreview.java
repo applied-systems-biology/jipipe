@@ -13,7 +13,9 @@
 
 package org.hkijena.jipipe.ui.cache;
 
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.data.JIPipeVirtualData;
 import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -28,17 +30,16 @@ import java.util.concurrent.ExecutionException;
  */
 public class JIPipeCachedDataPreview extends JPanel {
     private Component parentComponent;
-    private JIPipeData data;
+    private JIPipeVirtualData data;
     private Worker worker;
 
     /**
      * Creates a new instance
-     *
-     * @param parentComponent The parent component that contains the preview
+     *  @param parentComponent The parent component that contains the preview
      * @param data            the data
      * @param deferRendering  if true, the preview will not be immediately rendered
      */
-    public JIPipeCachedDataPreview(Component parentComponent, JIPipeData data, boolean deferRendering) {
+    public JIPipeCachedDataPreview(Component parentComponent, JIPipeVirtualData data, boolean deferRendering) {
         this.parentComponent = parentComponent;
         this.data = data;
         initialize();
@@ -81,7 +82,7 @@ public class JIPipeCachedDataPreview extends JPanel {
         add(label, BorderLayout.CENTER);
     }
 
-    public JIPipeData getData() {
+    public JIPipeVirtualData getData() {
         return data;
     }
 
@@ -99,7 +100,7 @@ public class JIPipeCachedDataPreview extends JPanel {
 
         @Override
         protected Component doInBackground() throws Exception {
-            return parent.data.preview(width, width);
+            return parent.data.getData(new JIPipeProgressInfo()).preview(width, width);
         }
 
         @Override

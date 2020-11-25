@@ -13,11 +13,14 @@
 
 package org.hkijena.jipipe.api.data;
 
+import org.apache.commons.io.FileSystemUtils;
+import org.apache.commons.io.FileUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.extensions.settings.VirtualDataSettings;
+import org.hkijena.jipipe.utils.PathUtils;
 
+import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.nio.file.Path;
 
@@ -53,30 +56,36 @@ public class JIPipeVirtualData {
         this.stringRepresentation = stringRepresentation;
     }
 
-    /**
-     * Copies the virtual data. This is a shallow copy
-     * @param other the original
-     */
-    public JIPipeVirtualData(JIPipeVirtualData other) {
-        this.dataClass = other.dataClass;
-        this.data = other.data;
-        this.dataReference = other.dataReference;
-        this.virtualStoragePath = other.virtualStoragePath;
-    }
-
     public synchronized boolean isVirtual() {
         return data == null;
     }
 
-    public synchronized void makeVirtual(JIPipeProgressInfo progressInfo) {
+    @Override
+    protected void finalize() throws Throwable {
+        destroy();
+        super.finalize();
+    }
+
+    /**
+     * Makes the data virtual if not already
+     * @param progressInfo progress
+     * @param discard if existing data should be saved or discarded. Discard has no effect if data was not saved, yet.
+     */
+    public synchronized void makeVirtual(JIPipeProgressInfo progressInfo, boolean discard) {
         if(!isVirtual()) {
             if(JIPipe.getInstance() != null && !VirtualDataSettings.getInstance().isVirtualMode())
                 return;
+            boolean canDiscard = virtualStoragePath.getPath() != null;
             if(virtualStoragePath.getPath() == null) {
                 virtualStoragePath.setPath(VirtualDataSettings.generateTempDirectory("virtual"));
             }
-            progressInfo.log("Saving data of type " + JIPipeDataInfo.getInstance(dataClass).getName() + " to virtual path " + virtualStoragePath.getPath());
-            data.saveTo(virtualStoragePath.getPath(), "virtual", false, progressInfo);
+            if(canDiscard && discard) {
+                progressInfo.log("Unloading data of type " + JIPipeDataInfo.getInstance(dataClass).getName());
+            }
+            else {
+                progressInfo.log("Saving data of type " + JIPipeDataInfo.getInstance(dataClass).getName() + " to virtual path " + virtualStoragePath.getPath());
+                data.saveTo(virtualStoragePath.getPath(), "virtual", false, progressInfo);
+            }
             dataReference = new WeakReference<>(data);
             data = null;
             System.gc();
@@ -91,17 +100,23 @@ public class JIPipeVirtualData {
             progressInfo.log("Loading data of type " + JIPipeDataInfo.getInstance(dataClass).getName() + " from virtual path " + virtualStoragePath.getPath());
             data = JIPipe.importData(virtualStoragePath.getPath(), dataClass);
             dataReference = null;
+            stringRepresentation = "" + data;
         }
     }
 
-    public JIPipeData getData(JIPipeProgressInfo progressInfo) {
+    public synchronized JIPipeData getData(JIPipeProgressInfo progressInfo) {
+        boolean shouldBeVirtual = isVirtual();
         if(dataReference != null) {
             JIPipeData existing = dataReference.get();
             if(existing != null)
                 return existing;
         }
         makeNonVirtual(progressInfo);
-        return data;
+        JIPipeData cachedData = data;
+        if(shouldBeVirtual && !isVirtual()) {
+            makeVirtual(progressInfo, true);
+        }
+        return cachedData;
     }
 
     public String getStringRepresentation() {
@@ -110,6 +125,22 @@ public class JIPipeVirtualData {
 
     public Class<? extends JIPipeData> getDataClass() {
         return dataClass;
+    }
+
+    public void destroy() {
+        if(virtualStoragePath != null && virtualStoragePath.getPath() != null) {
+            try {
+                FileUtils.deleteDirectory(virtualStoragePath.getPath().toFile());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        data = null;
+        dataReference = null;
+        if(virtualStoragePath != null) {
+            virtualStoragePath.setPath(null);
+            virtualStoragePath = null;
+        }
     }
 
     private static class PathContainer {

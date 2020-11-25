@@ -84,7 +84,7 @@ public interface JIPipeData {
      * Called when the data is flushed
      * Use this to help Java to clean up the memory.
      */
-    default void flush() {
+    default void destroy() {
     }
 
     /**

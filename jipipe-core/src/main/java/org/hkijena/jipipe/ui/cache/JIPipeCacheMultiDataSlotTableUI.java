@@ -19,6 +19,7 @@ import org.hkijena.jipipe.api.JIPipeProjectCache;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeMergedDataSlotTable;
 import org.hkijena.jipipe.api.events.ParameterChangedEvent;
@@ -117,7 +118,7 @@ public class JIPipeCacheMultiDataSlotTableUI extends JIPipeProjectWorkbenchPanel
             table.setRowHeight(GeneralDataSettings.getInstance().getPreviewSize());
         else
             table.setRowHeight(25);
-        table.setDefaultRenderer(JIPipeData.class, new JIPipeDataCellRenderer());
+        table.setDefaultRenderer(JIPipeDataInfo.class, new JIPipeDataInfoCellRenderer());
         table.setDefaultRenderer(Component.class, new JIPipeComponentCellRenderer());
         table.setDefaultRenderer(JIPipeGraphNode.class, new JIPipeNodeTableCellRenderer());
         table.setDefaultRenderer(JIPipeProjectCompartment.class, new JIPipeProjectCompartmentTableCellRenderer());

@@ -21,8 +21,6 @@ import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.utils.StringUtils;
 
-import javax.swing.event.TableModelListener;
-import javax.swing.table.TableModel;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -38,7 +36,7 @@ import java.util.Set;
  * A data slot holds an {@link JIPipeData} instance.
  * Slots are part of an {@link JIPipeGraphNode}
  */
-public class JIPipeDataSlot implements TableModel {
+public class JIPipeDataSlot {
     private JIPipeGraphNode node;
     private JIPipeDataSlotInfo definition;
     private String name;
@@ -228,7 +226,7 @@ public class JIPipeDataSlot implements TableModel {
             traitArray.set(getRowCount() - 1, trait);
         }
         if(virtual)
-            virtualData.makeVirtual(progressInfo);
+            virtualData.makeVirtual(progressInfo, false);
     }
 
     /**
@@ -357,8 +355,9 @@ public class JIPipeDataSlot implements TableModel {
             save(basePath, saveProgress);
         }
         for (int i = 0; i < data.size(); ++i) {
-            if (destroyData && !data.get(i).isVirtual()) {
-                data.get(i).getData(saveProgress.resolve("Load virtual data")).flush();
+            if (destroyData) {
+                if( !data.get(i).isVirtual())
+                    data.get(i).getData(saveProgress.resolve("Load virtual data")).destroy();
             }
             data.set(i, null);
         }
@@ -507,60 +506,8 @@ public class JIPipeDataSlot implements TableModel {
         return data.get(row).getDataClass();
     }
 
-    @Override
     public int getRowCount() {
         return data.size();
-    }
-
-    @Override
-    public int getColumnCount() {
-        return annotationColumns.size() + 1;
-    }
-
-    @Override
-    public String getColumnName(int columnIndex) {
-        if (columnIndex == 0)
-            return "Data";
-        else
-            return annotationColumns.get(columnIndex - 1);
-    }
-
-    @Override
-    public Class<?> getColumnClass(int columnIndex) {
-        if (columnIndex == 0)
-            return JIPipeData.class;
-        else {
-            return JIPipeAnnotation.class;
-        }
-    }
-
-    @Override
-    public boolean isCellEditable(int rowIndex, int columnIndex) {
-        return false;
-    }
-
-    @Override
-    public Object getValueAt(int rowIndex, int columnIndex) {
-        if (columnIndex == 0) {
-            return data.get(rowIndex);
-        } else {
-            return annotations.get(annotationColumns.get(columnIndex - 1)).get(rowIndex);
-        }
-    }
-
-    @Override
-    public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
-
-    }
-
-    @Override
-    public void addTableModelListener(TableModelListener l) {
-
-    }
-
-    @Override
-    public void removeTableModelListener(TableModelListener l) {
-
     }
 
     /**
@@ -579,7 +526,7 @@ public class JIPipeDataSlot implements TableModel {
         if (destroyData) {
             for (JIPipeVirtualData item : data) {
                 if(!item.isVirtual())
-                    item.getData(new JIPipeProgressInfo()).flush();
+                    item.getData(new JIPipeProgressInfo()).destroy();
             }
         }
         data.clear();
@@ -654,7 +601,7 @@ public class JIPipeDataSlot implements TableModel {
         for (int row = 0; row < getRowCount(); row++) {
             JIPipeVirtualData virtualData = getVirtualData(row);
             if(virtualData.isVirtual()) {
-                virtualData.makeVirtual(subProgress.resolveAndLog("Row", row, getRowCount()));
+                virtualData.makeVirtual(subProgress.resolveAndLog("Row", row, getRowCount()), false);
             }
         }
     }
@@ -671,5 +618,10 @@ public class JIPipeDataSlot implements TableModel {
         else {
             makeDataNonVirtual(progressInfo);
         }
+    }
+
+    public JIPipeAnnotation getAnnotation(int row, int column) {
+        String annotation = annotationColumns.get(column);
+        return annotations.get(annotation).get(row);
     }
 }
