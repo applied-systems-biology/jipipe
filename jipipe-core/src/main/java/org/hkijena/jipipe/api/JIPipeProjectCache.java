@@ -39,6 +39,7 @@ public class JIPipeProjectCache {
     private final Map<JIPipeGraphNode, Map<State, Map<String, JIPipeDataSlot>>> cacheEntries = new HashMap<>();
     private final Map<JIPipeDataInfo, Integer> cachedDataTypes = new HashMap<>();
     private int cachedRowNumber = 0;
+    private boolean disableTriggerEvent = false;
 
     /**
      * Creates a new instance
@@ -92,7 +93,8 @@ public class JIPipeProjectCache {
         slotMap.put(slot.getName(), slotCopy);
         addToStatistics(slotCopy);
 
-        eventBus.post(new ModifiedEvent(this));
+        if(!disableTriggerEvent)
+            eventBus.post(new ModifiedEvent(this));
     }
 
     /**
@@ -154,7 +156,8 @@ public class JIPipeProjectCache {
                 }
             }
             cacheEntries.remove(source);
-            eventBus.post(new ModifiedEvent(this));
+            if(!disableTriggerEvent)
+                eventBus.post(new ModifiedEvent(this));
         }
     }
 
@@ -175,7 +178,8 @@ public class JIPipeProjectCache {
                 }
             }
             stateMap.remove(stateId);
-            eventBus.post(new ModifiedEvent(this));
+            if(!disableTriggerEvent)
+                eventBus.post(new ModifiedEvent(this));
         }
     }
 
@@ -193,7 +197,8 @@ public class JIPipeProjectCache {
         cacheEntries.clear();
         cachedRowNumber = 0;
         cachedDataTypes.clear();
-        eventBus.post(new ModifiedEvent(this));
+        if(!disableTriggerEvent)
+            eventBus.post(new ModifiedEvent(this));
     }
 
     private void addToStatistics(JIPipeDataSlot slot) {
@@ -219,36 +224,43 @@ public class JIPipeProjectCache {
      * @param compareProjectStates if true, states that are not within the project anymore are also removed
      */
     public void autoClean(boolean compareSlots, boolean compareProjectStates) {
-        JIPipeProjectCacheQuery cacheQuery = new JIPipeProjectCacheQuery(project);
-        List<JIPipeGraphNode> traversedAlgorithms = null;
-        for (JIPipeGraphNode algorithm : ImmutableList.copyOf(cacheEntries.keySet())) {
-            if (project.getGraph().containsNode(algorithm)) {
-                if (compareSlots || compareProjectStates) {
-                    if (traversedAlgorithms == null) {
-                        traversedAlgorithms = project.getGraph().traverseAlgorithms();
-                    }
-                    State stateId = cacheQuery.getCachedId(algorithm);
+        try {
+            disableTriggerEvent = true;
+            JIPipeProjectCacheQuery cacheQuery = new JIPipeProjectCacheQuery(project);
+            List<JIPipeGraphNode> traversedAlgorithms = null;
+            for (JIPipeGraphNode algorithm : ImmutableList.copyOf(cacheEntries.keySet())) {
+                if (project.getGraph().containsNode(algorithm)) {
+                    if (compareSlots || compareProjectStates) {
+                        if (traversedAlgorithms == null) {
+                            traversedAlgorithms = project.getGraph().traverseAlgorithms();
+                        }
+                        State stateId = cacheQuery.getCachedId(algorithm);
 
-                    Map<State, Map<String, JIPipeDataSlot>> stateMap = cacheEntries.getOrDefault(algorithm, null);
-                    for (Map.Entry<State, Map<String, JIPipeDataSlot>> stateEntry : ImmutableList.copyOf(stateMap.entrySet())) {
-                        if (compareProjectStates) {
-                            if (!Objects.equals(stateEntry.getKey(), stateId)) {
-                                clear(algorithm, stateEntry.getKey());
-                            }
-                        } else {
-                            for (String slotName : stateEntry.getValue().keySet()) {
-                                if (!algorithm.getOutputSlotMap().containsKey(slotName) || !algorithm.getOutputSlotMap().get(slotName).isOutput()) {
+                        Map<State, Map<String, JIPipeDataSlot>> stateMap = cacheEntries.getOrDefault(algorithm, null);
+                        for (Map.Entry<State, Map<String, JIPipeDataSlot>> stateEntry : ImmutableList.copyOf(stateMap.entrySet())) {
+                            if (compareProjectStates) {
+                                if (!Objects.equals(stateEntry.getKey(), stateId)) {
                                     clear(algorithm, stateEntry.getKey());
-                                    break;
+                                }
+                            } else {
+                                for (String slotName : stateEntry.getValue().keySet()) {
+                                    if (!algorithm.getOutputSlotMap().containsKey(slotName) || !algorithm.getOutputSlotMap().get(slotName).isOutput()) {
+                                        clear(algorithm, stateEntry.getKey());
+                                        break;
+                                    }
                                 }
                             }
                         }
                     }
+                } else {
+                    clear(algorithm);
                 }
-            } else {
-                clear(algorithm);
             }
         }
+        finally {
+            disableTriggerEvent = false;
+        }
+        eventBus.post(new ModifiedEvent(this));
     }
 
     /**
