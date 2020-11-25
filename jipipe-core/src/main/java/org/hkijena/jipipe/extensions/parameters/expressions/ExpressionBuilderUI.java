@@ -58,6 +58,7 @@ public class ExpressionBuilderUI extends JPanel {
     public static final Color COLOR_CONSTANT = Color.BLUE;
     public static final Color COLOR_OPERATOR = new Color(0x854745);
     public static final Color COLOR_FUNCTION = new Color(0xb38814);
+    public static final Color COLOR_STRING = new Color(0xe80da5);
     private static final EntryRankingFunction RANKING_FUNCTION = new EntryRankingFunction();
     private static final Function<Object, String> ENTRY_TO_STRING_FUNCTION = new EntryToStringFunction();
     private Set<ExpressionParameterVariable> variables;

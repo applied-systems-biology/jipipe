@@ -341,7 +341,9 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
         saveProjectButton.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK));
         saveProjectButton.addActionListener(e -> {
             window.saveProjectAs(true);
-            validateProject(true);
+            if(GeneralUISettings.getInstance().isValidateOnSave()) {
+                validateProject(true);
+            }
         });
         projectMenu.add(saveProjectButton);
 
@@ -351,7 +353,9 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
         saveProjectAsButton.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK + KeyEvent.SHIFT_DOWN_MASK));
         saveProjectAsButton.addActionListener(e -> {
             window.saveProjectAs(false);
-            validateProject(true);
+            if(GeneralUISettings.getInstance().isValidateOnSave()) {
+                validateProject(true);
+            }
         });
         projectMenu.add(saveProjectAsButton);
 

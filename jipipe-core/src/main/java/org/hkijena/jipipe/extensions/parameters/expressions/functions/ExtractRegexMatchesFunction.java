@@ -41,7 +41,7 @@ public class ExtractRegexMatchesFunction extends ExpressionFunction {
         Matcher matcher = Pattern.compile(pattern).matcher(haystack);
         if (matcher.find()) {
             ArrayList<Object> result = new ArrayList<>();
-            for (int i = 0; i < matcher.groupCount(); i++) {
+            for (int i = 0; i <= matcher.groupCount(); i++) {
                 result.add(matcher.group(i));
             }
             return result;

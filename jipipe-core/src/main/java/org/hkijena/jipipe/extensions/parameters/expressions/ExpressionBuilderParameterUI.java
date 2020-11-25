@@ -37,6 +37,7 @@ public class ExpressionBuilderParameterUI extends JPanel {
     private JCheckBox booleanEditor;
     private JSpinner numberEditor;
     private JTextField variableEditor;
+    private JTextField stringEditor;
     private JPanel editorPanel;
 
     public ExpressionBuilderParameterUI() {
@@ -60,6 +61,11 @@ public class ExpressionBuilderParameterUI extends JPanel {
         variableEditor = new JTextField();
         variableEditor.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
         variableEditor.setForeground(ExpressionBuilderUI.COLOR_VARIABLE);
+
+        // Variable editor
+        stringEditor = new JTextField();
+        stringEditor.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
+        stringEditor.setForeground(ExpressionBuilderUI.COLOR_STRING);
 
         // Number editor
         numberEditor = new JSpinner(new SpinnerNumberModel(0.0, -Double.MAX_VALUE, Double.MAX_VALUE, 1));
@@ -91,6 +97,7 @@ public class ExpressionBuilderParameterUI extends JPanel {
         editorPanel.add(variableEditor, Mode.Variable.name());
         editorPanel.add(numberEditor, Mode.Number.name());
         editorPanel.add(booleanEditor, Mode.Boolean.name());
+        editorPanel.add(stringEditor, Mode.String.name());
         {
             JPanel expressionEditorPanel = new JPanel(new BorderLayout());
             expressionEditorPanel.setBackground(UIManager.getColor("TextArea.background"));
@@ -116,6 +123,8 @@ public class ExpressionBuilderParameterUI extends JPanel {
                 return DefaultExpressionEvaluator.escapeVariable(variableEditor.getText());
             case Expression:
                 return expressionEditor.getText();
+            case String:
+                return "\"" + DefaultExpressionEvaluator.escapeString(stringEditor.getText()) + "\"";
             default:
                 throw new UnsupportedOperationException();
         }
@@ -130,6 +139,7 @@ public class ExpressionBuilderParameterUI extends JPanel {
         Expression,
         Variable,
         Boolean,
-        Number
+        Number,
+        String
     }
 }
