@@ -343,10 +343,9 @@ public class JIPipeDataSlot {
      * Saves the stored data to the provided storage path and sets data to null
      * Warning: Ensure that depending input slots do not use this slot, anymore!
      *  @param basePath    the base path to where all results are stored relative to. If null, there is no base path
-     * @param destroyData the the containing data should be destroyed
      * @param saveProgress progress that reports the saving
      */
-    public void flush(Path basePath, boolean destroyData, JIPipeProgressInfo saveProgress) {
+    public void flush(Path basePath, JIPipeProgressInfo saveProgress) {
         if (getNode() instanceof JIPipeAlgorithm) {
             if (((JIPipeAlgorithm) getNode()).isSaveOutputs()) {
                 save(basePath, saveProgress);
@@ -354,13 +353,7 @@ public class JIPipeDataSlot {
         } else {
             save(basePath, saveProgress);
         }
-        for (int i = 0; i < data.size(); ++i) {
-            if (destroyData) {
-                if( !data.get(i).isVirtual())
-                    data.get(i).getData(saveProgress.resolve("Load virtual data")).destroy();
-            }
-            data.set(i, null);
-        }
+       destroy();
     }
 
     /**
@@ -520,18 +513,12 @@ public class JIPipeDataSlot {
     /**
      * Removes all data from this slot
      *
-     * @param destroyData if each data item should be destroyed via its flush() function
      */
-    public void clearData(boolean destroyData) {
-        if (destroyData) {
-            for (JIPipeVirtualData item : data) {
-                if(!item.isVirtual())
-                    item.getData(new JIPipeProgressInfo()).destroy();
-            }
-        }
+    public void clearData() {
         data.clear();
         annotationColumns.clear();
         annotations.clear();
+        System.gc();
     }
 
     public JIPipeDataSlotInfo getDefinition() {
@@ -623,5 +610,16 @@ public class JIPipeDataSlot {
     public JIPipeAnnotation getAnnotation(int row, int column) {
         String annotation = annotationColumns.get(column);
         return annotations.get(annotation).get(row);
+    }
+
+    /**
+     * Similar to flush(), but only destroys the data.
+     * This will keep the annotations, and replace all data items by null
+     */
+    public void destroy() {
+        for (int i = 0; i < data.size(); ++i) {
+            data.set(i, null);
+        }
+        System.gc();
     }
 }

@@ -62,7 +62,21 @@ public class JIPipeVirtualData {
 
     @Override
     protected void finalize() throws Throwable {
-        destroy();
+
+        if(virtualStoragePath != null && virtualStoragePath.getPath() != null) {
+            try {
+                FileUtils.deleteDirectory(virtualStoragePath.getPath().toFile());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        data = null;
+        dataReference = null;
+        if(virtualStoragePath != null) {
+            virtualStoragePath.setPath(null);
+            virtualStoragePath = null;
+        }
+
         super.finalize();
     }
 
@@ -125,22 +139,6 @@ public class JIPipeVirtualData {
 
     public Class<? extends JIPipeData> getDataClass() {
         return dataClass;
-    }
-
-    public void destroy() {
-        if(virtualStoragePath != null && virtualStoragePath.getPath() != null) {
-            try {
-                FileUtils.deleteDirectory(virtualStoragePath.getPath().toFile());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        data = null;
-        dataReference = null;
-        if(virtualStoragePath != null) {
-            virtualStoragePath.setPath(null);
-            virtualStoragePath = null;
-        }
     }
 
     private static class PathContainer {

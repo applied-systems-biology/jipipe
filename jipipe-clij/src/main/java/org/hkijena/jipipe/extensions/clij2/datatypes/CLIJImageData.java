@@ -66,9 +66,10 @@ public class CLIJImageData implements JIPipeData {
     }
 
     @Override
-    public void destroy() {
+    public void finalize() throws Throwable {
         image.close();
         image = null;
+        super.finalize();
     }
 
     @Override

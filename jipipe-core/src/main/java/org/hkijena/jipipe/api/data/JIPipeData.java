@@ -81,13 +81,6 @@ public interface JIPipeData {
     }
 
     /**
-     * Called when the data is flushed
-     * Use this to help Java to clean up the memory.
-     */
-    default void destroy() {
-    }
-
-    /**
      * Returns the name of a data type
      *
      * @param klass The data class

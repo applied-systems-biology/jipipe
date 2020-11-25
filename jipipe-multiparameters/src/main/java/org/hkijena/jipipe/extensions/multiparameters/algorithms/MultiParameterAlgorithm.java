@@ -140,14 +140,14 @@ public class MultiParameterAlgorithm extends JIPipeAlgorithm {
                 }
                 outputSlot.addData(data, traits, JIPipeAnnotationMergeStrategy.Merge, progressInfo);
             }
-            wrappedOutputSlot.clearData(false);
+            wrappedOutputSlot.clearData();
         }
     }
 
     private void passInputData() {
         for (JIPipeDataSlot wrappedInputSlot : algorithmInstance.getInputSlots()) {
             JIPipeDataSlot inputSlot = getInputSlot("Data " + wrappedInputSlot.getName());
-            wrappedInputSlot.clearData(false);
+            wrappedInputSlot.clearData();
             wrappedInputSlot.addData(inputSlot);
         }
     }

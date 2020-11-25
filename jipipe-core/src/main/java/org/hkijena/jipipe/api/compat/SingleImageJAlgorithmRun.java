@@ -107,7 +107,7 @@ public class SingleImageJAlgorithmRun implements JIPipeValidatable {
     public void pushInput() {
         for (Map.Entry<String, ImageJDatatypeImporter> entry : inputSlotImporters.entrySet()) {
             JIPipeDataSlot slot = algorithm.getInputSlot(entry.getKey());
-            slot.clearData(false);
+            slot.clearData();
             slot.addData(entry.getValue().get(), new JIPipeProgressInfo());
         }
     }
