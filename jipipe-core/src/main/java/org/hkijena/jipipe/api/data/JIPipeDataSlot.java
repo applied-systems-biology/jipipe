@@ -571,13 +571,14 @@ public class JIPipeDataSlot {
      * Loads all virtual data into memory
      *
      * @param progressInfo the progress
+     * @param removeVirtualDataStorage if true, the folder containing the cache is deleted
      */
-    public void makeDataNonVirtual(JIPipeProgressInfo progressInfo) {
+    public void makeDataNonVirtual(JIPipeProgressInfo progressInfo, boolean removeVirtualDataStorage) {
         JIPipeProgressInfo subProgress = progressInfo.resolve("Loading virtual data to memory");
         for (int row = 0; row < getRowCount(); row++) {
             JIPipeVirtualData virtualData = getVirtualData(row);
             if (virtualData.isVirtual()) {
-                virtualData.makeNonVirtual(subProgress.resolveAndLog("Row", row, getRowCount()));
+                virtualData.makeNonVirtual(subProgress.resolveAndLog("Row", row, getRowCount()), removeVirtualDataStorage);
             }
         }
     }
@@ -608,7 +609,7 @@ public class JIPipeDataSlot {
         if (info.isVirtual() && VirtualDataSettings.getInstance().isVirtualMode()) {
             makeDataVirtual(progressInfo);
         } else {
-            makeDataNonVirtual(progressInfo);
+            makeDataNonVirtual(progressInfo, false);
         }
     }
 

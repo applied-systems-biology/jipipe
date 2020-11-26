@@ -299,6 +299,52 @@ public class JIPipeProjectCache {
         return cachedRowNumber <= 0;
     }
 
+    public int size() {
+        return cachedRowNumber;
+    }
+
+    /**
+     * Makes the whole cache virtual
+     * @param progress the progress
+     */
+    public void makeVirtual(JIPipeProgressInfo progress) {
+        progress.addMaxProgress(cachedRowNumber);
+        for (Map.Entry<JIPipeGraphNode, Map<State, Map<String, JIPipeDataSlot>>> nodeMap : cacheEntries.entrySet()) {
+            JIPipeProgressInfo nodeProgress = progress.resolve(nodeMap.getKey().getName());
+            for (Map.Entry<State, Map<String, JIPipeDataSlot>> stateMapEntry : nodeMap.getValue().entrySet()) {
+                JIPipeProgressInfo stateProgress = nodeProgress.resolve(stateMapEntry.getKey().renderGenerationTime());
+                for (Map.Entry<String, JIPipeDataSlot> dataSlotEntry : stateMapEntry.getValue().entrySet()) {
+                    JIPipeProgressInfo slotProgress = stateProgress.resolve(dataSlotEntry.getKey());
+                    slotProgress.addProgress(dataSlotEntry.getValue().getRowCount());
+                    slotProgress.log("Moving " + dataSlotEntry.getValue().getRowCount() + " rows to HDD");
+                    dataSlotEntry.getValue().getInfo().setVirtual(true);
+                    dataSlotEntry.getValue().makeDataVirtual(slotProgress);
+                }
+            }
+        }
+    }
+
+    /**
+     * Makes the whole cache virtual
+     * @param progress the progress
+     */
+    public void makeNonVirtual(JIPipeProgressInfo progress) {
+        progress.addMaxProgress(cachedRowNumber);
+        for (Map.Entry<JIPipeGraphNode, Map<State, Map<String, JIPipeDataSlot>>> nodeMap : cacheEntries.entrySet()) {
+            JIPipeProgressInfo nodeProgress = progress.resolve(nodeMap.getKey().getName());
+            for (Map.Entry<State, Map<String, JIPipeDataSlot>> stateMapEntry : nodeMap.getValue().entrySet()) {
+                JIPipeProgressInfo stateProgress = nodeProgress.resolve(stateMapEntry.getKey().renderGenerationTime());
+                for (Map.Entry<String, JIPipeDataSlot> dataSlotEntry : stateMapEntry.getValue().entrySet()) {
+                    JIPipeProgressInfo slotProgress = stateProgress.resolve(dataSlotEntry.getKey());
+                    slotProgress.addProgress(dataSlotEntry.getValue().getRowCount());
+                    slotProgress.log("Moving " + dataSlotEntry.getValue().getRowCount() + " rows from HDD");
+                    dataSlotEntry.getValue().getInfo().setVirtual(false);
+                    dataSlotEntry.getValue().makeDataNonVirtual(slotProgress, true);
+                }
+            }
+        }
+    }
+
     /**
      * Event that is triggered when the cache was modified (something stored or removed)
      */

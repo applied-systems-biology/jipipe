@@ -106,7 +106,7 @@ public class JIPipeVirtualData {
         }
     }
 
-    public synchronized void makeNonVirtual(JIPipeProgressInfo progressInfo) {
+    public synchronized void makeNonVirtual(JIPipeProgressInfo progressInfo, boolean removeVirtualDataStorage) {
         if (isVirtual()) {
             if (virtualStoragePath.getPath() == null) {
                 throw new UnsupportedOperationException("Tried to load virtual data, but no path is set. This should not be possible.");
@@ -115,6 +115,15 @@ public class JIPipeVirtualData {
             data = JIPipe.importData(virtualStoragePath.getPath(), dataClass);
             dataReference = null;
             stringRepresentation = "" + data;
+
+            if (removeVirtualDataStorage && virtualStoragePath != null && virtualStoragePath.getPath() != null) {
+                try {
+                    FileUtils.deleteDirectory(virtualStoragePath.getPath().toFile());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                virtualStoragePath.setPath(null);
+            }
         }
     }
 
@@ -125,7 +134,7 @@ public class JIPipeVirtualData {
             if (existing != null)
                 return existing;
         }
-        makeNonVirtual(progressInfo);
+        makeNonVirtual(progressInfo, false);
         JIPipeData cachedData = data;
         if (shouldBeVirtual && !isVirtual()) {
             makeVirtual(progressInfo, true);

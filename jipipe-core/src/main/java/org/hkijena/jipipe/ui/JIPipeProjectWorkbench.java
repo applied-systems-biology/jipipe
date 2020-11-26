@@ -38,7 +38,7 @@ import org.hkijena.jipipe.ui.components.MarkdownReader;
 import org.hkijena.jipipe.ui.components.MemoryStatusUI;
 import org.hkijena.jipipe.ui.components.RecentProjectsMenu;
 import org.hkijena.jipipe.ui.components.ReloadableValidityChecker;
-import org.hkijena.jipipe.ui.components.VirtualDataControl;
+import org.hkijena.jipipe.ui.data.VirtualDataControl;
 import org.hkijena.jipipe.ui.extension.MenuTarget;
 import org.hkijena.jipipe.ui.extensionbuilder.JIPipeJsonExporter;
 import org.hkijena.jipipe.ui.extensions.JIPipePluginManagerUIPanel;
@@ -273,6 +273,9 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
         virtualControlToggle.setBorder(BorderFactory.createEmptyBorder(0, 3, 0, 3));
 
         statusBar.add(virtualControlToggle);
+        JButton optionsButton = virtualDataControl.createOptionsButton();
+        UIUtils.makeFlat25x25(optionsButton);
+        statusBar.add(optionsButton);
         statusBar.add(Box.createHorizontalStrut(4));
         statusBar.add(new MemoryStatusUI());
 
