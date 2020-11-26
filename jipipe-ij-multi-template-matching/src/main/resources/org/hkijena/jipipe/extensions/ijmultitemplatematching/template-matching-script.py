@@ -14,6 +14,7 @@ from utils import AddToTable
 # fliph is set externally
 # angles is set externally
 # n_hit is set externally
+# max_overlap is set externally
 # score_threshold is set externally
 # tolerance is set externally
 # rm is set externally and contains a RoiManager
@@ -22,6 +23,16 @@ from utils import AddToTable
 # searchRoi is set externally
 # algorithmProgress is set externally
 # subProgress is set externally
+
+progress.log("Templates to process: " + str(len(List_Template)))
+progress.log("Input image: " + str(ImpImage))
+progress.log("Parameter flipv: " + str(flipv))
+progress.log("Parameter fliph: " + str(fliph))
+progress.log("Angles to test: " + str(angles))
+progress.log("Expected number of objects: " + str(n_hit))
+progress.log("Score threshold: " + str(score_threshold))
+progress.log("tolerance: " + str(tolerance))
+progress.log("Scoring method: " + str(Method))
 
 # Define offset
 if searchRoi:
@@ -50,11 +61,11 @@ for index, ImpTemplate in enumerate(List_Template):
     # Check that template is smaller than the searched image or ROI
     if Bool_SearchRoi and (
             ImpTemplate.height > searchRoi.getFloatHeight() or ImpTemplate.width > searchRoi.getFloatWidth()):
-        IJ.log(
+        progress.log(
             "The template " + ImpTemplate.getTitle() + " is larger in width and/or height than the search region -> skipped")
         continue  # go directly to the next for iteration
     elif ImpTemplate.width > ImpImage.width or ImpTemplate.height > ImpImage.height:
-        IJ.log(
+        progress.log(
             "The template " + ImpTemplate.getTitle() + " is larger in width and/or height than the searched image-> skipped")
         continue  # go directly to the next for iteration
 

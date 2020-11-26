@@ -93,6 +93,9 @@ public class JIPipeGraphCompartmentUI extends JIPipeGraphEditorUI {
                     } else {
                         iconURL = UIUtils.getIconURLFromResources("actions/configure.png");
                     }
+                    if(iconURL == null) {
+                        iconURL = UIUtils.getIconURLFromResources("actions/configure.png");
+                    }
                     Icon icon = new ImageIcon(iconURL);
 
                     NodeContextActionWrapperUIContextAction action = new NodeContextActionWrapperUIContextAction(info, documentationAnnotation.name(), documentationAnnotation.description(), icon, method);

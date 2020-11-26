@@ -29,16 +29,23 @@ import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
+import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
+import org.hkijena.jipipe.api.parameters.JIPipeCustomParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.ImagePlus2DData;
+import org.hkijena.jipipe.extensions.parameters.generators.IntegerRange;
 import org.hkijena.jipipe.extensions.parameters.primitives.IntegerList;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
+import org.hkijena.jipipe.ui.JIPipeWorkbench;
+import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.python.core.PyList;
 import org.python.util.PythonInterpreter;
 
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -63,7 +70,7 @@ public class MultiTemplateMatchingAlgorithm extends JIPipeMergingAlgorithm {
 
     private boolean flipTemplateVertically = true;
     private boolean flipTemplateHorizontally = true;
-    private IntegerList rotateTemplate = new IntegerList();
+    private IntegerRange rotateTemplate = new IntegerRange();
     private TemplateMatchingMethod templateMatchingMethod = TemplateMatchingMethod.NormalizedZeroMeanCrossCorrelation;
     private int expectedNumberOfObjects = 1;
     private double multiObjectScoreThreshold = 0.5;
@@ -72,16 +79,14 @@ public class MultiTemplateMatchingAlgorithm extends JIPipeMergingAlgorithm {
 
     public MultiTemplateMatchingAlgorithm(JIPipeNodeInfo info) {
         super(info);
-        rotateTemplate.add(90);
-        rotateTemplate.add(180);
-        rotateTemplate.add(270);
+        rotateTemplate.setValue("90,180,270");
     }
 
     public MultiTemplateMatchingAlgorithm(MultiTemplateMatchingAlgorithm other) {
         super(other);
         this.flipTemplateVertically = other.flipTemplateVertically;
         this.flipTemplateHorizontally = other.flipTemplateHorizontally;
-        this.rotateTemplate = other.rotateTemplate;
+        this.rotateTemplate = new IntegerRange(other.rotateTemplate);
         this.templateMatchingMethod = other.templateMatchingMethod;
         this.expectedNumberOfObjects = other.expectedNumberOfObjects;
         this.multiObjectScoreThreshold = other.multiObjectScoreThreshold;
@@ -112,7 +117,7 @@ public class MultiTemplateMatchingAlgorithm extends JIPipeMergingAlgorithm {
         pythonInterpreter.set("Method", templateMatchingMethod.getIndex());
         pythonInterpreter.set("fliph", flipTemplateHorizontally);
         pythonInterpreter.set("flipv", flipTemplateVertically);
-        pythonInterpreter.set("angles", rotateTemplate.stream().map(Object::toString).collect(Collectors.joining(",")));
+        pythonInterpreter.set("angles", rotateTemplate.getIntegers().stream().map(Object::toString).collect(Collectors.joining(",")));
         pythonInterpreter.set("n_hit", expectedNumberOfObjects);
         pythonInterpreter.set("score_threshold", multiObjectScoreThreshold);
         pythonInterpreter.set("tolerance", 0);
@@ -172,12 +177,12 @@ public class MultiTemplateMatchingAlgorithm extends JIPipeMergingAlgorithm {
             "NOTE: The template must be of rectangular shape, i.e. for angles not corresponding to \"square rotations\" (not a multiple of 90°) the rotated template will have some background area which are filled either with the modal gray value of the template (Fiji) or" +
             " with the pixel at the border in the initial template (KNIME). For higher performance, the non square rotations can be manually generated before calling the plugin and saved as templates.")
     @JIPipeParameter("template-rotations")
-    public IntegerList getRotateTemplate() {
+    public IntegerRange getRotateTemplate() {
         return rotateTemplate;
     }
 
     @JIPipeParameter("template-rotations")
-    public void setRotateTemplate(IntegerList rotateTemplate) {
+    public void setRotateTemplate(IntegerRange rotateTemplate) {
         this.rotateTemplate = rotateTemplate;
     }
 
@@ -263,6 +268,48 @@ public class MultiTemplateMatchingAlgorithm extends JIPipeMergingAlgorithm {
             slotConfiguration.addSlot("ROI", new JIPipeDataSlotInfo(ROIListData.class, JIPipeSlotType.Input, null), false);
         } else if (!restrictToROI && getInputSlotMap().containsKey("ROI")) {
             slotConfiguration.removeInputSlot("ROI", false);
+        }
+    }
+
+    @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/draw-use-tilt.png")
+    @JIPipeDocumentation(name = "Generate angles", description = "Generates additional rotation angles by providing the distance between them.")
+    public void generateRotations(JIPipeWorkbench workbench) {
+        JSpinner startAngle = new JSpinner(new SpinnerNumberModel(0, Integer.MIN_VALUE, Integer.MAX_VALUE, 1));
+        JSpinner endAngle = new JSpinner(new SpinnerNumberModel(360, Integer.MIN_VALUE, Integer.MAX_VALUE, 1));
+        JSpinner angleStep = new JSpinner(new SpinnerNumberModel(90, 1, Integer.MAX_VALUE, 1));
+        FormPanel formPanel = new FormPanel(null, FormPanel.NONE);
+        formPanel.addToForm(startAngle, new JLabel("Start angle"), null);
+        formPanel.addToForm(endAngle, new JLabel("End angle"), null);
+        formPanel.addToForm(angleStep, new JLabel("Increment"), null);
+        int result = JOptionPane.showOptionDialog(
+                workbench.getWindow(),
+                new Object[]{formPanel},
+                "Generate angles",
+                JOptionPane.OK_CANCEL_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null, null, null);
+
+        if (result == JOptionPane.OK_OPTION) {
+            int startAngleValue = ((SpinnerNumberModel)startAngle.getModel()).getNumber().intValue();
+            int endAngleValue = ((SpinnerNumberModel)endAngle.getModel()).getNumber().intValue();
+            int step = ((SpinnerNumberModel)angleStep.getModel()).getNumber().intValue();
+            if(endAngleValue < startAngleValue) {
+                JOptionPane.showMessageDialog(workbench.getWindow(),
+                        "The start angle must be less than the end angle!",
+                        "Generate angles",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            StringBuilder stringBuilder = new StringBuilder();
+            int angle = startAngleValue;
+            do {
+                if(stringBuilder.length() > 0)
+                    stringBuilder.append(",");
+                stringBuilder.append(angle);
+                angle += step;
+            }
+            while(angle < endAngleValue);
+            JIPipeParameterCollection.setParameter(this, "template-rotations", new IntegerRange(stringBuilder.toString()));
         }
     }
 
