@@ -70,6 +70,7 @@ for index, ImpTemplate in enumerate(List_Template):
 # for hit in Hits_BeforeNMS: print hit
 
 # InterHit NMS if more than one hit
+progress.log("Hits before NMS: " + str(len(Hits_BeforeNMS)))
 progress.log("Non-Maxima-Suppression")
 
 if Method in [0, 1]:
@@ -81,6 +82,7 @@ else:
 
 # print "\n-- Hits after NMS --\n"
 # for hit in Hits_AfterNMS : print hit
+progress.log("Hits after NMS: " + str(len(Hits_AfterNMS)))
 
 for hit in Hits_AfterNMS:
 
