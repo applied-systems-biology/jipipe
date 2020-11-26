@@ -62,6 +62,7 @@ public class ImageViewerPanel extends JPanel {
     private JComboBox<ImageJCalibrationMode> calibrationModes;
     private List<ImageViewerLUTEditor> lutEditors = new ArrayList<>();
     private JToggleButton autoCalibrateButton = new JToggleButton("Keep auto-calibrating", UIUtils.getIconFromResources("actions/view-refresh.png"));
+    private int rotation = 0;
 
     public ImageViewerPanel() {
         initialize();
@@ -199,6 +200,14 @@ public class ImageViewerPanel extends JPanel {
 
         toolBar.add(Box.createHorizontalGlue());
 
+        JButton rotateLeftButton = new JButton(UIUtils.getIconFromResources("actions/transform-rotate-left.png"));
+        rotateLeftButton.addActionListener(e -> rotateLeft());
+        toolBar.add(rotateLeftButton);
+
+        JButton rotateRightButton = new JButton(UIUtils.getIconFromResources("actions/transform-rotate.png"));
+        rotateRightButton.addActionListener(e -> rotateRight());
+        toolBar.add(rotateRightButton);
+
         JButton centerImageButton = new JButton("Center image", UIUtils.getIconFromResources("actions/zoom-center-page.png"));
         centerImageButton.addActionListener(e -> canvas.centerImage());
         toolBar.add(centerImageButton);
@@ -247,6 +256,21 @@ public class ImageViewerPanel extends JPanel {
         toolBar.add(zoomInButton);
 
         add(toolBar, BorderLayout.NORTH);
+    }
+
+    private void rotateLeft() {
+        if(rotation == 0)
+            rotation = 270;
+        else
+            rotation -= 90;
+        refreshImageInfo();
+        refreshSlice();
+    }
+
+    public void rotateRight() {
+        rotation = (rotation + 90) % 360;
+        refreshImageInfo();
+        refreshSlice();
     }
 
     protected void addLeftToolbarButtons(JToolBar toolBar) {
@@ -436,6 +460,9 @@ public class ImageViewerPanel extends JPanel {
         if (image.isInvertedLut())
             s += " (inverting LUT)";
         s += "; " + ImageWindow.getImageSize(image);
+        if(rotation != 0) {
+            s += " (Rotated " + rotation + "°)";
+        }
         imageInfoLabel.setText(s);
     }
 
@@ -478,7 +505,21 @@ public class ImageViewerPanel extends JPanel {
     }
 
     public void uploadSliceToCanvas() {
-        canvas.setImage(slice.getBufferedImage());
+        if(rotation == 0) {
+            canvas.setImage(slice.getBufferedImage());
+        }
+        else {
+            ImageProcessor duplicate;
+            if(rotation == 90)
+                duplicate = slice.rotateRight();
+            else if(rotation == 180)
+                duplicate = slice.rotateRight().rotateRight();
+            else if(rotation == 270)
+                duplicate = slice.rotateLeft();
+            else
+                throw new UnsupportedOperationException("Unknown rotation: " + rotation);
+            canvas.setImage(duplicate.getBufferedImage());
+        }
     }
 
     public ImageViewerPanelCanvas getCanvas() {
