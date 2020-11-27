@@ -232,10 +232,12 @@ public class ImageViewerPanel extends JPanel {
         toolBar.add(Box.createHorizontalGlue());
 
         JButton rotateLeftButton = new JButton(UIUtils.getIconFromResources("actions/transform-rotate-left.png"));
+        rotateLeftButton.setToolTipText("Rotate 90° to the left");
         rotateLeftButton.addActionListener(e -> rotateLeft());
         toolBar.add(rotateLeftButton);
 
         JButton rotateRightButton = new JButton(UIUtils.getIconFromResources("actions/transform-rotate.png"));
+        rotateRightButton.setToolTipText("Rotate 90° to the right");
         rotateRightButton.addActionListener(e -> rotateRight());
         toolBar.add(rotateRightButton);
 
