@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.extensions.imagejdatatypes.viewer;
 
+import ij.ImagePlus;
 import ij.process.ImageProcessor;
 import ij.process.ImageStatistics;
 import org.hkijena.jipipe.ui.theme.ModernMetalTheme;
@@ -95,6 +96,10 @@ public class ImageViewerPanelDisplayRangeControl extends JPanel implements Thumb
         }
         isUpdating = false;
         slider.repaint();
+    }
+
+    public void applyCalibration(ImagePlus foreign) {
+        ImageJUtils.calibrate(foreign, imageViewerPanel.getSelectedCalibration(), customMin, customMax);
     }
 
     public void applyCalibration(boolean upload) {

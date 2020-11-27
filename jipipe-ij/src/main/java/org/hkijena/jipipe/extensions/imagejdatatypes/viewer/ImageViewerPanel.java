@@ -374,6 +374,7 @@ public class ImageViewerPanel extends JPanel {
     public void exportVideo() {
         FormPanel formPanel = new FormPanel(null, FormPanel.NONE);
         PathEditor exportPathEditor = new PathEditor(PathEditor.IOMode.Save, PathEditor.PathMode.FilesOnly);
+        exportPathEditor.setPath(FileChooserSettings.getInstance().getLastDataDirectory());
         formPanel.addToForm(exportPathEditor, new JLabel("Exported file"), null);
 
         List<HyperstackDimension> availableDimensions = new ArrayList<>();
@@ -859,6 +860,10 @@ public class ImageViewerPanel extends JPanel {
         headerPanel.addColumn(autoCalibrateButton);
         formPanel.addToForm(calibrationModes, new JLabel("Calibration type"), null);
         formPanel.addWideToForm(displayRangeCalibrationControl, null);
+    }
+
+    public void applyCalibrationTo(ImagePlus foreign) {
+        displayRangeCalibrationControl.applyCalibration(foreign);
     }
 
     public void refreshImageInfo() {

@@ -16,6 +16,7 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.viewer;
 import ij.ImagePlus;
 import ij.ImageStack;
 import ij.plugin.filter.AVI_Writer;
+import ij.process.ColorProcessor;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeRunnable;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.AVICompression;
@@ -72,7 +73,7 @@ public class ImageViewerVideoExporterRun implements JIPipeRunnable {
                     return;
                 progressInfo.incrementProgress();
                 subProgress.log("z = " + z);
-                generatedStack.addSlice(viewerPanel.generateSlice(z, referencePosition.getC(), referencePosition.getT(), true, true));
+                generatedStack.addSlice(new ColorProcessor(viewerPanel.generateSlice(z, referencePosition.getC(), referencePosition.getT(), true, true).getBufferedImage()));
             }
         }
         else  if(followedDimension == HyperstackDimension.Channel) {
@@ -83,7 +84,7 @@ public class ImageViewerVideoExporterRun implements JIPipeRunnable {
                     return;
                 progressInfo.incrementProgress();
                 subProgress.log("c = " + c);
-                generatedStack.addSlice(viewerPanel.generateSlice(referencePosition.getZ(), c, referencePosition.getT(), true, true));
+                generatedStack.addSlice(new ColorProcessor(viewerPanel.generateSlice(referencePosition.getZ(), c, referencePosition.getT(), true, true).getBufferedImage()));
             }
         }
         else  if(followedDimension == HyperstackDimension.Frame) {
@@ -94,7 +95,7 @@ public class ImageViewerVideoExporterRun implements JIPipeRunnable {
                     return;
                 progressInfo.incrementProgress();
                 subProgress.log("t = " + t);
-                generatedStack.addSlice(viewerPanel.generateSlice(referencePosition.getZ(), referencePosition.getC(), t, true, true));
+                generatedStack.addSlice(new ColorProcessor(viewerPanel.generateSlice(referencePosition.getZ(), referencePosition.getC(), t, true, true).getBufferedImage()));
             }
         }
 
