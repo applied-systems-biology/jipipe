@@ -195,7 +195,12 @@ public class JIPipeProject implements JIPipeValidatable {
     }
 
     private void updateCompartmentVisibility() {
+
+        boolean changed = false;
+
+        Map<JIPipeProjectCompartment, Set<String>> oldVisibleCompartments = new HashMap<>();
         for (JIPipeProjectCompartment compartment : compartments.values()) {
+            oldVisibleCompartments.put(compartment, new HashSet<>(compartment.getVisibleCompartments()));
             compartment.getOutputNode().getVisibleCompartments().clear();
         }
 
@@ -205,6 +210,13 @@ public class JIPipeProject implements JIPipeValidatable {
             source.getOutputNode().getVisibleCompartments().add(target.getProjectCompartmentId());
         }
 
+        for (JIPipeProjectCompartment compartment : compartments.values()) {
+            if(!Objects.equals(compartment.getVisibleCompartments(), oldVisibleCompartments.get(compartment))) {
+                changed = true;
+                break;
+            }
+        }
+
         // Remove invalid connections in the project graph
         for (JIPipeGraphEdge edge : ImmutableList.copyOf(graph.getGraph().edgeSet())) {
             if (graph.getGraph().containsEdge(edge)) {
@@ -212,11 +224,13 @@ public class JIPipeProject implements JIPipeValidatable {
                 JIPipeDataSlot target = graph.getGraph().getEdgeTarget(edge);
                 if (!source.getNode().isVisibleIn(target.getNode().getCompartment())) {
                     graph.disconnect(source, target, false);
+                    changed = true;
                 }
             }
         }
 
-        graph.getEventBus().post(new GraphChangedEvent(graph));
+        if(changed)
+            graph.getEventBus().post(new GraphChangedEvent(graph));
     }
 
     /**

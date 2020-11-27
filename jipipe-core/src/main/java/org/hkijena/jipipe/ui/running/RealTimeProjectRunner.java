@@ -126,7 +126,6 @@ public class RealTimeProjectRunner extends JIPipeProjectWorkbenchPanel {
             if (!runtimeSettings.isRealTimeRunEnabled()) {
                 return;
             }
-            getProject().getCache().autoClean(true, true);
         }
     }
 

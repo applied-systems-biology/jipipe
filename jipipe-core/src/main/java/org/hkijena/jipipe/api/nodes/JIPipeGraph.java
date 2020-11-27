@@ -182,6 +182,7 @@ public class JIPipeGraph implements JIPipeValidatable {
         List<JIPipeGraphNode> traversedAlgorithms = traverseAlgorithms();
         ImmutableBiMap<String, JIPipeGraphNode> oldIds = ImmutableBiMap.copyOf(nodes);
         nodes.clear();
+        boolean changed = false;
         for (JIPipeGraphNode algorithm : traversedAlgorithms) {
             String compartment = algorithm.getCompartment();
             String name;
@@ -193,8 +194,11 @@ public class JIPipeGraph implements JIPipeValidatable {
             nodes.put(newId, algorithm);
             String oldId = oldIds.inverse().get(algorithm);
             renaming.put(oldId, newId);
+            if(!Objects.equals(oldId, newId))
+                changed = true;
         }
-        postChangedEvent();
+        if(changed)
+            postChangedEvent();
         return renaming;
     }
 
