@@ -164,16 +164,7 @@ public class JIPipeProject implements JIPipeValidatable {
      */
     public void connectCompartments(JIPipeProjectCompartment source, JIPipeProjectCompartment target) {
         JIPipeDataSlot sourceSlot = source.getFirstOutputSlot();
-        List<JIPipeDataSlot> openInputSlots = target.getOpenInputSlots();
-        if (openInputSlots.isEmpty()) {
-            JIPipeMutableSlotConfiguration slotConfiguration = (JIPipeMutableSlotConfiguration) target.getSlotConfiguration();
-            JIPipeDataSlotInfo slotDefinition = new JIPipeDataSlotInfo(JIPipeCompartmentOutputData.class, JIPipeSlotType.Input,
-                    StringUtils.makeUniqueString(source.getName(), " ", slotConfiguration::hasInputSlot),
-                    null);
-            slotConfiguration.addSlot(slotDefinition.getName(), slotDefinition, false);
-            openInputSlots = target.getOpenInputSlots();
-        }
-        compartmentGraph.connect(sourceSlot, openInputSlots.get(0));
+        compartmentGraph.connect(sourceSlot, target.getFirstInputSlot());
     }
 
     private void initializeCompartment(JIPipeProjectCompartment compartment) {
