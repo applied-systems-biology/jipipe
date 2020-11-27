@@ -1,5 +1,6 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1;
 
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.HyperstackDimension;
 import org.hkijena.jipipe.extensions.parameters.collections.ListParameter;
 import org.hkijena.jipipe.extensions.parameters.pairs.PairParameter;
 

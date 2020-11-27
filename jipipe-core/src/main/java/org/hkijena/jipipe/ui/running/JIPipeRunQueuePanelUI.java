@@ -53,7 +53,6 @@ public class JIPipeRunQueuePanelUI extends JPanel {
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
 
         progressBar = new JProgressBar();
-        progressBar.setString("Ready");
         progressBar.setStringPainted(true);
         buttonPanel.add(progressBar);
         buttonPanel.add(Box.createHorizontalStrut(16));
@@ -63,6 +62,16 @@ public class JIPipeRunQueuePanelUI extends JPanel {
         buttonPanel.add(cancelButton);
 
         add(buttonPanel, BorderLayout.SOUTH);
+
+        if(JIPipeRunnerQueue.getInstance().getCurrentRun() != null) {
+            progressBar.setString("Waiting for progress ...");
+            progressBar.setIndeterminate(true);
+        }
+        else {
+            progressBar.setString("Nothing is currently running");
+            progressBar.setIndeterminate(false);
+            cancelButton.setEnabled(false);
+        }
     }
 
     /**

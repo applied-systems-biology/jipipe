@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.extensions.imagejdatatypes.viewer;
 
-import com.google.common.collect.Sets;
 import com.google.common.primitives.Ints;
 import ij.IJ;
 import ij.ImagePlus;
@@ -26,10 +25,15 @@ import ij.process.ImageProcessor;
 import ij.process.ImageStatistics;
 import ij.util.Tools;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.AVICompression;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.HyperstackDimension;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.SliceIndex;
+import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.ui.components.ColorIcon;
 import org.hkijena.jipipe.ui.components.DocumentChangeListener;
 import org.hkijena.jipipe.ui.components.FormPanel;
+import org.hkijena.jipipe.ui.components.PathEditor;
+import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
 import org.hkijena.jipipe.ui.theme.JIPipeUITheme;
 import org.hkijena.jipipe.utils.BusyCursor;
 import org.hkijena.jipipe.utils.ImageJCalibrationMode;
@@ -37,6 +41,7 @@ import org.hkijena.jipipe.utils.ImageJUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import java.awt.Adjustable;
@@ -44,6 +49,8 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -90,6 +97,8 @@ public class ImageViewerPanel extends JPanel {
     private boolean roiFillOutline = false;
     private boolean roiDrawLabels = false;
     private boolean roiFilterList = false;
+    private JMenuItem exportAllSlicesItem;
+    private JMenuItem exportMovieItem;
 
     public ImageViewerPanel() {
         initialize();
@@ -231,6 +240,26 @@ public class ImageViewerPanel extends JPanel {
 
         toolBar.add(Box.createHorizontalGlue());
 
+        JButton exportMenuButton = new JButton(UIUtils.getIconFromResources("actions/camera.png"));
+        exportMenuButton.setToolTipText("Export currently displayed image");
+        JPopupMenu exportMenu = new JPopupMenu();
+
+        JMenuItem exportCurrentSliceItem = new JMenuItem("Snapshot of current slice", UIUtils.getIconFromResources("actions/viewimage.png"));
+        exportCurrentSliceItem.addActionListener(e -> exportCurrentSliceToPNG());
+        exportMenu.add(exportCurrentSliceItem);
+
+        exportAllSlicesItem = new JMenuItem("Snapshot of all slices", UIUtils.getIconFromResources("actions/qlipper.png"));
+        exportAllSlicesItem.addActionListener(e -> exportAllSlicesToPNG());
+        exportMenu.add(exportAllSlicesItem);
+
+        exportMovieItem = new JMenuItem("Movie", UIUtils.getIconFromResources("actions/filmgrain.png"));
+        exportMovieItem.addActionListener(e -> exportVideo());
+        exportMenu.add(exportMovieItem);
+
+        UIUtils.addPopupMenuToComponent(exportMenuButton, exportMenu);
+        toolBar.add(exportMenuButton);
+        toolBar.addSeparator();
+
         JButton rotateLeftButton = new JButton(UIUtils.getIconFromResources("actions/transform-rotate-left.png"));
         rotateLeftButton.setToolTipText("Rotate 90° to the left");
         rotateLeftButton.addActionListener(e -> rotateLeft());
@@ -289,6 +318,103 @@ public class ImageViewerPanel extends JPanel {
         toolBar.add(zoomInButton);
 
         add(toolBar, BorderLayout.NORTH);
+    }
+
+    public void exportCurrentSliceToPNG() {
+        if(getCanvas().getImage() == null) {
+            JOptionPane.showMessageDialog(this, "No image loaded.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        Path targetFile = FileChooserSettings.saveFile(this, FileChooserSettings.KEY_DATA, "Export current slice", UIUtils.EXTENSION_FILTER_PNG, UIUtils.EXTENSION_FILTER_JPEG, UIUtils.EXTENSION_FILTER_BMP);
+        if(targetFile != null) {
+            String format = "PNG";
+            if(UIUtils.EXTENSION_FILTER_BMP.accept(targetFile.toFile()))
+                format = "BMP";
+            else if(UIUtils.EXTENSION_FILTER_JPEG.accept(targetFile.toFile()))
+                format = "JPEG";
+            try {
+                ImageIO.write(getCanvas().getImage(),format, targetFile.toFile());
+            } catch (IOException e) {
+                IJ.handleException(e);
+            }
+        }
+    }
+
+    public void exportAllSlicesToPNG() {
+        FormPanel formPanel = new FormPanel(null, FormPanel.NONE);
+        PathEditor exportPathEditor = new PathEditor(PathEditor.IOMode.Open, PathEditor.PathMode.DirectoriesOnly);
+        exportPathEditor.setPath(FileChooserSettings.getInstance().getLastDataDirectory());
+        formPanel.addToForm(exportPathEditor, new JLabel("Target directory"), null);
+
+        JComboBox<String> fileFormatEditor = new JComboBox<>(new String[] { "PNG", "JPEG", "BMP" } );
+        fileFormatEditor.setSelectedItem("BMP");
+        formPanel.addToForm(fileFormatEditor, new JLabel("File format"), null);
+
+        JTextField baseNameEditor = new JTextField();
+        formPanel.addToForm(baseNameEditor, new JLabel("File name prefix"), null);
+
+        int response = JOptionPane.showOptionDialog(this,
+                formPanel,
+                "Export all slices to folder",
+                JOptionPane.OK_CANCEL_OPTION,
+                JOptionPane.PLAIN_MESSAGE,
+                null,
+                null,
+                null);
+        if(response == JOptionPane.OK_OPTION) {
+            FileChooserSettings.getInstance().setLastDataDirectory(exportPathEditor.getPath());
+            Path targetPath = exportPathEditor.getPath();
+            String format = fileFormatEditor.getSelectedItem() + "";
+            String baseName = StringUtils.makeFilesystemCompatible(baseNameEditor.getText());
+            ImageViewerStackExporterRun run = new ImageViewerStackExporterRun(this, targetPath, baseName, format);
+            JIPipeRunExecuterUI.runInDialog(run);
+        }
+    }
+
+    public void exportVideo() {
+        FormPanel formPanel = new FormPanel(null, FormPanel.NONE);
+        PathEditor exportPathEditor = new PathEditor(PathEditor.IOMode.Save, PathEditor.PathMode.FilesOnly);
+        formPanel.addToForm(exportPathEditor, new JLabel("Exported file"), null);
+
+        List<HyperstackDimension> availableDimensions = new ArrayList<>();
+        if(image.getNFrames() > 1)
+            availableDimensions.add(HyperstackDimension.Frame);
+        if(image.getNSlices() > 1)
+            availableDimensions.add(HyperstackDimension.Depth);
+        if(image.getNChannels() > 1)
+            availableDimensions.add(HyperstackDimension.Channel);
+
+        JComboBox<HyperstackDimension> dimensionEditor = new JComboBox<>(availableDimensions.toArray(new HyperstackDimension[0]));
+        dimensionEditor.setSelectedItem(availableDimensions.get(0));
+        formPanel.addToForm(dimensionEditor, new JLabel("Animated dimension"), null);
+
+        JComboBox<AVICompression> compressionEditor = new JComboBox<>(AVICompression.values());
+        compressionEditor.setSelectedItem(AVICompression.JPEG);
+        formPanel.addToForm(compressionEditor, new JLabel("Compression"), null);
+
+        JSlider compressionQualityEditor = new JSlider(0, 100, 100);
+        formPanel.addToForm(compressionQualityEditor, new JLabel("Quality"), null);
+
+        int response = JOptionPane.showOptionDialog(this,
+                formPanel,
+                "Export video",
+                JOptionPane.OK_CANCEL_OPTION,
+                JOptionPane.PLAIN_MESSAGE,
+                null,
+                null,
+                null);
+        if(response == JOptionPane.OK_OPTION) {
+            FileChooserSettings.getInstance().setLastDataDirectory(exportPathEditor.getPath());
+            ImageViewerVideoExporterRun run = new ImageViewerVideoExporterRun(
+                    this,
+                    exportPathEditor.getPath(),
+                    getCurrentSlicePosition(),
+                    (HyperstackDimension)dimensionEditor.getSelectedItem(),
+                    animationTimer.getDelay(),
+                    (AVICompression)compressionEditor.getSelectedItem(),
+                    compressionQualityEditor.getValue());
+            JIPipeRunExecuterUI.runInDialog(run);
+        }
     }
 
     private void rotateLeft() {
@@ -374,6 +500,7 @@ public class ImageViewerPanel extends JPanel {
         refreshSlice();
         refreshImageInfo();
         refreshFormPanel();
+        refreshMenus();
         for (ImageViewerLUTEditor lutEditor : lutEditors) {
             lutEditor.applyLUT();
         }
@@ -381,6 +508,12 @@ public class ImageViewerPanel extends JPanel {
         updateROIJList();
         revalidate();
         repaint();
+    }
+
+    private void refreshMenus() {
+        boolean hasMultipleSlices = image != null && image.getNDimensions() > 2;
+        exportAllSlicesItem.setVisible(hasMultipleSlices);
+        exportMovieItem.setVisible(hasMultipleSlices);
     }
 
     private void refreshFormPanel() {
@@ -523,6 +656,10 @@ public class ImageViewerPanel extends JPanel {
         panel.add(viewToolBar, BorderLayout.SOUTH);
 
         formPanel.addWideToForm(panel, null);
+    }
+
+    public SliceIndex getCurrentSlicePosition() {
+        return new SliceIndex(stackSlider.getValue() - 1, channelSlider.getValue() - 1, frameSlider.getValue() - 1);
     }
 
     private void reloadEditRoiMenu(JPopupMenu menu) {
@@ -813,11 +950,12 @@ public class ImageViewerPanel extends JPanel {
         }
     }
 
-    public void uploadSliceToCanvas() {
-        ImageProcessor processor = slice;
-        if(!(processor instanceof ColorProcessor) && !rois.isEmpty()) {
+    public ImageProcessor generateSlice(int z, int c, int t, boolean withRoi, boolean withRotation) {
+        image.setPosition(c + 1, z + 1, t + 1);
+        ImageProcessor processor = image.getProcessor();
+        if(withRoi && !(processor instanceof ColorProcessor) && !rois.isEmpty()) {
             processor = new ColorProcessor(processor.getBufferedImage());
-            rois.draw(processor, new SliceIndex(stackSlider.getValue() - 1, channelSlider.getValue() - 1, frameSlider.getValue() - 1),
+            rois.draw(processor, new SliceIndex(z, c, t),
                     roiSeeThroughZ,
                     roiSeeThroughC,
                     roiSeeThroughT,
@@ -829,7 +967,7 @@ public class ImageViewerPanel extends JPanel {
                     Color.YELLOW,
                     roiJList.getSelectedValuesList());
         }
-        if(rotation != 0) {
+        if(withRotation && rotation != 0) {
             if(rotation == 90)
                 processor = processor.rotateRight();
             else if(rotation == 180)
@@ -839,6 +977,15 @@ public class ImageViewerPanel extends JPanel {
             else
                 throw new UnsupportedOperationException("Unknown rotation: " + rotation);
         }
+        return processor;
+    }
+
+    public void uploadSliceToCanvas() {
+        ImageProcessor processor = generateSlice(stackSlider.getValue() - 1,
+                channelSlider.getValue() - 1,
+                frameSlider.getValue() - 1,
+                true,
+                true);
         canvas.setImage(processor.getBufferedImage());
     }
 

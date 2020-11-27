@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.ui.running;
 
 import com.google.common.eventbus.Subscribe;
+import org.hkijena.jipipe.api.JIPipeRun;
 import org.hkijena.jipipe.api.JIPipeRunnable;
 import org.hkijena.jipipe.ui.events.RunUIWorkerFinishedEvent;
 import org.hkijena.jipipe.ui.events.RunUIWorkerProgressEvent;
@@ -129,6 +130,27 @@ public class JIPipeRunExecuterUI extends JPanel {
             progressBar.setString("(" + progressBar.getValue() + "/" + progressBar.getMaximum() + ") " + event.getStatus().getMessage());
             log.append("[" + event.getStatus().getProgress() + "/" + event.getStatus().getMaxProgress() + "] " + event.getStatus().getMessage() + "\n");
         }
+    }
+
+    public static void runInDialog(JIPipeRunnable run) {
+        JDialog dialog = new JDialog();
+        dialog.setTitle(run.getTaskLabel());
+        JIPipeRunExecuterUI ui = new JIPipeRunExecuterUI(run);
+        dialog.setContentPane(ui);
+        dialog.pack();
+        dialog.revalidate();
+        dialog.repaint();
+        dialog.setSize(640,480);
+        dialog.setModal(true);
+        JIPipeRunnerQueue.getInstance().getEventBus().register(new Object() {
+            @Subscribe
+            public void onWorkerFinished(RunUIWorkerFinishedEvent event) {
+                if(event.getRun() == run)
+                    dialog.setVisible(false);
+            }
+        });
+        JIPipeRunnerQueue.getInstance().enqueue(run);
+        dialog.setVisible(true);
     }
 
 }
