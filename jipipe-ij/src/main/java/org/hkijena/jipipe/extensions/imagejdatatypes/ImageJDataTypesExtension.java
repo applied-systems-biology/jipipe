@@ -83,6 +83,8 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePl
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale8UData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.display.AddROIToActiveJIPipeImageViewerDataDisplay;
+import org.hkijena.jipipe.extensions.imagejdatatypes.display.AddROIToJIPipeImageViewerDataDisplay;
 import org.hkijena.jipipe.extensions.imagejdatatypes.display.OpenInImageJDataDisplay;
 import org.hkijena.jipipe.extensions.imagejdatatypes.parameters.OMEColorMode;
 import org.hkijena.jipipe.extensions.imagejdatatypes.parameters.OMETIFFCompression;
@@ -289,7 +291,10 @@ public class ImageJDataTypesExtension extends JIPipePrepackagedDefaultJavaExtens
         registerConverters();
 
         registerDatatype("imagej-roi", ROIListData.class, ResourceUtils.getPluginResource("icons/data-types/roi.png"),
-                null, ROIDataPreview.class, new ROIDataImportIntoImageOperation());
+                null, ROIDataPreview.class,
+                new ROIDataImportIntoImageOperation(),
+                new AddROIToActiveJIPipeImageViewerDataDisplay(),
+                new AddROIToJIPipeImageViewerDataDisplay());
         registerImageJDataAdapter(new ROIDataImageJAdapter(), ROIDataImporterUI.class);
         registerDatatype("imagej-results-table",
                 ResultsTableData.class,

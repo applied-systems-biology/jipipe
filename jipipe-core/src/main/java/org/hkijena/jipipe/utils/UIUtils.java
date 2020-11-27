@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.utils;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.google.common.primitives.Ints;
 import ij.IJ;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.Theme;
@@ -54,11 +55,8 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -240,6 +238,7 @@ public class UIUtils {
         });
         return popupMenu;
     }
+
 
     /**
      * Adds an existing popup menu to a button
@@ -571,6 +570,54 @@ public class UIUtils {
         dialog.setLocationRelativeTo(parent);
         dialog.setVisible(true);
     }
+
+    /**
+     * Lets the user select one or multiple items from a list
+     * @param <T> type
+     * @param parent parent component
+     * @param input list of input objects
+     * @param selected pre-selected items
+     * @param title the title
+     * @param message the message (can be null to disable message)
+     * @param renderer the renderer for the items (null to use default renderer)
+     * @param selectionMode the selection mode
+     * @return selected items or empty list if none was selected
+     */
+    public static <T> List<T> getSelectionByDialog(Component parent, Collection<T> input, Collection<T> selected, String title, String message, ListCellRenderer<T> renderer, ListSelectionMode selectionMode) {
+        JList<T> jList = new JList<>();
+        jList.setSelectionMode(selectionMode.getNativeValue());
+        if(renderer != null)
+            jList.setCellRenderer(renderer);
+        DefaultListModel<T> model = new DefaultListModel<>();
+        List<Integer> selectedIndices = new ArrayList<>();
+        int index = 0;
+        for (T t : input) {
+            model.addElement(t);
+            if(selected.contains(t))
+                selectedIndices.add(index);
+            ++index;
+        }
+        jList.setModel(model);
+        jList.setSelectedIndices(Ints.toArray(selectedIndices));
+        JScrollPane scrollPane = new JScrollPane(jList);
+        List<Object> content = new ArrayList<>();
+        if(message != null)
+            content.add(message);
+        content.add(scrollPane);
+        int result = JOptionPane.showOptionDialog(
+                parent,
+                content.toArray(),
+                title,
+                JOptionPane.OK_CANCEL_OPTION,
+                JOptionPane.PLAIN_MESSAGE,
+                null, null, null);
+
+        if (result == JOptionPane.OK_OPTION) {
+            return jList.getSelectedValuesList();
+        }
+        return Collections.emptyList();
+    }
+
 
     /**
      * Gets a multiline string by dialog

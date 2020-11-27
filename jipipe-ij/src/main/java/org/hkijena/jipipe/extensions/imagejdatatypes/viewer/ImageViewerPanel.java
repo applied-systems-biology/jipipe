@@ -813,16 +813,6 @@ public class ImageViewerPanel extends JPanel {
 
     public void uploadSliceToCanvas() {
         ImageProcessor processor = slice;
-        if(rotation != 0) {
-            if(rotation == 90)
-                processor = processor.rotateRight();
-            else if(rotation == 180)
-                processor = processor.rotateRight().rotateRight();
-            else if(rotation == 270)
-                processor = processor.rotateLeft();
-            else
-                throw new UnsupportedOperationException("Unknown rotation: " + rotation);
-        }
         if(!(processor instanceof ColorProcessor) && !rois.isEmpty()) {
             processor = new ColorProcessor(processor.getBufferedImage());
             rois.draw(processor, new SliceIndex(stackSlider.getValue() - 1, channelSlider.getValue() - 1, frameSlider.getValue() - 1),
@@ -836,6 +826,16 @@ public class ImageViewerPanel extends JPanel {
                     Color.RED,
                     Color.YELLOW,
                     roiJList.getSelectedValuesList());
+        }
+        if(rotation != 0) {
+            if(rotation == 90)
+                processor = processor.rotateRight();
+            else if(rotation == 180)
+                processor = processor.rotateRight().rotateRight();
+            else if(rotation == 270)
+                processor = processor.rotateLeft();
+            else
+                throw new UnsupportedOperationException("Unknown rotation: " + rotation);
         }
         canvas.setImage(processor.getBufferedImage());
     }
@@ -864,6 +864,14 @@ public class ImageViewerPanel extends JPanel {
 
     public void disableAutoCalibration() {
         autoCalibrateButton.setSelected(false);
+    }
+
+    public void importROIs(ROIListData rois) {
+        for (Roi roi : rois) {
+            this.rois.add((Roi) roi.clone());
+        }
+        updateROIJList();
+        uploadSliceToCanvas();
     }
 
     public static void main(String[] args) {
