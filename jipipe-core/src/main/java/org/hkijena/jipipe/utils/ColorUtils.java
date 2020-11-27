@@ -167,6 +167,22 @@ public class ColorUtils {
     }
 
     /**
+     * Applies scaling in HSV space
+     * @param color the color
+     * @param hFactor factor for H
+     * @param sFactor factor for S
+     * @param vFactor factor for V
+     * @return scaled color
+     */
+    public static Color scaleHSV(Color color, float hFactor, float sFactor, float vFactor) {
+        float[] hsv = Color.RGBtoHSB(color.getRed(), color.getGreen(), color.getBlue(), null);
+        hsv[0] *= hFactor;
+        hsv[1] *= sFactor;
+        hsv[2] *= vFactor;
+        return Color.getHSBColor(hsv[0], hsv[1], hsv[2]);
+    }
+
+    /**
      * Parses a color
      * @param colorString the color string
      * @return the color or null if none was found

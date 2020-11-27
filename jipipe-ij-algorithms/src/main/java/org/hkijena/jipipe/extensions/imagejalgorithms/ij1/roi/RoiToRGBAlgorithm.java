@@ -115,20 +115,25 @@ public class RoiToRGBAlgorithm extends JIPipeIteratingAlgorithm {
         Map<Roi, Integer> roiIndices = new HashMap<>();
         Filler roiFiller = new Filler();
         if (drawLabel) {
-            RoiStatisticsAlgorithm statisticsAlgorithm =
-                    JIPipe.createNode("ij1-roi-statistics", RoiStatisticsAlgorithm.class);
-            statisticsAlgorithm.setAllSlotsVirtual(false, false, null);
-            statisticsAlgorithm.setOverrideReferenceImage(true);
-            statisticsAlgorithm.getMeasurements().setNativeValue(Measurement.Centroid.getNativeValue());
-            statisticsAlgorithm.getInputSlot("ROI").addData(inputData, progressInfo);
-            statisticsAlgorithm.getInputSlot("Reference").addData(new ImagePlusData(reference), progressInfo);
-            statisticsAlgorithm.run(progressInfo);
-            ResultsTableData centroids = statisticsAlgorithm.getFirstOutputSlot().getData(0, ResultsTableData.class, progressInfo);
-            for (int row = 0; row < centroids.getRowCount(); row++) {
-                Point centroid = new Point((int) centroids.getValueAsDouble(row, "X"),
-                        (int) centroids.getValueAsDouble(row, "Y"));
-                roiCentroids.put(inputData.get(row), centroid);
-                roiIndices.put(inputData.get(row), row);
+//            RoiStatisticsAlgorithm statisticsAlgorithm =
+//                    JIPipe.createNode("ij1-roi-statistics", RoiStatisticsAlgorithm.class);
+//            statisticsAlgorithm.setAllSlotsVirtual(false, false, null);
+//            statisticsAlgorithm.setOverrideReferenceImage(true);
+//            statisticsAlgorithm.getMeasurements().setNativeValue(Measurement.Centroid.getNativeValue());
+//            statisticsAlgorithm.getInputSlot("ROI").addData(inputData, progressInfo);
+//            statisticsAlgorithm.getInputSlot("Reference").addData(new ImagePlusData(reference), progressInfo);
+//            statisticsAlgorithm.run(progressInfo);
+//            ResultsTableData centroids = statisticsAlgorithm.getFirstOutputSlot().getData(0, ResultsTableData.class, progressInfo);
+//            for (int row = 0; row < centroids.getRowCount(); row++) {
+//                Point centroid = new Point((int) centroids.getValueAsDouble(row, "X"),
+//                        (int) centroids.getValueAsDouble(row, "Y"));
+//                roiCentroids.put(inputData.get(row), centroid);
+//                roiIndices.put(inputData.get(row), row);
+//            }
+            for (int i = 0; i < inputData.size(); i++) {
+                Roi roi = inputData.get(i);
+                roiIndices.put(roi, i);
+                roiCentroids.put(roi, ROIListData.getCentroid(roi));
             }
         }
 

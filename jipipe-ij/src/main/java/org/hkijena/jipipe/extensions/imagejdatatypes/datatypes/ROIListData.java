@@ -27,6 +27,7 @@ import ij.io.RoiEncoder;
 import ij.macro.Interpreter;
 import ij.measure.ResultsTable;
 import ij.plugin.filter.Analyzer;
+import ij.plugin.filter.Filler;
 import ij.plugin.frame.RoiManager;
 import ij.process.FloatPolygon;
 import ij.process.ImageProcessor;
@@ -41,11 +42,13 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.ImageStatistic
 import org.hkijena.jipipe.extensions.parameters.roi.Margin;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
+import org.hkijena.jipipe.utils.ColorUtils;
 import org.hkijena.jipipe.utils.PathUtils;
 
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Frame;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
@@ -57,10 +60,12 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -324,6 +329,87 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
         ImagePlus result = IJ.createImage("ROIs", "8-bit", sx, sy, sc, sz, st);
         drawMask(drawOutline, drawFilledOutline, lineThickness, result);
         return result;
+    }
+
+    public void draw(ImageProcessor processor, SliceIndex currentIndex, boolean ignoreZ, boolean ignoreC, boolean ignoreT, boolean drawOutline, boolean fillOutline, boolean drawLabel, int defaultLineThickness, Color defaultFillColor, Color defaultLineColor, Collection<Roi> highlighted) {
+        ImagePlus tmp = new ImagePlus("tmp", processor);
+        final int z = currentIndex.getZ();
+        final int c = currentIndex.getC();
+        final int t = currentIndex.getT();
+        final Filler roiFiller = new Filler();
+        for (int i = 0; i < size(); i++) {
+            Roi roi = get(i);
+            int rz = roi.getZPosition();
+            int rc = roi.getCPosition();
+            int rt = roi.getTPosition();
+            if (!ignoreZ && rz != 0 && rz != (z + 1))
+                continue;
+            if (!ignoreC && rc != 0 && rc != (c + 1))
+                continue;
+            if (!ignoreT && rt != 0 && rt != (t + 1))
+                continue;
+            if (fillOutline) {
+                Color color = roi.getFillColor() != null ? roi.getFillColor() : defaultFillColor;
+                if(!highlighted.isEmpty()) {
+                    if(!highlighted.contains(roi)) {
+                        color = ColorUtils.scaleHSV(color, 0.8f, 1, 0.5f);
+                    }
+                    else {
+                        continue;
+                    }
+                }
+                processor.setColor(color);
+                processor.fill(roi);
+            }
+            if (drawOutline) {
+                Color color = roi.getStrokeColor() != null ? roi.getStrokeColor() : defaultLineColor;
+                int width = (int)roi.getStrokeWidth() <= 0 ? defaultLineThickness : (int)roi.getStrokeWidth();
+                if(!highlighted.isEmpty()) {
+                    if(!highlighted.contains(roi)) {
+                        color = ColorUtils.scaleHSV(color, 0.8f, 1, 0.5f);
+                    }
+                    else {
+                        continue;
+                    }
+                }
+                processor.setLineWidth(width);
+                processor.setColor(color);
+                roi.drawPixels(processor);
+            }
+            if (drawLabel) {
+                Point centroid = getCentroid(roi);
+                roiFiller.drawLabel(tmp, processor, i, new Rectangle(centroid.x, centroid.y, 0, 0));
+            }
+        }
+        for (Roi roi : highlighted) {
+            int i = indexOf(roi);
+            int rz = roi.getZPosition();
+            int rc = roi.getCPosition();
+            int rt = roi.getTPosition();
+            if (!ignoreZ && rz != 0 && rz != (z + 1))
+                continue;
+            if (!ignoreC && rc != 0 && rc != (c + 1))
+                continue;
+            if (!ignoreT && rt != 0 && rt != (t + 1))
+                continue;
+            if (fillOutline) {
+                Color color = roi.getFillColor() != null ? roi.getFillColor() : defaultFillColor;
+                processor.setColor(color);
+                processor.fill(roi);
+            }
+            if (drawOutline) {
+                Color color = roi.getStrokeColor() != null ? roi.getStrokeColor() : defaultLineColor;
+                int width = (int)roi.getStrokeWidth() <= 0 ? defaultLineThickness : (int)roi.getStrokeWidth();
+                processor.setLineWidth(width);
+                processor.setColor(color);
+                roi.drawPixels(processor);
+            }
+            if (drawLabel) {
+                Point centroid = getCentroid(roi);
+                roiFiller.drawLabel(tmp, processor, i, new Rectangle(centroid.x, centroid.y, 0, 0));
+            }
+        }
+
     }
 
     /**
@@ -799,5 +885,33 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
         }
 
         return result;
+    }
+
+    /**
+     * Gets the centroid of a ROI
+     * @param roi the roi
+     * @return the centroid
+     */
+    public static Point getCentroid(Roi roi) {
+        return new Point((int)roi.getContourCentroid()[0], (int)roi.getContourCentroid()[1]);
+    }
+
+    /**
+     * Returns true if the ROI is visible at given slice index
+     * @param roi the roi
+     * @param location slice index, zero-based
+     * @param ignoreZ ignore Z constraint
+     * @param ignoreC ignore C constraint
+     * @param ignoreT ignore T constraint
+     * @return if the ROI is visible
+     */
+    public static boolean isVisibleIn(Roi roi, SliceIndex location, boolean ignoreZ, boolean ignoreC, boolean ignoreT) {
+        if(!ignoreZ && roi.getZPosition() > 0 && roi.getZPosition() != (location.getZ() + 1))
+            return false;
+        if(!ignoreC && roi.getCPosition() > 0 && roi.getCPosition() != (location.getC() + 1))
+            return false;
+        if(!ignoreT && roi.getTPosition() > 0 && roi.getTPosition() != (location.getT() + 1))
+            return false;
+        return true;
     }
 }

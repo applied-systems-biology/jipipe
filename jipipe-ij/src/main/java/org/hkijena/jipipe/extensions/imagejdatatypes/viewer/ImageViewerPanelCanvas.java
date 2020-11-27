@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.ui.components;
+package org.hkijena.jipipe.extensions.imagejdatatypes.viewer;
 
 import javax.swing.*;
 import java.awt.Component;

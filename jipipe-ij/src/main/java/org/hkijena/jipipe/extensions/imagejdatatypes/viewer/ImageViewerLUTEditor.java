@@ -11,10 +11,11 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.ui.components;
+package org.hkijena.jipipe.extensions.imagejdatatypes.viewer;
 
 import ij.ImagePlus;
 import ij.process.LUT;
+import org.hkijena.jipipe.ui.components.ColorIcon;
 import org.hkijena.jipipe.utils.ImageJUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jdesktop.swingx.JXMultiThumbSlider;

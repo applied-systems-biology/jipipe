@@ -11,11 +11,10 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe;
+package org.hkijena.jipipe.extensions.imagejdatatypes.viewer;
 
 import ij.IJ;
 import ij.ImagePlus;
-import org.hkijena.jipipe.ui.components.ImageViewerPanel;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.command.Command;
 import org.scijava.plugin.Plugin;
@@ -30,14 +29,10 @@ public class JIPipeImageViewerGUICommand implements Command {
         UIUtils.loadLookAndFeelFromSettings();
         SwingUtilities.invokeLater(() -> {
             ImageViewerPanel dataDisplay = new ImageViewerPanel();
+            ImageViewerWindow window = new ImageViewerWindow(dataDisplay);
             dataDisplay.setImage(image.duplicate());
-            JFrame frame = new JFrame(image.getTitle());
-            frame.setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
-            frame.setContentPane(dataDisplay);
-            frame.pack();
-            frame.setSize(1024, 768);
-            frame.setVisible(true);
-            SwingUtilities.invokeLater(dataDisplay::fitImageToScreen);
+            window.setTitle(image.getTitle());
+            window.setVisible(true);
         });
     }
 }

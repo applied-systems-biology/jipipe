@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.ui.components;
+package org.hkijena.jipipe.extensions.imagejdatatypes.viewer;
 
 import ij.process.ImageProcessor;
 import ij.process.ImageStatistics;
