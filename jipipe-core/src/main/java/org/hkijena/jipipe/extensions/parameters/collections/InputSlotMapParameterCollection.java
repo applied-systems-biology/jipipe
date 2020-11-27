@@ -50,13 +50,19 @@ public class InputSlotMapParameterCollection extends SlotMapParameterCollection 
             for (String slotName : toRemove) {
                 removeParameter(slotName);
             }
-            for (JIPipeDataSlot slot : getAlgorithm().getInputSlots()) {
+            for (int i = 0; i < getAlgorithm().getInputSlots().size(); i++) {
+                JIPipeDataSlot slot = getAlgorithm().getInputSlots().get(i);
                 if (!containsKey(slot.getName())) {
                     JIPipeMutableParameterAccess access = addParameter(slot.getName(), getDataClass());
+                    access.setUIOrder(i);
                     if (getNewInstanceGenerator() != null)
                         access.set(getNewInstanceGenerator().get());
                     else
                         access.set(ReflectionUtils.newInstance(getDataClass()));
+                }
+                else {
+                    JIPipeMutableParameterAccess access = (JIPipeMutableParameterAccess) get(slot.getName());
+                    access.setUIOrder(i);
                 }
             }
         }
