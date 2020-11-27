@@ -27,6 +27,8 @@ import org.hkijena.jipipe.ui.components.DocumentTabPane;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphCanvasUI;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphEditorUI;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
+import org.hkijena.jipipe.ui.running.JIPipeRunQueuePanelUI;
+import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
 import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -47,6 +49,7 @@ public class JIPipeSingleAlgorithmSelectionPanelUI extends JIPipeProjectWorkbenc
     private JPanel testBenchTabContent;
     private JPanel cacheBrowserTabContent;
     private JPanel batchAssistantTabContent;
+    private JPanel currentRunTabContent;
     private DocumentTabPane tabbedPane;
 
     /**
@@ -94,6 +97,11 @@ public class JIPipeSingleAlgorithmSelectionPanelUI extends JIPipeProjectWorkbenc
                 testBenchTabContent,
                 DocumentTabPane.CloseMode.withoutCloseButton, false);
 
+        if(JIPipeRunnerQueue.getInstance().getCurrentRun() != null) {
+            currentRunTabContent = new JPanel(new BorderLayout());
+            tabbedPane.addSingletonTab("CURRENT_RUN", "Current process", UIUtils.getIconFromResources("actions/show_log.png"),
+                    currentRunTabContent, DocumentTabPane.CloseMode.withoutCloseButton, false);
+        }
 
         add(tabbedPane, BorderLayout.CENTER);
 
@@ -145,6 +153,9 @@ public class JIPipeSingleAlgorithmSelectionPanelUI extends JIPipeProjectWorkbenc
                     batchAssistantTabContent.add(browserUI, BorderLayout.CENTER);
                 }
             }
+        }
+        if(currentRunTabContent != null && tabbedPane.getCurrentContent() == currentRunTabContent) {
+            currentRunTabContent.add(new JIPipeRunQueuePanelUI(), BorderLayout.CENTER);
         }
     }
 
