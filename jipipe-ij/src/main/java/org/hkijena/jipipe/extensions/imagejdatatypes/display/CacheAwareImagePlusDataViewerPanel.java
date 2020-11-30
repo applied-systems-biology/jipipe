@@ -71,7 +71,6 @@ public class CacheAwareImagePlusDataViewerPanel extends ImageViewerPanel {
         ImagePlusData data = dataSource.getSlot().getData(dataSource.getRow(), ImagePlusData.class, new JIPipeProgressInfo());
         ImagePlus image = data.getDuplicateImage();
         setImage(image);
-        WindowManager.setTempCurrentImage(image);
     }
 
     @Override
