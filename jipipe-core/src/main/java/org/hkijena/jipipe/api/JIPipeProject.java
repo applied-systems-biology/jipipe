@@ -36,12 +36,8 @@ import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeMutableDependency;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeCompartmentOutput;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
-import org.hkijena.jipipe.api.compartments.datatypes.JIPipeCompartmentOutputData;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
-import org.hkijena.jipipe.api.data.JIPipeMutableSlotConfiguration;
-import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.events.CompartmentRemovedEvent;
 import org.hkijena.jipipe.api.events.CompartmentRenamedEvent;
 import org.hkijena.jipipe.api.events.GraphChangedEvent;
@@ -55,14 +51,12 @@ import org.hkijena.jipipe.ui.components.MarkdownDocument;
 import org.hkijena.jipipe.ui.settings.JIPipeProjectInfoParameters;
 import org.hkijena.jipipe.utils.JsonUtils;
 import org.hkijena.jipipe.utils.ReflectionUtils;
-import org.hkijena.jipipe.utils.StringUtils;
 
 import java.awt.Point;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -231,7 +225,7 @@ public class JIPipeProject implements JIPipeValidatable {
      */
     @Subscribe
     public void onCompartmentGraphChanged(GraphChangedEvent event) {
-        if (event.getAlgorithmGraph() == compartmentGraph) {
+        if (event.getGraph() == compartmentGraph) {
             for (JIPipeGraphNode algorithm : compartmentGraph.getNodes().values()) {
                 JIPipeProjectCompartment compartment = (JIPipeProjectCompartment) algorithm;
                 if (!compartment.isInitialized()) {
