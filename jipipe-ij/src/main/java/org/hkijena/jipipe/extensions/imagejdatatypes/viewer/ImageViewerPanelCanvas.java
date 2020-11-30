@@ -13,6 +13,8 @@
 
 package org.hkijena.jipipe.extensions.imagejdatatypes.viewer;
 
+import com.google.common.eventbus.EventBus;
+
 import javax.swing.*;
 import java.awt.Component;
 import java.awt.Cursor;
@@ -29,6 +31,7 @@ import java.awt.image.BufferedImage;
 import java.awt.image.BufferedImageOp;
 
 public class ImageViewerPanelCanvas extends JPanel implements MouseListener, MouseMotionListener {
+    private final EventBus eventBus = new EventBus();
     private BufferedImage image;
     private double zoom = 1.0;
     private int contentX = 0;
@@ -74,6 +77,10 @@ public class ImageViewerPanelCanvas extends JPanel implements MouseListener, Mou
         }
         revalidate();
         repaint();
+    }
+
+    public EventBus getEventBus() {
+        return eventBus;
     }
 
     @Override
@@ -205,7 +212,7 @@ public class ImageViewerPanelCanvas extends JPanel implements MouseListener, Mou
 
     @Override
     public void mouseMoved(MouseEvent e) {
-
+        eventBus.post(new PixelHoverEvent(getMouseModelPixelCoordinate()));
     }
 
     public JScrollPane getScrollPane() {
@@ -262,6 +269,34 @@ public class ImageViewerPanelCanvas extends JPanel implements MouseListener, Mou
         return renderedError;
     }
 
+    /**
+     * Gets the pixel coordinates inside the shown image under the mouse.
+     * @return the pixel coordinates. Null if the current mouse position is invalid.
+     */
+    public Point getMouseModelPixelCoordinate() {
+        if(image == null)
+            return null;
+        Point mousePosition = getMousePosition();
+        if(mousePosition != null) {
+            int x = mousePosition.x;
+            int y = mousePosition.y;
+            x -= contentX;
+            y -= contentY;
+            if(x < 0 || y < 0)
+                return null;
+            int sw = (int) (zoom * image.getWidth());
+            int sh = (int) (zoom * image.getHeight());
+            if(x >= sw || y >= sh)
+                return null;
+            double rx = Math.max(0, Math.min(1, 1.0 * x / sw));
+            double ry = Math.max(0, Math.min(1, 1.0 * y / sh));
+            int mx = (int)(rx * image.getWidth());
+            int my = (int)(ry * image.getHeight());
+            return new Point(mx, my);
+        }
+        return null;
+    }
+
     public int getContentX() {
         return contentX;
     }
@@ -287,5 +322,17 @@ public class ImageViewerPanelCanvas extends JPanel implements MouseListener, Mou
         this.contentY = y;
         revalidate();
         repaint();
+    }
+
+    public static class PixelHoverEvent {
+        private final Point pixelCoordinate;
+
+        public PixelHoverEvent(Point pixelCoordinate) {
+            this.pixelCoordinate = pixelCoordinate;
+        }
+
+        public Point getPixelCoordinate() {
+            return pixelCoordinate;
+        }
     }
 }

@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.extensions.imagejdatatypes.viewer;
 
+import com.google.common.eventbus.Subscribe;
 import com.google.common.primitives.Ints;
 import ij.IJ;
 import ij.ImagePlus;
@@ -47,8 +48,11 @@ import javax.swing.event.DocumentEvent;
 import java.awt.Adjustable;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Point;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -99,6 +103,7 @@ public class ImageViewerPanel extends JPanel {
     private boolean roiFilterList = false;
     private JMenuItem exportAllSlicesItem;
     private JMenuItem exportMovieItem;
+    private JLabel pixelInfoLabel = new JLabel(UIUtils.getIconFromResources("actions/tool-pointer.png"), JLabel.LEFT);
 
     public ImageViewerPanel() {
         initialize();
@@ -124,6 +129,7 @@ public class ImageViewerPanel extends JPanel {
                 getParent().dispatchEvent(e);
             }
         });
+        canvas.getEventBus().register(this);
 
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
                 scrollPane,
@@ -152,6 +158,37 @@ public class ImageViewerPanel extends JPanel {
         frameSlider.addAdjustmentListener(e -> refreshSlice());
 
         initializeAnimationControls();
+        updatePixelInfo();
+    }
+
+    private void updatePixelInfo() {
+        if(image != null) {
+            Point coordinate = canvas.getMouseModelPixelCoordinate();
+            if(coordinate != null) {
+                String value = "";
+                try {
+                    if(slice != null) {
+                        if(slice instanceof ColorProcessor) {
+                            Color color = ((ColorProcessor) slice).getColor(coordinate.x, coordinate.y);
+                            value = String.format("RGB(%d, %d, %d)", color.getRed(), color.getGreen(), color.getBlue());
+                        }
+                        else {
+                            value = "Intensity: " + slice.getf(coordinate.x, coordinate.y);
+                        }
+                    }
+                }
+                catch (Exception e) {
+                    e.printStackTrace();
+                }
+                pixelInfoLabel.setText("x: " + coordinate.x + " y: " + coordinate.y + " " + value);
+            }
+            else {
+                pixelInfoLabel.setText("No info available");
+            }
+        }
+        else {
+            pixelInfoLabel.setText("No info available");
+        }
     }
 
     public ImageJCalibrationMode getSelectedCalibration() {
@@ -864,6 +901,7 @@ public class ImageViewerPanel extends JPanel {
         headerPanel.addColumn(autoCalibrateButton);
         formPanel.addToForm(calibrationModes, new JLabel("Calibration type"), null);
         formPanel.addWideToForm(displayRangeCalibrationControl, null);
+        formPanel.addWideToForm(pixelInfoLabel, null);
     }
 
     public void applyCalibrationTo(ImagePlus foreign) {
@@ -1035,6 +1073,11 @@ public class ImageViewerPanel extends JPanel {
         }
         updateROIJList();
         uploadSliceToCanvas();
+    }
+
+    @Subscribe
+    public void onPixelHover(ImageViewerPanelCanvas.PixelHoverEvent event) {
+        updatePixelInfo();
     }
 
     public static void main(String[] args) {

@@ -114,9 +114,10 @@ public class CropToRoiAlgorithm extends JIPipeIteratingAlgorithm {
         int targetWidth = input.getWidth();
         int targetHeight = input.getHeight();
         if (cropXY) {
-            input.getProcessor().setRoi(bounds);
-            ImageProcessor cropped = input.getProcessor().crop();
-            input.getProcessor().setRoi((Roi) null);
+            ImageProcessor imp = input.getProcessor();
+            imp.setRoi(bounds);
+            ImageProcessor cropped = imp.crop();
+            imp.setRoi((Roi) null);
             targetWidth = cropped.getWidth();
             targetHeight = cropped.getHeight();
         }
