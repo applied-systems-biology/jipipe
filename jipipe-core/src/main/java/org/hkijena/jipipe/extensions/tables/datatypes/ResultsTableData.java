@@ -28,6 +28,8 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import gnu.trove.map.TIntIntMap;
 import gnu.trove.map.hash.TIntIntHashMap;
+import gnu.trove.set.TIntSet;
+import gnu.trove.set.hash.TIntHashSet;
 import ij.macro.Variable;
 import ij.measure.ResultsTable;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
@@ -342,7 +344,6 @@ public class ResultsTableData implements JIPipeData, TableModel {
         for (int row = 0; row < rows; row++) {
             table.incrementCounter();
         }
-        fireChangedEvent(new TableModelEvent(this));
     }
 
     /**
@@ -626,9 +627,6 @@ public class ResultsTableData implements JIPipeData, TableModel {
         } else {
             table.setValue(columnIndex, rowIndex, "" + aValue);
         }
-        for (TableModelListener listener : listeners) {
-            listener.tableChanged(new TableModelEvent(this, rowIndex));
-        }
     }
 
     /**
@@ -721,7 +719,6 @@ public class ResultsTableData implements JIPipeData, TableModel {
     public void removeColumnAt(int col) {
         table.deleteColumn(getColumnName(col));
         cleanupTable();
-        fireChangedEvent(new TableModelEvent(this));
     }
 
     /**
@@ -754,7 +751,6 @@ public class ResultsTableData implements JIPipeData, TableModel {
 
             ++localRow;
         }
-        fireChangedEvent(new TableModelEvent(this));
     }
 
     /**
@@ -916,7 +912,13 @@ public class ResultsTableData implements JIPipeData, TableModel {
      */
     public void addRow() {
         table.incrementCounter();
-        fireChangedEvent(new TableModelEvent(this));
+        int row = getRowCount() - 1;
+        for (int col = 0; col < getColumnCount(); col++) {
+            if(isNumeric(col))
+                setValueAt(0.0, row, col);
+            else
+                setValueAt("", row, col);
+        }
     }
 
     /**
@@ -993,6 +995,49 @@ public class ResultsTableData implements JIPipeData, TableModel {
                 setValueAt(column.getRowAsString(row), row, columnIndex);
             }
         }
+    }
+
+    public void removeRow(int removedRow) {
+        // This function is buggy, so we instead replace the backend table
+//        table.deleteRow(row);
+        int targetRow = 0;
+        ResultsTable newData = new ResultsTable(getRowCount() - 1);
+        for (int col = 0; col < getColumnCount(); col++) {
+            newData.getFreeColumn(getColumnName(col));
+        }
+        for (int row = 0; row < getRowCount(); row++) {
+            if(row == removedRow)
+                continue;
+            for (int col = 0; col < getColumnCount(); col++) {
+                if(isNumeric(col))
+                    newData.setValue(col, targetRow, getValueAsDouble(row, col));
+                else
+                    newData.setValue(col, targetRow, getValueAsString(row, col));
+            }
+            ++targetRow;
+        }
+        this.table = newData;
+    }
+
+    public void removeRows(Collection<Integer> rows) {
+        TIntSet removedRows  = new TIntHashSet(rows);
+        int targetRow = 0;
+        ResultsTable newData = new ResultsTable(getRowCount() - removedRows.size());
+        for (int col = 0; col < getColumnCount(); col++) {
+            newData.getFreeColumn(getColumnName(col));
+        }
+        for (int row = 0; row < getRowCount(); row++) {
+            if(removedRows.contains(row))
+                continue;
+            for (int col = 0; col < getColumnCount(); col++) {
+                if(isNumeric(col))
+                    newData.setValue(col, targetRow, getValueAsDouble(row, col));
+                else
+                    newData.setValue(col, targetRow, getValueAsString(row, col));
+            }
+            ++targetRow;
+        }
+        this.table = newData;
     }
 
     public static ResultsTableData importFrom(Path storagePath) {

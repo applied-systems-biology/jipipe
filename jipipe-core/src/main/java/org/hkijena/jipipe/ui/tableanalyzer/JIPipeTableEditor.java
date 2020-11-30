@@ -374,6 +374,7 @@ public class JIPipeTableEditor extends JIPipeWorkbenchPanel {
         dialog.setLocationRelativeTo(SwingUtilities.getWindowAncestor(this));
         dialog.setModal(true);
         dialog.setVisible(true);
+        refreshTable();
     }
 
     private void createNewPlot() {
@@ -541,6 +542,8 @@ public class JIPipeTableEditor extends JIPipeWorkbenchPanel {
                 tableModel::containsColumn);
         if (name != null && !name.isEmpty()) {
             createUndoSnapshot();
+            if(tableModel.getRowCount() == 0)
+                tableModel.addRow();
             tableModel.addColumn(name, stringColumn);
             refreshTable();
         }
@@ -615,6 +618,7 @@ public class JIPipeTableEditor extends JIPipeWorkbenchPanel {
 
     private void addRow() {
         tableModel.addRow();
+        refreshTable();
         updateSelectionStatistics();
     }
 
@@ -643,9 +647,8 @@ public class JIPipeTableEditor extends JIPipeWorkbenchPanel {
                 for (int i = 0; i < jxTable.getSelectedRows().length; ++i) {
                     rows.add(jxTable.convertRowIndexToModel(jxTable.getSelectedRows()[i]));
                 }
-                rows.sort(Comparator.naturalOrder());
-
-                tableModel = tableModel.getRows(rows);
+                tableModel.removeRows(rows);
+                refreshTable();
                 jxTable.packAll();
             }
         }
