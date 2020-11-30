@@ -86,7 +86,7 @@ public class RemoveOutliersFilter2DAlgorithm extends JIPipeSimpleIteratingAlgori
                 radius,
                 RankFilters.OUTLIERS,
                 mode == Mode.RemoveLargerThanMedian ? RankFilters.BRIGHT_OUTLIERS : RankFilters.DARK_OUTLIERS,
-                threshold));
+                threshold), progressInfo);
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(img), progressInfo);
     }
 

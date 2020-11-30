@@ -77,7 +77,7 @@ public class RemoveNaNFilter2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo);
         ImagePlus img = inputData.getDuplicateImage();
         RankFilters rankFilters = new RankFilters();
-        ImageJUtils.forEachSlice(img, ip -> rankFilters.rank(ip, radius, RankFilters.REMOVE_NAN));
+        ImageJUtils.forEachSlice(img, ip -> rankFilters.rank(ip, radius, RankFilters.REMOVE_NAN), progressInfo);
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(img), progressInfo);
     }
 

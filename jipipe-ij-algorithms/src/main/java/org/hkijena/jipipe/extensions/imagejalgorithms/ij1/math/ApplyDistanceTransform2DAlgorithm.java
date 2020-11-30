@@ -72,7 +72,7 @@ public class ApplyDistanceTransform2DAlgorithm extends JIPipeSimpleIteratingAlgo
         ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscaleMaskData.class, progressInfo);
         ImagePlus img = inputData.getDuplicateImage();
         EDM edm = new EDM();
-        ImageJUtils.forEachSlice(img, edm::toEDM);
+        ImageJUtils.forEachSlice(img, edm::toEDM, progressInfo);
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscale8UData(img), progressInfo);
     }
 }

@@ -83,7 +83,7 @@ public class AutoThreshold2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                 ip.invert();
             int threshold = autoThresholder.getThreshold(method, ip.getHistogram());
             ip.threshold(threshold);
-        });
+        }, progressInfo);
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleMaskData(img), progressInfo);
     }
 

@@ -94,7 +94,7 @@ public class MorphologyInternalGradient2DAlgorithm extends JIPipeSimpleIterating
             ImagePlus slice = new ImagePlus("slice", imp.duplicate());
             applyInternalGradient(slice);
             stack.addSlice("slice" + index, slice.getProcessor());
-        });
+        }, progressInfo);
         ImagePlus result = new ImagePlus("Segmented Image", stack);
         result.setDimensions(img.getNChannels(), img.getNSlices(), img.getNFrames());
 

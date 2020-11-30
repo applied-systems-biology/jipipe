@@ -64,7 +64,7 @@ public class FFT2DSwapQuadrants extends JIPipeSimpleIteratingAlgorithm {
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ImagePlus fft = dataBatch.getInputData(getFirstInputSlot(), ImagePlusFFT2DData.class, progressInfo).getDuplicateImage();
         FHT fht = new FHT(new FloatProcessor(1, 1));
-        ImageJUtils.forEachSlice(fft, fht::swapQuadrants);
+        ImageJUtils.forEachSlice(fft, fht::swapQuadrants, progressInfo);
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusFFT2DData(fft), progressInfo);
     }
 

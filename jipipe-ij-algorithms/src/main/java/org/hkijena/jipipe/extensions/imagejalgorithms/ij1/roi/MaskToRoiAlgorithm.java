@@ -62,7 +62,7 @@ public class MaskToRoiAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             Roi roi = ThresholdToSelection.run(new ImagePlus("slice", ip));
             roi.setPosition(index.getC() + 1, index.getZ() + 1, index.getT() + 1);
             result.add(roi);
-        });
+        }, progressInfo);
         dataBatch.addOutputData(getFirstOutputSlot(), result, progressInfo);
     }
 

@@ -100,7 +100,7 @@ public class LocalMaxima2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                     inputIsEDM);
             resultStack.setProcessor(maxima, index + 1);
             resultStack.setSliceLabel("slice=" + index, index + 1);
-        });
+        }, progressInfo);
 
         ImagePlus resultImage = new ImagePlus("Output", resultStack);
         resultImage.setDimensions(img.getNChannels(), img.getNSlices(), img.getNFrames());

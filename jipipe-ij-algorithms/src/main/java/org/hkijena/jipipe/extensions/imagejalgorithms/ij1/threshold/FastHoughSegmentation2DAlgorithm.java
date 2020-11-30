@@ -183,7 +183,7 @@ public class FastHoughSegmentation2DAlgorithm extends JIPipeSimpleIteratingAlgor
         ImageJUtils.forEachIndexedSlice(img, (imp, index) -> {
             progressInfo.log("Slice " + index + "/" + img.getStackSize());
             applyHough(imp, maskStack, houghStack, measurements, progressInfo);
-        });
+        }, progressInfo);
 
         ImagePlus mask = new ImagePlus("Segmented Image", maskStack);
         mask.setDimensions(img.getNChannels(), img.getNSlices(), img.getNFrames());

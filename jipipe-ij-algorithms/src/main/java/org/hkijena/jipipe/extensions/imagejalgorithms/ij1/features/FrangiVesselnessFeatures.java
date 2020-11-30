@@ -97,7 +97,7 @@ public class FrangiVesselnessFeatures extends JIPipeSimpleIteratingAlgorithm {
 
         if (invert) {
             img = img.duplicate();
-            ImageJUtils.forEachSlice(img, ImageProcessor::invert);
+            ImageJUtils.forEachSlice(img, ImageProcessor::invert, progressInfo);
         }
 
         Frangi_<FloatType> frangi = new Frangi_<>();
@@ -136,7 +136,7 @@ public class FrangiVesselnessFeatures extends JIPipeSimpleIteratingAlgorithm {
                         false,
                         multiTaskProgress);
                 stack.addSlice("slice" + index, processedSlice.getProcessor());
-            });
+            }, progressInfo);
             result = new ImagePlus("Vesselness", stack);
             result.setDimensions(img.getNChannels(), img.getNSlices(), img.getNFrames());
         } else {

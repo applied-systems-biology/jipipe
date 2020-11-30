@@ -91,7 +91,7 @@ public class StackTo2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             } else {
                 dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlus2DData(new ImagePlus("slice=" + index, ip)), progressInfo);
             }
-        });
+        }, progressInfo);
     }
 
 

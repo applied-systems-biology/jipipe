@@ -93,7 +93,7 @@ public class TransformFlip2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                 if (transformOrigin && r.x == 0 && r.y == 0 && r.width == ip.getWidth() && r.height == ip.getHeight())
                     cal.yOrigin = img.getHeight() - 1 - cal.yOrigin;
             }
-        });
+        }, progressInfo);
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(img), progressInfo);
     }
 

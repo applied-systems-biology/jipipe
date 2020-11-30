@@ -179,7 +179,7 @@ public class FindParticles2D extends JIPipeSimpleIteratingAlgorithm {
 
                 dataBatch.addOutputData("ROI", rois, traits, JIPipeAnnotationMergeStrategy.Merge, progressInfo);
                 dataBatch.addOutputData("Measurements", new ResultsTableData(table), traits, JIPipeAnnotationMergeStrategy.Merge, progressInfo);
-            });
+            }, progressInfo);
         } else {
             ResultsTableData mergedResultsTable = new ResultsTableData(new ResultsTable());
             ROIListData mergedROI = new ROIListData(new ArrayList<>());
@@ -219,7 +219,7 @@ public class FindParticles2D extends JIPipeSimpleIteratingAlgorithm {
                 // Merge into one result
                 mergedResultsTable.mergeWith(new ResultsTableData(table));
                 mergedROI.mergeWith(rois);
-            });
+            }, progressInfo);
 
             dataBatch.addOutputData("ROI", mergedROI, progressInfo);
             dataBatch.addOutputData("Measurements", mergedResultsTable, progressInfo);

@@ -175,7 +175,7 @@ public class InternalGradientSegmentation2DAlgorithm extends JIPipeSimpleIterati
                 binaryFilter.run(processedSlice.getProcessor());
             }
             stack.addSlice("slice" + index, processedSlice.getProcessor());
-        });
+        }, progressInfo);
         ImagePlus result = new ImagePlus("Segmented Image", stack);
         result.setDimensions(img.getNChannels(), img.getNSlices(), img.getNFrames());
 

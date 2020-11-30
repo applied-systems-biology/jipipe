@@ -88,11 +88,10 @@ public class Hessian2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         ImageStack stack = new ImageStack(img.getWidth(), img.getHeight(), img.getProcessor().getColorModel());
 
         ImageJUtils.forEachIndexedSlice(img, (imp, index) -> {
-            progressInfo.log("Slice " + index + "/" + img.getStackSize());
             ImagePlus slice = new ImagePlus("slice", imp.duplicate());
             ImagePlus processedSlice = applyHessian(slice);
             stack.addSlice("slice" + index, processedSlice.getProcessor());
-        });
+        }, progressInfo);
         ImagePlus result = new ImagePlus("Segmented Image", stack);
         result.setDimensions(img.getNChannels(), img.getNSlices(), img.getNFrames());
 

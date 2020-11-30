@@ -100,7 +100,7 @@ public class MeijeringVesselness2DFeatures extends JIPipeSimpleIteratingAlgorith
 
         if (invert) {
             img = img.duplicate();
-            ImageJUtils.forEachSlice(img, ImageProcessor::invert);
+            ImageJUtils.forEachSlice(img, ImageProcessor::invert, progressInfo);
         }
 
         ImageStack stack = new ImageStack(img.getWidth(), img.getHeight(), img.getProcessor().getColorModel());
@@ -110,7 +110,7 @@ public class MeijeringVesselness2DFeatures extends JIPipeSimpleIteratingAlgorith
             ImagePlus slice = new ImagePlus("slice", imp);
             ImagePlus processedSlice = processSlice(slice);
             stack.addSlice("slice" + index, processedSlice.getProcessor());
-        });
+        }, progressInfo);
         ImagePlus result = new ImagePlus("Vesselness", stack);
         result.setDimensions(img.getNChannels(), img.getNSlices(), img.getNFrames());
 

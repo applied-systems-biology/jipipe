@@ -77,7 +77,7 @@ public class ConvolveByImage2DAlgorithm extends JIPipeIteratingAlgorithm {
             }
         }
 
-        ImageJUtils.forEachSlice(img, imp -> convolver.convolve(imp, kernel, imgKernel.getWidth(), imgKernel.getHeight()));
+        ImageJUtils.forEachSlice(img, imp -> convolver.convolve(imp, kernel, imgKernel.getWidth(), imgKernel.getHeight()), progressInfo);
 
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(img), progressInfo);
     }

@@ -191,7 +191,7 @@ public class HoughSegmentation2DAlgorithm extends JIPipeSimpleIteratingAlgorithm
             ImagePlus processedSlice = drawCircleMask(slice, resultsTable);
             stack.addSlice("slice" + index, processedSlice.getProcessor());
             measurements.mergeWith(new ResultsTableData(resultsTable));
-        });
+        }, progressInfo);
         ImagePlus result = new ImagePlus("Segmented Image", stack);
         result.setDimensions(img.getNChannels(), img.getNSlices(), img.getNFrames());
 

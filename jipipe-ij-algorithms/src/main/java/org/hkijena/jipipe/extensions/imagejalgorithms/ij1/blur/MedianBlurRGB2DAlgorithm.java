@@ -68,7 +68,7 @@ public class MedianBlurRGB2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusColorRGBData.class, progressInfo);
         ImagePlus img = inputData.getDuplicateImage();
-        ImageJUtils.forEachSlice(img, ImageProcessor::medianFilter);
+        ImageJUtils.forEachSlice(img, ImageProcessor::medianFilter, progressInfo);
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusColorRGBData(img), progressInfo);
     }
 

@@ -94,7 +94,7 @@ public class IlluminationCorrection2DAlgorithm extends JIPipeSimpleIteratingAlgo
         ImageJUtils.forEachSlice(background, imp -> {
             double max = imp.getStatistics().max;
             imp.multiply(1.0 / max);
-        });
+        }, progressInfo);
 
         ImageCalculator calculator = new ImageCalculator();
         ImagePlus result = calculator.run("Divide stack create 32-bit", inputData.getImage(), background);

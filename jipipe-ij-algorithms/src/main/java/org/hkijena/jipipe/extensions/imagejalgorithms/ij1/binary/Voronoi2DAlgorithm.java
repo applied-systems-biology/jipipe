@@ -68,7 +68,7 @@ public class Voronoi2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         ImagePlus img = inputData.getDuplicateImage();
         EDM edm = new EDM();
         edm.setup("voronoi", img);
-        ImageJUtils.forEachSlice(img, edm::run);
+        ImageJUtils.forEachSlice(img, edm::run, progressInfo);
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscale8UData(img), progressInfo);
     }
 }

@@ -85,11 +85,11 @@ public class GreyscalePixelsGenerator extends JIPipeSimpleIteratingAlgorithm {
                 } else {
                     dataBatch.addOutputData(getFirstOutputSlot(), resultsTable, progressInfo);
                 }
-            });
+            }, progressInfo);
         } else {
             ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo);
             final TDoubleList pixels = new TDoubleArrayList();
-            ImageJUtils.forEachSlice(inputData.getImage(), imp -> getPixels(imp, pixels));
+            ImageJUtils.forEachSlice(inputData.getImage(), imp -> getPixels(imp, pixels), progressInfo);
             ResultsTableData resultsTable = toResultsTable(pixels);
             dataBatch.addOutputData(getFirstOutputSlot(), resultsTable, progressInfo);
         }

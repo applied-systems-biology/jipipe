@@ -104,7 +104,7 @@ public class RollingBallBackgroundEstimator2DAlgorithm extends JIPipeSimpleItera
                         preSmoothing,
                         correctCorners);
             }
-        });
+        }, progressInfo);
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(img), progressInfo);
     }
 

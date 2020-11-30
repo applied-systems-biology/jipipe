@@ -66,7 +66,7 @@ public class SobelEdgeDetectorAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo);
         ImagePlus img = inputData.getDuplicateImage();
-        ImageJUtils.forEachSlice(img, ImageProcessor::findEdges);
+        ImageJUtils.forEachSlice(img, ImageProcessor::findEdges, progressInfo);
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(img), progressInfo);
     }
 

@@ -92,7 +92,7 @@ public class ManualThreshold16U2DAlgorithm extends JIPipeSimpleIteratingAlgorith
                     ip.set(i, 255);
                 ((ShortProcessor) ip).findMinAndMax();
             }
-        });
+        }, progressInfo);
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleMaskData(img), progressInfo);
     }
 

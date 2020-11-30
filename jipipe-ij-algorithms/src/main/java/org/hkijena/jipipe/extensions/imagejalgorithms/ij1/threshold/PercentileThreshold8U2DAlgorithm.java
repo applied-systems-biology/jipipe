@@ -95,7 +95,7 @@ public class PercentileThreshold8U2DAlgorithm extends JIPipeSimpleIteratingAlgor
                 }
             }
             ip.threshold(thresh);
-        });
+        }, progressInfo);
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleMaskData(img), progressInfo);
     }
 

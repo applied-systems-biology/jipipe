@@ -79,7 +79,7 @@ public class GaussianBlur2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         ImageJUtils.forEachSlice(img, ip -> {
             double accuracy = (ip instanceof ByteProcessor || ip instanceof ColorProcessor) ? 0.002 : 0.0002;
             gaussianBlur.blurGaussian(ip, sigmaX, sigmaY > 0 ? sigmaY : sigmaX, accuracy);
-        });
+        }, progressInfo);
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(img), progressInfo);
     }
 

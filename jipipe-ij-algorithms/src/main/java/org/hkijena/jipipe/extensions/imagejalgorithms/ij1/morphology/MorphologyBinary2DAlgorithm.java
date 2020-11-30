@@ -100,7 +100,7 @@ public class MorphologyBinary2DAlgorithm extends JIPipeSimpleIteratingAlgorithm 
                     ((ByteProcessor) ip).erode(iterations, background);
                     break;
             }
-        });
+        }, progressInfo);
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleMaskData(img), progressInfo);
     }
 

@@ -109,7 +109,7 @@ public class TransformScale2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                 imp.setInterpolationMethod(interpolationMethod.getNativeValue());
                 ImageProcessor resized = imp.resize(finalSx, finalSy, useAveraging);
                 result.addSlice("" + index, resized);
-            });
+            }, progressInfo);
             dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(new ImagePlus("Resized", result)), progressInfo);
         } else {
             img.getProcessor().setInterpolationMethod(interpolationMethod.getNativeValue());

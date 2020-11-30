@@ -77,7 +77,7 @@ public class MorphologyFillHoles2DAlgorithm extends JIPipeSimpleIteratingAlgorit
             int foreground = ip.isInvertedLut() ? 255 - fg : fg;
             int background = 255 - foreground;
             fill(ip, foreground, background);
-        });
+        }, progressInfo);
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleMaskData(img), progressInfo);
     }
 

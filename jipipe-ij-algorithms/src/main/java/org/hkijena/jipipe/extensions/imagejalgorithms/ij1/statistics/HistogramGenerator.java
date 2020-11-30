@@ -97,7 +97,7 @@ public class HistogramGenerator extends JIPipeSimpleIteratingAlgorithm {
                 } else {
                     dataBatch.addOutputData(getFirstOutputSlot(), resultsTable, progressInfo);
                 }
-            });
+            }, progressInfo);
         } else {
             final TDoubleDoubleMap histogram = new TDoubleDoubleHashMap();
             ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo);
@@ -109,7 +109,7 @@ public class HistogramGenerator extends JIPipeSimpleIteratingAlgorithm {
                     sliceHistogram = getGreyscaleHistogram(imp);
                 }
                 mergeHistograms(histogram, sliceHistogram);
-            });
+            }, progressInfo);
             if (normalize) {
                 TDoubleDoubleMap normalizedHistogram = normalizeHistogram(histogram);
                 ResultsTableData resultsTable = toResultsTable(normalizedHistogram);

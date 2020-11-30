@@ -74,8 +74,8 @@ public class DivideByMaximumAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscale32FData.class, progressInfo);
         ImagePlus img = inputData.getDuplicateImage();
         double[] max = new double[]{Double.NEGATIVE_INFINITY};
-        ImageJUtils.forEachSlice(img, ip -> max[0] = Math.max(ip.getStatistics().max, max[0]));
-        ImageJUtils.forEachSlice(img, ip -> ip.multiply(1.0 / max[0]));
+        ImageJUtils.forEachSlice(img, ip -> max[0] = Math.max(ip.getStatistics().max, max[0]), progressInfo);
+        ImageJUtils.forEachSlice(img, ip -> ip.multiply(1.0 / max[0]), progressInfo);
         if (recalibrate) {
             org.hkijena.jipipe.utils.ImageJUtils.calibrate(img, ImageJCalibrationMode.AutomaticImageJ, 0, 1);
         }

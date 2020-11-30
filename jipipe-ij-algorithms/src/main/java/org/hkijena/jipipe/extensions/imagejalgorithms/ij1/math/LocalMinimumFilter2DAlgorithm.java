@@ -78,7 +78,7 @@ public class LocalMinimumFilter2DAlgorithm extends JIPipeSimpleIteratingAlgorith
         ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo);
         ImagePlus img = inputData.getDuplicateImage();
         RankFilters rankFilters = new RankFilters();
-        ImageJUtils.forEachSlice(img, ip -> rankFilters.rank(ip, radius, RankFilters.MIN));
+        ImageJUtils.forEachSlice(img, ip -> rankFilters.rank(ip, radius, RankFilters.MIN), progressInfo);
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(img), progressInfo);
     }
 

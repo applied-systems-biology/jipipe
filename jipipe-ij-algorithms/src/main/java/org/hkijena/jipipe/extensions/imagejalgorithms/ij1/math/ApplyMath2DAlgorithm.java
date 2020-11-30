@@ -111,7 +111,7 @@ public class ApplyMath2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                     ip.xor((int) value);
                     break;
             }
-        });
+        }, progressInfo);
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(img), progressInfo);
     }
 

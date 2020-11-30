@@ -68,7 +68,7 @@ public class DespeckleFilter2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo);
         ImagePlus img = inputData.getDuplicateImage();
         RankFilters rankFilters = new RankFilters();
-        ImageJUtils.forEachSlice(img, ip -> rankFilters.rank(ip, 1, RankFilters.MEDIAN));
+        ImageJUtils.forEachSlice(img, ip -> rankFilters.rank(ip, 1, RankFilters.MEDIAN), progressInfo);
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(img), progressInfo);
     }
 

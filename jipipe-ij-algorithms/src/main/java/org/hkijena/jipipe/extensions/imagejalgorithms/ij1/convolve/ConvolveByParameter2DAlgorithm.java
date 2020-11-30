@@ -89,7 +89,7 @@ public class ConvolveByParameter2DAlgorithm extends JIPipeSimpleIteratingAlgorit
             }
         }
 
-        ImageJUtils.forEachSlice(img, imp -> convolver.convolve(imp, kernel, matrix.getColumnCount(), matrix.getRowCount()));
+        ImageJUtils.forEachSlice(img, imp -> convolver.convolve(imp, kernel, matrix.getColumnCount(), matrix.getRowCount()), progressInfo);
 
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(img), progressInfo);
     }

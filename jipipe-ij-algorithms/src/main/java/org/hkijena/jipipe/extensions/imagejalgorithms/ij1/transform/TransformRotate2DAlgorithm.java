@@ -111,7 +111,7 @@ public class TransformRotate2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                     cal.setXUnit(cal.getYUnit());
                     cal.setYUnit(xUnit);
                 }
-            });
+            }, progressInfo);
         }
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(imp), progressInfo);
     }

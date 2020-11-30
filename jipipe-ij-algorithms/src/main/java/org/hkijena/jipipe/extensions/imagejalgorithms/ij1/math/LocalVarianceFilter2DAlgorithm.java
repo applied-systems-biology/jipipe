@@ -78,7 +78,7 @@ public class LocalVarianceFilter2DAlgorithm extends JIPipeSimpleIteratingAlgorit
         ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo);
         ImagePlus img = inputData.getDuplicateImage();
         RankFilters rankFilters = new RankFilters();
-        ImageJUtils.forEachSlice(img, ip -> rankFilters.rank(ip, radius, RankFilters.VARIANCE));
+        ImageJUtils.forEachSlice(img, ip -> rankFilters.rank(ip, radius, RankFilters.VARIANCE), progressInfo);
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(img), progressInfo);
     }
 

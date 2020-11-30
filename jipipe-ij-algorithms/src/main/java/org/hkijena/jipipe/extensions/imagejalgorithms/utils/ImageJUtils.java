@@ -18,6 +18,7 @@ import ij.ImagePlus;
 import ij.WindowManager;
 import ij.plugin.PlugIn;
 import ij.process.ImageProcessor;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.SliceIndex;
 
 import java.util.Arrays;
@@ -37,14 +38,15 @@ public class ImageJUtils {
 
     /**
      * Runs the function for each slice
-     *
-     * @param img      the image
+     *  @param img      the image
      * @param function the function
+     * @param progressInfo the progress
      */
-    public static void forEachSlice(ImagePlus img, Consumer<ImageProcessor> function) {
+    public static void forEachSlice(ImagePlus img, Consumer<ImageProcessor> function, JIPipeProgressInfo progressInfo) {
         if (img.isStack()) {
             for (int i = 0; i < img.getStack().size(); ++i) {
                 ImageProcessor ip = img.getStack().getProcessor(i + 1);
+                progressInfo.resolveAndLog("Slice", i, img.getStackSize());
                 function.accept(ip);
             }
         } else {
@@ -54,14 +56,15 @@ public class ImageJUtils {
 
     /**
      * Runs the function for each slice
-     *
-     * @param img      the image
+     *  @param img      the image
      * @param function the function
+     * @param progressInfo the progress
      */
-    public static void forEachIndexedSlice(ImagePlus img, BiConsumer<ImageProcessor, Integer> function) {
+    public static void forEachIndexedSlice(ImagePlus img, BiConsumer<ImageProcessor, Integer> function, JIPipeProgressInfo progressInfo) {
         if (img.isStack()) {
             for (int i = 0; i < img.getStack().size(); ++i) {
                 ImageProcessor ip = img.getStack().getProcessor(i + 1);
+                progressInfo.resolveAndLog("Slice", i, img.getStackSize());
                 function.accept(ip, i);
             }
         } else {
@@ -71,16 +74,18 @@ public class ImageJUtils {
 
     /**
      * Runs the function for each Z, C, and T slice.
-     *
-     * @param img      the image
+     *  @param img      the image
      * @param function the function
+     * @param progressInfo the progress
      */
-    public static void forEachIndexedZCTSlice(ImagePlus img, BiConsumer<ImageProcessor, SliceIndex> function) {
+    public static void forEachIndexedZCTSlice(ImagePlus img, BiConsumer<ImageProcessor, SliceIndex> function, JIPipeProgressInfo progressInfo) {
         if (img.isStack()) {
+            int iterationIndex = 0;
             for (int t = 0; t < img.getNFrames(); t++) {
                 for (int z = 0; z < img.getNSlices(); z++) {
                     for (int c = 0; c < img.getNChannels(); c++) {
                         int index = img.getStackIndex(c + 1, z + 1, t + 1);
+                        progressInfo.resolveAndLog("Slice", iterationIndex++, img.getStackSize()).log("z=" + z + ", c=" + c + ", t=" + t);
                         ImageProcessor processor = img.getImageStack().getProcessor(index);
                         function.accept(processor, new SliceIndex(z, c, t));
                     }
@@ -95,15 +100,17 @@ public class ImageJUtils {
      * Runs the function for each Z and T slice.
      * The function consumes a map from channel index to the channel slice.
      * The slice index channel is always set to -1
-     *
-     * @param img      the image
+     *  @param img      the image
      * @param function the function
+     * @param progressInfo the progress
      */
-    public static void forEachIndexedZTSlice(ImagePlus img, BiConsumer<Map<Integer, ImageProcessor>, SliceIndex> function) {
+    public static void forEachIndexedZTSlice(ImagePlus img, BiConsumer<Map<Integer, ImageProcessor>, SliceIndex> function, JIPipeProgressInfo progressInfo) {
+        int iterationIndex = 0;
         for (int t = 0; t < img.getNFrames(); t++) {
             for (int z = 0; z < img.getNSlices(); z++) {
                 Map<Integer, ImageProcessor> channels = new HashMap<>();
                 for (int c = 0; c < img.getNChannels(); c++) {
+                    progressInfo.resolveAndLog("Slice", iterationIndex++, img.getStackSize()).log("z=" + z + ", c=" + c + ", t=" + t);
                     channels.put(c, img.getStack().getProcessor(img.getStackIndex(c + 1, z + 1, t + 1)));
                 }
                 function.accept(channels, new SliceIndex(z, -1, t));

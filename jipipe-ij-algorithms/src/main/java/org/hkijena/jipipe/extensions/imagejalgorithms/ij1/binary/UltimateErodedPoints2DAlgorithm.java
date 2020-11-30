@@ -70,7 +70,7 @@ public class UltimateErodedPoints2DAlgorithm extends JIPipeSimpleIteratingAlgori
         ImagePlus img = inputData.getDuplicateImage();
         EDM edm = new EDM();
         edm.setup("points", img);
-        ImageJUtils.forEachSlice(img, edm::run);
+        ImageJUtils.forEachSlice(img, edm::run, progressInfo);
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscale8UData(img), progressInfo);
     }
 }

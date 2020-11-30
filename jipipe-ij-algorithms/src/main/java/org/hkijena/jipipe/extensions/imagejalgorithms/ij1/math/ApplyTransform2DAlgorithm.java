@@ -89,7 +89,7 @@ public class ApplyTransform2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                     ip.exp();
                     break;
             }
-        });
+        }, progressInfo);
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(img), progressInfo);
     }
 
