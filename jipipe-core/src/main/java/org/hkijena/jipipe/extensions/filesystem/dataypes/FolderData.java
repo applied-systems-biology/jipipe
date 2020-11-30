@@ -20,19 +20,15 @@ import java.nio.file.Path;
 /**
  * Data that stores a folder
  */
-@JIPipeDocumentation(name = "Folder")
+@JIPipeDocumentation(name = "Folder", description = "A path to a directory")
 public class FolderData extends PathData {
 
-    /**
-     * Initializes file data from a file
-     *
-     * @param path File path
-     */
     public FolderData(Path path) {
         super(path);
     }
 
-    private FolderData() {
+    public FolderData(String path) {
+        super(path);
     }
 
     public static FolderData importFrom(Path storageFilePath) {

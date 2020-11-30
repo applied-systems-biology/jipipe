@@ -22,7 +22,7 @@ import java.nio.file.Path;
 public class ImportImageJPathDataOperation implements JIPipeDataImportOperation, JIPipeDataDisplayOperation {
     @Override
     public void display(JIPipeData data, String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
-        UIUtils.openFileInNative(((PathData) data).getPath());
+        UIUtils.openFileInNative(((PathData) data).toPath());
     }
 
     @Override
@@ -51,7 +51,7 @@ public class ImportImageJPathDataOperation implements JIPipeDataImportOperation,
             Path fileOrFolderPath;
             try {
                 PathData pathData = JsonUtils.getObjectMapper().readerFor(PathData.class).readValue(listFile.toFile());
-                fileOrFolderPath = pathData.getPath();
+                fileOrFolderPath = pathData.toPath();
             } catch (IOException e) {
                 return null;
             }

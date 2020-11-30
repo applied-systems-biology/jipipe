@@ -74,18 +74,18 @@ public class SimplePathAnnotationGenerator extends JIPipeSimpleIteratingAlgorith
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         if (!StringUtils.isNullOrEmpty(generatedAnnotation)) {
             FolderData inputData = dataBatch.getInputData(getFirstInputSlot(), FolderData.class, progressInfo);
-            boolean removeThisExtension = removeExtensions && Files.isRegularFile(inputData.getPath());
+            boolean removeThisExtension = removeExtensions && Files.isRegularFile(inputData.toPath());
 
             String annotationValue;
             if (removeThisExtension && fullPath) {
-                String fileName = inputData.getPath().getFileName().toString();
+                String fileName = inputData.toPath().getFileName().toString();
                 fileName = removeExtension(fileName);
-                annotationValue = inputData.getPath().getParent().resolve(fileName).toString();
+                annotationValue = inputData.toPath().getParent().resolve(fileName).toString();
             } else {
                 if (fullPath) {
-                    annotationValue = inputData.getPath().toString();
+                    annotationValue = inputData.getPath();
                 } else {
-                    annotationValue = inputData.getPath().getFileName().toString();
+                    annotationValue = inputData.toPath().getFileName().toString();
                 }
                 if (removeThisExtension) {
                     annotationValue = removeExtension(annotationValue);

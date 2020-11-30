@@ -27,13 +27,14 @@ import org.hkijena.jipipe.utils.PathUtils;
 import java.awt.Desktop;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 /**
  * Encapsulates a {@link java.nio.file.Path}
  */
 @JIPipeDocumentation(name = "Path", description = "A file or folder")
 public class PathData implements JIPipeData {
-    private Path path;
+    private String path;
 
     /**
      * Initializes file data from a file
@@ -41,6 +42,10 @@ public class PathData implements JIPipeData {
      * @param path File path
      */
     public PathData(Path path) {
+        this.path = path.toString();
+    }
+
+    public PathData(String path) {
         this.path = path;
     }
 
@@ -59,13 +64,13 @@ public class PathData implements JIPipeData {
 
     @Override
     public JIPipeData duplicate() {
-        return new FileData(path);
+        return new PathData(path);
     }
 
     @Override
     public void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
         try {
-            Desktop.getDesktop().open(getPath().toFile());
+            Desktop.getDesktop().open(toPath().toFile());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -81,27 +86,27 @@ public class PathData implements JIPipeData {
         return JIPipe.getDataTypes().getIdOf(getClass());
     }
 
-    /**
-     * @return The path
-     */
     @JsonGetter("path")
-    public Path getPath() {
+    public String getPath() {
         return path;
     }
 
-    /**
-     * Sets the file
-     *
-     * @param path The path
-     */
     @JsonSetter("path")
-    public void setPath(Path path) {
+    public void setPath(String path) {
         this.path = path;
+    }
+
+    public void setPath(Path path) {
+        this.path = path.toString();
     }
 
     @Override
     public String toString() {
-        return "" + path;
+        return path;
+    }
+
+    public Path toPath() {
+        return Paths.get(path);
     }
 
     public static PathData importFrom(Path storageFilePath) {

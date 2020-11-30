@@ -106,29 +106,29 @@ public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
             // Only works for something that is directly compatible to the row storage format (TIFF)
             List<JIPipeAnnotation> traits = new ArrayList<>(dataBatch.getAnnotations().values());
             if (titleAnnotation.isEnabled()) {
-                traits.add(new JIPipeAnnotation(titleAnnotation.getContent(), fileData.getPath().getFileName().toString()));
+                traits.add(new JIPipeAnnotation(titleAnnotation.getContent(), fileData.toPath().getFileName().toString()));
             }
             Path targetPath = VirtualDataSettings.generateTempDirectory("virtual");
             if (!SystemUtils.IS_OS_WINDOWS) {
                 // Create a symlink
                 try {
-                    Files.createSymbolicLink(targetPath.resolve("image.tif"), fileData.getPath());
+                    Files.createSymbolicLink(targetPath.resolve("image.tif"), fileData.toPath());
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
             } else {
                 // Make a copy
                 try {
-                    Files.copy(fileData.getPath(), targetPath.resolve("imag.tif"), StandardCopyOption.REPLACE_EXISTING);
+                    Files.copy(fileData.toPath(), targetPath.resolve("imag.tif"), StandardCopyOption.REPLACE_EXISTING);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
             }
-            JIPipeVirtualData virtualData = new JIPipeVirtualData(generatedImageType.getInfo().getDataClass(), targetPath, "VIRTUAL: " + fileData.getPath().getFileName());
+            JIPipeVirtualData virtualData = new JIPipeVirtualData(generatedImageType.getInfo().getDataClass(), targetPath, "VIRTUAL: " + fileData.toPath().getFileName());
             getFirstOutputSlot().addData(virtualData, traits, JIPipeAnnotationMergeStrategy.Merge);
         } else {
             ImagePlusData outputData;
-            ImagePlus image = readImageFrom(fileData.getPath(), progressInfo);
+            ImagePlus image = readImageFrom(fileData.toPath(), progressInfo);
             if (removeLut) {
                 image.getProcessor().setLut(null);
             }

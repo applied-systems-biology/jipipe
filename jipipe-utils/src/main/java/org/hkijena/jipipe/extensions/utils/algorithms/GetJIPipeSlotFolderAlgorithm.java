@@ -64,7 +64,7 @@ public class GetJIPipeSlotFolderAlgorithm extends JIPipeSimpleIteratingAlgorithm
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         JIPipeOutputData outputData = dataBatch.getInputData(getFirstInputSlot(), JIPipeOutputData.class, progressInfo);
-        Path slotPath = outputData.getPath().resolve("analysis").resolve(nodeId).resolve(slotName);
+        Path slotPath = outputData.toPath().resolve("analysis").resolve(nodeId).resolve(slotName);
         dataBatch.addOutputData(getFirstOutputSlot(), new FolderData(slotPath), progressInfo);
     }
 

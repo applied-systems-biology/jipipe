@@ -110,7 +110,7 @@ public class ImageStackFromFolder extends JIPipeSimpleIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        Path inputFolder = dataBatch.getInputData(getFirstInputSlot(), FolderData.class, progressInfo).getPath();
+        Path inputFolder = dataBatch.getInputData(getFirstInputSlot(), FolderData.class, progressInfo).toPath();
         try {
             progressInfo.log("Looking for files in " + inputFolder);
             List<Path> inputFiles = Files.list(inputFolder).filter(filterExpression).collect(Collectors.toList());

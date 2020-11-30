@@ -80,7 +80,7 @@ public class ListSubfolders extends JIPipeSimpleIteratingAlgorithm {
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         FolderData inputFolder = dataBatch.getInputData(getFirstInputSlot(), FolderData.class, progressInfo);
-        Path inputPath = inputFolder.getPath();
+        Path inputPath = inputFolder.toPath();
         if (!StringUtils.isNullOrEmpty(subFolder)) {
             inputPath = inputPath.resolve(subFolder);
         }

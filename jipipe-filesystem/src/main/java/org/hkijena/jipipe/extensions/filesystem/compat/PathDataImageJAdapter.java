@@ -89,7 +89,7 @@ public class PathDataImageJAdapter implements ImageJDatatypeAdapter {
         if (activate && !noWindow) {
             resultsTableData.getTable().show(windowName);
         }
-        return data.getPath().toFile();
+        return data.toPath().toFile();
     }
 
     @Override

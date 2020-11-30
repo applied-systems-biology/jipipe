@@ -55,7 +55,7 @@ public class ExportData extends JIPipeIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        Path basePath = dataBatch.getInputData("Path", PathData.class, progressInfo).getPath();
+        Path basePath = dataBatch.getInputData("Path", PathData.class, progressInfo).toPath();
         Path outputFolder = basePath.getParent();
         String name = basePath.getFileName().toString();
 

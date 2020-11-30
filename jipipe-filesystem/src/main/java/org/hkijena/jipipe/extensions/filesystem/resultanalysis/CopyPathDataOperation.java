@@ -20,7 +20,7 @@ import java.nio.file.Path;
 public class CopyPathDataOperation implements JIPipeDataImportOperation, JIPipeDataDisplayOperation {
     @Override
     public void display(JIPipeData data, String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
-        UIUtils.openFileInNative(((PathData) data).getPath());
+        UIUtils.openFileInNative(((PathData) data).toPath());
     }
 
     @Override

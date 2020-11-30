@@ -16,7 +16,7 @@ import java.nio.file.Path;
 public class OpenPathDataOperation implements JIPipeDataImportOperation, JIPipeDataDisplayOperation {
     @Override
     public void display(JIPipeData data, String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
-        UIUtils.openFileInNative(((PathData) data).getPath());
+        UIUtils.openFileInNative(((PathData) data).toPath());
     }
 
     @Override
@@ -42,7 +42,7 @@ public class OpenPathDataOperation implements JIPipeDataImportOperation, JIPipeD
     @Override
     public JIPipeData show(JIPipeDataSlot slot, JIPipeExportedDataTable.Row row, Path rowStorageFolder, String compartmentName, String algorithmName, String displayName, JIPipeWorkbench workbench) {
         PathData pathData = PathData.importFrom(rowStorageFolder);
-        UIUtils.openFileInNative(pathData.getPath());
+        UIUtils.openFileInNative(pathData.toPath());
         return null;
     }
 }

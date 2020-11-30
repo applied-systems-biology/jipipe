@@ -20,19 +20,15 @@ import java.nio.file.Path;
 /**
  * Data containing a file
  */
-@JIPipeDocumentation(name = "File")
+@JIPipeDocumentation(name = "File", description = "A path to a file")
 public class FileData extends PathData {
 
-    /**
-     * Initializes file data from a file
-     *
-     * @param path File path
-     */
     public FileData(Path path) {
         super(path);
     }
 
-    private FileData() {
+    public FileData(String path) {
+        super(path);
     }
 
     public static FileData importFrom(Path storageFilePath) {

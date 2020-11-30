@@ -65,7 +65,7 @@ public class RenameByString extends JIPipeSimpleIteratingAlgorithm {
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         FolderData inputFolder = dataBatch.getInputData(getFirstInputSlot(), FolderData.class, progressInfo);
         if (!StringUtils.isNullOrEmpty(pathName))
-            dataBatch.addOutputData(getFirstOutputSlot(), new FolderData(inputFolder.getPath().getParent().resolve(pathName)), progressInfo);
+            dataBatch.addOutputData(getFirstOutputSlot(), new FolderData(inputFolder.toPath().getParent().resolve(pathName)), progressInfo);
         else
             dataBatch.addOutputData(getFirstOutputSlot(), inputFolder, progressInfo);
     }

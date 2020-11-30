@@ -31,7 +31,7 @@ import java.nio.file.Path;
 public class ImportJIPipeProjectDataOperation implements JIPipeDataImportOperation, JIPipeDataDisplayOperation {
     @Override
     public void display(JIPipeData data, String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
-        Path folderPath = ((PathData) data).getPath();
+        Path folderPath = ((PathData) data).toPath();
         JIPipeProjectWindow window = (JIPipeProjectWindow) workbench.getWindow();
         window.openProject(folderPath);
     }
@@ -40,7 +40,7 @@ public class ImportJIPipeProjectDataOperation implements JIPipeDataImportOperati
     public JIPipeData show(JIPipeDataSlot slot, JIPipeExportedDataTable.Row row, Path rowStorageFolder, String compartmentName, String algorithmName, String displayName, JIPipeWorkbench workbench) {
         JIPipeOutputData data = JIPipeOutputData.importFrom(rowStorageFolder);
         JIPipeProjectWindow window = (JIPipeProjectWindow) workbench.getWindow();
-        window.openProject(data.getPath());
+        window.openProject(data.toPath());
         return data;
     }
 

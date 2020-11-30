@@ -60,6 +60,6 @@ public class RelativizePaths extends JIPipeIteratingAlgorithm {
         PathData parent = dataBatch.getInputData("Parent", PathData.class, progressInfo);
         PathData child = dataBatch.getInputData("Child", PathData.class, progressInfo);
 
-        dataBatch.addOutputData(getFirstOutputSlot(), new PathData(parent.getPath().relativize(child.getPath())), progressInfo);
+        dataBatch.addOutputData(getFirstOutputSlot(), new PathData(parent.toPath().relativize(child.toPath())), progressInfo);
     }
 }

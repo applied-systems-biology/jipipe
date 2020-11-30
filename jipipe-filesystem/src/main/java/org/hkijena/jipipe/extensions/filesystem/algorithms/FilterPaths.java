@@ -80,7 +80,7 @@ public class FilterPaths extends JIPipeSimpleIteratingAlgorithm {
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         PathData inputData = dataBatch.getInputData(getFirstInputSlot(), PathData.class, progressInfo);
         JIPipeDataSlot firstOutputSlot = getFirstOutputSlot();
-        Path inputPath = inputData.getPath();
+        Path inputPath = inputData.toPath();
         if (!canOutput(inputPath))
             return;
         if (filters.test(inputPath)) {

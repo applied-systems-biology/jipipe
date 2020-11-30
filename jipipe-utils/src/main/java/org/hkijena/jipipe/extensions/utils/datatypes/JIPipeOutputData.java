@@ -37,10 +37,14 @@ public class JIPipeOutputData extends FolderData {
         super(path);
     }
 
+    public JIPipeOutputData(String path) {
+        super(path);
+    }
+
     @Override
     public void saveTo(Path storageFilePath, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
         // Copy if we copy it to a different folder
-        if (getPath() != null && !storageFilePath.equals(getPath()) && Files.isDirectory(getPath()) && Files.exists(getPath().resolve("project.jip")) && Files.isDirectory(getPath().resolve("analysis"))) {
+        if (getPath() != null && !storageFilePath.equals(getPath()) && Files.isDirectory(toPath()) && Files.exists(toPath().resolve("project.jip")) && Files.isDirectory(toPath().resolve("analysis"))) {
             Path outputPath = storageFilePath;
             if (forceName)
                 outputPath = outputPath.resolve(StringUtils.makeFilesystemCompatible(name));
@@ -48,14 +52,14 @@ public class JIPipeOutputData extends FolderData {
                 if (!Files.isDirectory(outputPath))
                     Files.createDirectories(outputPath);
                 // Copy the project file
-                Files.copy(getPath().resolve("project.jip"), outputPath.resolve("project.jip"), StandardCopyOption.REPLACE_EXISTING);
+                Files.copy(toPath().resolve("project.jip"), outputPath.resolve("project.jip"), StandardCopyOption.REPLACE_EXISTING);
 
                 // Copy the results
                 Path finalOutputPath = outputPath;
-                Files.walkFileTree(getPath().resolve("analysis"), new FileVisitor<Path>() {
+                Files.walkFileTree(toPath().resolve("analysis"), new FileVisitor<Path>() {
                     @Override
                     public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
-                        Path internalPath = getPath().resolve("analysis").relativize(dir);
+                        Path internalPath = toPath().resolve("analysis").relativize(dir);
                         Path absolutePath = finalOutputPath.resolve(internalPath);
                         if (!Files.isDirectory(absolutePath))
                             Files.createDirectories(absolutePath);
@@ -64,7 +68,7 @@ public class JIPipeOutputData extends FolderData {
 
                     @Override
                     public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                        Path internalPath = getPath().resolve("analysis").relativize(file);
+                        Path internalPath = toPath().resolve("analysis").relativize(file);
                         Path absolutePath = finalOutputPath.resolve(internalPath);
                         progressInfo.log("Copying " + internalPath);
                         Files.copy(file, absolutePath);

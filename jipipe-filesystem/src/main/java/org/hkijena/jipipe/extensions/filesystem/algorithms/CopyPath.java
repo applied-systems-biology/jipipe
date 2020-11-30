@@ -80,8 +80,8 @@ public class CopyPath extends JIPipeIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        Path input = dataBatch.getInputData("Source", PathData.class, progressInfo).getPath();
-        Path destination = dataBatch.getInputData("Destination", PathData.class, progressInfo).getPath();
+        Path input = dataBatch.getInputData("Source", PathData.class, progressInfo).toPath();
+        Path destination = dataBatch.getInputData("Destination", PathData.class, progressInfo).toPath();
 
         try {
             if (Files.isDirectory(input)) {

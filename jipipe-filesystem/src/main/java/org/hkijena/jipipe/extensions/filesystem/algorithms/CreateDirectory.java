@@ -66,12 +66,12 @@ public class CreateDirectory extends JIPipeSimpleIteratingAlgorithm {
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         FolderData inputFolder = dataBatch.getInputData(getFirstInputSlot(), FolderData.class, progressInfo);
-        if (!Files.exists(inputFolder.getPath())) {
+        if (!Files.exists(inputFolder.toPath())) {
             try {
                 if (withParents) {
-                    Files.createDirectory(inputFolder.getPath());
+                    Files.createDirectory(inputFolder.toPath());
                 } else {
-                    Files.createDirectories(inputFolder.getPath());
+                    Files.createDirectories(inputFolder.toPath());
                 }
             } catch (IOException e) {
                 throw new UserFriendlyRuntimeException(e, "Could not create directory!",

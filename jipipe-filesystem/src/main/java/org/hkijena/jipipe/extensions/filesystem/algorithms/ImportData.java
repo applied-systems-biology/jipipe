@@ -63,7 +63,7 @@ public class ImportData extends JIPipeSimpleIteratingAlgorithm {
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         if (ignoreInputAnnotations)
             dataBatch.setAnnotations(new HashMap<>());
-        Path dataFolder = dataBatch.getInputData(getFirstInputSlot(), FolderData.class, progressInfo).getPath();
+        Path dataFolder = dataBatch.getInputData(getFirstInputSlot(), FolderData.class, progressInfo).toPath();
         if (!Files.exists(dataFolder.resolve("data-table.json"))) {
             throw new UserFriendlyRuntimeException("Missing data-table.json!",
                     "Wrong input folder!",

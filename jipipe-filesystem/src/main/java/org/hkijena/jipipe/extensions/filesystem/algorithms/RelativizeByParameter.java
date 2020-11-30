@@ -68,7 +68,7 @@ public class RelativizeByParameter extends JIPipeSimpleIteratingAlgorithm {
         if (parentPath == null || parentPath.toString().isEmpty())
             dataBatch.addOutputData(getFirstOutputSlot(), inputFolder, progressInfo);
         else
-            dataBatch.addOutputData(getFirstOutputSlot(), new PathData(parentPath.relativize(inputFolder.getPath())), progressInfo);
+            dataBatch.addOutputData(getFirstOutputSlot(), new PathData(parentPath.relativize(inputFolder.toPath())), progressInfo);
     }
 
     /**
