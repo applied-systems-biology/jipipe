@@ -24,25 +24,32 @@ import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
-import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
-import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
+import org.hkijena.jipipe.api.events.ParameterChangedEvent;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
+import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColorData;
+import org.hkijena.jipipe.extensions.parameters.generators.IntegerRange;
 import org.hkijena.jipipe.extensions.parameters.pairs.IntegerAndIntegerPairParameter;
+import org.hkijena.jipipe.extensions.parameters.pairs.PairParameterSettings;
+import org.hkijena.jipipe.ui.JIPipeWorkbench;
+import org.hkijena.jipipe.utils.ImageJCalibrationMode;
+import org.hkijena.jipipe.utils.ImageJUtils;
+import org.hkijena.jipipe.utils.ResourceUtils;
 
+import javax.swing.*;
 import java.util.Comparator;
+import java.util.List;
 
 /**
  * Wrapper around {@link ij.plugin.ChannelArranger}
  */
 @JIPipeDocumentation(name = "Arrange channels", description = "Reorders the channels of each input image")
 @JIPipeOrganization(menuPath = "Colors", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@JIPipeInputSlot(value = ImagePlusColorData.class, slotName = "Input")
-@JIPipeOutputSlot(value = ImagePlusColorData.class, slotName = "Output")
+@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)
+@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true, inheritedSlot = "Input")
 public class ArrangeChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private IntegerAndIntegerPairParameter.List channelReordering = new IntegerAndIntegerPairParameter.List();
@@ -54,12 +61,7 @@ public class ArrangeChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
      * @param info the info
      */
     public ArrangeChannelsAlgorithm(JIPipeNodeInfo info) {
-        super(info, JIPipeDefaultMutableSlotConfiguration.builder()
-                .addInputSlot("Input", ImagePlusColorData.class)
-                .addOutputSlot("Output", ImagePlusColorData.class, null)
-                .allowOutputSlotInheritance(true)
-                .seal()
-                .build());
+        super(info);
     }
 
     /**
@@ -75,7 +77,14 @@ public class ArrangeChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ImagePlus image = dataBatch.getInputData(getFirstInputSlot(), ImagePlusColorData.class, progressInfo).getImage();
+        ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo);
+        ImagePlus image = inputData.getImage();
+
+        if(image.getNDimensions() == 3) {
+            // Ensure that the image is channel
+            image = inputData.getDuplicateImage();
+            image.setDimensions(image.getStackSize(), 1, 1);
+        }
 
         // First determine the number of output channels and generate the order array
         int nChannels;
@@ -110,7 +119,8 @@ public class ArrangeChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         }
 
         ImagePlus result = ChannelArranger.run(image, order);
-        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusColorData(result), progressInfo);
+        ImageJUtils.calibrate(result, ImageJCalibrationMode.AutomaticImageJ,0,0);
+        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(result), progressInfo);
     }
 
     @Override
@@ -157,6 +167,7 @@ public class ArrangeChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeDocumentation(name = "Channel reordering", description = "The channel with index on the left hand side is assigned to the channel with the index on the right hand side. " +
             "The first index is 0. Channels left out of this assignment stay at the same index after transformation.")
     @JIPipeParameter("channel-reordering")
+    @PairParameterSettings(singleRow = false, keyLabel = "Source channel", valueLabel = "Target channel")
     public IntegerAndIntegerPairParameter.List getChannelReordering() {
         return channelReordering;
     }
@@ -175,5 +186,31 @@ public class ArrangeChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeParameter("keep-same-channel-count")
     public void setKeepSameChannelCount(boolean keepSameChannelCount) {
         this.keepSameChannelCount = keepSameChannelCount;
+    }
+
+    @JIPipeDocumentation(name = "Simple reorder", description = "Allows you to input the reordering like in ImageJ.")
+    @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/apps/imagej.png")
+    public void setToExample(JIPipeWorkbench parent) {
+        String reordering = JOptionPane.showInputDialog(parent.getWindow(),
+                "Please put in the list of numbers how the channels should be re-ordered. " +
+                        "For example '1,2,3'.\n\nPlease note that the first channel index is one (like in ImageJ).\nThe 'Channel reordering' " +
+                        "parameter indexes channels starting from zero.",
+                "1,2,3");
+        if(reordering == null)
+            return;
+        IntegerRange range = new IntegerRange(reordering);
+        List<Integer> channelIndices = range.tryGetIntegers();
+        if(channelIndices == null || channelIndices.isEmpty() || channelIndices.stream().anyMatch(i -> i <= 0)) {
+            JOptionPane.showMessageDialog(parent.getWindow(), "Invalid channel indices. Please provide a comma separated list of positive numbers.");
+            return;
+        }
+        channelReordering.clear();
+        for (int i = 0; i < channelIndices.size(); i++) {
+            IntegerAndIntegerPairParameter pair = new IntegerAndIntegerPairParameter();
+            pair.setValue(i);
+            pair.setKey(channelIndices.get(i) - 1);
+            channelReordering.add(pair);
+        }
+        getEventBus().post(new ParameterChangedEvent(this, "channel-reordering"));
     }
 }
