@@ -62,6 +62,7 @@ public class VirtualDataControl extends JIPipeProjectWorkbenchPanel {
         JButton button = new JButton(UIUtils.getIconFromResources("actions/configure.png"));
         JPopupMenu menu = new JPopupMenu();
         UIUtils.addReloadablePopupMenuToComponent(button, menu, () -> {
+            menu.removeAll();
             JMenuItem gcItem = new JMenuItem("Clean memory", UIUtils.getIconFromResources("devices/media-memory.png"));
             gcItem.setToolTipText("Runs the garbage collector (GC) that attempts to clean unused memory. Please note that this will shortly freeze the application.");
             gcItem.addActionListener(e -> {
