@@ -26,6 +26,7 @@ public class ImageJDataTypesSettings implements JIPipeParameterCollection {
 
     private final EventBus eventBus = new EventBus();
     private boolean useBioFormats = true;
+    private boolean saveRGBWithImageJ = true;
     private OMETIFFCompression bioFormatsCompression = OMETIFFCompression.Uncompressed;
 
     @Override
@@ -56,6 +57,16 @@ public class ImageJDataTypesSettings implements JIPipeParameterCollection {
         this.bioFormatsCompression = bioFormatsCompression;
     }
 
+    @JIPipeDocumentation(name = "Save RGB images with ImageJ", description = "If enabled, RGB images are always saved with ImageJ, even if Bio-Formats is used by default. This can increase performance.")
+    @JIPipeParameter("save-rgb-with-imagej")
+    public boolean isSaveRGBWithImageJ() {
+        return saveRGBWithImageJ;
+    }
+
+    @JIPipeParameter("save-rgb-with-imagej")
+    public void setSaveRGBWithImageJ(boolean saveRGBWithImageJ) {
+        this.saveRGBWithImageJ = saveRGBWithImageJ;
+    }
 
     public static ImageJDataTypesSettings getInstance() {
         return JIPipe.getSettings().getSettings(ID, ImageJDataTypesSettings.class);

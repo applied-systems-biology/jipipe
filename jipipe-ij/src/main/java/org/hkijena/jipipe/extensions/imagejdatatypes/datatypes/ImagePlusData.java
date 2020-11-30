@@ -71,7 +71,7 @@ public class ImagePlusData implements JIPipeData {
 
     @Override
     public void saveTo(Path storageFilePath, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
-        if (ImageJDataTypesSettings.getInstance().isUseBioFormats()) {
+        if (ImageJDataTypesSettings.getInstance().isUseBioFormats() && !(image.getType() == ImagePlus.COLOR_RGB && ImageJDataTypesSettings.getInstance().isSaveRGBWithImageJ())) {
             Path outputPath = storageFilePath.resolve(name + ".ome.tif");
             OMEImageData.simpleOMEExport(image, outputPath);
         } else {
