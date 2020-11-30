@@ -28,6 +28,7 @@ import org.hkijena.jipipe.extensions.tables.datatypes.AnnotationTableData;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.extensions.tables.datatypes.TableColumn;
 
+import java.util.HashSet;
 import java.util.Map;
 
 /**
@@ -64,12 +65,13 @@ public class ConvertAnnotationTableToAnnotatedTables extends JIPipeSimpleIterati
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         AnnotationTableData inputData = dataBatch.getInputData(getFirstInputSlot(), AnnotationTableData.class, progressInfo);
-        TableColumn mergedColumn = inputData.getMergedColumn(inputData.getAnnotationColumns(), ", ", "=");
+        HashSet<String> annotationColumns = new HashSet<>(inputData.getColumnNames());
+        TableColumn mergedColumn = inputData.getMergedColumn(annotationColumns, ", ", "=");
         for (Map.Entry<String, ResultsTableData> entry : inputData.splitBy(mergedColumn).entrySet()) {
             ResultsTableData data = entry.getValue();
             AnnotationTableData annotationTableData = new AnnotationTableData(data);
             if (!keepAnnotationColumns) {
-                data.removeColumns(inputData.getAnnotationColumns());
+                data.removeColumns(annotationColumns);
             }
             dataBatch.addOutputData(getFirstOutputSlot(), data, annotationTableData.getAnnotations(0), JIPipeAnnotationMergeStrategy.Merge, progressInfo);
         }

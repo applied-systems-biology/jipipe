@@ -38,7 +38,7 @@ import java.util.Map;
 @JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
 public class AddAnnotationColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
-    private String annotationPrefix = "annotation:";
+    private String annotationPrefix = "";
     private StringQueryExpression annotationNameFilter = new StringQueryExpression("");
 
     /**

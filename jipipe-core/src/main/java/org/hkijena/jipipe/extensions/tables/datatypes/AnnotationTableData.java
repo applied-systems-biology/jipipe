@@ -32,8 +32,6 @@ import java.util.Set;
 @JIPipeDocumentation(name = "Annotation table", description = "A table that contains data annotations and other metadata")
 public class AnnotationTableData extends ResultsTableData {
 
-    public static final String ANNOTATION_COLUMN_IDENTIFIER = "annotation:";
-
     /**
      * {@inheritDoc}
      */
@@ -76,38 +74,7 @@ public class AnnotationTableData extends ResultsTableData {
      * @return index
      */
     public int addAnnotationColumn(String traitInfo) {
-        return addColumn(getAnnotationColumnName(traitInfo), true);
-    }
-
-    /**
-     * Returns all columns that do not identify as annotation (via 'annotation:' prefix)
-     *
-     * @return all columns that do not identify as annotation
-     */
-    public Set<String> getMetadataColumns() {
-        Set<String> result = new HashSet<>();
-        for (String columnName : getColumnNames()) {
-            if (!columnName.startsWith(ANNOTATION_COLUMN_IDENTIFIER)) {
-                result.add(columnName);
-            }
-        }
-        return result;
-    }
-
-    /**
-     * Returns all columns that reference valid annotation types
-     *
-     * @return all column names that reference valid annotation types
-     */
-    public Set<String> getAnnotationColumns() {
-        Set<String> result = new HashSet<>();
-        for (String columnName : getColumnNames()) {
-            String annotationType = getAnnotationTypeFromColumnName(columnName);
-            if (annotationType != null) {
-                result.add(columnName);
-            }
-        }
-        return result;
+        return addColumn(traitInfo, true);
     }
 
     /**
@@ -120,10 +87,7 @@ public class AnnotationTableData extends ResultsTableData {
         List<JIPipeAnnotation> result = new ArrayList<>();
         for (int col = 0; col < getColumnCount(); col++) {
             String columnName = getColumnName(col);
-            if (columnName.startsWith(ANNOTATION_COLUMN_IDENTIFIER)) {
-                String annotationName = getAnnotationTypeFromColumnName(columnName);
-                result.add(new JIPipeAnnotation(annotationName, StringUtils.orElse(getValueAsString(row, col), "")));
-            }
+            result.add(new JIPipeAnnotation(columnName, StringUtils.orElse(getValueAsString(row, col), "")));
         }
         return result;
     }
@@ -135,29 +99,5 @@ public class AnnotationTableData extends ResultsTableData {
 
     public static AnnotationTableData importFrom(Path storageFolder) {
         return new AnnotationTableData(ResultsTableData.importFrom(storageFolder));
-    }
-
-    /**
-     * Returns the annotation column name of the annotation type
-     *
-     * @param traitInfo the annotation type
-     * @return column name
-     */
-    public static String getAnnotationColumnName(String traitInfo) {
-        return ANNOTATION_COLUMN_IDENTIFIER + traitInfo;
-    }
-
-    /**
-     * Returns the trait info from a column name. If the annotation type does not exist or
-     * the column is not an annotation column, null is returned
-     *
-     * @param columnName the column name
-     * @return annotation type or null if not an annotation column name or the annotation type does not exist
-     */
-    public static String getAnnotationTypeFromColumnName(String columnName) {
-        if (columnName.startsWith(ANNOTATION_COLUMN_IDENTIFIER)) {
-            return columnName.substring(ANNOTATION_COLUMN_IDENTIFIER.length());
-        }
-        return null;
     }
 }

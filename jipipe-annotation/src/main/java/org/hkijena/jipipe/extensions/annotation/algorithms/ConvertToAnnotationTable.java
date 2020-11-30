@@ -27,7 +27,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
+import org.hkijena.jipipe.extensions.parameters.primitives.OptionalAnnotationNameParameter;
 import org.hkijena.jipipe.extensions.tables.datatypes.AnnotationTableData;
 
 import java.util.Set;
@@ -38,16 +38,14 @@ import static org.hkijena.jipipe.api.nodes.JIPipeMergingAlgorithm.MERGING_ALGORI
  * Removes a specified annotation
  */
 @JIPipeDocumentation(name = "Convert to annotation table", description = "Converts data into an annotation table that contains " +
-        "all annotations of the data row. The table contains a column 'data' that contains a string representation of the input data. " +
-        "All other columns are generated based on the annotations. They have following structure: 'annotation:[annotation-id]' where the annotation id " +
-        "is the unique identifier of this annotation type. You can find annotation types in the help menu." + "\n\n" + MERGING_ALGORITHM_DESCRIPTION)
+        "all annotations of the data row. You can also add a string representation of the data." + "\n\n" + MERGING_ALGORITHM_DESCRIPTION)
 @JIPipeOrganization(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 @JIPipeInputSlot(value = JIPipeData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = AnnotationTableData.class, slotName = "Output", autoCreate = true)
 public class ConvertToAnnotationTable extends JIPipeMergingAlgorithm {
 
-    private boolean removeOutputAnnotations = true;
-    private String generatedColumn = "data";
+    private boolean removeOutputAnnotations = false;
+    private OptionalAnnotationNameParameter addDataToString = new OptionalAnnotationNameParameter("data_as_string", false);
 
     /**
      * @param info algorithm info
@@ -65,12 +63,12 @@ public class ConvertToAnnotationTable extends JIPipeMergingAlgorithm {
     public ConvertToAnnotationTable(ConvertToAnnotationTable other) {
         super(other);
         this.removeOutputAnnotations = other.removeOutputAnnotations;
-        this.generatedColumn = other.generatedColumn;
+        this.addDataToString = other.addDataToString;
     }
 
     @Override
     public void reportValidity(JIPipeValidityReport report) {
-        report.forCategory("Generated column").checkNonEmpty(generatedColumn, this);
+        report.forCategory("Add data as string").report(addDataToString);
     }
 
     @Override
@@ -78,12 +76,13 @@ public class ConvertToAnnotationTable extends JIPipeMergingAlgorithm {
         Set<Integer> inputDataRows = dataBatch.getInputRows(getFirstInputSlot());
 
         AnnotationTableData output = new AnnotationTableData();
-        int dataColumn = output.addColumn(generatedColumn, true);
+        int dataColumn = addDataToString.isEnabled() ? output.addColumn(addDataToString.getContent(), true) : -1;
 
         int row = 0;
         for (int sourceRow : inputDataRows) {
             output.addRow();
-            output.setValueAt("" + getFirstInputSlot().getData(sourceRow, JIPipeData.class, progressInfo), row, dataColumn);
+            if(dataColumn >= 0)
+                output.setValueAt("" + getFirstInputSlot().getData(sourceRow, JIPipeData.class, progressInfo), row, dataColumn);
             for (JIPipeAnnotation trait : getFirstInputSlot().getAnnotations(sourceRow)) {
                 if (trait != null) {
                     int col = output.addAnnotationColumn(trait.getName());
@@ -111,15 +110,14 @@ public class ConvertToAnnotationTable extends JIPipeMergingAlgorithm {
         this.removeOutputAnnotations = removeOutputAnnotations;
     }
 
-    @JIPipeDocumentation(name = "Generated column", description = "The string representation of the data are stored in the column with this name")
-    @JIPipeParameter("generated-column")
-    @StringParameterSettings(monospace = true)
-    public String getGeneratedColumn() {
-        return generatedColumn;
+    @JIPipeDocumentation(name = "Add data as string", description = "Adds the string representation of data as string")
+    @JIPipeParameter("add-data-as-string")
+    public OptionalAnnotationNameParameter getAddDataToString() {
+        return addDataToString;
     }
 
-    @JIPipeParameter("generated-column")
-    public void setGeneratedColumn(String generatedColumn) {
-        this.generatedColumn = generatedColumn;
+    @JIPipeParameter("add-data-as-string")
+    public void setAddDataToString(OptionalAnnotationNameParameter addDataToString) {
+        this.addDataToString = addDataToString;
     }
 }

@@ -33,6 +33,7 @@ import org.hkijena.jipipe.extensions.tables.datatypes.TableColumn;
 
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -83,13 +84,11 @@ public class AnnotationTableToPaths extends JIPipeSimpleIteratingAlgorithm {
                     "Please check if your input columns are set up with valid filters. Please check the input of the algorithm " +
                             "via the quick run to see if the input data is correct.");
         }
-        Set<String> annotationColumns = tableData.getAnnotationColumns();
+        Set<String> annotationColumns = new HashSet<>(tableData.getColumnNames());
         for (int row = 0; row < tableData.getRowCount(); row++) {
             List<JIPipeAnnotation> annotations = new ArrayList<>();
             for (String annotationColumn : annotationColumns) {
-                String info = AnnotationTableData.getAnnotationTypeFromColumnName(annotationColumn);
-                if (info != null)
-                    annotations.add(new JIPipeAnnotation(info, tableData.getValueAsString(row, annotationColumn)));
+                annotations.add(new JIPipeAnnotation(annotationColumn, tableData.getValueAsString(row, annotationColumn)));
             }
 
             String data = tableColumn.getRowAsString(row);

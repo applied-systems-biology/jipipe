@@ -84,7 +84,7 @@ public class AnnotateWithAnnotationTable extends JIPipeIteratingAlgorithm {
             Set<Integer> dataRows = dataBatch.getInputRows("Data");
             if (dataRows == null)
                 continue;
-            Set<Integer> metadataRows = dataBatch.getInputRows("dummy");
+            Set<Integer> metadataRows = dataBatch.getInputRows(dummy);
 
             Map<String, JIPipeAnnotation> newAnnotations = new HashMap<>();
             for (int row : metadataRows) {
