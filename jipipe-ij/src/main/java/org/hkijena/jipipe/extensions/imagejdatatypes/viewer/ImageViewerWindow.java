@@ -66,7 +66,7 @@ public class ImageViewerWindow extends JFrame implements WindowListener {
 
     @Override
     public void windowClosed(WindowEvent e) {
-
+        viewerPanel.setImage(null);
     }
 
     @Override

@@ -76,7 +76,11 @@ public class JIPipeProgressInfo {
     }
 
     public synchronized void log(String message) {
-        log.append("<").append(progress).append("/").append(maxProgress).append("> ").append(logPrepend).append(" ").append(message).append("\n");
+        log.append("<").append(progress).append("/").append(maxProgress).append("> ").append(logPrepend);
+        if(!StringUtils.isNullOrEmpty(logPrepend) && !StringUtils.isNullOrEmpty(message))
+            log.append(" | ");
+        log.append(" ").append(message);
+        log.append("\n");
         eventBus.post(new StatusUpdatedEvent(this, progress.get(), maxProgress.get(), logPrepend + " " + message));
     }
 

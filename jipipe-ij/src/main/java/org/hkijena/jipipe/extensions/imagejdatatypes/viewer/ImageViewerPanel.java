@@ -522,7 +522,7 @@ public class ImageViewerPanel extends JPanel {
         initializeCalibrationPanel();
         initializeLUTPanel();
         initializeROIPanel();
-        if (image.getNChannels() > 1 || image.getNSlices() > 1 || image.getNFrames() > 1) {
+        if (image != null && (image.getNChannels() > 1 || image.getNSlices() > 1 || image.getNFrames() > 1)) {
             formPanel.addGroupHeader("Animation", UIUtils.getIconFromResources("actions/filmgrain.png"));
             formPanel.addToForm(animationSpeed, new JLabel("Speed (ms)"), null);
         }
@@ -531,6 +531,8 @@ public class ImageViewerPanel extends JPanel {
     }
 
     private void initializeROIPanel() {
+        if(image == null)
+            return;
         FormPanel.GroupHeaderPanel headerPanel = formPanel.addGroupHeader("ROI", UIUtils.getIconFromResources("data-types/roi.png"));
         JButton importROIsButton = new JButton("Import", UIUtils.getIconFromResources("actions/document-import.png"));
         importROIsButton.setToolTipText("Imports ROIs from the ImageJ ROI manager");
@@ -806,6 +808,8 @@ public class ImageViewerPanel extends JPanel {
     }
 
     private void initializeLUTPanel() {
+        if(image == null)
+            return;
         if (image.getType() == ImagePlus.COLOR_256 || image.getType() == ImagePlus.COLOR_RGB) {
             FormPanel.GroupHeaderPanel headerPanel = formPanel.addGroupHeader("LUT", UIUtils.getIconFromResources("actions/color-gradient.png"));
             JButton toRGBButton = new JButton("Split channels", UIUtils.getIconFromResources("actions/channelmixer.png"));
@@ -986,12 +990,17 @@ public class ImageViewerPanel extends JPanel {
     }
 
     public void uploadSliceToCanvas() {
-        ImageProcessor processor = generateSlice(stackSlider.getValue() - 1,
-                channelSlider.getValue() - 1,
-                frameSlider.getValue() - 1,
-                true,
-                true);
-        canvas.setImage(processor.getBufferedImage());
+        if(image != null) {
+            ImageProcessor processor = generateSlice(stackSlider.getValue() - 1,
+                    channelSlider.getValue() - 1,
+                    frameSlider.getValue() - 1,
+                    true,
+                    true);
+            canvas.setImage(processor.getBufferedImage());
+        }
+        else {
+            canvas.setImage(null);
+        }
     }
 
     public ImageViewerPanelCanvas getCanvas() {
