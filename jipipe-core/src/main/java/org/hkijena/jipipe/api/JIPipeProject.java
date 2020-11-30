@@ -69,13 +69,13 @@ import java.util.stream.Collectors;
 @JsonSerialize(using = JIPipeProject.Serializer.class)
 @JsonDeserialize(using = JIPipeProject.Deserializer.class)
 public class JIPipeProject implements JIPipeValidatable {
-    private EventBus eventBus = new EventBus();
+    private final EventBus eventBus = new EventBus();
 
     private JIPipeGraph graph = new JIPipeGraph();
     private JIPipeGraph compartmentGraph = new JIPipeGraph();
     private BiMap<String, JIPipeProjectCompartment> compartments = HashBiMap.create();
     private JIPipeProjectMetadata metadata = new JIPipeProjectMetadata();
-    private Map<String, Object> additionalMetadata = new HashMap<String, Object>();
+    private Map<String, Object> additionalMetadata = new HashMap<>();
     private Path workDirectory;
     private JIPipeProjectCache cache;
 
@@ -189,14 +189,16 @@ public class JIPipeProject implements JIPipeValidatable {
             compartment.getOutputNode().getVisibleCompartments().clear();
         }
 
-        for (JIPipeGraphEdge edge : compartmentGraph.getGraph().edgeSet()) {
-            JIPipeProjectCompartment source = (JIPipeProjectCompartment) compartmentGraph.getGraph().getEdgeSource(edge).getNode();
-            JIPipeProjectCompartment target = (JIPipeProjectCompartment) compartmentGraph.getGraph().getEdgeTarget(edge).getNode();
-            source.getOutputNode().getVisibleCompartments().add(target.getProjectCompartmentId());
+        for (JIPipeGraphNode targetNode : compartmentGraph.getNodes().values()) {
+            JIPipeProjectCompartment target = (JIPipeProjectCompartment) targetNode;
+            for (JIPipeDataSlot sourceSlot : compartmentGraph.getSourceSlots(target.getFirstInputSlot())) {
+                JIPipeProjectCompartment source = (JIPipeProjectCompartment) sourceSlot.getNode();
+                source.getOutputNode().getVisibleCompartments().add(target.getProjectCompartmentId());
+            }
         }
 
         for (JIPipeProjectCompartment compartment : compartments.values()) {
-            if(!Objects.equals(compartment.getVisibleCompartments(), oldVisibleCompartments.get(compartment))) {
+            if(!Objects.equals(compartment.getOutputNode().getVisibleCompartments(), oldVisibleCompartments.get(compartment))) {
                 changed = true;
                 break;
             }

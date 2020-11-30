@@ -21,6 +21,7 @@ import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.events.CompartmentRemovedEvent;
 import org.hkijena.jipipe.api.events.ExtensionRegisteredEvent;
+import org.hkijena.jipipe.api.events.ParameterChangedEvent;
 import org.hkijena.jipipe.api.grouping.NodeGroup;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.extensions.settings.AutoSaveSettings;
@@ -249,6 +250,15 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
                     compartmentUI,
                     DocumentTabPane.CloseMode.withSilentCloseButton,
                     false);
+            compartment.getEventBus().register(new Object() {
+                @Subscribe
+                public void onRenamed(ParameterChangedEvent event) {
+                    if(event.getKey().equals("jipipe:node:name")) {
+                        documentTab.setTitle(compartment.getName());
+                        documentTab.getEventBus().post(new ParameterChangedEvent(compartment, "title"));
+                    }
+                }
+            });
             if (switchToTab)
                 documentTabPane.switchToLastTab();
             return documentTab;

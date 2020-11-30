@@ -19,7 +19,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraph;
  * Event is triggered when algorithm graph is changed
  */
 public class GraphChangedEvent {
-    private JIPipeGraph graph;
+    private final JIPipeGraph graph;
 
     /**
      * @param graph the graph

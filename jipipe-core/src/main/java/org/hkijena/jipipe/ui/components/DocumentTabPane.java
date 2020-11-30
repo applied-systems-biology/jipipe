@@ -17,6 +17,11 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableBiMap;
 import com.google.common.collect.ImmutableList;
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
+import org.hkijena.jipipe.api.events.ParameterChangedEvent;
+import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
 import org.hkijena.jipipe.ui.theme.CustomTabbedPaneUI;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -168,6 +173,13 @@ public class DocumentTabPane extends JPanel {
 
         DocumentTab tab = new DocumentTab(title, icon, tabPanel, component, closeMode);
 
+        tab.getEventBus().register(new Object() {
+            @Subscribe
+            public void onPropertyChanged(ParameterChangedEvent event) {
+                titleLabel.setText(tab.getTitle());
+            }
+        });
+
         if (allowRename) {
             JButton renameButton = new JButton(UIUtils.getIconFromResources("actions/tag.png"));
             renameButton.setToolTipText("Rename tab");
@@ -175,7 +187,6 @@ public class DocumentTabPane extends JPanel {
             renameButton.addActionListener(e -> {
                 String newName = JOptionPane.showInputDialog(this, "Rename tab '" + titleLabel.getText() + "' to ...", titleLabel.getText());
                 if (newName != null && !newName.isEmpty()) {
-                    titleLabel.setText(newName);
                     tab.setTitle(newName);
                 }
             });
@@ -399,7 +410,8 @@ public class DocumentTabPane extends JPanel {
     /**
      * Encapsulates a tab
      */
-    public static class DocumentTab {
+    public static class DocumentTab implements JIPipeParameterCollection {
+        private final EventBus eventBus = new EventBus();
         private String title;
         private Icon icon;
         private Component tabComponent;
@@ -414,10 +426,12 @@ public class DocumentTabPane extends JPanel {
             this.closeMode = closeMode;
         }
 
+        @JIPipeParameter("title")
         public String getTitle() {
             return title;
         }
 
+        @JIPipeParameter("title")
         public void setTitle(String title) {
             this.title = title;
         }
@@ -436,6 +450,11 @@ public class DocumentTabPane extends JPanel {
 
         public CloseMode getCloseMode() {
             return closeMode;
+        }
+
+        @Override
+        public EventBus getEventBus() {
+            return eventBus;
         }
     }
 }
