@@ -36,6 +36,11 @@ public class JIPipeRunQueuePanelUI extends JPanel {
 
     public JIPipeRunQueuePanelUI() {
         initialize();
+        // Pre-initialize log
+        JIPipeRunnable currentRun = JIPipeRunnerQueue.getInstance().getCurrentRun();
+        if(currentRun != null) {
+            log.append(currentRun.getProgressInfo().getLog().toString());
+        }
         JIPipeRunnerQueue.getInstance().getEventBus().register(this);
     }
 
