@@ -281,6 +281,15 @@ public class JIPipeMergingDataBatchBuilder {
             }
             result.add(dataBatch);
         }
+
+        // Ensure that all slots are covered
+        for (JIPipeMergingDataBatch dataBatch : result) {
+            for (JIPipeDataSlot slot : slotList) {
+                dataBatch.getInputSlotRows().putIfAbsent(slot, Collections.emptySet());
+            }
+        }
+
+
         return result;
     }
 

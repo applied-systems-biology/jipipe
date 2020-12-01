@@ -46,7 +46,7 @@ public class JIPipeDefaultResultDataSlotRowUI extends JIPipeResultDataSlotRowUI 
      */
     public JIPipeDefaultResultDataSlotRowUI(JIPipeProjectWorkbench workbenchUI, JIPipeDataSlot slot, JIPipeExportedDataTable.Row row) {
         super(workbenchUI, slot, row);
-        String datatypeId = JIPipe.getInstance().getDatatypeRegistry().getIdOf(slot.getAcceptedDataType());
+        String datatypeId = row.getTrueDataType();
         importOperations = JIPipe.getInstance().getDatatypeRegistry().getImportOperationsFor(datatypeId);
         initialize();
     }

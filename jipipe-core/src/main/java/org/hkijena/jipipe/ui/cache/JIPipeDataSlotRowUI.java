@@ -55,7 +55,8 @@ public class JIPipeDataSlotRowUI extends JIPipeWorkbenchPanel {
         super(workbench);
         this.slot = slot;
         this.row = row;
-        String datatypeId = JIPipe.getInstance().getDatatypeRegistry().getIdOf(slot.getAcceptedDataType());
+        Class<? extends JIPipeData> dataClass = slot.getDataClass(row);
+        String datatypeId = JIPipe.getInstance().getDatatypeRegistry().getIdOf(dataClass);
         displayOperations = JIPipe.getInstance().getDatatypeRegistry().getDisplayOperationsFor(datatypeId);
         this.initialize();
     }

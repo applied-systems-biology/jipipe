@@ -425,7 +425,8 @@ public class JIPipeDatatypeRegistry {
      * @return slot UI
      */
     public JIPipeResultDataSlotRowUI getUIForResultSlot(JIPipeProjectWorkbench workbenchUI, JIPipeDataSlot slot, JIPipeExportedDataTable.Row row) {
-        Class<? extends JIPipeResultDataSlotRowUI> uiClass = resultUIs.getOrDefault(slot.getAcceptedDataType(), null);
+        Class<? extends JIPipeData> dataClass = getById(row.getTrueDataType());
+        Class<? extends JIPipeResultDataSlotRowUI> uiClass = resultUIs.getOrDefault(dataClass, null);
         if (uiClass != null) {
             try {
                 return ConstructorUtils.getMatchingAccessibleConstructor(uiClass, JIPipeProjectWorkbench.class, JIPipeDataSlot.class, JIPipeExportedDataTable.Row.class)
@@ -441,16 +442,16 @@ public class JIPipeDatatypeRegistry {
     /**
      * Returns a cell renderer for dataslot result table
      *
-     * @param klass     data class
      * @param workbench the workbench
      * @param table     the table that owns the renderer
      * @param slot      the slot
      * @param row       the data row
      * @return cell renderer
      */
-    public JIPipeResultDataSlotPreview getCellRendererFor(Class<? extends JIPipeData> klass, JIPipeProjectWorkbench workbench, JTable table, JIPipeDataSlot slot, JIPipeExportedDataTable.Row row) {
+    public JIPipeResultDataSlotPreview getCellRendererFor(JIPipeProjectWorkbench workbench, JTable table, JIPipeDataSlot slot, JIPipeExportedDataTable.Row row) {
+        Class<? extends JIPipeData> dataClass = getById(row.getTrueDataType());
         if (GeneralDataSettings.getInstance().isGenerateResultPreviews()) {
-            Class<? extends JIPipeResultDataSlotPreview> rendererClass = resultTableCellUIs.getOrDefault(klass, null);
+            Class<? extends JIPipeResultDataSlotPreview> rendererClass = resultTableCellUIs.getOrDefault(dataClass, null);
             if (rendererClass != null) {
                 return (JIPipeResultDataSlotPreview) ReflectionUtils.newInstance(rendererClass, workbench, table, slot, row);
             } else {

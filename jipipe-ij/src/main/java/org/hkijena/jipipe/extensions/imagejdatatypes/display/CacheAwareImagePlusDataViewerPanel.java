@@ -33,6 +33,7 @@ import org.hkijena.jipipe.utils.UIUtils;
 import javax.swing.*;
 import java.awt.Component;
 import java.awt.Window;
+import java.lang.ref.WeakReference;
 import java.util.Map;
 
 public class CacheAwareImagePlusDataViewerPanel extends ImageViewerPanel {
