@@ -235,18 +235,22 @@ public class JIPipeCacheMultiDataSlotTableUI extends JIPipeProjectWorkbenchPanel
     }
 
     private void updateStatus() {
+        boolean hasData = false;
         for (JIPipeDataSlot slot : slots) {
-            if (slot.getRowCount() == 0) {
-                removeAll();
-                setLayout(new BorderLayout());
-                JLabel label = new JLabel("No data available", UIUtils.getIcon64FromResources("no-data.png"), JLabel.LEFT);
-                label.setFont(label.getFont().deriveFont(26.0f));
-                add(label, BorderLayout.CENTER);
-
-                getProject().getCache().getEventBus().unregister(this);
-                multiSlotTable = null;
-                return;
+            if (slot.getRowCount() > 0) {
+               hasData = true;
+               break;
             }
+        }
+        if(!hasData) {
+            removeAll();
+            setLayout(new BorderLayout());
+            JLabel label = new JLabel("No data available", UIUtils.getIcon64FromResources("no-data.png"), JLabel.LEFT);
+            label.setFont(label.getFont().deriveFont(26.0f));
+            add(label, BorderLayout.CENTER);
+
+            getProject().getCache().getEventBus().unregister(this);
+            multiSlotTable = null;
         }
     }
 
