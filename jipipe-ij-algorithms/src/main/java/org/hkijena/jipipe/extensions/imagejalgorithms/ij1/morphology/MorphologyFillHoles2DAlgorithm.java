@@ -27,6 +27,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
+import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
@@ -40,6 +41,8 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePl
 @JIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Input")
 @JIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output")
 public class MorphologyFillHoles2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
+
+    private boolean blackBackground = true;
 
     /**
      * Instantiates a new node type.
@@ -61,6 +64,7 @@ public class MorphologyFillHoles2DAlgorithm extends JIPipeSimpleIteratingAlgorit
      */
     public MorphologyFillHoles2DAlgorithm(MorphologyFillHoles2DAlgorithm other) {
         super(other);
+        this.blackBackground = other.blackBackground;
     }
 
     @Override
@@ -73,7 +77,7 @@ public class MorphologyFillHoles2DAlgorithm extends JIPipeSimpleIteratingAlgorit
         ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscaleMaskData.class, progressInfo);
         ImagePlus img = inputData.getDuplicateImage();
         ImageJUtils.forEachSlice(img, ip -> {
-            int fg = Prefs.blackBackground ? 255 : 0;
+            int fg = blackBackground ? 255 : 0;
             int foreground = ip.isInvertedLut() ? 255 - fg : fg;
             int background = 255 - foreground;
             fill(ip, foreground, background);
@@ -110,5 +114,16 @@ public class MorphologyFillHoles2DAlgorithm extends JIPipeSimpleIteratingAlgorit
             else
                 pixels[i] = (byte) foreground;
         }
+    }
+
+    @JIPipeDocumentation(name = "Black background", description = "If enabled, the background is assumed to be black.")
+    @JIPipeParameter("black-background")
+    public boolean isBlackBackground() {
+        return blackBackground;
+    }
+
+    @JIPipeParameter("black-background")
+    public void setBlackBackground(boolean blackBackground) {
+        this.blackBackground = blackBackground;
     }
 }
