@@ -42,7 +42,7 @@ public class ExportCompartmentAsJsonNodeUIContextAction implements NodeUIContext
                 null,
                 ParameterPanel.WITH_SCROLLING);
 
-        if (JOptionPane.showConfirmDialog(canvasUI, metadataEditor, "Export compartment",
+        if (JOptionPane.showConfirmDialog(canvasUI.getWorkbench().getWindow(), metadataEditor, "Export compartment",
                 JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE) == JOptionPane.OK_OPTION) {
             Path selectedPath = FileChooserSettings.saveFile(canvasUI, FileChooserSettings.KEY_PROJECT, "Save JIPipe graph compartment (*.jipc)", UIUtils.EXTENSION_FILTER_JIPC);
             if (selectedPath != null) {
