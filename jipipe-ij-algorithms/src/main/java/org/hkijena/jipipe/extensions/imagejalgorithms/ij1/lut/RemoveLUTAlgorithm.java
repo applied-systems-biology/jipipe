@@ -25,7 +25,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.SliceIndex;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 
 @JIPipeDocumentation(name = "Remove LUT", description = "Removes LUT information from the input image.")
 @JIPipeOrganization(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Miscellaneous")
@@ -52,7 +52,7 @@ public class RemoveLUTAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             data = (ImagePlusData) data.duplicate();
         ImagePlus image = data.getImage();
         if (applyToAllPlanes && image.isStack()) {
-            SliceIndex original = new SliceIndex(image.getZ(), image.getC(), image.getT());
+            ImageSliceIndex original = new ImageSliceIndex(image.getZ(), image.getC(), image.getT());
             for (int z = 0; z < image.getNSlices(); z++) {
                 for (int c = 0; c < image.getNChannels(); c++) {
                     for (int t = 0; t < image.getNFrames(); t++) {

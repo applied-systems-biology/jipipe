@@ -38,11 +38,11 @@ import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageJUtils;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.ImageJDataTypesExtension;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.SliceIndex;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.parameters.collections.OutputSlotMapParameterCollection;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
@@ -150,7 +150,7 @@ public class SplitChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
         // First, we need to ensure that we only have 2D grayscale planes
         // This means we have to completely decompose the image
-        Map<SliceIndex, ImageProcessor> decomposedSlices = new HashMap<>();
+        Map<ImageSliceIndex, ImageProcessor> decomposedSlices = new HashMap<>();
         ImageJUtils.forEachIndexedZTSlice(image, (channels, sliceIndex) -> {
             // Decompose potential nested color processors
             // We might need to add some channels as we de-compose color processors
@@ -170,10 +170,10 @@ public class SplitChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                 }
             }
             for (Map.Entry<Integer, ImageProcessor> entry : decomposed.entrySet()) {
-                decomposedSlices.put(new SliceIndex(sliceIndex.getZ(), entry.getKey(), sliceIndex.getT()), entry.getValue());
+                decomposedSlices.put(new ImageSliceIndex(sliceIndex.getZ(), entry.getKey(), sliceIndex.getT()), entry.getValue());
             }
         }, progressInfo);
-        int nChannels = decomposedSlices.keySet().stream().map(SliceIndex::getC).max(Comparator.naturalOrder()).orElse(-1) + 1;
+        int nChannels = decomposedSlices.keySet().stream().map(ImageSliceIndex::getC).max(Comparator.naturalOrder()).orElse(-1) + 1;
 
         for (Map.Entry<String, JIPipeParameterAccess> entry : channelToSlotAssignment.getParameters().entrySet()) {
             String slotName = entry.getKey();
@@ -201,7 +201,7 @@ public class SplitChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
             // Rebuild image stack
             ImageStack stack = new ImageStack(image.getWidth(), image.getHeight(), image.getNSlices() * image.getNFrames());
-            SliceIndex tempIndex = new SliceIndex();
+            ImageSliceIndex tempIndex = new ImageSliceIndex();
             tempIndex.setC(channelIndex);
             for (int t = 0; t < image.getNFrames(); t++) {
                 tempIndex.setT(t);

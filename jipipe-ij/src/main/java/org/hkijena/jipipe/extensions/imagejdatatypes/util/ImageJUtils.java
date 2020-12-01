@@ -11,25 +11,269 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.utils;
+package org.hkijena.jipipe.extensions.imagejdatatypes.util;
 
+import com.google.common.collect.ImmutableList;
+import gnu.trove.map.TIntIntMap;
+import gnu.trove.map.hash.TIntIntHashMap;
+import ij.IJ;
 import ij.ImagePlus;
 import ij.ImageStack;
+import ij.WindowManager;
+import ij.plugin.PlugIn;
 import ij.process.ByteProcessor;
 import ij.process.ColorProcessor;
 import ij.process.ImageConverter;
 import ij.process.ImageProcessor;
 import ij.process.ImageStatistics;
 import ij.process.LUT;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.utils.ImageJCalibrationMode;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.Color;
+import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
+/**
+ * Utility functions for ImageJ
+ */
 public class ImageJUtils {
     private ImageJUtils() {
 
+    }
+
+    /**
+     * Runs the function for each slice
+     *  @param img      the image
+     * @param function the function
+     * @param progressInfo the progress
+     */
+    public static void forEachSlice(ImagePlus img, Consumer<ImageProcessor> function, JIPipeProgressInfo progressInfo) {
+        if (img.isStack()) {
+            for (int i = 0; i < img.getStack().size(); ++i) {
+                ImageProcessor ip = img.getStack().getProcessor(i + 1);
+                progressInfo.resolveAndLog("Slice", i, img.getStackSize());
+                function.accept(ip);
+            }
+        } else {
+            function.accept(img.getProcessor());
+        }
+    }
+
+    /**
+     * Stack index (one-based)
+     * @param channel one-based channel
+     * @param slice one-based slice
+     * @param frame one-based frame
+     * @param nChannels number of channels
+     * @param nSlices number of slices
+     * @param nFrames number of frames
+     * @return one-based stack index
+     */
+    public static int getStackIndex(int channel, int slice, int frame, int nChannels, int nSlices, int nFrames) {
+        if (channel<1) channel = 1;
+        if (channel>nChannels) channel = nChannels;
+        if (slice<1) slice = 1;
+        if (slice>nSlices) slice = nSlices;
+        if (frame<1) frame = 1;
+        if (frame>nFrames) frame = nFrames;
+        return (frame-1)*nChannels*nSlices + (slice-1)*nChannels + channel;
+    }
+
+    /**
+     * Combines the slices in the map into one image. The slice indices can be discontinuous.
+     * The new image is built up in order T -> Z -> C, which implies constraints on the discontinuations:
+     * 1. If a T is present, all slices of this T must be present (same length per frame)
+     * 2. If a Z is present, all slices of this Z must be present (same channels per Z)
+     * @param slices the slices. Must all have the same size. Can be discontinuous.
+     * @return the output image
+     */
+    public static ImagePlus combineSlices(Map<ImageSliceIndex, ImageProcessor> slices) {
+        ImageProcessor reference = slices.values().iterator().next();
+
+        // Re-map the slices to continuous indices
+        TIntIntMap mappingT = new TIntIntHashMap();
+        TIntIntMap mappingZ = new TIntIntHashMap();
+        TIntIntMap mappingC = new TIntIntHashMap();
+
+        List<Integer> distinctT = slices.keySet().stream().map(ImageSliceIndex::getT).sorted().distinct().collect(Collectors.toList());
+        List<Integer> distinctZ = slices.keySet().stream().map(ImageSliceIndex::getZ).sorted().distinct().collect(Collectors.toList());
+        List<Integer> distinctC = slices.keySet().stream().map(ImageSliceIndex::getC).sorted().distinct().collect(Collectors.toList());
+
+        for (int i = 0; i < distinctT.size(); i++) {
+            mappingT.put(distinctT.get(i), i);
+        }
+        for (int i = 0; i < distinctZ.size(); i++) {
+            mappingZ.put(distinctZ.get(i), i);
+        }
+        for (int i = 0; i < distinctC.size(); i++) {
+            mappingC.put(distinctC.get(i), i);
+        }
+
+        // Build the stack
+        ImageProcessor[] array = new ImageProcessor[slices.size()];
+        for (Map.Entry<ImageSliceIndex, ImageProcessor> entry : slices.entrySet()) {
+            int t = mappingT.get(entry.getKey().getT()) + 1;
+            int z = mappingZ.get(entry.getKey().getZ()) + 1;
+            int c = mappingC.get(entry.getKey().getC()) + 1;
+            int index = getStackIndex(c, z, t, distinctC.size(), distinctZ.size(), distinctT.size()) - 1;
+            array[index] = entry.getValue();
+        }
+
+        ImageStack stack = new ImageStack(reference.getWidth(), reference.getHeight());
+        for (ImageProcessor processor : array) {
+            stack.addSlice(processor);
+        }
+        ImagePlus combined = new ImagePlus("combined", stack);
+        combined.setDimensions(distinctC.size(), distinctZ.size(), distinctT.size());
+        return combined;
+    }
+
+    /**
+     * Runs the function for each slice
+     *  @param img      the image
+     * @param function the function
+     * @param progressInfo the progress
+     */
+    public static void forEachIndexedSlice(ImagePlus img, BiConsumer<ImageProcessor, Integer> function, JIPipeProgressInfo progressInfo) {
+        if (img.isStack()) {
+            for (int i = 0; i < img.getStack().size(); ++i) {
+                ImageProcessor ip = img.getStack().getProcessor(i + 1);
+                progressInfo.resolveAndLog("Slice", i, img.getStackSize());
+                function.accept(ip, i);
+            }
+        } else {
+            function.accept(img.getProcessor(), 0);
+        }
+    }
+
+    /**
+     * Runs the function for each Z, C, and T slice.
+     *  @param img      the image
+     * @param function the function
+     * @param progressInfo the progress
+     */
+    public static void forEachIndexedZCTSlice(ImagePlus img, BiConsumer<ImageProcessor, ImageSliceIndex> function, JIPipeProgressInfo progressInfo) {
+        if (img.isStack()) {
+            int iterationIndex = 0;
+            for (int t = 0; t < img.getNFrames(); t++) {
+                for (int z = 0; z < img.getNSlices(); z++) {
+                    for (int c = 0; c < img.getNChannels(); c++) {
+                        int index = img.getStackIndex(c + 1, z + 1, t + 1);
+                        progressInfo.resolveAndLog("Slice", iterationIndex++, img.getStackSize()).log("z=" + z + ", c=" + c + ", t=" + t);
+                        ImageProcessor processor = img.getImageStack().getProcessor(index);
+                        function.accept(processor, new ImageSliceIndex(z, c, t));
+                    }
+                }
+            }
+        } else {
+            function.accept(img.getProcessor(), new ImageSliceIndex(0, 0, 0));
+        }
+    }
+
+    /**
+     * Runs the function for each Z and T slice.
+     * The function consumes a map from channel index to the channel slice.
+     * The slice index channel is always set to -1
+     *  @param img      the image
+     * @param function the function
+     * @param progressInfo the progress
+     */
+    public static void forEachIndexedZTSlice(ImagePlus img, BiConsumer<Map<Integer, ImageProcessor>, ImageSliceIndex> function, JIPipeProgressInfo progressInfo) {
+        int iterationIndex = 0;
+        for (int t = 0; t < img.getNFrames(); t++) {
+            for (int z = 0; z < img.getNSlices(); z++) {
+                Map<Integer, ImageProcessor> channels = new HashMap<>();
+                for (int c = 0; c < img.getNChannels(); c++) {
+                    progressInfo.resolveAndLog("Slice", iterationIndex++, img.getStackSize()).log("z=" + z + ", c=" + c + ", t=" + t);
+                    channels.put(c, img.getStack().getProcessor(img.getStackIndex(c + 1, z + 1, t + 1)));
+                }
+                function.accept(channels, new ImageSliceIndex(z, -1, t));
+            }
+        }
+    }
+
+    /**
+     * Runs a command on an ImageJ image
+     *
+     * @param img        the image
+     * @param command    the command
+     * @param parameters command parameters
+     * @return Result image
+     */
+    public static ImagePlus runOnImage(ImagePlus img, String command, Object... parameters) {
+        String params = toParameterString(parameters);
+        WindowManager.setTempCurrentImage(img);
+        IJ.run(command, params);
+        WindowManager.setTempCurrentImage(null);
+        return img;
+    }
+
+    /**
+     * Runs a command on a copy of an ImageJ image
+     *
+     * @param img        the image
+     * @param command    the command
+     * @param parameters the command parameters
+     * @return Result image
+     */
+    public static ImagePlus runOnNewImage(ImagePlus img, String command, Object... parameters) {
+        ImagePlus copy = img.duplicate();
+        String params = toParameterString(parameters);
+        WindowManager.setTempCurrentImage(copy);
+        IJ.run(command, params);
+        WindowManager.setTempCurrentImage(null);
+        return copy;
+    }
+
+    /**
+     * Runs a command on a copy of an ImageJ image
+     *
+     * @param img        the image
+     * @param plugin     the command
+     * @param parameters the command parameters
+     * @return Result image
+     */
+    public static ImagePlus runOnImage(ImagePlus img, PlugIn plugin, Object... parameters) {
+        String params = toParameterString(parameters);
+        WindowManager.setTempCurrentImage(img);
+        plugin.run(params);
+        WindowManager.setTempCurrentImage(null);
+        return img;
+    }
+
+    /**
+     * Runs a command on a copy of an ImageJ image
+     *
+     * @param img        the image
+     * @param plugin     the command
+     * @param parameters the command parameters
+     * @return Result image
+     */
+    public static ImagePlus runOnNewImage(ImagePlus img, PlugIn plugin, Object... parameters) {
+        ImagePlus copy = img.duplicate();
+        String params = toParameterString(parameters);
+        WindowManager.setTempCurrentImage(copy);
+        plugin.run(params);
+        WindowManager.setTempCurrentImage(null);
+        return copy;
+    }
+
+    /**
+     * Converts a list of parameters into a space-delimited
+     *
+     * @param parameters the parameters
+     * @return Joined string
+     */
+    public static String toParameterString(Object... parameters) {
+        return Arrays.stream(parameters).map(Object::toString).collect(Collectors.joining(" "));
     }
 
     /**
@@ -248,7 +492,7 @@ public class ImageJUtils {
         }
 
         @Override
-        public int compareTo(@NotNull ImageJUtils.GradientStop o) {
+        public int compareTo(@NotNull GradientStop o) {
             return Float.compare(fraction, o.fraction);
         }
     }

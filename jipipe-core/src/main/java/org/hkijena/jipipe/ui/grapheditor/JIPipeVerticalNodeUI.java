@@ -58,7 +58,7 @@ public class JIPipeVerticalNodeUI extends JIPipeNodeUI {
     /**
      * Creates a new UI
      *
-     * @param workbench
+     * @param workbench the workbench
      * @param graphUI   The graph UI that contains this UI
      * @param algorithm The algorithm
      */
@@ -318,7 +318,7 @@ public class JIPipeVerticalNodeUI extends JIPipeNodeUI {
             if (algorithm.isEnabled()) {
                 if (!algorithm.isPassThrough()) {
                     setBackground(getFillColor());
-//                    nameLabel.setForeground(UIManager.getColor("Label.foreground"));
+                    nameLabel.setForeground(UIManager.getColor("Label.foreground"));
                     openSettingsButton.setIcon(UIUtils.getIconFromResources("actions/wrench.png"));
                 } else {
 //                    setBackground(UIManager.getColor("TextArea.background"));

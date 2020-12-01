@@ -27,7 +27,7 @@ import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.SliceIndex;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 
 import java.awt.Color;
 
@@ -62,7 +62,7 @@ public class SetLUTFromColorAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         LUT lut = createGradientLUT(firstColor, secondColor);
         ImagePlus image = data.getImage();
         if (applyToAllPlanes && image.isStack()) {
-            SliceIndex original = new SliceIndex(image.getZ(), image.getC(), image.getT());
+            ImageSliceIndex original = new ImageSliceIndex(image.getZ(), image.getC(), image.getT());
             for (int z = 0; z < image.getNSlices(); z++) {
                 for (int c = 0; c < image.getNChannels(); c++) {
                     for (int t = 0; t < image.getNFrames(); t++) {

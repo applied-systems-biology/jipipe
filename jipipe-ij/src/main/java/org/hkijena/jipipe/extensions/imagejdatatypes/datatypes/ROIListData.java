@@ -37,7 +37,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.RoiOutline;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.SliceIndex;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
 import org.hkijena.jipipe.extensions.parameters.roi.Margin;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
@@ -65,7 +65,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -114,9 +113,9 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
      * @param perFrame   group per frame
      * @return groups
      */
-    public Map<SliceIndex, List<Roi>> groupByPosition(boolean perSlice, boolean perChannel, boolean perFrame) {
+    public Map<ImageSliceIndex, List<Roi>> groupByPosition(boolean perSlice, boolean perChannel, boolean perFrame) {
         return this.stream().collect(Collectors.groupingBy(roi -> {
-            SliceIndex index = new SliceIndex();
+            ImageSliceIndex index = new ImageSliceIndex();
             if (perSlice)
                 index.setZ(roi.getZPosition() - 1);
             if (perFrame)
@@ -331,7 +330,7 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
         return result;
     }
 
-    public void draw(ImageProcessor processor, SliceIndex currentIndex, boolean ignoreZ, boolean ignoreC, boolean ignoreT, boolean drawOutline, boolean fillOutline, boolean drawLabel, int defaultLineThickness, Color defaultFillColor, Color defaultLineColor, Collection<Roi> highlighted) {
+    public void draw(ImageProcessor processor, ImageSliceIndex currentIndex, boolean ignoreZ, boolean ignoreC, boolean ignoreT, boolean drawOutline, boolean fillOutline, boolean drawLabel, int defaultLineThickness, Color defaultFillColor, Color defaultLineColor, Collection<Roi> highlighted) {
         ImagePlus tmp = new ImagePlus("tmp", processor);
         final int z = currentIndex.getZ();
         final int c = currentIndex.getC();
@@ -905,7 +904,7 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
      * @param ignoreT ignore T constraint
      * @return if the ROI is visible
      */
-    public static boolean isVisibleIn(Roi roi, SliceIndex location, boolean ignoreZ, boolean ignoreC, boolean ignoreT) {
+    public static boolean isVisibleIn(Roi roi, ImageSliceIndex location, boolean ignoreZ, boolean ignoreC, boolean ignoreT) {
         if(!ignoreZ && roi.getZPosition() > 0 && roi.getZPosition() != (location.getZ() + 1))
             return false;
         if(!ignoreC && roi.getCPosition() > 0 && roi.getCPosition() != (location.getC() + 1))

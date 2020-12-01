@@ -23,7 +23,7 @@ import java.util.Objects;
  * Helper class that identifies an image slice.
  * Indices are shifted compared to ImageJ (-1 indicating that no assignment is set and zero being the first index)
  */
-public class SliceIndex {
+public class ImageSliceIndex {
     private int z = -1;
     private int c = -1;
     private int t = -1;
@@ -35,7 +35,7 @@ public class SliceIndex {
      * @param c channel
      * @param t frame
      */
-    public SliceIndex(int z, int c, int t) {
+    public ImageSliceIndex(int z, int c, int t) {
         this.z = z;
         this.c = c;
         this.t = t;
@@ -44,7 +44,7 @@ public class SliceIndex {
     /**
      * Initializes a slice index where all values are -1
      */
-    public SliceIndex() {
+    public ImageSliceIndex() {
     }
 
     /**
@@ -52,7 +52,7 @@ public class SliceIndex {
      *
      * @param other the original
      */
-    public SliceIndex(SliceIndex other) {
+    public ImageSliceIndex(ImageSliceIndex other) {
         this.z = other.z;
         this.c = other.c;
         this.t = other.t;
@@ -92,7 +92,7 @@ public class SliceIndex {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        SliceIndex that = (SliceIndex) o;
+        ImageSliceIndex that = (ImageSliceIndex) o;
         return z == that.z &&
                 c == that.c &&
                 t == that.t;

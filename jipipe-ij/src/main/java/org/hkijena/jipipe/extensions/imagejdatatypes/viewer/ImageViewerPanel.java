@@ -28,7 +28,8 @@ import ij.util.Tools;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.AVICompression;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.HyperstackDimension;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.SliceIndex;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.ui.components.ColorIcon;
 import org.hkijena.jipipe.ui.components.DocumentChangeListener;
@@ -38,7 +39,6 @@ import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
 import org.hkijena.jipipe.ui.theme.JIPipeUITheme;
 import org.hkijena.jipipe.utils.BusyCursor;
 import org.hkijena.jipipe.utils.ImageJCalibrationMode;
-import org.hkijena.jipipe.utils.ImageJUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -51,8 +51,6 @@ import java.awt.Color;
 import java.awt.Point;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -698,8 +696,8 @@ public class ImageViewerPanel extends JPanel {
         formPanel.addWideToForm(panel, null);
     }
 
-    public SliceIndex getCurrentSlicePosition() {
-        return new SliceIndex(stackSlider.getValue() - 1, channelSlider.getValue() - 1, frameSlider.getValue() - 1);
+    public ImageSliceIndex getCurrentSlicePosition() {
+        return new ImageSliceIndex(stackSlider.getValue() - 1, channelSlider.getValue() - 1, frameSlider.getValue() - 1);
     }
 
     private void reloadEditRoiMenu(JPopupMenu menu) {
@@ -832,7 +830,7 @@ public class ImageViewerPanel extends JPanel {
     private void updateROIJList() {
         DefaultListModel<Roi> model = new DefaultListModel<>();
         int[] selectedIndices = roiJList.getSelectedIndices();
-        SliceIndex currentIndex = new SliceIndex(stackSlider.getValue() - 1, channelSlider.getValue() - 1, frameSlider.getValue() - 1);
+        ImageSliceIndex currentIndex = new ImageSliceIndex(stackSlider.getValue() - 1, channelSlider.getValue() - 1, frameSlider.getValue() - 1);
         for (Roi roi : rois) {
             if(roiFilterList && !ROIListData.isVisibleIn(roi, currentIndex, roiSeeThroughZ, roiSeeThroughC, roiSeeThroughT))
                 continue;
@@ -1002,7 +1000,7 @@ public class ImageViewerPanel extends JPanel {
         ImageProcessor processor = image.getProcessor();
         if(withRoi && !(processor instanceof ColorProcessor) && !rois.isEmpty()) {
             processor = new ColorProcessor(processor.getBufferedImage());
-            rois.draw(processor, new SliceIndex(z, c, t),
+            rois.draw(processor, new ImageSliceIndex(z, c, t),
                     roiSeeThroughZ,
                     roiSeeThroughC,
                     roiSeeThroughT,

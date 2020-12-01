@@ -15,8 +15,8 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.viewer;
 
 import ij.ImagePlus;
 import ij.process.LUT;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.ui.components.ColorIcon;
-import org.hkijena.jipipe.utils.ImageJUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jdesktop.swingx.JXMultiThumbSlider;
 import org.jdesktop.swingx.color.GradientThumbRenderer;

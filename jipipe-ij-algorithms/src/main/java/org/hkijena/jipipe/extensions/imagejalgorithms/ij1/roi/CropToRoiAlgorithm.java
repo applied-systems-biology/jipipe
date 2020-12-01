@@ -27,11 +27,14 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageJUtils;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 
 import java.awt.Rectangle;
+import java.util.HashMap;
+import java.util.Map;
 
 @JIPipeDocumentation(name = "Crop to ROI", description = "Crops the incoming images to fit into the boundaries defined by the ROI.")
 @JIPipeOrganization(menuPath = "Transform", nodeTypeCategory = ImagesNodeTypeCategory.class)
@@ -111,37 +114,38 @@ public class CropToRoiAlgorithm extends JIPipeIteratingAlgorithm {
         if (!cropT || maxT == 0)
             maxT = input.getNFrames();
 
-        int targetWidth = input.getWidth();
-        int targetHeight = input.getHeight();
-        if (cropXY) {
-            ImageProcessor imp = input.getProcessor();
-            imp.setRoi(bounds);
-            ImageProcessor cropped = imp.crop();
-            imp.setRoi((Roi) null);
-            targetWidth = cropped.getWidth();
-            targetHeight = cropped.getHeight();
-        }
+//        int targetWidth = input.getWidth();
+//        int targetHeight = input.getHeight();
+//        if (cropXY) {
+//            ImageProcessor imp = input.getProcessor();
+//            imp.setRoi(bounds);
+//            ImageProcessor cropped = imp.crop();
+//            imp.setRoi((Roi) null);
+//            targetWidth = cropped.getWidth();
+//            targetHeight = cropped.getHeight();
+//        }
 
-        ImageStack stack = new ImageStack(targetWidth, targetHeight, input.getProcessor().getColorModel());
+        Map<ImageSliceIndex, ImageProcessor> sliceMap = new HashMap<>();
         int finalMinZ = minZ;
         int finalMaxZ = maxZ;
         int finalMinC = minC;
         int finalMaxC = maxC;
         int finalMinT = minT;
         int finalMaxT = maxT;
-        ImageJUtils.forEachIndexedSlice(input, (imp, index) -> {
-            int[] pos = input.convertIndexToPosition(index + 1);
-            int z = pos[0];
-            int c = pos[1];
-            int t = pos[2];
+        ImageJUtils.forEachIndexedZCTSlice(input, (imp, index) -> {
+            int z = index.getZ() + 1;
+            int c = index.getC() + 1;
+            int t = index.getT() + 1;
             if (z >= finalMinZ && z <= finalMaxZ && c >= finalMinC && c <= finalMaxC && t >= finalMinT && t <= finalMaxT) {
                 imp.setRoi(bounds);
                 ImageProcessor cropped = imp.crop();
                 imp.setRoi((Roi) null);
-                stack.addSlice(cropped);
+                sliceMap.put(index, cropped);
             }
         }, progressInfo);
-        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(new ImagePlus("Cropped", stack)), progressInfo);
+        ImagePlus cropped = ImageJUtils.combineSlices(sliceMap);
+        cropped.setTitle("cropped");
+        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(cropped), progressInfo);
     }
 
     @JIPipeDocumentation(name = "Crop XY plane", description = "If enabled, images are cropped according to the boundaries in the XY plane.")
