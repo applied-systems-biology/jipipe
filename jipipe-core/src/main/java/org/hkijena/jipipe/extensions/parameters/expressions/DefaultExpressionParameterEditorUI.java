@@ -135,6 +135,5 @@ public class DefaultExpressionParameterEditorUI extends JIPipeParameterEditorUI 
             ExpressionParameterVariableSource variableSource = (ExpressionParameterVariableSource) ReflectionUtils.newInstance(settings.variableSource());
             variables.addAll(variableSource.getVariables(getParameterAccess()));
         }
-        tokenMaker.setDynamicVariables(variables);
     }
 }

@@ -33,7 +33,6 @@ import java.util.Set;
 public class DefaultExpressionEvaluatorSyntaxTokenMaker extends AbstractTokenMaker {
 
     private final List<String> knownNonAlphanumericOperatorTokens;
-    private Set<ExpressionParameterVariable> dynamicVariables;
     private Set<String> operators;
 
     public DefaultExpressionEvaluatorSyntaxTokenMaker() {
@@ -62,15 +61,18 @@ public class DefaultExpressionEvaluatorSyntaxTokenMaker extends AbstractTokenMak
         resetTokenList();
         int offset = text.offset;
         int newStartOffset = startOffset - offset;
-
-        String expression = text.toString();
+        int count = text.count;
+        int end = offset + count;
+        char[] array = text.array;
 
         StringBuilder buffer = new StringBuilder();
-        int bufferStart = 0;
         boolean isQuoted = false;
         boolean isEscape = false;
-        for (int index = 0; index < expression.length(); index++) {
-            char c = expression.charAt(index);
+
+        int currentTokenStart = offset;
+
+        for (int index = offset; index < end; index++) {
+            char c =array[index];
             if (c == '\\') {
                 isEscape = !isEscape;
             }
@@ -80,25 +82,25 @@ public class DefaultExpressionEvaluatorSyntaxTokenMaker extends AbstractTokenMak
                     if (!isQuoted) {
                         // Flush the builder
                         buffer.append(c);
-                        addToken(text, buffer.toString(), bufferStart, offset, newStartOffset + offset);
-                        bufferStart = index + 1;
+                        addToken(text, buffer.toString(), currentTokenStart, newStartOffset + currentTokenStart);
+                        currentTokenStart = index + 1;
                         buffer.setLength(0);
                         continue;
                     }
                 }
             }
             if (!isQuoted && (c == ' ' || c == '\t' || c == '\r' || c == '\n')) {
-                addToken(text, buffer.toString(), bufferStart, offset, newStartOffset + offset);
+                addToken(text, buffer.toString(), currentTokenStart, newStartOffset + currentTokenStart);
                 buffer.setLength(0);
-                bufferStart = index + 1;
-                addToken(text, index + offset, index + offset, Token.WHITESPACE, newStartOffset + index + offset);
+                addToken(text, index, index, Token.WHITESPACE, newStartOffset + currentTokenStart);
+                currentTokenStart = index + 1;
                 continue;
             }
-            if (!isQuoted && (c == '(' || c == ')')) {
-                addToken(text, buffer.toString(), bufferStart, offset, newStartOffset);
+            if (!isQuoted && (c == '(' || c == ')' || c == ',')) {
+                addToken(text, buffer.toString(), currentTokenStart, newStartOffset + currentTokenStart);
                 buffer.setLength(0);
-                bufferStart = index + 1;
-                addToken(text, index + offset, index + offset, Token.SEPARATOR, newStartOffset + index + offset);
+                addToken(text, index, index, Token.SEPARATOR, newStartOffset + currentTokenStart);
+                currentTokenStart = index + 1;
                 continue;
             }
             buffer.append(c);
@@ -110,16 +112,16 @@ public class DefaultExpressionEvaluatorSyntaxTokenMaker extends AbstractTokenMak
 //            }
             if (!isQuoted && buffer.length() > 0) {
                 String s1 = buffer.toString();
-                if (index != expression.length() - 1) {
+                if (index != end - 1) {
                     // Workaround <= >=
                     if (s1.endsWith("<") || s1.endsWith(">")) {
-                        char next = expression.charAt(index + 1);
+                        char next = array[index + 1];
                         if (next == '=')
                             continue;
                     }
                     // Workaround !=
                     if (s1.endsWith("!")) {
-                        char next = expression.charAt(index + 1);
+                        char next = array[index + 1];
                         if (next == '=')
                             continue;
                     }
@@ -128,48 +130,38 @@ public class DefaultExpressionEvaluatorSyntaxTokenMaker extends AbstractTokenMak
                     int i1 = s1.indexOf(s);
                     if (i1 != -1) {
                         if (i1 > 0) {
-                            addToken(text, s1.substring(0, i1), bufferStart, offset, newStartOffset);
+                            addToken(text, s1.substring(0, i1), currentTokenStart, newStartOffset + currentTokenStart);
                         }
-                        addToken(text, s, bufferStart + i1, offset, newStartOffset);
+                        addToken(text, s, currentTokenStart + i1, newStartOffset + currentTokenStart);
                         buffer.setLength(0);
-                        bufferStart = index + 1;
+                        currentTokenStart = index + 1;
                         break;
                     }
                 }
             }
         }
         if (buffer.length() > 0) {
-            addToken(text, buffer.toString(), bufferStart, offset, newStartOffset);
+            addToken(text, buffer.toString(), currentTokenStart, newStartOffset);
         }
         if (firstToken == null) {
-            addToken(text, 0, text.count, Token.NULL, newStartOffset);
+            addNullToken();
         }
         return firstToken;
     }
 
-    private void addToken(Segment segment, String text, int index, int offset, int startOffset) {
-//        System.out.println("Add " + text + " @ " + index + ":" + (index + text.length()));
+    private void addToken(Segment segment, String text, int start, int startOffset) {
         if (text.isEmpty())
             return;
-        int tokenType = getWordsToHighlight().get(segment, index + offset, index + offset + text.length() - 1);
-        if (dynamicVariables != null && dynamicVariables.stream().anyMatch(v -> Objects.equals(v.getKey(), text)))
-            tokenType = Token.VARIABLE;
+        int end = start + text.length() - 1;
+        int tokenType = getWordsToHighlight().get(segment, start, end);
         if (text.startsWith("\""))
             tokenType = Token.LITERAL_STRING_DOUBLE_QUOTE;
         else if (NumberUtils.isCreatable(text))
             tokenType = Token.LITERAL_NUMBER_FLOAT;
         if (tokenType == -1)
             tokenType = Token.VARIABLE;
-        for (int i = 0; i < text.length(); i++) {
-            addToken(segment, index + offset + i, index + offset + i, tokenType, startOffset + index + offset + i);
+        for (int i = start; i <= end; i++) {
+            addToken(segment, i, i, tokenType, startOffset);
         }
-    }
-
-    public Set<ExpressionParameterVariable> getDynamicVariables() {
-        return dynamicVariables;
-    }
-
-    public void setDynamicVariables(Set<ExpressionParameterVariable> variables) {
-        this.dynamicVariables = variables;
     }
 }
