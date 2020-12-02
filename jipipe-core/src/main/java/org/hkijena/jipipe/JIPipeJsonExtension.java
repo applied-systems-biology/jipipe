@@ -28,8 +28,6 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeMetadata;
 import org.hkijena.jipipe.api.JIPipeValidatable;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
-import org.hkijena.jipipe.api.events.ExtensionContentAddedEvent;
-import org.hkijena.jipipe.api.events.ExtensionContentRemovedEvent;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.grouping.JsonNodeInfo;
 import org.hkijena.jipipe.api.grouping.JsonNodeRegistrationTask;
@@ -232,7 +230,7 @@ public class JIPipeJsonExtension implements JIPipeParameterCollection, JIPipeDep
         if (nodeInfos == null)
             deserializeNodeInfos();
         nodeInfos.add(nodeInfo);
-        eventBus.post(new ExtensionContentAddedEvent(this, nodeInfo));
+        eventBus.post(new JIPipe.ExtensionContentAddedEvent(this, nodeInfo));
     }
 
     /**
@@ -317,7 +315,7 @@ public class JIPipeJsonExtension implements JIPipeParameterCollection, JIPipeDep
         if (nodeInfos == null)
             deserializeNodeInfos();
         if (nodeInfos.remove(info)) {
-            eventBus.post(new ExtensionContentRemovedEvent(this, info));
+            eventBus.post(new JIPipe.ExtensionContentRemovedEvent(this, info));
         }
     }
 

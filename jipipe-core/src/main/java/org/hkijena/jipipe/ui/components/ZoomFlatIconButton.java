@@ -1,7 +1,6 @@
 package org.hkijena.jipipe.ui.components;
 
 import com.google.common.eventbus.Subscribe;
-import org.hkijena.jipipe.ui.events.ZoomChangedEvent;
 
 import javax.swing.*;
 import java.awt.Dimension;
@@ -34,7 +33,7 @@ public class ZoomFlatIconButton extends JButton {
     }
 
     @Subscribe
-    public void onZoomChanged(ZoomChangedEvent event) {
+    public void onZoomChanged(ZoomViewPort.ZoomChangedEvent event) {
         updateSize();
     }
 

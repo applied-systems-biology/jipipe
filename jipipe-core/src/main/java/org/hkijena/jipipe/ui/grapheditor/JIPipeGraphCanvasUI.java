@@ -24,9 +24,6 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.events.CompartmentRenamedEvent;
-import org.hkijena.jipipe.api.events.GraphChangedEvent;
-import org.hkijena.jipipe.api.events.NodeConnectedEvent;
 import org.hkijena.jipipe.api.history.JIPipeGraphHistory;
 import org.hkijena.jipipe.api.history.MoveNodesGraphHistorySnapshot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
@@ -38,13 +35,6 @@ import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.ZoomViewPort;
-import org.hkijena.jipipe.ui.events.AlgorithmEvent;
-import org.hkijena.jipipe.ui.events.AlgorithmSelectedEvent;
-import org.hkijena.jipipe.ui.events.AlgorithmSelectionChangedEvent;
-import org.hkijena.jipipe.ui.events.AlgorithmUIActionRequestedEvent;
-import org.hkijena.jipipe.ui.events.DefaultAlgorithmUIActionRequestedEvent;
-import org.hkijena.jipipe.ui.events.GraphCanvasUpdatedEvent;
-import org.hkijena.jipipe.ui.events.ZoomChangedEvent;
 import org.hkijena.jipipe.ui.grapheditor.connections.RectangularLineDrawer;
 import org.hkijena.jipipe.ui.grapheditor.contextmenu.NodeUIContextAction;
 import org.hkijena.jipipe.ui.grapheditor.layout.MSTGraphAutoLayoutMethod;
@@ -135,7 +125,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
             if (compartmentInstance != null) {
                 project.getEventBus().register(new Object() {
                     @Subscribe
-                    public void onCompartmentRenamed(CompartmentRenamedEvent event) {
+                    public void onCompartmentRenamed(JIPipeProject.CompartmentRenamedEvent event) {
                         if (event.getCompartment() == compartmentInstance && !Objects.equals(compartment, event.getCompartment().getProjectCompartmentId())) {
                             JIPipeGraphCanvasUI.this.compartment = event.getCompartment().getProjectCompartmentId();
                             JIPipeGraphCanvasUI.this.fullRedraw();
@@ -266,7 +256,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
             autoLayoutAll();
         }
         if (ui != null) {
-            getEventBus().post(new AlgorithmEvent(ui));
+            getEventBus().post(new JIPipeNodeUI.AlgorithmEvent(ui));
         }
         if (newlyPlacedAlgorithms > 0) {
             getEventBus().post(new GraphCanvasUpdatedEvent(this));
@@ -769,7 +759,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
      * @param event The generated event
      */
     @Subscribe
-    public void onAlgorithmGraphChanged(GraphChangedEvent event) {
+    public void onAlgorithmGraphChanged(JIPipeGraph.GraphChangedEvent event) {
         // Update the location of existing nodes
         for (JIPipeNodeUI ui : nodeUIs.values()) {
             ui.moveToStoredGridLocation(true);
@@ -784,7 +774,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
      * @param event The generated event
      */
     @Subscribe
-    public void onAlgorithmConnected(NodeConnectedEvent event) {
+    public void onAlgorithmConnected(JIPipeGraph.NodeConnectedEvent event) {
         JIPipeNodeUI sourceNode = nodeUIs.getOrDefault(event.getSource().getNode(), null);
         JIPipeNodeUI targetNode = nodeUIs.getOrDefault(event.getTarget().getNode(), null);
 
@@ -1540,5 +1530,104 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
 
     public void setScrollPane(JScrollPane scrollPane) {
         this.scrollPane = scrollPane;
+    }
+
+    /**
+     * Generated when an algorithm is selected
+     */
+    public static class AlgorithmSelectedEvent extends JIPipeNodeUI.AlgorithmEvent {
+        private boolean addToSelection;
+
+        /**
+         * @param ui             the algorithm UI
+         * @param addToSelection if the algorithm should be added to the selection
+         */
+        public AlgorithmSelectedEvent(JIPipeNodeUI ui, boolean addToSelection) {
+            super(ui);
+            this.addToSelection = addToSelection;
+        }
+
+        public boolean isAddToSelection() {
+            return addToSelection;
+        }
+    }
+
+    /**
+     * Triggered when An {@link JIPipeGraphCanvasUI} selection was changed
+     */
+    public static class AlgorithmSelectionChangedEvent {
+        private JIPipeGraphCanvasUI canvasUI;
+
+        /**
+         * @param canvasUI the canvas that triggered the event
+         */
+        public AlgorithmSelectionChangedEvent(JIPipeGraphCanvasUI canvasUI) {
+
+            this.canvasUI = canvasUI;
+        }
+
+        public JIPipeGraphCanvasUI getCanvasUI() {
+            return canvasUI;
+        }
+    }
+
+    /**
+     * An action that is requested by an {@link JIPipeNodeUI} and passed down to a {@link JIPipeGraphEditorUI}
+     */
+    public static class AlgorithmUIActionRequestedEvent {
+        private final JIPipeNodeUI ui;
+        private final Object action;
+
+        /**
+         * Initializes a new instance
+         *
+         * @param ui     the requesting UI
+         * @param action the action parameter
+         */
+        public AlgorithmUIActionRequestedEvent(JIPipeNodeUI ui, Object action) {
+            this.ui = ui;
+            this.action = action;
+        }
+
+        public JIPipeNodeUI getUi() {
+            return ui;
+        }
+
+        public Object getAction() {
+            return action;
+        }
+    }
+
+    /**
+     * Triggered when an {@link JIPipeNodeUI} requests a default action (double click)
+     */
+    public static class DefaultAlgorithmUIActionRequestedEvent {
+        private JIPipeNodeUI ui;
+
+        /**
+         * @param ui event source
+         */
+        public DefaultAlgorithmUIActionRequestedEvent(JIPipeNodeUI ui) {
+            this.ui = ui;
+        }
+
+        public JIPipeNodeUI getUi() {
+            return ui;
+        }
+    }
+
+    /**
+     * Triggered when a graph canvas was updated
+     */
+    public static class GraphCanvasUpdatedEvent {
+        private final JIPipeGraphCanvasUI graphCanvasUI;
+
+        public GraphCanvasUpdatedEvent(JIPipeGraphCanvasUI graphCanvasUI) {
+            this.graphCanvasUI = graphCanvasUI;
+        }
+
+        public JIPipeGraphCanvasUI getGraphCanvasUI() {
+            return graphCanvasUI;
+        }
     }
 }

@@ -14,7 +14,6 @@
 package org.hkijena.jipipe.extensions.parameters.util;
 
 import com.google.common.eventbus.Subscribe;
-import org.hkijena.jipipe.api.events.ParameterChangedEvent;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
@@ -57,7 +56,7 @@ public class JIPipeParameterCollectionParameterEditorUI extends JIPipeParameterE
         JIPipeParameterCollection parameter = getParameter(JIPipeParameterCollection.class);
         parameter.getEventBus().register(new Object() {
             @Subscribe
-            public void onParameterChanged(ParameterChangedEvent event) {
+            public void onParameterChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
                 setParameter(parameter, false);
             }
         });

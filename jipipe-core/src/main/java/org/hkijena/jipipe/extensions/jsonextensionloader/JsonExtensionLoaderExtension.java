@@ -20,7 +20,6 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.JIPipeJsonExtension;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
-import org.hkijena.jipipe.api.events.ExtensionRegisteredEvent;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
 import org.hkijena.jipipe.utils.JsonUtils;
@@ -191,7 +190,7 @@ public class JsonExtensionLoaderExtension extends JIPipePrepackagedDefaultJavaEx
      * @param event Generated event
      */
     @Subscribe
-    public void onExtensionRegistered(ExtensionRegisteredEvent event) {
+    public void onExtensionRegistered(JIPipe.ExtensionRegisteredEvent event) {
         updateRegistrationTasks();
     }
 

@@ -14,7 +14,6 @@
 package org.hkijena.jipipe.api.history;
 
 import com.google.common.eventbus.EventBus;
-import org.hkijena.jipipe.api.events.GraphHistoryChangedEvent;
 
 import java.util.Stack;
 
@@ -91,5 +90,20 @@ public class JIPipeGraphHistory {
 
     public EventBus getEventBus() {
         return eventBus;
+    }
+
+    /**
+     * Triggered when an {@link JIPipeGraphHistory} was changed
+     */
+    public static class GraphHistoryChangedEvent {
+        private final JIPipeGraphHistory graphHistory;
+
+        public GraphHistoryChangedEvent(JIPipeGraphHistory graphHistory) {
+            this.graphHistory = graphHistory;
+        }
+
+        public JIPipeGraphHistory getGraphHistory() {
+            return graphHistory;
+        }
     }
 }

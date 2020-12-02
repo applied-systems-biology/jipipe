@@ -14,7 +14,6 @@
 package org.hkijena.jipipe.api.grouping.parameters;
 
 import com.google.common.eventbus.Subscribe;
-import org.hkijena.jipipe.api.events.ParameterChangedEvent;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
@@ -119,9 +118,9 @@ public class GraphNodeParameterReferenceAccess implements JIPipeParameterAccess 
     }
 
     @Subscribe
-    public void onSourceParameterChanged(ParameterChangedEvent event) {
+    public void onSourceParameterChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
         if (Objects.equals(target.getKey(), event.getKey())) {
-            alternativeSource.getEventBus().post(new ParameterChangedEvent(alternativeSource, getKey()));
+            alternativeSource.getEventBus().post(new JIPipeParameterCollection.ParameterChangedEvent(alternativeSource, getKey()));
         }
     }
 }

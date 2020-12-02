@@ -22,7 +22,6 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.events.ParameterChangedEvent;
 import org.hkijena.jipipe.utils.JsonUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.scijava.Priority;
@@ -227,7 +226,7 @@ public class JIPipeMutableParameterAccess implements JIPipeParameterAccess {
 
         // Trigger change in parent parameter holder
         if (parameterHolder != null)
-            parameterHolder.getEventBus().post(new ParameterChangedEvent(parameterHolder, key));
+            parameterHolder.getEventBus().post(new JIPipeParameterCollection.ParameterChangedEvent(parameterHolder, key));
         return true;
     }
 

@@ -15,7 +15,6 @@ package org.hkijena.jipipe.ui.parameters;
 
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.events.ParameterChangedEvent;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
@@ -128,7 +127,7 @@ public abstract class JIPipeParameterEditorUI extends JIPipeWorkbenchPanel imple
      * @param event Generated event
      */
     @Subscribe
-    public void onParameterChanged(ParameterChangedEvent event) {
+    public void onParameterChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
         if (Objects.equals(event.getKey(), parameterAccess.getKey())) {
             if (preventReload == 0) {
                 reloadScheduled = false;

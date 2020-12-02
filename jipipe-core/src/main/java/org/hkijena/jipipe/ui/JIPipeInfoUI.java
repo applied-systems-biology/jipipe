@@ -16,7 +16,7 @@ package org.hkijena.jipipe.ui;
 import com.google.common.eventbus.Subscribe;
 import ij.IJ;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.events.ParameterChangedEvent;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
 import org.hkijena.jipipe.extensions.settings.ProjectsSettings;
 import org.hkijena.jipipe.ui.components.BackgroundPanel;
@@ -156,7 +156,7 @@ public class JIPipeInfoUI extends JIPipeProjectWorkbenchPanel {
     }
 
     @Subscribe
-    public void onRecentProjectsChanged(ParameterChangedEvent event) {
+    public void onRecentProjectsChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
         if ("recent-projects".equals(event.getKey())) {
             refreshRecentProjects();
         }

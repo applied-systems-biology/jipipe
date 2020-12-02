@@ -16,7 +16,6 @@ package org.hkijena.jipipe.ui.grapheditor.contextmenu;
 import org.hkijena.jipipe.api.history.MoveNodesGraphHistorySnapshot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.ui.components.PickNodeDialog;
-import org.hkijena.jipipe.ui.events.AlgorithmEvent;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphCanvasUI;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeNodeUI;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -42,7 +41,7 @@ public class SelectAndMoveNodeHereNodeUIContextAction implements NodeUIContextAc
                 canvasUI.getGraphHistory().addSnapshotBefore(new MoveNodesGraphHistorySnapshot(canvasUI.getGraph(), "Move node here ..."));
                 ui.moveToNextGridPoint(canvasUI.getGraphEditorCursor(), false, true);
                 canvasUI.repaint();
-                canvasUI.getEventBus().post(new AlgorithmEvent(ui));
+                canvasUI.getEventBus().post(new JIPipeNodeUI.AlgorithmEvent(ui));
             }
         }
     }

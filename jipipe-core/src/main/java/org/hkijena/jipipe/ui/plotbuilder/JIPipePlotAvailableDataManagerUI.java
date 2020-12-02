@@ -15,7 +15,7 @@ package org.hkijena.jipipe.ui.plotbuilder;
 
 import com.google.common.eventbus.Subscribe;
 import ij.measure.ResultsTable;
-import org.hkijena.jipipe.api.events.ParameterChangedEvent;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.plots.datatypes.PlotDataSeries;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
@@ -189,7 +189,7 @@ public class JIPipePlotAvailableDataManagerUI extends JIPipeWorkbenchPanel {
      * @param event generated event
      */
     @Subscribe
-    public void onParameterChanged(ParameterChangedEvent event) {
+    public void onParameterChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
         if (event.getKey().equals("available-data")) {
             reloadList();
         }

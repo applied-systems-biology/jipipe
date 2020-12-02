@@ -21,10 +21,9 @@ import org.hkijena.jipipe.api.JIPipeProjectCache;
 import org.hkijena.jipipe.api.JIPipeProjectCacheQuery;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.events.NodeDisconnectedEvent;
-import org.hkijena.jipipe.api.events.NodeSlotsChangedEvent;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatchAlgorithm;
+import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
@@ -296,7 +295,7 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
      * @param event generated event
      */
     @Subscribe
-    public void onSlotsChanged(NodeSlotsChangedEvent event) {
+    public void onSlotsChanged(JIPipeGraph.NodeSlotsChangedEvent event) {
         if (!isDisplayable())
             return;
         updateStatus();
@@ -308,7 +307,7 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
      * @param event generated event
      */
     @Subscribe
-    public void onDisconnected(NodeDisconnectedEvent event) {
+    public void onDisconnected(JIPipeGraph.NodeDisconnectedEvent event) {
         if (event.getTarget().getNode() == algorithm) {
             updateStatus();
         }

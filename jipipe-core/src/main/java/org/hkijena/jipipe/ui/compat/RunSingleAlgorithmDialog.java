@@ -23,8 +23,8 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeMutableSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
-import org.hkijena.jipipe.api.events.NodeSlotsChangedEvent;
 import org.hkijena.jipipe.api.history.JIPipeGraphHistory;
+import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
@@ -296,7 +296,7 @@ public class RunSingleAlgorithmDialog extends JDialog implements JIPipeWorkbench
      * @param event Generated event
      */
     @Subscribe
-    public void onAlgorithmSlotsChanged(NodeSlotsChangedEvent event) {
+    public void onAlgorithmSlotsChanged(JIPipeGraph.NodeSlotsChangedEvent event) {
         reloadAlgorithmProperties();
     }
 

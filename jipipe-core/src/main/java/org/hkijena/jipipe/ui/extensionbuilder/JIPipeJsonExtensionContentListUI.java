@@ -15,12 +15,11 @@ package org.hkijena.jipipe.ui.extensionbuilder;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.Subscribe;
-import org.hkijena.jipipe.api.events.ExtensionContentAddedEvent;
-import org.hkijena.jipipe.api.events.ExtensionContentRemovedEvent;
-import org.hkijena.jipipe.api.events.ParameterChangedEvent;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.grouping.JsonNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.ui.JIPipeJsonExtensionWorkbench;
 import org.hkijena.jipipe.ui.JIPipeJsonExtensionWorkbenchPanel;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -125,7 +124,7 @@ public class JIPipeJsonExtensionContentListUI extends JIPipeJsonExtensionWorkben
      * @param event Generated event
      */
     @Subscribe
-    public void onParameterChanged(ParameterChangedEvent event) {
+    public void onParameterChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
         if ("name".equals(event.getKey())) {
             list.repaint();
         }
@@ -137,7 +136,7 @@ public class JIPipeJsonExtensionContentListUI extends JIPipeJsonExtensionWorkben
      * @param event Generated event
      */
     @Subscribe
-    public void onContentAddedEvent(ExtensionContentAddedEvent event) {
+    public void onContentAddedEvent(JIPipe.ExtensionContentAddedEvent event) {
         reload();
     }
 
@@ -147,7 +146,7 @@ public class JIPipeJsonExtensionContentListUI extends JIPipeJsonExtensionWorkben
      * @param event Generated event
      */
     @Subscribe
-    public void onContentRemovedEvent(ExtensionContentRemovedEvent event) {
+    public void onContentRemovedEvent(JIPipe.ExtensionContentRemovedEvent event) {
         reload();
     }
 

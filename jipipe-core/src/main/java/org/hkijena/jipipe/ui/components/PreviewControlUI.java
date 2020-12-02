@@ -14,7 +14,6 @@
 package org.hkijena.jipipe.ui.components;
 
 import com.google.common.eventbus.Subscribe;
-import org.hkijena.jipipe.api.events.ParameterChangedEvent;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -84,7 +83,7 @@ public class PreviewControlUI extends JPanel {
     }
 
     @Subscribe
-    public void onSettingChanged(ParameterChangedEvent event) {
+    public void onSettingChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
         if ("preview-size".equals(event.getKey())) {
             refreshZoomStatus();
         }

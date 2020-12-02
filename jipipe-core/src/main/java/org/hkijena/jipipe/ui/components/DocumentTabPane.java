@@ -19,7 +19,6 @@ import com.google.common.collect.ImmutableBiMap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import org.hkijena.jipipe.api.events.ParameterChangedEvent;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
@@ -175,7 +174,7 @@ public class DocumentTabPane extends JPanel {
 
         tab.getEventBus().register(new Object() {
             @Subscribe
-            public void onPropertyChanged(ParameterChangedEvent event) {
+            public void onPropertyChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
                 titleLabel.setText(tab.getTitle());
             }
         });

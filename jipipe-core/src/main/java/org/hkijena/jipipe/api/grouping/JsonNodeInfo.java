@@ -27,8 +27,6 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeMutableSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
-import org.hkijena.jipipe.api.events.GraphChangedEvent;
-import org.hkijena.jipipe.api.events.ParameterStructureChangedEvent;
 import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameters;
 import org.hkijena.jipipe.api.nodes.DefaultJIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.DefaultJIPipeOutputSlot;
@@ -258,7 +256,7 @@ public class JsonNodeInfo implements JIPipeNodeInfo, JIPipeValidatable, JIPipePa
      * @param event generated event
      */
     @Subscribe
-    public void onGraphChanged(GraphChangedEvent event) {
+    public void onGraphChanged(JIPipeGraph.GraphChangedEvent event) {
         updateSlots();
     }
 

@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.ui.components;
 
 import com.google.common.eventbus.Subscribe;
-import org.hkijena.jipipe.api.events.ParameterChangedEvent;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.settings.ProjectsSettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWindow;
 
@@ -66,7 +66,7 @@ public class RecentProjectsMenu extends JMenu {
      * @param event generated event
      */
     @Subscribe
-    public void onApplicationSettingsChanged(ParameterChangedEvent event) {
+    public void onApplicationSettingsChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
         if ("recent-projects".equals(event.getKey())) {
             reload();
         }

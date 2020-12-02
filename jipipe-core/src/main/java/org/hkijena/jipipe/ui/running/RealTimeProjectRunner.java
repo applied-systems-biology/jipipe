@@ -16,16 +16,13 @@ package org.hkijena.jipipe.ui.running;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.JIPipeRun;
 import org.hkijena.jipipe.api.JIPipeRunSettings;
-import org.hkijena.jipipe.api.events.GraphChangedEvent;
-import org.hkijena.jipipe.api.events.ParameterChangedEvent;
-import org.hkijena.jipipe.api.events.SlotsChangedEvent;
+import org.hkijena.jipipe.api.data.JIPipeSlotConfiguration;
+import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
-import org.hkijena.jipipe.ui.events.RunUIWorkerFinishedEvent;
-import org.hkijena.jipipe.ui.events.RunUIWorkerInterruptedEvent;
-import org.hkijena.jipipe.ui.events.RunUIWorkerStartedEvent;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -50,7 +47,7 @@ public class RealTimeProjectRunner extends JIPipeProjectWorkbenchPanel {
         JIPipeRunnerQueue.getInstance().getEventBus().register(this);
         runtimeSettings.getEventBus().register(new Object() {
             @Subscribe
-            public void onParameterChanged(ParameterChangedEvent event) {
+            public void onParameterChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
                 if ("real-time-run-enabled".equals(event.getKey()) && runtimeSettings.isRealTimeRunEnabled()) {
                     scheduleRun();
                 }
@@ -65,7 +62,7 @@ public class RealTimeProjectRunner extends JIPipeProjectWorkbenchPanel {
         button.addActionListener(e -> {
             if (button.isSelected() != runtimeSettings.isRealTimeRunEnabled()) {
                 runtimeSettings.setRealTimeRunEnabled(button.isSelected());
-                runtimeSettings.getEventBus().post(new ParameterChangedEvent(runtimeSettings, "real-time-run-enabled"));
+                runtimeSettings.getEventBus().post(new JIPipeParameterCollection.ParameterChangedEvent(runtimeSettings, "real-time-run-enabled"));
             }
         });
         return button;
@@ -78,18 +75,18 @@ public class RealTimeProjectRunner extends JIPipeProjectWorkbenchPanel {
     }
 
     @Subscribe
-    public void onGraphChanged(GraphChangedEvent event) {
+    public void onGraphChanged(JIPipeGraph.GraphChangedEvent event) {
         refreshEventRegistrations();
         scheduleRunTimer();
     }
 
     @Subscribe
-    public void onNodeSlotsChanged(SlotsChangedEvent event) {
+    public void onNodeSlotsChanged(JIPipeSlotConfiguration.SlotsChangedEvent event) {
         scheduleRunTimer();
     }
 
     @Subscribe
-    public void onParameterChanged(ParameterChangedEvent event) {
+    public void onParameterChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
         if ("jipipe:node:name".equals(event.getKey()) || "jipipe:node:description".equals(event.getKey()))
             return;
         scheduleRunTimer();

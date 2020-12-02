@@ -18,8 +18,6 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeMutableSlotConfiguration;
-import org.hkijena.jipipe.api.events.GraphChangedEvent;
-import org.hkijena.jipipe.api.events.ParameterChangedEvent;
 import org.hkijena.jipipe.api.history.CompoundGraphHistorySnapshot;
 import org.hkijena.jipipe.api.history.EdgeConnectGraphHistorySnapshot;
 import org.hkijena.jipipe.api.history.EdgeDisconnectAllTargetsGraphHistorySnapshot;
@@ -30,10 +28,11 @@ import org.hkijena.jipipe.api.history.MoveNodesGraphHistorySnapshot;
 import org.hkijena.jipipe.api.history.SlotConfigurationHistorySnapshot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphEdge;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.EditAlgorithmSlotPanel;
-import org.hkijena.jipipe.ui.events.AlgorithmFinderSuccessEvent;
+import org.hkijena.jipipe.ui.grapheditor.algorithmfinder.AlgorithmFinderSuccessEvent;
 import org.hkijena.jipipe.ui.grapheditor.algorithmfinder.JIPipeAlgorithmSourceFinderUI;
 import org.hkijena.jipipe.ui.grapheditor.algorithmfinder.JIPipeAlgorithmTargetFinderUI;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -592,7 +591,7 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
      * @param event Generated event
      */
     @Subscribe
-    public void onAlgorithmGraphChanged(GraphChangedEvent event) {
+    public void onAlgorithmGraphChanged(JIPipeGraph.GraphChangedEvent event) {
         if (getGraph().containsNode(slot)) {
             reloadButtonStatus();
         }
@@ -604,7 +603,7 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
      * @param event Generated event
      */
     @Subscribe
-    public void onSlotNameChanged(ParameterChangedEvent event) {
+    public void onSlotNameChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
         if ("custom-name".equals(event.getKey())) {
             reloadName();
             nodeUI.updateSize();

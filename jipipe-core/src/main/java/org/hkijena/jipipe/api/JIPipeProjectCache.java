@@ -17,7 +17,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.events.GraphChangedEvent;
+import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.extensions.settings.VirtualDataSettings;
@@ -269,7 +269,7 @@ public class JIPipeProjectCache {
      *
      * @param event the event
      */
-    public void onAlgorithmRemoved(GraphChangedEvent event) {
+    public void onAlgorithmRemoved(JIPipeGraph.GraphChangedEvent event) {
         autoClean(false, false);
     }
 

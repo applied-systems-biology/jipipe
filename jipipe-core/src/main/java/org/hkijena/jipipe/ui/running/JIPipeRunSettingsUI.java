@@ -29,8 +29,6 @@ import org.hkijena.jipipe.ui.components.JIPipeValidityReportUI;
 import org.hkijena.jipipe.ui.components.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.MarkdownReader;
 import org.hkijena.jipipe.ui.components.UserFriendlyErrorUI;
-import org.hkijena.jipipe.ui.events.RunUIWorkerFinishedEvent;
-import org.hkijena.jipipe.ui.events.RunUIWorkerInterruptedEvent;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.ui.resultanalysis.JIPipeResultUI;
 import org.hkijena.jipipe.utils.ResourceUtils;

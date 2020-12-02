@@ -2,7 +2,6 @@ package org.hkijena.jipipe.ui.grapheditor;
 
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
-import org.hkijena.jipipe.ui.events.GraphCanvasUpdatedEvent;
 import org.hkijena.jipipe.ui.theme.ModernMetalTheme;
 import org.hkijena.jipipe.utils.ScreenImage;
 
@@ -206,7 +205,7 @@ public class JIPipeGraphEditorMinimap extends JIPipeWorkbenchPanel implements Mo
     }
 
     @Subscribe
-    public void onGraphCanvasUpdated(GraphCanvasUpdatedEvent event) {
+    public void onGraphCanvasUpdated(JIPipeGraphCanvasUI.GraphCanvasUpdatedEvent event) {
         if (isDisplayable()) {
             refreshGraphImage();
             repaint();

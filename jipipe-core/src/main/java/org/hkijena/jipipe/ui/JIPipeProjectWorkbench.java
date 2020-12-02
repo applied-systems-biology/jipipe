@@ -19,11 +19,9 @@ import org.hkijena.jipipe.JIPipeJsonExtension;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
-import org.hkijena.jipipe.api.events.CompartmentRemovedEvent;
-import org.hkijena.jipipe.api.events.ExtensionRegisteredEvent;
-import org.hkijena.jipipe.api.events.ParameterChangedEvent;
 import org.hkijena.jipipe.api.grouping.NodeGroup;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.settings.AutoSaveSettings;
 import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
 import org.hkijena.jipipe.extensions.settings.ProjectsSettings;
@@ -151,7 +149,7 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
      * @param event the event
      */
     @Subscribe
-    public void onExtensionRegistered(ExtensionRegisteredEvent event) {
+    public void onExtensionRegistered(JIPipe.ExtensionRegisteredEvent event) {
         sendStatusBarText("Registered extension: '" + event.getExtension().getMetadata().getName() + "' with id '" + event.getExtension().getDependencyId() + "'. We recommend to restart ImageJ.");
     }
 
@@ -252,10 +250,10 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
                     false);
             compartment.getEventBus().register(new Object() {
                 @Subscribe
-                public void onRenamed(ParameterChangedEvent event) {
+                public void onRenamed(JIPipeParameterCollection.ParameterChangedEvent event) {
                     if(event.getKey().equals("jipipe:node:name")) {
                         documentTab.setTitle(compartment.getName());
-                        documentTab.getEventBus().post(new ParameterChangedEvent(compartment, "title"));
+                        documentTab.getEventBus().post(new JIPipeParameterCollection.ParameterChangedEvent(compartment, "title"));
                     }
                 }
             });
@@ -661,7 +659,7 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
      * @param event Generated event
      */
     @Subscribe
-    public void onCompartmentRemoved(CompartmentRemovedEvent event) {
+    public void onCompartmentRemoved(JIPipeProject.CompartmentRemovedEvent event) {
         for (JIPipeCompartmentUI compartmentUI : findCompartmentUIs(event.getCompartment())) {
             documentTabPane.remove(compartmentUI);
         }

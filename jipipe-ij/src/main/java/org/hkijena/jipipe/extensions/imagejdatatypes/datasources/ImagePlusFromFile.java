@@ -25,8 +25,8 @@ import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeVirtualData;
-import org.hkijena.jipipe.api.events.NodeSlotsChangedEvent;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
+import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
@@ -169,7 +169,7 @@ public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
     public void setGeneratedImageType(JIPipeDataInfoRef generatedImageType) {
         this.generatedImageType = generatedImageType;
         getFirstOutputSlot().setAcceptedDataType(generatedImageType.getInfo().getDataClass());
-        getEventBus().post(new NodeSlotsChangedEvent(this));
+        getEventBus().post(new JIPipeGraph.NodeSlotsChangedEvent(this));
     }
 
     /**

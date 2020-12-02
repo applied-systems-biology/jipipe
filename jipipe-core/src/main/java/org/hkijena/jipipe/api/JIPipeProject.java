@@ -38,10 +38,6 @@ import org.hkijena.jipipe.api.compartments.algorithms.JIPipeCompartmentOutput;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.events.CompartmentRemovedEvent;
-import org.hkijena.jipipe.api.events.CompartmentRenamedEvent;
-import org.hkijena.jipipe.api.events.GraphChangedEvent;
-import org.hkijena.jipipe.api.events.WorkDirectoryChangedEvent;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphEdge;
@@ -221,7 +217,7 @@ public class JIPipeProject implements JIPipeValidatable {
         }
 
         if(changed)
-            graph.getEventBus().post(new GraphChangedEvent(graph));
+            graph.getEventBus().post(new JIPipeGraph.GraphChangedEvent(graph));
     }
 
     /**
@@ -230,7 +226,7 @@ public class JIPipeProject implements JIPipeValidatable {
      * @param event Generated event
      */
     @Subscribe
-    public void onCompartmentGraphChanged(GraphChangedEvent event) {
+    public void onCompartmentGraphChanged(JIPipeGraph.GraphChangedEvent event) {
         if (event.getGraph() == compartmentGraph) {
             for (JIPipeGraphNode algorithm : compartmentGraph.getNodes().values()) {
                 JIPipeProjectCompartment compartment = (JIPipeProjectCompartment) algorithm;
@@ -596,6 +592,78 @@ public class JIPipeProject implements JIPipeValidatable {
             JsonNode node = jsonParser.getCodec().readTree(jsonParser);
             project.fromJson(node, new JIPipeValidityReport());
             return project;
+        }
+    }
+
+    /**
+     * Triggered when a sample is added to an {@link JIPipeProject}
+     */
+    public static class CompartmentAddedEvent {
+        private JIPipeProjectCompartment compartment;
+
+        /**
+         * @param compartment the compartment
+         */
+        public CompartmentAddedEvent(JIPipeProjectCompartment compartment) {
+            this.compartment = compartment;
+        }
+
+        public JIPipeProjectCompartment getCompartment() {
+            return compartment;
+        }
+    }
+
+    /**
+     * Triggered when a sample is removed from an {@link JIPipeProject}
+     */
+    public static class CompartmentRemovedEvent {
+        private JIPipeProjectCompartment compartment;
+
+        /**
+         * @param compartment the compartment
+         */
+        public CompartmentRemovedEvent(JIPipeProjectCompartment compartment) {
+            this.compartment = compartment;
+        }
+
+        public JIPipeProjectCompartment getCompartment() {
+            return compartment;
+        }
+    }
+
+    /**
+     * Triggered when a sample in an {@link JIPipeProject} is renamed
+     */
+    public static class CompartmentRenamedEvent {
+        private JIPipeProjectCompartment compartment;
+
+        /**
+         * @param compartment the compartment
+         */
+        public CompartmentRenamedEvent(JIPipeProjectCompartment compartment) {
+            this.compartment = compartment;
+        }
+
+        public JIPipeProjectCompartment getCompartment() {
+            return compartment;
+        }
+    }
+
+    /**
+     * Triggered when the work directory of a project or algorithm was changed
+     */
+    public static class WorkDirectoryChangedEvent {
+        private Path workDirectory;
+
+        /**
+         * @param workDirectory the work directory
+         */
+        public WorkDirectoryChangedEvent(Path workDirectory) {
+            this.workDirectory = workDirectory;
+        }
+
+        public Path getWorkDirectory() {
+            return workDirectory;
         }
     }
 }

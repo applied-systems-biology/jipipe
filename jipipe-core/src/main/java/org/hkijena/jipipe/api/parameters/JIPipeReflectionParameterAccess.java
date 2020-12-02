@@ -14,7 +14,6 @@
 package org.hkijena.jipipe.api.parameters;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.events.ParameterChangedEvent;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.utils.StringUtils;
 
@@ -111,7 +110,7 @@ public class JIPipeReflectionParameterAccess implements JIPipeParameterAccess {
 
             // Trigger change in parent parameter holder
             if (source != null)
-                source.getEventBus().post(new ParameterChangedEvent(source, key));
+                source.getEventBus().post(new JIPipeParameterCollection.ParameterChangedEvent(source, key));
 
             if (result instanceof Boolean) {
                 return (boolean) result;

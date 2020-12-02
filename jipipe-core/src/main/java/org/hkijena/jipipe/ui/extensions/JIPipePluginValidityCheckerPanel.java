@@ -15,7 +15,6 @@ package org.hkijena.jipipe.ui.extensions;
 
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.events.ExtensionRegisteredEvent;
 import org.hkijena.jipipe.ui.components.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.ReloadableValidityChecker;
 
@@ -38,7 +37,7 @@ public class JIPipePluginValidityCheckerPanel extends ReloadableValidityChecker 
      * @param event Generated event
      */
     @Subscribe
-    public void onExtensionRegistered(ExtensionRegisteredEvent event) {
+    public void onExtensionRegistered(JIPipe.ExtensionRegisteredEvent event) {
         recheckValidity();
     }
 }

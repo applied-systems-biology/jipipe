@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.ui.plotbuilder;
 
 import com.google.common.eventbus.Subscribe;
-import org.hkijena.jipipe.api.events.ParameterChangedEvent;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.FormPanel;
@@ -65,7 +65,7 @@ public class JIPipePlotSeriesListEditorUI extends JIPipeWorkbenchPanel {
      * @param event generated event
      */
     @Subscribe
-    public void onParametersChanged(ParameterChangedEvent event) {
+    public void onParametersChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
         if (event.getKey().equals("series")) {
             reloadEntries();
         }

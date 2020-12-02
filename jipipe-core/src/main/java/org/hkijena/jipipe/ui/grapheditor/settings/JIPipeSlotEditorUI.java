@@ -17,10 +17,10 @@ import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeMutableSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
-import org.hkijena.jipipe.api.events.NodeSlotsChangedEvent;
-import org.hkijena.jipipe.api.events.ParameterChangedEvent;
 import org.hkijena.jipipe.api.history.SlotConfigurationHistorySnapshot;
+import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.ui.components.AddAlgorithmSlotPanel;
 import org.hkijena.jipipe.ui.components.EditAlgorithmSlotPanel;
 import org.hkijena.jipipe.ui.components.MarkdownDocument;
@@ -276,7 +276,7 @@ public class JIPipeSlotEditorUI extends JPanel {
      * @param event Generated event
      */
     @Subscribe
-    public void onAlgorithmSlotsChanged(NodeSlotsChangedEvent event) {
+    public void onAlgorithmSlotsChanged(JIPipeGraph.NodeSlotsChangedEvent event) {
         reloadList();
     }
 
@@ -286,7 +286,7 @@ public class JIPipeSlotEditorUI extends JPanel {
      * @param event Generated event
      */
     @Subscribe
-    public void onSlotNameChanged(ParameterChangedEvent event) {
+    public void onSlotNameChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
         if ("custom-name".equals(event.getKey())) {
             reloadList();
         }

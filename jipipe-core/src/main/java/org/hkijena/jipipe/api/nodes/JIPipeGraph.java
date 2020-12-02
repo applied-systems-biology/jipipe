@@ -35,12 +35,8 @@ import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.JIPipeValidatable;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.events.GraphChangedEvent;
-import org.hkijena.jipipe.api.events.NodeConnectedEvent;
-import org.hkijena.jipipe.api.events.NodeDisconnectedEvent;
-import org.hkijena.jipipe.api.events.NodeSlotsChangedEvent;
-import org.hkijena.jipipe.api.events.ParameterStructureChangedEvent;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.utils.GraphUtils;
@@ -630,7 +626,7 @@ public class JIPipeGraph implements JIPipeValidatable {
      * @param event Generated event
      */
     @Subscribe
-    public void onParameterStructureChanged(ParameterStructureChangedEvent event) {
+    public void onParameterStructureChanged(JIPipeParameterCollection.ParameterStructureChangedEvent event) {
         eventBus.post(event);
     }
 
@@ -1299,6 +1295,106 @@ public class JIPipeGraph implements JIPipeValidatable {
             JIPipeGraph graph = new JIPipeGraph();
             graph.fromJson(jsonParser.readValueAsTree(), new JIPipeValidityReport());
             return graph;
+        }
+    }
+
+    /**
+     * Event is triggered when algorithm graph is changed
+     */
+    public static class GraphChangedEvent {
+        private final JIPipeGraph graph;
+
+        /**
+         * @param graph the graph
+         */
+        public GraphChangedEvent(JIPipeGraph graph) {
+            this.graph = graph;
+        }
+
+        public JIPipeGraph getGraph() {
+            return graph;
+        }
+    }
+
+    /**
+     * Generated when a connection was made in {@link JIPipeGraph}
+     */
+    public static class NodeConnectedEvent {
+        private JIPipeGraph graph;
+        private JIPipeDataSlot source;
+        private JIPipeDataSlot target;
+
+        /**
+         * @param graph  the graph
+         * @param source the source slot
+         * @param target the target slot
+         */
+        public NodeConnectedEvent(JIPipeGraph graph, JIPipeDataSlot source, JIPipeDataSlot target) {
+            this.graph = graph;
+            this.source = source;
+            this.target = target;
+        }
+
+        public JIPipeGraph getGraph() {
+            return graph;
+        }
+
+        public JIPipeDataSlot getSource() {
+            return source;
+        }
+
+        public JIPipeDataSlot getTarget() {
+            return target;
+        }
+    }
+
+    /**
+     * Generated when slots are disconnected
+     */
+    public static class NodeDisconnectedEvent {
+        private JIPipeGraph graph;
+        private JIPipeDataSlot source;
+        private JIPipeDataSlot target;
+
+        /**
+         * @param graph  the graph
+         * @param source the source slot
+         * @param target the target slot
+         */
+        public NodeDisconnectedEvent(JIPipeGraph graph, JIPipeDataSlot source, JIPipeDataSlot target) {
+            this.graph = graph;
+            this.source = source;
+            this.target = target;
+        }
+
+        public JIPipeGraph getGraph() {
+            return graph;
+        }
+
+        public JIPipeDataSlot getSource() {
+            return source;
+        }
+
+        public JIPipeDataSlot getTarget() {
+            return target;
+        }
+    }
+
+    /**
+     * Triggered when an algorithm's slots change
+     */
+    public static class NodeSlotsChangedEvent {
+        private JIPipeGraphNode algorithm;
+
+        /**
+         * @param algorithm the algorithm
+         */
+        public NodeSlotsChangedEvent(JIPipeGraphNode algorithm) {
+            this.algorithm = algorithm;
+        }
+
+        public JIPipeGraphNode getAlgorithm() {
+            return algorithm;
         }
     }
 }

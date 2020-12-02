@@ -17,7 +17,6 @@ import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeJsonExtension;
-import org.hkijena.jipipe.api.events.ExtensionRegisteredEvent;
 import org.hkijena.jipipe.ui.JIPipeJsonExtensionWindow;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
@@ -124,7 +123,7 @@ public class JIPipePluginManagerUIPanel extends JIPipeProjectWorkbenchPanel {
      * @param event Generated event
      */
     @Subscribe
-    public void onExtensionRegistered(ExtensionRegisteredEvent event) {
+    public void onExtensionRegistered(JIPipe.ExtensionRegisteredEvent event) {
         reload();
     }
 }

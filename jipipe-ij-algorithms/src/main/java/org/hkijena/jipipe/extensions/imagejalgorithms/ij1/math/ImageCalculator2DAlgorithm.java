@@ -22,8 +22,8 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
-import org.hkijena.jipipe.api.events.NodeSlotsChangedEvent;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
+import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -187,7 +187,7 @@ public class ImageCalculator2DAlgorithm extends JIPipeIteratingAlgorithm {
             getFirstOutputSlot().setAcceptedDataType(ImagePlusData.class);
             definition.setInheritanceConversionsFromRaw(REMOVE_MASK_QUALIFIER);
         }
-        getEventBus().post(new NodeSlotsChangedEvent(this));
+        getEventBus().post(new JIPipeGraph.NodeSlotsChangedEvent(this));
         updateSlotInheritance();
     }
 

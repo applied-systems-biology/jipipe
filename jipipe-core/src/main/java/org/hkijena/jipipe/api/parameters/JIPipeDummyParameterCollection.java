@@ -14,7 +14,6 @@
 package org.hkijena.jipipe.api.parameters;
 
 import com.google.common.eventbus.EventBus;
-import org.hkijena.jipipe.api.events.ParameterChangedEvent;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;

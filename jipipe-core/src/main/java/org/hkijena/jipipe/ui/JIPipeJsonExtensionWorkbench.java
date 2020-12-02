@@ -17,8 +17,6 @@ import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeJsonExtension;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
-import org.hkijena.jipipe.api.events.ExtensionContentRemovedEvent;
-import org.hkijena.jipipe.api.events.ExtensionRegisteredEvent;
 import org.hkijena.jipipe.ui.components.DocumentTabPane;
 import org.hkijena.jipipe.ui.components.RecentJsonExtensionsMenu;
 import org.hkijena.jipipe.ui.components.ReloadableValidityChecker;
@@ -75,7 +73,7 @@ public class JIPipeJsonExtensionWorkbench extends JPanel implements JIPipeWorkbe
      * @param event the event
      */
     @Subscribe
-    public void onExtensionRegistered(ExtensionRegisteredEvent event) {
+    public void onExtensionRegistered(JIPipe.ExtensionRegisteredEvent event) {
         sendStatusBarText("Registered extension: '" + event.getExtension().getMetadata().getName() + "' with id '" + event.getExtension().getDependencyId() + "'. We recommend to restart ImageJ.");
     }
 
@@ -285,7 +283,7 @@ public class JIPipeJsonExtensionWorkbench extends JPanel implements JIPipeWorkbe
      * @param event Generated event
      */
     @Subscribe
-    public void onContentRemovedEvent(ExtensionContentRemovedEvent event) {
+    public void onContentRemovedEvent(JIPipe.ExtensionContentRemovedEvent event) {
         removeUnnecessaryAlgorithmGraphEditors();
     }
 

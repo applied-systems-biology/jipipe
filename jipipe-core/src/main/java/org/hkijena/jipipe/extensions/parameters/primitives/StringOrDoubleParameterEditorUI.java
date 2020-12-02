@@ -14,8 +14,8 @@
 package org.hkijena.jipipe.extensions.parameters.primitives;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.events.ParameterChangedEvent;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
@@ -75,7 +75,7 @@ public class StringOrDoubleParameterEditorUI extends JIPipeParameterEditorUI {
     }
 
     @Override
-    public void onParameterChanged(ParameterChangedEvent event) {
+    public void onParameterChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
         if (event.getKey().equals("mode")) {
             reload();
             return;

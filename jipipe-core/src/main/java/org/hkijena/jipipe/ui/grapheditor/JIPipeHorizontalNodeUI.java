@@ -26,7 +26,6 @@ import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.ZoomFlatIconButton;
 import org.hkijena.jipipe.ui.components.ZoomIcon;
 import org.hkijena.jipipe.ui.components.ZoomLabel;
-import org.hkijena.jipipe.ui.events.AlgorithmUIActionRequestedEvent;
 import org.hkijena.jipipe.utils.PointRange;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -84,7 +83,7 @@ public class JIPipeHorizontalNodeUI extends JIPipeNodeUI {
         nameLabel.setIcon(new ZoomIcon(JIPipe.getNodes().getIconFor(getNode().getInfo()), getGraphUI()));
         openSettingsButton = new ZoomFlatIconButton(UIUtils.getIconFromResources("actions/wrench.png"), getGraphUI());
         openSettingsButton.setBorder(null);
-        openSettingsButton.addActionListener(e -> getEventBus().post(new AlgorithmUIActionRequestedEvent(this, REQUEST_OPEN_CONTEXT_MENU)));
+        openSettingsButton.addActionListener(e -> getEventBus().post(new JIPipeGraphCanvasUI.AlgorithmUIActionRequestedEvent(this, REQUEST_OPEN_CONTEXT_MENU)));
 
         add(inputSlotPanel, new GridBagConstraints() {
             {

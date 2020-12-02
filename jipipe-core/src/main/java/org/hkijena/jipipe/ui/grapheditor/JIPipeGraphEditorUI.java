@@ -16,8 +16,6 @@ package org.hkijena.jipipe.ui.grapheditor;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.events.GraphChangedEvent;
-import org.hkijena.jipipe.api.events.NodeInfoRegisteredEvent;
 import org.hkijena.jipipe.api.history.AddNodeGraphHistorySnapshot;
 import org.hkijena.jipipe.api.history.MoveNodesGraphHistorySnapshot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
@@ -29,10 +27,7 @@ import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.ColorIcon;
 import org.hkijena.jipipe.ui.components.SearchBox;
-import org.hkijena.jipipe.ui.events.AlgorithmEvent;
-import org.hkijena.jipipe.ui.events.AlgorithmSelectedEvent;
-import org.hkijena.jipipe.ui.events.AlgorithmSelectionChangedEvent;
-import org.hkijena.jipipe.ui.events.ZoomChangedEvent;
+import org.hkijena.jipipe.ui.components.ZoomViewPort;
 import org.hkijena.jipipe.ui.grapheditor.contextmenu.NodeUIContextAction;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -332,7 +327,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         zoomButton.setToolTipText("<html>Change zoom<br>Reset zoom: <i>Ctrl-NumPad 0</i></html>");
         canvasUI.getEventBus().register(new Object() {
             @Subscribe
-            public void onZoomChanged(ZoomChangedEvent event) {
+            public void onZoomChanged(ZoomViewPort.ZoomChangedEvent event) {
                 zoomButton.setText((int) (canvasUI.getZoom() * 100) + "%");
             }
         });
@@ -433,7 +428,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
     }
 
     @Subscribe
-    public void onSelectionChanged(AlgorithmSelectionChangedEvent event) {
+    public void onSelectionChanged(JIPipeGraphCanvasUI.AlgorithmSelectionChangedEvent event) {
         updateSelection();
     }
 
@@ -444,7 +439,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
      * @param event Generated event
      */
     @Subscribe
-    public void onAlgorithmRegistryChanged(NodeInfoRegisteredEvent event) {
+    public void onAlgorithmRegistryChanged(JIPipe.NodeInfoRegisteredEvent event) {
         reloadMenuBar();
         getWorkbench().sendStatusBarText("Plugins were updated");
     }
@@ -455,7 +450,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
      * @param event The generated event
      */
     @Subscribe
-    public void onAlgorithmSelected(AlgorithmSelectedEvent event) {
+    public void onAlgorithmSelected(JIPipeGraphCanvasUI.AlgorithmSelectedEvent event) {
         if (event.getUi() != null) {
             if (event.isAddToSelection()) {
                 if (canvasUI.getSelection().contains(event.getUi())) {
@@ -477,7 +472,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
      * @param event generated event
      */
     @Subscribe
-    public void onAlgorithmEvent(AlgorithmEvent event) {
+    public void onAlgorithmEvent(JIPipeNodeUI.AlgorithmEvent event) {
         if (event.getUi() != null) {
             scrollToAlgorithm(event.getUi());
         }
@@ -557,7 +552,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
      * @param event The generated event
      */
     @Subscribe
-    public void onGraphChanged(GraphChangedEvent event) {
+    public void onGraphChanged(JIPipeGraph.GraphChangedEvent event) {
         updateNavigation();
     }
 

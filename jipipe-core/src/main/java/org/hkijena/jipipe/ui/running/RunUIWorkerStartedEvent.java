@@ -11,22 +11,25 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.ui.events;
+package org.hkijena.jipipe.ui.running;
 
 import org.hkijena.jipipe.api.JIPipeRunnable;
 import org.hkijena.jipipe.ui.running.JIPipeRunWorker;
 
 /**
- * Generated when an {@link JIPipeRunWorker} finished its work
+ * Generated when an {@link JIPipeRunWorker} was started
  */
-public class RunUIWorkerFinishedEvent {
+public class RunUIWorkerStartedEvent {
 
+    private JIPipeRunnable run;
     private JIPipeRunWorker worker;
 
     /**
-     * @param worker worker that finished
+     * @param run    the run
+     * @param worker the worker
      */
-    public RunUIWorkerFinishedEvent(JIPipeRunWorker worker) {
+    public RunUIWorkerStartedEvent(JIPipeRunnable run, JIPipeRunWorker worker) {
+        this.run = run;
         this.worker = worker;
     }
 
@@ -35,6 +38,6 @@ public class RunUIWorkerFinishedEvent {
     }
 
     public JIPipeRunnable getRun() {
-        return worker.getRun();
+        return run;
     }
 }

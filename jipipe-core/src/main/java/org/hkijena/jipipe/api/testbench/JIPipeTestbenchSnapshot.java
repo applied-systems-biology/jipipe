@@ -15,9 +15,9 @@ package org.hkijena.jipipe.api.testbench;
 
 import org.hkijena.jipipe.api.JIPipeRunSettings;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.events.ParameterStructureChangedEvent;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 
 import java.nio.file.Path;
@@ -143,7 +143,7 @@ public class JIPipeTestbenchSnapshot {
             }
 
             // Developers might "forget" to add the events. Trigger a structural event to force the panels to reload
-            targetAlgorithm.getEventBus().post(new ParameterStructureChangedEvent(targetAlgorithm));
+            targetAlgorithm.getEventBus().post(new JIPipeParameterCollection.ParameterStructureChangedEvent(targetAlgorithm));
         }
     }
 }

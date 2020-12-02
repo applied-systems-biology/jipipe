@@ -16,7 +16,6 @@ package org.hkijena.jipipe.ui.components;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeJavaExtension;
-import org.hkijena.jipipe.api.events.ExtensionDiscoveredEvent;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Context;
@@ -122,7 +121,7 @@ public class SplashScreen extends JWindow implements LogListener, Contextual {
     }
 
     @Subscribe
-    public void onExtensionDiscovered(ExtensionDiscoveredEvent event) {
+    public void onExtensionDiscovered(JIPipe.ExtensionDiscoveredEvent event) {
         if (event.getExtension() instanceof JIPipeJavaExtension) {
             SwingUtilities.invokeLater(() -> {
                 for (ImageIcon icon : ((JIPipeJavaExtension) event.getExtension()).getSplashIcons()) {

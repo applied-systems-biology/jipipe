@@ -17,7 +17,6 @@ import com.google.common.eventbus.Subscribe;
 import com.google.common.html.HtmlEscapers;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.events.ParameterStructureChangedEvent;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeMutableParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
@@ -307,7 +306,7 @@ public class ParameterPanel extends FormPanel implements Contextual {
      * @param event generated event
      */
     @Subscribe
-    public void onParameterStructureChanged(ParameterStructureChangedEvent event) {
+    public void onParameterStructureChanged(JIPipeParameterCollection.ParameterStructureChangedEvent event) {
         reloadForm();
     }
 

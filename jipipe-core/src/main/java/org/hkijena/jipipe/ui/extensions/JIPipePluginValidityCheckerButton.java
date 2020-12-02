@@ -16,7 +16,6 @@ package org.hkijena.jipipe.ui.extensions;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
-import org.hkijena.jipipe.api.events.ExtensionRegisteredEvent;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -59,7 +58,7 @@ public class JIPipePluginValidityCheckerButton extends JButton {
      * @param event Generated event
      */
     @Subscribe
-    public void onExtensionRegistered(ExtensionRegisteredEvent event) {
+    public void onExtensionRegistered(JIPipe.ExtensionRegisteredEvent event) {
         recheckValidity();
     }
 }

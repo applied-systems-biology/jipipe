@@ -118,4 +118,24 @@ public interface JIPipeSlotConfiguration {
             slotConfiguration.toJson(jsonGenerator);
         }
     }
+
+    /**
+     * Triggered when a {@link JIPipeSlotConfiguration} was changed
+     */
+    class SlotsChangedEvent {
+        private final JIPipeSlotConfiguration configuration;
+
+        /**
+         * Creates a new instance
+         *
+         * @param configuration the configuration
+         */
+        public SlotsChangedEvent(JIPipeSlotConfiguration configuration) {
+            this.configuration = configuration;
+        }
+
+        public JIPipeSlotConfiguration getConfiguration() {
+            return configuration;
+        }
+    }
 }

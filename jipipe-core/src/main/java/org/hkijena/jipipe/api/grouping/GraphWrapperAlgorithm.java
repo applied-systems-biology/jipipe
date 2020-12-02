@@ -23,7 +23,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeMutableSlotConfiguration;
-import org.hkijena.jipipe.api.events.SlotsChangedEvent;
+import org.hkijena.jipipe.api.data.JIPipeSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
@@ -237,7 +237,7 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm {
          * @param event The event
          */
         @Subscribe
-        public void onIOSlotsChanged(SlotsChangedEvent event) {
+        public void onIOSlotsChanged(JIPipeSlotConfiguration.SlotsChangedEvent event) {
             updateGroupSlots();
         }
     }

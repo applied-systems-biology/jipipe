@@ -17,10 +17,10 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
-import org.hkijena.jipipe.api.events.NodeSlotsChangedEvent;
-import org.hkijena.jipipe.api.events.ParameterChangedEvent;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
+import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.AddAlgorithmSlotPanel;
@@ -155,7 +155,7 @@ public abstract class JIPipeNodeUI extends JIPipeWorkbenchPanel {
      * @param event Generated event
      */
     @Subscribe
-    public void onAlgorithmSlotsChanged(NodeSlotsChangedEvent event) {
+    public void onAlgorithmSlotsChanged(JIPipeGraph.NodeSlotsChangedEvent event) {
         updateAlgorithmSlotUIs();
     }
 
@@ -165,7 +165,7 @@ public abstract class JIPipeNodeUI extends JIPipeWorkbenchPanel {
      * @param event The generated event
      */
     @Subscribe
-    public void onAlgorithmParametersChanged(ParameterChangedEvent event) {
+    public void onAlgorithmParametersChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
         if (event.getSource() == node && "jipipe:node:name".equals(event.getKey())) {
             updateSize();
             updateName();
@@ -315,4 +315,24 @@ public abstract class JIPipeNodeUI extends JIPipeWorkbenchPanel {
      * Updates the UIs for slots
      */
     public abstract void refreshSlots();
+
+    /**
+     * An event around {@link JIPipeNodeUI}
+     */
+    public static class AlgorithmEvent {
+        private JIPipeNodeUI ui;
+
+        /**
+         * Creates a new event
+         *
+         * @param ui the algorithm
+         */
+        public AlgorithmEvent(JIPipeNodeUI ui) {
+            this.ui = ui;
+        }
+
+        public JIPipeNodeUI getUi() {
+            return ui;
+        }
+    }
 }

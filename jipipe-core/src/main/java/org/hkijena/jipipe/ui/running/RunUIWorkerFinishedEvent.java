@@ -11,24 +11,30 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.api.events;
+package org.hkijena.jipipe.ui.running;
 
-import org.hkijena.jipipe.api.nodes.JIPipeGraph;
+import org.hkijena.jipipe.api.JIPipeRunnable;
+import org.hkijena.jipipe.ui.running.JIPipeRunWorker;
 
 /**
- * Event is triggered when algorithm graph is changed
+ * Generated when an {@link JIPipeRunWorker} finished its work
  */
-public class GraphChangedEvent {
-    private final JIPipeGraph graph;
+public class RunUIWorkerFinishedEvent {
+
+    private JIPipeRunWorker worker;
 
     /**
-     * @param graph the graph
+     * @param worker worker that finished
      */
-    public GraphChangedEvent(JIPipeGraph graph) {
-        this.graph = graph;
+    public RunUIWorkerFinishedEvent(JIPipeRunWorker worker) {
+        this.worker = worker;
     }
 
-    public JIPipeGraph getGraph() {
-        return graph;
+    public JIPipeRunWorker getWorker() {
+        return worker;
+    }
+
+    public JIPipeRunnable getRun() {
+        return worker.getRun();
     }
 }

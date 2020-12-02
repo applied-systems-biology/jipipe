@@ -22,8 +22,8 @@ import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeMergedDataSlotTable;
-import org.hkijena.jipipe.api.events.ParameterChangedEvent;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
@@ -85,7 +85,7 @@ public class JIPipeCacheMultiDataSlotTableUI extends JIPipeProjectWorkbenchPanel
         updateStatus();
         GeneralDataSettings.getInstance().getEventBus().register(new Object() {
             @Subscribe
-            public void onPreviewSizeChanged(ParameterChangedEvent event) {
+            public void onPreviewSizeChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
                 if (isDisplayable() && "preview-size".equals(event.getKey())) {
                     reloadTable();
                 }

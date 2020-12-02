@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.ui.data;
 
-import org.hkijena.jipipe.api.events.ParameterChangedEvent;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.settings.VirtualDataSettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWindow;
@@ -46,7 +45,7 @@ public class VirtualDataControl extends JIPipeProjectWorkbenchPanel {
         button.addActionListener(e -> {
             if (button.isSelected() != virtualDataSettings.isVirtualMode()) {
                 virtualDataSettings.setVirtualMode(button.isSelected());
-                virtualDataSettings.getEventBus().post(new ParameterChangedEvent(virtualDataSettings, "virtual-mode"));
+                virtualDataSettings.getEventBus().post(new JIPipeParameterCollection.ParameterChangedEvent(virtualDataSettings, "virtual-mode"));
                 if(virtualDataSettings.isVirtualMode()) {
                     checkForCacheToVirtual();
                 }

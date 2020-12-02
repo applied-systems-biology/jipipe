@@ -24,7 +24,6 @@ import com.google.common.eventbus.Subscribe;
 import ij.IJ;
 import ij.Prefs;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.events.ParameterChangedEvent;
 import org.hkijena.jipipe.api.parameters.JIPipeCustomParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;

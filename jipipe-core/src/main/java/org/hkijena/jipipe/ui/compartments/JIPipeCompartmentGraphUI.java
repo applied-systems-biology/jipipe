@@ -27,7 +27,7 @@ import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.components.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.MarkdownReader;
-import org.hkijena.jipipe.ui.events.DefaultAlgorithmUIActionRequestedEvent;
+import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphCanvasUI;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphEditorMinimap;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphEditorUI;
 import org.hkijena.jipipe.ui.grapheditor.contextmenu.DeleteCompartmentUIContextAction;
@@ -209,7 +209,7 @@ public class JIPipeCompartmentGraphUI extends JIPipeGraphEditorUI {
      * @param event Generated event
      */
     @Subscribe
-    public void onOpenCompartment(DefaultAlgorithmUIActionRequestedEvent event) {
+    public void onOpenCompartment(JIPipeGraphCanvasUI.DefaultAlgorithmUIActionRequestedEvent event) {
         if (event.getUi() != null && event.getUi().getNode() instanceof JIPipeProjectCompartment) {
             getProjectWorkbench().openCompartmentGraph((JIPipeProjectCompartment) event.getUi().getNode(), true);
         }

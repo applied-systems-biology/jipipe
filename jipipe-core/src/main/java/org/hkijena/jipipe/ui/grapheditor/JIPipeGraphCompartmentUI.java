@@ -31,8 +31,6 @@ import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.MarkdownReader;
-import org.hkijena.jipipe.ui.events.AlgorithmUIActionRequestedEvent;
-import org.hkijena.jipipe.ui.events.DefaultAlgorithmUIActionRequestedEvent;
 import org.hkijena.jipipe.ui.grapheditor.contextmenu.*;
 import org.hkijena.jipipe.ui.grapheditor.contextmenu.clipboard.AlgorithmGraphCopyNodeUIContextAction;
 import org.hkijena.jipipe.ui.grapheditor.contextmenu.clipboard.AlgorithmGraphCutNodeUIContextAction;
@@ -213,7 +211,7 @@ public class JIPipeGraphCompartmentUI extends JIPipeGraphEditorUI {
     }
 
     @Subscribe
-    public void onDefaultActionRequested(DefaultAlgorithmUIActionRequestedEvent event) {
+    public void onDefaultActionRequested(JIPipeGraphCanvasUI.DefaultAlgorithmUIActionRequestedEvent event) {
         if (event.getUi().getNode() instanceof NodeGroup) {
             if (event.getUi().getNode() instanceof NodeGroup) {
                 if (getWorkbench() instanceof JIPipeProjectWorkbench) {
@@ -229,7 +227,7 @@ public class JIPipeGraphCompartmentUI extends JIPipeGraphEditorUI {
      * @param event the event
      */
     @Subscribe
-    public void onAlgorithmActionRequested(AlgorithmUIActionRequestedEvent event) {
+    public void onAlgorithmActionRequested(JIPipeGraphCanvasUI.AlgorithmUIActionRequestedEvent event) {
         boolean runAndShowResults = Objects.equals(event.getAction(), JIPipeNodeUI.REQUEST_RUN_AND_SHOW_RESULTS);
         boolean updateCache = Objects.equals(event.getAction(), JIPipeNodeUI.REQUEST_UPDATE_CACHE);
         if (runAndShowResults ||

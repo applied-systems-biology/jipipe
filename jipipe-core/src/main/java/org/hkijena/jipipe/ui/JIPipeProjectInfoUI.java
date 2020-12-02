@@ -19,7 +19,7 @@ import ij.ImagePlus;
 import ij.plugin.filter.GaussianBlur;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
-import org.hkijena.jipipe.api.events.ParameterChangedEvent;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
 import org.hkijena.jipipe.ui.components.BackgroundPanel;
 import org.hkijena.jipipe.ui.components.FormPanel;
@@ -188,7 +188,7 @@ public class JIPipeProjectInfoUI extends JIPipeProjectWorkbenchPanel {
     }
 
     @Subscribe
-    public void onRecentProjectsChanged(ParameterChangedEvent event) {
+    public void onRecentProjectsChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
         if ("description".equals(event.getKey())) {
             refreshDescription();
         } else if ("name".equals(event.getKey()) || "authors".equals(event.getKey())) {

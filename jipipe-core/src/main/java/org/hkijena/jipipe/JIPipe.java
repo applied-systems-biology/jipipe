@@ -31,8 +31,6 @@ import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataDisplayOperation;
 import org.hkijena.jipipe.api.data.JIPipeDataImportOperation;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
-import org.hkijena.jipipe.api.events.ExtensionDiscoveredEvent;
-import org.hkijena.jipipe.api.events.ExtensionRegisteredEvent;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
@@ -749,6 +747,138 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | InstantiationException e) {
             throw new UserFriendlyRuntimeException(e, "Cannot create data instance!", "Undefined", "There is an error in the code that provides the annotation type.",
                     "Please contact the author of the plugin that provides the annotation type " + klass);
+        }
+    }
+
+    /**
+     * Triggered when a new data type is registered
+     */
+    public static class DatatypeRegisteredEvent {
+        private String id;
+
+        /**
+         * @param id the data type id
+         */
+        public DatatypeRegisteredEvent(String id) {
+            this.id = id;
+        }
+
+        public String getId() {
+            return id;
+        }
+    }
+
+    /**
+     * Generated when content is added to an {@link JIPipeJsonExtension}
+     */
+    public static class ExtensionContentAddedEvent {
+        private JIPipeJsonExtension extension;
+        private Object content;
+
+        /**
+         * @param extension event source
+         * @param content   the new content
+         */
+        public ExtensionContentAddedEvent(JIPipeJsonExtension extension, Object content) {
+            this.extension = extension;
+            this.content = content;
+        }
+
+        public JIPipeJsonExtension getExtension() {
+            return extension;
+        }
+
+        public Object getContent() {
+            return content;
+        }
+    }
+
+    /**
+     * Generated when content is removed from an {@link JIPipeJsonExtension}
+     */
+    public static class ExtensionContentRemovedEvent {
+        private JIPipeJsonExtension extension;
+        private Object content;
+
+        /**
+         * @param extension event source
+         * @param content   removed content
+         */
+        public ExtensionContentRemovedEvent(JIPipeJsonExtension extension, Object content) {
+            this.extension = extension;
+            this.content = content;
+        }
+
+        public JIPipeJsonExtension getExtension() {
+            return extension;
+        }
+
+        public Object getContent() {
+            return content;
+        }
+    }
+
+    /**
+     * Triggered when a new extension was discovered
+     */
+    public static class ExtensionDiscoveredEvent {
+        private final JIPipe registry;
+        private final JIPipeDependency extension;
+
+        public ExtensionDiscoveredEvent(JIPipe registry, JIPipeDependency extension) {
+            this.registry = registry;
+            this.extension = extension;
+        }
+
+        public JIPipe getRegistry() {
+            return registry;
+        }
+
+        public JIPipeDependency getExtension() {
+            return extension;
+        }
+    }
+
+    /**
+     * Triggered by {@link JIPipeRegistry} when an extension is registered
+     */
+    public static class ExtensionRegisteredEvent {
+        private JIPipeRegistry registry;
+        private JIPipeDependency extension;
+
+        /**
+         * @param registry  event source
+         * @param extension registered extension
+         */
+        public ExtensionRegisteredEvent(JIPipeRegistry registry, JIPipeDependency extension) {
+            this.registry = registry;
+            this.extension = extension;
+        }
+
+        public JIPipeRegistry getRegistry() {
+            return registry;
+        }
+
+        public JIPipeDependency getExtension() {
+            return extension;
+        }
+    }
+
+    /**
+     * Triggered when an algorithm is registered
+     */
+    public static class NodeInfoRegisteredEvent {
+        private JIPipeNodeInfo nodeInfo;
+
+        /**
+         * @param nodeInfo the algorithm type
+         */
+        public NodeInfoRegisteredEvent(JIPipeNodeInfo nodeInfo) {
+            this.nodeInfo = nodeInfo;
+        }
+
+        public JIPipeNodeInfo getNodeInfo() {
+            return nodeInfo;
         }
     }
 }

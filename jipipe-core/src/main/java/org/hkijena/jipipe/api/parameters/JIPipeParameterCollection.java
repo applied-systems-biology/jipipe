@@ -18,7 +18,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
-import org.hkijena.jipipe.api.events.ParameterStructureChangedEvent;
 import org.hkijena.jipipe.utils.JsonDeserializable;
 import org.hkijena.jipipe.utils.JsonUtils;
 
@@ -39,7 +38,7 @@ public interface JIPipeParameterCollection {
     /**
      * Gets the event bus that posts events about the parameters
      *
-     * @return The event bus triggering {@link org.hkijena.jipipe.api.events.ParameterChangedEvent} and {@link org.hkijena.jipipe.api.events.ParameterStructureChangedEvent}
+     * @return The event bus triggering {@link ParameterChangedEvent} and {@link ParameterStructureChangedEvent}
      */
     EventBus getEventBus();
 
@@ -202,5 +201,48 @@ public interface JIPipeParameterCollection {
     static <T> T getParameter(JIPipeParameterCollection collection, String key, Class<T> klass) {
         JIPipeParameterTree tree = new JIPipeParameterTree(collection);
         return tree.getParameters().get(key).get(klass);
+    }
+
+    /**
+     * Triggered when a parameter holder's parameters are changed
+     */
+    class ParameterChangedEvent {
+        private Object source;
+        private String key;
+
+        /**
+         * @param source event source
+         * @param key    parameter key
+         */
+        public ParameterChangedEvent(Object source, String key) {
+            this.source = source;
+            this.key = key;
+        }
+
+        public Object getSource() {
+            return source;
+        }
+
+        public String getKey() {
+            return key;
+        }
+    }
+
+    /**
+     * Triggered by an {@link JIPipeParameterCollection} if the list of available parameters is changed
+     */
+    class ParameterStructureChangedEvent {
+        private JIPipeParameterCollection source;
+
+        /**
+         * @param source event source
+         */
+        public ParameterStructureChangedEvent(JIPipeParameterCollection source) {
+            this.source = source;
+        }
+
+        public JIPipeParameterCollection getSource() {
+            return source;
+        }
     }
 }
