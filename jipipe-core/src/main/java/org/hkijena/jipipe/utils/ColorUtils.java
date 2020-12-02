@@ -13,8 +13,6 @@
 
 package org.hkijena.jipipe.utils;
 
-import org.hkijena.jipipe.extensions.parameters.generators.IntegerRange;
-
 import java.awt.Color;
 import java.util.HashMap;
 import java.util.Map;
@@ -168,7 +166,8 @@ public class ColorUtils {
 
     /**
      * Applies scaling in HSV space
-     * @param color the color
+     *
+     * @param color   the color
      * @param hFactor factor for H
      * @param sFactor factor for S
      * @param vFactor factor for V
@@ -184,18 +183,17 @@ public class ColorUtils {
 
     /**
      * Parses a color
+     *
      * @param colorString the color string
      * @return the color or null if none was found
      */
     public static Color parseColor(String colorString) {
-        if(colorString.startsWith("#")) {
+        if (colorString.startsWith("#")) {
             return hexStringToColor(colorString);
-        }
-        else if(colorString.contains(",")) {
+        } else if (colorString.contains(",")) {
             String[] components = colorString.replace(" ", "").split(",");
             return new Color(Integer.parseInt(components[0]), Integer.parseInt(components[1]), Integer.parseInt(components[2]));
-        }
-        else {
+        } else {
             return COLOR_MAP.get(colorString.toLowerCase().replace(" ", "").replace("_", ""));
         }
     }

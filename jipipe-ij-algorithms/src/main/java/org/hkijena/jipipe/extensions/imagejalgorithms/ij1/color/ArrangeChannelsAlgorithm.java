@@ -23,7 +23,11 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
-import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
+import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -77,7 +81,7 @@ public class ArrangeChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo);
         ImagePlus image = inputData.getImage();
 
-        if(image.getNDimensions() == 3) {
+        if (image.getNDimensions() == 3) {
             // Ensure that the image is channel
             image = inputData.getDuplicateImage();
             image.setDimensions(image.getStackSize(), 1, 1);
@@ -116,7 +120,7 @@ public class ArrangeChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         }
 
         ImagePlus result = ChannelArranger.run(image, order);
-        ImageJUtils.calibrate(result, ImageJCalibrationMode.AutomaticImageJ,0,0);
+        ImageJUtils.calibrate(result, ImageJCalibrationMode.AutomaticImageJ, 0, 0);
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(result), progressInfo);
     }
 
@@ -193,11 +197,11 @@ public class ArrangeChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                         "For example '1,2,3'.\n\nPlease note that the first channel index is one (like in ImageJ).\nThe 'Channel reordering' " +
                         "parameter indexes channels starting from zero.",
                 "1,2,3");
-        if(reordering == null)
+        if (reordering == null)
             return;
         IntegerRange range = new IntegerRange(reordering);
         List<Integer> channelIndices = range.tryGetIntegers();
-        if(channelIndices == null || channelIndices.isEmpty() || channelIndices.stream().anyMatch(i -> i <= 0)) {
+        if (channelIndices == null || channelIndices.isEmpty() || channelIndices.stream().anyMatch(i -> i <= 0)) {
             JOptionPane.showMessageDialog(parent.getWindow(), "Invalid channel indices. Please provide a comma separated list of positive numbers.");
             return;
         }

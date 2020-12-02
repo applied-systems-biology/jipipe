@@ -27,7 +27,7 @@ import java.awt.GridBagLayout;
 
 public class RoiListCellRenderer extends JPanel implements ListCellRenderer<Roi> {
 
-    private ColorIcon strokeFillPreview = new ColorIcon(16,16);
+    private ColorIcon strokeFillPreview = new ColorIcon(16, 16);
     private JLabel iconLabel = new JLabel();
     private JLabel nameLabel = new JLabel();
     private JLabel infoLabel = new JLabel();
@@ -71,15 +71,15 @@ public class RoiListCellRenderer extends JPanel implements ListCellRenderer<Roi>
     @Override
     public Component getListCellRendererComponent(JList<? extends Roi> list, Roi value, int index, boolean isSelected, boolean cellHasFocus) {
 
-        if(!StringUtils.isNullOrEmpty(value.getName()))
+        if (!StringUtils.isNullOrEmpty(value.getName()))
             nameLabel.setText(value.getName());
         else
             nameLabel.setText("Unnamed [" + index + "]");
-        if(value.getFillColor() != null)
+        if (value.getFillColor() != null)
             strokeFillPreview.setFillColor(value.getFillColor());
         else
             strokeFillPreview.setFillColor(Color.WHITE);
-        if(value.getStrokeColor() != null)
+        if (value.getStrokeColor() != null)
             strokeFillPreview.setBorderColor(value.getStrokeColor());
         else
             strokeFillPreview.setBorderColor(Color.YELLOW);

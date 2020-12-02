@@ -46,10 +46,9 @@ public class VirtualDataControl extends JIPipeProjectWorkbenchPanel {
             if (button.isSelected() != virtualDataSettings.isVirtualMode()) {
                 virtualDataSettings.setVirtualMode(button.isSelected());
                 virtualDataSettings.getEventBus().post(new JIPipeParameterCollection.ParameterChangedEvent(virtualDataSettings, "virtual-mode"));
-                if(virtualDataSettings.isVirtualMode()) {
+                if (virtualDataSettings.isVirtualMode()) {
                     checkForCacheToVirtual();
-                }
-                else {
+                } else {
                     checkForCacheToNonVirtual();
                 }
             }
@@ -85,13 +84,13 @@ public class VirtualDataControl extends JIPipeProjectWorkbenchPanel {
     private void checkForCacheToVirtual() {
         boolean hasCache = false;
         for (JIPipeProjectWindow window : JIPipeProjectWindow.getOpenWindows()) {
-            if(!window.getProject().getCache().isEmpty()) {
+            if (!window.getProject().getCache().isEmpty()) {
                 hasCache = true;
                 break;
             }
         }
-        if(hasCache) {
-            if(JOptionPane.showConfirmDialog(getWorkbench().getWindow(),
+        if (hasCache) {
+            if (JOptionPane.showConfirmDialog(getWorkbench().getWindow(),
                     "You currently have cached data across multiple projects. Should it be moved to the hard drive to free memory?",
                     "Reduce memory", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
                 moveAllCacheToVirtual();
@@ -102,13 +101,13 @@ public class VirtualDataControl extends JIPipeProjectWorkbenchPanel {
     private void checkForCacheToNonVirtual() {
         boolean hasCache = false;
         for (JIPipeProjectWindow window : JIPipeProjectWindow.getOpenWindows()) {
-            if(!window.getProject().getCache().isEmpty()) {
+            if (!window.getProject().getCache().isEmpty()) {
                 hasCache = true;
                 break;
             }
         }
-        if(hasCache) {
-            if(JOptionPane.showConfirmDialog(getWorkbench().getWindow(),
+        if (hasCache) {
+            if (JOptionPane.showConfirmDialog(getWorkbench().getWindow(),
                     "You currently have cached data across multiple projects. Should it be moved to the system memory to speed up the processing time?",
                     "Reduce memory", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
                 moveAllCacheToNonVirtual();

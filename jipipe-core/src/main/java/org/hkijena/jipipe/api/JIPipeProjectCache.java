@@ -93,7 +93,7 @@ public class JIPipeProjectCache {
         slotMap.put(slot.getName(), slotCopy);
         addToStatistics(slotCopy);
 
-        if(!disableTriggerEvent)
+        if (!disableTriggerEvent)
             eventBus.post(new ModifiedEvent(this));
     }
 
@@ -156,7 +156,7 @@ public class JIPipeProjectCache {
                 }
             }
             cacheEntries.remove(source);
-            if(!disableTriggerEvent)
+            if (!disableTriggerEvent)
                 eventBus.post(new ModifiedEvent(this));
         }
     }
@@ -178,7 +178,7 @@ public class JIPipeProjectCache {
                 }
             }
             stateMap.remove(stateId);
-            if(!disableTriggerEvent)
+            if (!disableTriggerEvent)
                 eventBus.post(new ModifiedEvent(this));
         }
     }
@@ -197,7 +197,7 @@ public class JIPipeProjectCache {
         cacheEntries.clear();
         cachedRowNumber = 0;
         cachedDataTypes.clear();
-        if(!disableTriggerEvent)
+        if (!disableTriggerEvent)
             eventBus.post(new ModifiedEvent(this));
     }
 
@@ -256,8 +256,7 @@ public class JIPipeProjectCache {
                     clear(algorithm);
                 }
             }
-        }
-        finally {
+        } finally {
             disableTriggerEvent = false;
         }
         eventBus.post(new ModifiedEvent(this));
@@ -305,6 +304,7 @@ public class JIPipeProjectCache {
 
     /**
      * Makes the whole cache virtual
+     *
      * @param progress the progress
      */
     public void makeVirtual(JIPipeProgressInfo progress) {
@@ -326,6 +326,7 @@ public class JIPipeProjectCache {
 
     /**
      * Makes the whole cache virtual
+     *
      * @param progress the progress
      */
     public void makeNonVirtual(JIPipeProgressInfo progress) {

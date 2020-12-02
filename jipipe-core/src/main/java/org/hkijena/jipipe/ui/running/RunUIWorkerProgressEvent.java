@@ -15,7 +15,6 @@ package org.hkijena.jipipe.ui.running;
 
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeRunnable;
-import org.hkijena.jipipe.ui.running.JIPipeRunWorker;
 
 /**
  * Generated when an {@link JIPipeRunWorker} reports progress

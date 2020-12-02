@@ -198,7 +198,7 @@ public class JIPipeProject implements JIPipeValidatable {
         }
 
         for (JIPipeProjectCompartment compartment : compartments.values()) {
-            if(!Objects.equals(compartment.getOutputNode().getVisibleCompartments(), oldVisibleCompartments.get(compartment))) {
+            if (!Objects.equals(compartment.getOutputNode().getVisibleCompartments(), oldVisibleCompartments.get(compartment))) {
                 changed = true;
                 break;
             }
@@ -216,7 +216,7 @@ public class JIPipeProject implements JIPipeValidatable {
             }
         }
 
-        if(changed)
+        if (changed)
             graph.getEventBus().post(new JIPipeGraph.GraphChangedEvent(graph));
     }
 

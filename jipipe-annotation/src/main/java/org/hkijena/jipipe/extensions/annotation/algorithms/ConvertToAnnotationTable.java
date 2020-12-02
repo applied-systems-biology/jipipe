@@ -81,7 +81,7 @@ public class ConvertToAnnotationTable extends JIPipeMergingAlgorithm {
         int row = 0;
         for (int sourceRow : inputDataRows) {
             output.addRow();
-            if(dataColumn >= 0)
+            if (dataColumn >= 0)
                 output.setValueAt("" + getFirstInputSlot().getData(sourceRow, JIPipeData.class, progressInfo), row, dataColumn);
             for (JIPipeAnnotation trait : getFirstInputSlot().getAnnotations(sourceRow)) {
                 if (trait != null) {

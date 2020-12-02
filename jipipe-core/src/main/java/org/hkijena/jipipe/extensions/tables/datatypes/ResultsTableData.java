@@ -914,7 +914,7 @@ public class ResultsTableData implements JIPipeData, TableModel {
         table.incrementCounter();
         int row = getRowCount() - 1;
         for (int col = 0; col < getColumnCount(); col++) {
-            if(isNumeric(col))
+            if (isNumeric(col))
                 setValueAt(0.0, row, col);
             else
                 setValueAt("", row, col);
@@ -1006,10 +1006,10 @@ public class ResultsTableData implements JIPipeData, TableModel {
             newData.getFreeColumn(getColumnName(col));
         }
         for (int row = 0; row < getRowCount(); row++) {
-            if(row == removedRow)
+            if (row == removedRow)
                 continue;
             for (int col = 0; col < getColumnCount(); col++) {
-                if(isNumeric(col))
+                if (isNumeric(col))
                     newData.setValue(col, targetRow, getValueAsDouble(row, col));
                 else
                     newData.setValue(col, targetRow, getValueAsString(row, col));
@@ -1020,17 +1020,17 @@ public class ResultsTableData implements JIPipeData, TableModel {
     }
 
     public void removeRows(Collection<Integer> rows) {
-        TIntSet removedRows  = new TIntHashSet(rows);
+        TIntSet removedRows = new TIntHashSet(rows);
         int targetRow = 0;
         ResultsTable newData = new ResultsTable(getRowCount() - removedRows.size());
         for (int col = 0; col < getColumnCount(); col++) {
             newData.getFreeColumn(getColumnName(col));
         }
         for (int row = 0; row < getRowCount(); row++) {
-            if(removedRows.contains(row))
+            if (removedRows.contains(row))
                 continue;
             for (int col = 0; col < getColumnCount(); col++) {
-                if(isNumeric(col))
+                if (isNumeric(col))
                     newData.setValue(col, targetRow, getValueAsDouble(row, col));
                 else
                     newData.setValue(col, targetRow, getValueAsString(row, col));

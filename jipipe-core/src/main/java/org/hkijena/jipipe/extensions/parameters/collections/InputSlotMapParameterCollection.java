@@ -59,8 +59,7 @@ public class InputSlotMapParameterCollection extends SlotMapParameterCollection 
                         access.set(getNewInstanceGenerator().get());
                     else
                         access.set(ReflectionUtils.newInstance(getDataClass()));
-                }
-                else {
+                } else {
                     JIPipeMutableParameterAccess access = (JIPipeMutableParameterAccess) get(slot.getName());
                     access.setUIOrder(i);
                 }

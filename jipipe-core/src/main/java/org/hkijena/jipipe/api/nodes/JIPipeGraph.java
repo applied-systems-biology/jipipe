@@ -191,31 +191,33 @@ public class JIPipeGraph implements JIPipeValidatable {
             nodes.put(newId, algorithm);
             String oldId = oldIds.inverse().get(algorithm);
             renaming.put(oldId, newId);
-            if(!Objects.equals(oldId, newId))
+            if (!Objects.equals(oldId, newId))
                 changed = true;
         }
-        if(changed)
+        if (changed)
             postChangedEvent();
         return renaming;
     }
 
     /**
      * Returns an attachment or null if it does not exist
+     *
      * @param klass the attachment class
-     * @param <T> the attachment class
+     * @param <T>   the attachment class
      * @return the attachment or null
      */
     public <T> T getAttachment(Class<T> klass) {
-        return (T)attachments.getOrDefault(klass, null);
+        return (T) attachments.getOrDefault(klass, null);
     }
 
     /**
      * Attaches an object as the specified type
-     * @param klass the type the attachment is attached as
+     *
+     * @param klass      the type the attachment is attached as
      * @param attachment the attachment
      */
     public void attach(Class<?> klass, Object attachment) {
-        if(!klass.isAssignableFrom(attachment.getClass())) {
+        if (!klass.isAssignableFrom(attachment.getClass())) {
             throw new IllegalArgumentException("Attachment object must be of given attachment type.");
         }
         attachments.put(klass, attachment);
@@ -223,6 +225,7 @@ public class JIPipeGraph implements JIPipeValidatable {
 
     /**
      * Attaches the object with its class as key
+     *
      * @param attachment the attachment
      */
     public void attach(Object attachment) {
@@ -231,6 +234,7 @@ public class JIPipeGraph implements JIPipeValidatable {
 
     /**
      * Removes an attachment
+     *
      * @param klass the class
      */
     public void removeAttachment(Class<?> klass) {
@@ -239,6 +243,7 @@ public class JIPipeGraph implements JIPipeValidatable {
 
     /**
      * Returns true if there is an attachment of given type
+     *
      * @param klass the attachment class
      * @return if there is an attachment
      */

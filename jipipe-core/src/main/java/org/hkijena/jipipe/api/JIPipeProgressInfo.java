@@ -18,7 +18,6 @@ import org.hkijena.jipipe.utils.StringUtils;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.IntBinaryOperator;
 
 /**
  * This object is available inside a {@link JIPipeRunnable} and contains methods to report progress, logs, and request cancellation.
@@ -77,7 +76,7 @@ public class JIPipeProgressInfo {
 
     public synchronized void log(String message) {
         log.append("<").append(progress).append("/").append(maxProgress).append("> ").append(logPrepend);
-        if(!StringUtils.isNullOrEmpty(logPrepend) && !StringUtils.isNullOrEmpty(message))
+        if (!StringUtils.isNullOrEmpty(logPrepend) && !StringUtils.isNullOrEmpty(message))
             log.append(" | ");
         log.append(" ").append(message);
         log.append("\n");

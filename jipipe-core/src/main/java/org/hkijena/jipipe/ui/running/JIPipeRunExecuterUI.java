@@ -137,12 +137,12 @@ public class JIPipeRunExecuterUI extends JPanel {
         dialog.pack();
         dialog.revalidate();
         dialog.repaint();
-        dialog.setSize(640,480);
+        dialog.setSize(640, 480);
         dialog.setModal(true);
         JIPipeRunnerQueue.getInstance().getEventBus().register(new Object() {
             @Subscribe
             public void onWorkerFinished(RunUIWorkerFinishedEvent event) {
-                if(event.getRun() == run)
+                if (event.getRun() == run)
                     dialog.setVisible(false);
             }
         });

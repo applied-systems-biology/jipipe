@@ -542,7 +542,7 @@ public class JIPipeTableEditor extends JIPipeWorkbenchPanel {
                 tableModel::containsColumn);
         if (name != null && !name.isEmpty()) {
             createUndoSnapshot();
-            if(tableModel.getRowCount() == 0)
+            if (tableModel.getRowCount() == 0)
                 tableModel.addRow();
             tableModel.addColumn(name, stringColumn);
             refreshTable();

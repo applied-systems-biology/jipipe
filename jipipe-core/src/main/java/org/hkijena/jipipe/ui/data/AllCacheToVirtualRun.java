@@ -27,13 +27,13 @@ public class AllCacheToVirtualRun implements JIPipeRunnable {
         return progressInfo;
     }
 
+    public void setProgressInfo(JIPipeProgressInfo progressInfo) {
+        this.progressInfo = progressInfo;
+    }
+
     @Override
     public String getTaskLabel() {
         return "Move cache from RAM to HDD";
-    }
-
-    public void setProgressInfo(JIPipeProgressInfo progressInfo) {
-        this.progressInfo = progressInfo;
     }
 
     @Override

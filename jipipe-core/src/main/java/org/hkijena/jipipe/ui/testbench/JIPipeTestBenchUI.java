@@ -22,11 +22,11 @@ import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.ColorIcon;
 import org.hkijena.jipipe.ui.components.ConfirmingButton;
 import org.hkijena.jipipe.ui.components.MarkdownDocument;
-import org.hkijena.jipipe.ui.running.RunUIWorkerFinishedEvent;
-import org.hkijena.jipipe.ui.running.RunUIWorkerInterruptedEvent;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.ui.resultanalysis.JIPipeResultUI;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
+import org.hkijena.jipipe.ui.running.RunUIWorkerFinishedEvent;
+import org.hkijena.jipipe.ui.running.RunUIWorkerInterruptedEvent;
 import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 

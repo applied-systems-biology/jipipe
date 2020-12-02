@@ -14,7 +14,6 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.morphology;
 
 import ij.ImagePlus;
-import ij.Prefs;
 import ij.process.FloodFiller;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
@@ -28,9 +27,9 @@ import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 
 /**
  * Wrapper around {@link ij.process.ImageProcessor}

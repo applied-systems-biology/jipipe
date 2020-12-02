@@ -27,7 +27,6 @@ import java.io.IOException;
 import java.nio.file.Path;
 
 public class ImageViewerVideoExporterRun implements JIPipeRunnable {
-    private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
     private final ImageViewerPanel viewerPanel;
     private final Path outputFile;
     private final ImageSliceIndex referencePosition;
@@ -35,6 +34,7 @@ public class ImageViewerVideoExporterRun implements JIPipeRunnable {
     private final int timePerFrame;
     private final AVICompression compression;
     private final int jpegQuality;
+    private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
 
     public ImageViewerVideoExporterRun(ImageViewerPanel viewerPanel, Path outputFile, ImageSliceIndex referencePosition, HyperstackDimension followedDimension, int timePerFrame, AVICompression compression, int jpegQuality) {
         this.viewerPanel = viewerPanel;
@@ -51,13 +51,13 @@ public class ImageViewerVideoExporterRun implements JIPipeRunnable {
         return progressInfo;
     }
 
+    public void setProgressInfo(JIPipeProgressInfo progressInfo) {
+        this.progressInfo = progressInfo;
+    }
+
     @Override
     public String getTaskLabel() {
         return "Image viewer: Export stack";
-    }
-
-    public void setProgressInfo(JIPipeProgressInfo progressInfo) {
-        this.progressInfo = progressInfo;
     }
 
     @Override
@@ -65,33 +65,31 @@ public class ImageViewerVideoExporterRun implements JIPipeRunnable {
         ImagePlus image = viewerPanel.getImage();
         ImageStack generatedStack = new ImageStack(image.getWidth(), image.getHeight());
 
-        if(followedDimension == HyperstackDimension.Depth) {
+        if (followedDimension == HyperstackDimension.Depth) {
             progressInfo.setMaxProgress(image.getNSlices());
             JIPipeProgressInfo subProgress = progressInfo.resolve("Generating RGB stack");
             for (int z = 0; z < image.getNSlices(); z++) {
-                if(progressInfo.isCancelled().get())
+                if (progressInfo.isCancelled().get())
                     return;
                 progressInfo.incrementProgress();
                 subProgress.log("z = " + z);
                 generatedStack.addSlice(new ColorProcessor(viewerPanel.generateSlice(z, referencePosition.getC(), referencePosition.getT(), true, true).getBufferedImage()));
             }
-        }
-        else  if(followedDimension == HyperstackDimension.Channel) {
+        } else if (followedDimension == HyperstackDimension.Channel) {
             progressInfo.setMaxProgress(image.getNChannels());
             JIPipeProgressInfo subProgress = progressInfo.resolve("Generating RGB stack");
             for (int c = 0; c < image.getNChannels(); c++) {
-                if(progressInfo.isCancelled().get())
+                if (progressInfo.isCancelled().get())
                     return;
                 progressInfo.incrementProgress();
                 subProgress.log("c = " + c);
                 generatedStack.addSlice(new ColorProcessor(viewerPanel.generateSlice(referencePosition.getZ(), c, referencePosition.getT(), true, true).getBufferedImage()));
             }
-        }
-        else  if(followedDimension == HyperstackDimension.Frame) {
+        } else if (followedDimension == HyperstackDimension.Frame) {
             progressInfo.setMaxProgress(image.getNFrames());
             JIPipeProgressInfo subProgress = progressInfo.resolve("Generating RGB stack");
             for (int t = 0; t < image.getNFrames(); t++) {
-                if(progressInfo.isCancelled().get())
+                if (progressInfo.isCancelled().get())
                     return;
                 progressInfo.incrementProgress();
                 subProgress.log("t = " + t);

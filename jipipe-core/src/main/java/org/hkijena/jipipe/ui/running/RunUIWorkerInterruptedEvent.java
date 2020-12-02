@@ -14,7 +14,6 @@
 package org.hkijena.jipipe.ui.running;
 
 import org.hkijena.jipipe.api.JIPipeRunnable;
-import org.hkijena.jipipe.ui.running.JIPipeRunWorker;
 
 /**
  * Generated when work of an {@link JIPipeRunWorker} is interrupted

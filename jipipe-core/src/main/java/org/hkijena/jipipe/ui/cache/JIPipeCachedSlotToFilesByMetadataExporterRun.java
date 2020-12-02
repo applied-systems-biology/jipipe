@@ -21,10 +21,10 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
-import org.hkijena.jipipe.ui.running.RunUIWorkerFinishedEvent;
-import org.hkijena.jipipe.ui.running.RunUIWorkerInterruptedEvent;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
+import org.hkijena.jipipe.ui.running.RunUIWorkerFinishedEvent;
+import org.hkijena.jipipe.ui.running.RunUIWorkerInterruptedEvent;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 

@@ -15,7 +15,6 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.display;
 
 import com.google.common.eventbus.Subscribe;
 import ij.ImagePlus;
-import ij.WindowManager;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.JIPipeProjectCache;
@@ -24,16 +23,15 @@ import org.hkijena.jipipe.api.data.JIPipeCacheSlotDataSource;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.ImageViewerPanel;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.ImageViewerWindow;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.ImageViewerPanel;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.Component;
 import java.awt.Window;
-import java.lang.ref.WeakReference;
 import java.util.Map;
 
 public class CacheAwareImagePlusDataViewerPanel extends ImageViewerPanel {

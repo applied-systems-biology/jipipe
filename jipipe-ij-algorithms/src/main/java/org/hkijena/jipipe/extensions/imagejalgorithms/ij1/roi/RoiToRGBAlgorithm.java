@@ -18,7 +18,6 @@ import ij.ImagePlus;
 import ij.gui.Roi;
 import ij.plugin.filter.Filler;
 import ij.process.ImageProcessor;
-import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -33,10 +32,8 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColorRGBData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.Measurement;
 import org.hkijena.jipipe.extensions.parameters.colors.OptionalColorParameter;
 import org.hkijena.jipipe.extensions.parameters.primitives.OptionalDoubleParameter;
-import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 
 import java.awt.Color;
 import java.awt.Point;

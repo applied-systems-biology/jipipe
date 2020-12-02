@@ -570,7 +570,7 @@ public class JIPipeDataSlot {
     /**
      * Loads all virtual data into memory
      *
-     * @param progressInfo the progress
+     * @param progressInfo             the progress
      * @param removeVirtualDataStorage if true, the folder containing the cache is deleted
      */
     public void makeDataNonVirtual(JIPipeProgressInfo progressInfo, boolean removeVirtualDataStorage) {

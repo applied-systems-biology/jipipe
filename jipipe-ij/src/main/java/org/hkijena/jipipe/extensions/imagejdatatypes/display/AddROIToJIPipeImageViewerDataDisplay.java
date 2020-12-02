@@ -33,20 +33,18 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public class AddROIToJIPipeImageViewerDataDisplay implements JIPipeDataDisplayOperation, JIPipeDataImportOperation {
     @Override
     public void display(JIPipeData data, String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
         List<ImageViewerWindow> windows = new ArrayList<>(ImageViewerWindow.getOpenWindows());
-        if(windows.isEmpty()) {
+        if (windows.isEmpty()) {
             JOptionPane.showMessageDialog(workbench.getWindow(), "There are no active JIPipe image viewers.", "Add to image viewer", JOptionPane.ERROR_MESSAGE);
             return;
         }
         windows.sort(Comparator.comparing(Frame::getTitle));
-        if(ImageViewerWindow.getActiveWindow() != null) {
+        if (ImageViewerWindow.getActiveWindow() != null) {
             windows.remove(ImageViewerWindow.getActiveWindow());
             windows.add(0, ImageViewerWindow.getActiveWindow());
         }
@@ -58,7 +56,7 @@ public class AddROIToJIPipeImageViewerDataDisplay implements JIPipeDataDisplayOp
                 new WindowListCellRenderer<>(),
                 ListSelectionMode.MultipleInterval);
         for (ImageViewerWindow window : selected) {
-            window.getViewerPanel().importROIs((ROIListData)data);
+            window.getViewerPanel().importROIs((ROIListData) data);
         }
     }
 

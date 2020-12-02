@@ -14,7 +14,6 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi;
 
 import ij.ImagePlus;
-import ij.ImageStack;
 import ij.gui.Roi;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
@@ -27,9 +26,9 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 
 import java.awt.Rectangle;

@@ -22,10 +22,10 @@ import org.hkijena.jipipe.api.JIPipeRunnable;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.MessagePanel;
-import org.hkijena.jipipe.ui.running.RunUIWorkerFinishedEvent;
-import org.hkijena.jipipe.ui.running.RunUIWorkerInterruptedEvent;
 import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
+import org.hkijena.jipipe.ui.running.RunUIWorkerFinishedEvent;
+import org.hkijena.jipipe.ui.running.RunUIWorkerInterruptedEvent;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.util.AppUtils;
 

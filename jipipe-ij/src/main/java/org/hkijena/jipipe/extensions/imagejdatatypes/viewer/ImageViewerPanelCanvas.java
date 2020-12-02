@@ -271,27 +271,28 @@ public class ImageViewerPanelCanvas extends JPanel implements MouseListener, Mou
 
     /**
      * Gets the pixel coordinates inside the shown image under the mouse.
+     *
      * @return the pixel coordinates. Null if the current mouse position is invalid.
      */
     public Point getMouseModelPixelCoordinate() {
-        if(image == null)
+        if (image == null)
             return null;
         Point mousePosition = getMousePosition();
-        if(mousePosition != null) {
+        if (mousePosition != null) {
             int x = mousePosition.x;
             int y = mousePosition.y;
             x -= contentX;
             y -= contentY;
-            if(x < 0 || y < 0)
+            if (x < 0 || y < 0)
                 return null;
             int sw = (int) (zoom * image.getWidth());
             int sh = (int) (zoom * image.getHeight());
-            if(x >= sw || y >= sh)
+            if (x >= sw || y >= sh)
                 return null;
             double rx = Math.max(0, Math.min(1, 1.0 * x / sw));
             double ry = Math.max(0, Math.min(1, 1.0 * y / sh));
-            int mx = (int)(rx * image.getWidth());
-            int my = (int)(ry * image.getHeight());
+            int mx = (int) (rx * image.getWidth());
+            int my = (int) (ry * image.getHeight());
             return new Point(mx, my);
         }
         return null;

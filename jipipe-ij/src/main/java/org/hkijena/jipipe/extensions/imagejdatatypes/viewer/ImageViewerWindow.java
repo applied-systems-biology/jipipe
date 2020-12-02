@@ -60,7 +60,7 @@ public class ImageViewerWindow extends JFrame implements WindowListener {
     @Override
     public void windowClosing(WindowEvent e) {
         OPEN_WINDOWS.remove(this);
-        if(ACTIVE_WINDOW == this)
+        if (ACTIVE_WINDOW == this)
             ACTIVE_WINDOW = null;
     }
 

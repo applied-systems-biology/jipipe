@@ -32,10 +32,9 @@ public class AddROIToActiveJIPipeImageViewerDataDisplay implements JIPipeDataDis
     @Override
     public void display(JIPipeData data, String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
         ImageViewerWindow activeWindow = ImageViewerWindow.getActiveWindow();
-        if(activeWindow != null) {
-            activeWindow.getViewerPanel().importROIs((ROIListData)data);
-        }
-        else {
+        if (activeWindow != null) {
+            activeWindow.getViewerPanel().importROIs((ROIListData) data);
+        } else {
             JOptionPane.showMessageDialog(workbench.getWindow(), "There is no active JIPipe image viewer.", "Add to active image viewer", JOptionPane.ERROR_MESSAGE);
         }
     }

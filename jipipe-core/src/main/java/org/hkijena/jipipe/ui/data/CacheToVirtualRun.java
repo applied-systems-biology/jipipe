@@ -16,7 +16,6 @@ package org.hkijena.jipipe.ui.data;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.JIPipeRunnable;
-import org.hkijena.jipipe.ui.JIPipeProjectWindow;
 
 public class CacheToVirtualRun implements JIPipeRunnable {
 
@@ -32,13 +31,13 @@ public class CacheToVirtualRun implements JIPipeRunnable {
         return progressInfo;
     }
 
+    public void setProgressInfo(JIPipeProgressInfo progressInfo) {
+        this.progressInfo = progressInfo;
+    }
+
     @Override
     public String getTaskLabel() {
         return "Move cache from RAM to HDD";
-    }
-
-    public void setProgressInfo(JIPipeProgressInfo progressInfo) {
-        this.progressInfo = progressInfo;
     }
 
     @Override

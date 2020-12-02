@@ -251,7 +251,7 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
             compartment.getEventBus().register(new Object() {
                 @Subscribe
                 public void onRenamed(JIPipeParameterCollection.ParameterChangedEvent event) {
-                    if(event.getKey().equals("jipipe:node:name")) {
+                    if (event.getKey().equals("jipipe:node:name")) {
                         documentTab.setTitle(compartment.getName());
                         documentTab.getEventBus().post(new JIPipeParameterCollection.ParameterChangedEvent(compartment, "title"));
                     }
@@ -352,7 +352,7 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
         saveProjectButton.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK));
         saveProjectButton.addActionListener(e -> {
             window.saveProjectAs(true);
-            if(GeneralUISettings.getInstance().isValidateOnSave()) {
+            if (GeneralUISettings.getInstance().isValidateOnSave()) {
                 validateProject(true);
             }
         });
@@ -364,7 +364,7 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
         saveProjectAsButton.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK + KeyEvent.SHIFT_DOWN_MASK));
         saveProjectAsButton.addActionListener(e -> {
             window.saveProjectAs(false);
-            if(GeneralUISettings.getInstance().isValidateOnSave()) {
+            if (GeneralUISettings.getInstance().isValidateOnSave()) {
                 validateProject(true);
             }
         });

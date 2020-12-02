@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.extensions.imagejdatatypes.viewer;
 
-import ij.IJ;
 import ij.ImagePlus;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeRunnable;
@@ -26,11 +25,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 public class ImageViewerStackExporterRun implements JIPipeRunnable {
-    private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
     private final ImageViewerPanel viewerPanel;
     private final Path outputFolder;
     private final String baseName;
     private final String formatName;
+    private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
 
     public ImageViewerStackExporterRun(ImageViewerPanel viewerPanel, Path outputFolder, String baseName, String formatName) {
         this.viewerPanel = viewerPanel;
@@ -44,18 +43,18 @@ public class ImageViewerStackExporterRun implements JIPipeRunnable {
         return progressInfo;
     }
 
-    @Override
-    public String getTaskLabel() {
-        return "Image viewer: Export stack";
-    }
-
     public void setProgressInfo(JIPipeProgressInfo progressInfo) {
         this.progressInfo = progressInfo;
     }
 
     @Override
+    public String getTaskLabel() {
+        return "Image viewer: Export stack";
+    }
+
+    @Override
     public void run() {
-        if(!Files.isDirectory(outputFolder)) {
+        if (!Files.isDirectory(outputFolder)) {
             try {
                 Files.createDirectories(outputFolder);
             } catch (IOException e) {
@@ -68,14 +67,14 @@ public class ImageViewerStackExporterRun implements JIPipeRunnable {
         for (int c = 0; c < image.getNChannels(); c++) {
             for (int t = 0; t < image.getNFrames(); t++) {
                 for (int z = 0; z < image.getNSlices(); z++) {
-                    if(progressInfo.isCancelled().get())
+                    if (progressInfo.isCancelled().get())
                         return;
                     String fileName = String.format("%sc%d_t%d_z%d.%s", StringUtils.isNullOrEmpty(baseName) ? "" : baseName + "_", c, t, z, formatName.toLowerCase());
                     progressInfo.incrementProgress();
                     progressInfo.log(fileName);
                     BufferedImage bufferedImage = viewerPanel.generateSlice(z, c, t, true, true).getBufferedImage();
                     try {
-                        ImageIO.write(bufferedImage,formatName, outputFolder.resolve(fileName).toFile());
+                        ImageIO.write(bufferedImage, formatName, outputFolder.resolve(fileName).toFile());
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }

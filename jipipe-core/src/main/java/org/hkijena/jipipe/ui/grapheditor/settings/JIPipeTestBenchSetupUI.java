@@ -26,11 +26,11 @@ import org.hkijena.jipipe.ui.components.DocumentedComponent;
 import org.hkijena.jipipe.ui.components.JIPipeValidityReportUI;
 import org.hkijena.jipipe.ui.components.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.UserFriendlyErrorUI;
-import org.hkijena.jipipe.ui.running.RunUIWorkerFinishedEvent;
-import org.hkijena.jipipe.ui.running.RunUIWorkerInterruptedEvent;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
+import org.hkijena.jipipe.ui.running.RunUIWorkerFinishedEvent;
+import org.hkijena.jipipe.ui.running.RunUIWorkerInterruptedEvent;
 import org.hkijena.jipipe.ui.testbench.JIPipeTestBenchUI;
 import org.hkijena.jipipe.utils.UIUtils;
 

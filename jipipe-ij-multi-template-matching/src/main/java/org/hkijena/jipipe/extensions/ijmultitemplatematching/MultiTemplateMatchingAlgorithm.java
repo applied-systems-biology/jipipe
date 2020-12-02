@@ -30,14 +30,12 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
-import org.hkijena.jipipe.api.parameters.JIPipeCustomParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.ImagePlus2DData;
 import org.hkijena.jipipe.extensions.parameters.generators.IntegerRange;
-import org.hkijena.jipipe.extensions.parameters.primitives.IntegerList;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.FormPanel;
@@ -290,10 +288,10 @@ public class MultiTemplateMatchingAlgorithm extends JIPipeMergingAlgorithm {
                 null, null, null);
 
         if (result == JOptionPane.OK_OPTION) {
-            int startAngleValue = ((SpinnerNumberModel)startAngle.getModel()).getNumber().intValue();
-            int endAngleValue = ((SpinnerNumberModel)endAngle.getModel()).getNumber().intValue();
-            int step = ((SpinnerNumberModel)angleStep.getModel()).getNumber().intValue();
-            if(endAngleValue < startAngleValue) {
+            int startAngleValue = ((SpinnerNumberModel) startAngle.getModel()).getNumber().intValue();
+            int endAngleValue = ((SpinnerNumberModel) endAngle.getModel()).getNumber().intValue();
+            int step = ((SpinnerNumberModel) angleStep.getModel()).getNumber().intValue();
+            if (endAngleValue < startAngleValue) {
                 JOptionPane.showMessageDialog(workbench.getWindow(),
                         "The start angle must be less than the end angle!",
                         "Generate angles",
@@ -303,12 +301,12 @@ public class MultiTemplateMatchingAlgorithm extends JIPipeMergingAlgorithm {
             StringBuilder stringBuilder = new StringBuilder();
             int angle = startAngleValue;
             do {
-                if(stringBuilder.length() > 0)
+                if (stringBuilder.length() > 0)
                     stringBuilder.append(",");
                 stringBuilder.append(angle);
                 angle += step;
             }
-            while(angle < endAngleValue);
+            while (angle < endAngleValue);
             JIPipeParameterCollection.setParameter(this, "template-rotations", new IntegerRange(stringBuilder.toString()));
         }
     }

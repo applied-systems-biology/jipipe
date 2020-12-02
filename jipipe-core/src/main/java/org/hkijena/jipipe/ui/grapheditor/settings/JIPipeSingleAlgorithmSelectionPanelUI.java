@@ -81,7 +81,7 @@ public class JIPipeSingleAlgorithmSelectionPanelUI extends JIPipeProjectWorkbenc
                 slotEditorUI,
                 DocumentTabPane.CloseMode.withoutCloseButton, false);
 
-        if(algorithm.getGraph().getAttachment(JIPipeGraphType.class) == JIPipeGraphType.Project) {
+        if (algorithm.getGraph().getAttachment(JIPipeGraphType.class) == JIPipeGraphType.Project) {
             cacheBrowserTabContent = new JPanel(new BorderLayout());
             tabbedPane.addSingletonTab("CACHE_BROWSER", "Cache browser", UIUtils.getIconFromResources("actions/database.png"),
                     cacheBrowserTabContent,
@@ -157,7 +157,7 @@ public class JIPipeSingleAlgorithmSelectionPanelUI extends JIPipeProjectWorkbenc
                 }
             }
         }
-        if(currentRunTabContent != null && tabbedPane.getCurrentContent() == currentRunTabContent) {
+        if (currentRunTabContent != null && tabbedPane.getCurrentContent() == currentRunTabContent) {
             currentRunTabContent.add(new JIPipeRunQueuePanelUI(), BorderLayout.CENTER);
         }
     }

@@ -35,7 +35,7 @@ public class JIPipeRunQueuePanelUI extends JPanel {
         initialize();
         // Pre-initialize log
         JIPipeRunnable currentRun = JIPipeRunnerQueue.getInstance().getCurrentRun();
-        if(currentRun != null) {
+        if (currentRun != null) {
             log.append(currentRun.getProgressInfo().getLog().toString());
         }
         JIPipeRunnerQueue.getInstance().getEventBus().register(this);
@@ -65,11 +65,10 @@ public class JIPipeRunQueuePanelUI extends JPanel {
 
         add(buttonPanel, BorderLayout.SOUTH);
 
-        if(JIPipeRunnerQueue.getInstance().getCurrentRun() != null) {
+        if (JIPipeRunnerQueue.getInstance().getCurrentRun() != null) {
             progressBar.setString("Waiting for progress ...");
             progressBar.setIndeterminate(true);
-        }
-        else {
+        } else {
             progressBar.setString("Nothing is currently running");
             progressBar.setIndeterminate(false);
             cancelButton.setEnabled(false);
@@ -81,7 +80,7 @@ public class JIPipeRunQueuePanelUI extends JPanel {
      */
     public void requestCancelRun() {
         cancelButton.setEnabled(false);
-        if(JIPipeRunnerQueue.getInstance().getCurrentRun() != null) {
+        if (JIPipeRunnerQueue.getInstance().getCurrentRun() != null) {
             JIPipeRunnerQueue.getInstance().cancel(JIPipeRunnerQueue.getInstance().getCurrentRun());
         }
     }

@@ -17,13 +17,10 @@ import com.google.common.html.HtmlEscapers;
 import org.apache.commons.lang.WordUtils;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 
-import java.awt.Color;
 import java.net.URL;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.function.Predicate;
 
 /**

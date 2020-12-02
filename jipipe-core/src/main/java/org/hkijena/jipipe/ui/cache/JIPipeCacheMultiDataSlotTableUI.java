@@ -238,11 +238,11 @@ public class JIPipeCacheMultiDataSlotTableUI extends JIPipeProjectWorkbenchPanel
         boolean hasData = false;
         for (JIPipeDataSlot slot : slots) {
             if (slot.getRowCount() > 0) {
-               hasData = true;
-               break;
+                hasData = true;
+                break;
             }
         }
-        if(!hasData) {
+        if (!hasData) {
             removeAll();
             setLayout(new BorderLayout());
             JLabel label = new JLabel("No data available", UIUtils.getIcon64FromResources("no-data.png"), JLabel.LEFT);

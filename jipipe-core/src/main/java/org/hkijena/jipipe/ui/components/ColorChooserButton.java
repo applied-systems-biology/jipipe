@@ -19,7 +19,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class ColorChooserButton extends JButton implements ActionListener {
-    private ColorIcon icon = new ColorIcon(16,16);
+    private ColorIcon icon = new ColorIcon(16, 16);
     private Color selectedColor = Color.RED;
     private String selectColorPrompt = "Select color";
 

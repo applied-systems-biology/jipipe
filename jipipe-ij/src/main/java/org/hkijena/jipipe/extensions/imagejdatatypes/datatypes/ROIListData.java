@@ -36,8 +36,8 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.RoiOutline;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.RoiOutline;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
 import org.hkijena.jipipe.extensions.parameters.roi.Margin;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
@@ -349,11 +349,10 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
                 continue;
             if (fillOutline) {
                 Color color = roi.getFillColor() != null ? roi.getFillColor() : defaultFillColor;
-                if(!highlighted.isEmpty()) {
-                    if(!highlighted.contains(roi)) {
+                if (!highlighted.isEmpty()) {
+                    if (!highlighted.contains(roi)) {
                         color = ColorUtils.scaleHSV(color, 0.8f, 1, 0.5f);
-                    }
-                    else {
+                    } else {
                         continue;
                     }
                 }
@@ -362,12 +361,11 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
             }
             if (drawOutline) {
                 Color color = roi.getStrokeColor() != null ? roi.getStrokeColor() : defaultLineColor;
-                int width = (int)roi.getStrokeWidth() <= 0 ? defaultLineThickness : (int)roi.getStrokeWidth();
-                if(!highlighted.isEmpty()) {
-                    if(!highlighted.contains(roi)) {
+                int width = (int) roi.getStrokeWidth() <= 0 ? defaultLineThickness : (int) roi.getStrokeWidth();
+                if (!highlighted.isEmpty()) {
+                    if (!highlighted.contains(roi)) {
                         color = ColorUtils.scaleHSV(color, 0.8f, 1, 0.5f);
-                    }
-                    else {
+                    } else {
                         continue;
                     }
                 }
@@ -398,7 +396,7 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
             }
             if (drawOutline) {
                 Color color = roi.getStrokeColor() != null ? roi.getStrokeColor() : defaultLineColor;
-                int width = (int)roi.getStrokeWidth() <= 0 ? defaultLineThickness : (int)roi.getStrokeWidth();
+                int width = (int) roi.getStrokeWidth() <= 0 ? defaultLineThickness : (int) roi.getStrokeWidth();
                 processor.setLineWidth(width);
                 processor.setColor(color);
                 roi.drawPixels(processor);
@@ -888,28 +886,30 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
 
     /**
      * Gets the centroid of a ROI
+     *
      * @param roi the roi
      * @return the centroid
      */
     public static Point getCentroid(Roi roi) {
-        return new Point((int)roi.getContourCentroid()[0], (int)roi.getContourCentroid()[1]);
+        return new Point((int) roi.getContourCentroid()[0], (int) roi.getContourCentroid()[1]);
     }
 
     /**
      * Returns true if the ROI is visible at given slice index
-     * @param roi the roi
+     *
+     * @param roi      the roi
      * @param location slice index, zero-based
-     * @param ignoreZ ignore Z constraint
-     * @param ignoreC ignore C constraint
-     * @param ignoreT ignore T constraint
+     * @param ignoreZ  ignore Z constraint
+     * @param ignoreC  ignore C constraint
+     * @param ignoreT  ignore T constraint
      * @return if the ROI is visible
      */
     public static boolean isVisibleIn(Roi roi, ImageSliceIndex location, boolean ignoreZ, boolean ignoreC, boolean ignoreT) {
-        if(!ignoreZ && roi.getZPosition() > 0 && roi.getZPosition() != (location.getZ() + 1))
+        if (!ignoreZ && roi.getZPosition() > 0 && roi.getZPosition() != (location.getZ() + 1))
             return false;
-        if(!ignoreC && roi.getCPosition() > 0 && roi.getCPosition() != (location.getC() + 1))
+        if (!ignoreC && roi.getCPosition() > 0 && roi.getCPosition() != (location.getC() + 1))
             return false;
-        if(!ignoreT && roi.getTPosition() > 0 && roi.getTPosition() != (location.getT() + 1))
+        if (!ignoreT && roi.getTPosition() > 0 && roi.getTPosition() != (location.getT() + 1))
             return false;
         return true;
     }

@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.extensions.imagejdatatypes.util;
 
-import com.google.common.collect.ImmutableList;
 import gnu.trove.map.TIntIntMap;
 import gnu.trove.map.hash.TIntIntHashMap;
 import ij.IJ;
@@ -51,8 +50,9 @@ public class ImageJUtils {
 
     /**
      * Runs the function for each slice
-     *  @param img      the image
-     * @param function the function
+     *
+     * @param img          the image
+     * @param function     the function
      * @param progressInfo the progress
      */
     public static void forEachSlice(ImagePlus img, Consumer<ImageProcessor> function, JIPipeProgressInfo progressInfo) {
@@ -69,22 +69,23 @@ public class ImageJUtils {
 
     /**
      * Stack index (one-based)
-     * @param channel one-based channel
-     * @param slice one-based slice
-     * @param frame one-based frame
+     *
+     * @param channel   one-based channel
+     * @param slice     one-based slice
+     * @param frame     one-based frame
      * @param nChannels number of channels
-     * @param nSlices number of slices
-     * @param nFrames number of frames
+     * @param nSlices   number of slices
+     * @param nFrames   number of frames
      * @return one-based stack index
      */
     public static int getStackIndex(int channel, int slice, int frame, int nChannels, int nSlices, int nFrames) {
-        if (channel<1) channel = 1;
-        if (channel>nChannels) channel = nChannels;
-        if (slice<1) slice = 1;
-        if (slice>nSlices) slice = nSlices;
-        if (frame<1) frame = 1;
-        if (frame>nFrames) frame = nFrames;
-        return (frame-1)*nChannels*nSlices + (slice-1)*nChannels + channel;
+        if (channel < 1) channel = 1;
+        if (channel > nChannels) channel = nChannels;
+        if (slice < 1) slice = 1;
+        if (slice > nSlices) slice = nSlices;
+        if (frame < 1) frame = 1;
+        if (frame > nFrames) frame = nFrames;
+        return (frame - 1) * nChannels * nSlices + (slice - 1) * nChannels + channel;
     }
 
     /**
@@ -92,6 +93,7 @@ public class ImageJUtils {
      * The new image is built up in order T -> Z -> C, which implies constraints on the discontinuations:
      * 1. If a T is present, all slices of this T must be present (same length per frame)
      * 2. If a Z is present, all slices of this Z must be present (same channels per Z)
+     *
      * @param slices the slices. Must all have the same size. Can be discontinuous.
      * @return the output image
      */
@@ -138,8 +140,9 @@ public class ImageJUtils {
 
     /**
      * Runs the function for each slice
-     *  @param img      the image
-     * @param function the function
+     *
+     * @param img          the image
+     * @param function     the function
      * @param progressInfo the progress
      */
     public static void forEachIndexedSlice(ImagePlus img, BiConsumer<ImageProcessor, Integer> function, JIPipeProgressInfo progressInfo) {
@@ -156,8 +159,9 @@ public class ImageJUtils {
 
     /**
      * Runs the function for each Z, C, and T slice.
-     *  @param img      the image
-     * @param function the function
+     *
+     * @param img          the image
+     * @param function     the function
      * @param progressInfo the progress
      */
     public static void forEachIndexedZCTSlice(ImagePlus img, BiConsumer<ImageProcessor, ImageSliceIndex> function, JIPipeProgressInfo progressInfo) {
@@ -182,8 +186,9 @@ public class ImageJUtils {
      * Runs the function for each Z and T slice.
      * The function consumes a map from channel index to the channel slice.
      * The slice index channel is always set to -1
-     *  @param img      the image
-     * @param function the function
+     *
+     * @param img          the image
+     * @param function     the function
      * @param progressInfo the progress
      */
     public static void forEachIndexedZTSlice(ImagePlus img, BiConsumer<Map<Integer, ImageProcessor>, ImageSliceIndex> function, JIPipeProgressInfo progressInfo) {

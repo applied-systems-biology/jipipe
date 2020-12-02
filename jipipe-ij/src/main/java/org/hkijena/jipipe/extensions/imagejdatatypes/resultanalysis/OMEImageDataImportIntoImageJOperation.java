@@ -7,8 +7,8 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeExportedDataTable;
 import org.hkijena.jipipe.api.data.JIPipeResultSlotDataSource;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.running.RunUIWorkerFinishedEvent;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
+import org.hkijena.jipipe.ui.running.RunUIWorkerFinishedEvent;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;

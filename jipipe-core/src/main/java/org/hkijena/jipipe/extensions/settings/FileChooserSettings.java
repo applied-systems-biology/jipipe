@@ -125,7 +125,7 @@ public class FileChooserSettings implements JIPipeParameterCollection {
 
     @JIPipeParameter("last-projects-directory")
     public void setLastProjectsDirectory(Path lastProjectsDirectory) {
-        if(!Files.isDirectory(lastProjectsDirectory)) {
+        if (!Files.isDirectory(lastProjectsDirectory)) {
             lastProjectsDirectory = lastProjectsDirectory.getParent();
         }
         this.lastProjectsDirectory = lastProjectsDirectory;
@@ -142,7 +142,7 @@ public class FileChooserSettings implements JIPipeParameterCollection {
 
     @JIPipeParameter("last-parameters-directory")
     public void setLastParametersDirectory(Path lastParametersDirectory) {
-        if(!Files.isDirectory(lastParametersDirectory)) {
+        if (!Files.isDirectory(lastParametersDirectory)) {
             lastParametersDirectory = lastParametersDirectory.getParent();
         }
         this.lastParametersDirectory = lastParametersDirectory;
@@ -159,7 +159,7 @@ public class FileChooserSettings implements JIPipeParameterCollection {
 
     @JIPipeParameter("last-data-directory")
     public void setLastDataDirectory(Path lastDataDirectory) {
-        if(!Files.isDirectory(lastDataDirectory)) {
+        if (!Files.isDirectory(lastDataDirectory)) {
             lastDataDirectory = lastDataDirectory.getParent();
         }
         this.lastDataDirectory = lastDataDirectory;
