@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.ui.cache;
 
 import com.google.common.eventbus.Subscribe;
+import ij.IJ;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeRunnable;
@@ -121,6 +122,7 @@ public class JIPipeCachedSlotToFilesByMetadataExporterRun extends JIPipeWorkbenc
                     Files.createDirectories(targetPath);
                 exporter.writeToFolder(slot, targetPath, info.resolve("Slot " + slot.getName()));
             } catch (Exception e) {
+                IJ.handleException(e);
                 info.log(ExceptionUtils.getStackTrace(e));
                 throw new RuntimeException(e);
             }
