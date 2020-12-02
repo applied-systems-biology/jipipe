@@ -64,7 +64,6 @@ import java.util.stream.Collectors;
  */
 @JIPipeDocumentation(name = "Plot", description = "A plot")
 @JsonSerialize(using = PlotData.Serializer.class)
-@JIPipeHidden
 public abstract class PlotData implements JIPipeData, JIPipeParameterCollection, JIPipeValidatable {
 
     private EventBus eventBus = new EventBus();
