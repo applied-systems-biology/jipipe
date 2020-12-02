@@ -118,6 +118,12 @@ public class StandardSettingsExtension extends JIPipePrepackagedDefaultJavaExten
                 "Data",
                 null,
                 new VirtualDataSettings());
+        registerSettingsSheet(DataExporterSettings.ID,
+                "Data export",
+                UIUtils.getIconFromResources("actions/document-export.png"),
+                "Data",
+                null,
+                new DataExporterSettings());
 
         registerParameterType("jipipe:settings:projects:new-project-template",
                 ProjectsSettings.ProjectTemplateEnum.class,

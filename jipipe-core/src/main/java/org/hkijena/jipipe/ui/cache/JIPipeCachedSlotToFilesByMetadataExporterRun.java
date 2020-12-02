@@ -20,6 +20,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeRunnable;
 import org.hkijena.jipipe.api.data.JIPipeDataByMetadataExporter;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
+import org.hkijena.jipipe.extensions.settings.DataExporterSettings;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
@@ -43,7 +44,7 @@ public class JIPipeCachedSlotToFilesByMetadataExporterRun extends JIPipeWorkbenc
 
     private final List<JIPipeDataSlot> slots;
     private final boolean splitBySlot;
-    private final JIPipeDataByMetadataExporter exporter = new JIPipeDataByMetadataExporter();
+    private final JIPipeDataByMetadataExporter exporter;
     private JIPipeProgressInfo info = new JIPipeProgressInfo();
     private Path outputPath;
 
@@ -56,6 +57,7 @@ public class JIPipeCachedSlotToFilesByMetadataExporterRun extends JIPipeWorkbenc
         super(workbench);
         this.slots = slots;
         this.splitBySlot = splitBySlot;
+        this.exporter = new JIPipeDataByMetadataExporter(DataExporterSettings.getInstance());
         JIPipeRunnerQueue.getInstance().getEventBus().register(this);
     }
 
@@ -102,6 +104,16 @@ public class JIPipeCachedSlotToFilesByMetadataExporterRun extends JIPipeWorkbenc
         editorDialog.setSize(800, 600);
         editorDialog.setLocationRelativeTo(null);
         editorDialog.setVisible(true);
+
+        if(confirmation.get()) {
+            try {
+                DataExporterSettings.getInstance().copyFrom(exporter);
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
         return confirmation.get();
     }
 
@@ -120,7 +132,7 @@ public class JIPipeCachedSlotToFilesByMetadataExporterRun extends JIPipeWorkbenc
             try {
                 if (!Files.isDirectory(targetPath))
                     Files.createDirectories(targetPath);
-                exporter.writeToFolder(slot, targetPath, info.resolve("Slot " + slot.getName()));
+                exporter.writeToFolder(slot, targetPath, subProgress.resolve("Slot " + slot.getName()));
             } catch (Exception e) {
                 IJ.handleException(e);
                 info.log(ExceptionUtils.getStackTrace(e));

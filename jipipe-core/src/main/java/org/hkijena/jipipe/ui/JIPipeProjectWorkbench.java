@@ -31,6 +31,7 @@ import org.hkijena.jipipe.ui.cache.JIPipeCacheManagerUI;
 import org.hkijena.jipipe.ui.compartments.JIPipeCompartmentGraphUI;
 import org.hkijena.jipipe.ui.compartments.JIPipeCompartmentUI;
 import org.hkijena.jipipe.ui.compendium.JIPipeAlgorithmCompendiumUI;
+import org.hkijena.jipipe.ui.compendium.JIPipeDataTypeCompendiumUI;
 import org.hkijena.jipipe.ui.components.DocumentTabPane;
 import org.hkijena.jipipe.ui.components.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.MarkdownReader;
@@ -519,7 +520,7 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
         projectInfo2.addActionListener(e -> documentTabPane.selectSingletonTab(TAB_PROJECT_OVERVIEW));
         helpMenu.add(projectInfo2);
 
-        JMenuItem algorithmCompendiumButton = new JMenuItem("Open algorithm compendium", UIUtils.getIconFromResources("actions/configure.png"));
+        JMenuItem algorithmCompendiumButton = new JMenuItem("Open algorithm compendium", UIUtils.getIconFromResources("data-types/node.png"));
         algorithmCompendiumButton.addActionListener(e -> {
             getDocumentTabPane().addTab("Algorithm compendium",
                     UIUtils.getIconFromResources("actions/help.png"),
@@ -529,6 +530,17 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
             getDocumentTabPane().switchToLastTab();
         });
         helpMenu.add(algorithmCompendiumButton);
+
+        JMenuItem datatypeCompendiumButton = new JMenuItem("Open data type compendium", UIUtils.getIconFromResources("data-types/data-type.png"));
+        datatypeCompendiumButton.addActionListener(e -> {
+            getDocumentTabPane().addTab("Data type compendium",
+                    UIUtils.getIconFromResources("actions/help.png"),
+                    new JIPipeDataTypeCompendiumUI(),
+                    DocumentTabPane.CloseMode.withSilentCloseButton,
+                    true);
+            getDocumentTabPane().switchToLastTab();
+        });
+        helpMenu.add(datatypeCompendiumButton);
 
         JMenuItem license = new JMenuItem("License", UIUtils.getIconFromResources("actions/license.png"));
         license.addActionListener(e -> documentTabPane.selectSingletonTab(TAB_LICENSE));

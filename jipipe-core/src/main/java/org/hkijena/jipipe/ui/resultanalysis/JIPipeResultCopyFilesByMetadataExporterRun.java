@@ -21,6 +21,7 @@ import org.hkijena.jipipe.api.JIPipeRunnable;
 import org.hkijena.jipipe.api.data.JIPipeDataByMetadataExporter;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeExportedDataTable;
+import org.hkijena.jipipe.extensions.settings.DataExporterSettings;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
@@ -50,7 +51,7 @@ public class JIPipeResultCopyFilesByMetadataExporterRun extends JIPipeWorkbenchP
 
     private final List<JIPipeDataSlot> slots;
     private final boolean splitBySlot;
-    private final JIPipeDataByMetadataExporter exporter = new JIPipeDataByMetadataExporter();
+    private final JIPipeDataByMetadataExporter exporter;
     private JIPipeProgressInfo info = new JIPipeProgressInfo();
     private Path outputPath;
 
@@ -63,6 +64,7 @@ public class JIPipeResultCopyFilesByMetadataExporterRun extends JIPipeWorkbenchP
         super(workbench);
         this.slots = slots;
         this.splitBySlot = splitBySlot;
+        this.exporter = new JIPipeDataByMetadataExporter(DataExporterSettings.getInstance());
         JIPipeRunnerQueue.getInstance().getEventBus().register(this);
     }
 
@@ -109,6 +111,16 @@ public class JIPipeResultCopyFilesByMetadataExporterRun extends JIPipeWorkbenchP
         editorDialog.setSize(800, 600);
         editorDialog.setLocationRelativeTo(null);
         editorDialog.setVisible(true);
+
+        if(confirmation.get()) {
+            try {
+                DataExporterSettings.getInstance().copyFrom(exporter);
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
         return confirmation.get();
     }
 
