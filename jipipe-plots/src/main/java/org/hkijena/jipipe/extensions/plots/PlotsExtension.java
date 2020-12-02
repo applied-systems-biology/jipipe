@@ -18,6 +18,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataOperation;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.core.data.OpenInNativeApplicationDataImportOperation;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
+import org.hkijena.jipipe.extensions.plots.converters.PlotToTableConverter;
 import org.hkijena.jipipe.extensions.plots.datatypes.*;
 import org.hkijena.jipipe.extensions.plots.parameters.UIPlotDataSeriesColumnEnum;
 import org.hkijena.jipipe.extensions.plots.parameters.UIPlotDataSeriesColumnEnumParameterEditorUI;
@@ -77,6 +78,7 @@ public class PlotsExtension extends JIPipePrepackagedDefaultJavaExtension {
                 null,
                 PlotDataSlotPreview.class,
                 STANDARD_DATA_OPERATIONS);
+        registerDatatypeConversion(new PlotToTableConverter());
 
         // Register
         registerDatatype("plot-histogram",

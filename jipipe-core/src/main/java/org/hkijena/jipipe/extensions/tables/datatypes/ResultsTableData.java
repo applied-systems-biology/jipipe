@@ -19,11 +19,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import gnu.trove.map.TIntIntMap;
@@ -52,10 +48,11 @@ import javax.swing.*;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
-import java.awt.Component;
+import java.awt.*;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -846,6 +843,21 @@ public class ResultsTableData implements JIPipeData, TableModel {
             } else {
                 setValueAt(data.getRowAsString(row), row, col);
             }
+        }
+        return col;
+    }
+
+    /**
+     * Sets a column to a value.
+     * Creates the column if necessary
+     * @param name the column name
+     * @param value the value. Can be numeric or string
+     * @return the column index
+     */
+    public int setColumnToValue(String name, Object value) {
+        int col = addColumn(name, !(value instanceof Number));
+        for (int row = 0; row < getRowCount(); row++) {
+            setValueAt(value, row, col);
         }
         return col;
     }
