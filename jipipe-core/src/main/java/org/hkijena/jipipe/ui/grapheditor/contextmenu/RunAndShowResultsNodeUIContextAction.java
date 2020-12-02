@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.ui.grapheditor.contextmenu;
 
+import org.hkijena.jipipe.api.JIPipeGraphType;
 import org.hkijena.jipipe.ui.events.AlgorithmUIActionRequestedEvent;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphCanvasUI;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeNodeUI;
@@ -28,7 +29,7 @@ import static org.hkijena.jipipe.ui.grapheditor.JIPipeNodeUI.REQUEST_RUN_AND_SHO
 public class RunAndShowResultsNodeUIContextAction implements NodeUIContextAction {
     @Override
     public boolean matches(Set<JIPipeNodeUI> selection) {
-        return selection.size() == 1;
+        return selection.size() == 1 && selection.iterator().next().getNode().getGraph().getAttachment(JIPipeGraphType.class) == JIPipeGraphType.Project;
     }
 
     @Override
@@ -60,5 +61,10 @@ public class RunAndShowResultsNodeUIContextAction implements NodeUIContextAction
     @Override
     public KeyStroke getKeyboardShortcut() {
         return KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, InputEvent.CTRL_MASK, true);
+    }
+
+    @Override
+    public boolean disableOnNonMatch() {
+        return false;
     }
 }

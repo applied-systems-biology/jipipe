@@ -71,6 +71,7 @@ public class JIPipeGraph implements JIPipeValidatable {
     private Map<JIPipeGraphNode, String> compartments = new HashMap<>();
     private List<JIPipeDataSlot> traversedSlots;
     private List<JIPipeGraphNode> traversedAlgorithms;
+    private Map<Class<?>, Object> attachments = new HashMap<>();
     private EventBus eventBus = new EventBus();
     /**
      * If this value is greater than one, no events are triggered
@@ -200,6 +201,53 @@ public class JIPipeGraph implements JIPipeValidatable {
         if(changed)
             postChangedEvent();
         return renaming;
+    }
+
+    /**
+     * Returns an attachment or null if it does not exist
+     * @param klass the attachment class
+     * @param <T> the attachment class
+     * @return the attachment or null
+     */
+    public <T> T getAttachment(Class<T> klass) {
+        return (T)attachments.getOrDefault(klass, null);
+    }
+
+    /**
+     * Attaches an object as the specified type
+     * @param klass the type the attachment is attached as
+     * @param attachment the attachment
+     */
+    public void attach(Class<?> klass, Object attachment) {
+        if(!klass.isAssignableFrom(attachment.getClass())) {
+            throw new IllegalArgumentException("Attachment object must be of given attachment type.");
+        }
+        attachments.put(klass, attachment);
+    }
+
+    /**
+     * Attaches the object with its class as key
+     * @param attachment the attachment
+     */
+    public void attach(Object attachment) {
+        attach(attachment.getClass(), attachment);
+    }
+
+    /**
+     * Removes an attachment
+     * @param klass the class
+     */
+    public void removeAttachment(Class<?> klass) {
+        attachments.remove(klass);
+    }
+
+    /**
+     * Returns true if there is an attachment of given type
+     * @param klass the attachment class
+     * @return if there is an attachment
+     */
+    public boolean hasAttachmentOfType(Class<?> klass) {
+        return attachments.containsKey(klass);
     }
 
     /**

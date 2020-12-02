@@ -85,6 +85,10 @@ public class JIPipeProject implements JIPipeValidatable {
     public JIPipeProject() {
         this.cache = new JIPipeProjectCache(this);
         this.metadata.setDescription(MarkdownDocument.fromPluginResource("documentation/new-project-template.md").getMarkdown());
+        this.graph.attach(JIPipeProject.class, this);
+        this.graph.attach(JIPipeGraphType.Project);
+        this.compartmentGraph.attach(JIPipeProject.class, this);
+        this.compartmentGraph.attach(JIPipeGraphType.ProjectCompartments);
         compartmentGraph.getEventBus().register(this);
     }
 

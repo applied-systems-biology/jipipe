@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.ui.grapheditor.contextmenu;
 
+import org.hkijena.jipipe.api.JIPipeGraphType;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.cache.JIPipeAlgorithmCacheBrowserUI;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphCanvasUI;
@@ -25,7 +26,7 @@ import java.util.Set;
 public class OpenCacheBrowserInWindowUIContextAction implements NodeUIContextAction {
     @Override
     public boolean matches(Set<JIPipeNodeUI> selection) {
-        return true;
+        return selection.stream().allMatch(ui -> ui.getNode().getGraph().getAttachment(JIPipeGraphType.class) == JIPipeGraphType.Project);
     }
 
     @Override
@@ -61,5 +62,10 @@ public class OpenCacheBrowserInWindowUIContextAction implements NodeUIContextAct
     @Override
     public boolean isShowingInOverhang() {
         return true;
+    }
+
+    @Override
+    public boolean disableOnNonMatch() {
+        return false;
     }
 }
