@@ -94,6 +94,6 @@ public class OMEROExtension extends JIPipePrepackagedDefaultJavaExtension {
 
     @Override
     public String getDependencyVersion() {
-        return "2020.11";
+        return "2020.12";
     }
 }

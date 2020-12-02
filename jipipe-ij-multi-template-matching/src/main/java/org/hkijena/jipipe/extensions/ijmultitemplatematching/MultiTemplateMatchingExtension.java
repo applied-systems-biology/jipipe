@@ -44,7 +44,7 @@ public class MultiTemplateMatchingExtension extends JIPipePrepackagedDefaultJava
 
     @Override
     public String getDependencyVersion() {
-        return "2020.11";
+        return "2020.12";
     }
 
     @Override
