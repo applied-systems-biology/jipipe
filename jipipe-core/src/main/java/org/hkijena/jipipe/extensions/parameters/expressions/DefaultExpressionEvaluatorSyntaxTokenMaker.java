@@ -92,6 +92,7 @@ public class DefaultExpressionEvaluatorSyntaxTokenMaker extends AbstractTokenMak
             if (!isQuoted && (c == ' ' || c == '\t' || c == '\r' || c == '\n')) {
                 addToken(text, buffer.toString(), currentTokenStart, newStartOffset + currentTokenStart);
                 buffer.setLength(0);
+                currentTokenStart = index;
                 addToken(text, index, index, Token.WHITESPACE, newStartOffset + currentTokenStart);
                 currentTokenStart = index + 1;
                 continue;
@@ -99,6 +100,7 @@ public class DefaultExpressionEvaluatorSyntaxTokenMaker extends AbstractTokenMak
             if (!isQuoted && (c == '(' || c == ')' || c == ',')) {
                 addToken(text, buffer.toString(), currentTokenStart, newStartOffset + currentTokenStart);
                 buffer.setLength(0);
+                currentTokenStart = index;
                 addToken(text, index, index, Token.SEPARATOR, newStartOffset + currentTokenStart);
                 currentTokenStart = index + 1;
                 continue;
@@ -160,8 +162,15 @@ public class DefaultExpressionEvaluatorSyntaxTokenMaker extends AbstractTokenMak
             tokenType = Token.LITERAL_NUMBER_FLOAT;
         if (tokenType == -1)
             tokenType = Token.VARIABLE;
+        int shift = 0;
         for (int i = start; i <= end; i++) {
-            addToken(segment, i, i, tokenType, startOffset);
+            addToken(segment, i, i, tokenType, startOffset + shift++);
         }
     }
+
+//    @Override
+//    public void addToken(Segment segment, int start, int end, int tokenType, int startOffset) {
+//        System.out.println("ato " + start + "-" + end + " @ " + startOffset);
+//        super.addToken(segment, start, end, tokenType, startOffset);
+//    }
 }
