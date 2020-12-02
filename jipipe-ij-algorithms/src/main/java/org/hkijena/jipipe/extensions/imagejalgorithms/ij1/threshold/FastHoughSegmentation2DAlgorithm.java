@@ -343,7 +343,7 @@ public class FastHoughSegmentation2DAlgorithm extends JIPipeSimpleIteratingAlgor
 
         maskStack.addSlice(mask.getProcessor());
         houghStack.addSlice(maxHough.getProcessor());
-        measurements.mergeWith(new ResultsTableData(rt));
+        measurements.addRows(new ResultsTableData(rt));
     }
 
     @JIPipeDocumentation(name = "Min radius", description = "Minimum radius of circles in pixels")

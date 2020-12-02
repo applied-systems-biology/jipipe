@@ -151,7 +151,7 @@ public class FilterAndMergeRoiByStatisticsScriptAlgorithm extends ImageRoiProces
             roiStatisticsAlgorithm.run(progressInfo);
             ResultsTableData statistics = roiStatisticsAlgorithm.getFirstOutputSlot().getData(0, ResultsTableData.class, progressInfo);
             allROIs.addAll(entry.getValue());
-            allStatistics.mergeWith(statistics);
+            allStatistics.addRows(statistics);
         }
 
         List<PyDictionary> roiList = new ArrayList<>();

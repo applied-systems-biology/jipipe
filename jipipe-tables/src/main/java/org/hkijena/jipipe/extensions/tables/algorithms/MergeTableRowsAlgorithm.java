@@ -58,7 +58,7 @@ public class MergeTableRowsAlgorithm extends JIPipeMergingAlgorithm {
     protected void runIteration(JIPipeMergingDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ResultsTableData resultsTableData = new ResultsTableData();
         for (ResultsTableData tableData : dataBatch.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo)) {
-            resultsTableData.mergeWith(tableData);
+            resultsTableData.addRows(tableData);
         }
         dataBatch.addOutputData(getFirstOutputSlot(), resultsTableData, progressInfo);
     }

@@ -1,13 +1,9 @@
-package org.hkijena.jipipe.extensions.tables.algorithms;
-
-import org.hkijena.jipipe.extensions.tables.datatypes.DoubleArrayTableColumn;
-import org.hkijena.jipipe.extensions.tables.datatypes.StringArrayTableColumn;
-import org.hkijena.jipipe.extensions.tables.datatypes.TableColumn;
+package org.hkijena.jipipe.extensions.tables.datatypes;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public enum ColumnRowNormalization {
+public enum TableColumnNormalization {
     ZeroOrEmpty("Zero or empty"),
     RowIndex("Row index"),
     LastValue("Last value"),
@@ -15,9 +11,10 @@ public enum ColumnRowNormalization {
 
     private final String name;
 
-    ColumnRowNormalization(String name) {
+    TableColumnNormalization(String name) {
         this.name = name;
     }
+
 
     /**
      * Generates columns that have the same number of true rows
@@ -25,12 +22,8 @@ public enum ColumnRowNormalization {
      * @param inputColumns the input columns
      * @return List of {@link org.hkijena.jipipe.extensions.tables.datatypes.DoubleArrayTableColumn} or {@link org.hkijena.jipipe.extensions.tables.datatypes.StringArrayTableColumn}
      */
-    public List<TableColumn> normalize(List<TableColumn> inputColumns) {
+    public List<TableColumn> normalize(List<TableColumn> inputColumns, int nRow) {
         List<TableColumn> result = new ArrayList<>();
-        int nRow = 0;
-        for (TableColumn column : inputColumns) {
-            nRow = Math.max(column.getRows(), nRow);
-        }
         for (TableColumn inputColumn : inputColumns) {
             if (inputColumn.isNumeric()) {
                 double[] data = new double[nRow];
@@ -90,6 +83,20 @@ public enum ColumnRowNormalization {
             }
         }
         return result;
+    }
+
+    /**
+     * Generates columns that have the same number of true rows
+     *
+     * @param inputColumns the input columns
+     * @return List of {@link org.hkijena.jipipe.extensions.tables.datatypes.DoubleArrayTableColumn} or {@link org.hkijena.jipipe.extensions.tables.datatypes.StringArrayTableColumn}
+     */
+    public List<TableColumn> normalize(List<TableColumn> inputColumns) {
+        int nRow = 0;
+        for (TableColumn column : inputColumns) {
+            nRow = Math.max(column.getRows(), nRow);
+        }
+       return normalize(inputColumns, nRow);
     }
 
     @Override

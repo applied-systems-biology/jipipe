@@ -718,7 +718,7 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
                             imp.setRoi(roi);
                             aSys.measure();
                             ResultsTableData forRoi = new ResultsTableData(rtSys);
-                            result.mergeWith(forRoi);
+                            result.addRows(forRoi);
                         }
                     }
                 }

@@ -87,7 +87,7 @@ public class JIPipeMergeTablesDialogUI extends JDialog {
             ResultsTableData sourceModel = ((JIPipeTableEditor) ((DocumentTabPane.DocumentTab) tableSelection.getSelectedItem()).getContent()).getTableModel();
             ResultsTableData targetModel = tableAnalyzerUI.getTableModel();
 
-            targetModel.mergeWith(sourceModel);
+            targetModel.addRows(sourceModel);
 
             tableAnalyzerUI.autoSizeColumns();
             setVisible(false);

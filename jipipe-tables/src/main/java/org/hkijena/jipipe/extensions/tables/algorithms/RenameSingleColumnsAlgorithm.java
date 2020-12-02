@@ -24,6 +24,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.extensions.parameters.pairs.PairParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.pairs.StringQueryExpressionAndStringPairParameter;
 import org.hkijena.jipipe.extensions.tables.datatypes.DoubleArrayTableColumn;
 import org.hkijena.jipipe.extensions.tables.datatypes.StringArrayTableColumn;
@@ -37,7 +38,7 @@ import org.hkijena.jipipe.utils.StringUtils;
 @JIPipeOrganization(nodeTypeCategory = TableNodeTypeCategory.class)
 @JIPipeInputSlot(value = TableColumn.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = TableColumn.class, slotName = "Output", autoCreate = true)
-public class RenameColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
+public class RenameSingleColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private StringQueryExpressionAndStringPairParameter.List renamingEntries = new StringQueryExpressionAndStringPairParameter.List();
 
@@ -46,7 +47,7 @@ public class RenameColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
      *
      * @param info algorithm info
      */
-    public RenameColumnsAlgorithm(JIPipeNodeInfo info) {
+    public RenameSingleColumnsAlgorithm(JIPipeNodeInfo info) {
         super(info);
     }
 
@@ -55,7 +56,7 @@ public class RenameColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
      *
      * @param other the original
      */
-    public RenameColumnsAlgorithm(RenameColumnsAlgorithm other) {
+    public RenameSingleColumnsAlgorithm(RenameSingleColumnsAlgorithm other) {
         super(other);
         this.renamingEntries = new StringQueryExpressionAndStringPairParameter.List(other.renamingEntries);
     }
@@ -93,6 +94,7 @@ public class RenameColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @JIPipeDocumentation(name = "Renaming entries", description = "You can rename one or multiple columns.")
     @JIPipeParameter("renaming-entries")
+    @PairParameterSettings(singleRow = false, keyLabel = "Old name", valueLabel = "New name")
     public StringQueryExpressionAndStringPairParameter.List getRenamingEntries() {
         return renamingEntries;
     }

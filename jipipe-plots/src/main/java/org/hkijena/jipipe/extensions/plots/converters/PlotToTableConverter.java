@@ -26,7 +26,7 @@ public class PlotToTableConverter implements JIPipeDataConverter {
         for (PlotDataSeries series : plotData.getSeries()) {
             ResultsTableData copy = new ResultsTableData(series);
             copy.setColumnToValue("#Series", StringUtils.orElse(series.getName(), "" + index));
-            resultsTableData.mergeWith(copy);
+            resultsTableData.addRows(copy);
             ++index;
         }
         return resultsTableData;

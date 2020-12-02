@@ -551,39 +551,6 @@ public class ResultsTableData implements JIPipeData, TableModel {
     }
 
     /**
-     * Returns a new table that only contains the selected rows.
-     * The resulting table is ordered according to the input rows
-     *
-     * @param rows the row indices
-     * @return table only containing the selected rows
-     */
-    public ResultsTableData getRows(Collection<Integer> rows) {
-        ResultsTableData result = new ResultsTableData();
-
-        // Find the location of the columns
-        TIntIntMap columnMap = new TIntIntHashMap();
-        for (int col = 0; col < getColumnCount(); col++) {
-            columnMap.put(col, result.getTable().getFreeColumn(getColumnName(col)));
-        }
-
-        int targetRow = 0;
-        for (Integer sourceRow : rows) {
-            result.table.incrementCounter();
-            for (int sourceCol = 0; sourceCol < getColumnCount(); sourceCol++) {
-                int targetCol = columnMap.get(sourceCol);
-                if (isNumeric(sourceCol)) {
-                    result.table.setValue(targetCol, targetRow, getValueAsDouble(sourceRow, sourceCol));
-                } else {
-                    result.table.setValue(targetCol, targetRow, getValueAsString(sourceRow, sourceCol));
-                }
-            }
-            ++targetRow;
-        }
-
-        return result;
-    }
-
-    /**
      * @return The table's internal string column table
      */
     private Hashtable<Integer, ArrayList<Object>> getStringColumnsTable() {
@@ -723,7 +690,7 @@ public class ResultsTableData implements JIPipeData, TableModel {
      *
      * @param other the other data
      */
-    public void mergeWith(ResultsTableData other) {
+    public void addRows(ResultsTableData other) {
         Map<String, Boolean> inputColumnsNumeric = new HashMap<>();
         for (int col = 0; col < other.getColumnCount(); col++) {
             inputColumnsNumeric.put(other.getColumnName(col), other.isNumeric(col));
@@ -732,9 +699,9 @@ public class ResultsTableData implements JIPipeData, TableModel {
         // For some reason ImageJ can create tables with missing columns
         Set<String> allowedColumns = new HashSet<>(Arrays.asList(other.getTable().getHeadings()));
 
-        int localRow = table.getCounter();
+        int localRow = getRowCount();
         for (int row = 0; row < other.getRowCount(); row++) {
-            table.incrementCounter();
+            addRow();
             for (int col = 0; col < other.getColumnCount(); col++) {
                 String colName = other.getColumnName(col);
                 if (!allowedColumns.contains(colName))
@@ -747,6 +714,32 @@ public class ResultsTableData implements JIPipeData, TableModel {
             }
 
             ++localRow;
+        }
+    }
+
+    /**
+     * Adds columns from another table
+     * @param others the other tables
+     * @param makeUnique if true, the columns will be made unique. Otherwise, existing columns will be skipped.
+     */
+    public void addColumns(Collection<ResultsTableData> others, boolean makeUnique, TableColumnNormalization normalization) {
+        List<TableColumn> columnList = new ArrayList<>();
+        int nRow = getRowCount();
+        for (ResultsTableData tableData : others) {
+            nRow = Math.max(nRow, tableData.getRowCount());
+            for (int col = 0; col < tableData.getColumnCount(); col++) {
+                TableColumn column = tableData.getColumnReference(col);
+                columnList.add(column);
+            }
+        }
+        columnList = normalization.normalize(columnList, nRow);
+        Set<String> existing = new HashSet<>();
+        for (TableColumn column : columnList) {
+            if(containsColumn(column.getLabel()) && !makeUnique)
+                continue;
+            String name = StringUtils.makeUniqueString(column.getLabel(), ".", existing);
+            existing.add(name);
+            addColumn(name, column);
         }
     }
 
@@ -938,9 +931,10 @@ public class ResultsTableData implements JIPipeData, TableModel {
      *
      * @param removedColumns the columns to remove
      */
-    public void removeColumns(Set<String> removedColumns) {
+    public void removeColumns(Collection<String> removedColumns) {
         for (String removedColumn : removedColumns) {
-            table.deleteColumn(removedColumn);
+            if(containsColumn(removedColumn))
+                table.deleteColumn(removedColumn);
         }
         cleanupTable();
     }
@@ -1052,6 +1046,22 @@ public class ResultsTableData implements JIPipeData, TableModel {
         this.table = newData;
     }
 
+    public ResultsTableData getRows(Collection<Integer> rows) {
+        ResultsTableData result = new ResultsTableData();
+        for (int col = 0; col < getColumnCount(); col++) {
+            result.addColumn(getColumnName(col), !isNumeric(col));
+        }
+        int targetRow = 0;
+        for (Integer row : rows) {
+            result.addRow();
+            for (int col = 0; col < getColumnCount(); col++) {
+                result.setValueAt(getValueAt(row, col), targetRow, col);
+            }
+            ++targetRow;
+        }
+        return result;
+    }
+
     public static ResultsTableData importFrom(Path storagePath) {
         try {
             return new ResultsTableData(ResultsTable.open(PathUtils.findFileByExtensionIn(storagePath, ".csv").toString()));
@@ -1121,6 +1131,10 @@ public class ResultsTableData implements JIPipeData, TableModel {
             }
         }
         return resultsTableData;
+    }
+
+    public ResultsTableData getRow(int row) {
+        return getRows(Collections.singleton(row));
     }
 
     /**

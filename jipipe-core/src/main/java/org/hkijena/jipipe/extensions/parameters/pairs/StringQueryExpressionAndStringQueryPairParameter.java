@@ -20,13 +20,13 @@ import org.hkijena.jipipe.extensions.parameters.expressions.StringQueryExpressio
  * A parameter that renames a matching string into another string
  */
 @PairParameterSettings(singleRow = false)
-public class StringQueryExpressionAndStringPairParameter extends PairParameter<StringQueryExpression, String> {
+public class StringQueryExpressionAndStringQueryPairParameter extends PairParameter<StringQueryExpression, StringQueryExpression> {
 
     /**
      * Creates a new instance
      */
-    public StringQueryExpressionAndStringPairParameter() {
-        super(StringQueryExpression.class, String.class);
+    public StringQueryExpressionAndStringQueryPairParameter() {
+        super(StringQueryExpression.class, StringQueryExpression.class);
     }
 
     /**
@@ -34,19 +34,19 @@ public class StringQueryExpressionAndStringPairParameter extends PairParameter<S
      *
      * @param other the original
      */
-    public StringQueryExpressionAndStringPairParameter(StringQueryExpressionAndStringPairParameter other) {
+    public StringQueryExpressionAndStringQueryPairParameter(StringQueryExpressionAndStringQueryPairParameter other) {
         super(other);
     }
 
     /**
-     * A collection of multiple {@link StringQueryExpressionAndStringPairParameter}
+     * A collection of multiple {@link StringQueryExpressionAndStringQueryPairParameter}
      */
-    public static class List extends ListParameter<StringQueryExpressionAndStringPairParameter> {
+    public static class List extends ListParameter<StringQueryExpressionAndStringQueryPairParameter> {
         /**
          * Creates a new instance
          */
         public List() {
-            super(StringQueryExpressionAndStringPairParameter.class);
+            super(StringQueryExpressionAndStringQueryPairParameter.class);
         }
 
         /**
@@ -55,9 +55,9 @@ public class StringQueryExpressionAndStringPairParameter extends PairParameter<S
          * @param other the original
          */
         public List(List other) {
-            super(StringQueryExpressionAndStringPairParameter.class);
-            for (StringQueryExpressionAndStringPairParameter filter : other) {
-                add(new StringQueryExpressionAndStringPairParameter(filter));
+            super(StringQueryExpressionAndStringQueryPairParameter.class);
+            for (StringQueryExpressionAndStringQueryPairParameter filter : other) {
+                add(new StringQueryExpressionAndStringQueryPairParameter(filter));
             }
         }
     }

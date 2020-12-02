@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.extensions.tables.algorithms;
 
+import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -24,14 +25,13 @@ import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.parameters.expressions.StringQueryExpression;
+import org.hkijena.jipipe.extensions.tables.datatypes.TableColumnNormalization;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.extensions.tables.datatypes.TableColumn;
 import org.hkijena.jipipe.utils.StringUtils;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.hkijena.jipipe.api.nodes.JIPipeMergingAlgorithm.MERGING_ALGORITHM_DESCRIPTION;
 
@@ -39,15 +39,18 @@ import static org.hkijena.jipipe.api.nodes.JIPipeMergingAlgorithm.MERGING_ALGORI
  * Algorithm that integrates columns
  */
 @JIPipeDocumentation(name = "Merge table columns", description = "Merges multiple tables into one table by merging the list of columns. " +
-        "The generated table is sized according to the table with the most rows. In missing columns, the values are filled in."
+        "The generated table is sized according to the table with the most rows. In missing columns, the values are filled in. " +
+        "This node allows the merging of columns (e.g. merging multiple time series tables by their time). To do this, determine such " +
+        "merged columns via a parameter."
         + "\n\n" + MERGING_ALGORITHM_DESCRIPTION)
 @JIPipeOrganization(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Merge")
 @JIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
 public class MergeTableColumnsAlgorithm extends JIPipeMergingAlgorithm {
 
-    private ColumnRowNormalization rowNormalization = ColumnRowNormalization.ZeroOrEmpty;
+    private TableColumnNormalization rowNormalization = TableColumnNormalization.ZeroOrEmpty;
     private StringQueryExpression columnFilter = new StringQueryExpression();
+    private StringQueryExpression mergedColumns = new StringQueryExpression("false");
 
     /**
      * Creates a new instance
@@ -67,13 +70,15 @@ public class MergeTableColumnsAlgorithm extends JIPipeMergingAlgorithm {
         super(other);
         this.rowNormalization = other.rowNormalization;
         this.columnFilter = new StringQueryExpression(other.columnFilter);
+        this.mergedColumns = new StringQueryExpression(other.mergedColumns);
     }
 
     @Override
     protected void runIteration(JIPipeMergingDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         List<TableColumn> columnList = new ArrayList<>();
+        List<ResultsTableData> inputTables = dataBatch.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo);
         int nRow = 0;
-        for (ResultsTableData tableData : dataBatch.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo)) {
+        for (ResultsTableData tableData : inputTables) {
             nRow = Math.max(nRow, tableData.getRowCount());
             for (int col = 0; col < tableData.getColumnCount(); col++) {
                 if (columnFilter.test(tableData.getColumnName(col))) {
@@ -83,27 +88,91 @@ public class MergeTableColumnsAlgorithm extends JIPipeMergingAlgorithm {
             }
         }
 
-        // Normalize to the same number of rows
-        columnList = rowNormalization.normalize(columnList);
-        Set<String> existing = new HashSet<>();
-        ResultsTableData outputData = new ResultsTableData();
-        outputData.addRows(nRow);
-        for (TableColumn column : columnList) {
-            String name = StringUtils.makeUniqueString(column.getLabel(), ".", existing);
-            outputData.addColumn(name, column);
+        // Find which columns should be merged
+        Set<String> mergedColumns = new HashSet<>();
+        Map<String, List<TableColumn>> groups = columnList.stream().collect(Collectors.groupingBy(TableColumn::getLabel));
+        for (Map.Entry<String, List<TableColumn>> entry : groups.entrySet()) {
+            if(entry.getValue().size() > 1 && this.mergedColumns.test(entry.getKey())) {
+                mergedColumns.add(entry.getKey());
+            }
         }
-        dataBatch.addOutputData(getFirstOutputSlot(), outputData, progressInfo);
+
+        if(mergedColumns.isEmpty()) {
+            // No merging, we can use the faster and more simple algorithm
+            // Normalize to the same number of rows
+            columnList = rowNormalization.normalize(columnList);
+            Set<String> existing = new HashSet<>();
+            ResultsTableData outputData = new ResultsTableData();
+            outputData.addRows(nRow);
+            for (TableColumn column : columnList) {
+                String name = StringUtils.makeUniqueString(column.getLabel(), ".", existing);
+                existing.add(name);
+                outputData.addColumn(name, column);
+            }
+            dataBatch.addOutputData(getFirstOutputSlot(), outputData, progressInfo);
+        }
+        else {
+            Set<String> existing = new HashSet<>();
+
+            ResultsTableData outputData = new ResultsTableData();
+            Map<String, ResultsTableData> conditionTables = new HashMap<>();
+            StringBuilder stringBuilder = new StringBuilder();
+
+            // Collect all per-condition tables
+            for (ResultsTableData inputTable : inputTables) {
+                ResultsTableData uniqueColumnInputTable = (ResultsTableData) inputTable.duplicate();
+
+                // Rename to make columns unique (except merged ones)
+                existing.addAll(uniqueColumnInputTable.getColumnNames());
+                for (String columnName : ImmutableList.copyOf(uniqueColumnInputTable.getColumnNames())) {
+                    if(mergedColumns.contains(columnName))
+                        continue;
+                    existing.remove(columnName);
+                    String newName = StringUtils.makeUniqueString(columnName, ".", existing);
+                    existing.add(newName);
+                    inputTable.renameColumn(columnName, newName);
+                }
+
+                for (int row = 0; row < uniqueColumnInputTable.getRowCount(); row++) {
+                    stringBuilder.setLength(0);
+                    for (String mergedColumn : mergedColumns) {
+                        stringBuilder.append("\n");
+                        int col = uniqueColumnInputTable.getColumnIndex(mergedColumn);
+                        if(col >= 0)
+                            stringBuilder.append(uniqueColumnInputTable.getValueAt(row, col));
+                    }
+                    String condition = stringBuilder.toString();
+
+                    ResultsTableData rowTable = uniqueColumnInputTable.getRow(row);
+                    ResultsTableData mergedRowTable = conditionTables.getOrDefault(condition, null);
+                    if(mergedRowTable == null) {
+                        conditionTables.put(condition, rowTable);
+                    }
+                    else {
+                        rowTable.removeColumns(mergedColumns);
+                        mergedRowTable.addColumns(Collections.singleton(rowTable), true, rowNormalization);
+                    }
+                }
+            }
+
+            // Merge per-condition tables into the output
+            for (ResultsTableData value : conditionTables.values()) {
+                outputData.addRows(value);
+            }
+
+            dataBatch.addOutputData(getFirstOutputSlot(), outputData, progressInfo);
+        }
     }
 
     @JIPipeDocumentation(name = "Row normalization", description = "Determines how missing column values are handled if the input tables have different numbers of rows. " +
             "You can set it to zero/empty (depending on numeric or string type), to the row number (starting with zero), copy the last value, or cycle.")
     @JIPipeParameter("row-normalization")
-    public ColumnRowNormalization getRowNormalization() {
+    public TableColumnNormalization getRowNormalization() {
         return rowNormalization;
     }
 
     @JIPipeParameter("row-normalization")
-    public void setRowNormalization(ColumnRowNormalization rowNormalization) {
+    public void setRowNormalization(TableColumnNormalization rowNormalization) {
         this.rowNormalization = rowNormalization;
     }
 
@@ -116,5 +185,18 @@ public class MergeTableColumnsAlgorithm extends JIPipeMergingAlgorithm {
     @JIPipeParameter("column-filter")
     public void setColumnFilter(StringQueryExpression columnFilter) {
         this.columnFilter = columnFilter;
+    }
+
+    @JIPipeDocumentation(name = "Merged columns", description = "Expression to filter all columns that should be merged. " +
+            "By default columns will be assigned unique names if there are duplicates. This filter determines which input columns should be " +
+            "merged by their value. All merged columns are handled together.")
+    @JIPipeParameter("merged-columns")
+    public StringQueryExpression getMergedColumns() {
+        return mergedColumns;
+    }
+
+    @JIPipeParameter("merged-columns")
+    public void setMergedColumns(StringQueryExpression mergedColumns) {
+        this.mergedColumns = mergedColumns;
     }
 }

@@ -54,13 +54,7 @@ import org.hkijena.jipipe.extensions.parameters.matrix.Matrix2DFloat;
 import org.hkijena.jipipe.extensions.parameters.matrix.Matrix2DParameterEditorUI;
 import org.hkijena.jipipe.extensions.parameters.optional.OptionalParameter;
 import org.hkijena.jipipe.extensions.parameters.optional.OptionalParameterEditorUI;
-import org.hkijena.jipipe.extensions.parameters.pairs.DoubleAndDoublePairParameter;
-import org.hkijena.jipipe.extensions.parameters.pairs.IntegerAndIntegerPairParameter;
-import org.hkijena.jipipe.extensions.parameters.pairs.PairParameter;
-import org.hkijena.jipipe.extensions.parameters.pairs.PairParameterEditorUI;
-import org.hkijena.jipipe.extensions.parameters.pairs.StringAndStringPairParameter;
-import org.hkijena.jipipe.extensions.parameters.pairs.StringQueryExpressionAndSortOrderPairParameter;
-import org.hkijena.jipipe.extensions.parameters.pairs.StringQueryExpressionAndStringPairParameter;
+import org.hkijena.jipipe.extensions.parameters.pairs.*;
 import org.hkijena.jipipe.extensions.parameters.patterns.StringPatternExtraction;
 import org.hkijena.jipipe.extensions.parameters.patterns.StringPatternExtractionParameterEditorUI;
 import org.hkijena.jipipe.extensions.parameters.primitives.*;
@@ -524,8 +518,16 @@ public class StandardParametersExtension extends JIPipePrepackagedDefaultJavaExt
                 StringQueryExpressionAndStringPairParameter.List.class,
                 StringQueryExpressionAndStringPairParameter::new,
                 r -> new StringQueryExpressionAndStringPairParameter((StringQueryExpressionAndStringPairParameter) r),
-                "String pair",
-                "A pair of a string predicate and a string",
+                "String query / string pair",
+                "A pair of a string query and a string",
+                null);
+        registerParameterType("string-query-expression:string-query-expression:pair",
+                StringQueryExpressionAndStringQueryPairParameter.class,
+                StringQueryExpressionAndStringQueryPairParameter.List.class,
+                StringQueryExpressionAndStringQueryPairParameter::new,
+                r -> new StringQueryExpressionAndStringQueryPairParameter((StringQueryExpressionAndStringQueryPairParameter) r),
+                "String query pair",
+                "A pair of two string queries",
                 null);
         registerParameterType("integer:integer:pair",
                 IntegerAndIntegerPairParameter.class,

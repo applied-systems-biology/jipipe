@@ -17,12 +17,7 @@ import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
 import org.hkijena.jipipe.extensions.tables.algorithms.*;
-import org.hkijena.jipipe.extensions.tables.datatypes.DoubleArrayTableColumn;
-import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
-import org.hkijena.jipipe.extensions.tables.datatypes.RowIndexTableColumn;
-import org.hkijena.jipipe.extensions.tables.datatypes.StringArrayTableColumn;
-import org.hkijena.jipipe.extensions.tables.datatypes.TableColumn;
-import org.hkijena.jipipe.extensions.tables.datatypes.ZeroTableColumn;
+import org.hkijena.jipipe.extensions.tables.datatypes.*;
 import org.hkijena.jipipe.extensions.tables.display.OpenResultsTableInImageJDataOperation;
 import org.hkijena.jipipe.extensions.tables.display.OpenResultsTableInJIPipeTabDataOperation;
 import org.hkijena.jipipe.extensions.tables.operations.converting.*;
@@ -137,7 +132,8 @@ public class TablesExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerNodeType("table-add-columns-generate", GenerateColumnAlgorithm.class, UIUtils.getIconURLFromResources("actions/edit-table-insert-column-right.png"));
         registerNodeType("table-remove-columns", RemoveColumnAlgorithm.class, UIUtils.getIconURLFromResources("actions/edit-table-delete-column.png"));
         registerNodeType("table-rename-columns", RenameTableColumnsAlgorithm.class, UIUtils.getIconURLFromResources("actions/document-edit.png"));
-        registerNodeType("table-rename-single-columns", RenameColumnsAlgorithm.class, UIUtils.getIconURLFromResources("actions/document-edit.png"));
+        registerNodeType("table-rename-columns-to-annotation", RenameTableColumnsToAnnotationAlgorithm.class, UIUtils.getIconURLFromResources("actions/document-edit.png"));
+        registerNodeType("table-rename-single-columns", RenameSingleColumnsAlgorithm.class, UIUtils.getIconURLFromResources("actions/document-edit.png"));
         registerNodeType("table-integrate-columns", IntegrateColumnsAlgorithm.class, UIUtils.getIconURLFromResources("actions/statistics.png"));
         registerNodeType("table-convert-columns", ConvertColumnsAlgorithm.class, UIUtils.getIconURLFromResources("actions/formula.png"));
         registerNodeType("table-split-into-columns", SplitTableIntoColumnsAlgorithm.class, UIUtils.getIconURLFromResources("actions/split.png"));
@@ -233,7 +229,7 @@ public class TablesExtension extends JIPipePrepackagedDefaultJavaExtension {
                 null);
 
         registerEnumParameterType("table-column-row-normalization",
-                ColumnRowNormalization.class,
+                TableColumnNormalization.class,
                 "Column normalization",
                 "Operations for normalizing the number of rows in columns");
     }

@@ -60,6 +60,7 @@ import java.awt.BorderLayout;
 import java.awt.Window;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
+import java.nio.file.Files;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -397,6 +398,11 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
         projectInfo.addActionListener(e -> documentTabPane.selectSingletonTab(TAB_PROJECT_OVERVIEW));
         projectMenu.add(projectInfo);
 
+        JMenuItem openProjectFolderItem = new JMenuItem("Open project folder", UIUtils.getIconFromResources("actions/document-open-folder.png"));
+        openProjectFolderItem.setToolTipText("Opens the folder that contains the project file");
+        openProjectFolderItem.addActionListener(e -> openProjectFolder());
+        projectMenu.add(openProjectFolderItem);
+
         projectMenu.addSeparator();
 
         JMenuItem exitButton = new JMenuItem("Exit", UIUtils.getIconFromResources("actions/exit.png"));
@@ -531,6 +537,15 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
         menu.add(helpMenu);
 
         add(menu, BorderLayout.NORTH);
+    }
+
+    private void openProjectFolder() {
+        if(getProject().getWorkDirectory() == null || !Files.isDirectory(getProject().getWorkDirectory())) {
+            JOptionPane.showMessageDialog(this, "This project does not have a folder. Please save it first.",
+                    "Open project folder", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        UIUtils.openFileInNative(getProject().getWorkDirectory());
     }
 
     private void manageImageJPlugins() {

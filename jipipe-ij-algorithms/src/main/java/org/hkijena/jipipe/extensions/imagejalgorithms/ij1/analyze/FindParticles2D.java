@@ -217,7 +217,7 @@ public class FindParticles2D extends JIPipeSimpleIteratingAlgorithm {
                 }
 
                 // Merge into one result
-                mergedResultsTable.mergeWith(new ResultsTableData(table));
+                mergedResultsTable.addRows(new ResultsTableData(table));
                 mergedROI.mergeWith(rois);
             }, progressInfo);
 
