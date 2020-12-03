@@ -861,19 +861,40 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
         // Draw currently dragged connection
         if (currentConnectionDragSource != null) {
             g.setStroke(STROKE_HIGHLIGHT);
-            graphics.setColor(new Color(0, 128, 0));
             PointRange sourcePoint;
-            PointRange targetPoint;
+            PointRange targetPoint = null;
 
             sourcePoint = currentConnectionDragSource.getNodeUI().getSlotLocation(currentConnectionDragSource.getSlot());
             sourcePoint.add(currentConnectionDragSource.getNodeUI().getLocation());
 
-            if (currentConnectionDragTarget == null || currentConnectionDragTarget == currentConnectionDragSource ||
-                    currentConnectionDragTarget.getNodeUI().getNode() == currentConnectionDragSource.getNodeUI().getNode()) {
+            if(currentConnectionDragTarget != null &&
+                    currentConnectionDragTarget != currentConnectionDragSource &&
+                    currentConnectionDragTarget.getNodeUI().getNode() != currentConnectionDragSource.getNodeUI().getNode()) {
+                JIPipeNodeUI nodeUI = currentConnectionDragTarget.getNodeUI();
+                Rectangle bounds = currentConnectionDragTarget.getBounds();
+                Point mousePosition = currentConnectionDragTarget.getMousePosition();
+                bounds.x += 5;
+                bounds.y += 5;
+                bounds.width -= 10;
+                bounds.height -= 10;
+                if(mousePosition != null && bounds.contains(mousePosition)) {
+                    targetPoint = nodeUI.getSlotLocation(currentConnectionDragTarget.getSlot());
+                    targetPoint.add(nodeUI.getLocation());
+                }
+            }
+            if(targetPoint != null) {
+                if(currentConnectionDragTarget == null || !graph.getGraph().containsEdge(currentConnectionDragSource.getSlot(), currentConnectionDragTarget.getSlot())) {
+                    graphics.setColor(new Color(0, 128, 0));
+                }
+                else {
+                    graphics.setColor(Color.RED);
+                }
+            }
+            else {
+                graphics.setColor(Color.DARK_GRAY);
+            }
+            if(targetPoint == null) {
                 targetPoint = new PointRange(getMousePosition().x, getMousePosition().y);
-            } else {
-                targetPoint = currentConnectionDragTarget.getNodeUI().getSlotLocation(currentConnectionDragTarget.getSlot());
-                targetPoint.add(currentConnectionDragTarget.getNodeUI().getLocation());
             }
 
             // Tighten the point ranges: Bringing the centers together

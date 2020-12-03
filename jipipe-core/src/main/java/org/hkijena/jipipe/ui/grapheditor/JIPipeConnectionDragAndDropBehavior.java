@@ -94,7 +94,7 @@ public class JIPipeConnectionDragAndDropBehavior implements DropTargetListener, 
                                 secondSlot = graphNode.getOutputSlot(graphSlotLink.asText());
                             }
                             if (secondSlot != null) {
-                                connectSlots(slotUI.getSlot(), secondSlot);
+                                connectOrDisconnectSlots(slotUI.getSlot(), secondSlot);
                             }
                         }
                     }
@@ -109,15 +109,25 @@ public class JIPipeConnectionDragAndDropBehavior implements DropTargetListener, 
         dtde.rejectDrop();
     }
 
-    private void connectSlots(JIPipeDataSlot firstSlot, JIPipeDataSlot secondSlot) {
+    private void connectOrDisconnectSlots(JIPipeDataSlot firstSlot, JIPipeDataSlot secondSlot) {
         JIPipeGraph graph = firstSlot.getNode().getGraph();
         if (graph != secondSlot.getNode().getGraph())
             return;
         if (firstSlot.isInput() != secondSlot.isInput()) {
             if (firstSlot.isInput()) {
-                slotUI.connectSlot(secondSlot, firstSlot);
+                if(!graph.getGraph().containsEdge(secondSlot, firstSlot)) {
+                    slotUI.connectSlot(secondSlot, firstSlot);
+                }
+                else {
+                    slotUI.disconnectSlot(secondSlot, firstSlot);
+                }
             } else {
-                slotUI.connectSlot(firstSlot, secondSlot);
+                if(!graph.getGraph().containsEdge(secondSlot, firstSlot)) {
+                    slotUI.connectSlot(firstSlot, secondSlot);
+                }
+                else {
+                    slotUI.disconnectSlot(firstSlot, secondSlot);
+                }
             }
         }
     }
