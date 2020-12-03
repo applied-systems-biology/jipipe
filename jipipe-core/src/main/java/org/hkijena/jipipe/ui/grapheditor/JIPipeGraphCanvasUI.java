@@ -880,7 +880,8 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
                 }
             }
             if(targetPoint != null) {
-                if(currentConnectionDragTarget == null || !graph.getGraph().containsEdge(currentConnectionDragSource.getSlot(), currentConnectionDragTarget.getSlot())) {
+                if(currentConnectionDragTarget == null || (!graph.getGraph().containsEdge(currentConnectionDragSource.getSlot(), currentConnectionDragTarget.getSlot())
+                        && !graph.getGraph().containsEdge(currentConnectionDragTarget.getSlot(), currentConnectionDragSource.getSlot()))) {
                     graphics.setColor(new Color(0, 128, 0));
                 }
                 else {
