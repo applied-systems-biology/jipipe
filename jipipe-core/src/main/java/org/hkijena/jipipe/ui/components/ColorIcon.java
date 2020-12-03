@@ -85,14 +85,17 @@ public class ColorIcon implements Icon {
         borderColor = c;
     }
 
+    @Override
     public int getIconWidth() {
         return imageWidth;
     }
 
+    @Override
     public int getIconHeight() {
         return imageHeight;
     }
 
+    @Override
     public void paintIcon(Component c, Graphics g, int x, int y) {
         g.setColor(borderColor);
         g.drawRect(x, y, imageWidth - 1, imageHeight - 2);
