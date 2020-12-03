@@ -87,6 +87,7 @@ public class MultiTemplateMatchingAlgorithm extends JIPipeMergingAlgorithm {
     private double multiObjectMaximumBoundingBoxOverlap = 0.3;
     private boolean restrictToROI = false;
     private boolean assembleTemplates = false;
+    private boolean withNonMaximaSuppression = true;
     private OptionalColorParameter assembleTemplatesBackground = new OptionalColorParameter();
     private OptionalDataInfoRefParameter assembleTemplatesOutput = new OptionalDataInfoRefParameter();
 
@@ -109,6 +110,7 @@ public class MultiTemplateMatchingAlgorithm extends JIPipeMergingAlgorithm {
         this.setAssembleTemplates(other.assembleTemplates);
         this.assembleTemplatesBackground = new OptionalColorParameter(other.assembleTemplatesBackground);
         this.setRestrictToROI(other.restrictToROI);
+        this.withNonMaximaSuppression = other.withNonMaximaSuppression;
     }
 
     @Override
@@ -146,6 +148,7 @@ public class MultiTemplateMatchingAlgorithm extends JIPipeMergingAlgorithm {
         pythonInterpreter.set("Bool_SearchRoi", restrictToROI && searchRoi != null);
         pythonInterpreter.set("searchRoi", searchRoi);
         pythonInterpreter.set("progress", progressInfo);
+        pythonInterpreter.set("with_nms", withNonMaximaSuppression);
 
         for (int i = 0; i < images.size(); i++) {
             ImagePlus image = images.get(i);
@@ -315,6 +318,17 @@ public class MultiTemplateMatchingAlgorithm extends JIPipeMergingAlgorithm {
     @JIPipeParameter("template-matching-method")
     public void setTemplateMatchingMethod(TemplateMatchingMethod templateMatchingMethod) {
         this.templateMatchingMethod = templateMatchingMethod;
+    }
+
+    @JIPipeDocumentation(name = "Enable non-maxima suppression", description = "Enables the non-maxima-suppression algorithm that removes bounding boxes that overlap too much.")
+    @JIPipeParameter("with-non-maxima-suppression")
+    public boolean isWithNonMaximaSuppression() {
+        return withNonMaximaSuppression;
+    }
+
+    @JIPipeParameter("with-non-maxima-suppression")
+    public void setWithNonMaximaSuppression(boolean withNonMaximaSuppression) {
+        this.withNonMaximaSuppression = withNonMaximaSuppression;
     }
 
     @JIPipeDocumentation(name = "Expected number of objects (N)", description = "This is the expected number of object expected in each image. The plugin will return N or less predicted locations of the object.")

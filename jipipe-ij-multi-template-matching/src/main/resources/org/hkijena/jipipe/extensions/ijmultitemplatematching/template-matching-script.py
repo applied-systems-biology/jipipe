@@ -81,15 +81,19 @@ for index, ImpTemplate in enumerate(List_Template):
 # for hit in Hits_BeforeNMS: print hit
 
 # InterHit NMS if more than one hit
-progress.log("Hits before NMS: " + str(len(Hits_BeforeNMS)))
-progress.log("Non-Maxima-Suppression")
+if with_nms:
+    progress.log("Hits before NMS: " + str(len(Hits_BeforeNMS)))
+    progress.log("Non-Maxima-Suppression")
 
-if Method in [0, 1]:
-    Hits_AfterNMS = NMS(Hits_BeforeNMS, N=n_hit, maxOverlap=max_overlap,
-                        sortDescending=False)  # only difference is the sorting
+    if Method in [0, 1]:
+        Hits_AfterNMS = NMS(Hits_BeforeNMS, N=n_hit, maxOverlap=max_overlap,
+                            sortDescending=False)  # only difference is the sorting
 
+    else:
+        Hits_AfterNMS = NMS(Hits_BeforeNMS, N=n_hit, maxOverlap=max_overlap, sortDescending=True)
 else:
-    Hits_AfterNMS = NMS(Hits_BeforeNMS, N=n_hit, maxOverlap=max_overlap, sortDescending=True)
+    progress.log("Non-Maxima-Suppression was skipped via parameter")
+    Hits_AfterNMS = Hits_BeforeNMS
 
 # print "\n-- Hits after NMS --\n"
 # for hit in Hits_AfterNMS : print hit
