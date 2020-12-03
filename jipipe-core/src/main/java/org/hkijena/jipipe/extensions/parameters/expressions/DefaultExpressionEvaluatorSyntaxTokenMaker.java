@@ -143,7 +143,7 @@ public class DefaultExpressionEvaluatorSyntaxTokenMaker extends AbstractTokenMak
             }
         }
         if (buffer.length() > 0) {
-            addToken(text, buffer.toString(), currentTokenStart, newStartOffset);
+            addToken(text, buffer.toString(), currentTokenStart, newStartOffset + currentTokenStart);
         }
         if (firstToken == null) {
             addNullToken();
