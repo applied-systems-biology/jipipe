@@ -17,9 +17,13 @@ import ij.ImagePlus;
 import ij.gui.Roi;
 import ij.gui.ShapeRoi;
 import ij.plugin.frame.RoiManager;
+import ij.process.ColorProcessor;
+import ij.process.ImageProcessor;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
@@ -35,7 +39,12 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.ImagePlus2DData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.extensions.parameters.colors.OptionalColorParameter;
+import org.hkijena.jipipe.extensions.parameters.editors.JIPipeDataParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.generators.IntegerRange;
+import org.hkijena.jipipe.extensions.parameters.references.JIPipeDataInfoRef;
+import org.hkijena.jipipe.extensions.parameters.references.OptionalDataInfoRefParameter;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.FormPanel;
@@ -44,6 +53,8 @@ import org.python.core.PyList;
 import org.python.util.PythonInterpreter;
 
 import javax.swing.*;
+import java.awt.Color;
+import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -61,6 +72,7 @@ import java.util.stream.Collectors;
 @JIPipeInputSlot(value = ImagePlus2DData.class, slotName = "Template", autoCreate = true)
 @JIPipeOutputSlot(value = ROIListData.class, slotName = "ROI", autoCreate = true)
 @JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Measurements", autoCreate = true)
+@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Assembled templates")
 @JIPipeOrganization(menuPath = "Analyze", nodeTypeCategory = ImagesNodeTypeCategory.class)
 public class MultiTemplateMatchingAlgorithm extends JIPipeMergingAlgorithm {
 
@@ -74,10 +86,15 @@ public class MultiTemplateMatchingAlgorithm extends JIPipeMergingAlgorithm {
     private double multiObjectScoreThreshold = 0.5;
     private double multiObjectMaximumBoundingBoxOverlap = 0.3;
     private boolean restrictToROI = false;
+    private boolean assembleTemplates = false;
+    private OptionalColorParameter assembleTemplatesBackground = new OptionalColorParameter();
+    private OptionalDataInfoRefParameter assembleTemplatesOutput = new OptionalDataInfoRefParameter();
 
     public MultiTemplateMatchingAlgorithm(JIPipeNodeInfo info) {
         super(info);
+        assembleTemplatesBackground.setContent(Color.BLACK);
         rotateTemplate.setValue("90,180,270");
+        assembleTemplatesOutput.setContent(new JIPipeDataInfoRef(JIPipeDataInfo.getInstance(ImagePlusData.class)));
     }
 
     public MultiTemplateMatchingAlgorithm(MultiTemplateMatchingAlgorithm other) {
@@ -89,6 +106,8 @@ public class MultiTemplateMatchingAlgorithm extends JIPipeMergingAlgorithm {
         this.expectedNumberOfObjects = other.expectedNumberOfObjects;
         this.multiObjectScoreThreshold = other.multiObjectScoreThreshold;
         this.multiObjectMaximumBoundingBoxOverlap = other.multiObjectMaximumBoundingBoxOverlap;
+        this.setAssembleTemplates(other.assembleTemplates);
+        this.assembleTemplatesBackground = new OptionalColorParameter(other.assembleTemplatesBackground);
         this.setRestrictToROI(other.restrictToROI);
     }
 
@@ -101,8 +120,11 @@ public class MultiTemplateMatchingAlgorithm extends JIPipeMergingAlgorithm {
         for (ImagePlusData image : dataBatch.getInputData("Image", ImagePlusData.class, progressInfo)) {
             images.add(image.getImage());
         }
+        // Each template has its own index
         for (ImagePlusData template : dataBatch.getInputData("Template", ImagePlusData.class, progressInfo)) {
-            templates.add(template.getImage());
+            ImagePlus duplicateImage = template.getDuplicateImage();
+            duplicateImage.setTitle("" + templates.size());
+            templates.add(duplicateImage);
         }
         if (restrictToROI) {
             for (ROIListData roi : dataBatch.getInputData("ROI", ROIListData.class, progressInfo)) {
@@ -137,8 +159,98 @@ public class MultiTemplateMatchingAlgorithm extends JIPipeMergingAlgorithm {
 
             dataBatch.addOutputData("ROI", new ROIListData(roiManager), progressInfo);
             dataBatch.addOutputData("Measurements", measurements, progressInfo);
+
+            if(assembleTemplates) {
+                ImagePlus assembled = assembleTemplates(image, templates, measurements, progressInfo.resolveAndLog("Assemble templates", i, images.size()));
+                dataBatch.addOutputData("Assembled templates", new ImagePlusData(assembled), progressInfo);
+            }
         }
 
+    }
+
+    private ImagePlus assembleTemplates(ImagePlus original, List<ImagePlus> templates, ResultsTableData measurements, JIPipeProgressInfo progressInfo) {
+        // Create a target image of the appropriate type
+        ImagePlus target;
+        if(assembleTemplatesOutput.isEnabled()) {
+            ImagePlusData data = (ImagePlusData) JIPipe.createData(assembleTemplatesOutput.getContent().getInfo().getDataClass(), original);
+            if(data.getImage() == original)
+                target = data.getDuplicateImage();
+            else
+                target = data.getImage();
+        }
+        else {
+            target = original.duplicate();
+        }
+
+        // Fill with color if requested
+        target = ImageJUtils.channelsToRGB(target);
+        if(assembleTemplatesBackground.isEnabled()) {
+            if(target.getType() == ImagePlus.COLOR_RGB) {
+                Color color = assembleTemplatesBackground.getContent();
+                ImageJUtils.forEachSlice(target, ip -> {
+                    ColorProcessor colorProcessor = (ColorProcessor) ip;
+                    ip.setRoi(0,0,ip.getWidth(), ip.getHeight());
+                    colorProcessor.setColor(color);
+                    ip.fill();
+                    ip.setRoi((Roi)null);
+                }, progressInfo);
+            }
+            else {
+                Color color = assembleTemplatesBackground.getContent();
+                double value = (color.getRed() + color.getGreen() + color.getBlue()) / 3.0;
+                ImageJUtils.forEachSlice(target, ip -> ip.set(value), progressInfo);
+            }
+        }
+
+        // Draw the templates
+        ImageProcessor targetProcessor = target.getProcessor();
+        for (int row = 0; row < measurements.getRowCount(); row++) {
+            String templateName = measurements.getValueAsString(row, "Template");
+            boolean verticalFlip = templateName.contains("Vertical_Flip");
+            boolean horizontalFlip = templateName.contains("Horizontal_Flip");
+            int rotation = 0;
+            for (String s : templateName.split("_")) {
+                if(s.endsWith("degrees")) {
+                    rotation = Integer.parseInt(s.substring(0, s.indexOf("degrees")));
+                }
+            }
+            int templateIndex = Integer.parseInt(templateName.split("_")[0]);
+            ImagePlus template = templates.get(templateIndex).duplicate();
+            ImageProcessor templateProcessor = template.getProcessor();
+            if(verticalFlip)
+                templateProcessor.flipVertical();
+            if(horizontalFlip)
+                templateProcessor.flipHorizontal();
+            if(rotation != 0) {
+               template = ImageJUtils.rotate(template, rotation, true, Color.BLACK, true, progressInfo);
+               templateProcessor = template.getProcessor();
+            }
+            if(template.getRoi() == null) {
+                template.setRoi(new Rectangle(0,0,template.getWidth(), template.getHeight()));
+            }
+            Roi templateRoi = template.getRoi();
+            int locationX = (int) measurements.getValueAsDouble(row, "Xcorner");
+            int locationY = (int) measurements.getValueAsDouble(row, "Ycorner");
+            for (int y = 0; y < templateProcessor.getHeight(); y++) {
+                int targetY = y + locationY;
+                if(targetY < 0)
+                    continue;
+                if(targetY >= targetProcessor.getHeight())
+                    break;
+                for (int x = 0; x < templateProcessor.getWidth(); x++) {
+                    int targetX = x + locationX;
+                    if(targetX < 0)
+                        continue;
+                    if(targetX >= targetProcessor.getWidth())
+                        break;
+                    if(!templateRoi.contains(x, y))
+                        continue;
+                    targetProcessor.setf(targetX, targetY, templateProcessor.getf(x, y));
+                }
+            }
+        }
+
+        return target;
     }
 
     @JIPipeDocumentation(name = "Flip template vertically", description = "Performing additional searches with the transformed template allows to maximize the probability to find the object, if the object is expected to have different orientations in the image.\n" +
@@ -309,6 +421,56 @@ public class MultiTemplateMatchingAlgorithm extends JIPipeMergingAlgorithm {
             while (angle < endAngleValue);
             JIPipeParameterCollection.setParameter(this, "template-rotations", new IntegerRange(stringBuilder.toString()));
         }
+    }
+
+    @JIPipeDocumentation(name = "Assemble templates", description = "If enabled, all matched templates are put at their matched located within the original image. You can choose to overlay them over the original image or generate an empty image.")
+    @JIPipeParameter("assemble-templates")
+    public boolean isAssembleTemplates() {
+        return assembleTemplates;
+    }
+
+    @JIPipeParameter("assemble-templates")
+    public void setAssembleTemplates(boolean assembleTemplates) {
+        this.assembleTemplates = assembleTemplates;
+        updateSlots();
+    }
+
+    private void updateSlots() {
+        if(assembleTemplates) {
+            if(!hasOutputSlot("Assembled templates")) {
+                JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) getSlotConfiguration();
+                slotConfiguration.addOutputSlot("Assembled templates", ImagePlusData.class,null, false);
+            }
+        }
+        else {
+            if(hasOutputSlot("Assembled templates")) {
+                JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) getSlotConfiguration();
+                slotConfiguration.removeOutputSlot("Assembled templates", false);
+            }
+        }
+    }
+
+    @JIPipeDocumentation(name = "Assemble templates background", description = "If enabled, 'Assemble templates' will be put to an image of the given background. Please note that ")
+    @JIPipeParameter("assemble-templates-background")
+    public OptionalColorParameter getAssembleTemplatesBackground() {
+        return assembleTemplatesBackground;
+    }
+
+    @JIPipeParameter("assemble-templates-background")
+    public void setAssembleTemplatesBackground(OptionalColorParameter assembleTemplatesBackground) {
+        this.assembleTemplatesBackground = assembleTemplatesBackground;
+    }
+
+    @JIPipeDocumentation(name = "Assemble templates output", description = "If enabled, override the type of the generated assembly. If disabled, it has the same type as the input image.")
+    @JIPipeParameter("assemble-templates-output")
+    @JIPipeDataParameterSettings(dataBaseClass = ImagePlusData.class)
+    public OptionalDataInfoRefParameter getAssembleTemplatesOutput() {
+        return assembleTemplatesOutput;
+    }
+
+    @JIPipeParameter("assemble-templates-output")
+    public void setAssembleTemplatesOutput(OptionalDataInfoRefParameter assembleTemplatesOutput) {
+        this.assembleTemplatesOutput = assembleTemplatesOutput;
     }
 
     private static String loadScriptFromResources() {

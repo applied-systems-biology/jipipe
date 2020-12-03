@@ -97,6 +97,7 @@ progress.log("Hits after NMS: " + str(len(Hits_AfterNMS)))
 
 for hit in Hits_AfterNMS:
 
+    # progress.log(str(hit))
     # print hit
 
     if Bool_SearchRoi:  # Add offset of search ROI

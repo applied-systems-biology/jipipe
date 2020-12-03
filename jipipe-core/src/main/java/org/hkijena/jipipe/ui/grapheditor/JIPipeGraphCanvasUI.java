@@ -871,13 +871,10 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
                     currentConnectionDragTarget != currentConnectionDragSource &&
                     currentConnectionDragTarget.getNodeUI().getNode() != currentConnectionDragSource.getNodeUI().getNode()) {
                 JIPipeNodeUI nodeUI = currentConnectionDragTarget.getNodeUI();
-                Rectangle bounds = currentConnectionDragTarget.getBounds();
                 Point mousePosition = currentConnectionDragTarget.getMousePosition();
-                bounds.x += 5;
-                bounds.y += 5;
-                bounds.width -= 10;
-                bounds.height -= 10;
-                if(mousePosition != null && bounds.contains(mousePosition)) {
+                int width = currentConnectionDragTarget.getWidth();
+                int height = currentConnectionDragTarget.getHeight();
+                if(mousePosition != null &&mousePosition.x >= 5 && mousePosition.y >= 5 && mousePosition.x <= (width - 5) && mousePosition.y <= (height - 5)) {
                     targetPoint = nodeUI.getSlotLocation(currentConnectionDragTarget.getSlot());
                     targetPoint.add(nodeUI.getLocation());
                 }

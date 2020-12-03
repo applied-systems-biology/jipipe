@@ -43,6 +43,8 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.color.ArrangeChannelsA
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.color.CombineChannelsToRGBAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.color.InvertColorsAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.color.MergeChannelsAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.color.SetToColorAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.color.SetToValueAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.color.SplitChannelsAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.color.SplitRGBChannelsAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.contrast.CLAHEContrastEnhancer;
@@ -89,6 +91,7 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.transform.TransformEqu
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.transform.TransformExpandCanvas2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.transform.TransformFlip2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.transform.TransformRotate2DAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.transform.TransformRotateFree2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.transform.TransformScale2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.transform.TransformScale3DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejdatatypes.algorithms.DisplayRangeCalibrationAlgorithm;
@@ -398,6 +401,7 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
     private void registerTransformationAlgorithms() {
         registerNodeType("ij1-transform-flip2d", TransformFlip2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/object-flip-horizontal.png"));
         registerNodeType("ij1-transform-rotate2d", TransformRotate2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/transform-rotate.png"));
+        registerNodeType("ij1-transform-rotate2d-free", TransformRotateFree2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/transform-rotate.png"));
         registerNodeType("ij1-transform-scale2d", TransformScale2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/transform-scale.png"));
         registerNodeType("ij1-transform-scale3d", TransformScale3DAlgorithm.class, UIUtils.getIconURLFromResources("actions/transform-scale.png"));
         registerNodeType("ij1-transform-crop2d", TransformCrop2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/image-crop.png"));
@@ -562,6 +566,8 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         registerNodeType("ij1-color-split-channels", SplitChannelsAlgorithm.class, UIUtils.getIconURLFromResources("actions/split.png"));
         registerNodeType("ij1-color-combine-rgb", CombineChannelsToRGBAlgorithm.class, UIUtils.getIconURLFromResources("actions/colors-rgb.png"));
         registerNodeType("ij1-color-split-rgb", SplitRGBChannelsAlgorithm.class, UIUtils.getIconURLFromResources("actions/channelmixer.png"));
+        registerNodeType("ij1-color-set-to-color", SetToColorAlgorithm.class, UIUtils.getIconURLFromResources("actions/color-fill.png"));
+        registerNodeType("ij1-color-set-to-grayscale-value", SetToValueAlgorithm.class, UIUtils.getIconURLFromResources("actions/color-fill.png"));
 
         registerEnumParameterType("ij1-color-merge-channels:channel-color", MergeChannelsAlgorithm.ChannelColor.class,
                 "Channel color", "Available channel colors");

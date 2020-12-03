@@ -27,6 +27,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyNullPointerException;
 import org.hkijena.jipipe.extensions.imagejdatatypes.ImageJDataTypesSettings;
 import org.hkijena.jipipe.extensions.imagejdatatypes.display.CacheAwareImagePlusDataViewerPanel;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.PathUtils;
 
@@ -115,7 +116,8 @@ public class ImagePlusData implements JIPipeData {
         boolean smooth = factor < 0;
         int imageWidth = (int) (image.getWidth() * factor);
         int imageHeight = (int) (image.getHeight() * factor);
-        ImageProcessor resized = image.getProcessor().resize(imageWidth, imageHeight, smooth);
+        ImagePlus rgbImage = ImageJUtils.channelsToRGB(image);
+        ImageProcessor resized = rgbImage.getProcessor().resize(imageWidth, imageHeight, smooth);
         BufferedImage bufferedImage = resized.getBufferedImage();
         return new JLabel(new ImageIcon(bufferedImage));
     }

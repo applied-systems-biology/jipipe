@@ -13,10 +13,7 @@
 
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.transform;
 
-import ij.IJ;
 import ij.ImagePlus;
-import ij.ImageStack;
-import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -28,6 +25,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.parameters.roi.Anchor;
 import org.hkijena.jipipe.extensions.parameters.roi.IntModificationParameter;
 
@@ -64,86 +62,7 @@ public class TransformExpandCanvas2DAlgorithm extends JIPipeIteratingAlgorithm {
         int wNew = xAxis.apply(wOld);
         int hNew = yAxis.apply(hOld);
 
-        int xOff, yOff;
-        int xC = (wNew - wOld) / 2;    // offset for centered
-        int xR = (wNew - wOld);        // offset for right
-        int yC = (hNew - hOld) / 2;    // offset for centered
-        int yB = (hNew - hOld);        // offset for bottom
-
-        switch (anchor) {
-            case TopLeft:    // TL
-                xOff = 0;
-                yOff = 0;
-                break;
-            case TopCenter:    // TC
-                xOff = xC;
-                yOff = 0;
-                break;
-            case TopRight:    // TR
-                xOff = xR;
-                yOff = 0;
-                break;
-            case CenterLeft: // CL
-                xOff = 0;
-                yOff = yC;
-                break;
-            case CenterCenter: // C
-                xOff = xC;
-                yOff = yC;
-                break;
-            case CenterRight:    // CR
-                xOff = xR;
-                yOff = yC;
-                break;
-            case BottomLeft: // BL
-                xOff = 0;
-                yOff = yB;
-                break;
-            case BottomCenter: // BC
-                xOff = xC;
-                yOff = yB;
-                break;
-            case BottomRight: // BR
-                xOff = xR;
-                yOff = yB;
-                break;
-            default: // center
-                xOff = xC;
-                yOff = yC;
-                break;
-        }
-
-        if (imp.isStack()) {
-            dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(new ImagePlus("Expanded", expandStack(imp.getStack(), wNew, hNew, xOff, yOff))), progressInfo);
-        } else {
-            dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(new ImagePlus("Expanded", expandImage(imp.getProcessor(), wNew, hNew, xOff, yOff))), progressInfo);
-        }
-    }
-
-    public ImageStack expandStack(ImageStack stackOld, int wNew, int hNew, int xOff, int yOff) {
-        int nFrames = stackOld.getSize();
-        ImageProcessor ipOld = stackOld.getProcessor(1);
-
-        ImageStack stackNew = new ImageStack(wNew, hNew, stackOld.getColorModel());
-        ImageProcessor ipNew;
-
-        for (int i = 1; i <= nFrames; i++) {
-            IJ.showProgress((double) i / nFrames);
-            ipNew = ipOld.createProcessor(wNew, hNew);
-            ipNew.setColor(backgroundColor);
-            ipNew.fill();
-            ipNew.insert(stackOld.getProcessor(i), xOff, yOff);
-            stackNew.addSlice(stackOld.getSliceLabel(i), ipNew);
-        }
-        return stackNew;
-    }
-
-    public ImageProcessor expandImage(ImageProcessor ipOld, int wNew, int hNew, int xOff, int yOff) {
-        ImageProcessor ipNew = ipOld.createProcessor(wNew, hNew);
-        ipNew.setColor(backgroundColor);
-        ipNew.fill();
-        ipNew.insert(ipOld, xOff, yOff);
-        return ipNew;
+        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(ImageJUtils.expandImageCanvas(imp, backgroundColor, wNew, hNew, anchor)), progressInfo);
     }
 
     @JIPipeDocumentation(name = "X axis", description = "Defines the size of the output canvas")

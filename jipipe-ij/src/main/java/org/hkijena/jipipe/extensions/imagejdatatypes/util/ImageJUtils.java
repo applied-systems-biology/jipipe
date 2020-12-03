@@ -13,12 +13,16 @@
 
 package org.hkijena.jipipe.extensions.imagejdatatypes.util;
 
+import com.google.common.collect.ImmutableList;
+import gnu.trove.list.TIntList;
+import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.map.TIntIntMap;
 import gnu.trove.map.hash.TIntIntHashMap;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.ImageStack;
 import ij.WindowManager;
+import ij.gui.PolygonRoi;
 import ij.plugin.PlugIn;
 import ij.process.ByteProcessor;
 import ij.process.ColorProcessor;
@@ -27,10 +31,16 @@ import ij.process.ImageProcessor;
 import ij.process.ImageStatistics;
 import ij.process.LUT;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.extensions.parameters.roi.Anchor;
 import org.hkijena.jipipe.utils.ImageJCalibrationMode;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.Color;
+import java.awt.Rectangle;
+import java.awt.Shape;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.PathIterator;
+import java.awt.geom.Rectangle2D;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -49,8 +59,116 @@ public class ImageJUtils {
     }
 
     /**
+     * Rotates the image by a specified amount of degrees to the right
+     * @param img the image
+     * @param degrees the degrees
+     * @param expandCanvas if the canvas should be expanded
+     * @param background the background (if non-90-degree angles)
+     * @param addRoi if the image should be overlaid with ROI indicating the area of the content
+     * @param progressInfo the progress
+     * @return the image
+     */
+    public static ImagePlus rotate(ImagePlus img, double degrees, boolean expandCanvas, Color background, boolean addRoi, JIPipeProgressInfo progressInfo) {
+        if(degrees == 0)
+            return img.duplicate();
+        if(degrees % 90 == 0) {
+            ImageStack stack;
+            int width;
+            int height;
+            if(degrees < 0) {
+                int rotations = (int)(degrees) / -90;
+                width = (rotations % 2 == 0) ? img.getWidth() : img.getHeight();
+                height = (rotations % 2 == 0) ? img.getHeight() : img.getWidth();
+                stack = new ImageStack(width, height, img.getStack().getColorModel());
+                forEachSlice(img, ip -> {
+                    ImageProcessor processor = ip;
+                    for (int i = 0; i < rotations; i++) {
+                        processor = processor.rotateLeft();
+                    }
+                    stack.addSlice(processor);
+                }, progressInfo);
+            }
+            else {
+                int rotations = (int)(degrees) / 90;
+                width = (rotations % 2 == 0) ? img.getWidth() : img.getHeight();
+                height = (rotations % 2 == 0) ? img.getHeight() : img.getWidth();
+                stack = new ImageStack(width, height, img.getStack().getColorModel());
+                forEachSlice(img, ip -> {
+                    ImageProcessor processor = ip;
+                    for (int i = 0; i < rotations; i++) {
+                        processor = processor.rotateRight();
+                    }
+                    stack.addSlice(processor);
+                }, progressInfo);
+            }
+            ImagePlus imagePlus = new ImagePlus(img.getTitle() + "_Rotated" + degrees, stack);
+            if(addRoi)
+                imagePlus.setRoi(new Rectangle(0,0,width, height));
+            imagePlus.setDimensions(img.getNChannels(), img.getNSlices(), img.getNFrames());
+            return imagePlus;
+        }
+        else {
+            // Find the ROI and canvas size
+            Rectangle originalRoi = new Rectangle(0,0,img.getWidth(), img.getHeight());
+            Rectangle rotatedBoundingRectangle;
+            PolygonRoi roi;
+            {
+                AffineTransform affineTransform = new AffineTransform();
+                affineTransform.rotate(2 * Math.PI * (degrees / 360), originalRoi.getCenterX(), originalRoi.getCenterY());
+                Shape transformedShape = affineTransform.createTransformedShape(originalRoi);
+                rotatedBoundingRectangle = transformedShape.getBounds();
+                PathIterator pathIterator = transformedShape.getPathIterator(null);
+                double[] coords = new double[2];
+                TIntList xCoords = new TIntArrayList();
+                TIntList yCoords = new TIntArrayList();
+                while(!pathIterator.isDone()) {
+                    pathIterator.currentSegment(coords);
+                    pathIterator.next();
+                    int x = (int) coords[0];
+                    int y = (int) coords[1];
+                    if(expandCanvas) {
+                        x -= rotatedBoundingRectangle.x;
+                        y -= rotatedBoundingRectangle.y;
+                    }
+                    xCoords.add(x);
+                    yCoords.add(y);
+                }
+                roi = new PolygonRoi(xCoords.toArray(), yCoords.toArray(), xCoords.size(), PolygonRoi.POLYGON);
+            }
+            if(expandCanvas) {
+                System.out.println(rotatedBoundingRectangle);
+                int newWidth = rotatedBoundingRectangle.width;
+                int newHeight = rotatedBoundingRectangle.height;
+
+                // Expand the image
+                ImagePlus imagePlus = expandImageCanvas(img, background, newWidth, newHeight, Anchor.CenterCenter);
+                forEachSlice(imagePlus, ip -> {
+                    ip.setColor(background);
+                    ip.rotate(degrees);
+                    ip.fillOutside(roi);
+                }, progressInfo);
+                imagePlus.setTitle(img.getTitle() + "_Rotated" + degrees);
+                if(addRoi)
+                    imagePlus.setRoi(roi);
+                return imagePlus;
+            }
+            else {
+                ImagePlus imagePlus = img.duplicate();
+                forEachSlice(imagePlus, ip -> {
+                    ip.setColor(background);
+                    ip.rotate(degrees);
+                    ip.fillOutside(roi);
+                }, progressInfo);
+                imagePlus.setTitle(img.getTitle() + "_Rotated" + degrees);
+                if(addRoi)
+                    imagePlus.setRoi(roi);
+                return imagePlus;
+            }
+        }
+    }
+
+    /**
      * Runs the function for each slice
-     *
      * @param img          the image
      * @param function     the function
      * @param progressInfo the progress
@@ -140,8 +258,7 @@ public class ImageJUtils {
 
     /**
      * Runs the function for each slice
-     *
-     * @param img          the image
+     *  @param img          the image
      * @param function     the function
      * @param progressInfo the progress
      */
@@ -159,8 +276,7 @@ public class ImageJUtils {
 
     /**
      * Runs the function for each Z, C, and T slice.
-     *
-     * @param img          the image
+     *  @param img          the image
      * @param function     the function
      * @param progressInfo the progress
      */
@@ -186,7 +302,6 @@ public class ImageJUtils {
      * Runs the function for each Z and T slice.
      * The function consumes a map from channel index to the channel slice.
      * The slice index channel is always set to -1
-     *
      * @param img          the image
      * @param function     the function
      * @param progressInfo the progress
@@ -477,6 +592,99 @@ public class ImageJUtils {
             imp.setDisplayRange(min, max, channels);
         else
             imp.setDisplayRange(min, max);
+    }
+
+    public static ImageStack expandImageStackCanvas(ImageStack stackOld, Color backgroundColor, int wNew, int hNew, int xOff, int yOff) {
+        int nFrames = stackOld.getSize();
+        ImageProcessor ipOld = stackOld.getProcessor(1);
+
+        ImageStack stackNew = new ImageStack(wNew, hNew, stackOld.getColorModel());
+        ImageProcessor ipNew;
+
+        for (int i = 1; i <= nFrames; i++) {
+            IJ.showProgress((double) i / nFrames);
+            ipNew = ipOld.createProcessor(wNew, hNew);
+            ipNew.setColor(backgroundColor);
+            ipNew.fill();
+            ipNew.insert(stackOld.getProcessor(i), xOff, yOff);
+            stackNew.addSlice(stackOld.getSliceLabel(i), ipNew);
+        }
+        return stackNew;
+    }
+
+    public static ImageProcessor expandImageProcessorCanvas(ImageProcessor ipOld, Color backgroundColor, int wNew, int hNew, int xOff, int yOff) {
+        ImageProcessor ipNew = ipOld.createProcessor(wNew, hNew);
+        ipNew.setColor(backgroundColor);
+        ipNew.fill();
+        ipNew.insert(ipOld, xOff, yOff);
+        return ipNew;
+    }
+
+    /**
+     * Expands the canvas of an image
+     * @param imp the image
+     * @param backgroundColor the background color
+     * @param newWidth the new width
+     * @param newHeight the new height
+     * @param anchor the anchor that determines where to expand from
+     * @return expanded image
+     */
+    public static ImagePlus expandImageCanvas(ImagePlus imp, Color backgroundColor, int newWidth, int newHeight, Anchor anchor) {
+        int wOld = imp.getWidth();
+        int hOld = imp.getHeight();
+        int xOff, yOff;
+        int xC = (newWidth - wOld) / 2;    // offset for centered
+        int xR = (newWidth - wOld);        // offset for right
+        int yC = (newHeight - hOld) / 2;    // offset for centered
+        int yB = (newHeight - hOld);        // offset for bottom
+
+        switch (anchor) {
+            case TopLeft:    // TL
+                xOff = 0;
+                yOff = 0;
+                break;
+            case TopCenter:    // TC
+                xOff = xC;
+                yOff = 0;
+                break;
+            case TopRight:    // TR
+                xOff = xR;
+                yOff = 0;
+                break;
+            case CenterLeft: // CL
+                xOff = 0;
+                yOff = yC;
+                break;
+            case CenterCenter: // C
+                xOff = xC;
+                yOff = yC;
+                break;
+            case CenterRight:    // CR
+                xOff = xR;
+                yOff = yC;
+                break;
+            case BottomLeft: // BL
+                xOff = 0;
+                yOff = yB;
+                break;
+            case BottomCenter: // BC
+                xOff = xC;
+                yOff = yB;
+                break;
+            case BottomRight: // BR
+                xOff = xR;
+                yOff = yB;
+                break;
+            default: // center
+                xOff = xC;
+                yOff = yC;
+                break;
+        }
+        if (imp.isStack()) {
+            return new ImagePlus(imp.getTitle() + "_Expanded", expandImageStackCanvas(imp.getImageStack(), backgroundColor, newWidth, newHeight, xOff, yOff));
+        } else {
+            return new ImagePlus(imp.getTitle() + "_Expanded", expandImageProcessorCanvas(imp.getProcessor(), backgroundColor, newWidth, newHeight, xOff, yOff));
+        }
     }
 
     public static class GradientStop implements Comparable<GradientStop> {

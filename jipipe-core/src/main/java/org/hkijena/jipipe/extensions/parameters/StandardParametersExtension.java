@@ -61,6 +61,8 @@ import org.hkijena.jipipe.extensions.parameters.primitives.*;
 import org.hkijena.jipipe.extensions.parameters.references.JIPipeAlgorithmIconRef;
 import org.hkijena.jipipe.extensions.parameters.references.JIPipeDataInfoRef;
 import org.hkijena.jipipe.extensions.parameters.references.JIPipeNodeInfoRef;
+import org.hkijena.jipipe.extensions.parameters.references.OptionalDataInfoRefParameter;
+import org.hkijena.jipipe.extensions.parameters.references.OptionalNodeInfoRefParameter;
 import org.hkijena.jipipe.extensions.parameters.roi.*;
 import org.hkijena.jipipe.extensions.parameters.scripts.ImageJMacro;
 import org.hkijena.jipipe.extensions.parameters.scripts.PythonScript;
@@ -586,6 +588,13 @@ public class StandardParametersExtension extends JIPipePrepackagedDefaultJavaExt
                 "Data type",
                 "Reference to a data type",
                 JIPipeDataInfoRefParameterEditorUI.class);
+        registerParameterType("optional-data-type",
+                OptionalDataInfoRefParameter.class,
+                null,
+                null,
+                "Optional data type",
+                "Optional reference to a data type",
+                null);
         registerParameterType("algorithm-type",
                 JIPipeNodeInfoRef.class,
                 JIPipeNodeInfoRef::new,
@@ -593,6 +602,13 @@ public class StandardParametersExtension extends JIPipePrepackagedDefaultJavaExt
                 "Algorithm type",
                 "Reference to an algorithm type",
                 JIPipeNodeInfoRefParameterEditorUI.class);
+        registerParameterType("optional-node-type",
+                OptionalNodeInfoRefParameter.class,
+                null,
+                null,
+                "Optional node type",
+                "Optional reference to a node type",
+                null);
 
         // Icon types
         registerParameterType("algorithm-type-icon",
