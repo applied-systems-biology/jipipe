@@ -76,7 +76,7 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
                     "Please contact the plugin developers and tell them to let algorithm '" + getInfo().getId() + "' inherit from 'JIPipeIteratingAlgorithm' instead.");
         if (isPassThrough() && canPassThrough()) {
             progressInfo.log("Data passed through to output");
-            runPassThrough();
+            runPassThrough(progressInfo);
             return;
         }
 

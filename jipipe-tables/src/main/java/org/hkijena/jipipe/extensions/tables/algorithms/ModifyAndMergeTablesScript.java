@@ -108,7 +108,7 @@ public class ModifyAndMergeTablesScript extends JIPipeAlgorithm {
     public void run(JIPipeProgressInfo progressInfo) {
         if (isPassThrough() && canPassThrough()) {
             progressInfo.log("Data passed through to output");
-            runPassThrough();
+            runPassThrough(progressInfo);
             return;
         }
         this.pythonInterpreter = new PythonInterpreter();

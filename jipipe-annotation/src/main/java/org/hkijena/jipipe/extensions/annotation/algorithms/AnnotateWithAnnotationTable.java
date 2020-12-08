@@ -61,7 +61,7 @@ public class AnnotateWithAnnotationTable extends JIPipeIteratingAlgorithm {
     public void runParameterSet(JIPipeProgressInfo progressInfo, List<JIPipeAnnotation> parameterAnnotations) {
         if (isPassThrough() && canPassThrough()) {
             progressInfo.log("Data passed through to output");
-            runPassThrough();
+            runPassThrough(progressInfo);
             return;
         }
 
@@ -139,8 +139,8 @@ public class AnnotateWithAnnotationTable extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runPassThrough() {
-        getFirstOutputSlot().addData(getInputSlot("Data"));
+    protected void runPassThrough(JIPipeProgressInfo progressInfo) {
+        getFirstOutputSlot().addData(getInputSlot("Data"), progressInfo);
     }
 
     @JIPipeDocumentation(name = "Replace all existing annotations", description = "If enabled, existing annotations will not be carried over into the output.")

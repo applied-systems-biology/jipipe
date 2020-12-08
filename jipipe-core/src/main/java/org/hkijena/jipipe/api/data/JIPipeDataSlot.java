@@ -461,9 +461,11 @@ public class JIPipeDataSlot {
      * Data is copied without duplication.
      *
      * @param sourceSlot The other slot
+     * @param progressInfo the progress
      */
-    public void addData(JIPipeDataSlot sourceSlot) {
+    public void addData(JIPipeDataSlot sourceSlot, JIPipeProgressInfo progressInfo) {
         for (int row = 0; row < sourceSlot.getRowCount(); ++row) {
+            progressInfo.resolveAndLog("Copying data from slot to slot", row, sourceSlot.getRowCount());
             addData(sourceSlot.getVirtualData(row), sourceSlot.getAnnotations(row), JIPipeAnnotationMergeStrategy.Merge);
         }
     }

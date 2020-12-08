@@ -49,10 +49,10 @@ public class MergeAnnotations extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runPassThrough() {
+    protected void runPassThrough(JIPipeProgressInfo progressInfo) {
         for (JIPipeDataSlot inputSlot : getInputSlots()) {
             JIPipeDataSlot outputSlot = getOutputSlot(inputSlot.getName());
-            outputSlot.addData(inputSlot);
+            outputSlot.addData(inputSlot, progressInfo);
         }
     }
 }

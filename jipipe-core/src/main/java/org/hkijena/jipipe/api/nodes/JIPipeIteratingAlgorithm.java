@@ -102,7 +102,7 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
 
         if (isPassThrough() && canPassThrough()) {
             progressInfo.log("Data passed through to output");
-            runPassThrough();
+            runPassThrough(progressInfo);
             return;
         }
 

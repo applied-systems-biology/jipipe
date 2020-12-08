@@ -89,7 +89,7 @@ public class JIPipeGraphRunner implements JIPipeRunnable {
                         "Do not click 'Cancel' if you do not want to cancel the execution.");
             JIPipeDataSlot slot = traversedSlots.get(index);
             info.setProgress(index, traversedSlots.size());
-            JIPipeProgressInfo subInfo = info.resolveAndLog("Algorithm: " + slot.getNode().getName());
+            JIPipeProgressInfo subProgress = info.resolveAndLog("Algorithm: " + slot.getNode().getName());
 
             // If an algorithm cannot be executed, skip it automatically
             if (unExecutableAlgorithms.contains(slot.getNode()))
@@ -100,7 +100,7 @@ public class JIPipeGraphRunner implements JIPipeRunnable {
                     // Copy data from source (merging rows)
                     Set<JIPipeDataSlot> sourceSlots = algorithmGraph.getSourceSlots(slot);
                     for (JIPipeDataSlot sourceSlot : sourceSlots) {
-                        slot.addData(sourceSlot);
+                        slot.addData(sourceSlot, subProgress);
                     }
                 }
             } else if (slot.isOutput()) {
@@ -109,13 +109,13 @@ public class JIPipeGraphRunner implements JIPipeRunnable {
 
                 // Check if this is a postprocessor
                 if (!executedAlgorithms.contains(node) && postprocessorNodes.contains(node)) {
-                    subInfo.resolveAndLog("Node is postprocessor. Deferring the run.");
+                    subProgress.resolveAndLog("Node is postprocessor. Deferring the run.");
                 }
 
                 // Ensure the algorithm has run
                 if (!executedAlgorithms.contains(node)) {
                     try {
-                        node.run(subInfo);
+                        node.run(subProgress);
                     } catch (Exception e) {
                         throw new UserFriendlyRuntimeException("Algorithm " + node + " raised an exception!",
                                 e,

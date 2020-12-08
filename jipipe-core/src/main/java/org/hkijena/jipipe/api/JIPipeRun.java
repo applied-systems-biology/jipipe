@@ -256,7 +256,7 @@ public class JIPipeRun implements JIPipeRunnable {
             if (slot.isInput()) {
                 // Copy data from source
                 for (JIPipeDataSlot sourceSlot : algorithmGraph.getSourceSlots(slot)) {
-                    slot.addData(sourceSlot);
+                    slot.addData(sourceSlot, subProgress);
                 }
 
                 // Check if we can flush the output that sourced the input
@@ -383,7 +383,7 @@ public class JIPipeRun implements JIPipeRunnable {
             }
             for (JIPipeDataSlot outputSlot : algorithm.getOutputSlots()) {
                 outputSlot.clearData();
-                outputSlot.addData(cachedData.get(outputSlot.getName()));
+                outputSlot.addData(cachedData.get(outputSlot.getName()), progressInfo);
             }
             progressInfo.log("Cache data access successful.");
             return true;

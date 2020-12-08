@@ -135,7 +135,7 @@ public abstract class JIPipeParameterSlotAlgorithm extends JIPipeAlgorithm {
     public void run(JIPipeProgressInfo progressInfo) {
         if (isPassThrough() && canPassThrough()) {
             progressInfo.log("Data passed through to output");
-            runPassThrough();
+            runPassThrough(progressInfo);
             return;
         }
         if (parameterSlotAlgorithmSettings.hasParameterSlot) {

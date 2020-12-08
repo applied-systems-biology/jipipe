@@ -108,7 +108,7 @@ public class MultiParameterAlgorithm extends JIPipeAlgorithm {
             ParametersData parametersData = parameterSlot.getData(row, ParametersData.class, progressInfo);
 
             passParameters(parametersData, parameters);
-            passInputData();
+            passInputData(progressInfo);
             algorithmInstance.run(parameterProgress);
             passOutputData(parameters, changedParameterTraits, progressInfo);
 
@@ -143,11 +143,11 @@ public class MultiParameterAlgorithm extends JIPipeAlgorithm {
         }
     }
 
-    private void passInputData() {
+    private void passInputData(JIPipeProgressInfo progressInfo) {
         for (JIPipeDataSlot wrappedInputSlot : algorithmInstance.getInputSlots()) {
             JIPipeDataSlot inputSlot = getInputSlot("Data " + wrappedInputSlot.getName());
             wrappedInputSlot.clearData();
-            wrappedInputSlot.addData(inputSlot);
+            wrappedInputSlot.addData(inputSlot, progressInfo);
         }
     }
 

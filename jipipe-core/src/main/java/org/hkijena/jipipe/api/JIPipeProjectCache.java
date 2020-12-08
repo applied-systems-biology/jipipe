@@ -88,7 +88,7 @@ public class JIPipeProjectCache {
 
         JIPipeDataSlot slotCopy = new JIPipeDataSlot(slot.getInfo(), source);
         slotCopy.getInfo().setVirtual(VirtualDataSettings.getInstance().isVirtualCache());
-        slotCopy.addData(slot);
+        slotCopy.addData(slot, progressInfo);
         slotCopy.applyVirtualState(progressInfo);
         slotMap.put(slot.getName(), slotCopy);
         addToStatistics(slotCopy);

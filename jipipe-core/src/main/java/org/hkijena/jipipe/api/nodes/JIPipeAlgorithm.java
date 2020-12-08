@@ -79,7 +79,7 @@ public abstract class JIPipeAlgorithm extends JIPipeGraphNode {
     public void run(JIPipeProgressInfo progressInfo) {
         if (passThrough && canAutoPassThrough()) {
             progressInfo.log("Data passed through to output");
-            runPassThrough();
+            runPassThrough(progressInfo);
         }
     }
 
@@ -96,8 +96,9 @@ public abstract class JIPipeAlgorithm extends JIPipeGraphNode {
 
     /**
      * Runs the pass through. Override this for custom implementations if you want
+     * @param progressInfo the progress
      */
-    protected void runPassThrough() {
+    protected void runPassThrough(JIPipeProgressInfo progressInfo) {
         if (!canAutoPassThrough()) {
             throw new RuntimeException("Auto pass through not allowed!");
         }
@@ -105,7 +106,7 @@ public abstract class JIPipeAlgorithm extends JIPipeGraphNode {
             return;
         if (getOutputSlots().isEmpty())
             return;
-        getFirstOutputSlot().addData(getFirstInputSlot());
+        getFirstOutputSlot().addData(getFirstInputSlot(), progressInfo);
     }
 
     /**
