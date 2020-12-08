@@ -112,25 +112,22 @@ public class MergeTableColumnsAlgorithm extends JIPipeMergingAlgorithm {
             dataBatch.addOutputData(getFirstOutputSlot(), outputData, progressInfo);
         }
         else {
-            Set<String> existing = new HashSet<>();
-
             ResultsTableData outputData = new ResultsTableData();
             Map<String, ResultsTableData> conditionTables = new HashMap<>();
             StringBuilder stringBuilder = new StringBuilder();
+            Set<String> existing = new HashSet<>();
 
             // Collect all per-condition tables
             for (ResultsTableData inputTable : inputTables) {
                 ResultsTableData uniqueColumnInputTable = (ResultsTableData) inputTable.duplicate();
 
                 // Rename to make columns unique (except merged ones)
-                existing.addAll(uniqueColumnInputTable.getColumnNames());
                 for (String columnName : ImmutableList.copyOf(uniqueColumnInputTable.getColumnNames())) {
                     if(mergedColumns.contains(columnName))
                         continue;
-                    existing.remove(columnName);
                     String newName = StringUtils.makeUniqueString(columnName, ".", existing);
                     existing.add(newName);
-                    inputTable.renameColumn(columnName, newName);
+                    uniqueColumnInputTable.renameColumn(columnName, newName);
                 }
 
                 for (int row = 0; row < uniqueColumnInputTable.getRowCount(); row++) {
