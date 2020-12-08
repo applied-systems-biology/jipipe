@@ -159,7 +159,7 @@ public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm {
         }
 
         // Inject path data
-        for (JIPipeDataSlot inputSlot : getInputSlots()) {
+        for (JIPipeDataSlot inputSlot : getNonParameterInputSlots()) {
             JIPipeData data = dataBatch.getInputData(inputSlot, JIPipeData.class, progressInfo);
             if (data instanceof PathData) {
                 if (!MacroUtils.isValidVariableName(inputSlot.getName()))
@@ -260,7 +260,7 @@ public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm {
         for (int i = 0; i < WindowManager.getImageCount(); ++i) {
             initiallyOpenedImages.add(WindowManager.getImage(i + 1));
         }
-        for (JIPipeDataSlot inputSlot : getInputSlots()) {
+        for (JIPipeDataSlot inputSlot : getNonParameterInputSlots()) {
             JIPipeData data = dataBatch.getInputData(inputSlot, JIPipeData.class, progressInfo);
             if (data instanceof PathData)
                 continue;
@@ -271,9 +271,9 @@ public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm {
 
     @Override
     public void reportValidity(JIPipeValidityReport report) {
-        long roiInputSlotCount = getInputSlots().stream().filter(slot -> slot.getAcceptedDataType() == ROIListData.class).count();
+        long roiInputSlotCount = getNonParameterInputSlots().stream().filter(slot -> slot.getAcceptedDataType() == ROIListData.class).count();
         long roiOutputSlotCount = getOutputSlots().stream().filter(slot -> slot.getAcceptedDataType() == ROIListData.class).count();
-        long resultsTableInputSlotCount = getInputSlots().stream().filter(slot -> slot.getAcceptedDataType() == ResultsTableData.class).count();
+        long resultsTableInputSlotCount = getNonParameterInputSlots().stream().filter(slot -> slot.getAcceptedDataType() == ResultsTableData.class).count();
         long resultsTableOutputSlotCount = getOutputSlots().stream().filter(slot -> slot.getAcceptedDataType() == ResultsTableData.class).count();
         if (roiInputSlotCount > 1) {
             report.reportIsInvalid("Too many ROI inputs!",
@@ -309,7 +309,7 @@ public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm {
         }
 
         if (strictMode) {
-            for (JIPipeDataSlot inputSlot : getInputSlots()) {
+            for (JIPipeDataSlot inputSlot : getNonParameterInputSlots()) {
                 if (ImagePlusData.class.isAssignableFrom(inputSlot.getAcceptedDataType())) {
                     if (!code.getCode().contains("\"" + inputSlot.getName() + "\"")) {
                         report.reportIsInvalid("Strict mode: Unused input image",
