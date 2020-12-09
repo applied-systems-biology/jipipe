@@ -124,13 +124,13 @@ public class IteratingPythonScriptAlgorithm extends JIPipeIteratingAlgorithm {
         pythonInterpreter.set("data_batch", dataBatch);
         PyDictionary inputSlotMap = new PyDictionary();
         PyDictionary outputSlotMap = new PyDictionary();
-        for (JIPipeDataSlot inputSlot : getInputSlots()) {
+        for (JIPipeDataSlot inputSlot : getNonParameterInputSlots()) {
             inputSlotMap.put(inputSlot.getName(), inputSlot);
         }
         for (JIPipeDataSlot outputSlot : getOutputSlots()) {
             outputSlotMap.put(outputSlot.getName(), outputSlot);
         }
-        pythonInterpreter.set("input_slots", new ArrayList<>(getInputSlots()));
+        pythonInterpreter.set("input_slots", new ArrayList<>(getNonParameterInputSlots()));
         pythonInterpreter.set("output_slots", new ArrayList<>(getOutputSlots()));
         pythonInterpreter.set("input_slot_map", inputSlotMap);
         pythonInterpreter.set("output_slot_map", outputSlotMap);

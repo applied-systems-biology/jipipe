@@ -37,7 +37,7 @@ public class MergeAnnotations extends JIPipeIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        for (JIPipeDataSlot inputSlot : getInputSlots()) {
+        for (JIPipeDataSlot inputSlot : getNonParameterInputSlots()) {
             JIPipeDataSlot outputSlot = getOutputSlot(inputSlot.getName());
             dataBatch.addOutputData(outputSlot, dataBatch.getInputData(inputSlot, JIPipeData.class, progressInfo), progressInfo);
         }
@@ -50,7 +50,7 @@ public class MergeAnnotations extends JIPipeIteratingAlgorithm {
 
     @Override
     protected void runPassThrough(JIPipeProgressInfo progressInfo) {
-        for (JIPipeDataSlot inputSlot : getInputSlots()) {
+        for (JIPipeDataSlot inputSlot : getNonParameterInputSlots()) {
             JIPipeDataSlot outputSlot = getOutputSlot(inputSlot.getName());
             outputSlot.addData(inputSlot, progressInfo);
         }

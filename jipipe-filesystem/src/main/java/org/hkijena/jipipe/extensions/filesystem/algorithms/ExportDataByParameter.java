@@ -28,6 +28,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FolderData;
 import org.hkijena.jipipe.extensions.parameters.primitives.FilePathParameterSettings;
 import org.hkijena.jipipe.ui.components.PathEditor;
+import org.hkijena.jipipe.utils.StringUtils;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -77,7 +78,7 @@ public class ExportDataByParameter extends JIPipeAlgorithm {
             for (JIPipeDataSlot inputSlot : getInputSlots()) {
                 if (progressInfo.isCancelled().get())
                     return;
-                exporter.writeToFolder(Collections.singletonList(inputSlot), outputPath.resolve(inputSlot.getName()), progressInfo.resolve("Slot '" + inputSlot.getName() + "'"));
+                exporter.writeToFolder(Collections.singletonList(inputSlot), outputPath.resolve(StringUtils.makeFilesystemCompatible(inputSlot.getName())), progressInfo.resolve("Slot '" + inputSlot.getName() + "'"));
                 getFirstOutputSlot().addData(new FolderData(outputPath.resolve(inputSlot.getName())), progressInfo);
             }
         } else {
