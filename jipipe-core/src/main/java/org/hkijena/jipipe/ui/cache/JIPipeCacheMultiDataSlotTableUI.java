@@ -69,12 +69,13 @@ public class JIPipeCacheMultiDataSlotTableUI extends JIPipeProjectWorkbenchPanel
     /**
      * @param workbenchUI the workbench UI
      * @param slots       The slots
+     * @param withCompartmentAndAlgorithm
      */
-    public JIPipeCacheMultiDataSlotTableUI(JIPipeProjectWorkbench workbenchUI, List<JIPipeDataSlot> slots) {
+    public JIPipeCacheMultiDataSlotTableUI(JIPipeProjectWorkbench workbenchUI, List<JIPipeDataSlot> slots, boolean withCompartmentAndAlgorithm) {
         super(workbenchUI);
         this.slots = slots;
         table = new JXTable();
-        this.multiSlotTable = new JIPipeMergedDataSlotTable(table);
+        this.multiSlotTable = new JIPipeMergedDataSlotTable(table, withCompartmentAndAlgorithm);
         for (JIPipeDataSlot slot : slots) {
             multiSlotTable.add(getProject(), slot);
         }
@@ -271,12 +272,14 @@ public class JIPipeCacheMultiDataSlotTableUI extends JIPipeProjectWorkbenchPanel
 
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            JIPipeMergedDataSlotTable model = (JIPipeMergedDataSlotTable) table.getModel();
             TableCellRenderer defaultRenderer = table.getTableHeader().getDefaultRenderer();
             int modelColumn = table.convertColumnIndexToModel(column);
-            if (modelColumn < 6) {
+            int spacer = model.isWithCompartmentAndAlgorithm() ? 6 : 4;
+            if (modelColumn < spacer) {
                 return defaultRenderer.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
             } else {
-                String info = dataTable.getTraitColumns().get(modelColumn - 6);
+                String info = dataTable.getTraitColumns().get(modelColumn - spacer);
                 String html = String.format("<html><table><tr><td><img src=\"%s\"/></td><td>%s</tr>",
                         UIUtils.getIconFromResources("data-types/annotation.png"),
                         info);

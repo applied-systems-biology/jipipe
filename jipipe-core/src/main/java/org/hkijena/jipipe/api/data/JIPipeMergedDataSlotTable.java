@@ -46,9 +46,11 @@ public class JIPipeMergedDataSlotTable implements TableModel {
     private List<Component> previewCache = new ArrayList<>();
     private int previewCacheSize = GeneralDataSettings.getInstance().getPreviewSize();
     private JScrollPane scrollPane;
+    private boolean withCompartmentAndAlgorithm;
 
-    public JIPipeMergedDataSlotTable(JTable table) {
+    public JIPipeMergedDataSlotTable(JTable table, boolean withCompartmentAndAlgorithm) {
         this.table = table;
+        this.withCompartmentAndAlgorithm = withCompartmentAndAlgorithm;
     }
 
     /**
@@ -94,43 +96,78 @@ public class JIPipeMergedDataSlotTable implements TableModel {
 
     @Override
     public int getColumnCount() {
-        return traitColumns.size() + 6;
+        if(withCompartmentAndAlgorithm)
+            return traitColumns.size() + 6;
+        else
+            return traitColumns.size() + 4;
     }
 
     @Override
     public String getColumnName(int columnIndex) {
-        if (columnIndex == 0)
-            return "Compartment";
-        else if (columnIndex == 1)
-            return "Algorithm";
-        if (columnIndex == 2)
-            return "Index";
-        else if (columnIndex == 3)
-            return "Data type";
-        else if (columnIndex == 4)
-            return "Preview";
-        else if (columnIndex == 5)
-            return "String representation";
-        else
-            return traitColumns.get(columnIndex - 6);
+        if(withCompartmentAndAlgorithm) {
+            if (columnIndex == 0)
+                return "Compartment";
+            else if (columnIndex == 1)
+                return "Algorithm";
+            if (columnIndex == 2)
+                return "Index";
+            else if (columnIndex == 3)
+                return "Data type";
+            else if (columnIndex == 4)
+                return "Preview";
+            else if (columnIndex == 5)
+                return "String representation";
+            else
+                return traitColumns.get(columnIndex - 6);
+        }
+        else {
+            if (columnIndex == 0)
+                return "Index";
+            else if (columnIndex == 1)
+                return "Data type";
+            else if (columnIndex == 2)
+                return "Preview";
+            else if (columnIndex == 3)
+                return "String representation";
+            else
+                return traitColumns.get(columnIndex - 4);
+        }
     }
 
     @Override
     public Class<?> getColumnClass(int columnIndex) {
-        if (columnIndex == 0)
-            return JIPipeProjectCompartment.class;
-        else if (columnIndex == 1)
-            return JIPipeGraphNode.class;
-        else if (columnIndex == 2)
-            return Integer.class;
-        else if (columnIndex == 3)
-            return JIPipeDataInfo.class;
-        else if (columnIndex == 4)
-            return Component.class;
-        else if (columnIndex == 5)
-            return String.class;
-        else
-            return JIPipeAnnotation.class;
+        if(withCompartmentAndAlgorithm) {
+            if (columnIndex == 0)
+                return JIPipeProjectCompartment.class;
+            else if (columnIndex == 1)
+                return JIPipeGraphNode.class;
+            else if (columnIndex == 2)
+                return Integer.class;
+            else if (columnIndex == 3)
+                return JIPipeDataInfo.class;
+            else if (columnIndex == 4)
+                return Component.class;
+            else if (columnIndex == 5)
+                return String.class;
+            else
+                return JIPipeAnnotation.class;
+        }
+        else {
+            if (columnIndex == 0)
+                return Integer.class;
+            else if (columnIndex == 1)
+                return JIPipeDataInfo.class;
+            else if (columnIndex == 2)
+                return Component.class;
+            else if (columnIndex == 3)
+                return String.class;
+            else
+                return JIPipeAnnotation.class;
+        }
+    }
+
+    public boolean isWithCompartmentAndAlgorithm() {
+        return withCompartmentAndAlgorithm;
     }
 
     @Override
@@ -140,33 +177,61 @@ public class JIPipeMergedDataSlotTable implements TableModel {
 
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
-        if (columnIndex == 0)
-            return compartmentList.get(rowIndex);
-        else if (columnIndex == 1)
-            return algorithmList.get(rowIndex);
-        else if (columnIndex == 2)
-            return rowList.get(rowIndex);
-        else if (columnIndex == 3)
-            return JIPipeDataInfo.getInstance(slotList.get(rowIndex).getDataClass(rowList.get(rowIndex)));
-        else if (columnIndex == 4) {
-            revalidatePreviewCache();
-            Component preview = previewCache.get(rowIndex);
-            if (preview == null) {
-                if (GeneralDataSettings.getInstance().isGenerateCachePreviews()) {
-                    preview = new JIPipeCachedDataPreview(table, slotList.get(rowIndex).getVirtualData(rowList.get(rowIndex)), true);
-                    previewCache.set(rowIndex, preview);
-                } else {
-                    preview = new JLabel("N/A");
-                    previewCache.set(rowIndex, preview);
+        if(withCompartmentAndAlgorithm) {
+            if (columnIndex == 0)
+                return compartmentList.get(rowIndex);
+            else if (columnIndex == 1)
+                return algorithmList.get(rowIndex);
+            else if (columnIndex == 2)
+                return rowList.get(rowIndex);
+            else if (columnIndex == 3)
+                return JIPipeDataInfo.getInstance(slotList.get(rowIndex).getDataClass(rowList.get(rowIndex)));
+            else if (columnIndex == 4) {
+                revalidatePreviewCache();
+                Component preview = previewCache.get(rowIndex);
+                if (preview == null) {
+                    if (GeneralDataSettings.getInstance().isGenerateCachePreviews()) {
+                        preview = new JIPipeCachedDataPreview(table, slotList.get(rowIndex).getVirtualData(rowList.get(rowIndex)), true);
+                        previewCache.set(rowIndex, preview);
+                    } else {
+                        preview = new JLabel("N/A");
+                        previewCache.set(rowIndex, preview);
+                    }
                 }
+                return preview;
+            } else if (columnIndex == 5)
+                return "" + slotList.get(rowIndex).getVirtualData(rowList.get(rowIndex)).getStringRepresentation();
+            else {
+                String traitColumn = traitColumns.get(columnIndex - 6);
+                JIPipeDataSlot slot = slotList.get(rowIndex);
+                return slot.getAnnotationOr(rowList.get(rowIndex), traitColumn, null);
             }
-            return preview;
-        } else if (columnIndex == 5)
-            return "" + slotList.get(rowIndex).getVirtualData(rowList.get(rowIndex)).getStringRepresentation();
+        }
         else {
-            String traitColumn = traitColumns.get(columnIndex - 6);
-            JIPipeDataSlot slot = slotList.get(rowIndex);
-            return slot.getAnnotationOr(rowList.get(rowIndex), traitColumn, null);
+            if (columnIndex == 0)
+                return rowList.get(rowIndex);
+            else if (columnIndex == 1)
+                return JIPipeDataInfo.getInstance(slotList.get(rowIndex).getDataClass(rowList.get(rowIndex)));
+            else if (columnIndex == 2) {
+                revalidatePreviewCache();
+                Component preview = previewCache.get(rowIndex);
+                if (preview == null) {
+                    if (GeneralDataSettings.getInstance().isGenerateCachePreviews()) {
+                        preview = new JIPipeCachedDataPreview(table, slotList.get(rowIndex).getVirtualData(rowList.get(rowIndex)), true);
+                        previewCache.set(rowIndex, preview);
+                    } else {
+                        preview = new JLabel("N/A");
+                        previewCache.set(rowIndex, preview);
+                    }
+                }
+                return preview;
+            } else if (columnIndex == 3)
+                return "" + slotList.get(rowIndex).getVirtualData(rowList.get(rowIndex)).getStringRepresentation();
+            else {
+                String traitColumn = traitColumns.get(columnIndex - 4);
+                JIPipeDataSlot slot = slotList.get(rowIndex);
+                return slot.getAnnotationOr(rowList.get(rowIndex), traitColumn, null);
+            }
         }
     }
 
