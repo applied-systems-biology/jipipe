@@ -718,6 +718,7 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
                                 (roi.getCPosition() == 0 || roi.getCPosition() == c + 1) &&
                                 (roi.getTPosition() == 0 || roi.getTPosition() == t + 1)) {
                             imp.setRoi(roi);
+                            rtSys.reset();
                             aSys.measure();
                             ResultsTableData forRoi = new ResultsTableData(rtSys);
                             if (measurements.getValues().contains(Measurement.StackPosition)) {
