@@ -61,6 +61,7 @@ import java.util.List;
 public class JIPipeCacheMultiDataSlotTableUI extends JIPipeProjectWorkbenchPanel {
 
     private final List<JIPipeDataSlot> slots;
+    private final boolean withCompartmentAndAlgorithm;
     private JIPipeMergedDataSlotTable multiSlotTable;
     private JXTable table;
     private FormPanel rowUIList;
@@ -74,6 +75,7 @@ public class JIPipeCacheMultiDataSlotTableUI extends JIPipeProjectWorkbenchPanel
     public JIPipeCacheMultiDataSlotTableUI(JIPipeProjectWorkbench workbenchUI, List<JIPipeDataSlot> slots, boolean withCompartmentAndAlgorithm) {
         super(workbenchUI);
         this.slots = slots;
+        this.withCompartmentAndAlgorithm = withCompartmentAndAlgorithm;
         table = new JXTable();
         this.multiSlotTable = new JIPipeMergedDataSlotTable(table, withCompartmentAndAlgorithm);
         for (JIPipeDataSlot slot : slots) {
@@ -109,7 +111,9 @@ public class JIPipeCacheMultiDataSlotTableUI extends JIPipeProjectWorkbenchPanel
         table.setAutoCreateRowSorter(true);
         table.setRowFilter(new SearchTextFieldTableRowFilter(searchTextField));
         table.packAll();
-        columnModel.getColumn(4).setPreferredWidth(GeneralDataSettings.getInstance().getPreviewSize());
+
+        int previewColumn = withCompartmentAndAlgorithm ? 4 : 2;
+        columnModel.getColumn(previewColumn).setPreferredWidth(GeneralDataSettings.getInstance().getPreviewSize());
         SwingUtilities.invokeLater(multiSlotTable::updateRenderedPreviews);
     }
 
