@@ -1117,13 +1117,9 @@ public class ImageViewerPanel extends JPanel {
     public static ImageViewerPanel showImage(ImagePlus image, String title) {
         ImageViewerPanel dataDisplay = new ImageViewerPanel();
         dataDisplay.setImage(image);
-        JFrame frame = new JFrame(title);
-        frame.setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
-        frame.setContentPane(dataDisplay);
-        frame.pack();
-        frame.setSize(1024, 768);
-        frame.setVisible(true);
-        SwingUtilities.invokeLater(dataDisplay::fitImageToScreen);
+        ImageViewerWindow window = new ImageViewerWindow(dataDisplay);
+        window.setTitle(title);
+        window.setVisible(true);
         return dataDisplay;
     }
 
