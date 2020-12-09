@@ -280,7 +280,7 @@ public class JIPipeCacheDataSlotTableUI extends JIPipeProjectWorkbenchPanel {
 
         @Override
         public int getColumnCount() {
-            return slot.getAnnotationColumns().size() + 2;
+            return slot.getAnnotationColumns().size() + 3;
         }
 
         @Override
@@ -292,7 +292,7 @@ public class JIPipeCacheDataSlotTableUI extends JIPipeProjectWorkbenchPanel {
             else if (columnIndex == 2)
                 return "String representation";
             else {
-                return slot.getAnnotationColumns().get(columnIndex - 2);
+                return slot.getAnnotationColumns().get(columnIndex - 3);
             }
         }
 
@@ -334,7 +334,7 @@ public class JIPipeCacheDataSlotTableUI extends JIPipeProjectWorkbenchPanel {
             } else if (columnIndex == 2)
                 return "" + slot.getVirtualData(rowIndex).getStringRepresentation();
             else {
-                return slot.getAnnotation(rowIndex, columnIndex - 2);
+                return slot.getAnnotation(rowIndex, columnIndex - 3);
             }
         }
 
