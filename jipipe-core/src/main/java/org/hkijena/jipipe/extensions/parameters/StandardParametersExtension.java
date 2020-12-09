@@ -252,6 +252,8 @@ public class StandardParametersExtension extends JIPipePrepackagedDefaultJavaExt
         registerExpressionFunction(new GetMapValuesFunction());
         registerExpressionFunction(new StringReplaceFunction());
         registerExpressionFunction(new StringRegexReplaceFunction());
+        registerExpressionFunction(new ToJsonFunction());
+        registerExpressionFunction(new ParseJsonFunction());
     }
 
     private void registerScriptParameters() {
