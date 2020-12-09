@@ -874,7 +874,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
                 Point mousePosition = currentConnectionDragTarget.getMousePosition();
                 int width = currentConnectionDragTarget.getWidth();
                 int height = currentConnectionDragTarget.getHeight();
-                if(mousePosition != null &&mousePosition.x >= 5 && mousePosition.y >= 5 && mousePosition.x <= (width - 5) && mousePosition.y <= (height - 5)) {
+                if(getMousePosition() == null || (mousePosition != null &&mousePosition.x >= 5 && mousePosition.y >= 5 && mousePosition.x <= (width - 5) && mousePosition.y <= (height - 5))) {
                     targetPoint = nodeUI.getSlotLocation(currentConnectionDragTarget.getSlot());
                     targetPoint.add(nodeUI.getLocation());
                 }
@@ -892,17 +892,22 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
                 graphics.setColor(Color.DARK_GRAY);
             }
             if(targetPoint == null) {
-                targetPoint = new PointRange(getMousePosition().x, getMousePosition().y);
+                Point mousePosition = getMousePosition();
+                if(mousePosition != null) {
+                    targetPoint = new PointRange(mousePosition.x, mousePosition.y);
+                }
             }
 
-            // Tighten the point ranges: Bringing the centers together
-            PointRange.tighten(sourcePoint, targetPoint);
+            if(targetPoint != null) {
+                // Tighten the point ranges: Bringing the centers together
+                PointRange.tighten(sourcePoint, targetPoint);
 
-            // Draw arrow
-            if (currentConnectionDragSource.getSlot().isOutput())
-                drawEdge(g, sourcePoint.center, currentConnectionDragSource.getNodeUI().getBounds(), targetPoint.center, drawer);
-            else
-                drawEdge(g, targetPoint.center, currentConnectionDragSource.getNodeUI().getBounds(), sourcePoint.center, drawer);
+                // Draw arrow
+                if (currentConnectionDragSource.getSlot().isOutput())
+                    drawEdge(g, sourcePoint.center, currentConnectionDragSource.getNodeUI().getBounds(), targetPoint.center, drawer);
+                else
+                    drawEdge(g, targetPoint.center, currentConnectionDragSource.getNodeUI().getBounds(), sourcePoint.center, drawer);
+            }
         }
 
         if (currentHighlightedForDisconnect != null) {
