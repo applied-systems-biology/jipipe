@@ -68,13 +68,18 @@ public class DefaultExpressionEvaluatorSyntaxTokenMaker extends AbstractTokenMak
         StringBuilder buffer = new StringBuilder();
         boolean isQuoted = false;
         boolean isEscape = false;
+        int lastEscapeIndex = -1;
 
         int currentTokenStart = offset;
 
         for (int index = offset; index < end; index++) {
             char c =array[index];
-            if (c == '\\') {
-                isEscape = !isEscape;
+            if(isEscape && index == lastEscapeIndex + 2) {
+                isEscape = false;
+            }
+            if (c == '\\' && !isEscape) {
+                isEscape = true;
+                lastEscapeIndex = index;
             }
             if (c == '"') {
                 if (!isEscape) {
