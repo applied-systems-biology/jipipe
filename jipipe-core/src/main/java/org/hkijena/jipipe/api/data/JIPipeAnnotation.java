@@ -20,6 +20,8 @@ import org.python.core.PyDictionary;
 import org.python.core.PyString;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -186,11 +188,37 @@ public class JIPipeAnnotation implements Comparable<JIPipeAnnotation> {
      * @param annotations the annotations
      * @return the Python dictionary
      */
-    public static PyDictionary annotationListToPython(List<JIPipeAnnotation> annotations) {
+    public static PyDictionary annotationListToPython(Collection<JIPipeAnnotation> annotations) {
         PyDictionary annotationDict = new PyDictionary();
         for (JIPipeAnnotation annotation : annotations) {
             annotationDict.put(new PyString(annotation.getName()), new PyString(annotation.getValue()));
         }
         return annotationDict;
+    }
+
+    /**
+     * Converts a set of annotations to a map
+     * @param annotations the annotations
+     * @return annotations as map
+     */
+    public static Map<String, String> annotationListToMap(Collection<JIPipeAnnotation> annotations, JIPipeAnnotationMergeStrategy mergeStrategy) {
+        Map<String, String> result = new HashMap<>();
+        for (JIPipeAnnotation annotation : mergeStrategy.merge(annotations)) {
+            result.put(annotation.getName(), annotation.getValue());
+        }
+        return result;
+    }
+
+    /**
+     * Converts an annotation map to a list
+     * @param map the map
+     * @return the annotations
+     */
+    public static List<JIPipeAnnotation> mapToAnnotationList(Map<String, String> map) {
+        List<JIPipeAnnotation> annotations = new ArrayList<>();
+        for (Map.Entry<String, String> entry : map.entrySet()) {
+            annotations.add(new JIPipeAnnotation(entry.getKey(), entry.getValue()));
+        }
+        return annotations;
     }
 }

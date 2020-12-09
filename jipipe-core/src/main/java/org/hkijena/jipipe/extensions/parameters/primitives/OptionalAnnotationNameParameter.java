@@ -15,7 +15,10 @@ package org.hkijena.jipipe.extensions.parameters.primitives;
 
 import org.hkijena.jipipe.api.JIPipeValidatable;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.utils.ResourceUtils;
+
+import java.util.Collection;
 
 /**
  * Parameter used for creating annotations
@@ -37,6 +40,26 @@ public class OptionalAnnotationNameParameter extends OptionalStringParameter imp
     public void reportValidity(JIPipeValidityReport report) {
         if (isEnabled()) {
             report.forCategory("Value").checkNonEmpty(getContent(), this);
+        }
+    }
+
+    /**
+     * Creates a new annotation with the defined name and value
+     * @param value the value of the annotation
+     * @return annotation
+     */
+    public JIPipeAnnotation createAnnotation(String value) {
+        return new JIPipeAnnotation(getContent(), value);
+    }
+
+    /**
+     * Adds the annotation with given value of the parameter is enabled
+     * @param annotations list of annotations
+     * @param value the value
+     */
+    public void addAnnotationIfEnabled(Collection<JIPipeAnnotation> annotations, String value) {
+        if(isEnabled()) {
+            annotations.add(createAnnotation(value));
         }
     }
 }

@@ -65,7 +65,7 @@ import static org.hkijena.jipipe.api.nodes.JIPipeIteratingAlgorithm.ITERATING_AL
 @JIPipeDocumentation(name = "ImageJ Macro", description = "Runs a custom ImageJ macro. " +
         "Images are opened as windows named according to the input slot. You have to select windows with " +
         "the select() function or comparable functions. You have have one results table input which " +
-        "can be adressed via the global functions. Input ROI are merged into one ROI manager.\n\n" +
+        "can be addressed via the global functions. Input ROI are merged into one ROI manager.\n\n" +
         "You can define variables that are passed from JIPipe to ImageJ. Variables are also created for incoming path-like data." + "\n\n" + ITERATING_ALGORITHM_DESCRIPTION)
 @JIPipeOrganization(nodeTypeCategory = ImagesNodeTypeCategory.class)
 @JIPipeInputSlot(ImagePlusData.class)

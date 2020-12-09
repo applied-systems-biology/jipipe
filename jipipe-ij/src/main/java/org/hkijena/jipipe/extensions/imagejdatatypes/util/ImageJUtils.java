@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.extensions.imagejdatatypes.util;
 
-import com.google.common.collect.ImmutableList;
 import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.map.TIntIntMap;
@@ -40,7 +39,6 @@ import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.PathIterator;
-import java.awt.geom.Rectangle2D;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -277,7 +275,7 @@ public class ImageJUtils {
     /**
      * Runs the function for each Z, C, and T slice.
      *  @param img          the image
-     * @param function     the function
+     * @param function     the function. The indices are one-based
      * @param progressInfo the progress
      */
     public static void forEachIndexedZCTSlice(ImagePlus img, BiConsumer<ImageProcessor, ImageSliceIndex> function, JIPipeProgressInfo progressInfo) {
@@ -685,6 +683,32 @@ public class ImageJUtils {
         } else {
             return new ImagePlus(imp.getTitle() + "_Expanded", expandImageProcessorCanvas(imp.getProcessor(), backgroundColor, newWidth, newHeight, xOff, yOff));
         }
+    }
+
+    /**
+     * Converts this image to the same type as the other one if needed
+     * @param reference the other image
+     * @param doScaling apply scaling for greyscale conversions
+     */
+    public static ImagePlus convertToSameTypeIfNeeded(ImagePlus image, ImagePlus reference, boolean doScaling) {
+       if(reference.getType() != image.getType()) {
+           image = image.duplicate();
+           ImageConverter converter = new ImageConverter(image);
+           ImageConverter.setDoScaling(doScaling);
+           if(reference.getType() == ImagePlus.GRAY8)
+               converter.convertToGray8();
+           else if(reference.getType() == ImagePlus.GRAY16)
+               converter.convertToGray16();
+           else if(reference.getType() == ImagePlus.GRAY32)
+               converter.convertToGray32();
+           else if(reference.getType() == ImagePlus.COLOR_RGB)
+               converter.convertToRGB();
+           else if(reference.getType() == ImagePlus.COLOR_256) {
+               converter.convertToRGB();
+               converter.convertRGBtoIndexedColor(256);
+           }
+       }
+       return image;
     }
 
     public static class GradientStop implements Comparable<GradientStop> {

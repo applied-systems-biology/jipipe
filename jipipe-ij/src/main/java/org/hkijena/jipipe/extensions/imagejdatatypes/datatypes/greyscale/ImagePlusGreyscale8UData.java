@@ -54,6 +54,7 @@ public class ImagePlusGreyscale8UData extends ImagePlusGreyscaleData {
      */
     public static ImagePlus convertIfNeeded(ImagePlus image) {
         if (image.getType() != ImagePlus.GRAY8) {
+            ImageConverter.setDoScaling(true);
             ImageConverter ic = new ImageConverter(image);
             ic.convertToGray8();
         }

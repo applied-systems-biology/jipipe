@@ -60,6 +60,24 @@ public class JIPipeDataBatch {
     }
 
     /**
+     * Gets the original annotations of given slot
+     * @param slot the slot
+     * @return the annotations
+     */
+    public List<JIPipeAnnotation> getOriginalAnnotations(JIPipeDataSlot slot) {
+        return slot.getAnnotations(inputSlotRows.get(slot));
+    }
+
+    /**
+     * Gets the original annotations of given slot
+     * @param slotName the slot
+     * @return the annotations
+     */
+    public List<JIPipeAnnotation> getOriginalAnnotations(String slotName) {
+        return getOriginalAnnotations(node.getInputSlot(slotName));
+    }
+
+    /**
      * Raw access to all data stored in the  batch
      *
      * @return map from data slot to row index

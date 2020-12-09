@@ -15,6 +15,7 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color;
 
 import ij.ImagePlus;
 import ij.process.ImageConverter;
+import org.antlr.runtime.DFA;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeHeavyData;
 import org.hkijena.jipipe.api.JIPipeOrganization;
@@ -54,6 +55,7 @@ public class ImagePlusColor8UData extends ImagePlusColorData {
      */
     public static ImagePlus convertIfNeeded(ImagePlus image) {
         if (image.getType() != ImagePlus.COLOR_256) {
+            ImageConverter.setDoScaling(true);
             ImageConverter ic = new ImageConverter(image);
             ic.convertToRGB();
             ic.convertRGBtoIndexedColor(256);

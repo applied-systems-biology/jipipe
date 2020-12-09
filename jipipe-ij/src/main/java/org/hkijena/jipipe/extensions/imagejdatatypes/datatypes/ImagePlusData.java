@@ -15,6 +15,7 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.datatypes;
 
 import ij.IJ;
 import ij.ImagePlus;
+import ij.process.ImageConverter;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
@@ -161,4 +162,5 @@ public class ImagePlusData implements JIPipeData {
             throw new RuntimeException(e);
         }
     }
+
 }

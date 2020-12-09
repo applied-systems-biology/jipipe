@@ -29,6 +29,12 @@ public class OptionalColorParameter extends OptionalParameter<Color> {
         super(Color.class);
     }
 
+    public OptionalColorParameter(Color color, boolean enabled) {
+        this();
+        setEnabled(enabled);
+        setContent(color);
+    }
+
     /**
      * Creates a copy
      *

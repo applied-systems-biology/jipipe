@@ -57,6 +57,7 @@ public class ImagePlusGreyscaleData extends ImagePlusData {
         if (image.getType() != ImagePlus.GRAY8 &&
                 image.getType() != ImagePlus.GRAY16 &&
                 image.getType() != ImagePlus.GRAY32) {
+            ImageConverter.setDoScaling(true);
             if (JIPipe.getInstance() != null)
                 JIPipe.getInstance().getLogService().warn("Attempt to store non-grayscale data into a grayscale image. Converting to 32-bit floating point.");
             ImageConverter ic = new ImageConverter(image);

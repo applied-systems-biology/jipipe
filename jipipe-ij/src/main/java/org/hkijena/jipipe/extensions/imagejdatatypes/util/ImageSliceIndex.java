@@ -111,4 +111,13 @@ public class ImageSliceIndex {
     public int getStackIndex(ImagePlus imagePlus) {
         return imagePlus.getStackIndex(c + 1, z + 1, t + 1);
     }
+
+    /**
+     * Adds the value to all components
+     * @param zct the value
+     * @return result
+     */
+    public ImageSliceIndex add(int zct) {
+        return new ImageSliceIndex(z + zct, c + zct, t + zct);
+    }
 }

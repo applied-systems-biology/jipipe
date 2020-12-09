@@ -327,6 +327,23 @@ public class JIPipeMergingDataBatch {
         slot.addData(data, finalAnnotations, mergeStrategy, progressInfo);
     }
 
+    /**
+     * Gets the original annotations of given slot
+     * @param slot the slot
+     * @return the annotations
+     */
+    public List<JIPipeAnnotation> getOriginalAnnotations(JIPipeDataSlot slot) {
+        return slot.getAnnotations(inputSlotRows.get(slot));
+    }
+
+    /**
+     * Gets the original annotations of given slot
+     * @param slotName the slot
+     * @return the annotations
+     */
+    public List<JIPipeAnnotation> getOriginalAnnotations(String slotName) {
+        return getOriginalAnnotations(node.getInputSlot(slotName));
+    }
 
     /**
      * Returns true if there is at least one slot that has no rows attached to it

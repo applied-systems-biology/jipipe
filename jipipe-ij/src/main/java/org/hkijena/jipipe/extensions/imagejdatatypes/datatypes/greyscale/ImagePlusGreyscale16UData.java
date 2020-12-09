@@ -54,6 +54,7 @@ public class ImagePlusGreyscale16UData extends ImagePlusGreyscaleData {
      */
     public static ImagePlus convertIfNeeded(ImagePlus image) {
         if (image.getType() != ImagePlus.GRAY16) {
+            ImageConverter.setDoScaling(true);
             ImageConverter ic = new ImageConverter(image);
             ic.convertToGray16();
         }

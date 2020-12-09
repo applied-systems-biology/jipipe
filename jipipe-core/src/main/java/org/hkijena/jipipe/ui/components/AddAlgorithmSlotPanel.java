@@ -89,7 +89,7 @@ public class AddAlgorithmSlotPanel extends JPanel {
     }
 
     private void setInitialName() {
-        String initialValue = slotType + " data";
+        String initialValue = slotType.toString();
 
         // This is general
         if (algorithm.getSlotConfiguration() instanceof JIPipeIOSlotConfiguration) {

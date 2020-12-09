@@ -54,6 +54,7 @@ public class ImagePlusColorRGBData extends ImagePlusColorData {
      */
     public static ImagePlus convertIfNeeded(ImagePlus image) {
         if (image.getType() != ImagePlus.COLOR_RGB) {
+            ImageConverter.setDoScaling(true);
             ImageConverter ic = new ImageConverter(image);
             ic.convertToRGB();
         }

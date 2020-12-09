@@ -57,6 +57,7 @@ public class ImagePlusColorData extends ImagePlusData {
         if (image.getType() != ImagePlus.COLOR_256 && image.getType() != ImagePlus.COLOR_RGB) {
             if (JIPipe.getInstance() != null)
                 JIPipe.getInstance().getLogService().warn("Attempt to store non-color data into a color image. Converting to RGB.");
+            ImageConverter.setDoScaling(true);
             ImageConverter ic = new ImageConverter(image);
             ic.convertToRGB();
         }

@@ -7,6 +7,7 @@ import org.hkijena.jipipe.utils.StringUtils;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,7 +26,7 @@ public enum JIPipeAnnotationMergeStrategy {
      * @param annotations input annotations. can have duplicate names.
      * @return annotations without duplicate names.
      */
-    public List<JIPipeAnnotation> merge(List<JIPipeAnnotation> annotations) {
+    public List<JIPipeAnnotation> merge(Collection<JIPipeAnnotation> annotations) {
         Map<String, String> map = new HashMap<>();
         for (JIPipeAnnotation annotation : annotations) {
             map.put(annotation.getName(), merge(map.getOrDefault(annotation.getName(), ""), annotation.getValue()));
