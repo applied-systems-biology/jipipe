@@ -125,6 +125,10 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
         }
 
         List<JIPipeMergingDataBatch> dataBatches = generateDataBatchesDryRun(getNonParameterInputSlots());
+        for (JIPipeMergingDataBatch dataBatch : dataBatches) {
+            dataBatch.addGlobalAnnotations(parameterAnnotations, dataBatchGenerationSettings.annotationMergeStrategy);
+        }
+
 
         // Check for incomplete batches
         if (dataBatchGenerationSettings.skipIncompleteDataSets) {

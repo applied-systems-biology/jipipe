@@ -123,6 +123,7 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
             for (int row = 0; row < getFirstInputSlot().getRowCount(); row++) {
                 JIPipeDataBatch dataBatch = new JIPipeDataBatch(this);
                 dataBatch.setData(getFirstInputSlot(), row);
+                dataBatch.addGlobalAnnotations(parameterAnnotations, dataBatchGenerationSettings.annotationMergeStrategy);
                 dataBatch.addGlobalAnnotations(getFirstInputSlot().getAnnotations(row), dataBatchGenerationSettings.annotationMergeStrategy);
                 dataBatches.add(dataBatch);
             }
@@ -146,8 +147,11 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
                     }
                 }
             }
-            // Convert to single batch
+            // Convert to single batch and attach parameters
             dataBatches = JIPipeMergingDataBatchBuilder.convertMergingToSingleDataBatches(mergingDataBatches);
+            for (JIPipeDataBatch dataBatch : dataBatches) {
+                dataBatch.addGlobalAnnotations(parameterAnnotations, dataBatchGenerationSettings.annotationMergeStrategy);
+            }
         }
 
         if (dataBatches == null) {
