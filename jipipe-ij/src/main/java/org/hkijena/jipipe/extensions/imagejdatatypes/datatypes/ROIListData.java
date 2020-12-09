@@ -39,6 +39,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.RoiOutline;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.Measurement;
 import org.hkijena.jipipe.extensions.parameters.roi.Margin;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
@@ -698,9 +699,10 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
      *
      * @param imp          the reference image
      * @param measurements which measurements to extract
+     * @param addNameToTable if true, add the ROI's name to the table
      * @return the measurements
      */
-    public ResultsTableData measure(ImagePlus imp, ImageStatisticsSetParameter measurements) {
+    public ResultsTableData measure(ImagePlus imp, ImageStatisticsSetParameter measurements, boolean addNameToTable) {
         measurements.updateAnalyzer();
         Analyzer aSys = new Analyzer(imp); // System Analyzer
         ResultsTable rtSys = Analyzer.getResultsTable();
@@ -718,6 +720,22 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
                             imp.setRoi(roi);
                             aSys.measure();
                             ResultsTableData forRoi = new ResultsTableData(rtSys);
+                            if (measurements.getValues().contains(Measurement.StackPosition)) {
+                                int columnChannel = forRoi.getOrCreateColumnIndex("Ch", false);
+                                int columnStack = forRoi.getOrCreateColumnIndex("Slice", false);
+                                int columnFrame = forRoi.getOrCreateColumnIndex("Frame", false);
+                                for (int row = 0; row < forRoi.getRowCount(); row++) {
+                                    forRoi.setValueAt(roi.getCPosition(), row, columnChannel);
+                                    forRoi.setValueAt(roi.getZPosition(), row, columnStack);
+                                    forRoi.setValueAt(roi.getTPosition(), row, columnFrame);
+                                }
+                            }
+                            if (addNameToTable) {
+                                int columnName = result.getOrCreateColumnIndex("Name", true);
+                                for (int row = 0; row < result.getRowCount(); row++) {
+                                    result.setValueAt(roi.getName(), row, columnName);
+                                }
+                            }
                             result.addRows(forRoi);
                         }
                     }

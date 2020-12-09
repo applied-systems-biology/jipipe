@@ -110,7 +110,7 @@ public class SplitRoiConnectedComponentsAlgorithm extends ImageRoiProcessorAlgor
                         "Try to remove the images associated to the ROI.");
             }
             referenceImage = referenceImages.keySet().iterator().next().getImage();
-            measurements = input.measure(referenceImage, overlapFilterMeasurements);
+            measurements = input.measure(referenceImage, overlapFilterMeasurements, addNameToTable);
         }
         int currentProgress = 0;
         int currentProgressPercentage = 0;
@@ -276,7 +276,7 @@ public class SplitRoiConnectedComponentsAlgorithm extends ImageRoiProcessorAlgor
         // Measure overlap
         temp.clear();
         temp.add(overlap);
-        ResultsTableData overlapMeasurements = temp.measure(referenceImage, overlapFilterMeasurements);
+        ResultsTableData overlapMeasurements = temp.measure(referenceImage, overlapFilterMeasurements, addNameToTable);
         for (int col = 0; col < overlapMeasurements.getColumnCount(); col++) {
             variableSet.set("Overlap." + overlapMeasurements.getColumnName(col), overlapMeasurements.getValueAt(0, col));
         }
