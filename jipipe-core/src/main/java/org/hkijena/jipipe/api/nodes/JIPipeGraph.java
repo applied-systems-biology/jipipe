@@ -441,17 +441,17 @@ public class JIPipeGraph implements JIPipeValidatable {
         toRemove.forEach(graph::removeVertex);
 
         // Add missing slots
-        for (JIPipeGraphNode algorithm : nodes.values()) {
+        for (JIPipeGraphNode node : nodes.values()) {
 
             // Add vertices
-            for (JIPipeDataSlot inputSlot : algorithm.getInputSlots()) {
+            for (JIPipeDataSlot inputSlot : node.getInputSlots()) {
                 if (!graph.vertexSet().contains(inputSlot)) {
                     graph.addVertex(inputSlot);
                     inputSlot.getEventBus().register(this);
                     modified = true;
                 }
             }
-            for (JIPipeDataSlot outputSlot : algorithm.getOutputSlots()) {
+            for (JIPipeDataSlot outputSlot : node.getOutputSlots()) {
                 if (!graph.vertexSet().contains(outputSlot)) {
                     graph.addVertex(outputSlot);
                     outputSlot.getEventBus().register(this);
@@ -460,8 +460,8 @@ public class JIPipeGraph implements JIPipeValidatable {
             }
 
             // Connect input -> output in the graph
-            for (JIPipeDataSlot inputSlot : algorithm.getInputSlots()) {
-                for (JIPipeDataSlot outputSlot : algorithm.getOutputSlots()) {
+            for (JIPipeDataSlot inputSlot : node.getInputSlots()) {
+                for (JIPipeDataSlot outputSlot : node.getOutputSlots()) {
                     if (!graph.containsEdge(inputSlot, outputSlot)) {
                         graph.addEdge(inputSlot, outputSlot);
                         modified = true;
@@ -1283,8 +1283,8 @@ public class JIPipeGraph implements JIPipeValidatable {
                 jsonGenerator.writeStartObject();
                 jsonGenerator.writeStringField("source-node", StringUtils.jsonify(graph.getIdOf(edge.getKey().getNode())));
                 jsonGenerator.writeStringField("target-node", StringUtils.jsonify(graph.getIdOf(edge.getValue().getNode())));
-                jsonGenerator.writeStringField("source-slot", StringUtils.makeFilesystemCompatible(edge.getKey().getName()));
-                jsonGenerator.writeStringField("target-slot", StringUtils.makeFilesystemCompatible(edge.getValue().getName()));
+                jsonGenerator.writeStringField("source-slot", edge.getKey().getName());
+                jsonGenerator.writeStringField("target-slot", edge.getValue().getName());
                 jsonGenerator.writeObjectField("metadata", graph.getGraph().getEdge(edge.getKey(), edge.getValue()));
                 jsonGenerator.writeEndObject();
             }
