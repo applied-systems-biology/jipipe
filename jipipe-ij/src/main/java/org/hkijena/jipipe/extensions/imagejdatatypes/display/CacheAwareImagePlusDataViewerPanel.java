@@ -21,6 +21,7 @@ import org.hkijena.jipipe.api.JIPipeProjectCache;
 import org.hkijena.jipipe.api.JIPipeProjectCacheQuery;
 import org.hkijena.jipipe.api.data.JIPipeCacheSlotDataSource;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
+import org.hkijena.jipipe.api.data.JIPipeVirtualData;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.ImageViewerPanel;
@@ -42,6 +43,7 @@ public class CacheAwareImagePlusDataViewerPanel extends ImageViewerPanel {
     private JIPipeCacheSlotDataSource dataSource;
     private Component errorPanel;
     private JToggleButton cacheAwareToggle;
+    private JIPipeVirtualData lastVirtualData;
 
     public CacheAwareImagePlusDataViewerPanel(JIPipeWorkbench workbench, JIPipeCacheSlotDataSource dataSource) {
         this.project = ((JIPipeProjectWorkbench) workbench).getProject();
@@ -67,9 +69,13 @@ public class CacheAwareImagePlusDataViewerPanel extends ImageViewerPanel {
     }
 
     private void loadImageFromDataSource() {
+        JIPipeVirtualData virtualData = dataSource.getSlot().getVirtualData(dataSource.getRow());
+        if(virtualData == lastVirtualData)
+            return;
         ImagePlusData data = dataSource.getSlot().getData(dataSource.getRow(), ImagePlusData.class, new JIPipeProgressInfo());
         ImagePlus image = data.getDuplicateImage();
         setImage(image);
+        lastVirtualData = virtualData;
     }
 
     @Override
@@ -100,6 +106,7 @@ public class CacheAwareImagePlusDataViewerPanel extends ImageViewerPanel {
             dataSource = new JIPipeCacheSlotDataSource(slot, dataSource.getRow());
             loadImageFromDataSource();
         } else {
+            lastVirtualData = null;
             getCanvas().setError(errorPanel);
         }
     }

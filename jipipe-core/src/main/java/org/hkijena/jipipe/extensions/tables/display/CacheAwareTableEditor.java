@@ -20,6 +20,7 @@ import org.hkijena.jipipe.api.JIPipeProjectCache;
 import org.hkijena.jipipe.api.JIPipeProjectCacheQuery;
 import org.hkijena.jipipe.api.data.JIPipeCacheSlotDataSource;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
+import org.hkijena.jipipe.api.data.JIPipeVirtualData;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
@@ -40,6 +41,7 @@ public class CacheAwareTableEditor extends JIPipeTableEditor {
     private JIPipeCacheSlotDataSource dataSource;
     private JLabel errorPanel;
     private JToggleButton cacheAwareToggle;
+    private JIPipeVirtualData lastVirtualData;
 
     public CacheAwareTableEditor(JIPipeWorkbench workbench, JIPipeCacheSlotDataSource dataSource) {
         super(workbench, new ResultsTableData());
@@ -65,10 +67,14 @@ public class CacheAwareTableEditor extends JIPipeTableEditor {
     }
 
     private void loadDataFromDataSource() {
+        JIPipeVirtualData virtualData = dataSource.getSlot().getVirtualData(dataSource.getRow());
+        if(virtualData == lastVirtualData)
+            return;
         ResultsTableData data = dataSource.getSlot().getData(dataSource.getRow(), ResultsTableData.class, new JIPipeProgressInfo());
         ResultsTableData duplicate = (ResultsTableData) data.duplicate();
         setTableModel(duplicate);
         errorPanel.setVisible(false);
+        lastVirtualData = virtualData;
     }
 
     @Override
@@ -105,6 +111,7 @@ public class CacheAwareTableEditor extends JIPipeTableEditor {
         } else {
             errorPanel.setVisible(true);
             setTableModel(new ResultsTableData());
+            lastVirtualData = null;
         }
     }
 
