@@ -53,6 +53,24 @@ public class OptionalAnnotationNameParameter extends OptionalStringParameter imp
     }
 
     /**
+     * Creates a new annotation with the defined name and value
+     * @param values the value of the annotation
+     * @return annotation
+     */
+    public JIPipeAnnotation createAnnotation(String[] values) {
+        return new JIPipeAnnotation(getContent(), values);
+    }
+
+    /**
+     * Creates a new annotation with the defined name and value
+     * @param values the value of the annotation
+     * @return annotation
+     */
+    public JIPipeAnnotation createAnnotation(Collection<String> values) {
+        return new JIPipeAnnotation(getContent(), values);
+    }
+
+    /**
      * Adds the annotation with given value of the parameter is enabled
      * @param annotations list of annotations
      * @param value the value
@@ -60,6 +78,28 @@ public class OptionalAnnotationNameParameter extends OptionalStringParameter imp
     public void addAnnotationIfEnabled(Collection<JIPipeAnnotation> annotations, String value) {
         if(isEnabled()) {
             annotations.add(createAnnotation(value));
+        }
+    }
+
+    /**
+     * Adds the annotation with given value of the parameter is enabled
+     * @param annotations list of annotations
+     * @param values the value
+     */
+    public void addAnnotationIfEnabled(Collection<JIPipeAnnotation> annotations, String[] values) {
+        if(isEnabled()) {
+            annotations.add(createAnnotation(values));
+        }
+    }
+
+    /**
+     * Adds the annotation with given value of the parameter is enabled
+     * @param annotations list of annotations
+     * @param values the value
+     */
+    public void addAnnotationIfEnabled(Collection<JIPipeAnnotation> annotations, Collection<String> values) {
+        if(isEnabled()) {
+            annotations.add(createAnnotation(values));
         }
     }
 }

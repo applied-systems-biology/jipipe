@@ -56,12 +56,26 @@ public class JIPipeAnnotation implements Comparable<JIPipeAnnotation> {
 
     /**
      * Creates a new instance from an array.
+     * Automatically collapses the array if it contains only one item.
+     * If the array is empty, the value is empty.
+     * The array is converted into JSON
+     * @param name the name
+     * @param values the values
+     */
+    public JIPipeAnnotation(String name, Collection<String> values) {
+        this(name, values.isEmpty() ? "" : (values.size() == 1 ? values.iterator().next() : JsonUtils.toJsonString(values)));
+    }
+
+    /**
+     * Creates a new instance from an array.
+     * Automatically collapses the array if it contains only one item.
+     * If the array is empty, the value is empty.
      * The array is converted into JSON
      * @param name the name
      * @param values the values
      */
     public JIPipeAnnotation(String name, String[] values) {
-        this(name, JsonUtils.toJsonString(values));
+        this(name, values.length == 0 ? "" : (values.length == 1 ? values[0] : JsonUtils.toJsonString(values)));
     }
 
     @JsonGetter("name")
