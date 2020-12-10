@@ -46,8 +46,8 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
     private boolean allowInheritedOutputSlots = false;
     private Set<Class<? extends JIPipeData>> allowedInputSlotTypes;
     private Set<Class<? extends JIPipeData>> allowedOutputSlotTypes;
-    private int maxInputSlots = 32;
-    private int maxOutputSlots = 32;
+    private int maxInputSlots = Integer.MAX_VALUE;
+    private int maxOutputSlots = Integer.MAX_VALUE;
 
     /**
      * Creates a new instance
