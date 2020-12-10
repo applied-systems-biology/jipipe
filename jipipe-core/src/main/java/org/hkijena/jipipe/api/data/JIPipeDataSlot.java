@@ -248,13 +248,13 @@ public class JIPipeDataSlot {
     /**
      * Removes an annotation column from the data
      *
-     * @param info Annotation type
+     * @param column Annotation type
      */
-    public synchronized void removeAllAnnotationsFromData(String info) {
-        int columnIndex = annotationColumns.indexOf(info);
+    public synchronized void removeAllAnnotationsFromData(String column) {
+        int columnIndex = annotationColumns.indexOf(column);
         if (columnIndex != -1) {
             annotationColumns.remove(columnIndex);
-            annotations.remove(info);
+            annotations.remove(column);
         }
     }
 

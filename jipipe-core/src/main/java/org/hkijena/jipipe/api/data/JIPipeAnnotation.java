@@ -15,10 +15,13 @@ package org.hkijena.jipipe.api.data;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
+import org.hkijena.jipipe.utils.JsonUtils;
 import org.hkijena.jipipe.utils.NaturalOrderComparator;
+import org.hkijena.jipipe.utils.StringUtils;
 import org.python.core.PyDictionary;
 import org.python.core.PyString;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -51,6 +54,16 @@ public class JIPipeAnnotation implements Comparable<JIPipeAnnotation> {
         this.value = value;
     }
 
+    /**
+     * Creates a new instance from an array.
+     * The array is converted into JSON
+     * @param name the name
+     * @param values the values
+     */
+    public JIPipeAnnotation(String name, String[] values) {
+        this(name, JsonUtils.toJsonString(values));
+    }
+
     @JsonGetter("name")
     public String getName() {
         if (name == null)
@@ -73,6 +86,24 @@ public class JIPipeAnnotation implements Comparable<JIPipeAnnotation> {
     @JsonSetter("value")
     public void setValue(String value) {
         this.value = value;
+    }
+
+    /**
+     * Returns the value as array or an array with the value if it is not an array.
+     * @return the value inside an array or the value as array
+     */
+    public String[] getArray() {
+        if (StringUtils.isNullOrEmpty(value))
+            return new String[0];
+        if (value.contains("[") && value.contains("]")) {
+            try {
+                return JsonUtils.getObjectMapper().readerFor(String[].class).readValue(value);
+            } catch (IOException e) {
+                return new String[]{value};
+            }
+        } else {
+            return new String[]{value};
+        }
     }
 
     @Override
@@ -123,6 +154,14 @@ public class JIPipeAnnotation implements Comparable<JIPipeAnnotation> {
     @Override
     public String toString() {
         return name + "=" + value;
+    }
+
+    /**
+     * Returns true if the value is an array
+     * @return if the value is an array
+     */
+    public boolean isArray() {
+        return getArray().length > 1;
     }
 
     /**
