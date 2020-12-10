@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi;
 
+import ij.IJ;
 import ij.ImagePlus;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
@@ -110,11 +111,12 @@ public abstract class ImageRoiProcessorAlgorithm extends JIPipeIteratingAlgorith
                 }
             } else {
                 ROIListData inputRois = dataBatch.getInputData("ROI", ROIListData.class, progressInfo);
-                toMaskAlgorithm.clearSlotData();
-                toMaskAlgorithm.getFirstInputSlot().addData(inputRois, progressInfo);
-                toMaskAlgorithm.run(progressInfo);
-                ImagePlusData reference = toMaskAlgorithm.getFirstOutputSlot().getData(0, ImagePlusData.class, progressInfo);
-                result.put(reference, inputRois);
+//                toMaskAlgorithm.clearSlotData();
+//                toMaskAlgorithm.getFirstInputSlot().addData(inputRois, progressInfo);
+//                toMaskAlgorithm.run(progressInfo);
+//                ImagePlusData reference = toMaskAlgorithm.getFirstOutputSlot().getData(0, ImagePlusData.class, progressInfo);
+//                ImagePlusData reference = new ImagePlusData(IJ.createImage("empty", "8-bit", 1, 1, 1));
+                result.put(null, inputRois);
             }
             return result;
         }

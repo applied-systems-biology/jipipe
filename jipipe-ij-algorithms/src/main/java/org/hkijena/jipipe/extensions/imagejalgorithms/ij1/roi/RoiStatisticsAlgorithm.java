@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi;
 
+import ij.ImagePlus;
 import ij.gui.Roi;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
@@ -95,8 +96,11 @@ public class RoiStatisticsAlgorithm extends ImageRoiProcessorAlgorithm {
             Map<ImageSliceIndex, List<Roi>> grouped = referenceEntry.getValue().groupByPosition(applyPerSlice, applyPerChannel, applyPerFrame);
             for (Map.Entry<ImageSliceIndex, List<Roi>> entry : grouped.entrySet()) {
                 ROIListData data = new ROIListData(entry.getValue());
-
-                ResultsTableData result = data.measure(referenceEntry.getKey().getImage(), measurements, addNameToTable);
+                ImagePlus referenceImage = null;
+                if(referenceEntry.getKey() != null) {
+                    referenceImage = referenceEntry.getKey().getImage();
+                }
+                ResultsTableData result = data.measure(referenceImage, measurements, addNameToTable);
                 List<JIPipeAnnotation> annotations = new ArrayList<>();
                 if (indexAnnotation.isEnabled() && !StringUtils.isNullOrEmpty(indexAnnotation.getContent())) {
                     annotations.add(new JIPipeAnnotation(indexAnnotation.getContent(), entry.getKey().toString()));
