@@ -18,7 +18,8 @@ import java.util.Map;
 public enum JIPipeAnnotationMergeStrategy {
     SkipExisting,
     OverwriteExisting,
-    Merge;
+    Merge,
+    MergeLists;
 
     /**
      * Ensures that a list of annotations has unique names. Merges according to the strategy if needed.
@@ -55,8 +56,20 @@ public enum JIPipeAnnotationMergeStrategy {
             return newValue;
         } else {
             List<String> components = new ArrayList<>(Arrays.asList(extractMergedAnnotations(existingValue)));
-            if (!components.contains(newValue))
-                components.add(newValue);
+            if(this == MergeLists) {
+                String[] newValues = extractMergedAnnotations(newValue);
+                if(newValues.length > 1) {
+                    components.addAll(Arrays.asList(newValues));
+                }
+                else {
+                    if (!components.contains(newValue))
+                        components.add(newValue);
+                }
+            }
+            else {
+                if (!components.contains(newValue))
+                    components.add(newValue);
+            }
             if (components.isEmpty())
                 return "";
             else if (components.size() == 1) {
@@ -76,6 +89,8 @@ public enum JIPipeAnnotationMergeStrategy {
         switch (this) {
             case Merge:
                 return "Merge";
+            case MergeLists:
+                return "Merge lists";
             case SkipExisting:
                 return "Skip existing";
             case OverwriteExisting:
