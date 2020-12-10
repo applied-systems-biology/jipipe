@@ -60,6 +60,23 @@ public class RoiPropertiesToAnnotationsAlgorithm extends JIPipeSimpleIteratingAl
         super(info);
     }
 
+    public RoiPropertiesToAnnotationsAlgorithm(RoiPropertiesToAnnotationsAlgorithm other) {
+        super(other);
+        this.countAnnotation = new OptionalAnnotationNameParameter(other.countAnnotation);
+        this.nameAnnotation = new OptionalAnnotationNameParameter(other.nameAnnotation);
+        this.locationXAnnotation = new OptionalAnnotationNameParameter(other.locationXAnnotation);
+        this.locationYAnnotation = new OptionalAnnotationNameParameter(other.locationYAnnotation);
+        this.locationZAnnotation = new OptionalAnnotationNameParameter(other.locationZAnnotation);
+        this.locationCAnnotation = new OptionalAnnotationNameParameter(other.locationCAnnotation);
+        this.locationTAnnotation = new OptionalAnnotationNameParameter(other.locationTAnnotation);
+        this.fillColorAnnotation = new OptionalAnnotationNameParameter(other.fillColorAnnotation);
+        this.lineColorAnnotation = new OptionalAnnotationNameParameter(other.lineColorAnnotation);
+        this.lineWidthAnnotation = new OptionalAnnotationNameParameter(other.lineWidthAnnotation);
+        this.annotationMergeStrategy = other.annotationMergeStrategy;
+        this.deduplicate = other.deduplicate;
+        this.onlyFirst = other.onlyFirst;
+    }
+
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ROIListData rois = dataBatch.getInputData(getFirstInputSlot(), ROIListData.class, progressInfo);

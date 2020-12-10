@@ -42,7 +42,7 @@ public class JIPipeLogViewer extends JIPipeProjectWorkbenchPanel {
     private final RuntimeSettings runtimeSettings = RuntimeSettings.getInstance();
     private List<LogEntry> logEntries = new ArrayList<>();
     private JList<LogEntry> logEntryJList = new JList<>();
-    private MarkdownReader logReader = new MarkdownReader(true);
+    private JTextPane logReader = new JTextPane();
 
     public JIPipeLogViewer(JIPipeProjectWorkbench workbenchUI) {
         super(workbenchUI);
@@ -52,10 +52,11 @@ public class JIPipeLogViewer extends JIPipeProjectWorkbenchPanel {
 
     private void initialize() {
         setLayout(new BorderLayout());
+        logReader.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
         logEntryJList.setCellRenderer(new LogEntryRenderer());
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
                 logEntryJList,
-                logReader);
+                new JScrollPane(logReader));
         splitPane.setDividerSize(3);
         splitPane.setResizeWeight(0.33);
         addComponentListener(new ComponentAdapter() {
@@ -76,7 +77,7 @@ public class JIPipeLogViewer extends JIPipeProjectWorkbenchPanel {
     }
 
     private void showLog(LogEntry entry) {
-        logReader.setDocument(new MarkdownDocument("<code>" + HtmlEscapers.htmlEscaper().escape(entry.getLog()).replace("\n", "<br/>") + "</code>"));
+        logReader.setText(entry.getLog());
     }
 
     private void pushToLog(JIPipeRunnable run, boolean success) {
