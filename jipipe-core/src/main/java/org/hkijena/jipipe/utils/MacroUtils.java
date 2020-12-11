@@ -48,6 +48,7 @@ public class MacroUtils {
 
     /**
      * Escapes a string to be used within macros
+     * Will not add quotes around the string
      *
      * @param value unescaped string
      * @return escaped string

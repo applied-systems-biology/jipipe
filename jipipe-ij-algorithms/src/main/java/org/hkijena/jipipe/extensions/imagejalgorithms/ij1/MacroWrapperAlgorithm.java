@@ -24,6 +24,7 @@ import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.compat.ImageJDatatypeAdapter;
+import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
@@ -66,7 +67,8 @@ import static org.hkijena.jipipe.api.nodes.JIPipeIteratingAlgorithm.ITERATING_AL
         "Images are opened as windows named according to the input slot. You have to select windows with " +
         "the select() function or comparable functions. You have have one results table input which " +
         "can be addressed via the global functions. Input ROI are merged into one ROI manager.\n\n" +
-        "You can define variables that are passed from JIPipe to ImageJ. Variables are also created for incoming path-like data." + "\n\n" + ITERATING_ALGORITHM_DESCRIPTION)
+        "You can define variables that are passed from JIPipe to ImageJ. Variables are also created for incoming path-like data, named according to the slot name. " +
+        "Annotations can also be accessed via a function getJIPipeAnnotation(key), which returns the string value of the annotation or an empty string if no value was set." + "\n\n" + ITERATING_ALGORITHM_DESCRIPTION)
 @JIPipeOrganization(nodeTypeCategory = ImagesNodeTypeCategory.class)
 @JIPipeInputSlot(ImagePlusData.class)
 @JIPipeInputSlot(ROIListData.class)
@@ -124,10 +126,18 @@ public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm {
         prepareInputData(dataBatch, progressInfo);
 
         StringBuilder finalCode = new StringBuilder();
+        // Inject annotations
+        finalCode.append("function getJIPipeAnnotation(key) {\n");
+        for (Map.Entry<String, JIPipeAnnotation> entry : dataBatch.getAnnotations().entrySet()) {
+            finalCode.append("if (key == \"").append(MacroUtils.escapeString(entry.getKey())).append("\") { return \"").append(MacroUtils.escapeString(entry.getValue().getValue())).append("\"; }\n");
+        }
+        finalCode.append("return \"\";\n");
+        finalCode.append("}\n\n");
+
         // Inject parameters
         for (Map.Entry<String, JIPipeParameterAccess> entry : macroParameters.getParameters().entrySet()) {
             if (!MacroUtils.isValidVariableName(entry.getKey()))
-                throw new IllegalArgumentException("Invalid variable name " + entry.getKey());
+                throw new IllegalArgumentException("Invalid variable name: " + entry.getKey());
             finalCode.append("var ").append(entry.getKey()).append(" = ");
             if (entry.getValue().getFieldClass() == Integer.class) {
                 int value = 0;
