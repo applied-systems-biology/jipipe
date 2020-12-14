@@ -22,14 +22,14 @@ Image data types Various ImageJ algorithms only work on data with a specific col
     </item>
     
     <item>
-      <title>Multi-parameter algorithms</title>
-      <link>https://www.jipipe.org/documentation/standard-library/multi-parameter/</link>
+      <title>Macro node</title>
+      <link>https://www.jipipe.org/documentation/standard-library/macro-node/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://www.jipipe.org/documentation/standard-library/multi-parameter/</guid>
-      <description>Most algorithms allow handling of multiple parameters via an additional slot that can be optionally enabled. You can find the setting in an algorithm&amp;rsquo;s settings as Multiple parameters. On selecting the item, a new slot will appear that consumes parameter data.
-To define parameters, use the algorithms found in Add data &amp;gt; Parameters. There are currently two data source algorithms available:
- Define parameter defines a single set of parameters Define multiple parameters lets you define a table of parameters  Use Process &amp;gt; Merge &amp;gt; Merge slots to merge multiple parameter sets.</description>
+      <guid>https://www.jipipe.org/documentation/standard-library/macro-node/</guid>
+      <description>The macro node allows to run existing ImageJ macros or execute algorithms that are not directly available as JIPipe nodes. You will find it in Images &amp;gt; ImageJ Macro.
+Inputs and outputs By default, the node has no inputs and outputs. Use to the + button to add them. For example, if you want to process one image and output the processed result, create one input and one output.
+By default, there are four data types that can be used as input and output:</description>
     </item>
     
     <item>
@@ -41,6 +41,17 @@ To define parameters, use the algorithms found in Add data &amp;gt; Parameters. 
       <description>The JIPipe standard library contains data types and algorithms to apply file system operations. The common use case is to extract the list of input files for the following algorithms.
 The filesystem library has two basic data types:
  A  File contains a path to a file A  Folder contains a path to a folder A Path contains a path to a file or folder  In the Add data menu you can define one file/folder or a list of files/folders.</description>
+    </item>
+    
+    <item>
+      <title>Multi-parameter algorithms</title>
+      <link>https://www.jipipe.org/documentation/standard-library/multi-parameter/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/documentation/standard-library/multi-parameter/</guid>
+      <description>Most algorithms allow handling of multiple parameters via an additional slot that can be optionally enabled. You can find the setting in an algorithm&amp;rsquo;s settings as Multiple parameters. On selecting the item, a new slot will appear that consumes parameter data.
+To define parameters, use the algorithms found in Add data &amp;gt; Parameters. There are currently two data source algorithms available:
+ Define parameter defines a single set of parameters Define multiple parameters lets you define a table of parameters  Use Process &amp;gt; Merge &amp;gt; Merge slots to merge multiple parameter sets.</description>
     </item>
     
     <item>

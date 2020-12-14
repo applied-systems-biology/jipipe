@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2020-11-19T11:18:53 CET">
+<meta name="revised" content="2020-12-14T11:51:51 CET">
 <title>ImageJ integration :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../../images/favicon.png" type="image/x-icon" />
 <link href="../../../css/font-awesome.min.css" rel="stylesheet">
@@ -195,10 +195,10 @@
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
-      <li data-nav-id="https://www.jipipe.org/documentation/standard-library/multi-parameter/" class="dd-item">
+      <li data-nav-id="https://www.jipipe.org/documentation/standard-library/macro-node/" class="dd-item">
         <div>
-          <a href="../../../documentation/standard-library/multi-parameter/">
-            Multi-parameter algorithms
+          <a href="../../../documentation/standard-library/macro-node/">
+            Macro node
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
@@ -206,6 +206,13 @@
         <div>
           <a href="../../../documentation/standard-library/filesystem/">
             Filesystem algorithms
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/documentation/standard-library/multi-parameter/" class="dd-item">
+        <div>
+          <a href="../../../documentation/standard-library/multi-parameter/">
+            Multi-parameter algorithms
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
@@ -475,8 +482,9 @@
   - 
    Standard library</option> 
       <option value="/documentation/standard-library/imagej-integration/"  selected>-- ImageJ integration</option>
-      <option value="/documentation/standard-library/multi-parameter/" >-- Multi-parameter algorithms</option>
+      <option value="/documentation/standard-library/macro-node/" >-- Macro node</option>
       <option value="/documentation/standard-library/filesystem/" >-- Filesystem algorithms</option>
+      <option value="/documentation/standard-library/multi-parameter/" >-- Multi-parameter algorithms</option>
       <option value="/documentation/standard-library/annotations/" >-- Data annotation algorithms</option>
       <option value="/documentation/standard-library/plots-tables/" >-- Plots and tables</option>
       <option value="/documentation/standard-library/python/" >-- Python integration</option>
@@ -585,11 +593,8 @@ We recommend to generate FFT data within the pipeline to generate the correct da
 Those algorithms wrap around the respective ImageJ methods and have the same feature set, aside
 from some changes that are required to make algorithms usable in a batch-environment like JIPipe.</p>
 <p>You can find a list of all algorithms via the <span class="fa fa-question-circle-o"  style="font-size:medium" aria-hidden="true"></span> <strong>Help</strong> menu on the top right corner and the item <code>Algorithm compendium</code>.</p>
-
-<div class="notices tip" ><p><p>You can run ImageJ macro code as node. The input slot names correspond to the image windows that are created. Macro nodes do not work in a headless (server) environment, so be careful
-when including them.</p>
-</p></div>
-
+<h2 id="macro-node">Macro node</h2>
+<p>If an algorithm is not available as JIPipe node, you can use the <a href="../macro-node">Macro node</a>.</p>
 
 
     
@@ -597,7 +602,7 @@ when including them.</p>
         <div class="chevrons">
     <div id="navigation">
 <a class="nav nav-prev" href="../../../documentation/standard-library/" title="Standard library"> <i class="fa fa-chevron-left"></i><label>Standard library</label></a>
-    <a class="nav nav-next" href="../../../documentation/standard-library/multi-parameter/" title="Multi-parameter algorithms" style="margin-right: 0px;"><label>Multi-parameter algorithms</label><i class="fa fa-chevron-right"></i></a></div>
+    <a class="nav nav-next" href="../../../documentation/standard-library/macro-node/" title="Macro node" style="margin-right: 0px;"><label>Macro node</label><i class="fa fa-chevron-right"></i></a></div>
   </div>
 
   </section>

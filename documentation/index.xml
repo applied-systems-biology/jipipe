@@ -87,8 +87,8 @@ Cache items are assigned a unique identifier ( Snapshot) that is based on releva
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://www.jipipe.org/documentation/imagej-integration/</guid>
-      <description>JIPipe algorithms and pipelines can be executed from within an ImageJ environment. There are two ways JIPipe integrates back into ImageJ:
- You can run a pipeline project from a macro/command You can run JIPipe algorithms from a macro/command if the slot data types are supported by ImageJ  Running a pipeline You can run an JIPipe pipeline via the command Plugins &amp;gt; JIPipe &amp;gt; Run JIPipe project. It will ask you the project file and the output directory.</description>
+      <description>ImageJ to JIPipe JIPipe integrates commonly used data types and popular algorithms from ImageJ. If an algorithm is not available for JIPipe, you can still run them via the Macro node. There is also a Python script node available that behaves similar to the macro node.
+JIPipe to ImageJ JIPipe algorithms and pipelines can be executed from within an ImageJ environment. There are two ways JIPipe integrates back into ImageJ:</description>
     </item>
     
     <item>

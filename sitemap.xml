@@ -67,10 +67,6 @@
   </url>
   
   <url>
-    <loc>https://www.jipipe.org/documentation/standard-library/multi-parameter/</loc>
-  </url>
-  
-  <url>
     <loc>https://www.jipipe.org/documentation/graph-editor/</loc>
   </url>
   
@@ -80,6 +76,10 @@
   
   <url>
     <loc>https://www.jipipe.org/tutorials/</loc>
+  </url>
+  
+  <url>
+    <loc>https://www.jipipe.org/documentation/standard-library/macro-node/</loc>
   </url>
   
   <url>
@@ -108,6 +108,10 @@
   
   <url>
     <loc>https://www.jipipe.org/documentation/graph-compartment/</loc>
+  </url>
+  
+  <url>
+    <loc>https://www.jipipe.org/documentation/standard-library/multi-parameter/</loc>
   </url>
   
   <url>

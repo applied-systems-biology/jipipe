@@ -153,17 +153,6 @@ Image data types Various ImageJ algorithms only work on data with a specific col
     </item>
     
     <item>
-      <title>Multi-parameter algorithms</title>
-      <link>https://www.jipipe.org/documentation/standard-library/multi-parameter/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>https://www.jipipe.org/documentation/standard-library/multi-parameter/</guid>
-      <description>Most algorithms allow handling of multiple parameters via an additional slot that can be optionally enabled. You can find the setting in an algorithm&amp;rsquo;s settings as Multiple parameters. On selecting the item, a new slot will appear that consumes parameter data.
-To define parameters, use the algorithms found in Add data &amp;gt; Parameters. There are currently two data source algorithms available:
- Define parameter defines a single set of parameters Define multiple parameters lets you define a table of parameters  Use Process &amp;gt; Merge &amp;gt; Merge slots to merge multiple parameter sets.</description>
-    </item>
-    
-    <item>
       <title>Pipeline editor</title>
       <link>https://www.jipipe.org/documentation/graph-editor/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -180,6 +169,17 @@ To define parameters, use the algorithms found in Add data &amp;gt; Parameters. 
       
       <guid>https://www.jipipe.org/documentation-java-api/data-type/result-preview/</guid>
       <description>While JIPipeData allows you to define a custom function for previewing, this only works for data already present in memory. To allow previewing of data stored in a results folder, you need to suppy a JIPipeResultDataSlotPreviewUI that loads the data from disk and generates a preview. We recommend to use JIPipeAsyncResultDataPlotPreviewUI This class will offload the loading and preview generation into a separate thread to prevent the UI from freezing. By default it will use the already defined importFrom(Path) method present in the JIPipeData class and use its already defined preview function.</description>
+    </item>
+    
+    <item>
+      <title>Macro node</title>
+      <link>https://www.jipipe.org/documentation/standard-library/macro-node/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/documentation/standard-library/macro-node/</guid>
+      <description>The macro node allows to run existing ImageJ macros or execute algorithms that are not directly available as JIPipe nodes. You will find it in Images &amp;gt; ImageJ Macro.
+Inputs and outputs By default, the node has no inputs and outputs. Use to the + button to add them. For example, if you want to process one image and output the processed result, create one input and one output.
+By default, there are four data types that can be used as input and output:</description>
     </item>
     
     <item>
@@ -220,6 +220,17 @@ The filesystem library has two basic data types:
       <guid>https://www.jipipe.org/documentation/graph-compartment/</guid>
       <description>A common issue with graphical programming languages is that large graphs are hard to navigate. JIPipe solves this issue by separating the pipeline graph into sub-graphs. Each sub-graph has a predetermined output node that is visible to other compartments. Other nodes on the other hand are not visible to other compartments.
 The difference between compartments and simple node groups is that compartments only communicate with each other via the compartment output node.</description>
+    </item>
+    
+    <item>
+      <title>Multi-parameter algorithms</title>
+      <link>https://www.jipipe.org/documentation/standard-library/multi-parameter/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/documentation/standard-library/multi-parameter/</guid>
+      <description>Most algorithms allow handling of multiple parameters via an additional slot that can be optionally enabled. You can find the setting in an algorithm&amp;rsquo;s settings as Multiple parameters. On selecting the item, a new slot will appear that consumes parameter data.
+To define parameters, use the algorithms found in Add data &amp;gt; Parameters. There are currently two data source algorithms available:
+ Define parameter defines a single set of parameters Define multiple parameters lets you define a table of parameters  Use Process &amp;gt; Merge &amp;gt; Merge slots to merge multiple parameter sets.</description>
     </item>
     
     <item>
@@ -342,8 +353,8 @@ Cache items are assigned a unique identifier ( Snapshot) that is based on releva
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://www.jipipe.org/documentation/imagej-integration/</guid>
-      <description>JIPipe algorithms and pipelines can be executed from within an ImageJ environment. There are two ways JIPipe integrates back into ImageJ:
- You can run a pipeline project from a macro/command You can run JIPipe algorithms from a macro/command if the slot data types are supported by ImageJ  Running a pipeline You can run an JIPipe pipeline via the command Plugins &amp;gt; JIPipe &amp;gt; Run JIPipe project. It will ask you the project file and the output directory.</description>
+      <description>ImageJ to JIPipe JIPipe integrates commonly used data types and popular algorithms from ImageJ. If an algorithm is not available for JIPipe, you can still run them via the Macro node. There is also a Python script node available that behaves similar to the macro node.
+JIPipe to ImageJ JIPipe algorithms and pipelines can be executed from within an ImageJ environment. There are two ways JIPipe integrates back into ImageJ:</description>
     </item>
     
     <item>
