@@ -64,7 +64,8 @@ public class ROIDataImageJAdapter implements ImageJDatatypeAdapter {
     @Override
     public Object convertJIPipeToImageJ(JIPipeData jipipeData, boolean activate, boolean noWindow, String windowName) {
         if (activate) {
-            RoiManager roiManager = new RoiManager();
+            RoiManager roiManager = RoiManager.getRoiManager();
+            roiManager.reset();
             ((ROIListData) jipipeData).addToRoiManager(roiManager);
             return roiManager;
         } else {
@@ -77,7 +78,8 @@ public class ROIDataImageJAdapter implements ImageJDatatypeAdapter {
     @Override
     public List<Object> convertMultipleJIPipeToImageJ(List<JIPipeData> jipipeData, boolean activate, boolean noWindow, String windowName) {
         if (activate) {
-            RoiManager roiManager = new RoiManager();
+            RoiManager roiManager = RoiManager.getRoiManager();
+            roiManager.reset();
             for (JIPipeData data : jipipeData) {
                 ROIListData rois = (ROIListData) data;
                 rois.addToRoiManager(roiManager);
