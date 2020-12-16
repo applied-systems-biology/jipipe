@@ -23,6 +23,8 @@ import org.jfree.chart.renderer.xy.XYBarRenderer;
 import org.jfree.data.statistics.HistogramDataset;
 import org.jfree.data.statistics.HistogramType;
 
+import java.awt.BasicStroke;
+import java.awt.Font;
 import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.Set;
@@ -39,6 +41,8 @@ public class HistogramPlotData extends PlotData {
     private String valueAxisLabel = "Value";
     private int bins = 10;
     private HistogramType_ histogramType = HistogramType_.Frequency;
+    private int binAxisFontSize = 12;
+    private int valueAxisFontSize = 12;
 
     /**
      * Creates a new instance
@@ -56,6 +60,8 @@ public class HistogramPlotData extends PlotData {
         super(other);
         this.binAxisLabel = other.binAxisLabel;
         this.valueAxisLabel = other.valueAxisLabel;
+        this.binAxisFontSize = other.binAxisFontSize;
+        this.valueAxisFontSize = other.valueAxisFontSize;
     }
 
     @Override
@@ -82,6 +88,12 @@ public class HistogramPlotData extends PlotData {
         }
         JFreeChart chart = ChartFactory.createHistogram(getTitle(), getBinAxisLabel(), getValueAxisLabel(), dataset);
         ((XYBarRenderer) chart.getXYPlot().getRenderer()).setBarPainter(new StandardXYBarPainter());
+        chart.getXYPlot().setDomainGridlinePaint(getGridColor());
+        chart.getXYPlot().getDomainAxis().setLabelFont(new Font(Font.SANS_SERIF, Font.BOLD, binAxisFontSize));
+        chart.getXYPlot().getDomainAxis().setTickLabelFont(new Font(Font.SANS_SERIF, Font.PLAIN, binAxisFontSize));
+        chart.getXYPlot().getRangeAxis().setLabelFont(new Font(Font.SANS_SERIF, Font.BOLD, valueAxisFontSize));
+        chart.getXYPlot().getRangeAxis().setTickLabelFont(new Font(Font.SANS_SERIF, Font.PLAIN, valueAxisFontSize));
+        updateChartProperties(chart);
         return chart;
     }
 
@@ -131,6 +143,28 @@ public class HistogramPlotData extends PlotData {
     public void setHistogramType(HistogramType_ histogramType) {
         this.histogramType = histogramType;
 
+    }
+
+    @JIPipeDocumentation(name = "Bin axis font size", description = "Font size of the bin axis")
+    @JIPipeParameter("bin-axis-font-size")
+    public int getBinAxisFontSize() {
+        return binAxisFontSize;
+    }
+
+    @JIPipeParameter("bin-axis-font-size")
+    public void setBinAxisFontSize(int binAxisFontSize) {
+        this.binAxisFontSize = binAxisFontSize;
+    }
+
+    @JIPipeDocumentation(name = "Value axis font size", description = "Font size of the value axis")
+    @JIPipeParameter("value-axis-font-size")
+    public int getValueAxisFontSize() {
+        return valueAxisFontSize;
+    }
+
+    @JIPipeParameter("value-axis-font-size")
+    public void setValueAxisFontSize(int valueAxisFontSize) {
+        this.valueAxisFontSize = valueAxisFontSize;
     }
 
     public static HistogramPlotData importFrom(Path storagePath) {

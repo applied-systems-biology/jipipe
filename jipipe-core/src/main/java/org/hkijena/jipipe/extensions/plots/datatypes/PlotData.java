@@ -34,6 +34,8 @@ import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
+import org.hkijena.jipipe.extensions.plots.utils.ColorMap;
+import org.hkijena.jipipe.extensions.plots.utils.ColorMapSupplier;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.DocumentTabPane;
@@ -47,7 +49,9 @@ import org.jfree.graphics2d.svg.SVGGraphics2D;
 import org.jfree.graphics2d.svg.SVGUtils;
 
 import javax.swing.*;
+import java.awt.Color;
 import java.awt.Component;
+import java.awt.Font;
 import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
@@ -70,7 +74,13 @@ public abstract class PlotData implements JIPipeData, JIPipeParameterCollection,
     private String title;
     private int exportWidth = 1024;
     private int exportHeight = 768;
+    private Color backgroundColor = Color.WHITE;
+    private Color gridColor = Color.GRAY;
+    private boolean withLegend = true;
     private List<PlotDataSeries> series = new ArrayList<>();
+    private int titleFontSize = 26;
+    private int legendFontSize = 12;
+    private ColorMap colorMap = ColorMap.Pastel1;
 
     /**
      * Creates a new empty instance
@@ -88,6 +98,12 @@ public abstract class PlotData implements JIPipeData, JIPipeParameterCollection,
         this.title = other.title;
         this.exportWidth = other.exportWidth;
         this.exportHeight = other.exportHeight;
+        this.backgroundColor = other.backgroundColor;
+        this.gridColor = other.gridColor;
+        this.withLegend = other.withLegend;
+        this.titleFontSize = other.titleFontSize;
+        this.legendFontSize = other.legendFontSize;
+        this.colorMap = other.colorMap;
         for (PlotDataSeries data : other.series) {
             this.series.add(new PlotDataSeries(data));
         }
@@ -218,6 +234,94 @@ public abstract class PlotData implements JIPipeData, JIPipeParameterCollection,
     public void setExportHeight(int exportHeight) {
         this.exportHeight = exportHeight;
         eventBus.post(new ParameterChangedEvent(this, "export-height"));
+    }
+
+    @JIPipeDocumentation(name = "Background color", description = "Background color of the plot area.")
+    @JIPipeParameter("background-color")
+    public Color getBackgroundColor() {
+        return backgroundColor;
+    }
+
+    @JIPipeParameter("background-color")
+    public void setBackgroundColor(Color backgroundColor) {
+        this.backgroundColor = backgroundColor;
+    }
+
+    @JIPipeDocumentation(name = "Grid color", description = "Color of the grid")
+    @JIPipeParameter("grid-color")
+    public Color getGridColor() {
+        return gridColor;
+    }
+
+    @JIPipeParameter("grid-color")
+    public void setGridColor(Color gridColor) {
+        this.gridColor = gridColor;
+    }
+
+    @JIPipeDocumentation(name = "Show legend", description = "If enabled, a legend is shown.")
+    @JIPipeParameter("with-legend")
+    public boolean isWithLegend() {
+        return withLegend;
+    }
+
+    @JIPipeParameter("with-legend")
+    public void setWithLegend(boolean withLegend) {
+        this.withLegend = withLegend;
+    }
+
+    @JIPipeDocumentation(name = "Title font size", description = "Font size of the title")
+    @JIPipeParameter("title-font-size")
+    public int getTitleFontSize() {
+        return titleFontSize;
+    }
+
+    @JIPipeParameter("title-font-size")
+    public boolean setTitleFontSize(int titleFontSize) {
+        if(titleFontSize <= 0)
+            return false;
+        this.titleFontSize = titleFontSize;
+        return true;
+    }
+
+    @JIPipeDocumentation(name = "Legend font size", description = "The font size of legends")
+    @JIPipeParameter("legend-font-size")
+    public int getLegendFontSize() {
+        return legendFontSize;
+    }
+
+    @JIPipeParameter("legend-font-size")
+    public void setLegendFontSize(int legendFontSize) {
+        this.legendFontSize = legendFontSize;
+    }
+
+    @JIPipeDocumentation(name = "Color map", description = "Determines how elements are colored")
+    @JIPipeParameter("color-map")
+    public ColorMap getColorMap() {
+        return colorMap;
+    }
+
+    @JIPipeParameter("color-map")
+    public void setColorMap(ColorMap colorMap) {
+        this.colorMap = colorMap;
+    }
+
+    /**
+     * Sets properties of charts
+     * @param chart the chart
+     */
+    protected void updateChartProperties(JFreeChart chart) {
+        chart.getPlot().setBackgroundPaint(getBackgroundColor());
+        if(chart.getLegend() != null) {
+            if (!isWithLegend())
+                chart.removeLegend();
+            else {
+                chart.getLegend().setItemFont(new Font(Font.SANS_SERIF, Font.PLAIN, getLegendFontSize()));
+            }
+        }
+        if(chart.getTitle() != null) {
+            chart.getTitle().setFont(new Font(Font.SANS_SERIF, Font.PLAIN, getTitleFontSize()));
+        }
+        chart.getPlot().setDrawingSupplier(new ColorMapSupplier(colorMap.getColors()));
     }
 
     @Override

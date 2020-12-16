@@ -18,6 +18,7 @@ import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.data.statistics.BoxAndWhiskerCategoryDataset;
 
+import java.awt.Font;
 import java.nio.file.Path;
 
 /**
@@ -53,6 +54,12 @@ public class BarBoxAndWhiskerCategoryPlotData extends BoxAndWhiskerCategoryPlotD
                 true);
         CustomBoxAndWhiskerRenderer renderer = new CustomBoxAndWhiskerRenderer();
         chart.getCategoryPlot().setRenderer(renderer);
+        chart.getCategoryPlot().setDomainGridlinePaint(getGridColor());
+        chart.getCategoryPlot().getDomainAxis().setLabelFont(new Font(Font.SANS_SERIF, Font.BOLD, getCategoryAxisFontSize()));
+        chart.getCategoryPlot().getDomainAxis().setTickLabelFont(new Font(Font.SANS_SERIF, Font.PLAIN, getCategoryAxisFontSize()));
+        chart.getCategoryPlot().getRangeAxis().setLabelFont(new Font(Font.SANS_SERIF, Font.BOLD, getValueAxisFontSize()));
+        chart.getCategoryPlot().getRangeAxis().setTickLabelFont(new Font(Font.SANS_SERIF, Font.PLAIN, getValueAxisFontSize()));
+        updateChartProperties(chart);
         return chart;
     }
 

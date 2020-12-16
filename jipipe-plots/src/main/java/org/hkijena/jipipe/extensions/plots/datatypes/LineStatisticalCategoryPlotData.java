@@ -14,10 +14,16 @@
 package org.hkijena.jipipe.extensions.plots.datatypes;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.renderer.AbstractRenderer;
+import org.jfree.chart.renderer.category.CategoryItemRenderer;
 import org.jfree.chart.renderer.category.StatisticalLineAndShapeRenderer;
+import org.jfree.chart.renderer.xy.XYItemRenderer;
 
+import java.awt.BasicStroke;
+import java.awt.Font;
 import java.nio.file.Path;
 
 /**
@@ -28,7 +34,9 @@ import java.nio.file.Path;
 @PlotMetadata(columns = {@PlotColumn(name = "Value", description = "Values displayed in the Y axis", isNumeric = true),
         @PlotColumn(name = "Category", description = "Categories displayed in the X axis. Must correspond to each value.", isNumeric = false),
         @PlotColumn(name = "Group", description = "Groups to color the bars. Shown in the legend. Must correspond to each value.", isNumeric = false)})
-public class LineStatisticalCategoryPlotData extends CategoryPlotData {
+public class LineStatisticalCategoryPlotData extends StatisticalCategoryPlotData {
+
+    private int lineThickness = 1;
 
     /**
      * Creates a new instance
@@ -43,13 +51,37 @@ public class LineStatisticalCategoryPlotData extends CategoryPlotData {
      */
     public LineStatisticalCategoryPlotData(LineStatisticalCategoryPlotData other) {
         super(other);
+        this.lineThickness = other.lineThickness;
     }
 
     @Override
     public JFreeChart getChart() {
         JFreeChart chart = ChartFactory.createLineChart(getTitle(), getCategoryAxisLabel(), getValueAxisLabel(), createDataSet());
         chart.getCategoryPlot().setRenderer(new StatisticalLineAndShapeRenderer());
+        chart.getCategoryPlot().setDomainGridlinePaint(getGridColor());
+        chart.getCategoryPlot().getDomainAxis().setLabelFont(new Font(Font.SANS_SERIF, Font.BOLD, getCategoryAxisFontSize()));
+        chart.getCategoryPlot().getDomainAxis().setTickLabelFont(new Font(Font.SANS_SERIF, Font.PLAIN, getCategoryAxisFontSize()));
+        chart.getCategoryPlot().getRangeAxis().setLabelFont(new Font(Font.SANS_SERIF, Font.BOLD, getValueAxisFontSize()));
+        chart.getCategoryPlot().getRangeAxis().setTickLabelFont(new Font(Font.SANS_SERIF, Font.PLAIN, getValueAxisFontSize()));
+
+        // Set line thickness
+        CategoryItemRenderer renderer = chart.getCategoryPlot().getRenderer();
+        renderer.setDefaultStroke(new BasicStroke(lineThickness));
+        ((AbstractRenderer) renderer).setAutoPopulateSeriesStroke(false);
+
+        updateChartProperties(chart);
         return chart;
+    }
+
+    @JIPipeDocumentation(name = "Line thickness", description = "The thickness of the lines")
+    @JIPipeParameter("line-thickness")
+    public int getLineThickness() {
+        return lineThickness;
+    }
+
+    @JIPipeParameter("line-thickness")
+    public void setLineThickness(int lineThickness) {
+        this.lineThickness = lineThickness;
     }
 
     public static LineStatisticalCategoryPlotData importFrom(Path storagePath) {

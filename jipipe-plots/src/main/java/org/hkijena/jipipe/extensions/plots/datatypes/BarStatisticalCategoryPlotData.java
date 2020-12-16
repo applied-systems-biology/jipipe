@@ -20,6 +20,7 @@ import org.jfree.chart.renderer.category.BarRenderer;
 import org.jfree.chart.renderer.category.StandardBarPainter;
 import org.jfree.chart.renderer.category.StatisticalBarRenderer;
 
+import java.awt.Font;
 import java.nio.file.Path;
 
 /**
@@ -30,7 +31,7 @@ import java.nio.file.Path;
 @PlotMetadata(columns = {@PlotColumn(name = "Value", description = "Values displayed in the Y axis", isNumeric = true),
         @PlotColumn(name = "Category", description = "Categories displayed in the X axis. Must correspond to each value.", isNumeric = false),
         @PlotColumn(name = "Group", description = "Groups to color the bars. Shown in the legend. Must correspond to each value.", isNumeric = false)})
-public class BarStatisticalCategoryPlotData extends CategoryPlotData {
+public class BarStatisticalCategoryPlotData extends StatisticalCategoryPlotData {
 
     /**
      * Creates a new instance
@@ -52,6 +53,12 @@ public class BarStatisticalCategoryPlotData extends CategoryPlotData {
         JFreeChart chart = ChartFactory.createBarChart(getTitle(), getCategoryAxisLabel(), getValueAxisLabel(), createDataSet());
         chart.getCategoryPlot().setRenderer(new StatisticalBarRenderer());
         ((BarRenderer) chart.getCategoryPlot().getRenderer()).setBarPainter(new StandardBarPainter());
+        chart.getCategoryPlot().setDomainGridlinePaint(getGridColor());
+        chart.getCategoryPlot().getDomainAxis().setLabelFont(new Font(Font.SANS_SERIF, Font.BOLD, getCategoryAxisFontSize()));
+        chart.getCategoryPlot().getDomainAxis().setTickLabelFont(new Font(Font.SANS_SERIF, Font.PLAIN, getCategoryAxisFontSize()));
+        chart.getCategoryPlot().getRangeAxis().setLabelFont(new Font(Font.SANS_SERIF, Font.BOLD, getValueAxisFontSize()));
+        chart.getCategoryPlot().getRangeAxis().setTickLabelFont(new Font(Font.SANS_SERIF, Font.PLAIN, getValueAxisFontSize()));
+        updateChartProperties(chart);
         return chart;
     }
 

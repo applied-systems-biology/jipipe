@@ -24,6 +24,7 @@ import org.hkijena.jipipe.extensions.plots.parameters.UIPlotDataSeriesColumnEnum
 import org.hkijena.jipipe.extensions.plots.parameters.UIPlotDataSeriesColumnEnumParameterEditorUI;
 import org.hkijena.jipipe.extensions.plots.ui.resultanalysis.OpenPlotInJIPipeDataOperation;
 import org.hkijena.jipipe.extensions.plots.ui.resultanalysis.PlotDataSlotPreview;
+import org.hkijena.jipipe.extensions.plots.utils.ColorMap;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.plugin.Plugin;
@@ -70,6 +71,9 @@ public class PlotsExtension extends JIPipePrepackagedDefaultJavaExtension {
 
         // Register extension so users can create plots
         registerMenuExtension(NewPlotMenuExtension.class);
+
+        // Register parameter types
+        registerEnumParameterType("plot-color-map", ColorMap.class, "Color map", "Determines how plot elements are colored");
 
         // Register the base plot data type for internal usage
         registerDatatype("plot",

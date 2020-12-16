@@ -14,9 +14,13 @@
 package org.hkijena.jipipe.extensions.plots.datatypes;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.PiePlot;
+import org.jfree.chart.plot.PiePlot3D;
 
+import java.awt.Font;
 import java.nio.file.Path;
 
 /**
@@ -26,6 +30,8 @@ import java.nio.file.Path;
 @PlotMetadata(columns = {@PlotColumn(name = "Amount", description = "The values to be displayed", isNumeric = true),
         @PlotColumn(name = "Category", description = "The categories to be displayed", isNumeric = false)})
 public class Pie3DPlotData extends PiePlotData {
+
+    private int labelFontSize = 12;
 
     /**
      * Creates a new instance
@@ -40,11 +46,31 @@ public class Pie3DPlotData extends PiePlotData {
      */
     public Pie3DPlotData(Pie3DPlotData other) {
         super(other);
+        this.labelFontSize = other.labelFontSize;
     }
 
     @Override
     public JFreeChart getChart() {
-        return ChartFactory.createPieChart3D(getTitle(), createDataSet(), true, true, false);
+        JFreeChart chart = ChartFactory.createPieChart3D(getTitle(), createDataSet(), true, true, false);
+        PiePlot3D plot = (PiePlot3D) chart.getPlot();
+        plot.setLabelBackgroundPaint(getBackgroundColor());
+        plot.setLabelFont(new Font(Font.SANS_SERIF, Font.PLAIN, labelFontSize));
+        updateChartProperties(chart);
+        return chart;
+    }
+
+    @JIPipeDocumentation(name = "Label font size", description = "Font size of the pie chart labels")
+    @JIPipeParameter("label-font-size")
+    public int getLabelFontSize() {
+        return labelFontSize;
+    }
+
+    @JIPipeParameter("label-font-size")
+    public boolean setLabelFontSize(int labelFontSize) {
+        if(labelFontSize <= 0)
+            return false;
+        this.labelFontSize = labelFontSize;
+        return true;
     }
 
     public static Pie3DPlotData importFrom(Path storagePath) {

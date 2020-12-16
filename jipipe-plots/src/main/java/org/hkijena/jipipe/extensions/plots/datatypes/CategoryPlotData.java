@@ -30,6 +30,8 @@ public abstract class CategoryPlotData extends PlotData {
 
     private String categoryAxisLabel = "Category";
     private String valueAxisLabel = "Value";
+    private int categoryAxisFontSize = 12;
+    private int valueAxisFontSize = 12;
 
     /**
      * Creates a new instance
@@ -47,6 +49,8 @@ public abstract class CategoryPlotData extends PlotData {
         super(other);
         this.categoryAxisLabel = other.categoryAxisLabel;
         this.valueAxisLabel = other.valueAxisLabel;
+        this.categoryAxisFontSize = other.categoryAxisFontSize;
+        this.valueAxisFontSize = other.valueAxisFontSize;
     }
 
     /**
@@ -89,5 +93,27 @@ public abstract class CategoryPlotData extends PlotData {
     public void setValueAxisLabel(String valueAxisLabel) {
         this.valueAxisLabel = valueAxisLabel;
 
+    }
+
+    @JIPipeDocumentation(name = "Category axis font size", description = "Font size of the category axis")
+    @JIPipeParameter("category-axis-font-size")
+    public int getCategoryAxisFontSize() {
+        return categoryAxisFontSize;
+    }
+
+    @JIPipeParameter("category-axis-font-size")
+    public void setCategoryAxisFontSize(int categoryAxisFontSize) {
+        this.categoryAxisFontSize = categoryAxisFontSize;
+    }
+
+    @JIPipeDocumentation(name = "Value axis font size", description = "Font size of the value axis")
+    @JIPipeParameter("value-axis-font-size")
+    public int getValueAxisFontSize() {
+        return valueAxisFontSize;
+    }
+
+    @JIPipeParameter("value-axis-font-size")
+    public void setValueAxisFontSize(int valueAxisFontSize) {
+        this.valueAxisFontSize = valueAxisFontSize;
     }
 }

@@ -32,6 +32,8 @@ public abstract class XYPlotData extends PlotData {
 
     private String xAxisLabel = "X";
     private String yAxisLabel = "Y";
+    private int xAxisFontSize = 12;
+    private int yAxisFontSize = 12;
 
     /**
      * Creates a new instance
@@ -49,6 +51,8 @@ public abstract class XYPlotData extends PlotData {
         super(other);
         this.xAxisLabel = other.xAxisLabel;
         this.yAxisLabel = other.yAxisLabel;
+        this.xAxisFontSize = other.xAxisFontSize;
+        this.yAxisFontSize = other.yAxisFontSize;
     }
 
     /**
@@ -98,5 +102,27 @@ public abstract class XYPlotData extends PlotData {
     public void setyAxisLabel(String yAxisLabel) {
         this.yAxisLabel = yAxisLabel;
 
+    }
+
+    @JIPipeDocumentation(name = "X axis font size", description = "Font size of the X axis")
+    @JIPipeParameter("x-axis-font-size")
+    public int getxAxisFontSize() {
+        return xAxisFontSize;
+    }
+
+    @JIPipeParameter("x-axis-font-size")
+    public void setxAxisFontSize(int xAxisFontSize) {
+        this.xAxisFontSize = xAxisFontSize;
+    }
+
+    @JIPipeDocumentation(name = "Y axis font size", description = "Font size of the Y axis")
+    @JIPipeParameter("y-axis-font-size")
+    public int getyAxisFontSize() {
+        return yAxisFontSize;
+    }
+
+    @JIPipeParameter("y-axis-font-size")
+    public void setyAxisFontSize(int yAxisFontSize) {
+        this.yAxisFontSize = yAxisFontSize;
     }
 }

@@ -17,6 +17,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 
+import java.awt.Font;
 import java.nio.file.Path;
 
 /**
@@ -44,7 +45,14 @@ public class ScatterXYPlotData extends XYPlotData {
 
     @Override
     public JFreeChart getChart() {
-        return ChartFactory.createScatterPlot(getTitle(), getxAxisLabel(), getyAxisLabel(), createDataSet());
+        JFreeChart chart = ChartFactory.createScatterPlot(getTitle(), getxAxisLabel(), getyAxisLabel(), createDataSet());
+        chart.getXYPlot().setDomainGridlinePaint(getGridColor());
+        chart.getXYPlot().getDomainAxis().setLabelFont(new Font(Font.SANS_SERIF, Font.BOLD, getxAxisFontSize()));
+        chart.getXYPlot().getDomainAxis().setTickLabelFont(new Font(Font.SANS_SERIF, Font.PLAIN, getxAxisFontSize()));
+        chart.getXYPlot().getRangeAxis().setLabelFont(new Font(Font.SANS_SERIF, Font.BOLD, getyAxisFontSize()));
+        chart.getXYPlot().getRangeAxis().setTickLabelFont(new Font(Font.SANS_SERIF, Font.PLAIN, getyAxisFontSize()));
+        updateChartProperties(chart);
+        return chart;
     }
 
     public static ScatterXYPlotData importFrom(Path storagePath) {

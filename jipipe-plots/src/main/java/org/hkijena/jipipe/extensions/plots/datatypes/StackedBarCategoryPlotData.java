@@ -19,6 +19,7 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.renderer.category.BarRenderer;
 import org.jfree.chart.renderer.category.StandardBarPainter;
 
+import java.awt.Font;
 import java.nio.file.Path;
 
 /**
@@ -50,6 +51,12 @@ public class StackedBarCategoryPlotData extends CategoryPlotData {
     public JFreeChart getChart() {
         JFreeChart chart = ChartFactory.createStackedBarChart(getTitle(), getCategoryAxisLabel(), getValueAxisLabel(), createDataSet());
         ((BarRenderer) chart.getCategoryPlot().getRenderer()).setBarPainter(new StandardBarPainter());
+        chart.getCategoryPlot().setDomainGridlinePaint(getGridColor());
+        chart.getCategoryPlot().getDomainAxis().setLabelFont(new Font(Font.SANS_SERIF, Font.BOLD, getCategoryAxisFontSize()));
+        chart.getCategoryPlot().getDomainAxis().setTickLabelFont(new Font(Font.SANS_SERIF, Font.PLAIN, getCategoryAxisFontSize()));
+        chart.getCategoryPlot().getRangeAxis().setLabelFont(new Font(Font.SANS_SERIF, Font.BOLD, getValueAxisFontSize()));
+        chart.getCategoryPlot().getRangeAxis().setTickLabelFont(new Font(Font.SANS_SERIF, Font.PLAIN, getValueAxisFontSize()));
+        updateChartProperties(chart);
         return chart;
     }
 

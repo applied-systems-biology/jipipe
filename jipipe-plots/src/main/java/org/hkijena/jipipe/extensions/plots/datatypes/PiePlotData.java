@@ -47,7 +47,7 @@ public abstract class PiePlotData extends PlotData {
     public PieDataset createDataSet() {
         DefaultPieDataset dataset = new DefaultPieDataset();
         for (PlotDataSeries series : getSeries()) {
-            double[] values = series.getColumnAsDouble("Value");
+            double[] values = series.getColumnAsDouble("Amount");
             String[] categories = series.getColumnAsString("Category");
             for (int i = 0; i < values.length; i++) {
                 dataset.setValue(categories[i], values[i]);
