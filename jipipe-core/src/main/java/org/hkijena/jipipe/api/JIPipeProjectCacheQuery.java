@@ -124,7 +124,7 @@ public class JIPipeProjectCacheQuery {
      * @return map of slot name to cache slot
      */
     public Map<String, JIPipeDataSlot> getCachedCache(JIPipeGraphNode node) {
-        return project.getCache().extract((JIPipeAlgorithm) node, getCachedId(node));
+        return project.getCache().extract(node, getCachedId(node));
     }
 
     /**
