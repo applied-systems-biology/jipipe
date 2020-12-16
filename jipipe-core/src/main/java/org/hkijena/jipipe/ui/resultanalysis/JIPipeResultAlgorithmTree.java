@@ -54,13 +54,13 @@ public class JIPipeResultAlgorithmTree extends JIPipeProjectWorkbenchPanel {
         int scrollPosition = treeScrollPane.getVerticalScrollBar().getValue();
 
         DefaultMutableTreeNode root = new DefaultMutableTreeNode(null);
-        for (JIPipeProjectCompartment compartment : run.getProject().getCompartmentGraph().traverseAlgorithms()
+        for (JIPipeProjectCompartment compartment : run.getProject().getCompartmentGraph().traverse()
                 .stream().map(a -> (JIPipeProjectCompartment) a).collect(Collectors.toList())) {
             DefaultMutableTreeNode compartmentNode = new DefaultMutableTreeNode(compartment);
             boolean compartmentMatches = searchTextField.test(compartment.getName());
             boolean compartmentHasMatchedChildren = false;
 
-            for (JIPipeGraphNode algorithm : run.getGraph().traverseAlgorithms()) {
+            for (JIPipeGraphNode algorithm : run.getGraph().traverse()) {
                 if (algorithm.getCompartment().equals(compartment.getProjectCompartmentId())) {
                     DefaultMutableTreeNode algorithmNode = new DefaultMutableTreeNode(algorithm);
 

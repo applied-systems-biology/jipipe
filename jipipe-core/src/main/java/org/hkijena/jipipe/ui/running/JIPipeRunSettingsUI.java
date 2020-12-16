@@ -183,7 +183,7 @@ public class JIPipeRunSettingsUI extends JIPipeProjectWorkbenchPanel {
                     "You can deselect these outputs in the following list to disable saving outputs for them. They will still be executed, but their results will not be saved to the hard drive.");
             List<JCheckBox> checkBoxes = new ArrayList<>();
             JPanel contentPanel = new JPanel(new GridBagLayout());
-            List<JIPipeGraphNode> traversed = getProject().getGraph().traverseAlgorithms();
+            List<JIPipeGraphNode> traversed = getProject().getGraph().traverse();
             for (JIPipeGraphNode node : traversed) {
                 if (!(node instanceof JIPipeAlgorithm))
                     continue;

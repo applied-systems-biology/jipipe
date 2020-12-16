@@ -176,7 +176,7 @@ public class JIPipeGraph implements JIPipeValidatable {
      */
     public Map<String, String> cleanupIds() {
         Map<String, String> renaming = new HashMap<>();
-        List<JIPipeGraphNode> traversedAlgorithms = traverseAlgorithms();
+        List<JIPipeGraphNode> traversedAlgorithms = traverse();
         ImmutableBiMap<String, JIPipeGraphNode> oldIds = ImmutableBiMap.copyOf(nodes);
         nodes.clear();
         boolean changed = false;
@@ -910,7 +910,7 @@ public class JIPipeGraph implements JIPipeValidatable {
      */
     public Set<JIPipeGraphNode> getDeactivatedAlgorithms() {
         Set<JIPipeGraphNode> missing = new HashSet<>();
-        for (JIPipeGraphNode algorithm : traverseAlgorithms()) {
+        for (JIPipeGraphNode algorithm : traverse()) {
             if (algorithm instanceof JIPipeAlgorithm) {
                 if (!((JIPipeAlgorithm) algorithm).isEnabled()) {
                     missing.add(algorithm);
@@ -942,7 +942,7 @@ public class JIPipeGraph implements JIPipeValidatable {
      */
     public Set<JIPipeGraphNode> getDeactivatedAlgorithms(Set<JIPipeGraphNode> externallySatisfied) {
         Set<JIPipeGraphNode> missing = new HashSet<>();
-        for (JIPipeGraphNode algorithm : traverseAlgorithms()) {
+        for (JIPipeGraphNode algorithm : traverse()) {
             if (externallySatisfied.contains(algorithm))
                 continue;
             if (algorithm instanceof JIPipeAlgorithm) {
@@ -974,7 +974,7 @@ public class JIPipeGraph implements JIPipeValidatable {
      *
      * @return Sorted list of algorithms
      */
-    public List<JIPipeGraphNode> traverseAlgorithms() {
+    public List<JIPipeGraphNode> traverse() {
         if (traversedAlgorithms != null)
             return Collections.unmodifiableList(traversedAlgorithms);
 
@@ -1057,7 +1057,7 @@ public class JIPipeGraph implements JIPipeValidatable {
      * @param satisfied  all algorithms that are considered to have a satisfied input
      */
     public void reportValidity(JIPipeValidityReport report, JIPipeGraphNode targetNode, Set<JIPipeGraphNode> satisfied) {
-        List<JIPipeGraphNode> predecessorAlgorithms = getPredecessorAlgorithms(targetNode, traverseAlgorithms());
+        List<JIPipeGraphNode> predecessorAlgorithms = getPredecessorAlgorithms(targetNode, traverse());
         predecessorAlgorithms.add(targetNode);
         for (JIPipeGraphNode node : predecessorAlgorithms) {
             if (satisfied.contains(node))

@@ -86,7 +86,7 @@ public class JIPipeCacheTree extends JIPipeProjectWorkbenchPanel {
         DefaultMutableTreeNode root = new DefaultMutableTreeNode(null);
 
         Set<String> coveredCompartments = new HashSet<>();
-        for (JIPipeProjectCompartment compartment : getProject().getCompartmentGraph().traverseAlgorithms()
+        for (JIPipeProjectCompartment compartment : getProject().getCompartmentGraph().traverse()
                 .stream().map(a -> (JIPipeProjectCompartment) a).collect(Collectors.toList())) {
             createCompartmentNode(root, byCompartmentId.getOrDefault(compartment.getProjectCompartmentId(), Collections.emptyMap()), compartment.getName());
             coveredCompartments.add(compartment.getProjectCompartmentId());

@@ -218,7 +218,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
     private void addNewNodes() {
         int newlyPlacedAlgorithms = 0;
         JIPipeNodeUI ui = null;
-        for (JIPipeGraphNode algorithm : graph.traverseAlgorithms()) {
+        for (JIPipeGraphNode algorithm : graph.traverse()) {
             if (!algorithm.isVisibleIn(compartment))
                 continue;
             if (nodeUIs.containsKey(algorithm))
@@ -268,7 +268,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
      * Auto-places components when an overlap was detected
      */
     private void removeComponentOverlaps() {
-        List<JIPipeGraphNode> traversed = graph.traverseAlgorithms();
+        List<JIPipeGraphNode> traversed = graph.traverse();
         boolean detected = false;
         for (int i = traversed.size() - 1; i >= 0; --i) {
             JIPipeGraphNode algorithm = traversed.get(i);

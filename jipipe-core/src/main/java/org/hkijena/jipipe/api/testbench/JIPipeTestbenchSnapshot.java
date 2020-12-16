@@ -42,7 +42,7 @@ public class JIPipeTestbenchSnapshot {
         this.testBench = testBench;
         this.outputFolderBackup = testBench.getTestBenchRun().getConfiguration().getOutputPath();
         timestamp = LocalDateTime.now();
-        for (JIPipeGraphNode algorithm : testBench.getTestBenchRun().getGraph().traverseAlgorithms()) {
+        for (JIPipeGraphNode algorithm : testBench.getTestBenchRun().getGraph().traverse()) {
             algorithmBackups.put(algorithm, new AlgorithmBackup(algorithm));
         }
     }

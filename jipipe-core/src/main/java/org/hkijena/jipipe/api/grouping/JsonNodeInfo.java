@@ -347,7 +347,7 @@ public class JsonNodeInfo implements JIPipeNodeInfo, JIPipeValidatable, JIPipePa
      */
     public Map<String, JIPipeParameterAccess> getAvailableParameters() {
         Map<String, JIPipeParameterAccess> parameterAccessMap = new HashMap<>();
-        for (JIPipeGraphNode algorithm : graph.traverseAlgorithms()) {
+        for (JIPipeGraphNode algorithm : graph.traverse()) {
             for (Map.Entry<String, JIPipeParameterAccess> entry : JIPipeParameterTree.getParameters(algorithm).entrySet()) {
                 String newId = algorithm.getIdInGraph() + "/" + entry.getKey();
                 parameterAccessMap.put(newId, entry.getValue());

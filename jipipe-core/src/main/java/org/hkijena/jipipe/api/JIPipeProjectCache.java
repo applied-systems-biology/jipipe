@@ -17,6 +17,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
@@ -24,11 +25,7 @@ import org.hkijena.jipipe.extensions.settings.VirtualDataSettings;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * A structure that manages cached data
@@ -232,7 +229,7 @@ public class JIPipeProjectCache {
                 if (project.getGraph().containsNode(algorithm)) {
                     if (compareSlots || compareProjectStates) {
                         if (traversedAlgorithms == null) {
-                            traversedAlgorithms = project.getGraph().traverseAlgorithms();
+                            traversedAlgorithms = project.getGraph().traverse();
                         }
                         State stateId = cacheQuery.getCachedId(algorithm);
 
@@ -370,18 +367,27 @@ public class JIPipeProjectCache {
      * Encapsulates a state
      */
     public static class State implements Comparable<State> {
+        private final JIPipeGraphNode node;
         private final LocalDateTime generationTime;
         private final String stateId;
+        private final Set<State> predecessorStates;
 
         /**
          * Creates a new instance
-         *
+         *  @param node the node
+         * @param predecessorStates the states of predecessor nodes
          * @param generationTime the generation time. It is ignored during comparison.
-         * @param stateId        the state ID that uniquely identifies the state
          */
-        public State(LocalDateTime generationTime, String stateId) {
+        public State(JIPipeGraphNode node, Set<State> predecessorStates, LocalDateTime generationTime) {
+            this.node = node;
+            this.predecessorStates = predecessorStates;
             this.generationTime = generationTime;
-            this.stateId = stateId;
+            if(node instanceof JIPipeAlgorithm) {
+                this.stateId = ((JIPipeAlgorithm) node).getStateId();
+            }
+            else {
+                this.stateId = "";
+            }
         }
 
         public LocalDateTime getGenerationTime() {
@@ -393,16 +399,8 @@ public class JIPipeProjectCache {
         }
 
         @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            State state = (State) o;
-            return stateId.equals(state.stateId);
-        }
-
-        @Override
         public int hashCode() {
-            return Objects.hash(stateId);
+            return Objects.hash(stateId, predecessorStates);
         }
 
         @Override
@@ -422,6 +420,22 @@ public class JIPipeProjectCache {
          */
         public String renderGenerationTime() {
             return StringUtils.formatDateTime(getGenerationTime());
+        }
+
+        public JIPipeGraphNode getNode() {
+            return node;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            State state = (State) o;
+            return node.equals(state.node) && stateId.equals(state.stateId) && predecessorStates.equals(state.predecessorStates);
+        }
+
+        public Set<State> getPredecessorStates() {
+            return predecessorStates;
         }
     }
 }

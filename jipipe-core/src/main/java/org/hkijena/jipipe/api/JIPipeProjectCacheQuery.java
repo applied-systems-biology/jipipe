@@ -18,10 +18,12 @@ import com.google.common.collect.HashBiMap;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.jgrapht.graph.DefaultDirectedGraph;
+import org.jgrapht.graph.DefaultEdge;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
 
@@ -31,9 +33,8 @@ import java.util.Objects;
 public class JIPipeProjectCacheQuery {
     private final JIPipeProject project;
     private BiMap<String, JIPipeGraphNode> nodes = HashBiMap.create();
-    private List<JIPipeGraphNode> traversedNodes;
-    private BiMap<JIPipeGraphNode, String> cachedRawStates = HashBiMap.create();
-    private BiMap<JIPipeGraphNode, String> cachedIterationStates = HashBiMap.create();
+    private BiMap<JIPipeGraphNode, JIPipeProjectCache.State> cachedStates = HashBiMap.create();
+    private DefaultDirectedGraph<JIPipeProjectCache.State, DefaultEdge> stateGraph = new DefaultDirectedGraph<>(DefaultEdge.class);
 
     public JIPipeProjectCacheQuery(JIPipeProject project) {
         this.project = project;
@@ -41,55 +42,32 @@ public class JIPipeProjectCacheQuery {
     }
 
     /**
-     * Checks if the query is invalid.
-     *
-     * @return if the cache is invalid
-     */
-    public boolean isInvalid() {
-        if (!Objects.equals(new ArrayList<>(project.getGraph().traverseAlgorithms()), traversedNodes))
-            return true;
-        for (Map.Entry<JIPipeGraphNode, String> entry : cachedRawStates.entrySet()) {
-            JIPipeGraphNode node = entry.getKey();
-            if (node == null)
-                return true;
-            if (node instanceof JIPipeAlgorithm) {
-                String currentState = ((JIPipeAlgorithm) node).getStateId();
-                if (!Objects.equals(currentState, entry.getValue()))
-                    return true;
-            }
-        }
-        return true;
-    }
-
-    /**
      * Rebuilds the stored states
      */
     public void rebuild() {
-        // Fetch traversed nodes again. Make a copy
-        this.traversedNodes = new ArrayList<>(project.getGraph().traverseAlgorithms());
-
         // Fetch nodes and make a copy. Required because users might invalidate (delete) the nodes
         this.nodes.clear();
         for (Map.Entry<String, JIPipeGraphNode> entry : project.getGraph().getNodes().entrySet()) {
             this.nodes.put(entry.getKey(), entry.getValue());
         }
 
-        // Cached raw states
-        cachedRawStates.clear();
-        for (JIPipeGraphNode node : traversedNodes) {
-            String state = "";
-            if (node instanceof JIPipeAlgorithm) {
-                state = ((JIPipeAlgorithm) node).getStateId();
-            }
-            cachedRawStates.put(node, state);
+        // Create the state graph
+        stateGraph = new DefaultDirectedGraph<>(DefaultEdge.class);
+        for (JIPipeGraphNode node : project.getGraph().getNodes().values()) {
+            JIPipeProjectCache.State state = new JIPipeProjectCache.State(node, new HashSet<>(), LocalDateTime.now());
+            stateGraph.addVertex(state);
+            cachedStates.put(node, state);
+        }
+        for (Map.Entry<JIPipeDataSlot, JIPipeDataSlot> edge : project.getGraph().getSlotEdges()) {
+            stateGraph.addEdge(cachedStates.get(edge.getKey().getNode()), cachedStates.get(edge.getValue().getNode()));
         }
 
-        // Cached iteration states
-        StringBuilder currentIterationState = new StringBuilder();
-        for (JIPipeGraphNode node : traversedNodes) {
-            String rawState = cachedRawStates.get(node);
-            currentIterationState.append(rawState).append("\n");
-            cachedIterationStates.put(node, currentIterationState.toString());
+        // Resolve connections
+        for (JIPipeProjectCache.State state : stateGraph.vertexSet()) {
+            for (DefaultEdge edge : stateGraph.incomingEdgesOf(state)) {
+                JIPipeProjectCache.State source = stateGraph.getEdgeSource(edge);
+                state.getPredecessorStates().add(source);
+            }
         }
     }
 
@@ -103,18 +81,6 @@ public class JIPipeProjectCacheQuery {
 
     public BiMap<String, JIPipeGraphNode> getNodes() {
         return nodes;
-    }
-
-    public List<JIPipeGraphNode> getTraversedNodes() {
-        return traversedNodes;
-    }
-
-    public BiMap<JIPipeGraphNode, String> getCachedRawStates() {
-        return cachedRawStates;
-    }
-
-    public BiMap<JIPipeGraphNode, String> getCachedIterationStates() {
-        return cachedIterationStates;
     }
 
     /**
@@ -135,6 +101,6 @@ public class JIPipeProjectCacheQuery {
      * @return the current cache state with the current local date & time
      */
     public JIPipeProjectCache.State getCachedId(JIPipeGraphNode node) {
-        return new JIPipeProjectCache.State(LocalDateTime.now(), cachedIterationStates.get(node));
+        return cachedStates.get(node);
     }
 }

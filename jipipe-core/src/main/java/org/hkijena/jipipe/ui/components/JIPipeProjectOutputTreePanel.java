@@ -47,13 +47,13 @@ public class JIPipeProjectOutputTreePanel extends JPanel {
         int scrollPosition = treeScrollPane.getVerticalScrollBar().getValue();
 
         DefaultMutableTreeNode root = new DefaultMutableTreeNode(null);
-        for (JIPipeProjectCompartment compartment : project.getCompartmentGraph().traverseAlgorithms()
+        for (JIPipeProjectCompartment compartment : project.getCompartmentGraph().traverse()
                 .stream().map(a -> (JIPipeProjectCompartment) a).collect(Collectors.toList())) {
             DefaultMutableTreeNode compartmentNode = new DefaultMutableTreeNode(compartment);
             boolean compartmentMatches = searchTextField.test(compartment.getName());
             boolean compartmentHasMatchedChildren = false;
 
-            for (JIPipeGraphNode algorithm : project.getGraph().traverseAlgorithms()) {
+            for (JIPipeGraphNode algorithm : project.getGraph().traverse()) {
                 if (algorithm.getCompartment().equals(compartment.getProjectCompartmentId())) {
                     DefaultMutableTreeNode algorithmNode = new DefaultMutableTreeNode(algorithm);
 
