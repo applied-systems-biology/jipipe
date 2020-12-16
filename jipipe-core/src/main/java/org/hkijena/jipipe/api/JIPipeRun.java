@@ -179,6 +179,11 @@ public class JIPipeRun implements JIPipeRunnable {
             threadPool = null;
         }
 
+        // Clear all slots
+        for (JIPipeGraphNode node : algorithmGraph.getNodes().values()) {
+            node.clearSlotData();
+        }
+
         // Postprocessing
         info.log("Postprocessing steps ...");
         try {
