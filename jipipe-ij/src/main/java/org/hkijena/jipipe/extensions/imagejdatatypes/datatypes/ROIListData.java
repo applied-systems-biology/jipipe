@@ -46,11 +46,7 @@ import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.ColorUtils;
 import org.hkijena.jipipe.utils.PathUtils;
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Frame;
-import java.awt.Point;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -164,6 +160,9 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
 
     @Override
     public String toString() {
+        if(size() == 1) {
+            return "ROI list (" + size() + " items) " + get(0);
+        }
         return "ROI list (" + size() + " items)";
     }
 
@@ -297,6 +296,35 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
         for (Roi roi : this) {
             roi.setPosition(0, 0, 0);
         }
+    }
+
+    /**
+     * Creates a 2D 8-bit image that covers the region of all ROI
+     * @return the image
+     */
+    public ImagePlus createDummyImage() {
+        Rectangle bounds = getBounds();
+        int width = Math.max(0, bounds.x) + bounds.width;
+        int height = Math.max(0, bounds.y) + bounds.height;
+        return IJ.createImage("empty", "8-bit", width, height, 1);
+    }
+
+    /**
+     * Creates a 2D 8-bit black image that covers the region of all provided ROI
+     * @param rois the rois
+     * @return the image. 1x1 pixel if no ROI or empty roi are provided
+     */
+    public static ImagePlus createDummyImageFor(Collection<ROIListData> rois) {
+        int width = 1;
+        int height = 1;
+        for (ROIListData data : rois) {
+            Rectangle bounds = data.getBounds();
+            int w = Math.max(0, bounds.x) + bounds.width;
+            int h = Math.max(0, bounds.y) + bounds.height;
+            width = Math.max(w, width);
+            height = Math.max(h, height);
+        }
+        return IJ.createImage("empty", "8-bit", width, height, 1);
     }
 
     /**
@@ -745,7 +773,7 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
             }
         }
         else {
-            imp = IJ.createImage("empty", "8-bit", 1, 1, 1);
+            imp = createDummyImage();
             measurements.updateAnalyzer();
             Analyzer aSys = new Analyzer(imp); // System Analyzer
             ResultsTable rtSys = Analyzer.getResultsTable();

@@ -37,4 +37,4 @@ Edges represent that data is transferred from an output to an input node.
 <tr><td><img src="resource://icons/actions/list-add.png"/></td><td>Some nodes will allow you to create custom slots or modify existing ones.</td></tr>
 </table>
 
-For more information and tutorials, visit https://jipipe.org/
+For more information and tutorials, visit https://www.jipipe.org/

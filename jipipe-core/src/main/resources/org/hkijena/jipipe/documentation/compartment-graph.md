@@ -37,4 +37,4 @@ the drawbacks of group nodes and full access to the cache system.
 <tr><td><img src="resource://icons/actions/arrow-down.png"/></td><td>Use the arrow button to create long-range connections and show other options.</td></tr>
 </table>
 
-For more information and tutorials, visit https://jipipe.org/
+For more information and tutorials, visit https://www.jipipe.org/

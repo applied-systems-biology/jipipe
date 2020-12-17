@@ -41,4 +41,18 @@ public enum LogicalOperation {
                 throw new UnsupportedOperationException("Unsupported: " + this);
         }
     }
+
+    @Override
+    public String toString() {
+        switch (this) {
+            case LogicalOr:
+                return "OR";
+            case LogicalAnd:
+                return "AND";
+            case LogicalXor:
+                return "XOR";
+            default:
+                throw new UnsupportedOperationException();
+        }
+    }
 }
