@@ -6,7 +6,6 @@ org.hkijena.jipipe.api.compartments.algorithms
 org.hkijena.jipipe.api.compartments.datatypes
 org.hkijena.jipipe.api.compat
 org.hkijena.jipipe.api.data
-org.hkijena.jipipe.api.events
 org.hkijena.jipipe.api.exceptions
 org.hkijena.jipipe.api.grouping
 org.hkijena.jipipe.api.grouping.events
@@ -44,6 +43,7 @@ org.hkijena.jipipe.extensions.imagejalgorithms.ij1.blur
 org.hkijena.jipipe.extensions.imagejalgorithms.ij1.color
 org.hkijena.jipipe.extensions.imagejalgorithms.ij1.contrast
 org.hkijena.jipipe.extensions.imagejalgorithms.ij1.convolve
+org.hkijena.jipipe.extensions.imagejalgorithms.ij1.datasources
 org.hkijena.jipipe.extensions.imagejalgorithms.ij1.dimensions
 org.hkijena.jipipe.extensions.imagejalgorithms.ij1.edge
 org.hkijena.jipipe.extensions.imagejalgorithms.ij1.features
@@ -86,6 +86,7 @@ org.hkijena.jipipe.extensions.imagejdatatypes.parameters
 org.hkijena.jipipe.extensions.imagejdatatypes.resultanalysis
 org.hkijena.jipipe.extensions.imagejdatatypes.util
 org.hkijena.jipipe.extensions.imagejdatatypes.util.measure
+org.hkijena.jipipe.extensions.imagejdatatypes.viewer
 org.hkijena.jipipe.extensions.jsonextensionloader
 org.hkijena.jipipe.extensions.multiparameters
 org.hkijena.jipipe.extensions.multiparameters.algorithms
@@ -119,9 +120,11 @@ org.hkijena.jipipe.extensions.parameters.scripts
 org.hkijena.jipipe.extensions.parameters.table
 org.hkijena.jipipe.extensions.parameters.util
 org.hkijena.jipipe.extensions.plots
+org.hkijena.jipipe.extensions.plots.converters
 org.hkijena.jipipe.extensions.plots.datatypes
 org.hkijena.jipipe.extensions.plots.parameters
 org.hkijena.jipipe.extensions.plots.ui.resultanalysis
+org.hkijena.jipipe.extensions.plots.utils
 org.hkijena.jipipe.extensions.python
 org.hkijena.jipipe.extensions.settings
 org.hkijena.jipipe.extensions.strings
@@ -153,6 +156,7 @@ org.hkijena.jipipe.ui.compartments
 org.hkijena.jipipe.ui.compat
 org.hkijena.jipipe.ui.compendium
 org.hkijena.jipipe.ui.components
+org.hkijena.jipipe.ui.data
 org.hkijena.jipipe.ui.events
 org.hkijena.jipipe.ui.extension
 org.hkijena.jipipe.ui.extensionbuilder
