@@ -137,7 +137,7 @@ public class JIPipeRun implements JIPipeRunnable {
             if (configuration.isStoreToCache()) {
                 JIPipeGraphNode runAlgorithm = outputSlot.getNode();
                 JIPipeGraphNode projectAlgorithm = cacheQuery.getNode(runAlgorithm.getIdInGraph());
-                JIPipeProjectCache.State stateId = cacheQuery.getCachedId(projectAlgorithm);
+                JIPipeProjectCacheState stateId = cacheQuery.getCachedId(projectAlgorithm);
                 project.getCache().store(projectAlgorithm, stateId, outputSlot, progressInfo);
             }
             if (configuration.isSaveOutputs()) {
@@ -375,7 +375,7 @@ public class JIPipeRun implements JIPipeRunnable {
         if (!configuration.isLoadFromCache())
             return false;
         JIPipeGraphNode projectAlgorithm = cacheQuery.getNode(algorithm.getIdInGraph());
-        JIPipeProjectCache.State stateId = cacheQuery.getCachedId(projectAlgorithm);
+        JIPipeProjectCacheState stateId = cacheQuery.getCachedId(projectAlgorithm);
         Map<String, JIPipeDataSlot> cachedData = project.getCache().extract(projectAlgorithm, stateId);
         if (!cachedData.isEmpty()) {
             progressInfo.log(String.format("Accessing cache with slots %s via state id %s", String.join(", ",

@@ -13,7 +13,9 @@
 
 package org.hkijena.jipipe.ui.cache;
 
-import org.hkijena.jipipe.api.JIPipeProjectCache;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
+import org.hkijena.jipipe.api.JIPipeProjectCacheState;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
@@ -27,6 +29,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import java.awt.BorderLayout;
+import java.util.Comparator;
 import java.util.Map;
 
 /**
@@ -36,6 +39,7 @@ public class JIPipeAlgorithmCacheTree extends JIPipeProjectWorkbenchPanel {
     private final JIPipeGraphNode graphNode;
     private JScrollPane treeScollPane;
     private JTree tree;
+    private BiMap<JIPipeProjectCacheState, DefaultMutableTreeNode> stateTreeNodeMap = HashBiMap.create();
 
     /**
      * @param workbenchUI Workbench ui
@@ -54,12 +58,14 @@ public class JIPipeAlgorithmCacheTree extends JIPipeProjectWorkbenchPanel {
     public void refreshTree() {
         int scrollPosition = treeScollPane.getVerticalScrollBar().getValue();
 
+        stateTreeNodeMap.clear();
         DefaultMutableTreeNode root = new DefaultMutableTreeNode(null);
 
-        Map<JIPipeProjectCache.State, Map<String, JIPipeDataSlot>> stateMap = getProject().getCache().extract((JIPipeAlgorithm) graphNode);
+        Map<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateMap = getProject().getCache().extract((JIPipeAlgorithm) graphNode);
         if (stateMap != null) {
-            for (Map.Entry<JIPipeProjectCache.State, Map<String, JIPipeDataSlot>> stateEntry : stateMap.entrySet()) {
+            for (Map.Entry<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateEntry : stateMap.entrySet()) {
                 DefaultMutableTreeNode stateNode = new DefaultMutableTreeNode(stateEntry.getKey());
+                stateTreeNodeMap.put(stateEntry.getKey(), stateNode);
 
                 for (JIPipeDataSlot slot : stateEntry.getValue().values()) {
                     DefaultMutableTreeNode slotNode = new DefaultMutableTreeNode(slot);
@@ -75,7 +81,8 @@ public class JIPipeAlgorithmCacheTree extends JIPipeProjectWorkbenchPanel {
         tree.setModel(model);
         UIUtils.expandAllTree(tree);
 
-        tree.getSelectionModel().setSelectionPath(new TreePath(root));
+//        tree.getSelectionModel().setSelectionPath(new TreePath(root));
+        selectNewestState();
 
         treeScollPane.getVerticalScrollBar().setValue(scrollPosition);
     }
@@ -95,5 +102,13 @@ public class JIPipeAlgorithmCacheTree extends JIPipeProjectWorkbenchPanel {
      */
     public JTree getTree() {
         return tree;
+    }
+
+    public void selectNewestState() {
+        if(!stateTreeNodeMap.isEmpty()) {
+            JIPipeProjectCacheState state = stateTreeNodeMap.keySet().stream().max(Comparator.naturalOrder()).get();
+            DefaultMutableTreeNode treeNode = stateTreeNodeMap.get(state);
+            tree.setSelectionPath(new TreePath(treeNode.getPath()));
+        }
     }
 }

@@ -17,14 +17,11 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.extensions.settings.VirtualDataSettings;
-import org.hkijena.jipipe.utils.StringUtils;
 
-import java.time.LocalDateTime;
 import java.util.*;
 
 /**
@@ -33,7 +30,7 @@ import java.util.*;
 public class JIPipeProjectCache {
     private final EventBus eventBus = new EventBus();
     private final JIPipeProject project;
-    private final Map<JIPipeGraphNode, Map<State, Map<String, JIPipeDataSlot>>> cacheEntries = new HashMap<>();
+    private final Map<JIPipeGraphNode, Map<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>>> cacheEntries = new HashMap<>();
     private final Map<JIPipeDataInfo, Integer> cachedDataTypes = new HashMap<>();
     private int cachedRowNumber = 0;
     private boolean disableTriggerEvent = false;
@@ -60,12 +57,12 @@ public class JIPipeProjectCache {
      * @param slot         the slot that contains the data
      * @param progressInfo data storage progress
      */
-    public void store(JIPipeGraphNode source, State stateId, JIPipeDataSlot slot, JIPipeProgressInfo progressInfo) {
+    public void store(JIPipeGraphNode source, JIPipeProjectCacheState stateId, JIPipeDataSlot slot, JIPipeProgressInfo progressInfo) {
         if (!RuntimeSettings.getInstance().isAllowCache())
             return;
         if (!project.getGraph().containsNode(source))
             throw new IllegalArgumentException("The cache only can hold project graph nodes!");
-        Map<State, Map<String, JIPipeDataSlot>> stateMap = cacheEntries.getOrDefault(source, null);
+        Map<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateMap = cacheEntries.getOrDefault(source, null);
         if (stateMap == null) {
             stateMap = new HashMap<>();
             cacheEntries.put(source, stateMap);
@@ -100,7 +97,7 @@ public class JIPipeProjectCache {
      * @param source the generating algorithm
      * @return map from state ID to map of slot name to slot. Null if not found
      */
-    public Map<State, Map<String, JIPipeDataSlot>> extract(JIPipeGraphNode source) {
+    public Map<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> extract(JIPipeGraphNode source) {
         return cacheEntries.getOrDefault(source, null);
     }
 
@@ -111,8 +108,8 @@ public class JIPipeProjectCache {
      * @param stateId the state id
      * @return all cached slots. Please do not work directly on those. Use targetSlot.copyFrom() instead. Never null.
      */
-    public Map<String, JIPipeDataSlot> extract(JIPipeGraphNode source, State stateId) {
-        Map<State, Map<String, JIPipeDataSlot>> stateMap = cacheEntries.getOrDefault(source, null);
+    public Map<String, JIPipeDataSlot> extract(JIPipeGraphNode source, JIPipeProjectCacheState stateId) {
+        Map<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateMap = cacheEntries.getOrDefault(source, null);
         if (stateMap != null) {
             return stateMap.getOrDefault(stateId, Collections.emptyMap());
         }
@@ -128,7 +125,7 @@ public class JIPipeProjectCache {
      * @return the cache's slot. Please do not work directly on this slot. Use targetSlot.copyFrom() instead. Null if not found
      */
     public JIPipeDataSlot extract(JIPipeGraphNode source, String stateId, String slotName) {
-        Map<State, Map<String, JIPipeDataSlot>> stateMap = cacheEntries.getOrDefault(source, null);
+        Map<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateMap = cacheEntries.getOrDefault(source, null);
         if (stateMap != null) {
             Map<String, JIPipeDataSlot> slotMap = stateMap.getOrDefault(stateId, null);
             if (slotMap != null) {
@@ -144,9 +141,9 @@ public class JIPipeProjectCache {
      * @param source the algorithm
      */
     public void clear(JIPipeGraphNode source) {
-        Map<State, Map<String, JIPipeDataSlot>> stateMap = cacheEntries.getOrDefault(source, null);
+        Map<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateMap = cacheEntries.getOrDefault(source, null);
         if (stateMap != null) {
-            for (Map.Entry<State, Map<String, JIPipeDataSlot>> stateEntry : stateMap.entrySet()) {
+            for (Map.Entry<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateEntry : stateMap.entrySet()) {
                 for (Map.Entry<String, JIPipeDataSlot> slotEntry : stateEntry.getValue().entrySet()) {
                     removeFromStatistics(slotEntry.getValue());
                     slotEntry.getValue().clearData();
@@ -164,8 +161,8 @@ public class JIPipeProjectCache {
      * @param source  the algorithm
      * @param stateId state id
      */
-    public void clear(JIPipeGraphNode source, State stateId) {
-        Map<State, Map<String, JIPipeDataSlot>> stateMap = cacheEntries.getOrDefault(source, null);
+    public void clear(JIPipeGraphNode source, JIPipeProjectCacheState stateId) {
+        Map<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateMap = cacheEntries.getOrDefault(source, null);
         if (stateMap != null) {
             Map<String, JIPipeDataSlot> slotMap = stateMap.getOrDefault(stateId, null);
             if (slotMap != null) {
@@ -184,8 +181,8 @@ public class JIPipeProjectCache {
      * Removes everything from the cache
      */
     public void clear() {
-        for (Map.Entry<JIPipeGraphNode, Map<State, Map<String, JIPipeDataSlot>>> algorithmEntry : cacheEntries.entrySet()) {
-            for (Map.Entry<State, Map<String, JIPipeDataSlot>> stateEntry : algorithmEntry.getValue().entrySet()) {
+        for (Map.Entry<JIPipeGraphNode, Map<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>>> algorithmEntry : cacheEntries.entrySet()) {
+            for (Map.Entry<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateEntry : algorithmEntry.getValue().entrySet()) {
                 for (Map.Entry<String, JIPipeDataSlot> slotEntry : stateEntry.getValue().entrySet()) {
                     slotEntry.getValue().clearData();
                 }
@@ -231,10 +228,10 @@ public class JIPipeProjectCache {
                         if (traversedAlgorithms == null) {
                             traversedAlgorithms = project.getGraph().traverse();
                         }
-                        State stateId = cacheQuery.getCachedId(algorithm);
+                        JIPipeProjectCacheState stateId = cacheQuery.getCachedId(algorithm);
 
-                        Map<State, Map<String, JIPipeDataSlot>> stateMap = cacheEntries.getOrDefault(algorithm, null);
-                        for (Map.Entry<State, Map<String, JIPipeDataSlot>> stateEntry : ImmutableList.copyOf(stateMap.entrySet())) {
+                        Map<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateMap = cacheEntries.getOrDefault(algorithm, null);
+                        for (Map.Entry<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateEntry : ImmutableList.copyOf(stateMap.entrySet())) {
                             if (compareProjectStates) {
                                 if (!Objects.equals(stateEntry.getKey(), stateId)) {
                                     clear(algorithm, stateEntry.getKey());
@@ -306,9 +303,9 @@ public class JIPipeProjectCache {
      */
     public void makeVirtual(JIPipeProgressInfo progress) {
         progress.addMaxProgress(cachedRowNumber);
-        for (Map.Entry<JIPipeGraphNode, Map<State, Map<String, JIPipeDataSlot>>> nodeMap : cacheEntries.entrySet()) {
+        for (Map.Entry<JIPipeGraphNode, Map<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>>> nodeMap : cacheEntries.entrySet()) {
             JIPipeProgressInfo nodeProgress = progress.resolve(nodeMap.getKey().getName());
-            for (Map.Entry<State, Map<String, JIPipeDataSlot>> stateMapEntry : nodeMap.getValue().entrySet()) {
+            for (Map.Entry<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateMapEntry : nodeMap.getValue().entrySet()) {
                 JIPipeProgressInfo stateProgress = nodeProgress.resolve(stateMapEntry.getKey().renderGenerationTime());
                 for (Map.Entry<String, JIPipeDataSlot> dataSlotEntry : stateMapEntry.getValue().entrySet()) {
                     JIPipeProgressInfo slotProgress = stateProgress.resolve(dataSlotEntry.getKey());
@@ -328,9 +325,9 @@ public class JIPipeProjectCache {
      */
     public void makeNonVirtual(JIPipeProgressInfo progress) {
         progress.addMaxProgress(cachedRowNumber);
-        for (Map.Entry<JIPipeGraphNode, Map<State, Map<String, JIPipeDataSlot>>> nodeMap : cacheEntries.entrySet()) {
+        for (Map.Entry<JIPipeGraphNode, Map<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>>> nodeMap : cacheEntries.entrySet()) {
             JIPipeProgressInfo nodeProgress = progress.resolve(nodeMap.getKey().getName());
-            for (Map.Entry<State, Map<String, JIPipeDataSlot>> stateMapEntry : nodeMap.getValue().entrySet()) {
+            for (Map.Entry<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateMapEntry : nodeMap.getValue().entrySet()) {
                 JIPipeProgressInfo stateProgress = nodeProgress.resolve(stateMapEntry.getKey().renderGenerationTime());
                 for (Map.Entry<String, JIPipeDataSlot> dataSlotEntry : stateMapEntry.getValue().entrySet()) {
                     JIPipeProgressInfo slotProgress = stateProgress.resolve(dataSlotEntry.getKey());
@@ -363,79 +360,4 @@ public class JIPipeProjectCache {
         }
     }
 
-    /**
-     * Encapsulates a state
-     */
-    public static class State implements Comparable<State> {
-        private final JIPipeGraphNode node;
-        private final LocalDateTime generationTime;
-        private final String stateId;
-        private final Set<State> predecessorStates;
-
-        /**
-         * Creates a new instance
-         *  @param node the node
-         * @param predecessorStates the states of predecessor nodes
-         * @param generationTime the generation time. It is ignored during comparison.
-         */
-        public State(JIPipeGraphNode node, Set<State> predecessorStates, LocalDateTime generationTime) {
-            this.node = node;
-            this.predecessorStates = predecessorStates;
-            this.generationTime = generationTime;
-            if(node instanceof JIPipeAlgorithm) {
-                this.stateId = ((JIPipeAlgorithm) node).getStateId();
-            }
-            else {
-                this.stateId = "";
-            }
-        }
-
-        public LocalDateTime getGenerationTime() {
-            return generationTime;
-        }
-
-        public String getStateId() {
-            return stateId;
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(stateId, predecessorStates);
-        }
-
-        @Override
-        public int compareTo(State o) {
-            return generationTime.compareTo(o.generationTime);
-        }
-
-        @Override
-        public String toString() {
-            return stateId;
-        }
-
-        /**
-         * Formats the generation time
-         *
-         * @return formatted string
-         */
-        public String renderGenerationTime() {
-            return StringUtils.formatDateTime(getGenerationTime());
-        }
-
-        public JIPipeGraphNode getNode() {
-            return node;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            State state = (State) o;
-            return node.equals(state.node) && stateId.equals(state.stateId) && predecessorStates.equals(state.predecessorStates);
-        }
-
-        public Set<State> getPredecessorStates() {
-            return predecessorStates;
-        }
-    }
 }

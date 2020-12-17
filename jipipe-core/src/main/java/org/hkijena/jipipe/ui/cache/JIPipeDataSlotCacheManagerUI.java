@@ -17,6 +17,7 @@ import com.google.common.eventbus.Subscribe;
 import com.google.common.html.HtmlEscapers;
 import org.hkijena.jipipe.api.JIPipeProjectCache;
 import org.hkijena.jipipe.api.JIPipeProjectCacheQuery;
+import org.hkijena.jipipe.api.JIPipeProjectCacheState;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
@@ -77,9 +78,9 @@ public class JIPipeDataSlotCacheManagerUI extends JIPipeProjectWorkbenchPanel {
     private void reloadContextMenu() {
         contextMenu.removeAll();
         JIPipeProjectCacheQuery query = new JIPipeProjectCacheQuery(getProject());
-        JIPipeProjectCache.State currentState = query.getCachedId(getDataSlot().getNode());
+        JIPipeProjectCacheState currentState = query.getCachedId(getDataSlot().getNode());
 
-        Map<JIPipeProjectCache.State, Map<String, JIPipeDataSlot>> stateMap = getProject().getCache().extract(getDataSlot().getNode());
+        Map<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateMap = getProject().getCache().extract(getDataSlot().getNode());
         if (stateMap != null) {
             JMenuItem openCurrent = createOpenStateButton(stateMap, currentState, "Open current snapshot");
             if (openCurrent != null) {
@@ -87,7 +88,7 @@ public class JIPipeDataSlotCacheManagerUI extends JIPipeProjectWorkbenchPanel {
             }
             JMenu previousMenu = new JMenu("All snapshots");
             previousMenu.setIcon(UIUtils.getIconFromResources("actions/clock.png"));
-            for (JIPipeProjectCache.State state : stateMap.keySet().stream().sorted(Comparator.reverseOrder()).collect(Collectors.toList())) {
+            for (JIPipeProjectCacheState state : stateMap.keySet().stream().sorted(Comparator.reverseOrder()).collect(Collectors.toList())) {
                 JMenuItem item = createOpenStateButton(stateMap, state, "Open snapshot from " + state.getGenerationTime().format(DateTimeFormatter.ISO_LOCAL_DATE) + " " +
                         state.getGenerationTime().format(DateTimeFormatter.ofPattern("HH:mm:ss")));
                 if (item != null) {
@@ -112,7 +113,7 @@ public class JIPipeDataSlotCacheManagerUI extends JIPipeProjectWorkbenchPanel {
         contextMenu.add(clearAll);
     }
 
-    private JMenuItem createOpenStateButton(Map<JIPipeProjectCache.State, Map<String, JIPipeDataSlot>> stateMap, JIPipeProjectCache.State state, String label) {
+    private JMenuItem createOpenStateButton(Map<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateMap, JIPipeProjectCacheState state, String label) {
         Map<String, JIPipeDataSlot> slotMap = stateMap.getOrDefault(state, null);
         if (slotMap == null)
             return null;
@@ -127,7 +128,7 @@ public class JIPipeDataSlotCacheManagerUI extends JIPipeProjectWorkbenchPanel {
         return item;
     }
 
-    private void openData(JIPipeProjectCache.State state) {
+    private void openData(JIPipeProjectCacheState state) {
 //        JIPipeCacheDataSlotTableUI cacheTable = new JIPipeCacheDataSlotTableUI(getProjectWorkbench(), cachedSlot);
 //        String tabName = getDataSlot().getAlgorithm().getName() + "/" + getDataSlot().getName() + " @ " + state.getGenerationTime().format(DateTimeFormatter.ISO_LOCAL_DATE) + " " +
 //                state.getGenerationTime().format(DateTimeFormatter.ofPattern("HH:mm:ss"));
@@ -160,7 +161,7 @@ public class JIPipeDataSlotCacheManagerUI extends JIPipeProjectWorkbenchPanel {
 
     private void updateStatus() {
         JIPipeProjectCache cache = getProject().getCache();
-        Map<JIPipeProjectCache.State, Map<String, JIPipeDataSlot>> stateMap = cache.extract(getDataSlot().getNode());
+        Map<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateMap = cache.extract(getDataSlot().getNode());
         int dataRows = 0;
         Set<String> traitTypes = new HashSet<>();
         if (stateMap != null) {
@@ -201,12 +202,12 @@ public class JIPipeDataSlotCacheManagerUI extends JIPipeProjectWorkbenchPanel {
         annotationButton.setToolTipText(builder.toString());
     }
 
-    private void generateCacheButtonTooltip(int dataRows, Map<JIPipeProjectCache.State, Map<String, JIPipeDataSlot>> stateMap) {
+    private void generateCacheButtonTooltip(int dataRows, Map<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateMap) {
         StringBuilder builder = new StringBuilder();
         builder.append("<html>");
         builder.append("The cache currently contains ").append(dataRows).append(" data rows that are spread across ").append(stateMap.keySet().size()).append(" snapshots.<br/><br/>");
         builder.append("<table>");
-        for (JIPipeProjectCache.State state : stateMap.keySet().stream().sorted(Comparator.reverseOrder()).collect(Collectors.toList())) {
+        for (JIPipeProjectCacheState state : stateMap.keySet().stream().sorted(Comparator.reverseOrder()).collect(Collectors.toList())) {
             Map<String, JIPipeDataSlot> slotMap = stateMap.get(state);
             JIPipeDataSlot cacheSlot = slotMap.getOrDefault(getDataSlot().getName(), null);
             if (cacheSlot != null) {

@@ -19,6 +19,7 @@ import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeProjectCache;
 import org.hkijena.jipipe.api.JIPipeProjectCacheQuery;
+import org.hkijena.jipipe.api.JIPipeProjectCacheState;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
@@ -92,7 +93,7 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
             Set<JIPipeDataSlot> sourceSlots = algorithm.getGraph().getSourceSlots(inputSlot);
             if (!sourceSlots.isEmpty()) {
                 for (JIPipeDataSlot sourceSlot : sourceSlots) {
-                    Map<JIPipeProjectCache.State, Map<String, JIPipeDataSlot>> sourceCaches = getProject().getCache().extract(sourceSlot.getNode());
+                    Map<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> sourceCaches = getProject().getCache().extract(sourceSlot.getNode());
                     if (sourceCaches == null || sourceCaches.isEmpty()) {
                         errorLabel.setText("No cached data available");
                         currentCache.clear();

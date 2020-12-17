@@ -16,16 +16,13 @@ package org.hkijena.jipipe.api;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * A query that allows to access a {@link JIPipeProjectCache}. This query caches the node cache states, so they are not always recalculated (which is expensive!)
@@ -33,8 +30,8 @@ import java.util.Objects;
 public class JIPipeProjectCacheQuery {
     private final JIPipeProject project;
     private BiMap<String, JIPipeGraphNode> nodes = HashBiMap.create();
-    private BiMap<JIPipeGraphNode, JIPipeProjectCache.State> cachedStates = HashBiMap.create();
-    private DefaultDirectedGraph<JIPipeProjectCache.State, DefaultEdge> stateGraph = new DefaultDirectedGraph<>(DefaultEdge.class);
+    private BiMap<JIPipeGraphNode, JIPipeProjectCacheState> cachedStates = HashBiMap.create();
+    private DefaultDirectedGraph<JIPipeProjectCacheState, DefaultEdge> stateGraph = new DefaultDirectedGraph<>(DefaultEdge.class);
 
     public JIPipeProjectCacheQuery(JIPipeProject project) {
         this.project = project;
@@ -54,7 +51,7 @@ public class JIPipeProjectCacheQuery {
         // Create the state graph
         stateGraph = new DefaultDirectedGraph<>(DefaultEdge.class);
         for (JIPipeGraphNode node : project.getGraph().getNodes().values()) {
-            JIPipeProjectCache.State state = new JIPipeProjectCache.State(node, new HashSet<>(), LocalDateTime.now());
+            JIPipeProjectCacheState state = new JIPipeProjectCacheState(node, new HashSet<>(), LocalDateTime.now());
             stateGraph.addVertex(state);
             cachedStates.put(node, state);
         }
@@ -63,9 +60,9 @@ public class JIPipeProjectCacheQuery {
         }
 
         // Resolve connections
-        for (JIPipeProjectCache.State state : stateGraph.vertexSet()) {
+        for (JIPipeProjectCacheState state : stateGraph.vertexSet()) {
             for (DefaultEdge edge : stateGraph.incomingEdgesOf(state)) {
-                JIPipeProjectCache.State source = stateGraph.getEdgeSource(edge);
+                JIPipeProjectCacheState source = stateGraph.getEdgeSource(edge);
                 state.getPredecessorStates().add(source);
             }
         }
@@ -100,7 +97,7 @@ public class JIPipeProjectCacheQuery {
      * @param node the node
      * @return the current cache state with the current local date & time
      */
-    public JIPipeProjectCache.State getCachedId(JIPipeGraphNode node) {
+    public JIPipeProjectCacheState getCachedId(JIPipeGraphNode node) {
         return cachedStates.get(node);
     }
 }

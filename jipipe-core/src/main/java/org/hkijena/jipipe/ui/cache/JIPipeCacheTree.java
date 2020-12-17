@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.ui.cache;
 
-import org.hkijena.jipipe.api.JIPipeProjectCache;
+import org.hkijena.jipipe.api.JIPipeProjectCacheState;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
@@ -54,24 +54,24 @@ public class JIPipeCacheTree extends JIPipeProjectWorkbenchPanel {
     public void refreshTree() {
         int scrollPosition = treeScollPane.getVerticalScrollBar().getValue();
 
-        Map<String, Map<JIPipeGraphNode, Map<JIPipeProjectCache.State, List<JIPipeDataSlot>>>> byCompartmentId = new HashMap<>();
+        Map<String, Map<JIPipeGraphNode, Map<JIPipeProjectCacheState, List<JIPipeDataSlot>>>> byCompartmentId = new HashMap<>();
         for (JIPipeGraphNode node : getProject().getGraph().getNodes().values()) {
-            Map<JIPipeProjectCache.State, Map<String, JIPipeDataSlot>> stateMap = getProject().getCache().extract((JIPipeAlgorithm) node);
+            Map<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateMap = getProject().getCache().extract((JIPipeAlgorithm) node);
             if (stateMap == null)
                 continue;
 
-            for (Map.Entry<JIPipeProjectCache.State, Map<String, JIPipeDataSlot>> stateEntry : stateMap.entrySet()) {
+            for (Map.Entry<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateEntry : stateMap.entrySet()) {
                 Map<String, JIPipeDataSlot> slots = stateMap.getOrDefault(stateEntry.getKey(), null);
                 if (slots == null)
                     continue;
                 String compartmentId = node.getCompartment();
-                Map<JIPipeGraphNode, Map<JIPipeProjectCache.State, List<JIPipeDataSlot>>> algorithmMap = byCompartmentId.getOrDefault(compartmentId, null);
+                Map<JIPipeGraphNode, Map<JIPipeProjectCacheState, List<JIPipeDataSlot>>> algorithmMap = byCompartmentId.getOrDefault(compartmentId, null);
                 if (algorithmMap == null) {
                     algorithmMap = new HashMap<>();
                     byCompartmentId.put(compartmentId, algorithmMap);
                 }
 
-                Map<JIPipeProjectCache.State, List<JIPipeDataSlot>> stateMap2 = algorithmMap.getOrDefault(node, null);
+                Map<JIPipeProjectCacheState, List<JIPipeDataSlot>> stateMap2 = algorithmMap.getOrDefault(node, null);
                 if (stateMap2 == null) {
                     stateMap2 = new HashMap<>();
                     algorithmMap.put(node, stateMap2);
@@ -91,7 +91,7 @@ public class JIPipeCacheTree extends JIPipeProjectWorkbenchPanel {
             createCompartmentNode(root, byCompartmentId.getOrDefault(compartment.getProjectCompartmentId(), Collections.emptyMap()), compartment.getName());
             coveredCompartments.add(compartment.getProjectCompartmentId());
         }
-        for (Map.Entry<String, Map<JIPipeGraphNode, Map<JIPipeProjectCache.State, List<JIPipeDataSlot>>>> entry : byCompartmentId.entrySet()) {
+        for (Map.Entry<String, Map<JIPipeGraphNode, Map<JIPipeProjectCacheState, List<JIPipeDataSlot>>>> entry : byCompartmentId.entrySet()) {
             if (!coveredCompartments.contains(entry.getKey())) {
                 createCompartmentNode(root, byCompartmentId.getOrDefault(entry.getKey(), Collections.emptyMap()), entry.getKey());
             }
@@ -112,7 +112,7 @@ public class JIPipeCacheTree extends JIPipeProjectWorkbenchPanel {
      * @param state    the state
      * @param dataSlot the slot
      */
-    public void selectDataSlot(JIPipeProjectCache.State state, JIPipeDataSlot dataSlot) {
+    public void selectDataSlot(JIPipeProjectCacheState state, JIPipeDataSlot dataSlot) {
         DefaultMutableTreeNode root = (DefaultMutableTreeNode) tree.getModel().getRoot();
         Enumeration enumeration = root.breadthFirstEnumeration();
         while (enumeration.hasMoreElements()) {
@@ -121,7 +121,7 @@ public class JIPipeCacheTree extends JIPipeProjectWorkbenchPanel {
                 JIPipeDataSlot cacheSlot = (JIPipeDataSlot) node.getUserObject();
                 if (cacheSlot.getNode() == dataSlot.getNode() && Objects.equals(cacheSlot.getName(), dataSlot.getName())) {
                     DefaultMutableTreeNode parent = (DefaultMutableTreeNode) node.getParent();
-                    JIPipeProjectCache.State nodeState = (JIPipeProjectCache.State) parent.getUserObject();
+                    JIPipeProjectCacheState nodeState = (JIPipeProjectCacheState) parent.getUserObject();
                     if (Objects.equals(nodeState, state)) {
                         DefaultTreeModel model = (DefaultTreeModel) tree.getModel();
                         tree.setSelectionPath(new TreePath(model.getPathToRoot(node)));
@@ -132,20 +132,20 @@ public class JIPipeCacheTree extends JIPipeProjectWorkbenchPanel {
         }
     }
 
-    private void createCompartmentNode(DefaultMutableTreeNode root, Map<JIPipeGraphNode, Map<JIPipeProjectCache.State, List<JIPipeDataSlot>>> algorithms, String compartmentName) {
+    private void createCompartmentNode(DefaultMutableTreeNode root, Map<JIPipeGraphNode, Map<JIPipeProjectCacheState, List<JIPipeDataSlot>>> algorithms, String compartmentName) {
         DefaultMutableTreeNode compartmentNode = new DefaultMutableTreeNode(compartmentName);
 
         boolean compartmentMatches = searchTextField.test(compartmentName);
         boolean compartmentHasMatchingChild = false;
 
-        for (Map.Entry<JIPipeGraphNode, Map<JIPipeProjectCache.State, List<JIPipeDataSlot>>> algorithmEntry : algorithms.entrySet()) {
+        for (Map.Entry<JIPipeGraphNode, Map<JIPipeProjectCacheState, List<JIPipeDataSlot>>> algorithmEntry : algorithms.entrySet()) {
             DefaultMutableTreeNode algorithmNode = new DefaultMutableTreeNode(algorithmEntry.getKey());
 
             boolean algorithmMatches = compartmentMatches || searchTextField.test(algorithmEntry.getKey().getName());
             compartmentHasMatchingChild |= algorithmMatches;
             boolean algorithmHasMatchingChild = false;
 
-            for (JIPipeProjectCache.State state : algorithmEntry.getValue().keySet().stream().sorted(Comparator.reverseOrder()).collect(Collectors.toList())) {
+            for (JIPipeProjectCacheState state : algorithmEntry.getValue().keySet().stream().sorted(Comparator.reverseOrder()).collect(Collectors.toList())) {
                 DefaultMutableTreeNode stateNode = new DefaultMutableTreeNode(state);
 
                 boolean stateMatches = algorithmMatches || searchTextField.test(state.renderGenerationTime());
