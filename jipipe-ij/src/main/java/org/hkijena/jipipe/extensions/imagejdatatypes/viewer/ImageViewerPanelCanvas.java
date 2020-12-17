@@ -22,6 +22,7 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -201,13 +202,27 @@ public class ImageViewerPanelCanvas extends JPanel implements MouseListener, Mou
     }
 
     private void fixNegativeOffsets() {
-        if (contentX < 0) {
-            int d = -contentX;
-            contentX = 0;
-            if (scrollPane != null) {
-                scrollPane.getHorizontalScrollBar().setValue(scrollPane.getHorizontalScrollBar().getValue() + d);
-            }
+        int w;
+        int h;
+        if (image != null) {
+            w = (int) (zoom * image.getWidth());
+            h = (int) (zoom * image.getHeight());
+        } else if (scrollPane != null) {
+            w = scrollPane.getViewport().getWidth();
+            h = scrollPane.getViewport().getHeight();
+        } else {
+            w = getWidth();
+            h = getHeight();
         }
+        contentX = Math.max(-w, Math.min(w, contentX));
+        contentY = Math.max(-h, Math.min(h, contentY));
+//        if (contentX < 0) {
+//            int d = -contentX;
+//            contentX = 0;
+//            if (scrollPane != null) {
+//                scrollPane.getHorizontalScrollBar().setValue(scrollPane.getHorizontalScrollBar().getValue() + d);
+//            }
+//        }
     }
 
     @Override
