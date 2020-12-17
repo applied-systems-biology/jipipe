@@ -527,8 +527,7 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
             }
             getGraph().connect(source, target);
         } else {
-            JOptionPane.showMessageDialog(this, "The data slots could not be connected. Is this connection causing loops?",
-                    "Error", JOptionPane.ERROR_MESSAGE);
+            UIUtils.showConnectionErrorMessage(this, source, target);
         }
     }
 

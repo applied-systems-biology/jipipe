@@ -145,7 +145,7 @@ public class JIPipeAlgorithmTargetFinderSlotUI extends JPanel {
             graph.connect(outputSlot, inputSlot);
             eventBus.post(new AlgorithmFinderSuccessEvent(outputSlot, inputSlot));
         } else {
-            JOptionPane.showMessageDialog(this, "The data slots could not be connected. Is this connection causing loops?", "Error", JOptionPane.ERROR_MESSAGE);
+            UIUtils.showConnectionErrorMessage(this, outputSlot, inputSlot);
         }
     }
 
