@@ -17,6 +17,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -55,7 +56,10 @@ public class JIPipeResultTreeCellRenderer extends JLabel implements TreeCellRend
             } else if (userObject instanceof JIPipeDataSlot) {
                 JIPipeDataSlot slot = (JIPipeDataSlot) userObject;
                 setIcon(JIPipe.getDataTypes().getIconFor(slot.getAcceptedDataType()));
-                setText(slot.getName());
+                if(!StringUtils.isNullOrEmpty(slot.getInfo().getCustomName()))
+                    setText(slot.getInfo().getCustomName() + " [" + slot.getName() + "]");
+                else
+                    setText(slot.getName());
             } else {
                 setIcon(rootIcon);
                 setText("Results");

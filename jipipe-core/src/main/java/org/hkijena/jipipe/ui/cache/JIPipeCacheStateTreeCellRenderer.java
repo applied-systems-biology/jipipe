@@ -18,6 +18,7 @@ import org.hkijena.jipipe.api.JIPipeProjectCacheState;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.ui.resultanalysis.JIPipeResultAlgorithmTree;
+import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -55,7 +56,10 @@ public class JIPipeCacheStateTreeCellRenderer extends JLabel implements TreeCell
             } else if (userObject instanceof JIPipeDataSlot) {
                 JIPipeDataSlot slot = (JIPipeDataSlot) userObject;
                 setIcon(JIPipe.getDataTypes().getIconFor(slot.getAcceptedDataType()));
-                setText(slot.getName());
+                if(!StringUtils.isNullOrEmpty(slot.getInfo().getCustomName()))
+                    setText(slot.getInfo().getCustomName() + " [" + slot.getName() + "]");
+                else
+                    setText(slot.getName());
             } else if (userObject instanceof JIPipeProjectCacheState) {
                 JIPipeProjectCacheState state = (JIPipeProjectCacheState) userObject;
                 setIcon(UIUtils.getIconFromResources("actions/camera.png"));
