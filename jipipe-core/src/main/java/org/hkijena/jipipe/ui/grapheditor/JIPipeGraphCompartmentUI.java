@@ -73,7 +73,7 @@ public class JIPipeGraphCompartmentUI extends JIPipeGraphEditorUI {
         setPropertyPanel(defaultPanel);
 
         // Set D&D and Copy&Paste behavior
-        getCanvasUI().setDragAndDropBehavior(new JIPipeStandardDragAndDropBehavior());
+        getCanvasUI().setDragAndDropBehavior(new JIPipeGraphCompartmentDragAndDropBehavior());
         List<NodeUIContextAction> nodeSpecificContextActions = new ArrayList<>();
         if (GeneralUISettings.getInstance().isAddContextActionsToContextMenu()) {
             for (JIPipeNodeInfo info : JIPipe.getNodes().getRegisteredNodeInfos().values()) {

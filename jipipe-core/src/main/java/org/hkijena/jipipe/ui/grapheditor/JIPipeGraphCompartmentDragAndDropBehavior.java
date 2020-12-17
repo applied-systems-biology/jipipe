@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
 /**
  * Installs Drag&Drop features that create filesystem nodes
  */
-public class JIPipeStandardDragAndDropBehavior implements JIPipeGraphDragAndDropBehavior {
+public class JIPipeGraphCompartmentDragAndDropBehavior implements JIPipeGraphDragAndDropBehavior {
 
     private JIPipeGraphCanvasUI canvas;
 
