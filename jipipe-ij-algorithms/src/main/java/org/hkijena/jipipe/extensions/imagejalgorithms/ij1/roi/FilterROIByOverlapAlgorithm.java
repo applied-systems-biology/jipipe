@@ -210,7 +210,9 @@ public class FilterROIByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
         this.logicalOperation = logicalOperation;
     }
 
-    @JIPipeDocumentation(name = "Overlap filter", description = "This filter is applied to any combination of ROIs that have an overlap. Please open the expression builder to see a list of all available variables. If the filter is empty, " +
+    @JIPipeDocumentation(name = "Overlap filter", description = "This filter is applied to any combination of ROIs that have an overlap. You will have three sets of measurements: First, Overlap, and Second." +
+            "'First' is the currently filtered ROI item. 'Second' is the tested item. 'Overlap' is the overlap between these ROI." +
+            " Please open the expression builder to see a list of all available variables. If the filter is empty, " +
             "no filtering is applied.")
     @JIPipeParameter("overlap-filter")
     @ExpressionParameterSettings(variableSource = RoiOverlapStatisticsVariableSource.class)
