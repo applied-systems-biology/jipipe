@@ -103,6 +103,8 @@ public class FilterROIByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
                         }
                     }
                     boolean success = logicalOperation.apply(overlapSuccesses);
+                    if(invert)
+                        success = !success;
                     if(success) {
                         if(outputOverlaps) {
                             temp.clear();
@@ -122,10 +124,10 @@ public class FilterROIByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
                         }
                     }
                     else {
-                        here.remove(i);
-                        i--;
+                        here.set(i, null);
                     }
                 }
+                here.removeIf(Objects::isNull);
             }
         }
 
