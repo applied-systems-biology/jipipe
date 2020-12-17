@@ -592,7 +592,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
             requestFocusInWindow();
             repaint();
         } else if (SwingUtilities.isRightMouseButton(mouseEvent)) {
-            if (selection.isEmpty()) {
+            if (selection.size() <= 1) {
                 JIPipeNodeUI ui = pickComponent(mouseEvent);
                 selectOnly(ui);
             }
