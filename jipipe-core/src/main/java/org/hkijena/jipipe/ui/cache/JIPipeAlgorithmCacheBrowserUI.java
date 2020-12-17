@@ -52,7 +52,7 @@ public class JIPipeAlgorithmCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
         super(workbenchUI);
         this.graphNode = graphNode;
         initialize();
-        tree.selectNewestState();
+        showCurrentlySelectedNode();
 
         getProject().getCache().getEventBus().register(this);
         JIPipeRunnerQueue.getInstance().getEventBus().register(this);
@@ -75,23 +75,25 @@ public class JIPipeAlgorithmCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
         });
         add(splitPane, BorderLayout.CENTER);
 
-        tree.getTree().addTreeSelectionListener(e -> {
-            Object lastPathComponent = e.getPath().getLastPathComponent();
-            if (lastPathComponent instanceof DefaultMutableTreeNode) {
-                Object userObject = ((DefaultMutableTreeNode) lastPathComponent).getUserObject();
-                if (userObject instanceof JIPipeDataSlot) {
-                    showDataSlot((JIPipeDataSlot) userObject);
-                } else if (userObject instanceof JIPipeGraphNode) {
-                    showDataSlotsOfAlgorithm((JIPipeGraphNode) userObject);
-                } else if (userObject instanceof JIPipeProjectCacheState) {
-                    showDataSlotsOfState((JIPipeProjectCacheState) userObject);
-                } else {
-                    showAllDataSlots();
-                }
-            }
-        });
+        tree.getTree().addTreeSelectionListener(e -> showCurrentlySelectedNode());
 
         initializeToolbar();
+    }
+
+    private void showCurrentlySelectedNode() {
+        Object lastPathComponent = tree.getTree().getLastSelectedPathComponent();
+        if (lastPathComponent instanceof DefaultMutableTreeNode) {
+            Object userObject = ((DefaultMutableTreeNode) lastPathComponent).getUserObject();
+            if (userObject instanceof JIPipeDataSlot) {
+                showDataSlot((JIPipeDataSlot) userObject);
+            } else if (userObject instanceof JIPipeGraphNode) {
+                showDataSlotsOfAlgorithm((JIPipeGraphNode) userObject);
+            } else if (userObject instanceof JIPipeProjectCacheState) {
+                showDataSlotsOfState((JIPipeProjectCacheState) userObject);
+            } else {
+                showAllDataSlots();
+            }
+        }
     }
 
     private void showDataSlotsOfState(JIPipeProjectCacheState state) {
