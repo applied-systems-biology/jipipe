@@ -45,6 +45,9 @@ public class AlgorithmGraphPasteNodeUIContextAction implements NodeUIContextActi
             String json = UIUtils.getStringFromClipboard();
             if (json != null) {
                 JIPipeGraph graph = JsonUtils.getObjectMapper().readValue(json, JIPipeGraph.class);
+                if(graph.getNodes().isEmpty()) {
+                    throw new NullPointerException("Empty graph pasted.");
+                }
 
                 // Replace project compartment with IOInterface
                 for (JIPipeGraphNode node : graph.getNodes().values()) {
@@ -93,6 +96,7 @@ public class AlgorithmGraphPasteNodeUIContextAction implements NodeUIContextActi
                 canvasUI.getGraph().mergeWith(graph);
             }
         } catch (Exception e) {
+            JOptionPane.showMessageDialog(canvasUI.getWorkbench().getWindow(), "The current clipboard contents are no valid nodes/graph.", "Paste nodes", JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
         }
     }

@@ -51,6 +51,7 @@ public class GraphCompartmentCopyNodeUIContextAction implements NodeUIContextAct
             StringSelection stringSelection = new StringSelection(json);
             Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
             clipboard.setContents(stringSelection, stringSelection);
+            canvasUI.getWorkbench().sendStatusBarText("Copied " + selection.size() + " compartments");
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }

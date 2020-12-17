@@ -48,6 +48,9 @@ public class GraphCompartmentPasteNodeUIContextAction implements NodeUIContextAc
                 TypeReference<List<JIPipeExportedCompartment>> typeReference = new TypeReference<List<JIPipeExportedCompartment>>() {
                 };
                 List<JIPipeExportedCompartment> compartments = JsonUtils.getObjectMapper().readValue(json, typeReference);
+                if(compartments.isEmpty()) {
+                    throw new NullPointerException("Empty compartment list pasted.");
+                }
                 for (JIPipeExportedCompartment compartment : compartments) {
                     String newId = StringUtils.makeUniqueString(compartment.getSuggestedName(), " ", project.getCompartments().keySet());
                     JIPipeProjectCompartment compartmentNode = compartment.addTo(project, newId);
@@ -55,10 +58,10 @@ public class GraphCompartmentPasteNodeUIContextAction implements NodeUIContextAc
                     if (ui != null) {
                         canvasUI.autoPlaceCloseToCursor(ui);
                     }
-
                 }
             }
         } catch (Exception e) {
+            JOptionPane.showMessageDialog(canvasUI.getWorkbench().getWindow(), "The current clipboard contents are no valid compartments.", "Paste compartment", JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
         }
     }
