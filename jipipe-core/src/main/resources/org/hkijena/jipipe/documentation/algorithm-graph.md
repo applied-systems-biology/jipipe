@@ -1,46 +1,40 @@
-# Creating a pipeline
+# Quick reference
 
-The graph editor allows you to create a pipeline of algorithms.
-To add an algorithm, select one in the *menu bar* on top of the white *graph area*.
-You can also use the *search bar* to find and add algorithms.
+This editor allows you to create a data processing pipeline. Processing steps are represented as 
+nodes that have one or multiple inputs or outputs located at the top/bottom (vertical view, default) or left/right (horizontal view).
+Edges represent that data is transferred from an output to an input node.
 
-Once added, you can freely move algorithms within the area my dragging them by the colored areas.
-Click the area to select the node. If you hold `Shift` while clicking, you can select multiple algorithms.
+<h3>Navigating the graph</h3>
+<table>
+<tr><td><img src="resource://icons/actions/transform-move.png"/></td><td>Move nodes around by dragging them by their colored area.</td></tr>
+<tr><td><img src="resource://icons/actions/edit-select-all.png"/></td><td>You can select multiple nodes by dragging a box around them or clicking while holding Shift.</td></tr>
+<tr><td><img src="resource://icons/actions/grid-rectangular.png"/></td><td>The graph area expands in all directions. Just drag a node to the edge.</td></tr>
+<tr><td><img src="resource://icons/devices/input-mouse.png"/></td><td>Drag the middle mouse button or use the scroll bars to navigate around.</td></tr>
+<tr><td><img src="resource://icons/actions/zoom-in.png"/></td><td>Hold Ctrl and scroll to zoom in and out.</td></tr>
+</table>
+<h3>Visual programming</h3>
+<table>
+<tr><td><img src="resource://icons/actions/run-build.png"/></td><td>Nodes represent processing steps</td></tr>
+<tr><td><img src="resource://icons/actions/database.png"/></td><td>Slots represent input/output data</td></tr>
+<tr><td><img src="resource://icons/actions/epiphany-download.png"/></td><td>Edges represent transfer of data</td></tr>
+<tr><td><img src="resource://icons/actions/help-info.png"/></td><td>Input/output slots can have multiple edges</td></tr>
+</table>
+<h3>Nodes</h3>
+<table>
+<tr><td><img src="resource://icons/actions/list-add.png"/></td><td>Add nodes by selecting one from the menu at the top of the graph</td></tr>
+<tr><td><img src="resource://icons/actions/search.png"/></td><td>You can also use the search bar to find nodes.</td></tr>
+<tr><td><img src="resource://icons/actions/target.png"/></td><td>New nodes will appear at the cursor.</td></tr>
+<tr><td><img src="resource://icons/actions/edit-select-all.png"/></td><td>Select a node to show its parameters.</td></tr>
+<tr><td><img src="resource://icons/actions/cursor-arrow.png"/></td><td>Hover over a parameter to show its documentation.</td></tr>
+<tr><td><img src="resource://icons/devices/input-mouse.png"/></td><td>Right-click a node to show its context menu.</td></tr>
+</table>
+<h3>Edges</h3>
+<table>
+<tr><td><img src="resource://icons/devices/input-mouse.png"/></td><td>Drag a line between two slots to make an edge.</td></tr>
+<tr><td><img src="resource://icons/actions/edit-delete.png"/></td><td>Delete edges by dragging another line between the slots.</td></tr>
+<tr><td><img src="resource://icons/actions/arrow-down.png"/></td><td>Use the arrow button to create long-range connections and show other options.</td></tr>
+<tr><td><img src="resource://icons/actions/help-info.png"/></td><td><span style="color: blue">Blue</span> edges indicate that a data type conversion is applied.</td></tr>
+<tr><td><img src="resource://icons/actions/list-add.png"/></td><td>Some nodes will allow you to create custom slots or modify existing ones.</td></tr>
+</table>
 
-You can right-click the graph area or a node to open the context menu. Alternatively, you will also find context 
-actions at the top-right corner after selecting one or multiple nodes.
-
-You will notice a ![](resource://icons/actions/target.png) **Cursor** within the graph area that moves to the 
-position where you clicked. New nodes appear at its location.
-
-## Data slots
-
-Algorithms process input data to generate output data. The input and output can be 
-addressed as individual *data slots* that are at the top and bottom of 
-an algorithm node.
-
-**Input data slots** are located at the top (left side in horizontal view)
-
-**Output data slots** are located at the bottom (right side in horizontal view)
-
-### Connecting data
-
-To connect slots, click the ![](resource://icons/emblems/slot-connected-vertical.png) icon to open a menu of
-compatible source or target data slots. On creating a connection, a line will appear between
-the two affected slots to indicate a connection. Alternatively, you can drag a 
-line between the slots with your mouse.
-
-To disconnect two slots, click ![](resource://icons/emblems/slot-connected-vertical.png) and select 
-![](resource://icons/actions/cancel.png) **Disconnect**.
-
-The connection type is indicated by its color. <span style="color: #404040">Gray</span> connections 
-are regular edges without any meaning. <span style="color: blue">Blue</span> links indicate that 
-an automated data conversion is applied. <span style="color: red">Red</span> connections indicate 
-that the data types are incompatible.
-
-### Modifying slots
-
-Some algorithms allow you to add additional slots. To add another slot, click the ![](resource://icons/actions/list-add.png)
-**Add** button and select which data type the slot should have. Depending on the algorithm, 
-you can make an output slot inherit the type of an existing input slot.
-
+For more information and tutorials, visit https://jipipe.org/
