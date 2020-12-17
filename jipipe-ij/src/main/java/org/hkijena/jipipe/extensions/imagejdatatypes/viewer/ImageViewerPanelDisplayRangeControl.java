@@ -103,7 +103,7 @@ public class ImageViewerPanelDisplayRangeControl extends JPanel implements Thumb
     }
 
     public void applyCalibration(boolean upload) {
-        if (imageViewerPanel.getImage() != null) {
+        if (imageViewerPanel.getImage() != null && imageViewerPanel.getImage().getType() != ImagePlus.COLOR_RGB) {
             ImageJUtils.calibrate(imageViewerPanel.getImage(), imageViewerPanel.getSelectedCalibration(), customMin, customMax);
             updateSliders();
             if (upload)
