@@ -96,13 +96,13 @@ public class JIPipeAlgorithmCompendiumUI extends JIPipeCompendiumUI<JIPipeNodeIn
                 }
             }
         }
+        builder.append("</table>\n\n");
 
         // Write description
         String description = info.getDescription();
         if (description != null && !description.isEmpty())
             builder.append(HtmlEscapers.htmlEscaper().escape(description)).append("</br>");
 
-        builder.append("</table>\n\n");
 
         // Write parameter documentation
         builder.append("# Parameters").append("\nIn the following section, you will find a description of all parameters.\n\n");
