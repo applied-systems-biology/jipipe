@@ -19,7 +19,10 @@ import org.hkijena.jipipe.extensions.filesystem.datasources.FileDataSource;
 import org.hkijena.jipipe.extensions.filesystem.datasources.FileListDataSource;
 import org.hkijena.jipipe.extensions.filesystem.datasources.FolderDataSource;
 import org.hkijena.jipipe.extensions.filesystem.datasources.FolderListDataSource;
+import org.hkijena.jipipe.ui.grapheditor.contextmenu.clipboard.AlgorithmGraphPasteNodeUIContextAction;
+import org.hkijena.jipipe.utils.UIUtils;
 
+import javax.swing.*;
 import java.awt.Point;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
@@ -78,6 +81,12 @@ public class JIPipeGraphCompartmentDragAndDropBehavior implements JIPipeGraphDra
 
                     dtde.dropComplete(true);
                 }
+                else if(flavors[i].isFlavorTextType()) {
+                    dtde.acceptDrop(dtde.getDropAction());
+                    String text = (String) tr.getTransferData(flavors[i]);
+                    processDrop(text);
+                    dtde.dropComplete(true);
+                }
             }
             return;
         } catch (Throwable t) {
@@ -86,6 +95,28 @@ public class JIPipeGraphCompartmentDragAndDropBehavior implements JIPipeGraphDra
         dtde.rejectDrop();
     }
 
+    /**
+     * Processes the drop as serializable (nodes)
+     * @param text json
+     */
+    private void processDrop(String text) {
+        try {
+            if (text != null) {
+                AlgorithmGraphPasteNodeUIContextAction.pasteNodes(canvas, text);
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(canvas.getWorkbench().getWindow(),
+                    "The dropped string is no valid node/graph.",
+                    "Drop nodes",
+                    JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Processes drop to create file node(s)
+     * @param files the files
+     */
     private void processDrop(List<File> files) {
         String compartment = canvas.getCompartment();
         JIPipeGraph graph = canvas.getGraph();

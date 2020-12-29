@@ -44,61 +44,65 @@ public class AlgorithmGraphPasteNodeUIContextAction implements NodeUIContextActi
         try {
             String json = UIUtils.getStringFromClipboard();
             if (json != null) {
-                JIPipeGraph graph = JsonUtils.getObjectMapper().readValue(json, JIPipeGraph.class);
-                if(graph.getNodes().isEmpty()) {
-                    throw new NullPointerException("Empty graph pasted.");
-                }
-
-                // Replace project compartment with IOInterface
-                for (JIPipeGraphNode node : graph.getNodes().values()) {
-                    if (node instanceof JIPipeCompartmentOutput) {
-                        node.setInfo(JIPipe.getNodes().getInfoById("io-interface"));
-                    }
-                }
-
-                // Save the original locations (if available)
-                int minX = Integer.MAX_VALUE;
-                int minY = Integer.MAX_VALUE;
-                Map<JIPipeGraphNode, Point> originalLocations = new HashMap<>();
-                for (JIPipeGraphNode algorithm : graph.getNodes().values()) {
-                    Point point = algorithm.getLocationWithin(algorithm.getCompartment(), canvasUI.getViewMode().name());
-                    if (point != null) {
-                        originalLocations.put(algorithm, point);
-                        minX = Math.min(minX, point.x);
-                        minY = Math.min(minY, point.y);
-                    }
-                }
-                if (minX == Integer.MAX_VALUE)
-                    minX = 0;
-                if (minY == Integer.MAX_VALUE)
-                    minY = 0;
-
-                // Change the compartment
-                String compartment = canvasUI.getCompartment();
-                for (JIPipeGraphNode algorithm : graph.getNodes().values()) {
-                    algorithm.setCompartment(compartment);
-                }
-
-                // Update the location relative to the mouse
-                Point cursor = canvasUI.getGraphEditorCursor();
-                for (JIPipeGraphNode algorithm : graph.getNodes().values()) {
-                    Point original = originalLocations.getOrDefault(algorithm, null);
-                    if (original != null) {
-                        original.x = (int) (original.x - minX + cursor.x * canvasUI.getZoom() / canvasUI.getViewMode().getGridWidth());
-                        original.y = (int) (original.y - minY + cursor.y * canvasUI.getZoom() / canvasUI.getViewMode().getGridHeight());
-                        algorithm.setLocationWithin(compartment, original, canvasUI.getViewMode().name());
-                    }
-                }
-
-                // Add to graph
-                canvasUI.getGraphHistory().addSnapshotBefore(new PasteNodeGraphHistorySnapshot(canvasUI.getGraph(),
-                        new HashSet<>(graph.getNodes().values())));
-                canvasUI.getGraph().mergeWith(graph);
+                pasteNodes(canvasUI, json);
             }
         } catch (Exception e) {
             JOptionPane.showMessageDialog(canvasUI.getWorkbench().getWindow(), "The current clipboard contents are no valid nodes/graph.", "Paste nodes", JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
         }
+    }
+
+    public static void pasteNodes(JIPipeGraphCanvasUI canvasUI, String json) throws com.fasterxml.jackson.core.JsonProcessingException {
+        JIPipeGraph graph = JsonUtils.getObjectMapper().readValue(json, JIPipeGraph.class);
+        if(graph.getNodes().isEmpty()) {
+            throw new NullPointerException("Empty graph pasted.");
+        }
+
+        // Replace project compartment with IOInterface
+        for (JIPipeGraphNode node : graph.getNodes().values()) {
+            if (node instanceof JIPipeCompartmentOutput) {
+                node.setInfo(JIPipe.getNodes().getInfoById("io-interface"));
+            }
+        }
+
+        // Save the original locations (if available)
+        int minX = Integer.MAX_VALUE;
+        int minY = Integer.MAX_VALUE;
+        Map<JIPipeGraphNode, Point> originalLocations = new HashMap<>();
+        for (JIPipeGraphNode algorithm : graph.getNodes().values()) {
+            Point point = algorithm.getLocationWithin(algorithm.getCompartment(), canvasUI.getViewMode().name());
+            if (point != null) {
+                originalLocations.put(algorithm, point);
+                minX = Math.min(minX, point.x);
+                minY = Math.min(minY, point.y);
+            }
+        }
+        if (minX == Integer.MAX_VALUE)
+            minX = 0;
+        if (minY == Integer.MAX_VALUE)
+            minY = 0;
+
+        // Change the compartment
+        String compartment = canvasUI.getCompartment();
+        for (JIPipeGraphNode algorithm : graph.getNodes().values()) {
+            algorithm.setCompartment(compartment);
+        }
+
+        // Update the location relative to the mouse
+        Point cursor = canvasUI.getGraphEditorCursor();
+        for (JIPipeGraphNode algorithm : graph.getNodes().values()) {
+            Point original = originalLocations.getOrDefault(algorithm, null);
+            if (original != null) {
+                original.x = (int) (original.x - minX + cursor.x * canvasUI.getZoom() / canvasUI.getViewMode().getGridWidth());
+                original.y = (int) (original.y - minY + cursor.y * canvasUI.getZoom() / canvasUI.getViewMode().getGridHeight());
+                algorithm.setLocationWithin(compartment, original, canvasUI.getViewMode().name());
+            }
+        }
+
+        // Add to graph
+        canvasUI.getGraphHistory().addSnapshotBefore(new PasteNodeGraphHistorySnapshot(canvasUI.getGraph(),
+                new HashSet<>(graph.getNodes().values())));
+        canvasUI.getGraph().mergeWith(graph);
     }
 
     @Override
