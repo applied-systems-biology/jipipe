@@ -27,6 +27,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeDataBatchAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.FormPanel;
@@ -53,6 +54,7 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
     private final JIPipeAlgorithm algorithm;
     private final Runnable runTestBench;
     private final ArrayDeque<JIPipeMergingDataBatch> infiniteScrollingQueue = new ArrayDeque<>();
+    private final JIPipeParameterCollection batchSettings;
     private JPanel errorUI;
     private Multimap<String, JIPipeDataSlot> currentCache = HashMultimap.create();
     private JLabel errorLabel;
@@ -63,6 +65,7 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
     private JLabel batchPreviewDuplicateLabel;
     private JIPipeGraphNode batchesNodeCopy;
     private List<JIPipeMergingDataBatch> batches = new ArrayList<>();
+    private boolean autoRefresh = true;
 
 
     /**
@@ -73,6 +76,7 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
     public DataBatchAssistantUI(JIPipeProjectWorkbench workbenchUI, JIPipeGraphNode algorithm, Runnable runTestBench) {
         super(workbenchUI);
         this.algorithm = (JIPipeAlgorithm) algorithm;
+        this.batchSettings = ((JIPipeDataBatchAlgorithm)algorithm).getGenerationSettingsInterface();
         this.runTestBench = runTestBench;
         this.scrollToBeginTimer.setRepeats(false);
         initialize();
@@ -80,6 +84,7 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
         getProject().getCache().getEventBus().register(this);
         algorithm.getEventBus().register(this);
         algorithm.getGraph().getEventBus().register(this);
+        batchSettings.getEventBus().register(this);
     }
 
     private void updateCurrentCache() {
@@ -147,6 +152,16 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
         refreshButton.setToolTipText("Refreshes the preview of generated batches");
         refreshButton.addActionListener(e -> refreshBatchPreview());
         toolBar.add(refreshButton);
+
+        JToggleButton autoRefreshButton = new JToggleButton(UIUtils.getIconFromResources("actions/quickopen-function.png"));
+        autoRefreshButton.setToolTipText("Auto refresh");
+        autoRefreshButton.setSelected(autoRefresh);
+        autoRefreshButton.addActionListener(e -> {
+            autoRefresh = autoRefreshButton.isSelected();
+            if(autoRefresh)
+                refreshBatchPreview();
+        });
+        toolBar.add(autoRefreshButton);
 
         add(toolBar, BorderLayout.NORTH);
 
@@ -311,6 +326,13 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
     public void onDisconnected(JIPipeGraph.NodeDisconnectedEvent event) {
         if (event.getTarget().getNode() == algorithm) {
             updateStatus();
+        }
+    }
+
+    @Subscribe
+    public void onParameterChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
+        if(event.getSource() == batchSettings && autoRefresh) {
+            refreshBatchPreview();
         }
     }
 }
