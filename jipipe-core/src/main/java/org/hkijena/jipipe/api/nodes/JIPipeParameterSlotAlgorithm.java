@@ -169,6 +169,8 @@ public abstract class JIPipeParameterSlotAlgorithm extends JIPipeAlgorithm {
 
                 // Create run
                 for (int row = 0; row < parameterSlot.getRowCount(); row++) {
+                    if(progressInfo.isCancelled().get())
+                        break;
                     ParametersData data = parameterSlot.getData(row, ParametersData.class, progressInfo);
                     List<JIPipeAnnotation> annotations = new ArrayList<>();
                     for (Map.Entry<String, Object> entry : data.getParameterData().entrySet()) {

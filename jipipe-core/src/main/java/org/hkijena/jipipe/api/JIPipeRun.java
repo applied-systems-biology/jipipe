@@ -295,12 +295,16 @@ public class JIPipeRun implements JIPipeRunnable {
         // Will also run any postprocessor
         List<JIPipeGraphNode> additionalAlgorithms = new ArrayList<>();
         for (JIPipeGraphNode node : algorithmGraph.getNodes().values()) {
+            if(progressInfo.isCancelled().get())
+                break;
             if (!executedAlgorithms.contains(node) && !unExecutableAlgorithms.contains(node)) {
                 additionalAlgorithms.add(node);
             }
         }
         progressInfo.setMaxProgress(progressInfo.getProgress() + additionalAlgorithms.size());
         for (int index = 0; index < additionalAlgorithms.size(); index++) {
+            if(progressInfo.isCancelled().get())
+                break;
             JIPipeGraphNode node = additionalAlgorithms.get(index);
             int absoluteIndex = index + preprocessorNodes.size() + traversedSlots.size() - 1;
             progressInfo.setProgress(absoluteIndex);

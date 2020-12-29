@@ -113,21 +113,46 @@ public class JIPipeGraphRunner implements JIPipeRunnable {
                 }
 
                 // Ensure the algorithm has run
-                if (!executedAlgorithms.contains(node)) {
-                    try {
-                        node.run(subProgress);
-                    } catch (Exception e) {
-                        throw new UserFriendlyRuntimeException("Algorithm " + node + " raised an exception!",
-                                e,
-                                "An error occurred during processing",
-                                "On running the algorithm '" + node.getName() + "', within graph '" + algorithmGraph + "'",
-                                "Please refer to the other error messages.",
-                                "Please follow the instructions for the other error messages.");
-                    }
-
-                    executedAlgorithms.add(node);
-                }
+                runNode(executedAlgorithms, node, subProgress);
             }
+        }
+
+        // There might be some algorithms missing (ones that do not have an output)
+        // Will also run any postprocessor
+        List<JIPipeGraphNode> additionalAlgorithms = new ArrayList<>();
+        for (JIPipeGraphNode node : algorithmGraph.getNodes().values()) {
+            if(info.isCancelled().get())
+                break;
+            if (!executedAlgorithms.contains(node) && !unExecutableAlgorithms.contains(node)) {
+                additionalAlgorithms.add(node);
+            }
+        }
+        info.setMaxProgress(info.getProgress() + additionalAlgorithms.size());
+        for (int index = 0; index < additionalAlgorithms.size(); index++) {
+            if(info.isCancelled().get())
+                break;
+            JIPipeGraphNode node = additionalAlgorithms.get(index);
+            int absoluteIndex = index + preprocessorNodes.size() + traversedSlots.size() - 1;
+            info.setProgress(absoluteIndex);
+            JIPipeProgressInfo subProgress = info.resolve("Algorithm: " + node.getName());
+            runNode(executedAlgorithms, node, subProgress);
+        }
+    }
+
+    private void runNode(Set<JIPipeGraphNode> executedAlgorithms, JIPipeGraphNode node, JIPipeProgressInfo subProgress) {
+        if (!executedAlgorithms.contains(node)) {
+            try {
+                node.run(subProgress);
+            } catch (Exception e) {
+                throw new UserFriendlyRuntimeException("Algorithm " + node + " raised an exception!",
+                        e,
+                        "An error occurred during processing",
+                        "On running the algorithm '" + node.getName() + "', within graph '" + algorithmGraph + "'",
+                        "Please refer to the other error messages.",
+                        "Please follow the instructions for the other error messages.");
+            }
+
+            executedAlgorithms.add(node);
         }
     }
 
