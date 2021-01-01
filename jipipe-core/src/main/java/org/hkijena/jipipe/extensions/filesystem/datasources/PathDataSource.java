@@ -23,6 +23,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FileData;
+import org.hkijena.jipipe.extensions.filesystem.dataypes.PathData;
 import org.hkijena.jipipe.extensions.parameters.primitives.FilePathParameterSettings;
 import org.hkijena.jipipe.ui.components.PathEditor;
 
@@ -32,13 +33,13 @@ import java.nio.file.Path;
 /**
  * Provides an input file
  */
-@JIPipeDocumentation(name = "File", description = "Converts the path parameter into file data.")
-@JIPipeOutputSlot(value = FileData.class, slotName = "Filename", autoCreate = true)
+@JIPipeDocumentation(name = "Path", description = "Converts the path parameter into path data.")
+@JIPipeOutputSlot(value = PathData.class, slotName = "Path", autoCreate = true)
 @JIPipeOrganization(nodeTypeCategory = DataSourceNodeTypeCategory.class)
-public class FileDataSource extends JIPipeAlgorithm {
+public class PathDataSource extends JIPipeAlgorithm {
 
     private Path currentWorkingDirectory;
-    private Path fileName;
+    private Path path;
     private boolean needsToExist = true;
 
     /**
@@ -46,7 +47,7 @@ public class FileDataSource extends JIPipeAlgorithm {
      *
      * @param info The algorithm info
      */
-    public FileDataSource(JIPipeNodeInfo info) {
+    public PathDataSource(JIPipeNodeInfo info) {
         super(info);
     }
 
@@ -55,40 +56,40 @@ public class FileDataSource extends JIPipeAlgorithm {
      *
      * @param other The original
      */
-    public FileDataSource(FileDataSource other) {
+    public PathDataSource(PathDataSource other) {
         super(other);
-        this.fileName = other.fileName;
+        this.path = other.path;
         this.currentWorkingDirectory = other.currentWorkingDirectory;
         this.needsToExist = other.needsToExist;
     }
 
     @Override
     public void run(JIPipeProgressInfo progressInfo) {
-        getFirstOutputSlot().addData(new FileData(fileName), progressInfo);
+        getFirstOutputSlot().addData(new PathData(path), progressInfo);
     }
 
     /**
      * @return The file name
      */
-    @JIPipeParameter("file-name")
-    @JIPipeDocumentation(name = "File name")
-    @FilePathParameterSettings(ioMode = PathEditor.IOMode.Open, pathMode = PathEditor.PathMode.FilesOnly)
-    public Path getFileName() {
-        return fileName;
+    @JIPipeParameter("path")
+    @JIPipeDocumentation(name = "Path")
+    @FilePathParameterSettings(ioMode = PathEditor.IOMode.Open, pathMode = PathEditor.PathMode.FilesAndDirectories)
+    public Path getPath() {
+        return path;
     }
 
     /**
      * Sets the file name
      *
-     * @param fileName The file name
+     * @param path The file name
      */
-    @JIPipeParameter("file-name")
-    public void setFileName(Path fileName) {
-        this.fileName = fileName;
+    @JIPipeParameter("path")
+    public void setPath(Path path) {
+        this.path = path;
 
     }
 
-    @JIPipeDocumentation(name = "Needs to exist", description = "If true, the selected file needs to exist.")
+    @JIPipeDocumentation(name = "Needs to exist", description = "If true, the selected path needs to exist.")
     @JIPipeParameter("needs-to-exist")
     public boolean isNeedsToExist() {
         return needsToExist;
@@ -102,21 +103,21 @@ public class FileDataSource extends JIPipeAlgorithm {
     /**
      * @return The file name as absolute path
      */
-    public Path getAbsoluteFileName() {
-        if (fileName == null)
+    public Path getAbsolutePath() {
+        if (path == null)
             return null;
         else if (currentWorkingDirectory != null)
-            return currentWorkingDirectory.resolve(fileName);
+            return currentWorkingDirectory.resolve(path);
         else
-            return fileName;
+            return path;
     }
 
     @Override
     public void reportValidity(JIPipeValidityReport report) {
-        if (needsToExist && (fileName == null || !Files.isRegularFile(getAbsoluteFileName())))
-            report.reportIsInvalid("Input file does not exist!",
-                    "The file '" + getAbsoluteFileName() + "' does not exist.",
-                    "Please provide a valid input file.",
+        if (needsToExist && (path == null || !Files.exists(getAbsolutePath())))
+            report.reportIsInvalid("Input path does not exist!",
+                    "The file '" + getAbsolutePath() + "' does not exist.",
+                    "Please provide a valid input path.",
                     this);
     }
 
@@ -124,19 +125,19 @@ public class FileDataSource extends JIPipeAlgorithm {
     public void setWorkDirectory(Path workDirectory) {
         super.setWorkDirectory(workDirectory);
 
-        if (fileName != null) {
+        if (path != null) {
             // Make absolute
-            if (!fileName.isAbsolute()) {
+            if (!path.isAbsolute()) {
                 if (currentWorkingDirectory != null) {
-                    setFileName(currentWorkingDirectory.resolve(fileName));
+                    setPath(currentWorkingDirectory.resolve(path));
                 } else if (workDirectory != null) {
-                    setFileName(workDirectory.resolve(fileName));
+                    setPath(workDirectory.resolve(path));
                 }
             }
             // Make relative if already absolute and workDirectory != null
-            if (fileName.isAbsolute()) {
-                if (workDirectory != null && fileName.startsWith(workDirectory)) {
-                    setFileName(workDirectory.relativize(fileName));
+            if (path.isAbsolute()) {
+                if (workDirectory != null && path.startsWith(workDirectory)) {
+                    setPath(workDirectory.relativize(path));
                 }
             }
         }

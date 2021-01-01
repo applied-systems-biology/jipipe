@@ -33,7 +33,7 @@ import java.nio.file.Path;
 /**
  * Provides an input folder
  */
-@JIPipeDocumentation(name = "Folder list")
+@JIPipeDocumentation(name = "Folder list", description = "Converts each provided path into folder data.")
 @JIPipeOutputSlot(value = FolderData.class, slotName = "Folder paths", autoCreate = true)
 @JIPipeOrganization(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 public class FolderListDataSource extends JIPipeAlgorithm {

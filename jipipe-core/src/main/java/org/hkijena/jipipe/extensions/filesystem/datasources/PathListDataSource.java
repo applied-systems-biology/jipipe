@@ -22,7 +22,8 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.filesystem.dataypes.FileData;
+import org.hkijena.jipipe.extensions.filesystem.dataypes.FolderData;
+import org.hkijena.jipipe.extensions.filesystem.dataypes.PathData;
 import org.hkijena.jipipe.extensions.parameters.primitives.FilePathParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.primitives.PathList;
 import org.hkijena.jipipe.ui.components.PathEditor;
@@ -31,22 +32,22 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 /**
- * Provides an input file
+ * Provides an input folder
  */
-@JIPipeDocumentation(name = "File list", description = "Converts each provided path into file data.")
-@JIPipeOutputSlot(value = FileData.class, slotName = "Filenames", autoCreate = true)
+@JIPipeDocumentation(name = "Path list", description = "Converts each provided path into path data.")
+@JIPipeOutputSlot(value = PathData.class, slotName = "Paths", autoCreate = true)
 @JIPipeOrganization(nodeTypeCategory = DataSourceNodeTypeCategory.class)
-public class FileListDataSource extends JIPipeAlgorithm {
+public class PathListDataSource extends JIPipeAlgorithm {
 
-    private PathList fileNames = new PathList();
+    private PathList paths = new PathList();
     private Path currentWorkingDirectory;
 
     /**
-     * Initializes the algorithm
+     * Creates a new instance
      *
      * @param info The algorithm info
      */
-    public FileListDataSource(JIPipeNodeInfo info) {
+    public PathListDataSource(JIPipeNodeInfo info) {
         super(info);
     }
 
@@ -55,68 +56,68 @@ public class FileListDataSource extends JIPipeAlgorithm {
      *
      * @param other The original
      */
-    public FileListDataSource(FileListDataSource other) {
+    public PathListDataSource(PathListDataSource other) {
         super(other);
-        this.fileNames.addAll(other.fileNames);
+        this.paths.addAll(other.paths);
         this.currentWorkingDirectory = other.currentWorkingDirectory;
     }
 
     @Override
     public void run(JIPipeProgressInfo progressInfo) {
-        for (Path path : fileNames) {
-            getFirstOutputSlot().addData(new FileData(path), progressInfo);
+        for (Path folderPath : paths) {
+            getFirstOutputSlot().addData(new PathData(folderPath), progressInfo);
         }
     }
 
     /**
-     * @return The file names
+     * @return Gets the folder paths
      */
-    @JIPipeParameter("file-names")
-    @JIPipeDocumentation(name = "File names")
-    @FilePathParameterSettings(ioMode = PathEditor.IOMode.Open, pathMode = PathEditor.PathMode.FilesOnly)
-    public PathList getFileNames() {
-        return fileNames;
+    @JIPipeParameter("paths")
+    @JIPipeDocumentation(name = "Paths")
+    @FilePathParameterSettings(ioMode = PathEditor.IOMode.Open, pathMode = PathEditor.PathMode.FilesAndDirectories)
+    public PathList getPaths() {
+        return paths;
     }
 
     /**
-     * Sets the file names
+     * Sets the folder path
      *
-     * @param fileNames The file names
+     * @param paths Folder paths
      */
-    @JIPipeParameter("file-names")
-    public void setFileNames(PathList fileNames) {
-        this.fileNames = fileNames;
+    @JIPipeParameter("paths")
+    public void setPaths(PathList paths) {
+        this.paths = paths;
 
     }
 
     /**
-     * @return Absolute file names
+     * @return Folder paths as absolute paths
      */
-    public PathList getAbsoluteFileNames() {
+    public PathList getAbsolutePaths() {
         PathList result = new PathList();
-        for (Path fileName : fileNames) {
-            if (fileName == null)
+        for (Path folderPath : paths) {
+            if (folderPath == null)
                 result.add(null);
             else if (currentWorkingDirectory != null)
-                result.add(currentWorkingDirectory.resolve(fileName));
+                result.add(currentWorkingDirectory.resolve(folderPath));
             else
-                result.add(fileName);
+                result.add(folderPath);
         }
         return result;
     }
 
     @Override
     public void reportValidity(JIPipeValidityReport report) {
-        for (Path fileName : getAbsoluteFileNames()) {
-            if (fileName == null) {
-                report.reportIsInvalid("Invalid file path!",
-                        "An input file does not exist!",
-                        "Please provide a valid input file.",
+        for (Path folderPath : getAbsolutePaths()) {
+            if (folderPath == null) {
+                report.reportIsInvalid("Invalid path!",
+                        "An input folder path does not exist!",
+                        "Please provide a valid path.",
                         this);
-            } else if (!Files.isRegularFile(fileName)) {
-                report.reportIsInvalid("Invalid file path!",
-                        "Input file '" + fileName + "' does not exist!",
-                        "Please provide a valid input file.",
+            } else if (!Files.exists(folderPath)) {
+                report.reportIsInvalid("Invalid path!",
+                        "Input path '" + folderPath + "' does not exist!",
+                        "Please provide a valid path.",
                         this);
             }
         }
@@ -127,29 +128,29 @@ public class FileListDataSource extends JIPipeAlgorithm {
         super.setWorkDirectory(workDirectory);
 
         boolean modified = false;
-        for (int i = 0; i < fileNames.size(); ++i) {
-            Path fileName = fileNames.get(i);
-            if (fileName != null) {
+        for (int i = 0; i < paths.size(); ++i) {
+            Path folderPath = paths.get(i);
+            if (folderPath != null) {
                 // Make absolute
-                if (!fileName.isAbsolute()) {
+                if (!folderPath.isAbsolute()) {
                     if (currentWorkingDirectory != null) {
-                        fileName = currentWorkingDirectory.resolve(fileName);
+                        folderPath = currentWorkingDirectory.resolve(folderPath);
                         modified = true;
                     } else if (workDirectory != null) {
-                        fileName = workDirectory.resolve(fileName);
+                        folderPath = workDirectory.resolve(folderPath);
                         modified = true;
                     }
                 }
                 // Make relative if already absolute and workDirectory != null
-                if (fileName.isAbsolute()) {
-                    if (workDirectory != null && fileName.startsWith(workDirectory)) {
-                        fileName = workDirectory.relativize(fileName);
+                if (folderPath.isAbsolute()) {
+                    if (workDirectory != null && folderPath.startsWith(workDirectory)) {
+                        folderPath = workDirectory.relativize(folderPath);
                         modified = true;
                     }
                 }
 
                 if (modified)
-                    this.fileNames.set(i, fileName);
+                    this.paths.set(i, folderPath);
             }
         }
         currentWorkingDirectory = workDirectory;
