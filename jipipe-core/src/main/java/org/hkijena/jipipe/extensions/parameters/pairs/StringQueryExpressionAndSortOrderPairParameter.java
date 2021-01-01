@@ -18,7 +18,7 @@ import org.hkijena.jipipe.extensions.parameters.expressions.StringQueryExpressio
 import org.hkijena.jipipe.extensions.parameters.util.SortOrder;
 
 /**
- * A pair of {@link StringPredicate} and {@link SortOrder}
+ * A pair of {@link StringQueryExpression} and {@link SortOrder}
  */
 public class StringQueryExpressionAndSortOrderPairParameter extends PairParameter<StringQueryExpression, SortOrder> {
 

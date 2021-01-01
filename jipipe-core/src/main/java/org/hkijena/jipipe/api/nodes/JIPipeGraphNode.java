@@ -542,7 +542,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
      * A use case is to convert algorithms from internal representations to their public variants (e.g. {@link org.hkijena.jipipe.api.compartments.algorithms.JIPipeCompartmentOutput}
      * to {@link org.hkijena.jipipe.api.compartments.algorithms.IOInterfaceAlgorithm}
      *
-     * @param info
+     * @param info the info
      */
     public void setInfo(JIPipeNodeInfo info) {
         this.info = info;

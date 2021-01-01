@@ -5,11 +5,11 @@
     <parent>
         <artifactId>pom-jipipe</artifactId>
         <groupId>org.hkijena</groupId>
-        <version>2020.12</version>
+        <version>2021.1</version>
     </parent>
 
     <artifactId>jipipe-launcher</artifactId>
-    <version>2020.12</version>
+    <version>2021.1</version>
 
     <name>jipipe-launcher</name>
     <description>JIPipe launcher Application</description>
@@ -104,73 +104,73 @@
             <dependency>
                 <groupId>org.hkijena</groupId>
                 <artifactId>jipipe-core</artifactId>
-                <version>2020.12</version>
+                <version>2021.1</version>
             </dependency>
             <dependency>
                 <groupId>org.hkijena</groupId>
                 <artifactId>jipipe-python</artifactId>
-                <version>2020.12</version>
+                <version>2021.1</version>
             </dependency>
             <dependency>
                 <groupId>org.hkijena</groupId>
                 <artifactId>jipipe-annotation</artifactId>
-                <version>2020.12</version>
+                <version>2021.1</version>
             </dependency>
             <dependency>
                 <groupId>org.hkijena</groupId>
                 <artifactId>jipipe-filesystem</artifactId>
-                <version>2020.12</version>
+                <version>2021.1</version>
             </dependency>
             <dependency>
                 <groupId>org.hkijena</groupId>
                 <artifactId>jipipe-multiparameters</artifactId>
-                <version>2020.12</version>
+                <version>2021.1</version>
             </dependency>
             <dependency>
                 <groupId>org.hkijena</groupId>
                 <artifactId>jipipe-plots</artifactId>
-                <version>2020.12</version>
+                <version>2021.1</version>
             </dependency>
             <dependency>
                 <groupId>org.hkijena</groupId>
                 <artifactId>jipipe-tables</artifactId>
-                <version>2020.12</version>
+                <version>2021.1</version>
             </dependency>
             <dependency>
                 <groupId>org.hkijena</groupId>
                 <artifactId>jipipe-ij</artifactId>
-                <version>2020.12</version>
+                <version>2021.1</version>
                 <scope>runtime</scope>
             </dependency>
             <dependency>
                 <groupId>org.hkijena</groupId>
                 <artifactId>jipipe-ij-algorithms</artifactId>
-                <version>2020.12</version>
+                <version>2021.1</version>
             </dependency>
             <dependency>
                 <groupId>org.hkijena</groupId>
                 <artifactId>jipipe-ij-multi-template-matching</artifactId>
-                <version>2020.12</version>
+                <version>2021.1</version>
             </dependency>
             <dependency>
                 <groupId>org.hkijena</groupId>
                 <artifactId>jipipe-clij</artifactId>
-                <version>2020.12</version>
+                <version>2021.1</version>
             </dependency>
             <dependency>
                 <groupId>org.hkijena</groupId>
                 <artifactId>jipipe-strings</artifactId>
-                <version>2020.12</version>
+                <version>2021.1</version>
             </dependency>
             <dependency>
                 <groupId>org.hkijena</groupId>
                 <artifactId>jipipe-utils</artifactId>
-                <version>2020.12</version>
+                <version>2021.1</version>
             </dependency>
             <dependency>
                 <groupId>org.hkijena</groupId>
                 <artifactId>jipipe-ij-omero</artifactId>
-                <version>2020.12</version>
+                <version>2021.1</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

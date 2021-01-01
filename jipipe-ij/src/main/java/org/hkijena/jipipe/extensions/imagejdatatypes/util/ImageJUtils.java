@@ -206,7 +206,7 @@ public class ImageJUtils {
 
     /**
      * Combines the slices in the map into one image. The slice indices can be discontinuous.
-     * The new image is built up in order T -> Z -> C, which implies constraints on the discontinuations:
+     * The new image is built up in order T, Z, C, which implies constraints on the discontinuations:
      * 1. If a T is present, all slices of this T must be present (same length per frame)
      * 2. If a Z is present, all slices of this Z must be present (same channels per Z)
      *

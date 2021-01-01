@@ -95,7 +95,7 @@ public class JIPipeProjectCacheQuery {
      * Please note that this will not necessarily be the most current id, only the one that was extracted by the last rebuild()
      *
      * @param node the node
-     * @return the current cache state with the current local date & time
+     * @return the current cache state with the current local date and time
      */
     public JIPipeProjectCacheState getCachedId(JIPipeGraphNode node) {
         return cachedStates.get(node);

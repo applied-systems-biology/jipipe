@@ -27,7 +27,7 @@ import java.util.List;
 
 /**
  * Generator that creates instances of {@link Number}.
- * This cannot be used directly in {@link JIPipeParameterTypeRegistry}, as the constructor does
+ * This cannot be used directly in {@link org.hkijena.jipipe.api.registries.JIPipeParameterTypeRegistry}, as the constructor does
  * not match. You have to inherit from this type and define the number type.
  */
 public class NumberRangeParameterGenerator<T extends Number & Comparable<T>> extends JIPipeParameterGeneratorUI {

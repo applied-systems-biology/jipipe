@@ -89,7 +89,7 @@ public class UIUtils {
     public static boolean DARK_THEME = false;
 
     /**
-     * Attempts to override the look & feel based on the JIPipe settings
+     * Attempts to override the look and feel based on the JIPipe settings
      */
     public static void loadLookAndFeelFromSettings() {
         JIPipeUITheme theme = getThemeFromRawSettings();

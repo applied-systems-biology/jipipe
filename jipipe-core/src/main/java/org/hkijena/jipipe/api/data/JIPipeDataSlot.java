@@ -272,7 +272,7 @@ public class JIPipeDataSlot {
      * Finds the row that matches the given traits
      *
      * @param traits A valid annotation list with size equals to getRowCount()
-     * @return row index >= 0 if found, otherwise -1
+     * @return row index greater or equal to 0 if found, otherwise -1
      */
     public int findRowWithAnnotations(List<JIPipeAnnotation> traits) {
         String[] infoMap = new String[traits.size()];

@@ -31,9 +31,9 @@ public class JIPipeFixedThreadPool {
 
     /**
      * Initializes a pool with the specified amount of threads.
-     * If maxThreads < 2, no {@link java.util.concurrent.ExecutorService} is created and all workloads are run in single-threaded mode
+     * If maxThreads less than 2, no {@link java.util.concurrent.ExecutorService} is created and all workloads are run in single-threaded mode
      *
-     * @param maxThreads number of threads. must be >= 1
+     * @param maxThreads number of threads. must be larger or equal to 1
      */
     public JIPipeFixedThreadPool(int maxThreads) {
         this.maxThreads = maxThreads;
@@ -97,7 +97,7 @@ public class JIPipeFixedThreadPool {
 
     /**
      * Returns the {@link ExecutorService} or null.
-     * This will return null if getMaxThreads() <= 1
+     * This will return null if getMaxThreads() is less than 1
      *
      * @return the {@link ExecutorService} or null
      */

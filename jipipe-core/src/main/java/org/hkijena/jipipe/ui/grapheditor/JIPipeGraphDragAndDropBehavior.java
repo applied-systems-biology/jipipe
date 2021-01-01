@@ -16,7 +16,7 @@ package org.hkijena.jipipe.ui.grapheditor;
 import java.awt.dnd.DropTargetListener;
 
 /**
- * Provides Drag & Drop behavior for {@link JIPipeGraphCanvasUI}
+ * Provides Drag and Drop behavior for {@link JIPipeGraphCanvasUI}
  */
 public interface JIPipeGraphDragAndDropBehavior extends DropTargetListener {
     /**

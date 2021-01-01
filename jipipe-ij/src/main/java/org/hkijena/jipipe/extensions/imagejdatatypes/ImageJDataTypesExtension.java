@@ -211,7 +211,7 @@ public class ImageJDataTypesExtension extends JIPipePrepackagedDefaultJavaExtens
 
     @Override
     public String getDependencyVersion() {
-        return "2020.12";
+        return "2021.1";
     }
 
     @Override

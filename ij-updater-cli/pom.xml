@@ -10,7 +10,7 @@
     </parent>
 
     <artifactId>ij-updater-cli</artifactId>
-    <version>2020.12</version>
+    <version>2021.1</version>
 
     <name>ij-updater-cli</name>
     <description>ImageJ Updater CLI</description>

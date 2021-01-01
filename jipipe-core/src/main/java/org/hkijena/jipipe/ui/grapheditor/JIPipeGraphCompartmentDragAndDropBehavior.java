@@ -35,7 +35,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * Installs Drag&Drop features that create filesystem nodes
+ * Installs Drag and Drop features that create filesystem nodes
  */
 public class JIPipeGraphCompartmentDragAndDropBehavior implements JIPipeGraphDragAndDropBehavior {
 

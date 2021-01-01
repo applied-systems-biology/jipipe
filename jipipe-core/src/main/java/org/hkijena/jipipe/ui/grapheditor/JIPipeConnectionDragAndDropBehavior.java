@@ -18,14 +18,14 @@ import java.awt.dnd.*;
 import java.awt.event.MouseEvent;
 
 /**
- * Adds connection drag & drop behavior to a data slot
+ * Adds connection drag and drop behavior to a data slot
  */
 public class JIPipeConnectionDragAndDropBehavior implements DropTargetListener, DragGestureListener, DragSourceListener {
 
     private final JIPipeDataSlotUI slotUI;
 
     /**
-     * Adds connection drag & drop behavior to a data slot
+     * Adds connection drag and drop behavior to a data slot
      *
      * @param slotUI       the slot UI
      * @param assignButton the assign button

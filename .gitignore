@@ -13,4 +13,4 @@ target
 /dist/zip/package/
 /dist/zip/dependencies/
 /dist/zip/*.zip
-/dist/jipipe-windows-installer/JIPipe-2020.12-Setup.exe
+/dist/jipipe-windows-installer/JIPipe-2021.1-Setup.exe

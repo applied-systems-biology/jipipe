@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Copy of {@link net.imagej.ui.swing.updater.FileTable.FileTableModel} for usage in JIPipe
+ * Copy of FileTableModel for usage in JIPipe
  */
 public class FileTableModel extends AbstractTableModel {
 
