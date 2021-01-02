@@ -34,6 +34,6 @@ public class NodeToolBoxToolExtension extends JIPipePrepackagedDefaultJavaExtens
 
     @Override
     public void register() {
-        registerMenuExtension(NodeToolBoxMenuExtension.class);
+        registerGraphEditorToolBarButtonExtension(NodeToolBoxMenuExtension.class);
     }
 }

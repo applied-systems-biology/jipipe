@@ -28,6 +28,7 @@ import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.ColorIcon;
 import org.hkijena.jipipe.ui.components.SearchBox;
 import org.hkijena.jipipe.ui.components.ZoomViewPort;
+import org.hkijena.jipipe.ui.extension.GraphEditorToolBarButtonExtension;
 import org.hkijena.jipipe.ui.grapheditor.contextmenu.NodeUIContextAction;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -223,6 +224,15 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         navigator.getComboBox().setMaximumSize(new Dimension(200, 32));
         menuBar.add(navigator);
         menuBar.add(Box.createHorizontalStrut(8));
+
+        List<GraphEditorToolBarButtonExtension> graphEditorToolBarButtonExtensions = JIPipe.getCustomMenus().graphEditorToolBarButtonExtensionsFor(this);
+        for (GraphEditorToolBarButtonExtension extension : graphEditorToolBarButtonExtensions) {
+            UIUtils.makeFlat25x25(extension);
+            menuBar.add(extension);
+        }
+
+        if(!graphEditorToolBarButtonExtensions.isEmpty())
+            menuBar.add(new JSeparator(JSeparator.VERTICAL));
 
         JButton undoButton = new JButton(UIUtils.getIconFromResources("actions/undo.png"));
         undoButton.setToolTipText("<html>Undo<br><i>Ctrl-Z</i></html>");

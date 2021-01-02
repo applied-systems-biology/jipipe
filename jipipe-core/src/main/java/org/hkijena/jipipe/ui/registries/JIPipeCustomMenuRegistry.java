@@ -15,9 +15,12 @@ package org.hkijena.jipipe.ui.registries;
 
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
+import org.hkijena.jipipe.ui.extension.GraphEditorToolBarButtonExtension;
 import org.hkijena.jipipe.ui.extension.MenuExtension;
 import org.hkijena.jipipe.ui.extension.MenuTarget;
+import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphEditorUI;
 import org.hkijena.jipipe.utils.ReflectionUtils;
+import org.hkijena.jipipe.utils.StringUtils;
 
 import javax.swing.*;
 import java.util.ArrayList;
@@ -31,19 +34,20 @@ import java.util.Map;
  * Registry for menu extensions
  */
 public class JIPipeCustomMenuRegistry {
-    private Map<MenuTarget, List<Class<? extends MenuExtension>>> registeredExtensions = new HashMap<>();
+    private Map<MenuTarget, List<Class<? extends MenuExtension>>> registeredMenuExtensions = new HashMap<>();
+    private List<Class<? extends GraphEditorToolBarButtonExtension>> registeredGraphEditorToolBarExtensions = new ArrayList<>();
 
     /**
      * Registers a new extension
      *
      * @param extension the extension
      */
-    public void register(Class<? extends MenuExtension> extension) {
+    public void registerMenu(Class<? extends MenuExtension> extension) {
         JIPipeOrganization organization = extension.getAnnotation(JIPipeOrganization.class);
-        List<Class<? extends MenuExtension>> list = registeredExtensions.getOrDefault(organization.menuExtensionTarget(), null);
+        List<Class<? extends MenuExtension>> list = registeredMenuExtensions.getOrDefault(organization.menuExtensionTarget(), null);
         if (list == null) {
             list = new ArrayList<>();
-            registeredExtensions.put(organization.menuExtensionTarget(), list);
+            registeredMenuExtensions.put(organization.menuExtensionTarget(), list);
         }
         list.add(extension);
     }
@@ -57,7 +61,7 @@ public class JIPipeCustomMenuRegistry {
      */
     public List<MenuExtension> getMenuExtensionsTargeting(MenuTarget target, JIPipeWorkbench workbench) {
         List<MenuExtension> result = new ArrayList<>();
-        for (Class<? extends MenuExtension> klass : registeredExtensions.getOrDefault(target, Collections.emptyList())) {
+        for (Class<? extends MenuExtension> klass : registeredMenuExtensions.getOrDefault(target, Collections.emptyList())) {
             MenuExtension extension = (MenuExtension) ReflectionUtils.newInstance(klass, workbench);
             result.add(extension);
         }
@@ -65,7 +69,22 @@ public class JIPipeCustomMenuRegistry {
         return result;
     }
 
-    public Map<MenuTarget, List<Class<? extends MenuExtension>>> getRegisteredExtensions() {
-        return Collections.unmodifiableMap(registeredExtensions);
+    public List<GraphEditorToolBarButtonExtension> graphEditorToolBarButtonExtensionsFor(JIPipeGraphEditorUI graphEditorUI) {
+        List<GraphEditorToolBarButtonExtension> result = new ArrayList<>();
+        for (Class<? extends GraphEditorToolBarButtonExtension> extension : registeredGraphEditorToolBarExtensions) {
+            GraphEditorToolBarButtonExtension instance = (GraphEditorToolBarButtonExtension) ReflectionUtils.newInstance(extension, graphEditorUI);
+            if(instance.isVisibleInGraph())
+                result.add(instance);
+        }
+        result.sort(Comparator.comparing(instance -> StringUtils.nullToEmpty(StringUtils.orElse(instance.getText(), instance.getToolTipText()))));
+        return result;
+    }
+
+    public Map<MenuTarget, List<Class<? extends MenuExtension>>> getRegisteredMenuExtensions() {
+        return Collections.unmodifiableMap(registeredMenuExtensions);
+    }
+
+    public void registerGraphEditorToolBarButton(Class<? extends GraphEditorToolBarButtonExtension> klass) {
+        registeredGraphEditorToolBarExtensions.add(klass);
     }
 }

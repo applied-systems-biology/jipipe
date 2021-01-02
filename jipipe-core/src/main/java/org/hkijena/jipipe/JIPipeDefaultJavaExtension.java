@@ -40,6 +40,7 @@ import org.hkijena.jipipe.extensions.parameters.primitives.EnumParameterTypeInfo
 import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
 import org.hkijena.jipipe.extensions.tables.ColumnOperation;
 import org.hkijena.jipipe.ui.compat.ImageJDatatypeImporterUI;
+import org.hkijena.jipipe.ui.extension.GraphEditorToolBarButtonExtension;
 import org.hkijena.jipipe.ui.extension.MenuExtension;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterGeneratorUI;
@@ -147,7 +148,15 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
      * @param klass The menu entry
      */
     public void registerMenuExtension(Class<? extends MenuExtension> klass) {
-        registry.getCustomMenuRegistry().register(klass);
+        registry.getCustomMenuRegistry().registerMenu(klass);
+    }
+
+    /**
+     * Registers a custom button for the graph editor toolbar
+     * @param klass the toolbar button class
+     */
+    public void registerGraphEditorToolBarButtonExtension(Class<? extends GraphEditorToolBarButtonExtension> klass) {
+        registry.getCustomMenuRegistry().registerGraphEditorToolBarButton(klass);
     }
 
     /**
