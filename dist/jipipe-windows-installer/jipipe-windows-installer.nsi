@@ -157,7 +157,9 @@ Section Uninstall
   Delete "$SMPROGRAMS\JIPipe\Uninstall.lnk"
   Delete "$SMPROGRAMS\JIPipe\Website.lnk"
   Delete "$DESKTOP\JIPipe.lnk"
+  Delete "$DESKTOP\ImageJ+JIPipe.lnk"
   Delete "$SMPROGRAMS\JIPipe\JIPipe.lnk"
+  Delete "$SMPROGRAMS\JIPipe\ImageJ+JIPipe.lnk"
 
   RMDir "$SMPROGRAMS\JIPipe"
   RMDir /r "$INSTDIR"
