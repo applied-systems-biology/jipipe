@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2020-12-17T15:39:55 CET">
+<meta name="revised" content="2021-01-03T23:43:07 CET">
 <title>Macro node :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../../images/favicon.png" type="image/x-icon" />
 <link href="../../../css/font-awesome.min.css" rel="stylesheet">
@@ -543,10 +543,9 @@ create one input and one output.</p>
 <p>Depending on the data type, JIPipe converts inputs into a format that can be processed by
 an ImageJ macro. The other way around, JIPipe extracts outputs from via modes that are
 commonly used in macros.</p>
-
-<div class="notices info" ><p><p>Developers can provide their own integrations to add more data types.</p>
+<div class="notices info" ><p>
+Developers can provide their own integrations to add more data types.
 </p></div>
-
 <h2 id="image-data">Image data</h2>
 <p><strong>As input:</strong> The image is opened as ImageJ image window, named according to the slot name. We recommend to use the macro command <code>select(&lt;window name&gt;)</code> to first select the image window before applying the processing.</p>
 <p><strong>As output:</strong> The image is extracted from an image window, named according to the slot name. Use the <code>rename()</code> command to rename outputs accordingly.</p>
@@ -559,24 +558,21 @@ commonly used in macros.</p>
 </code></pre></div><h2 id="results-table">Results table</h2>
 <p><strong>As input:</strong> The table data is opened as the main &ldquo;Results&rdquo; table. We recommend to have only one results table input, as the conversion overwrites the current table.</p>
 <p><strong>As output:</strong> The table data is extracted from the main &ldquo;Results&rdquo; table.</p>
-
-<div class="notices warning" ><p><p>You should only have one results table input, as only the latest input is used. If you want to merge tables, use JIPipe nodes for this.</p>
+<div class="notices warning" ><p>
+You should only have one results table input, as only the latest input is used. If you want to merge tables, use JIPipe nodes for this.
 </p></div>
-
 <h2 id="roi-data">ROI data</h2>
 <p><strong>As input:</strong> The ROI are added to the ROI manager. Like with the results table data, the existing ROI manager is cleared.</p>
 <p><strong>As output:</strong> The ROI are extracted from the ROI manager.</p>
-
-<div class="notices warning" ><p><p>You should only have one results ROI List data input, as only the latest input is used.</p>
+<div class="notices warning" ><p>
+You should only have one results ROI List data input, as only the latest input is used.
 </p></div>
-
 <h2 id="path-data">Path data</h2>
 <p><strong>As input:</strong> Paths are defined as string variable, named according to the input slot name. Please note that the slot name must be a valid variable name.</p>
 <p><strong>As output:</strong> A path is extracted from a results table window (row 0, column 0). We do not recommend to extact paths as output, as ImageJ does not have native handling for such data.</p>
-
-<div class="notices warning" ><p><p>We recommend to only use paths as input. The extraction as output is unpredictable, as ImageJ has not a native way to display this type in a way that can be distinguished from result tables.</p>
+<div class="notices warning" ><p>
+We recommend to only use paths as input. The extraction as output is unpredictable, as ImageJ has not a native way to display this type in a way that can be distinguished from result tables.
 </p></div>
-
 <h1 id="parameters">Parameters</h1>
 <p>The most important parameters are</p>
 <ol>
@@ -650,10 +646,9 @@ The values are converted as following:</p>
 </span><span style="color:#75715e"></span><span style="color:#111">selectWindow</span><span style="color:#111">(</span><span style="color:#d88200">&#34;Input&#34;</span><span style="color:#111">);</span>
 <span style="color:#111">run</span><span style="color:#111">(</span><span style="color:#d88200">&#34;Gaussian Blur...&#34;</span><span style="color:#111">,</span> <span style="color:#d88200">&#34;sigma=&#34;</span> <span style="color:#f92672">+</span> <span style="color:#111">sigma</span><span style="color:#111">);</span>
 <span style="color:#111">rename</span><span style="color:#111">(</span><span style="color:#d88200">&#34;Output&#34;</span><span style="color:#111">);</span>
-</code></pre></div>
-<div class="notices info" ><p><p>Path inputs are converted in a similar way.</p>
+</code></pre></div><div class="notices info" ><p>
+Path inputs are converted in a similar way.
 </p></div>
-
 
 
     

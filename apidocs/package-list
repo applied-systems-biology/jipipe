@@ -92,6 +92,7 @@ org.hkijena.jipipe.extensions.multiparameters
 org.hkijena.jipipe.extensions.multiparameters.algorithms
 org.hkijena.jipipe.extensions.multiparameters.datasources
 org.hkijena.jipipe.extensions.multiparameters.datatypes
+org.hkijena.jipipe.extensions.nodetoolboxtool
 org.hkijena.jipipe.extensions.omero
 org.hkijena.jipipe.extensions.omero.algorithms
 org.hkijena.jipipe.extensions.omero.datasources

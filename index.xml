@@ -96,8 +96,7 @@ An user interface is shown when a user select a row in the results table. There 
       
       <guid>https://www.jipipe.org/documentation-java-api/algorithm/merging-algorithms/</guid>
       <description>You might need to develop an algorithm that does not simply iterate through its input(s), but organize it into groups to be merged. JIPipe comes with JIPipeMergingAlgorithm that uses the annotation attached during processing to find data rows that belong to the same data set. The implementation creates JIPipeMergingDataBatch instances that represent multiple data rows merged into one group.
-Please access data via the data interface.
- The only difference to JIPipeAlgorithm is that you need to override a different function called runIteration.</description>
+ Please access data via the data interface.  The only difference to JIPipeAlgorithm is that you need to override a different function called runIteration.</description>
     </item>
     
     <item>
@@ -230,7 +229,7 @@ The difference between compartments and simple node groups is that compartments 
       <guid>https://www.jipipe.org/documentation/standard-library/multi-parameter/</guid>
       <description>Most algorithms allow handling of multiple parameters via an additional slot that can be optionally enabled. You can find the setting in an algorithm&amp;rsquo;s settings as Multiple parameters. On selecting the item, a new slot will appear that consumes parameter data.
 To define parameters, use the algorithms found in Add data &amp;gt; Parameters. There are currently two data source algorithms available:
- Define parameter defines a single set of parameters Define multiple parameters lets you define a table of parameters  Use Process &amp;gt; Merge &amp;gt; Merge slots to merge multiple parameter sets.</description>
+ Define parameter defines a single set of parameters Define multiple parameters lets you define a table of parameters   Use Process  Merge  Merge slots to merge multiple parameter sets.</description>
     </item>
     
     <item>
@@ -284,7 +283,7 @@ How algorithms are registered Algorithm instances are created by an JIPipeNodeIn
       <guid>https://www.jipipe.org/documentation/result-analysis/</guid>
       <description>JIPipe stores its results in a user-defined output folder. After clicking  Run (located at the top right corner of a project window) JIPipe will query the output folder from you. You can also generate a random folder that will be located on your operating system&amp;rsquo;s temporary directory by clicking the button.
 After confirming the settings by clicking  Run now, JIPipe will start processing the pipeline.
-You can have as many runs as you want.</description>
+ You can have as many runs as you want.</description>
     </item>
     
     <item>
