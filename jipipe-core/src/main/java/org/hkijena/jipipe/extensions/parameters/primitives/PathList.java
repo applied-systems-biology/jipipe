@@ -16,6 +16,7 @@ package org.hkijena.jipipe.extensions.parameters.primitives;
 import org.hkijena.jipipe.extensions.parameters.collections.ListParameter;
 
 import java.nio.file.Path;
+import java.util.Collection;
 
 /**
  * Collection of paths. Used as parameter type.
@@ -30,10 +31,9 @@ public class PathList extends ListParameter<Path> {
 
     /**
      * Creates a copy
-     *
      * @param other the original
      */
-    public PathList(PathList other) {
+    public PathList(Collection<Path> other) {
         super(Path.class);
         addAll(other);
     }

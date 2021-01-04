@@ -38,7 +38,7 @@ import java.nio.file.Path;
 @JIPipeOrganization(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 public class FileListDataSource extends JIPipeAlgorithm {
 
-    private PathList fileNames = new PathList();
+    private PathList files = new PathList();
     private Path currentWorkingDirectory;
 
     /**
@@ -57,13 +57,13 @@ public class FileListDataSource extends JIPipeAlgorithm {
      */
     public FileListDataSource(FileListDataSource other) {
         super(other);
-        this.fileNames.addAll(other.fileNames);
+        this.files.addAll(other.files);
         this.currentWorkingDirectory = other.currentWorkingDirectory;
     }
 
     @Override
     public void run(JIPipeProgressInfo progressInfo) {
-        for (Path path : fileNames) {
+        for (Path path : files) {
             getFirstOutputSlot().addData(new FileData(path), progressInfo);
         }
     }
@@ -72,20 +72,20 @@ public class FileListDataSource extends JIPipeAlgorithm {
      * @return The file names
      */
     @JIPipeParameter("file-names")
-    @JIPipeDocumentation(name = "File names")
+    @JIPipeDocumentation(name = "Files")
     @FilePathParameterSettings(ioMode = PathEditor.IOMode.Open, pathMode = PathEditor.PathMode.FilesOnly)
-    public PathList getFileNames() {
-        return fileNames;
+    public PathList getFiles() {
+        return files;
     }
 
     /**
      * Sets the file names
      *
-     * @param fileNames The file names
+     * @param files The file names
      */
     @JIPipeParameter("file-names")
-    public void setFileNames(PathList fileNames) {
-        this.fileNames = fileNames;
+    public void setFiles(PathList files) {
+        this.files = files;
 
     }
 
@@ -94,7 +94,7 @@ public class FileListDataSource extends JIPipeAlgorithm {
      */
     public PathList getAbsoluteFileNames() {
         PathList result = new PathList();
-        for (Path fileName : fileNames) {
+        for (Path fileName : files) {
             if (fileName == null)
                 result.add(null);
             else if (currentWorkingDirectory != null)
@@ -127,8 +127,8 @@ public class FileListDataSource extends JIPipeAlgorithm {
         super.setWorkDirectory(workDirectory);
 
         boolean modified = false;
-        for (int i = 0; i < fileNames.size(); ++i) {
-            Path fileName = fileNames.get(i);
+        for (int i = 0; i < files.size(); ++i) {
+            Path fileName = files.get(i);
             if (fileName != null) {
                 // Make absolute
                 if (!fileName.isAbsolute()) {
@@ -149,7 +149,7 @@ public class FileListDataSource extends JIPipeAlgorithm {
                 }
 
                 if (modified)
-                    this.fileNames.set(i, fileName);
+                    this.files.set(i, fileName);
             }
         }
         currentWorkingDirectory = workDirectory;

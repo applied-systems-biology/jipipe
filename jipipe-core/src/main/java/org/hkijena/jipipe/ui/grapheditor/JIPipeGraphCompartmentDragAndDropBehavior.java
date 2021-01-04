@@ -15,15 +15,11 @@ package org.hkijena.jipipe.ui.grapheditor;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
-import org.hkijena.jipipe.extensions.filesystem.datasources.FileDataSource;
-import org.hkijena.jipipe.extensions.filesystem.datasources.FileListDataSource;
-import org.hkijena.jipipe.extensions.filesystem.datasources.FolderDataSource;
-import org.hkijena.jipipe.extensions.filesystem.datasources.FolderListDataSource;
+import org.hkijena.jipipe.extensions.filesystem.datasources.*;
+import org.hkijena.jipipe.extensions.parameters.primitives.PathList;
 import org.hkijena.jipipe.ui.grapheditor.contextmenu.clipboard.AlgorithmGraphPasteNodeUIContextAction;
-import org.hkijena.jipipe.utils.UIUtils;
 
-import javax.swing.*;
-import java.awt.Point;
+import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.dnd.DropTargetDragEvent;
@@ -72,18 +68,28 @@ public class JIPipeGraphCompartmentDragAndDropBehavior implements JIPipeGraphDra
         try {
             Transferable tr = dtde.getTransferable();
             DataFlavor[] flavors = tr.getTransferDataFlavors();
-            for (int i = 0; i < flavors.length; i++) {
-                if (flavors[i].isFlavorJavaFileListType()) {
-                    dtde.acceptDrop(dtde.getDropAction());
-                    @SuppressWarnings("unchecked")
-                    List<File> files = (List<File>) tr.getTransferData(flavors[i]);
+            boolean accept = false;
+            DataFlavor acceptedFlavor = null;
+            for (DataFlavor flavor : flavors) {
+                if (flavor.isFlavorJavaFileListType()) {
+                    accept = true;
+                    acceptedFlavor = flavor;
+                } else if (flavor.isFlavorTextType()) {
+                    accept = true;
+                    if(acceptedFlavor == null)
+                        acceptedFlavor = flavor;
+                }
+            }
+            if(accept) {
+                dtde.acceptDrop(dtde.getDropAction());
+                Object transferData = tr.getTransferData(acceptedFlavor);
+                if (transferData instanceof List) {
+                    List<File> files = (List<File>) transferData;
                     processDrop(files);
-
                     dtde.dropComplete(true);
                 }
-                else if(flavors[i].isFlavorTextType()) {
-                    dtde.acceptDrop(dtde.getDropAction());
-                    String text = (String) tr.getTransferData(flavors[i]);
+                else if(transferData instanceof String) {
+                    String text = (String) transferData;
                     processDrop(text);
                     dtde.dropComplete(true);
                 }
@@ -105,11 +111,11 @@ public class JIPipeGraphCompartmentDragAndDropBehavior implements JIPipeGraphDra
                 AlgorithmGraphPasteNodeUIContextAction.pasteNodes(canvas, text);
             }
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(canvas.getWorkbench().getWindow(),
-                    "The dropped string is no valid node/graph.",
-                    "Drop nodes",
-                    JOptionPane.ERROR_MESSAGE);
-            e.printStackTrace();
+//            JOptionPane.showMessageDialog(canvas.getWorkbench().getWindow(),
+//                    "The dropped string is no valid node/graph.",
+//                    "Drop nodes",
+//                    JOptionPane.ERROR_MESSAGE);
+//            e.printStackTrace();
         }
     }
 
@@ -120,35 +126,28 @@ public class JIPipeGraphCompartmentDragAndDropBehavior implements JIPipeGraphDra
     private void processDrop(List<File> files) {
         String compartment = canvas.getCompartment();
         JIPipeGraph graph = canvas.getGraph();
-        if (files.size() == 1) {
-            File selected = files.get(0);
-            if (selected.isDirectory()) {
-                FolderDataSource dataSource = JIPipe.createNode("import-folder", FolderDataSource.class);
-                dataSource.setFolderPath(selected.toPath());
-                graph.insertNode(dataSource, compartment);
-            } else {
-                FileDataSource dataSource = JIPipe.createNode("import-file", FileDataSource.class);
-                dataSource.setFileName(selected.toPath());
-                graph.insertNode(dataSource, compartment);
-            }
-        } else {
-            Map<Boolean, List<File>> groupedByType = files.stream().collect(Collectors.groupingBy(File::isDirectory));
-            for (Map.Entry<Boolean, List<File>> entry : groupedByType.entrySet()) {
-                if (entry.getKey()) {
-                    FolderListDataSource dataSource = JIPipe.createNode("import-folder-list", FolderListDataSource.class);
-                    for (File file : entry.getValue()) {
-                        dataSource.getFolderPaths().add(file.toPath());
-                    }
-                    graph.insertNode(dataSource, compartment);
-                } else {
-                    FileListDataSource dataSource = JIPipe.createNode("import-file-list", FileListDataSource.class);
-                    for (File file : entry.getValue()) {
-                        dataSource.getFileNames().add(file.toPath());
-                    }
-                    graph.insertNode(dataSource, compartment);
-                }
-            }
 
+        boolean hasFiles = false;
+        boolean hasDirectories = false;
+        for (File file : files) {
+            hasFiles |= file.isFile();
+            hasDirectories |= file.isDirectory();
+        }
+
+        if(hasFiles && hasDirectories) {
+            PathListDataSource dataSource = JIPipe.createNode("import-path-list", PathListDataSource.class);
+            dataSource.setPaths(new PathList(files.stream().map(File::toPath).collect(Collectors.toList())));
+            graph.insertNode(dataSource, compartment);
+        }
+        else if(hasFiles) {
+            FileListDataSource dataSource = JIPipe.createNode("import-file-list", FileListDataSource.class);
+            dataSource.setFiles(new PathList(files.stream().map(File::toPath).collect(Collectors.toList())));
+            graph.insertNode(dataSource, compartment);
+        }
+        else if(hasDirectories) {
+            FolderListDataSource dataSource = JIPipe.createNode("import-folder-list", FolderListDataSource.class);
+            dataSource.setFolderPaths(new PathList(files.stream().map(File::toPath).collect(Collectors.toList())));
+            graph.insertNode(dataSource, compartment);
         }
     }
 
