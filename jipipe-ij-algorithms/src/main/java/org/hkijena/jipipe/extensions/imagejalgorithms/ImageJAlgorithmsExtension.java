@@ -39,14 +39,7 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.blur.MedianBlurFilter2
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.blur.MedianBlurFilter3DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.blur.MedianBlurGreyscale8U2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.blur.MedianBlurRGB2DAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.color.ArrangeChannelsAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.color.CombineChannelsToRGBAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.color.InvertColorsAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.color.MergeChannelsAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.color.SetToColorAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.color.SetToValueAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.color.SplitChannelsAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.color.SplitRGBChannelsAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.color.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.contrast.CLAHEContrastEnhancer;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.contrast.IlluminationCorrection2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.convolve.ConvolveByImage2DAlgorithm;
@@ -572,6 +565,7 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         registerNodeType("ij1-color-split-rgb", SplitRGBChannelsAlgorithm.class, UIUtils.getIconURLFromResources("actions/channelmixer.png"));
         registerNodeType("ij1-color-set-to-color", SetToColorAlgorithm.class, UIUtils.getIconURLFromResources("actions/color-fill.png"));
         registerNodeType("ij1-color-set-to-grayscale-value", SetToValueAlgorithm.class, UIUtils.getIconURLFromResources("actions/color-fill.png"));
+        registerNodeType("ij1-color-to-rgb", ToRGBAlgorithm.class, UIUtils.getIconURLFromResources("actions/colors-rgb.png"));
 
         registerEnumParameterType("ij1-color-merge-channels:channel-color", MergeChannelsAlgorithm.ChannelColor.class,
                 "Channel color", "Available channel colors");
