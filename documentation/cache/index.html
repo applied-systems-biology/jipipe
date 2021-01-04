@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2021-01-03T23:43:07 CET">
+<meta name="revised" content="2021-01-04T17:44:23 CET">
 <title>Data caching :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../images/favicon.png" type="image/x-icon" />
 <link href="../../css/font-awesome.min.css" rel="stylesheet">
@@ -156,7 +156,7 @@
       <li data-nav-id="https://www.jipipe.org/documentation/quick-run/" class="dd-item">
         <div>
           <a href="../../documentation/quick-run/">
-            Testing algorithm parameters
+            Running a single node
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
@@ -473,7 +473,7 @@
       <option value="/documentation/expressions/" >- Expression parameters</option>
       <option value="/documentation/graph-compartment/" >- Graph compartments</option>
       <option value="/documentation/result-analysis/" >- Running a pipeline</option>
-      <option value="/documentation/quick-run/" >- Testing algorithm parameters</option>
+      <option value="/documentation/quick-run/" >- Running a single node</option>
       <option value="/documentation/cache/"  selected>- Data caching</option>
       <option value="/documentation/imagej-integration/" >- ImageJ integration</option>
       <option value="/documentation/plugins/" >- Managing plugins</option>
@@ -518,6 +518,10 @@
     
     <p>JIPipe has a project-wide cache for generated results. This cache can be accessed
 by algorithms to prevent repeating previous calculation steps.</p>
+<h1 id="load-data-into-the-cache">Load data into the cache</h1>
+<p>To cache data, right click a node and click <i class="fa fa-database"></i> <strong>Update cache</strong>.
+This will execute a <a href="../quick-run">Quick run</a> and store all results into the cache.</p>
+<h1 id="accessing-the-cache">Accessing the cache</h1>
 <p>Cache items are assigned a unique identifier (<i class="fa fa-camera"></i> <strong>Snapshot</strong>)
 that is based on relevant algorithm parameters and the processing pipeline behind the
 data generation.
@@ -533,13 +537,18 @@ the exact data type. ImageJ images for example are opened in ImageJ.</p>
 Hover the items with your mouse to show a summary. Clicking the items allows you to manage the cache or
 display the results in a full-window cache browser.</p>
 <p><img src="../../img/documentation/cache.png" alt="Cache UI elements"></p>
+<h1 id="managing-the-cache">Managing the cache</h1>
+<p>The cache consumes large amounts of memory, depending on the pipeline. Use the button at the top (menu bar) to clean all cached data or remove
+cached items that are invalid (e.g., because the node parameters were changed).</p>
+<p>You can also enable the &ldquo;Reduce memory&rdquo; mode (bottom) to store unused data on the hard drive, or explicitly move cached items
+to the hard disk.</p>
 
 
     
     
         <div class="chevrons">
     <div id="navigation">
-<a class="nav nav-prev" href="../../documentation/quick-run/" title="Testing algorithm parameters"> <i class="fa fa-chevron-left"></i><label>Testing algorithm parameters</label></a>
+<a class="nav nav-prev" href="../../documentation/quick-run/" title="Running a single node"> <i class="fa fa-chevron-left"></i><label>Running a single node</label></a>
     <a class="nav nav-next" href="../../documentation/imagej-integration/" title="ImageJ integration" style="margin-right: 0px;"><label>ImageJ integration</label><i class="fa fa-chevron-right"></i></a></div>
   </div>
 

@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2021-01-03T23:43:07 CET">
+<meta name="revised" content="2021-01-04T17:44:23 CET">
 <title>Expression parameters :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../images/favicon.png" type="image/x-icon" />
 <link href="../../css/font-awesome.min.css" rel="stylesheet">
@@ -156,7 +156,7 @@
       <li data-nav-id="https://www.jipipe.org/documentation/quick-run/" class="dd-item">
         <div>
           <a href="../../documentation/quick-run/">
-            Testing algorithm parameters
+            Running a single node
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
@@ -473,7 +473,7 @@
       <option value="/documentation/expressions/"  selected>- Expression parameters</option>
       <option value="/documentation/graph-compartment/" >- Graph compartments</option>
       <option value="/documentation/result-analysis/" >- Running a pipeline</option>
-      <option value="/documentation/quick-run/" >- Testing algorithm parameters</option>
+      <option value="/documentation/quick-run/" >- Running a single node</option>
       <option value="/documentation/cache/" >- Data caching</option>
       <option value="/documentation/imagej-integration/" >- ImageJ integration</option>
       <option value="/documentation/plugins/" >- Managing plugins</option>
@@ -546,7 +546,10 @@ might put the pixel coordinates into them.</p>
 Here the node supplies the variables <code>x</code> and <code>y</code> and expects a number back. You can input a formula that will be
 automatically applied to ally <code>x</code> and <code>y</code> values:</p>
 <pre><code>(x + y) + x/y + 1
-</code></pre><h2 id="operators">Operators</h2>
+</code></pre><div class="notices info" ><p>
+The expression builder shows a list of all variables. This list might be incomplete if variables are generated during the runtime (e.g., extracted from a table).
+</p></div>
+<h2 id="operators">Operators</h2>
 <p>The expressions understand a wide range of common operators for numeric, string, and boolean data:</p>
 <ul>
 <li>You can add, subtract, divide, &hellip; numbers</li>

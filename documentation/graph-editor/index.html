@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2021-01-03T23:43:07 CET">
+<meta name="revised" content="2021-01-04T17:44:23 CET">
 <title>Pipeline editor :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../images/favicon.png" type="image/x-icon" />
 <link href="../../css/font-awesome.min.css" rel="stylesheet">
@@ -156,7 +156,7 @@
       <li data-nav-id="https://www.jipipe.org/documentation/quick-run/" class="dd-item">
         <div>
           <a href="../../documentation/quick-run/">
-            Testing algorithm parameters
+            Running a single node
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
@@ -473,7 +473,7 @@
       <option value="/documentation/expressions/" >- Expression parameters</option>
       <option value="/documentation/graph-compartment/" >- Graph compartments</option>
       <option value="/documentation/result-analysis/" >- Running a pipeline</option>
-      <option value="/documentation/quick-run/" >- Testing algorithm parameters</option>
+      <option value="/documentation/quick-run/" >- Running a single node</option>
       <option value="/documentation/cache/" >- Data caching</option>
       <option value="/documentation/imagej-integration/" >- ImageJ integration</option>
       <option value="/documentation/plugins/" >- Managing plugins</option>
@@ -561,7 +561,7 @@ Hover with your mouse over a slot's name to show information about its data type
 additional entries to managing connections.</p>
 <ul>
 <li><span class="fa fa-tag"  style="font-size:medium" aria-hidden="true"></span> <strong>Label this slot</strong> allows you to give the slot a custom name without changing the internal workings of the algorithm (As many algorithms are designed to adress specific slots). On selecting the entry, you can give a custom name that is displayed in <em>cursive</em>. To remove the custom label, label it with an empty text.</li>
-<li><span class="fa fa-search"  style="font-size:medium" aria-hidden="true"></span> <strong>Find matching algorithm &hellip;</strong> (only output slots) opens a tool that lists all compatible algorithms that can receive the output data as input.</li>
+<li><span class="fa fa-search"  style="font-size:medium" aria-hidden="true"></span> <strong>Find matching algorithm &hellip;</strong> opens a tool that lists all compatible algorithms that can receive the output data as input.</li>
 <li>Depending on the algorithm, you can remove a slot from within this menu</li>
 </ul>
 <h1 id="algorithm-settings">Algorithm settings</h1>
@@ -581,7 +581,7 @@ There are usually four categories:</p>
 <li>The <strong>navigator</strong> allows you to quickly navigate to an existing algorithm instance or create a new one. Just type one or multiple search terms into the field. On pressing the <span class="fa fa-keyboard-o"  style="font-size:medium" aria-hidden="true"></span> <em>arrow down</em> key on your keyboard, the first entry is selected.</li>
 <li>The <strong>view options</strong> control how the graph editor behaves and contains some additional utility functions.</li>
 </ul>
-<h2 id="view-options">View options</h2>
+<h2 id="additional-tools">Additional tools</h2>
 <ul>
 <li><img class="inline-image" src="../../img/icons/view-horizontal.png" /> and <img class="inline-image" src="../../img/icons/view-vertical.png"/> allow you to switch between horizontal and vertial view modes. This does not change the pipeline, but just how it is displayed in the editor. By default, a vertical view is enabled. If you prefer that data flows from left to right, choose the horizontal view mode.</li>
 <li><img class="inline-image" src="../../img/icons/auto-layout-all.png" /> automatically aligns all nodes in the algorithm graph according to the algorithm by Sugiyama <em>et. al</em></li>

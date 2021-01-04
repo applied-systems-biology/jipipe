@@ -317,7 +317,7 @@ We recommend to use the algorithms in Annotation &amp;gt; Generate while setting
     </item>
     
     <item>
-      <title>Testing algorithm parameters</title>
+      <title>Running a single node</title>
       <link>https://www.jipipe.org/documentation/quick-run/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
@@ -333,7 +333,8 @@ JIPipe comes with a feature termed Quick Run that makes it easier to only test a
       
       <guid>https://www.jipipe.org/documentation/cache/</guid>
       <description>JIPipe has a project-wide cache for generated results. This cache can be accessed by algorithms to prevent repeating previous calculation steps.
-Cache items are assigned a unique identifier ( Snapshot) that is based on relevant algorithm parameters and the processing pipeline behind the data generation. You have multiple ways to manage and access the cache. First, in the top tool bar, there is a summary on how many items are currently cached.</description>
+Load data into the cache To cache data, right click a node and click  Update cache. This will execute a Quick run and store all results into the cache.
+Accessing the cache Cache items are assigned a unique identifier ( Snapshot) that is based on relevant algorithm parameters and the processing pipeline behind the data generation.</description>
     </item>
     
     <item>
