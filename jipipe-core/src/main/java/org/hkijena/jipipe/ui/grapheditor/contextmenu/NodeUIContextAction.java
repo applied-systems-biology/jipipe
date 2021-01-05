@@ -84,4 +84,16 @@ public interface NodeUIContextAction {
     default KeyStroke getKeyboardShortcut() {
         return null;
     }
+
+    /**
+     * Determines if the item is displayed in the compartment graph.
+     * @return if the item is displayed
+     */
+    default boolean showInCompartmentGraph() { return false; }
+
+    /**
+     * Determines if the item is displayed in the graph compartment (project/group/extension editor).
+     * @return if the item is displayed
+     */
+    default boolean showInGraphCompartment() { return true; }
 }

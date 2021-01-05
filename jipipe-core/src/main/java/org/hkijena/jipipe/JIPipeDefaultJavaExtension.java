@@ -42,6 +42,7 @@ import org.hkijena.jipipe.extensions.tables.ColumnOperation;
 import org.hkijena.jipipe.ui.compat.ImageJDatatypeImporterUI;
 import org.hkijena.jipipe.ui.extension.GraphEditorToolBarButtonExtension;
 import org.hkijena.jipipe.ui.extension.MenuExtension;
+import org.hkijena.jipipe.ui.grapheditor.contextmenu.NodeUIContextAction;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterGeneratorUI;
 import org.hkijena.jipipe.ui.resultanalysis.JIPipeResultDataSlotPreview;
@@ -157,6 +158,14 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
      */
     public void registerGraphEditorToolBarButtonExtension(Class<? extends GraphEditorToolBarButtonExtension> klass) {
         registry.getCustomMenuRegistry().registerGraphEditorToolBarButton(klass);
+    }
+
+    /**
+     * Registers a custom context menu action
+     * @param action the action
+     */
+    public void registerContextMenuAction(NodeUIContextAction action) {
+        registry.getCustomMenuRegistry().registerContextMenuAction(action);
     }
 
     /**

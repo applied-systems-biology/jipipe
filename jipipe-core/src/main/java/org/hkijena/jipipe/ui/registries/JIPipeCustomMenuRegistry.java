@@ -19,6 +19,7 @@ import org.hkijena.jipipe.ui.extension.GraphEditorToolBarButtonExtension;
 import org.hkijena.jipipe.ui.extension.MenuExtension;
 import org.hkijena.jipipe.ui.extension.MenuTarget;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphEditorUI;
+import org.hkijena.jipipe.ui.grapheditor.contextmenu.NodeUIContextAction;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 
@@ -36,6 +37,7 @@ import java.util.Map;
 public class JIPipeCustomMenuRegistry {
     private Map<MenuTarget, List<Class<? extends MenuExtension>>> registeredMenuExtensions = new HashMap<>();
     private List<Class<? extends GraphEditorToolBarButtonExtension>> registeredGraphEditorToolBarExtensions = new ArrayList<>();
+    private List<NodeUIContextAction> registeredContextMenuActions = new ArrayList<>();
 
     /**
      * Registers a new extension
@@ -84,7 +86,28 @@ public class JIPipeCustomMenuRegistry {
         return Collections.unmodifiableMap(registeredMenuExtensions);
     }
 
+    /**
+     * Registers a new button for the graph editor.
+     * The button will appear right next to the search box
+     * @param klass the class
+     */
     public void registerGraphEditorToolBarButton(Class<? extends GraphEditorToolBarButtonExtension> klass) {
         registeredGraphEditorToolBarExtensions.add(klass);
+    }
+
+    /**
+     * Registers a new context menu action.
+     * @param action the action
+     */
+    public void registerContextMenuAction(NodeUIContextAction action) {
+        registeredContextMenuActions.add(action);
+    }
+
+    /**
+     * Gets the registered context menu actions
+     * @return the actions
+     */
+    public List<NodeUIContextAction> getRegisteredContextMenuActions() {
+        return registeredContextMenuActions;
     }
 }

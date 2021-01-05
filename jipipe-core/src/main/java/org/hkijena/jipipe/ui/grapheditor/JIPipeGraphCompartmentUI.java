@@ -81,6 +81,8 @@ public class JIPipeGraphCompartmentUI extends JIPipeGraphEditorUI {
                     JIPipeContextAction actionAnnotation = method.getAnnotation(JIPipeContextAction.class);
                     if (actionAnnotation == null)
                         continue;
+                    if(!actionAnnotation.showInContextMenu())
+                        continue;
                     JIPipeDocumentation documentationAnnotation = method.getAnnotation(JIPipeDocumentation.class);
                     if (documentationAnnotation == null) {
                         documentationAnnotation = new JIPipeDefaultDocumentation(method.getName(), "");
@@ -134,6 +136,17 @@ public class JIPipeGraphCompartmentUI extends JIPipeGraphEditorUI {
                 new SelectAndMoveNodeHereNodeUIContextAction()
         );
 
+        // Custom entries (from registry)
+        List<NodeUIContextAction> registeredEntries = JIPipe.getCustomMenus().getRegisteredContextMenuActions().stream()
+                .filter(NodeUIContextAction::showInGraphCompartment)
+                .sorted(Comparator.comparing(NodeUIContextAction::getName))
+                .collect(Collectors.toList());
+        if(!registeredEntries.isEmpty()) {
+            actions.add(NodeUIContextAction.SEPARATOR);
+            actions.addAll(registeredEntries);
+        }
+
+        // Node context actions
         if (!nodeSpecificContextActions.isEmpty()) {
             actions = new ArrayList<>(actions);
             actions.add(NodeUIContextAction.SEPARATOR);

@@ -49,6 +49,8 @@ import java.awt.event.ComponentEvent;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.hkijena.jipipe.api.nodes.JIPipeGraph.COMPARTMENT_DEFAULT;
@@ -68,9 +70,7 @@ public class JIPipeCompartmentGraphUI extends JIPipeGraphEditorUI {
         setPropertyPanel(defaultPanel);
 
         getCanvasUI().setDragAndDropBehavior(new JIPipeCompartmentGraphDragAndDropBehavior());
-
-        // Copy & paste behavior
-        getCanvasUI().setContextActions(Arrays.asList(
+        List<NodeUIContextAction> actions = Arrays.asList(
                 new SelectAllNodeUIContextAction(),
                 new InvertSelectionNodeUIContextAction(),
                 NodeUIContextAction.SEPARATOR,
@@ -84,7 +84,17 @@ public class JIPipeCompartmentGraphUI extends JIPipeGraphEditorUI {
                 new DeleteCompartmentUIContextAction(),
                 NodeUIContextAction.SEPARATOR,
                 new SelectAndMoveNodeHereNodeUIContextAction()
-        ));
+        );
+        // Custom entries (from registry)
+        List<NodeUIContextAction> registeredEntries = JIPipe.getCustomMenus().getRegisteredContextMenuActions().stream()
+                .filter(NodeUIContextAction::showInCompartmentGraph)
+                .sorted(Comparator.comparing(NodeUIContextAction::getName))
+                .collect(Collectors.toList());
+        if(!registeredEntries.isEmpty()) {
+            actions.add(NodeUIContextAction.SEPARATOR);
+            actions.addAll(registeredEntries);
+        }
+        getCanvasUI().setContextActions(actions);
     }
 
     private void initializeDefaultPanel() {
