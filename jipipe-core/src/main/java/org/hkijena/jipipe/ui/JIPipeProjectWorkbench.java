@@ -548,6 +548,8 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
 
         menu.add(helpMenu);
 
+        UIUtils.installMenuExtension(this, helpMenu, MenuTarget.ProjectHelpMenu, true);
+
         add(menu, BorderLayout.NORTH);
     }
 

@@ -22,6 +22,8 @@ public enum MenuTarget {
     ProjectCompartmentMenu,
     ProjectPluginsMenu,
     ProjectToolsMenu,
+    ProjectHelpMenu,
     ExtensionBuilderMainMenu,
-    ExtensionBuilderToolsMenu
+    ExtensionBuilderToolsMenu,
+    ExtensionHelpMenu
 }
