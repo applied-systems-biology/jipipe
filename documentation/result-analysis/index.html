@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2021-01-04T17:44:23 CET">
+<meta name="revised" content="2021-01-05T15:13:32 CET">
 <title>Running a pipeline :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../images/favicon.png" type="image/x-icon" />
 <link href="../../css/font-awesome.min.css" rel="stylesheet">
@@ -537,8 +537,8 @@ You find the "Open analysis output ..."  button in the "Project" menu.
 It allows you to navigate through the results, and import them back into ImageJ (if supported by the generated data type).</p>
 <p>The UI has two main components:</p>
 <ol>
-<li>The <strong>slot tree</strong> shows a hierarchy of all data slots. It is organized by <a href="../../documentation/graph-compartment">compartment</a>, then <a href="../../documentation/batch-pipelines">algorithm</a>, and finally <a href="../../documentation/batch-pipelines">data slot</a>. By selecting any of the entries, all data associated to the selection or any n-child is displayed.</li>
-<li>The <strong>output data table</strong> lists the stored data of the selected slot(s) as table (if you are unfamiliar why this is, please take a look at the explanation on <a href="../../documentation/batch-pipelines">how JIPipe processes data</a>)</li>
+<li>The <strong>slot tree</strong> shows a hierarchy of all data slots. It is organized by <a href="https://www.jipipe.org/documentation/graph-compartment/">compartment</a>, then <a href="https://www.jipipe.org/documentation/batch-pipelines/">algorithm</a>, and finally <a href="https://www.jipipe.org/documentation/batch-pipelines/">data slot</a>. By selecting any of the entries, all data associated to the selection or any n-child is displayed.</li>
+<li>The <strong>output data table</strong> lists the stored data of the selected slot(s) as table (if you are unfamiliar why this is, please take a look at the explanation on <a href="https://www.jipipe.org/documentation/batch-pipelines/">how JIPipe processes data</a>)</li>
 </ol>
 <p><img src="../../img/documentation/result-analysis-ui.png" alt="Result analysis UI"></p>
 <p>After selecting a set of slots in the <em>slot tree</em> the <em>output data table</em> will update to only display the data of the selected slots.
@@ -548,7 +548,7 @@ The table has following columns:</p>
 <li>(Optional) <strong>Algorithm</strong> shows the name of the algorithm that generated the data.</li>
 <li><strong>Location</strong> is the folder name where the data is located relative to the slot directory</li>
 <li><strong>Data</strong> shows a string representation of the data row. The contents vary depending on the slot data type. For example, file system data display their path at this location.</li>
-<li>Additional columns correspond to the <a href="../../documentation/batch-pipelines/#data-annotations">data annotations</a> that were attached by various algorithms</li>
+<li>Additional columns correspond to the <a href="https://www.jipipe.org/documentation/batch-pipelines/#data-annotations">data annotations</a> that were attached by various algorithms</li>
 </ul>
 <h2 id="importing-results-back-into-jipipeimagej">Importing results back into JIPipe/ImageJ/&hellip;</h2>
 <p>On selecting one or multiple rows, additional UI elements are displayed below the table. They contain various actions that can be applied to the output data, such

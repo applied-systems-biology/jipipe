@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2021-01-04T17:44:23 CET">
+<meta name="revised" content="2021-01-05T15:13:32 CET">
 <title>Documentation :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../images/favicon.png" type="image/x-icon" />
 <link href="../css/font-awesome.min.css" rel="stylesheet">
@@ -535,7 +535,7 @@ graph LR;
     B --> C[Apply gaussian]
 </div>
 <p>To design efficient and scalable pipelines yourself, it is a good idea to
-look into the <a href="../documentation/batch-pipelines">JIPipe data model</a>.</p>
+look into the <a href="https://www.jipipe.org/documentation/batch-pipelines/">JIPipe data model</a>.</p>
 <h1 id="graph-compartments">Graph compartments</h1>
 <p>A common issue with graphical programming languages is that larger pipelines are
 hard to navigate. Another issue with such languages is that it is hard to separate functional
@@ -543,14 +543,14 @@ units for easier readability.</p>
 <p>JIPipe solves both issues with the concept of strongly separated <em>graph components</em> that
 group a set of algorithms together. Components only can interact via special interface algorithms,
 making it easier to structure the pipeline.</p>
-<p>Please take a look at our <a href="../documentation/graph-compartment">graph compartment documentation</a> for more information.</p>
+<p>Please take a look at our <a href="https://www.jipipe.org/documentation/graph-compartment/">graph compartment documentation</a> for more information.</p>
 <h1 id="user-interface-overview">User interface overview</h1>
 <p>The JIPipe user interface is designed around managing an <em>analysis project</em>.
 A project contains all information to run an analysis, outside of the input data and
 can be saved into <a href="https://www.json.org/json-en.html">JSON</a> files.
 The user interface is separated into three sections:</p>
 <ol>
-<li><strong>The project menu</strong> contains all operations for the current project / window. It allows you to open/save projects, access and modify <a href="../documentation/graph-compartments">graph compartments</a>, manage <a href="../documentation/plugins">plugins</a>, and run the analysis</li>
+<li><strong>The project menu</strong> contains all operations for the current project / window. It allows you to open/save projects, access and modify <a href="https://www.jipipe.org/documentation/graph-compartment/">graph compartments</a>, manage <a href="https://www.jipipe.org/documentation/plugins/">plugins</a>, and run the analysis</li>
 <li><strong>The tab bar</strong> allows you to switch between different interfaces associated to the current project. You can close thabs by clicking the <code>x</code> icon. If a tab contains some data that will be lost after closing it, you will have to confirm the action. If no question is asked on closing a tab, you will be able to open it later again without losing data.</li>
 <li><strong>The current content</strong> depends on the selected tab</li>
 </ol>

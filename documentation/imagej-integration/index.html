@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2021-01-04T17:44:23 CET">
+<meta name="revised" content="2021-01-05T15:13:32 CET">
 <title>ImageJ integration :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../images/favicon.png" type="image/x-icon" />
 <link href="../../css/font-awesome.min.css" rel="stylesheet">
@@ -518,7 +518,7 @@
     
     <h1 id="imagej-to-jipipe">ImageJ to JIPipe</h1>
 <p>JIPipe integrates commonly used data types and popular algorithms from ImageJ.
-If an algorithm is not available for JIPipe, you can still run them via the <a href="standard-library/macro-node">Macro node</a>.
+If an algorithm is not available for JIPipe, you can still run them via the <a href="../../documentation/standard-library/macro-node/">Macro node</a>.
 There is also a Python script node available that behaves similar to the macro node.</p>
 <h1 id="jipipe-to-imagej">JIPipe to ImageJ</h1>
 <p>JIPipe algorithms and pipelines can be executed from within an ImageJ environment.
@@ -569,8 +569,8 @@ Algorithm parameters are provided as string in <a href="https://json.org/">JSON<
 The JSON data should have following structure:</p>
 <ul>
 <li>(Optional) An object <code>parameters</code> that contains the algorithm parameters. They are equal to the parameters saved in an JIPipe project file. We recommend to use the <code>Copy command</code> button to obtain the parameters. If you leave out parameters, the default value is assumed.</li>
-<li>(Optional) An object <code>add-input</code> that contains additional input <a href="../../documentation-json-api/slot-definition/">slot definitions</a>. The entry keys are the slot names.</li>
-<li>(Optional) An object <code>add-output</code> that contains additional output <a href="../../documentation-json-api/slot-definition/">slot definitions</a>. The entry keys are the slot names.</li>
+<li>(Optional) An object <code>add-input</code> that contains additional input <a href="https://www.jipipe.org/documentation-json-api/slot-definition/">slot definitions</a>. The entry keys are the slot names.</li>
+<li>(Optional) An object <code>add-output</code> that contains additional output <a href="https://www.jipipe.org/documentation-json-api/slot-definition/">slot definitions</a>. The entry keys are the slot names.</li>
 <li>(Optional) An object <code>input</code>. Entry keys correspond to the slot name. The entry value is a string that corresponds to the Window name that contains the data. Only required for image data types, as JIPipe accesses the global ROI manager and global result table.</li>
 </ul>
 <div class="notices tip" ><p>
