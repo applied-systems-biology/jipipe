@@ -188,8 +188,11 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
                 if (!JIPipeData.class.isAssignableFrom(method.getReturnType())) {
                     throw new IllegalArgumentException("Import method does not return JIPipeData!");
                 }
-            } catch (Exception e) {
-                throw new RuntimeException(e);
+            } catch (NoClassDefFoundError | Exception e) {
+                // Unregister node
+                logService.warn("Data type '" + dataType + "' cannot be instantiated.");
+                issues.getErroneousDataTypes().add(dataType);
+                e.printStackTrace();
             }
         }
         if (extensionSettings.isValidateNodeTypes()) {

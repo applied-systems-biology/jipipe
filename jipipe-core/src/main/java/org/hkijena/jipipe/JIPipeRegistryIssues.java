@@ -15,6 +15,7 @@ package org.hkijena.jipipe;
 
 import org.hkijena.jipipe.api.JIPipeValidatable;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
+import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.scijava.plugin.PluginInfo;
 
@@ -27,6 +28,7 @@ import java.util.Set;
 public class JIPipeRegistryIssues implements JIPipeValidatable {
     private Set<JIPipeImageJUpdateSiteDependency> missingImageJSites = new HashSet<>();
     private Set<PluginInfo<JIPipeJavaExtension>> erroneousPlugins = new HashSet<>();
+    private Set<Class<? extends JIPipeData>> erroneousDataTypes = new HashSet<>();
     private Set<JIPipeNodeInfo> erroneousNodes = new HashSet<>();
 
     @Override
@@ -47,8 +49,15 @@ public class JIPipeRegistryIssues implements JIPipeValidatable {
             report.forCategory("Node types").forCategory(info.getId())
                     .reportIsInvalid("Invalid node type '" + info.getName() + "'",
                             "There was an error while loading a node type.",
-                            "Please install necessary dependencies via ImageJ. Then restart  ImageJ.",
+                            "Please install necessary dependencies via ImageJ. Then restart ImageJ.",
                             info);
+        }
+        for (Class<? extends JIPipeData> dataType : erroneousDataTypes) {
+            report.forCategory("Data types").forCategory(dataType.getCanonicalName())
+                    .reportIsInvalid("Invalid data type '" + dataType + "'",
+                            "There was an error while loading a data type.",
+                            "Please install necessary dependencies via ImageJ. Then restart ImageJ.",
+                            dataType.getCanonicalName());
         }
     }
 
@@ -74,5 +83,13 @@ public class JIPipeRegistryIssues implements JIPipeValidatable {
 
     public void setErroneousNodes(Set<JIPipeNodeInfo> erroneousNodes) {
         this.erroneousNodes = erroneousNodes;
+    }
+
+    public Set<Class<? extends JIPipeData>> getErroneousDataTypes() {
+        return erroneousDataTypes;
+    }
+
+    public void setErroneousDataTypes(Set<Class<? extends JIPipeData>> erroneousDataTypes) {
+        this.erroneousDataTypes = erroneousDataTypes;
     }
 }
