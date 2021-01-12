@@ -4,7 +4,7 @@ FIJI_DOWNLOAD="https://downloads.imagej.net/fiji/latest/fiji-macosx.zip"
 
 function download_url {
   echo "Downloading $1 ..."
-  curl -O -s $1
+  curl -O -L -s $1
 }
 
 if [[ ! -e $PWD/Fiji.app ]]; then
