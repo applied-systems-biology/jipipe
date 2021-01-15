@@ -137,6 +137,7 @@ public class JIPipeDataInfoRefParameterEditorUI extends JIPipeParameterEditorUI 
     @Subscribe
     public void onTraitSelected(JIPipeDataTypePicker.SelectedDataTypesChangedEvent event) {
         if (pickerDialog.isVisible()) {
+            pickerDialog.setVisible(false);
             JIPipeDataInfoRef infoRef = getParameter(JIPipeDataInfoRef.class);
             infoRef.setInfo(picker.getSelectedDataTypes().isEmpty() ? null : picker.getSelectedDataTypes().iterator().next());
             setParameter(infoRef, true);
