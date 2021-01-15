@@ -363,9 +363,12 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
      * @param event generated event
      */
     @Subscribe
-    public void onSlotConfigurationParameterChanged(ParameterChangedEvent event) {
+    public void onParameterChanged(ParameterChangedEvent event) {
         if (event.getSource() == slotConfiguration) {
             getEventBus().post(new JIPipeGraph.NodeSlotsChangedEvent(this));
+        }
+        else if(event.getSource() != this) {
+            getEventBus().post(event);
         }
     }
 
