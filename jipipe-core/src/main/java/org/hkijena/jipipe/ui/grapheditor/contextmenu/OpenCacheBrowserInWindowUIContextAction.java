@@ -28,7 +28,7 @@ import java.util.Set;
 public class OpenCacheBrowserInWindowUIContextAction implements NodeUIContextAction {
     @Override
     public boolean matches(Set<JIPipeNodeUI> selection) {
-        return selection.stream().allMatch(ui -> ui.getNode().getGraph().getAttachment(JIPipeGraphType.class) == JIPipeGraphType.Project);
+        return !selection.isEmpty() && selection.stream().allMatch(ui -> ui.getNode().getGraph().getAttachment(JIPipeGraphType.class) == JIPipeGraphType.Project);
     }
 
     @Override
