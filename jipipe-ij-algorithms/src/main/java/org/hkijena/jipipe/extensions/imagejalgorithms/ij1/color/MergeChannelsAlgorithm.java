@@ -126,7 +126,7 @@ public class MergeChannelsAlgorithm extends JIPipeIteratingAlgorithm {
             }
         }
 
-
+        boolean composite = this.createComposite;
         int stackSize = 0;
         int width = 0;
         int height = 0;
@@ -178,7 +178,7 @@ public class MergeChannelsAlgorithm extends JIPipeIteratingAlgorithm {
             if (img.getWidth() != width || images[i].getHeight() != height) {
                 throw new RuntimeException("The source images or stacks must have the same width and height.");
             }
-            if (createComposite && img.getBitDepth() != bitDepth) {
+            if (composite && img.getBitDepth() != bitDepth) {
                 throw new RuntimeException("The source images must have the same bit depth.");
             }
         }
@@ -190,13 +190,13 @@ public class MergeChannelsAlgorithm extends JIPipeIteratingAlgorithm {
         boolean fourOrMoreChannelRGB = false;
         for (int i = 3; i < images.length; i++) {
             if (stacks[i] != null) {
-                if (!createComposite)
+                if (!composite)
                     fourOrMoreChannelRGB = true;
-                createComposite = true;
+                composite = true;
             }
         }
         if (fourOrMoreChannelRGB)
-            createComposite = true;
+            composite = true;
         boolean isRGB = false;
         int extraIChannels = 0;
         for (int i = 0; i < images.length; i++) {
@@ -208,14 +208,14 @@ public class MergeChannelsAlgorithm extends JIPipeIteratingAlgorithm {
             }
         }
         if (isRGB && extraIChannels > 0) {
-            imp2 = mergeUsingRGBProjection(firstImage, images, createComposite);
-        } else if ((createComposite && !isRGB) || mergeHyperstacks) {
+            imp2 = mergeUsingRGBProjection(firstImage, images, composite);
+        } else if ((composite && !isRGB) || mergeHyperstacks) {
             imp2 = RGB_STACK_MERGE.mergeHyperstacks(images, true);
             if (imp2 == null) return;
         } else {
             ImageStack rgb = RGB_STACK_MERGE.mergeStacks(width, height, stackSize, stacks[0], stacks[1], stacks[2], true);
             imp2 = new ImagePlus("RGB", rgb);
-            if (createComposite) {
+            if (composite) {
                 imp2 = CompositeConverter.makeComposite(imp2);
                 imp2.setTitle("Composite");
             }
