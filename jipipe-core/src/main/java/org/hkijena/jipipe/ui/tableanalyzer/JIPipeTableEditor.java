@@ -76,6 +76,7 @@ public class JIPipeTableEditor extends JIPipeWorkbenchPanel {
     private FormPanel.GroupHeaderPanel rowPaletteGroup;
     private FormPanel.GroupHeaderPanel columnPaletteGroup;
     private FormPanel.GroupHeaderPanel selectionPaletteGroup;
+    private JToolBar toolBar = new JToolBar();
 
     /**
      * @param workbench  the workbench
@@ -92,7 +93,7 @@ public class JIPipeTableEditor extends JIPipeWorkbenchPanel {
         setLayout(new BorderLayout());
 
         // Add toolbar buttons
-        JToolBar toolBar = new JToolBar();
+
         toolBar.setFloatable(false);
 
         addLeftToolbarButtons(toolBar);
@@ -136,6 +137,8 @@ public class JIPipeTableEditor extends JIPipeWorkbenchPanel {
         JButton createPlotButton = new JButton("Create plot", UIUtils.getIconFromResources("actions/office-chart-line.png"));
         createPlotButton.addActionListener(e -> createNewPlot());
         toolBar.add(createPlotButton);
+
+        addRightToolbarButtons(toolBar);
 
         add(toolBar, BorderLayout.NORTH);
 
@@ -266,6 +269,14 @@ public class JIPipeTableEditor extends JIPipeWorkbenchPanel {
         add(splitPane, BorderLayout.CENTER);
 
         jxTable.getSelectionModel().addListSelectionListener(listSelectionEvent -> updateConvertMenu());
+    }
+
+    public JToolBar getToolBar() {
+        return toolBar;
+    }
+
+    protected void addRightToolbarButtons(JToolBar toolBar) {
+
     }
 
     protected void addLeftToolbarButtons(JToolBar toolBar) {

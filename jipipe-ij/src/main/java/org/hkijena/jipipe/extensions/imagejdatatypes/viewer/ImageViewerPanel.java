@@ -102,6 +102,7 @@ public class ImageViewerPanel extends JPanel {
     private JMenuItem exportAllSlicesItem;
     private JMenuItem exportMovieItem;
     private JLabel pixelInfoLabel = new JLabel(UIUtils.getIconFromResources("actions/tool-pointer.png"), JLabel.LEFT);
+    private JToolBar toolBar = new JToolBar();
 
     public ImageViewerPanel() {
         initialize();
@@ -256,8 +257,11 @@ public class ImageViewerPanel extends JPanel {
         bottomPanel.addToForm(slider, descriptionPanel, null);
     }
 
+    public JToolBar getToolBar() {
+        return toolBar;
+    }
+
     private void initializeToolbar() {
-        JToolBar toolBar = new JToolBar();
         toolBar.setFloatable(false);
 
         JButton openInImageJButton = new JButton("Open in ImageJ", UIUtils.getIconFromResources("apps/imagej.png"));

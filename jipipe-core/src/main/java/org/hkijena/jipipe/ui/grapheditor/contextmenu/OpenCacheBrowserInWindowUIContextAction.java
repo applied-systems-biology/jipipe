@@ -14,8 +14,10 @@
 package org.hkijena.jipipe.ui.grapheditor.contextmenu;
 
 import org.hkijena.jipipe.api.JIPipeGraphType;
+import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.cache.JIPipeAlgorithmCacheBrowserUI;
+import org.hkijena.jipipe.ui.components.AlwaysOnTopToggle;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphCanvasUI;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeNodeUI;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -34,12 +36,18 @@ public class OpenCacheBrowserInWindowUIContextAction implements NodeUIContextAct
         for (JIPipeNodeUI ui : selection) {
             JIPipeAlgorithmCacheBrowserUI browserUI = new JIPipeAlgorithmCacheBrowserUI((JIPipeProjectWorkbench) ui.getWorkbench(), ui.getNode());
             JFrame frame = new JFrame("Cache browser: " + ui.getNode().getName());
+            frame.setAlwaysOnTop(GeneralUISettings.getInstance().isOpenUtilityWindowsAlwaysOnTop());
             frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
             frame.setContentPane(browserUI);
             frame.setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
             frame.pack();
             frame.setSize(640, 480);
             frame.setLocationRelativeTo(null);
+
+            AlwaysOnTopToggle alwaysOnTopToggle = new AlwaysOnTopToggle(frame);
+            alwaysOnTopToggle.addActionListener(e -> GeneralUISettings.getInstance().setOpenUtilityWindowsAlwaysOnTop(alwaysOnTopToggle.isSelected()));
+            browserUI.getToolBar().add(alwaysOnTopToggle);
+
             frame.setVisible(true);
         }
     }

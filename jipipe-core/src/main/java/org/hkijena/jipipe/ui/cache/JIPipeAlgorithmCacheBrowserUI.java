@@ -43,6 +43,7 @@ public class JIPipeAlgorithmCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
     private final JIPipeGraphNode graphNode;
     private JSplitPane splitPane;
     private JIPipeAlgorithmCacheTree tree;
+    private final JToolBar toolBar = new JToolBar();
 
     /**
      * @param workbenchUI the workbench
@@ -143,7 +144,6 @@ public class JIPipeAlgorithmCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
     }
 
     private void initializeToolbar() {
-        JToolBar toolBar = new JToolBar();
         toolBar.setFloatable(false);
 
         JButton clearOutdatedButton = new JButton("Clear outdated", UIUtils.getIconFromResources("actions/clear-brush.png"));
@@ -157,6 +157,10 @@ public class JIPipeAlgorithmCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
         toolBar.add(Box.createHorizontalGlue());
 
         add(toolBar, BorderLayout.NORTH);
+    }
+
+    public JToolBar getToolBar() {
+        return toolBar;
     }
 
     public JIPipeAlgorithmCacheTree getTree() {

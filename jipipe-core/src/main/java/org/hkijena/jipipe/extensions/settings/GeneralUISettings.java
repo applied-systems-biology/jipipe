@@ -38,6 +38,8 @@ public class GeneralUISettings implements JIPipeParameterCollection {
     private boolean addContextActionsToContextMenu = true;
     private boolean maximizeWindows = true;
     private boolean showIntroductionTour = true;
+    private boolean openDataWindowsAlwaysOnTop = true;
+    private boolean openUtilityWindowsAlwaysOnTop = true;
     private JIPipeUITheme theme = JIPipeUITheme.ModernLight;
 
     @Override
@@ -158,6 +160,29 @@ public class GeneralUISettings implements JIPipeParameterCollection {
     @JIPipeParameter("theme")
     public void setTheme(JIPipeUITheme theme) {
         this.theme = theme;
+    }
+
+    @JIPipeDocumentation(name = "Open data windows always on top", description = "If enabled, data that is opened in new windows will have the window always on top of other windows by default. " +
+            "Please note that this setting only affects data displays if they support this feature.")
+    @JIPipeParameter("open-data-windows-always-on-top")
+    public boolean isOpenDataWindowsAlwaysOnTop() {
+        return openDataWindowsAlwaysOnTop;
+    }
+
+    @JIPipeParameter("open-data-windows-always-on-top")
+    public void setOpenDataWindowsAlwaysOnTop(boolean openDataWindowsAlwaysOnTop) {
+        this.openDataWindowsAlwaysOnTop = openDataWindowsAlwaysOnTop;
+    }
+
+    @JIPipeDocumentation(name = "Open utility windows always on top", description = "If enabled, some utility windows will be always displayed on top of other windows by default.")
+    @JIPipeParameter("open-utility-windows-always-on-top")
+    public boolean isOpenUtilityWindowsAlwaysOnTop() {
+        return openUtilityWindowsAlwaysOnTop;
+    }
+
+    @JIPipeParameter("open-utility-windows-always-on-top")
+    public void setOpenUtilityWindowsAlwaysOnTop(boolean openUtilityWindowsAlwaysOnTop) {
+        this.openUtilityWindowsAlwaysOnTop = openUtilityWindowsAlwaysOnTop;
     }
 
     public static GeneralUISettings getInstance() {

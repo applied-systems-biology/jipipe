@@ -22,11 +22,14 @@ import org.hkijena.jipipe.api.data.JIPipeCacheSlotDataSource;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeVirtualData;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
+import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
+import org.hkijena.jipipe.ui.components.AlwaysOnTopToggle;
 import org.hkijena.jipipe.ui.tableanalyzer.JIPipeTableEditor;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.jgrapht.alg.util.ToleranceDoubleComparator;
 
 import javax.swing.*;
 import java.awt.Window;
@@ -116,8 +119,12 @@ public class CacheAwareTableEditor extends JIPipeTableEditor {
     }
 
     public static void show(JIPipeWorkbench workbench, JIPipeCacheSlotDataSource dataSource, String displayName) {
-        CacheAwareTableEditor dataDisplay = new CacheAwareTableEditor(workbench, dataSource);
         JFrame frame = new JFrame(displayName);
+        frame.setAlwaysOnTop(GeneralUISettings.getInstance().isOpenDataWindowsAlwaysOnTop());
+        CacheAwareTableEditor dataDisplay = new CacheAwareTableEditor(workbench, dataSource);
+        AlwaysOnTopToggle alwaysOnTopToggle = new AlwaysOnTopToggle(frame);
+        alwaysOnTopToggle.addActionListener(e -> GeneralUISettings.getInstance().setOpenDataWindowsAlwaysOnTop(alwaysOnTopToggle.isSelected()));
+        dataDisplay.getToolBar().add(alwaysOnTopToggle);
         frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         frame.setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
         frame.setContentPane(dataDisplay);

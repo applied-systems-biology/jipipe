@@ -8,6 +8,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
+import org.hkijena.jipipe.ui.components.AlwaysOnTopToggle;
 import org.hkijena.jipipe.ui.components.JIPipeNodeInfoListCellRenderer;
 import org.hkijena.jipipe.ui.components.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.MarkdownReader;
@@ -59,10 +60,7 @@ public class NodeToolBoxWindow extends JFrame {
         searchField.addActionListener(e -> reloadAlgorithmList());
         toolBar.add(searchField);
 
-        JToggleButton alwaysOnTopToggle = new JToggleButton(UIUtils.getIconFromResources("actions/window-pin.png"));
-        alwaysOnTopToggle.setSelected(isAlwaysOnTop());
-        alwaysOnTopToggle.addActionListener(e -> setAlwaysOnTop(alwaysOnTopToggle.isSelected()));
-        toolBar.add(alwaysOnTopToggle);
+        toolBar.add(new AlwaysOnTopToggle(this));
 
         algorithmList = new JList<>();
         algorithmList.setToolTipText("Drag one or multiple entries from the list into the graph to create nodes.");

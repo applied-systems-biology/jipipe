@@ -61,7 +61,7 @@ public class JIPipeAlgorithmCacheTree extends JIPipeProjectWorkbenchPanel {
         stateTreeNodeMap.clear();
         DefaultMutableTreeNode root = new DefaultMutableTreeNode(null);
 
-        Map<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateMap = getProject().getCache().extract((JIPipeAlgorithm) graphNode);
+        Map<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateMap = getProject().getCache().extract(graphNode);
         if (stateMap != null) {
             for (Map.Entry<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateEntry : stateMap.entrySet()) {
                 DefaultMutableTreeNode stateNode = new DefaultMutableTreeNode(stateEntry.getKey());
