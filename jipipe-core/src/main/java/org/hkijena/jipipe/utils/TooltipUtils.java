@@ -108,12 +108,15 @@ public class TooltipUtils {
             }
         }
 
+        builder.append("</table>\n\n");
+
         // Write description
         String description = info.getDescription();
         if (description != null && !description.isEmpty())
             builder.append(HtmlEscapers.htmlEscaper().escape(description)).append("</br>");
 
-        builder.append("</table>\n\n");
+        builder.append("\n\n");
+
 
         // Write author information
         JIPipeDependency source = JIPipe.getNodes().getSourceOf(info.getId());
@@ -171,12 +174,14 @@ public class TooltipUtils {
             }
         }
 
+        builder.append("</table>\n\n");
+
         // Write description
         String description = info.getDescription();
         if (description != null && !description.isEmpty())
             builder.append(HtmlEscapers.htmlEscaper().escape(description)).append("</br>");
 
-        builder.append("</table>\n\n");
+        builder.append("\n\n");
 
         // Write author information
         JIPipeDependency source = JIPipe.getNodes().getSourceOf(info.getId());
@@ -244,12 +249,12 @@ public class TooltipUtils {
             }
         }
 
+        builder.append("</table>");
+
         // Write description
         String description = info.getDescription();
         if (description != null && !description.isEmpty())
             builder.append(StringUtils.wordWrappedHTMLElement(description, 50)).append("</br>");
-
-        builder.append("</table>");
 
 //        if (!preferredTraits.isEmpty()) {
 //            builder.append("<br/><br/><strong>Good for<br/>");
