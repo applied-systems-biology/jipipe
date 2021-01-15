@@ -19,7 +19,11 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import gnu.trove.map.TIntIntMap;
@@ -50,11 +54,10 @@ import javax.swing.*;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
-import java.awt.*;
+import java.awt.Component;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.nio.file.Path;
-import java.util.List;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -441,8 +444,7 @@ public class ResultsTableData implements JIPipeData, TableModel {
     public void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
         if (source instanceof JIPipeCacheSlotDataSource) {
             CacheAwareTableEditor.show(workbench, (JIPipeCacheSlotDataSource) source, displayName);
-        }
-        else {
+        } else {
             workbench.getDocumentTabPane().addTab(displayName, UIUtils.getIconFromResources("data-types/results-table.png"),
                     new JIPipeTableEditor(workbench, (ResultsTableData) duplicate()), DocumentTabPane.CloseMode.withAskOnCloseButton, true);
             workbench.getDocumentTabPane().switchToLastTab();
@@ -726,7 +728,8 @@ public class ResultsTableData implements JIPipeData, TableModel {
 
     /**
      * Adds columns from another table
-     * @param others the other tables
+     *
+     * @param others     the other tables
      * @param makeUnique if true, the columns will be made unique. Otherwise, existing columns will be skipped.
      */
     public void addColumns(Collection<ResultsTableData> others, boolean makeUnique, TableColumnNormalization normalization) {
@@ -742,7 +745,7 @@ public class ResultsTableData implements JIPipeData, TableModel {
         columnList = normalization.normalize(columnList, nRow);
         Set<String> existing = new HashSet<>();
         for (TableColumn column : columnList) {
-            if(containsColumn(column.getLabel()) && !makeUnique)
+            if (containsColumn(column.getLabel()) && !makeUnique)
                 continue;
             String name = StringUtils.makeUniqueString(column.getLabel(), ".", existing);
             existing.add(name);
@@ -850,7 +853,8 @@ public class ResultsTableData implements JIPipeData, TableModel {
     /**
      * Sets a column to a value.
      * Creates the column if necessary
-     * @param name the column name
+     *
+     * @param name  the column name
      * @param value the value. Can be numeric or string
      * @return the column index
      */
@@ -940,7 +944,7 @@ public class ResultsTableData implements JIPipeData, TableModel {
      */
     public void removeColumns(Collection<String> removedColumns) {
         for (String removedColumn : removedColumns) {
-            if(containsColumn(removedColumn))
+            if (containsColumn(removedColumn))
                 table.deleteColumn(removedColumn);
         }
         cleanupTable();
@@ -1069,6 +1073,10 @@ public class ResultsTableData implements JIPipeData, TableModel {
         return result;
     }
 
+    public ResultsTableData getRow(int row) {
+        return getRows(Collections.singleton(row));
+    }
+
     public static ResultsTableData importFrom(Path storagePath) {
         try {
             return new ResultsTableData(ResultsTable.open(PathUtils.findFileByExtensionIn(storagePath, ".csv").toString()));
@@ -1138,10 +1146,6 @@ public class ResultsTableData implements JIPipeData, TableModel {
             }
         }
         return resultsTableData;
-    }
-
-    public ResultsTableData getRow(int row) {
-        return getRows(Collections.singleton(row));
     }
 
     /**

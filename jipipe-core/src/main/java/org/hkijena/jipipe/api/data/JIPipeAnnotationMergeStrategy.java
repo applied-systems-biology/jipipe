@@ -56,17 +56,15 @@ public enum JIPipeAnnotationMergeStrategy {
             return newValue;
         } else {
             List<String> components = new ArrayList<>(Arrays.asList(extractMergedAnnotations(existingValue)));
-            if(this == MergeLists) {
+            if (this == MergeLists) {
                 String[] newValues = extractMergedAnnotations(newValue);
-                if(newValues.length > 1) {
+                if (newValues.length > 1) {
                     components.addAll(Arrays.asList(newValues));
-                }
-                else {
+                } else {
                     if (!components.contains(newValue))
                         components.add(newValue);
                 }
-            }
-            else {
+            } else {
                 if (!components.contains(newValue))
                     components.add(newValue);
             }

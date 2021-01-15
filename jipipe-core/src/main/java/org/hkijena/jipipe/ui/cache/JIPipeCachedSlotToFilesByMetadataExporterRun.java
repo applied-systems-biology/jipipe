@@ -105,11 +105,10 @@ public class JIPipeCachedSlotToFilesByMetadataExporterRun extends JIPipeWorkbenc
         editorDialog.setLocationRelativeTo(null);
         editorDialog.setVisible(true);
 
-        if(confirmation.get()) {
+        if (confirmation.get()) {
             try {
                 DataExporterSettings.getInstance().copyFrom(exporter);
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }

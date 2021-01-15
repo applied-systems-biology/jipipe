@@ -24,7 +24,6 @@ import com.google.common.eventbus.EventBus;
 import ij.measure.ResultsTable;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeHidden;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeValidatable;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
@@ -277,7 +276,7 @@ public abstract class PlotData implements JIPipeData, JIPipeParameterCollection,
 
     @JIPipeParameter("title-font-size")
     public boolean setTitleFontSize(int titleFontSize) {
-        if(titleFontSize <= 0)
+        if (titleFontSize <= 0)
             return false;
         this.titleFontSize = titleFontSize;
         return true;
@@ -307,18 +306,19 @@ public abstract class PlotData implements JIPipeData, JIPipeParameterCollection,
 
     /**
      * Sets properties of charts
+     *
      * @param chart the chart
      */
     protected void updateChartProperties(JFreeChart chart) {
         chart.getPlot().setBackgroundPaint(getBackgroundColor());
-        if(chart.getLegend() != null) {
+        if (chart.getLegend() != null) {
             if (!isWithLegend())
                 chart.removeLegend();
             else {
                 chart.getLegend().setItemFont(new Font(Font.SANS_SERIF, Font.PLAIN, getLegendFontSize()));
             }
         }
-        if(chart.getTitle() != null) {
+        if (chart.getTitle() != null) {
             chart.getTitle().setFont(new Font(Font.SANS_SERIF, Font.PLAIN, getTitleFontSize()));
         }
         chart.getPlot().setDrawingSupplier(new ColorMapSupplier(colorMap.getColors()));

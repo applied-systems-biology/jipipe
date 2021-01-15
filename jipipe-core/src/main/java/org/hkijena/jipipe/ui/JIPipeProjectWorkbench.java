@@ -554,7 +554,7 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
     }
 
     private void openProjectFolder() {
-        if(getProject().getWorkDirectory() == null || !Files.isDirectory(getProject().getWorkDirectory())) {
+        if (getProject().getWorkDirectory() == null || !Files.isDirectory(getProject().getWorkDirectory())) {
             JOptionPane.showMessageDialog(this, "This project does not have a folder. Please save it first.",
                     "Open project folder", JOptionPane.ERROR_MESSAGE);
             return;

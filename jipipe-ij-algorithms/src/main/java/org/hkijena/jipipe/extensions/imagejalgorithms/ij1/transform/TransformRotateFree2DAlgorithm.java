@@ -14,15 +14,11 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.transform;
 
 import ij.ImagePlus;
-import ij.ImageStack;
 import ij.gui.Roi;
-import ij.measure.Calibration;
 import ij.process.ImageProcessor;
-import ij.process.StackProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
@@ -31,7 +27,6 @@ import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.TableToRectangularROIAlgorithm;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
@@ -89,9 +84,9 @@ public class TransformRotateFree2DAlgorithm extends JIPipeSimpleIteratingAlgorit
         ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo);
         ImagePlus imp = ImageJUtils.rotate(inputData.getImage(), angle, expandCanvas, backgroundColor, outputRoi, progressInfo);
         dataBatch.addOutputData("Output", new ImagePlusData(imp), progressInfo);
-        if(outputRoi) {
+        if (outputRoi) {
             Roi roi = imp.getRoi();
-            imp.setRoi((Roi)null);
+            imp.setRoi((Roi) null);
             dataBatch.addOutputData("Content", new ROIListData(Collections.singletonList(roi)), progressInfo);
         }
     }
@@ -142,16 +137,15 @@ public class TransformRotateFree2DAlgorithm extends JIPipeSimpleIteratingAlgorit
     }
 
     private void updateSlots() {
-        if(outputRoi) {
-            if(!hasOutputSlot("Content")) {
+        if (outputRoi) {
+            if (!hasOutputSlot("Content")) {
                 JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) getSlotConfiguration();
                 slotConfiguration.addOutputSlot("Content", ROIListData.class, null, false);
             }
-        }
-        else {
-            if(hasOutputSlot("Content")) {
+        } else {
+            if (hasOutputSlot("Content")) {
                 JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) getSlotConfiguration();
-                slotConfiguration.removeOutputSlot("Content",false);
+                slotConfiguration.removeOutputSlot("Content", false);
             }
         }
     }

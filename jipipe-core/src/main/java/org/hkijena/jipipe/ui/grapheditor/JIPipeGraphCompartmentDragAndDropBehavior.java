@@ -15,11 +15,13 @@ package org.hkijena.jipipe.ui.grapheditor;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
-import org.hkijena.jipipe.extensions.filesystem.datasources.*;
+import org.hkijena.jipipe.extensions.filesystem.datasources.FileListDataSource;
+import org.hkijena.jipipe.extensions.filesystem.datasources.FolderListDataSource;
+import org.hkijena.jipipe.extensions.filesystem.datasources.PathListDataSource;
 import org.hkijena.jipipe.extensions.parameters.primitives.PathList;
 import org.hkijena.jipipe.ui.grapheditor.contextmenu.clipboard.AlgorithmGraphPasteNodeUIContextAction;
 
-import java.awt.*;
+import java.awt.Point;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.dnd.DropTargetDragEvent;
@@ -27,7 +29,6 @@ import java.awt.dnd.DropTargetDropEvent;
 import java.awt.dnd.DropTargetEvent;
 import java.io.File;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -76,19 +77,18 @@ public class JIPipeGraphCompartmentDragAndDropBehavior implements JIPipeGraphDra
                     acceptedFlavor = flavor;
                 } else if (flavor.isFlavorTextType()) {
                     accept = true;
-                    if(acceptedFlavor == null)
+                    if (acceptedFlavor == null)
                         acceptedFlavor = flavor;
                 }
             }
-            if(accept) {
+            if (accept) {
                 dtde.acceptDrop(dtde.getDropAction());
                 Object transferData = tr.getTransferData(acceptedFlavor);
                 if (transferData instanceof List) {
                     List<File> files = (List<File>) transferData;
                     processDrop(files);
                     dtde.dropComplete(true);
-                }
-                else if(transferData instanceof String) {
+                } else if (transferData instanceof String) {
                     String text = (String) transferData;
                     processDrop(text);
                     dtde.dropComplete(true);
@@ -103,6 +103,7 @@ public class JIPipeGraphCompartmentDragAndDropBehavior implements JIPipeGraphDra
 
     /**
      * Processes the drop as serializable (nodes)
+     *
      * @param text json
      */
     private void processDrop(String text) {
@@ -121,6 +122,7 @@ public class JIPipeGraphCompartmentDragAndDropBehavior implements JIPipeGraphDra
 
     /**
      * Processes drop to create file node(s)
+     *
      * @param files the files
      */
     private void processDrop(List<File> files) {
@@ -134,17 +136,15 @@ public class JIPipeGraphCompartmentDragAndDropBehavior implements JIPipeGraphDra
             hasDirectories |= file.isDirectory();
         }
 
-        if(hasFiles && hasDirectories) {
+        if (hasFiles && hasDirectories) {
             PathListDataSource dataSource = JIPipe.createNode("import-path-list", PathListDataSource.class);
             dataSource.setPaths(new PathList(files.stream().map(File::toPath).collect(Collectors.toList())));
             graph.insertNode(dataSource, compartment);
-        }
-        else if(hasFiles) {
+        } else if (hasFiles) {
             FileListDataSource dataSource = JIPipe.createNode("import-file-list", FileListDataSource.class);
             dataSource.setFiles(new PathList(files.stream().map(File::toPath).collect(Collectors.toList())));
             graph.insertNode(dataSource, compartment);
-        }
-        else if(hasDirectories) {
+        } else if (hasDirectories) {
             FolderListDataSource dataSource = JIPipe.createNode("import-folder-list", FolderListDataSource.class);
             dataSource.setFolderPaths(new PathList(files.stream().map(File::toPath).collect(Collectors.toList())));
             graph.insertNode(dataSource, compartment);

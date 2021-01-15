@@ -22,9 +22,9 @@ import java.awt.geom.AffineTransform;
 
 public class ThrobberIcon implements Icon {
 
+    private final Timer timer;
     private Component parent;
     private ImageIcon wrappedIcon;
-    private final Timer timer;
     private double rotation = 0;
     private double rotationStep;
 
@@ -77,7 +77,7 @@ public class ThrobberIcon implements Icon {
 
     private void updateIcon() {
         rotation += rotationStep;
-        if(parent != null) {
+        if (parent != null) {
             parent.repaint();
             parent.getToolkit().sync();
         }

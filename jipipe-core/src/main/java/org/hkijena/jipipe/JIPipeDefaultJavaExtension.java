@@ -154,6 +154,7 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
 
     /**
      * Registers a custom button for the graph editor toolbar
+     *
      * @param klass the toolbar button class
      */
     public void registerGraphEditorToolBarButtonExtension(Class<? extends GraphEditorToolBarButtonExtension> klass) {
@@ -162,6 +163,7 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
 
     /**
      * Registers a custom context menu action
+     *
      * @param action the action
      */
     public void registerContextMenuAction(NodeUIContextAction action) {

@@ -11,8 +11,6 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 public class NodeToolBoxTransferHandler extends TransferHandler {
     @Override
@@ -23,7 +21,7 @@ public class NodeToolBoxTransferHandler extends TransferHandler {
     @Nullable
     @Override
     protected Transferable createTransferable(JComponent c) {
-        if(c instanceof JList) {
+        if (c instanceof JList) {
             JIPipeGraph graph = new JIPipeGraph();
             for (JIPipeNodeInfo info : ((JList<JIPipeNodeInfo>) c).getSelectedValuesList()) {
                 graph.insertNode(info.newInstance(), JIPipeGraph.COMPARTMENT_DEFAULT);
@@ -32,7 +30,7 @@ public class NodeToolBoxTransferHandler extends TransferHandler {
             return new Transferable() {
                 @Override
                 public DataFlavor[] getTransferDataFlavors() {
-                    return new DataFlavor[] { DataFlavor.stringFlavor };
+                    return new DataFlavor[]{DataFlavor.stringFlavor};
                 }
 
                 @Override

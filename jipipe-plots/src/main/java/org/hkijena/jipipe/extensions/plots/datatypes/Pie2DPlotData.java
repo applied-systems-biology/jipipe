@@ -66,7 +66,7 @@ public class Pie2DPlotData extends PiePlotData {
 
     @JIPipeParameter("label-font-size")
     public boolean setLabelFontSize(int labelFontSize) {
-        if(labelFontSize <= 0)
+        if (labelFontSize <= 0)
             return false;
         this.labelFontSize = labelFontSize;
         return true;

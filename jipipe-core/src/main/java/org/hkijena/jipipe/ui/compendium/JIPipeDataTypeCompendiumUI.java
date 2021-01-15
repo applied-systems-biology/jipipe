@@ -18,7 +18,6 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
 import org.hkijena.jipipe.ui.components.JIPipeDataInfoListCellRenderer;
 import org.hkijena.jipipe.ui.components.MarkdownDocument;
@@ -39,7 +38,7 @@ public class JIPipeDataTypeCompendiumUI extends JIPipeCompendiumUI<JIPipeDataInf
 
     @Override
     protected List<JIPipeDataInfo> getFilteredItems() {
-        if(dataInfos == null)
+        if (dataInfos == null)
             dataInfos = JIPipe.getDataTypes().getRegisteredDataTypes().values().stream().map(JIPipeDataInfo::getInstance).sorted(Comparator.comparing(JIPipeDataInfo::getName)).collect(Collectors.toList());
         Predicate<JIPipeDataInfo> filterFunction = info -> getSearchField().test(info.getName() + " " + info.getDescription() + " " + info.getMenuPath());
         return dataInfos.stream().filter(filterFunction).collect(Collectors.toList());
@@ -71,13 +70,13 @@ public class JIPipeDataTypeCompendiumUI extends JIPipeCompendiumUI<JIPipeDataInf
                     if (JIPipeDatatypeRegistry.isTriviallyConvertible(info.getDataClass(), dataInfo.getDataClass())) {
                         builder.append("<td><img src=\"").append(JIPipe.getDataTypes().getIconURLFor(dataInfo)).append("\"/></td><td>").append(dataInfo.getName()).append("</td>");
                         ++column;
-                        if(column % 5 == 0) {
+                        if (column % 5 == 0) {
                             builder.append("</tr><tr>");
                         }
                     }
                 }
             }
-            if(column == 0) {
+            if (column == 0) {
                 builder.append("<td>None</td>");
             }
             builder.append("</tr>");
@@ -94,13 +93,13 @@ public class JIPipeDataTypeCompendiumUI extends JIPipeCompendiumUI<JIPipeDataInf
                     if (JIPipeDatatypeRegistry.isTriviallyConvertible(dataInfo.getDataClass(), info.getDataClass())) {
                         builder.append("<td><img src=\"").append(JIPipe.getDataTypes().getIconURLFor(dataInfo)).append("\"/></td><td>").append(dataInfo.getName()).append("</td>");
                         ++column;
-                        if(column % 5 == 0) {
+                        if (column % 5 == 0) {
                             builder.append("</tr><tr>");
                         }
                     }
                 }
             }
-            if(column == 0) {
+            if (column == 0) {
                 builder.append("<td>None</td>");
             }
             builder.append("</tr>");
@@ -119,13 +118,13 @@ public class JIPipeDataTypeCompendiumUI extends JIPipeCompendiumUI<JIPipeDataInf
                     if (!JIPipeDatatypeRegistry.isTriviallyConvertible(info.getDataClass(), dataInfo.getDataClass()) && JIPipe.getDataTypes().isConvertible(info.getDataClass(), dataInfo.getDataClass())) {
                         builder.append("<td><img src=\"").append(JIPipe.getDataTypes().getIconURLFor(dataInfo)).append("\"/></td><td>").append(dataInfo.getName()).append("</td>");
                         ++column;
-                        if(column % 5 == 0) {
+                        if (column % 5 == 0) {
                             builder.append("</tr><tr>");
                         }
                     }
                 }
             }
-            if(column == 0) {
+            if (column == 0) {
                 builder.append("<td>None</td>");
             }
             builder.append("</tr>");
@@ -142,13 +141,13 @@ public class JIPipeDataTypeCompendiumUI extends JIPipeCompendiumUI<JIPipeDataInf
                     if (!JIPipeDatatypeRegistry.isTriviallyConvertible(dataInfo.getDataClass(), info.getDataClass()) && JIPipe.getDataTypes().isConvertible(dataInfo.getDataClass(), info.getDataClass())) {
                         builder.append("<td><img src=\"").append(JIPipe.getDataTypes().getIconURLFor(dataInfo)).append("\"/></td><td>").append(dataInfo.getName()).append("</td>");
                         ++column;
-                        if(column % 5 == 0) {
+                        if (column % 5 == 0) {
                             builder.append("</tr><tr>");
                         }
                     }
                 }
             }
-            if(column == 0) {
+            if (column == 0) {
                 builder.append("<td>None</td>");
             }
             builder.append("</tr>");

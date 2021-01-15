@@ -59,7 +59,8 @@ public class JIPipeAnnotation implements Comparable<JIPipeAnnotation> {
      * Automatically collapses the array if it contains only one item.
      * If the array is empty, the value is empty.
      * The array is converted into JSON
-     * @param name the name
+     *
+     * @param name   the name
      * @param values the values
      */
     public JIPipeAnnotation(String name, Collection<String> values) {
@@ -71,7 +72,8 @@ public class JIPipeAnnotation implements Comparable<JIPipeAnnotation> {
      * Automatically collapses the array if it contains only one item.
      * If the array is empty, the value is empty.
      * The array is converted into JSON
-     * @param name the name
+     *
+     * @param name   the name
      * @param values the values
      */
     public JIPipeAnnotation(String name, String[] values) {
@@ -104,6 +106,7 @@ public class JIPipeAnnotation implements Comparable<JIPipeAnnotation> {
 
     /**
      * Returns the value as array or an array with the value if it is not an array.
+     *
      * @return the value inside an array or the value as array
      */
     public String[] getArray() {
@@ -172,6 +175,7 @@ public class JIPipeAnnotation implements Comparable<JIPipeAnnotation> {
 
     /**
      * Returns true if the value is an array
+     *
      * @return if the value is an array
      */
     public boolean isArray() {
@@ -251,6 +255,7 @@ public class JIPipeAnnotation implements Comparable<JIPipeAnnotation> {
 
     /**
      * Converts a set of annotations to a map
+     *
      * @param annotations the annotations
      * @return annotations as map
      */
@@ -264,6 +269,7 @@ public class JIPipeAnnotation implements Comparable<JIPipeAnnotation> {
 
     /**
      * Converts an annotation map to a list
+     *
      * @param map the map
      * @return the annotations
      */

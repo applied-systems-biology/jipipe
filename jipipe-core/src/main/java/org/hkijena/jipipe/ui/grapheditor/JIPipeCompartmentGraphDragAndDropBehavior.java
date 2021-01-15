@@ -13,23 +13,10 @@
 
 package org.hkijena.jipipe.ui.grapheditor;
 
-import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.nodes.JIPipeGraph;
-import org.hkijena.jipipe.extensions.filesystem.datasources.FileDataSource;
-import org.hkijena.jipipe.extensions.filesystem.datasources.FileListDataSource;
-import org.hkijena.jipipe.extensions.filesystem.datasources.FolderDataSource;
-import org.hkijena.jipipe.extensions.filesystem.datasources.FolderListDataSource;
-
-import java.awt.*;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.Transferable;
+import java.awt.Point;
 import java.awt.dnd.DropTargetDragEvent;
 import java.awt.dnd.DropTargetDropEvent;
 import java.awt.dnd.DropTargetEvent;
-import java.io.File;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * Installs Drag and Drop features that create filesystem nodes

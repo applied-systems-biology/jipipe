@@ -533,11 +533,12 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
 
     /**
      * Disconnects two slots
+     *
      * @param source the source
      * @param target the target
      */
     public void disconnectSlot(JIPipeDataSlot source, JIPipeDataSlot target) {
-        if(getGraph().getGraph().containsEdge(source, target)) {
+        if (getGraph().getGraph().containsEdge(source, target)) {
             JIPipeGraphHistory graphHistory = nodeUI.getGraphUI().getGraphHistory();
             graphHistory.addSnapshotBefore(new EdgeDisconnectGraphHistorySnapshot(getGraph(), Collections.singleton(source), target));
             getGraph().disconnect(source, target, true);

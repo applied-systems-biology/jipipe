@@ -115,17 +115,15 @@ public class JIPipeConnectionDragAndDropBehavior implements DropTargetListener, 
             return;
         if (firstSlot.isInput() != secondSlot.isInput()) {
             if (firstSlot.isInput()) {
-                if(!graph.getGraph().containsEdge(secondSlot, firstSlot)) {
+                if (!graph.getGraph().containsEdge(secondSlot, firstSlot)) {
                     slotUI.connectSlot(secondSlot, firstSlot);
-                }
-                else {
+                } else {
                     slotUI.disconnectSlot(secondSlot, firstSlot);
                 }
             } else {
-                if(!graph.getGraph().containsEdge(firstSlot, secondSlot)) {
+                if (!graph.getGraph().containsEdge(firstSlot, secondSlot)) {
                     slotUI.connectSlot(firstSlot, secondSlot);
-                }
-                else {
+                } else {
                     slotUI.disconnectSlot(firstSlot, secondSlot);
                 }
             }

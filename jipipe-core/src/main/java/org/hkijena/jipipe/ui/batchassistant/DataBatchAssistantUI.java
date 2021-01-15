@@ -76,7 +76,7 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
     public DataBatchAssistantUI(JIPipeProjectWorkbench workbenchUI, JIPipeGraphNode algorithm, Runnable runTestBench) {
         super(workbenchUI);
         this.algorithm = (JIPipeAlgorithm) algorithm;
-        this.batchSettings = ((JIPipeDataBatchAlgorithm)algorithm).getGenerationSettingsInterface();
+        this.batchSettings = ((JIPipeDataBatchAlgorithm) algorithm).getGenerationSettingsInterface();
         this.runTestBench = runTestBench;
         this.scrollToBeginTimer.setRepeats(false);
         initialize();
@@ -158,7 +158,7 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
         autoRefreshButton.setSelected(autoRefresh);
         autoRefreshButton.addActionListener(e -> {
             autoRefresh = autoRefreshButton.isSelected();
-            if(autoRefresh)
+            if (autoRefresh)
                 refreshBatchPreview();
         });
         toolBar.add(autoRefreshButton);
@@ -331,7 +331,7 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
 
     @Subscribe
     public void onParameterChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
-        if(event.getSource() == batchSettings && autoRefresh) {
+        if (event.getSource() == batchSettings && autoRefresh) {
             refreshBatchPreview();
         }
     }

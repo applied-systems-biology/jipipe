@@ -18,7 +18,11 @@ import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyNullPointerException;
-import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
+import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.parameters.pairs.PairParameterSettings;
@@ -65,8 +69,8 @@ public class RenameTableColumnsToAnnotationAlgorithm extends JIPipeSimpleIterati
         for (StringQueryExpressionAndStringQueryPairParameter renamingEntry : renamingEntries) {
             String oldName = renamingEntry.getKey().queryFirst(input.getColumnNames());
             String newName = renamingEntry.getValue().queryFirst(dataBatch.getAnnotations().keySet());
-            if(oldName == null) {
-                if(ignoreMissingColumns)
+            if (oldName == null) {
+                if (ignoreMissingColumns)
                     continue;
                 throw new UserFriendlyNullPointerException("Could not find column matching '" + renamingEntry.getKey() + "'",
                         "Could not find column!",
@@ -74,8 +78,8 @@ public class RenameTableColumnsToAnnotationAlgorithm extends JIPipeSimpleIterati
                         "You tried to rename a column '" + renamingEntry.getKey() + "', but it was not found.",
                         "Please check if the table '" + input + "' contains the column.");
             }
-            if(newName == null) {
-                if(ignoreMissingAnnotations)
+            if (newName == null) {
+                if (ignoreMissingAnnotations)
                     continue;
                 throw new UserFriendlyNullPointerException("Could not find annotation matching '" + renamingEntry.getValue() + "'",
                         "Could not find annotation!",

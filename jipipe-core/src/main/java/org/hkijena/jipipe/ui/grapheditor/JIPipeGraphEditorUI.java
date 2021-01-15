@@ -231,7 +231,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
             menuBar.add(extension);
         }
 
-        if(!graphEditorToolBarButtonExtensions.isEmpty())
+        if (!graphEditorToolBarButtonExtensions.isEmpty())
             menuBar.add(new JSeparator(JSeparator.VERTICAL));
 
         JButton undoButton = new JButton(UIUtils.getIconFromResources("actions/undo.png"));

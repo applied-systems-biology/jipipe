@@ -41,9 +41,9 @@ import java.util.Map;
  */
 public class JIPipeAlgorithmCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
     private final JIPipeGraphNode graphNode;
+    private final JToolBar toolBar = new JToolBar();
     private JSplitPane splitPane;
     private JIPipeAlgorithmCacheTree tree;
-    private final JToolBar toolBar = new JToolBar();
 
     /**
      * @param workbenchUI the workbench

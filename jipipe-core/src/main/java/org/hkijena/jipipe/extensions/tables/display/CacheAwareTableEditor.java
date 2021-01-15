@@ -29,7 +29,6 @@ import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.AlwaysOnTopToggle;
 import org.hkijena.jipipe.ui.tableanalyzer.JIPipeTableEditor;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.jgrapht.alg.util.ToleranceDoubleComparator;
 
 import javax.swing.*;
 import java.awt.Window;
@@ -71,7 +70,7 @@ public class CacheAwareTableEditor extends JIPipeTableEditor {
 
     private void loadDataFromDataSource() {
         JIPipeVirtualData virtualData = dataSource.getSlot().getVirtualData(dataSource.getRow());
-        if(virtualData == lastVirtualData)
+        if (virtualData == lastVirtualData)
             return;
         ResultsTableData data = dataSource.getSlot().getData(dataSource.getRow(), ResultsTableData.class, new JIPipeProgressInfo());
         ResultsTableData duplicate = (ResultsTableData) data.duplicate();

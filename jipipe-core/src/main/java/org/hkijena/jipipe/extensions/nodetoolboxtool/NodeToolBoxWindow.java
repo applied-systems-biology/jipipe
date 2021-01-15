@@ -2,9 +2,7 @@ package org.hkijena.jipipe.extensions.nodetoolboxtool;
 
 import com.google.common.html.HtmlEscapers;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.compat.SingleImageJAlgorithmRun;
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
@@ -13,19 +11,16 @@ import org.hkijena.jipipe.ui.components.JIPipeNodeInfoListCellRenderer;
 import org.hkijena.jipipe.ui.components.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.MarkdownReader;
 import org.hkijena.jipipe.ui.components.SearchTextField;
-import org.hkijena.jipipe.ui.grapheditor.JIPipeNodeUI;
 import org.hkijena.jipipe.utils.RankedData;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Cursor;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.util.Comparator;
 import java.util.List;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 public class NodeToolBoxWindow extends JFrame {
 
@@ -38,16 +33,6 @@ public class NodeToolBoxWindow extends JFrame {
         setAlwaysOnTop(true);
         initialize();
         reloadAlgorithmList();
-    }
-
-    public static NodeToolBoxWindow openNewToolBox() {
-        NodeToolBoxWindow window = new NodeToolBoxWindow();
-        window.setTitle("Available nodes");
-        window.setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
-        window.pack();
-        window.setSize(300,700);
-        window.setVisible(true);
-        return window;
     }
 
     private void initialize() {
@@ -104,7 +89,7 @@ public class NodeToolBoxWindow extends JFrame {
     }
 
     private void selectNodeInfo(JIPipeNodeInfo info) {
-        if(info != null) {
+        if (info != null) {
             StringBuilder builder = new StringBuilder();
             builder.append("# ").append(info.getName()).append("\n\n");
             // Write algorithm slot info
@@ -143,16 +128,25 @@ public class NodeToolBoxWindow extends JFrame {
 
 
             documentationReader.setDocument(new MarkdownDocument(builder.toString()));
-        }
-        else
+        } else
             documentationReader.setDocument(new MarkdownDocument(""));
     }
 
     private List<JIPipeNodeInfo> getFilteredAndSortedInfos() {
-        return RankedData.getSortedAndFilteredData( JIPipe.getNodes().getRegisteredNodeInfos().values(),
+        return RankedData.getSortedAndFilteredData(JIPipe.getNodes().getRegisteredNodeInfos().values(),
                 JIPipeNodeInfo::getName,
                 NodeToolBoxWindow::rankNavigationEntry,
                 searchField.getSearchStrings());
+    }
+
+    public static NodeToolBoxWindow openNewToolBox() {
+        NodeToolBoxWindow window = new NodeToolBoxWindow();
+        window.setTitle("Available nodes");
+        window.setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
+        window.pack();
+        window.setSize(300, 700);
+        window.setVisible(true);
+        return window;
     }
 
     private static int[] rankNavigationEntry(JIPipeNodeInfo info, String[] searchStrings) {

@@ -17,7 +17,6 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
-import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -53,7 +52,7 @@ public class RemoveNAAnnotationColumnsAlgorithm extends JIPipeParameterSlotAlgor
         Set<String> toRemove = annotationNameFilter.queryAll(getFirstInputSlot().getAnnotationColumns()).stream().filter(columnName -> {
             for (int row = 0; row < getFirstInputSlot().getRowCount(); row++) {
                 JIPipeAnnotation existing = getFirstInputSlot().getAnnotationOr(row, columnName, null);
-                if(existing == null)
+                if (existing == null)
                     return true;
             }
             return false;

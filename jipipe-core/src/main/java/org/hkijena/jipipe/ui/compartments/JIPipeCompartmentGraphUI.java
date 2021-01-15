@@ -27,7 +27,10 @@ import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.components.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.MarkdownReader;
-import org.hkijena.jipipe.ui.grapheditor.*;
+import org.hkijena.jipipe.ui.grapheditor.JIPipeCompartmentGraphDragAndDropBehavior;
+import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphCanvasUI;
+import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphEditorMinimap;
+import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphEditorUI;
 import org.hkijena.jipipe.ui.grapheditor.contextmenu.DeleteCompartmentUIContextAction;
 import org.hkijena.jipipe.ui.grapheditor.contextmenu.ExportCompartmentAsJsonNodeUIContextAction;
 import org.hkijena.jipipe.ui.grapheditor.contextmenu.ExportCompartmentToNodeUIContextAction;
@@ -90,7 +93,7 @@ public class JIPipeCompartmentGraphUI extends JIPipeGraphEditorUI {
                 .filter(NodeUIContextAction::showInCompartmentGraph)
                 .sorted(Comparator.comparing(NodeUIContextAction::getName))
                 .collect(Collectors.toList());
-        if(!registeredEntries.isEmpty()) {
+        if (!registeredEntries.isEmpty()) {
             actions.add(NodeUIContextAction.SEPARATOR);
             actions.addAll(registeredEntries);
         }

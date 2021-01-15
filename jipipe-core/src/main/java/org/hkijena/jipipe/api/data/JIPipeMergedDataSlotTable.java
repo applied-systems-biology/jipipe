@@ -96,7 +96,7 @@ public class JIPipeMergedDataSlotTable implements TableModel {
 
     @Override
     public int getColumnCount() {
-        if(withCompartmentAndAlgorithm)
+        if (withCompartmentAndAlgorithm)
             return traitColumns.size() + 6;
         else
             return traitColumns.size() + 4;
@@ -104,7 +104,7 @@ public class JIPipeMergedDataSlotTable implements TableModel {
 
     @Override
     public String getColumnName(int columnIndex) {
-        if(withCompartmentAndAlgorithm) {
+        if (withCompartmentAndAlgorithm) {
             if (columnIndex == 0)
                 return "Compartment";
             else if (columnIndex == 1)
@@ -119,8 +119,7 @@ public class JIPipeMergedDataSlotTable implements TableModel {
                 return "String representation";
             else
                 return traitColumns.get(columnIndex - 6);
-        }
-        else {
+        } else {
             if (columnIndex == 0)
                 return "Index";
             else if (columnIndex == 1)
@@ -136,7 +135,7 @@ public class JIPipeMergedDataSlotTable implements TableModel {
 
     @Override
     public Class<?> getColumnClass(int columnIndex) {
-        if(withCompartmentAndAlgorithm) {
+        if (withCompartmentAndAlgorithm) {
             if (columnIndex == 0)
                 return JIPipeProjectCompartment.class;
             else if (columnIndex == 1)
@@ -151,8 +150,7 @@ public class JIPipeMergedDataSlotTable implements TableModel {
                 return String.class;
             else
                 return JIPipeAnnotation.class;
-        }
-        else {
+        } else {
             if (columnIndex == 0)
                 return Integer.class;
             else if (columnIndex == 1)
@@ -177,7 +175,7 @@ public class JIPipeMergedDataSlotTable implements TableModel {
 
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
-        if(withCompartmentAndAlgorithm) {
+        if (withCompartmentAndAlgorithm) {
             if (columnIndex == 0)
                 return compartmentList.get(rowIndex);
             else if (columnIndex == 1)
@@ -206,8 +204,7 @@ public class JIPipeMergedDataSlotTable implements TableModel {
                 JIPipeDataSlot slot = slotList.get(rowIndex);
                 return slot.getAnnotationOr(rowList.get(rowIndex), traitColumn, null);
             }
-        }
-        else {
+        } else {
             if (columnIndex == 0)
                 return rowList.get(rowIndex);
             else if (columnIndex == 1)

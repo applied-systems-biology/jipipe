@@ -52,9 +52,34 @@ public class AlgorithmGraphPasteNodeUIContextAction implements NodeUIContextActi
         }
     }
 
+    @Override
+    public String getName() {
+        return "Paste";
+    }
+
+    @Override
+    public String getDescription() {
+        return "Copies nodes from clipboard into the current graph";
+    }
+
+    @Override
+    public Icon getIcon() {
+        return UIUtils.getIconFromResources("actions/edit-paste.png");
+    }
+
+    @Override
+    public boolean isShowingInOverhang() {
+        return false;
+    }
+
+    @Override
+    public KeyStroke getKeyboardShortcut() {
+        return KeyStroke.getKeyStroke(KeyEvent.VK_V, InputEvent.CTRL_MASK, true);
+    }
+
     public static void pasteNodes(JIPipeGraphCanvasUI canvasUI, String json) throws com.fasterxml.jackson.core.JsonProcessingException {
         JIPipeGraph graph = JsonUtils.getObjectMapper().readValue(json, JIPipeGraph.class);
-        if(graph.getNodes().isEmpty()) {
+        if (graph.getNodes().isEmpty()) {
             throw new NullPointerException("Empty graph pasted.");
         }
 
@@ -103,30 +128,5 @@ public class AlgorithmGraphPasteNodeUIContextAction implements NodeUIContextActi
         canvasUI.getGraphHistory().addSnapshotBefore(new PasteNodeGraphHistorySnapshot(canvasUI.getGraph(),
                 new HashSet<>(graph.getNodes().values())));
         canvasUI.getGraph().mergeWith(graph);
-    }
-
-    @Override
-    public String getName() {
-        return "Paste";
-    }
-
-    @Override
-    public String getDescription() {
-        return "Copies nodes from clipboard into the current graph";
-    }
-
-    @Override
-    public Icon getIcon() {
-        return UIUtils.getIconFromResources("actions/edit-paste.png");
-    }
-
-    @Override
-    public boolean isShowingInOverhang() {
-        return false;
-    }
-
-    @Override
-    public KeyStroke getKeyboardShortcut() {
-        return KeyStroke.getKeyStroke(KeyEvent.VK_V, InputEvent.CTRL_MASK, true);
     }
 }

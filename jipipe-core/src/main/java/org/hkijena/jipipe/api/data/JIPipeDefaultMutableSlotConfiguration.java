@@ -200,9 +200,10 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
 
     /**
      * Adds a new input slot
-     * @param name the name
+     *
+     * @param name      the name
      * @param dataClass the data type
-     * @param user if the user triggered this
+     * @param user      if the user triggered this
      * @return the slot info
      */
     public JIPipeDataSlotInfo addInputSlot(String name, Class<? extends JIPipeData> dataClass, boolean user) {
@@ -212,10 +213,11 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
 
     /**
      * Adds a new input slot
-     * @param name the name
+     *
+     * @param name      the name
      * @param dataClass the data type
      * @param inherited inherited slot can be null or '*' or the slot name
-     * @param user if the user triggered this
+     * @param user      if the user triggered this
      * @return the slot info
      */
     public JIPipeDataSlotInfo addOutputSlot(String name, Class<? extends JIPipeData> dataClass, String inherited, boolean user) {

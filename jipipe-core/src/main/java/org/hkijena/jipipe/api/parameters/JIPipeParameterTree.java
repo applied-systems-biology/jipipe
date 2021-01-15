@@ -183,7 +183,7 @@ public class JIPipeParameterTree implements JIPipeParameterCollection, JIPipeCus
             JIPipeContextAction actionAnnotation = method.getAnnotation(JIPipeContextAction.class);
             if (actionAnnotation == null)
                 continue;
-            if(!actionAnnotation.showInParameters())
+            if (!actionAnnotation.showInParameters())
                 continue;
             JIPipeDocumentation documentationAnnotation = method.getAnnotation(JIPipeDocumentation.class);
             if (documentationAnnotation == null) {

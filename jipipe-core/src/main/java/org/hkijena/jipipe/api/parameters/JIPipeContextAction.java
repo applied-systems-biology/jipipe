@@ -36,12 +36,14 @@ public @interface JIPipeContextAction {
 
     /**
      * Determines if the context action is shown as button in the parameters
+     *
      * @return if the action is shown in the parameters
      */
     boolean showInParameters() default true;
 
     /**
      * Determines if the context action is shown in the context menu
+     *
      * @return if the action is shown in the context menu
      */
     boolean showInContextMenu() default true;

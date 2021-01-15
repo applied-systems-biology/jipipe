@@ -56,7 +56,7 @@ public class JIPipeCacheStateTreeCellRenderer extends JLabel implements TreeCell
             } else if (userObject instanceof JIPipeDataSlot) {
                 JIPipeDataSlot slot = (JIPipeDataSlot) userObject;
                 setIcon(JIPipe.getDataTypes().getIconFor(slot.getAcceptedDataType()));
-                if(!StringUtils.isNullOrEmpty(slot.getInfo().getCustomName()))
+                if (!StringUtils.isNullOrEmpty(slot.getInfo().getCustomName()))
                     setText(slot.getInfo().getCustomName() + " [" + slot.getName() + "]");
                 else
                     setText(slot.getName());

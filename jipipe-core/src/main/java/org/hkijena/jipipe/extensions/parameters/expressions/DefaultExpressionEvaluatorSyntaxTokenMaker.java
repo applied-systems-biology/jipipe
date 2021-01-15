@@ -24,7 +24,6 @@ import org.fife.ui.rsyntaxtextarea.TokenMap;
 import javax.swing.text.Segment;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -73,8 +72,8 @@ public class DefaultExpressionEvaluatorSyntaxTokenMaker extends AbstractTokenMak
         int currentTokenStart = offset;
 
         for (int index = offset; index < end; index++) {
-            char c =array[index];
-            if(isEscape && index == lastEscapeIndex + 2) {
+            char c = array[index];
+            if (isEscape && index == lastEscapeIndex + 2) {
                 isEscape = false;
             }
             if (c == '\\' && !isEscape) {

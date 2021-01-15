@@ -25,12 +25,18 @@ import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.parameters.expressions.StringQueryExpression;
-import org.hkijena.jipipe.extensions.tables.datatypes.TableColumnNormalization;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.extensions.tables.datatypes.TableColumn;
+import org.hkijena.jipipe.extensions.tables.datatypes.TableColumnNormalization;
 import org.hkijena.jipipe.utils.StringUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.hkijena.jipipe.api.nodes.JIPipeMergingAlgorithm.MERGING_ALGORITHM_DESCRIPTION;
@@ -92,12 +98,12 @@ public class MergeTableColumnsAlgorithm extends JIPipeMergingAlgorithm {
         Set<String> mergedColumns = new HashSet<>();
         Map<String, List<TableColumn>> groups = columnList.stream().collect(Collectors.groupingBy(TableColumn::getLabel));
         for (Map.Entry<String, List<TableColumn>> entry : groups.entrySet()) {
-            if(entry.getValue().size() > 1 && this.mergedColumns.test(entry.getKey())) {
+            if (entry.getValue().size() > 1 && this.mergedColumns.test(entry.getKey())) {
                 mergedColumns.add(entry.getKey());
             }
         }
 
-        if(mergedColumns.isEmpty()) {
+        if (mergedColumns.isEmpty()) {
             // No merging, we can use the faster and more simple algorithm
             // Normalize to the same number of rows
             columnList = rowNormalization.normalize(columnList);
@@ -110,8 +116,7 @@ public class MergeTableColumnsAlgorithm extends JIPipeMergingAlgorithm {
                 outputData.addColumn(name, column);
             }
             dataBatch.addOutputData(getFirstOutputSlot(), outputData, progressInfo);
-        }
-        else {
+        } else {
             ResultsTableData outputData = new ResultsTableData();
             Map<String, ResultsTableData> conditionTables = new HashMap<>();
             StringBuilder stringBuilder = new StringBuilder();
@@ -123,7 +128,7 @@ public class MergeTableColumnsAlgorithm extends JIPipeMergingAlgorithm {
 
                 // Rename to make columns unique (except merged ones)
                 for (String columnName : ImmutableList.copyOf(uniqueColumnInputTable.getColumnNames())) {
-                    if(mergedColumns.contains(columnName))
+                    if (mergedColumns.contains(columnName))
                         continue;
                     String newName = StringUtils.makeUniqueString(columnName, ".", existing);
                     existing.add(newName);
@@ -135,17 +140,16 @@ public class MergeTableColumnsAlgorithm extends JIPipeMergingAlgorithm {
                     for (String mergedColumn : mergedColumns) {
                         stringBuilder.append("\n");
                         int col = uniqueColumnInputTable.getColumnIndex(mergedColumn);
-                        if(col >= 0)
+                        if (col >= 0)
                             stringBuilder.append(uniqueColumnInputTable.getValueAt(row, col));
                     }
                     String condition = stringBuilder.toString();
 
                     ResultsTableData rowTable = uniqueColumnInputTable.getRow(row);
                     ResultsTableData mergedRowTable = conditionTables.getOrDefault(condition, null);
-                    if(mergedRowTable == null) {
+                    if (mergedRowTable == null) {
                         conditionTables.put(condition, rowTable);
-                    }
-                    else {
+                    } else {
                         rowTable.removeColumns(mergedColumns);
                         mergedRowTable.addColumns(Collections.singleton(rowTable), true, rowNormalization);
                     }

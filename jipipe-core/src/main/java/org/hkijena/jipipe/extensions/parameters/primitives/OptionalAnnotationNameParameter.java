@@ -45,6 +45,7 @@ public class OptionalAnnotationNameParameter extends OptionalStringParameter imp
 
     /**
      * Creates a new annotation with the defined name and value
+     *
      * @param value the value of the annotation
      * @return annotation
      */
@@ -54,6 +55,7 @@ public class OptionalAnnotationNameParameter extends OptionalStringParameter imp
 
     /**
      * Creates a new annotation with the defined name and value
+     *
      * @param values the value of the annotation
      * @return annotation
      */
@@ -63,6 +65,7 @@ public class OptionalAnnotationNameParameter extends OptionalStringParameter imp
 
     /**
      * Creates a new annotation with the defined name and value
+     *
      * @param values the value of the annotation
      * @return annotation
      */
@@ -72,33 +75,36 @@ public class OptionalAnnotationNameParameter extends OptionalStringParameter imp
 
     /**
      * Adds the annotation with given value of the parameter is enabled
+     *
      * @param annotations list of annotations
-     * @param value the value
+     * @param value       the value
      */
     public void addAnnotationIfEnabled(Collection<JIPipeAnnotation> annotations, String value) {
-        if(isEnabled()) {
+        if (isEnabled()) {
             annotations.add(createAnnotation(value));
         }
     }
 
     /**
      * Adds the annotation with given value of the parameter is enabled
+     *
      * @param annotations list of annotations
-     * @param values the value
+     * @param values      the value
      */
     public void addAnnotationIfEnabled(Collection<JIPipeAnnotation> annotations, String[] values) {
-        if(isEnabled()) {
+        if (isEnabled()) {
             annotations.add(createAnnotation(values));
         }
     }
 
     /**
      * Adds the annotation with given value of the parameter is enabled
+     *
      * @param annotations list of annotations
-     * @param values the value
+     * @param values      the value
      */
     public void addAnnotationIfEnabled(Collection<JIPipeAnnotation> annotations, Collection<String> values) {
-        if(isEnabled()) {
+        if (isEnabled()) {
             annotations.add(createAnnotation(values));
         }
     }

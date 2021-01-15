@@ -23,7 +23,6 @@ import org.jfree.chart.renderer.xy.XYBarRenderer;
 import org.jfree.data.statistics.HistogramDataset;
 import org.jfree.data.statistics.HistogramType;
 
-import java.awt.BasicStroke;
 import java.awt.Font;
 import java.nio.file.Path;
 import java.util.HashSet;

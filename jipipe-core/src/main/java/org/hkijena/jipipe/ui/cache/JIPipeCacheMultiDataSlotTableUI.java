@@ -68,8 +68,8 @@ public class JIPipeCacheMultiDataSlotTableUI extends JIPipeProjectWorkbenchPanel
     private SearchTextField searchTextField = new SearchTextField();
 
     /**
-     * @param workbenchUI the workbench UI
-     * @param slots       The slots
+     * @param workbenchUI                 the workbench UI
+     * @param slots                       The slots
      * @param withCompartmentAndAlgorithm
      */
     public JIPipeCacheMultiDataSlotTableUI(JIPipeProjectWorkbench workbenchUI, List<JIPipeDataSlot> slots, boolean withCompartmentAndAlgorithm) {

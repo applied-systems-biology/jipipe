@@ -17,7 +17,6 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
-import org.jfree.chart.plot.PiePlot;
 import org.jfree.chart.plot.PiePlot3D;
 
 import java.awt.Font;
@@ -67,7 +66,7 @@ public class Pie3DPlotData extends PiePlotData {
 
     @JIPipeParameter("label-font-size")
     public boolean setLabelFontSize(int labelFontSize) {
-        if(labelFontSize <= 0)
+        if (labelFontSize <= 0)
             return false;
         this.labelFontSize = labelFontSize;
         return true;

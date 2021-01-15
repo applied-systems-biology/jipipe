@@ -44,27 +44,25 @@ public class ParseJsonFunction extends ExpressionFunction {
     }
 
     private Object parseJson(JsonNode node) {
-        if(node.isBoolean())
+        if (node.isBoolean())
             return node.asBoolean();
-        else if(node.isTextual())
+        else if (node.isTextual())
             return node.asText();
-        else if(node.isNumber())
+        else if (node.isNumber())
             return node.asDouble();
-        else if(node.isArray()) {
+        else if (node.isArray()) {
             List<Object> result = new ArrayList<>();
             for (JsonNode element : ImmutableList.copyOf(node.elements())) {
                 result.add(parseJson(element));
             }
             return result;
-        }
-        else if(node.isObject()) {
+        } else if (node.isObject()) {
             Map<String, Object> result = new HashMap<>();
             for (Map.Entry<String, JsonNode> entry : ImmutableList.copyOf(node.fields())) {
                 result.put(entry.getKey(), parseJson(entry.getValue()));
             }
             return result;
-        }
-        else {
+        } else {
             return null;
         }
     }

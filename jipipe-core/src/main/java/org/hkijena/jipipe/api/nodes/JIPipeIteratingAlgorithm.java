@@ -121,7 +121,7 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
         } else if (getEffectiveInputSlotCount() == 1) {
             dataBatches = new ArrayList<>();
             for (int row = 0; row < getFirstInputSlot().getRowCount(); row++) {
-                if(progressInfo.isCancelled().get())
+                if (progressInfo.isCancelled().get())
                     break;
                 JIPipeDataBatch dataBatch = new JIPipeDataBatch(this);
                 dataBatch.setData(getFirstInputSlot(), row);
@@ -138,7 +138,7 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
                 mergingDataBatches.removeIf(JIPipeMergingDataBatch::isIncomplete);
             } else {
                 for (JIPipeMergingDataBatch batch : mergingDataBatches) {
-                    if(progressInfo.isCancelled().get())
+                    if (progressInfo.isCancelled().get())
                         break;
                     if (batch.isIncomplete()) {
                         throw new UserFriendlyRuntimeException("Incomplete data set found!",

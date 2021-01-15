@@ -94,23 +94,23 @@ public class RoiPropertiesToAnnotationsAlgorithm extends JIPipeSimpleIteratingAl
         List<String> lineWidths = new ArrayList<>();
 
         for (Roi roi : rois) {
-            if(roi.getName() != null)
+            if (roi.getName() != null)
                 names.add(roi.getName());
             xLocations.add(roi.getXBase() + "");
             yLocations.add(roi.getYBase() + "");
             zLocations.add(roi.getZPosition() + "");
             cLocations.add(roi.getCPosition() + "");
             tLocations.add(roi.getTPosition() + "");
-            if(roi.getFillColor() != null)
+            if (roi.getFillColor() != null)
                 fillColors.add(ColorUtils.colorToHexString(roi.getFillColor()));
-            if(roi.getStrokeColor() != null)
+            if (roi.getStrokeColor() != null)
                 fillColors.add(ColorUtils.colorToHexString(roi.getStrokeColor()));
             lineWidths.add(roi.getStrokeWidth() + "");
-            if(onlyFirst)
+            if (onlyFirst)
                 break;
         }
 
-        if(deduplicate) {
+        if (deduplicate) {
             names = new ArrayList<>(new LinkedHashSet<>(names));
             xLocations = new ArrayList<>(new LinkedHashSet<>(xLocations));
             yLocations = new ArrayList<>(new LinkedHashSet<>(yLocations));

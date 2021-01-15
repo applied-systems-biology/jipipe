@@ -17,7 +17,6 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import org.hkijena.jipipe.api.JIPipeProjectCacheState;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
@@ -105,7 +104,7 @@ public class JIPipeAlgorithmCacheTree extends JIPipeProjectWorkbenchPanel {
     }
 
     public void selectNewestState() {
-        if(!stateTreeNodeMap.isEmpty()) {
+        if (!stateTreeNodeMap.isEmpty()) {
             JIPipeProjectCacheState state = stateTreeNodeMap.keySet().stream().max(Comparator.naturalOrder()).get();
             DefaultMutableTreeNode treeNode = stateTreeNodeMap.get(state);
             tree.setSelectionPath(new TreePath(treeNode.getPath()));

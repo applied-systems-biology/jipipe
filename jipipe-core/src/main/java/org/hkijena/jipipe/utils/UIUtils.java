@@ -1038,13 +1038,12 @@ public class UIUtils {
     }
 
     public static void showConnectionErrorMessage(Component parent, JIPipeDataSlot source, JIPipeDataSlot target) {
-        if(!JIPipe.getDataTypes().isConvertible(source.getAcceptedDataType(), target.getAcceptedDataType())) {
+        if (!JIPipe.getDataTypes().isConvertible(source.getAcceptedDataType(), target.getAcceptedDataType())) {
             JOptionPane.showMessageDialog(parent,
                     String.format("Unable to convert data type '%s' to '%s'!\nPlease refer to the data type compendium (top right [?] button) for info about which data types are compatible.", JIPipeDataInfo.getInstance(source.getAcceptedDataType()).getName(), JIPipeDataInfo.getInstance(target.getAcceptedDataType())),
                     "Unable to connect slots",
                     JOptionPane.ERROR_MESSAGE);
-        }
-        else {
+        } else {
             JOptionPane.showMessageDialog(parent,
                     "The connection is not valid. Please check if it a loop/cycle.",
                     "Unable to connect slots",

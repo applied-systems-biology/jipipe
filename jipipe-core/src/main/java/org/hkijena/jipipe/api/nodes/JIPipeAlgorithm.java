@@ -96,6 +96,7 @@ public abstract class JIPipeAlgorithm extends JIPipeGraphNode {
 
     /**
      * Runs the pass through. Override this for custom implementations if you want
+     *
      * @param progressInfo the progress
      */
     protected void runPassThrough(JIPipeProgressInfo progressInfo) {

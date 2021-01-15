@@ -96,7 +96,7 @@ public enum TableColumnNormalization {
         for (TableColumn column : inputColumns) {
             nRow = Math.max(column.getRows(), nRow);
         }
-       return normalize(inputColumns, nRow);
+        return normalize(inputColumns, nRow);
     }
 
     @Override

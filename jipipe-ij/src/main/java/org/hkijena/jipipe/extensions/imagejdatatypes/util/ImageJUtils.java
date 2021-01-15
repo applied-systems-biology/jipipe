@@ -58,23 +58,24 @@ public class ImageJUtils {
 
     /**
      * Rotates the image by a specified amount of degrees to the right
-     * @param img the image
-     * @param degrees the degrees
+     *
+     * @param img          the image
+     * @param degrees      the degrees
      * @param expandCanvas if the canvas should be expanded
-     * @param background the background (if non-90-degree angles)
-     * @param addRoi if the image should be overlaid with ROI indicating the area of the content
+     * @param background   the background (if non-90-degree angles)
+     * @param addRoi       if the image should be overlaid with ROI indicating the area of the content
      * @param progressInfo the progress
      * @return the image
      */
     public static ImagePlus rotate(ImagePlus img, double degrees, boolean expandCanvas, Color background, boolean addRoi, JIPipeProgressInfo progressInfo) {
-        if(degrees == 0)
+        if (degrees == 0)
             return img.duplicate();
-        if(degrees % 90 == 0) {
+        if (degrees % 90 == 0) {
             ImageStack stack;
             int width;
             int height;
-            if(degrees < 0) {
-                int rotations = (int)(degrees) / -90;
+            if (degrees < 0) {
+                int rotations = (int) (degrees) / -90;
                 width = (rotations % 2 == 0) ? img.getWidth() : img.getHeight();
                 height = (rotations % 2 == 0) ? img.getHeight() : img.getWidth();
                 stack = new ImageStack(width, height, img.getStack().getColorModel());
@@ -85,9 +86,8 @@ public class ImageJUtils {
                     }
                     stack.addSlice(processor);
                 }, progressInfo);
-            }
-            else {
-                int rotations = (int)(degrees) / 90;
+            } else {
+                int rotations = (int) (degrees) / 90;
                 width = (rotations % 2 == 0) ? img.getWidth() : img.getHeight();
                 height = (rotations % 2 == 0) ? img.getHeight() : img.getWidth();
                 stack = new ImageStack(width, height, img.getStack().getColorModel());
@@ -100,14 +100,13 @@ public class ImageJUtils {
                 }, progressInfo);
             }
             ImagePlus imagePlus = new ImagePlus(img.getTitle() + "_Rotated" + degrees, stack);
-            if(addRoi)
-                imagePlus.setRoi(new Rectangle(0,0,width, height));
+            if (addRoi)
+                imagePlus.setRoi(new Rectangle(0, 0, width, height));
             imagePlus.setDimensions(img.getNChannels(), img.getNSlices(), img.getNFrames());
             return imagePlus;
-        }
-        else {
+        } else {
             // Find the ROI and canvas size
-            Rectangle originalRoi = new Rectangle(0,0,img.getWidth(), img.getHeight());
+            Rectangle originalRoi = new Rectangle(0, 0, img.getWidth(), img.getHeight());
             Rectangle rotatedBoundingRectangle;
             PolygonRoi roi;
             {
@@ -119,12 +118,12 @@ public class ImageJUtils {
                 double[] coords = new double[2];
                 TIntList xCoords = new TIntArrayList();
                 TIntList yCoords = new TIntArrayList();
-                while(!pathIterator.isDone()) {
+                while (!pathIterator.isDone()) {
                     pathIterator.currentSegment(coords);
                     pathIterator.next();
                     int x = (int) coords[0];
                     int y = (int) coords[1];
-                    if(expandCanvas) {
+                    if (expandCanvas) {
                         x -= rotatedBoundingRectangle.x;
                         y -= rotatedBoundingRectangle.y;
                     }
@@ -133,7 +132,7 @@ public class ImageJUtils {
                 }
                 roi = new PolygonRoi(xCoords.toArray(), yCoords.toArray(), xCoords.size(), PolygonRoi.POLYGON);
             }
-            if(expandCanvas) {
+            if (expandCanvas) {
                 System.out.println(rotatedBoundingRectangle);
                 int newWidth = rotatedBoundingRectangle.width;
                 int newHeight = rotatedBoundingRectangle.height;
@@ -146,11 +145,10 @@ public class ImageJUtils {
                     ip.fillOutside(roi);
                 }, progressInfo);
                 imagePlus.setTitle(img.getTitle() + "_Rotated" + degrees);
-                if(addRoi)
+                if (addRoi)
                     imagePlus.setRoi(roi);
                 return imagePlus;
-            }
-            else {
+            } else {
                 ImagePlus imagePlus = img.duplicate();
                 forEachSlice(imagePlus, ip -> {
                     ip.setColor(background);
@@ -158,7 +156,7 @@ public class ImageJUtils {
                     ip.fillOutside(roi);
                 }, progressInfo);
                 imagePlus.setTitle(img.getTitle() + "_Rotated" + degrees);
-                if(addRoi)
+                if (addRoi)
                     imagePlus.setRoi(roi);
                 return imagePlus;
             }
@@ -167,6 +165,7 @@ public class ImageJUtils {
 
     /**
      * Runs the function for each slice
+     *
      * @param img          the image
      * @param function     the function
      * @param progressInfo the progress
@@ -256,7 +255,8 @@ public class ImageJUtils {
 
     /**
      * Runs the function for each slice
-     *  @param img          the image
+     *
+     * @param img          the image
      * @param function     the function
      * @param progressInfo the progress
      */
@@ -274,7 +274,8 @@ public class ImageJUtils {
 
     /**
      * Runs the function for each Z, C, and T slice.
-     *  @param img          the image
+     *
+     * @param img          the image
      * @param function     the function. The indices are one-based
      * @param progressInfo the progress
      */
@@ -300,6 +301,7 @@ public class ImageJUtils {
      * Runs the function for each Z and T slice.
      * The function consumes a map from channel index to the channel slice.
      * The slice index channel is always set to -1
+     *
      * @param img          the image
      * @param function     the function
      * @param progressInfo the progress
@@ -620,11 +622,12 @@ public class ImageJUtils {
 
     /**
      * Expands the canvas of an image
-     * @param imp the image
+     *
+     * @param imp             the image
      * @param backgroundColor the background color
-     * @param newWidth the new width
-     * @param newHeight the new height
-     * @param anchor the anchor that determines where to expand from
+     * @param newWidth        the new width
+     * @param newHeight       the new height
+     * @param anchor          the anchor that determines where to expand from
      * @return expanded image
      */
     public static ImagePlus expandImageCanvas(ImagePlus imp, Color backgroundColor, int newWidth, int newHeight, Anchor anchor) {
@@ -687,28 +690,29 @@ public class ImageJUtils {
 
     /**
      * Converts this image to the same type as the other one if needed
+     *
      * @param reference the other image
      * @param doScaling apply scaling for greyscale conversions
      */
     public static ImagePlus convertToSameTypeIfNeeded(ImagePlus image, ImagePlus reference, boolean doScaling) {
-       if(reference.getType() != image.getType()) {
-           image = image.duplicate();
-           ImageConverter converter = new ImageConverter(image);
-           ImageConverter.setDoScaling(doScaling);
-           if(reference.getType() == ImagePlus.GRAY8)
-               converter.convertToGray8();
-           else if(reference.getType() == ImagePlus.GRAY16)
-               converter.convertToGray16();
-           else if(reference.getType() == ImagePlus.GRAY32)
-               converter.convertToGray32();
-           else if(reference.getType() == ImagePlus.COLOR_RGB)
-               converter.convertToRGB();
-           else if(reference.getType() == ImagePlus.COLOR_256) {
-               converter.convertToRGB();
-               converter.convertRGBtoIndexedColor(256);
-           }
-       }
-       return image;
+        if (reference.getType() != image.getType()) {
+            image = image.duplicate();
+            ImageConverter converter = new ImageConverter(image);
+            ImageConverter.setDoScaling(doScaling);
+            if (reference.getType() == ImagePlus.GRAY8)
+                converter.convertToGray8();
+            else if (reference.getType() == ImagePlus.GRAY16)
+                converter.convertToGray16();
+            else if (reference.getType() == ImagePlus.GRAY32)
+                converter.convertToGray32();
+            else if (reference.getType() == ImagePlus.COLOR_RGB)
+                converter.convertToRGB();
+            else if (reference.getType() == ImagePlus.COLOR_256) {
+                converter.convertToRGB();
+                converter.convertRGBtoIndexedColor(256);
+            }
+        }
+        return image;
     }
 
     public static class GradientStop implements Comparable<GradientStop> {

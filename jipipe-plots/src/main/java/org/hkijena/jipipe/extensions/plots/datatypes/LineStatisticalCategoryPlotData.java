@@ -20,7 +20,6 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.renderer.AbstractRenderer;
 import org.jfree.chart.renderer.category.CategoryItemRenderer;
 import org.jfree.chart.renderer.category.StatisticalLineAndShapeRenderer;
-import org.jfree.chart.renderer.xy.XYItemRenderer;
 
 import java.awt.BasicStroke;
 import java.awt.Font;

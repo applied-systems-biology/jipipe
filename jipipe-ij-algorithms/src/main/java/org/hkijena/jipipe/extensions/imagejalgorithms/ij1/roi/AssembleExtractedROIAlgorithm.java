@@ -86,23 +86,23 @@ public class AssembleExtractedROIAlgorithm extends JIPipeMergingAlgorithm {
                 int z = 0;
                 int c = 0;
                 int t = 0;
-                if(annotationZ.isEnabled())
+                if (annotationZ.isEnabled())
                     z = NumberUtils.createDouble(annotationMap.get(annotationZ.getContent())).intValue();
-                if(annotationC.isEnabled())
+                if (annotationC.isEnabled())
                     c = NumberUtils.createDouble(annotationMap.get(annotationC.getContent())).intValue();
-                if(annotationT.isEnabled())
+                if (annotationT.isEnabled())
                     t = NumberUtils.createDouble(annotationMap.get(annotationT.getContent())).intValue();
                 int finalZ = z;
                 int finalC = c;
                 int finalT = t;
-                Rectangle bounds = xyAnchor.getRectangle(new Point(x,y), roiImage.getImage().getWidth(), roiImage.getImage().getHeight());
+                Rectangle bounds = xyAnchor.getRectangle(new Point(x, y), roiImage.getImage().getWidth(), roiImage.getImage().getHeight());
                 ImageProcessor roiProcessor = convertedRoiImage.getProcessor();
                 ImageJUtils.forEachIndexedZCTSlice(targetImage.getImage(), (processor, index) -> {
-                    if(finalZ != 0 && finalZ != index.getZ())
+                    if (finalZ != 0 && finalZ != index.getZ())
                         return;
-                    if(finalC != 0 && finalC != index.getC())
+                    if (finalC != 0 && finalC != index.getC())
                         return;
-                    if(finalT != 0 && finalT != index.getT())
+                    if (finalT != 0 && finalT != index.getT())
                         return;
                     processor.setColor(Color.WHITE);
                     processor.setRoi(bounds);

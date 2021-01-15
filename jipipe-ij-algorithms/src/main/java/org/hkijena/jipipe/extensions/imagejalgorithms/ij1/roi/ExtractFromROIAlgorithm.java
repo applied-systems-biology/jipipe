@@ -87,16 +87,15 @@ public class ExtractFromROIAlgorithm extends JIPipeIteratingAlgorithm {
         ImageJUtils.forEachIndexedZCTSlice(image.getImage(), (processor, index) -> {
             ImageSliceIndex zeroBasedIndex = index.add(-1);
             for (Roi roi : rois) {
-                if(ROIListData.isVisibleIn(roi, zeroBasedIndex, false, false, false)) {
+                if (ROIListData.isVisibleIn(roi, zeroBasedIndex, false, false, false)) {
                     ImageProcessor resultProcessor;
-                    if(outsideColor.isEnabled()) {
+                    if (outsideColor.isEnabled()) {
                         resultProcessor = processor.duplicate();
                         resultProcessor.setColor(outsideColor.getContent());
                         resultProcessor.fillOutside(roi);
                         resultProcessor.setRoi(roi);
                         resultProcessor = resultProcessor.crop();
-                    }
-                    else {
+                    } else {
                         processor.setRoi(roi);
                         resultProcessor = processor.crop();
                         processor.setRoi((Roi) null);

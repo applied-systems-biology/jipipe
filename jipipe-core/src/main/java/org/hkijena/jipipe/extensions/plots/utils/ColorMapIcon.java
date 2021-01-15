@@ -34,10 +34,10 @@ public class ColorMapIcon implements Icon {
     public void paintIcon(Component c, Graphics g, int x, int y) {
         Graphics2D g2 = (Graphics2D) g;
         int rw = width;
-        int step = (int)Math.ceil(1.0 * width / colorMap.getColors().length);
+        int step = (int) Math.ceil(1.0 * width / colorMap.getColors().length);
         int cx = x;
         int i = 0;
-        while(rw > 0) {
+        while (rw > 0) {
             int w = Math.min(step, rw);
             g2.setPaint(colorMap.getColors()[i]);
             g2.fillRect(cx, y, w, height);

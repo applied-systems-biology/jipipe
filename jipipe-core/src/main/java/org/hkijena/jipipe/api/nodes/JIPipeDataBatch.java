@@ -61,6 +61,7 @@ public class JIPipeDataBatch {
 
     /**
      * Gets the original annotations of given slot
+     *
      * @param slot the slot
      * @return the annotations
      */
@@ -70,6 +71,7 @@ public class JIPipeDataBatch {
 
     /**
      * Gets the original annotations of given slot
+     *
      * @param slotName the slot
      * @return the annotations
      */

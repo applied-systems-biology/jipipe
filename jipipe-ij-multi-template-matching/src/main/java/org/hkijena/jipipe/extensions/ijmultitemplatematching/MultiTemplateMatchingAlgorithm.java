@@ -163,7 +163,7 @@ public class MultiTemplateMatchingAlgorithm extends JIPipeMergingAlgorithm {
             dataBatch.addOutputData("ROI", new ROIListData(roiManager), progressInfo);
             dataBatch.addOutputData("Measurements", measurements, progressInfo);
 
-            if(assembleTemplates) {
+            if (assembleTemplates) {
                 ImagePlus assembled = assembleTemplates(image, templates, measurements, progressInfo.resolveAndLog("Assemble templates", i, images.size()));
                 dataBatch.addOutputData("Assembled templates", new ImagePlusData(assembled), progressInfo);
             }
@@ -174,31 +174,29 @@ public class MultiTemplateMatchingAlgorithm extends JIPipeMergingAlgorithm {
     private ImagePlus assembleTemplates(ImagePlus original, List<ImagePlus> templates, ResultsTableData measurements, JIPipeProgressInfo progressInfo) {
         // Create a target image of the appropriate type
         ImagePlus target;
-        if(assembleTemplatesOutput.isEnabled()) {
+        if (assembleTemplatesOutput.isEnabled()) {
             ImagePlusData data = (ImagePlusData) JIPipe.createData(assembleTemplatesOutput.getContent().getInfo().getDataClass(), original);
-            if(data.getImage() == original)
+            if (data.getImage() == original)
                 target = data.getDuplicateImage();
             else
                 target = data.getImage();
-        }
-        else {
+        } else {
             target = original.duplicate();
         }
 
         // Fill with color if requested
         target = ImageJUtils.channelsToRGB(target);
-        if(assembleTemplatesBackground.isEnabled()) {
-            if(target.getType() == ImagePlus.COLOR_RGB) {
+        if (assembleTemplatesBackground.isEnabled()) {
+            if (target.getType() == ImagePlus.COLOR_RGB) {
                 Color color = assembleTemplatesBackground.getContent();
                 ImageJUtils.forEachSlice(target, ip -> {
                     ColorProcessor colorProcessor = (ColorProcessor) ip;
-                    ip.setRoi(0,0,ip.getWidth(), ip.getHeight());
+                    ip.setRoi(0, 0, ip.getWidth(), ip.getHeight());
                     colorProcessor.setColor(color);
                     ip.fill();
-                    ip.setRoi((Roi)null);
+                    ip.setRoi((Roi) null);
                 }, progressInfo);
-            }
-            else {
+            } else {
                 Color color = assembleTemplatesBackground.getContent();
                 double value = (color.getRed() + color.getGreen() + color.getBlue()) / 3.0;
                 ImageJUtils.forEachSlice(target, ip -> ip.set(value), progressInfo);
@@ -213,40 +211,40 @@ public class MultiTemplateMatchingAlgorithm extends JIPipeMergingAlgorithm {
             boolean horizontalFlip = templateName.contains("Horizontal_Flip");
             int rotation = 0;
             for (String s : templateName.split("_")) {
-                if(s.endsWith("degrees")) {
+                if (s.endsWith("degrees")) {
                     rotation = Integer.parseInt(s.substring(0, s.indexOf("degrees")));
                 }
             }
             int templateIndex = Integer.parseInt(templateName.split("_")[0]);
             ImagePlus template = templates.get(templateIndex).duplicate();
             ImageProcessor templateProcessor = template.getProcessor();
-            if(verticalFlip)
+            if (verticalFlip)
                 templateProcessor.flipVertical();
-            if(horizontalFlip)
+            if (horizontalFlip)
                 templateProcessor.flipHorizontal();
-            if(rotation != 0) {
-               template = ImageJUtils.rotate(template, rotation, true, Color.BLACK, true, progressInfo);
-               templateProcessor = template.getProcessor();
+            if (rotation != 0) {
+                template = ImageJUtils.rotate(template, rotation, true, Color.BLACK, true, progressInfo);
+                templateProcessor = template.getProcessor();
             }
-            if(template.getRoi() == null) {
-                template.setRoi(new Rectangle(0,0,template.getWidth(), template.getHeight()));
+            if (template.getRoi() == null) {
+                template.setRoi(new Rectangle(0, 0, template.getWidth(), template.getHeight()));
             }
             Roi templateRoi = template.getRoi();
             int locationX = (int) measurements.getValueAsDouble(row, "Xcorner");
             int locationY = (int) measurements.getValueAsDouble(row, "Ycorner");
             for (int y = 0; y < templateProcessor.getHeight(); y++) {
                 int targetY = y + locationY;
-                if(targetY < 0)
+                if (targetY < 0)
                     continue;
-                if(targetY >= targetProcessor.getHeight())
+                if (targetY >= targetProcessor.getHeight())
                     break;
                 for (int x = 0; x < templateProcessor.getWidth(); x++) {
                     int targetX = x + locationX;
-                    if(targetX < 0)
+                    if (targetX < 0)
                         continue;
-                    if(targetX >= targetProcessor.getWidth())
+                    if (targetX >= targetProcessor.getWidth())
                         break;
-                    if(!templateRoi.contains(x, y))
+                    if (!templateRoi.contains(x, y))
                         continue;
                     targetProcessor.setf(targetX, targetY, templateProcessor.getf(x, y));
                 }
@@ -450,14 +448,13 @@ public class MultiTemplateMatchingAlgorithm extends JIPipeMergingAlgorithm {
     }
 
     private void updateSlots() {
-        if(assembleTemplates) {
-            if(!hasOutputSlot("Assembled templates")) {
+        if (assembleTemplates) {
+            if (!hasOutputSlot("Assembled templates")) {
                 JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) getSlotConfiguration();
-                slotConfiguration.addOutputSlot("Assembled templates", ImagePlusData.class,null, false);
+                slotConfiguration.addOutputSlot("Assembled templates", ImagePlusData.class, null, false);
             }
-        }
-        else {
-            if(hasOutputSlot("Assembled templates")) {
+        } else {
+            if (hasOutputSlot("Assembled templates")) {
                 JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) getSlotConfiguration();
                 slotConfiguration.removeOutputSlot("Assembled templates", false);
             }

@@ -75,7 +75,7 @@ public class JIPipeCustomMenuRegistry {
         List<GraphEditorToolBarButtonExtension> result = new ArrayList<>();
         for (Class<? extends GraphEditorToolBarButtonExtension> extension : registeredGraphEditorToolBarExtensions) {
             GraphEditorToolBarButtonExtension instance = (GraphEditorToolBarButtonExtension) ReflectionUtils.newInstance(extension, graphEditorUI);
-            if(instance.isVisibleInGraph())
+            if (instance.isVisibleInGraph())
                 result.add(instance);
         }
         result.sort(Comparator.comparing(instance -> StringUtils.nullToEmpty(StringUtils.orElse(instance.getText(), instance.getToolTipText()))));
@@ -89,6 +89,7 @@ public class JIPipeCustomMenuRegistry {
     /**
      * Registers a new button for the graph editor.
      * The button will appear right next to the search box
+     *
      * @param klass the class
      */
     public void registerGraphEditorToolBarButton(Class<? extends GraphEditorToolBarButtonExtension> klass) {
@@ -97,6 +98,7 @@ public class JIPipeCustomMenuRegistry {
 
     /**
      * Registers a new context menu action.
+     *
      * @param action the action
      */
     public void registerContextMenuAction(NodeUIContextAction action) {
@@ -105,6 +107,7 @@ public class JIPipeCustomMenuRegistry {
 
     /**
      * Gets the registered context menu actions
+     *
      * @return the actions
      */
     public List<NodeUIContextAction> getRegisteredContextMenuActions() {

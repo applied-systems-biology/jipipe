@@ -19,6 +19,7 @@ public abstract class GraphEditorToolBarButtonExtension extends JButton {
 
     /**
      * Override this method to determine if this button should be available for a graph
+     *
      * @return if the button is displayed
      */
     public boolean isVisibleInGraph() {

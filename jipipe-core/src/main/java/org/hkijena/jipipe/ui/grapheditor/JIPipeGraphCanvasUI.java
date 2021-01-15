@@ -867,38 +867,36 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
             sourcePoint = currentConnectionDragSource.getNodeUI().getSlotLocation(currentConnectionDragSource.getSlot());
             sourcePoint.add(currentConnectionDragSource.getNodeUI().getLocation());
 
-            if(currentConnectionDragTarget != null &&
+            if (currentConnectionDragTarget != null &&
                     currentConnectionDragTarget != currentConnectionDragSource &&
                     currentConnectionDragTarget.getNodeUI().getNode() != currentConnectionDragSource.getNodeUI().getNode()) {
                 JIPipeNodeUI nodeUI = currentConnectionDragTarget.getNodeUI();
                 Point mousePosition = currentConnectionDragTarget.getMousePosition();
                 int width = currentConnectionDragTarget.getWidth();
                 int height = currentConnectionDragTarget.getHeight();
-                if(getMousePosition() == null || (mousePosition != null &&mousePosition.x >= 5 && mousePosition.y >= 5 && mousePosition.x <= (width - 5) && mousePosition.y <= (height - 5))) {
+                if (getMousePosition() == null || (mousePosition != null && mousePosition.x >= 5 && mousePosition.y >= 5 && mousePosition.x <= (width - 5) && mousePosition.y <= (height - 5))) {
                     targetPoint = nodeUI.getSlotLocation(currentConnectionDragTarget.getSlot());
                     targetPoint.add(nodeUI.getLocation());
                 }
             }
-            if(targetPoint != null) {
-                if(currentConnectionDragTarget == null || (!graph.getGraph().containsEdge(currentConnectionDragSource.getSlot(), currentConnectionDragTarget.getSlot())
+            if (targetPoint != null) {
+                if (currentConnectionDragTarget == null || (!graph.getGraph().containsEdge(currentConnectionDragSource.getSlot(), currentConnectionDragTarget.getSlot())
                         && !graph.getGraph().containsEdge(currentConnectionDragTarget.getSlot(), currentConnectionDragSource.getSlot()))) {
                     graphics.setColor(new Color(0, 128, 0));
-                }
-                else {
+                } else {
                     graphics.setColor(Color.RED);
                 }
-            }
-            else {
+            } else {
                 graphics.setColor(Color.DARK_GRAY);
             }
-            if(targetPoint == null) {
+            if (targetPoint == null) {
                 Point mousePosition = getMousePosition();
-                if(mousePosition != null) {
+                if (mousePosition != null) {
                     targetPoint = new PointRange(mousePosition.x, mousePosition.y);
                 }
             }
 
-            if(targetPoint != null) {
+            if (targetPoint != null) {
                 // Tighten the point ranges: Bringing the centers together
                 PointRange.tighten(sourcePoint, targetPoint);
 

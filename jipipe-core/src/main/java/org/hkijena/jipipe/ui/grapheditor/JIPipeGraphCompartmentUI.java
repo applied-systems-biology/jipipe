@@ -81,7 +81,7 @@ public class JIPipeGraphCompartmentUI extends JIPipeGraphEditorUI {
                     JIPipeContextAction actionAnnotation = method.getAnnotation(JIPipeContextAction.class);
                     if (actionAnnotation == null)
                         continue;
-                    if(!actionAnnotation.showInContextMenu())
+                    if (!actionAnnotation.showInContextMenu())
                         continue;
                     JIPipeDocumentation documentationAnnotation = method.getAnnotation(JIPipeDocumentation.class);
                     if (documentationAnnotation == null) {
@@ -141,7 +141,7 @@ public class JIPipeGraphCompartmentUI extends JIPipeGraphEditorUI {
                 .filter(NodeUIContextAction::showInGraphCompartment)
                 .sorted(Comparator.comparing(NodeUIContextAction::getName))
                 .collect(Collectors.toList());
-        if(!registeredEntries.isEmpty()) {
+        if (!registeredEntries.isEmpty()) {
             actions.add(NodeUIContextAction.SEPARATOR);
             actions.addAll(registeredEntries);
         }

@@ -21,7 +21,7 @@ public class ColorMapEnumItemInfo implements EnumItemInfo {
 
     @Override
     public Icon getIcon(Object value) {
-        return new ColorMapIcon(32,16, (ColorMap) value);
+        return new ColorMapIcon(32, 16, (ColorMap) value);
     }
 
     @Override

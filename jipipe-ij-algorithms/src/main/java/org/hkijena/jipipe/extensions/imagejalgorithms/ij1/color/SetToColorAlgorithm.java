@@ -52,16 +52,15 @@ public class SetToColorAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ImagePlus image = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo).getDuplicateImage();
         image = ImageJUtils.channelsToRGB(image);
-        if(image.getType() == ImagePlus.COLOR_RGB) {
+        if (image.getType() == ImagePlus.COLOR_RGB) {
             ImageJUtils.forEachSlice(image, ip -> {
                 ColorProcessor colorProcessor = (ColorProcessor) ip;
-                ip.setRoi(0,0,ip.getWidth(), ip.getHeight());
+                ip.setRoi(0, 0, ip.getWidth(), ip.getHeight());
                 colorProcessor.setColor(color);
                 ip.fill();
-                ip.setRoi((Roi)null);
+                ip.setRoi((Roi) null);
             }, progressInfo);
-        }
-        else {
+        } else {
             double value = (color.getRed() + color.getGreen() + color.getBlue()) / 3.0;
             ImageJUtils.forEachSlice(image, ip -> ip.set(value), progressInfo);
         }

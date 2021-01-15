@@ -87,7 +87,7 @@ public class RoiStatisticsAlgorithm extends ImageRoiProcessorAlgorithm {
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ROIListData roi = dataBatch.getInputData("ROI", ROIListData.class, progressInfo);
-        if(roi.isEmpty()) {
+        if (roi.isEmpty()) {
             dataBatch.addOutputData(getFirstOutputSlot(), new ResultsTableData(), progressInfo);
             return;
         }
@@ -97,7 +97,7 @@ public class RoiStatisticsAlgorithm extends ImageRoiProcessorAlgorithm {
             for (Map.Entry<ImageSliceIndex, List<Roi>> entry : grouped.entrySet()) {
                 ROIListData data = new ROIListData(entry.getValue());
                 ImagePlus referenceImage = null;
-                if(referenceEntry.getKey() != null) {
+                if (referenceEntry.getKey() != null) {
                     referenceImage = referenceEntry.getKey().getImage();
                 }
                 ResultsTableData result = data.measure(referenceImage, measurements, addNameToTable);

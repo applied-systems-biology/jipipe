@@ -31,6 +31,7 @@ public class PathList extends ListParameter<Path> {
 
     /**
      * Creates a copy
+     *
      * @param other the original
      */
     public PathList(Collection<Path> other) {

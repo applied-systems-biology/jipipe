@@ -46,24 +46,26 @@ public enum Anchor {
 
     /**
      * Reconstructs the rectangle from a location anchored inside
-     * @param width the width
+     *
+     * @param width  the width
      * @param height the height
      * @return the rectangle
      */
     public Rectangle getRectangle(Point location, int width, int height) {
-        int x = (int)(location.x - relativeX * (width - 1));
-        int y = (int)(location.y - relativeY * (height - 1));
+        int x = (int) (location.x - relativeX * (width - 1));
+        int y = (int) (location.y - relativeY * (height - 1));
         return new Rectangle(x, y, width, height);
     }
 
     /**
      * Gets the coordinate inside given rectangle
+     *
      * @param rectangle the rectangle
      * @return the coordinate inside the rectangle according to the anchor
      */
     public Point getRectangleCoordinates(Rectangle rectangle) {
-        return new Point((int)(rectangle.x + relativeX * (rectangle.width - 1)),
-                (int)(rectangle.y + relativeY * (rectangle.height - 1)));
+        return new Point((int) (rectangle.x + relativeX * (rectangle.width - 1)),
+                (int) (rectangle.y + relativeY * (rectangle.height - 1)));
     }
 
     public double getRelativeX() {

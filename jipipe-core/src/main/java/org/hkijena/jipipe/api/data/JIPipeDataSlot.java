@@ -460,7 +460,7 @@ public class JIPipeDataSlot {
      * This will only add data and not clear it beforehand.
      * Data is copied without duplication.
      *
-     * @param sourceSlot The other slot
+     * @param sourceSlot   The other slot
      * @param progressInfo the progress
      */
     public void addData(JIPipeDataSlot sourceSlot, JIPipeProgressInfo progressInfo) {

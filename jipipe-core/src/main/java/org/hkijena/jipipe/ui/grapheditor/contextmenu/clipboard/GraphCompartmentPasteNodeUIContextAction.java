@@ -48,7 +48,7 @@ public class GraphCompartmentPasteNodeUIContextAction implements NodeUIContextAc
                 TypeReference<List<JIPipeExportedCompartment>> typeReference = new TypeReference<List<JIPipeExportedCompartment>>() {
                 };
                 List<JIPipeExportedCompartment> compartments = JsonUtils.getObjectMapper().readValue(json, typeReference);
-                if(compartments.isEmpty()) {
+                if (compartments.isEmpty()) {
                     throw new NullPointerException("Empty compartment list pasted.");
                 }
                 for (JIPipeExportedCompartment compartment : compartments) {
