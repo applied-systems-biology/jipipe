@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2021-01-05T15:13:32 CET">
+<meta name="revised" content="2021-01-15T16:13:03 CET">
 <title>Filesystem algorithms :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../../images/favicon.png" type="image/x-icon" />
 <link href="../../../css/font-awesome.min.css" rel="stylesheet">
@@ -105,11 +105,48 @@
     </li>
         </ul>
     </li>
-    <li data-nav-id="https://www.jipipe.org/faq/" class="dd-item
+    <li data-nav-id="https://www.jipipe.org/faq/" class="dd-item haschildren
         ">
       <div>
-      <a href="../../../faq/">Frequently asked questions</a><i class="fa fa-circle-thin read-icon"></i>
+      <a href="../../../faq/">Frequently asked questions</a><i class="fa fa-angle-right fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
       </div>
+        <ul>
+      <li data-nav-id="https://www.jipipe.org/faq/general/" class="dd-item">
+        <div>
+          <a href="../../../faq/general/">
+            General questions
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/faq/user-interface/" class="dd-item">
+        <div>
+          <a href="../../../faq/user-interface/">
+            User interface
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/faq/data-processing/" class="dd-item">
+        <div>
+          <a href="../../../faq/data-processing/">
+            Data processing
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/faq/imagej-integration/" class="dd-item">
+        <div>
+          <a href="../../../faq/imagej-integration/">
+            ImageJ integration
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/faq/result-analysis/" class="dd-item">
+        <div>
+          <a href="../../../faq/result-analysis/">
+            Result analysis
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+        </ul>
     </li>
     <li data-nav-id="https://www.jipipe.org/documentation/" class="dd-item parent haschildren
         ">
@@ -534,12 +571,14 @@ The common use case is to extract the list of input files for the following algo
 <li>A <img class="inline-image" src="../../../img/icons/path.png" /> <strong>Path</strong> contains a path to a file or folder</li>
 </ul>
 <p>In the <code>Add data</code> menu you can define one file/folder or a list of files/folders.</p>
-<div class="notices tip" ><p>
-We recommend to create a list of files/folders. This makes it easier to scale your workflow up.
+
+<div class="notices tip" ><p><p>We recommend to create a list of files/folders. This makes it easier to scale your workflow up.</p>
 </p></div>
-<div class="notices tip" ><p>
-Drag any set of files or folders into the graph editor to create corresponding file/folder data source algorithms.
+
+
+<div class="notices tip" ><p><p>Drag any set of files or folders into the graph editor to create corresponding file/folder data source algorithms.</p>
 </p></div>
+
 <h1 id="filefolder-manipulation-algorithms">File/folder manipulation algorithms</h1>
 <p>The standard library comes with various algorithms that apply common operations to
 input filesystem data. This includes listing the files in a folder,

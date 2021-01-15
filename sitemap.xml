@@ -3,7 +3,27 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>https://www.jipipe.org/faq/general/</loc>
+  </url>
+  
+  <url>
     <loc>https://www.jipipe.org/_header/</loc>
+  </url>
+  
+  <url>
+    <loc>https://www.jipipe.org/faq/user-interface/</loc>
+  </url>
+  
+  <url>
+    <loc>https://www.jipipe.org/faq/data-processing/</loc>
+  </url>
+  
+  <url>
+    <loc>https://www.jipipe.org/faq/imagej-integration/</loc>
+  </url>
+  
+  <url>
+    <loc>https://www.jipipe.org/faq/result-analysis/</loc>
   </url>
   
   <url>

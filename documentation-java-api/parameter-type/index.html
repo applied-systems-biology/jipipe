@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2021-01-05T15:13:32 CET">
+<meta name="revised" content="2021-01-15T16:13:03 CET">
 <title>Creating a parameter type :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../images/favicon.png" type="image/x-icon" />
 <link href="../../css/font-awesome.min.css" rel="stylesheet">
@@ -105,11 +105,48 @@
     </li>
         </ul>
     </li>
-    <li data-nav-id="https://www.jipipe.org/faq/" class="dd-item
+    <li data-nav-id="https://www.jipipe.org/faq/" class="dd-item haschildren
         ">
       <div>
-      <a href="../../faq/">Frequently asked questions</a><i class="fa fa-circle-thin read-icon"></i>
+      <a href="../../faq/">Frequently asked questions</a><i class="fa fa-angle-right fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
       </div>
+        <ul>
+      <li data-nav-id="https://www.jipipe.org/faq/general/" class="dd-item">
+        <div>
+          <a href="../../faq/general/">
+            General questions
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/faq/user-interface/" class="dd-item">
+        <div>
+          <a href="../../faq/user-interface/">
+            User interface
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/faq/data-processing/" class="dd-item">
+        <div>
+          <a href="../../faq/data-processing/">
+            Data processing
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/faq/imagej-integration/" class="dd-item">
+        <div>
+          <a href="../../faq/imagej-integration/">
+            ImageJ integration
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/faq/result-analysis/" class="dd-item">
+        <div>
+          <a href="../../faq/result-analysis/">
+            Result analysis
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+        </ul>
     </li>
     <li data-nav-id="https://www.jipipe.org/documentation/" class="dd-item haschildren
         ">
@@ -519,17 +556,19 @@
 identifier. This is done to allow future refactoring without breaking a user&rsquo;s project.</p>
 <p>A custom parameter type must be JSON-serializable via the <a href="https://github.com/FasterXML/jackson">Jackson</a> library.
 It is associated to an editor UI that is responsible for updating the parameter value from the GUI.</p>
-<div class="notices warning" ><p>
-A parameter type cannot be a generic class. This is due to restrictions in the JVM. We recommend to create a sub-class for a list of
-a parameter if you require a list of it down the line. The list parameter inherits from the ListParameter class.
+
+<div class="notices warning" ><p><p>A parameter type cannot be a generic class. This is due to restrictions in the JVM. We recommend to create a sub-class for a list of
+a parameter if you require a list of it down the line. The list parameter inherits from the ListParameter class.</p>
 </p></div>
+
 <h2 id="creating-an-editor">Creating an editor</h2>
 <p>To create an editor UI, you have to inherit from <a href="../../apidocs/org/hkijena/jipipe/ui/grapheditor/settings/JIPipeParameterEditorUI.html">JIPipeParameterEditorUI</a>.</p>
 <p>The UI class provides access to the <a href="../../apidocs/org/hkijena/jipipe/api/parameters/JIPipeParameterHolder.html">JIPipeParameterHolder</a> object and the <a href="../../apidocs/org/hkijena/jipipe/api/parameters/JIPipeParameterAccess.html">JIPipeParameterAccess</a> object that encapsulates the getter and setters, as well as additional annotations.</p>
 <p>There is also access to the SciJava context object.</p>
-<div class="notices warning" ><p>
-Please be careful to avoid infinite loops between reloading and setting parameters from UI elements.
+
+<div class="notices warning" ><p><p>Please be careful to avoid infinite loops between reloading and setting parameters from UI elements.</p>
 </p></div>
+
 <h2 id="registering-a-parameter">Registering a parameter</h2>
 <p>Register the parameter type and its UI in <a href="../../apidocs/org/hkijena/jipipe/JIPipeJavaExtension.html">JIPipeJavaExtension</a>:</p>
 <div class="highlight"><pre style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75af00">@Plugin</span><span style="color:#f92672">(</span><span style="color:#111">type</span> <span style="color:#f92672">=</span> <span style="color:#111">JIPipeJavaExtension</span><span style="color:#f92672">.</span><span style="color:#75af00">class</span><span style="color:#f92672">)</span>
@@ -555,19 +594,23 @@ Please be careful to avoid infinite loops between reloading and setting paramete
     <span style="color:#f92672">}</span>
 
 <span style="color:#f92672">}</span>
-</code></pre></div><div class="notices warning" ><p>
-Do not forget to register all algorithm parameter types. JIPipe will throw an error if it detects a missing parameter registration.
+</code></pre></div><p>
+<div class="notices warning" ><p><p>Do not forget to register all algorithm parameter types. JIPipe will throw an error if it detects a missing parameter registration.</p>
 </p></div>
-<div class="notices tip" ><p>
-There is an overload of registerParameterType that takes the matching list directly and automatically generates the ID, name, and description.
+
+
+<div class="notices tip" ><p><p>There is an overload of registerParameterType that takes the matching list directly and automatically generates the ID, name, and description.</p>
 </p></div>
-<div class="notices tip" ><p>
-You can set the instance creation function to null if the parameter is default-constructable. You can set the clone function to null if the parameter type can
-be copied via a copy constructor.
+
+
+<div class="notices tip" ><p><p>You can set the instance creation function to null if the parameter is default-constructable. You can set the clone function to null if the parameter type can
+be copied via a copy constructor.</p>
 </p></div>
-<div class="notices tip" ><p>
-You can review your parameter UI via Tools > Development > Show all parameter types.
+
+
+<div class="notices tip" ><p><p>You can review your parameter UI via Tools &gt; Development &gt; Show all parameter types.</p>
 </p></div>
+</p>
 <h2 id="making-use-of-the-parameter-registration">Making use of the parameter registration</h2>
 <p>You can use the <a href="../../apidocs/org/hkijena/jipipe/api/registries/JIPipeParameterTypeRegistry.html">parameter type registry</a> to get a
 <a href="../../apidocs/org/hkijena/jipipe/api/parameters/JIPipeParameterTypeDeclaration.html">parameter type info</a>. The info

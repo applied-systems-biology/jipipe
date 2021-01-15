@@ -10,5 +10,57 @@
 	<atom:link href="https://www.jipipe.org/faq/index.xml" rel="self" type="application/rss+xml" />
     
     
+    <item>
+      <title>General questions</title>
+      <link>https://www.jipipe.org/faq/general/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/faq/general/</guid>
+      <description>Where do I find documentations? You can find all documentations in the  menu at the top right.
+There are also context-based documentations available if you select a node in the graph. Hover your mouse over a parameter to show documentations for this parameter only.
+Does JIPipe have a backup function? Yes. By default, JIPipe creates a backup every 3 minutes. You can recover it via Project &amp;gt; Restore Backup.</description>
+    </item>
+    
+    <item>
+      <title>User interface</title>
+      <link>https://www.jipipe.org/faq/user-interface/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/faq/user-interface/</guid>
+      <description>Does JIPipe have a dark mode? Yes, you can enable it in Project &amp;gt; Application settings &amp;gt; UI &amp;gt; General &amp;gt; Theme. Set the theme to Modern dark and restart JIPipe/ImageJ.
+How can I make long connections without zooming out? Click the arrow button at the input/output slot. It lists all compatible sources/targets ordered by distance.
+Why is the user interface suddenly messed up on Windows? This is a known issue with the open/save dialogs that are used on Windows.</description>
+    </item>
+    
+    <item>
+      <title>Data processing</title>
+      <link>https://www.jipipe.org/faq/data-processing/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/faq/data-processing/</guid>
+      <description>What are those compartments for? Imagine you have a large complicated pipeline. Most certainly, you could split it into multiple sub-pipelines like &amp;ldquo;preprocessing&amp;rdquo; or &amp;ldquo;segmentation&amp;rdquo;. Compartments allow you to do exactly this.
+What is the difference between groups and compartments? If you use compartments, JIPipe is still aware of the whole pipeline. This allows it to run all dependency nodes via Update cache or Quick run. Groups are independent pipelines that are not aware where they are used.</description>
+    </item>
+    
+    <item>
+      <title>ImageJ integration</title>
+      <link>https://www.jipipe.org/faq/imagej-integration/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/faq/imagej-integration/</guid>
+      <description>Can I use plugins from ImageJ in JIPipe? Yes. Either there is an integration available, or you just use the macro node and input the corresponding macro code that runs the plugin.
+Can I use existing ImageJ macros in JIPipe? Yes, use Images &amp;gt; ImageJ macro. The input slots are opened as image windows and can be addressed from within the macro with selectWindow(). You can also load an example that shows how to use the node.</description>
+    </item>
+    
+    <item>
+      <title>Result analysis</title>
+      <link>https://www.jipipe.org/faq/result-analysis/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/faq/result-analysis/</guid>
+      <description>Can I open a table in ImageJ instead of JIPipe or vice versa? Yes, and even more: Depending on the data type there are multiple options on displaying data available. Select the data in the result view or cache browser and click the ... button at the bottom. JIPipe will even remember the last setting for you.
+Can I save data by their metadata? Yes, use the node Miscellaneous &amp;gt; Export data.</description>
+    </item>
+    
   </channel>
 </rss>

@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2021-01-05T15:13:32 CET">
+<meta name="revised" content="2021-01-15T16:13:03 CET">
 <title>Running a single node :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../images/favicon.png" type="image/x-icon" />
 <link href="../../css/font-awesome.min.css" rel="stylesheet">
@@ -105,11 +105,48 @@
     </li>
         </ul>
     </li>
-    <li data-nav-id="https://www.jipipe.org/faq/" class="dd-item
+    <li data-nav-id="https://www.jipipe.org/faq/" class="dd-item haschildren
         ">
       <div>
-      <a href="../../faq/">Frequently asked questions</a><i class="fa fa-circle-thin read-icon"></i>
+      <a href="../../faq/">Frequently asked questions</a><i class="fa fa-angle-right fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
       </div>
+        <ul>
+      <li data-nav-id="https://www.jipipe.org/faq/general/" class="dd-item">
+        <div>
+          <a href="../../faq/general/">
+            General questions
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/faq/user-interface/" class="dd-item">
+        <div>
+          <a href="../../faq/user-interface/">
+            User interface
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/faq/data-processing/" class="dd-item">
+        <div>
+          <a href="../../faq/data-processing/">
+            Data processing
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/faq/imagej-integration/" class="dd-item">
+        <div>
+          <a href="../../faq/imagej-integration/">
+            ImageJ integration
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/faq/result-analysis/" class="dd-item">
+        <div>
+          <a href="../../faq/result-analysis/">
+            Result analysis
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+        </ul>
     </li>
     <li data-nav-id="https://www.jipipe.org/documentation/" class="dd-item parent haschildren
         ">
@@ -527,14 +564,16 @@ you can leave the folder as is - but if you expect to generate large amounts
 of output data, you should select a folder on a drive that can store as much data.
 Click <span class="fa fa-cog"  style="font-size:medium" aria-hidden="true"></span> <strong>Run &amp; open results</strong> to create the testbench.
 JIPipe then will run the pipeline up until the selected algorithm and open a new tab.</p>
-<div class="notices info" ><p>
-The Quick Run expects that all relevant algorithms are valid and will tell you
-if it finds issues. Please fix the issues and click "Retry".
+
+<div class="notices info" ><p><p>The Quick Run expects that all relevant algorithms are valid and will tell you
+if it finds issues. Please fix the issues and click &ldquo;Retry&rdquo;.</p>
 </p></div>
-<div class="notices tip" ><p>
-You can also do a Quick Run from an algorithm's right-click context menu.
-Here you will also find a related option called "Update cache" that just updates the cache of the selected node.
+
+
+<div class="notices tip" ><p><p>You can also do a Quick Run from an algorithm&rsquo;s right-click context menu.
+Here you will also find a related option called &ldquo;Update cache&rdquo; that just updates the cache of the selected node.</p>
 </p></div>
+
 <p>If you click <span class="fa fa-cog"  style="font-size:medium" aria-hidden="true"></span> <strong>Run</strong>, the results will <strong>not</strong> be shown.
 Instead, if enabled, data will just be stored into the <a href="https://www.jipipe.org/documentation/cache/">Cache</a></p>
 <p><img src="../../img/documentation/testbench-ui.png" alt="Testbench UI"></p>

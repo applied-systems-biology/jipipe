@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2021-01-05T15:13:32 CET">
+<meta name="revised" content="2021-01-15T16:13:03 CET">
 <title>Handling multiple inputs :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../../images/favicon.png" type="image/x-icon" />
 <link href="../../../css/font-awesome.min.css" rel="stylesheet">
@@ -105,11 +105,48 @@
     </li>
         </ul>
     </li>
-    <li data-nav-id="https://www.jipipe.org/faq/" class="dd-item
+    <li data-nav-id="https://www.jipipe.org/faq/" class="dd-item haschildren
         ">
       <div>
-      <a href="../../../faq/">Frequently asked questions</a><i class="fa fa-circle-thin read-icon"></i>
+      <a href="../../../faq/">Frequently asked questions</a><i class="fa fa-angle-right fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
       </div>
+        <ul>
+      <li data-nav-id="https://www.jipipe.org/faq/general/" class="dd-item">
+        <div>
+          <a href="../../../faq/general/">
+            General questions
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/faq/user-interface/" class="dd-item">
+        <div>
+          <a href="../../../faq/user-interface/">
+            User interface
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/faq/data-processing/" class="dd-item">
+        <div>
+          <a href="../../../faq/data-processing/">
+            Data processing
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/faq/imagej-integration/" class="dd-item">
+        <div>
+          <a href="../../../faq/imagej-integration/">
+            ImageJ integration
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/faq/result-analysis/" class="dd-item">
+        <div>
+          <a href="../../../faq/result-analysis/">
+            Result analysis
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+        </ul>
     </li>
     <li data-nav-id="https://www.jipipe.org/documentation/" class="dd-item haschildren
         ">
@@ -527,13 +564,15 @@ iterate their workload for each input row and generate equivalent output in the
 respective output slots.</p>
 <p>There can be issues if data from multiple input slots need to be combined (e.g. merge channels into RGB, see <a href="../../../documentation/batch-pipelines#handling-multiple-inputs">user documentation</a>). <a href="../../../apidocs/org/hkijena/jipipe/api/nodes/JIPipeAlgorithm.html">JIPipeAlgorithm</a> has no capabilities to help with such cases.</p>
 <p>A solution can be <a href="../../../apidocs/org/hkijena/jipipe/api/nodes/JIPipeIteratingAlgorithm.html">JIPipeIteratingAlgorithm</a> or <a href="../../../apidocs/org/hkijena/jipipe/api/nodes/JIPipeSimpleIteratingAlgorithm.html">JIPipeSimpleIteratingAlgorithm</a> that use the annotation attached during processing to find data rows that belong to the same data set. The implementation creates <a href="../../../apidocs/org/hkijena/jipipe/api/nodes/JIPipeDataBatch.html">JIPipeDataBatch</a> instances that represent one data set iteration.</p>
-<div class="notices tip" ><p>
-For simple algorithms, we recommend JIPipeSimpleIteratingAlgorithm. It does not have the additional parameters that might confuse some users, but creates the same runIteration(...) command
-as JIPipeIteratingAlgorithm. It only works for algorithms with at most one input and will generate error messages if you have more than one input.
+
+<div class="notices tip" ><p><p>For simple algorithms, we recommend JIPipeSimpleIteratingAlgorithm. It does not have the additional parameters that might confuse some users, but creates the same runIteration(&hellip;) command
+as JIPipeIteratingAlgorithm. It only works for algorithms with at most one input and will generate error messages if you have more than one input.</p>
 </p></div>
-<div class="notices warning" ><p>
-Please access data via the data interface. It reads exactly one JIPipeData for each input.
+
+
+<div class="notices warning" ><p><p>Please access data via the data interface. It reads exactly one JIPipeData for each input.</p>
 </p></div>
+
 <p>The only difference to <a href="../../../apidocs/org/hkijena/jipipe/api/nodes/JIPipeAlgorithm.html">JIPipeAlgorithm</a> is that you need to override a different function called <code>runIteration</code>.</p>
 <div class="highlight"><pre style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75715e">// Annotates documentation to the algorithm
 </span><span style="color:#75715e"></span><span style="color:#75af00">@JIPipeDocumentation</span><span style="color:#f92672">(</span><span style="color:#111">name</span> <span style="color:#f92672">=</span> <span style="color:#d88200">&#34;My Algorithm&#34;</span><span style="color:#f92672">,</span> <span style="color:#111">description</span> <span style="color:#f92672">=</span> <span style="color:#d88200">&#34;Does something&#34;</span><span style="color:#f92672">)</span>
