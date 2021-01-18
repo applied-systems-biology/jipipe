@@ -15,6 +15,7 @@ package org.hkijena.jipipe.ui.parameters;
 
 import com.google.common.eventbus.Subscribe;
 import com.google.common.html.HtmlEscapers;
+import org.checkerframework.checker.units.qual.C;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
@@ -24,6 +25,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterVisibility;
+import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
 import org.hkijena.jipipe.extensions.settings.GraphEditorUISettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.AddDynamicParameterPanel;
@@ -37,7 +39,7 @@ import org.scijava.Context;
 import org.scijava.Contextual;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
@@ -78,6 +80,11 @@ public class ParameterPanel extends FormPanel implements Contextual {
      */
     public static final int WITHOUT_LABEL_SEPARATION = 1024;
 
+    /**
+     * With this flag, collapsing is disabled
+     */
+    public static final int WITHOUT_COLLAPSE = 2048;
+
     private JIPipeWorkbench workbench;
     private Context context;
     private JIPipeParameterCollection displayedParameters;
@@ -86,6 +93,7 @@ public class ParameterPanel extends FormPanel implements Contextual {
     private boolean forceTraverse;
     private boolean withSearchBar;
     private boolean withoutLabelSeparation;
+    private boolean allowCollapse;
     private JIPipeParameterTree traversed;
     private SearchTextField searchField = new SearchTextField();
 
@@ -102,6 +110,7 @@ public class ParameterPanel extends FormPanel implements Contextual {
         this.forceTraverse = (flags & FORCE_TRAVERSE) == FORCE_TRAVERSE;
         this.withSearchBar = (flags & WITH_SEARCH_BAR) == WITH_SEARCH_BAR;
         this.withoutLabelSeparation = (flags & WITHOUT_LABEL_SEPARATION) == WITHOUT_LABEL_SEPARATION;
+        this.allowCollapse = (flags & WITHOUT_COLLAPSE) != WITHOUT_COLLAPSE;
         this.workbench = workbench;
         this.context = workbench.getContext();
         this.displayedParameters = displayedParameters;
@@ -185,15 +194,33 @@ public class ParameterPanel extends FormPanel implements Contextual {
         if (!isModifiable && parameterAccesses.isEmpty())
             return;
 
+        JIPipeParameterTree.Node node = traversed.getSourceNode(parameterHolder);
+
+        JCheckBox collapseButton = new JCheckBox();
+        collapseButton.setToolTipText("Collapse/Show this category");
+        collapseButton.setOpaque(false);
+        collapseButton.setIcon(UIUtils.getIconFromResources("actions/arrow-right.png"));
+        collapseButton.setSelectedIcon(UIUtils.getIconFromResources("actions/arrow-down.png"));
+        collapseButton.setSelected(!node.isCollapsed());
+        if(!collapseButton.isSelected()) {
+            if(!GeneralUISettings.getInstance().isAllowDefaultCollapsedParameters())
+                collapseButton.setSelected(true);
+        }
+
         if (!noGroupHeaders) {
-            JIPipeParameterTree.Node node = traversed.getSourceNode(parameterHolder);
             JIPipeDocumentation documentation = traversed.getSourceDocumentation(parameterHolder);
             boolean documentationIsEmpty = documentation == null || (StringUtils.isNullOrEmpty(documentation.name()) && StringUtils.isNullOrEmpty(documentation.description()));
             boolean groupHeaderIsEmpty = documentationIsEmpty && !isModifiable && node.getActions().isEmpty();
 
             if (!noEmptyGroupHeaders || !groupHeaderIsEmpty) {
-                GroupHeaderPanel groupHeaderPanel = addGroupHeader(traversed.getSourceDocumentationName(parameterHolder),
-                        UIUtils.getIconFromResources("actions/configure.png"));
+                Component[] leftComponents;
+                if(allowCollapse)
+                    leftComponents = new Component[] {collapseButton};
+                else
+                    leftComponents = new Component[0];
+                GroupHeaderPanel groupHeaderPanel = new GroupHeaderPanel(traversed.getSourceDocumentationName(parameterHolder),
+                        UIUtils.getIconFromResources("actions/configure.png"), leftComponents);
+                addWideToForm(groupHeaderPanel, null);
 
                 if (documentation != null && !StringUtils.isNullOrEmpty(documentation.description())) {
                     groupHeaderPanel.getDescriptionArea().setVisible(true);
@@ -209,7 +236,6 @@ public class ParameterPanel extends FormPanel implements Contextual {
                     groupHeaderPanel.addColumn(actionButton);
                 }
 
-
                 if (isModifiable) {
                     JButton addButton = new JButton("Add parameter", UIUtils.getIconFromResources("actions/list-add.png"));
                     addButton.addActionListener(e -> addDynamicParameter((JIPipeDynamicParameterCollection) parameterHolder));
@@ -221,6 +247,8 @@ public class ParameterPanel extends FormPanel implements Contextual {
         }
 
         List<JIPipeParameterEditorUI> uiList = new ArrayList<>();
+        List<Component> uiComponents = new ArrayList<>();
+
         JIPipeParameterVisibility sourceVisibility = traversed.getSourceVisibility(parameterHolder);
         for (JIPipeParameterAccess parameterAccess : parameterAccesses) {
             JIPipeParameterVisibility visibility = parameterAccess.getVisibility();
@@ -228,9 +256,13 @@ public class ParameterPanel extends FormPanel implements Contextual {
                 continue;
             if (withSearchBar && !searchField.test(parameterAccess.getName() + " " + parameterAccess.getDescription()))
                 continue;
+            if(allowCollapse && !StringUtils.isNullOrEmpty(searchField.getText())) {
+                collapseButton.setSelected(true);
+            }
 
             JIPipeParameterEditorUI ui = JIPipe.getParameterTypes().createEditorFor(workbench, parameterAccess);
             uiList.add(ui);
+            uiComponents.add(ui);
         }
         Comparator<JIPipeParameterEditorUI> comparator;
         if (withoutLabelSeparation) {
@@ -255,10 +287,23 @@ public class ParameterPanel extends FormPanel implements Contextual {
                 labelPanel.add(removeButton, BorderLayout.WEST);
             }
 
-            if (ui.isUILabelEnabled() || parameterHolder instanceof JIPipeDynamicParameterCollection)
+            if (ui.isUILabelEnabled() || parameterHolder instanceof JIPipeDynamicParameterCollection) {
                 addToForm(ui, labelPanel, generateParameterDocumentation(parameterAccess));
+                uiComponents.add(labelPanel);
+            }
             else
                 addToForm(ui, generateParameterDocumentation(parameterAccess));
+        }
+
+        if(allowCollapse) {
+            showCollapse(uiComponents, collapseButton.isSelected());
+            collapseButton.addActionListener(e -> showCollapse(uiComponents, collapseButton.isSelected()));
+        }
+    }
+
+    private void showCollapse(List<Component> uiComponents, boolean selected) {
+        for (Component component : uiComponents) {
+            component.setVisible(selected);
         }
     }
 

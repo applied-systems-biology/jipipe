@@ -271,6 +271,7 @@ public class JIPipeParameterTree implements JIPipeParameterCollection, JIPipeCus
                     } else
                         childNode.setName(entry.getKey());
 
+                    childNode.setCollapsed(entry.getValue().isCollapsed());
                     childNode.setUiOrder(entry.getValue().getUIOrder());
                     childNode.setVisibility(entry.getValue().getVisibility());
                     childNode.setUiExcludedSubParameters(entry.getValue().getUIExcludedSubParameters());
@@ -564,6 +565,11 @@ public class JIPipeParameterTree implements JIPipeParameterCollection, JIPipeCus
             documentations = setter.getAnnotationsByType(JIPipeDocumentation.class);
             return documentations.length > 0 ? documentations[0] : null;
         }
+
+        public boolean isCollapsed() {
+            JIPipeParameter getterAnnotation = getter.getAnnotation(JIPipeParameter.class);
+            return getterAnnotation.collapsed();
+        }
     }
 
     public static class ContextAction implements Consumer<JIPipeWorkbench> {
@@ -622,6 +628,7 @@ public class JIPipeParameterTree implements JIPipeParameterCollection, JIPipeCus
         private List<ContextAction> actions = new ArrayList<>();
         private Set<String> uiExcludedSubParameters = new HashSet<>();
         private JIPipeParameterPersistence persistence = JIPipeParameterPersistence.Collection;
+        private boolean collapsed;
 
         /**
          * Creates a node
@@ -713,6 +720,14 @@ public class JIPipeParameterTree implements JIPipeParameterCollection, JIPipeCus
 
         public void setChildren(BiMap<String, Node> children) {
             this.children = children;
+        }
+
+        public boolean isCollapsed() {
+            return collapsed;
+        }
+
+        public void setCollapsed(boolean collapsed) {
+            this.collapsed = collapsed;
         }
 
         public void addChild(String key, Node child) {

@@ -40,6 +40,7 @@ public class GeneralUISettings implements JIPipeParameterCollection {
     private boolean showIntroductionTour = true;
     private boolean openDataWindowsAlwaysOnTop = true;
     private boolean openUtilityWindowsAlwaysOnTop = true;
+    private boolean allowDefaultCollapsedParameters = true;
     private JIPipeUITheme theme = JIPipeUITheme.ModernLight;
 
     @Override
@@ -183,6 +184,17 @@ public class GeneralUISettings implements JIPipeParameterCollection {
     @JIPipeParameter("open-utility-windows-always-on-top")
     public void setOpenUtilityWindowsAlwaysOnTop(boolean openUtilityWindowsAlwaysOnTop) {
         this.openUtilityWindowsAlwaysOnTop = openUtilityWindowsAlwaysOnTop;
+    }
+
+    @JIPipeDocumentation(name = "Allow default collapsed parameters", description = "If enabled, nodes can collapse parameter groups by default")
+    @JIPipeParameter("allow-default-collapsed-parameters")
+    public boolean isAllowDefaultCollapsedParameters() {
+        return allowDefaultCollapsedParameters;
+    }
+
+    @JIPipeParameter("allow-default-collapsed-parameters")
+    public void setAllowDefaultCollapsedParameters(boolean allowDefaultCollapsedParameters) {
+        this.allowDefaultCollapsedParameters = allowDefaultCollapsedParameters;
     }
 
     public static GeneralUISettings getInstance() {

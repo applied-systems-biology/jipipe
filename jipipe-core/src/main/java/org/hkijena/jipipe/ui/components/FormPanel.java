@@ -411,15 +411,20 @@ public class FormPanel extends JXPanel {
         /**
          * @param text the text
          * @param icon the icon
+         * @param leftComponents Components added after the icon
          */
-        public GroupHeaderPanel(String text, Icon icon) {
+        public GroupHeaderPanel(String text, Icon icon, Component... leftComponents) {
             setBorder(BorderFactory.createEmptyBorder(8, 0, 4, 0));
             setLayout(new GridBagLayout());
+
+            for (Component leftComponent : leftComponents) {
+                addColumn(leftComponent);
+            }
 
             titleLabel = new JLabel(text, icon, JLabel.LEFT);
             add(titleLabel, new GridBagConstraints() {
                 {
-                    gridx = 0;
+                    gridx = columnCount;
                     gridy = 0;
                     anchor = GridBagConstraints.WEST;
                     insets = UI_PADDING;
@@ -429,7 +434,7 @@ public class FormPanel extends JXPanel {
 
             add(new JSeparator(), new GridBagConstraints() {
                 {
-                    gridx = 1;
+                    gridx = columnCount;
                     gridy = 0;
                     fill = GridBagConstraints.HORIZONTAL;
                     weightx = 1;
@@ -447,7 +452,7 @@ public class FormPanel extends JXPanel {
                 {
                     gridx = 0;
                     gridy = 1;
-                    gridwidth = 2;
+                    gridwidth = columnCount;
                     fill = GridBagConstraints.HORIZONTAL;
                     anchor = GridBagConstraints.WEST;
                     insets = UI_PADDING;

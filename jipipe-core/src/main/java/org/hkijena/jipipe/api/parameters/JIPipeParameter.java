@@ -80,4 +80,10 @@ public @interface JIPipeParameter {
      * @return the serialization behavior
      */
     JIPipeParameterPersistence persistence() default JIPipeParameterPersistence.Collection;
+
+    /**
+     * Determines if a sub-parameter is collapsed.
+     * @return if a sub-parameter is collapsed
+     */
+    boolean collapsed() default false;
 }
