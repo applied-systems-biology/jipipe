@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2021-01-15T16:13:03 CET">
+<meta name="revised" content="2021-01-20T13:21:41 CET">
 <title>General questions :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../images/favicon.png" type="image/x-icon" />
 <link href="../../css/font-awesome.min.css" rel="stylesheet">
@@ -553,6 +553,13 @@ Hover your mouse over a parameter to show documentations for this parameter only
 <p>Many JIPipe extensions rely on other ImageJ plugins to work. That is why JIPipe always checks if all necessary ImageJ plugins are available.
 If you are sure that you have everything installed, you can disable this check at <code>Project &gt; Application settings &gt; General &gt; Extensions</code>.
 Disable <code>Validate ImageJ dependencies</code>.</p>
+<p>If you do not have access to these setting (because you are offline or there are issues with the ImageJ servers), open the file <code>jipipe.properties.json</code>
+(located in your ImageJ directory) in a text editor search for a line <code>&quot;extensions/validate-imagej-dependencies&quot; : true</code> and replace <code>true</code> by <code>false</code>.</p>
+<p>If the file is not present, create a new file and put following text into it:</p>
+<pre><code>{
+  &quot;extensions/validate-imagej-dependencies&quot; : false
+}
+</code></pre><p>JIPipe will automatically add the other settings on the first startup.</p>
 <h2 id="can-i-expose-a-set-of-specific-parameters-for-collaborators">Can I expose a set of specific parameters for collaborators?</h2>
 <p>Yes. You can do this via the <code>Project &gt; Project settings &gt; Parameters</code>.
 They will be available in <code>Project &gt; Project overview</code>, alongside the description that can be set
@@ -565,6 +572,9 @@ provide a citation, license, and website, as well as cite other projects.</p>
 as the project (or in a subfolder). This allows you to compress the project and
 share it with other without breaking anything.</p>
 <p>This is the recommended way to do share your projects if you have multiple operating systems.</p>
+<h2 id="how-can-i-copy--delete-the-global-settings">How can I copy / delete the global settings?</h2>
+<p>JIPipe places a file <code>jipipe.properties.json</code> into your ImageJ directory. You can delete it to reset all settings
+to their defaults or copy it to another JIPipe instance.</p>
 
 
     
