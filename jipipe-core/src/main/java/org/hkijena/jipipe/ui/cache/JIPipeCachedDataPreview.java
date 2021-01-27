@@ -21,6 +21,7 @@ import org.hkijena.jipipe.utils.UIUtils;
 import javax.swing.*;
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.lang.ref.WeakReference;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -29,7 +30,7 @@ import java.util.concurrent.ExecutionException;
  */
 public class JIPipeCachedDataPreview extends JPanel {
     private Component parentComponent;
-    private JIPipeVirtualData data;
+    private WeakReference<JIPipeVirtualData> data;
     private Worker worker;
 
     /**
@@ -41,7 +42,7 @@ public class JIPipeCachedDataPreview extends JPanel {
      */
     public JIPipeCachedDataPreview(Component parentComponent, JIPipeVirtualData data, boolean deferRendering) {
         this.parentComponent = parentComponent;
-        this.data = data;
+        this.data = new WeakReference<>(data);
         initialize();
         if (!deferRendering)
             renderPreview();
@@ -82,8 +83,12 @@ public class JIPipeCachedDataPreview extends JPanel {
         add(label, BorderLayout.CENTER);
     }
 
+    /**
+     * Returns the stored data or null if it was already cleared
+     * @return the data
+     */
     public JIPipeVirtualData getData() {
-        return data;
+        return data.get();
     }
 
     /**
@@ -100,7 +105,11 @@ public class JIPipeCachedDataPreview extends JPanel {
 
         @Override
         protected Component doInBackground() throws Exception {
-            return parent.data.getData(new JIPipeProgressInfo()).preview(width, width);
+            JIPipeVirtualData virtualData = parent.data.get();
+            if(virtualData != null)
+                return virtualData.getData(new JIPipeProgressInfo()).preview(width, width);
+            else
+                return new JLabel("N/A");
         }
 
         @Override

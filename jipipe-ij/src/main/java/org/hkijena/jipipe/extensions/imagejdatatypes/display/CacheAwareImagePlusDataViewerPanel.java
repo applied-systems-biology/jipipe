@@ -35,6 +35,7 @@ import org.hkijena.jipipe.utils.UIUtils;
 import javax.swing.*;
 import java.awt.Component;
 import java.awt.Window;
+import java.lang.ref.WeakReference;
 import java.util.Map;
 
 public class CacheAwareImagePlusDataViewerPanel extends ImageViewerPanel {
@@ -45,7 +46,7 @@ public class CacheAwareImagePlusDataViewerPanel extends ImageViewerPanel {
     private JIPipeCacheSlotDataSource dataSource;
     private Component errorPanel;
     private JToggleButton cacheAwareToggle;
-    private JIPipeVirtualData lastVirtualData;
+    private WeakReference<JIPipeVirtualData> lastVirtualData;
 
     public CacheAwareImagePlusDataViewerPanel(JIPipeWorkbench workbench, JIPipeCacheSlotDataSource dataSource) {
         this.project = ((JIPipeProjectWorkbench) workbench).getProject();
@@ -72,12 +73,12 @@ public class CacheAwareImagePlusDataViewerPanel extends ImageViewerPanel {
 
     private void loadImageFromDataSource() {
         JIPipeVirtualData virtualData = dataSource.getSlot().getVirtualData(dataSource.getRow());
-        if (virtualData == lastVirtualData)
+        if (lastVirtualData != null && virtualData == lastVirtualData.get())
             return;
         ImagePlusData data = dataSource.getSlot().getData(dataSource.getRow(), ImagePlusData.class, new JIPipeProgressInfo());
         ImagePlus image = data.getDuplicateImage();
         setImage(image);
-        lastVirtualData = virtualData;
+        lastVirtualData = new WeakReference<>(virtualData);
     }
 
     @Override

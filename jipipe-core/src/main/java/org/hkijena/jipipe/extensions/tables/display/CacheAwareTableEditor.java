@@ -32,6 +32,7 @@ import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.Window;
+import java.lang.ref.WeakReference;
 import java.util.Map;
 
 public class CacheAwareTableEditor extends JIPipeTableEditor {
@@ -43,7 +44,7 @@ public class CacheAwareTableEditor extends JIPipeTableEditor {
     private JIPipeCacheSlotDataSource dataSource;
     private JLabel errorPanel;
     private JToggleButton cacheAwareToggle;
-    private JIPipeVirtualData lastVirtualData;
+    private WeakReference<JIPipeVirtualData> lastVirtualData;
 
     public CacheAwareTableEditor(JIPipeWorkbench workbench, JIPipeCacheSlotDataSource dataSource) {
         super(workbench, new ResultsTableData());
@@ -70,13 +71,13 @@ public class CacheAwareTableEditor extends JIPipeTableEditor {
 
     private void loadDataFromDataSource() {
         JIPipeVirtualData virtualData = dataSource.getSlot().getVirtualData(dataSource.getRow());
-        if (virtualData == lastVirtualData)
+        if (lastVirtualData != null && virtualData == lastVirtualData.get())
             return;
         ResultsTableData data = dataSource.getSlot().getData(dataSource.getRow(), ResultsTableData.class, new JIPipeProgressInfo());
         ResultsTableData duplicate = (ResultsTableData) data.duplicate();
         setTableModel(duplicate);
         errorPanel.setVisible(false);
-        lastVirtualData = virtualData;
+        lastVirtualData = new WeakReference<>(virtualData);
     }
 
     @Override
