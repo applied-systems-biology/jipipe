@@ -19,8 +19,10 @@ import org.hkijena.jipipe.extensions.filesystem.datasources.FileListDataSource;
 import org.hkijena.jipipe.extensions.filesystem.datasources.FolderListDataSource;
 import org.hkijena.jipipe.extensions.filesystem.datasources.PathListDataSource;
 import org.hkijena.jipipe.extensions.parameters.primitives.PathList;
+import org.hkijena.jipipe.extensions.settings.GraphEditorUISettings;
 import org.hkijena.jipipe.ui.grapheditor.contextmenu.clipboard.AlgorithmGraphPasteNodeUIContextAction;
 
+import javax.swing.*;
 import java.awt.Point;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
@@ -97,6 +99,9 @@ public class JIPipeGraphCompartmentDragAndDropBehavior implements JIPipeGraphDra
             return;
         } catch (Throwable t) {
             t.printStackTrace();
+            if(GraphEditorUISettings.getInstance().isNotifyInvalidDragAndDrop()) {
+                JOptionPane.showMessageDialog(canvas, new JLabel("The dropped data is invalid. You can drop files/folders or JSON data that describes JIPipe nodes."), "Invalid drop", JOptionPane.ERROR_MESSAGE);
+            }
         }
         dtde.rejectDrop();
     }
@@ -112,11 +117,13 @@ public class JIPipeGraphCompartmentDragAndDropBehavior implements JIPipeGraphDra
                 AlgorithmGraphPasteNodeUIContextAction.pasteNodes(canvas, text);
             }
         } catch (Exception e) {
-//            JOptionPane.showMessageDialog(canvas.getWorkbench().getWindow(),
-//                    "The dropped string is no valid node/graph.",
-//                    "Drop nodes",
-//                    JOptionPane.ERROR_MESSAGE);
-//            e.printStackTrace();
+            if(GraphEditorUISettings.getInstance().isNotifyInvalidDragAndDrop()) {
+                JOptionPane.showMessageDialog(canvas.getWorkbench().getWindow(),
+                        "The dropped string is no valid node/graph.",
+                        "Drop nodes",
+                        JOptionPane.ERROR_MESSAGE);
+                e.printStackTrace();
+            }
         }
     }
 

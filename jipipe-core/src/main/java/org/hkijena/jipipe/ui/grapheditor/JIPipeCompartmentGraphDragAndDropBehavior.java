@@ -13,6 +13,9 @@
 
 package org.hkijena.jipipe.ui.grapheditor;
 
+import org.hkijena.jipipe.extensions.settings.GraphEditorUISettings;
+
+import javax.swing.*;
 import java.awt.Point;
 import java.awt.dnd.DropTargetDragEvent;
 import java.awt.dnd.DropTargetDropEvent;
@@ -70,6 +73,12 @@ public class JIPipeCompartmentGraphDragAndDropBehavior implements JIPipeGraphDra
 //        } catch (Throwable t) {
 //            t.printStackTrace();
 //        }
+        if(GraphEditorUISettings.getInstance().isNotifyInvalidDragAndDrop()) {
+            String message = "<html>You probably wanted to drop some data into this graph.<br/>" +
+                    "This is not possible, as the <strong>Compartment Graph</strong> only organizes your project into " +
+                    "multiple sections.<br/><br/>Please double-click a node inside this graph to edit the pipeline.</html>";
+            JOptionPane.showMessageDialog(canvas, new JLabel(message), "Drag & drop not supported", JOptionPane.ERROR_MESSAGE);
+        }
         dtde.rejectDrop();
     }
 

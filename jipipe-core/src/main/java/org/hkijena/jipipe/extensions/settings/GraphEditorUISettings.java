@@ -38,6 +38,7 @@ public class GraphEditorUISettings implements JIPipeParameterCollection {
     private boolean askOnDeleteCompartment = true;
     private boolean askOnDeleteParameter = true;
     private boolean drawOutsideEdges = true;
+    private boolean notifyInvalidDragAndDrop = true;
 
     @Override
     public EventBus getEventBus() {
@@ -138,6 +139,16 @@ public class GraphEditorUISettings implements JIPipeParameterCollection {
         this.drawOutsideEdges = drawOutsideEdges;
     }
 
+    @JIPipeDocumentation(name = "Notify users about invalid drops", description = "If enabled, a message box will be displayed if invalid data is dropped into a graph.")
+    @JIPipeParameter("notify-invalid-drag-and-drop")
+    public boolean isNotifyInvalidDragAndDrop() {
+        return notifyInvalidDragAndDrop;
+    }
+
+    @JIPipeParameter("notify-invalid-drag-and-drop")
+    public void setNotifyInvalidDragAndDrop(boolean notifyInvalidDragAndDrop) {
+        this.notifyInvalidDragAndDrop = notifyInvalidDragAndDrop;
+    }
 
     public static GraphEditorUISettings getInstance() {
         return JIPipe.getSettings().getSettings(ID, GraphEditorUISettings.class);
