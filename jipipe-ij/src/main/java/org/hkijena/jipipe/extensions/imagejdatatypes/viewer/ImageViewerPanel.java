@@ -1018,6 +1018,12 @@ public class ImageViewerPanel extends JPanel {
 
     public ImageProcessor generateSlice(int z, int c, int t, boolean withRoi, boolean withRotation) {
         image.setPosition(c + 1, z + 1, t + 1);
+        if(c <= lutEditors.size() - 1) {
+            image.setLut(lutEditors.get(c).getLUT());
+        }
+        else {
+            image.setLut(null);
+        }
         ImageProcessor processor = image.getProcessor();
         if (withRoi && !(processor instanceof ColorProcessor) && !rois.isEmpty()) {
             processor = new ColorProcessor(processor.getBufferedImage());
