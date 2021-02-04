@@ -5,11 +5,11 @@
     <parent>
         <artifactId>pom-jipipe</artifactId>
         <groupId>org.hkijena</groupId>
-        <version>2021.1</version>
+        <version>2021.2</version>
     </parent>
 
     <artifactId>jipipe-utils</artifactId>
-    <version>2021.1</version>
+    <version>2021.2</version>
 
     <name>jipipe-utils</name>
     <description>JIPipe Utilities</description>
@@ -78,17 +78,17 @@
             <dependency>
                 <groupId>org.hkijena</groupId>
                 <artifactId>jipipe-core</artifactId>
-                <version>2021.1</version>
+                <version>2021.2</version>
             </dependency>
             <dependency>
                 <groupId>org.hkijena</groupId>
                 <artifactId>jipipe-filesystem</artifactId>
-                <version>2021.1</version>
+                <version>2021.2</version>
             </dependency>
             <dependency>
                 <groupId>org.hkijena</groupId>
                 <artifactId>jipipe-multiparameters</artifactId>
-                <version>2021.1</version>
+                <version>2021.2</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
