@@ -80,7 +80,7 @@ public class CreateDirectory extends JIPipeSimpleIteratingAlgorithm {
                         "Please check if the path is correct and you have sufficient rights to create such path.");
             }
         }
-        dataBatch.addOutputData("Subfolders", inputFolder, progressInfo);
+        dataBatch.addOutputData(getFirstOutputSlot(), inputFolder, progressInfo);
     }
 
     /**
