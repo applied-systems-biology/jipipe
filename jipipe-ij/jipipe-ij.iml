@@ -10,6 +10,17 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="Maven: org.jetbrains.kotlin:kotlin-stdlib-common:1.3.71" level="project" />
+    <orderEntry type="library" name="Maven: ome:bio-formats_plugins:6.5.1" level="project" />
+    <orderEntry type="library" name="Maven: com.squareup.okio:okio:1.12.0" level="project" />
+    <orderEntry type="library" name="Maven: org.openmicroscopy:ome-xml:6.1.0" level="project" />
+    <orderEntry type="library" name="Maven: org.openmicroscopy:specification:6.1.0" level="project" />
+    <orderEntry type="library" name="Maven: ome:formats-api:6.5.1" level="project" />
+    <orderEntry type="library" name="Maven: org.openmicroscopy:ome-codecs:0.3.0" level="project" />
+    <orderEntry type="library" name="Maven: ome:formats-bsd:6.5.1" level="project" />
+    <orderEntry type="library" name="Maven: ome:turbojpeg:6.5.1" level="project" />
+    <orderEntry type="library" name="Maven: ome:jxrlib-all:0.2.4" level="project" />
+    <orderEntry type="library" name="Maven: ome:formats-gpl:6.5.1" level="project" />
     <orderEntry type="module" module-name="jipipe-core" />
     <orderEntry type="library" name="Maven: net.imagej:imagej:2.1.0" level="project" />
     <orderEntry type="library" name="Maven: net.imagej:imagej-common:0.33.0" level="project" />
