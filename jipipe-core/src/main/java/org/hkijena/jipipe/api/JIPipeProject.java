@@ -273,11 +273,12 @@ public class JIPipeProject implements JIPipeValidatable {
      * @param compartment The compartment
      */
     public void removeCompartment(JIPipeProjectCompartment compartment) {
-        graph.removeCompartment(compartment.getProjectCompartmentId());
+        String compartmentId = compartment.getProjectCompartmentId();
+        graph.removeCompartment(compartmentId);
         compartments.remove(compartment.getProjectCompartmentId());
         updateCompartmentVisibility();
         compartmentGraph.removeNode(compartment, false);
-        eventBus.post(new CompartmentRemovedEvent(compartment));
+        eventBus.post(new CompartmentRemovedEvent(compartment, compartmentId));
     }
 
     /**
@@ -628,16 +629,23 @@ public class JIPipeProject implements JIPipeValidatable {
      */
     public static class CompartmentRemovedEvent {
         private JIPipeProjectCompartment compartment;
+        private final String compartmentId;
 
         /**
          * @param compartment the compartment
+         * @param compartmentId the compartment id
          */
-        public CompartmentRemovedEvent(JIPipeProjectCompartment compartment) {
+        public CompartmentRemovedEvent(JIPipeProjectCompartment compartment, String compartmentId) {
             this.compartment = compartment;
+            this.compartmentId = compartmentId;
         }
 
         public JIPipeProjectCompartment getCompartment() {
             return compartment;
+        }
+
+        public String getCompartmentId() {
+            return compartmentId;
         }
     }
 

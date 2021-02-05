@@ -51,7 +51,9 @@ public class JIPipeProjectTabMetadata {
                 id = "singleton:" + singletonTabId;
             } else if (component instanceof JIPipeCompartmentUI) {
                 JIPipeCompartmentUI graphCompartmentUI = (JIPipeCompartmentUI) component;
-                id = "graph-compartment:" + graphCompartmentUI.getCompartment().getProjectCompartmentId();
+                if(graphCompartmentUI.getCompartment().getGraph() != null) {
+                    id = "graph-compartment:" + graphCompartmentUI.getCompartment().getProjectCompartmentId();
+                }
             }
 
             if (id != null) {

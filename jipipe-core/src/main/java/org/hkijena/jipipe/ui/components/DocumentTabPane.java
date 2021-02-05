@@ -221,6 +221,8 @@ public class DocumentTabPane extends JPanel {
      * @param tab the tab
      */
     public void closeTab(DocumentTab tab) {
+        if(!tabs.contains(tab))
+            return;
         if (tab.closeMode == CloseMode.withoutCloseButton || tab.closeMode == CloseMode.withDisabledCloseButton)
             return;
         if (!GeneralUISettings.getInstance().isNeverAskOnClosingTabs() && tab.closeMode == CloseMode.withAskOnCloseButton) {

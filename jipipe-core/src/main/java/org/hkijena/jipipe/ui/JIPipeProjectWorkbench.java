@@ -259,6 +259,14 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
                     }
                 }
             });
+            project.getEventBus().register(new Object() {
+                @Subscribe
+                public void onCompartmentRemoved(JIPipeProject.CompartmentRemovedEvent event) {
+                    if(event.getCompartment() == compartment) {
+                        documentTabPane.closeTab(documentTab);
+                    }
+                }
+            });
             if (switchToTab)
                 documentTabPane.switchToLastTab();
             return documentTab;
