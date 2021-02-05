@@ -2,6 +2,7 @@ package org.hkijena.jipipe.extensions.core;
 
 import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.nodes.JIPipeJavaNodeInfo;
 import org.hkijena.jipipe.api.nodes.categories.AnnotationsNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.FileSystemNodeTypeCategory;
@@ -14,6 +15,7 @@ import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.core.data.CopyContainingFolderDataImportOperation;
 import org.hkijena.jipipe.extensions.core.data.DefaultDataDisplayOperation;
 import org.hkijena.jipipe.extensions.core.data.OpenContainingFolderDataImportOperation;
+import org.hkijena.jipipe.extensions.core.nodes.JIPipeCommentNode;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
 import org.hkijena.jipipe.ui.theme.JIPipeUITheme;
 import org.hkijena.jipipe.utils.ResourceUtils;
@@ -55,6 +57,11 @@ public class CoreExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerNodeTypeCategory(new TableNodeTypeCategory());
         registerNodeTypeCategory(new RoiNodeTypeCategory());
         registerNodeTypeCategory(new AnnotationsNodeTypeCategory());
+
+        // Comment node
+        JIPipeJavaNodeInfo commentNodeInfo = new JIPipeJavaNodeInfo("jipipe:comment", JIPipeCommentNode.class);
+        commentNodeInfo.setRunnable(false);
+        registerNodeType(commentNodeInfo, UIUtils.getIconURLFromResources("actions/edit-comment.png"));
 
         // Global data importers
         registerDatatypeImportOperation("", new CopyContainingFolderDataImportOperation());

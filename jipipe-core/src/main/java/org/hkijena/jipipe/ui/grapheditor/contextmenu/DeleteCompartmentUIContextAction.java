@@ -43,9 +43,14 @@ public class DeleteCompartmentUIContextAction implements NodeUIContextAction {
                 JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
             JIPipeProject project = ((JIPipeProjectWorkbench) canvasUI.getWorkbench()).getProject();
             for (JIPipeNodeUI ui : ImmutableList.copyOf(selection)) {
-                JIPipeProjectCompartment compartment = (JIPipeProjectCompartment) ui.getNode();
-                canvasUI.getGraphHistory().addSnapshotBefore(new DeleteCompartmentGraphHistorySnapshot(project, compartment));
-                compartment.getProject().removeCompartment(compartment);
+                if(ui.getNode() instanceof JIPipeProjectCompartment) {
+                    JIPipeProjectCompartment compartment = (JIPipeProjectCompartment) ui.getNode();
+                    canvasUI.getGraphHistory().addSnapshotBefore(new DeleteCompartmentGraphHistorySnapshot(project, compartment));
+                    compartment.getProject().removeCompartment(compartment);
+                }
+                else {
+                    canvasUI.getGraph().removeNode(ui.getNode(), true);
+                }
             }
         }
     }

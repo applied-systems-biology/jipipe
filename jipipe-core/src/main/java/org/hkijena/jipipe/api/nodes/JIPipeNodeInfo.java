@@ -118,6 +118,14 @@ public interface JIPipeNodeInfo {
     boolean isHidden();
 
     /**
+     * Indicates that the node should carry a workload. Defaults to true.
+     * @return if the node carries a workload
+     */
+    default boolean isRunnable() {
+        return true;
+    }
+
+    /**
      * Gets the registered algorithms, grouped by their menu paths
      *
      * @param infos The infos to group

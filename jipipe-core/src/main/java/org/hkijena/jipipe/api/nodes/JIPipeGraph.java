@@ -911,6 +911,8 @@ public class JIPipeGraph implements JIPipeValidatable {
     public Set<JIPipeGraphNode> getDeactivatedAlgorithms() {
         Set<JIPipeGraphNode> missing = new HashSet<>();
         for (JIPipeGraphNode algorithm : traverse()) {
+            if(!algorithm.getInfo().isRunnable())
+                continue;
             if (algorithm instanceof JIPipeAlgorithm) {
                 if (!((JIPipeAlgorithm) algorithm).isEnabled()) {
                     missing.add(algorithm);
@@ -943,6 +945,8 @@ public class JIPipeGraph implements JIPipeValidatable {
     public Set<JIPipeGraphNode> getDeactivatedAlgorithms(Set<JIPipeGraphNode> externallySatisfied) {
         Set<JIPipeGraphNode> missing = new HashSet<>();
         for (JIPipeGraphNode algorithm : traverse()) {
+            if(!algorithm.getInfo().isRunnable())
+                continue;
             if (externallySatisfied.contains(algorithm))
                 continue;
             if (algorithm instanceof JIPipeAlgorithm) {
@@ -1026,6 +1030,8 @@ public class JIPipeGraph implements JIPipeValidatable {
         }
         if (!RuntimeSettings.getInstance().isAllowSkipAlgorithmsWithoutInput()) {
             for (JIPipeDataSlot slot : graph.vertexSet()) {
+                if(!slot.getNode().getInfo().isRunnable())
+                    continue;
                 if (slot.isInput()) {
                     if (graph.incomingEdgesOf(slot).isEmpty()) {
                         report.forCategory(slot.getNode().getCompartment()).forCategory(slot.getNode().getName())
@@ -1078,6 +1084,8 @@ public class JIPipeGraph implements JIPipeValidatable {
                 }
             }
             for (JIPipeDataSlot slot : node.getInputSlots()) {
+                if(!slot.getNode().getInfo().isRunnable())
+                    continue;
                 if (graph.incomingEdgesOf(slot).isEmpty()) {
                     report.forCategory(slot.getNode().getCompartment()).forCategory(slot.getNode().getName())
                             .forCategory("Slot: " + slot.getName()).reportIsInvalid("An input slot has no incoming data!",

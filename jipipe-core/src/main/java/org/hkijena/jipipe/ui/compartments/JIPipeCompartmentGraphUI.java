@@ -21,16 +21,17 @@ import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.compartments.JIPipeExportedCompartment;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.history.AddCompartmentGraphHistorySnapshot;
+import org.hkijena.jipipe.api.history.AddNodeGraphHistorySnapshot;
 import org.hkijena.jipipe.api.history.ImportCompartmentGraphHistorySnapshot;
+import org.hkijena.jipipe.api.nodes.JIPipeGraph;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.extensions.core.nodes.JIPipeCommentNode;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.components.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.MarkdownReader;
-import org.hkijena.jipipe.ui.grapheditor.JIPipeCompartmentGraphDragAndDropBehavior;
-import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphCanvasUI;
-import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphEditorMinimap;
-import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphEditorUI;
+import org.hkijena.jipipe.ui.grapheditor.*;
 import org.hkijena.jipipe.ui.grapheditor.contextmenu.DeleteCompartmentUIContextAction;
 import org.hkijena.jipipe.ui.grapheditor.contextmenu.ExportCompartmentAsJsonNodeUIContextAction;
 import org.hkijena.jipipe.ui.grapheditor.contextmenu.ExportCompartmentToNodeUIContextAction;
@@ -41,6 +42,8 @@ import org.hkijena.jipipe.ui.grapheditor.contextmenu.SelectAndMoveNodeHereNodeUI
 import org.hkijena.jipipe.ui.grapheditor.contextmenu.clipboard.GraphCompartmentCopyNodeUIContextAction;
 import org.hkijena.jipipe.ui.grapheditor.contextmenu.clipboard.GraphCompartmentCutNodeUIContextAction;
 import org.hkijena.jipipe.ui.grapheditor.contextmenu.clipboard.GraphCompartmentPasteNodeUIContextAction;
+import org.hkijena.jipipe.ui.grapheditor.settings.JIPipeMultiAlgorithmSelectionPanelUI;
+import org.hkijena.jipipe.ui.grapheditor.settings.JIPipeSingleAlgorithmSelectionPanelUI;
 import org.hkijena.jipipe.utils.JsonUtils;
 import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -52,6 +55,7 @@ import java.awt.event.ComponentEvent;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -146,11 +150,23 @@ public class JIPipeCompartmentGraphUI extends JIPipeGraphEditorUI {
         if (getSelection().isEmpty()) {
             setPropertyPanel(defaultPanel);
         } else if (getSelection().size() == 1) {
-            setPropertyPanel(new JIPipeSingleCompartmentSelectionPanelUI(this,
-                    (JIPipeProjectCompartment) getSelection().iterator().next().getNode()));
+            JIPipeGraphNode node = getSelection().iterator().next().getNode();
+            if(node instanceof JIPipeProjectCompartment) {
+                setPropertyPanel(new JIPipeSingleCompartmentSelectionPanelUI(this,
+                        (JIPipeProjectCompartment) node));
+            }
+            else {
+                setPropertyPanel(new JIPipeSingleAlgorithmSelectionPanelUI(this, node));
+            }
         } else {
-            setPropertyPanel(new JIPipeMultiCompartmentSelectionPanelUI((JIPipeProjectWorkbench) getWorkbench(),
-                    getSelection().stream().map(ui -> (JIPipeProjectCompartment) ui.getNode()).collect(Collectors.toSet()), getCanvasUI()));
+            if(getSelection().stream().allMatch(ui -> ui.getNode() instanceof JIPipeProjectCompartment)) {
+                setPropertyPanel(new JIPipeMultiCompartmentSelectionPanelUI((JIPipeProjectWorkbench) getWorkbench(),
+                        getSelection().stream().map(ui -> (JIPipeProjectCompartment) ui.getNode()).collect(Collectors.toSet()), getCanvasUI()));
+            }
+            else {
+                setPropertyPanel(new JIPipeMultiAlgorithmSelectionPanelUI((JIPipeProjectWorkbench) getWorkbench(), getCanvasUI(),
+                        getSelection().stream().map(JIPipeNodeUI::getNode).collect(Collectors.toSet())));
+            }
         }
     }
 
@@ -173,6 +189,20 @@ public class JIPipeCompartmentGraphUI extends JIPipeGraphEditorUI {
         importItem.setToolTipText("Imports a compartment from a *.jipc file");
         importItem.addActionListener(e -> importCompartment());
         menuBar.add(importItem);
+
+        JButton addCommentItem = new JButton("Add comment", UIUtils.getIconFromResources("actions/edit-comment.png"));
+        UIUtils.makeFlatH25(addCommentItem);
+        addCommentItem.setBorder(BorderFactory.createEmptyBorder(0, 2, 0, 2));
+        addCommentItem.setToolTipText("Add a comment node");
+        addCommentItem.addActionListener(e -> addComment());
+        menuBar.add(addCommentItem);
+    }
+
+    private void addComment() {
+        JIPipeCommentNode node = JIPipe.createNode(JIPipeCommentNode.class);
+        AddNodeGraphHistorySnapshot snapshot = new AddNodeGraphHistorySnapshot(getAlgorithmGraph(), Collections.singleton(node));
+        getCanvasUI().getGraphHistory().addSnapshotBefore(snapshot);
+        getAlgorithmGraph().insertNode(node, COMPARTMENT_DEFAULT);
     }
 
     private void importCompartment() {

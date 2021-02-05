@@ -190,10 +190,14 @@ public class JIPipeProject implements JIPipeValidatable {
         }
 
         for (JIPipeGraphNode targetNode : compartmentGraph.getNodes().values()) {
-            JIPipeProjectCompartment target = (JIPipeProjectCompartment) targetNode;
-            for (JIPipeDataSlot sourceSlot : compartmentGraph.getSourceSlots(target.getFirstInputSlot())) {
-                JIPipeProjectCompartment source = (JIPipeProjectCompartment) sourceSlot.getNode();
-                source.getOutputNode().getVisibleCompartments().add(target.getProjectCompartmentId());
+            if(targetNode instanceof JIPipeProjectCompartment) {
+                JIPipeProjectCompartment target = (JIPipeProjectCompartment) targetNode;
+                for (JIPipeDataSlot sourceSlot : compartmentGraph.getSourceSlots(target.getFirstInputSlot())) {
+                    if(sourceSlot.getNode() instanceof JIPipeProjectCompartment) {
+                        JIPipeProjectCompartment source = (JIPipeProjectCompartment) sourceSlot.getNode();
+                        source.getOutputNode().getVisibleCompartments().add(target.getProjectCompartmentId());
+                    }
+                }
             }
         }
 
@@ -229,10 +233,12 @@ public class JIPipeProject implements JIPipeValidatable {
     public void onCompartmentGraphChanged(JIPipeGraph.GraphChangedEvent event) {
         if (event.getGraph() == compartmentGraph) {
             for (JIPipeGraphNode algorithm : compartmentGraph.getNodes().values()) {
-                JIPipeProjectCompartment compartment = (JIPipeProjectCompartment) algorithm;
-                if (!compartment.isInitialized()) {
-                    compartments.put(compartment.getProjectCompartmentId(), compartment);
-                    initializeCompartment(compartment);
+                if(algorithm instanceof JIPipeProjectCompartment) {
+                    JIPipeProjectCompartment compartment = (JIPipeProjectCompartment) algorithm;
+                    if (!compartment.isInitialized()) {
+                        compartments.put(compartment.getProjectCompartmentId(), compartment);
+                        initializeCompartment(compartment);
+                    }
                 }
             }
             updateCompartmentVisibility();
@@ -320,9 +326,11 @@ public class JIPipeProject implements JIPipeValidatable {
         Map<String, String> compartmentRenames = compartmentGraph.cleanupIds();
         Map<String, Set<JIPipeGraphNode>> compartmentNodes = new HashMap<>();
         for (Map.Entry<String, String> entry : compartmentRenames.entrySet()) {
-            Set<JIPipeGraphNode> nodes = graph.getNodes().values().stream().filter(node -> Objects.equals(node.getCompartment(), entry.getKey())).collect(Collectors.toSet());
-            compartmentNodes.put(entry.getKey(), nodes);
-            eventBus.post(new CompartmentRenamedEvent((JIPipeProjectCompartment) compartmentGraph.getNodes().get(entry.getValue())));
+            if(compartmentGraph.getNodes().get(entry.getValue()) instanceof JIPipeProjectCompartment) {
+                Set<JIPipeGraphNode> nodes = graph.getNodes().values().stream().filter(node -> Objects.equals(node.getCompartment(), entry.getKey())).collect(Collectors.toSet());
+                compartmentNodes.put(entry.getKey(), nodes);
+                eventBus.post(new CompartmentRenamedEvent((JIPipeProjectCompartment) compartmentGraph.getNodes().get(entry.getValue())));
+            }
         }
         for (Map.Entry<String, Set<JIPipeGraphNode>> entry : compartmentNodes.entrySet()) {
             String newCompartment = compartmentRenames.get(entry.getKey());
@@ -430,10 +438,12 @@ public class JIPipeProject implements JIPipeValidatable {
         // read compartments
         compartmentGraph.fromJson(node.get("compartments").get("compartment-graph"), new JIPipeValidityReport());
         for (JIPipeGraphNode algorithm : compartmentGraph.getNodes().values()) {
-            JIPipeProjectCompartment compartment = (JIPipeProjectCompartment) algorithm;
-            compartment.setProject(this);
-            compartments.put(compartment.getProjectCompartmentId(), compartment);
-            initializeCompartment(compartment);
+            if(algorithm instanceof JIPipeProjectCompartment) {
+                JIPipeProjectCompartment compartment = (JIPipeProjectCompartment) algorithm;
+                compartment.setProject(this);
+                compartments.put(compartment.getProjectCompartmentId(), compartment);
+                initializeCompartment(compartment);
+            }
         }
 
         // Reading compartments might break some connections. This will restore them

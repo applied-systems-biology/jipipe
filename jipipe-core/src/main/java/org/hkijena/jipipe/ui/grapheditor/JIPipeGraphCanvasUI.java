@@ -30,6 +30,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphEdge;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
+import org.hkijena.jipipe.extensions.core.nodes.JIPipeCommentNode;
 import org.hkijena.jipipe.extensions.settings.GraphEditorUISettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
@@ -71,6 +72,9 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
     public static final Stroke STROKE_HIGHLIGHT = new BasicStroke(8);
     public static final Stroke STROKE_SELECTION = new BasicStroke(3, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL, 0, new float[]{9}, 0);
     public static final Stroke STROKE_MARQUEE = new BasicStroke(1, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL, 0, new float[]{2}, 0);
+    public static final Stroke STROKE_COMMENT = new BasicStroke(2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL, 0, new float[]{2}, 0);
+    public static final Stroke STROKE_COMMENT_HIGHLIGHT = new BasicStroke(4, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL, 0, new float[]{8}, 0);
+    private static final Color COMMENT_EDGE_COLOR = new Color(194, 141, 0);
 
     private final ImageIcon cursorImage = UIUtils.getIconFromResources("actions/target.png");
     private final JIPipeGraph graph;
@@ -839,12 +843,12 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
         graphics.setColor(Color.LIGHT_GRAY);
         if (compartment != null && GraphEditorUISettings.getInstance().isDrawOutsideEdges())
             paintOutsideEdges(g, drawer, false);
-        paintEdges(g, drawer, STROKE_DEFAULT, false, false);
+        paintEdges(g, drawer, STROKE_DEFAULT, STROKE_COMMENT, false, false);
 
         g.setStroke(STROKE_HIGHLIGHT);
         if (compartment != null && GraphEditorUISettings.getInstance().isDrawOutsideEdges())
             paintOutsideEdges(g, drawer, true);
-        paintEdges(g, drawer, STROKE_HIGHLIGHT, true, true);
+        paintEdges(g, drawer, STROKE_HIGHLIGHT, STROKE_COMMENT_HIGHLIGHT, true, true);
 
         // Draw selections
         g.setStroke(STROKE_SELECTION);
@@ -989,7 +993,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
         }
     }
 
-    private void paintEdges(Graphics2D g, RectangularLineDrawer drawer, Stroke stroke, boolean onlySelected, boolean withHidden) {
+    private void paintEdges(Graphics2D g, RectangularLineDrawer drawer, Stroke stroke, Stroke strokeComment, boolean onlySelected, boolean withHidden) {
         for (Map.Entry<JIPipeDataSlot, JIPipeDataSlot> kv : graph.getSlotEdges()) {
             JIPipeDataSlot source = kv.getKey();
             JIPipeDataSlot target = kv.getValue();
@@ -1000,7 +1004,12 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
                     continue;
                 }
             }
-            paintSlotEdge(g, drawer, stroke, onlySelected, source, target);
+            if(source.getNode() instanceof JIPipeCommentNode || target.getNode() instanceof JIPipeCommentNode) {
+                paintSlotEdge(g, drawer, strokeComment, onlySelected, source, target);
+            }
+            else {
+                paintSlotEdge(g, drawer, stroke, onlySelected, source, target);
+            }
         }
     }
 
@@ -1069,6 +1078,8 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
     }
 
     private Color getEdgeColor(JIPipeDataSlot source, JIPipeDataSlot target) {
+        if(source.getNode() instanceof JIPipeCommentNode || target.getNode() instanceof JIPipeCommentNode)
+            return COMMENT_EDGE_COLOR;
         if (JIPipeDatatypeRegistry.isTriviallyConvertible(source.getAcceptedDataType(), target.getAcceptedDataType()))
             return Color.DARK_GRAY;
         else if (JIPipe.getDataTypes().isConvertible(source.getAcceptedDataType(), target.getAcceptedDataType()))

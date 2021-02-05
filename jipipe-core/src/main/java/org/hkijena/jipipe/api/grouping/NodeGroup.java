@@ -116,6 +116,8 @@ public class NodeGroup extends GraphWrapperAlgorithm implements JIPipeCustomPara
             BiMap<JIPipeDataSlot, String> exportedInputSlotNames = HashBiMap.create();
             BiMap<JIPipeDataSlot, String> exportedOutputSlotNames = HashBiMap.create();
             for (JIPipeDataSlot slot : getWrappedGraph().getUnconnectedSlots()) {
+                if(!slot.getNode().getInfo().isRunnable())
+                    continue;
                 if (slot.isInput()) {
                     String uniqueName = StringUtils.makeUniqueString(slot.getName(), " ", exportedInputSlotNames::containsValue);
                     inputSlotConfiguration.addSlot(uniqueName, slot.getInfo(), false);

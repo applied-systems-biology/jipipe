@@ -41,6 +41,10 @@ public class JIPipeAlgorithmIconRef {
     public JIPipeAlgorithmIconRef() {
     }
 
+    public JIPipeAlgorithmIconRef(String iconName) {
+        this.iconName = iconName;
+    }
+
     /**
      * Copies an instance
      *

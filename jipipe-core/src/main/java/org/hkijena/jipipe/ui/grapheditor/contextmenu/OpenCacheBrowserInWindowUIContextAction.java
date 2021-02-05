@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.ui.grapheditor.contextmenu;
 
 import org.hkijena.jipipe.api.JIPipeGraphType;
+import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.cache.JIPipeAlgorithmCacheBrowserUI;
@@ -28,7 +29,9 @@ import java.util.Set;
 public class OpenCacheBrowserInWindowUIContextAction implements NodeUIContextAction {
     @Override
     public boolean matches(Set<JIPipeNodeUI> selection) {
-        return !selection.isEmpty() && selection.stream().allMatch(ui -> ui.getNode().getGraph().getAttachment(JIPipeGraphType.class) == JIPipeGraphType.Project);
+        return !selection.isEmpty() && selection.stream().allMatch(ui -> ui.getNode().getInfo().isRunnable() &&
+                ui.getNode() instanceof JIPipeAlgorithm &&
+                ui.getNode().getGraph().getAttachment(JIPipeGraphType.class) == JIPipeGraphType.Project);
     }
 
     @Override

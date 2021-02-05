@@ -15,6 +15,7 @@ package org.hkijena.jipipe.ui.grapheditor.settings;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeGraphType;
+import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatchAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.testbench.JIPipeTestBenchSettings;
@@ -83,10 +84,11 @@ public class JIPipeSingleAlgorithmSelectionPanelUI extends JIPipeProjectWorkbenc
 
         if (algorithm.getGraph().getAttachment(JIPipeGraphType.class) == JIPipeGraphType.Project) {
             cacheBrowserTabContent = new JPanel(new BorderLayout());
-            tabbedPane.addSingletonTab("CACHE_BROWSER", "Cache browser", UIUtils.getIconFromResources("actions/database.png"),
-                    cacheBrowserTabContent,
-                    DocumentTabPane.CloseMode.withoutCloseButton, false);
-
+            if(algorithm instanceof JIPipeAlgorithm) {
+                tabbedPane.addSingletonTab("CACHE_BROWSER", "Cache browser", UIUtils.getIconFromResources("actions/database.png"),
+                        cacheBrowserTabContent,
+                        DocumentTabPane.CloseMode.withoutCloseButton, false);
+            }
             if (algorithm instanceof JIPipeDataBatchAlgorithm) {
                 batchAssistantTabContent = new JPanel(new BorderLayout());
                 tabbedPane.addSingletonTab("DATA_BATCHES", "Data batches", UIUtils.getIconFromResources("actions/package.png"),
@@ -95,9 +97,11 @@ public class JIPipeSingleAlgorithmSelectionPanelUI extends JIPipeProjectWorkbenc
             }
 
             testBenchTabContent = new JPanel(new BorderLayout());
-            tabbedPane.addSingletonTab("QUICK_RUN", "Quick run", UIUtils.getIconFromResources("actions/media-play.png"),
-                    testBenchTabContent,
-                    DocumentTabPane.CloseMode.withoutCloseButton, false);
+            if(algorithm.getInfo().isRunnable()) {
+                tabbedPane.addSingletonTab("QUICK_RUN", "Quick run", UIUtils.getIconFromResources("actions/media-play.png"),
+                        testBenchTabContent,
+                        DocumentTabPane.CloseMode.withoutCloseButton, false);
+            }
 
             if (JIPipeRunnerQueue.getInstance().getCurrentRun() != null) {
                 currentRunTabContent = new JPanel(new BorderLayout());

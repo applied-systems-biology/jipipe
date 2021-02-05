@@ -22,6 +22,8 @@ import org.hkijena.jipipe.api.data.JIPipeMutableSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
+import org.hkijena.jipipe.extensions.core.nodes.JIPipeCommentNode;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.ZoomFlatIconButton;
 import org.hkijena.jipipe.ui.components.ZoomIcon;
@@ -66,6 +68,9 @@ public class JIPipeVerticalNodeUI extends JIPipeNodeUI {
         initialize();
         updateAlgorithmSlotUIs();
         updateActivationStatus();
+        if(getNode() instanceof JIPipeCommentNode) {
+            updateCommentNodeDesign();
+        }
     }
 
     private void initialize() {
@@ -389,6 +394,21 @@ public class JIPipeVerticalNodeUI extends JIPipeNodeUI {
         } else {
             throw new UnsupportedOperationException("Unknown slot type!");
         }
+    }
+
+    @Override
+    public void onAlgorithmParametersChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
+        super.onAlgorithmParametersChanged(event);
+        if(event.getSource() == getNode() && getNode() instanceof JIPipeCommentNode) {
+            updateCommentNodeDesign();
+        }
+    }
+
+    private void updateCommentNodeDesign() {
+        JIPipeCommentNode commentNode = (JIPipeCommentNode) getNode();
+        setBackground(commentNode.getBackgroundColor());
+        nameLabel.setForeground(commentNode.getTextColor());
+        nameLabel.setIcon(UIUtils.getIconFromResources(commentNode.getIcon().getIconName()));
     }
 
     @Override

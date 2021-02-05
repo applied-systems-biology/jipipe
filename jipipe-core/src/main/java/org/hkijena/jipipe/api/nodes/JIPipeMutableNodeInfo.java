@@ -30,6 +30,7 @@ public abstract class JIPipeMutableNodeInfo implements JIPipeNodeInfo {
     private List<JIPipeOutputSlot> outputSlots = new ArrayList<>();
     private String menuPath;
     private boolean hidden = false;
+    private boolean runnable = true;
 
     @Override
     public Class<? extends JIPipeGraphNode> getInstanceClass() {
@@ -151,5 +152,14 @@ public abstract class JIPipeMutableNodeInfo implements JIPipeNodeInfo {
 
     public void setHidden(boolean hidden) {
         this.hidden = hidden;
+    }
+
+    @Override
+    public boolean isRunnable() {
+        return runnable;
+    }
+
+    public void setRunnable(boolean runnable) {
+        this.runnable = runnable;
     }
 }
