@@ -12,7 +12,8 @@ import org.hkijena.jipipe.extensions.parameters.references.JIPipeAlgorithmIconRe
 
 import java.awt.*;
 
-@JIPipeDocumentation(name = "Comment", description = "Allows you to comment an input or output slot. You can customize the color and icon of this node.")
+@JIPipeDocumentation(name = "Comment", description = "Allows you to comment an input or output slot. You can customize the color and icon of this node. " +
+        "This nodes has no workload attached to it and will connect to any data type. It requires no input and produces no output.")
 @JIPipeInputSlot(value = JIPipeData.class, slotName = "Comment", autoCreate = true)
 @JIPipeOutputSlot(value = JIPipeData.class, slotName = "Comment", autoCreate = true)
 @JIPipeOrganization(nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
