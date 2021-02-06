@@ -659,6 +659,13 @@ public class StandardParametersExtension extends JIPipePrepackagedDefaultJavaExt
                 "String/Double",
                 "An object that can either hold a string or double.",
                 StringOrDoubleParameterEditorUI.class);
+        registerParameterType("formatted-text",
+                FormattedTextParameter.class,
+                null,
+                null,
+                "Formatted text",
+                "A formatted text",
+                FormattedTextParameterEditorUI.class);
     }
 
     private void registerPrimitives() {
