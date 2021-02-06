@@ -25,7 +25,9 @@ import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.text.*;
 import javax.swing.text.html.HTMLEditorKit;
+import javax.swing.text.rtf.RTFEditorKit;
 import java.awt.*;
+import java.io.ByteArrayOutputStream;
 import java.io.StringWriter;
 import java.util.Objects;
 
@@ -56,8 +58,8 @@ public class FormattedTextParameterEditorUI extends JIPipeParameterEditorUI {
         }
 
         JTextPane textArea = new JTextPane();
-        textArea.setContentType("text/html");
-        HTMLEditorKit editorKit = new HTMLEditorKit();
+        textArea.setContentType("text/richtext");
+        RTFEditorKit editorKit = new RTFEditorKit();
         textArea.setEditorKit(editorKit);
         textArea.setText(stringValue);
         setBorder(BorderFactory.createEtchedBorder());
@@ -69,9 +71,12 @@ public class FormattedTextParameterEditorUI extends JIPipeParameterEditorUI {
             public void changed(DocumentEvent documentEvent) {
                 try {
                     Document document = textArea.getDocument();
-                    StringWriter writer = new StringWriter();
-                    editorKit.write(writer, document, 0, document.getLength());
-                    setParameter(writer.toString(), false);
+                    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream ();
+                    editorKit.write(byteArrayOutputStream, document, 0, document.getLength());
+                    setParameter(new FormattedTextParameter(document.getText(0, document.getLength()),
+                            byteArrayOutputStream.toString()), false);
+                    System.out.println(document.getText(0, document.getLength()));
+                    System.out.println(byteArrayOutputStream.toString());
                 }
                 catch (Exception e) {
                     e.printStackTrace();
