@@ -84,7 +84,7 @@ public class HTMLEditor extends JPanel {
 
     private void initializeToolBar(int flags) {
 
-        JPanel toolbarPanel = new JPanel(new GridBagLayout());
+        JPanel toolbarPanel = new JPanel(new WrapLayout(WrapLayout.LEFT));
 
         fontSelection = new JComboBox<>();
         fontSelection.setModel(new DefaultComboBoxModel<>(GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames()));
@@ -100,14 +100,6 @@ public class HTMLEditor extends JPanel {
                 }
                 updateSelection();
                 textPane.requestFocusInWindow();
-            }
-        });
-        toolbarPanel.add(fontSelection, new GridBagConstraints() {
-            {
-                gridx = 0;
-                gridy = 0;
-                gridwidth = 5;
-                anchor = GridBagConstraints.WEST;
             }
         });
 
@@ -127,87 +119,44 @@ public class HTMLEditor extends JPanel {
                 textPane.requestFocusInWindow();
             }
         });
-        toolbarPanel.add(sizeSelection, new GridBagConstraints() {
-            {
-                gridx = 5;
-                gridy = 0;
-                gridwidth = 2;
-                anchor = GridBagConstraints.WEST;
-            }
-        });
-//        toolbarPanel.add(createFormatActionButton(availableEditorKitActions.get("InsertUnorderedList"),
-//                this::selectionIsAlignLeft,
-//                "Create bullet list",
-//                "actions/format-list-unordered.png"), new GridBagConstraints() {
-//            {
-//                gridx = 7;
-//                gridy = 0;
-//                anchor = GridBagConstraints.WEST;
-//            }
-//        });
 
-        // Bottom toolbar
+        // Font family/size
+        JPanel fontSizePanel = new JPanel(new FlowLayout(FlowLayout.LEFT,0,0));
+        fontSizePanel.setBorder(null);
+        fontSizePanel.add(fontSelection);
+        fontSizePanel.add(sizeSelection);
+        toolbarPanel.add(fontSizePanel);
 
-        toolbarPanel.add(createFormatActionButton(new StyledEditorKit.BoldAction(),
+        // Standard formats
+        JPanel standardFormatPanel = new JPanel(new FlowLayout(FlowLayout.LEFT,0,0));
+        standardFormatPanel.add(createFormatActionButton(new StyledEditorKit.BoldAction(),
                 this::selectionIsBold,
                 "Format bold",
-                "actions/format-text-bold.png"), new GridBagConstraints() {
-            {
-                gridx = 0;
-                gridy = 1;
-                anchor = GridBagConstraints.WEST;
-            }
-        });
-        toolbarPanel.add(createFormatActionButton(new StyledEditorKit.ItalicAction(),
+                "actions/format-text-bold.png"));
+        standardFormatPanel.add(createFormatActionButton(new StyledEditorKit.ItalicAction(),
                 this::selectionIsItalic,
                 "Format italic",
-                "actions/format-text-italic.png"), new GridBagConstraints() {
-            {
-                gridx = 1;
-                gridy = 1;
-                anchor = GridBagConstraints.WEST;
-            }
-        });
-        toolbarPanel.add(createFormatActionButton(new StyledEditorKit.UnderlineAction(),
+                "actions/format-text-italic.png"));
+        standardFormatPanel.add(createFormatActionButton(new StyledEditorKit.UnderlineAction(),
                 this::selectionIsUnderline,
                 "Format underlined",
-                "actions/format-text-underline.png"), new GridBagConstraints() {
-            {
-                gridx = 2;
-                gridy = 1;
-                anchor = GridBagConstraints.WEST;
-            }
-        });
-        toolbarPanel.add(createFormatActionButton(new StrikeThroughAction(),
+                "actions/format-text-underline.png"));
+        toolbarPanel.add(standardFormatPanel);
+
+        // Extended formats
+        JPanel extendedFormatPanel = new JPanel(new FlowLayout(FlowLayout.LEFT,0,0));
+        extendedFormatPanel.add(createFormatActionButton(new StrikeThroughAction(),
                 this::selectionIsStrikeThrough,
                 "Format strike-through",
-                "actions/format-text-strikethrough.png"), new GridBagConstraints() {
-            {
-                gridx = 3;
-                gridy = 1;
-                anchor = GridBagConstraints.WEST;
-            }
-        });
-        toolbarPanel.add(createFormatActionButton(new SubscriptAction(),
+                "actions/format-text-strikethrough.png"));
+        extendedFormatPanel.add(createFormatActionButton(new SubscriptAction(),
                 this::selectionIsSubscript,
                 "Format as sub-script",
-                "actions/format-text-subscript.png"), new GridBagConstraints() {
-            {
-                gridx = 4;
-                gridy = 1;
-                anchor = GridBagConstraints.WEST;
-            }
-        });
-        toolbarPanel.add(createFormatActionButton(new SuperscriptAction(),
+                "actions/format-text-subscript.png"));
+        extendedFormatPanel.add(createFormatActionButton(new SuperscriptAction(),
                 this::selectionIsSuperscript,
                 "Format as super-script",
-                "actions/format-text-superscript.png"), new GridBagConstraints() {
-            {
-                gridx = 5;
-                gridy = 1;
-                anchor = GridBagConstraints.WEST;
-            }
-        });
+                "actions/format-text-superscript.png"));
 
         foregroundColorButton = new ColorChooserButton("");
         UIUtils.makeFlat25x25(foregroundColorButton);
@@ -231,54 +180,28 @@ public class HTMLEditor extends JPanel {
                 }
             }
         });
+        extendedFormatPanel.add(foregroundColorButton);
+        toolbarPanel.add(extendedFormatPanel);
 
-        toolbarPanel.add(createFormatActionButton(new StyledEditorKit.AlignmentAction("Align left", StyleConstants.ALIGN_LEFT),
+        // Align panel
+        JPanel alignPanel = new JPanel(new FlowLayout(FlowLayout.LEFT,0,0));
+        alignPanel.add(createFormatActionButton(new StyledEditorKit.AlignmentAction("Align left", StyleConstants.ALIGN_LEFT),
                 this::selectionIsAlignLeft,
                 "Align left",
-                "actions/format-justify-left.png"), new GridBagConstraints() {
-            {
-                gridx = 7;
-                gridy = 1;
-                anchor = GridBagConstraints.WEST;
-            }
-        });
-        toolbarPanel.add(createFormatActionButton(new StyledEditorKit.AlignmentAction("Align center", StyleConstants.ALIGN_CENTER),
+                "actions/format-justify-left.png"));
+        alignPanel.add(createFormatActionButton(new StyledEditorKit.AlignmentAction("Align center", StyleConstants.ALIGN_CENTER),
                 this::selectionIsAlignCenter,
                 "Align center",
-                "actions/format-justify-center.png"), new GridBagConstraints() {
-            {
-                gridx = 8;
-                gridy = 1;
-                anchor = GridBagConstraints.WEST;
-            }
-        });
-        toolbarPanel.add(createFormatActionButton(new StyledEditorKit.AlignmentAction("Align right", StyleConstants.ALIGN_RIGHT),
+                "actions/format-justify-center.png"));
+        alignPanel.add(createFormatActionButton(new StyledEditorKit.AlignmentAction("Align right", StyleConstants.ALIGN_RIGHT),
                 this::selectionIsAlignRight,
                 "Align right",
-                "actions/format-justify-right.png"), new GridBagConstraints() {
-            {
-                gridx = 9;
-                gridy = 1;
-                anchor = GridBagConstraints.WEST;
-            }
-        });
-        toolbarPanel.add(createFormatActionButton(new StyledEditorKit.AlignmentAction("Align justified", StyleConstants.ALIGN_JUSTIFIED),
+                "actions/format-justify-right.png"));
+        alignPanel.add(createFormatActionButton(new StyledEditorKit.AlignmentAction("Align justified", StyleConstants.ALIGN_JUSTIFIED),
                 this::selectionIsAlignJustified,
                 "Align justified",
-                "actions/format-justify-fill.png"), new GridBagConstraints() {
-            {
-                gridx = 10;
-                gridy = 1;
-                anchor = GridBagConstraints.WEST;
-            }
-        });
-        toolbarPanel.add(new JPanel(), new GridBagConstraints() {
-            {
-                gridx = 20;
-                gridy = 1;
-                weightx = 1;
-            }
-        });
+                "actions/format-justify-fill.png"));
+        toolbarPanel.add(alignPanel);
 
         if((flags & WITHOUT_TOOLBAR) != WITHOUT_TOOLBAR) {
             add(toolbarPanel, BorderLayout.NORTH);
