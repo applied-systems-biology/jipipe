@@ -15,6 +15,7 @@ package org.hkijena.jipipe.api.grouping.parameters;
 
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
+import org.hkijena.jipipe.extensions.parameters.primitives.HTMLText;
 import org.hkijena.jipipe.ui.components.DocumentChangeListener;
 import org.hkijena.jipipe.ui.components.FancyTextField;
 import org.hkijena.jipipe.ui.components.FormPanel;
@@ -129,8 +130,8 @@ public class GraphNodeParameterReferenceGroupUI extends JPanel {
         }
 
         private void changeDescription() {
-            String currentDescription = group.getDescription();
-            String newDescription = UIUtils.getMultiLineStringByDialog(this, "Set description", "Please enter a new description:", currentDescription);
+            HTMLText currentDescription = group.getDescription();
+            HTMLText newDescription = UIUtils.getHTMLByDialog(this, "Set description", "Please enter a new description:", currentDescription);
             if (newDescription != null) {
                 group.setDescription(newDescription);
             }

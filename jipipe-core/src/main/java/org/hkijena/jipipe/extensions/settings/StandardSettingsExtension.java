@@ -15,6 +15,7 @@ package org.hkijena.jipipe.extensions.settings;
 
 import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
+import org.hkijena.jipipe.extensions.parameters.primitives.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.plugin.Plugin;
@@ -36,8 +37,8 @@ public class StandardSettingsExtension extends JIPipePrepackagedDefaultJavaExten
     }
 
     @Override
-    public String getDescription() {
-        return "Provides a collection of settings sheets";
+    public HTMLText getDescription() {
+        return new HTMLText("Provides a collection of settings sheets");
     }
 
     @Override

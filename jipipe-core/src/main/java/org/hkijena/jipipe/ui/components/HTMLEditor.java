@@ -1,5 +1,7 @@
 package org.hkijena.jipipe.ui.components;
 
+import com.google.common.eventbus.Subscribe;
+import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -8,8 +10,7 @@ import javax.swing.text.html.HTMLEditorKit;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.ByteArrayOutputStream;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.function.BooleanSupplier;
 
 public class HTMLEditor extends JPanel {
@@ -21,19 +22,42 @@ public class HTMLEditor extends JPanel {
     private JTextPane textPane;
     private HTMLEditorKit editorKit;
     private Map<JToggleButton, BooleanSupplier> updatedButtons = new HashMap<>();
+    private JComboBox<String> fontSelection;
+    private JComboBox<Integer> sizeSelection;
+    private ColorChooserButton foregroundColorButton;
+    private boolean isUpdating = false;
+    private final Set<String> availableFonts = new HashSet<>(Arrays.asList(GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames()));
+    private final Map<String, Action> availableEditorKitActions = new HashMap<>();
 
     public HTMLEditor(int flags) {
         initialize(flags);
         initializeEvents();
     }
 
-    private void initializeEvents() {
-        textPane.addCaretListener(e -> updateSelectionToggles());
+    public JTextPane getTextPane() {
+        return textPane;
     }
 
-    public void updateSelectionToggles() {
-        for (Map.Entry<JToggleButton, BooleanSupplier> entry : updatedButtons.entrySet()) {
-            entry.getKey().setSelected(entry.getValue().getAsBoolean());
+    public Document getDocument() {
+        return textPane.getDocument();
+    }
+
+    private void initializeEvents() {
+        textPane.addCaretListener(e -> updateSelection());
+    }
+
+    public void updateSelection() {
+        isUpdating = true;
+        try {
+            for (Map.Entry<JToggleButton, BooleanSupplier> entry : updatedButtons.entrySet()) {
+                entry.getKey().setSelected(entry.getValue().getAsBoolean());
+            }
+            fontSelection.setSelectedItem(getSelectionFontFamily());
+            sizeSelection.setSelectedItem(getSelectionFontSize());
+            foregroundColorButton.setSelectedColor(getSelectionForegroundColor());
+        }
+        finally {
+            isUpdating = false;
         }
     }
 
@@ -41,6 +65,10 @@ public class HTMLEditor extends JPanel {
         textPane = new JTextPane();
         textPane.setContentType("text/html");
         editorKit = new HTMLEditorKit();
+        for (Action action : editorKit.getActions()) {
+            availableEditorKitActions.put(action.getValue(Action.NAME) + "", action);
+        }
+
         textPane.setEditorKit(editorKit);
         editorKit.getStyleSheet().addRule("body { font-family: Dialog; }");
         setLayout(new BorderLayout());
@@ -58,34 +86,67 @@ public class HTMLEditor extends JPanel {
 
         JPanel toolbarPanel = new JPanel(new GridBagLayout());
 
-        JComboBox<String> fontSelection = new JComboBox<>();
+        fontSelection = new JComboBox<>();
+        fontSelection.setModel(new DefaultComboBoxModel<>(GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames()));
         fontSelection.setEditable(true);
         fontSelection.setMinimumSize(new Dimension(20, 25));
-        fontSelection.setPreferredSize(new Dimension(150, 25));
+        fontSelection.setPreferredSize(new Dimension(125, 25));
+        fontSelection.setSelectedItem("Dialog");
+        fontSelection.addItemListener(e -> {
+            if(!isUpdating) {
+                String family = fontSelection.getSelectedItem() instanceof String ? (String) fontSelection.getSelectedItem() : "Dialog";
+                if(availableFonts.contains(family)) {
+                    new StyledEditorKit.FontFamilyAction(family, family).actionPerformed(new ActionEvent(textPane, e.getID(), family));
+                }
+                updateSelection();
+                textPane.requestFocusInWindow();
+            }
+        });
         toolbarPanel.add(fontSelection, new GridBagConstraints() {
             {
                 gridx = 0;
                 gridy = 0;
-                gridwidth = 6;
+                gridwidth = 5;
                 anchor = GridBagConstraints.WEST;
             }
         });
 
-        JComboBox<Integer> sizeSelection = new JComboBox<>();
+        sizeSelection = new JComboBox<>();
         sizeSelection.setPrototypeDisplayValue(99);
         sizeSelection.setModel(new DefaultComboBoxModel<>(new Integer[] { 8,9,10,11,12,14,16,18,20,22,24,26,28,36,48,72 }));
+        sizeSelection.setSelectedItem(12);
         sizeSelection.setEditable(true);
         sizeSelection.setMinimumSize(new Dimension(20, 25));
-        sizeSelection.setPreferredSize(new Dimension(100, 25));
-//        sizeSelection.setMaximumSize(new Dimension(20, 25));
+        sizeSelection.setPreferredSize(new Dimension(50, 25));
+        sizeSelection.addItemListener(e -> {
+            if(!isUpdating) {
+                int size = sizeSelection.getSelectedItem() instanceof Integer ? (int) sizeSelection.getSelectedItem() : 12;
+                size = Math.max(1,size);
+                new StyledEditorKit.FontSizeAction("set-font-size", size).actionPerformed(new ActionEvent(textPane, e.getID(), "set-font-size"));
+                updateSelection();
+                textPane.requestFocusInWindow();
+            }
+        });
         toolbarPanel.add(sizeSelection, new GridBagConstraints() {
             {
-                gridx = 6;
+                gridx = 5;
                 gridy = 0;
-                gridwidth = 4;
+                gridwidth = 2;
                 anchor = GridBagConstraints.WEST;
             }
         });
+//        toolbarPanel.add(createFormatActionButton(availableEditorKitActions.get("InsertUnorderedList"),
+//                this::selectionIsAlignLeft,
+//                "Create bullet list",
+//                "actions/format-list-unordered.png"), new GridBagConstraints() {
+//            {
+//                gridx = 7;
+//                gridy = 0;
+//                anchor = GridBagConstraints.WEST;
+//            }
+//        });
+
+        // Bottom toolbar
 
         toolbarPanel.add(createFormatActionButton(new StyledEditorKit.BoldAction(),
                 this::selectionIsBold,
@@ -148,12 +209,35 @@ public class HTMLEditor extends JPanel {
             }
         });
 
+        foregroundColorButton = new ColorChooserButton("");
+        UIUtils.makeFlat25x25(foregroundColorButton);
+        toolbarPanel.add(foregroundColorButton,  new GridBagConstraints() {
+            {
+                gridx = 6;
+                gridy = 1;
+                anchor = GridBagConstraints.WEST;
+            }
+        });
+        foregroundColorButton.setToolTipText("Set color");
+        foregroundColorButton.getEventBus().register(new Object() {
+            @Subscribe
+            public void onColorSelected(ColorChooserButton.ColorChosenEvent event) {
+                if(!isUpdating) {
+                    new StyledEditorKit.ForegroundAction("set-foreground", event.getColor()).actionPerformed(
+                            new ActionEvent(textPane, 0, "set-foreground")
+                    );
+                    updateSelection();
+                    textPane.requestFocusInWindow();
+                }
+            }
+        });
+
         toolbarPanel.add(createFormatActionButton(new StyledEditorKit.AlignmentAction("Align left", StyleConstants.ALIGN_LEFT),
                 this::selectionIsAlignLeft,
                 "Align left",
                 "actions/format-justify-left.png"), new GridBagConstraints() {
             {
-                gridx = 6;
+                gridx = 7;
                 gridy = 1;
                 anchor = GridBagConstraints.WEST;
             }
@@ -163,7 +247,7 @@ public class HTMLEditor extends JPanel {
                 "Align center",
                 "actions/format-justify-center.png"), new GridBagConstraints() {
             {
-                gridx = 7;
+                gridx = 8;
                 gridy = 1;
                 anchor = GridBagConstraints.WEST;
             }
@@ -173,7 +257,7 @@ public class HTMLEditor extends JPanel {
                 "Align right",
                 "actions/format-justify-right.png"), new GridBagConstraints() {
             {
-                gridx = 8;
+                gridx = 9;
                 gridy = 1;
                 anchor = GridBagConstraints.WEST;
             }
@@ -183,7 +267,7 @@ public class HTMLEditor extends JPanel {
                 "Align justified",
                 "actions/format-justify-fill.png"), new GridBagConstraints() {
             {
-                gridx = 9;
+                gridx = 10;
                 gridy = 1;
                 anchor = GridBagConstraints.WEST;
             }
@@ -199,6 +283,34 @@ public class HTMLEditor extends JPanel {
         if((flags & WITHOUT_TOOLBAR) != WITHOUT_TOOLBAR) {
             add(toolbarPanel, BorderLayout.NORTH);
         }
+    }
+
+    public int getSelectionFontSize() {
+        StyledDocument document = textPane.getStyledDocument();
+        if(document.getLength() == 0)
+            return 12;
+        int value = 0;
+        for (int i = textPane.getSelectionStart(); i <= textPane.getSelectionEnd(); i++) {
+            Element element = document.getCharacterElement(i);
+            value = Math.max(value, StyleConstants.getFontSize(element.getAttributes()));
+        }
+        return value;
+    }
+
+    public Color getSelectionForegroundColor() {
+        StyledDocument document = textPane.getStyledDocument();
+        if(document.getLength() == 0)
+            return Color.BLACK;
+        Element element = document.getCharacterElement(textPane.getSelectionStart());
+        return StyleConstants.getForeground(element.getAttributes());
+    }
+
+    public String getSelectionFontFamily() {
+        StyledDocument document = textPane.getStyledDocument();
+        if(document.getLength() == 0)
+            return "Dialog";
+        Element element = document.getCharacterElement(textPane.getSelectionStart());
+        return StyleConstants.getFontFamily(element.getAttributes());
     }
 
     public boolean selectionIsBold() {
@@ -325,7 +437,7 @@ public class HTMLEditor extends JPanel {
         JToggleButton button = new JToggleButton();
         button.addActionListener(e -> {
             action.actionPerformed(e);
-            updateSelectionToggles();
+            updateSelection();
             textPane.requestFocusInWindow();
         });
         button.setText("");
@@ -350,7 +462,12 @@ public class HTMLEditor extends JPanel {
             Document document = textPane.getDocument();
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream ();
             editorKit.write(byteArrayOutputStream, document, 0, document.getLength());
-            return byteArrayOutputStream.toString();
+            String value = byteArrayOutputStream.toString();
+            int bodyStart = value.indexOf("<body>") + "<body>".length();
+            int bodyEnd = value.indexOf("</body>");
+            String body = value.substring(bodyStart, bodyEnd).trim();
+            body = body.replace("\n", "<br/>");
+            return value.substring(0, bodyStart) + body + "</body></html>";
         }
         catch (Exception e) {
             throw new RuntimeException(e);
@@ -364,6 +481,12 @@ public class HTMLEditor extends JPanel {
         frame.setSize(800,600);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.setVisible(true);
+    }
+
+    public void setText(String value) {
+        textPane.setText(StringUtils.nullToEmpty(value));
+        // Workaround https://stackoverflow.com/questions/1527021/html-jtextpane-newline-support
+//        textPane.getDocument().putProperty(DefaultEditorKit.EndOfLineStringProperty, "<br/>\n");
     }
 
     public static class StrikeThroughAction extends StyledEditorKit.StyledTextAction {

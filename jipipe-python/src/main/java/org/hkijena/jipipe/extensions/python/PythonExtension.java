@@ -15,6 +15,7 @@ package org.hkijena.jipipe.extensions.python;
 
 import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
+import org.hkijena.jipipe.extensions.parameters.primitives.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.plugin.Plugin;
@@ -34,8 +35,8 @@ public class PythonExtension extends JIPipePrepackagedDefaultJavaExtension {
     }
 
     @Override
-    public String getDescription() {
-        return "Provides algorithms and data types that allow Python scripting";
+    public HTMLText getDescription() {
+        return new HTMLText("Provides algorithms and data types that allow Python scripting");
     }
 
     @Override

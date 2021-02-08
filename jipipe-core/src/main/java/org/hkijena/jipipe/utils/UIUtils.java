@@ -24,11 +24,9 @@ import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.registries.JIPipeSettingsRegistry;
+import org.hkijena.jipipe.extensions.parameters.primitives.HTMLText;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.components.ColorIcon;
-import org.hkijena.jipipe.ui.components.JIPipeValidityReportUI;
-import org.hkijena.jipipe.ui.components.MarkdownDocument;
-import org.hkijena.jipipe.ui.components.UserFriendlyErrorUI;
+import org.hkijena.jipipe.ui.components.*;
 import org.hkijena.jipipe.ui.extension.MenuExtension;
 import org.hkijena.jipipe.ui.extension.MenuTarget;
 import org.hkijena.jipipe.ui.theme.JIPipeUITheme;
@@ -628,6 +626,32 @@ public class UIUtils {
         return Collections.emptyList();
     }
 
+    /**
+     * Gets a formatted HTML string by dialog
+     *
+     * @param parent       the parent component
+     * @param title        the title
+     * @param message      message
+     * @param initialValue initial value
+     * @return value or null
+     */
+    public static HTMLText getHTMLByDialog(Component parent, String title, String message, HTMLText initialValue) {
+        HTMLEditor area = new HTMLEditor(HTMLEditor.NONE);
+        area.setText(initialValue.getHtml());
+        JScrollPane scrollPane = new JScrollPane(area);
+        int result = JOptionPane.showOptionDialog(
+                parent,
+                new Object[]{message, scrollPane},
+                title,
+                JOptionPane.OK_CANCEL_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null, null, null);
+
+        if (result == JOptionPane.OK_OPTION) {
+            return new HTMLText(area.getHTML());
+        }
+        return null;
+    }
 
     /**
      * Gets a multiline string by dialog

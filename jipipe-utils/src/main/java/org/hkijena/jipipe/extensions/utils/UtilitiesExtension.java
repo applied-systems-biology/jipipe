@@ -16,9 +16,12 @@ package org.hkijena.jipipe.extensions.utils;
 import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.api.compartments.algorithms.IOInterfaceAlgorithm;
 import org.hkijena.jipipe.api.grouping.NodeGroup;
+import org.hkijena.jipipe.api.nodes.JIPipeJavaNodeInfo;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
+import org.hkijena.jipipe.extensions.core.nodes.JIPipeCommentNode;
 import org.hkijena.jipipe.extensions.filesystem.resultanalysis.CopyPathDataOperation;
 import org.hkijena.jipipe.extensions.filesystem.resultanalysis.OpenPathDataOperation;
+import org.hkijena.jipipe.extensions.parameters.primitives.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
 import org.hkijena.jipipe.extensions.utils.algorithms.ConverterAlgorithm;
 import org.hkijena.jipipe.extensions.utils.algorithms.GetJIPipeSlotFolderAlgorithm;
@@ -46,8 +49,8 @@ public class UtilitiesExtension extends JIPipePrepackagedDefaultJavaExtension {
     }
 
     @Override
-    public String getDescription() {
-        return "Utility algorithms";
+    public HTMLText getDescription() {
+        return new HTMLText("Utility algorithms");
     }
 
     @Override
@@ -64,6 +67,11 @@ public class UtilitiesExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerNodeType("jipipe-project-parameters-from-paths", PathsToJIPipeProjectParametersAlgorithm.class, UIUtils.getIconURLFromResources("apps/jipipe.png"));
         registerNodeType("jipipe-output-get-slot-folder", GetJIPipeSlotFolderAlgorithm.class, UIUtils.getIconURLFromResources("actions/find.png"));
         registerNodeType("jipipe-output-import-slot-folder", ImportJIPipeSlotFolderAlgorithm.class, UIUtils.getIconURLFromResources("actions/document-import.png"));
+
+        // Comment node
+        JIPipeJavaNodeInfo commentNodeInfo = new JIPipeJavaNodeInfo("jipipe:comment", JIPipeCommentNode.class);
+        commentNodeInfo.setRunnable(false);
+        registerNodeType(commentNodeInfo, UIUtils.getIconURLFromResources("actions/edit-comment.png"));
     }
 
     @Override

@@ -15,6 +15,7 @@ package org.hkijena.jipipe.extensions.tools;
 
 import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
+import org.hkijena.jipipe.extensions.parameters.primitives.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
 import org.scijava.plugin.Plugin;
 
@@ -34,8 +35,8 @@ public class ToolsExtension extends JIPipePrepackagedDefaultJavaExtension {
     }
 
     @Override
-    public String getDescription() {
-        return "Provides some additional tools.";
+    public HTMLText getDescription() {
+        return new HTMLText("Provides some additional tools.");
     }
 
     @Override

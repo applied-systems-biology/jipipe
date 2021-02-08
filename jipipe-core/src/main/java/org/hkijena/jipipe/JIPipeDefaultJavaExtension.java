@@ -37,6 +37,7 @@ import org.hkijena.jipipe.extensions.parameters.collections.ListParameter;
 import org.hkijena.jipipe.extensions.parameters.expressions.ExpressionFunction;
 import org.hkijena.jipipe.extensions.parameters.expressions.functions.ColumnOperationAdapterFunction;
 import org.hkijena.jipipe.extensions.parameters.primitives.EnumParameterTypeInfo;
+import org.hkijena.jipipe.extensions.parameters.primitives.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
 import org.hkijena.jipipe.extensions.tables.ColumnOperation;
 import org.hkijena.jipipe.ui.compat.ImageJDatatypeImporterUI;
@@ -106,7 +107,7 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
     /**
      * @return The extension description
      */
-    public abstract String getDescription();
+    public abstract HTMLText getDescription();
 
     /**
      * @return The extension authors

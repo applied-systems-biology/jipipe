@@ -159,7 +159,8 @@ public class JIPipeAlgorithmTargetFinderAlgorithmUI extends JPanel {
         });
 
         // The description
-        JTextArea description = UIUtils.makeReadonlyBorderlessTextArea(info.getDescription());
+        JTextPane description = UIUtils.makeBorderlessReadonlyTextPane(info.getDescription().getHtml());
+        description.setOpaque(false);
         centerPanel.add(description, new GridBagConstraints() {
             {
                 anchor = WEST;

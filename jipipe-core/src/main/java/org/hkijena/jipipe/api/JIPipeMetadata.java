@@ -18,6 +18,7 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
+import org.hkijena.jipipe.extensions.parameters.primitives.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
 import org.hkijena.jipipe.utils.ResourceUtils;
@@ -28,7 +29,7 @@ import org.hkijena.jipipe.utils.ResourceUtils;
 public class JIPipeMetadata implements JIPipeParameterCollection {
     private EventBus eventBus = new EventBus();
     private String name = "New project";
-    private String description = "A JIPipe project";
+    private HTMLText description = new HTMLText("A JIPipe project");
     private JIPipeAuthorMetadata.List authors = new JIPipeAuthorMetadata.List();
     private String website = "";
     private String license = "";
@@ -84,7 +85,7 @@ public class JIPipeMetadata implements JIPipeParameterCollection {
     @JIPipeParameter(value = "description", uiOrder = 1)
     @StringParameterSettings(multiline = true, monospace = true)
     @JsonGetter("description")
-    public String getDescription() {
+    public HTMLText getDescription() {
         return description;
     }
 
@@ -95,9 +96,8 @@ public class JIPipeMetadata implements JIPipeParameterCollection {
      */
     @JIPipeParameter("description")
     @JsonSetter("description")
-    public void setDescription(String description) {
+    public void setDescription(HTMLText description) {
         this.description = description;
-
     }
 
     /**

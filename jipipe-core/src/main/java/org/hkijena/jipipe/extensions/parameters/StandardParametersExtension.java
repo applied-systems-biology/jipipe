@@ -110,8 +110,8 @@ public class StandardParametersExtension extends JIPipePrepackagedDefaultJavaExt
     }
 
     @Override
-    public String getDescription() {
-        return "User interfaces for editing common parameter types";
+    public HTMLText getDescription() {
+        return new HTMLText("User interfaces for editing common parameter types");
     }
 
     @Override
@@ -659,13 +659,13 @@ public class StandardParametersExtension extends JIPipePrepackagedDefaultJavaExt
                 "String/Double",
                 "An object that can either hold a string or double.",
                 StringOrDoubleParameterEditorUI.class);
-        registerParameterType("formatted-text",
-                FormattedTextParameter.class,
+        registerParameterType("html-text",
+                HTMLText.class,
                 null,
                 null,
-                "Formatted text",
+                "HTML text",
                 "A formatted text",
-                FormattedTextParameterEditorUI.class);
+                HTMLTextParameterEditorUI.class);
     }
 
     private void registerPrimitives() {

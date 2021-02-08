@@ -15,6 +15,7 @@ import org.hkijena.jipipe.extensions.clij2.ui.CLIJControlPanelMenuExtension;
 import org.hkijena.jipipe.extensions.imagejdatatypes.ImageJDataTypesExtension;
 import org.hkijena.jipipe.extensions.imagejdatatypes.compat.ImagePlusDataImporterUI;
 import org.hkijena.jipipe.extensions.imagejdatatypes.resultanalysis.ImagePlusDataImportIntoImageJOperation;
+import org.hkijena.jipipe.extensions.parameters.primitives.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.plugin.Plugin;
@@ -45,8 +46,8 @@ public class CLIJExtension extends JIPipePrepackagedDefaultJavaExtension {
     }
 
     @Override
-    public String getDescription() {
-        return "Integrates data types and algorithms for GPU computing based on CLIJ2.";
+    public HTMLText getDescription() {
+        return new HTMLText( "Integrates data types and algorithms for GPU computing based on CLIJ2.");
     }
 
     @Override

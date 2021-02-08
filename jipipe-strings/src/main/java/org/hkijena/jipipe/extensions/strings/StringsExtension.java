@@ -17,6 +17,7 @@ import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.core.data.OpenInNativeApplicationDataImportOperation;
 import org.hkijena.jipipe.extensions.core.data.OpenTextInJIPipeDataOperation;
+import org.hkijena.jipipe.extensions.parameters.primitives.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
 import org.hkijena.jipipe.extensions.strings.datasources.StringDefinitionDataSource;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -38,8 +39,8 @@ public class StringsExtension extends JIPipePrepackagedDefaultJavaExtension {
     }
 
     @Override
-    public String getDescription() {
-        return "Provides support for string data types";
+    public HTMLText getDescription() {
+        return new HTMLText("Provides support for string data types");
     }
 
     @Override

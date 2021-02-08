@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.api.nodes;
 
 import org.hkijena.jipipe.JIPipeDependency;
+import org.hkijena.jipipe.extensions.parameters.primitives.HTMLText;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.util.Comparator;
@@ -70,7 +71,7 @@ public interface JIPipeNodeInfo {
      *
      * @return The description
      */
-    String getDescription();
+    HTMLText getDescription();
 
     /**
      * Gets the menu path of this algorithm

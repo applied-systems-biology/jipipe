@@ -13,12 +13,16 @@
 
 package org.hkijena.jipipe.ui.components;
 
+import com.google.common.eventbus.EventBus;
+
 import javax.swing.*;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Objects;
 
 public class ColorChooserButton extends JButton implements ActionListener {
+    private final EventBus eventBus = new EventBus();
     private ColorIcon icon = new ColorIcon(16, 16);
     private Color selectedColor = Color.RED;
     private String selectColorPrompt = "Select color";
@@ -57,9 +61,16 @@ public class ColorChooserButton extends JButton implements ActionListener {
     }
 
     public void setSelectedColor(Color selectedColor) {
-        this.selectedColor = selectedColor;
-        icon.setFillColor(selectedColor);
-        repaint();
+        if(!Objects.equals(selectedColor, this.selectedColor)) {
+            this.selectedColor = selectedColor;
+            icon.setFillColor(selectedColor);
+            repaint();
+            eventBus.post(new ColorChosenEvent(this, selectedColor));
+        }
+    }
+
+    public EventBus getEventBus() {
+        return eventBus;
     }
 
     public String getSelectColorPrompt() {
@@ -68,5 +79,23 @@ public class ColorChooserButton extends JButton implements ActionListener {
 
     public void setSelectColorPrompt(String selectColorPrompt) {
         this.selectColorPrompt = selectColorPrompt;
+    }
+
+    public static class ColorChosenEvent {
+        private final ColorChooserButton button;
+        private final Color color;
+
+        public ColorChosenEvent(ColorChooserButton button, Color color) {
+            this.button = button;
+            this.color = color;
+        }
+
+        public ColorChooserButton getButton() {
+            return button;
+        }
+
+        public Color getColor() {
+            return color;
+        }
     }
 }

@@ -28,6 +28,7 @@ import org.hkijena.jipipe.extensions.omero.datasources.OMEROProjectReferenceData
 import org.hkijena.jipipe.extensions.omero.datatypes.OMERODatasetReferenceData;
 import org.hkijena.jipipe.extensions.omero.datatypes.OMEROImageReferenceData;
 import org.hkijena.jipipe.extensions.omero.datatypes.OMEROProjectReferenceData;
+import org.hkijena.jipipe.extensions.parameters.primitives.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.plugin.Plugin;
@@ -52,8 +53,8 @@ public class OMEROExtension extends JIPipePrepackagedDefaultJavaExtension {
     }
 
     @Override
-    public String getDescription() {
-        return "Integrates OMERO";
+    public HTMLText getDescription() {
+        return new HTMLText("Integrates OMERO");
     }
 
     @Override

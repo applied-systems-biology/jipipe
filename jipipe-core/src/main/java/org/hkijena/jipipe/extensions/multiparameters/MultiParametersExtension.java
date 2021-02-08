@@ -17,6 +17,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.multiparameters.datatypes.ParametersData;
+import org.hkijena.jipipe.extensions.parameters.primitives.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.scijava.plugin.Plugin;
@@ -38,8 +39,8 @@ public class MultiParametersExtension extends JIPipePrepackagedDefaultJavaExtens
     }
 
     @Override
-    public String getDescription() {
-        return "Extension that provides the necessary data types for handling multiple parameters";
+    public HTMLText getDescription() {
+        return new HTMLText("Extension that provides the necessary data types for handling multiple parameters");
     }
 
     @Override

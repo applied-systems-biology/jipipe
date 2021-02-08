@@ -77,7 +77,7 @@ public class JIPipeDependencyUI extends JPanel {
         }
         formPanel.addToForm(UIUtils.makeReadonlyTextField(dependency.getMetadata().getLicense()), new JLabel("License"), null);
         formPanel.addToForm(UIUtils.makeReadonlyTextField("" + dependency.getDependencyLocation()), new JLabel("Defining file"), null);
-        formPanel.addToForm(UIUtils.makeReadonlyTextArea(dependency.getMetadata().getDescription()), new JLabel("Description"), null);
+        formPanel.addToForm(UIUtils.makeReadonlyTextPane(dependency.getMetadata().getDescription().getHtml()), new JLabel("Description"), null);
 
         insertDependencies(formPanel);
         insertAddedDatatypes(formPanel);
@@ -150,7 +150,7 @@ public class JIPipeDependencyUI extends JPanel {
             model.addRow(new Object[]{
                     info.getName(),
                     info.getId(),
-                    StringUtils.wordWrappedHTML(info.getDescription(), 50),
+                    info.getDescription(),
                     TooltipUtils.getSlotTable(info.getInputSlots().stream().map(JIPipeDataSlotInfo::new).collect(Collectors.toList())),
                     TooltipUtils.getSlotTable(info.getOutputSlots().stream().map(JIPipeDataSlotInfo::new).collect(Collectors.toList()))
             });

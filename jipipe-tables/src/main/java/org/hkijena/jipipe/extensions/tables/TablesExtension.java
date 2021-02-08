@@ -15,6 +15,7 @@ package org.hkijena.jipipe.extensions.tables;
 
 import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
+import org.hkijena.jipipe.extensions.parameters.primitives.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
 import org.hkijena.jipipe.extensions.tables.algorithms.*;
 import org.hkijena.jipipe.extensions.tables.datatypes.DoubleArrayTableColumn;
@@ -66,8 +67,8 @@ public class TablesExtension extends JIPipePrepackagedDefaultJavaExtension {
     }
 
     @Override
-    public String getDescription() {
-        return "Common table operations";
+    public HTMLText getDescription() {
+        return new HTMLText("Common table operations");
     }
 
     @Override

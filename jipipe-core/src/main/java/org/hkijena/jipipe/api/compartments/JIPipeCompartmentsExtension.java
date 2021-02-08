@@ -19,6 +19,7 @@ import org.hkijena.jipipe.api.compartments.algorithms.JIPipeCompartmentOutput;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.compartments.datatypes.JIPipeCompartmentOutputData;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
+import org.hkijena.jipipe.extensions.parameters.primitives.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -41,8 +42,8 @@ public class JIPipeCompartmentsExtension extends JIPipePrepackagedDefaultJavaExt
     }
 
     @Override
-    public String getDescription() {
-        return "Data types required for graph compartment management";
+    public HTMLText getDescription() {
+        return new HTMLText("Data types required for graph compartment management");
     }
 
     @Override

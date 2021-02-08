@@ -18,6 +18,7 @@ import org.hkijena.jipipe.JIPipeJsonExtension;
 import org.hkijena.jipipe.api.grouping.JsonNodeInfo;
 import org.hkijena.jipipe.api.grouping.NodeGroup;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
+import org.hkijena.jipipe.extensions.parameters.primitives.HTMLText;
 import org.hkijena.jipipe.ui.JIPipeJsonExtensionWindow;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.components.DocumentTabPane;
@@ -163,7 +164,7 @@ public class JIPipeJsonExporter extends JIPipeGraphEditorUI {
      * @param name        predefined name
      * @param description predefined description
      */
-    public static void createExporter(JIPipeProjectWorkbench workbench, NodeGroup nodeGroup, String name, String description) {
+    public static void createExporter(JIPipeProjectWorkbench workbench, NodeGroup nodeGroup, String name, HTMLText description) {
         JIPipeJsonExporter exporter = new JIPipeJsonExporter(workbench, (NodeGroup) nodeGroup.duplicate());
         exporter.getNodeInfo().setName(name);
         exporter.getNodeInfo().setDescription(description);

@@ -22,6 +22,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.extensions.multiparameters.datatypes.ParametersData;
+import org.hkijena.jipipe.extensions.parameters.primitives.HTMLText;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -69,8 +70,8 @@ public class MultiParameterNodeInfo implements JIPipeNodeInfo {
     }
 
     @Override
-    public String getDescription() {
-        return "Applies each input parameter to an algorithm";
+    public HTMLText getDescription() {
+        return new HTMLText("Applies each input parameter to an algorithm");
     }
 
     @Override

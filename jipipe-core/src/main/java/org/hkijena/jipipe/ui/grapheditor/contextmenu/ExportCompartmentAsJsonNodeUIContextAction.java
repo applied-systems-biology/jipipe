@@ -15,6 +15,7 @@ package org.hkijena.jipipe.ui.grapheditor.contextmenu;
 
 import org.hkijena.jipipe.api.compartments.JIPipeExportedCompartment;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
+import org.hkijena.jipipe.extensions.parameters.primitives.HTMLText;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphCanvasUI;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeNodeUI;
@@ -37,7 +38,7 @@ public class ExportCompartmentAsJsonNodeUIContextAction implements NodeUIContext
         JIPipeProjectCompartment compartment = (JIPipeProjectCompartment) selection.iterator().next().getNode();
         JIPipeExportedCompartment exportedCompartment = new JIPipeExportedCompartment(compartment);
         exportedCompartment.getMetadata().setName(compartment.getName());
-        exportedCompartment.getMetadata().setDescription("An exported JIPipe compartment");
+        exportedCompartment.getMetadata().setDescription(new HTMLText("An exported JIPipe compartment"));
         ParameterPanel metadataEditor = new ParameterPanel(canvasUI.getWorkbench(), exportedCompartment.getMetadata(),
                 null,
                 ParameterPanel.WITH_SCROLLING);

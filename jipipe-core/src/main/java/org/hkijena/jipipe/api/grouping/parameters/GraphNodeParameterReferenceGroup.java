@@ -17,6 +17,7 @@ import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.grouping.events.ParameterReferencesChangedEvent;
+import org.hkijena.jipipe.extensions.parameters.primitives.HTMLText;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -30,7 +31,7 @@ public class GraphNodeParameterReferenceGroup {
     private final EventBus eventBus = new EventBus();
     private List<GraphNodeParameterReference> content = new ArrayList<>();
     private String name;
-    private String description;
+    private HTMLText description;
 
     /**
      * Creates a new instance
@@ -62,12 +63,12 @@ public class GraphNodeParameterReferenceGroup {
     }
 
     @JsonGetter("description")
-    public String getDescription() {
+    public HTMLText getDescription() {
         return description;
     }
 
     @JsonSetter("description")
-    public void setDescription(String description) {
+    public void setDescription(HTMLText description) {
         this.description = description;
     }
 

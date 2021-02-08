@@ -21,6 +21,7 @@ import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.JIPipeJsonExtension;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
+import org.hkijena.jipipe.extensions.parameters.primitives.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
 import org.hkijena.jipipe.utils.JsonUtils;
 import org.hkijena.jipipe.utils.ResourceUtils;
@@ -53,8 +54,8 @@ public class JsonExtensionLoaderExtension extends JIPipePrepackagedDefaultJavaEx
     }
 
     @Override
-    public String getDescription() {
-        return "Loads JSON extensions";
+    public HTMLText getDescription() {
+        return new HTMLText("Loads JSON extensions");
     }
 
     @Override

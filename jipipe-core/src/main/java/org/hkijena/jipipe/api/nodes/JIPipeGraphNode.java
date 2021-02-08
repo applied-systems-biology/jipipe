@@ -41,6 +41,7 @@ import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterVisibility;
+import org.hkijena.jipipe.extensions.parameters.primitives.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
 import org.hkijena.jipipe.utils.StringUtils;
 
@@ -77,7 +78,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
     private Path internalStoragePath;
     private Path storagePath;
     private String customName;
-    private String customDescription;
+    private HTMLText customDescription;
     private String compartment;
     private Set<String> visibleCompartments = new HashSet<>();
     private JIPipeGraph graph;
@@ -728,7 +729,9 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
     @JIPipeDocumentation(name = "Description", description = "A custom description")
     @StringParameterSettings(multiline = true)
     @JIPipeParameter(value = "jipipe:node:description", visibility = JIPipeParameterVisibility.Visible, uiOrder = -999)
-    public String getCustomDescription() {
+    public HTMLText getCustomDescription() {
+        if(customDescription == null)
+            customDescription = new HTMLText();
         return customDescription;
     }
 
@@ -738,7 +741,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
      * @param customDescription Description string
      */
     @JIPipeParameter("jipipe:node:description")
-    public void setCustomDescription(String customDescription) {
+    public void setCustomDescription(HTMLText customDescription) {
         this.customDescription = customDescription;
     }
 

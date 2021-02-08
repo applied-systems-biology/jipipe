@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.nodes.categories.InternalNodeTypeCategory;
+import org.hkijena.jipipe.extensions.parameters.primitives.HTMLText;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -59,8 +60,8 @@ public class JIPipeEmptyNodeInfo implements JIPipeNodeInfo {
     }
 
     @Override
-    public String getDescription() {
-        return null;
+    public HTMLText getDescription() {
+        return new HTMLText();
     }
 
     @Override

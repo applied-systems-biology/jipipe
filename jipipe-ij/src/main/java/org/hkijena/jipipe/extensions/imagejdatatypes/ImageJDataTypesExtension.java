@@ -89,6 +89,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.display.OpenInImageJDataDis
 import org.hkijena.jipipe.extensions.imagejdatatypes.parameters.OMEColorMode;
 import org.hkijena.jipipe.extensions.imagejdatatypes.parameters.OMETIFFCompression;
 import org.hkijena.jipipe.extensions.imagejdatatypes.resultanalysis.*;
+import org.hkijena.jipipe.extensions.parameters.primitives.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
 import org.hkijena.jipipe.extensions.tables.ResultsTableDataPreview;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
@@ -200,8 +201,8 @@ public class ImageJDataTypesExtension extends JIPipePrepackagedDefaultJavaExtens
     }
 
     @Override
-    public String getDescription() {
-        return "Adds support for commonly used ImageJ data types";
+    public HTMLText getDescription() {
+        return new HTMLText("Adds support for commonly used ImageJ data types");
     }
 
     @Override

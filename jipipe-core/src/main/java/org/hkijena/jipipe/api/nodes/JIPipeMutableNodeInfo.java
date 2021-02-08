@@ -13,6 +13,8 @@
 
 package org.hkijena.jipipe.api.nodes;
 
+import org.hkijena.jipipe.extensions.parameters.primitives.HTMLText;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,7 +26,7 @@ public abstract class JIPipeMutableNodeInfo implements JIPipeNodeInfo {
     private Class<? extends JIPipeGraphNode> nodeClass;
     private String id;
     private String name;
-    private String description;
+    private HTMLText description;
     private JIPipeNodeTypeCategory category;
     private List<JIPipeInputSlot> inputSlots = new ArrayList<>();
     private List<JIPipeOutputSlot> outputSlots = new ArrayList<>();
@@ -61,7 +63,7 @@ public abstract class JIPipeMutableNodeInfo implements JIPipeNodeInfo {
     }
 
     @Override
-    public String getDescription() {
+    public HTMLText getDescription() {
         return description;
     }
 
@@ -70,7 +72,7 @@ public abstract class JIPipeMutableNodeInfo implements JIPipeNodeInfo {
      *
      * @param description The description
      */
-    public void setDescription(String description) {
+    public void setDescription(HTMLText description) {
         this.description = description;
     }
 

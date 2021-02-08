@@ -19,6 +19,7 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.JIPipeDefaultDocumentation;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.extensions.parameters.primitives.HTMLText;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -267,7 +268,7 @@ public class JIPipeParameterTree implements JIPipeParameterCollection, JIPipeCus
                     Node childNode = add(subParameters, entry.getKey(), parent);
                     if (pair.getDocumentation() != null) {
                         childNode.setName(pair.getDocumentation().name());
-                        childNode.setDescription(pair.getDocumentation().description());
+                        childNode.setDescription(new HTMLText(pair.getDocumentation().description()));
                     } else
                         childNode.setName(entry.getKey());
 
@@ -446,8 +447,10 @@ public class JIPipeParameterTree implements JIPipeParameterCollection, JIPipeCus
     public JIPipeDocumentation getSourceDocumentation(JIPipeParameterCollection source) {
         Node node = nodeMap.get(source);
         String name = getSourceDocumentationName(source);
-        String description = node.getDescription();
-        return new JIPipeDefaultDocumentation(name, description);
+        HTMLText description = node.getDescription();
+        if(description == null)
+            description = new HTMLText();
+        return new JIPipeDefaultDocumentation(name, description.getBody());
     }
 
     /**
@@ -459,7 +462,7 @@ public class JIPipeParameterTree implements JIPipeParameterCollection, JIPipeCus
     public void setSourceDocumentation(JIPipeParameterCollection source, JIPipeDefaultDocumentation documentation) {
         Node node = nodeMap.get(source);
         node.setName(documentation.name());
-        node.setDescription(documentation.description());
+        node.setDescription(new HTMLText(documentation.description()));
     }
 
     /**
@@ -620,7 +623,7 @@ public class JIPipeParameterTree implements JIPipeParameterCollection, JIPipeCus
         private String key;
         private JIPipeParameterVisibility visibility = JIPipeParameterVisibility.Visible;
         private String name;
-        private String description;
+        private HTMLText description;
         private int order;
         private int uiOrder;
         private BiMap<String, JIPipeParameterAccess> parameters = HashBiMap.create();
@@ -690,11 +693,11 @@ public class JIPipeParameterTree implements JIPipeParameterCollection, JIPipeCus
             this.name = name;
         }
 
-        public String getDescription() {
+        public HTMLText getDescription() {
             return description;
         }
 
-        public void setDescription(String description) {
+        public void setDescription(HTMLText description) {
             this.description = description;
         }
 

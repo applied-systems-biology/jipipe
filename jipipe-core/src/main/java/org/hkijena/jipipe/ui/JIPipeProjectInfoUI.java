@@ -34,6 +34,7 @@ import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.text.html.HTMLEditorKit;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -52,7 +53,8 @@ import java.util.concurrent.ExecutionException;
  */
 public class JIPipeProjectInfoUI extends JIPipeProjectWorkbenchPanel {
 
-    private final MarkdownReader descriptionReader;
+    private final JTextPane descriptionReader;
+    private JScrollPane descriptionReaderScrollPane;
     private final ParameterPanel parameterPanel;
     private JTextField licenseInfo;
     private JTextField projectName;
@@ -70,7 +72,11 @@ public class JIPipeProjectInfoUI extends JIPipeProjectWorkbenchPanel {
      */
     public JIPipeProjectInfoUI(JIPipeProjectWorkbench workbenchUI) {
         super(workbenchUI);
-        descriptionReader = new MarkdownReader(false);
+        descriptionReader = new JTextPane();
+        descriptionReader.setContentType("text/html");
+        descriptionReader.setEditorKit(new HTMLEditorKit());
+        descriptionReader.setEditable(false);
+        descriptionReaderScrollPane = new JScrollPane(descriptionReader);
         parameterPanel = new ParameterPanel(getWorkbench(),
                 getProject().getPipelineParameters(),
                 MarkdownDocument.fromPluginResource("documentation/project-info-parameters.md"),
@@ -163,7 +169,7 @@ public class JIPipeProjectInfoUI extends JIPipeProjectWorkbenchPanel {
     }
 
     private void refreshDescription() {
-        descriptionReader.setDocument(new MarkdownDocument(getProject().getMetadata().getDescription()));
+        descriptionReader.setText(getProject().getMetadata().getDescription().getHtml());
     }
 
     private void initialize() {
@@ -171,9 +177,9 @@ public class JIPipeProjectInfoUI extends JIPipeProjectWorkbenchPanel {
 
         initializeHeaderPanel();
 
-        descriptionReader.getScrollPane().setBorder(null);
+        descriptionReaderScrollPane.setBorder(null);
         parameterPanel.getScrollPane().setBorder(null);
-        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, descriptionReader, parameterPanel);
+        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, descriptionReaderScrollPane, parameterPanel);
         splitPane.setBorder(null);
         splitPane.setDividerSize(3);
         splitPane.setResizeWeight(0.66);

@@ -17,6 +17,7 @@ import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.api.data.JIPipeDataOperation;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.core.data.OpenInNativeApplicationDataImportOperation;
+import org.hkijena.jipipe.extensions.parameters.primitives.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
 import org.hkijena.jipipe.extensions.plots.converters.PlotToTableConverter;
 import org.hkijena.jipipe.extensions.plots.datatypes.*;
@@ -52,8 +53,8 @@ public class PlotsExtension extends JIPipePrepackagedDefaultJavaExtension {
     }
 
     @Override
-    public String getDescription() {
-        return "Commonly used plot types";
+    public HTMLText getDescription() {
+        return new HTMLText("Commonly used plot types");
     }
 
     @Override

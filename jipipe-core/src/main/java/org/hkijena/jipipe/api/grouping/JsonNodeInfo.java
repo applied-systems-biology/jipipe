@@ -42,6 +42,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.parameters.enums.DynamicCategoryEnumParameter;
+import org.hkijena.jipipe.extensions.parameters.primitives.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.references.JIPipeAlgorithmIconRef;
@@ -63,7 +64,7 @@ public class JsonNodeInfo implements JIPipeNodeInfo, JIPipeValidatable, JIPipePa
     private final EventBus eventBus = new EventBus();
     private String id;
     private String name;
-    private String description;
+    private HTMLText description;
     private List<JIPipeInputSlot> inputSlots = new ArrayList<>();
     private List<JIPipeOutputSlot> outputSlots = new ArrayList<>();
     private JIPipeGraph graph = new JIPipeGraph();
@@ -160,13 +161,13 @@ public class JsonNodeInfo implements JIPipeNodeInfo, JIPipeValidatable, JIPipePa
     @JIPipeParameter(value = "description", uiOrder = 10)
     @StringParameterSettings(multiline = true)
     @JsonGetter("description")
-    public String getDescription() {
+    public HTMLText getDescription() {
         return description;
     }
 
     @JsonSetter("description")
     @JIPipeParameter("description")
-    public void setDescription(String description) {
+    public void setDescription(HTMLText description) {
         this.description = description;
     }
 

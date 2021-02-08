@@ -1,6 +1,5 @@
 package org.hkijena.jipipe.extensions.nodetoolboxtool;
 
-import com.google.common.html.HtmlEscapers;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
@@ -122,9 +121,9 @@ public class NodeToolBoxWindow extends JFrame {
             builder.append("</table>\n\n");
 
             // Write description
-            String description = info.getDescription();
+            String description = info.getDescription().getBody();
             if (description != null && !description.isEmpty())
-                builder.append(HtmlEscapers.htmlEscaper().escape(description)).append("</br>");
+                builder.append(description).append("</br>");
 
 
             documentationReader.setDocument(new MarkdownDocument(builder.toString()));
@@ -157,7 +156,7 @@ public class NodeToolBoxWindow extends JFrame {
         if (info.isHidden())
             return null;
         nameHayStack = StringUtils.orElse(info.getName(), "").toLowerCase();
-        descriptionHayStack = StringUtils.orElse(info.getDescription(), "").toLowerCase();
+        descriptionHayStack = StringUtils.orElse(info.getDescription().getBody(), "").toLowerCase();
 
         nameHayStack = nameHayStack.toLowerCase();
         descriptionHayStack = descriptionHayStack.toLowerCase();

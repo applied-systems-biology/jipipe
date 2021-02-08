@@ -25,6 +25,7 @@ import org.hkijena.jipipe.extensions.filesystem.dataypes.PathData;
 import org.hkijena.jipipe.extensions.filesystem.resultanalysis.CopyPathDataOperation;
 import org.hkijena.jipipe.extensions.filesystem.resultanalysis.FilesystemDataSlotPreview;
 import org.hkijena.jipipe.extensions.filesystem.resultanalysis.OpenPathDataOperation;
+import org.hkijena.jipipe.extensions.parameters.primitives.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -47,8 +48,8 @@ public class FilesystemExtension extends JIPipePrepackagedDefaultJavaExtension {
     }
 
     @Override
-    public String getDescription() {
-        return "Data types and algorithms for interacting with files and folders";
+    public HTMLText getDescription() {
+        return new HTMLText("Data types and algorithms for interacting with files and folders");
     }
 
     @Override

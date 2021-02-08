@@ -111,9 +111,9 @@ public class TooltipUtils {
         builder.append("</table>\n\n");
 
         // Write description
-        String description = info.getDescription();
+        String description = info.getDescription().wrap(50).getBody();
         if (description != null && !description.isEmpty())
-            builder.append(HtmlEscapers.htmlEscaper().escape(description)).append("</br>");
+            builder.append(description).append("</br>");
 
         builder.append("\n\n");
 
@@ -177,9 +177,9 @@ public class TooltipUtils {
         builder.append("</table>\n\n");
 
         // Write description
-        String description = info.getDescription();
+        String description = info.getDescription().wrap(50).getBody();
         if (description != null && !description.isEmpty())
-            builder.append(HtmlEscapers.htmlEscaper().escape(description)).append("</br>");
+            builder.append(description).append("</br>");
 
         builder.append("\n\n");
 
@@ -252,9 +252,9 @@ public class TooltipUtils {
         builder.append("</table>");
 
         // Write description
-        String description = info.getDescription();
+        String description = info.getDescription().wrap(50).getBody();
         if (description != null && !description.isEmpty())
-            builder.append(StringUtils.wordWrappedHTMLElement(description, 50)).append("</br>");
+            builder.append(description).append("</br>");
 
 //        if (!preferredTraits.isEmpty()) {
 //            builder.append("<br/><br/><strong>Good for<br/>");

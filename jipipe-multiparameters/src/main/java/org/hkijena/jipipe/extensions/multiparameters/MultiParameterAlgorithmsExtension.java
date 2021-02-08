@@ -19,6 +19,7 @@ import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.multiparameters.algorithms.MultiParameterNodeInfo;
 import org.hkijena.jipipe.extensions.multiparameters.datasources.ParametersDataDefinition;
 import org.hkijena.jipipe.extensions.multiparameters.datasources.ParametersDataTableDefinition;
+import org.hkijena.jipipe.extensions.parameters.primitives.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
 import org.scijava.plugin.Plugin;
 
@@ -39,8 +40,8 @@ public class MultiParameterAlgorithmsExtension extends JIPipePrepackagedDefaultJ
     }
 
     @Override
-    public String getDescription() {
-        return "Extension that provides capabilities to run multiple parameters";
+    public HTMLText getDescription() {
+        return new HTMLText("Extension that provides capabilities to run multiple parameters");
     }
 
     @Override

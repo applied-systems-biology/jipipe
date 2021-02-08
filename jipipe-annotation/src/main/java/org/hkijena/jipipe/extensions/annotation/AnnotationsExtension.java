@@ -18,6 +18,7 @@ import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.annotation.algorithms.*;
 import org.hkijena.jipipe.extensions.annotation.datasources.AnnotationTableFromFile;
 import org.hkijena.jipipe.extensions.core.data.OpenInNativeApplicationDataImportOperation;
+import org.hkijena.jipipe.extensions.parameters.primitives.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
 import org.hkijena.jipipe.extensions.tables.datatypes.AnnotationTableData;
 import org.hkijena.jipipe.extensions.tables.display.OpenResultsTableInImageJDataOperation;
@@ -43,8 +44,8 @@ public class AnnotationsExtension extends JIPipePrepackagedDefaultJavaExtension 
     }
 
     @Override
-    public String getDescription() {
-        return "Provides data types and algorithms to modify data annotations";
+    public HTMLText getDescription() {
+        return new HTMLText("Provides data types and algorithms to modify data annotations");
     }
 
     @Override

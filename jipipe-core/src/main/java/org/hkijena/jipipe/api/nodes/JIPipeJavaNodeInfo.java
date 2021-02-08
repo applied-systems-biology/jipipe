@@ -25,6 +25,7 @@ import org.hkijena.jipipe.api.JIPipeHidden;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.categories.InternalNodeTypeCategory;
+import org.hkijena.jipipe.extensions.parameters.primitives.HTMLText;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 
 import java.io.IOException;
@@ -115,10 +116,11 @@ public class JIPipeJavaNodeInfo extends JIPipeMutableNodeInfo {
      * @param klass The algorithm class
      * @return The name
      */
-    public static String getDescriptionOf(Class<? extends JIPipeGraphNode> klass) {
+    public static HTMLText getDescriptionOf(Class<? extends JIPipeGraphNode> klass) {
         JIPipeDocumentation[] annotations = klass.getAnnotationsByType(JIPipeDocumentation.class);
         if (annotations.length > 0) {
-            return annotations[0].description();
+            String rawDescription = annotations[0].description();
+            return new HTMLText(rawDescription.replace("\n", "<br/>"));
         } else {
             return null;
         }

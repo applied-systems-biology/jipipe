@@ -47,13 +47,13 @@ public class JIPipeAlgorithmTargetRanking implements RankingFunction<Object> {
         if (value instanceof JIPipeGraphNode) {
             JIPipeGraphNode node = ((JIPipeGraphNode) value);
             nameHayStack = node.getName();
-            descriptionHayStack = StringUtils.orElse(node.getCustomDescription(), node.getInfo().getDescription());
+            descriptionHayStack = StringUtils.orElse(node.getCustomDescription().getBody(), node.getInfo().getDescription().getBody());
         } else if (value instanceof JIPipeNodeInfo) {
             JIPipeNodeInfo info = (JIPipeNodeInfo) value;
             if (info.isHidden())
                 return null;
             nameHayStack = StringUtils.orElse(info.getName(), "").toLowerCase();
-            descriptionHayStack = StringUtils.orElse(info.getDescription(), "").toLowerCase();
+            descriptionHayStack = StringUtils.orElse(info.getDescription().getBody(), "").toLowerCase();
         } else {
             return null;
         }

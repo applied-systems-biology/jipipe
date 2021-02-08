@@ -22,6 +22,7 @@ import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.grouping.NodeGroup;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
+import org.hkijena.jipipe.extensions.parameters.primitives.HTMLText;
 import org.hkijena.jipipe.extensions.settings.AutoSaveSettings;
 import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
 import org.hkijena.jipipe.extensions.settings.ProjectsSettings;
@@ -608,7 +609,7 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
         NodeGroup nodeGroup = new NodeGroup(new JIPipeGraph(getProject().getGraph()), true);
         JIPipeJsonExporter exporter = new JIPipeJsonExporter(this, nodeGroup);
         exporter.getNodeInfo().setName("Custom algorithm");
-        exporter.getNodeInfo().setDescription("A custom algorithm");
+        exporter.getNodeInfo().setDescription(new HTMLText("A custom algorithm"));
         getDocumentTabPane().addTab("Export custom algorithm",
                 UIUtils.getIconFromResources("actions/document-export.png"),
                 exporter,

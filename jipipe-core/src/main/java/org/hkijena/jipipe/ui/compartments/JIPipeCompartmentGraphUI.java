@@ -190,12 +190,14 @@ public class JIPipeCompartmentGraphUI extends JIPipeGraphEditorUI {
         importItem.addActionListener(e -> importCompartment());
         menuBar.add(importItem);
 
-        JButton addCommentItem = new JButton("Add comment", UIUtils.getIconFromResources("actions/edit-comment.png"));
-        UIUtils.makeFlatH25(addCommentItem);
-        addCommentItem.setBorder(BorderFactory.createEmptyBorder(0, 2, 0, 2));
-        addCommentItem.setToolTipText("Add a comment node");
-        addCommentItem.addActionListener(e -> addComment());
-        menuBar.add(addCommentItem);
+        if(JIPipe.getNodes().hasNodeInfoWithId("jipipe:comment")) {
+            JButton addCommentItem = new JButton("Add comment", UIUtils.getIconFromResources("actions/edit-comment.png"));
+            UIUtils.makeFlatH25(addCommentItem);
+            addCommentItem.setBorder(BorderFactory.createEmptyBorder(0, 2, 0, 2));
+            addCommentItem.setToolTipText("Add a comment node");
+            addCommentItem.addActionListener(e -> addComment());
+            menuBar.add(addCommentItem);
+        }
     }
 
     private void addComment() {

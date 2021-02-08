@@ -13,6 +13,8 @@
 
 package org.hkijena.jipipe.api.parameters;
 
+import org.hkijena.jipipe.extensions.parameters.primitives.HTMLText;
+
 /**
  * An {@link JIPipeParameterCollection} that comes with a predefined name
  */
@@ -29,5 +31,5 @@ public interface JIPipeNamedParameterCollection {
      *
      * @return A default description. Can still be overridden by external settings
      */
-    String getDefaultParameterCollectionDescription();
+    HTMLText getDefaultParameterCollectionDescription();
 }

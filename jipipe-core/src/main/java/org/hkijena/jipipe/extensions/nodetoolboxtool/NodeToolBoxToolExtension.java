@@ -2,6 +2,7 @@ package org.hkijena.jipipe.extensions.nodetoolboxtool;
 
 import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
+import org.hkijena.jipipe.extensions.parameters.primitives.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
 import org.scijava.plugin.Plugin;
 
@@ -18,8 +19,8 @@ public class NodeToolBoxToolExtension extends JIPipePrepackagedDefaultJavaExtens
     }
 
     @Override
-    public String getDescription() {
-        return "Provides a tool that allows dragging node types into a graph";
+    public HTMLText getDescription() {
+        return new HTMLText("Provides a tool that allows dragging node types into a graph");
     }
 
     @Override

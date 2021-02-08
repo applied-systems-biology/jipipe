@@ -43,6 +43,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphEdge;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
+import org.hkijena.jipipe.extensions.parameters.primitives.HTMLText;
 import org.hkijena.jipipe.ui.components.MarkdownDocument;
 import org.hkijena.jipipe.ui.settings.JIPipeProjectInfoParameters;
 import org.hkijena.jipipe.utils.JsonUtils;
@@ -80,7 +81,7 @@ public class JIPipeProject implements JIPipeValidatable {
      */
     public JIPipeProject() {
         this.cache = new JIPipeProjectCache(this);
-        this.metadata.setDescription(MarkdownDocument.fromPluginResource("documentation/new-project-template.md").getMarkdown());
+        this.metadata.setDescription(new HTMLText(MarkdownDocument.fromPluginResource("documentation/new-project-template.md").getRenderedHTML()));
         this.graph.attach(JIPipeProject.class, this);
         this.graph.attach(JIPipeGraphType.Project);
         this.compartmentGraph.attach(JIPipeProject.class, this);
