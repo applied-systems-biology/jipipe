@@ -64,7 +64,6 @@ public class HTMLEditor extends JPanel {
     private void initialize(int flags) {
         textPane = new JTextPane();
         textPane.setContentType("text/html");
-        textPane.setCursor(Cursor.getPredefinedCursor(Cursor.TEXT_CURSOR));
         editorKit = new HTMLEditorKit();
         for (Action action : editorKit.getActions()) {
             availableEditorKitActions.put(action.getValue(Action.NAME) + "", action);
@@ -72,6 +71,7 @@ public class HTMLEditor extends JPanel {
 
         textPane.setEditorKit(editorKit);
         editorKit.getStyleSheet().addRule("body { font-family: Dialog; }");
+        textPane.setCursor(Cursor.getPredefinedCursor(Cursor.TEXT_CURSOR));
         setLayout(new BorderLayout());
         initializeToolBar(flags);
 
