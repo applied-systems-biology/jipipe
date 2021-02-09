@@ -1421,6 +1421,8 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
     }
 
     public Point getGraphEditorCursor() {
+        if(graphEditCursor == null)
+            graphEditCursor = new Point(0,0);
         return graphEditCursor;
     }
 
@@ -1505,6 +1507,13 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
     }
 
     public void setZoom(double zoom) {
+        // Zoom the cursor
+        double oldZoom = this.zoom;
+        double normalizedCursorX = getGraphEditorCursor().x / oldZoom;
+        double normalizedCursorY = getGraphEditorCursor().y / oldZoom;
+        setGraphEditCursor(new Point((int)Math.round(normalizedCursorX * zoom), (int)Math.round(normalizedCursorY * zoom)));
+
+        // Zoom nodes
         this.zoom = zoom;
         eventBus.post(new ZoomChangedEvent(this));
         for (JIPipeNodeUI ui : nodeUIs.values()) {
