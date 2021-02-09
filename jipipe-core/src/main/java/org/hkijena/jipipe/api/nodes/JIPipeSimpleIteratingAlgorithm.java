@@ -238,7 +238,7 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
             return eventBus;
         }
 
-        @JIPipeDocumentation(name = "Limit", description = "Limits which data batches are generated. The first index is zero.")
+        @JIPipeDocumentation(name = "Limit", description = "Limits which data batches are generated. The first index is zero.\n" + IntegerRange.DOCUMENTATION_DESCRIPTION)
         @JIPipeParameter("limit")
         public OptionalIntegerRange getLimit() {
             return limit;

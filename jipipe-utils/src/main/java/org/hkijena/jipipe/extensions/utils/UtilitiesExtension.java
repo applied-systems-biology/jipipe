@@ -23,13 +23,7 @@ import org.hkijena.jipipe.extensions.filesystem.resultanalysis.CopyPathDataOpera
 import org.hkijena.jipipe.extensions.filesystem.resultanalysis.OpenPathDataOperation;
 import org.hkijena.jipipe.extensions.parameters.primitives.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringList;
-import org.hkijena.jipipe.extensions.utils.algorithms.ConverterAlgorithm;
-import org.hkijena.jipipe.extensions.utils.algorithms.GetJIPipeSlotFolderAlgorithm;
-import org.hkijena.jipipe.extensions.utils.algorithms.ImportJIPipeSlotFolderAlgorithm;
-import org.hkijena.jipipe.extensions.utils.algorithms.JIPipeProjectParameterDefinition;
-import org.hkijena.jipipe.extensions.utils.algorithms.PathsToJIPipeProjectParametersAlgorithm;
-import org.hkijena.jipipe.extensions.utils.algorithms.RunJIPipeProjectAlgorithm;
-import org.hkijena.jipipe.extensions.utils.algorithms.SortRowsAlgorithm;
+import org.hkijena.jipipe.extensions.utils.algorithms.*;
 import org.hkijena.jipipe.extensions.utils.datatypes.JIPipeOutputData;
 import org.hkijena.jipipe.extensions.utils.datatypes.PathDataToJIPipeOutputConverter;
 import org.hkijena.jipipe.extensions.utils.display.ImportJIPipeProjectDataOperation;
@@ -67,6 +61,7 @@ public class UtilitiesExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerNodeType("jipipe-project-parameters-from-paths", PathsToJIPipeProjectParametersAlgorithm.class, UIUtils.getIconURLFromResources("apps/jipipe.png"));
         registerNodeType("jipipe-output-get-slot-folder", GetJIPipeSlotFolderAlgorithm.class, UIUtils.getIconURLFromResources("actions/find.png"));
         registerNodeType("jipipe-output-import-slot-folder", ImportJIPipeSlotFolderAlgorithm.class, UIUtils.getIconURLFromResources("actions/document-import.png"));
+        registerNodeType("select-data-table-rows", SelectDataTableRowsAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
 
         // Comment node
         JIPipeJavaNodeInfo commentNodeInfo = new JIPipeJavaNodeInfo("jipipe:comment", JIPipeCommentNode.class);
