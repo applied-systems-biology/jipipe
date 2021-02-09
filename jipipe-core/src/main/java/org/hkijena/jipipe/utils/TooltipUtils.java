@@ -177,7 +177,7 @@ public class TooltipUtils {
         builder.append("</table>\n\n");
 
         // Write description
-        String description = info.getDescription().wrap(50).getBody();
+        String description = info.getDescription().getBody();
         if (description != null && !description.isEmpty())
             builder.append(description).append("</br>");
 
