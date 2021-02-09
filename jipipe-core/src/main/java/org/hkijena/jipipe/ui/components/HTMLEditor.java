@@ -387,15 +387,13 @@ public class HTMLEditor extends JPanel {
             Document document = textPane.getDocument();
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream ();
             editorKit.write(byteArrayOutputStream, document, 0, document.getLength());
-            String value = byteArrayOutputStream.toString();
-//            int bodyStart = value.indexOf("<body>") + "<body>".length();
+            //            int bodyStart = value.indexOf("<body>") + "<body>".length();
 //            int bodyEnd = value.indexOf("</body>");
 //            String body = value.substring(bodyStart, bodyEnd).trim();
 //            body = body.replace("\n", "<br/>");
 //            System.out.println(body);
 //            return value.substring(0, bodyStart) + body + "</body></html>";
-            System.out.println(value);
-            return value;
+            return byteArrayOutputStream.toString();
         }
         catch (Exception e) {
             throw new RuntimeException(e);
