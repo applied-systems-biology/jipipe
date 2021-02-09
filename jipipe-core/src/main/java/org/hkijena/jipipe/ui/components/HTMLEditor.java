@@ -70,7 +70,8 @@ public class HTMLEditor extends JPanel {
         }
 
         textPane.setEditorKit(editorKit);
-        editorKit.getStyleSheet().addRule("body { font-family: Dialog; }");
+        editorKit.getStyleSheet().addRule("body { font-family: Dialog; }" +
+                "p { margin: 0; }");
         textPane.setCursor(Cursor.getPredefinedCursor(Cursor.TEXT_CURSOR));
         setLayout(new BorderLayout());
         initializeToolBar(flags);
@@ -387,11 +388,14 @@ public class HTMLEditor extends JPanel {
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream ();
             editorKit.write(byteArrayOutputStream, document, 0, document.getLength());
             String value = byteArrayOutputStream.toString();
-            int bodyStart = value.indexOf("<body>") + "<body>".length();
-            int bodyEnd = value.indexOf("</body>");
-            String body = value.substring(bodyStart, bodyEnd).trim();
-            body = body.replace("\n", "<br/>");
-            return value.substring(0, bodyStart) + body + "</body></html>";
+//            int bodyStart = value.indexOf("<body>") + "<body>".length();
+//            int bodyEnd = value.indexOf("</body>");
+//            String body = value.substring(bodyStart, bodyEnd).trim();
+//            body = body.replace("\n", "<br/>");
+//            System.out.println(body);
+//            return value.substring(0, bodyStart) + body + "</body></html>";
+            System.out.println(value);
+            return value;
         }
         catch (Exception e) {
             throw new RuntimeException(e);
@@ -408,7 +412,18 @@ public class HTMLEditor extends JPanel {
     }
 
     public void setText(String value) {
-        textPane.setText(StringUtils.nullToEmpty(value));
+        if(value == null) {
+            textPane.setText("<html><body><p></p></body></html>");
+        }
+        else {
+            int bodyStart = value.indexOf("<body>") + "<body>".length();
+            int bodyEnd = value.indexOf("</body>");
+            String body = value.substring(bodyStart, bodyEnd).trim();
+            if(!body.startsWith("<"))
+                body = "<p>" + body + "</p>";
+            textPane.setText("<html><body>" + body + "</body></html>");
+        }
+
         // Workaround https://stackoverflow.com/questions/1527021/html-jtextpane-newline-support
 //        textPane.getDocument().putProperty(DefaultEditorKit.EndOfLineStringProperty, "<br/>\n");
     }
