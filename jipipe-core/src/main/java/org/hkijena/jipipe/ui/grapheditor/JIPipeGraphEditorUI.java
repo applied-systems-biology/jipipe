@@ -626,6 +626,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
                     ey = (int) Math.ceil(1.0 * -ny / (canvasUI.getViewMode().getGridHeight() * canvasUI.getZoom()));
                 }
                 if (ex > 0 || ey > 0) {
+                    System.out.println(ey);
                     canvasUI.expandLeftTop(ex, ey);
                     if (ex > 0) {
                         nx = canvasUI.getViewMode().getGridWidth();
