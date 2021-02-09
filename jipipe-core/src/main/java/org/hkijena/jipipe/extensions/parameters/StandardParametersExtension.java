@@ -41,14 +41,7 @@ import org.hkijena.jipipe.extensions.parameters.expressions.functions.*;
 import org.hkijena.jipipe.extensions.parameters.functions.FunctionParameter;
 import org.hkijena.jipipe.extensions.parameters.functions.FunctionParameterEditorUI;
 import org.hkijena.jipipe.extensions.parameters.functions.StringPatternExtractionFunction;
-import org.hkijena.jipipe.extensions.parameters.generators.ByteRangeParameterGenerator;
-import org.hkijena.jipipe.extensions.parameters.generators.DoubleRangeParameterGenerator;
-import org.hkijena.jipipe.extensions.parameters.generators.FloatRangeParameterGenerator;
-import org.hkijena.jipipe.extensions.parameters.generators.IntegerRange;
-import org.hkijena.jipipe.extensions.parameters.generators.IntegerRangeParameterEditorUI;
-import org.hkijena.jipipe.extensions.parameters.generators.IntegerRangeParameterGenerator;
-import org.hkijena.jipipe.extensions.parameters.generators.LongRangeParameterGenerator;
-import org.hkijena.jipipe.extensions.parameters.generators.ShortRangeParameterGenerator;
+import org.hkijena.jipipe.extensions.parameters.generators.*;
 import org.hkijena.jipipe.extensions.parameters.matrix.Matrix2D;
 import org.hkijena.jipipe.extensions.parameters.matrix.Matrix2DFloat;
 import org.hkijena.jipipe.extensions.parameters.matrix.Matrix2DParameterEditorUI;
@@ -475,6 +468,13 @@ public class StandardParametersExtension extends JIPipePrepackagedDefaultJavaExt
                 null,
                 "Optional annotation name",
                 "An optional annotation name",
+                null);
+        registerParameterType("optional-integer-range",
+                OptionalIntegerRange.class,
+                null,
+                null,
+                "Optional integer range",
+                "An optional range of integers",
                 null);
     }
 

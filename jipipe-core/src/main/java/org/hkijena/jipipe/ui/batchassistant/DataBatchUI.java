@@ -22,6 +22,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
+import org.hkijena.jipipe.ui.cache.JIPipeCacheDataSlotTableUI;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -101,8 +102,8 @@ public class DataBatchUI extends JIPipeProjectWorkbenchPanel {
         for (int row : rows) {
             copySlot.addData(slot.getVirtualData(row), slot.getAnnotations(row), JIPipeAnnotationMergeStrategy.Merge);
         }
-
-        DataSlotTableUI tableUI = new DataSlotTableUI(getProjectWorkbench(), copySlot);
+        JIPipeCacheDataSlotTableUI tableUI = new JIPipeCacheDataSlotTableUI(getProjectWorkbench(), copySlot);
+//        DataSlotTableUI tableUI = new DataSlotTableUI(getProjectWorkbench(), copySlot);
         JFrame frame = new JFrame("Data batch contents");
         frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         frame.setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());

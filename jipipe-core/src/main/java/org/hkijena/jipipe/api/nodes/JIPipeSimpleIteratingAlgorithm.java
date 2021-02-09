@@ -13,15 +13,23 @@
 
 package org.hkijena.jipipe.api.nodes;
 
+import com.google.common.eventbus.EventBus;
+import gnu.trove.set.TIntSet;
+import gnu.trove.set.hash.TIntHashSet;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
+import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeSlotConfiguration;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterVisibility;
+import org.hkijena.jipipe.extensions.parameters.generators.IntegerRange;
+import org.hkijena.jipipe.extensions.parameters.generators.IntegerRangeParameterGenerator;
+import org.hkijena.jipipe.extensions.parameters.generators.OptionalIntegerRange;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,9 +41,10 @@ import java.util.concurrent.Future;
  * This is a simplified version of {@link JIPipeIteratingAlgorithm} that assumes that there is only one or zero input slots.
  * An error is thrown if there are more than one input slots.
  */
-public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlotAlgorithm implements JIPipeParallelizedAlgorithm {
+public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlotAlgorithm implements JIPipeParallelizedAlgorithm, JIPipeDataBatchAlgorithm {
 
     private boolean parallelizationEnabled = true;
+    private DataBatchGenerationSettings dataBatchGenerationSettings = new DataBatchGenerationSettings();
 
     /**
      * Creates a new instance
@@ -45,6 +54,7 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
      */
     public JIPipeSimpleIteratingAlgorithm(JIPipeNodeInfo info, JIPipeSlotConfiguration slotConfiguration) {
         super(info, slotConfiguration);
+        registerSubParameter(dataBatchGenerationSettings);
     }
 
     /**
@@ -54,6 +64,7 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
      */
     public JIPipeSimpleIteratingAlgorithm(JIPipeNodeInfo info) {
         super(info, null);
+        registerSubParameter(dataBatchGenerationSettings);
     }
 
     /**
@@ -63,7 +74,9 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
      */
     public JIPipeSimpleIteratingAlgorithm(JIPipeSimpleIteratingAlgorithm other) {
         super(other);
+        this.dataBatchGenerationSettings = new DataBatchGenerationSettings(other.dataBatchGenerationSettings);
         this.parallelizationEnabled = other.parallelizationEnabled;
+        registerSubParameter(dataBatchGenerationSettings);
     }
 
     @Override
@@ -87,8 +100,15 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
             dataBatch.addGlobalAnnotations(parameterAnnotations, JIPipeAnnotationMergeStrategy.Merge);
             runIteration(dataBatch, slotProgress);
         } else {
+
+            boolean withLimit = dataBatchGenerationSettings.getLimit().isEnabled();
+            IntegerRange limit = dataBatchGenerationSettings.getLimit().getContent();
+            TIntSet allowedIndices = withLimit ? new TIntHashSet(limit.getIntegers()) : null;
+
             if (!supportsParallelization() || !isParallelizationEnabled() || getThreadPool() == null || getThreadPool().getMaxThreads() <= 1) {
                 for (int i = 0; i < getFirstInputSlot().getRowCount(); i++) {
+                    if(withLimit && !allowedIndices.contains(i))
+                        continue;
                     if (progressInfo.isCancelled().get())
                         return;
                     JIPipeProgressInfo slotProgress = progressInfo.resolveAndLog("Data row", i, getFirstInputSlot().getRowCount());
@@ -101,6 +121,8 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
             } else {
                 List<Runnable> tasks = new ArrayList<>();
                 for (int i = 0; i < getFirstInputSlot().getRowCount(); i++) {
+                    if(withLimit && !allowedIndices.contains(i))
+                        continue;
                     int rowIndex = i;
                     tasks.add(() -> {
                         if (progressInfo.isCancelled().get())
@@ -169,5 +191,62 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
     @JIPipeParameter("jipipe:parallelization:enabled")
     public void setParallelizationEnabled(boolean parallelizationEnabled) {
         this.parallelizationEnabled = parallelizationEnabled;
+    }
+
+    @JIPipeDocumentation(name = "Data batch generation", description = "This algorithm has one input and will iterate through each row of its input and apply the workload. " +
+            "Use following settings to control which data batches are generated.")
+    @JIPipeParameter(value = "jipipe:data-batch-generation", visibility = JIPipeParameterVisibility.Visible, collapsed = true)
+    public DataBatchGenerationSettings getDataBatchGenerationSettings() {
+        return dataBatchGenerationSettings;
+    }
+
+    @Override
+    public JIPipeParameterCollection getGenerationSettingsInterface() {
+        return dataBatchGenerationSettings;
+    }
+
+    @Override
+    public List<JIPipeMergingDataBatch> generateDataBatchesDryRun(List<JIPipeDataSlot> slots) {
+        List<JIPipeMergingDataBatch> batches = new ArrayList<>();
+        JIPipeDataSlot slot = slots.get(0);
+        boolean withLimit = dataBatchGenerationSettings.getLimit().isEnabled();
+        IntegerRange limit = dataBatchGenerationSettings.getLimit().getContent();
+        TIntSet allowedIndices = withLimit ? new TIntHashSet(limit.getIntegers()) : null;
+        for (int i = 0; i < slot.getRowCount(); i++) {
+            if(withLimit && !allowedIndices.contains(i))
+                continue;
+            JIPipeMergingDataBatch dataBatch = new JIPipeMergingDataBatch(this);
+            dataBatch.addData(slot, i);
+            batches.add(dataBatch);
+        }
+        return batches;
+    }
+
+    public static class DataBatchGenerationSettings implements JIPipeParameterCollection {
+        private final EventBus eventBus = new EventBus();
+        private OptionalIntegerRange limit = new OptionalIntegerRange(new IntegerRange("0-9"), false);
+
+        public DataBatchGenerationSettings() {
+        }
+
+        public DataBatchGenerationSettings(DataBatchGenerationSettings other) {
+            this.limit = new OptionalIntegerRange(other.limit);
+        }
+
+        @Override
+        public EventBus getEventBus() {
+            return eventBus;
+        }
+
+        @JIPipeDocumentation(name = "Limit", description = "Limits which data batches are generated. The first index is zero.")
+        @JIPipeParameter("limit")
+        public OptionalIntegerRange getLimit() {
+            return limit;
+        }
+
+        @JIPipeParameter("limit")
+        public void setLimit(OptionalIntegerRange limit) {
+            this.limit = limit;
+        }
     }
 }
