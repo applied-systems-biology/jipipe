@@ -41,6 +41,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.utils.GraphUtils;
 import org.hkijena.jipipe.utils.JsonUtils;
+import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.jgrapht.Graph;
 import org.jgrapht.alg.cycle.CycleDetector;
@@ -68,6 +69,7 @@ public class JIPipeGraph implements JIPipeValidatable {
     private List<JIPipeDataSlot> traversedSlots;
     private List<JIPipeGraphNode> traversedAlgorithms;
     private Map<Class<?>, Object> attachments = new HashMap<>();
+    private Map<String, Object> additionalMetadata = new HashMap<>();
     private EventBus eventBus = new EventBus();
     /**
      * If this value is greater than one, no events are triggered
@@ -82,6 +84,7 @@ public class JIPipeGraph implements JIPipeValidatable {
 
     /**
      * Creates a deep copy of the other algorithm graph
+     * Will not copy the additional metadata
      *
      * @param other The original graph
      */
@@ -108,6 +111,14 @@ public class JIPipeGraph implements JIPipeValidatable {
             JIPipeGraphEdge originalEdge = other.graph.getEdge(edge.getKey(), edge.getValue());
             copyEdge.setMetadataFrom(originalEdge);
         }
+    }
+
+    public Map<String, Object> getAdditionalMetadata() {
+        return additionalMetadata;
+    }
+
+    public void setAdditionalMetadata(Map<String, Object> additionalMetadata) {
+        this.additionalMetadata = additionalMetadata;
     }
 
     /**
@@ -793,6 +804,26 @@ public class JIPipeGraph implements JIPipeValidatable {
                 }
             }
         }
+
+        // Deserialize additional metadata
+        JsonNode additionalMetadataNode = node.path("additional-metadata");
+        for (Map.Entry<String, JsonNode> metadataEntry : ImmutableList.copyOf(additionalMetadataNode.fields())) {
+            try {
+                Class<?> metadataClass = JsonUtils.getObjectMapper().readerFor(Class.class).readValue(metadataEntry.getValue().get("jipipe:type"));
+                if (JIPipeParameterCollection.class.isAssignableFrom(metadataClass)) {
+                    JIPipeParameterCollection metadata = (JIPipeParameterCollection) ReflectionUtils.newInstance(metadataClass);
+                    JIPipeParameterCollection.deserializeParametersFromJson(metadata, metadataEntry.getValue(), issues.forCategory("Metadata"));
+                    additionalMetadata.put(metadataEntry.getKey(), metadata);
+                } else {
+                    Object data = JsonUtils.getObjectMapper().readerFor(metadataClass).readValue(metadataEntry.getValue().get("data"));
+                    if (data != null) {
+                        additionalMetadata.put(metadataEntry.getKey(), data);
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     /**
@@ -1264,20 +1295,38 @@ public class JIPipeGraph implements JIPipeValidatable {
      */
     public static class Serializer extends JsonSerializer<JIPipeGraph> {
         @Override
-        public void serialize(JIPipeGraph algorithmGraph, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
-            jsonGenerator.writeStartObject();
+        public void serialize(JIPipeGraph algorithmGraph, JsonGenerator generator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
+            generator.writeStartObject();
 
-            jsonGenerator.writeFieldName("nodes");
-            jsonGenerator.writeStartObject();
-            serializeNodes(algorithmGraph, jsonGenerator);
-            jsonGenerator.writeEndObject();
+            generator.writeFieldName("nodes");
+            generator.writeStartObject();
+            serializeNodes(algorithmGraph, generator);
+            generator.writeEndObject();
 
-            jsonGenerator.writeFieldName("edges");
-            jsonGenerator.writeStartArray();
-            serializeEdges(algorithmGraph, jsonGenerator);
-            jsonGenerator.writeEndArray();
+            generator.writeFieldName("edges");
+            generator.writeStartArray();
+            serializeEdges(algorithmGraph, generator);
+            generator.writeEndArray();
 
-            jsonGenerator.writeEndObject();
+            if (!algorithmGraph.additionalMetadata.isEmpty()) {
+                generator.writeObjectFieldStart("additional-metadata");
+                for (Map.Entry<String, Object> entry : algorithmGraph.additionalMetadata.entrySet()) {
+                    if (entry.getValue() instanceof JIPipeParameterCollection) {
+                        generator.writeObjectFieldStart(entry.getKey());
+                        generator.writeObjectField("jipipe:type", entry.getValue().getClass());
+                        JIPipeParameterCollection.serializeParametersToJson((JIPipeParameterCollection) entry.getValue(), generator);
+                        generator.writeEndObject();
+                    } else {
+                        generator.writeObjectFieldStart(entry.getKey());
+                        generator.writeObjectField("jipipe:type", entry.getValue().getClass());
+                        generator.writeObjectField("data", entry.getValue());
+                        generator.writeEndObject();
+                    }
+                }
+                generator.writeEndObject();
+            }
+
+            generator.writeEndObject();
         }
 
         private void serializeNodes(JIPipeGraph algorithmGraph, JsonGenerator jsonGenerator) throws IOException {
