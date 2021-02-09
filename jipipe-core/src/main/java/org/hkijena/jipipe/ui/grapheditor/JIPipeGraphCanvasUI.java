@@ -561,9 +561,9 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
             graphEditCursor.x = Math.round(graphEditCursor.x + realLeftTop.x);
             graphEditCursor.y = Math.round(graphEditCursor.y + realLeftTop.y);
         }
-        if (getParent() != null)
-            getParent().revalidate();
-        repaint();
+//        if (getParent() != null)
+//            getParent().revalidate();
+//        repaint();
     }
 
     /**
