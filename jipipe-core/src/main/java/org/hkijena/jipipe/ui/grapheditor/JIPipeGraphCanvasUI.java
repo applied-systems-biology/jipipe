@@ -907,9 +907,9 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
 
                 // Draw arrow
                 if (currentConnectionDragSource.getSlot().isOutput())
-                    drawEdge(g, sourcePoint.center, currentConnectionDragSource.getNodeUI().getBounds(), targetPoint.center, drawer);
+                    drawEdge(g, sourcePoint.center, currentConnectionDragSource.getNodeUI().getBounds(), targetPoint.center, drawer, JIPipeGraphEdge.Shape.Elbow);
                 else
-                    drawEdge(g, targetPoint.center, currentConnectionDragSource.getNodeUI().getBounds(), sourcePoint.center, drawer);
+                    drawEdge(g, targetPoint.center, currentConnectionDragSource.getNodeUI().getBounds(), sourcePoint.center, drawer, JIPipeGraphEdge.Shape.Elbow);
             }
         }
 
@@ -936,7 +936,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
                         PointRange.tighten(sourcePoint, targetPoint);
 
                         // Draw arrow
-                        drawEdge(g, sourcePoint.center, sourceUI.getBounds(), targetPoint.center, drawer);
+                        drawEdge(g, sourcePoint.center, sourceUI.getBounds(), targetPoint.center, drawer, JIPipeGraphEdge.Shape.Elbow);
                     }
                 }
             } else if (currentHighlightedForDisconnect.getSlot().isOutput()) {
@@ -958,7 +958,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
                         PointRange.tighten(sourcePoint, targetPoint);
 
                         // Draw arrow
-                        drawEdge(g, sourcePoint.center, sourceUI.getBounds(), targetPoint.center, drawer);
+                        drawEdge(g, sourcePoint.center, sourceUI.getBounds(), targetPoint.center, drawer, JIPipeGraphEdge.Shape.Elbow);
                     }
                 }
             }
@@ -998,18 +998,18 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
         for (Map.Entry<JIPipeDataSlot, JIPipeDataSlot> kv : graph.getSlotEdges()) {
             JIPipeDataSlot source = kv.getKey();
             JIPipeDataSlot target = kv.getValue();
+            JIPipeGraphEdge edge = graph.getGraph().getEdge(kv.getKey(), kv.getValue());
             if (!withHidden) {
-                JIPipeGraphEdge edge = graph.getGraph().getEdge(kv.getKey(), kv.getValue());
                 if (edge.isUiHidden()) {
                     paintHiddenSlotEdge(g, source, target);
                     continue;
                 }
             }
             if(source.getNode() instanceof JIPipeCommentNode || target.getNode() instanceof JIPipeCommentNode) {
-                paintSlotEdge(g, drawer, strokeComment, onlySelected, source, target);
+                paintSlotEdge(g, drawer, strokeComment, onlySelected, source, target, edge.getUiShape());
             }
             else {
-                paintSlotEdge(g, drawer, stroke, onlySelected, source, target);
+                paintSlotEdge(g, drawer, stroke, onlySelected, source, target, edge.getUiShape());
             }
         }
     }
@@ -1089,7 +1089,13 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
             return Color.RED;
     }
 
-    private Map.Entry<PointRange, PointRange> paintSlotEdge(Graphics2D g, RectangularLineDrawer drawer, Stroke stroke, boolean onlySelected, JIPipeDataSlot source, JIPipeDataSlot target) {
+    private Map.Entry<PointRange, PointRange> paintSlotEdge(Graphics2D g,
+                                                            RectangularLineDrawer drawer,
+                                                            Stroke stroke,
+                                                            boolean onlySelected,
+                                                            JIPipeDataSlot source,
+                                                            JIPipeDataSlot target,
+                                                            JIPipeGraphEdge.Shape uiShape) {
         JIPipeNodeUI sourceUI = nodeUIs.getOrDefault(source.getNode(), null);
         JIPipeNodeUI targetUI = nodeUIs.getOrDefault(target.getNode(), null);
 
@@ -1118,7 +1124,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
         PointRange.tighten(sourcePoint, targetPoint);
 
         // Draw arrow
-        drawEdge(g, sourcePoint.center, sourceUI.getBounds(), targetPoint.center, drawer);
+        drawEdge(g, sourcePoint.center, sourceUI.getBounds(), targetPoint.center, drawer, uiShape);
         return new AbstractMap.SimpleEntry<>(sourcePoint, targetPoint);
     }
 
@@ -1201,7 +1207,27 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
         drawer.drawCurrentSegment(g, viewMode);
     }
 
-    private void drawEdge(Graphics2D g, Point sourcePoint, Rectangle sourceBounds, Point targetPoint, RectangularLineDrawer drawer) {
+    /**
+     * Draws an edge between source point and the target point
+     * @param g the graphics
+     * @param sourcePoint the source point
+     * @param sourceBounds bounds of the source
+     * @param targetPoint the target point
+     * @param drawer the drawer
+     * @param shape the line shape
+     */
+    private void drawEdge(Graphics2D g, Point sourcePoint, Rectangle sourceBounds, Point targetPoint, RectangularLineDrawer drawer, JIPipeGraphEdge.Shape shape) {
+        switch (shape) {
+            case Elbow:
+                drawElbowEdge(g, sourcePoint, sourceBounds, targetPoint, drawer);
+            break;
+            case Line:
+                g.drawLine(sourcePoint.x, sourcePoint.y, targetPoint.x, targetPoint.y);
+            break;
+        }
+    }
+
+    private void drawElbowEdge(Graphics2D g, Point sourcePoint, Rectangle sourceBounds, Point targetPoint, RectangularLineDrawer drawer) {
         int buffer;
         int sourceA;
         int targetA;
@@ -1229,7 +1255,6 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
         }
 
         drawer.start(sourceA, sourceB);
-
         // Target point is above the source. We have to navigate around it
         if (sourceA > targetA) {
             // Add some space in major direction

@@ -23,31 +23,36 @@ public class EdgeDisconnectGraphHistorySnapshot implements JIPipeAlgorithmGraphH
 
     private final JIPipeGraph graph;
     private final Set<JIPipeDataSlot> sources;
-    private final JIPipeDataSlot target;
+    private final Set<JIPipeDataSlot> targets;
 
-    public EdgeDisconnectGraphHistorySnapshot(JIPipeGraph graph, Set<JIPipeDataSlot> sources, JIPipeDataSlot target) {
+    public EdgeDisconnectGraphHistorySnapshot(JIPipeGraph graph, Set<JIPipeDataSlot> sources, Set<JIPipeDataSlot> targets) {
         this.graph = graph;
         this.sources = sources;
-        this.target = target;
+        this.targets = targets;
     }
 
     @Override
     public String getName() {
 
-        return "Disconnect " + sources.stream().map(JIPipeDataSlot::getDisplayName).collect(Collectors.joining(", ")) + " and " + target.getDisplayName();
+        return "Disconnect " + sources.stream().map(JIPipeDataSlot::getDisplayName).collect(Collectors.joining(", ")) + " and "
+                + targets.stream().map(JIPipeDataSlot::getDisplayName).collect(Collectors.joining(", "));
     }
 
     @Override
     public void undo() {
         for (JIPipeDataSlot source : sources) {
-            graph.connect(source, target, true);
+            for (JIPipeDataSlot target : targets) {
+                graph.connect(source, target, true);
+            }
         }
     }
 
     @Override
     public void redo() {
         for (JIPipeDataSlot source : sources) {
-            graph.disconnect(source, target, false);
+            for (JIPipeDataSlot target : targets) {
+                graph.disconnect(source, target, true);
+            }
         }
     }
 
@@ -59,7 +64,7 @@ public class EdgeDisconnectGraphHistorySnapshot implements JIPipeAlgorithmGraphH
         return sources;
     }
 
-    public JIPipeDataSlot getTarget() {
-        return target;
+    public Set<JIPipeDataSlot> getTargets() {
+        return targets;
     }
 }

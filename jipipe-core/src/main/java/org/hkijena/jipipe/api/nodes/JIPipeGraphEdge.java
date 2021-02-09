@@ -24,9 +24,10 @@ public class JIPipeGraphEdge extends DefaultEdge {
 
     private boolean userCanDisconnect;
     private boolean uiHidden = false;
+    private Shape uiShape = Shape.Elbow;
 
     /**
-     * Initializes a new graph edge that is not user-disconnectable
+     * Initializes a new graph edge that cannot be disconnected by users
      */
     public JIPipeGraphEdge() {
     }
@@ -62,7 +63,25 @@ public class JIPipeGraphEdge extends DefaultEdge {
         this.uiHidden = uiHidden;
     }
 
+    @JsonGetter("ui-shape")
+    public Shape getUiShape() {
+        return uiShape;
+    }
+
+    @JsonSetter("ui-shape")
+    public void setUiShape(Shape uiShape) {
+        this.uiShape = uiShape;
+    }
+
     public void setMetadataFrom(JIPipeGraphEdge other) {
         this.uiHidden = other.uiHidden;
+    }
+
+    /**
+     * Available line shapes
+     */
+    public enum Shape {
+        Elbow,
+        Line
     }
 }
