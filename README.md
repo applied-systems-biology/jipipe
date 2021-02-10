@@ -32,6 +32,7 @@ The project consists of following parts:
 * **JIPipe-Tables** provides algorithms and data types to handle table data.
 * **JIPipe-Strings** provides algorithms and data types for handling string data.
 * **JIPipe-Utils** provides some helpful utility extensions.
+* **JIPipe-Forms** provides core functions to allow user interaction during pipeline runs.
 * **JIPipe-Launcher** provides a JAR file that launches JIPipe from outside of ImageJ
 * **IJ-Updater-CLI** is an alternative way to trigger ImageJ updates. This is used within the installer tools.
 

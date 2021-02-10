@@ -13,6 +13,7 @@
         <module name="jipipe-strings" />
         <module name="jipipe-utils" />
         <module name="jipipe-filesystem" />
+        <module name="jipipe-forms" />
         <module name="jipipe-launcher" />
         <module name="jipipe-ij" />
         <module name="jipipe-ij-multi-template-matching" />
@@ -33,6 +34,7 @@
       <module name="jipipe-core" target="1.8" />
       <module name="jipipe-debug" target="1.8" />
       <module name="jipipe-filesystem" target="1.8" />
+      <module name="jipipe-forms" target="1.8" />
       <module name="jipipe-ij" target="1.8" />
       <module name="jipipe-ij-algorithms" target="1.8" />
       <module name="jipipe-ij-multi-template-matching" target="1.8" />

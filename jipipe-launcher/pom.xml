@@ -172,6 +172,11 @@
                 <artifactId>jipipe-ij-omero</artifactId>
                 <version>2021.2</version>
             </dependency>
+            <dependency>
+                <groupId>org.hkijena</groupId>
+                <artifactId>jipipe-forms</artifactId>
+                <version>2021.2</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -243,6 +248,11 @@
         <dependency>
             <groupId>org.hkijena</groupId>
             <artifactId>jipipe-ij-omero</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.hkijena</groupId>
+            <artifactId>jipipe-forms</artifactId>
             <scope>runtime</scope>
         </dependency>
         <dependency>
