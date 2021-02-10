@@ -951,6 +951,8 @@ public class JIPipeGraph implements JIPipeValidatable {
                 }
             }
             for (JIPipeDataSlot inputSlot : algorithm.getInputSlots()) {
+                if(inputSlot.getInfo().isOptional())
+                    continue;
                 Set<JIPipeDataSlot> sourceSlots = getSourceSlots(inputSlot);
                 if (sourceSlots.isEmpty()) {
                     missing.add(algorithm);
@@ -987,6 +989,8 @@ public class JIPipeGraph implements JIPipeValidatable {
                 }
             }
             for (JIPipeDataSlot inputSlot : algorithm.getInputSlots()) {
+                if(inputSlot.getInfo().isOptional())
+                    continue;
                 Set<JIPipeDataSlot> sourceSlots = getSourceSlots(inputSlot);
                 if (sourceSlots.isEmpty()) {
                     missing.add(algorithm);
@@ -1064,7 +1068,7 @@ public class JIPipeGraph implements JIPipeValidatable {
                 if(!slot.getNode().getInfo().isRunnable())
                     continue;
                 if (slot.isInput()) {
-                    if (graph.incomingEdgesOf(slot).isEmpty()) {
+                    if (!slot.getInfo().isOptional() && graph.incomingEdgesOf(slot).isEmpty()) {
                         report.forCategory(slot.getNode().getCompartment()).forCategory(slot.getNode().getName())
                                 .forCategory("Slot: " + slot.getName()).reportIsInvalid("An input slot has no incoming data!",
                                 "Input slots must always be provided with input data.",
@@ -1117,7 +1121,7 @@ public class JIPipeGraph implements JIPipeValidatable {
             for (JIPipeDataSlot slot : node.getInputSlots()) {
                 if(!slot.getNode().getInfo().isRunnable())
                     continue;
-                if (graph.incomingEdgesOf(slot).isEmpty()) {
+                if (!slot.getInfo().isOptional() && graph.incomingEdgesOf(slot).isEmpty()) {
                     report.forCategory(slot.getNode().getCompartment()).forCategory(slot.getNode().getName())
                             .forCategory("Slot: " + slot.getName()).reportIsInvalid("An input slot has no incoming data!",
                             "Input slots must always be provided with input data.",

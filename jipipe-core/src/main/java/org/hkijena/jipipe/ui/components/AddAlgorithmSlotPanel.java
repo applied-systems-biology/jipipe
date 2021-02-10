@@ -63,6 +63,7 @@ public class AddAlgorithmSlotPanel extends JPanel {
     private JDialog dialog;
     private Set<JIPipeDataInfo> availableTypes;
     private Map<JIPipeDataInfo, JIPipeDataInfo> inheritanceConversions = new HashMap<>();
+    private JCheckBox optionalInputEditor = new JCheckBox();
 
     /**
      * @param algorithm    the target algorithm
@@ -144,6 +145,11 @@ public class AddAlgorithmSlotPanel extends JPanel {
         });
         formPanel.addToForm(nameEditor, new JLabel("Slot name"), null);
 
+        if(slotType == JIPipeSlotType.Input) {
+            optionalInputEditor.setText("Optional input");
+            optionalInputEditor.setToolTipText("If enabled, the input slot does not require an incoming edge. The node then will receive an empty data table.");
+            formPanel.addWideToForm(optionalInputEditor, null);
+        }
         if (slotType == JIPipeSlotType.Output && slotConfiguration.isAllowInheritedOutputSlots()) {
             formPanel.addGroupHeader("Inheritance", UIUtils.getIconFromResources("actions/configure.png"));
             inheritedSlotList = new JComboBox<>();
@@ -223,6 +229,7 @@ public class AddAlgorithmSlotPanel extends JPanel {
         JIPipeDataSlotInfo slotDefinition;
         if (slotType == JIPipeSlotType.Input) {
             slotDefinition = new JIPipeDataSlotInfo(selectedInfo.getDataClass(), slotType, slotName, null);
+            slotDefinition.setOptional(optionalInputEditor.isSelected());
         } else if (slotType == JIPipeSlotType.Output) {
             String inheritedSlot = null;
             if (inheritedSlotList != null && inheritedSlotList.getSelectedItem() != null) {

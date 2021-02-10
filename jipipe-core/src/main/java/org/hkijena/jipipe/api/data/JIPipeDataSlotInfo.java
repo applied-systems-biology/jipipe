@@ -58,7 +58,7 @@ public class JIPipeDataSlotInfo implements JIPipeParameterCollection {
     private String customName;
     private boolean virtual;
     private boolean saveOutputs = true;
-    private boolean optional = true;
+    private boolean optional = false;
 
     /**
      * @param dataClass     slot data class
