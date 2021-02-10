@@ -58,6 +58,7 @@ public class JIPipeDataSlotInfo implements JIPipeParameterCollection {
     private String customName;
     private boolean virtual;
     private boolean saveOutputs = true;
+    private boolean optional = true;
 
     /**
      * @param dataClass     slot data class
@@ -94,6 +95,7 @@ public class JIPipeDataSlotInfo implements JIPipeParameterCollection {
      */
     public JIPipeDataSlotInfo(JIPipeInputSlot slot) {
         this(slot.value(), JIPipeSlotType.Input, slot.slotName(), null);
+        this.optional = slot.optional();
     }
 
 
@@ -118,6 +120,7 @@ public class JIPipeDataSlotInfo implements JIPipeParameterCollection {
         this.customName = other.customName;
         this.virtual = other.virtual;
         this.saveOutputs = other.saveOutputs;
+        this.optional = other.optional;
     }
 
     /**
@@ -254,6 +257,17 @@ public class JIPipeDataSlotInfo implements JIPipeParameterCollection {
         this.saveOutputs = saveOutputs;
     }
 
+    @JIPipeDocumentation(name = "Optional", description = "If true, the input does not need an incoming edge")
+    @JIPipeParameter("is-optional")
+    public boolean isOptional() {
+        return optional;
+    }
+
+    @JIPipeParameter("is-optional")
+    public void setOptional(boolean optional) {
+        this.optional = optional;
+    }
+
     /**
      * Copies additional parameters such as custom names from the other slot
      *
@@ -354,6 +368,9 @@ public class JIPipeDataSlotInfo implements JIPipeParameterCollection {
             jsonGenerator.writeStringField("inherited-slot", definition.inheritedSlot);
             jsonGenerator.writeStringField("name", definition.name);
             jsonGenerator.writeStringField("custom-name", definition.customName);
+            jsonGenerator.writeBooleanField("is-virtual", definition.virtual);
+            jsonGenerator.writeBooleanField("save-outputs", definition.saveOutputs);
+            jsonGenerator.writeBooleanField("is-optional", definition.optional);
             jsonGenerator.writeFieldName("inheritance-conversions");
             jsonGenerator.writeStartObject();
             for (Map.Entry<JIPipeDataInfo, JIPipeDataInfo> entry : definition.getInheritanceConversions().entrySet()) {
@@ -390,6 +407,18 @@ public class JIPipeDataSlotInfo implements JIPipeParameterCollection {
             JsonNode customNameNode = node.path("custom-name");
             if (!customNameNode.isMissingNode() && !customNameNode.isNull()) {
                 definition.customName = customNameNode.textValue();
+            }
+            JsonNode isVirtualNode = node.path("is-virtual");
+            if(!isVirtualNode.isMissingNode()) {
+                definition.virtual = isVirtualNode.asBoolean();
+            }
+            JsonNode saveOutputsNode = node.path("save-outputs");
+            if(!saveOutputsNode.isMissingNode()) {
+                definition.saveOutputs = saveOutputsNode.asBoolean();
+            }
+            JsonNode isOptionalNode = node.path("is-optional");
+            if(!isOptionalNode.isMissingNode()) {
+                definition.optional = isOptionalNode.asBoolean();
             }
             return definition;
         }

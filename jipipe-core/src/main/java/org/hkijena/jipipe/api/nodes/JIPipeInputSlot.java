@@ -49,4 +49,10 @@ public @interface JIPipeInputSlot {
      * @return if auto-configuration is enabled
      */
     boolean autoCreate() default false;
+
+    /**
+     * If true, the input is considered optional. The node will still run without a connection to the input (with an empty data table)
+     * @return if the input is optional
+     */
+    boolean optional() default false;
 }
