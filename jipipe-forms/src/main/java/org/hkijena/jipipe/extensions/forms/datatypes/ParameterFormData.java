@@ -53,7 +53,7 @@ public abstract class ParameterFormData extends FormData {
     public abstract Component getEditor(JIPipeWorkbench workbench);
 
     @JIPipeDocumentation(name = "Name", description = "Name of the form element. Hidden if 'Show name' is disabled.")
-    @JIPipeParameter("form:name")
+    @JIPipeParameter(value = "form:name", uiOrder = -100)
     public String getName() {
         return name;
     }

@@ -40,6 +40,28 @@ public enum JIPipeAnnotationMergeStrategy {
     }
 
     /**
+     * Ensures that a list of annotations has unique names. Merges according to the strategy if needed.
+     *
+     * @param target the target list
+     * @param annotations input annotations. can have duplicate names.
+     *
+     */
+    public void mergeInto(Map<String, JIPipeAnnotation> target, Collection<JIPipeAnnotation> annotations) {
+        Map<String, String> map = new HashMap<>();
+        for (Map.Entry<String, JIPipeAnnotation> entry : target.entrySet()) {
+            if(entry.getValue() != null) {
+                map.put(entry.getKey(), entry.getValue().getValue());
+            }
+        }
+        for (JIPipeAnnotation annotation : annotations) {
+            map.put(annotation.getName(), merge(map.getOrDefault(annotation.getName(), ""), annotation.getValue()));
+        }
+        for (Map.Entry<String, String> entry : map.entrySet()) {
+            target.put(entry.getKey(), new JIPipeAnnotation(entry.getKey(), entry.getValue()));
+        }
+    }
+
+    /**
      * Merges the new annotation value into the existing one according to the strategy
      *
      * @param existingValue the existing value

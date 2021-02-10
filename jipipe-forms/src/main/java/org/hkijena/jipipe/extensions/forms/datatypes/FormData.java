@@ -13,6 +13,7 @@ import org.hkijena.jipipe.api.JIPipeValidatable;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
+import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.plots.datatypes.PlotData;
 import org.hkijena.jipipe.extensions.plots.datatypes.PlotDataSeries;
@@ -58,6 +59,18 @@ public abstract class FormData implements JIPipeData, JIPipeParameterCollection,
     public EventBus getEventBus() {
         return eventBus;
     }
+
+    /**
+     * This method is called by the form processor nodes on loading data into this form.
+     * @param dataBatch the data batch
+     */
+    public abstract void loadData(JIPipeMergingDataBatch dataBatch);
+
+    /**
+     * This method should write any changes into the data batch
+     * @param dataBatch the data batch
+     */
+    public abstract void writeData(JIPipeMergingDataBatch dataBatch);
 
     /**
      * Loads metadata from JSON
