@@ -34,9 +34,8 @@ import java.util.stream.Collectors;
 
 /**
  * Base class for any JIPipe data wrapper class
- * Any custom data should have following constructors:
- * 1. A constructor that takes the wrapped data type
- * 2. A constructor that takes a path to a folder to load the data from
+ * There must be a static function importFrom(Path) that imports the data from a row storage folder.
+ * The static method can be omitted for abstract data types or interfaces.
  */
 @JIPipeDocumentation(name = "Data", description = "Generic data")
 public interface JIPipeData {

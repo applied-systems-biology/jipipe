@@ -753,6 +753,20 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
         }
 
         /**
+         * Adds an input slot
+         *
+         * @param name  Unique slot name
+         * @param klass Slot data class
+         * @param optional Make the slot optional
+         * @return The builder
+         */
+        public Builder addInputSlot(String name, Class<? extends JIPipeData> klass, boolean optional) {
+            JIPipeDataSlotInfo slot = object.addSlot(name, new JIPipeDataSlotInfo(klass, JIPipeSlotType.Input, name, null), false);
+            slot.setOptional(optional);
+            return this;
+        }
+
+        /**
          * Adds an output slot
          *
          * @param name          Unique slot name

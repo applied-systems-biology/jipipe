@@ -60,7 +60,12 @@ public class JIPipeVerticalDataSlotUI extends JIPipeDataSlotUI {
     protected void reloadButtonStatus() {
         if (getSlot().isInput()) {
             if (getGraph().getSourceSlots(getSlot()).isEmpty()) {
-                assignButton.setIcon(new ZoomIcon(UIUtils.getIconFromResources("emblems/slot-unconnected-input-vertical.png"), getGraphUI()));
+                if(getSlot().getInfo().isOptional()) {
+                    assignButton.setIcon(new ZoomIcon(UIUtils.getIconFromResources("emblems/slot-unconnected-output-vertical.png"), getGraphUI()));
+                }
+                else {
+                    assignButton.setIcon(new ZoomIcon(UIUtils.getIconFromResources("emblems/slot-unconnected-input-vertical.png"), getGraphUI()));
+                }
             } else {
                 assignButton.setIcon(new ZoomIcon(UIUtils.getIconFromResources("emblems/slot-connected-vertical.png"), getGraphUI()));
             }
