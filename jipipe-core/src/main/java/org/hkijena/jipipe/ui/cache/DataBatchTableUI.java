@@ -1,11 +1,14 @@
 package org.hkijena.jipipe.ui.cache;
 
+import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
 import org.hkijena.jipipe.ui.components.JIPipeComponentCellRenderer;
 import org.hkijena.jipipe.ui.components.PreviewControlUI;
 import org.hkijena.jipipe.ui.components.SearchTextField;
 import org.hkijena.jipipe.ui.components.SearchTextFieldTableRowFilter;
+import org.hkijena.jipipe.utils.StringUtils;
 import org.jdesktop.swingx.JXTable;
 
 import javax.swing.*;
@@ -72,6 +75,15 @@ public class DataBatchTableUI extends JPanel {
 
         PreviewControlUI previewControlUI = new PreviewControlUI();
         toolBar.add(previewControlUI);
+
+        GeneralDataSettings.getInstance().getEventBus().register(new Object() {
+            @Subscribe
+            public void onPreviewSizeChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
+                if (isDisplayable() && "preview-size".equals(event.getKey())) {
+                    reloadTable();
+                }
+            }
+        });
     }
 
     private void reloadTable() {
@@ -88,5 +100,11 @@ public class DataBatchTableUI extends JPanel {
         table.packAll();
         columnModel.getColumn(1).setPreferredWidth(GeneralDataSettings.getInstance().getPreviewSize());
         SwingUtilities.invokeLater(dataTable::updateRenderedPreviews);
+    }
+
+    public void resetSearch() {
+        if(!StringUtils.isNullOrEmpty(searchTextField.getText())) {
+            searchTextField.setText("");
+        }
     }
 }

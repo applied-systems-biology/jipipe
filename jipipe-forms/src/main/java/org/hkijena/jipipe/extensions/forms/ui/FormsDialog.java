@@ -23,6 +23,7 @@ public class FormsDialog extends JFrame {
     private final List<JIPipeMergingDataBatch> dataBatchList;
     private final List<List<FormData>> dataBatchForms = new ArrayList<>();
     private boolean cancelled = false;
+    private DataBatchTableUI dataBatchTableUI;
 
     public FormsDialog(JIPipeWorkbench workbench, List<JIPipeMergingDataBatch> dataBatchList, List<FormData> forms) {
         this.workbench = workbench;
@@ -39,12 +40,50 @@ public class FormsDialog extends JFrame {
 
         // Initialize UI
         initialize();
+        gotoNextBatch();
+    }
+
+    private void gotoNextBatch() {
+        if(dataBatchList.size() > 0) {
+            dataBatchTableUI.resetSearch();
+            JXTable table = dataBatchTableUI.getTable();
+            int row = table.getSelectedRow();
+            if(row == -1) {
+                table.getSelectionModel().setSelectionInterval(0,0);
+            }
+            else {
+                row = table.convertRowIndexToModel(row);
+                row = (row + 1) % dataBatchList.size();
+                row = table.convertRowIndexToView(row);
+                table.getSelectionModel().setSelectionInterval(row, row);
+            }
+        }
+    }
+
+    private void gotoPreviousBatch() {
+        if(dataBatchList.size() > 0) {
+            dataBatchTableUI.resetSearch();
+            JXTable table = dataBatchTableUI.getTable();
+            int row = table.getSelectedRow();
+            if(row == -1) {
+                table.getSelectionModel().setSelectionInterval(0,0);
+            }
+            else {
+                row = table.convertRowIndexToModel(row);
+                --row;
+                if(row < 0)
+                    row = dataBatchList.size() - 1;
+                row = table.convertRowIndexToView(row);
+                table.getSelectionModel().setSelectionInterval(row, row);
+            }
+        }
     }
 
     private void initialize() {
         JPanel contentPanel = new JPanel(new BorderLayout());
 
-        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, new DataBatchTableUI(dataBatchList), new JPanel());
+        dataBatchTableUI = new DataBatchTableUI(dataBatchList);
+        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, dataBatchTableUI, new JPanel());
         splitPane.setDividerSize(3);
         splitPane.setResizeWeight(0.33);
         addComponentListener(new ComponentAdapter() {
@@ -77,8 +116,10 @@ public class FormsDialog extends JFrame {
         buttonBar.add(Box.createHorizontalGlue());
 
         JButton previousButton = new JButton("Previous", UIUtils.getIconFromResources("actions/go-previous.png"));
+        previousButton.addActionListener(e -> gotoPreviousBatch());
         buttonBar.add(previousButton);
         JButton nextButton = new JButton("Next", UIUtils.getIconFromResources("actions/go-next.png"));
+        nextButton.addActionListener(e -> gotoNextBatch());
         buttonBar.add(nextButton);
 
         buttonBar.add(Box.createHorizontalStrut(8));
