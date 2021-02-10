@@ -323,6 +323,19 @@ public class JIPipeProjectWindow extends JFrame {
     }
 
     /**
+     * Tries to find the window that belongs to the provided project
+     * @param project the project
+     * @return the window or null if none is found
+     */
+    public static JIPipeProjectWindow getWindowFor(JIPipeProject project) {
+        for (JIPipeProjectWindow window : OPEN_WINDOWS) {
+            if(window.project == project)
+                return window;
+        }
+        return null;
+    }
+
+    /**
      * @return GUI command
      */
     public Context getContext() {

@@ -630,4 +630,8 @@ public class JIPipeDataSlot {
         }
 //        System.gc();
     }
+
+    public boolean isEmpty() {
+        return getRowCount() <= 0;
+    }
 }

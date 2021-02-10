@@ -1080,6 +1080,14 @@ public class JIPipeGraph implements JIPipeValidatable {
         }
     }
 
+    public Map<Class<?>, Object> getAttachments() {
+        return attachments;
+    }
+
+    public void setAttachments(Map<Class<?>, Object> attachments) {
+        this.attachments = attachments;
+    }
+
     /**
      * Reports the validity for the target node and its dependencies
      *

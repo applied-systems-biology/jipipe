@@ -1,0 +1,92 @@
+package org.hkijena.jipipe.ui.cache;
+
+import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
+import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
+import org.hkijena.jipipe.ui.components.JIPipeComponentCellRenderer;
+import org.hkijena.jipipe.ui.components.PreviewControlUI;
+import org.hkijena.jipipe.ui.components.SearchTextField;
+import org.hkijena.jipipe.ui.components.SearchTextFieldTableRowFilter;
+import org.jdesktop.swingx.JXTable;
+
+import javax.swing.*;
+import javax.swing.table.TableColumnModel;
+import java.awt.*;
+import java.util.List;
+
+/**
+ * Panel that displays a data batch table
+ */
+public class DataBatchTableUI extends JPanel {
+    private final List<JIPipeMergingDataBatch> dataBatchList;
+    private JXTable table;
+    private JScrollPane scrollPane;
+    private SearchTextField searchTextField;
+    private DataBatchTableModel dataTable;
+
+    public DataBatchTableUI(List<JIPipeMergingDataBatch> dataBatchList) {
+        this.dataBatchList = dataBatchList;
+        initialize();
+        reloadTable();
+    }
+
+    public JScrollPane getScrollPane() {
+        return scrollPane;
+    }
+
+    public JXTable getTable() {
+        return table;
+    }
+
+    public List<JIPipeMergingDataBatch> getDataBatchList() {
+        return dataBatchList;
+    }
+
+    public DataBatchTableModel getDataTable() {
+        return dataTable;
+    }
+
+    private void initialize() {
+        setLayout(new BorderLayout());
+
+        table = new JXTable();
+        if (GeneralDataSettings.getInstance().isGenerateCachePreviews())
+            table.setRowHeight(GeneralDataSettings.getInstance().getPreviewSize());
+        else
+            table.setRowHeight(25);
+        table.setDefaultRenderer(Component.class, new JIPipeComponentCellRenderer());
+        table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+
+        scrollPane = new JScrollPane(table);
+        scrollPane.getViewport().setBackground(UIManager.getColor("TextArea.background"));
+        add(scrollPane, BorderLayout.CENTER);
+        add(table.getTableHeader(), BorderLayout.NORTH);
+
+        // Toolbar for searching and export
+        JToolBar toolBar = new JToolBar();
+        add(toolBar, BorderLayout.NORTH);
+        toolBar.setFloatable(false);
+
+        searchTextField = new SearchTextField();
+        searchTextField.addActionListener(e -> reloadTable());
+        toolBar.add(searchTextField);
+
+        PreviewControlUI previewControlUI = new PreviewControlUI();
+        toolBar.add(previewControlUI);
+    }
+
+    private void reloadTable() {
+        dataTable = new DataBatchTableModel(table, dataBatchList);
+        table.setModel(dataTable);
+        dataTable.setScrollPane(scrollPane);
+        if (GeneralDataSettings.getInstance().isGenerateCachePreviews())
+            table.setRowHeight(GeneralDataSettings.getInstance().getPreviewSize());
+        else
+            table.setRowHeight(25);
+        table.setRowFilter(new SearchTextFieldTableRowFilter(searchTextField));
+        TableColumnModel columnModel = table.getColumnModel();
+        table.setAutoCreateRowSorter(true);
+        table.packAll();
+        columnModel.getColumn(1).setPreferredWidth(GeneralDataSettings.getInstance().getPreviewSize());
+        SwingUtilities.invokeLater(dataTable::updateRenderedPreviews);
+    }
+}

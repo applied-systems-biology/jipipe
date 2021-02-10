@@ -58,6 +58,8 @@ public class JIPipeRun implements JIPipeRunnable {
         this.cacheQuery = new JIPipeProjectCacheQuery(project);
         this.configuration = configuration;
         this.algorithmGraph = new JIPipeGraph(project.getGraph());
+        this.algorithmGraph.setAttachments(project.getGraph().getAttachments());
+        this.algorithmGraph.attach(this);
         initializeRelativeDirectories();
         initializeInternalStoragePaths();
     }

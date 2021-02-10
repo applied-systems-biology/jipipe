@@ -217,6 +217,7 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
                 continue;
             JIPipeMergingDataBatch dataBatch = new JIPipeMergingDataBatch(this);
             dataBatch.addData(slot, i);
+            dataBatch.addGlobalAnnotations(slot.getAnnotations(i), JIPipeAnnotationMergeStrategy.Merge);
             batches.add(dataBatch);
         }
         return batches;
