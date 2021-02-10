@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.apache.commons.lang.WordUtils;
+import org.hkijena.jipipe.ui.components.MarkdownDocument;
 
 import java.io.IOException;
 
@@ -70,7 +71,7 @@ public class HTMLText {
             if(bodyLocation < 0) {
                 return "";
             }
-            body = html.substring(bodyLocation + "<body>".length()).replace("</body>", "").replace("</html>", "");
+            body = html.substring(bodyLocation + "<body>".length()).replace("</body>", "").replace("</html>", "").trim();
         }
         return body;
     }
@@ -78,6 +79,10 @@ public class HTMLText {
     @Override
     public String toString() {
         return html;
+    }
+
+    public MarkdownDocument toMarkdown() {
+        return new MarkdownDocument(getBody());
     }
 
     public static class Deserializer extends JsonDeserializer<HTMLText> {

@@ -16,6 +16,7 @@ package org.hkijena.jipipe.extensions.forms;
 import org.hkijena.jipipe.JIPipeImageJUpdateSiteDependency;
 import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
+import org.hkijena.jipipe.extensions.forms.algorithms.SimpleIteratingFormProcessorAlgorithm;
 import org.hkijena.jipipe.extensions.forms.algorithms.StringFormGeneratorAlgorithm;
 import org.hkijena.jipipe.extensions.forms.datatypes.FormData;
 import org.hkijena.jipipe.extensions.forms.datatypes.StringFormData;
@@ -69,6 +70,8 @@ public class FormsExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerDatatype("string-form", StringFormData.class, UIUtils.getIconURLFromResources("data-types/form.png"), null, null);
 
         registerNodeType("string-form", StringFormGeneratorAlgorithm.class, UIUtils.getIconURLFromResources("data-types/form.png"));
+
+        registerNodeType("form-processor-simple-iterating", SimpleIteratingFormProcessorAlgorithm.class, UIUtils.getIconURLFromResources("data-types/form.png"));
     }
 
 }

@@ -5,6 +5,7 @@ import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.extensions.parameters.primitives.HTMLText;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.MarkdownDocument;
@@ -17,6 +18,7 @@ import java.awt.*;
  */
 public abstract class ParameterFormData extends FormData {
     private String name = "Form";
+    private HTMLText description = new HTMLText();
     private boolean showName = true;
 
     public ParameterFormData() {
@@ -24,6 +26,7 @@ public abstract class ParameterFormData extends FormData {
 
     public ParameterFormData(ParameterFormData other) {
         this.name = other.name;
+        this.description = new HTMLText(other.description);
         this.showName = other.showName;
     }
 
@@ -33,10 +36,10 @@ public abstract class ParameterFormData extends FormData {
                 FormPanel.WITH_DOCUMENTATION | FormPanel.WITH_SCROLLING | FormPanel.DOCUMENTATION_BELOW);
         ParameterFormData duplicate = (ParameterFormData) duplicate();
         if(isShowName()) {
-            formPanel.addToForm(duplicate.getEditor(workbench), new JLabel(getName()), null);
+            formPanel.addToForm(duplicate.getEditor(workbench), new JLabel(getName()), description.toMarkdown());
         }
         else {
-            formPanel.addWideToForm(duplicate.getEditor(workbench), null);
+            formPanel.addWideToForm(duplicate.getEditor(workbench), description.toMarkdown());
         }
         formPanel.addVerticalGlue();
         JFrame frame = new JFrame("Preview: " + JIPipeDataInfo.getInstance(getClass()).getName());
@@ -48,7 +51,7 @@ public abstract class ParameterFormData extends FormData {
     /**
      * Returns an editor component for the data
      * @return the editor component
-     * @param workbench
+     * @param workbench the workbench
      */
     public abstract Component getEditor(JIPipeWorkbench workbench);
 
@@ -61,6 +64,17 @@ public abstract class ParameterFormData extends FormData {
     @JIPipeParameter("form:name")
     public void setName(String name) {
         this.name = name;
+    }
+
+    @JIPipeDocumentation(name = "Description", description = "Description of the element displayed to the user.")
+    @JIPipeParameter(value = "form:description", uiOrder = -80)
+    public HTMLText getDescription() {
+        return description;
+    }
+
+    @JIPipeParameter("form:description")
+    public void setDescription(HTMLText description) {
+        this.description = description;
     }
 
     @JIPipeDocumentation(name = "Show name", description = "If enabled, the name of the form element is shown next to it.")
