@@ -50,13 +50,6 @@ public abstract class ParameterFormData extends FormData {
         frame.setVisible(true);
     }
 
-    /**
-     * Returns an editor component for the data
-     * @return the editor component
-     * @param workbench the workbench
-     */
-    public abstract Component getEditor(JIPipeWorkbench workbench);
-
     @JIPipeDocumentation(name = "Name", description = "Name of the form element. Hidden if 'Show name' is disabled.")
     @JIPipeParameter(value = "form:name", uiOrder = -100)
     public String getName() {

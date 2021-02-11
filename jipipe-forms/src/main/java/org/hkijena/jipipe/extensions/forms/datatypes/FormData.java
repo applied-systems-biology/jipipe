@@ -67,6 +67,14 @@ public abstract class FormData implements JIPipeData, JIPipeParameterCollection,
         return null;
     }
 
+    /**
+     * Gets a component that acts as the editor for the form data.
+     * This is presented to the user
+     * @param workbench the workbench
+     * @return the editor
+     */
+    public abstract Component getEditor(JIPipeWorkbench workbench);
+
     @Override
     public EventBus getEventBus() {
         return eventBus;

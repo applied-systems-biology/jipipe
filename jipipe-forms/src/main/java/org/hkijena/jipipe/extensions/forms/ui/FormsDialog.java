@@ -1,12 +1,17 @@
 package org.hkijena.jipipe.extensions.forms.ui;
 
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.data.JIPipeAnnotation;
+import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
+import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
 import org.hkijena.jipipe.extensions.forms.datatypes.FormData;
+import org.hkijena.jipipe.extensions.forms.datatypes.ParameterFormData;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.cache.DataBatchTableModel;
 import org.hkijena.jipipe.ui.cache.DataBatchTableUI;
 import org.hkijena.jipipe.ui.components.DocumentTabPane;
-import org.hkijena.jipipe.ui.components.JIPipeComponentCellRenderer;
+import org.hkijena.jipipe.ui.components.FormPanel;
+import org.hkijena.jipipe.ui.components.MarkdownDocument;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jdesktop.swingx.JXTable;
 
@@ -17,27 +22,35 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class FormsDialog extends JFrame {
     private final JIPipeWorkbench workbench;
+    private final String tabAnnotation;
     private final List<JIPipeMergingDataBatch> dataBatchList;
-    private final List<List<FormData>> dataBatchForms = new ArrayList<>();
+    private final List<JIPipeDataSlot> dataBatchForms = new ArrayList<>();
     private boolean cancelled = false;
     private DataBatchTableUI dataBatchTableUI;
     private DocumentTabPane tabPane = new DocumentTabPane();
 
-    public FormsDialog(JIPipeWorkbench workbench, List<JIPipeMergingDataBatch> dataBatchList, List<FormData> forms) {
+    public FormsDialog(JIPipeWorkbench workbench, List<JIPipeMergingDataBatch> dataBatchList, JIPipeDataSlot forms, String tabAnnotation) {
         this.workbench = workbench;
         this.dataBatchList = dataBatchList;
+        this.tabAnnotation = tabAnnotation;
 
+        JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
         // We need to make copies of the FormData objects, as they are mutable
-        for (JIPipeMergingDataBatch dataBatch : dataBatchList) {
-            List<FormData> dataBatchFormList = new ArrayList<>();
-            for (FormData form : forms) {
-                dataBatchFormList.add((FormData) form.duplicate());
+        for (int i = 0; i < dataBatchList.size(); ++i) {
+            JIPipeDataSlot copy = new JIPipeDataSlot(forms.getInfo(), forms.getNode());
+            for (int row = 0; row < forms.getRowCount(); row++) {
+                copy.addData(forms.getData(row, FormData.class, progressInfo).duplicate(),
+                        forms.getAnnotations(row),
+                        JIPipeAnnotationMergeStrategy.OverwriteExisting,
+                        progressInfo);
             }
-            dataBatchForms.add(dataBatchFormList);
+            dataBatchForms.add(copy);
         }
 
         // Initialize UI
@@ -109,6 +122,73 @@ public class FormsDialog extends JFrame {
                 cancelDialog();
             }
         });
+
+        dataBatchTableUI.getTable().getSelectionModel().addListSelectionListener(e -> {
+            int selectedRow = dataBatchTableUI.getTable().getSelectedRow();
+            tabPane.closeAllTabs();
+            if(selectedRow != -1) {
+                selectedRow = dataBatchTableUI.getTable().convertRowIndexToModel(selectedRow);
+                switchToDataBatchUI(selectedRow);
+            }
+        });
+    }
+
+    private void switchToDataBatchUI(int selectedRow) {
+        Map<String, List<Integer>> groupedByTabName = new HashMap<>();
+        JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
+        JIPipeDataSlot formsForRow = dataBatchForms.get(selectedRow);
+        for (int row = 0; row < formsForRow.getRowCount(); row++) {
+            String tab = formsForRow.getAnnotationOr(row, tabAnnotation, new JIPipeAnnotation(tabAnnotation, "General")).getValue();
+            List<Integer> rowList = groupedByTabName.getOrDefault(tab, null);
+            if(rowList == null) {
+                rowList = new ArrayList<>();
+                groupedByTabName.put(tab, rowList);
+            }
+            rowList.add(row);
+        }
+        Map<String, FormPanel> formPanelsForTab = new HashMap<>();
+        for (Map.Entry<String, List<Integer>> entry : groupedByTabName.entrySet()) {
+            String tab = entry.getKey();
+            for (Integer row : entry.getValue()) {
+                FormData formData = formsForRow.getData(row, FormData.class, progressInfo);
+                if(formData instanceof ParameterFormData) {
+                    // Add to form panel
+                    FormPanel formPanel = formPanelsForTab.getOrDefault(tab, null);
+                    if(formPanel == null) {
+                        formPanel = new FormPanel(new MarkdownDocument("Please provide your input!"),
+                                FormPanel.WITH_DOCUMENTATION | FormPanel.DOCUMENTATION_BELOW | FormPanel.WITH_SCROLLING);
+                        tabPane.addTab(tab,
+                                UIUtils.getIconFromResources("actions/settings.png"),
+                                formPanel,
+                                DocumentTabPane.CloseMode.withoutCloseButton,
+                                false);
+                        formPanelsForTab.put(tab, formPanel);
+                    }
+                    ParameterFormData parameterFormData = (ParameterFormData) formData;
+                    if(parameterFormData.isShowName()) {
+                        formPanel.addToForm(formData.getEditor(workbench),
+                                new JLabel(parameterFormData.getName()),
+                                parameterFormData.getDescription().toMarkdown());
+                    }
+                    else {
+                        formPanel.addWideToForm(formData.getEditor(workbench),
+                                parameterFormData.getDescription().toMarkdown());
+                    }
+                }
+                else {
+                    // Create a separate GUI tab
+                    tabPane.addTab(tab,
+                            UIUtils.getIconFromResources("actions/settings.png"),
+                            formData.getEditor(getWorkbench()),
+                            DocumentTabPane.CloseMode.withoutCloseButton,
+                            false);
+                }
+            }
+        }
+        for (Map.Entry<String, FormPanel> entry : formPanelsForTab.entrySet()) {
+            entry.getValue().addVerticalGlue();
+        }
+
     }
 
     private void initializeBottomBar(JPanel contentPanel) {

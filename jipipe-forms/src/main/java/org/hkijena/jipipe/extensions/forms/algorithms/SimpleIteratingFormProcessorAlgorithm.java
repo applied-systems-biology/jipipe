@@ -3,19 +3,19 @@ package org.hkijena.jipipe.extensions.forms.algorithms;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
+import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.forms.datatypes.FormData;
 import org.hkijena.jipipe.extensions.forms.ui.FormsDialog;
+import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
 import org.hkijena.jipipe.ui.JIPipeDummyWorkbench;
-import org.hkijena.jipipe.ui.JIPipeProjectWindow;
-import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
+import org.hkijena.jipipe.utils.ResourceUtils;
 
 import javax.swing.*;
 import java.awt.event.WindowAdapter;
@@ -32,12 +32,16 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @JIPipeInputSlot(value = FormData.class, slotName = "Forms", autoCreate = true)
 @JIPipeOutputSlot(value = JIPipeData.class, slotName = "Data", autoCreate = true)
 public class SimpleIteratingFormProcessorAlgorithm extends JIPipeAlgorithm {
+
+    private String tabAnnotation = "Tab";
+
     public SimpleIteratingFormProcessorAlgorithm(JIPipeNodeInfo info) {
         super(info);
     }
 
     public SimpleIteratingFormProcessorAlgorithm(SimpleIteratingFormProcessorAlgorithm other) {
         super(other);
+        this.tabAnnotation = other.tabAnnotation;
     }
 
     @Override
@@ -53,15 +57,11 @@ public class SimpleIteratingFormProcessorAlgorithm extends JIPipeAlgorithm {
         else if(!dataSlot.isEmpty()) {
             // Generate data batches and show the user interface
             List<JIPipeMergingDataBatch> dataBatchList = new ArrayList<>();
-            List<FormData> forms = new ArrayList<>();
             for (int row = 0; row < dataSlot.getRowCount(); row++) {
                 JIPipeMergingDataBatch dataBatch = new JIPipeMergingDataBatch(this);
                 dataBatch.addData(dataSlot, row);
                 dataBatch.addGlobalAnnotations(dataSlot.getAnnotations(row), JIPipeAnnotationMergeStrategy.Merge);
                 dataBatchList.add(dataBatch);
-            }
-            for (int row = 0; row < formsSlot.getRowCount(); row++) {
-                forms.add(formsSlot.getData(row, FormData.class, progressInfo));
             }
 
             progressInfo.log("Waiting for user input ...");
@@ -73,7 +73,7 @@ public class SimpleIteratingFormProcessorAlgorithm extends JIPipeAlgorithm {
             synchronized (lock) {
                 SwingUtilities.invokeLater(() -> {
                     JIPipeWorkbench workbench = JIPipeWorkbench.tryFindWorkbench(getGraph(), new JIPipeDummyWorkbench());
-                    FormsDialog dialog = new FormsDialog(workbench, dataBatchList, forms);
+                    FormsDialog dialog = new FormsDialog(workbench, dataBatchList, formsSlot, tabAnnotation);
                     dialog.setTitle(getName());
                     dialog.setSize(1024, 768);
                     dialog.setLocationRelativeTo(workbench.getWindow());
@@ -116,5 +116,15 @@ public class SimpleIteratingFormProcessorAlgorithm extends JIPipeAlgorithm {
         return true;
     }
 
+    @JIPipeDocumentation(name = "Form tab annotation", description = "The annotation that is used to group form elements into tabs.")
+    @JIPipeParameter("tab-annotation")
+    @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/annotation.png")
+    public String getTabAnnotation() {
+        return tabAnnotation;
+    }
 
+    @JIPipeParameter("tab-annotation")
+    public void setTabAnnotation(String tabAnnotation) {
+        this.tabAnnotation = tabAnnotation;
+    }
 }
