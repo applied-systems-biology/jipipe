@@ -71,6 +71,7 @@ public class CacheAwareTableEditor extends JIPipeTableEditor {
         frame.setContentPane(dataDisplay);
         frame.pack();
         frame.setSize(1024, 768);
+        frame.setLocationRelativeTo(workbench.getWindow());
         frame.setVisible(true);
     }
 

@@ -67,6 +67,7 @@ public class CacheAwareImagePlusDataViewerPanel extends ImageViewerPanel {
         alwaysOnTopToggle.addActionListener(e -> GeneralUISettings.getInstance().setOpenDataWindowsAlwaysOnTop(alwaysOnTopToggle.isSelected()));
         dataDisplay.getToolBar().add(alwaysOnTopToggle);
         window.setTitle(displayName);
+        window.setLocationRelativeTo(workbench.getWindow());
         window.setVisible(true);
     }
 
