@@ -1,6 +1,7 @@
 package org.hkijena.jipipe.extensions.forms.ui;
 
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
@@ -10,9 +11,7 @@ import org.hkijena.jipipe.extensions.forms.datatypes.ParameterFormData;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.batchassistant.DataBatchBrowserUI;
 import org.hkijena.jipipe.ui.batchassistant.DataBatchTableUI;
-import org.hkijena.jipipe.ui.components.DocumentTabPane;
-import org.hkijena.jipipe.ui.components.FormPanel;
-import org.hkijena.jipipe.ui.components.MarkdownDocument;
+import org.hkijena.jipipe.ui.components.*;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jdesktop.swingx.JXTable;
 
@@ -34,6 +33,11 @@ public class FormsDialog extends JFrame {
     private DataBatchTableUI dataBatchTableUI;
     private DocumentTabPane tabPane = new DocumentTabPane();
     private String lastTab = "";
+    private List<DataBatchStatus> dataBatchStatuses = new ArrayList<>();
+    private JLabel unvisitedLabel = new JLabel(new ColorIcon(16,16, DataBatchStatusTableCellRenderer.COLOR_UNVISITED));
+    private JLabel visitedLabel = new JLabel(new ColorIcon(16,16, new Color(0xb3ef8e)));
+    private JLabel invalidLabel = new JLabel(new ColorIcon(16,16, DataBatchStatusTableCellRenderer.COLOR_INVALID));
+    private JToggleButton visitedButton = new JToggleButton("Reviewed", UIUtils.getIconFromResources("actions/eye.png"));
 
     public FormsDialog(JIPipeWorkbench workbench, List<JIPipeMergingDataBatch> dataBatchList, JIPipeDataSlot forms, String tabAnnotation) {
         this.workbench = workbench;
@@ -51,6 +55,7 @@ public class FormsDialog extends JFrame {
                         progressInfo);
             }
             dataBatchForms.add(copy);
+            dataBatchStatuses.add(DataBatchStatus.Unvisited);
         }
 
         // Initialize UI
@@ -98,6 +103,8 @@ public class FormsDialog extends JFrame {
         JPanel contentPanel = new JPanel(new BorderLayout());
 
         dataBatchTableUI = new DataBatchTableUI(dataBatchList);
+        dataBatchTableUI.getTable().setDefaultRenderer(Integer.class, new DataBatchStatusTableCellRenderer(dataBatchStatuses));
+        dataBatchTableUI.getTable().setDefaultRenderer(String.class, new DataBatchStatusTableCellRenderer(dataBatchStatuses));
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, dataBatchTableUI, tabPane);
         splitPane.setDividerSize(3);
         splitPane.setResizeWeight(0.33);
@@ -137,12 +144,49 @@ public class FormsDialog extends JFrame {
     }
 
     private void switchToDataBatchUI(int selectedRow) {
+
+        boolean wasVisitedBefore = dataBatchStatuses.get(selectedRow) != DataBatchStatus.Unvisited;
+        visitedButton.setSelected(true);
+
+        updateVisitedStatuses();
+
+        // Set the status
+        dataBatchStatuses.set(selectedRow, DataBatchStatus.Visited);
+        dataBatchTableUI.getTable().repaint();
+        updateBottomBarStats();
+
         // Create preview tab
         tabPane.addTab("View data",
                 UIUtils.getIconFromResources("actions/zoom.png"),
                 new DataBatchBrowserUI(getWorkbench(), dataBatchList.get(selectedRow)),
                 DocumentTabPane.CloseMode.withoutCloseButton,
                 false);
+
+        // If invalid, create report
+        if(wasVisitedBefore) {
+            JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
+            JIPipeValidityReport report = new JIPipeValidityReport();
+            JIPipeDataSlot formsForRow = dataBatchForms.get(selectedRow);
+            for (int row = 0; row < formsForRow.getRowCount(); row++) {
+                FormData formData = formsForRow.getData(row, FormData.class, progressInfo);
+                String name = formData.toString();
+                String tab = formsForRow.getAnnotationOr(row, tabAnnotation, new JIPipeAnnotation(tabAnnotation, "General")).getValue();
+                if(formData instanceof ParameterFormData) {
+                    name = ((ParameterFormData) formData).getName();
+                }
+                formData.reportValidity(report.forCategory(tab).forCategory(name + " (#" + row + ")"));
+            }
+            if(!report.isValid()) {
+                UserFriendlyErrorUI errorUI = new UserFriendlyErrorUI(null, UserFriendlyErrorUI.WITH_SCROLLING);
+                errorUI.displayErrors(report);
+                errorUI.addVerticalGlue();
+                tabPane.addTab("Issues detected",
+                        UIUtils.getIconFromResources("actions/dialog-warning.png"),
+                        errorUI,
+                        DocumentTabPane.CloseMode.withSilentCloseButton,
+                        false);
+            }
+        }
 
         // Create settings tabs
         Map<String, List<Integer>> groupedByTabName = new HashMap<>();
@@ -205,15 +249,71 @@ public class FormsDialog extends JFrame {
                 .ifPresent(documentTab -> tabPane.switchToContent(documentTab.getContent()));
     }
 
+    private void updateVisitedStatuses() {
+        JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
+        for (int i = 0; i < dataBatchList.size(); i++) {
+            if(dataBatchStatuses.get(i) == DataBatchStatus.Visited) {
+                JIPipeValidityReport report = new JIPipeValidityReport();
+                for (int row = 0; row < dataBatchForms.get(i).getRowCount(); row++) {
+                    FormData formData = dataBatchForms.get(i).getData(row, FormData.class, progressInfo);
+                    formData.reportValidity(report.forCategory("Form " + row));
+                    if(!report.isValid()) {
+                        dataBatchStatuses.set(i, DataBatchStatus.Invalid);
+                        break;
+                    }
+                }
+                if(report.isValid()) {
+                    dataBatchStatuses.set(i, DataBatchStatus.Visited);
+                }
+            }
+        }
+        dataBatchTableUI.getTable().repaint();
+    }
+
+    private void updateBottomBarStats() {
+        int visited = 0;
+        int unvisited = 0;
+        int invalid = 0;
+        for (DataBatchStatus status : dataBatchStatuses) {
+            switch (status) {
+                case Invalid:
+                    ++invalid;
+                    break;
+                case Visited:
+                    ++visited;
+                    break;
+                case Unvisited:
+                    ++unvisited;
+                    break;
+            }
+        }
+        invalidLabel.setVisible(invalid > 0);
+        unvisitedLabel.setVisible(unvisited > 0);
+        visitedLabel.setVisible(visited > 0);
+        invalidLabel.setText(invalid + " invalid");
+        unvisitedLabel.setText(unvisited + " to review");
+        visitedLabel.setText(visited + " already reviewed");
+    }
+
     private void initializeBottomBar(JPanel contentPanel) {
         JPanel buttonBar = new JPanel();
         buttonBar.setLayout(new BoxLayout(buttonBar, BoxLayout.X_AXIS));
+
+        visitedLabel.setBorder(BorderFactory.createEmptyBorder(0,4,0,4));
+        buttonBar.add(visitedLabel);
+        unvisitedLabel.setBorder(BorderFactory.createEmptyBorder(0,4,0,4));
+        buttonBar.add(unvisitedLabel);
+        invalidLabel.setBorder(BorderFactory.createEmptyBorder(0,4,0,4));
+        buttonBar.add(invalidLabel);
 
         buttonBar.add(Box.createHorizontalGlue());
 
         JButton previousButton = new JButton("Previous", UIUtils.getIconFromResources("actions/go-previous.png"));
         previousButton.addActionListener(e -> gotoPreviousBatch());
         buttonBar.add(previousButton);
+        visitedButton.setToolTipText("Mark/un-mark the current entry as reviewed.");
+        visitedButton.addActionListener(e -> toggleBatchVisited());
+        buttonBar.add(visitedButton);
         JButton nextButton = new JButton("Next", UIUtils.getIconFromResources("actions/go-next.png"));
         nextButton.addActionListener(e -> gotoNextBatch());
         buttonBar.add(nextButton);
@@ -246,18 +346,40 @@ public class FormsDialog extends JFrame {
         contentPanel.add(buttonBar, BorderLayout.SOUTH);
     }
 
+    private void toggleBatchVisited() {
+        int selectedRow = dataBatchTableUI.getTable().getSelectedRow();
+        if(selectedRow != -1) {
+            selectedRow = dataBatchTableUI.getTable().convertRowIndexToModel(selectedRow);
+            if(visitedButton.isSelected()) {
+                dataBatchStatuses.set(selectedRow, DataBatchStatus.Visited);
+            }
+            else {
+                dataBatchStatuses.set(selectedRow, DataBatchStatus.Unvisited);
+            }
+            updateBottomBarStats();
+            dataBatchTableUI.getTable().repaint();
+        }
+    }
+
     private void finishDialog() {
 
     }
 
     private void cancelDialog() {
-        if(JOptionPane.showConfirmDialog(FormsDialog.this,
-                "Do you really want to cancel the pipeline?",
-                getTitle(),
-                JOptionPane.YES_NO_OPTION,
-                JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
-            cancelled = true;
+        updateVisitedStatuses();
+        if(dataBatchStatuses.stream().allMatch(dataBatchStatus -> dataBatchStatus == DataBatchStatus.Visited)) {
+            cancelled = false;
             dispose();
+        }
+        else {
+            if (JOptionPane.showConfirmDialog(FormsDialog.this,
+                    "Do you really want to cancel the pipeline?",
+                    getTitle(),
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
+                cancelled = true;
+                dispose();
+            }
         }
     }
 
