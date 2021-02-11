@@ -217,7 +217,7 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
         batchPreviewMissingLabel.setVisible(false);
         batchPreviewDuplicateLabel.setVisible(false);
         for (JIPipeMergingDataBatch batch : batches) {
-            for (JIPipeDataSlot inputSlot : batchesNodeCopy.getInputSlots()) {
+            for (JIPipeDataSlot inputSlot : batchesNodeCopy.getEffectiveInputSlots()) {
                 List<JIPipeData> data = batch.getInputData(inputSlot, JIPipeData.class, new JIPipeProgressInfo());
                 if (data.isEmpty())
                     batchPreviewMissingLabel.setVisible(true);

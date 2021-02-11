@@ -1,5 +1,7 @@
 package org.hkijena.jipipe.extensions.forms.algorithms;
 
+import gnu.trove.set.TIntSet;
+import gnu.trove.set.hash.TIntHashSet;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -10,8 +12,11 @@ import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterVisibility;
 import org.hkijena.jipipe.extensions.forms.datatypes.FormData;
 import org.hkijena.jipipe.extensions.forms.ui.FormsDialog;
+import org.hkijena.jipipe.extensions.parameters.generators.IntegerRange;
 import org.hkijena.jipipe.extensions.parameters.primitives.StringParameterSettings;
 import org.hkijena.jipipe.ui.JIPipeDummyWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
@@ -21,6 +26,7 @@ import javax.swing.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -31,9 +37,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @JIPipeInputSlot(value = JIPipeData.class, slotName = "Data", autoCreate = true)
 @JIPipeInputSlot(value = FormData.class, slotName = "Forms", autoCreate = true)
 @JIPipeOutputSlot(value = JIPipeData.class, slotName = "Data", autoCreate = true)
-public class SimpleIteratingFormProcessorAlgorithm extends JIPipeAlgorithm {
+public class SimpleIteratingFormProcessorAlgorithm extends JIPipeAlgorithm implements JIPipeDataBatchAlgorithm {
 
     private String tabAnnotation = "Tab";
+    private JIPipeSimpleIteratingAlgorithm.DataBatchGenerationSettings dataBatchGenerationSettings = new JIPipeSimpleIteratingAlgorithm.DataBatchGenerationSettings();
 
     public SimpleIteratingFormProcessorAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -42,6 +49,7 @@ public class SimpleIteratingFormProcessorAlgorithm extends JIPipeAlgorithm {
     public SimpleIteratingFormProcessorAlgorithm(SimpleIteratingFormProcessorAlgorithm other) {
         super(other);
         this.tabAnnotation = other.tabAnnotation;
+        this.dataBatchGenerationSettings = new JIPipeSimpleIteratingAlgorithm.DataBatchGenerationSettings(other.dataBatchGenerationSettings);
     }
 
     @Override
@@ -56,11 +64,21 @@ public class SimpleIteratingFormProcessorAlgorithm extends JIPipeAlgorithm {
         } else if (!dataSlot.isEmpty()) {
             // Generate data batches and show the user interface
             List<JIPipeMergingDataBatch> dataBatchList = new ArrayList<>();
+            boolean withLimit = dataBatchGenerationSettings.getLimit().isEnabled();
+            IntegerRange limit = dataBatchGenerationSettings.getLimit().getContent();
+            TIntSet allowedIndices = withLimit ? new TIntHashSet(limit.getIntegers()) : null;
             for (int row = 0; row < dataSlot.getRowCount(); row++) {
+                if (withLimit && !allowedIndices.contains(row))
+                    continue;
                 JIPipeMergingDataBatch dataBatch = new JIPipeMergingDataBatch(this);
                 dataBatch.addData(dataSlot, row);
                 dataBatch.addGlobalAnnotations(dataSlot.getAnnotations(row), JIPipeAnnotationMergeStrategy.Merge);
                 dataBatchList.add(dataBatch);
+            }
+
+            if(dataBatchList.isEmpty()) {
+                progressInfo.log("No data batches selected (according to limit). Skipping.");
+                return;
             }
 
             progressInfo.log("Waiting for user input ...");
@@ -146,5 +164,40 @@ public class SimpleIteratingFormProcessorAlgorithm extends JIPipeAlgorithm {
     @JIPipeParameter("tab-annotation")
     public void setTabAnnotation(String tabAnnotation) {
         this.tabAnnotation = tabAnnotation;
+    }
+
+    @JIPipeDocumentation(name = "Data batch generation", description = "This algorithm has one input and will iterate through each row of its input and apply the workload. " +
+            "Use following settings to control which data batches are generated.")
+    @JIPipeParameter(value = "jipipe:data-batch-generation", visibility = JIPipeParameterVisibility.Visible, collapsed = true)
+    public JIPipeSimpleIteratingAlgorithm.DataBatchGenerationSettings getDataBatchGenerationSettings() {
+        return dataBatchGenerationSettings;
+    }
+
+    @Override
+    public JIPipeParameterCollection getGenerationSettingsInterface() {
+        return dataBatchGenerationSettings;
+    }
+
+    @Override
+    public List<JIPipeDataSlot> getEffectiveInputSlots() {
+        return Collections.singletonList(getInputSlot("Data"));
+    }
+
+    @Override
+    public List<JIPipeMergingDataBatch> generateDataBatchesDryRun(List<JIPipeDataSlot> slots) {
+        List<JIPipeMergingDataBatch> batches = new ArrayList<>();
+        JIPipeDataSlot slot = slots.stream().filter(s -> "Data".equals(s.getName())).findFirst().get();
+        boolean withLimit = dataBatchGenerationSettings.getLimit().isEnabled();
+        IntegerRange limit = dataBatchGenerationSettings.getLimit().getContent();
+        TIntSet allowedIndices = withLimit ? new TIntHashSet(limit.getIntegers()) : null;
+        for (int i = 0; i < slot.getRowCount(); i++) {
+            if (withLimit && !allowedIndices.contains(i))
+                continue;
+            JIPipeMergingDataBatch dataBatch = new JIPipeMergingDataBatch(this);
+            dataBatch.addData(slot, i);
+            dataBatch.addGlobalAnnotations(slot.getAnnotations(i), JIPipeAnnotationMergeStrategy.Merge);
+            batches.add(dataBatch);
+        }
+        return batches;
     }
 }

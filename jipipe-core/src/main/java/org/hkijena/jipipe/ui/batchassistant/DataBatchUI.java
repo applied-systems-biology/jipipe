@@ -66,7 +66,7 @@ public class DataBatchUI extends JIPipeProjectWorkbenchPanel {
         add(metaDataList, BorderLayout.CENTER);
 
         FormPanel dataList = new FormPanel(null, FormPanel.NONE);
-        for (JIPipeDataSlot slot : node.getInputSlots()) {
+        for (JIPipeDataSlot slot : node.getEffectiveInputSlots()) {
             Set<Integer> rows = batch.getInputSlotRows().getOrDefault(slot, Collections.emptySet());
             Icon dataTypeIcon = JIPipe.getDataTypes().getIconFor(slot.getAcceptedDataType());
             JButton displayButton = new JButton(slot.getName(), dataTypeIcon);
