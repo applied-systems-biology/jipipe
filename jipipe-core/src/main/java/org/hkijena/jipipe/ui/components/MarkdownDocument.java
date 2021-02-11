@@ -122,6 +122,32 @@ public class MarkdownDocument {
         }
     }
 
+    /**
+     * Loads a document from a resource URL
+     *
+     * @param resourcePath resource path
+     * @param enableResourceProtocol Allows to target core JIPipe resources with resource://
+     * @return the document
+     */
+    public static MarkdownDocument fromResourceURL(URL resourcePath, boolean enableResourceProtocol) {
+        try {
+            String md = Resources.toString(resourcePath, Charsets.UTF_8);
+            if(enableResourceProtocol) {
+                Set<String> resourceURLs = getResourceURLs(md, "resource://");
+                for (String imageURL : resourceURLs) {
+                    URL url = resourceReplacementCache.getOrDefault(imageURL, null);
+                    if (url == null) {
+                        url = ResourceUtils.getPluginResource(imageURL);
+                    }
+                    md = md.replace("resource://" + imageURL, "" + url);
+                }
+            }
+            return new MarkdownDocument(md);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private static Set<String> getResourceURLs(String md, String protocol) {
         Set<String> imageURLs = new HashSet<>();
         int index = md.indexOf(protocol);

@@ -6,6 +6,7 @@ import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
+import org.hkijena.jipipe.extensions.forms.FormsExtension;
 import org.hkijena.jipipe.extensions.forms.datatypes.FormData;
 import org.hkijena.jipipe.extensions.forms.datatypes.ParameterFormData;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
@@ -14,6 +15,7 @@ import org.hkijena.jipipe.ui.batchassistant.DataBatchTableUI;
 import org.hkijena.jipipe.ui.components.*;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jdesktop.swingx.JXTable;
+import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.awt.*;
@@ -25,6 +27,7 @@ import java.util.*;
 import java.util.List;
 
 public class FormsDialog extends JFrame {
+    private static final String TAB_ISSUES_DETECTED = "Issues detected";
     private final JIPipeWorkbench workbench;
     private final String tabAnnotation;
     private final List<JIPipeMergingDataBatch> dataBatchList;
@@ -39,6 +42,7 @@ public class FormsDialog extends JFrame {
     private JLabel visitedLabel = new JLabel(new ColorIcon(16,16, new Color(0xb3ef8e)));
     private JLabel invalidLabel = new JLabel(new ColorIcon(16,16, DataBatchStatusTableCellRenderer.COLOR_INVALID));
     private JToggleButton visitedButton = new JToggleButton("Reviewed", UIUtils.getIconFromResources("actions/eye.png"));
+    private MarkdownDocument documentation;
 
     public FormsDialog(JIPipeWorkbench workbench, List<JIPipeMergingDataBatch> dataBatchList, JIPipeDataSlot originalForms, String tabAnnotation) {
         this.originalForms = originalForms;
@@ -46,6 +50,8 @@ public class FormsDialog extends JFrame {
         this.workbench = workbench;
         this.dataBatchList = dataBatchList;
         this.tabAnnotation = tabAnnotation;
+        this.documentation = MarkdownDocument.fromResourceURL(FormsExtension.class.getResource("/org/hkijena/jipipe/extensions/forms/form-dialog-documentation.md"),
+                true);
 
         JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
         // We need to make copies of the FormData objects, as they are mutable
@@ -72,6 +78,8 @@ public class FormsDialog extends JFrame {
     }
 
     private void gotoNextBatch() {
+        if(!checkCurrentBatch())
+            return;
         if(dataBatchList.size() > 0) {
             dataBatchTableUI.resetSearch();
             JXTable table = dataBatchTableUI.getTable();
@@ -88,7 +96,40 @@ public class FormsDialog extends JFrame {
         }
     }
 
+    private boolean checkCurrentBatch() {
+        JXTable table = dataBatchTableUI.getTable();
+        int row = table.getSelectedRow();
+        if(row == -1) {
+            return true;
+        }
+        JIPipeProgressInfo info = new JIPipeProgressInfo();
+        JIPipeValidityReport report = getReportForDataBatch(row, info);
+        if(!report.isValid()) {
+            int result = JOptionPane.showOptionDialog(this,
+                    "The current batch has settings that are not fully valid. Do you want to continue, anyways?",
+                    "Issues found",
+                    JOptionPane.YES_NO_CANCEL_OPTION,
+                    JOptionPane.QUESTION_MESSAGE,
+                    null,
+                    new Object[]{"Yes", "No", "Show errors"},
+                    "Show errors");
+            if(result == JOptionPane.YES_OPTION)
+                return true;
+            else if (result == JOptionPane.NO_OPTION)
+                return false;
+            else {
+                tabPane.closeAllTabs();
+                lastTab = TAB_ISSUES_DETECTED;
+                switchToDataBatchUI(row);
+                return false;
+            }
+        }
+        return true;
+    }
+
     private void gotoPreviousBatch() {
+        if(!checkCurrentBatch())
+            return;
         if(dataBatchList.size() > 0) {
             dataBatchTableUI.resetSearch();
             JXTable table = dataBatchTableUI.getTable();
@@ -177,22 +218,12 @@ public class FormsDialog extends JFrame {
         // If invalid, create report
         if(wasVisitedBefore) {
             JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
-            JIPipeValidityReport report = new JIPipeValidityReport();
-            JIPipeDataSlot formsForRow = dataBatchForms.get(selectedRow);
-            for (int row = 0; row < formsForRow.getRowCount(); row++) {
-                FormData formData = formsForRow.getData(row, FormData.class, progressInfo);
-                String name = formData.toString();
-                String tab = formsForRow.getAnnotationOr(row, tabAnnotation, new JIPipeAnnotation(tabAnnotation, "General")).getValue();
-                if(formData instanceof ParameterFormData) {
-                    name = ((ParameterFormData) formData).getName();
-                }
-                formData.reportValidity(report.forCategory(tab).forCategory(name + " (#" + row + ")"));
-            }
+            JIPipeValidityReport report = getReportForDataBatch(selectedRow, progressInfo);
             if(!report.isValid()) {
                 UserFriendlyErrorUI errorUI = new UserFriendlyErrorUI(null, UserFriendlyErrorUI.WITH_SCROLLING);
                 errorUI.displayErrors(report);
                 errorUI.addVerticalGlue();
-                tabPane.addTab("Issues detected",
+                tabPane.addTab(TAB_ISSUES_DETECTED,
                         UIUtils.getIconFromResources("actions/dialog-warning.png"),
                         errorUI,
                         DocumentTabPane.CloseMode.withSilentCloseButton,
@@ -222,7 +253,7 @@ public class FormsDialog extends JFrame {
                     // Add to form panel
                     FormPanel formPanel = formPanelsForTab.getOrDefault(tab, null);
                     if(formPanel == null) {
-                        formPanel = new FormPanel(new MarkdownDocument("Please provide your input!"),
+                        formPanel = new FormPanel(documentation,
                                 FormPanel.WITH_DOCUMENTATION | FormPanel.DOCUMENTATION_BELOW | FormPanel.WITH_SCROLLING);
                         tabPane.addTab(tab,
                                 UIUtils.getIconFromResources("actions/settings.png"),
@@ -259,6 +290,22 @@ public class FormsDialog extends JFrame {
         // Switch to the last tab for consistency
         tabPane.getTabs().stream().filter(tab -> Objects.equals(lastTab, tab.getTitle())).findFirst()
                 .ifPresent(documentTab -> tabPane.switchToContent(documentTab.getContent()));
+    }
+
+    @NotNull
+    private JIPipeValidityReport getReportForDataBatch(int selectedRow, JIPipeProgressInfo progressInfo) {
+        JIPipeValidityReport report = new JIPipeValidityReport();
+        JIPipeDataSlot formsForRow = dataBatchForms.get(selectedRow);
+        for (int row = 0; row < formsForRow.getRowCount(); row++) {
+            FormData formData = formsForRow.getData(row, FormData.class, progressInfo);
+            String name = formData.toString();
+            String tab = formsForRow.getAnnotationOr(row, tabAnnotation, new JIPipeAnnotation(tabAnnotation, "General")).getValue();
+            if(formData instanceof ParameterFormData) {
+                name = ((ParameterFormData) formData).getName();
+            }
+            formData.reportValidity(report.forCategory(tab).forCategory(name + " (#" + row + ")"));
+        }
+        return report;
     }
 
     private void updateVisitedStatuses() {
