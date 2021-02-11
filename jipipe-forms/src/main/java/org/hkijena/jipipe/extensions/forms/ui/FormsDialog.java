@@ -4,6 +4,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
+import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
 import org.hkijena.jipipe.extensions.forms.FormsExtension;
@@ -69,7 +70,9 @@ public class FormsDialog extends JFrame {
     private JIPipeDataSlot createFormsInstanceFor(int index, JIPipeProgressInfo progressInfo) {
         JIPipeDataSlot copy = new JIPipeDataSlot(originalForms.getInfo(), originalForms.getNode());
         for (int row = 0; row < originalForms.getRowCount(); row++) {
-            copy.addData(originalForms.getData(row, FormData.class, progressInfo).duplicate(),
+            FormData formCopy = (FormData) originalForms.getData(row, FormData.class, progressInfo).duplicate();
+            formCopy.loadData(dataBatchList.get(index));
+            copy.addData(formCopy,
                     originalForms.getAnnotations(row),
                     JIPipeAnnotationMergeStrategy.OverwriteExisting,
                     progressInfo);
@@ -527,6 +530,8 @@ public class FormsDialog extends JFrame {
     }
 
     private void applyCurrentSettingsToAll(boolean includingVisited) {
+        if(!checkCurrentBatch())
+            return;
         int selectedRow = dataBatchTableUI.getTable().getSelectedRow();
         if(selectedRow != -1) {
             selectedRow = dataBatchTableUI.getTable().convertRowIndexToModel(selectedRow);
@@ -574,7 +579,29 @@ public class FormsDialog extends JFrame {
     }
 
     private void finishDialog() {
-
+        updateVisitedStatuses();
+        long unvisited = dataBatchStatuses.stream().filter(dataBatchStatus -> dataBatchStatus == DataBatchStatus.Unvisited).count();
+        long invalid = dataBatchStatuses.stream().filter(dataBatchStatus -> dataBatchStatus == DataBatchStatus.Invalid).count();
+        if(unvisited > 0) {
+            if (JOptionPane.showConfirmDialog(FormsDialog.this,
+                    "There are " + unvisited + " data batches that are not marked as reviewed. Do you want to continue, anyways?",
+                    getTitle(),
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.QUESTION_MESSAGE) == JOptionPane.NO_OPTION) {
+                return;
+            }
+        }
+        if(invalid > 0) {
+            if (JOptionPane.showConfirmDialog(FormsDialog.this,
+                    "There are " + invalid + " data batches that report issues. Do you want to continue, anyways?",
+                    getTitle(),
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.QUESTION_MESSAGE) == JOptionPane.NO_OPTION) {
+                return;
+            }
+        }
+        cancelled = false;
+        dispose();
     }
 
     private void cancelDialog() {
@@ -601,5 +628,9 @@ public class FormsDialog extends JFrame {
 
     public JIPipeWorkbench getWorkbench() {
         return workbench;
+    }
+
+    public List<JIPipeDataSlot> getDataBatchForms() {
+        return dataBatchForms;
     }
 }
