@@ -8,7 +8,8 @@ import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
 import org.hkijena.jipipe.extensions.forms.datatypes.FormData;
 import org.hkijena.jipipe.extensions.forms.datatypes.ParameterFormData;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.cache.DataBatchTableUI;
+import org.hkijena.jipipe.ui.batchassistant.DataBatchBrowserUI;
+import org.hkijena.jipipe.ui.batchassistant.DataBatchTableUI;
 import org.hkijena.jipipe.ui.components.DocumentTabPane;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.MarkdownDocument;
@@ -21,10 +22,8 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 
 public class FormsDialog extends JFrame {
     private final JIPipeWorkbench workbench;
@@ -34,6 +33,7 @@ public class FormsDialog extends JFrame {
     private boolean cancelled = false;
     private DataBatchTableUI dataBatchTableUI;
     private DocumentTabPane tabPane = new DocumentTabPane();
+    private String lastTab = "";
 
     public FormsDialog(JIPipeWorkbench workbench, List<JIPipeMergingDataBatch> dataBatchList, JIPipeDataSlot forms, String tabAnnotation) {
         this.workbench = workbench;
@@ -125,6 +125,9 @@ public class FormsDialog extends JFrame {
 
         dataBatchTableUI.getTable().getSelectionModel().addListSelectionListener(e -> {
             int selectedRow = dataBatchTableUI.getTable().getSelectedRow();
+            if(tabPane.getTabCount() > 0 && tabPane.getCurrentContent() != null) {
+                lastTab = tabPane.getTabContaining(tabPane.getCurrentContent()).getTitle();
+            }
             tabPane.closeAllTabs();
             if(selectedRow != -1) {
                 selectedRow = dataBatchTableUI.getTable().convertRowIndexToModel(selectedRow);
@@ -134,6 +137,14 @@ public class FormsDialog extends JFrame {
     }
 
     private void switchToDataBatchUI(int selectedRow) {
+        // Create preview tab
+        tabPane.addTab("View data",
+                UIUtils.getIconFromResources("actions/zoom.png"),
+                new DataBatchBrowserUI(getWorkbench(), dataBatchList.get(selectedRow)),
+                DocumentTabPane.CloseMode.withoutCloseButton,
+                false);
+
+        // Create settings tabs
         Map<String, List<Integer>> groupedByTabName = new HashMap<>();
         JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
         JIPipeDataSlot formsForRow = dataBatchForms.get(selectedRow);
@@ -189,6 +200,9 @@ public class FormsDialog extends JFrame {
             entry.getValue().addVerticalGlue();
         }
 
+        // Switch to the last tab for consistency
+        tabPane.getTabs().stream().filter(tab -> Objects.equals(lastTab, tab.getTitle())).findFirst()
+                .ifPresent(documentTab -> tabPane.switchToContent(documentTab.getContent()));
     }
 
     private void initializeBottomBar(JPanel contentPanel) {

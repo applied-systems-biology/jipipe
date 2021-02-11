@@ -1,4 +1,4 @@
-package org.hkijena.jipipe.ui.cache;
+package org.hkijena.jipipe.ui.batchassistant;
 
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;

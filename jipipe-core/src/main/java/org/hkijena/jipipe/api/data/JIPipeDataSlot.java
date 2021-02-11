@@ -25,13 +25,7 @@ import org.hkijena.jipipe.utils.StringUtils;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 /**
  * A data slot holds an {@link JIPipeData} instance.
@@ -633,5 +627,19 @@ public class JIPipeDataSlot {
 
     public boolean isEmpty() {
         return getRowCount() <= 0;
+    }
+
+    /**
+     * Creates a new {@link JIPipeDataSlot} instance that contains only the selected rows.
+     * All other attributes are copied.
+     * @param rows the rows
+     * @return the sliced slot
+     */
+    public JIPipeDataSlot slice(Collection<Integer> rows) {
+        JIPipeDataSlot result = new JIPipeDataSlot(getInfo(), getNode());
+        for (Integer row : rows) {
+            result.addData(getVirtualData(row), getAnnotations(row), JIPipeAnnotationMergeStrategy.OverwriteExisting);
+        }
+        return result;
     }
 }

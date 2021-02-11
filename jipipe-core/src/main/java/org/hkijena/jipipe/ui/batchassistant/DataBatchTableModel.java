@@ -1,4 +1,4 @@
-package org.hkijena.jipipe.ui.cache;
+package org.hkijena.jipipe.ui.batchassistant;
 
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;

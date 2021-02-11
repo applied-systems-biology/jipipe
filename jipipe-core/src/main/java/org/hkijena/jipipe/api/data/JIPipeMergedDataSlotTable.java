@@ -64,7 +64,10 @@ public class JIPipeMergedDataSlotTable implements TableModel {
             if (!traitColumns.contains(traitColumn))
                 traitColumns.add(traitColumn);
         }
-        JIPipeProjectCompartment compartment = project.getCompartments().getOrDefault(dataSlot.getNode().getCompartment(), null);
+        JIPipeProjectCompartment compartment = null;
+        if(project != null) {
+            compartment = project.getCompartments().getOrDefault(dataSlot.getNode().getCompartment(), null);
+        }
         if (compartment == null) {
             compartment = new JIPipeProjectCompartment(new JIPipeEmptyNodeInfo());
             compartment.setCustomName(dataSlot.getNode().getCompartment());

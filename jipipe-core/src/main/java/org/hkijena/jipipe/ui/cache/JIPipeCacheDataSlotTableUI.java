@@ -25,6 +25,8 @@ import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
+import org.hkijena.jipipe.ui.JIPipeWorkbench;
+import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.JIPipeComponentCellRenderer;
 import org.hkijena.jipipe.ui.components.PreviewControlUI;
@@ -57,7 +59,7 @@ import java.util.List;
 /**
  * UI that displays a {@link JIPipeDataSlot} that is cached
  */
-public class JIPipeCacheDataSlotTableUI extends JIPipeProjectWorkbenchPanel {
+public class JIPipeCacheDataSlotTableUI extends JIPipeWorkbenchPanel {
 
     private final JIPipeDataSlot slot;
     private JXTable table;
@@ -70,13 +72,15 @@ public class JIPipeCacheDataSlotTableUI extends JIPipeProjectWorkbenchPanel {
      * @param workbenchUI the workbench UI
      * @param slot        The slot
      */
-    public JIPipeCacheDataSlotTableUI(JIPipeProjectWorkbench workbenchUI, JIPipeDataSlot slot) {
+    public JIPipeCacheDataSlotTableUI(JIPipeWorkbench workbenchUI, JIPipeDataSlot slot) {
         super(workbenchUI);
         this.slot = slot;
 
         initialize();
         reloadTable();
-        getProject().getCache().getEventBus().register(this);
+        if(getWorkbench() instanceof JIPipeProjectWorkbench) {
+            ((JIPipeProjectWorkbench) getWorkbench()).getProject().getCache().getEventBus().register(this);
+        }
         updateStatus();
         GeneralDataSettings.getInstance().getEventBus().register(new Object() {
             @Subscribe
@@ -233,7 +237,9 @@ public class JIPipeCacheDataSlotTableUI extends JIPipeProjectWorkbenchPanel {
             label.setFont(label.getFont().deriveFont(26.0f));
             add(label, BorderLayout.CENTER);
 
-            getProject().getCache().getEventBus().unregister(this);
+            if(getWorkbench() instanceof JIPipeProjectWorkbench) {
+                ((JIPipeProjectWorkbench) getWorkbench()).getProject().getCache().getEventBus().unregister(this);
+            }
         }
     }
 

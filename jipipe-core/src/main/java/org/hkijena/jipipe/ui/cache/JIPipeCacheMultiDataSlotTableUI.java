@@ -15,6 +15,7 @@ package org.hkijena.jipipe.ui.cache;
 
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.JIPipeProjectCache;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
@@ -29,6 +30,8 @@ import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
+import org.hkijena.jipipe.ui.JIPipeWorkbench;
+import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.JIPipeComponentCellRenderer;
 import org.hkijena.jipipe.ui.components.PreviewControlUI;
@@ -58,7 +61,7 @@ import java.util.List;
 /**
  * UI that displays a {@link JIPipeDataSlot} that is cached
  */
-public class JIPipeCacheMultiDataSlotTableUI extends JIPipeProjectWorkbenchPanel {
+public class JIPipeCacheMultiDataSlotTableUI extends JIPipeWorkbenchPanel {
 
     private final List<JIPipeDataSlot> slots;
     private final boolean withCompartmentAndAlgorithm;
@@ -72,19 +75,25 @@ public class JIPipeCacheMultiDataSlotTableUI extends JIPipeProjectWorkbenchPanel
      * @param slots                       The slots
      * @param withCompartmentAndAlgorithm
      */
-    public JIPipeCacheMultiDataSlotTableUI(JIPipeProjectWorkbench workbenchUI, List<JIPipeDataSlot> slots, boolean withCompartmentAndAlgorithm) {
+    public JIPipeCacheMultiDataSlotTableUI(JIPipeWorkbench workbenchUI, List<JIPipeDataSlot> slots, boolean withCompartmentAndAlgorithm) {
         super(workbenchUI);
         this.slots = slots;
         this.withCompartmentAndAlgorithm = withCompartmentAndAlgorithm;
         table = new JXTable();
         this.multiSlotTable = new JIPipeMergedDataSlotTable(table, withCompartmentAndAlgorithm);
+        JIPipeProject project = null;
+        if(getWorkbench() instanceof JIPipeProjectWorkbench) {
+            project = ((JIPipeProjectWorkbench) getWorkbench()).getProject();
+        }
         for (JIPipeDataSlot slot : slots) {
-            multiSlotTable.add(getProject(), slot);
+            multiSlotTable.add(project, slot);
         }
 
         initialize();
         reloadTable();
-        getProject().getCache().getEventBus().register(this);
+        if(getWorkbench() instanceof JIPipeProjectWorkbench) {
+            ((JIPipeProjectWorkbench) getWorkbench()).getProject().getCache().getEventBus().register(this);
+        }
         updateStatus();
         GeneralDataSettings.getInstance().getEventBus().register(new Object() {
             @Subscribe
@@ -254,7 +263,9 @@ public class JIPipeCacheMultiDataSlotTableUI extends JIPipeProjectWorkbenchPanel
             label.setFont(label.getFont().deriveFont(26.0f));
             add(label, BorderLayout.CENTER);
 
-            getProject().getCache().getEventBus().unregister(this);
+            if(getWorkbench() instanceof JIPipeProjectWorkbench) {
+                ((JIPipeProjectWorkbench) getWorkbench()).getProject().getCache().getEventBus().unregister(this);
+            }
             multiSlotTable = null;
         }
     }
