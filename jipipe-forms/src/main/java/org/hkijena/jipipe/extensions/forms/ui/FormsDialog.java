@@ -29,6 +29,7 @@ public class FormsDialog extends JFrame {
     private final String tabAnnotation;
     private final List<JIPipeMergingDataBatch> dataBatchList;
     private final List<JIPipeDataSlot> dataBatchForms = new ArrayList<>();
+    private final JIPipeDataSlot originalForms;
     private boolean cancelled = false;
     private DataBatchTableUI dataBatchTableUI;
     private DocumentTabPane tabPane = new DocumentTabPane();
@@ -39,7 +40,9 @@ public class FormsDialog extends JFrame {
     private JLabel invalidLabel = new JLabel(new ColorIcon(16,16, DataBatchStatusTableCellRenderer.COLOR_INVALID));
     private JToggleButton visitedButton = new JToggleButton("Reviewed", UIUtils.getIconFromResources("actions/eye.png"));
 
-    public FormsDialog(JIPipeWorkbench workbench, List<JIPipeMergingDataBatch> dataBatchList, JIPipeDataSlot forms, String tabAnnotation) {
+    public FormsDialog(JIPipeWorkbench workbench, List<JIPipeMergingDataBatch> dataBatchList, JIPipeDataSlot originalForms, String tabAnnotation) {
+        this.originalForms = originalForms;
+        setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
         this.workbench = workbench;
         this.dataBatchList = dataBatchList;
         this.tabAnnotation = tabAnnotation;
@@ -47,13 +50,7 @@ public class FormsDialog extends JFrame {
         JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
         // We need to make copies of the FormData objects, as they are mutable
         for (int i = 0; i < dataBatchList.size(); ++i) {
-            JIPipeDataSlot copy = new JIPipeDataSlot(forms.getInfo(), forms.getNode());
-            for (int row = 0; row < forms.getRowCount(); row++) {
-                copy.addData(forms.getData(row, FormData.class, progressInfo).duplicate(),
-                        forms.getAnnotations(row),
-                        JIPipeAnnotationMergeStrategy.OverwriteExisting,
-                        progressInfo);
-            }
+            JIPipeDataSlot copy = createFormsInstanceFor(i, progressInfo);
             dataBatchForms.add(copy);
             dataBatchStatuses.add(DataBatchStatus.Unvisited);
         }
@@ -61,6 +58,17 @@ public class FormsDialog extends JFrame {
         // Initialize UI
         initialize();
         gotoNextBatch();
+    }
+
+    private JIPipeDataSlot createFormsInstanceFor(int index, JIPipeProgressInfo progressInfo) {
+        JIPipeDataSlot copy = new JIPipeDataSlot(originalForms.getInfo(), originalForms.getNode());
+        for (int row = 0; row < originalForms.getRowCount(); row++) {
+            copy.addData(originalForms.getData(row, FormData.class, progressInfo).duplicate(),
+                    originalForms.getAnnotations(row),
+                    JIPipeAnnotationMergeStrategy.OverwriteExisting,
+                    progressInfo);
+        }
+        return copy;
     }
 
     private void gotoNextBatch() {
@@ -132,15 +140,19 @@ public class FormsDialog extends JFrame {
 
         dataBatchTableUI.getTable().getSelectionModel().addListSelectionListener(e -> {
             int selectedRow = dataBatchTableUI.getTable().getSelectedRow();
-            if(tabPane.getTabCount() > 0 && tabPane.getCurrentContent() != null) {
-                lastTab = tabPane.getTabContaining(tabPane.getCurrentContent()).getTitle();
-            }
-            tabPane.closeAllTabs();
+            closeAllTabsAndRememberLast();
             if(selectedRow != -1) {
                 selectedRow = dataBatchTableUI.getTable().convertRowIndexToModel(selectedRow);
                 switchToDataBatchUI(selectedRow);
             }
         });
+    }
+
+    private void closeAllTabsAndRememberLast() {
+        if(tabPane.getTabCount() > 0 && tabPane.getCurrentContent() != null) {
+            lastTab = tabPane.getTabContaining(tabPane.getCurrentContent()).getTitle();
+        }
+        tabPane.closeAllTabs();
     }
 
     private void switchToDataBatchUI(int selectedRow) {
@@ -324,14 +336,104 @@ public class FormsDialog extends JFrame {
         JPopupMenu applyToMenu = UIUtils.addPopupMenuToComponent(applyToButton);
 
         JMenuItem applyToAllButton = new JMenuItem("All data batches", UIUtils.getIconFromResources("actions/dialog-layers.png"));
+        applyToAllButton.addActionListener(e -> {
+            if(JOptionPane.showConfirmDialog(this,
+                    "Do you really want to copy the current settings to all other batches?\n" +
+                            "This will replace all existing values.",
+                    "Apply to all data batches",
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
+                applyCurrentSettingsToAll(true);
+            }
+        });
         applyToAllButton.setToolTipText("Applies the current settings to all data batches, including ones that have been already visited.");
         applyToMenu.add(applyToAllButton);
 
         JMenuItem applyToAllRemainingButton = new JMenuItem("All data remaining batches", UIUtils.getIconFromResources("actions/dialog-layers.png"));
+        applyToAllRemainingButton.addActionListener(e -> {
+            if(dataBatchStatuses.stream().noneMatch(dataBatchStatus -> dataBatchStatus == DataBatchStatus.Unvisited)) {
+                JOptionPane.showMessageDialog(this,
+                        "There are no remaining unvisited data batches.",
+                        "Apply to all remaining batches",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            if(JOptionPane.showConfirmDialog(this,
+                    "Do you really want to copy the current settings to all remaining batches?",
+                    "Apply to all remaining data batches",
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
+                applyCurrentSettingsToAll(false);
+            }
+        });
         applyToAllRemainingButton.setToolTipText("Applies the current settings to all data batches, excluding ones that have been already visited.");
         applyToMenu.add(applyToAllRemainingButton);
 
         buttonBar.add(applyToButton);
+
+        JButton resetButton = new JButton("Reset ...", UIUtils.getIconFromResources("actions/clear-brush.png"));
+        JPopupMenu resetMenu = UIUtils.addPopupMenuToComponent(resetButton);
+
+        JMenuItem resetVisitedItem = new JMenuItem("'Reviewed' status only", UIUtils.getIconFromResources("actions/eye-slash.png"));
+        resetVisitedItem.setToolTipText("Marks all data batches as not reviewed. This will not change any settings.");
+        resetVisitedItem.addActionListener(e -> {
+            if(JOptionPane.showConfirmDialog(this,
+                    "Do you want to set all batches to 'not reviewed'?\n" +
+                            "This will not change any settings already made.",
+                    "Reset 'Reviewed' status only",
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
+                for (int i = 0; i < dataBatchStatuses.size(); i++) {
+                    dataBatchStatuses.set(i, DataBatchStatus.Unvisited);
+                }
+                visitedButton.setSelected(false);
+                dataBatchTableUI.getTable().repaint();
+                updateBottomBarStats();
+            }
+        });
+        resetMenu.add(resetVisitedItem);
+        resetMenu.addSeparator();
+
+        JMenuItem resetCurrentItem = new JMenuItem("Current batch", UIUtils.getIconFromResources("actions/clear-brush.png"));
+        resetCurrentItem.setToolTipText("Resets the settings of the currently viewed data batch.");
+        resetCurrentItem.addActionListener(e -> {
+            if(JOptionPane.showConfirmDialog(this,
+                    "Do you want to reset all settings of the current batch?",
+                    "Reset current batch",
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
+               resetCurrentBatch();
+            }
+        });
+        resetMenu.add(resetCurrentItem);
+
+        JMenuItem resetAllItem = new JMenuItem("All batches", UIUtils.getIconFromResources("actions/clear-brush.png"));
+        resetAllItem.setToolTipText("Resets the settings of all data batches.");
+        resetAllItem.addActionListener(e -> {
+            if(JOptionPane.showConfirmDialog(this,
+                    "Do you want to reset all settings of all batches?",
+                    "Reset all batches",
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
+                resetAllBatches(false);
+            }
+        });
+        resetMenu.add(resetAllItem);
+
+        JMenuItem resetUnvisitedItem = new JMenuItem("Non-reviewed batches", UIUtils.getIconFromResources("actions/clear-brush.png"));
+        resetUnvisitedItem.setToolTipText("Resets the settings of all data batches that are not reviewed.");
+        resetUnvisitedItem.addActionListener(e -> {
+            if(JOptionPane.showConfirmDialog(this,
+                    "Do you want to reset all settings of all non-reviewed batches?",
+                    "Reset non-reviewed batches",
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
+                resetAllBatches(true);
+            }
+        });
+        resetMenu.add(resetUnvisitedItem);
+
+        buttonBar.add(resetButton);
 
         buttonBar.add(Box.createHorizontalStrut(8));
 
@@ -344,6 +446,69 @@ public class FormsDialog extends JFrame {
         buttonBar.add(finishButton);
 
         contentPanel.add(buttonBar, BorderLayout.SOUTH);
+    }
+
+    private void resetAllBatches(boolean onlyUnvisited) {
+        JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
+        for (int i = 0; i < dataBatchList.size(); ++i) {
+            if(onlyUnvisited && dataBatchStatuses.get(i) != DataBatchStatus.Unvisited)
+                continue;
+            JIPipeDataSlot copy = createFormsInstanceFor(i, progressInfo);
+            dataBatchForms.set(i, copy);
+            dataBatchStatuses.set(i, DataBatchStatus.Unvisited);
+        }
+        updateVisitedStatuses();
+        updateBottomBarStats();
+        dataBatchTableUI.getTable().repaint();
+    }
+
+    private void resetCurrentBatch() {
+        int selectedRow = dataBatchTableUI.getTable().getSelectedRow();
+        if(selectedRow != -1) {
+            selectedRow = dataBatchTableUI.getTable().convertRowIndexToModel(selectedRow);
+        }
+        else {
+            return;
+        }
+        JIPipeDataSlot copy = createFormsInstanceFor(selectedRow, new JIPipeProgressInfo());
+        dataBatchForms.set(selectedRow, copy);
+        dataBatchStatuses.set(selectedRow, DataBatchStatus.Unvisited);
+        updateBottomBarStats();
+        dataBatchTableUI.getTable().repaint();
+        closeAllTabsAndRememberLast();
+        switchToDataBatchUI(selectedRow);
+    }
+
+    private void applyCurrentSettingsToAll(boolean includingVisited) {
+        int selectedRow = dataBatchTableUI.getTable().getSelectedRow();
+        if(selectedRow != -1) {
+            selectedRow = dataBatchTableUI.getTable().convertRowIndexToModel(selectedRow);
+        }
+        else {
+            return;
+        }
+
+        JIPipeDataSlot forms = dataBatchForms.get(selectedRow);
+        JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
+        for (int i = 0; i < dataBatchList.size(); i++) {
+            if(i == selectedRow)
+                continue;
+            if(!includingVisited && dataBatchStatuses.get(i) != DataBatchStatus.Unvisited)
+                continue;
+
+            // Just copy the form
+            JIPipeDataSlot copy = new JIPipeDataSlot(forms.getInfo(), forms.getNode());
+            for (int row = 0; row < forms.getRowCount(); row++) {
+                copy.addData(forms.getData(row, FormData.class, progressInfo).duplicate(),
+                        forms.getAnnotations(row),
+                        JIPipeAnnotationMergeStrategy.OverwriteExisting,
+                        progressInfo);
+            }
+            dataBatchForms.set(i, copy);
+            dataBatchStatuses.set(i, DataBatchStatus.Visited);
+        }
+        updateVisitedStatuses();
+        updateBottomBarStats();
     }
 
     private void toggleBatchVisited() {
