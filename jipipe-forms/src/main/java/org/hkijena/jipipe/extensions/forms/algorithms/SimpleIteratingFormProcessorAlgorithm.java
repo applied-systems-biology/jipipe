@@ -3,6 +3,7 @@ package org.hkijena.jipipe.extensions.forms.algorithms;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeOrganization;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.data.JIPipeAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
@@ -68,6 +69,7 @@ public class SimpleIteratingFormProcessorAlgorithm extends JIPipeAlgorithm {
 
             AtomicBoolean cancelled = new AtomicBoolean(true);
             AtomicBoolean windowOpened = new AtomicBoolean(true);
+            Object[] uiResult = new Object[1];
             Object lock = new Object();
 
             synchronized (lock) {
@@ -83,6 +85,7 @@ public class SimpleIteratingFormProcessorAlgorithm extends JIPipeAlgorithm {
                         @Override
                         public void windowClosed(WindowEvent e) {
                             cancelled.set(dialog.isCancelled());
+                            uiResult[0] = dialog.getDataBatchForms();
                             windowOpened.set(false);
                             synchronized (lock) {
                                 lock.notify();
@@ -107,6 +110,25 @@ public class SimpleIteratingFormProcessorAlgorithm extends JIPipeAlgorithm {
                         "Node '" + getName() + "'",
                         "You had to provide input to allow the pipeline to continue. Instead, you cancelled the input.",
                         "");
+            }
+
+            // Apply the form workloads
+            List<JIPipeDataSlot> dataBatchForms = (List<JIPipeDataSlot>) uiResult[0];
+            for (int i = 0; i < dataBatchForms.size(); i++) {
+                JIPipeProgressInfo batchProgress = progressInfo.resolveAndLog("Processing user input", i, dataBatchForms.size());
+                JIPipeDataSlot forms = dataBatchForms.get(i);
+                for (int row = 0; row < forms.getRowCount(); row++) {
+                    FormData form = forms.getData(row, FormData.class, batchProgress);
+                    batchProgress.resolveAndLog(form.toString(), row, forms.getRowCount());
+                    form.writeData(dataBatchList.get(i));
+                }
+            }
+
+            // Write the output
+            for (JIPipeMergingDataBatch dataBatch : dataBatchList) {
+                getFirstOutputSlot().addData(dataBatch.getVirtualInputData(dataSlot).get(0),
+                        new ArrayList<>(dataBatch.getAnnotations().values()),
+                        JIPipeAnnotationMergeStrategy.OverwriteExisting);
             }
         }
     }

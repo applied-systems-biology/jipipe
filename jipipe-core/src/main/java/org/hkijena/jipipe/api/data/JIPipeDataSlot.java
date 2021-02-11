@@ -466,7 +466,6 @@ public class JIPipeDataSlot {
 
     /**
      * Adds data as virtual data reference
-     *
      * @param virtualData   the virtual data
      * @param annotations   the annotations
      * @param mergeStrategy merge strategy

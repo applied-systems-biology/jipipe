@@ -14,11 +14,7 @@
 package org.hkijena.jipipe.api.nodes;
 
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeAnnotation;
-import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
-import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
+import org.hkijena.jipipe.api.data.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -175,6 +171,16 @@ public class JIPipeMergingDataBatch {
     /**
      * Gets stored data from an input slot
      *
+     * @param slotName     The slot name
+     * @return Input data with provided name
+     */
+    public List<JIPipeVirtualData> getVirtualInputData(String slotName ) {
+        return getVirtualInputData(node.getInputSlot(slotName));
+    }
+
+    /**
+     * Gets stored data from an input slot
+     *
      * @param <T>          Data type
      * @param slot         The slot
      * @param dataClass    The data type that should be returned
@@ -189,6 +195,24 @@ public class JIPipeMergingDataBatch {
         List<T> result = new ArrayList<>();
         for (Integer row : inputSlotRows.getOrDefault(slot, Collections.emptySet())) {
             result.add(slot.getData(row, dataClass, progressInfo));
+        }
+        return result;
+    }
+
+    /**
+     * Gets stored data from an input slot
+     *
+     * @param slot         The slot
+     * @return Input data with provided name
+     */
+    public List<JIPipeVirtualData> getVirtualInputData(JIPipeDataSlot slot) {
+        if (slot.getNode() != node)
+            throw new IllegalArgumentException("The provided slot does not belong to the data interface algorithm!");
+        if (!slot.isInput())
+            throw new IllegalArgumentException("Slot is not an input slot!");
+        List<JIPipeVirtualData> result = new ArrayList<>();
+        for (Integer row : inputSlotRows.getOrDefault(slot, Collections.emptySet())) {
+            result.add(slot.getVirtualData(row));
         }
         return result;
     }
