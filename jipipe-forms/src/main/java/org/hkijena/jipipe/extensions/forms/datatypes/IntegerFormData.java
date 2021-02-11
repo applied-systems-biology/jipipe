@@ -1,40 +1,37 @@
 package org.hkijena.jipipe.extensions.forms.datatypes;
 
+import com.fathzer.soft.javaluator.StaticVariableSet;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDefaultDocumentation;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeValidityReport;
 import org.hkijena.jipipe.api.data.JIPipeAnnotation;
-import org.hkijena.jipipe.api.data.JIPipeAnnotationMergeStrategy;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.parameters.JIPipeReflectionParameterAccess;
 import org.hkijena.jipipe.extensions.forms.utils.SingleAnnotationIOSettings;
-import org.hkijena.jipipe.extensions.parameters.expressions.StringQueryExpression;
-import org.hkijena.jipipe.extensions.parameters.primitives.HTMLText;
-import org.hkijena.jipipe.extensions.parameters.primitives.OptionalAnnotationNameParameter;
+import org.hkijena.jipipe.extensions.parameters.expressions.*;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.utils.StringUtils;
 
 import java.awt.*;
 import java.nio.file.Path;
 import java.util.Collections;
 
-@JIPipeDocumentation(name = "Text input form", description = "A form element that allows the user to input text")
-public class StringFormData extends ParameterFormData {
+@JIPipeDocumentation(name = "Integer input form", description = "A form element that allows the user to input an integer number")
+public class IntegerFormData extends ParameterFormData {
 
-    private String value = "";
-    private StringQueryExpression validationExpression = new StringQueryExpression();
+    private int value = 0;
+    private DefaultExpressionParameter validationExpression = new DefaultExpressionParameter();
     private SingleAnnotationIOSettings annotationIOSettings = new SingleAnnotationIOSettings();
 
-    public StringFormData() {
+    public IntegerFormData() {
         annotationIOSettings.getEventBus().register(this);
     }
 
-    public StringFormData(StringFormData other) {
+    public IntegerFormData(IntegerFormData other) {
         super(other);
         this.value = other.value;
         this.validationExpression = new StringQueryExpression(other.validationExpression);
@@ -42,26 +39,27 @@ public class StringFormData extends ParameterFormData {
         annotationIOSettings.getEventBus().register(this);
     }
 
-    @JIPipeDocumentation(name = "Initial value", description = "The initial string value")
+    @JIPipeDocumentation(name = "Initial value", description = "The initial value")
     @JIPipeParameter("initial-value")
-    public String getValue() {
+    public int getValue() {
         return value;
     }
 
     @JIPipeParameter("initial-value")
-    public void setValue(String value) {
+    public void setValue(int value) {
         this.value = value;
     }
 
-    @JIPipeDocumentation(name = "Validation expression", description = "Expression that is used to validate the user input. There is a variable 'value' available that " +
-            "contains the tested string.")
+    @JIPipeDocumentation(name = "Validation expression", description = "Expression that is used to validate the user input. There is a variable 'value' available that tests " +
+            "the current number.")
     @JIPipeParameter("validation-expression")
-    public StringQueryExpression getValidationExpression() {
+    @ExpressionParameterSettings(variableSource = NumberQueryExpressionVariableSource.class)
+    public DefaultExpressionParameter getValidationExpression() {
         return validationExpression;
     }
 
     @JIPipeParameter("validation-expression")
-    public void setValidationExpression(StringQueryExpression validationExpression) {
+    public void setValidationExpression(DefaultExpressionParameter validationExpression) {
         this.validationExpression = validationExpression;
     }
 
@@ -82,16 +80,18 @@ public class StringFormData extends ParameterFormData {
 
     @Override
     public JIPipeData duplicate() {
-        return new StringFormData(this);
+        return new IntegerFormData(this);
     }
 
-    public static StringFormData importFrom(Path rowStorage) {
-        return FormData.importFrom(rowStorage, StringFormData.class);
+    public static IntegerFormData importFrom(Path rowStorage) {
+        return FormData.importFrom(rowStorage, IntegerFormData.class);
     }
 
     @Override
     public void reportValidity(JIPipeValidityReport report) {
-        if(!validationExpression.test(value)) {
+        StaticVariableSet<Object> variableSet = new StaticVariableSet<>();
+        variableSet.set("value", value);
+        if(!validationExpression.test(variableSet)) {
             report.reportIsInvalid("Invalid value!",
                     String.format("The provided value '%s' does not comply to the test '%s'", value, validationExpression.getExpression()),
                     "Please correct your input",
@@ -101,7 +101,7 @@ public class StringFormData extends ParameterFormData {
 
     @Override
     public String toString() {
-        return String.format("Text form [name=%s, value=%s]", getName(), value);
+        return String.format("Integer form [name=%s, value=%s]", getName(), value);
     }
 
     @Override
@@ -111,7 +111,9 @@ public class StringFormData extends ParameterFormData {
                     dataBatch.getAnnotations().getOrDefault(annotationIOSettings.getInputAnnotation().getContent(),
                             null);
             if(annotation != null) {
-                value = annotation.getValue();
+               if(NumberUtils.isCreatable(annotation.getValue())) {
+                   value = NumberUtils.createInteger(annotation.getValue());
+               }
             }
         }
     }
@@ -120,7 +122,7 @@ public class StringFormData extends ParameterFormData {
     public void writeData(JIPipeMergingDataBatch dataBatch) {
         if(annotationIOSettings.getOutputAnnotation().isEnabled()) {
             annotationIOSettings.getAnnotationMergeStrategy().mergeInto(dataBatch.getAnnotations(),
-                    Collections.singletonList(annotationIOSettings.getOutputAnnotation().createAnnotation(value)));
+                    Collections.singletonList(annotationIOSettings.getOutputAnnotation().createAnnotation("" + value)));
         }
     }
 }
